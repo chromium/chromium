@@ -4,7 +4,7 @@
 
 import './diagnostics_shared_css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * Badge style class type.
@@ -24,28 +24,39 @@ export const BadgeType = {
  * @fileoverview
  * 'text-badge' displays a text-based rounded badge.
  */
-Polymer({
-  is: 'text-badge',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class TextBadgeElement extends PolymerElement {
+  static get is() {
+    return 'text-badge';
+  }
 
-  properties: {
-    /** @type {!BadgeType} */
-    badgeType: {
-      type: String,
-      value: BadgeType.QUEUED,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {string} */
-    value: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /** @type {!BadgeType} */
+      badgeType: {
+        type: String,
+        value: BadgeType.QUEUED,
+      },
 
-    /** @type {boolean} */
-    hidden: {
-      type: Boolean,
-      value: false,
-    },
-  },
-});
+      /** @type {string} */
+      value: {
+        type: String,
+        value: '',
+      },
+
+      /** @type {boolean} */
+      hidden: {
+        type: Boolean,
+        value: false,
+      },
+
+    };
+  }
+}
+
+customElements.define(TextBadgeElement.is, TextBadgeElement);

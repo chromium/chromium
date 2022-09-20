@@ -6,143 +6,158 @@ import './d3.min.js';
 import './diagnostics_shared_css.js';
 import './strings.m.js';
 
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNavEnabled} from './diagnostics_utils.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const RealtimeCpuChartElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
 /**
  * @fileoverview
  * 'realtime-cpu-chart' is a moving stacked area graph component used to display
  * a realtime cpu usage information.
  */
-Polymer({
-  is: 'realtime-cpu-chart',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class RealtimeCpuChartElement extends RealtimeCpuChartElementBase {
+  static get is() {
+    return 'realtime-cpu-chart';
+  }
 
-  behaviors: [I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /**
-   * Helper function to map range of x coordinates to graph width.
-   * @private {?d3.LinearScale}
-   */
-  xAxisScaleFn_: null,
+  static get properties() {
+    return {
+      /** @type {number} */
+      user: {
+        type: Number,
+        value: 0,
+      },
 
-  /**
-   * Helper function to map range of y coordinates to graph height.
-   * @private {?d3.LinearScale}
-   */
-  yAxisScaleFn_: null,
+      /** @type {number} */
+      system: {
+        type: Number,
+        value: 0,
+      },
 
-  /** @private {!Array<!Object>} */
-  data_: [],
+      /** @private {number} */
+      numDataPoints_: {
+        type: Number,
+        value: 50,
+      },
 
-  /**
-   * DOMHighResTimeStamp of last graph render.
-   * @private {number}
-   */
-  lastRender_: 0,
+      /**
+       * @private {number}
+       */
+      dataRefreshPerSecond_: {
+        type: Number,
+        value: 2,
+      },
 
-  /**
-   * Current render frame out of this.framesPerSecond_.
-   * @private {number}
-   */
-  currentFrame_: 0,
+      /**
+       * Chart rendering frames per second.
+       * Strongly preferred to be multiples of dataRefreshPerSecond_. If not,
+       * there will be a small (hard to notice) jittering at every data refresh.
+       * @private {number}
+       */
+      framesPerSecond_: {
+        type: Number,
+        value: 30,
+      },
 
-  /**
-   * Y-Values where we should mark ticks for the y-axis on the left.
-   * @private {!Array<number>}
-   */
-  yAxisTicks_: [0, 25, 50, 75, 100],
+      /**
+       * Duration of each frame in milliseconds
+       * @private {number}
+       */
+      frameDuration_: {
+        readOnly: true,
+        type: Number,
+        computed: 'getFrameDuration_(dataRefreshPerSecond_, framesPerSecond_)',
+      },
 
-  properties: {
-    /** @type {number} */
-    user: {
-      type: Number,
-      value: 0,
-    },
+      /** @private {number} */
+      width_: {
+        type: Number,
+        value: 560,
+      },
 
-    /** @type {number} */
-    system: {
-      type: Number,
-      value: 0,
-    },
+      /** @private {number} */
+      height_: {
+        type: Number,
+        value: 114,
+      },
 
-    /** @private {number} */
-    numDataPoints_: {
-      type: Number,
-      value: 50,
-    },
+      /** @private {!Object} */
+      padding_: {
+        type: Object,
+        value: {top: 10, right: 5, bottom: 8, left: 50, tick: 10},
+      },
 
-    /**
-     * @private {number}
-     */
-    dataRefreshPerSecond_: {
-      type: Number,
-      value: 2,
-    },
+      /** @private {number} */
+      graphWidth_: {
+        readOnly: true,
+        type: Number,
+        computed: 'getGraphDimension_(width_, padding_.left, padding_.right)',
+      },
 
-    /**
-     * Chart rendering frames per second.
-     * Strongly preferred to be multiples of dataRefreshPerSecond_. If not,
-     * there will be a small (hard to notice) jittering at every data refresh.
-     * @private {number}
-     */
-    framesPerSecond_: {
-      type: Number,
-      value: 30,
-    },
+      /** @private {number} */
+      graphHeight_: {
+        readOnly: true,
+        type: Number,
+        computed: 'getGraphDimension_(height_, padding_.top, padding_.bottom)',
+      },
 
-    /**
-     * Duration of each frame in milliseconds
-     * @private {number}
-     */
-    frameDuration_: {
-      readOnly: true,
-      type: Number,
-      computed: 'getFrameDuration_(dataRefreshPerSecond_, framesPerSecond_)',
-    },
-
-    /** @private {number} */
-    width_: {
-      type: Number,
-      value: 560,
-    },
-
-    /** @private {number} */
-    height_: {
-      type: Number,
-      value: 114,
-    },
-
-    /** @private {!Object} */
-    padding_: {
-      type: Object,
-      value: {top: 10, right: 5, bottom: 8, left: 50, tick: 10},
-    },
-
-    /** @private {number} */
-    graphWidth_: {
-      readOnly: true,
-      type: Number,
-      computed: 'getGraphDimension_(width_, padding_.left, padding_.right)',
-    },
-
-    /** @private {number} */
-    graphHeight_: {
-      readOnly: true,
-      type: Number,
-      computed: 'getGraphDimension_(height_, padding_.top, padding_.bottom)',
-    },
-  },
-
-  observers: ['setScaling_(graphWidth_)'],
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+    /**
+     * Helper function to map range of x coordinates to graph width.
+     * @private {?d3.LinearScale}
+     */
+    this.xAxisScaleFn_ = null;
+
+    /**
+     * Helper function to map range of y coordinates to
+     * graph height.
+     * @private {?d3.LinearScale}
+     */
+    this.yAxisScaleFn_ = null;
+
+    /** @private {!Array<!Object>} */
+    this.data_ = [];
+
+    /**
+     * DOMHighResTimeStamp of last graph render.
+     * @private {number}
+     */
+    this.lastRender_ = 0;
+
+    /**
+     * Current render frame out of this.framesPerSecond_.
+     * @private {number}
+     */
+    this.currentFrame_ = 0;
+
+    /**
+     * Y-Values where we should mark ticks for the y-axis on the left.
+     * @private {!Array<number>}
+     */
+    this.yAxisTicks_ = [0, 25, 50, 75, 100];
+
     // Initialize the data array with data outside the chart boundary.
     // Note that with side nav DOM manipulation, created() isn't guaranteed to
     // be called only once.
@@ -150,25 +165,31 @@ Polymer({
     for (let i = 0; i < this.numDataPoints_; ++i) {
       this.data_.push({user: -1, system: -1});
     }
-  },
+  }
+
+  static get observers() {
+    return ['setScaling_(graphWidth_)'];
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.setScaling_();
     this.initializeChart_();
     window.addEventListener('resize', () => this.updateChartWidth_());
 
     // Set the initial chart width.
     this.updateChartWidth_();
-  },
+  }
 
   /** @private */
   updateChartWidth_() {
     // parseFloat() is used to convert the string returned by
     // getComputedStyleValue() into a number ("642px" --> 642).
     const chartVar = isNavEnabled() ? '--chart-width-nav' : '--chart-width';
-    this.width_ = parseFloat(this.getComputedStyleValue(chartVar));
-  },
+    this.width_ =
+        parseFloat(window.getComputedStyle(this).getPropertyValue(chartVar));
+  }
 
   /**
    * Calculate the duration of each frame in milliseconds.
@@ -180,7 +201,7 @@ Polymer({
     assert(this.framesPerSecond_ > 0);
     assert(this.framesPerSecond_ % this.dataRefreshPerSecond_ === 0);
     return 1000 / (this.framesPerSecond_ / this.dataRefreshPerSecond_);
-  },
+  }
 
   /**
    * Get actual graph dimensions after accounting for margins.
@@ -191,7 +212,7 @@ Polymer({
    */
   getGraphDimension_(base, ...margins) {
     return margins.reduce(((acc, margin) => acc - margin), base);
-  },
+  }
 
   /**
    * Sets scaling functions that convert data -> svg coordinates.
@@ -215,7 +236,7 @@ Polymer({
 
     // Draw the y-axis legend and also draw the horizontal gridlines by
     // reversing the ticks back into the chart body.
-    const chartGroup = d3.select(this.$$('#chartGroup'));
+    const chartGroup = d3.select(this.shadowRoot.querySelector('#chartGroup'));
     chartGroup.select('#gridLines')
         .call(
             d3.axisLeft(/** @type {!d3.LinearScale} */ (this.yAxisScaleFn_))
@@ -225,18 +246,18 @@ Polymer({
                 .tickSize(-this.graphWidth_),  // Extend the ticks into the
                                                // entire graph as gridlines.
         );
-  },
+  }
 
   /** @private */
   initializeChart_() {
-    const chartGroup = d3.select(this.$$('#chartGroup'));
+    const chartGroup = d3.select(this.shadowRoot.querySelector('#chartGroup'));
 
     // Position chartGroup inside the margin.
     chartGroup.attr(
         'transform',
         'translate(' + this.padding_.left + ',' + this.padding_.top + ')');
 
-    const plotGroup = d3.select(this.$$('#plotGroup'));
+    const plotGroup = d3.select(this.shadowRoot.querySelector('#plotGroup'));
 
     // Feed data array to the plot group.
     plotGroup.datum(this.data_);
@@ -256,7 +277,7 @@ Polymer({
     // Draw initial data and kick off the rendering process.
     this.getDataSnapshotAndRedraw_();
     this.render_(0);
-  },
+  }
 
   /**
    * @param {string} areaClass class string for <path> element.
@@ -276,7 +297,7 @@ Polymer({
         .y1(data => this.yAxisScaleFn_(
                 areaClass === 'system-area' ? data.system :
                                               data.system + data.user));
-  },
+  }
 
   /**
    * Takes a snapshot of current CPU readings and appends to the data array for
@@ -287,11 +308,12 @@ Polymer({
     this.data_.push({user: this.user, system: this.system});
     this.data_.shift();
 
-    const userArea = assert(this.$$(`path.user-area`));
-    const systemArea = assert(this.$$(`path.system-area`));
+    const userArea = assert(this.shadowRoot.querySelector(`path.user-area`));
+    const systemArea =
+        assert(this.shadowRoot.querySelector(`path.system-area`));
     d3.select(userArea).attr('d', this.getAreaDefinition_('user-area'));
     d3.select(systemArea).attr('d', this.getAreaDefinition_('system-area'));
-  },
+  }
 
   /**
    * @param {number} timeStamp Current time based on DOMHighResTimeStamp.
@@ -310,8 +332,9 @@ Polymer({
         this.getDataSnapshotAndRedraw_();
       }
 
-      const userArea = assert(this.$$(`path.user-area`));
-      const systemArea = assert(this.$$(`path.system-area`));
+      const userArea = assert(this.shadowRoot.querySelector(`path.user-area`));
+      const systemArea =
+          assert(this.shadowRoot.querySelector(`path.system-area`));
 
       // Calculate the new position. Use this.currentFrame_ + 1 since on frame
       // 0, it is already at position 0.
@@ -327,7 +350,7 @@ Polymer({
 
     // Request another frame.
     requestAnimationFrame((timeStamp) => this.render_(timeStamp));
-  },
+  }
 
   /**
    * @param {number} value of percentage.
@@ -336,5 +359,7 @@ Polymer({
    */
   getPercentageLabel_(value) {
     return loadTimeData.getStringF('percentageLabel', value);
-  },
-});
+  }
+}
+
+customElements.define(RealtimeCpuChartElement.is, RealtimeCpuChartElement);

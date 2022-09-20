@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/data_point.js';
+
+import {DataPointElement} from 'chrome://diagnostics/data_point.js';
+
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
 
@@ -52,12 +55,15 @@ export function dataPointTestSuite() {
     const tooltipText = 'Test tooltip';
     return initializeDataPoint(header, value, tooltipText).then(() => {
       dx_utils.assertElementContainsText(
-          dataPointElement.$$('.header > span'), header);
-      dx_utils.assertElementContainsText(dataPointElement.$$('.value'), value);
-      assertTrue(isVisible(
-          /**@type {!HTMLElement} */ (dataPointElement.$$('#infoIcon'))));
+          dataPointElement.shadowRoot.querySelector('.header > span'), header);
       dx_utils.assertElementContainsText(
-          dataPointElement.$$('paper-tooltip'), tooltipText);
+          dataPointElement.shadowRoot.querySelector('.value'), value);
+      assertTrue(isVisible(
+          /**@type {!HTMLElement} */ (
+              dataPointElement.shadowRoot.querySelector('#infoIcon'))));
+      dx_utils.assertElementContainsText(
+          dataPointElement.shadowRoot.querySelector('paper-tooltip'),
+          tooltipText);
     });
   });
 
@@ -67,7 +73,8 @@ export function dataPointTestSuite() {
     return initializeDataPoint(header, value).then(() => {
       // Icon should be hidden when tooltip text is not provided.
       assertFalse(isVisible(
-          /**@type {!HTMLElement} */ (dataPointElement.$$('#infoIcon'))));
+          /**@type {!HTMLElement} */ (
+              dataPointElement.shadowRoot.querySelector('#infoIcon'))));
     });
   });
 
@@ -76,7 +83,7 @@ export function dataPointTestSuite() {
     const value = 'Test value';
     return initializeDataPoint(header, value, '', true).then(() => {
       dx_utils.assertElementContainsText(
-          dataPointElement.$$('.text-red'), value);
+          dataPointElement.shadowRoot.querySelector('.text-red'), value);
     });
   });
 }

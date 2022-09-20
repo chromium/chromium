@@ -5,10 +5,10 @@
 import './data_point.js';
 import './diagnostics_shared_css.js';
 
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, SecurityType} from './diagnostics_types.js';
 import {getSignalStrength, getSubnetMaskFromRoutingPrefix} from './diagnostics_utils.js';
@@ -19,38 +19,52 @@ import {convertFrequencyToChannel} from './frequency_channel_utils.js';
  * 'wifi-info' is responsible for displaying data points related
  * to a WiFi network.
  */
-Polymer({
-  is: 'wifi-info',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const WifiInfoElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class WifiInfoElement extends WifiInfoElementBase {
+  static get is() {
+    return 'wifi-info';
+  }
 
-  properties: {
-    /** @type {!Network} */
-    network: {
-      type: Object,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * @protected
-     * @type {string}
-     */
-    security_: {
-      type: String,
-      computed: 'computeSecurity_(network.typeProperties.wifi.security)',
-    },
+  static get properties() {
+    return {
+      /** @type {!Network} */
+      network: {
+        type: Object,
+      },
 
-    /**
-     * @protected
-     * @type {string}
-     */
-    signalStrength_: {
-      type: String,
-      computed:
-          'computeSignalStrength_(network.typeProperties.wifi.signalStrength)',
-    },
-  },
+      /**
+       * @protected
+       * @type {string}
+       */
+      security_: {
+        type: String,
+        computed: 'computeSecurity_(network.typeProperties.wifi.security)',
+      },
+
+      /**
+       * @protected
+       * @type {string}
+       */
+      signalStrength_: {
+        type: String,
+        computed: 'computeSignalStrength_(network.typeProperties.wifi.' +
+            'signalStrength)',
+      },
+
+    };
+  }
 
   /**
    * Builds channel text based frequency conversion. If value of frequency is
@@ -69,7 +83,7 @@ Polymer({
     const channel = convertFrequencyToChannel(frequency);
     const ghz = (frequency / 1000).toFixed(3);
     return `${channel || '?'} (${ghz} GHz)`;
-  },
+  }
 
   /**
    * @protected
@@ -95,7 +109,7 @@ Polymer({
         assertNotReached();
         return '';
     }
-  },
+  }
 
   /**
    * @return {string}
@@ -105,5 +119,7 @@ Polymer({
       return getSignalStrength(this.network.typeProperties.wifi.signalStrength);
     }
     return '';
-  },
-});
+  }
+}
+
+customElements.define(WifiInfoElement.is, WifiInfoElement);

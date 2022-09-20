@@ -5,6 +5,7 @@
 import 'chrome://diagnostics/diagnostics_app.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+import {DiagnosticsAppElement} from 'chrome://diagnostics/diagnostics_app.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, KeyboardInfo, MemoryUsage, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeKeyboards, fakeMemoryUsage, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeTouchDevices, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
@@ -73,7 +74,8 @@ export function appTestSuite() {
   function getCautionBanner() {
     assertTrue(!!page);
 
-    return /** @type {!HTMLElement} */ (page.$$('diagnostics-sticky-banner'));
+    return /** @type {!HTMLElement} */ (
+        page.shadowRoot.querySelector('diagnostics-sticky-banner'));
   }
 
   /** @return {!HTMLElement} */
@@ -88,7 +90,8 @@ export function appTestSuite() {
   function getSessionLogButton() {
     assertTrue(!!page);
 
-    return /** @type {!CrButtonElement} */ (page.$$('.session-log-button'));
+    return /** @type {!CrButtonElement} */ (
+        page.shadowRoot.querySelector('.session-log-button'));
   }
 
   /**
@@ -98,7 +101,7 @@ export function appTestSuite() {
     assertTrue(!!page);
 
     return /** @type {!HTMLElement} */ (
-        page.$$('[slot=bottom-nav-content-drawer]'));
+        page.shadowRoot.querySelector('[slot=bottom-nav-content-drawer]'));
   }
 
   /**
@@ -108,7 +111,7 @@ export function appTestSuite() {
     assertTrue(!!page);
 
     return /** @type {!HTMLElement} */ (
-        page.$$('[slot=bottom-nav-content-panel]'));
+        page.shadowRoot.querySelector('[slot=bottom-nav-content-panel]'));
   }
 
   /**
@@ -293,7 +296,7 @@ export function appTestSuiteForInputHiding() {
 
   /** @param {!string} id */
   function navigationSelectorHasId(id) {
-    const items = page.$$('navigation-view-panel')
+    const items = page.shadowRoot.querySelector('navigation-view-panel')
                       .shadowRoot.querySelector('navigation-selector')
                       .selectorItems;
     return !!items.find((item) => item.id === id);

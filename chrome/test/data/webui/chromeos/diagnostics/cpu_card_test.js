@@ -4,10 +4,12 @@
 
 import 'chrome://diagnostics/cpu_card.js';
 
+import {CpuCardElement} from 'chrome://diagnostics/cpu_card.js';
 import {CpuUsage, RoutineType, SystemDataProviderInterface, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeCpuUsage, fakeSystemInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -67,7 +69,7 @@ export function cpuCardTestSuite() {
   function getRoutineSection() {
     const routineSection =
         /** @type {!RoutineSectionElement} */ (
-            cpuElement.$$('routine-section'));
+            cpuElement.shadowRoot.querySelector('routine-section'));
     assertTrue(!!routineSection);
     return routineSection;
   }
@@ -109,11 +111,13 @@ export function cpuCardTestSuite() {
           dx_utils.getDataPointValue(cpuElement, '#cpuSpeed'),
           `${convertkhzToGhz(fakeCpuUsage[0].scalingCurrentFrequencyKhz)}`);
       dx_utils.assertElementContainsText(
-          cpuElement.$$('#cpuChipInfo'), `${fakeSystemInfo.cpuModelName}`);
+          cpuElement.shadowRoot.querySelector('#cpuChipInfo'),
+          `${fakeSystemInfo.cpuModelName}`);
       dx_utils.assertElementContainsText(
-          cpuElement.$$('#cpuChipInfo'), `${fakeSystemInfo.cpuThreadsCount}`);
+          cpuElement.shadowRoot.querySelector('#cpuChipInfo'),
+          `${fakeSystemInfo.cpuThreadsCount}`);
       dx_utils.assertElementContainsText(
-          cpuElement.$$('#cpuChipInfo'),
+          cpuElement.shadowRoot.querySelector('#cpuChipInfo'),
           `${fakeSystemInfo.cpuMaxClockSpeedKhz}`);
 
       const cpuChart = dx_utils.getRealtimeCpuChartElement(cpuElement);

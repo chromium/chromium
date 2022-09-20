@@ -7,9 +7,9 @@ import './diagnostics_shared_css.js';
 import './icons.js';
 import './network_card.js';
 
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 import {NetworkHealthProviderInterface, NetworkListObserverInterface, NetworkListObserverReceiver} from './diagnostics_types.js';
@@ -21,71 +21,88 @@ import {TestSuiteStatus} from './routine_list_executor.js';
  * 'network-list' is responsible for displaying Ethernet, Cellular,
  *  and WiFi networks.
  */
-Polymer({
-  is: 'network-list',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NetworkListElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class NetworkListElement extends NetworkListElementBase {
+  static get is() {
+    return 'network-list';
+  }
 
-  /** @private {?DiagnosticsBrowserProxy} */
-  browserProxy_: null,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /**
-   * @private {?NetworkHealthProviderInterface}
-   */
-  networkHealthProvider_: null,
+  static get properties() {
+    return {
+      /** @type {!TestSuiteStatus} */
+      testSuiteStatus: {
+        type: Number,
+        value: TestSuiteStatus.kNotRunning,
+      },
 
-  /**
-   * Receiver responsible for observing active network guids.
-   * @private {?NetworkListObserverReceiver}
-   */
-  networkListObserverReceiver_: null,
+      /** @private {Array<?string>} */
+      otherNetworkGuids_: {
+        type: Array,
+        value: () => [],
+      },
 
-  properties: {
-    /** @type {!TestSuiteStatus} */
-    testSuiteStatus: {
-      type: Number,
-      value: TestSuiteStatus.kNotRunning,
-    },
+      /** @private {string} */
+      activeGuid_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private {Array<?string>} */
-    otherNetworkGuids_: {
-      type: Array,
-      value: () => [],
-    },
+      /** @type {boolean} */
+      isActive: {
+        type: Boolean,
+        value: true,
+      },
 
-    /** @private {string} */
-    activeGuid_: {
-      type: String,
-      value: '',
-    },
+      /** @protected {boolean} */
+      isLoggedIn_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isLoggedIn'),
+      },
 
-    /** @type {boolean} */
-    isActive: {
-      type: Boolean,
-      value: true,
-    },
-
-    /** @protected {boolean} */
-    isLoggedIn_: {
-      type: Boolean,
-      value: loadTimeData.getBoolean('isLoggedIn'),
-    },
-  },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+    /** @private {?DiagnosticsBrowserProxy} */
+    this.browserProxy_ = null;
+
+    /**
+     * @private {?NetworkHealthProviderInterface}
+     */
+    this.networkHealthProvider_ = null;
+
+    /**
+     * Receiver responsible for observing active network guids.
+     * @private {?NetworkListObserverReceiver}
+     */
+    this.networkListObserverReceiver_ = null;
+
     this.browserProxy_ = DiagnosticsBrowserProxyImpl.getInstance();
     this.browserProxy_.initialize();
     this.networkHealthProvider_ = getNetworkHealthProvider();
     this.observeNetworkList_();
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.networkListObserverReceiver_.$.close();
-  },
+  }
 
   /** @private */
   observeNetworkList_() {
@@ -98,7 +115,7 @@ Polymer({
 
     this.networkHealthProvider_.observeNetworkList(
         this.networkListObserverReceiver_.$.bindNewPipeAndPassRemote());
-  },
+  }
 
   /**
    * Implements NetworkListObserver.onNetworkListChanged
@@ -111,7 +128,7 @@ Polymer({
     // a network-card for it.
     this.otherNetworkGuids_ = networkGuids.filter(guid => guid !== activeGuid);
     this.activeGuid_ = activeGuid;
-  },
+  }
 
   /**
    * 'navigation-view-panel' is responsible for calling this function when
@@ -127,10 +144,14 @@ Polymer({
       // fallback to focusing the element's main container.
       afterNextRender(this, () => {
         if (this.activeGuid_) {
-          this.$$('connectivity-card').$$('#cardTitle').focus();
+          this.shadowRoot.querySelector('connectivity-card')
+              .shadowRoot.querySelector('#cardTitle')
+              .focus();
           return;
         } else if (this.otherNetworkGuids_.length > 0) {
-          this.$$('network-card').$$('#cardTitle').focus();
+          this.shadowRoot.querySelector('network-card')
+              .shadowRoot.querySelector('#cardTitle')
+              .focus();
           return;
         }
         this.$.networkListContainer.focus();
@@ -139,10 +160,12 @@ Polymer({
       // to avoid duplicate code in all navigatable pages.
       this.browserProxy_.recordNavigation('connectivity');
     }
-  },
+  }
 
   /** @protected */
   getSettingsString_() {
     return this.i18nAdvanced('settingsLinkText');
-  },
-});
+  }
+}
+
+customElements.define(NetworkListElement.is, NetworkListElement);

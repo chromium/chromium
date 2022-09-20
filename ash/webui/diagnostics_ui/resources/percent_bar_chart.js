@@ -9,36 +9,45 @@ import './diagnostics_shared_css.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview
  * 'percent-bar-chart' is a styling wrapper for paper-progress used to display a
  * percentage based bar chart.
  */
-Polymer({
-  is: 'percent-bar-chart',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PercentBarChartElement extends PolymerElement {
+  static get is() {
+    return 'percent-bar-chart';
+  }
 
-  properties: {
-    /** @type {string} */
-    header: {
-      type: String,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {number} */
-    value: {
-      type: Number,
-      value: 0,
-    },
+  static get properties() {
+    return {
+      /** @type {string} */
+      header: {
+        type: String,
+      },
 
-    /** @type {number} */
-    max: {
-      type: Number,
-      value: 100,
-    },
-  },
+      /** @type {number} */
+      value: {
+        type: Number,
+        value: 0,
+      },
+
+      /** @type {number} */
+      max: {
+        type: Number,
+        value: 100,
+      },
+
+    };
+  }
 
   /**
    * Get adjusted value clamped to max value. paper-progress breaks for a while
@@ -48,5 +57,7 @@ Polymer({
    */
   getAdjustedValue_() {
     return this.value <= this.max ? this.value : this.max;
-  },
-});
+  }
+}
+
+customElements.define(PercentBarChartElement.is, PercentBarChartElement);

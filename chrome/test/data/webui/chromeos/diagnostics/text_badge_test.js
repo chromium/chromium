@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/text_badge.js';
 
-import {BadgeType} from 'chrome://diagnostics/text_badge.js';
+import {BadgeType, TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
@@ -47,7 +47,7 @@ export function textBadgeTestSuite() {
     const badgeType = BadgeType.QUEUED;
     const value = 'Test value';
     return initializeBadge(badgeType, value).then(() => {
-      const textBadge = textBadgeElement.$$('#textBadge');
+      const textBadge = textBadgeElement.shadowRoot.querySelector('#textBadge');
       assertEquals(badgeType, textBadge.getAttribute('class'));
       dx_utils.assertTextContains(textBadge.textContent, value);
     });

@@ -4,16 +4,24 @@
 
 import './diagnostics_shared_css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview
  * 'diagnostics-card-frame' is a styling wrapper for each component's diagnostic
  * card.
  */
-Polymer({
-  is: 'diagnostics-card-frame',
 
-  _template: html`{__html_template__}`,
-});
+/** @polymer */
+class DiagnosticsCardFrameElement extends PolymerElement {
+  static get is() {
+    return 'diagnostics-card-frame';
+  }
 
+  static get template() {
+    return html`{__html_template__}`;
+  }
+}
+
+customElements.define(
+    DiagnosticsCardFrameElement.is, DiagnosticsCardFrameElement);

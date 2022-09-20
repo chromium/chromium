@@ -7,6 +7,7 @@ import 'chrome://diagnostics/ip_config_info_drawer.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 import {Network} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeEthernetNetwork, fakeWifiNetwork, fakeWifiNetworkEmptyNameServers, fakeWifiNetworkMultipleNameServers, fakeWifiNetworkNoNameServers} from 'chrome://diagnostics/fake_data.js';
+import {IpConfigInfoDrawerElement} from 'chrome://diagnostics/ip_config_info_drawer.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
@@ -53,7 +54,8 @@ export function ipConfigInfoDrawerTestSuite() {
    */
   function getDrawerContentContainer() {
     return /** @type {!HTMLElement} */ (
-        ipConfigInfoDrawerElement.$$('#ipConfigInfoElement'));
+        ipConfigInfoDrawerElement.shadowRoot.querySelector(
+            '#ipConfigInfoElement'));
   }
 
   /**
@@ -61,7 +63,8 @@ export function ipConfigInfoDrawerTestSuite() {
    * @return {!HTMLElement}
    */
   function getDrawerToggle() {
-    const toggleButton = ipConfigInfoDrawerElement.$$('#drawerToggle');
+    const toggleButton =
+        ipConfigInfoDrawerElement.shadowRoot.querySelector('#drawerToggle');
     assertTrue(!!toggleButton);
     return /** @type {!HTMLElement} */ (toggleButton);
   }
@@ -93,7 +96,8 @@ export function ipConfigInfoDrawerTestSuite() {
       assertTrue(isVisible(getDrawerToggle()));
       dx_utils.assertElementContainsText(
           /** @type {HTMLElement} */ (
-              ipConfigInfoDrawerElement.$$('#drawerTitle')),
+              ipConfigInfoDrawerElement.shadowRoot.querySelector(
+                  '#drawerTitle')),
           ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerTitle'));
     });
   });

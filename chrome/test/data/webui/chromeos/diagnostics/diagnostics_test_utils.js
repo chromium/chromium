@@ -4,6 +4,18 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+import {CellularInfoElement} from 'chrome://diagnostics/cellular_info.js';
+import {CpuCardElement} from 'chrome://diagnostics/cpu_card.js';
+import {DataPointElement} from 'chrome://diagnostics/data_point.js';
+import {DiagnosticsCardElement} from 'chrome://diagnostics/diagnostics_card.js';
+import {EthernetInfoElement} from 'chrome://diagnostics/ethernet_info.js';
+import {PercentBarChartElement} from 'chrome://diagnostics/percent_bar_chart.js';
+import {RealtimeCpuChartElement} from 'chrome://diagnostics/realtime_cpu_chart.js';
+import {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
+import {RoutineResultListElement} from 'chrome://diagnostics/routine_result_list.js';
+import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
+import {WifiInfoElement} from 'chrome://diagnostics/wifi_info.js';
+
 import {assertEquals, assertTrue} from '../../chai_assert.js';
 import {isVisible} from '../../test_util.js';
 
@@ -91,7 +103,8 @@ export function getResultEntriesFromSection(element) {
  */
 export function getRunTestsButtonFromSection(element) {
   const button =
-      /** @type {!CrButtonElement} */ (element.$$('#runTestsButton'));
+      /** @type {!CrButtonElement} */ (
+          element.shadowRoot.querySelector('#runTestsButton'));
   assertTrue(!!button);
   return button;
 }
@@ -103,7 +116,8 @@ export function getRunTestsButtonFromSection(element) {
  */
 export function getStopTestsButtonFromSection(element) {
   const button =
-      /** @type {!CrButtonElement} */ (element.$$('#stopTestsButton'));
+      /** @type {!CrButtonElement} */ (
+          element.shadowRoot.querySelector('#stopTestsButton'));
   assertTrue(!!button);
   return button;
 }
@@ -116,7 +130,8 @@ export function getStopTestsButtonFromSection(element) {
  */
 export function getToggleTestReportButtonFromSection(element) {
   const button =
-      /** @type {!CrButtonElement} */ (element.$$('#toggleReportButton'));
+      /** @type {!CrButtonElement} */ (
+          element.shadowRoot.querySelector('#toggleReportButton'));
   assertTrue(!!button);
   return button;
 }
@@ -199,7 +214,8 @@ export function getDiagnosticsCard(element) {
  */
 export function getRoutineSection(element) {
   const routineSection =
-      /** @type {!RoutineSectionElement} */ (element.$$('routine-section'));
+      /** @type {!RoutineSectionElement} */ (
+          element.shadowRoot.querySelector('routine-section'));
   assertTrue(!!routineSection);
   return routineSection;
 }
@@ -248,7 +264,7 @@ export function getEthernetInfoElement(element) {
  * @return {!HTMLElement}
  */
 export function getNavigationViewPanelElement(element, selector) {
-  const navPanel = element.$$('navigation-view-panel');
+  const navPanel = element.shadowRoot.querySelector('navigation-view-panel');
   return /** @type {!HTMLElement} */ (
       navPanel.shadowRoot.querySelector(`#${selector}`));
 }

@@ -8,6 +8,7 @@ import {SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeSystemInfo, fakeSystemInfoWithoutBoardName, fakeSystemInfoWithTBD} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {OverviewCardElement} from 'chrome://diagnostics/overview_card.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -56,11 +57,13 @@ export function overviewCardTestSuite() {
   test('OverviewCardPopulated', () => {
     return initializeOverviewCard(fakeSystemInfo).then(() => {
       dx_utils.assertElementContainsText(
-          overviewElement.$$('#marketingName'), fakeSystemInfo.marketingName);
+          overviewElement.shadowRoot.querySelector('#marketingName'),
+          fakeSystemInfo.marketingName);
       dx_utils.assertElementContainsText(
-          overviewElement.$$('#deviceInfo'), fakeSystemInfo.boardName);
+          overviewElement.shadowRoot.querySelector('#deviceInfo'),
+          fakeSystemInfo.boardName);
       dx_utils.assertElementContainsText(
-          overviewElement.$$('#deviceInfo'),
+          overviewElement.shadowRoot.querySelector('#deviceInfo'),
           fakeSystemInfo.versionInfo.milestoneVersion);
     });
   });
@@ -68,11 +71,13 @@ export function overviewCardTestSuite() {
   test('TBDMarketingNameHidden', () => {
     return initializeOverviewCard(fakeSystemInfoWithTBD).then(() => {
       assertFalse(isVisible(
-          /** @type {!HTMLElement} */ (overviewElement.$$('#marketingName'))));
+          /** @type {!HTMLElement} */ (
+              overviewElement.shadowRoot.querySelector('#marketingName'))));
 
       // Device info should not be surrounded by parentheses when the marketing
       // name is hidden.
-      const deviceInfoText = overviewElement.$$('#deviceInfo').textContent;
+      const deviceInfoText =
+          overviewElement.shadowRoot.querySelector('#deviceInfo').textContent;
       assertTrue(deviceInfoText[0] !== '(');
       assertTrue(deviceInfoText[deviceInfoText.length - 1] !== ')');
     });
@@ -84,7 +89,7 @@ export function overviewCardTestSuite() {
           'versionInfo',
           fakeSystemInfoWithoutBoardName.versionInfo.fullVersionString);
       assertEquals(
-          overviewElement.$$('#deviceInfo').textContent,
+          overviewElement.shadowRoot.querySelector('#deviceInfo').textContent,
           versionInfo[0].toUpperCase() + versionInfo.slice(1));
     });
   });

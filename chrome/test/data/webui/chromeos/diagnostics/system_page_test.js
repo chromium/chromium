@@ -13,6 +13,8 @@ import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_prov
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setNetworkHealthProviderForTesting, setSystemDataProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
+import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
+import {SystemPageElement} from 'chrome://diagnostics/system_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -139,7 +141,8 @@ export function systemPageTestSuite() {
    * @return {!CrButtonElement}
    */
   function getSessionLogButton() {
-    return /** @type {!CrButtonElement} */ (page.$$('.session-log-button'));
+    return /** @type {!CrButtonElement} */ (
+        page.shadowRoot.querySelector('.session-log-button'));
   }
 
   /**
@@ -156,7 +159,7 @@ export function systemPageTestSuite() {
    * @return {boolean}
    */
   function isToastVisible() {
-    return page.$$('cr-toast').open;
+    return page.shadowRoot.querySelector('cr-toast').open;
   }
 
   /**
@@ -174,7 +177,8 @@ export function systemPageTestSuite() {
    * @return {!HTMLElement}
    */
   function getCautionBanner() {
-    return /** @type {!HTMLElement} */ (page.$$('#banner'));
+    return /** @type {!HTMLElement} */ (
+        page.shadowRoot.querySelector('#banner'));
   }
 
   test('LandingPageLoaded', () => {
@@ -183,23 +187,25 @@ export function systemPageTestSuite() {
                fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
         .then(() => {
           // Verify the overview card is in the page.
-          const overview = page.$$('#overviewCard');
+          const overview = page.shadowRoot.querySelector('#overviewCard');
           assertTrue(!!overview);
 
           // Verify the memory card is in the page.
-          const memory = page.$$('#memoryCard');
+          const memory = page.shadowRoot.querySelector('#memoryCard');
           assertTrue(!!memory);
 
           // Verify the CPU card is in the page.
-          const cpu = page.$$('#cpuCard');
+          const cpu = page.shadowRoot.querySelector('#cpuCard');
           assertTrue(!!cpu);
 
           // Verify the battery status card is in the page.
-          const batteryStatus = page.$$('#batteryStatusCard');
+          const batteryStatus =
+              page.shadowRoot.querySelector('#batteryStatusCard');
           assertTrue(!!batteryStatus);
 
           // Verify the session log button is in the page.
-          const sessionLog = page.$$('.session-log-button');
+          const sessionLog =
+              page.shadowRoot.querySelector('.session-log-button');
           assertTrue(!!sessionLog);
         });
   });
@@ -211,7 +217,8 @@ export function systemPageTestSuite() {
                fakeMemoryUsage)
         .then(() => {
           // Verify the battery status card is not in the page.
-          const batteryStatus = page.$$('#batteryStatusCard');
+          const batteryStatus =
+              page.shadowRoot.querySelector('#batteryStatusCard');
           assertFalse(!!batteryStatus);
         });
   });
@@ -223,9 +230,10 @@ export function systemPageTestSuite() {
                fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
                fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
         .then(() => {
-          const batteryStatusCard = page.$$('battery-status-card');
-          const cpuCard = page.$$('cpu-card');
-          const memoryCard = page.$$('memory-card');
+          const batteryStatusCard =
+              page.shadowRoot.querySelector('battery-status-card');
+          const cpuCard = page.shadowRoot.querySelector('cpu-card');
+          const memoryCard = page.shadowRoot.querySelector('memory-card');
           cards = [batteryStatusCard, cpuCard, memoryCard];
 
           memoryRoutinesSection = dx_utils.getRoutineSection(memoryCard);
@@ -266,7 +274,7 @@ export function systemPageTestSuite() {
           clickSessionLogButton().then(() => {
             assertTrue(isToastVisible());
             dx_utils.assertElementContainsText(
-                page.$$('#toast'),
+                page.shadowRoot.querySelector('#toast'),
                 loadTimeData.getString('sessionLogToastTextSuccess'));
           });
         });
@@ -281,7 +289,7 @@ export function systemPageTestSuite() {
           clickSessionLogButton().then(() => {
             assertTrue(isToastVisible());
             dx_utils.assertElementContainsText(
-                page.$$('#toast'),
+                page.shadowRoot.querySelector('#toast'),
                 loadTimeData.getString('sessionLogToastTextFailure'));
           });
         });
@@ -320,7 +328,8 @@ export function systemPageTestSuite() {
                  fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
                  fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
           .then(() => {
-            routineSection = dx_utils.getRoutineSection(page.$$('cpu-card'));
+            routineSection = dx_utils.getRoutineSection(
+                page.shadowRoot.querySelector('cpu-card'));
             routineSection.routines = routines;
             assertFalse(isVisible(getCautionBanner()));
             return flushTasks();
@@ -348,7 +357,8 @@ export function systemPageTestSuite() {
                  fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
                  fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
           .then(() => {
-            routineSection = dx_utils.getRoutineSection(page.$$('memory-card'));
+            routineSection = dx_utils.getRoutineSection(
+                page.shadowRoot.querySelector('memory-card'));
             routineSection.routines = routines;
             assertFalse(isVisible(getCautionBanner()));
             return flushTasks();
@@ -359,7 +369,7 @@ export function systemPageTestSuite() {
           })
           .then(() => {
             dx_utils.assertElementContainsText(
-                page.$$('#banner > #bannerMsg'),
+                page.shadowRoot.querySelector('#banner > #bannerMsg'),
                 loadTimeData.getString('memoryBannerMessage'));
             assertTrue(isVisible(getCautionBanner()));
             return routineController.resolveRoutineForTesting();

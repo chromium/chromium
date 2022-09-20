@@ -7,7 +7,8 @@ import './diagnostics_shared_css.js';
 import './routine_result_entry.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {RoutineType} from './diagnostics_types.js';
 import {RoutineGroup} from './routine_group.js';
 import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
@@ -16,45 +17,54 @@ import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
  * @fileoverview
  * 'routine-result-list' shows a list of routine result entries.
  */
-Polymer({
-  is: 'routine-result-list',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class RoutineResultListElement extends PolymerElement {
+  static get is() {
+    return 'routine-result-list';
+  }
 
-  properties: {
-    /** @private {!Array<RoutineGroup|ResultStatusItem>} */
-    results_: {
-      type: Array,
-      value: () => [],
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {boolean} */
-    hidden: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      /** @private {!Array<RoutineGroup|ResultStatusItem>} */
+      results_: {
+        type: Array,
+        value: () => [],
+      },
 
-    /** @type {boolean} */
-    hideVerticalLines: {
-      type: Boolean,
-      value: false,
-    },
+      /** @type {boolean} */
+      hidden: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @type {boolean} */
-    usingRoutineGroups: {
-      type: Boolean,
-      value: false,
-    },
+      /** @type {boolean} */
+      hideVerticalLines: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Only used with routine groups.
-     * @type {boolean}
-     */
-    ignoreRoutineStatusUpdates: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** @type {boolean} */
+      usingRoutineGroups: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Only used with routine groups.
+       * @type {boolean}
+       */
+      ignoreRoutineStatusUpdates: {
+        type: Boolean,
+        value: false,
+      },
+
+    };
+  }
 
   /**
    * Resets the list and creates a new list with all routines in the unstarted
@@ -69,14 +79,14 @@ Polymer({
     } else {
       this.addRoutines_(routines);
     }
-  },
+  }
 
   /**
    * Removes all the routines from the list.
    */
   clearRoutines() {
     this.splice('results_', 0, this.results_.length);
-  },
+  }
 
   /**
    * Creates a list of unstarted routines.
@@ -86,7 +96,7 @@ Polymer({
     for (const routine of routines) {
       this.push('results_', new ResultStatusItem(routine));
     }
-  },
+  }
 
   /**
    * Updates the routine's status in the results_ list.
@@ -97,7 +107,7 @@ Polymer({
   updateRoutineStatus_(index, status) {
     assert(index < this.results_.length);
     this.splice('results_', index, 1, status);
-  },
+  }
 
   /**
    * Receives the callback from RoutineListExecutor whenever the status of a
@@ -130,7 +140,7 @@ Polymer({
         return;
       }
     });
-  },
+  }
 
   /**
    * @protected
@@ -140,7 +150,7 @@ Polymer({
   shouldHideVerticalLines_({value}) {
     return this.hideVerticalLines ||
         value === this.results_[this.results_.length - 1];
-  },
+  }
 
   /**
    * When a test in a routine group fails, we stop sending status updates to the
@@ -154,15 +164,14 @@ Polymer({
         this.updateRoutineStatus_(i, routineGroup.clone());
       }
     });
-  },
+  }
 
   /**
    * Called from 'routine-section' after all routines have finished running.
    */
   resetIgnoreStatusUpdatesFlag() {
     this.ignoreRoutineStatusUpdates = false;
-  },
+  }
+}
 
-  /** @override */
-  created() {},
-});
+customElements.define(RoutineResultListElement.is, RoutineResultListElement);

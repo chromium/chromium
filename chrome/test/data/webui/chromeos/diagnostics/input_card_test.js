@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/diagnostics_types.js';
-import {InputCardType} from 'chrome://diagnostics/input_card.js';
+import {InputCardElement, InputCardType} from 'chrome://diagnostics/input_card.js';
+
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
@@ -75,7 +76,9 @@ export function inputCardTestSuite() {
 
   test('KeyboardsListedCorrectly', async () => {
     await initializeInputCard(InputCardType.kKeyboard, keyboards);
-    assertEquals(2, inputCardElement.$$('dom-repeat').items.length);
+    assertEquals(
+        2,
+        inputCardElement.shadowRoot.querySelector('dom-repeat').items.length);
     const elements = inputCardElement.root.querySelectorAll('.device');
     assertEquals(
         keyboards[0].name, elements[0].querySelector('.device-name').innerText);
@@ -96,7 +99,9 @@ export function inputCardTestSuite() {
       listenerCalled = true;
       assertEquals(10, e.detail.evdevId);
     });
-    inputCardElement.$$('.device[data-evdev-id="10"] cr-button').click();
+    inputCardElement.shadowRoot
+        .querySelector('.device[data-evdev-id="10"] cr-button')
+        .click();
     await flushTasks();
     assertTrue(listenerCalled);
   });

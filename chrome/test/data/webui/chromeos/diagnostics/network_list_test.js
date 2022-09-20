@@ -4,12 +4,14 @@
 
 import 'chrome://diagnostics/network_list.js';
 
+import {ConnectivityCardElement} from 'chrome://diagnostics/connectivity_card.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 import {NavigationView, NetworkGuidInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setNetworkHealthProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {NetworkListElement} from 'chrome://diagnostics/network_list.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
@@ -80,7 +82,7 @@ export function networkListTestSuite() {
   function getConnectivityCard() {
     const connectivityCard =
         /** @type {!ConnectivityCardElement} */ (
-            networkListElement.$$('connectivity-card'));
+            networkListElement.shadowRoot.querySelector('connectivity-card'));
     assertTrue(!!connectivityCard);
     return connectivityCard;
   }
@@ -115,7 +117,8 @@ export function networkListTestSuite() {
   function getSettingsLink() {
     assertTrue(!!networkListElement);
 
-    return /** @type {!HTMLElement} */ (networkListElement.$$('#settingsLink'));
+    return /** @type {!HTMLElement} */ (
+        networkListElement.shadowRoot.querySelector('#settingsLink'));
   }
 
   /**
@@ -170,7 +173,8 @@ export function networkListTestSuite() {
         .then(() => {
           networkGuids = getOtherNetworkGuids();
           numDomRepeatInstances =
-              networkListElement.$$('#networkCardList').items.length;
+              networkListElement.shadowRoot.querySelector('#networkCardList')
+                  .items.length;
           networkCardElements = getNetworkCardElements();
           assertEquals(numDomRepeatInstances, networkGuids.length);
           for (let i = 0; i < networkCardElements.length; i++) {
@@ -181,7 +185,8 @@ export function networkListTestSuite() {
         .then(() => {
           networkGuids = getOtherNetworkGuids();
           numDomRepeatInstances =
-              networkListElement.$$('#networkCardList').items.length;
+              networkListElement.shadowRoot.querySelector('#networkCardList')
+                  .items.length;
           networkCardElements = getNetworkCardElements();
           assertEquals(numDomRepeatInstances, networkGuids.length);
           for (let i = 0; i < networkCardElements.length; i++) {
@@ -201,9 +206,9 @@ export function networkListTestSuite() {
           // and WiFi. The connectivity-card is responsbile for the Ethernet
           // guid as it's the currently active guid.
           const wifiInfoElement = dx_utils.getWifiInfoElement(
-              networkCardElements[0].$$('network-info'));
+              networkCardElements[0].shadowRoot.querySelector('network-info'));
           dx_utils.assertTextContains(
-              wifiInfoElement.$$('#ssid').value,
+              wifiInfoElement.shadowRoot.querySelector('#ssid').value,
               fakeWifiNetwork.typeProperties.wifi.ssid);
 
           assertEquals(
@@ -216,9 +221,9 @@ export function networkListTestSuite() {
         .then(() => {
           networkCardElements = getNetworkCardElements();
           const cellularInfoElement = dx_utils.getCellularInfoElement(
-              networkCardElements[0].$$('network-info'));
+              networkCardElements[0].shadowRoot.querySelector('network-info'));
           dx_utils.assertTextContains(
-              cellularInfoElement.$$('#iccid').value,
+              cellularInfoElement.shadowRoot.querySelector('#iccid').value,
               fakeCellularNetwork.typeProperties.cellular.iccid);
           assertEquals(
               getConnectivityCard().activeGuid,
@@ -229,7 +234,9 @@ export function networkListTestSuite() {
   test('ConnectivityCardHiddenWithNoActiveGuid', () => {
     return initializeNetworkList(fakeNetworkGuidInfoList)
         .then(() => changeActiveGuid(''))
-        .then(() => assertFalse(!!networkListElement.$$('connectivity-card')));
+        .then(
+            () => assertFalse(!!networkListElement.shadowRoot.querySelector(
+                'connectivity-card')));
   });
 
   test('SettingsLinkHiddenWhenNotLoggedIn', () => {
@@ -274,7 +281,8 @@ export function networkListTestSuite() {
     return initializeNetworkList(fakeNetworkGuidInfoList)
         .then(
             () => assertTrue(isVisible(
-                /** @type {!HTMLElement} */ (networkListElement.$$(
-                    '.diagnostics-network-list-container')))));
+                /** @type {!HTMLElement} */ (
+                    networkListElement.shadowRoot.querySelector(
+                        '.diagnostics-network-list-container')))));
   });
 }

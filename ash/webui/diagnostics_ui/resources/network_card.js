@@ -9,8 +9,8 @@ import './ip_config_info_drawer.js';
 import './network_info.js';
 import './network_troubleshooting.js';
 
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkHealthProviderInterface, NetworkState, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, TroubleshootingInfo} from './diagnostics_types.js';
 import {filterNameServers, formatMacAddress, getNetworkCardTitle, getNetworkState, getNetworkType, isConnectedOrOnline, isNetworkMissingNameServers} from './diagnostics_utils.js';
@@ -34,110 +34,130 @@ export const TroubleshootingState = {
  * @fileoverview
  * 'network-card' is a styling wrapper for a network-info element.
  */
-Polymer({
-  is: 'network-card',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NetworkCardElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class NetworkCardElement extends NetworkCardElementBase {
+  static get is() {
+    return 'network-card';
+  }
 
-  /**
-   * @private {?NetworkHealthProviderInterface}
-   */
-  networkHealthProvider_: null,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /**
-   * Receiver responsible for observing a single active network connection.
-   * @private {?NetworkStateObserverReceiver}
-   */
-  networkStateObserverReceiver_: null,
+  static get properties() {
+    return {
+      /** @type {string} */
+      guid: {
+        type: String,
+        value: '',
+      },
 
-  properties: {
-    /** @type {string} */
-    guid: {
-      type: String,
-      value: '',
-    },
+      /** @private {string} */
+      networkType_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private {string} */
-    networkType_: {
-      type: String,
-      value: '',
-    },
+      /** @private {string} */
+      networkState_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private {string} */
-    networkState_: {
-      type: String,
-      value: '',
-    },
+      /** @type {!Network} */
+      network: {
+        type: Object,
+      },
 
-    /** @type {!Network} */
-    network: {
-      type: Object,
-    },
+      /** @protected {boolean} */
+      showNetworkDataPoints_: {
+        type: Boolean,
+        computed: 'computeShouldShowNetworkDataPoints_(network.state,' +
+            ' unableToObtainIpAddress_, isMissingNameServers_)',
+      },
 
-    /** @protected {boolean} */
-    showNetworkDataPoints_: {
-      type: Boolean,
-      computed: 'computeShouldShowNetworkDataPoints_(network.state,' +
-          ' unableToObtainIpAddress_, isMissingNameServers_)',
-    },
+      /** @protected {boolean} */
+      showTroubleshootingCard_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @protected {boolean} */
-    showTroubleshootingCard_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @protected {string} */
+      macAddress_: {
+        type: String,
+        value: '',
+      },
 
-    /** @protected {string} */
-    macAddress_: {
-      type: String,
-      value: '',
-    },
+      /** @protected {boolean} */
+      unableToObtainIpAddress_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @protected {boolean} */
-    unableToObtainIpAddress_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @protected {TroubleshootingInfo} */
+      troubleshootingInfo_: {
+        type: Object,
+        computed: 'computeTroubleshootingInfo_(network.*,' +
+            ' unableToObtainIpAddress_, isMissingNameServers_)',
+      },
 
-    /** @protected {TroubleshootingInfo} */
-    troubleshootingInfo_: {
-      type: Object,
-      computed: 'computeTroubleshootingInfo_(network.*,' +
-          ' unableToObtainIpAddress_, isMissingNameServers_)',
-    },
+      /** @private */
+      timerId_: {
+        type: Number,
+        value: -1,
+      },
 
-    /** @private */
-    timerId_: {
-      type: Number,
-      value: -1,
-    },
+      /** @private */
+      timeoutInMs_: {
+        type: Number,
+        value: 30000,
+      },
 
-    /** @private */
-    timeoutInMs_: {
-      type: Number,
-      value: 30000,
-    },
+      /** @protected {boolean} */
+      isMissingNameServers_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @protected {boolean} */
-    isMissingNameServers_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+    };
+  }
 
-  observers: ['observeNetwork_(guid)'],
+  static get observers() {
+    return ['observeNetwork_(guid)'];
+  }
+
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+    /**
+     * @private {?NetworkHealthProviderInterface}
+     */
+    this.networkHealthProvider_ = null;
+
+    /**
+     * Receiver responsible for observing a single active network connection.
+     * @private {?NetworkStateObserverReceiver}
+     */
+    this.networkStateObserverReceiver_ = null;
+
     this.networkHealthProvider_ = getNetworkHealthProvider();
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.resetTimer_();
-  },
+  }
 
   /** @private */
   observeNetwork_() {
@@ -166,7 +186,7 @@ Polymer({
     this.networkHealthProvider_.observeNetwork(
         this.networkStateObserverReceiver_.$.bindNewPipeAndPassRemote(),
         this.guid);
-  },
+  }
 
   /**
    * Implements NetworkStateObserver.onNetworkStateChanged
@@ -197,7 +217,7 @@ Polymer({
         this.unableToObtainIpAddress_ = true;
       }, this.timeoutInMs_);
     }
-  },
+  }
 
   /**
    * @protected
@@ -205,7 +225,7 @@ Polymer({
    */
   getNetworkCardTitle_() {
     return getNetworkCardTitle(this.networkType_, this.networkState_);
-  },
+  }
 
   /**
    * @protected
@@ -231,7 +251,7 @@ Polymer({
       default:
         return false;
     }
-  },
+  }
 
   /**
    * @protected
@@ -239,7 +259,7 @@ Polymer({
    */
   isNetworkDisabled_() {
     return this.network.state === NetworkState.kDisabled;
-  },
+  }
 
   /**
    * @protected
@@ -250,7 +270,7 @@ Polymer({
       return '';
     }
     return formatMacAddress(this.macAddress_);
-  },
+  }
 
   /**
    * @private
@@ -266,7 +286,7 @@ Polymer({
       linkText,
       url: SETTINGS_URL,
     };
-  },
+  }
 
   /**
    * @private
@@ -278,7 +298,7 @@ Polymer({
       linkText: this.i18n('troubleConnecting'),
       url: BASE_SUPPORT_URL,
     };
-  },
+  }
 
   /**
    * @private
@@ -330,7 +350,7 @@ Polymer({
     this.showTroubleshootingCard_ = true;
     return this.getInfoProperties_(
         /** @type {!TroubleshootingState} */ (troubleshootingState));
-  },
+  }
 
   /**
    * @private
@@ -342,7 +362,7 @@ Polymer({
       linkText: this.i18n('visitSettingsToConfigureLinkText'),
       url: SETTINGS_URL,
     };
-  },
+  }
 
   /**
    * @private
@@ -354,7 +374,7 @@ Polymer({
       linkText: this.i18n('visitSettingsToConfigureLinkText'),
       url: SETTINGS_URL,
     };
-  },
+  }
 
   /**
    * @private
@@ -378,7 +398,7 @@ Polymer({
           url: '',
         };
     }
-  },
+  }
 
   /** @private */
   resetTimer_() {
@@ -386,5 +406,7 @@ Polymer({
       clearTimeout(this.timerId_);
       this.timerId_ = -1;
     }
-  },
-});
+  }
+}
+
+customElements.define(NetworkCardElement.is, NetworkCardElement);

@@ -12,8 +12,10 @@ import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_rout
 import {setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {ExecutionProgress, TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
-import {getRoutineType} from 'chrome://diagnostics/routine_result_entry.js';
-import {BadgeType} from 'chrome://diagnostics/text_badge.js';
+import {getRoutineType, RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
+import {RoutineResultListElement} from 'chrome://diagnostics/routine_result_list.js';
+import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
+import {BadgeType, TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -130,7 +132,7 @@ export function routineSectionTestSuite() {
    */
   function getStatusBadge() {
     return /** @type {!TextBadgeElement} */ (
-        routineSectionElement.$$('#testStatusBadge'));
+        routineSectionElement.shadowRoot.querySelector('#testStatusBadge'));
   }
 
   /**
@@ -140,7 +142,7 @@ export function routineSectionTestSuite() {
   function getStatusTextElement() {
     const statusText =
         /** @type {!HTMLElement} */ (
-            routineSectionElement.$$('#testStatusText'));
+            routineSectionElement.shadowRoot.querySelector('#testStatusText'));
     assertTrue(!!statusText);
     return statusText;
   }
@@ -250,15 +252,6 @@ export function routineSectionTestSuite() {
   }
 
   /**
-   * @param {boolean} runTestsAutomatically
-   * @return {!Promise}
-   */
-  function setRunTestsAutomatically(runTestsAutomatically) {
-    routineSectionElement.runTestsAutomatically = runTestsAutomatically;
-    return flushTasks();
-  }
-
-  /**
    * @param {!Array<!RoutineType>} routines
    * @return {!Promise}
    */
@@ -283,7 +276,7 @@ export function routineSectionTestSuite() {
   function getLearnMoreButton() {
     const learnMoreButton =
         /** @type {!CrButtonElement} */ (
-            routineSectionElement.$$('#learnMoreButton'));
+            routineSectionElement.shadowRoot.querySelector('#learnMoreButton'));
     assertTrue(!!learnMoreButton);
     return learnMoreButton;
   }
@@ -291,7 +284,8 @@ export function routineSectionTestSuite() {
   test('ElementRenders', () => {
     return initializeRoutineSection([]).then(() => {
       // Verify the element rendered.
-      assertTrue(!!routineSectionElement.$$('#routineSection'));
+      assertTrue(
+          !!routineSectionElement.shadowRoot.querySelector('#routineSection'));
     });
   });
 
@@ -300,13 +294,15 @@ export function routineSectionTestSuite() {
         .then(() => {
           // Verify the element is hidden.
           assertFalse(isVisible(/** @type {!HTMLElement} */ (
-              routineSectionElement.$$('#routineSection'))));
+              routineSectionElement.shadowRoot.querySelector(
+                  '#routineSection'))));
         })
         .then(() => setRoutines([RoutineType.kLanConnectivity]))
         .then(() => {
           // Verify the element is not hidden.
           assertTrue(isVisible(/** @type {!HTMLElement} */ (
-              routineSectionElement.$$('#routineSection'))));
+              routineSectionElement.shadowRoot.querySelector(
+                  '#routineSection'))));
         });
   });
 
@@ -977,9 +973,11 @@ export function routineSectionTestSuite() {
         .then(() => {
           assertFalse(isVisible(getLearnMoreButton()));
           assertFalse(isVisible(/** @type {!HTMLElement} */ (
-              routineSectionElement.$$('.routine-status-container'))));
+              routineSectionElement.shadowRoot.querySelector(
+                  '.routine-status-container'))));
           assertFalse(isVisible(/** @type {!HTMLElement} */ (
-              routineSectionElement.$$('.button-container'))));
+              routineSectionElement.shadowRoot.querySelector(
+                  '.button-container'))));
         });
   });
 
@@ -1044,7 +1042,7 @@ export function routineSectionTestSuite() {
           // Text badge should display 'FAILED' for the first group.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'FAILED');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'FAILED');
 
           // Remaining routine groups should display the skipped state.
           assertEquals(ExecutionProgress.kSkipped, entries[1].item.progress);
@@ -1114,7 +1112,7 @@ export function routineSectionTestSuite() {
           // Text badge should display 'WARNING' for the first group.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'WARNING');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'WARNING');
 
           // Resolve the running test.
           return routineController.resolveRoutineForTesting();
@@ -1126,7 +1124,7 @@ export function routineSectionTestSuite() {
           // Text badge should still display 'WARNING' for the first group.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'WARNING');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'WARNING');
 
           // First routine in the second group should be running.
           assertEquals(
@@ -1144,7 +1142,7 @@ export function routineSectionTestSuite() {
           // Text badge should display 'PASSED' for the second group.
           const textBadge = entries[1].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'PASSED');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'PASSED');
           assertEquals(ExecutionProgress.kCompleted, entries[1].item.progress);
           assertEquals(
               routineSectionElement.testSuiteStatus,
@@ -1188,7 +1186,7 @@ export function routineSectionTestSuite() {
           // Text badge should display 'WARNING' for the first group.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'WARNING');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'WARNING');
           // Failed test text should be set properly.
           assertEquals(entries[0].item.failedTest, RoutineType.kSignalStrength);
           // Resolve the running test.
@@ -1200,7 +1198,7 @@ export function routineSectionTestSuite() {
           // Text badge should still display 'WARNING' for the first group.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'WARNING');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'WARNING');
           // Failed test does not get overwritten.
           assertEquals(entries[0].item.failedTest, RoutineType.kSignalStrength);
         });
@@ -1241,7 +1239,7 @@ export function routineSectionTestSuite() {
           // routines in this group.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'RUNNING');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'RUNNING');
           // Failed test text should be unset.
           assertFalse(!!entries[0].item.failedTest);
           // Resolve the running test.
@@ -1254,7 +1252,7 @@ export function routineSectionTestSuite() {
           // state.
           const textBadge = entries[0].shadowRoot.querySelector('#status');
           dx_utils.assertElementContainsText(
-              textBadge.$$('#textBadge'), 'WARNING');
+              textBadge.shadowRoot.querySelector('#textBadge'), 'WARNING');
           assertEquals(entries[0].item.progress, ExecutionProgress.kCompleted);
           // Failed test text should be set properly.
           assertEquals(entries[0].item.failedTest, RoutineType.kCaptivePortal);

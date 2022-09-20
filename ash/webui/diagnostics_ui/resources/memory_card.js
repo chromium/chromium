@@ -12,9 +12,9 @@ import './percent_bar_chart.js';
 import './routine_section.js';
 import './strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MemoryUsage, MemoryUsageObserverInterface, MemoryUsageObserverReceiver, RoutineType, SystemDataProviderInterface} from './diagnostics_types.js';
 import {convertKibToGibDecimalString, convertKibToMib} from './diagnostics_utils.js';
@@ -25,63 +25,81 @@ import {TestSuiteStatus} from './routine_list_executor.js';
  * @fileoverview
  * 'memory-card' shows information about system memory.
  */
-Polymer({
-  is: 'memory-card',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const MemoryCardElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class MemoryCardElement extends MemoryCardElementBase {
+  static get is() {
+    return 'memory-card';
+  }
 
-  /**
-   * @private {?SystemDataProviderInterface}
-   */
-  systemDataProvider_: null,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /**
-   * Receiver responsible for observing memory usage.
-   * @private {?MemoryUsageObserverReceiver}
-   */
-  memoryUsageObserverReceiver_: null,
-
-  properties: {
-    /** @private {!Array<!RoutineType>} */
-    routines_: {
-      type: Array,
-      value: () => {
-        return [
-          RoutineType.kMemory,
-        ];
+  static get properties() {
+    return {
+      /** @private {!Array<!RoutineType>} */
+      routines_: {
+        type: Array,
+        value: () => {
+          return [
+            RoutineType.kMemory,
+          ];
+        },
       },
-    },
 
-    /** @private {!MemoryUsage} */
-    memoryUsage_: {
-      type: Object,
-    },
+      /** @private {!MemoryUsage} */
+      memoryUsage_: {
+        type: Object,
+      },
 
-    /** @type {!TestSuiteStatus} */
-    testSuiteStatus: {
-      type: Number,
-      value: TestSuiteStatus.kNotRunning,
-      notify: true,
-    },
+      /** @type {!TestSuiteStatus} */
+      testSuiteStatus: {
+        type: Number,
+        value: TestSuiteStatus.kNotRunning,
+        notify: true,
+      },
 
-    /** @type {boolean} */
-    isActive: {
-      type: Boolean,
-    },
-  },
+      /** @type {boolean} */
+      isActive: {
+        type: Boolean,
+      },
+
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /**
+     * @private {?SystemDataProviderInterface}
+     */
+    this.systemDataProvider_ = null;
+
+    /**
+     * Receiver responsible for observing memory usage.
+     * @private {?MemoryUsageObserverReceiver}
+     */
+    this.memoryUsageObserverReceiver_ = null;
+
     this.systemDataProvider_ = getSystemDataProvider();
     this.observeMemoryUsage_();
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.memoryUsageObserverReceiver_.$.close();
-  },
+  }
 
   /** @private */
   observeMemoryUsage_() {
@@ -93,7 +111,7 @@ Polymer({
 
     this.systemDataProvider_.observeMemoryUsage(
         this.memoryUsageObserverReceiver_.$.bindNewPipeAndPassRemote());
-  },
+  }
 
   /**
    * Implements MemoryUsageObserver.onMemoryUsageUpdated()
@@ -101,7 +119,7 @@ Polymer({
    */
   onMemoryUsageUpdated(memoryUsage) {
     this.memoryUsage_ = memoryUsage;
-  },
+  }
 
   /**
    * Calculates total used memory from MemoryUsage object.
@@ -111,7 +129,7 @@ Polymer({
    */
   getTotalUsedMemory_(memoryUsage) {
     return memoryUsage.totalMemoryKib - memoryUsage.availableMemoryKib;
-  },
+  }
 
   /**
    * Calculates total available memory from MemoryUsage object.
@@ -125,7 +143,7 @@ Polymer({
         'memoryAvailable',
         convertKibToGibDecimalString(this.memoryUsage_.availableMemoryKib, 2),
         convertKibToGibDecimalString(this.memoryUsage_.totalMemoryKib, 2));
-  },
+  }
 
   /**
    * Estimate the total runtime in minutes with kMicrosecondsPerByte = 0.2
@@ -138,7 +156,7 @@ Polymer({
     return this.memoryUsage_ ?
         Math.ceil(this.memoryUsage_.totalMemoryKib / 300000) :
         0;
-  },
+  }
 
   /**
    * @return {string}
@@ -148,5 +166,7 @@ Polymer({
     return convertKibToMib(this.memoryUsage_.availableMemoryKib) >= 500 ?
         '' :
         loadTimeData.getString('notEnoughAvailableMemoryMessage');
-  },
-});
+  }
+}
+
+customElements.define(MemoryCardElement.is, MemoryCardElement);

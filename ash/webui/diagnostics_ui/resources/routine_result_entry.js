@@ -9,7 +9,7 @@ import './text_badge.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
 import {getRoutineFailureMessage} from './diagnostics_utils.js';
@@ -101,70 +101,83 @@ export function getSimpleResult(result) {
  * @fileoverview
  * 'routine-result-entry' shows the status of a single test routine or group.
  */
-Polymer({
-  is: 'routine-result-entry',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class RoutineResultEntryElement extends PolymerElement {
+  static get is() {
+    return 'routine-result-entry';
+  }
 
-  properties: {
-    /**
-     * Added to support testing of announce behavior.
-     * @private
-     * @type {string}
-     */
-    announcedText_: {
-      type: String,
-      value: '',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {RoutineGroup|ResultStatusItem} */
-    item: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      /**
+       * Added to support testing of announce behavior.
+       * @private
+       * @type {string}
+       */
+      announcedText_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    routineType_: {
-      type: String,
-      computed: 'getRunningRoutineString_(item.*)',
-    },
+      /** @type {RoutineGroup|ResultStatusItem} */
+      item: {
+        type: Object,
+      },
 
-    /** @protected {!BadgeType} */
-    badgeType_: {
-      type: String,
-      value: BadgeType.QUEUED,
-    },
+      /** @private */
+      routineType_: {
+        type: String,
+        computed: 'getRunningRoutineString_(item.*)',
+      },
 
-    /** @protected {string} */
-    badgeText_: {
-      type: String,
-      value: '',
-    },
+      /** @protected {!BadgeType} */
+      badgeType_: {
+        type: String,
+        value: BadgeType.QUEUED,
+      },
 
-    /** @protected {boolean} */
-    testCompleted_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @protected {string} */
+      badgeText_: {
+        type: String,
+        value: '',
+      },
 
-    /** @type {boolean} */
-    hideVerticalLines: {
-      type: Boolean,
-      value: false,
-    },
+      /** @protected {boolean} */
+      testCompleted_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @type {boolean} */
-    usingRoutineGroups: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** @type {boolean} */
+      hideVerticalLines: {
+        type: Boolean,
+        value: false,
+      },
 
-  observers: ['entryStatusChanged_(item.*)'],
+      /** @type {boolean} */
+      usingRoutineGroups: {
+        type: Boolean,
+        value: false,
+      },
+
+    };
+  }
+
+  static get observers() {
+    return ['entryStatusChanged_(item.*)'];
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     IronA11yAnnouncer.requestAvailability();
-  },
+  }
 
   /**
    * Get the localized string name for the routine.
@@ -177,7 +190,7 @@ Polymer({
 
     return loadTimeData.getStringF(
         'routineEntryText', getRoutineType(this.item.routine));
-  },
+  }
 
   /**
    * @private
@@ -231,7 +244,7 @@ Polymer({
       default:
         assertNotReached();
     }
-  },
+  }
 
   /**
    * @param {!BadgeType} badgeType
@@ -240,16 +253,24 @@ Polymer({
    */
   setBadgeTypeAndText_(badgeType, badgeText) {
     this.setProperties({badgeType_: badgeType, badgeText_: badgeText});
-  },
+  }
 
   /** @override */
-  created() {},
+  constructor() {
+    super();
+  }
 
   /** @private */
   announceRoutineStatus_() {
     this.announcedText_ = this.routineType_ + ' - ' + this.badgeText_;
-    this.fire('iron-announce', {text: `${this.announcedText_}`});
-  },
+    this.dispatchEvent(new CustomEvent('iron-announce', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        text: this.announcedText_,
+      },
+    }));
+  }
 
   /**
    * @protected
@@ -277,7 +298,7 @@ Polymer({
         return '';
     }
     return `line animation-${num} ${lineColor}`;
-  },
+  }
 
   /**
    * @protected
@@ -285,7 +306,7 @@ Polymer({
    */
   shouldHideLines_() {
     return this.hideVerticalLines || !this.testCompleted_;
-  },
+  }
 
   /**
    * @protected
@@ -297,5 +318,7 @@ Polymer({
     }
 
     return getRoutineFailureMessage(this.item.failedTest);
-  },
-});
+  }
+}
+
+customElements.define(RoutineResultEntryElement.is, RoutineResultEntryElement);

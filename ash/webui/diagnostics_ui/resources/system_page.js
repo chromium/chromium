@@ -13,10 +13,10 @@ import './icons.js';
 import './memory_card.js';
 import './overview_card.js';
 
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 import {SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js';
@@ -28,93 +28,99 @@ import {TestSuiteStatus} from './routine_list_executor.js';
  * 'system-page' is the main page for viewing telemetric system information
  * and running diagnostic tests.
  */
-Polymer({
-  is: 'system-page',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SystemPageElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class SystemPageElement extends SystemPageElementBase {
+  static get is() {
+    return 'system-page';
+  }
 
-  /**
-   * @private {?SystemDataProviderInterface}
-   */
-  systemDataProvider_: null,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /**
-   * @private {?DiagnosticsBrowserProxy}
-   */
-  browserProxy_: null,
+  static get properties() {
+    return {
+      /** @protected {boolean} */
+      saveSessionLogEnabled_: {
+        type: Boolean,
+        value: true,
+      },
 
-  properties: {
-    /** @protected {boolean} */
-    saveSessionLogEnabled_: {
-      type: Boolean,
-      value: true,
-    },
+      /** @private {boolean} */
+      showBatteryStatusCard_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    showBatteryStatusCard_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @type {!TestSuiteStatus} */
+      testSuiteStatus: {
+        type: Number,
+        value: TestSuiteStatus.kNotRunning,
+      },
 
-    /** @type {!TestSuiteStatus} */
-    testSuiteStatus: {
-      type: Number,
-      value: TestSuiteStatus.kNotRunning,
-    },
+      /** @type {boolean} */
+      systemInfoReceived_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @type {boolean} */
-    systemInfoReceived_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {string} */
+      toastText_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private {string} */
-    toastText_: {
-      type: String,
-      value: '',
-    },
+      /** @private {boolean} */
+      isLoggedIn_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isLoggedIn'),
+      },
 
-    /** @private {boolean} */
-    isLoggedIn_: {
-      type: Boolean,
-      value: loadTimeData.getBoolean('isLoggedIn'),
-    },
+      /** @type {string} */
+      bannerMessage: {
+        type: String,
+        value: '',
+      },
 
-    /** @type {string} */
-    bannerMessage: {
-      type: String,
-      value: '',
-    },
+      /** @private {string} */
+      scrollingClass_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private {string} */
-    scrollingClass_: {
-      type: String,
-      value: '',
-    },
+      /** @private {number} */
+      scrollTimerId_: {
+        type: Number,
+        value: -1,
+      },
 
-    /** @private {number} */
-    scrollTimerId_: {
-      type: Number,
-      value: -1,
-    },
+      /** @type {boolean} */
+      isActive: {
+        type: Boolean,
+        value: true,
+      },
 
-    /** @type {boolean} */
-    isActive: {
-      type: Boolean,
-      value: true,
-    },
+      /** @type {boolean} */
+      isNetworkingEnabled: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isNetworkingEnabled'),
+      },
 
-    /** @type {boolean} */
-    isNetworkingEnabled: {
-      type: Boolean,
-      value: loadTimeData.getBoolean('isNetworkingEnabled'),
-    },
-  },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
     this.systemDataProvider_ = getSystemDataProvider();
     this.fetchSystemInfo_();
     this.browserProxy_ = DiagnosticsBrowserProxyImpl.getInstance();
@@ -124,7 +130,7 @@ Polymer({
     if (!this.isNetworkingEnabled) {
       this.addCautionBannerEventListeners_();
     }
-  },
+  }
 
   /** @private */
   fetchSystemInfo_() {
@@ -132,7 +138,7 @@ Polymer({
       this.onSystemInfoReceived_(result.systemInfo);
     });
     setTimeout(() => this.recordLateSystemInfo_(), 3000);
-  },
+  }
 
   /**
    * @param {!SystemInfo} systemInfo
@@ -141,7 +147,7 @@ Polymer({
   onSystemInfoReceived_(systemInfo) {
     this.systemInfoReceived_ = true;
     this.showBatteryStatusCard_ = systemInfo.deviceCapabilities.hasBattery;
-  },
+  }
 
   /**
    * @private
@@ -150,7 +156,7 @@ Polymer({
     if (!this.systemInfoReceived_) {
       console.warn('system info not received within three seconds.');
     }
-  },
+  }
 
   /** @protected */
   onSessionLogClick_() {
@@ -172,7 +178,7 @@ Polymer({
         .finally(() => {
           this.saveSessionLogEnabled_ = true;
         });
-  },
+  }
 
   /** @private */
   addCautionBannerEventListeners_() {
@@ -201,7 +207,7 @@ Polymer({
       this.scrollTimerId_ =
           window.setTimeout(() => this.scrollingClass_ = '', 300);
     });
-  },
+  }
 
   /**
    * 'navigation-view-panel' is responsible for calling this function when
@@ -213,12 +219,14 @@ Polymer({
     this.isActive = isActive;
     if (isActive) {
       // Focus the topmost system page element.
-      this.$$('#overviewCard').$$('#overviewCardContainer').focus();
+      this.shadowRoot.querySelector('#overviewCard')
+          .shadowRoot.querySelector('#overviewCardContainer')
+          .focus();
       // TODO(ashleydp): Remove when a call can be made at a higher component
       // to avoid duplicate code in all navigatable pages.
       this.browserProxy_.recordNavigation('system');
     }
-  },
+  }
 
   /**
    * @protected
@@ -227,5 +235,7 @@ Polymer({
   getCardContainerClass_() {
     const cardContainer = 'diagnostics-cards-container';
     return `${cardContainer}${this.isNetworkingEnabled ? '-nav' : ''}`;
-  },
-});
+  }
+}
+
+customElements.define(SystemPageElement.is, SystemPageElement);

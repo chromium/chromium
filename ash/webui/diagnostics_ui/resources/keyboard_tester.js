@@ -8,9 +8,9 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {MechanicalLayout as DiagramMechanicalLayout, PhysicalLayout as DiagramPhysicalLayout, TopRightKey as DiagramTopRightKey, TopRowKey as DiagramTopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {InputDataProviderInterface, KeyboardInfo, KeyboardObserverInterface, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './diagnostics_types.js';
 
@@ -89,23 +89,91 @@ const standardNumberPadCodes = new Set([
   111,  // KEY_DELETE
 ]);
 
-Polymer({
-  is: 'keyboard-tester',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const KeyboardTesterElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  created: function() {
+/** @polymer */
+export class KeyboardTesterElement extends KeyboardTesterElementBase {
+  static get is() {
+    return 'keyboard-tester';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * The keyboard being tested, or null if none is being tested at the
+       * moment.
+       * @type {?KeyboardInfo}
+       */
+      keyboard: KeyboardInfo,
+
+      /** @private */
+      layoutIsKnown_: {
+        type: Boolean,
+        computed: 'computeLayoutIsKnown_(keyboard)',
+      },
+
+      // TODO(crbug.com/1257138): use the proper type annotation instead of
+      // string.
+      /** @private {?string} */
+      diagramMechanicalLayout_: {
+        type: String,
+        computed: 'computeDiagramMechanicalLayout_(keyboard)',
+      },
+
+      // TODO(crbug.com/1257138): use the proper type annotation instead of
+      // string.
+      /** @private {?string} */
+      diagramPhysicalLayout_: {
+        type: String,
+        computed: 'computeDiagramPhysicalLayout_(keyboard)',
+      },
+
+      // TODO(crbug.com/1257138): use the proper type annotation instead of
+      // string.
+      /** @protected {?string} */
+      diagramTopRightKey_: {
+        type: String,
+        computed: 'computeDiagramTopRightKey_(keyboard)',
+      },
+
+      /** @private */
+      showNumberPad_: {
+        type: Boolean,
+        computed: 'computeShowNumberPad_(keyboard)',
+      },
+
+      // TODO(crbug.com/1257138): use the proper type annotation instead of
+      // Object.
+      /** @private {!Array<!Object>} */
+      topRowKeys_: {
+        type: Array,
+        computed: 'computeTopRowKeys_(keyboard)',
+      },
+    };
+  }
+
+  /** @override */
+  constructor() {
+    super();
+    /** @private {?KeyboardObserverReceiver} */
+    this.receiver_ = null;
+
+    /** @private {?InputDataProviderInterface} */
+    this.inputDataProvider_ = null;
+
     this.addEventListener('keydown', this.onKeyDown.bind(this));
     this.addEventListener('keyup', this.onKeyUp.bind(this));
-  },
-
-  _template: html`{__html_template__}`,
-
-  behaviors: [I18nBehavior],
-
-  /** @private {?KeyboardObserverReceiver} */
-  receiver_: null,
-
-  /** @private {?InputDataProviderInterface} */
-  inputDataProvider_: null,
+  }
 
   /**
    * Set the InputDataProvider to get events from.
@@ -113,59 +181,7 @@ Polymer({
    */
   setInputDataProvider(provider) {
     this.inputDataProvider_ = provider;
-  },
-
-  properties: {
-    /**
-     * The keyboard being tested, or null if none is being tested at the moment.
-     * @type {?KeyboardInfo}
-     */
-    keyboard: KeyboardInfo,
-
-    /** @private */
-    layoutIsKnown_: {
-      type: Boolean,
-      computed: 'computeLayoutIsKnown_(keyboard)',
-    },
-
-    // TODO(crbug.com/1257138): use the proper type annotation instead of
-    // string.
-    /** @private {?string} */
-    diagramMechanicalLayout_: {
-      type: String,
-      computed: 'computeDiagramMechanicalLayout_(keyboard)',
-    },
-
-    // TODO(crbug.com/1257138): use the proper type annotation instead of
-    // string.
-    /** @private {?string} */
-    diagramPhysicalLayout_: {
-      type: String,
-      computed: 'computeDiagramPhysicalLayout_(keyboard)',
-    },
-
-    // TODO(crbug.com/1257138): use the proper type annotation instead of
-    // string.
-    /** @protected {?string} */
-    diagramTopRightKey_: {
-      type: String,
-      computed: 'computeDiagramTopRightKey_(keyboard)',
-    },
-
-    /** @private */
-    showNumberPad_: {
-      type: Boolean,
-      computed: 'computeShowNumberPad_(keyboard)',
-    },
-
-    // TODO(crbug.com/1257138): use the proper type annotation instead of
-    // Object.
-    /** @private {!Array<!Object>} */
-    topRowKeys_: {
-      type: Array,
-      computed: 'computeTopRowKeys_(keyboard)',
-    },
-  },
+  }
 
   /**
    * @param {?KeyboardInfo} keyboard
@@ -180,7 +196,7 @@ Polymer({
         keyboard.mechanicalLayout !== MechanicalLayout.kUnknown;
     // Number pad presence can be unknown, as we can adapt on the fly if we get
     // a number pad event we weren't expecting.
-  },
+  }
 
   /**
    * @param {?KeyboardInfo} keyboardInfo
@@ -198,7 +214,7 @@ Polymer({
       [MechanicalLayout.kIso]: DiagramMechanicalLayout.kIso,
       [MechanicalLayout.kJis]: DiagramMechanicalLayout.kJis,
     }[keyboardInfo.mechanicalLayout];
-  },
+  }
 
   /**
    * @param {?KeyboardInfo} keyboardInfo
@@ -218,7 +234,7 @@ Polymer({
       [PhysicalLayout.kChromeOSDellEnterpriseDrallion]:
           DiagramPhysicalLayout.kChromeOSDellEnterpriseDrallion,
     }[keyboardInfo.physicalLayout];
-  },
+  }
 
   /**
    * @param {?KeyboardInfo} keyboardInfo
@@ -236,7 +252,7 @@ Polymer({
       [TopRightKey.kLock]: DiagramTopRightKey.kLock,
       [TopRightKey.kControlPanel]: DiagramTopRightKey.kControlPanel,
     }[keyboardInfo.topRightKey];
-  },
+  }
 
   /**
    * @param {?KeyboardInfo} keyboard
@@ -246,7 +262,7 @@ Polymer({
   computeShowNumberPad_(keyboard) {
     return !!keyboard &&
         keyboard.numberPadPresent === NumberPadPresence.kPresent;
-  },
+  }
 
 
   /**
@@ -259,7 +275,7 @@ Polymer({
       return [];
     }
     return keyboard.topRowKeys.map((keyId) => topRowKeyMap[keyId]);
-  },
+  }
 
   /** Shows the tester's dialog. */
   show() {
@@ -269,12 +285,12 @@ Polymer({
     this.inputDataProvider_.observeKeyEvents(
         this.keyboard.id, this.receiver_.$.bindNewPipeAndPassRemote());
     this.$.dialog.showModal();
-  },
+  }
 
   onKeyUp(e) {
     e.preventDefault();
     e.stopPropagation();
-  },
+  }
 
   onKeyDown(e) {
     e.preventDefault();
@@ -284,7 +300,7 @@ Polymer({
     if (e.altKey && e.key === 'Escape') {
       this.close();
     }
-  },
+  }
 
   /**
    * Returns whether the tester is currently open.
@@ -292,18 +308,18 @@ Polymer({
    */
   isOpen() {
     return this.$.dialog.open;
-  },
+  }
 
   close() {
-    this.$$('#diagram').clearPressedKeys();
+    this.shadowRoot.querySelector('#diagram').clearPressedKeys();
     this.$.dialog.close();
-  },
+  }
 
   handleClose() {
     if (this.receiver_) {
       this.receiver_.$.close();
     }
-  },
+  }
 
   /**
    * Returns whether a key is part of the number pad on this keyboard layout.
@@ -320,14 +336,14 @@ Polymer({
     }
 
     return numberPadCodes.has(evdevCode);
-  },
+  }
 
   /**
    * Implements KeyboardObserver.OnKeyEvent.
    * @param {!KeyEvent} keyEvent
    */
   onKeyEvent(keyEvent) {
-    const diagram = this.$$('#diagram');
+    const diagram = this.shadowRoot.querySelector('#diagram');
     const state = keyEvent.type === KeyEventType.kPress ?
         KeyboardKeyState.kPressed :
         KeyboardKeyState.kTested;
@@ -363,16 +379,16 @@ Polymer({
 
       diagram.setKeyState(keyEvent.keyCode, state);
     }
-  },
+  }
 
   /**
    * Implements KeyboardObserver.OnKeyEventsPaused.
    */
   onKeyEventsPaused() {
     console.log('Key events paused');
-    this.$$('#diagram').clearPressedKeys();
+    this.shadowRoot.querySelector('#diagram').clearPressedKeys();
     this.$.lostFocusToast.show();
-  },
+  }
 
   /**
    * Implements KeyboardObserver.OnKeyEventsResumed.
@@ -380,5 +396,7 @@ Polymer({
   onKeyEventsResumed() {
     console.log('Key events resumed');
     this.$.lostFocusToast.hide();
-  },
-});
+  }
+}
+
+customElements.define(KeyboardTesterElement.is, KeyboardTesterElement);

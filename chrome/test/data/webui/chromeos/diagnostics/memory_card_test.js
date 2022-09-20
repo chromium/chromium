@@ -9,7 +9,9 @@ import {MemoryUsage} from 'chrome://diagnostics/diagnostics_types.js';
 import {convertKibToGibDecimalString} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeMemoryUsage, fakeMemoryUsageLowAvailableMemory} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
+import {MemoryCardElement} from 'chrome://diagnostics/memory_card.js';
 import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -66,7 +68,7 @@ export function memoryCardTestSuite() {
    */
   function getRoutineSection() {
     const routineSection = /** @type {!RoutineSectionElement} */ (
-        memoryElement.$$('routine-section'));
+        memoryElement.shadowRoot.querySelector('routine-section'));
     assertTrue(!!routineSection);
     return routineSection;
   }
@@ -122,7 +124,7 @@ export function memoryCardTestSuite() {
           loadTimeData.getString('notEnoughAvailableMemoryMessage'));
       assertTrue(isRunTestsButtonDisabled());
       assertTrue(isVisible(/** @type {!HTMLElement} */ (
-          routineSectionElement.$$('#messageIcon'))));
+          routineSectionElement.shadowRoot.querySelector('#messageIcon'))));
     });
   });
 }

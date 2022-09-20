@@ -38,7 +38,8 @@ export function keyboardTesterTestSuite() {
     });
     await flushTasks();
 
-    const diagramElement = keyboardTesterElement.$$('#diagram');
+    const diagramElement =
+        keyboardTesterElement.shadowRoot.querySelector('#diagram');
     assertEquals(DiagramTopRightKey.kPower, diagramElement.topRightKey);
 
     /** @type {!KeyEvent} */
@@ -61,7 +62,8 @@ export function keyboardTesterTestSuite() {
     });
     await flushTasks();
 
-    const diagramElement = keyboardTesterElement.$$('#diagram');
+    const diagramElement =
+        keyboardTesterElement.shadowRoot.querySelector('#diagram');
     const mockController = new MockController();
     const mockSetKeyState =
         mockController.createFunctionMock(diagramElement, 'setKeyState');
@@ -89,7 +91,8 @@ export function keyboardTesterTestSuite() {
     });
     await flushTasks();
 
-    const diagramElement = keyboardTesterElement.$$('#diagram');
+    const diagramElement =
+        keyboardTesterElement.shadowRoot.querySelector('#diagram');
     assertFalse(diagramElement.showNumberPad);
 
     /** @type {!KeyEvent} */
@@ -115,7 +118,8 @@ export function keyboardTesterTestSuite() {
     });
     await flushTasks();
 
-    const diagramElement = keyboardTesterElement.$$('#diagram');
+    const diagramElement =
+        keyboardTesterElement.shadowRoot.querySelector('#diagram');
     assertFalse(diagramElement.showNumberPad);
 
     /** @type {!KeyEvent} */
@@ -141,7 +145,8 @@ export function keyboardTesterTestSuite() {
     });
     await flushTasks();
 
-    const diagramElement = keyboardTesterElement.$$('#diagram');
+    const diagramElement =
+        keyboardTesterElement.shadowRoot.querySelector('#diagram');
     assertFalse(diagramElement.showNumberPad);
 
     /** @type {!KeyEvent} */

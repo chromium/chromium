@@ -4,6 +4,8 @@
 
 import 'chrome://diagnostics/percent_bar_chart.js';
 
+import {PercentBarChartElement} from 'chrome://diagnostics/percent_bar_chart.js';
+
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
@@ -50,12 +52,15 @@ export function percentBarChartTestSuite() {
     const max = 30;
     const percent = Math.round(100 * value / max);
     return initializePercentBarChart(header, value, max).then(() => {
-      const paperProgress = percentBarChartElement.$$('paper-progress');
+      const paperProgress =
+          percentBarChartElement.shadowRoot.querySelector('paper-progress');
       assertEquals(value, paperProgress.value);
       assertEquals(max, paperProgress.max);
 
       assertEquals(
-          header, percentBarChartElement.$$('#chartName').textContent.trim());
+          header,
+          percentBarChartElement.shadowRoot.querySelector('#chartName')
+              .textContent.trim());
     });
   });
 
@@ -64,7 +69,8 @@ export function percentBarChartTestSuite() {
     const value = 101;
     const max = 100;
     return initializePercentBarChart(header, value, max).then(() => {
-      const paperProgress = percentBarChartElement.$$('paper-progress');
+      const paperProgress =
+          percentBarChartElement.shadowRoot.querySelector('paper-progress');
       assertEquals(paperProgress.value, paperProgress.max);
     });
   });

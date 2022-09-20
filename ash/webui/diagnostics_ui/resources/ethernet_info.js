@@ -5,50 +5,63 @@
 import './data_point.js';
 import './diagnostics_shared_css.js';
 
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AuthenticationType, Network} from './diagnostics_types.js';
-
 
 /**
  * @fileoverview
  * 'ethernet-info' is responsible for displaying data points related
  * to an Ethernet network.
  */
-Polymer({
-  is: 'ethernet-info',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const EthernetInfoElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class EthernetInfoElement extends EthernetInfoElementBase {
+  static get is() {
+    return 'ethernet-info';
+  }
 
-  properties: {
-    /**
-     * @protected
-     * @type {string}
-     */
-    authentication_: {
-      type: String,
-      computed: 'computeAuthentication_(network.typeProperties.ethernet.' +
-          'authentication)',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * @protected
-     * @type {string}
-     */
-    ipAddress_: {
-      type: String,
-      computed: 'computeIpAddress_(network.ipConfig.ipAddress)',
-    },
+  static get properties() {
+    return {
+      /**
+       * @protected
+       * @type {string}
+       */
+      authentication_: {
+        type: String,
+        computed: 'computeAuthentication_(network.typeProperties.ethernet.' +
+            'authentication)',
+      },
 
-    /** @type {!Network} */
-    network: {
-      type: Object,
-    },
-  },
+      /**
+       * @protected
+       * @type {string}
+       */
+      ipAddress_: {
+        type: String,
+        computed: 'computeIpAddress_(network.ipConfig.ipAddress)',
+      },
+
+      /** @type {!Network} */
+      network: {
+        type: Object,
+      },
+
+    };
+  }
 
   /**
    * @protected
@@ -70,7 +83,7 @@ Polymer({
       }
     }
     return '';
-  },
+  }
 
   /**
    * @protected
@@ -81,5 +94,7 @@ Polymer({
       return this.network.ipConfig.ipAddress;
     }
     return '';
-  },
-});
+  }
+}
+
+customElements.define(EthernetInfoElement.is, EthernetInfoElement);

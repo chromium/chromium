@@ -6,6 +6,7 @@ import 'chrome://diagnostics/network_info.js';
 
 import {Network} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {NetworkInfoElement} from 'chrome://diagnostics/network_info.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';

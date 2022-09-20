@@ -7,7 +7,7 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './diagnostics_shared_css.js';
 import './icons.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview
@@ -15,48 +15,59 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
  *  consists of a header, value, and tooltip that provides context about the
  *  item.
  */
-Polymer({
-  is: 'data-point',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class DataPointElement extends PolymerElement {
+  static get is() {
+    return 'data-point';
+  }
 
-  properties: {
-    /** @type {string} */
-    header: {
-      type: String,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {string} */
-    value: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /** @type {string} */
+      header: {
+        type: String,
+      },
 
-    /** @type {string} */
-    tooltipText: {
-      type: String,
-      value: '',
-    },
+      /** @type {string} */
+      value: {
+        type: String,
+        value: '',
+      },
 
-    /** @type {boolean} */
-    warningState: {
-      type: Boolean,
-      value: false,
-    },
+      /** @type {string} */
+      tooltipText: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * The alignment of the data point on the screen (vertical or horizontal).
-     *  @type {string}
-     */
-    orientation: {
-      type: String,
-      value: 'vertical',
-      reflectToAttribute: true,
-    },
-  },
+      /** @type {boolean} */
+      warningState: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * The alignment of the data point on the screen (vertical or horizontal).
+       *  @type {string}
+       */
+      orientation: {
+        type: String,
+        value: 'vertical',
+        reflectToAttribute: true,
+      },
+
+    };
+  }
 
   /** @protected */
   getValueClass_() {
     return this.warningState ? 'value text-red' : 'value';
-  },
-});
+  }
+}
+
+customElements.define(DataPointElement.is, DataPointElement);

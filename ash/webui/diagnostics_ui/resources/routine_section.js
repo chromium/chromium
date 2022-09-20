@@ -12,221 +12,246 @@ import './routine_result_list.js';
 import './text_badge.js';
 import './strings.m.js';
 
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PowerRoutineResult, RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './diagnostics_types.js';
 import {getSystemRoutineController} from './mojo_interface_provider.js';
 import {RoutineGroup} from './routine_group.js';
 import {ExecutionProgress, ResultStatusItem, RoutineListExecutor, TestSuiteStatus} from './routine_list_executor.js';
 import {getRoutineType, getSimpleResult} from './routine_result_entry.js';
+import {RoutineResultListElement} from './routine_result_list.js';
 import {BadgeType} from './text_badge.js';
-
 /**
  * @fileoverview
  * 'routine-section' has a button to run tests and displays their results. The
  * parent element eg. a CpuCard binds to the routines property to indicate
  * which routines this instance will run.
  */
-Polymer({
-  is: 'routine-section',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const RoutineSectionElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class RoutineSectionElement extends RoutineSectionElementBase {
+  static get is() {
+    return 'routine-section';
+  }
 
-  /**
-   * @private {?RoutineListExecutor}
-   */
-  executor_: null,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /**
-   * Boolean whether last run had at least one failure,
-   * @type {?RoutineType}
-   * @private
-   */
-  failedTest_: null,
+  static get properties() {
+    return {
+      /**
+       * Added to support testing of announce behavior.
+       * @private
+       * @type {string}
+       */
+      announcedText_: {
+        type: String,
+        value: '',
+      },
 
-  /** @private {?SystemRoutineControllerInterface} */
-  systemRoutineController_: null,
+      /** @type {!Array<RoutineGroup|RoutineType>} */
+      routines: {
+        type: Array,
+        value: () => [],
+      },
 
-  properties: {
+      /**
+       * Total time in minutes of estimate runtime based on routines array.
+       * @type {number}
+       */
+      routineRuntime: {
+        type: Number,
+        value: 0,
+      },
+
+      /**
+       * Timestamp of when routine test started execution in milliseconds.
+       * @private {number}
+       */
+      routineStartTimeMs_: {
+        type: Number,
+        value: -1,
+      },
+
+      /**
+       * Overall ExecutionProgress of the routine.
+       * @type {!ExecutionProgress}
+       * @private
+       */
+      executionStatus_: {
+        type: Number,
+        value: ExecutionProgress.kNotStarted,
+      },
+
+      /**
+       * Name of currently running test
+       * @private {string}
+       */
+      currentTestName_: {
+        type: String,
+        value: '',
+      },
+
+      /** @type {!TestSuiteStatus} */
+      testSuiteStatus: {
+        type: Number,
+        value: TestSuiteStatus.kNotRunning,
+        notify: true,
+      },
+
+      /** @type {boolean} */
+      isPowerRoutine: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {?PowerRoutineResult} */
+      powerRoutineResult_: {
+        type: Object,
+        value: null,
+      },
+
+      /** @type {string} */
+      runTestsButtonText: {
+        type: String,
+        value: '',
+      },
+
+      /** @type {string} */
+      additionalMessage: {
+        type: String,
+        value: '',
+      },
+
+      /** @type {string} */
+      learnMoreLinkSection: {
+        type: String,
+        value: '',
+      },
+
+      /** @private {!BadgeType} */
+      badgeType_: {
+        type: String,
+        value: BadgeType.RUNNING,
+      },
+
+      /** @private {string} */
+      badgeText_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private {string} */
+      statusText_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private {boolean} */
+      isLoggedIn_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isLoggedIn'),
+      },
+
+      /** @type {string} */
+      bannerMessage: {
+        type: Boolean,
+        value: '',
+      },
+
+      /** @type {boolean} */
+      isActive: {
+        type: Boolean,
+      },
+
+      /**
+       * Used to reset run button text to its initial state
+       * when a navigation page change event occurs.
+       *  @private {string}
+       */
+      initialButtonText_: {
+        type: String,
+        value: '',
+        computed: 'getInitialButtonText_(runTestsButtonText)',
+      },
+
+      /** @type {boolean} */
+      hideRoutineStatus: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /** @type {boolean} */
+      opened: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @type {boolean} */
+      hideVerticalLines: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @type {boolean} */
+      usingRoutineGroups: {
+        type: Boolean,
+        value: false,
+        computed: 'getUsingRoutineGroupsVal_(routines.*)',
+      },
+
+    };
+  }
+
+  static get observers() {
+    return [
+      'routineStatusChanged_(executionStatus_, currentTestName_,' +
+          'additionalMessage)',
+      'onActivePageChanged_(isActive)',
+
+    ];
+  }
+  /** @override */
+  constructor() {
+    super();
     /**
-     * Added to support testing of announce behavior.
+     * @private {?RoutineListExecutor}
+     */
+    this.executor_ = null;
+
+    /**
+     * Boolean whether last run had at least one failure,
+     * @type {?RoutineType}
      * @private
-     * @type {string}
      */
-    announcedText_: {
-      type: String,
-      value: '',
-    },
+    this.failedTest_ = null;
 
-    /** @type {!Array<RoutineGroup|RoutineType>} */
-    routines: {
-      type: Array,
-      value: () => [],
-    },
-
-    /**
-     * Total time in minutes of estimate runtime based on routines array.
-     * @type {number}
-     */
-    routineRuntime: {
-      type: Number,
-      value: 0,
-    },
-
-    /**
-     * Timestamp of when routine test started execution in milliseconds.
-     * @private {number}
-     */
-    routineStartTimeMs_: {
-      type: Number,
-      value: -1,
-    },
-
-    /**
-     * Overall ExecutionProgress of the routine.
-     * @type {!ExecutionProgress}
-     * @private
-     */
-    executionStatus_: {
-      type: Number,
-      value: ExecutionProgress.kNotStarted,
-    },
-
-    /**
-     * Name of currently running test
-     * @private {string}
-     */
-    currentTestName_: {
-      type: String,
-      value: '',
-    },
-
-    /** @type {!TestSuiteStatus} */
-    testSuiteStatus: {
-      type: Number,
-      value: TestSuiteStatus.kNotRunning,
-      notify: true,
-    },
-
-    /** @type {boolean} */
-    isPowerRoutine: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {?PowerRoutineResult} */
-    powerRoutineResult_: {
-      type: Object,
-      value: null,
-    },
-
-    /** @type {string} */
-    runTestsButtonText: {
-      type: String,
-      value: '',
-    },
-
-    /** @type {string} */
-    additionalMessage: {
-      type: String,
-      value: '',
-    },
-
-    /** @type {string} */
-    learnMoreLinkSection: {
-      type: String,
-      value: '',
-    },
-
-    /** @private {!BadgeType} */
-    badgeType_: {
-      type: String,
-      value: BadgeType.RUNNING,
-    },
-
-    /** @private {string} */
-    badgeText_: {
-      type: String,
-      value: '',
-    },
-
-    /** @private {string} */
-    statusText_: {
-      type: String,
-      value: '',
-    },
-
-    /** @private {boolean} */
-    isLoggedIn_: {
-      type: Boolean,
-      value: loadTimeData.getBoolean('isLoggedIn'),
-    },
-
-    /** @type {string} */
-    bannerMessage: {
-      type: Boolean,
-      value: '',
-    },
-
-    /** @type {boolean} */
-    isActive: {
-      type: Boolean,
-    },
-
-    /**
-     * Used to reset run button text to its initial state
-     * when a navigation page change event occurs.
-     *  @private {string}
-     */
-    initialButtonText_: {
-      type: String,
-      value: '',
-      computed: 'getInitialButtonText_(runTestsButtonText)',
-    },
-
-    /** @type {boolean} */
-    hideRoutineStatus: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-
-    /** @type {boolean} */
-    opened: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @type {boolean} */
-    hideVerticalLines: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @type {boolean} */
-    usingRoutineGroups: {
-      type: Boolean,
-      value: false,
-      computed: 'getUsingRoutineGroupsVal_(routines.*)',
-    },
-  },
-
-  observers: [
-    'routineStatusChanged_(executionStatus_, currentTestName_,' +
-        'additionalMessage)',
-    'onActivePageChanged_(isActive)',
-  ],
+    /** @private {?SystemRoutineControllerInterface} */
+    this.systemRoutineController_ = null;
+    this.hasTestFailure_ = false;
+    this.ignoreRoutineStatusUpdates = false;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     IronA11yAnnouncer.requestAvailability();
-  },
+  }
 
   /**
    * @param {string} buttonText
@@ -235,7 +260,7 @@ Polymer({
    */
   getInitialButtonText_(buttonText) {
     return this.initialButtonText_ || buttonText;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -246,13 +271,13 @@ Polymer({
       return false;
     }
     return this.routines[0] instanceof RoutineGroup;
-  },
+  }
 
   /** @private */
   getResultListElem_() {
     return /** @type {!RoutineResultListElement} */ (
-        this.$$('routine-result-list'));
-  },
+        this.shadowRoot.querySelector('routine-result-list'));
+  }
 
 
   /**
@@ -266,7 +291,7 @@ Polymer({
         routine =>
             supported.routines.includes(/** @type {!RoutineType} */ (routine)));
     return filteredRoutineTypes;
-  },
+  }
 
   /**
    *  @private
@@ -284,7 +309,7 @@ Polymer({
       }
     }
     return filteredRoutineGroups;
-  },
+  }
 
   async runTests() {
     // Do not attempt to run tests when no routines available to run.
@@ -342,14 +367,20 @@ Polymer({
         clearInterval(remainingTimeUpdaterId);
       }
     }
-  },
+  }
 
   /** @private */
   announceRoutinesComplete_() {
     this.announcedText_ =
         loadTimeData.getString('testOnRoutinesCompletedText');
-    this.fire('iron-announce', {text: `${this.announcedText_}`});
-  },
+    this.dispatchEvent(new CustomEvent('iron-announce', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        text: this.announcedText_,
+      },
+    }));
+  }
 
   /** @param {!ExecutionProgress} status */
   handleRoutinesCompletedStatus_(status) {
@@ -369,7 +400,7 @@ Polymer({
           loadTimeData.getString('testSucceededBadgeText');
       this.announceRoutinesComplete_();
     }
-  },
+  }
 
   /**
    * @param {!ResultStatusItem} status
@@ -400,7 +431,7 @@ Polymer({
     this.executionStatus_ = status.progress;
 
     resultListElem.onStatusUpdate.call(resultListElem, status);
-  },
+  }
 
   /** @private */
   cleanUp_() {
@@ -414,19 +445,19 @@ Polymer({
     }
 
     this.systemRoutineController_ = null;
-  },
+  }
 
   stopTests() {
     if (this.executor_) {
       this.executor_.cancel();
     }
-  },
+  }
 
   /** @private */
   onToggleReportClicked_() {
     // Toggle report list visibility
     this.$.collapse.toggle();
-  },
+  }
 
   /** @protected */
   onLearnMoreClicked_() {
@@ -435,24 +466,24 @@ Polymer({
     assert(this.learnMoreLinkSection);
 
     window.open(baseSupportUrl + this.learnMoreLinkSection);
-  },
+  }
 
   /** @protected */
   isResultButtonHidden_() {
     return this.shouldHideReportList_() ||
         this.executionStatus_ === ExecutionProgress.kNotStarted;
-  },
+  }
 
   /** @protected */
   isLearnMoreHidden_() {
     return !this.shouldHideReportList_() || !this.isLoggedIn_ ||
         this.executionStatus_ !== ExecutionProgress.kCompleted;
-  },
+  }
 
   /** @protected */
   isStatusHidden_() {
     return this.executionStatus_ === ExecutionProgress.kNotStarted;
-  },
+  }
 
   /**
    * @param {boolean} opened Whether the section is expanded or not.
@@ -461,7 +492,7 @@ Polymer({
    */
   getReportToggleButtonText_(opened) {
     return loadTimeData.getString(opened ? 'hideReportText' : 'seeReportText');
-  },
+  }
 
   /**
    * Sets status texts for remaining runtime while the routine runs.
@@ -490,7 +521,7 @@ Polymer({
     this.badgeText_ = timeRemainingInMin <= 1 ?
         loadTimeData.getString('routineRemainingMinFinal') :
         loadTimeData.getStringF('routineRemainingMin', timeRemainingInMin);
-  },
+  }
 
   /** @protected */
   routineStatusChanged_() {
@@ -525,7 +556,7 @@ Polymer({
       default:
         assertNotReached();
     }
-  },
+  }
 
   /**
    * @private
@@ -540,7 +571,7 @@ Polymer({
         'percentageLabel', this.powerRoutineResult_.percentChange.toFixed(2));
     return loadTimeData.getStringF(
         stringId, percentText, this.powerRoutineResult_.timeElapsedSeconds);
-  },
+  }
 
   /**
    * @param {!BadgeType} badgeType
@@ -552,7 +583,7 @@ Polymer({
       badgeType_: badgeType,
       statusText_: statusText,
     });
-  },
+  }
 
   /**
    * @protected
@@ -560,7 +591,7 @@ Polymer({
    */
   isTestRunning_() {
     return this.testSuiteStatus === TestSuiteStatus.kRunning;
-  },
+  }
 
   /**
    * @protected
@@ -569,7 +600,7 @@ Polymer({
   isRunTestsButtonHidden_() {
     return this.isTestRunning_() &&
         this.executionStatus_ === ExecutionProgress.kRunning;
-  },
+  }
 
   /**
    * @protected
@@ -577,7 +608,7 @@ Polymer({
    */
   isStopTestsButtonHidden_() {
     return this.executionStatus_ !== ExecutionProgress.kRunning;
-  },
+  }
 
   /**
    * @protected
@@ -585,7 +616,7 @@ Polymer({
    */
   isRunTestsButtonDisabled_() {
     return this.isTestRunning_() || this.additionalMessage != '';
-  },
+  }
 
   /**
    * @protected
@@ -593,7 +624,7 @@ Polymer({
    */
   shouldHideReportList_() {
     return this.routines.length < 2;
-  },
+  }
 
   /**
    * @protected
@@ -601,7 +632,7 @@ Polymer({
    */
   isAdditionalMessageHidden_() {
     return this.additionalMessage == '';
-  },
+  }
 
   /**
    * @private
@@ -612,13 +643,13 @@ Polymer({
       composed: true,
       detail: {message: this.bannerMessage},
     }));
-  },
+  }
 
   /** @private */
   dismissCautionBanner_() {
     this.dispatchEvent(new CustomEvent(
         'dismiss-caution-banner', {bubbles: true, composed: true}));
-  },
+  }
 
   /** @private */
   resetRoutineState_() {
@@ -630,7 +661,7 @@ Polymer({
     this.executionStatus_ = ExecutionProgress.kNotStarted;
     this.$.collapse.hide();
     this.ignoreRoutineStatusUpdates = false;
-  },
+  }
 
   /**
    * If the page is active, check if we should run the routines
@@ -644,7 +675,7 @@ Polymer({
       this.resetRoutineState_();
       return;
     }
-  },
+  }
 
   /**
    * @protected
@@ -652,15 +683,14 @@ Polymer({
    */
   isLearnMoreButtonHidden_() {
     return !this.isLoggedIn_ || this.hideRoutineStatus;
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.cleanUp_();
-  },
-
-  /** @override */
-  created() {},
+  }
 
   /**
    * @protected
@@ -668,5 +698,7 @@ Polymer({
    */
   hideRoutineSection() {
     return this.routines.length === 0;
-  },
-});
+  }
+}
+
+customElements.define(RoutineSectionElement.is, RoutineSectionElement);

@@ -6,13 +6,14 @@ import './diagnostics_shared_css.js';
 import './input_card.js';
 import './keyboard_tester.js';
 
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 import {ConnectedDevicesObserverInterface, ConnectedDevicesObserverReceiver, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js';
+import {KeyboardTesterElement} from './keyboard_tester.js';
 import {getInputDataProvider} from './mojo_interface_provider.js';
 
 /**
@@ -20,74 +21,86 @@ import {getInputDataProvider} from './mojo_interface_provider.js';
  * 'input-list' is responsible for displaying keyboard, touchpad, and
  * touchscreen cards.
  */
-Polymer({
-  is: 'input-list',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const InputListElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class InputListElement extends InputListElementBase {
+  static get is() {
+    return 'input-list';
+  }
 
-  /** @private {?DiagnosticsBrowserProxy} */
-  browserProxy_: null,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** @private {?InputDataProviderInterface} */
-  inputDataProvider_: null,
+  static get properties() {
+    return {
+      /** @private {!Array<!KeyboardInfo>} */
+      keyboards_: {
+        type: Array,
+        value: () => [],
+      },
 
-  /** @private {?ConnectedDevicesObserverReceiver} */
-  connectedDevicesObserverReceiver_: null,
+      /** @private {!Array<!TouchDeviceInfo>} */
+      touchpads_: {
+        type: Array,
+        value: () => [],
+      },
 
-  /** @private {?KeyboardTesterElement} */
-  keyboardTester_: null,
+      /** @private {!Array<!TouchDeviceInfo>} */
+      touchscreens_: {
+        type: Array,
+        value: () => [],
+      },
 
-  properties: {
-    /** @private {!Array<!KeyboardInfo>} */
-    keyboards_: {
-      type: Array,
-      value: () => [],
-    },
+      /** @protected */
+      showTouchpads_: {
+        type: Boolean,
+        computed: 'computeShowTouchpads_(touchpads_.length)',
+      },
 
-    /** @private {!Array<!TouchDeviceInfo>} */
-    touchpads_: {
-      type: Array,
-      value: () => [],
-    },
+      /** @protected */
+      showTouchscreens_: {
+        type: Boolean,
+        computed: 'computeShowTouchscreens_(touchscreens_.length)',
+      },
 
-    /** @private {!Array<!TouchDeviceInfo>} */
-    touchscreens_: {
-      type: Array,
-      value: () => [],
-    },
-
-    /** @protected */
-    showTouchpads_: {
-      type: Boolean,
-      computed: 'computeShowTouchpads_(touchpads_.length)',
-    },
-
-    /** @protected */
-    showTouchscreens_: {
-      type: Boolean,
-      computed: 'computeShowTouchscreens_(touchscreens_.length)',
-    },
-  },
+    };
+  }
 
   computeShowTouchpads_(numTouchpads) {
     return numTouchpads > 0 && loadTimeData.getBoolean('isTouchpadEnabled');
-  },
+  }
 
   computeShowTouchscreens_(numTouchscreens) {
     return numTouchscreens > 0 &&
         loadTimeData.getBoolean('isTouchscreenEnabled');
-  },
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {?ConnectedDevicesObserverReceiver} */
+    this.connectedDevicesObserverReceiver_ = null;
+
+    /** @private {?KeyboardTesterElement} */
+    this.keyboardTester_ = null;
+
+    /** @private {DiagnosticsBrowserProxy} */
     this.browserProxy_ = DiagnosticsBrowserProxyImpl.getInstance();
     this.browserProxy_.initialize();
+    /** @private {InputDataProviderInterface} */
     this.inputDataProvider_ = getInputDataProvider();
     this.loadInitialDevices_();
     this.observeConnectedDevices_();
-  },
+  }
 
   /** @private */
   loadInitialDevices_() {
@@ -98,7 +111,7 @@ Polymer({
       this.touchscreens_ = devices.touchDevices.filter(
           (device) => device.type === TouchDeviceType.kDirect);
     });
-  },
+  }
 
   /** @private */
   observeConnectedDevices_() {
@@ -107,7 +120,7 @@ Polymer({
         /** @type {!ConnectedDevicesObserverInterface} */(this));
     this.inputDataProvider_.observeConnectedDevices(
       this.connectedDevicesObserverReceiver_.$.bindNewPipeAndPassRemote());
-  },
+  }
 
   /**
    * Implements ConnectedDevicesObserver.OnKeyboardConnected.
@@ -115,7 +128,7 @@ Polymer({
    */
   onKeyboardConnected(newKeyboard) {
     this.push('keyboards_', newKeyboard);
-  },
+  }
 
   /**
    * Removes the device with the given evdev ID from one of the device list
@@ -129,7 +142,7 @@ Polymer({
     if (index !== -1) {
       this.splice(path, index, 1);
     }
-  },
+  }
 
   /**
    * Implements ConnectedDevicesObserver.OnKeyboardDisconnected.
@@ -145,7 +158,7 @@ Polymer({
       // explicitly close the dialog when this happens.
       this.keyboardTester_.close();
     }
-  },
+  }
 
   /**
    * Implements ConnectedDevicesObserver.OnTouchDeviceConnected.
@@ -157,7 +170,7 @@ Polymer({
     } else {
       this.push('touchscreens_', newTouchDevice);
     }
-  },
+  }
 
   /**
    * Implements ConnectedDevicesObserver.OnTouchDeviceDisconnected.
@@ -166,7 +179,7 @@ Polymer({
   onTouchDeviceDisconnected(id) {
     this.removeDeviceById_('touchpads_', id);
     this.removeDeviceById_('touchscreens_', id);
-  },
+  }
 
   /**
    * @param {!CustomEvent} e
@@ -183,7 +196,7 @@ Polymer({
     this.keyboardTester_.keyboard = assert(
         this.keyboards_.find((keyboard) => keyboard.id === e.detail.evdevId));
     this.keyboardTester_.show();
-  },
+  }
 
   /**
    * 'navigation-view-panel' is responsible for calling this function when
@@ -197,5 +210,7 @@ Polymer({
       // to avoid duplicate code in all navigatable pages.
       this.browserProxy_.recordNavigation('input');
     }
-  },
-});
+  }
+}
+
+customElements.define(InputListElement.is, InputListElement);

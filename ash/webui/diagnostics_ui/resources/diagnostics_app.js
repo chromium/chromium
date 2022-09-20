@@ -12,9 +12,9 @@ import './network_list.js';
 import './strings.m.js';
 import './system_page.js';
 
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 import {ConnectedDevicesObserverInterface, ConnectedDevicesObserverReceiver, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo} from './diagnostics_types.js';
@@ -27,80 +27,95 @@ import {getInputDataProvider} from './mojo_interface_provider.js';
  * the main page for viewing telemetric system information and running
  * diagnostic tests.
  */
-Polymer({
-  is: 'diagnostics-app',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const DiagnosticsAppElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
+  static get is() {
+    return 'diagnostics-app';
+  }
 
-  /** @private {?DiagnosticsBrowserProxy} */
-  browserProxy_: null,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** @private {?InputDataProviderInterface} */
-  inputDataProvider_: null,
+  static get properties() {
+    return {
+      /**
+       * Used in navigation-view-panel to set show-banner when banner is
+       * expected to be shown.
+       * @protected
+       * @type {string}
+       */
+      bannerMessage_: {
+        type: Boolean,
+        value: '',
+      },
 
-  /** @private {number} */
-  numKeyboards_: -1,
+      /** @protected {boolean} */
+      saveSessionLogEnabled_: {
+        type: Boolean,
+        value: true,
+      },
 
-  properties: {
-    /**
-     * Used in navigation-view-panel to set show-banner when banner is expected
-     * to be shown.
-     * @protected
-     * @type {string}
-     */
-    bannerMessage_: {
-      type: Boolean,
-      value: '',
-    },
+      /** @private {boolean} */
+      showNavPanel_: {
+        type: Boolean,
+        computed: 'computeShowNavPanel_(isNetworkingEnabled_, isInputEnabled_)',
+      },
 
-    /** @protected {boolean} */
-    saveSessionLogEnabled_: {
-      type: Boolean,
-      value: true,
-    },
+      /** @private {boolean} */
+      isNetworkingEnabled_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isNetworkingEnabled'),
+      },
 
-    /** @private {boolean} */
-    showNavPanel_: {
-      type: Boolean,
-      computed: 'computeShowNavPanel_(isNetworkingEnabled_, isInputEnabled_)',
-    },
+      /** @private {boolean} */
+      isInputEnabled_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isInputEnabled'),
+      },
 
-    /** @private {boolean} */
-    isNetworkingEnabled_: {
-      type: Boolean,
-      value: loadTimeData.getBoolean('isNetworkingEnabled'),
-    },
+      /**
+       * Whether a user is logged in or not.
+       * Note: A guest session is considered a logged-in state.
+       * @protected {boolean}
+       */
+      isLoggedIn_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isLoggedIn'),
+      },
 
-    /** @private {boolean} */
-    isInputEnabled_: {
-      type: Boolean,
-      value: loadTimeData.getBoolean('isInputEnabled'),
-    },
+      /** @private {string} */
+      toastText_: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * Whether a user is logged in or not.
-     * Note: A guest session is considered a logged-in state.
-     * @protected {boolean}
-     */
-    isLoggedIn_: {
-      type: Boolean,
-      value: loadTimeData.getBoolean('isLoggedIn'),
-    },
-
-    /** @private {string} */
-    toastText_: {
-      type: String,
-      value: '',
-    },
-  },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+    /** @private {?DiagnosticsBrowserProxy} */
+    this.browserProxy_ = null;
+
+    /** @private {?InputDataProviderInterface} */
+    this.inputDataProvider_ = null;
+
+    /** @private {number} */
+    this.numKeyboards_ = -1;
     this.browserProxy_ = DiagnosticsBrowserProxyImpl.getInstance();
     this.browserProxy_.initialize();
-  },
+  }
 
   /**
    * Implements ConnectedDevicesObserver.OnKeyboardConnected.
@@ -111,7 +126,7 @@ Polymer({
       this.$.navigationPanel.addSelectorItem(this.createInputSelector_());
     }
     this.numKeyboards_++;
-  },
+  }
 
   /**
    * Implements ConnectedDevicesObserver.OnKeyboardDisconnected.
@@ -122,36 +137,38 @@ Polymer({
     if (this.numKeyboards_ === 0) {
       this.$.navigationPanel.removeSelectorById('input');
     }
-  },
+  }
 
   /**
    * Implements ConnectedDevicesObserver.OnTouchDeviceConnected.
    * @param {!TouchDeviceInfo} newTouchDevice
    */
-  onTouchDeviceConnected(newTouchDevice) {},
+  onTouchDeviceConnected(newTouchDevice) {}
 
   /**
    * Implements ConnectedDevicesObserver.OnTouchDeviceDisconnected.
    * @param {number} id
    */
-  onTouchDeviceDisconnected(id) {},
+  onTouchDeviceDisconnected(id) {}
 
   /** @private */
   computeShowNavPanel_(isNetworkingEnabled, isInputEnabled) {
     return isNetworkingEnabled || isInputEnabled;
-  },
+  }
 
   /** @private */
   createInputSelector_() {
     return this.$.navigationPanel.createSelectorItem(
         loadTimeData.getString('inputText'), 'input-list',
         getDiagnosticsIcon('keyboard'), 'input');
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     if (this.showNavPanel_) {
-      const navPanel = this.$$('#navigationPanel');
+      const navPanel = this.shadowRoot.querySelector('#navigationPanel');
       // Note: When adding a new page, update the DiagnosticsPage enum located
       // in chrome/browser/ui/webui/chromeos/diagnostics_dialog.h.
       const pages = [navPanel.createSelectorItem(
@@ -186,7 +203,7 @@ Polymer({
       }
       navPanel.addSelectors(pages);
     }
-  },
+  }
 
   /** @protected */
   onSessionLogClick_() {
@@ -208,5 +225,7 @@ Polymer({
         .finally(() => {
           this.saveSessionLogEnabled_ = true;
         });
-  },
-});
+  }
+}
+
+customElements.define(DiagnosticsAppElement.is, DiagnosticsAppElement);

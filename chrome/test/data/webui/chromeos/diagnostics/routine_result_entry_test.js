@@ -7,7 +7,8 @@ import 'chrome://diagnostics/routine_result_entry.js';
 import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
-import {BadgeType} from 'chrome://diagnostics/text_badge.js';
+import {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
+import {BadgeType, TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -92,7 +93,7 @@ export function routineResultEntryTestSuite() {
    * @return {string}
    */
   function getNameText() {
-    const name = routineResultEntryElement.$$('#routine');
+    const name = routineResultEntryElement.shadowRoot.querySelector('#routine');
     assertTrue(!!name);
     return name.textContent.trim();
   }
@@ -103,7 +104,7 @@ export function routineResultEntryTestSuite() {
    */
   function getStatusBadge() {
     const badge = /** @type{!TextBadgeElement} */ (
-        routineResultEntryElement.$$('#status'));
+        routineResultEntryElement.shadowRoot.querySelector('#status'));
     assertTrue(!!badge);
     return badge;
   }
@@ -114,7 +115,8 @@ export function routineResultEntryTestSuite() {
    */
   function getFailedTestContainer() {
     const failedTestContainer = /** @type {!HTMLSpanElement} */ (
-        routineResultEntryElement.$$('#failed-test-text'));
+        routineResultEntryElement.shadowRoot.querySelector(
+            '#failed-test-text'));
     assertTrue(!!failedTestContainer);
     return failedTestContainer;
   }
@@ -122,7 +124,8 @@ export function routineResultEntryTestSuite() {
   test('ElementRendered', () => {
     return initializeRoutineResultEntry().then(() => {
       // Verify the element rendered.
-      const div = routineResultEntryElement.$$('.entry-row');
+      const div =
+          routineResultEntryElement.shadowRoot.querySelector('.entry-row');
       assertTrue(!!div);
     });
   });

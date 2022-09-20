@@ -6,6 +6,8 @@ import 'chrome://diagnostics/routine_result_list.js';
 
 import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
+import {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
+import {RoutineResultListElement} from 'chrome://diagnostics/routine_result_list.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
@@ -67,7 +69,8 @@ export function routineResultListTestSuite() {
   test('ElementRendered', () => {
     return initializeRoutineResultList([]).then(() => {
       // Verify the element rendered.
-      const div = routineResultListElement.$$('#resultListContainer');
+      const div = routineResultListElement.shadowRoot.querySelector(
+          '#resultListContainer');
       assertTrue(!!div);
     });
   });
@@ -76,15 +79,17 @@ export function routineResultListTestSuite() {
     return initializeRoutineResultList([])
         .then(() => {
           assertFalse(routineResultListElement.hidden);
-          assertFalse(
-              routineResultListElement.$$('#resultListContainer').hidden);
+          assertFalse(routineResultListElement.shadowRoot
+                          .querySelector('#resultListContainer')
+                          .hidden);
           routineResultListElement.hidden = true;
           return flushTasks();
         })
         .then(() => {
           assertTrue(routineResultListElement.hidden);
-          assertTrue(
-              routineResultListElement.$$('#resultListContainer').hidden);
+          assertTrue(routineResultListElement.shadowRoot
+                         .querySelector('#resultListContainer')
+                         .hidden);
         });
   });
 

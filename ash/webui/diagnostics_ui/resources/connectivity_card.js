@@ -9,104 +9,123 @@ import './ip_config_info_drawer.js';
 import './network_info.js';
 import './routine_section.js';
 
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, RoutineType} from './diagnostics_types.js';
 import {filterNameServers, formatMacAddress, getNetworkCardTitle, getNetworkState, getNetworkType, getRoutineGroups} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 import {RoutineGroup} from './routine_group.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
-
+import {RoutineSectionElement} from './routine_section.js';
 
 /**
  * @fileoverview
  * 'connectivity-card' runs network routines and displays network health data.
  */
-Polymer({
-  is: 'connectivity-card',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ConnectivityCardElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class ConnectivityCardElement extends ConnectivityCardElementBase {
+  static get is() {
+    return 'connectivity-card';
+  }
 
-  /**
-   * @private {?NetworkHealthProviderInterface}
-   */
-  networkHealthProvider_: null,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /**
-   * Receiver responsible for observing a single active network connection.
-   * @private {?NetworkStateObserverReceiver}
-   */
-  networkStateObserverReceiver_: null,
+  static get properties() {
+    return {
+      /** @type {!TestSuiteStatus} */
+      testSuiteStatus: {
+        type: Number,
+        value: TestSuiteStatus.kNotRunning,
+        notify: true,
+      },
 
-  properties: {
-    /** @type {!TestSuiteStatus} */
-    testSuiteStatus: {
-      type: Number,
-      value: TestSuiteStatus.kNotRunning,
-      notify: true,
-    },
+      /** @private {!Array<!RoutineGroup>} */
+      routineGroups_: {
+        type: Array,
+        value: () => [],
+      },
 
-    /** @private {!Array<!RoutineGroup>} */
-    routineGroups_: {
-      type: Array,
-      value: () => [],
-    },
+      /** @type {string} */
+      activeGuid: {
+        type: String,
+        value: '',
+        observer: 'activeGuidChanged_',
+      },
 
-    /** @type {string} */
-    activeGuid: {
-      type: String,
-      value: '',
-      observer: 'activeGuidChanged_',
-    },
+      /** @type {boolean} */
+      isActive: {
+        type: Boolean,
+        observer: 'isActiveChanged_',
+      },
 
-    /** @type {boolean} */
-    isActive: {
-      type: Boolean,
-      observer: 'isActiveChanged_',
-    },
+      /** @type {!Network} */
+      network: {
+        type: Object,
+      },
 
-    /** @type {!Network} */
-    network: {
-      type: Object,
-    },
+      /** @private {string} */
+      networkType_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private {string} */
-    networkType_: {
-      type: String,
-      value: '',
-    },
+      /** @private {string} */
+      networkState_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private {string} */
-    networkState_: {
-      type: String,
-      value: '',
-    },
+      /** @protected {string} */
+      macAddress_: {
+        type: String,
+        value: '',
+      },
 
-    /** @protected {string} */
-    macAddress_: {
-      type: String,
-      value: '',
-    },
-  },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+    /**
+     * @private {?NetworkHealthProviderInterface}
+     */
+    this.networkHealthProvider_ = null;
+
+    /**
+     * Receiver responsible for observing a single active network connection.
+     * @private {?NetworkStateObserverReceiver}
+     */
+    this.networkStateObserverReceiver_ = null;
+
     this.networkHealthProvider_ = getNetworkHealthProvider();
-  },
+  }
 
   /** @private */
   getRoutineSectionElem_() {
-    return /** @type {!RoutineSectionElement} */ (this.$$('routine-section'));
-  },
+    return /** @type {!RoutineSectionElement} */ (
+        this.shadowRoot.querySelector('routine-section'));
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.getRoutineSectionElem_().stopTests();
-  },
+  }
 
   /**
    * @protected
@@ -114,7 +133,7 @@ Polymer({
    */
   hasRoutines_() {
     return this.routineGroups_ && this.routineGroups_.length > 0;
-  },
+  }
 
   /** @private */
   observeNetwork_() {
@@ -132,7 +151,7 @@ Polymer({
     this.networkHealthProvider_.observeNetwork(
         this.networkStateObserverReceiver_.$.bindNewPipeAndPassRemote(),
         this.activeGuid);
-  },
+  }
 
   /**
    * Implements NetworkStateObserver.onNetworkStateChanged
@@ -153,18 +172,18 @@ Polymer({
     // Remove '0.0.0.0' (if present) from list of name servers.
     filterNameServers(network);
     this.set('network', network);
-  },
+  }
 
   /** @protected */
   getEstimateRuntimeInMinutes_() {
     // Connectivity routines will always last <= 1 minute.
     return 1;
-  },
+  }
 
   /** @protected */
   getNetworkCardTitle_() {
     return getNetworkCardTitle(this.networkType_, this.networkState_);
-  },
+  }
 
   /**
    * @protected
@@ -180,7 +199,7 @@ Polymer({
     }
     this.getRoutineSectionElem_().stopTests();
     this.observeNetwork_();
-  },
+  }
 
   /**
    * @protected
@@ -194,7 +213,7 @@ Polymer({
     if (this.routineGroups_.length > 0) {
       this.getRoutineSectionElem_().runTests();
     }
-  },
+  }
 
   /**
    * @protected
@@ -205,5 +224,7 @@ Polymer({
       return '';
     }
     return formatMacAddress(this.macAddress_);
-  },
-});
+  }
+}
+
+customElements.define(ConnectivityCardElement.is, ConnectivityCardElement);

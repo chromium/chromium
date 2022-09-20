@@ -7,9 +7,9 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './diagnostics_card_frame.js';
 import './icons.js';
 
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ConnectionType, KeyboardInfo, TouchDeviceInfo} from './diagnostics_types.js';
 
@@ -29,32 +29,45 @@ export const InputCardType = {
   kTouchscreen: 'touchscreen',
 };
 
-Polymer({
-  is: 'input-card',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const InputCardElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class InputCardElement extends InputCardElementBase {
+  static get is() {
+    return 'input-card';
+  }
 
-  behaviors: [I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**
-     * The type of input device to be displayed. Valid values are 'keyboard',
-     * 'touchpad', and 'touchscreen'.
-     * @type {!InputCardType}
-     */
-    deviceType: String,
+  static get properties() {
+    return {
+      /**
+       * The type of input device to be displayed. Valid values are 'keyboard',
+       * 'touchpad', and 'touchscreen'.
+       * @type {!InputCardType}
+       */
+      deviceType: String,
 
-    /** @type {!Array<!KeyboardInfo|!TouchDeviceInfo>} */
-    devices: {
-      type: Array,
-      value: () => [],
-    },
+      /** @type {!Array<!KeyboardInfo|!TouchDeviceInfo>} */
+      devices: {
+        type: Array,
+        value: () => [],
+      },
 
-    deviceIcon_: {
-      type: String,
-      computed: 'computeDeviceIcon_(deviceType)',
-    },
-  },
+      deviceIcon_: {
+        type: String,
+        computed: 'computeDeviceIcon_(deviceType)',
+      },
+
+    };
+  }
 
   computeDeviceIcon_(deviceType) {
     return {
@@ -62,7 +75,7 @@ Polymer({
       [InputCardType.kTouchpad]: 'diagnostics:touchpad',
       [InputCardType.kTouchscreen]: 'diagnostics:touchscreen',
     }[deviceType];
-  },
+  }
 
   /**
    * Fetches the description string for a device based on its connection type
@@ -87,7 +100,7 @@ Polymer({
     }[this.deviceType];
     return loadTimeData.getString(
         'inputDescription' + connectionTypeString + deviceTypeString);
-  },
+  }
 
   /**
    * @param {!PointerEvent} e
@@ -98,5 +111,7 @@ Polymer({
         parseInt(e.target.closest('.device').getAttribute('data-evdev-id'), 10);
     this.dispatchEvent(new CustomEvent(
         'test-button-click', {composed: true, detail: {evdevId: evdevId}}));
-  },
-});
+  }
+}
+
+customElements.define(InputCardElement.is, InputCardElement);

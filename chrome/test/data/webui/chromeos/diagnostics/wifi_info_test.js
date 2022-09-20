@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/wifi_info.js';
+
 import {Network, SecurityType, WiFiStateProperties} from 'chrome://diagnostics/diagnostics_types.js';
 import {getSignalStrength} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeDisconnectedWifiNetwork, fakeWifiNetwork, fakeWiFiStateProperties} from 'chrome://diagnostics/fake_data.js';
+import {WifiInfoElement} from 'chrome://diagnostics/wifi_info.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';

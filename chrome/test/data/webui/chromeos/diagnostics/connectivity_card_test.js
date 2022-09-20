@@ -4,10 +4,12 @@
 
 import 'chrome://diagnostics/connectivity_card.js';
 
+import {ConnectivityCardElement} from 'chrome://diagnostics/connectivity_card.js';
 import {Network, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
+import {IpConfigInfoDrawerElement} from 'chrome://diagnostics/ip_config_info_drawer.js';
 import {setNetworkHealthProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
@@ -145,14 +147,15 @@ export function connectivityCardTestSuite() {
   test('CardTitleEthernetOnlineInitializedCorrectly', () => {
     return initializeConnectivityCard('ethernetGuid').then(() => {
       dx_utils.assertElementContainsText(
-          connectivityCardElement.$$('#cardTitle'), 'Ethernet');
+          connectivityCardElement.shadowRoot.querySelector('#cardTitle'),
+          'Ethernet');
     });
   });
 
   test('CardMacAddressChipInitializedCorrectly', () => {
     return initializeConnectivityCard('ethernetGuid').then(() => {
       dx_utils.assertElementContainsText(
-          connectivityCardElement.$$('#macAddressChip'),
+          connectivityCardElement.shadowRoot.querySelector('#macAddressChip'),
           'MAC: 81:C5:A6:30:3F:31');
     });
   });
@@ -160,7 +163,8 @@ export function connectivityCardTestSuite() {
   test('CardNetworkIconEthernetOnlineInitializedCorrectly', () => {
     return initializeConnectivityCard('ethernetGuid').then(() => {
       assertTrue(isVisible(
-          /** @type {!Element} */ (connectivityCardElement.$$('#icon'))));
+          /** @type {!Element} */ (
+              connectivityCardElement.shadowRoot.querySelector('#icon'))));
     });
   });
 
@@ -176,8 +180,9 @@ export function connectivityCardTestSuite() {
       'CardIpConfigurationDrawerInitializedCorrectly', () => {
         return initializeConnectivityCard('ethernetGuid').then(() => {
           const ipConfigInfoDrawerElement =
-              /** @type IpConfigInfoDrawerElement */ (
-                  connectivityCardElement.$$('#ipConfigInfoDrawer'));
+              /** @type {IpConfigInfoDrawerElement} */ (
+                  connectivityCardElement.shadowRoot.querySelector(
+                      '#ipConfigInfoDrawer'));
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (ipConfigInfoDrawerElement)));
           assertDeepEquals(
