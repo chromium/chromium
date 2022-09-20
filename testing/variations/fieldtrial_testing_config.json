@@ -3545,6 +3545,25 @@
             ]
         }
     ],
+    "DesktopNtpRemoveScrim": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "NtpRemoveScrim",
+                    "enable_features": [
+                        "NtpRemoveScrim"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxBookmarkPaths": [
         {
             "platforms": [

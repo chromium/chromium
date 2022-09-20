@@ -284,8 +284,23 @@ suite('NewTabPageAppTest', () => {
       // Assert.
       assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
       assertTrue(await backgroundManager.whenCalled('setShowBackgroundImage'));
-      assertNotStyle(
-          $$(app, '#backgroundImageAttribution')!, 'text-shadow', 'none');
+
+      // Scrim removal will remove text shadows as background protection is
+      // applied to the background element instead.
+      if (loadTimeData.getBoolean('removeScrim')) {
+        assertNotStyle(
+            $$(app, '#backgroundImageAttribution')!, 'background-color',
+            'rgba(0, 0, 0, 0)');
+        assertStyle(
+            $$(app, '#backgroundImageAttribution')!, 'text-shadow', 'none');
+      } else {
+        assertStyle(
+            $$(app, '#backgroundImageAttribution')!, 'background-color',
+            'rgba(0, 0, 0, 0)');
+        assertNotStyle(
+            $$(app, '#backgroundImageAttribution')!, 'text-shadow', 'none');
+      }
+
       assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
       assertEquals(
           'https://img.png',
