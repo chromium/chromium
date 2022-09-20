@@ -1461,8 +1461,8 @@ void AwContents::RenderViewHostChanged(content::RenderViewHost* old_host,
 }
 
 void AwContents::PrimaryPageChanged(content::Page& page) {
+  std::string scheme = page.GetMainDocument().GetLastCommittedURL().scheme();
   const url::Origin& origin = page.GetMainDocument().GetLastCommittedOrigin();
-  const std::string& scheme = origin.scheme();
   const std::string& etld_plus1 =
       net::registry_controlled_domains::GetDomainAndRegistry(
           origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
