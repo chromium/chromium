@@ -155,15 +155,14 @@ class DisplayPrefsTest : public AshTestBase {
       int offset,
       int64_t primary_id) {
     std::string name = display::DisplayIdListToString(list);
-    DictionaryPrefUpdate update(local_state(), prefs::kSecondaryDisplays);
+    ScopedDictPrefUpdate update(local_state(), prefs::kSecondaryDisplays);
     display::DisplayLayout display_layout;
     display_layout.placement_list.emplace_back(position, offset);
     display_layout.primary_id = primary_id;
 
     DCHECK(!name.empty());
 
-    base::Value::Dict& pref_data = update->GetDict();
-    base::Value::Dict* layout_dict = pref_data.EnsureDict(name);
+    base::Value::Dict* layout_dict = update->EnsureDict(name);
     display::DisplayLayoutToJson(display_layout, *layout_dict);
   }
 
@@ -172,14 +171,13 @@ class DisplayPrefsTest : public AshTestBase {
                                    base::Value value) {
     std::string name = display::DisplayIdListToString(list);
 
-    DictionaryPrefUpdate update(local_state(), prefs::kSecondaryDisplays);
-    base::Value::Dict& pref_data = update->GetDict();
-    if (base::Value::Dict* existing_layout_value = pref_data.FindDict(name)) {
+    ScopedDictPrefUpdate update(local_state(), prefs::kSecondaryDisplays);
+    if (base::Value::Dict* existing_layout_value = update->FindDict(name)) {
       existing_layout_value->Set(key, std::move(value));
     } else {
       base::Value::Dict layout_dict;
       layout_dict.Set(key, true);
-      pref_data.SetByDottedPath(name, std::move(layout_dict));
+      update->SetByDottedPath(name, std::move(layout_dict));
     }
   }
 
@@ -196,16 +194,15 @@ class DisplayPrefsTest : public AshTestBase {
   }
 
   void StoreDisplayOverscan(int64_t id, const gfx::Insets& insets) {
-    DictionaryPrefUpdate update(local_state(), prefs::kDisplayProperties);
+    ScopedDictPrefUpdate update(local_state(), prefs::kDisplayProperties);
     const std::string name = base::NumberToString(id);
 
-    base::Value* pref_data = update.Get();
-    base::Value insets_value(base::Value::Type::DICTIONARY);
-    insets_value.SetIntKey("insets_top", insets.top());
-    insets_value.SetIntKey("insets_left", insets.left());
-    insets_value.SetIntKey("insets_bottom", insets.bottom());
-    insets_value.SetIntKey("insets_right", insets.right());
-    pref_data->SetKey(name, std::move(insets_value));
+    base::Value::Dict insets_value;
+    insets_value.Set("insets_top", insets.top());
+    insets_value.Set("insets_left", insets.left());
+    insets_value.Set("insets_bottom", insets.bottom());
+    insets_value.Set("insets_right", insets.right());
+    update->Set(name, std::move(insets_value));
   }
 
   display::Display::Rotation GetRotation() {
@@ -217,11 +214,12 @@ class DisplayPrefsTest : public AshTestBase {
 
   void StoreExternalDisplayMirrorInfo(
       const std::set<int64_t>& external_display_mirror_info) {
-    ListPrefUpdate update(local_state(), prefs::kExternalDisplayMirrorInfo);
-    base::Value* pref_data = update.Get();
-    pref_data->ClearList();
+    ScopedListPrefUpdate update(local_state(),
+                                prefs::kExternalDisplayMirrorInfo);
+    base::Value::List& pref_data = update.Get();
+    pref_data.clear();
     for (const auto& id : external_display_mirror_info)
-      pref_data->Append(base::NumberToString(id));
+      pref_data.Append(base::NumberToString(id));
   }
 
   std::string GetRegisteredDisplayPlacementStr(
