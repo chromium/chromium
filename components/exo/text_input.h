@@ -13,6 +13,7 @@
 #include "components/exo/seat_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
+#include "ui/base/ime/surrounding_text_tracker.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -60,7 +61,7 @@ class TextInput : public ui::TextInputClient,
     virtual void SetCompositionText(const ui::CompositionText& composition) = 0;
 
     // Commit |text| to the current text input session.
-    virtual void Commit(const std::u16string& text) = 0;
+    virtual void Commit(base::StringPiece16 text) = 0;
 
     // Set the cursor position.
     // |surrounding_text| is the current surrounding text.
@@ -263,18 +264,8 @@ class TextInput : public ui::TextInputClient,
   int flags_ = ui::TEXT_INPUT_FLAG_NONE;
   bool should_do_learning_ = true;
 
-  // Cache of the current surrounding text, sent from the client.
-  std::u16string surrounding_text_;
-
-  // Cache of the current cursor position in the surrounding text, sent from
-  // the client. Maybe "invalid" value, if not available.
-  gfx::Range cursor_pos_ = gfx::Range::InvalidRange();
-
-  // Cache of the current composition range (set in absolute indices).
-  gfx::Range composition_range_ = gfx::Range::InvalidRange();
-
-  // Cache of the current composition, updated from Chrome OS IME.
-  ui::CompositionText composition_;
+  // Tracks the surrounding text.
+  ui::SurroundingTextTracker surrounding_text_tracker_;
 
   // Cache of the current text input direction, update from the Chrome OS IME.
   base::i18n::TextDirection direction_ = base::i18n::UNKNOWN_DIRECTION;

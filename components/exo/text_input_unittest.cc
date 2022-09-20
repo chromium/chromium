@@ -34,7 +34,7 @@ namespace {
 ui::CompositionText GenerateCompositionText(const std::u16string& text) {
   ui::CompositionText t;
   t.text = text;
-  t.selection = gfx::Range(1u);
+  t.selection = gfx::Range(text.size());
   t.ime_text_spans.push_back(
       ui::ImeTextSpan(ui::ImeTextSpan::Type::kComposition, 0, t.text.size(),
                       ui::ImeTextSpan::Thickness::kThick));
@@ -53,7 +53,7 @@ class MockTextInputDelegate : public TextInput::Delegate {
   MOCK_METHOD(void, Deactivated, (), ());
   MOCK_METHOD(void, OnVirtualKeyboardVisibilityChanged, (bool), ());
   MOCK_METHOD(void, SetCompositionText, (const ui::CompositionText&), ());
-  MOCK_METHOD(void, Commit, (const std::u16string&), ());
+  MOCK_METHOD(void, Commit, (base::StringPiece16), ());
   MOCK_METHOD(void, SetCursor, (base::StringPiece16, const gfx::Range&), ());
   MOCK_METHOD(void,
               DeleteSurroundingText,
@@ -454,7 +454,8 @@ TEST_F(TextInputTest, CompositionTextEmpty) {
 TEST_F(TextInputTest, ConfirmCompositionText) {
   SetCompositionText(u"composition");
 
-  EXPECT_CALL(*delegate(), Commit(std::u16string(u"composition"))).Times(1);
+  EXPECT_CALL(*delegate(), Commit(base::StringPiece16(u"composition")))
+      .Times(1);
   const size_t composition_text_length =
       text_input()->ConfirmCompositionText(/*keep_selection=*/false);
   EXPECT_EQ(composition_text_length, 11u);
@@ -468,12 +469,14 @@ TEST_F(TextInputTest, ConfirmCompositionText) {
 TEST_F(TextInputTest, ConfirmCompositionTextKeepSelection) {
   constexpr char16_t kCompositionText[] = u"composition";
   SetCompositionText(kCompositionText);
+  text_input()->SetEditableSelectionRange(gfx::Range(2, 3));
   text_input()->SetSurroundingText(kCompositionText, gfx::Range(2, 3));
 
   EXPECT_CALL(*delegate(), SetCursor(base::StringPiece16(kCompositionText),
                                      gfx::Range(2, 3)))
       .Times(1);
-  EXPECT_CALL(*delegate(), Commit(std::u16string(kCompositionText))).Times(1);
+  EXPECT_CALL(*delegate(), Commit(base::StringPiece16(kCompositionText)))
+      .Times(1);
   const uint32_t composition_text_length =
       text_input()->ConfirmCompositionText(/*keep_selection=*/true);
   EXPECT_EQ(composition_text_length, static_cast<uint32_t>(11));
@@ -493,9 +496,9 @@ TEST_F(TextInputTest, ResetCompositionText) {
 }
 
 TEST_F(TextInputTest, Commit) {
-  std::u16string s = u"commit text";
+  constexpr char16_t s[] = u"commit text";
 
-  EXPECT_CALL(*delegate(), Commit(s)).Times(1);
+  EXPECT_CALL(*delegate(), Commit(base::StringPiece16(s))).Times(1);
   text_input()->InsertText(
       s, ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_FALSE(text_input()->HasCompositionText());
@@ -534,9 +537,11 @@ TEST_F(TextInputTest, SurroundingText) {
   TestingInputMethodObserver observer(GetInputMethod());
 
   gfx::Range range;
-  EXPECT_FALSE(text_input()->GetTextRange(&range));
+  EXPECT_TRUE(text_input()->GetTextRange(&range));
+  EXPECT_EQ(gfx::Range(0, 0), range);
   EXPECT_FALSE(text_input()->GetCompositionTextRange(&range));
-  EXPECT_FALSE(text_input()->GetEditableSelectionRange(&range));
+  EXPECT_TRUE(text_input()->GetEditableSelectionRange(&range));
+  EXPECT_EQ(gfx::Range(0, 0), range);
   std::u16string got_text;
   EXPECT_FALSE(text_input()->GetTextFromRange(gfx::Range(0, 1), &got_text));
 
@@ -565,26 +570,27 @@ TEST_F(TextInputTest, SurroundingText) {
   size_t composition_size = std::string("composition").size();
   SetCompositionText(u"composition");
   EXPECT_TRUE(text_input()->GetCompositionTextRange(&range));
-  EXPECT_EQ(gfx::Range(11, 11 + composition_size).ToString(), range.ToString());
+  EXPECT_EQ(gfx::Range(11, 11 + composition_size), range);
   EXPECT_TRUE(text_input()->GetEditableSelectionRange(&range));
-  EXPECT_EQ(gfx::Range(11, 12).ToString(), range.ToString());
+  EXPECT_EQ(gfx::Range(11 + composition_size), range);
 }
 
 TEST_F(TextInputTest, SetEditableSelectionRange) {
   SetCompositionText(u"text");
-  text_input()->SetSurroundingText(u"text", gfx::Range(1, 2));
+  text_input()->SetSurroundingText(u"text", gfx::Range(4, 4));
 
   // Should commit composition text and set selection range.
   EXPECT_CALL(*delegate(),
               SetCursor(base::StringPiece16(u"text"), gfx::Range(0, 3)))
       .Times(1);
-  EXPECT_CALL(*delegate(), Commit(std::u16string(u"text"))).Times(1);
+  EXPECT_CALL(*delegate(), Commit(base::StringPiece16(u"text"))).Times(1);
   EXPECT_TRUE(text_input()->SetEditableSelectionRange(gfx::Range(0, 3)));
   testing::Mock::VerifyAndClearExpectations(delegate());
 }
 
 TEST_F(TextInputTest, GetTextFromRange) {
   std::u16string text = u"surrounding text";
+  text_input()->SetEditableSelectionRange(gfx::Range(11, 12));
   text_input()->SetSurroundingText(text, gfx::Range(11, 12));
 
   const struct {
@@ -682,22 +688,18 @@ TEST_F(TextInputTest, CorrectTextReturnedAfterSetCompositionTextCalled) {
   std::u16string composition_text = u" and composition";
 
   ui::CompositionText t = GenerateCompositionText(composition_text);
-  EXPECT_CALL(*delegate(), SetCompositionText)
-      .WillOnce(
-          testing::Invoke([this, cursor_pos, surrounding_text,
-                           composition_text](const ui::CompositionText& t) {
-            EXPECT_EQ(t.text, composition_text);
-            // Simulate surrounding text update from wayland.
-            auto before = surrounding_text.substr(0, cursor_pos.GetMin());
-            auto after = surrounding_text.substr(cursor_pos.GetMin());
-            auto new_surrounding = before + t.text + after;
-            auto new_cursor_pos = cursor_pos.GetMin() + t.text.length();
-            text_input()->SetSurroundingText(
-                new_surrounding, gfx::Range(new_cursor_pos, new_cursor_pos));
-          }));
+  EXPECT_CALL(*delegate(), SetCompositionText(_)).Times(1);
 
   text_input()->SetSurroundingText(surrounding_text, cursor_pos);
   text_input()->SetCompositionText(t);
+
+  // Simulate surrounding text update from wayland.
+  auto before = surrounding_text.substr(0, cursor_pos.GetMin());
+  auto after = surrounding_text.substr(cursor_pos.GetMin());
+  auto new_surrounding = before + t.text + after;
+  auto new_cursor_pos = cursor_pos.GetMin() + t.text.length();
+  text_input()->SetSurroundingText(new_surrounding,
+                                   gfx::Range(new_cursor_pos, new_cursor_pos));
 
   gfx::Range text_range;
   std::u16string text;

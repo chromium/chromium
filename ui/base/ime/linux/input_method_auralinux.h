@@ -98,6 +98,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   absl::optional<CommitResult> last_commit_result_;
 
   absl::optional<std::u16string> result_text_;
+  absl::optional<std::u16string> surrounding_text_;
+  gfx::Range selection_range_;
 
   ui::CompositionText composition_;
 

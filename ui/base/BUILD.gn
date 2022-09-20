@@ -1130,6 +1130,7 @@ test("ui_base_unittests") {
       "ime/composition_text_unittest.cc",
       "ime/input_method_base_unittest.cc",
       "ime/mojom/ime_mojom_traits_unittest.cc",
+      "ime/surrounding_text_tracker_unittest.cc",
     ]
     if (is_win) {
       sources += [

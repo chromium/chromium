@@ -68,6 +68,8 @@ component("ime") {
     "input_method_observer.h",
     "mock_input_method.cc",
     "mock_input_method.h",
+    "surrounding_text_tracker.cc",
+    "surrounding_text_tracker.h",
     "text_edit_commands.h",
     "text_input_client.cc",
     "text_input_client.h",
