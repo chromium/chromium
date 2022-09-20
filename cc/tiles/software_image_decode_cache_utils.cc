@@ -152,15 +152,9 @@ SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate(
   SkPixmap target_pixmap(target_info, target_pixels->data(),
                          target_info.minRowBytes());
   PaintFlags::FilterQuality filter_quality = PaintFlags::FilterQuality::kMedium;
-  if (decoded_pixmap.colorType() == kRGBA_F16_SkColorType &&
-      !ImageDecodeCacheUtils::CanResizeF16Image(filter_quality)) {
-    result = ImageDecodeCacheUtils::ScaleToHalfFloatPixmapUsingN32Intermediate(
-        decoded_pixmap, &target_pixmap, filter_quality);
-  } else {
-    result = decoded_pixmap.scalePixels(
-        target_pixmap,
-        PaintFlags::FilterQualityToSkSamplingOptions(filter_quality));
-  }
+  result = decoded_pixmap.scalePixels(
+      target_pixmap,
+      PaintFlags::FilterQualityToSkSamplingOptions(filter_quality));
   DCHECK(result) << key.ToString();
 
   return std::make_unique<CacheEntry>(

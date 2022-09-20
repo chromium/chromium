@@ -321,12 +321,6 @@ bool DrawAndScaleImage(
   const SkSamplingOptions sampling(
       PaintFlags::FilterQualityToSkSamplingOptions(filter_quality));
 
-  bool decode_to_f16_using_n32_intermediate =
-      decode_info.colorType() == kRGBA_F16_SkColorType &&
-      !ImageDecodeCacheUtils::CanResizeF16Image(filter_quality);
-  if (decode_to_f16_using_n32_intermediate)
-    decode_info = decode_info.makeColorType(kN32_SkColorType);
-
   SkBitmap decode_bitmap;
   if (!decode_bitmap.tryAllocPixels(decode_info))
     return false;
@@ -347,10 +341,6 @@ bool DrawAndScaleImage(
   if (initial_decode_failed)
     return false;
 
-  if (decode_to_f16_using_n32_intermediate) {
-    return ImageDecodeCacheUtils::ScaleToHalfFloatPixmapUsingN32Intermediate(
-        decode_pixmap, &pixmap, filter_quality);
-  }
   if (do_yuv_decode) {
     const SkImageInfo y_info_scaled = info.makeColorType(yuva_color_type);
 
