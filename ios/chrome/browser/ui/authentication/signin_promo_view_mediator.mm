@@ -14,6 +14,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -461,6 +462,13 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
       // The user is not allowed to sign-in. The promo cannot be displayed.
       return NO;
+  }
+
+  // Always show the feed signin promo if the experimental setting is enabled.
+  if (accessPoint ==
+          signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO &&
+      experimental_flags::ShouldForceFeedSigninPromo()) {
+    return YES;
   }
 
   // Checks if the user has exceeded the max impression count.

@@ -56,6 +56,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Force Feed Signin Promo</string>
+			<key>Key</key>
+			<string>ForceFeedSigninPromo</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Always show Follow IPH</string>
 			<key>Key</key>
 			<string>AlwaysShowFollowIPH</string>

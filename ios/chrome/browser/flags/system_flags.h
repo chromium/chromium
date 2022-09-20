@@ -36,6 +36,10 @@ bool ShouldResetNoticeCardOnFeedStart();
 // TODO(crbug.com/1312124): Remove after launch.
 bool ShouldResetFirstFollowCount();
 
+// Returns true if the top of feed signin promo should be shown regardless of
+// dismissal conditions. The promo will still only show for signed out users.
+bool ShouldForceFeedSigninPromo();
+
 // Should be called after the count has been reset so that the resetting flag
 // can be turned off.
 // TODO(crbug.com/1312124): Remove after launch.
