@@ -484,20 +484,21 @@ LayoutUnit NGGridLayoutAlgorithm::Baseline(
     const GridItemData& grid_item,
     const GridTrackSizingDirection track_direction) const {
   // "If a box spans multiple shared alignment contexts, then it participates
-  // in first/last baseline alignment within its start-most/end-most shared
-  // alignment context along that axis", so we only need to look at the first
-  // index for baseline/first-baseline support.
+  //  in first/last baseline alignment within its start-most/end-most shared
+  //  alignment context along that axis"
   // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
   if (track_direction == kForColumns) {
-    const wtf_size_t set_index = grid_item.column_set_indices.begin;
     return (grid_item.column_baseline_group == BaselineGroup::kMajor)
-               ? layout_data.Columns()->MajorBaseline(set_index)
-               : layout_data.Columns()->MinorBaseline(set_index);
+               ? layout_data.Columns()->MajorBaseline(
+                     grid_item.column_set_indices.begin)
+               : layout_data.Columns()->MinorBaseline(
+                     grid_item.column_set_indices.end - 1);
   } else {
-    const wtf_size_t set_index = grid_item.row_set_indices.begin;
     return (grid_item.row_baseline_group == BaselineGroup::kMajor)
-               ? layout_data.Rows()->MajorBaseline(set_index)
-               : layout_data.Rows()->MinorBaseline(set_index);
+               ? layout_data.Rows()->MajorBaseline(
+                     grid_item.row_set_indices.begin)
+               : layout_data.Rows()->MinorBaseline(
+                     grid_item.row_set_indices.end - 1);
   }
 }
 
@@ -1328,17 +1329,16 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
   auto UpdateBaseline = [&](const GridItemData& grid_item,
                             LayoutUnit candidate_baseline) {
     // "If a box spans multiple shared alignment contexts, then it participates
-    // in first/last baseline alignment within its start-most/end-most shared
-    // alignment context along that axis", so we only need to look at the first
-    // index for baseline/first-baseline support.
+    //  in first/last baseline alignment within its start-most/end-most shared
+    //  alignment context along that axis"
     // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
-    const auto baseline_group = grid_item.BaselineGroup(track_direction);
-    const wtf_size_t set_index = grid_item.SetIndices(track_direction).begin;
-
-    if (baseline_group == BaselineGroup::kMajor)
-      track_collection->SetMajorBaseline(set_index, candidate_baseline);
-    else
-      track_collection->SetMinorBaseline(set_index, candidate_baseline);
+    if (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor) {
+      track_collection->SetMajorBaseline(
+          grid_item.SetIndices(track_direction).begin, candidate_baseline);
+    } else {
+      track_collection->SetMinorBaseline(
+          grid_item.SetIndices(track_direction).end - 1, candidate_baseline);
+    }
   };
 
   for (auto& grid_item : *grid_items) {
