@@ -294,11 +294,10 @@ TEST_F(ManualFillingControllerTest,
       .Times(AnyNumber());
   EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
 
-  FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
   NotifyPasswordSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
 
-  // TODO(crbug/1242839): Hide the accessory if no fallback is available.
-  EXPECT_CALL(*view(), Hide()).Times(0);
+  EXPECT_CALL(*view(), Hide());
   NotifyPasswordSourceObserver(IsFillingSourceAvailable(false));
 }
 
@@ -315,11 +314,10 @@ TEST_F(ManualFillingControllerTest,
   EXPECT_CALL(*view(), OnItemsAvailable(kTestAddressSheet)).Times(AnyNumber());
   EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
 
-  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
   NotifyAddressSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
 
-  // TODO(crbug/1242839): Hide the accessory if no fallback is available.
-  EXPECT_CALL(*view(), Hide()).Times(0);
+  EXPECT_CALL(*view(), Hide());
   NotifyAddressSourceObserver(IsFillingSourceAvailable(false));
 }
 
@@ -337,10 +335,10 @@ TEST_F(ManualFillingControllerTest,
       .Times(AnyNumber());
   EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
 
-  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
   NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
 
-  EXPECT_CALL(*view(), Hide()).Times(0);
+  EXPECT_CALL(*view(), Hide());
   NotifyCreditCardSourceObserver(IsFillingSourceAvailable(false));
 }
 
@@ -366,10 +364,10 @@ TEST_F(ManualFillingControllerTest,
       .Times(AnyNumber());
   EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
 
-  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
   NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
 
-  EXPECT_CALL(*view(), Hide()).Times(0);
+  EXPECT_CALL(*view(), Hide());
   NotifyCreditCardSourceObserver(IsFillingSourceAvailable(false));
 }
 
@@ -399,8 +397,7 @@ TEST_F(ManualFillingControllerTest, HidesAccessoryWithoutAvailableSources) {
                                          /*has_suggestions=*/false);
   testing::Mock::VerifyAndClearExpectations(view());
 
-  // TODO(crbug/1242839): Hide the accessory if no fallback is available.
-  EXPECT_CALL(*view(), Hide()).Times(0);
+  EXPECT_CALL(*view(), Hide());
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/false);
 }

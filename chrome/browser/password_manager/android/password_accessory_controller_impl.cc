@@ -373,6 +373,7 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
                "PasswordAccessoryControllerImpl::RefreshSuggestionsForField");
   last_focused_field_info_.emplace(origin, focused_field_type,
                                    is_manual_generation_available);
+  bool sheet_provides_value = is_manual_generation_available;
 
   all_passwords_helper_.ClearUpdateCallback();
   if (!all_passwords_helper_.available_credentials().has_value()) {
@@ -380,6 +381,9 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
         &PasswordAccessoryControllerImpl::RefreshSuggestionsForField,
         base::Unretained(this), focused_field_type,
         is_manual_generation_available));
+  } else {
+    sheet_provides_value |=
+        all_passwords_helper_.available_credentials().value() > 0;
   }
 
   if (ShouldShowRecoveryToggle(origin)) {
@@ -388,15 +392,21 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
       UMA_HISTOGRAM_BOOLEAN(
           "KeyboardAccessory.DisabledSavingAccessoryImpressions", true);
     }
+    sheet_provides_value = true;
   }
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillKeyboardAccessory)) {
     DCHECK(source_observer_);
-    // The "Manage Passwords" entry point always justifies showing this fallback
-    // sheet — given that the field is fillable at all.
+    // The all passwords sheet could cover this but if it's still loading, use
+    // this data as the next closest proxy to minimize delayed updates UI.
+    sheet_provides_value |=
+        !credential_cache_->GetCredentialStore(origin).GetCredentials().empty();
+    // The "Manage Passwords" entry point doesn't justify showing this fallback
+    // sheet for non-password fields.
     source_observer_.Run(this, IsFillingSourceAvailable(
-                                   autofill::IsFillable(focused_field_type)));
+                                   autofill::IsFillable(focused_field_type) &&
+                                   sheet_provides_value));
   } else {
     absl::optional<AccessorySheetData> data = GetSheetData();
     DCHECK(data.has_value());

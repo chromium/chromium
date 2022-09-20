@@ -332,15 +332,11 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
            last_focused_field_type_ == FocusedFieldType::kFillableUsernameField;
   }
   switch (last_focused_field_type_) {
-    // Always show on password fields to provide management and generation.
-    case FocusedFieldType::kFillablePasswordField:
-      return true;
-
     // If there are suggestions, show on usual form fields.
+    case FocusedFieldType::kFillablePasswordField:
     case FocusedFieldType::kFillableUsernameField:
     case FocusedFieldType::kFillableNonSearchField:
-      // TODO(crbug/1242839): Hide the accessory if no fallback is available.
-      return true;
+      return !available_sources_.empty();
 
     // Fallbacks aren't really useful on search fields but autocomplete entries
     // justify showing the accessory.

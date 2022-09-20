@@ -133,6 +133,8 @@ public class PasswordAccessoryIntegrationTest {
     @SmallTest
     public void testDisplaysEmptyStateMessageWithoutSavedPasswords() throws TimeoutException {
         mHelper.loadTestPage(false);
+        // Mark the origin as denylisted to have a reason to show the accessory in the first place.
+        mHelper.cacheCredentials(new String[0], new String[0], true);
 
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();

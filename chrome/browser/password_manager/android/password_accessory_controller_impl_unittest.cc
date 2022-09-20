@@ -726,7 +726,7 @@ TEST_F(PasswordAccessoryControllerTest,
   data_builder.AppendFooterCommand(manage_passwords_str(),
                                    autofill::AccessoryAction::MANAGE_PASSWORDS);
   EXPECT_CALL(filling_source_observer_,
-              Run(controller(), IsFillingSourceAvailable(true)));
+              Run(controller(), IsFillingSourceAvailable(false)));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
       /*is_manual_generation_available=*/false);

@@ -325,12 +325,14 @@ CreditCardAccessoryController* CreditCardAccessoryController::GetIfExisting(
 void CreditCardAccessoryControllerImpl::RefreshSuggestions() {
   TRACE_EVENT0("passwords",
                "CreditCardAccessoryControllerImpl::RefreshSuggestions");
-  absl::optional<AccessorySheetData> data = GetSheetData();
   if (source_observer_) {
-    source_observer_.Run(this, IsFillingSourceAvailable(data.has_value()));
+    source_observer_.Run(
+        this, IsFillingSourceAvailable(!GetAllCreditCards().empty() ||
+                                       !GetPromoCodeOffers().empty()));
   } else {
     // TODO(crbug.com/1169167): Remove once filling controller pulls this
     // information instead of waiting to get it pushed.
+    absl::optional<AccessorySheetData> data = GetSheetData();
     DCHECK(data.has_value());
     GetManualFillingController()->RefreshSuggestions(std::move(data.value()));
   }
@@ -448,9 +450,9 @@ CreditCardAccessoryControllerImpl::GetUnmaskedCreditCards() const {
 
 std::vector<const AutofillOfferData*>
 CreditCardAccessoryControllerImpl::GetPromoCodeOffers() const {
-  AutofillManager* autofill_manager = GetManager();
-  if (!GetWebContents().GetFocusedFrame() || !personal_data_manager_ ||
-      !autofill_manager)
+  AutofillManager* autofill_manager =
+      GetWebContents().GetFocusedFrame() ? GetManager() : nullptr;
+  if (!personal_data_manager_ || !autofill_manager)
     return std::vector<const AutofillOfferData*>();
 
   return personal_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
