@@ -1,0 +1,5 @@
+DateAndTime:
+  caption: Date and time
+  policies:
+  - SystemTimezone
+  - SystemTimezoneAutomaticDetection
