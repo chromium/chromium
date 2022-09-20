@@ -10616,5 +10616,84 @@ class LayerTreeHostTestBeginFramePausedChanged : public LayerTreeHostTest {
 };
 MULTI_THREAD_TEST_F(LayerTreeHostTestBeginFramePausedChanged);
 
+class LayerTreeHostUpdateViewportContainerSize : public LayerTreeHostTest {
+ public:
+  LayerTreeHostUpdateViewportContainerSize() { SetUseLayerLists(); }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void SetupTree() override {
+    LayerTreeHostTest::SetupTree();
+    Layer* root_layer = layer_tree_host()->root_layer();
+    // Set up scrollable root.
+    root_layer->SetBounds(gfx::Size(100, 100));
+    SetupViewport(root_layer, gfx::Size(50, 50), root_layer->bounds());
+    layer_tree_host()->SetPageScaleFactorAndLimits(1.f, 1.f, 1.f);
+    layer_tree_host()->SetBrowserControlsParams(
+        {kTopControlsHeight, 0, kBottomControlsHeight, 0, false /* animate */,
+         true /* shrink */});
+    top_shown_ratio_ = 1.f;
+    bottom_shown_ratio_ = 1.f;
+    layer_tree_host()->SetBrowserControlsShownRatio(top_shown_ratio_,
+                                                    bottom_shown_ratio_);
+  }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    // The propertytree in main does not compute the bounds_delta, so main
+    // always copy 0 to bounds_delta. Let's check if bounds_delta is computed
+    // correctly in pending by UpdateViewportContainerSize().
+    gfx::Vector2dF pending_bounds_delta =
+        host_impl->pending_tree()
+            ->property_trees()
+            ->inner_viewport_container_bounds_delta();
+    gfx::Vector2dF active_bounds_delta =
+        host_impl->active_tree()
+            ->property_trees()
+            ->inner_viewport_container_bounds_delta();
+    switch (host_impl->pending_tree()->source_frame_number()) {
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+        EXPECT_EQ(pending_bounds_delta, active_bounds_delta);
+        if (host_impl->pending_tree()->source_frame_number() == 4)
+          EndTest();
+        break;
+    }
+  }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    // change the shownratio in active and check if it's applied to pending
+    switch (host_impl->active_tree()->source_frame_number()) {
+      case 0:
+        host_impl->SetCurrentBrowserControlsShownRatio(0.5f, 0.5f);
+        break;
+      case 1:
+        host_impl->SetCurrentBrowserControlsShownRatio(0.f, 0.f);
+        break;
+      case 2:
+        host_impl->SetCurrentBrowserControlsShownRatio(0.3f, 0.3f);
+        break;
+      case 3:
+        host_impl->SetCurrentBrowserControlsShownRatio(1.f, 1.f);
+        break;
+    }
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void ApplyViewportChanges(const ApplyViewportChangesArgs& args) override {
+    top_shown_ratio_ += args.top_controls_delta;
+    bottom_shown_ratio_ += args.bottom_controls_delta;
+    layer_tree_host()->SetBrowserControlsShownRatio(top_shown_ratio_,
+                                                    bottom_shown_ratio_);
+  }
+  static constexpr float kTopControlsHeight = 10.0f;
+  static constexpr float kBottomControlsHeight = 10.0f;
+  float top_shown_ratio_;
+  float bottom_shown_ratio_;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostUpdateViewportContainerSize);
+
 }  // namespace
 }  // namespace cc

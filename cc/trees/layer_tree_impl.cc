@@ -735,16 +735,6 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
   if (commit_state.force_send_metadata_request)
     RequestForceSendMetadata();
 
-  // TODO(ericrk): The viewport changes caused by |top_controls_shown_ratio_|
-  // changes should propagate back to the main tree. This does not currently
-  // happen, so we must force the impl tree to update its viewports if
-  // |top_controls_shown_ratio_| is greater than 0.0f and less than 1.0f
-  // (partially shown). crbug.com/875943
-  if (commit_state.top_controls_shown_ratio > 0.0f &&
-      commit_state.top_controls_shown_ratio < 1.0f) {
-    UpdateViewportContainerSizes();
-  }
-
   set_display_transform_hint(commit_state.display_transform_hint);
 
   if (commit_state.delegated_ink_metadata)
@@ -1332,11 +1322,10 @@ void LayerTreeImpl::PushBrowserControls(
 
   if (top_controls_shown_ratio) {
     DCHECK(!IsActiveTree() || !host_impl_->pending_tree());
-    bool changed_pending =
-        top_controls_shown_ratio_->PushMainToPending(*top_controls_shown_ratio);
-    changed_pending |= bottom_controls_shown_ratio_->PushMainToPending(
+    top_controls_shown_ratio_->PushMainToPending(*top_controls_shown_ratio);
+    bottom_controls_shown_ratio_->PushMainToPending(
         *bottom_controls_shown_ratio);
-    if (!IsActiveTree() && changed_pending)
+    if (!IsActiveTree())
       UpdateViewportContainerSizes();
   }
   if (IsActiveTree()) {
