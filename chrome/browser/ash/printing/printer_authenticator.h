@@ -13,6 +13,7 @@
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/uri.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -53,6 +54,12 @@ class PrinterAuthenticator {
   //    `status` to choose an error message shown to the user.
   void ObtainAccessTokenIfNeeded(oauth2::StatusCallback callback);
 
+  // Instead of showing UI dialogs to user, statuses from
+  // `is_trusted_dialog_response` and `signin_dialog_response` are
+  // returned.
+  void SetUIResponsesForTesting(oauth2::StatusCode is_trusted_dialog_response,
+                                oauth2::StatusCode signin_dialog_response);
+
  private:
   // Enumerates steps of an authorization procedure.
   enum class Step {
@@ -72,6 +79,16 @@ class PrinterAuthenticator {
   void ToNextStep(Step current_step,
                   oauth2::StatusCode status,
                   const std::string& data);
+  // Shows a dialog to the user asking if the given `auth_url` is a trusted
+  // Authorization Server. Calls `callback` when the dialog is closed.
+  void ShowIsTrustedDialog(const GURL& auth_url,
+                           oauth2::StatusCallback callback);
+
+  // Shows a dialog to the user with the webpage provided by the Authorization
+  // Server at `auth_url` and calls `callback` when the authorization procedure
+  // is completed or when the dialog is closed by the user.
+  void ShowSigninDialog(const std::string& auth_url,
+                        oauth2::StatusCallback callback);
 
   raw_ptr<CupsPrintersManager> cups_manager_;
   raw_ptr<oauth2::AuthorizationZonesManager> auth_manager_;
@@ -79,6 +96,11 @@ class PrinterAuthenticator {
   GURL oauth_server_;
   std::string oauth_scope_;
   oauth2::StatusCallback callback_;
+
+  // These fields are used to avoid showing UI elements when the class is
+  // tested in unit tests.
+  absl::optional<oauth2::StatusCode> is_trusted_dialog_response_for_testing_;
+  absl::optional<oauth2::StatusCode> signin_dialog_response_for_testing_;
 
   base::WeakPtrFactory<PrinterAuthenticator> weak_factory_{this};
 };

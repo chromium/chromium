@@ -23,46 +23,14 @@
 
 namespace ash::printing {
 
-namespace {
-
-// Shows to the user a dialog asking if given `auth_url` is a trusted
-// Authorization Server.
-void ShowIsTrustedDialog(const GURL& auth_url,
-                         oauth2::StatusCallback callback) {
-  // TODO(https://crbug.com/1223535): Add dialog asking the user if
-  // the server is trusted. For now, we just save the server as trusted.
-  std::move(callback).Run(oauth2::StatusCode::kOK, "");
-}
-
-// Shows to the user a dialog with webpage provided by the Authorization Server
-// at `auth_url` and calls `callback` when the authorization procedure is
-// completed or the dialog is closed by the user.
-void ShowSigninDialog(const std::string& auth_url,
-                      oauth2::StatusCallback callback) {
-  const GURL url(auth_url);
-  if (!url.is_valid()) {
-    std::move(callback).Run(oauth2::StatusCode::kInvalidURL,
-                            "auth_url=" + url.possibly_invalid_spec());
-    return;
-  }
-  auto dialog = std::make_unique<oauth2::SigninDialog>(
-      ProfileManager::GetPrimaryUserProfile());
-  oauth2::SigninDialog* dialog_ptr = dialog.get();
-  views::DialogDelegate::CreateDialogWidget(
-      std::move(dialog), /*context=*/nullptr, /*parent=*/nullptr);
-  dialog_ptr->StartAuthorizationProcedure(url, std::move(callback));
-}
-
-}  // namespace
-
 PrinterAuthenticator::PrinterAuthenticator(
-    CupsPrintersManager* cups_manager,
+    CupsPrintersManager* printers_manager,
     oauth2::AuthorizationZonesManager* auth_manager,
     const chromeos::Printer& printer)
-    : cups_manager_(cups_manager),
+    : cups_manager_(printers_manager),
       auth_manager_(auth_manager),
       printer_(printer) {
-  DCHECK(cups_manager);
+  DCHECK(printers_manager);
   DCHECK(auth_manager);
 }
 
@@ -75,6 +43,13 @@ void PrinterAuthenticator::ObtainAccessTokenIfNeeded(
   cups_manager_->FetchPrinterStatus(
       printer_.id(), base::BindOnce(&PrinterAuthenticator::OnGetPrinterStatus,
                                     weak_factory_.GetWeakPtr()));
+}
+
+void PrinterAuthenticator::SetUIResponsesForTesting(
+    oauth2::StatusCode is_trusted_dialog_response,
+    oauth2::StatusCode signin_dialog_response) {
+  is_trusted_dialog_response_for_testing_ = is_trusted_dialog_response;
+  signin_dialog_response_for_testing_ = signin_dialog_response;
 }
 
 void PrinterAuthenticator::OnGetPrinterStatus(
@@ -166,6 +141,40 @@ void PrinterAuthenticator::ToNextStep(PrinterAuthenticator::Step current_step,
 
   // An error occurred.
   std::move(callback_).Run(status, "");
+}
+
+void PrinterAuthenticator::ShowIsTrustedDialog(
+    const GURL& auth_url,
+    oauth2::StatusCallback callback) {
+  if (is_trusted_dialog_response_for_testing_) {
+    std::move(callback).Run(*is_trusted_dialog_response_for_testing_,
+                            "response from mock");
+    return;
+  }
+  // TODO(https://crbug.com/1223535): Add dialog asking the user if
+  // the server is trusted. For now, we just save the server as trusted.
+  std::move(callback).Run(oauth2::StatusCode::kOK, "");
+}
+
+void PrinterAuthenticator::ShowSigninDialog(const std::string& auth_url,
+                                            oauth2::StatusCallback callback) {
+  const GURL url(auth_url);
+  if (!url.is_valid()) {
+    std::move(callback).Run(oauth2::StatusCode::kInvalidURL,
+                            "auth_url=" + url.possibly_invalid_spec());
+    return;
+  }
+  if (signin_dialog_response_for_testing_) {
+    std::move(callback).Run(*signin_dialog_response_for_testing_,
+                            "response from mock");
+    return;
+  }
+  auto dialog = std::make_unique<oauth2::SigninDialog>(
+      ProfileManager::GetPrimaryUserProfile());
+  oauth2::SigninDialog* dialog_ptr = dialog.get();
+  views::DialogDelegate::CreateDialogWidget(
+      std::move(dialog), /*context=*/nullptr, /*parent=*/nullptr);
+  dialog_ptr->StartAuthorizationProcedure(url, std::move(callback));
 }
 
 }  // namespace ash::printing
