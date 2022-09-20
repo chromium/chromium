@@ -13,7 +13,6 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_elider.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/widget/widget.h"
@@ -33,10 +32,6 @@ DesksTextfield::DesksTextfield() {
   views::Builder<DesksTextfield>(this)
       .SetBorder(nullptr)
       .SetCursorEnabled(true)
-      // TODO(crbug.com/1218186): Remove this, this is in place temporarily to
-      // be able to submit accessibility checks, but this focusable View needs
-      // to add a name so that the screen reader knows what to announce.
-      .SetProperty(views::kSkipAccessibilityPaintChecks, true)
       .BuildChildren();
 
   views::FocusRing* focus_ring =

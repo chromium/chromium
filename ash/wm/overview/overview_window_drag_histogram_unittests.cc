@@ -57,6 +57,16 @@ class OverviewWindowDragHistogramTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  void AddSecondDesk() {
+    DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+    ASSERT_EQ(2u, DesksController::Get()->desks().size());
+
+    // Give the second desk a name. The desk name gets exposed as the accessible
+    // name. And the focusable views that are painted in these tests will fail
+    // the accessibility paint checker checks if they lack an accessible name.
+    DesksController::Get()->desks()[1]->SetName(u"Desk 2", false);
+  }
+
  protected:
   void EnterTablet() {
     TabletModeControllerTestApi().DetachAllMice();
@@ -154,7 +164,7 @@ TEST_F(OverviewWindowDragHistogramTest, ToGridSameDisplayClamshellTouch) {
 }
 
 TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayClamshellMouse) {
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  AddSecondDesk();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(EnterOverviewAndGetItemCenterPoint());
   generator->DragMouseTo(GetSecondDeskMiniViewCenterPoint(/*grid_index=*/0u));
@@ -162,7 +172,7 @@ TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayClamshellMouse) {
 }
 
 TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayClamshellTouch) {
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  AddSecondDesk();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->set_current_screen_location(EnterOverviewAndGetItemCenterPoint());
   generator->PressMoveAndReleaseTouchTo(
@@ -226,7 +236,7 @@ TEST_F(OverviewWindowDragHistogramTest, ToGridSameDisplayTabletTouch) {
 }
 
 TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayTabletTouch) {
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  AddSecondDesk();
   EnterTabletAndOverviewAndLongPressItem();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveTouch(GetSecondDeskMiniViewCenterPoint(/*grid_index=*/0u));
@@ -251,7 +261,7 @@ TEST_F(OverviewWindowDragHistogramTest, ToGridSameDisplayTabletMouse) {
 }
 
 TEST_F(OverviewWindowDragHistogramTest, ToDeskSameDisplayTabletMouse) {
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  AddSecondDesk();
   EnterTablet();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(EnterOverviewAndGetItemCenterPoint());
@@ -285,7 +295,7 @@ TEST_F(OverviewWindowDragHistogramTestMultiDisplayOnly,
 TEST_F(OverviewWindowDragHistogramTestMultiDisplayOnly,
        ToDeskOtherDisplayClamshellMouse) {
   UpdateDisplay("800x600,800x600");
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  AddSecondDesk();
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(EnterOverviewAndGetItemCenterPoint());
   generator->PressLeftButton();

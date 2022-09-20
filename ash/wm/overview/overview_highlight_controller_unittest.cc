@@ -398,6 +398,11 @@ class DesksOverviewHighlightControllerTest
     auto* desk_controller = DesksController::Get();
     desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
     ASSERT_EQ(2u, desk_controller->desks().size());
+
+    // Give the second desk a name. The desk name gets exposed as the accessible
+    // name. And the focusable views that are painted in these tests will fail
+    // the accessibility paint checker checks if they lack an accessible name.
+    desk_controller->desks()[1]->SetName(u"Desk 2", false);
   }
 
   OverviewHighlightableView* GetHighlightedView() {
