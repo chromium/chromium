@@ -445,10 +445,6 @@ void WorkerOrWorkletGlobalScope::Dispose() {
   }
 }
 
-void WorkerOrWorkletGlobalScope::SetModulator(Modulator* modulator) {
-  modulator_ = modulator;
-}
-
 scoped_refptr<base::SingleThreadTaskRunner>
 WorkerOrWorkletGlobalScope::GetTaskRunner(TaskType type) {
   DCHECK(IsContextThread());
@@ -567,7 +563,6 @@ void WorkerOrWorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(resource_fetchers_);
   visitor->Trace(subresource_filter_);
   visitor->Trace(script_controller_);
-  visitor->Trace(modulator_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContext::Trace(visitor);
 }

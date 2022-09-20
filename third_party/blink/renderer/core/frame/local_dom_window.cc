@@ -1888,11 +1888,6 @@ CustomElementRegistry* LocalDOMWindow::MaybeCustomElements() const {
   return custom_elements_;
 }
 
-void LocalDOMWindow::SetModulator(Modulator* modulator) {
-  DCHECK(!modulator_);
-  modulator_ = modulator;
-}
-
 External* LocalDOMWindow::external() {
   if (!external_)
     external_ = MakeGarbageCollected<External>();
@@ -2257,7 +2252,6 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(navigator_);
   visitor->Trace(media_);
   visitor->Trace(custom_elements_);
-  visitor->Trace(modulator_);
   visitor->Trace(external_);
   visitor->Trace(visualViewport_);
   visitor->Trace(event_listener_observers_);

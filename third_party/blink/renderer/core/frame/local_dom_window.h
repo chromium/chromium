@@ -528,11 +528,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   mutable Member<Navigator> navigator_;
   mutable Member<StyleMedia> media_;
   mutable Member<CustomElementRegistry> custom_elements_;
-  // We store reference to Modulator here to have it TraceWrapper-ed.
-  // This is wrong, as Modulator is per-context, where as LocalDOMWindow is
-  // shared among context. However, this *works* as Modulator is currently only
-  // enabled in the main world,
-  Member<Modulator> modulator_;
   Member<External> external_;
 
   String status_;

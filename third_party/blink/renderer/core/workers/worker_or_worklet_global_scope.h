@@ -287,10 +287,6 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
 
   // This tracks deprecation features that have been used.
   Deprecation deprecation_;
-
-  // LocalDOMWindow::modulator_ workaround equivalent.
-  // TODO(kouhei): Remove this.
-  Member<Modulator> modulator_;
 };
 
 template <>
