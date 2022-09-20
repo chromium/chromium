@@ -88,26 +88,27 @@ struct MultiProfileStartupTestParam {
 };
 
 const MultiProfileStartupTestParam kTestParams[] = {
-    {false, false, {{HasBaseName(chrome::kInitialProfile), true}}},
-    {false, true, {{Property(&Profile::IsGuestSession, true), true}}},
-    {true,
-     false,
-     {{HasBaseName(chrome::kInitialProfile), true},
-      {HasBaseName(kOtherProfileDirPath), false}}},
-    {true,
-     true,
-     {// TODO(https://crbug.com/1150326): The first call with guest profile
-      // should be skipped.
-      {Property(&Profile::IsGuestSession, true), true},
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-      // Lacros loads the primary profile earlier and it is already loaded when
-      // `PostProfileInit()` is called for the first time.
-      // TODO(https://crbug.com/1150326): Re-add the primary profile once
-      // `PostProfileInit()` is called for profiles that were created before
-      // the initial startup profile.
-      {HasBaseName(chrome::kInitialProfile), false},
-#endif
-      {HasBaseName(kOtherProfileDirPath), false}}}};
+    {.should_enable_profile_observer = false,
+     .should_show_profile_picker = false,
+     .expected_post_profile_init_call_args =
+         {{HasBaseName(chrome::kInitialProfile), true}}},
+    {.should_enable_profile_observer = false,
+     .should_show_profile_picker = true,
+     .expected_post_profile_init_call_args =
+         {{Property(&Profile::IsGuestSession, true), true}}},
+    {.should_enable_profile_observer = true,
+     .should_show_profile_picker = false,
+     .expected_post_profile_init_call_args =
+         {{HasBaseName(chrome::kInitialProfile), true},
+          {HasBaseName(kOtherProfileDirPath), false}}},
+    {.should_enable_profile_observer = true,
+     .should_show_profile_picker = true,
+     // TODO(https://crbug.com/1150326): The first call with guest profile
+     // should be skipped.
+     .expected_post_profile_init_call_args = {
+         {Property(&Profile::IsGuestSession, true), true},
+         {HasBaseName(chrome::kInitialProfile), false},
+         {HasBaseName(kOtherProfileDirPath), false}}}};
 
 // Creates a new profile to be picked up on the actual test.
 void SetUpSecondaryProfileForPreTest(

@@ -506,10 +506,13 @@ bool ShouldInstallSodaDuringPostProfileInit(
 
 // ChromeBrowserMainParts::ProfileInitManager ----------------------------------
 
+// Runs `CallPostProfileInit()` on all existing and future profiles, the
+// initial profile is processed first.
 class ChromeBrowserMainParts::ProfileInitManager
     : public ProfileManagerObserver {
  public:
-  explicit ProfileInitManager(ChromeBrowserMainParts* browser_main);
+  ProfileInitManager(ChromeBrowserMainParts* browser_main,
+                     Profile* initial_profile);
   ~ProfileInitManager() override;
 
   ProfileInitManager(const ProfileInitManager&) = delete;
@@ -527,9 +530,24 @@ class ChromeBrowserMainParts::ProfileInitManager
 };
 
 ChromeBrowserMainParts::ProfileInitManager::ProfileInitManager(
-    ChromeBrowserMainParts* browser_main)
+    ChromeBrowserMainParts* browser_main,
+    Profile* initial_profile)
     : browser_main_(browser_main) {
-  profile_manager_observer_.Observe(g_browser_process->profile_manager());
+  browser_main_->CallPostProfileInit(initial_profile);
+
+  if (base::FeatureList::IsEnabled(features::kObserverBasedPostProfileInit)) {
+    // Run `CallPostProfileInit()` on the other existing and future profiles.
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    // Register the observer first, in case `OnProfileAdded()` causes a
+    // creation.
+    profile_manager_observer_.Observe(profile_manager);
+    for (auto* profile : profile_manager->GetLoadedProfiles()) {
+      DCHECK(profile);
+      if (profile == initial_profile)
+        continue;
+      OnProfileAdded(profile);
+    }
+  }
 }
 
 ChromeBrowserMainParts::ProfileInitManager::~ProfileInitManager() = default;
@@ -1625,13 +1643,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 
-  // TODO(stevenjb): Move WIN and MACOSX specific code to appropriate Parts.
-  // (requires supporting early exit).
-  CallPostProfileInit(profile);
-  if (base::FeatureList::IsEnabled(features::kObserverBasedPostProfileInit)) {
-    // Set up PostProfileInit triggering for profiles created later.
-    profile_init_manager_ = std::make_unique<ProfileInitManager>(this);
-  }
+  // Call `PostProfileInit()`and set it up for profiles created later.
+  profile_init_manager_ = std::make_unique<ProfileInitManager>(this, profile);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Execute first run specific code after the PrefService has been initialized
@@ -1946,6 +1959,8 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
   // done before |browser_process_| is released.
   metrics::CleanExitBeacon::EnsureCleanShutdown(
       browser_process_->local_state());
+
+  profile_init_manager_.reset();
 
   // The below call to browser_shutdown::ShutdownPostThreadsStop() deletes
   // |browser_process_|. We release it so that we don't keep holding onto an

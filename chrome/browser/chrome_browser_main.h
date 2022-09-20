@@ -223,6 +223,7 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 
   // Observer that triggers `PostProfileInit()` when new user profiles are
   // created.
+  // Must be deleted before `browser_process_`.
   std::unique_ptr<ProfileInitManager> profile_init_manager_;
 };
 
