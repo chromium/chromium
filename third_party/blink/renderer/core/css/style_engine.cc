@@ -832,7 +832,7 @@ void StyleEngine::CollectUserStyleFeaturesTo(RuleFeatureSet& features) const {
     features.MutableMediaQueryResultFlags().Add(
         sheet->GetMediaQueryResultFlags());
     DCHECK(sheet->Contents()->HasRuleSet());
-    features.Add(sheet->Contents()->GetRuleSet().Features());
+    features.Merge(sheet->Contents()->GetRuleSet().Features());
   }
 }
 
@@ -1804,7 +1804,7 @@ void StyleEngine::CollectFeaturesTo(RuleFeatureSet& features) {
     if (!sheet)
       continue;
     if (RuleSet* rule_set = RuleSetForSheet(*sheet))
-      features.Add(rule_set->Features());
+      features.Merge(rule_set->Features());
   }
 }
 

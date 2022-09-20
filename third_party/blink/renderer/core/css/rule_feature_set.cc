@@ -383,7 +383,7 @@ InvalidationSet& RuleFeatureSet::EnsureInvalidationSet(
   return EnsureMutableInvalidationSet(type, position, invalidation_set);
 }
 
-void RuleFeatureSet::AddInvalidationSet(
+void RuleFeatureSet::MergeInvalidationSet(
     InvalidationSetMap& map,
     const AtomicString& key,
     scoped_refptr<InvalidationSet> invalidation_set) {
@@ -400,7 +400,7 @@ void RuleFeatureSet::AddInvalidationSet(
   }
 }
 
-void RuleFeatureSet::AddInvalidationSet(
+void RuleFeatureSet::MergeInvalidationSet(
     PseudoTypeInvalidationSetMap& map,
     CSSSelector::PseudoType key,
     scoped_refptr<InvalidationSet> invalidation_set) {
@@ -1675,19 +1675,19 @@ bool RuleFeatureSet::FeatureMetadata::operator==(
          invalidates_parts == other.invalidates_parts;
 }
 
-void RuleFeatureSet::Add(const RuleFeatureSet& other) {
+void RuleFeatureSet::Merge(const RuleFeatureSet& other) {
   CHECK(is_alive_);
   CHECK(other.is_alive_);
   CHECK_NE(&other, this);
   for (const auto& entry : other.class_invalidation_sets_)
-    AddInvalidationSet(class_invalidation_sets_, entry.key, entry.value);
+    MergeInvalidationSet(class_invalidation_sets_, entry.key, entry.value);
   for (const auto& entry : other.attribute_invalidation_sets_)
-    AddInvalidationSet(attribute_invalidation_sets_, entry.key, entry.value);
+    MergeInvalidationSet(attribute_invalidation_sets_, entry.key, entry.value);
   for (const auto& entry : other.id_invalidation_sets_)
-    AddInvalidationSet(id_invalidation_sets_, entry.key, entry.value);
+    MergeInvalidationSet(id_invalidation_sets_, entry.key, entry.value);
   for (const auto& entry : other.pseudo_invalidation_sets_) {
     auto key = static_cast<CSSSelector::PseudoType>(entry.key);
-    AddInvalidationSet(pseudo_invalidation_sets_, key, entry.value);
+    MergeInvalidationSet(pseudo_invalidation_sets_, key, entry.value);
   }
   if (other.universal_sibling_invalidation_set_) {
     EnsureUniversalSiblingInvalidationSet().Combine(

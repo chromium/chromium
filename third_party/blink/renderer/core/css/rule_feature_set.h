@@ -59,7 +59,7 @@ class CORE_EXPORT RuleFeatureSet {
   bool operator!=(const RuleFeatureSet& o) const { return !(*this == o); }
 
   // Methods for updating the data in this object.
-  void Add(const RuleFeatureSet&);
+  void Merge(const RuleFeatureSet&);
   void Clear();
 
   enum SelectorPreMatch { kSelectorNeverMatches, kSelectorMayMatch };
@@ -697,19 +697,19 @@ class CORE_EXPORT RuleFeatureSet {
                                                 InvalidationType,
                                                 PositionType);
 
-  // Adds an InvalidationSet to this RuleFeatureSet.
+  // Adds an InvalidationSet to this RuleFeatureSet, combining with any
+  // data that may already be there. (That data may come from a previous
+  // call to EnsureInvalidationSet(), or from another MergeInvalidationSet().)
   //
-  // A copy-on-write mechanism is used: if we don't already have an invalidation
-  // set for |key|, we simply retain the incoming invalidation set without
-  // copying any data. If another AddInvalidationSet call takes place with the
-  // same key, we copy the existing InvalidationSet (if necessary) before
-  // combining it with the incoming InvalidationSet.
-  void AddInvalidationSet(InvalidationSetMap&,
-                          const AtomicString& key,
-                          scoped_refptr<InvalidationSet>);
-  void AddInvalidationSet(PseudoTypeInvalidationSetMap&,
-                          CSSSelector::PseudoType key,
-                          scoped_refptr<InvalidationSet>);
+  // Copy-on-write is used to get correct merging in face of shared
+  // InvalidationSets between keys; see comments on
+  // EnsureMutableInvalidationSet() for more details.
+  void MergeInvalidationSet(InvalidationSetMap&,
+                            const AtomicString& key,
+                            scoped_refptr<InvalidationSet>);
+  void MergeInvalidationSet(PseudoTypeInvalidationSetMap&,
+                            CSSSelector::PseudoType key,
+                            scoped_refptr<InvalidationSet>);
 
   FeatureMetadata metadata_;
   InvalidationSetMap class_invalidation_sets_;

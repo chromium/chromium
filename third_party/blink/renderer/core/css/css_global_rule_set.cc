@@ -44,7 +44,7 @@ void CSSGlobalRuleSet::Update(Document& document) {
   default_style_sheets.CollectFeaturesTo(document, features_);
 
   if (watched_selectors_rule_set_)
-    features_.Add(watched_selectors_rule_set_->Features());
+    features_.Merge(watched_selectors_rule_set_->Features());
 
   document.GetStyleEngine().CollectFeaturesTo(features_);
 }

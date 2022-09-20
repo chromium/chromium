@@ -431,13 +431,13 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
 void CSSDefaultStyleSheets::CollectFeaturesTo(const Document& document,
                                               RuleFeatureSet& features) {
   if (DefaultHtmlStyle())
-    features.Add(DefaultHtmlStyle()->Features());
+    features.Merge(DefaultHtmlStyle()->Features());
   if (DefaultMediaControlsStyle())
-    features.Add(DefaultMediaControlsStyle()->Features());
+    features.Merge(DefaultMediaControlsStyle()->Features());
   if (DefaultMathMLStyle())
-    features.Add(DefaultMathMLStyle()->Features());
+    features.Merge(DefaultMathMLStyle()->Features());
   if (document.IsViewSource() && DefaultViewSourceStyle())
-    features.Add(DefaultViewSourceStyle()->Features());
+    features.Merge(DefaultViewSourceStyle()->Features());
 }
 
 void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
