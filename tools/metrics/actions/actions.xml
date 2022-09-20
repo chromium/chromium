@@ -3536,6 +3536,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AppList_FullToPeeking">
+  <obsolete>This feature was deprecated in M104</obsolete>
   <owner>vadimt@chromium.org</owner>
   <description>CrOS Launcher went from full to peeking state.</description>
 </action>
@@ -3590,6 +3591,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AppList_PeekingToFull">
+  <obsolete>This feature was deprecated in M104</obsolete>
   <owner>vadimt@chromium.org</owner>
   <description>
     CrOS Launcher went from peeking to full state or, in a search mode, from

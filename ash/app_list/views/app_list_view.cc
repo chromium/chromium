@@ -982,7 +982,6 @@ void AppListView::MaybeIncreasePrivacyInfoRowShownCounts(
   AppListStateTransitionSource transition =
       GetAppListStateTransitionSource(new_state);
   switch (transition) {
-    case kPeekingToHalf:
     case kFullscreenAllAppsToFullscreenSearch:
       if (app_list_main_view()->contents_view()->IsShowingSearchResults())
         delegate_->MaybeIncreaseSuggestedContentInfoShownCount();
@@ -1002,20 +1001,6 @@ void AppListView::RecordStateTransitionForUma(AppListViewState new_state) {
 
   UMA_HISTOGRAM_ENUMERATION("Apps.AppListStateTransitionSource", transition,
                             kMaxAppListStateTransition);
-
-  switch (transition) {
-    case kPeekingToFullscreenAllApps:
-    case KHalfToFullscreenSearch:
-      base::RecordAction(base::UserMetricsAction("AppList_PeekingToFull"));
-      break;
-
-    case kFullscreenAllAppsToPeeking:
-      base::RecordAction(base::UserMetricsAction("AppList_FullToPeeking"));
-      break;
-
-    default:
-      break;
-  }
 }
 
 void AppListView::MaybeCreateAccessibilityEvent(AppListViewState new_state) {
@@ -1085,49 +1070,24 @@ AppListStateTransitionSource AppListView::GetAppListStateTransitionSource(
       // CLOSED->X transitions are not useful for UMA.
       return kMaxAppListStateTransition;
     case AppListViewState::kPeeking:
-      switch (target_state) {
-        case AppListViewState::kClosed:
-          return kPeekingToClosed;
-        case AppListViewState::kHalf:
-          return kPeekingToHalf;
-        case AppListViewState::kFullscreenAllApps:
-          return kPeekingToFullscreenAllApps;
-        case AppListViewState::kPeeking:
-          // PEEKING->PEEKING is used when resetting the widget position after a
-          // failed state transition. Not useful for UMA.
-          return kMaxAppListStateTransition;
-        case AppListViewState::kFullscreenSearch:
-          return kMaxAppListStateTransition;
-      }
     case AppListViewState::kHalf:
-      switch (target_state) {
-        case AppListViewState::kClosed:
-          return kHalfToClosed;
-        case AppListViewState::kPeeking:
-          return kHalfToPeeking;
-        case AppListViewState::kFullscreenSearch:
-          return KHalfToFullscreenSearch;
-        case AppListViewState::kHalf:
-          // HALF->HALF is used when resetting the widget position after a
-          // failed state transition. Not useful for UMA.
-          return kMaxAppListStateTransition;
-        case AppListViewState::kFullscreenAllApps:
-          // Half->FullscreenAllApps is available to replace Half->Peeking
-          // transition during peeking state removal. The UMA should not be used
-          // for the legacy launcher.
-          return kMaxAppListStateTransition;
-      }
-
+      // After Productivity launcher was set to default, we stopped logging
+      // these metrics.
+      // AppListViewStates kPeeking and kHalf states are being removed.
+      // (crbug.com/1359096)
+      return kMaxAppListStateTransition;
     case AppListViewState::kFullscreenAllApps:
       switch (target_state) {
         case AppListViewState::kClosed:
           return kFullscreenAllAppsToClosed;
-        case AppListViewState::kPeeking:
-          return kFullscreenAllAppsToPeeking;
         case AppListViewState::kFullscreenSearch:
           return kFullscreenAllAppsToFullscreenSearch;
+        case AppListViewState::kPeeking:
         case AppListViewState::kHalf:
-          // FULLSCREEN_ALL_APPS->HALF is not a valid transition.
+          // After Productivity launcher was set to default, we stopped logging
+          // these metrics.
+          // AppListViewStates kPeeking and kHalf states are being removed.
+          // (crbug.com/1359096)
           NOTREACHED();
           return kMaxAppListStateTransition;
         case AppListViewState::kFullscreenAllApps:
@@ -1147,11 +1107,11 @@ AppListStateTransitionSource AppListView::GetAppListStateTransitionSource(
           // UMA.
           return kMaxAppListStateTransition;
         case AppListViewState::kPeeking:
-          // FULLSCREEN_SEARCH->PEEKING is not a valid transition.
-          NOTREACHED();
-          return kMaxAppListStateTransition;
         case AppListViewState::kHalf:
-          // FULLSCREEN_SEARCH->HALF is not a valid transition.
+          // After Productivity launcher was set to default, we stopped logging
+          // these metrics.
+          // AppListViewStates kPeeking and kHalf states are being removed.
+          // (crbug.com/1359096)
           NOTREACHED();
           return kMaxAppListStateTransition;
       }
@@ -1338,10 +1298,6 @@ bool AppListView::HandleScroll(const gfx::Point& location,
   if (app_list_state_ == AppListViewState::kPeeking &&
       delegate_->AdjustAppListViewScrollOffset(offset.y(), type) > 0) {
     SetState(AppListViewState::kFullscreenAllApps);
-    const AppListPeekingToFullscreenSource source =
-        type == ui::ET_MOUSEWHEEL ? kMousewheelScroll : kMousepadScroll;
-    UMA_HISTOGRAM_ENUMERATION(kAppListPeekingToFullscreenHistogram, source,
-                              kMaxPeekingToFullscreen);
     return true;
   }
 

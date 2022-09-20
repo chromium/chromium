@@ -1748,16 +1748,6 @@ TEST_F(AppListViewTest, TypingTabletModeFullscreenSearch) {
   EXPECT_EQ(ash::AppListViewState::kFullscreenSearch, view_->app_list_state());
 }
 
-// Tests that pressing escape when in fullscreen closes the app list.
-TEST_F(AppListViewPeekingTest, EscapeKeyFullscreenToClosed) {
-  Initialize(false /*is_tablet_mode*/);
-
-  Show();
-  view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-
-  ASSERT_EQ(1, delegate_->dismiss_count());
-}
-
 // Tests that pressing escape when in fullscreen side-shelf closes the app list.
 TEST_F(AppListViewPeekingTest, EscapeKeySideShelfFullscreenToClosed) {
   // Put into fullscreen by using side-shelf.
@@ -1859,50 +1849,6 @@ TEST_F(AppListViewPeekingTest, AppsGridViewVisibilityOnReopening) {
   view_->SetState(ash::AppListViewState::kClosed);
   Show();
   EXPECT_TRUE(IsViewVisibleOnScreen(apps_grid_view()));
-}
-
-// Tests that a tap or click in an empty region of the AppsGridView closes the
-// AppList. ProductivityLauncher does not have this behavior.
-TEST_F(AppListViewPeekingTest, TapAndClickWithinAppsGridView) {
-  Initialize(false /*is_tablet_mode*/);
-  // Populate the AppList with a small number of apps so there is an empty
-  // region to click.
-  delegate_->GetTestModel()->PopulateApps(6);
-  Show();
-  EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
-  AppsGridView* apps_grid_view = view_->app_list_main_view()
-                                     ->contents_view()
-                                     ->apps_container_view()
-                                     ->apps_grid_view();
-  AppsGridViewTestApi test_api(apps_grid_view);
-
-  // Get the point of the first empty region (where app #7 would be) and tap on
-  // it, the AppList should close.
-  const gfx::Point empty_region =
-      test_api.GetItemTileRectOnCurrentPageAt(2, 2).CenterPoint();
-  ui::GestureEvent tap(empty_region.x(), empty_region.y(), 0, base::TimeTicks(),
-                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  ui::Event::DispatcherApi tap_dispatcher_api(static_cast<ui::Event*>(&tap));
-  tap_dispatcher_api.set_target(view_);
-  view_->OnGestureEvent(&tap);
-  ASSERT_EQ(1, delegate_->dismiss_count());
-
-  Show();
-
-  // Tap on the same empty region, the AppList should close again.
-  ui::MouseEvent mouse_click(ui::ET_MOUSE_PRESSED, empty_region, empty_region,
-                             base::TimeTicks(), 0, 0);
-  auto mouse_click_dispatcher_api = std::make_unique<ui::Event::DispatcherApi>(
-      static_cast<ui::Event*>(&mouse_click));
-  mouse_click_dispatcher_api->set_target(view_);
-  view_->OnMouseEvent(&mouse_click);
-  ui::MouseEvent mouse_release(ui::ET_MOUSE_RELEASED, empty_region,
-                               empty_region, base::TimeTicks(), 0, 0);
-  mouse_click_dispatcher_api =
-      std::make_unique<ui::Event::DispatcherApi>(&mouse_release);
-  mouse_click_dispatcher_api->set_target(view_);
-  view_->OnMouseEvent(&mouse_release);
-  ASSERT_EQ(2, delegate_->dismiss_count());
 }
 
 // Tests displaying the app list and performs a standard set of checks on its

@@ -1277,11 +1277,9 @@ chromium-metrics-reviews@google.com.
     <variant name=".Closed" summary=""/>
     <variant name=".FullscreenAllApps" summary=""/>
     <variant name=".FullscreenSearch" summary=""/>
-    <variant name=".Half" summary=""/>
     <variant name=".HomecherAllApps" summary=""/>
     <variant name=".HomecherClosed" summary=""/>
     <variant name=".HomecherSearch" summary=""/>
-    <variant name=".Peeking" summary=""/>
   </token>
 </histogram>
 
@@ -1506,24 +1504,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The source used to switch pages in the app list's app grid. Logged when the
     page switch succeeds.
-  </summary>
-</histogram>
-
-<histogram name="Apps.AppListPeekingToFullscreen"
-    enum="AppListPeekingToFullscreenSource" expires_after="M85">
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Replaced with Apps.AppListPeekingToFullscreenSource on 9/2017.
-  </summary>
-</histogram>
-
-<histogram name="Apps.AppListPeekingToFullscreenSource"
-    enum="AppListPeekingToFullscreenSource" expires_after="2021-09-19">
-  <owner>newcomer@chromium.org</owner>
-  <owner>mmourgos@chromium.org</owner>
-  <summary>
-    The source which transitions the app list from Peeking to Fullscreen. This
-    is logged when the transition method is used.
   </summary>
 </histogram>
 
