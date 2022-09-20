@@ -147,7 +147,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_isolation/site_isolation_policy.h"
@@ -233,11 +232,6 @@
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
-#include "ui/accessibility/accessibility_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -840,12 +834,6 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
 
   AnnouncementNotificationServiceFactory::GetForProfile(this)
       ->MaybeShowNotification();
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // TODO(https://crbug.com/1278249): Implement settings to replace flag.
-  if (features::IsPdfOcrEnabled())
-    screen_ai::AXScreenAIAnnotatorFactory::GetForBrowserContext(this);
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   if (breadcrumbs::IsEnabled()) {
     breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =

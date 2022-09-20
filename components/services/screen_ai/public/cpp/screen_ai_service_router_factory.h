@@ -13,8 +13,8 @@ class BrowserContext;
 }
 
 namespace screen_ai {
+
 class ScreenAIServiceRouter;
-}
 
 // Factory to get or create an instance of ScreenAIServiceRouter for a
 // BrowserContext.
@@ -36,5 +36,7 @@ class ScreenAIServiceRouterFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
+
+}  // namespace screen_ai
 
 #endif  // COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_SCREEN_AI_SERVICE_ROUTER_FACTORY_H_

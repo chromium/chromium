@@ -24,6 +24,12 @@ AXScreenAIAnnotatorFactory* AXScreenAIAnnotatorFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+void AXScreenAIAnnotatorFactory::EnsureExistsForBrowserContext(
+    content::BrowserContext* context) {
+  GetForBrowserContext(context);
+}
+
 AXScreenAIAnnotatorFactory::AXScreenAIAnnotatorFactory()
     : BrowserContextKeyedServiceFactory(
           "AXScreenAIAnnotator",

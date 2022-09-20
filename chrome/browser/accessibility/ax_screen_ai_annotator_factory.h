@@ -23,6 +23,8 @@ class AXScreenAIAnnotatorFactory : public BrowserContextKeyedServiceFactory {
   static screen_ai::AXScreenAIAnnotator* GetForBrowserContext(
       content::BrowserContext* context);
 
+  static void EnsureExistsForBrowserContext(content::BrowserContext* context);
+
  private:
   friend class base::NoDestructor<AXScreenAIAnnotatorFactory>;
   static AXScreenAIAnnotatorFactory* GetInstance();

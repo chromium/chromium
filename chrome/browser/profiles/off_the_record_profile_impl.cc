@@ -72,7 +72,6 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/zoom/zoom_event_manager.h"
@@ -118,11 +117,6 @@
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
-#include "ui/accessibility/accessibility_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -239,12 +233,6 @@ void OffTheRecordProfileImpl::Init() {
     profile::MaybeRecordGuestChildCreation(this);
   }
 #endif
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // TODO(https://crbug.com/1278249): Implement settings to replace flag.
-  if (features::IsPdfOcrEnabled())
-    screen_ai::AXScreenAIAnnotatorFactory::GetForBrowserContext(this);
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {

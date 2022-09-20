@@ -8,6 +8,8 @@
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
 #include "content/public/browser/browser_context.h"
 
+namespace screen_ai {
+
 // static
 screen_ai::ScreenAIServiceRouter*
 ScreenAIServiceRouterFactory::GetForBrowserContext(
@@ -39,3 +41,5 @@ content::BrowserContext* ScreenAIServiceRouterFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return context;
 }
+
+}  // namespace screen_ai
