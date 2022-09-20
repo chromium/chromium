@@ -26,7 +26,6 @@ namespace settings {
 
 namespace {
 
-// TODO(https://crbug.com/1251039): Remove usages of base::ListValue
 base::Value::List GetHandlersAsListValue(
     const custom_handlers::ProtocolHandlerRegistry* registry,
     const custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList&
