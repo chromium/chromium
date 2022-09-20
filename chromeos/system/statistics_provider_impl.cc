@@ -34,7 +34,6 @@ namespace {
 // Path to the tool used to get system info, and special values for the
 // output of the tool.
 const char kCrosSystemTool[] = "/usr/bin/crossystem";
-const char kCrosSystemToolArgs[] = "";
 const char kCrosSystemValueError[] = "(error)";
 
 // File to get ECHO coupon info from, and key/value delimiters of
@@ -161,8 +160,7 @@ bool HasOemPrefix(const std::string& name) {
 
 StatisticsProviderImpl::StatisticsSources CreateDefaultSources() {
   StatisticsProviderImpl::StatisticsSources sources;
-  sources.crossystem_tool = kCrosSystemTool;
-  sources.crossystem_tool_args = kCrosSystemToolArgs;
+  sources.crossystem_tool = {kCrosSystemTool};
   sources.machine_info_filepath = GetFilePathIgnoreFailure(FILE_MACHINE_INFO);
   sources.vpd_echo_filepath = base::FilePath(kEchoCouponFile);
   sources.vpd_filepath = GetFilePathIgnoreFailure(FILE_VPD);
@@ -379,9 +377,9 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
   if (base::SysInfo::IsRunningOnChromeOS()) {
     // Parse all of the key/value pairs from the crossystem tool.
     if (!parser.ParseNameValuePairsFromTool(
-            {sources_.crossystem_tool, sources_.crossystem_tool_args},
-            NameValuePairsFormat::kCrossystem)) {
-      LOG(ERROR) << "Errors parsing output from: " << sources_.crossystem_tool;
+            sources_.crossystem_tool, NameValuePairsFormat::kCrossystem)) {
+      LOG(ERROR) << "Errors parsing output from: "
+                 << sources_.crossystem_tool[0];
     }
     // Drop useless "(error)" values so they don't displace valid values
     // supplied later by other tools: https://crbug.com/844258

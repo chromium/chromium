@@ -37,10 +37,8 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
     StatisticsSources(StatisticsSources&& other);
     StatisticsSources& operator=(StatisticsSources&& other);
 
-    // Binary to fake crossystem tool. E.g. echo.
-    std::string crossystem_tool;
-    // Arguments for binary faking crossystem tool.
-    std::string crossystem_tool_args;
+    // Binary to fake crossystem tool with arguments. E.g. echo.
+    std::vector<std::string> crossystem_tool;
 
     base::FilePath machine_info_filepath;
     base::FilePath vpd_echo_filepath;
