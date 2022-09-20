@@ -1560,6 +1560,13 @@ AcceleratorControllerImpl::AcceleratorControllerImpl()
       accelerator_history_(std::make_unique<AcceleratorHistoryImpl>()),
       side_volume_button_location_file_path_(
           base::FilePath(kSideVolumeButtonLocationFilePath)) {
+  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+    // Observe input method changes to determine when to use positional
+    // shortcuts. Calling AddObserver will cause InputMethodChanged to be
+    // called once even when the method does not change.
+    InputMethodManager::Get()->AddObserver(this);
+  }
+
   Init();
 
   ParseSideVolumeButtonLocationInfo();
@@ -1573,6 +1580,11 @@ AcceleratorControllerImpl::AcceleratorControllerImpl()
 }
 
 AcceleratorControllerImpl::~AcceleratorControllerImpl() {
+  // |AcceleratorControllerImpl| is owned by the shell which always is
+  // deconstructed before |InputMethodManager|
+  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+    InputMethodManager::Get()->RemoveObserver(this);
+  }
   aura::Env::GetInstance()->RemovePreTargetHandler(accelerator_history_.get());
 }
 
