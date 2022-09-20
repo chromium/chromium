@@ -274,20 +274,24 @@ void WebLocalFrameImpl::SetTickmarks(const WebElement& target,
   find_in_page_->SetTickmarks(target, tickmarks);
 }
 
-void FindInPage::SetTickmarks(const WebElement& target,
-                              const WebVector<gfx::Rect>& tickmarks) {
-  Vector<gfx::Rect> tickmarks_converted(
-      base::checked_cast<wtf_size_t>(tickmarks.size()));
-  for (wtf_size_t i = 0; i < tickmarks.size(); ++i)
-    tickmarks_converted[i] = tickmarks[i];
-
+void FindInPage::SetTickmarks(
+    const WebElement& target,
+    const WebVector<gfx::Rect>& tickmarks_in_layout_space) {
   LayoutBox* box;
   if (target.IsNull())
     box = frame_->GetFrame()->ContentLayoutObject();
   else
     box = target.ConstUnwrap<Element>()->GetLayoutBoxForScrolling();
-  if (box)
-    box->OverrideTickmarks(std::move(tickmarks_converted));
+
+  if (!box)
+    return;
+
+  Vector<gfx::Rect> tickmarks_converted(
+      base::checked_cast<wtf_size_t>(tickmarks_in_layout_space.size()));
+  for (wtf_size_t i = 0; i < tickmarks_in_layout_space.size(); ++i)
+    tickmarks_converted[i] = tickmarks_in_layout_space[i];
+
+  box->OverrideTickmarks(std::move(tickmarks_converted));
 }
 
 TextFinder* WebLocalFrameImpl::GetTextFinder() const {

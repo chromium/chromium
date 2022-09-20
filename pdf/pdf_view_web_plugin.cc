@@ -803,14 +803,7 @@ void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
 
 void PdfViewWebPlugin::UpdateTickMarks(
     const std::vector<gfx::Rect>& tickmarks) {
-  float inverse_scale = 1.0f / device_scale_;
-  tickmarks_.clear();
-  tickmarks_.reserve(tickmarks.size());
-  std::transform(tickmarks.begin(), tickmarks.end(),
-                 std::back_inserter(tickmarks_),
-                 [inverse_scale](const gfx::Rect& t) -> gfx::Rect {
-                   return gfx::ScaleToEnclosingRect(t, inverse_scale);
-                 });
+  tickmarks_ = tickmarks;
 }
 
 void PdfViewWebPlugin::NotifyNumberOfFindResultsChanged(int total,
