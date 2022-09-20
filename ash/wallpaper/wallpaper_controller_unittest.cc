@@ -4006,6 +4006,62 @@ TEST_F(WallpaperControllerTest, UpdateWallpaperOnColorModeChanged) {
 }
 
 TEST_F(WallpaperControllerTest,
+       UpdateDailyWallpaperVariantOnColorModeChanged_RefreshTimerDoesntReset) {
+  using base::Time;
+
+  SimulateUserLogin(account_id_1);
+  // Resets the count as user will start with a default image after login.
+  ClearWallpaperCount();
+
+  std::vector<OnlineWallpaperVariant> variants;
+  variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  variants.emplace_back(kAssetId2, GURL(kDummyUrl2),
+                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  const OnlineWallpaperParams& params =
+      OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
+                            TestWallpaperControllerClient::kDummyCollectionId,
+                            WALLPAPER_LAYOUT_CENTER_CROPPED,
+                            /*preview_mode=*/false, /*from_user=*/true,
+                            /*daily_refresh_enabled=*/true, kUnitId, variants);
+  const WallpaperInfo info = WallpaperInfo(params);
+  pref_manager_->SetUserWallpaperInfo(account_id_1, info);
+
+  // Set a new daily wallpaper.
+  controller_->UpdateDailyRefreshWallpaperForTesting();
+  RunAllTasksUntilIdle();
+
+  Time run_time =
+      controller_->GetUpdateWallpaperTimerForTesting().desired_run_time();
+  base::TimeDelta delay = run_time - Time::Now();
+  base::TimeDelta one_day = base::Days(1);
+  // Leave a little wiggle room, as well as account for the hour fuzzing that
+  // we do.
+  EXPECT_GE(delay, one_day - base::Minutes(1));
+  EXPECT_LE(delay, one_day + base::Minutes(61));
+
+  EXPECT_EQ(1, GetWallpaperCount());
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDaily);
+
+  // Fast forward by one hour and attempt a system's color mode change.
+  task_environment()->FastForwardBy(base::Hours(1));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kDarkModeEnabled, true);
+  controller_->OnColorModeChanged(true);
+  RunAllTasksUntilIdle();
+  // TODO(crbug.com/1362424): Figure out why this is flaky.
+  // EXPECT_EQ(2, GetWallpaperCount());
+  // Expect the refresh timer doesn't reset.
+  EXPECT_EQ(
+      run_time,
+      controller_->GetUpdateWallpaperTimerForTesting().desired_run_time());
+
+  WallpaperInfo actual;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(account_id_1, &actual));
+  EXPECT_EQ(info, actual);
+}
+
+TEST_F(WallpaperControllerTest,
        UpdateWallpaperInfoWithOnlineWallpaperVariants) {
   SimulateUserLogin(account_id_1);
 

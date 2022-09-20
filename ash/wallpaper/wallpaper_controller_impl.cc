@@ -2133,16 +2133,20 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromVariantPaths(
 
 void WallpaperControllerImpl::OnWallpaperVariantsFetched(
     WallpaperType type,
+    bool start_daily_refresh_timer,
     SetWallpaperCallback callback,
     absl::optional<OnlineWallpaperParams> params) {
   DCHECK(type == WallpaperType::kDaily || type == WallpaperType::kOnline);
   if (params) {
     SetOnlineWallpaper(*params, std::move(callback));
 
-    // The Daily Refresh timer depends on the value of the user WallpaperInfo.
-    // it after setting the wallpaper value.
-    if (type == WallpaperType::kDaily)
+    // This callback may be invoked when the system color's mode changes and
+    // updates the variant of the same wallpaper. In this case, the caller is
+    // expected to set |start_daily_refresh_timer| to false to prevent the daily
+    // timer from getting reset and daily wallpaper getting stuck indefinitely.
+    if (type == WallpaperType::kDaily && start_daily_refresh_timer) {
       StartDailyRefreshTimer();
+    }
     return;
   }
 
@@ -3082,6 +3086,7 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
       OnlineWallpaperVariantInfoFetcher::FetchParamsCallback fetch_callback =
           base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
                          set_wallpaper_weak_factory_.GetWeakPtr(), info.type,
+                         /*start_daily_refresh_timer=*/true,
                          std::move(callback));
       // Fetch can fail if wallpaper_controller_client has been cleared or
       // |info| is malformed.
@@ -3268,7 +3273,8 @@ void WallpaperControllerImpl::HandleDailyWallpaperInfoSyncedIn(
     return;
   OnlineWallpaperVariantInfoFetcher::FetchParamsCallback callback =
       base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
-                     weak_factory_.GetWeakPtr(), info.type, base::DoNothing());
+                     weak_factory_.GetWeakPtr(), info.type,
+                     /*start_daily_refresh_timer=*/true, base::DoNothing());
   if (!variant_info_fetcher_->FetchDailyWallpaper(
           account_id, info, GetColorMode(), std::move(callback))) {
     NOTREACHED() << "Fetch of daily wallpaper info failed.";
@@ -3320,9 +3326,12 @@ void WallpaperControllerImpl::HandleSettingOnlineWallpaperFromWallpaperInfo(
     return;
   }
 
+  // Set |start_daily_refresh_timer| to false as this does not set a new
+  // wallpaper, but updates the variant of the same wallpaper.
   OnlineWallpaperVariantInfoFetcher::FetchParamsCallback callback =
       base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
-                     weak_factory_.GetWeakPtr(), info.type, base::DoNothing());
+                     weak_factory_.GetWeakPtr(), info.type,
+                     /*start_daily_refresh_timer=*/false, base::DoNothing());
 
   variant_info_fetcher_->FetchOnlineWallpaper(account_id, info, GetColorMode(),
                                               std::move(callback));
