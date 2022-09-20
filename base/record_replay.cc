@@ -156,4 +156,17 @@ AutoLockMaybeEventsDisallowed::~AutoLockMaybeEventsDisallowed() {
   lock_.Release();
 }
 
+AutoUnlockMaybeEventsDisallowed::AutoUnlockMaybeEventsDisallowed(base::Lock& lock) : lock_(lock) {
+  lock_.Release();
+}
+
+AutoUnlockMaybeEventsDisallowed::~AutoUnlockMaybeEventsDisallowed() {
+  if (AreEventsDisallowed()) {
+    AutoPassThroughEvents pt;
+    lock_.Acquire();
+  } else {
+    lock_.Acquire();
+  }
+}
+
 } // namespace recordreplay

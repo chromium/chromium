@@ -399,7 +399,7 @@ MojoResult MessagePipeDispatcher::CloseNoLock() {
   watchers_.NotifyClosed();
 
   if (!port_transferred_) {
-    base::AutoUnlock unlock(signal_lock_);
+    recordreplay::AutoUnlockMaybeEventsDisallowed unlock(signal_lock_);
     node_controller_->ClosePort(port_);
 
     TRACE_EVENT_WITH_FLOW0("toplevel.flow", "MessagePipe closing",

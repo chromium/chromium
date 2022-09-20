@@ -118,6 +118,17 @@ class SCOPED_LOCKABLE AutoLockMaybeEventsDisallowed {
   base::Lock& lock_;
 };
 
+// For releasing ordered locks when events might be disallowed. Passes through
+// events during the acquire to avoid generating a warning.
+class SCOPED_LOCKABLE AutoUnlockMaybeEventsDisallowed {
+ public:
+  AutoUnlockMaybeEventsDisallowed(base::Lock& lock);
+  ~AutoUnlockMaybeEventsDisallowed();
+
+ private:
+  base::Lock& lock_;
+};
+
 } // namespace recordreplay
 
 #endif // BASE_RECORD_REPLAY_H_
