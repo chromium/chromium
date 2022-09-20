@@ -77,6 +77,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
 
   // Related doc: https://goo.gl/uNecAj.
   virtual AtomicString initiatorType() const;
+  AtomicString deliveryType() const;
   AtomicString nextHopProtocol() const;
   virtual AtomicString renderBlockingStatus() const;
   DOMHighResTimeStamp workerStart() const;

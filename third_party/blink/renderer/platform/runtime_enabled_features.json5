@@ -927,6 +927,11 @@
       name: "DelegatedInkTrails",
       status: "stable",
     },
+    // https://github.com/w3c/resource-timing/pull/343
+    {
+      name: "DeliveryType",
+      status: "experimental",
+    },
     {
       name: "DesktopCaptureDisableLocalEchoControl",
       status: "experimental",

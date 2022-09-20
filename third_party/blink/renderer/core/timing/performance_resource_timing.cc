@@ -170,6 +170,12 @@ AtomicString PerformanceResourceTiming::initiatorType() const {
   return initiator_type_;
 }
 
+// TODO(crbug/1358591): Support "cache" and "navigational-prefetch".
+AtomicString PerformanceResourceTiming::deliveryType() const {
+  DCHECK(RuntimeEnabledFeatures::DeliveryTypeEnabled());
+  return g_empty_atom;
+}
+
 AtomicString PerformanceResourceTiming::renderBlockingStatus() const {
   switch (render_blocking_status_) {
     case RenderBlockingStatusType::kBlocking:
@@ -456,6 +462,9 @@ PerformanceResourceTiming::serverTiming() const {
 void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
   builder.AddString("initiatorType", initiatorType());
+  if (RuntimeEnabledFeatures::DeliveryTypeEnabled()) {
+    builder.AddString("deliveryType", deliveryType());
+  }
   builder.AddString("nextHopProtocol", nextHopProtocol());
   if (RuntimeEnabledFeatures::RenderBlockingStatusEnabled()) {
     builder.AddString("renderBlockingStatus", renderBlockingStatus());
