@@ -845,7 +845,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary"
-    units="Boolean" expires_after="2023-01-15">
+    units="Boolean" expires_after="2023-03-19">
   <owner>blundell@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
   <summary>
@@ -857,7 +857,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="GPU.GLES2DecoderPassthroughImplLazyBindingCheck.WasBindNecessary"
-    units="Boolean" expires_after="2023-01-15">
+    units="Boolean" expires_after="2023-03-19">
   <owner>blundell@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
   <summary>
@@ -888,7 +888,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUInitializationTime.V3" units="ms"
-    expires_after="2023-01-15">
+    expires_after="2023-03-19">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1158,7 +1158,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.MultipleSwapsDelta" units="%" expires_after="2023-01-15">
+<histogram name="GPU.MultipleSwapsDelta" units="%" expires_after="2023-03-19">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metrics@google.com</owner>
   <summary>

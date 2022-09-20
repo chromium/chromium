@@ -80,7 +80,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Carts.ExtractionTimedOut" enum="BooleanTimedOut"
-    expires_after="2023-01-15">
+    expires_after="2023-03-19">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
