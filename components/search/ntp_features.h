@@ -20,45 +20,45 @@ namespace ntp_features {
 // The features should be documented alongside the definition of their values in
 // the .cc file.
 
-extern const base::Feature kConfirmSuggestionRemovals;
-extern const base::Feature kCacheOneGoogleBar;
-extern const base::Feature kCustomizeChromeSidePanel;
-extern const base::Feature kCwsScrimRemoval;
-extern const base::Feature kDismissPromos;
-extern const base::Feature kIframeOneGoogleBar;
-extern const base::Feature kOneGoogleBarModalOverlays;
-extern const base::Feature kRealboxMatchOmniboxTheme;
-extern const base::Feature kRealboxMatchSearchboxTheme;
-extern const base::Feature kRealboxUseGoogleGIcon;
-extern const base::Feature kNtpChromeCartModule;
-extern const base::Feature kNtpDriveModule;
+BASE_DECLARE_FEATURE(kConfirmSuggestionRemovals);
+BASE_DECLARE_FEATURE(kCacheOneGoogleBar);
+BASE_DECLARE_FEATURE(kCustomizeChromeSidePanel);
+BASE_DECLARE_FEATURE(kCwsScrimRemoval);
+BASE_DECLARE_FEATURE(kDismissPromos);
+BASE_DECLARE_FEATURE(kIframeOneGoogleBar);
+BASE_DECLARE_FEATURE(kOneGoogleBarModalOverlays);
+BASE_DECLARE_FEATURE(kRealboxMatchOmniboxTheme);
+BASE_DECLARE_FEATURE(kRealboxMatchSearchboxTheme);
+BASE_DECLARE_FEATURE(kRealboxUseGoogleGIcon);
+BASE_DECLARE_FEATURE(kNtpChromeCartModule);
+BASE_DECLARE_FEATURE(kNtpDriveModule);
 #if !defined(OFFICIAL_BUILD)
-extern const base::Feature kNtpDummyModules;
+BASE_DECLARE_FEATURE(kNtpDummyModules);
 #endif
-extern const base::Feature kNtpComprehensiveTheming;
-extern const base::Feature kNtpLogo;
-extern const base::Feature kNtpMiddleSlotPromo;
-extern const base::Feature kNtpMiddleSlotPromoDismissal;
-extern const base::Feature kNtpModulesLoadTimeoutMilliseconds;
-extern const base::Feature kNtpModulesOrder;
-extern const base::Feature kNtpModulesDragAndDrop;
-extern const base::Feature kNtpModulesFirstRunExperience;
-extern const base::Feature kNtpModulesLoad;
-extern const base::Feature kNtpModulesRedesigned;
-extern const base::Feature kNtpModulesRedesignedLayout;
-extern const base::Feature kNtpPhotosModule;
-extern const base::Feature kNtpPhotosModuleSoftOptOut;
-extern const base::Feature kNtpPhotosModuleCustomizedOptInTitle;
-extern const base::Feature kNtpPhotosModuleCustomizedOptInArtWork;
-extern const base::Feature kNtpPhotosModuleSplitSvgOptInArtWork;
-extern const base::Feature kNtpFeedModule;
-extern const base::Feature kNtpOneGoogleBar;
-extern const base::Feature kNtpRecipeTasksModule;
-extern const base::Feature kNtpRemoveScrim;
-extern const base::Feature kNtpSafeBrowsingModule;
-extern const base::Feature kNtpShortcuts;
+BASE_DECLARE_FEATURE(kNtpComprehensiveTheming);
+BASE_DECLARE_FEATURE(kNtpLogo);
+BASE_DECLARE_FEATURE(kNtpMiddleSlotPromo);
+BASE_DECLARE_FEATURE(kNtpMiddleSlotPromoDismissal);
+BASE_DECLARE_FEATURE(kNtpModulesLoadTimeoutMilliseconds);
+BASE_DECLARE_FEATURE(kNtpModulesOrder);
+BASE_DECLARE_FEATURE(kNtpModulesDragAndDrop);
+BASE_DECLARE_FEATURE(kNtpModulesFirstRunExperience);
+BASE_DECLARE_FEATURE(kNtpModulesLoad);
+BASE_DECLARE_FEATURE(kNtpModulesRedesigned);
+BASE_DECLARE_FEATURE(kNtpModulesRedesignedLayout);
+BASE_DECLARE_FEATURE(kNtpPhotosModule);
+BASE_DECLARE_FEATURE(kNtpPhotosModuleSoftOptOut);
+BASE_DECLARE_FEATURE(kNtpPhotosModuleCustomizedOptInTitle);
+BASE_DECLARE_FEATURE(kNtpPhotosModuleCustomizedOptInArtWork);
+BASE_DECLARE_FEATURE(kNtpPhotosModuleSplitSvgOptInArtWork);
+BASE_DECLARE_FEATURE(kNtpFeedModule);
+BASE_DECLARE_FEATURE(kNtpOneGoogleBar);
+BASE_DECLARE_FEATURE(kNtpRecipeTasksModule);
+BASE_DECLARE_FEATURE(kNtpRemoveScrim);
+BASE_DECLARE_FEATURE(kNtpSafeBrowsingModule);
+BASE_DECLARE_FEATURE(kNtpShortcuts);
 
-extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly;
+BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
 
 // Parameter determining the module load timeout.
 extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
