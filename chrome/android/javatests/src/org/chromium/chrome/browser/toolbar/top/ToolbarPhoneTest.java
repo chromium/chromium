@@ -13,13 +13,11 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Canvas;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -243,9 +241,8 @@ public class ToolbarPhoneTest {
                             false /*isIncognito*/)));
         });
         verify(mLocationbarBackgroundDrawable)
-                .setColorFilter(
-                        locationBarCoordinator.getSuggestionBackgroundColor(false /*isIncognito*/),
-                        PorterDuff.Mode.SRC_IN);
+                .setTint(
+                        locationBarCoordinator.getSuggestionBackgroundColor(false /*isIncognito*/));
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setCornerRadius(focusedRadius);
 
         // Clear focus on the Omnibox
@@ -257,8 +254,7 @@ public class ToolbarPhoneTest {
                     Matchers.not(locationBarCoordinator.getDropdownBackgroundColor(
                             false /*isIncognito*/)));
         });
-        verify(mLocationbarBackgroundDrawable, atLeastOnce())
-                .setColorFilter(anyInt(), eq(PorterDuff.Mode.SRC_IN));
+        verify(mLocationbarBackgroundDrawable, atLeastOnce()).setTint(anyInt());
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setCornerRadius(nonFocusedRadius);
     }
 
@@ -286,9 +282,7 @@ public class ToolbarPhoneTest {
                             false /*isIncognito*/)));
         });
         verify(mLocationbarBackgroundDrawable)
-                .setColorFilter(
-                        locationBarCoordinator.getDropdownBackgroundColor(false /*isIncognito*/),
-                        PorterDuff.Mode.SRC_IN);
+                .setTint(locationBarCoordinator.getDropdownBackgroundColor(false /*isIncognito*/));
         verify(mLocationbarBackgroundDrawable, never()).setCornerRadius(anyInt());
 
         // Clear focus on the Omnibox
@@ -300,8 +294,7 @@ public class ToolbarPhoneTest {
                     Matchers.not(locationBarCoordinator.getDropdownBackgroundColor(
                             false /*isIncognito*/)));
         });
-        verify(mLocationbarBackgroundDrawable, atLeastOnce())
-                .setColorFilter(anyInt(), eq(PorterDuff.Mode.SRC_IN));
+        verify(mLocationbarBackgroundDrawable, atLeastOnce()).setTint(anyInt());
         verify(mLocationbarBackgroundDrawable, never()).setCornerRadius(anyInt());
     }
 
