@@ -6,6 +6,7 @@ import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
+import {ESimOperationResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
@@ -109,8 +110,7 @@ suite('EsimRemoveProfileDialog', function() {
 
     let foundProfile = await getProfileForIccid(profiles, '1');
     assertTrue(!!foundProfile);
-    foundProfile.setEsimOperationResultForTest(
-        ash.cellularSetup.mojom.ESimOperationResult.kFailure);
+    foundProfile.setEsimOperationResultForTest(ESimOperationResult.kFailure);
 
     const showErrorToastPromise =
         eventToPromise('show-error-toast', esimRemoveProfileDialog);

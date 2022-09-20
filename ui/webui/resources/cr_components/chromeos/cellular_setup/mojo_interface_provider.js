@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
-import 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-lite.js';
-import 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-lite.js';
+
+import {CellularSetup, CellularSetupRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
+import {ESimManager, ESimManagerObserverInterface, ESimManagerObserverReceiver, ESimManagerObserverRemote, ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 let cellularRemote = null;
 let eSimManagerRemote = null;
 let isTesting = false;
 
 /**
- * @param {?ash.cellularSetup.mojom.CellularSetupRemote}
- *        testCellularRemote A test cellular remote
+ * @param {?CellularSetupRemote} testCellularRemote A test cellular remote
  */
 export function setCellularSetupRemoteForTesting(testCellularRemote) {
   cellularRemote = testCellularRemote;
@@ -23,21 +20,19 @@ export function setCellularSetupRemoteForTesting(testCellularRemote) {
 }
 
 /**
- * @returns {!ash.cellularSetup.mojom.CellularSetupRemote}
+ * @returns {!CellularSetupRemote}
  */
 export function getCellularSetupRemote() {
   if (cellularRemote) {
     return cellularRemote;
   }
 
-  cellularRemote = ash.cellularSetup.mojom.CellularSetup.getRemote();
-
+  cellularRemote = CellularSetup.getRemote();
   return cellularRemote;
 }
 
 /**
- * @param {?ash.cellularSetup.mojom.ESimManagerRemote}
- *        testESimManagerRemote A test eSimManager remote
+ * @param {?ESimManagerRemote} testESimManagerRemote A test eSimManager remote
  */
 export function setESimManagerRemoteForTesting(testESimManagerRemote) {
   eSimManagerRemote = testESimManagerRemote;
@@ -45,32 +40,31 @@ export function setESimManagerRemoteForTesting(testESimManagerRemote) {
 }
 
 /**
- * @returns {!ash.cellularSetup.mojom.ESimManagerRemote}
+ * @returns {!ESimManagerRemote}
  */
 export function getESimManagerRemote() {
   if (eSimManagerRemote) {
     return eSimManagerRemote;
   }
 
-  eSimManagerRemote = ash.cellularSetup.mojom.ESimManager.getRemote();
+  eSimManagerRemote = ESimManager.getRemote();
 
   return eSimManagerRemote;
 }
 
 /**
- * @param {!ash.cellularSetup.mojom.ESimManagerObserverInterface} observer
- * @returns {?ash.cellularSetup.mojom.ESimManagerObserverReceiver}
+ * @param {!ESimManagerObserverInterface} observer
+ * @returns {?ESimManagerObserverReceiver}
  */
 export function observeESimManager(observer) {
   if (isTesting) {
     getESimManagerRemote().addObserver(
-        /** @type {!ash.cellularSetup.mojom.ESimManagerObserverRemote} */
+        /** @type {!ESimManagerObserverRemote} */
         (observer));
     return null;
   }
 
-  const receiver =
-      new ash.cellularSetup.mojom.ESimManagerObserverReceiver(observer);
+  const receiver = new ESimManagerObserverReceiver(observer);
   getESimManagerRemote().addObserver(receiver.$.bindNewPipeAndPassRemote());
   return receiver;
 }

@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ActivationDelegateRemote, CarrierPortalHandlerInterface} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
+
 /**
- * @implements {ash.cellularSetup.mojom.CarrierPortalHandlerInterface}
+ * @implements {CarrierPortalHandlerInterface}
  */
 export class FakeCarrierPortalHandlerRemote {
   constructor() {}
@@ -14,7 +16,7 @@ export class FakeCarrierPortalHandlerRemote {
   }
 }
 
-/** @implements {ash.cellularSetup.mojom.CellularSetupInterface} */
+/** @implements {CellularSetupInterface} */
 export class FakeCellularSetupRemote {
   /**
    * @param {!FakeCarrierPortalHandlerRemote} handler
@@ -34,7 +36,7 @@ export class FakeCellularSetupRemote {
   }
 
   /**
-   * @returns {!ash.cellularSetup.mojom.ActivationDelegateRemote}
+   * @returns {!ActivationDelegateRemote}
    */
   getLastActivationDelegate() {
     return this.delegate_;

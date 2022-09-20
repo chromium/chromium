@@ -13,6 +13,7 @@ import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './base_page.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
@@ -24,7 +25,7 @@ Polymer({
 
   properties: {
     /**
-     * @type {?ash.cellularSetup.mojom.ESimProfileRemote}
+     * @type {?ESimProfileRemote}
      */
     profile: {
       type: Object,
@@ -49,7 +50,7 @@ Polymer({
     },
 
     /**
-     * @type {?ash.cellularSetup.mojom.ESimProfileProperties}
+     * @type {?ESimProfileProperties}
      * @private
      */
     profileProperties_: {

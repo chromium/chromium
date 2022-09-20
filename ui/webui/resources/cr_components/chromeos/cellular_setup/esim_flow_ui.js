@@ -15,6 +15,7 @@ import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_c
 import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ESimManagerRemote, ESimOperationResult, ESimProfileRemote, EuiccRemote, ProfileInstallResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
@@ -138,7 +139,7 @@ Polymer({
 
     /**
      * Profiles fetched that have status kPending.
-     * @type {!Array<!ash.cellularSetup.mojom.ESimProfileRemote>}
+     * @type {!Array<!ESimProfileRemote>}
      * @private
      */
     pendingProfiles_: {
@@ -147,7 +148,7 @@ Polymer({
 
     /**
      * Profile selected to be installed.
-     * @type {?ash.cellularSetup.mojom.ESimProfileRemote}
+     * @type {?ESimProfileRemote}
      * @private
      */
     selectedProfile_: {
@@ -181,17 +182,17 @@ Polymer({
 
   /**
    * Provides an interface to the ESimManager Mojo service.
-   * @private {?ash.cellularSetup.mojom.ESimManagerRemote}
+   * @private {?ESimManagerRemote}
    */
   eSimManagerRemote_: null,
 
-  /** @private {?ash.cellularSetup.mojom.EuiccRemote} */
+  /** @private {?EuiccRemote} */
   euicc_: null,
 
   /** @private {boolean} */
   hasFailedFetchingProfiles_: false,
 
-  /** @private {?ash.cellularSetup.mojom.ProfileInstallResult} */
+  /** @private {?ProfileInstallResult} */
   lastProfileInstallResult_: null,
 
   /**
@@ -237,8 +238,6 @@ Polymer({
   /** @override */
   detached() {
     let resultCode = null;
-
-    const ProfileInstallResult = ash.cellularSetup.mojom.ProfileInstallResult;
 
     switch (this.lastProfileInstallResult_) {
       case ProfileInstallResult.kSuccess:
@@ -314,7 +313,7 @@ Polymer({
     this.euicc_ = euicc;
     const requestPendingProfilesResponse = await euicc.requestPendingProfiles();
     if (requestPendingProfilesResponse.result ===
-        ash.cellularSetup.mojom.ESimOperationResult.kFailure) {
+        ESimOperationResult.kFailure) {
       this.hasFailedFetchingProfiles_ = true;
       console.warn(
           'Error requesting pending profiles: ',
@@ -340,34 +339,26 @@ Polymer({
 
   /**
    * @private
-   * @param {{result: ash.cellularSetup.mojom.ProfileInstallResult}} response
+   * @param {{result: ProfileInstallResult}} response
    */
   handleProfileInstallResponse_(response) {
     this.lastProfileInstallResult_ = response.result;
-    if (response.result ===
-        ash.cellularSetup.mojom.ProfileInstallResult
-            .kErrorNeedsConfirmationCode) {
+    if (response.result === ProfileInstallResult.kErrorNeedsConfirmationCode) {
       this.state_ = ESimUiState.CONFIRMATION_CODE_ENTRY;
       return;
     }
-    this.showError_ = response.result !==
-        ash.cellularSetup.mojom.ProfileInstallResult.kSuccess;
-    if (response.result ===
-            ash.cellularSetup.mojom.ProfileInstallResult.kFailure &&
+    this.showError_ = response.result !== ProfileInstallResult.kSuccess;
+    if (response.result === ProfileInstallResult.kFailure &&
         this.state_ === ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING) {
       this.state_ = ESimUiState.CONFIRMATION_CODE_ENTRY_READY;
       return;
     }
-    if (response.result ===
-        ash.cellularSetup.mojom.ProfileInstallResult
-            .kErrorInvalidActivationCode) {
+    if (response.result === ProfileInstallResult.kErrorInvalidActivationCode) {
       this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY_READY;
       return;
     }
-    if (response.result ===
-            ash.cellularSetup.mojom.ProfileInstallResult.kSuccess ||
-        response.result ===
-            ash.cellularSetup.mojom.ProfileInstallResult.kFailure) {
+    if (response.result === ProfileInstallResult.kSuccess ||
+        response.result === ProfileInstallResult.kFailure) {
       this.state_ = ESimUiState.SETUP_FINISH;
     }
   },

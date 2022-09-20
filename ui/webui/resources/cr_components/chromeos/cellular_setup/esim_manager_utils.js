@@ -4,29 +4,30 @@
 
 import {getESimManagerRemote} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 /**
  * Fetches the EUICC's eSIM profiles with status 'Pending'.
- * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
- * @return {!Promise<!Array<!ash.cellularSetup.mojom.ESimProfileRemote>>}
+ * @param {!EuiccRemote} euicc
+ * @return {!Promise<!Array<!ESimProfileRemote>>}
  */
 export function getPendingESimProfiles(euicc) {
   return euicc.getProfileList().then(response => {
     return filterByProfileProperties_(response.profiles, properties => {
-      return properties.state === ash.cellularSetup.mojom.ProfileState.kPending;
+      return properties.state === ProfileState.kPending;
     });
   });
 }
 
 /**
  * Fetches the EUICC's eSIM profiles with status not 'Pending'.
- * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
- * @return {!Promise<!Array<!ash.cellularSetup.mojom.ESimProfileRemote>>}
+ * @param {!EuiccRemote} euicc
+ * @return {!Promise<!Array<!ESimProfileRemote>>}
  */
 export function getNonPendingESimProfiles(euicc) {
   return euicc.getProfileList().then(response => {
     return filterByProfileProperties_(response.profiles, properties => {
-      return properties.state !== ash.cellularSetup.mojom.ProfileState.kPending;
+      return properties.state !== ProfileState.kPending;
     });
   });
 }
@@ -36,10 +37,10 @@ export function getNonPendingESimProfiles(euicc) {
  * properties as an argument and returns true or false. Does not guarantee
  * that profiles retains the same order.
  * @private
- * @param {!Array<!ash.cellularSetup.mojom.ESimProfileRemote>} profiles
- * @param {function(ash.cellularSetup.mojom.ESimProfileProperties)}
+ * @param {!Array<!ESimProfileRemote>} profiles
+ * @param {function(ESimProfileProperties)}
  *     callback
- * @return {!Promise<Array<!ash.cellularSetup.mojom.ESimProfileRemote>>}
+ * @return {!Promise<Array<!ESimProfileRemote>>}
  */
 function filterByProfileProperties_(profiles, callback) {
   const profilePromises = profiles.map(profile => {
@@ -73,7 +74,7 @@ export function getNumESimProfiles() {
 /**
  * Returns the Euicc that should be used for eSim operations or null
  * if there is none available.
- * @return {!Promise<?ash.cellularSetup.mojom.EuiccRemote>}
+ * @return {!Promise<?EuiccRemote>}
  */
 export async function getEuicc() {
   const eSimManagerRemote = getESimManagerRemote();
@@ -99,8 +100,8 @@ export async function getEuicc() {
 /**
  * @param {string} iccid
  * @return {!Promise<?{
- *       profileRemote: ash.cellularSetup.mojom.ESimProfileRemote,
- *       profileProperties: ash.cellularSetup.mojom.ESimProfileProperties
+ *       profileRemote: ESimProfileRemote,
+ *       profileProperties: ESimProfileProperties
  *     }>} Returns a eSIM profile remote and profile properties for given
  *         |iccid|.
  */
@@ -134,7 +135,7 @@ async function getESimProfileDetails(iccid) {
  * Returns the eSIM profile with iccid in the first EUICC or null if none
  * is found.
  * @param {string} iccid
- * @return {!Promise<?ash.cellularSetup.mojom.ESimProfileRemote>}
+ * @return {!Promise<?ESimProfileRemote>}
  */
 export async function getESimProfile(iccid) {
   const details = await getESimProfileDetails(iccid);
@@ -148,7 +149,7 @@ export async function getESimProfile(iccid) {
  * Returns properties for eSIM profile with iccid in the first EUICC or null
  * if none is found.
  * @param {string} iccid
- * @return {!Promise<?ash.cellularSetup.mojom.ESimProfileProperties>}
+ * @return {!Promise<?ESimProfileProperties>}
  */
 export async function getESimProfileProperties(iccid) {
   const details = await getESimProfileDetails(iccid);

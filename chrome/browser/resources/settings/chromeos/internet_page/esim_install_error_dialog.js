@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {ESimOperationResult, ESimProfileRemote, ProfileInstallResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -37,14 +38,14 @@ class EsimInstallErrorDialogElement extends EsimInstallErrorDialogElementBase {
       /**
        * The error code returned when profile install attempt was made in
        * networks list.
-       * @type {?ash.cellularSetup.mojom.ProfileInstallResult}
+       * @type {?ProfileInstallResult}
        */
       errorCode: {
         type: Object,
         value: null,
       },
 
-      /** @type {?ash.cellularSetup.mojom.ESimProfileRemote} */
+      /** @type {?ESimProfileRemote} */
       profile: {
         type: Object,
         value: null,
@@ -90,8 +91,7 @@ class EsimInstallErrorDialogElement extends EsimInstallErrorDialogElementBase {
 
     this.profile.installProfile(this.confirmationCode_).then((response) => {
       this.isInstallInProgress_ = false;
-      if (response.result ===
-          ash.cellularSetup.mojom.ESimOperationResult.kSuccess) {
+      if (response.result === ESimOperationResult.kSuccess) {
         this.$.installErrorDialog.close();
         return;
       }
@@ -115,9 +115,7 @@ class EsimInstallErrorDialogElement extends EsimInstallErrorDialogElementBase {
    */
   /** @private */
   isConfirmationCodeError_() {
-    return this.errorCode ===
-        ash.cellularSetup.mojom.ProfileInstallResult
-            .kErrorNeedsConfirmationCode;
+    return this.errorCode === ProfileInstallResult.kErrorNeedsConfirmationCode;
   }
 
   /**

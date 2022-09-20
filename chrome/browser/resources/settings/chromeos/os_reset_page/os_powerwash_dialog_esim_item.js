@@ -10,6 +10,7 @@
 import '../../settings_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
@@ -33,7 +34,7 @@ class OsSettingsPowerwashDialogEsimItemElement extends
 
   static get properties() {
     return {
-      /** @type {?ash.cellularSetup.mojom.ESimProfileRemote} */
+      /** @type {?ESimProfileRemote} */
       profile: {
         type: Object,
         value: null,
@@ -41,7 +42,7 @@ class OsSettingsPowerwashDialogEsimItemElement extends
       },
 
       /**
-       * @type {?ash.cellularSetup.mojom.ESimProfileProperties}
+       * @type {?ESimProfileProperties}
        * @private
        */
       profileProperties_: {
@@ -82,7 +83,7 @@ class OsSettingsPowerwashDialogEsimItemElement extends
   }
 
   /**
-   * @param {ash.cellularSetup.mojom.ESimProfileProperties} profileProperties
+   * @param {ESimProfileProperties} profileProperties
    * @return {string}
    * @private
    */

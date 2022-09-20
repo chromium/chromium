@@ -5,6 +5,7 @@
 import 'chrome://os-settings/chromeos/os_settings.js';
 
 import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.js';
+import {ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 
@@ -47,8 +48,7 @@ suite('EsimInstallErrorDialog', function() {
 
     setup(async function() {
       esimInstallErrorDialog.errorCode =
-          ash.cellularSetup.mojom.ProfileInstallResult
-              .kErrorNeedsConfirmationCode;
+          ProfileInstallResult.kErrorNeedsConfirmationCode;
       await flushAsync();
 
       assertTrue(!!esimInstallErrorDialog.shadowRoot.querySelector(
@@ -77,17 +77,14 @@ suite('EsimInstallErrorDialog', function() {
       const profile = (await euicc.getProfileList()).profiles[0];
       const profileProperties = (await profile.getProperties()).properties;
 
-      assertEquals(
-          profileProperties.state,
-          ash.cellularSetup.mojom.ProfileState.kActive);
+      assertEquals(profileProperties.state, ProfileState.kActive);
       assertFalse(esimInstallErrorDialog.$.installErrorDialog.open);
     });
 
     test('Install profile unsuccessful', async function() {
       const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
       const profile = (await euicc.getProfileList()).profiles[0];
-      profile.setProfileInstallResultForTest(
-          ash.cellularSetup.mojom.ProfileInstallResult.kFailure);
+      profile.setProfileInstallResultForTest(ProfileInstallResult.kFailure);
 
       input.value = 'CONFIRMATION_CODE';
       assertFalse(doneButton.disabled);
@@ -104,9 +101,7 @@ suite('EsimInstallErrorDialog', function() {
       assertFalse(doneButton.disabled);
 
       const profileProperties = (await profile.getProperties()).properties;
-      assertEquals(
-          profileProperties.state,
-          ash.cellularSetup.mojom.ProfileState.kPending);
+      assertEquals(profileProperties.state, ProfileState.kPending);
       assertTrue(esimInstallErrorDialog.$.installErrorDialog.open);
 
       input.value = 'CONFIRMATION_COD';
@@ -116,8 +111,7 @@ suite('EsimInstallErrorDialog', function() {
 
   suite('Generic error', function() {
     setup(async function() {
-      esimInstallErrorDialog.errorCode =
-          ash.cellularSetup.mojom.ProfileInstallResult.kFailure;
+      esimInstallErrorDialog.errorCode = ProfileInstallResult.kFailure;
       await flushAsync();
 
       assertFalse(!!esimInstallErrorDialog.shadowRoot.querySelector(

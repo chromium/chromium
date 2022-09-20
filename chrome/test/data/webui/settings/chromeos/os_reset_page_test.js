@@ -6,6 +6,7 @@ import {OsResetBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.j
 import {LifetimeBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {ESimManagerRemote, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -33,7 +34,7 @@ suite('DialogTests', function() {
   /** @type {!LifetimeBrowserProxy} */
   let lifetimeBrowserProxy = null;
 
-  /** @type {!ash.cellularSetup.mojom.ESimManagerRemote|undefined} */
+  /** @type {!ESimManagerRemote|undefined} */
   let eSimManagerRemote;
 
   setup(function() {
@@ -97,7 +98,7 @@ suite('DialogTests', function() {
     // Set the first profile's state to kActive.
     const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
     const profile = (await euicc.getProfileList()).profiles[0];
-    profile.properties.state = ash.cellularSetup.mojom.ProfileState.kActive;
+    profile.properties.state = ProfileState.kActive;
 
     // Click the powerwash button.
     resetPage.shadowRoot.querySelector('#powerwash').click();
