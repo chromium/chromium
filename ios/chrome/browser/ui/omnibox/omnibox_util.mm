@@ -35,43 +35,43 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
   switch (type) {
     case AutocompleteMatchType::BOOKMARK_TITLE:
     case AutocompleteMatchType::CLIPBOARD_URL:
-    case AutocompleteMatchType::NAVSUGGEST:
-    case AutocompleteMatchType::NAVSUGGEST_PERSONALIZED:
-    case AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED:
-    case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
-    case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
-    case AutocompleteMatchType::PEDAL_DEPRECATED:
     case AutocompleteMatchType::HISTORY_BODY:
+    case AutocompleteMatchType::HISTORY_CLUSTER:
     case AutocompleteMatchType::HISTORY_KEYWORD:
     case AutocompleteMatchType::HISTORY_TITLE:
     case AutocompleteMatchType::HISTORY_URL:
-    case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
+    case AutocompleteMatchType::NAVSUGGEST:
+    case AutocompleteMatchType::NAVSUGGEST_PERSONALIZED:
     case AutocompleteMatchType::OPEN_TAB:
-    case AutocompleteMatchType::HISTORY_CLUSTER:
+    case AutocompleteMatchType::PEDAL_DEPRECATED:
+    case AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED:
+    case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case AutocompleteMatchType::STARTER_PACK:
+    case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
+    case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
       return OmniboxSuggestionIconType::kDefaultFavicon;
+    case AutocompleteMatchType::CLIPBOARD_IMAGE:
+    case AutocompleteMatchType::CLIPBOARD_TEXT:
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::SEARCH_OTHER_ENGINE:
     case AutocompleteMatchType::SEARCH_SUGGEST:
     case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY:
-    case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED:
     case AutocompleteMatchType::SEARCH_SUGGEST_PROFILE:
     case AutocompleteMatchType::SEARCH_SUGGEST_TAIL:
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
     case AutocompleteMatchType::VOICE_SUGGEST:
-    case AutocompleteMatchType::CLIPBOARD_TEXT:
-    case AutocompleteMatchType::CLIPBOARD_IMAGE:
       return OmniboxSuggestionIconType::kSearch;
     case AutocompleteMatchType::SEARCH_HISTORY:
+    case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED:
       return OmniboxSuggestionIconType::kSearchHistory;
     case AutocompleteMatchType::CALCULATOR:
       return OmniboxSuggestionIconType::kCalculator;
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
-    case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::NULL_RESULT_MESSAGE:
     case AutocompleteMatchType::NUM_TYPES:
+    case AutocompleteMatchType::TILE_SUGGESTION:
       NOTREACHED();
       return OmniboxSuggestionIconType::kDefaultFavicon;
   }
@@ -105,8 +105,8 @@ LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
   switch (security_level) {
     case security_state::NONE:
       return INFO;
-    case security_state::WARNING:
     case security_state::DANGEROUS:
+    case security_state::WARNING:
       return NOT_SECURE_WARNING;
     case security_state::SECURE:
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:

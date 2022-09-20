@@ -215,15 +215,13 @@ UIColor* DimColorIncognito() {
          _match.type == AutocompleteMatchType::HISTORY_URL ||
          _match.type == AutocompleteMatchType::NAVSUGGEST ||
          _match.type == AutocompleteMatchType::NAVSUGGEST_PERSONALIZED ||
-         _match.type == AutocompleteMatchType::STARTER_PACK ||
+         _match.type == AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED ||
          _match.type == AutocompleteMatchType::SEARCH_HISTORY ||
-         _match.type == AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED ||
-         _match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL ||
          _match.type == AutocompleteMatchType::SEARCH_SUGGEST ||
          _match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
          _match.type == AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED ||
          _match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL ||
-         _match.type == AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED;
+         _match.type == AutocompleteMatchType::STARTER_PACK;
 }
 
 - (BOOL)isTabMatch {
