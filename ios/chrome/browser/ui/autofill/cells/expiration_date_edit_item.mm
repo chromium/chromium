@@ -55,8 +55,12 @@
 
   cell.textField.textColor = [UIColor colorNamed:kTextPrimaryColor];
   cell.textField.enabled = YES;
+  // Prevent Voice Over from announcing autocorrection.
+  cell.textField.autocorrectionType = UITextAutocorrectionTypeNo;
 
   [cell setIcon:TableViewTextEditItemIconTypeNone];
+
+  cell.isAccessibilityElement = NO;
 
   __weak ExpirationDateEditItem* weakSelf = self;
   __weak ExpirationDateEditCell* weakCell = cell;

@@ -76,4 +76,23 @@ TEST_F(ExpirationDateEditItemTest, PickingDateUpdatesItemAndTextField) {
   EXPECT_OCMOCK_VERIFY(mockedDelegate);
 }
 
+// Verifies that the ExpirationDateEditCell exposes its contents to
+// accessibility tools such as Voice Over.
+TEST_F(ExpirationDateEditItemTest,
+       ExpirationDateEditCellIsNotAccessibilityElement) {
+  ExpirationDateEditItem* item =
+      [[ExpirationDateEditItem alloc] initWithType:0];
+
+  id view = [[[item cellClass] alloc] init];
+  ASSERT_TRUE([view isMemberOfClass:[ExpirationDateEditCell class]]);
+
+  ExpirationDateEditCell* cell =
+      base::mac::ObjCCastStrict<ExpirationDateEditCell>(view);
+
+  ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
+  [item configureCell:cell withStyler:styler];
+
+  EXPECT_FALSE(cell.isAccessibilityElement);
+}
+
 }  // namespace
