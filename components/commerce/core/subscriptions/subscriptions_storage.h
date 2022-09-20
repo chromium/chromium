@@ -68,6 +68,10 @@ class SubscriptionsStorage {
   // Delete all local subscriptions.
   virtual void DeleteAll();
 
+  // Check if the given subscription is in local storage.
+  virtual void IsSubscribed(CommerceSubscription subscription,
+                            base::OnceCallback<void(bool)> callback);
+
  private:
   std::string GetSubscriptionKey(const CommerceSubscription& subscription);
 

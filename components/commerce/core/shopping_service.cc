@@ -109,7 +109,8 @@ ShoppingService::ShoppingService(
 
   if (bookmark_model) {
     shopping_bookmark_observer_ =
-        std::make_unique<ShoppingBookmarkModelObserver>(bookmark_model, this);
+        std::make_unique<ShoppingBookmarkModelObserver>(
+            bookmark_model, this, subscriptions_manager_.get());
   }
 
   if (power_bookmark_service_ && IsProductInfoApiEnabled()) {
