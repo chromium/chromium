@@ -2005,44 +2005,46 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
       break;
   }
 
-  ServiceWorkerRegistrationData::PolicyContainerPolicies* policies =
-      data.mutable_policy_container_policies();
-  DCHECK(registration.policy_container_policies);
-  switch (registration.policy_container_policies->referrer_policy) {
-    case network::mojom::ReferrerPolicy::kDefault:
-      policies->set_referrer_policy(ServiceWorkerRegistrationData::DEFAULT);
-      break;
-    case network::mojom::ReferrerPolicy::kAlways:
-      policies->set_referrer_policy(ServiceWorkerRegistrationData::ALWAYS);
-      break;
-    case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
-      policies->set_referrer_policy(
-          ServiceWorkerRegistrationData::NO_REFERRER_WHEN_DOWNGRADE);
-      break;
-    case network::mojom::ReferrerPolicy::kNever:
-      policies->set_referrer_policy(ServiceWorkerRegistrationData::NEVER);
-      break;
-    case network::mojom::ReferrerPolicy::kOrigin:
-      policies->set_referrer_policy(ServiceWorkerRegistrationData::ORIGIN);
-      break;
-    case network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin:
-      policies->set_referrer_policy(
-          ServiceWorkerRegistrationData::ORIGIN_WHEN_CROSS_ORIGIN);
-      break;
-    case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
-      policies->set_referrer_policy(
-          ServiceWorkerRegistrationData::STRICT_ORIGIN_WHEN_CROSS_ORIGIN);
-      break;
-    case network::mojom::ReferrerPolicy::kSameOrigin:
-      policies->set_referrer_policy(ServiceWorkerRegistrationData::SAME_ORIGIN);
-      break;
-    case network::mojom::ReferrerPolicy::kStrictOrigin:
-      policies->set_referrer_policy(
-          ServiceWorkerRegistrationData::STRICT_ORIGIN);
-      break;
+  if (registration.policy_container_policies) {
+    ServiceWorkerRegistrationData::PolicyContainerPolicies* policies =
+        data.mutable_policy_container_policies();
+    switch (registration.policy_container_policies->referrer_policy) {
+      case network::mojom::ReferrerPolicy::kDefault:
+        policies->set_referrer_policy(ServiceWorkerRegistrationData::DEFAULT);
+        break;
+      case network::mojom::ReferrerPolicy::kAlways:
+        policies->set_referrer_policy(ServiceWorkerRegistrationData::ALWAYS);
+        break;
+      case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
+        policies->set_referrer_policy(
+            ServiceWorkerRegistrationData::NO_REFERRER_WHEN_DOWNGRADE);
+        break;
+      case network::mojom::ReferrerPolicy::kNever:
+        policies->set_referrer_policy(ServiceWorkerRegistrationData::NEVER);
+        break;
+      case network::mojom::ReferrerPolicy::kOrigin:
+        policies->set_referrer_policy(ServiceWorkerRegistrationData::ORIGIN);
+        break;
+      case network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin:
+        policies->set_referrer_policy(
+            ServiceWorkerRegistrationData::ORIGIN_WHEN_CROSS_ORIGIN);
+        break;
+      case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
+        policies->set_referrer_policy(
+            ServiceWorkerRegistrationData::STRICT_ORIGIN_WHEN_CROSS_ORIGIN);
+        break;
+      case network::mojom::ReferrerPolicy::kSameOrigin:
+        policies->set_referrer_policy(
+            ServiceWorkerRegistrationData::SAME_ORIGIN);
+        break;
+      case network::mojom::ReferrerPolicy::kStrictOrigin:
+        policies->set_referrer_policy(
+            ServiceWorkerRegistrationData::STRICT_ORIGIN);
+        break;
+    }
+    policies->set_sandbox_flags(static_cast<int>(
+        registration.policy_container_policies->sandbox_flags));
   }
-  policies->set_sandbox_flags(
-      static_cast<int>(registration.policy_container_policies->sandbox_flags));
 
   std::string value;
   bool success = data.SerializeToString(&value);

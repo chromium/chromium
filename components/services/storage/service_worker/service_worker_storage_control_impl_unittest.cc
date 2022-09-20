@@ -25,7 +25,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/navigation_preload_state.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -628,8 +627,6 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
     data->script = script_url;
     data->navigation_preload_state =
         blink::mojom::NavigationPreloadState::New();
-    data->policy_container_policies =
-        blink::mojom::PolicyContainerPolicies::New();
 
     int64_t resources_total_size_bytes = 0;
     for (auto& resource : resources) {
@@ -789,8 +786,6 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndDeleteRegistration) {
   data->script = kScriptUrl;
   data->version_id = kVersionId;
   data->navigation_preload_state = blink::mojom::NavigationPreloadState::New();
-  data->policy_container_policies =
-      blink::mojom::PolicyContainerPolicies::New();
 
   int64_t resources_total_size_bytes = 0;
   for (auto& resource : resources) {
