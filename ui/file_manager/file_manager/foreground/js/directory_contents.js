@@ -392,8 +392,8 @@ export class CrostiniMounter extends ContentScanner {
       invalidateCache = false) {
     chrome.fileManagerPrivate.mountCrostini(() => {
       if (chrome.runtime.lastError) {
-        console.error(
-            'mountCrostini error: ', chrome.runtime.lastError.message);
+        console.warn(`Cannot mount Crostini volume: ${
+            chrome.runtime.lastError.message}`);
         errorCallback(util.createDOMError(
             constants.CROSTINI_CONNECT_ERR, chrome.runtime.lastError.message));
         return;
