@@ -38,7 +38,8 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
   const LogicalSize available_size = {container_builder_.InlineSize(),
                                       kIndefiniteSize};
 
-  absl::optional<LayoutUnit> section_baseline;
+  absl::optional<LayoutUnit> first_baseline;
+  absl::optional<LayoutUnit> last_baseline;
   LogicalOffset offset;
   bool is_first_non_collapsed_row = true;
 
@@ -105,10 +106,12 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
         table_data.table_writing_direction,
         To<NGPhysicalBoxFragment>(row_result->PhysicalFragment()));
 
-    if (!section_baseline) {
-      DCHECK(fragment.FirstBaseline());
-      section_baseline = fragment.FirstBaseline();
-    }
+    DCHECK(fragment.FirstBaseline());
+    DCHECK(fragment.LastBaseline());
+    if (!first_baseline)
+      first_baseline = offset.block_offset + *fragment.FirstBaseline();
+    last_baseline = offset.block_offset + *fragment.LastBaseline();
+
     container_builder_.AddResult(*row_result, offset);
     offset.block_offset += fragment.BlockSize();
     is_first_non_collapsed_row &= is_row_collapsed;
@@ -139,8 +142,10 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
   }
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  if (section_baseline)
-    container_builder_.SetFirstBaseline(*section_baseline);
+  if (first_baseline)
+    container_builder_.SetFirstBaseline(*first_baseline);
+  if (last_baseline)
+    container_builder_.SetLastBaseline(*last_baseline);
   container_builder_.SetIsTableNGPart();
 
   // Store the collapsed-borders row geometry on this section fragment.

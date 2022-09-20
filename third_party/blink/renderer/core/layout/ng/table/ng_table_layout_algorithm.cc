@@ -1034,7 +1034,8 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       border_padding.inline_start + border_spacing.inline_size;
 
   absl::optional<TableBoxExtent> table_box_extent;
-  absl::optional<LayoutUnit> table_baseline;
+  absl::optional<LayoutUnit> first_baseline;
+  absl::optional<LayoutUnit> last_baseline;
 
   bool has_repeated_header = false;
   absl::optional<LayoutUnit> pending_repeated_footer_block_size;
@@ -1276,9 +1277,13 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(child_result->PhysicalFragment());
     NGBoxFragment fragment(table_writing_direction, physical_fragment);
-    if (child.IsTableSection() && !table_baseline) {
-      if (const auto& section_baseline = fragment.FirstBaseline())
-        table_baseline = *section_baseline + child_block_offset;
+    if (child.IsTableSection()) {
+      if (!first_baseline) {
+        if (const auto& section_first_baseline = fragment.FirstBaseline())
+          first_baseline = child_block_offset + *section_first_baseline;
+      }
+      if (const auto& section_last_baseline = fragment.LastBaseline())
+        last_baseline = child_block_offset + *section_last_baseline;
     }
 
     container_builder_.AddResult(
@@ -1443,8 +1448,11 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       Node().GetDOMNode()->HasTagName(mathml_names::kMtableTag)) {
     container_builder_.SetBaselines(
         MathTableBaseline(Style(), child_block_offset));
-  } else if (table_baseline) {
-    container_builder_.SetFirstBaseline(*table_baseline);
+  } else {
+    if (first_baseline)
+      container_builder_.SetFirstBaseline(*first_baseline);
+    if (last_baseline)
+      container_builder_.SetLastBaseline(*last_baseline);
   }
 
   container_builder_.SetIsTableNGPart();
