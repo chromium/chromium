@@ -245,7 +245,7 @@ std::string TerminalSource::GetContentSecurityPolicy(
   }
 }
 
-// Required for wasm SharedArrayBuffer.
+// Improve security, and it is required for wasm SharedArrayBuffer.
 std::string TerminalSource::GetCrossOriginOpenerPolicy() {
   return "same-origin";
 }
