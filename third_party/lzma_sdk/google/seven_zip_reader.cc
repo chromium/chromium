@@ -223,6 +223,27 @@ EntryInfo SevenZipReaderImpl::GetEntryInfo(size_t entry_index) const {
         base::Microseconds(intervals / 10));
   }
 
+  entry.is_encrypted = false;
+
+  if (folder_index != kNoFolder) {
+    CSzData span;
+    span.Data = db_.db.CodersData + db_.db.FoCodersOffsets[folder_index];
+    span.Size = db_.db.FoCodersOffsets[folder_index + 1] -
+                db_.db.FoCodersOffsets[folder_index];
+
+    CSzFolder folder;
+    SzGetNextFolderItem(&folder, &span);
+
+    for (size_t i = 0; i < folder.NumCoders && i < SZ_NUM_CODERS_IN_FOLDER_MAX;
+         ++i) {
+      // LZMA SDK's DOC/Methods.txt specifies that MethodIDs starting with 06
+      // are "Crypto" of some sort.
+      if ((folder.Coders[i].MethodID & 0xff000000) == 0x06000000) {
+        entry.is_encrypted = true;
+      }
+    }
+  }
+
   return entry;
 }
 

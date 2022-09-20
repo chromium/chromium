@@ -25,7 +25,8 @@ struct EntryInfo {
   // otherwise.
   base::Time last_modified_time;
 
-  // TODO(crbug/1355567): Surface whether a file is encrypted
+  // Whether the entry is encrypted.
+  bool is_encrypted;
 };
 
 enum class Result {

@@ -29,6 +29,9 @@
 //
 //   fake_crc_table.7z was created with a hex editor, replacing the three CRC
 //   values with 0.
+//
+//   echo "This is not an exe" > file.exe
+//   7z a -p encrypted.7z file.exe  # Provided 1234 as the password
 
 #include "third_party/lzma_sdk/google/seven_zip_reader.h"
 
@@ -347,6 +350,32 @@ TEST_F(SevenZipReaderFakeCrcTableTest, EmptyCrcWithFakeTable) {
   Extract(std::move(file), std::move(temp_file), delegate);
 
   EXPECT_EQ(std::string(buffer.begin(), buffer.end()), "This is not an exe\n");
+}
+
+TEST(SevenZipReaderTest, EncryptedFile) {
+  base::File file = OpenTestFile(FILE_PATH_LITERAL("encrypted.7z"));
+  ASSERT_TRUE(file.IsValid());
+  base::File temp_file = OpenTemporaryFile();
+  ASSERT_TRUE(temp_file.IsValid());
+
+  StrictMock<MockSevenZipDelegate> delegate;
+  EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::is_encrypted, true), _))
+      .WillOnce(Return(false));
+
+  Extract(std::move(file), std::move(temp_file), delegate);
+}
+
+TEST(SevenZipReaderTest, UnencryptedFile) {
+  base::File file = OpenTestFile(FILE_PATH_LITERAL("compressed_exe.7z"));
+  ASSERT_TRUE(file.IsValid());
+  base::File temp_file = OpenTemporaryFile();
+  ASSERT_TRUE(temp_file.IsValid());
+
+  StrictMock<MockSevenZipDelegate> delegate;
+  EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::is_encrypted, false), _))
+      .WillOnce(Return(false));
+
+  Extract(std::move(file), std::move(temp_file), delegate);
 }
 
 }  // namespace seven_zip
