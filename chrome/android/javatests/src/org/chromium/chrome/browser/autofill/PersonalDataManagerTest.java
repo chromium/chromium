@@ -26,7 +26,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.ValueWithStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.video_tutorials.test.TestImageFetcher;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -268,11 +267,7 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    @Features.
-    EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_MORE_STRUCTURE_IN_ADDRESSES,
-            ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_MORE_STRUCTURE_IN_NAMES})
-    public void
-    testRespectVerificationStatuses() throws TimeoutException {
+    public void testRespectVerificationStatuses() throws TimeoutException {
         AutofillProfile profileWithDifferentStatuses = new AutofillProfile("" /* guid */,
                 "" /* origin */, true,
                 new ValueWithStatus("" /* honorific prefix */, VerificationStatus.NO_STATUS),
