@@ -13,7 +13,12 @@ https://html.spec.whatwg.org/C/#dom-navigator-plugins
 <body>
 <script>
 
-setup(() => assertSpeculationRulesIsSupported());
+setup(() => {
+  assertSpeculationRulesIsSupported();
+  assert_implements_optional(
+      'plugins' in navigator, 'navigator.plugins is not provided.'
+    );
+});
 
 promise_test(async t => {
   const uid = token();
