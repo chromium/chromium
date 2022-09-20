@@ -40,6 +40,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm_mode/wm_mode_button_tray.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/time_formatting.h"
@@ -140,6 +141,11 @@ void StatusAreaWidget::Initialize() {
 
   if (chromeos::features::IsPhoneHubEnabled()) {
     phone_hub_tray_ = AddTrayButton(std::make_unique<PhoneHubTray>(shelf_));
+  }
+
+  if (features::IsWmModeEnabled()) {
+    wm_mode_button_tray_ =
+        AddTrayButton(std::make_unique<WmModeButtonTray>(shelf_));
   }
 
   if (chromeos::features::IsQsRevampEnabled()) {

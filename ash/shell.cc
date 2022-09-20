@@ -1400,6 +1400,12 @@ void Shell::Init(
   system_notification_controller_ =
       std::make_unique<SystemNotificationController>();
 
+  // WmModeController should be created before initializing the window tree
+  // hosts, since the latter will initialize the shelf on each display, which
+  // hosts the WM mode tray button.
+  if (features::IsWmModeEnabled())
+    wm_mode_controller_ = std::make_unique<WmModeController>();
+
   window_tree_host_manager_->InitHosts();
 
   // Create virtual keyboard after WindowTreeHostManager::InitHosts() since
@@ -1471,9 +1477,6 @@ void Shell::Init(
 
   if (chromeos::wm::features::IsFloatWindowEnabled())
     float_controller_ = std::make_unique<FloatController>();
-
-  if (features::IsWmModeEnabled())
-    wm_mode_controller_ = std::make_unique<WmModeController>();
 
   // Injects the factory which fulfills the implementation of the text context
   // menu exclusive to CrOS.

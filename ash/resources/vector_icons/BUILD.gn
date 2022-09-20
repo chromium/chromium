@@ -484,6 +484,8 @@ aggregate_vector_icons("ash_vector_icons") {
     "visibility.icon",
     "visibility_off.icon",
     "wallpaper.icon",
+    "wm_mode_off.icon",
+    "wm_mode_on.icon",
     "zoom_in.icon",
     "zoom_out.icon",
   ]

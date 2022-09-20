@@ -21,8 +21,10 @@ class Window;
 }
 
 namespace ash {
+
 class DateTray;
 class DictationButtonTray;
+class EcheTray;
 class HoldingSpaceTray;
 class ImeMenuTray;
 class LogoutButtonTray;
@@ -40,7 +42,7 @@ class StopRecordingButtonTray;
 class TrayBackgroundView;
 class UnifiedSystemTray;
 class VirtualKeyboardTray;
-class EcheTray;
+class WmModeButtonTray;
 
 // Widget showing the system tray, notification tray, and other tray views in
 // the bottom-right of the screen. Exists separately from ShelfView/ShelfWidget
@@ -153,6 +155,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   EcheTray* eche_tray() { return eche_tray_; }
 
   SelectToSpeakTray* select_to_speak_tray() { return select_to_speak_tray_; }
+  WmModeButtonTray* wm_mode_button_tray() { return wm_mode_button_tray_; }
 
   Shelf* shelf() { return shelf_; }
 
@@ -282,6 +285,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   ImeMenuTray* ime_menu_tray_ = nullptr;
   SelectToSpeakTray* select_to_speak_tray_ = nullptr;
   HoldingSpaceTray* holding_space_tray_ = nullptr;
+  WmModeButtonTray* wm_mode_button_tray_ = nullptr;
 
   // Vector of the tray buttons above. The ordering is used to determine which
   // tray buttons are hidden when they overflow the available width.
