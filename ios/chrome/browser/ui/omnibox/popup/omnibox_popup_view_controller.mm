@@ -556,6 +556,32 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
   }
 }
 
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForRowAtIndexPath:(NSIndexPath*)indexPath {
+  return UITableViewAutomaticDimension;
+}
+
+// Customize the appearance of table view cells.
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  DCHECK_LT((NSUInteger)indexPath.row,
+            self.currentResult[indexPath.section].suggestions.count);
+  OmniboxPopupRowCell* cell = [self.tableView
+      dequeueReusableCellWithIdentifier:OmniboxPopupRowCellReuseIdentifier
+                           forIndexPath:indexPath];
+  cell.faviconRetriever = self.faviconRetriever;
+  cell.imageRetriever = self.imageRetriever;
+  [cell setupWithAutocompleteSuggestion:self.currentResult[indexPath.section]
+                                            .suggestions[indexPath.row]
+                              incognito:self.incognito];
+  cell.showsSeparator =
+      (NSUInteger)indexPath.row <
+      self.currentResult[indexPath.section].suggestions.count - 1;
+  cell.delegate = self;
+
+  return cell;
+}
+
 #pragma mark - Internal API methods
 
 // Adjust the inset on the table view to prevent keyboard from overlapping the
@@ -628,35 +654,6 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 
   [self.tableView deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
                                 animated:NO];
-}
-
-
-#pragma mark - Table view data source
-
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForRowAtIndexPath:(NSIndexPath*)indexPath {
-  return UITableViewAutomaticDimension;
-}
-
-// Customize the appearance of table view cells.
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  DCHECK_LT((NSUInteger)indexPath.row,
-            self.currentResult[indexPath.section].suggestions.count);
-  OmniboxPopupRowCell* cell = [self.tableView
-      dequeueReusableCellWithIdentifier:OmniboxPopupRowCellReuseIdentifier
-                           forIndexPath:indexPath];
-  cell.faviconRetriever = self.faviconRetriever;
-  cell.imageRetriever = self.imageRetriever;
-  [cell setupWithAutocompleteSuggestion:self.currentResult[indexPath.section]
-                                            .suggestions[indexPath.row]
-                              incognito:self.incognito];
-  cell.showsSeparator =
-      (NSUInteger)indexPath.row <
-      self.currentResult[indexPath.section].suggestions.count - 1;
-  cell.delegate = self;
-
-  return cell;
 }
 
 #pragma mark - Keyboard events
