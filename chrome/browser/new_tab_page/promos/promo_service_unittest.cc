@@ -222,9 +222,9 @@ TEST_F(PromoServiceTest, GoodPromoWithBlockedID) {
   feature_list.InitAndEnableFeature(ntp_features::kNtpMiddleSlotPromoDismissal);
 
   {
-    DictionaryPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);
+    ScopedDictPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);
     base::Time recent = base::Time::Now() - base::Hours(2);
-    update->SetDoubleKey("42", recent.ToDeltaSinceWindowsEpoch().InSecondsF());
+    update->Set("42", recent.ToDeltaSinceWindowsEpoch().InSecondsF());
   }
 
   std::string response_string =
@@ -284,10 +284,10 @@ TEST_F(PromoServiceTest, BlocklistExpiration) {
   feature_list.InitAndEnableFeature(ntp_features::kNtpMiddleSlotPromoDismissal);
 
   {
-    DictionaryPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);
-    ASSERT_EQ(0u, update->DictSize());
+    ScopedDictPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);
+    ASSERT_EQ(0u, update->size());
     base::Time past = base::Time::Now() - base::Days(365);
-    update->SetDoubleKey("42", past.ToDeltaSinceWindowsEpoch().InSecondsF());
+    update->Set("42", past.ToDeltaSinceWindowsEpoch().InSecondsF());
   }
 
   ASSERT_EQ(1u, prefs()->GetDict(prefs::kNtpPromoBlocklist).size());
@@ -319,10 +319,10 @@ TEST_F(PromoServiceTest, BlocklistWrongExpiryType) {
   feature_list.InitAndEnableFeature(ntp_features::kNtpMiddleSlotPromoDismissal);
 
   {
-    DictionaryPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);
-    ASSERT_EQ(0u, update->DictSize());
-    update->SetDoubleKey("42", 5);
-    update->SetStringKey("84", "wrong type");
+    ScopedDictPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);
+    ASSERT_EQ(0u, update->size());
+    update->Set("42", 5);
+    update->Set("84", "wrong type");
   }
 
   ASSERT_GT(prefs()->GetDict(prefs::kNtpPromoBlocklist).size(), 0u);

@@ -153,16 +153,16 @@ void RecipesService::GetPrimaryTask(RecipesCallback callback) {
 }
 
 void RecipesService::DismissTask(const std::string& task_name) {
-  ListPrefUpdate update(profile_->GetPrefs(), kDismissedTasksPrefName);
-  base::Value::List& update_list = update->GetList();
+  ScopedListPrefUpdate update(profile_->GetPrefs(), kDismissedTasksPrefName);
+  base::Value::List& update_list = update.Get();
   base::Value task_name_value(task_name);
   if (!base::Contains(update_list, task_name_value))
     update_list.Append(std::move(task_name_value));
 }
 
 void RecipesService::RestoreTask(const std::string& task_name) {
-  ListPrefUpdate update(profile_->GetPrefs(), kDismissedTasksPrefName);
-  update->GetList().EraseValue(base::Value(task_name));
+  ScopedListPrefUpdate update(profile_->GetPrefs(), kDismissedTasksPrefName);
+  update->EraseValue(base::Value(task_name));
 }
 
 void RecipesService::OnDataLoaded(network::SimpleURLLoader* loader,
