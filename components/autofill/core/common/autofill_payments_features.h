@@ -13,43 +13,42 @@ namespace autofill {
 namespace features {
 
 // All features in alphabetical order.
-extern const base::Feature kAutofillAlwaysReturnCloudTokenizedCard;
-extern const base::Feature kAutofillAutoTriggerManualFallbackForCards;
-extern const base::Feature kAutofillCreditCardAuthentication;
-extern const base::Feature kAutofillEnableCardArtImage;
-extern const base::Feature kAutofillEnableCardProductName;
-extern const base::Feature
-    kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse;
-extern const base::Feature kAutofillEnableFIDOProgressDialog;
-extern const base::Feature kAutofillEnableManualFallbackForVirtualCards;
-extern const base::Feature kAutofillEnableMerchantOptOutErrorDialog;
-extern const base::Feature kAutofillEnableOfferNotificationForPromoCodes;
-extern const base::Feature kAutofillEnableOffersInClankKeyboardAccessory;
-extern const base::Feature kAutofillEnableRemadeDownstreamMetrics;
-extern const base::Feature kAutofillEnableSendingBcnInGetUploadDetails;
-extern const base::Feature kAutofillEnableStickyManualFallbackForCards;
-extern const base::Feature kAutofillEnableUnmaskCardRequestSetInstrumentId;
-extern const base::Feature kAutofillEnableUpdateVirtualCardEnrollment;
-extern const base::Feature kAutofillEnableVirtualCard;
-extern const base::Feature kAutofillEnableVirtualCardFidoEnrollment;
-extern const base::Feature
-    kAutofillEnableVirtualCardManagementInDesktopSettingsPage;
-extern const base::Feature kAutofillEnableVirtualCardMetadata;
-extern const base::Feature kAutofillEnforceDelaysInStrikeDatabase;
-extern const base::Feature kAutofillFillIbanFields;
-extern const base::Feature kAutofillFillMerchantPromoCodeFields;
-extern const base::Feature kAutofillParseIBANFields;
-extern const base::Feature kAutofillParseMerchantPromoCodeFields;
-extern const base::Feature kAutofillParseVcnCardOnFileStandaloneCvcFields;
-extern const base::Feature kAutofillSaveCardDismissOnNavigation;
-extern const base::Feature kAutofillSaveCardInfobarEditSupport;
-extern const base::Feature kAutofillSaveCardUiExperiment;
+BASE_DECLARE_FEATURE(kAutofillAlwaysReturnCloudTokenizedCard);
+BASE_DECLARE_FEATURE(kAutofillAutoTriggerManualFallbackForCards);
+BASE_DECLARE_FEATURE(kAutofillCreditCardAuthentication);
+BASE_DECLARE_FEATURE(kAutofillEnableCardArtImage);
+BASE_DECLARE_FEATURE(kAutofillEnableCardProductName);
+BASE_DECLARE_FEATURE(
+    kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse);
+BASE_DECLARE_FEATURE(kAutofillEnableFIDOProgressDialog);
+BASE_DECLARE_FEATURE(kAutofillEnableManualFallbackForVirtualCards);
+BASE_DECLARE_FEATURE(kAutofillEnableMerchantOptOutErrorDialog);
+BASE_DECLARE_FEATURE(kAutofillEnableOfferNotificationForPromoCodes);
+BASE_DECLARE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory);
+BASE_DECLARE_FEATURE(kAutofillEnableRemadeDownstreamMetrics);
+BASE_DECLARE_FEATURE(kAutofillEnableSendingBcnInGetUploadDetails);
+BASE_DECLARE_FEATURE(kAutofillEnableStickyManualFallbackForCards);
+BASE_DECLARE_FEATURE(kAutofillEnableUnmaskCardRequestSetInstrumentId);
+BASE_DECLARE_FEATURE(kAutofillEnableUpdateVirtualCardEnrollment);
+BASE_DECLARE_FEATURE(kAutofillEnableVirtualCard);
+BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardFidoEnrollment);
+BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardManagementInDesktopSettingsPage);
+BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardMetadata);
+BASE_DECLARE_FEATURE(kAutofillEnforceDelaysInStrikeDatabase);
+BASE_DECLARE_FEATURE(kAutofillFillIbanFields);
+BASE_DECLARE_FEATURE(kAutofillFillMerchantPromoCodeFields);
+BASE_DECLARE_FEATURE(kAutofillParseIBANFields);
+BASE_DECLARE_FEATURE(kAutofillParseMerchantPromoCodeFields);
+BASE_DECLARE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields);
+BASE_DECLARE_FEATURE(kAutofillSaveCardDismissOnNavigation);
+BASE_DECLARE_FEATURE(kAutofillSaveCardInfobarEditSupport);
+BASE_DECLARE_FEATURE(kAutofillSaveCardUiExperiment);
 extern const base::FeatureParam<int>
     kAutofillSaveCardUiExperimentSelectorInNumber;
-extern const base::Feature kAutofillShowUnmaskedCachedCardInManualFillingView;
-extern const base::Feature kAutofillUpstream;
-extern const base::Feature kAutofillUpstreamAllowAdditionalEmailDomains;
-extern const base::Feature kAutofillUpstreamAllowAllEmailDomains;
+BASE_DECLARE_FEATURE(kAutofillShowUnmaskedCachedCardInManualFillingView);
+BASE_DECLARE_FEATURE(kAutofillUpstream);
+BASE_DECLARE_FEATURE(kAutofillUpstreamAllowAdditionalEmailDomains);
+BASE_DECLARE_FEATURE(kAutofillUpstreamAllowAllEmailDomains);
 extern const base::FeatureParam<int>
     kAutofillVirtualCardEnrollDelayInStrikeDatabaseInDays;
 
