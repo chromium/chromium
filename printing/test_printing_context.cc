@@ -147,6 +147,9 @@ mojom::ResultCode TestPrintingContext::NewDocument(
     const std::u16string& document_name) {
   DCHECK(!in_print_job_);
 
+  if (!new_document_called_.is_null())
+    new_document_called_.Run();
+
   abort_printing_ = false;
   in_print_job_ = true;
 

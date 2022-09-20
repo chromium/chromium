@@ -299,6 +299,10 @@ class PrintBackendPrintingContextFactoryForTest
       context->SetAskUserForSettingsCanceled();
 #endif
 
+    context->SetNewDocumentCalledClosure(base::BindRepeating(
+        &PrintBackendPrintingContextFactoryForTest::NewDocumentCalled,
+        base::Unretained(this)));
+
     return std::move(context);
   }
 
@@ -334,6 +338,10 @@ class PrintBackendPrintingContextFactoryForTest
   }
 #endif
 
+  void NewDocumentCalled() { ++new_document_called_count_; }
+
+  int new_document_called_count() { return new_document_called_count_; }
+
  private:
   std::string printer_name_;
   bool access_denied_errors_for_new_document_ = false;
@@ -346,6 +354,7 @@ class PrintBackendPrintingContextFactoryForTest
 #if BUILDFLAG(IS_WIN)
   bool cancel_on_ask_user_for_settings_ = false;
 #endif
+  int new_document_called_count_ = 0;
 };
 
 class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
@@ -3557,6 +3566,10 @@ class MAYBE_ContentAnalysisPrintBrowserTest
     AddTestBackendPrinter(test_backend_.get(), printer_name);
   }
 
+  int new_document_called_count() {
+    return test_printing_context_factory_.new_document_called_count();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   scoped_refptr<TestPrintBackend> test_backend_;
@@ -3597,6 +3610,8 @@ class MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest
     print_view_manager->WaitOnScanning();
     ASSERT_EQ(print_view_manager->scripted_print_called(),
               content_analysis_allows_print());
+    // TODO(crbug.com/1352193): Update this to expect 0 calls.
+    ASSERT_EQ(new_document_called_count(), 1);
   }
 };
 
@@ -3628,6 +3643,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest, PrintNow) {
   ASSERT_TRUE(print_view_manager->print_now_called());
   ASSERT_EQ(print_view_manager->scripted_print_called(),
             content_analysis_allows_print());
+  // TODO(crbug.com/1352193): Update this to expect 0 calls.
+  ASSERT_EQ(new_document_called_count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest,
@@ -3652,6 +3669,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest,
   print_view_manager->WaitOnScanning();
   ASSERT_EQ(print_view_manager->preview_allowed(),
             content_analysis_allows_print());
+  // TODO(crbug.com/1352193): Update this to expect 0 calls.
+  ASSERT_EQ(new_document_called_count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest,
@@ -3690,6 +3709,9 @@ IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest,
   print_view_manager->WaitOnPreview();
   ASSERT_TRUE(print_view_manager->preview_allowed().has_value());
   ASSERT_FALSE(print_view_manager->preview_allowed().value());
+
+  // This is always 0 because printing is always blocked by the DLP policy.
+  ASSERT_EQ(new_document_called_count(), 0);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
