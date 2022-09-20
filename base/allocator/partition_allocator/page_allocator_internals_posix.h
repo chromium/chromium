@@ -21,13 +21,7 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/allocator/partition_allocator/partition_alloc_base/mac/foundation_util.h"
-#if BUILDFLAG(IS_IOS)
-#include "base/allocator/partition_allocator/partition_alloc_base/ios/ios_util.h"
-#elif BUILDFLAG(IS_MAC)
 #include "base/allocator/partition_allocator/partition_alloc_base/mac/mac_util.h"
-#else
-#error "Unknown platform"
-#endif
 #include "base/allocator/partition_allocator/partition_alloc_base/mac/scoped_cftyperef.h"
 
 #include <Availability.h>
