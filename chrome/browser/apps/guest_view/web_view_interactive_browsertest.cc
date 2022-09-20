@@ -1177,7 +1177,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
   SetupTest("web_view/text_selection",
             "/extensions/platform_apps/web_view/text_selection/guest.html");
-  ASSERT_TRUE(DeprecatedGuestWebContents());
+  ASSERT_TRUE(GetGuestView());
   ASSERT_TRUE(embedder_web_contents());
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(GetPlatformAppWindow()));
 
@@ -1187,9 +1187,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
   context_menu_gesture_event_type = blink::WebInputEvent::Type::kGestureLongTap;
 #endif
   auto filter = std::make_unique<content::InputMsgWatcher>(
-      DeprecatedGuestWebContents()
-          ->GetRenderWidgetHostView()
-          ->GetRenderWidgetHost(),
+      GetGuestRenderFrameHost()->GetRenderWidgetHost(),
       context_menu_gesture_event_type);
 
   // Wait for guest to load (without this the events never reach the guest).
@@ -1199,7 +1197,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
       FROM_HERE, message_loop_runner->QuitClosure(), base::Milliseconds(200));
   message_loop_runner->Run();
 
-  gfx::Rect guest_rect = DeprecatedGuestWebContents()->GetContainerBounds();
+  gfx::Rect guest_rect = GetGuestRenderFrameHost()->GetView()->GetViewBounds();
   gfx::Point embedder_origin =
       embedder_web_contents()->GetContainerBounds().origin();
   guest_rect.Offset(-embedder_origin.x(), -embedder_origin.y());
@@ -1224,7 +1222,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 #endif
 
-  EXPECT_FALSE(DeprecatedGuestWebContents()->IsShowingContextMenu());
+  EXPECT_FALSE(GetGuestView()->web_contents()->IsShowingContextMenu());
 }
 #endif
 
