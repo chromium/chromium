@@ -19,6 +19,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/compiler_specific.h"
 #include "base/debug/activity_tracker.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -217,6 +218,11 @@ PlatformThreadId PlatformThread::CurrentId() {
 #if BUILDFLAG(IS_APPLE)
   return pthread_mach_thread_np(pthread_self());
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Workaround false-positive MSAN use-of-uninitialized-value on
+  // thread_local storage for loaded libraries:
+  // https://github.com/google/sanitizers/issues/1265
+  MSAN_UNPOISON(&g_thread_id, sizeof(pid_t));
+  MSAN_UNPOISON(&g_is_main_thread, sizeof(bool));
   static InitAtFork init_at_fork;
   if (g_thread_id == -1 ||
       (g_is_main_thread &&
