@@ -81,11 +81,11 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
   }
 
   void AddDisabledFeaturesToPrefs(const std::vector<std::string>& features) {
-    base::Value disabled_feature_list(base::Value::Type::LIST);
+    base::Value::List disabled_feature_list;
     for (const std::string& feature : features) {
       disabled_feature_list.Append(feature);
     }
-    ListPrefUpdate update(
+    ScopedListPrefUpdate update(
         local_state(), embedder_support::prefs::kOriginTrialDisabledFeatures);
     *update = std::move(disabled_feature_list);
   }
@@ -114,12 +114,12 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
   }
 
   void AddDisabledTokensToPrefs(const std::vector<std::string>& tokens) {
-    base::Value disabled_token_list(base::Value::Type::LIST);
+    base::Value::List disabled_token_list;
     for (const std::string& token : tokens) {
       disabled_token_list.Append(token);
     }
-    ListPrefUpdate update(local_state(),
-                          embedder_support::prefs::kOriginTrialDisabledTokens);
+    ScopedListPrefUpdate update(
+        local_state(), embedder_support::prefs::kOriginTrialDisabledTokens);
     *update = std::move(disabled_token_list);
   }
 
