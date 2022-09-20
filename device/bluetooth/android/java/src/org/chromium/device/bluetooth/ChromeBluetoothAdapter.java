@@ -17,8 +17,6 @@ import android.os.Build;
 import android.os.ParcelUuid;
 import android.util.SparseArray;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNIAdditionalImport;
@@ -38,7 +36,6 @@ import java.util.Map;
  */
 @JNINamespace("device")
 @JNIAdditionalImport(Wrappers.class)
-@RequiresApi(Build.VERSION_CODES.M)
 final class ChromeBluetoothAdapter extends BroadcastReceiver {
     private static final String TAG = "Bluetooth";
 

@@ -13,12 +13,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.ParcelUuid;
 import android.test.mock.MockContext;
 import android.util.SparseArray;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -42,7 +39,6 @@ import java.util.UUID;
  * each of these classes.
  */
 @JNINamespace("device")
-@RequiresApi(Build.VERSION_CODES.M)
 class Fakes {
     private static final String TAG = "Bluetooth";
 

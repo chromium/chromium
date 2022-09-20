@@ -24,8 +24,6 @@ import android.os.Build;
 import android.os.ParcelUuid;
 import android.util.SparseArray;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -47,7 +45,6 @@ import java.util.UUID;
  * pass through to the Android object and instead provide fake implementations.
  */
 @JNINamespace("device")
-@RequiresApi(Build.VERSION_CODES.M)
 class Wrappers {
     private static final String TAG = "Bluetooth";
 
@@ -137,9 +134,8 @@ class Wrappers {
 
             // Only Low Energy currently supported, see BluetoothAdapterAndroid class note.
             final boolean hasLowEnergyFeature =
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
-                    && ContextUtils.getApplicationContext().getPackageManager().hasSystemFeature(
-                               PackageManager.FEATURE_BLUETOOTH_LE);
+                    ContextUtils.getApplicationContext().getPackageManager().hasSystemFeature(
+                            PackageManager.FEATURE_BLUETOOTH_LE);
             if (!hasLowEnergyFeature) {
                 Log.i(TAG, "BluetoothAdapterWrapper.create failed: No Low Energy support.");
                 return null;
