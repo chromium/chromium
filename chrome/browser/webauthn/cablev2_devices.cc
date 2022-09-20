@@ -351,14 +351,15 @@ void AddPairing(Profile* profile, std::unique_ptr<Pairing> pairing) {
   // This is called when doing a QR-code pairing with a phone and the phone
   // sends long-term pairing information during the handshake. The pairing
   // information is saved in preferences for future operations.
-  ListPrefUpdate update(profile->GetPrefs(), kWebAuthnCablePairingsPrefName);
+  ScopedListPrefUpdate update(profile->GetPrefs(),
+                              kWebAuthnCablePairingsPrefName);
 
   // Find any existing entries with the same public key and replace them. The
   // handshake protocol requires the phone to prove possession of the public
   // key so it's not possible for an evil phone to displace another's pairing.
   std::string public_key_base64 =
       base::Base64Encode(pairing->peer_public_key_x962);
-  DeletePairingByPublicKey(update->GetList(), public_key_base64);
+  DeletePairingByPublicKey(*update, public_key_base64);
 
   base::Value::Dict dict;
   dict.Set(kPairingPrefPublicKey, std::move(public_key_base64));
@@ -381,7 +382,7 @@ void AddPairing(Profile* profile, std::unique_ptr<Pairing> pairing) {
       base::StringPrintf("%04d-%02d-%02dT%02d:%02d:%02dZ", now.year, now.month,
                          now.day_of_month, now.hour, now.minute, now.second));
 
-  update->GetList().Append(std::move(dict));
+  update->Append(std::move(dict));
 }
 
 // DeletePairingByPublicKey erases any pairing with the given public key
@@ -389,8 +390,8 @@ void AddPairing(Profile* profile, std::unique_ptr<Pairing> pairing) {
 void DeletePairingByPublicKey(
     PrefService* pref_service,
     std::array<uint8_t, device::kP256X962Length> public_key) {
-  ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
-  DeletePairingByPublicKey(update->GetList(), base::Base64Encode(public_key));
+  ScopedListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
+  DeletePairingByPublicKey(*update, base::Base64Encode(public_key));
 }
 
 bool RenamePairing(
@@ -401,9 +402,9 @@ bool RenamePairing(
   const std::string name = FindUniqueName(new_name, existing_names);
   const std::string public_key_base64 = base::Base64Encode(public_key);
 
-  ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
+  ScopedListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
 
-  for (base::Value& value : update->GetList()) {
+  for (base::Value& value : *update) {
     if (!value.is_dict()) {
       continue;
     }
