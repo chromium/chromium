@@ -18,7 +18,6 @@
 #include "base/syslog_logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_get_routine_update_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_run_routine_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_screenshot_job.h"
