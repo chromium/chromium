@@ -54,7 +54,9 @@ class NudgeTracker {
 
   // Tells this class that all required update fetching or committing has
   // completed successfully, as the result of a "normal" sync cycle.
-  void RecordSuccessfulSyncCycle(ModelTypeSet types);
+  // Any blocked model types will ignore this, but non-blocked types and the
+  // overall state will still get updated.
+  void RecordSuccessfulSyncCycleIfNotBlocked(ModelTypeSet types);
 
   // Tells this class that the initial sync has happened for the given |types|,
   // generally due to a "configuration" cycle.

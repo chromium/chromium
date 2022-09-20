@@ -306,7 +306,7 @@ void DataTypeTracker::RecordSuccessfulCommitMessage() {
   }
 }
 
-void DataTypeTracker::RecordSuccessfulSyncCycle() {
+void DataTypeTracker::RecordSuccessfulSyncCycleIfNotBlocked() {
   // If we were blocked, then we would have been excluded from this cycle's
   // GetUpdates and Commit actions.  Our state remains unchanged.
   if (IsBlocked()) {

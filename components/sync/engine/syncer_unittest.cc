@@ -240,7 +240,7 @@ class SyncerTest : public testing::Test,
   // not preceeded by GetUpdates.
   void ConfigureNoGetUpdatesRequired() {
     nudge_tracker_.OnInvalidationsEnabled();
-    nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+    nudge_tracker_.RecordSuccessfulSyncCycleIfNotBlocked(ModelTypeSet::All());
 
     ASSERT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
   }
@@ -617,7 +617,7 @@ TEST_F(SyncerTest, CommitFailureWithConflict) {
   EXPECT_FALSE(SyncShareNudge());
   EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
-  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+  nudge_tracker_.RecordSuccessfulSyncCycleIfNotBlocked(ModelTypeSet::All());
   EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 }
 

@@ -100,7 +100,7 @@ class DataTypeTracker {
   // called since we count those cases as success. So we need to check if the
   // datatype is in partial throttling or backoff in the beginning of this
   // function.
-  void RecordSuccessfulSyncCycle();
+  void RecordSuccessfulSyncCycleIfNotBlocked();
 
   // Records that the initial sync has completed successfully. This gets called
   // when the initial configuration/download cycle has finished for this type.

@@ -82,7 +82,7 @@ void NudgeTracker::RecordSuccessfulCommitMessage(ModelTypeSet types) {
   }
 }
 
-void NudgeTracker::RecordSuccessfulSyncCycle(ModelTypeSet types) {
+void NudgeTracker::RecordSuccessfulSyncCycleIfNotBlocked(ModelTypeSet types) {
   // If a retry was required, we've just serviced it.  Unset the flag.
   if (IsRetryRequired()) {
     current_retry_time_ = base::TimeTicks();
@@ -94,7 +94,7 @@ void NudgeTracker::RecordSuccessfulSyncCycle(ModelTypeSet types) {
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
     DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
-    tracker_it->second->RecordSuccessfulSyncCycle();
+    tracker_it->second->RecordSuccessfulSyncCycleIfNotBlocked();
   }
 }
 

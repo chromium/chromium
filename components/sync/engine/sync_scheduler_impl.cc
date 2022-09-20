@@ -431,9 +431,7 @@ void SyncSchedulerImpl::DoNudgeSyncCycleJob(JobPriority priority) {
     // Note that some types might have become blocked (throttled) during the
     // cycle. NudgeTracker knows of that, and won't clear any "outstanding work"
     // flags for these types.
-    // TODO(crbug.com/930074): Consider renaming this method to
-    // RecordSuccessfulSyncCycleIfNotBlocked.
-    nudge_tracker_.RecordSuccessfulSyncCycle(types);
+    nudge_tracker_.RecordSuccessfulSyncCycleIfNotBlocked(types);
     HandleSuccess();
 
     // If this was a canary, we may need to restart the poll timer (the poll
