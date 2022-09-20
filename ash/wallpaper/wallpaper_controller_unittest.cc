@@ -3690,9 +3690,7 @@ TEST_F(WallpaperControllerTest, UpdateDailyRefreshWallpaper) {
   EXPECT_EQ(expected, client_.get_fetch_daily_refresh_wallpaper_param());
 }
 
-// Disabled due to flakes; see crbug/1320991.
-TEST_F(WallpaperControllerTest,
-       DISABLED_UpdateDailyRefreshWallpaperCalledOnLogin) {
+TEST_F(WallpaperControllerTest, UpdateDailyRefreshWallpaperCalledOnLogin) {
   SimulateUserLogin(account_id_1);
 
   WallpaperInfo info = WallpaperInfo(OnlineWallpaperParams(
@@ -3711,6 +3709,8 @@ TEST_F(WallpaperControllerTest,
   // Info is set as over a day old so we expect one task to run in under an hour
   // (due to fuzzing) then it will idle.
   task_environment()->FastForwardBy(base::Hours(1));
+  // Make sure all the tasks such as syncing, setting wallpaper complete.
+  RunAllTasksUntilIdle();
 
   EXPECT_EQ(TestWallpaperControllerClient::kDummyCollectionId,
             client_.get_fetch_daily_refresh_wallpaper_param());
