@@ -38,6 +38,10 @@ struct COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilterModelConfig {
   // Maximum sample count.
   uint32_t max_sample_count = 0;
 
+  // Convert the provided 'sample_count' to an equivalent time duration.
+  // Should only be called when resampling is enabled.
+  base::TimeDelta GetEquivalentDuration(uint32_t sample_count) const;
+
   // Minimum count of samples for a stroke to be considered as a neighbor.
   uint32_t neighbor_min_sample_count = 0;
 

@@ -81,6 +81,8 @@ class COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilter
   std::vector<float> ExtractFeatures(int tracking_id) const;
   void AppendFeatures(const PalmFilterStroke& stroke,
                       std::vector<float>* features) const;
+  void AppendResampledFeatures(const PalmFilterStroke& stroke,
+                               std::vector<float>* features) const;
   void AppendFeaturesAsNeighbor(const PalmFilterStroke& stroke,
                                 float distance,
                                 std::vector<float>* features) const;

@@ -69,6 +69,25 @@ class COMPONENT_EXPORT(EVDEV) PalmFilterStroke {
   float BiggestSize() const;
   // If no elements in stroke, returns 0.0;
   float MaxMajorRadius() const;
+  /**
+   * Return the time duration of this stroke.
+   */
+  base::TimeDelta Duration() const;
+  /**
+   * Provide a (potentially resampled) sample at the requested time.
+   * Only interpolation is allowed.
+   * The requested time must be within the window at which the gesture occurred.
+   */
+  PalmFilterSample GetSampleAt(base::TimeTicks time) const;
+
+  /**
+   * Return true if the provided duration is between the duration of the
+   * previous sample and the current sample. In other words, if the addition of
+   * the last sample caused the total stroke duration to exceed the provided
+   * duration. Return false otherwise.
+   */
+  bool LastSampleCrossed(base::TimeDelta duration) const;
+
   const std::deque<PalmFilterSample>& samples() const;
   uint64_t samples_seen() const;
   int tracking_id() const;
@@ -76,10 +95,8 @@ class COMPONENT_EXPORT(EVDEV) PalmFilterStroke {
  private:
   void AddToUnscaledCentroid(const gfx::Vector2dF point);
   void AddSample(const PalmFilterSample& sample);
-  /**
-   * Process the sample. Potentially store the resampled sample into samples_.
-   */
-  void Resample(const PalmFilterSample& sample);
+
+  base::TimeDelta PreviousDuration() const;
 
   std::deque<PalmFilterSample> samples_;
   const int tracking_id_;
@@ -92,13 +109,9 @@ class COMPONENT_EXPORT(EVDEV) PalmFilterStroke {
    * number of times 'AddSample' has been called.
    */
   uint64_t samples_seen_ = 0;
-  /**
-   * The last sample seen by the model. Used when resampling is enabled in order
-   * to compute the resampled value.
-   */
-  PalmFilterSample last_sample_;
 
   const uint64_t max_sample_count_;
+  base::TimeTicks first_sample_time_;
   const absl::optional<base::TimeDelta> resample_period_;
 
   gfx::PointF unscaled_centroid_ = gfx::PointF(0., 0.);

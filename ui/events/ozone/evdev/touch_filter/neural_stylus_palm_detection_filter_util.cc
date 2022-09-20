@@ -4,6 +4,7 @@
 
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_util.h"
 
+#include <base/logging.h>
 #include <algorithm>
 
 namespace ui {
@@ -77,7 +78,7 @@ const static auto kPreferInitialEventDelay = base::Microseconds(1);
  * not interpolated, the values are taken from the 'after' sample unless the
  * requested time is very close to the 'before' sample.
  */
-PalmFilterSample getSampleAtTime(base::TimeTicks time,
+PalmFilterSample GetSampleAtTime(base::TimeTicks time,
                                  const PalmFilterSample& before,
                                  const PalmFilterSample& after) {
   // Use the newest sample as the base, except when the requested time is very
@@ -150,16 +151,30 @@ PalmFilterStroke::~PalmFilterStroke() {}
 
 void PalmFilterStroke::ProcessSample(const PalmFilterSample& sample) {
   DCHECK_EQ(tracking_id_, sample.tracking_id);
-  if (resample_period_.has_value()) {
-    Resample(sample);
-    return;
+  if (samples_seen_ == 0) {
+    first_sample_time_ = sample.time;
   }
 
   AddSample(sample);
 
-  while (samples_.size() > max_sample_count_) {
-    AddToUnscaledCentroid(-samples_.front().point.OffsetFromOrigin());
-    samples_.pop_front();
+  if (resample_period_.has_value()) {
+    // Prune based on time
+    const base::TimeDelta max_duration =
+        (*resample_period_) * (max_sample_count_ - 1);
+    while (samples_.size() > 2 &&
+           samples_.back().time - samples_[1].time >= max_duration) {
+      // We can only discard the sample if after it's discarded, we still cover
+      // the entire range. If we don't, we need to keep this sample for
+      // calculating resampled values.
+      AddToUnscaledCentroid(-samples_.front().point.OffsetFromOrigin());
+      samples_.pop_front();
+    }
+  } else {
+    // Prune based on number of samples
+    while (samples_.size() > max_sample_count_) {
+      AddToUnscaledCentroid(-samples_.front().point.OffsetFromOrigin());
+      samples_.pop_front();
+    }
   }
 }
 
@@ -167,36 +182,6 @@ void PalmFilterStroke::AddSample(const PalmFilterSample& sample) {
   AddToUnscaledCentroid(sample.point.OffsetFromOrigin());
   samples_.push_back(sample);
   samples_seen_++;
-}
-
-/**
- * When resampling is enabled, we don't store all samples. Only the resampled
- * values are stored into samples_. In addition, the last real event is stored
- * into last_sample_, which is used to calculate the resampled values.
- */
-void PalmFilterStroke::Resample(const PalmFilterSample& sample) {
-  if (samples_seen_ == 0) {
-    AddSample(sample);
-    last_sample_ = sample;
-    return;
-  }
-
-  // We already have a valid last sample here.
-  DCHECK_LE(last_sample_.time, sample.time);
-  // Generate resampled values
-  base::TimeTicks next_sample_time = samples_.back().time + *resample_period_;
-  while (next_sample_time <= sample.time) {
-    AddSample(getSampleAtTime(next_sample_time, last_sample_, sample));
-    next_sample_time = samples_.back().time + (*resample_period_);
-  }
-  last_sample_ = sample;
-
-  // Prune the resampled collection
-  while ((samples_.back().time - samples_.front().time) >=
-         (*resample_period_) * max_sample_count_) {
-    AddToUnscaledCentroid(-samples_.front().point.OffsetFromOrigin());
-    samples_.pop_front();
-  }
 }
 
 void PalmFilterStroke::AddToUnscaledCentroid(const gfx::Vector2dF point) {
@@ -221,6 +206,47 @@ const std::deque<PalmFilterSample>& PalmFilterStroke::samples() const {
 
 int PalmFilterStroke::tracking_id() const {
   return tracking_id_;
+}
+
+base::TimeDelta PalmFilterStroke::Duration() const {
+  if (samples_.empty()) {
+    LOG(DFATAL) << "No samples available";
+    return base::Milliseconds(0);
+  }
+  return samples_.back().time - first_sample_time_;
+}
+
+base::TimeDelta PalmFilterStroke::PreviousDuration() const {
+  if (samples_.size() <= 1) {
+    LOG(DFATAL) << "Not enough samples";
+    return base::Milliseconds(0);
+  }
+  const PalmFilterSample& secondToLastSample = samples_.rbegin()[1];
+  return secondToLastSample.time - first_sample_time_;
+}
+
+bool PalmFilterStroke::LastSampleCrossed(base::TimeDelta duration) const {
+  if (samples_.size() <= 1) {
+    // If there's only 1 sample, stroke just started and Duration() is zero.
+    return false;
+  }
+  return PreviousDuration() < duration && duration <= Duration();
+}
+
+PalmFilterSample PalmFilterStroke::GetSampleAt(base::TimeTicks time) const {
+  size_t i = 0;
+  for (; i < samples_.size() && samples_[i].time < time; ++i) {
+  }
+
+  if (i < samples_.size() && !samples_.empty() && samples_[i].time == time) {
+    return samples_[i];
+  }
+  if (i == 0 || i == samples_.size()) {
+    LOG(DFATAL) << "Invalid index: " << i
+                << ", can't interpolate for time: " << time;
+    return {};
+  }
+  return GetSampleAtTime(time, samples_[i - 1], samples_[i]);
 }
 
 uint64_t PalmFilterStroke::samples_seen() const {

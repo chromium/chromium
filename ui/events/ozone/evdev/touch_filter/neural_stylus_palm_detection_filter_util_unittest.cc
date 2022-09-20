@@ -293,23 +293,24 @@ TEST(PalmFilterStrokeTest, NumberOfResampledValues) {
   ASSERT_THAT(stroke.samples(), ElementsAre(SampleTime(down_time)));
   ASSERT_EQ(1u, stroke.samples_seen());
 
-  // Add second sample at time = T + 2ms. It's not yet time for the new frame,
-  // so no new sample should be generated.
+  // Add second sample at time = T + 4ms. All samples are stored, even if it's
+  // before the next resample time.
   base::TimeTicks time = down_time + base::Milliseconds(4);
   sample = CreatePalmFilterSample(touch_, time, model_config_, device_info);
   stroke.ProcessSample(sample);
-  ASSERT_THAT(stroke.samples(), ElementsAre(SampleTime(down_time)));
-  ASSERT_EQ(1u, stroke.samples_seen());
+  ASSERT_THAT(stroke.samples(),
+              ElementsAre(SampleTime(down_time), SampleTime(time)));
+  ASSERT_EQ(2u, stroke.samples_seen());
 
-  // Add third sample at time = T + 10ms. An event at time = T + 8ms should be
-  // generated.
+  // Add third sample at time = T + 10ms.
   time = down_time + base::Milliseconds(10);
   sample = CreatePalmFilterSample(touch_, time, model_config_, device_info);
   stroke.ProcessSample(sample);
   ASSERT_THAT(stroke.samples(),
               ElementsAre(SampleTime(down_time),
-                          SampleTime(down_time + base::Milliseconds(8))));
-  ASSERT_EQ(2u, stroke.samples_seen());
+                          SampleTime(down_time + base::Milliseconds(4)),
+                          SampleTime(down_time + base::Milliseconds(10))));
+  ASSERT_EQ(3u, stroke.samples_seen());
 }
 
 TEST(PalmFilterStrokeTest, ResamplingTest) {
@@ -346,7 +347,7 @@ TEST(PalmFilterStrokeTest, ResamplingTest) {
       CreatePalmFilterSample(touch_, time, model_config_, device_info);
   stroke.ProcessSample(sample2);
   // The samples should remain unchanged
-  ASSERT_THAT(stroke.samples(), ElementsAre(sample1));
+  ASSERT_THAT(stroke.samples(), ElementsAre(sample1, sample2));
 
   // Add third sample at time = T + 12ms. A resampled event at time = T + 8ms
   // should be generated.
@@ -358,16 +359,16 @@ TEST(PalmFilterStrokeTest, ResamplingTest) {
   PalmFilterSample sample3 =
       CreatePalmFilterSample(touch_, time, model_config_, device_info);
   stroke.ProcessSample(sample3);
-  ASSERT_THAT(
-      stroke.samples(),
-      ElementsAre(sample1, SampleTime(down_time + base::Milliseconds(8))));
-
-  EXPECT_EQ(150, stroke.samples().back().point.x());
-  EXPECT_EQ(22, stroke.samples().back().point.y());
-  EXPECT_EQ(14, stroke.samples().back().major_radius);
-  EXPECT_EQ(13, stroke.samples().back().minor_radius);
+  ASSERT_THAT(stroke.samples(), ElementsAre(sample1, sample2, sample3));
 }
 
+/**
+ * There should always be at least (max_sample_count - 1) * resample_period
+ * worth of samples. However, that's not sufficient. In the cases where the gap
+ * between samples is very large (larger than the sample horizon), there needs
+ * to be another sample in order to calculate resampled values throughout the
+ * entire range.
+ */
 TEST(PalmFilterStrokeTest, MultipleResampledValues) {
   NeuralStylusPalmDetectionFilterModelConfig model_config_;
   model_config_.max_sample_count = 3;
@@ -391,8 +392,7 @@ TEST(PalmFilterStrokeTest, MultipleResampledValues) {
   // First sample should go in as is
   ASSERT_THAT(stroke.samples(), ElementsAre(sample1));
 
-  // Add second sample at time = T + 20ms. Two resampled values should be
-  // generated: 1) at time = T+8ms 2) at time = T+16ms
+  // Add second sample at time = T + 20ms.
   base::TimeTicks time = down_time + base::Milliseconds(20);
   touch_.x = 20;
   touch_.y = 30;
@@ -401,22 +401,23 @@ TEST(PalmFilterStrokeTest, MultipleResampledValues) {
   PalmFilterSample sample2 =
       CreatePalmFilterSample(touch_, time, model_config_, device_info);
   stroke.ProcessSample(sample2);
-  ASSERT_THAT(stroke.samples(),
-              ElementsAre(SampleTime(down_time),
-                          SampleTime(down_time + base::Milliseconds(8)),
-                          SampleTime(down_time + base::Milliseconds(16))));
 
-  // First sample : time = T + 8ms
-  EXPECT_EQ(8, stroke.samples()[1].point.x());
-  EXPECT_EQ(18, stroke.samples()[1].point.y());
-  EXPECT_EQ(220, stroke.samples()[1].major_radius);
-  EXPECT_EQ(120, stroke.samples()[1].minor_radius);
+  ASSERT_THAT(stroke.samples(), ElementsAre(sample1, sample2));
 
-  // Second sample : time = T + 16ms
-  EXPECT_EQ(16, stroke.samples().back().point.x());
-  EXPECT_EQ(26, stroke.samples().back().point.y());
-  EXPECT_EQ(220, stroke.samples().back().major_radius);
-  EXPECT_EQ(120, stroke.samples().back().minor_radius);
+  // Verify resampled sample : time = T + 8ms
+  PalmFilterSample resampled_sample =
+      stroke.GetSampleAt(down_time + base::Milliseconds(8));
+  EXPECT_EQ(8, resampled_sample.point.x());
+  EXPECT_EQ(18, resampled_sample.point.y());
+  EXPECT_EQ(220, resampled_sample.major_radius);
+  EXPECT_EQ(120, resampled_sample.minor_radius);
+
+  // Verify resampled sample : time = T + 16ms
+  resampled_sample = stroke.GetSampleAt(down_time + base::Milliseconds(16));
+  EXPECT_EQ(16, resampled_sample.point.x());
+  EXPECT_EQ(26, resampled_sample.point.y());
+  EXPECT_EQ(220, resampled_sample.major_radius);
+  EXPECT_EQ(120, resampled_sample.minor_radius);
 }
 
 }  // namespace ui
