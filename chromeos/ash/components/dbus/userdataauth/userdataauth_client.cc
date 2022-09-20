@@ -330,6 +330,13 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void ListAuthFactors(const ::user_data_auth::ListAuthFactorsRequest& request,
+                       ListAuthFactorsCallback callback) override {
+    CallProtoMethod(::user_data_auth::kListAuthFactors,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
   void GetRecoveryRequest(
       const ::user_data_auth::GetRecoveryRequestRequest& request,
       GetRecoveryRequestCallback callback) override {

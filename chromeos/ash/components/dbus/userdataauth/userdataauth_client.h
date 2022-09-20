@@ -298,6 +298,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       const ::user_data_auth::RemoveAuthFactorRequest& request,
       RemoveAuthFactorCallback callback) = 0;
 
+  virtual void ListAuthFactors(
+      const ::user_data_auth::ListAuthFactorsRequest& request,
+      ListAuthFactorsCallback callback) = 0;
+
   // This is called when a user authenticates with recovery to obtain the
   // request to be sent to the recovery service.
   virtual void GetRecoveryRequest(
