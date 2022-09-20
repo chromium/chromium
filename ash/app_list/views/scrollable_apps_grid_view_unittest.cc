@@ -59,9 +59,7 @@ class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
 class ScrollableAppsGridViewTest : public AshTestBase {
  public:
   ScrollableAppsGridViewTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
-  }
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~ScrollableAppsGridViewTest() override = default;
 
   void SetUp() override {
@@ -160,7 +158,6 @@ class ScrollableAppsGridViewTest : public AshTestBase {
 
   void AddPageBreakItem() { GetAppListTestHelper()->AddPageBreakItem(); }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<test::AppListTestModel> app_list_test_model_;
   std::unique_ptr<SearchModel> search_model_;
   std::unique_ptr<ShelfItemFactoryFake> shelf_item_factory_;
