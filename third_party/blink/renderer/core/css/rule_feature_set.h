@@ -230,10 +230,10 @@ class CORE_EXPORT RuleFeatureSet {
     bool invalidates_parts = false;
   };
 
-  SelectorPreMatch CollectFeaturesFromSelector(
+  SelectorPreMatch CollectMetadataFromSelector(
       const CSSSelector&,
-      FeatureMetadata&,
-      unsigned max_direct_adjacent_selectors);
+      unsigned max_direct_adjacent_selectors,
+      FeatureMetadata&);
 
   InvalidationSet& EnsureClassInvalidationSet(const AtomicString& class_name,
                                               InvalidationType,

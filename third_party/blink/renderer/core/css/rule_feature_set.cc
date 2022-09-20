@@ -1557,9 +1557,8 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromSelector(
   CHECK(is_alive_);
   FeatureMetadata metadata;
   const unsigned max_direct_adjacent_selectors = 0;
-  if (CollectFeaturesFromSelector(selector, metadata,
-                                  max_direct_adjacent_selectors) ==
-      kSelectorNeverMatches) {
+  if (CollectMetadataFromSelector(selector, max_direct_adjacent_selectors,
+                                  metadata) == kSelectorNeverMatches) {
     return kSelectorNeverMatches;
   }
 
@@ -1569,10 +1568,10 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromSelector(
   return kSelectorMayMatch;
 }
 
-RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromSelector(
+RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectMetadataFromSelector(
     const CSSSelector& selector,
-    RuleFeatureSet::FeatureMetadata& metadata,
-    unsigned max_direct_adjacent_selectors) {
+    unsigned max_direct_adjacent_selectors,
+    RuleFeatureSet::FeatureMetadata& metadata) {
   CSSSelector::RelationType relation = CSSSelector::kDescendant;
   bool found_host_pseudo = false;
 
@@ -1621,8 +1620,8 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromSelector(
           for (const CSSSelector* sub_selector = selector_list->First();
                sub_selector;
                sub_selector = CSSSelectorList::Next(*sub_selector)) {
-            CollectFeaturesFromSelector(*sub_selector, metadata,
-                                        max_direct_adjacent_selectors);
+            CollectMetadataFromSelector(
+                *sub_selector, max_direct_adjacent_selectors, metadata);
           }
         }
         break;
