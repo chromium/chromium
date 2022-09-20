@@ -8,6 +8,9 @@
 
 <body>
 <script>
+
+setup(() => assertSpeculationRulesIsSupported());
+
 promise_test(async () => {
   const uid = token();
   const bc = new PrerenderChannel('prerender-channel', uid);
