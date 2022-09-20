@@ -87,8 +87,6 @@ void FileAnalyzer::Start(const base::FilePath& target_path,
   callback_ = std::move(callback);
   start_time_ = base::Time::Now();
 
-  results_.type = download_type_util::GetDownloadType(target_path_);
-
   DownloadFileType::InspectionType inspection_type =
       FileTypePolicies::GetInstance()
           ->PolicyForFile(target_path_, GURL{}, nullptr)
@@ -106,6 +104,9 @@ void FileAnalyzer::Start(const base::FilePath& target_path,
   } else if (inspection_type == DownloadFileType::OFFICE_DOCUMENT) {
     StartExtractDocumentFeatures();
 #endif
+  } else if (base::FeatureList::IsEnabled(kSevenZipEvaluationEnabled) &&
+             inspection_type == DownloadFileType::SEVEN_ZIP) {
+    StartExtractSevenZipFeatures();
   } else {
 #if BUILDFLAG(IS_MAC)
     // Checks for existence of "koly" signature even if file doesn't have
@@ -181,16 +182,16 @@ void FileAnalyzer::OnZipAnalysisFinished(
   CopyArchivedBinaries(archive_results.archived_binary,
                        &results_.archived_binaries);
 
-  if (!results_.archived_executable) {
-    if (archive_results.has_archive) {
-      results_.type = ClientDownloadRequest::ZIPPED_ARCHIVE;
-    } else if (!archive_results.success) {
-      // .zip files that look invalid to Chrome can often be successfully
-      // unpacked by other archive tools, so they may be a real threat.
-      results_.type = ClientDownloadRequest::INVALID_ZIP;
-    }
-  } else {
+  if (archive_results.has_executable) {
     results_.type = ClientDownloadRequest::ZIPPED_EXECUTABLE;
+  } else if (archive_results.has_archive) {
+    results_.type = ClientDownloadRequest::ZIPPED_ARCHIVE;
+  } else if (!archive_results.success) {
+    // .zip files that look invalid to Chrome can often be successfully
+    // unpacked by other archive tools, so they may be a real threat.
+    results_.type = ClientDownloadRequest::INVALID_ZIP;
+  } else {
+    results_.type = download_type_util::GetDownloadType(target_path_);
   }
 
   results_.archive_summary.set_file_count(archive_results.file_count);
@@ -236,16 +237,16 @@ void FileAnalyzer::OnRarAnalysisFinished(
   CopyArchivedBinaries(archive_results.archived_binary,
                        &results_.archived_binaries);
 
-  if (!results_.archived_executable) {
-    if (archive_results.has_archive) {
-      results_.type = ClientDownloadRequest::RAR_COMPRESSED_ARCHIVE;
-    } else if (!archive_results.success) {
-      // .rar files that look invalid to Chrome may be successfully unpacked by
-      // other archive tools, so they may be a real threat.
-      results_.type = ClientDownloadRequest::INVALID_RAR;
-    }
-  } else {
+  if (archive_results.has_executable) {
     results_.type = ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE;
+  } else if (archive_results.has_archive) {
+    results_.type = ClientDownloadRequest::RAR_COMPRESSED_ARCHIVE;
+  } else if (!archive_results.success) {
+    // .rar files that look invalid to Chrome may be successfully unpacked by
+    // other archive tools, so they may be a real threat.
+    results_.type = ClientDownloadRequest::INVALID_RAR;
+  } else {
+    results_.type = download_type_util::GetDownloadType(target_path_);
   }
 
   results_.archive_summary.set_file_count(archive_results.file_count);
@@ -369,6 +370,60 @@ void FileAnalyzer::OnDocumentAnalysisFinished(
   std::move(callback_).Run(std::move(results_));
 }
 #endif
+
+void FileAnalyzer::StartExtractSevenZipFeatures() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // TODO(crbug/1355567): Implement SandboxedSevenZipAnalyzer and call it here.
+  NOTREACHED();
+}
+
+void FileAnalyzer::OnSevenZipAnalysisFinished(
+    const ArchiveAnalyzerResults& archive_results) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  base::UmaHistogramEnumeration(
+      "SBClientDownload.SevenZipArchiveAnalysisResult",
+      archive_results.analysis_result);
+  LogAnalysisDurationWithAndWithoutSuffix("SevenZip");
+
+  // Even if !results.success, some of the 7z may have been parsed.
+  // Some unzippers will successfully unpack archives that we cannot,
+  // so we're lenient here.
+  if (archive_results.success) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::VALID);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTimeout) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::PARSER_TIMED_OUT);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kTooLarge) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
+  }
+  results_.archived_executable = archive_results.has_executable;
+  results_.archived_archive = archive_results.has_archive;
+  CopyArchivedBinaries(archive_results.archived_binary,
+                       &results_.archived_binaries);
+
+  if (archive_results.has_executable) {
+    results_.type = ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_EXECUTABLE;
+  } else if (archive_results.has_archive) {
+    results_.type = ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_ARCHIVE;
+  } else if (!archive_results.success) {
+    // .7z files that look invalid to Chrome can sometimes be successfully
+    // unpacked by other archive tools, so they may be a real threat.
+    results_.type = ClientDownloadRequest::INVALID_SEVEN_ZIP;
+  } else {
+    results_.type = download_type_util::GetDownloadType(target_path_);
+  }
+
+  results_.archive_summary.set_file_count(archive_results.file_count);
+  results_.archive_summary.set_directory_count(archive_results.directory_count);
+
+  std::move(callback_).Run(std::move(results_));
+}
 
 void FileAnalyzer::LogAnalysisDurationWithAndWithoutSuffix(
     const std::string& suffix) {

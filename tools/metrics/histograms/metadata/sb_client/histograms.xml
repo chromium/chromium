@@ -214,6 +214,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Document" summary="Office document"/>
     <variant name="None" summary="executable"/>
     <variant name="Rar"/>
+    <variant name="SevenZip"/>
     <variant name="Zip"/>
   </token>
 </histogram>
@@ -239,6 +240,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Document" summary="Office document"/>
     <variant name="None" summary="executable"/>
     <variant name="Rar"/>
+    <variant name="SevenZip"/>
     <variant name="Zip"/>
   </token>
 </histogram>
@@ -331,6 +333,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".Document" summary="Office documents"/>
     <variant name=".Executable" summary="executables"/>
     <variant name=".Rar"/>
+    <variant name=".SevenZip"/>
     <variant name=".Zip"/>
   </token>
 </histogram>
@@ -552,6 +555,7 @@ chromium-metrics-reviews@google.com.
   <token key="ArchiveType">
     <variant name="Dmg"/>
     <variant name="Rar"/>
+    <variant name="SevenZip"/>
     <variant name="Zip"/>
   </token>
 </histogram>

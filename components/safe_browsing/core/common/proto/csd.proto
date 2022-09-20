@@ -718,6 +718,11 @@ message ClientDownloadRequest {
     INVALID_RAR = 13;
     // Office Document or PDF.
     DOCUMENT = 14;
+
+    // .7z archive
+    SEVEN_ZIP_COMPRESSED_EXECUTABLE = 15;
+    SEVEN_ZIP_COMPRESSED_ARCHIVE = 16;
+    INVALID_SEVEN_ZIP = 17;
   }
   optional DownloadType download_type = 10 [default = WIN_EXECUTABLE];
 

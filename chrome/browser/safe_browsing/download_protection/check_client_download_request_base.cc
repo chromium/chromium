@@ -288,7 +288,9 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
   if ((client_download_request_->download_type() ==
            ClientDownloadRequest::ZIPPED_EXECUTABLE ||
        client_download_request_->download_type() ==
-           ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE) &&
+           ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE ||
+       client_download_request_->download_type() ==
+           ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_EXECUTABLE) &&
       client_download_request_->archive_valid() &&
       base::ranges::all_of(
           client_download_request_->archived_binary(),
@@ -557,46 +559,37 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
       FileTypePolicies::GetInstance()
           ->PolicyForFile(target_file_path_, GURL{}, nullptr)
           .inspection_type();
+  std::string metrics_suffix = "";
+  base::TimeDelta duration = base::TimeTicks::Now() - start_time_;
   switch (inspection_type) {
     case DownloadFileType::NONE:
-      base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration.None",
-                              base::TimeTicks::Now() - start_time_);
-      base::UmaHistogramMediumTimes(
-          "SBClientDownload.DownloadRequestDurationMedium.None",
-          base::TimeTicks::Now() - start_time_);
+      metrics_suffix = ".None";
       break;
     case DownloadFileType::ZIP:
-      base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration.Zip",
-                              base::TimeTicks::Now() - start_time_);
-      base::UmaHistogramMediumTimes(
-          "SBClientDownload.DownloadRequestDurationMedium.Zip",
-          base::TimeTicks::Now() - start_time_);
+      metrics_suffix = ".Zip";
       break;
     case DownloadFileType::RAR:
-      base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration.Rar",
-                              base::TimeTicks::Now() - start_time_);
-      base::UmaHistogramMediumTimes(
-          "SBClientDownload.DownloadRequestDurationMedium.Rar",
-          base::TimeTicks::Now() - start_time_);
+      metrics_suffix = ".Rar";
       break;
     case DownloadFileType::DMG:
-      base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration.Dmg",
-                              base::TimeTicks::Now() - start_time_);
-      base::UmaHistogramMediumTimes(
-          "SBClientDownload.DownloadRequestDurationMedium.Dmg",
-          base::TimeTicks::Now() - start_time_);
+      metrics_suffix = ".Dmg";
       break;
     case DownloadFileType::OFFICE_DOCUMENT:
-      base::UmaHistogramTimes(
-          "SBClientDownload.DownloadRequestDuration.Document",
-          base::TimeTicks::Now() - start_time_);
-      base::UmaHistogramMediumTimes(
-          "SBClientDownload.DownloadRequestDurationMedium.Document",
-          base::TimeTicks::Now() - start_time_);
+      metrics_suffix = ".Document";
+      break;
+    case DownloadFileType::SEVEN_ZIP:
+      if (base::FeatureList::IsEnabled(kSevenZipEvaluationEnabled))
+        metrics_suffix = ".SevenZip";
+      else
+        metrics_suffix = ".None";
       break;
   }
-  base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration",
-                          base::TimeTicks::Now() - start_time_);
+  base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration", duration);
+  base::UmaHistogramTimes(
+      "SBClientDownload.DownloadRequestDuration" + metrics_suffix, duration);
+  base::UmaHistogramMediumTimes(
+      "SBClientDownload.DownloadRequestDurationMedium" + metrics_suffix,
+      duration);
   base::UmaHistogramTimes("SBClientDownload.DownloadRequestNetworkDuration",
                           base::TimeTicks::Now() - request_start_time_);
 

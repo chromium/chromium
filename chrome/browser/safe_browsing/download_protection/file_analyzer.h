@@ -111,6 +111,10 @@ class FileAnalyzer {
       const DocumentAnalyzerResults& document_results);
 #endif
 
+  void StartExtractSevenZipFeatures();
+  void OnSevenZipAnalysisFinished(
+      const ArchiveAnalyzerResults& archive_results);
+
   void LogAnalysisDurationWithAndWithoutSuffix(const std::string& suffix);
 
   base::FilePath target_path_;
