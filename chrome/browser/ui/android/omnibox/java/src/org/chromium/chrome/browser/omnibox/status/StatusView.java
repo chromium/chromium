@@ -5,15 +5,9 @@
 package org.chromium.chrome.browser.omnibox.status;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RotateDrawable;
-import android.graphics.drawable.TransitionDrawable;
-import android.graphics.drawable.VectorDrawable;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
 import android.view.View;
@@ -34,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -81,9 +76,6 @@ public class StatusView extends LinearLayout {
 
     private boolean mLastTouchDelegateRtlness;
     private Rect mLastTouchDelegateRect;
-
-    private int mCurrentTransitionDuration;
-    private long mTimeAtTransitionStartMs;
 
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private int mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
@@ -139,7 +131,7 @@ public class StatusView extends LinearLayout {
         // Ensure proper handling of animations.
         // Possible variants:
         // 1. Is: shown,           want: hidden  => animate hiding,
-        // 2. Is: shown,           want: shown   => crossfade w/TransitionDrawable,
+        // 2. Is: shown,           want: shown   => crossfade w/ChromeTransitionDrawable,
         // 3. Is: animating(show), want: hidden  => cancel animation; animate hiding,
         // 4. Is: animating(show), want: shown   => crossfade (carry on showing),
         // 5. Is: animating(hide), want: hidden  => no op,
@@ -150,8 +142,8 @@ public class StatusView extends LinearLayout {
         // This gives 3 actions:
         // - Animate showing, if hidden or previously hiding (6 + 8); cancel previous animation (6)
         // - Animate hiding, if shown or previously showing (1 + 3); cancel previous animation (3)
-        // - crossfade w/TransitionDrawable, if visible (2, 4, 6), otherwise use image directly.
-        // All other options (5, 7) are no-op.
+        // - crossfade w/ChromeTransitionDrawable, if visible (2, 4, 6), otherwise use image
+        // directly. All other options (5, 7) are no-op.
         //
         // Note: this will be compacted once we start using LayoutTransition with StatusView.
 
@@ -199,43 +191,29 @@ public class StatusView extends LinearLayout {
             updateTouchDelegate();
         }
 
-        // Action 3: Specify icon content. Use TransitionDrawable whenever object is visible.
+        // Action 3: Specify icon content. Use ChromeTransitionDrawable whenever object is visible.
         if (targetIcon != null) {
             if (!isIconHidden) {
                 Drawable existingDrawable = mIconView.getDrawable();
-                if (existingDrawable instanceof TransitionDrawable
-                        && ((TransitionDrawable) existingDrawable).getNumberOfLayers() == 2) {
-                    existingDrawable = ((TransitionDrawable) existingDrawable).getDrawable(1);
+                if (existingDrawable instanceof ChromeTransitionDrawable) {
+                    existingDrawable =
+                            ((ChromeTransitionDrawable) existingDrawable).getFinalDrawable();
                 }
 
-                TransitionDrawable newImage = new TransitionDrawable(new Drawable[] {
-                        existingDrawable,
+                ChromeTransitionDrawable newImage = new ChromeTransitionDrawable(existingDrawable,
                         transitionType == IconTransitionType.ROTATE ? getRotatedIcon(targetIcon)
-                                                                    : targetIcon}) {
-                    @Override
-                    public void draw(Canvas canvas) {
-                        super.draw(canvas);
-                        // Use this drawable's draw method to check if the animation is over or not.
-                        // Originally we tried #dispatchDraw() but this doesn't seem to work with
-                        // animations/drawables. See https://crbug.com/1325875.
-                        updateAnimationStatus();
-                    }
-                };
-
+                                                                    : targetIcon);
                 mIconView.setImageDrawable(newImage);
-
-                // Note: crossfade controls blending, not animation.
-                newImage.setCrossFadeEnabled(true);
 
                 if (transitionType == IconTransitionType.CROSSFADE) {
                     mIsAnimatingStatusIconChange = true;
-                    mCurrentTransitionDuration =
-                            mAnimationsEnabled ? getIconAnimationDuration() : 0;
-                    if (mCurrentTransitionDuration > 0) {
+                    long duration = mAnimationsEnabled ? getIconAnimationDuration() : 0;
+                    if (duration > 0) {
                         keepControlsShownForAnimation();
                     }
-                    mTimeAtTransitionStartMs = SystemClock.uptimeMillis();
-                    newImage.startTransition(mCurrentTransitionDuration);
+                    newImage.setCrossFadeEnabled(true);
+                    newImage.startTransition().setDuration(duration).withEndAction(
+                            this::resetAnimationStatus);
                 } else {
                     mIsAnimatingStatusIconChange = true;
                     keepControlsShownForAnimation();
@@ -243,8 +221,11 @@ public class StatusView extends LinearLayout {
                             .setDuration(ICON_ROTATION_DURATION_MS)
                             .rotationBy(ICON_ROTATION_DEGREES)
                             .setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR)
-                            .withStartAction(
-                                    () -> { newImage.startTransition(getIconAnimationDuration()); })
+                            .withStartAction(() -> {
+                                newImage.startTransition()
+                                        .setDuration(getIconAnimationDuration())
+                                        .withEndAction(this::resetAnimationStatus);
+                            })
                             .withEndAction(() -> {
                                 mIsAnimatingStatusIconChange = false;
                                 allowBrowserControlsHide();
@@ -334,32 +315,8 @@ public class StatusView extends LinearLayout {
      */
     void setStatusIconResources(@Nullable Drawable statusIconDrawable,
             @IconTransitionType int transitionType, @Nullable Runnable animationFinishedCallback) {
-        // TransitionDrawable and VectorDrawable do not play nicely together. Use BitmapDrawable
-        // instead otherwise the crossfade breaks, one of the icons will be fully visible when it
-        // should be fading. Solution from https://stackoverflow.com/q/49777302.
-        if (statusIconDrawable instanceof VectorDrawable) {
-            statusIconDrawable = convertToBitmapDrawable(statusIconDrawable);
-        }
-
         mStatusIconDrawable = statusIconDrawable;
         animateStatusIcon(transitionType, animationFinishedCallback);
-    }
-
-    private BitmapDrawable convertToBitmapDrawable(Drawable drawable) {
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-
-        // See https://crbug.com/1365377. This approach to convert between drawables has a downside
-        // that it flattens the tint if it's a color state list to a single value. We must choose
-        // a state value when this draw happens. Drawables default to false for all states, which is
-        // mostly fine, except for state_enabled. This causes many of our CSLs to add an alpha
-        // component. So set to enabled to avoid this.
-        drawable.setState(new int[] {android.R.attr.state_enabled});
-
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return new BitmapDrawable(getResources(), bitmap);
     }
 
     /** Specify the status icon alpha. */
@@ -586,17 +543,7 @@ public class StatusView extends LinearLayout {
         }
     }
 
-    private void updateAnimationStatus() {
-        long currentTimeMs = SystemClock.uptimeMillis();
-        if (mIsAnimatingStatusIconChange
-                && currentTimeMs - mTimeAtTransitionStartMs >= mCurrentTransitionDuration) {
-            resetAnimationStatus();
-        }
-    }
-
     private void resetAnimationStatus() {
-        mTimeAtTransitionStartMs = 0;
-        mCurrentTransitionDuration = 0;
         mIsAnimatingStatusIconChange = false;
         allowBrowserControlsHide();
     }
