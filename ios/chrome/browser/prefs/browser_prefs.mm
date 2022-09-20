@@ -8,6 +8,7 @@
 #import "base/time/time.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/browsing_data/core/pref_names.h"
+#import "components/commerce/core/pref_names.h"
 #import "components/component_updater/component_updater_service.h"
 #import "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -198,6 +199,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   autofill::prefs::RegisterProfilePrefs(registry);
+  commerce::RegisterPrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   ios_feed::RegisterProfilePrefs(registry);
   FirstRun::RegisterProfilePrefs(registry);

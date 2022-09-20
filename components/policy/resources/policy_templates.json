@@ -33433,6 +33433,38 @@ This policy has no effect if the option to keep existing browsing data is not av
       See https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage for details about JavaScript / ECMAScript media types.
       '''
     },
+    {
+      'name': 'ShoppingListEnabled',
+      'owners': ['aymana@chromium.org', 'mdjones@chromium.org', 'chrome-shopping-eng@google.com'],
+      'caption': 'Allow the shopping list feature to be enabled',
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:107-', 'chrome_os:107-', 'android:107-'],
+      'future_on': ['ios'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'The shopping list feature will be available to users.',
+        },
+        {
+          'value': False,
+          'caption': 'The shopping list feature will not be available to users.',
+        },
+      ],
+      'default': True,
+      'example_value': True,
+      'id': 1018,
+      'tags': [],
+      'desc': '''This policy controls the availability of the shopping list feature.
+      If enabled, users will be presented with UI to track the price of the product displayed on the current page. The tracked product will be shown in the bookmarks side panel.
+      If this policy is set to Enabled or not set, the shopping list feature will be available to users.
+      If this policy is set to Disabled, the shopping list feature will be unavailable.
+      ''',
+    }
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -34444,6 +34476,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1017,
+  'highest_id_currently_used': 1018,
   'highest_atomic_group_id_currently_used': 43
 }

@@ -38,7 +38,6 @@
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/session_proto_db/session_proto_storage.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -121,18 +120,6 @@ ShoppingService::ShoppingService(
 
   bookmark_update_manager_ = std::make_unique<BookmarkUpdateManager>(
       this, bookmark_model_, pref_service_);
-}
-
-void ShoppingService::RegisterPrefs(PrefRegistrySimple* registry) {
-  // This pref value is queried from server. Set initial value as true so our
-  // features can be correctly set up while waiting for the server response.
-  registry->RegisterBooleanPref(kWebAndAppActivityEnabledForShopping, true);
-
-  registry->RegisterBooleanPref(
-      commerce::kPriceEmailNotificationsEnabled, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-
-  registry->RegisterTimePref(kShoppingListBookmarkLastUpdateTime, base::Time());
 }
 
 void ShoppingService::WebWrapperCreated(WebWrapper* web) {}

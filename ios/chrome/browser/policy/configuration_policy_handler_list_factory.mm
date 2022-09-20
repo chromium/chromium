@@ -10,6 +10,7 @@
 #import "components/autofill/core/browser/autofill_credit_card_policy_handler.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
+#import "components/commerce/core/pref_names.h"
 #import "components/component_updater/pref_names.h"
 #import "components/content_settings/core/common/pref_names.h"
 #import "components/enterprise/browser/reporting/cloud_reporting_frequency_policy_handler.h"
@@ -112,6 +113,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kUrlKeyedAnonymizedDataCollectionEnabled,
     unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
     base::Value::Type::BOOLEAN },
+  { policy::key::kShoppingListEnabled,
+    commerce::kShoppingListEnabledPrefName,
+    base::Value::Type::BOOLEAN},
 };
 // clang-format on
 

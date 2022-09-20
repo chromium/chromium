@@ -1008,6 +1008,7 @@ policies:
   1007: DevicePrintingClientNameTemplate
   1008: ReportDeviceSignalStrengthEventDrivenTelemetry
   1009: BatterySaverModeAvailability
+  1018: ShoppingListEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

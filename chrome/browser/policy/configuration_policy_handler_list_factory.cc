@@ -61,6 +61,7 @@
 #include "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/certificate_transparency/pref_names.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/component_updater/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings_policy_handler.h"
 #include "components/content_settings/core/browser/insecure_private_network_policy_handler.h"
@@ -1756,6 +1757,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kRecoveryFactorBehavior,
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_FUCHSIA)
+  { key::kShoppingListEnabled,
+    commerce::kShoppingListEnabledPrefName,
+    base::Value::Type::BOOLEAN},
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 };
 // clang-format on
 

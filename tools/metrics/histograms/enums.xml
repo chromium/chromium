@@ -32461,6 +32461,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1015" label="CalendarIntegrationEnabled"/>
   <int value="1016" label="DeviceReportXDREvents"/>
   <int value="1017" label="TrashEnabled"/>
+  <int value="1018" label="ShoppingListEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

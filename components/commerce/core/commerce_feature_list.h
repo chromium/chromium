@@ -9,8 +9,11 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "components/flags_ui/feature_entry.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "url/gurl.h"
+
+class PrefService;
 
 namespace commerce {
 
@@ -301,6 +304,8 @@ bool IsCouponWithCodeEnabled();
 bool IsFakeDataEnabled();
 // Check if the contextual consent for discount is enabled.
 bool isContextualConsentEnabled();
+// Check if the shopping list feature is allowed for enterprise.
+bool IsShoppingListAllowedForEnterprise(PrefService* prefs);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Get the time delay between discount fetches.

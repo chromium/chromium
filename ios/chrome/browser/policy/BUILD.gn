@@ -62,6 +62,7 @@ source_set("policy") {
     "//components/autofill/core/browser",
     "//components/bookmarks/common",
     "//components/bookmarks/managed",
+    "//components/commerce/core:pref_names",
     "//components/component_updater",
     "//components/enterprise",
     "//components/history/core/common",

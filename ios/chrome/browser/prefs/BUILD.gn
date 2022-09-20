@@ -40,6 +40,7 @@ source_set("browser_prefs") {
   deps = [
     "//components/autofill/core/browser",
     "//components/browsing_data/core",
+    "//components/commerce/core:pref_names",
     "//components/component_updater",
     "//components/component_updater/installer_policies",
     "//components/content_settings/core/browser",

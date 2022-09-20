@@ -7,11 +7,13 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/values.h"
 #include "build/buildflag.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/commerce/core/commerce_heuristics_data.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 #include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
+#include "components/commerce/core/pref_names.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace commerce {
@@ -271,6 +273,14 @@ bool IsFakeDataEnabled() {
 bool isContextualConsentEnabled() {
   return kContextualConsentShowOnCartAndCheckoutPage.Get() ||
          kContextualConsentShowOnSRP.Get();
+}
+
+bool IsShoppingListAllowedForEnterprise(PrefService* prefs) {
+  const base::Value* pref =
+      prefs->GetUserPrefValue(kShoppingListEnabledPrefName);
+
+  // Default to true if there is no value set.
+  return !pref || pref->GetBool();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
