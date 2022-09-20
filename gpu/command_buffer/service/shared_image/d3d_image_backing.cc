@@ -102,33 +102,6 @@ gfx::Size PlaneSize(DXGI_FORMAT dxgi_format,
   }
 }
 
-class ScopedRestoreTexture {
- public:
-  ScopedRestoreTexture(gl::GLApi* api, GLenum target)
-      : api_(api), target_(target) {
-    DCHECK(target == GL_TEXTURE_2D || target == GL_TEXTURE_EXTERNAL_OES);
-    GLint binding = 0;
-    api->glGetIntegervFn(target == GL_TEXTURE_2D
-                             ? GL_TEXTURE_BINDING_2D
-                             : GL_TEXTURE_BINDING_EXTERNAL_OES,
-                         &binding);
-    // The bound texture could be already deleted by another context, and the
-    // texture ID |binding| could be reused and points to a different texture.
-    if (api->glIsTextureFn(binding))
-      prev_binding_ = binding;
-  }
-
-  ScopedRestoreTexture(const ScopedRestoreTexture&) = delete;
-  ScopedRestoreTexture& operator=(const ScopedRestoreTexture&) = delete;
-
-  ~ScopedRestoreTexture() { api_->glBindTextureFn(target_, prev_binding_); }
-
- private:
-  const raw_ptr<gl::GLApi> api_;
-  const GLenum target_;
-  GLuint prev_binding_ = 0;
-};
-
 scoped_refptr<gles2::TexturePassthrough> CreateGLTexture(
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -197,6 +170,24 @@ void CopyPlane(const uint8_t* source_memory,
 }
 
 }  // namespace
+
+ScopedRestoreTexture::ScopedRestoreTexture(gl::GLApi* api, GLenum target)
+    : api_(api), target_(target) {
+  DCHECK(target == GL_TEXTURE_2D || target == GL_TEXTURE_EXTERNAL_OES);
+  GLint binding = 0;
+  api->glGetIntegervFn(target == GL_TEXTURE_2D
+                           ? GL_TEXTURE_BINDING_2D
+                           : GL_TEXTURE_BINDING_EXTERNAL_OES,
+                       &binding);
+  // The bound texture could be already deleted by another context, and the
+  // texture ID |binding| could be reused and points to a different texture.
+  if (api->glIsTextureFn(binding))
+    prev_binding_ = binding;
+}
+
+ScopedRestoreTexture::~ScopedRestoreTexture() {
+  api_->glBindTextureFn(target_, prev_binding_);
+}
 
 // static
 std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(

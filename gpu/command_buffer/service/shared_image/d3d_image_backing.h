@@ -36,6 +36,21 @@ class ColorSpace;
 namespace gpu {
 struct Mailbox;
 
+class ScopedRestoreTexture {
+ public:
+  ScopedRestoreTexture(gl::GLApi* api, GLenum target);
+
+  ScopedRestoreTexture(const ScopedRestoreTexture&) = delete;
+  ScopedRestoreTexture& operator=(const ScopedRestoreTexture&) = delete;
+
+  ~ScopedRestoreTexture();
+
+ private:
+  const raw_ptr<gl::GLApi> api_;
+  const GLenum target_;
+  GLuint prev_binding_ = 0;
+};
+
 // Implementation of SharedImageBacking that holds buffer (front buffer/back
 // buffer of swap chain) texture (as gles2::Texture/gles2::TexturePassthrough)
 // and a reference to created swap chain.

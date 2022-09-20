@@ -29,6 +29,28 @@ GLTexturePassthroughD3DImageRepresentation::
     ~GLTexturePassthroughD3DImageRepresentation() = default;
 
 bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
+  // Bind the GLImage if necessary.
+  auto texture = GetTexturePassthrough();
+  if (texture->is_bind_pending()) {
+    GLenum target = texture->target();
+    gl::GLImage* image = texture->GetLevelImage(target, 0);
+
+    if (image) {
+      // First ensure that |target| is bound to |texture|.
+      gl::GLApi* const api = gl::g_current_gl_context;
+      ScopedRestoreTexture scoped_restore(api, target);
+      api->glBindTextureFn(target, texture->service_id());
+
+      // Now bind the GLImage to |texture| via |target|.
+      // NOTE: GLImages created in this context (GLImageDXGI or GLImageD3D)
+      // always bind.
+      DCHECK(image->ShouldBindOrCopy() == gl::GLImage::BIND);
+      image->BindTexImage(target);
+
+      texture->set_is_bind_pending(false);
+    }
+  }
+
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
   return d3d_image_backing->BeginAccessD3D11();
 }
