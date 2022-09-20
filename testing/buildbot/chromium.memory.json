@@ -20171,6 +20171,9 @@
         "test_id_prefix": "ninja://ui/events:events_unittests/"
       },
       {
+        "args": [
+          "--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -20189,6 +20192,9 @@
         "test_id_prefix": "ninja://extensions:extensions_browsertests/"
       },
       {
+        "args": [
+          "--gtest_filter=-NativeExtensionBindingsSystemUnittest*:BluetoothSocketApiUnittest.CreateThenClose:FeatureProviderTest.PermissionFeatureAvailability"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
@@ -21356,6 +21362,9 @@
         "test_id_prefix": "ninja://url:url_unittests/"
       },
       {
+        "args": [
+          "--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:DesktopWidgetTest*:DesktopWindowTreeHostPlatformTest*:EditableComboboxTest*:MenuRunnerTest*:TextfieldTest*:TooltipControllerTest*:TooltipStateManagerTest*"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],

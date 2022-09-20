@@ -2028,6 +2028,12 @@
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100, # https://crbug.com/876615
       },
+      # https://crbug.com/1111979
+      'linux-lacros-asan-lsan-rel': {
+        'args': [
+          '--gtest_filter=-BluetoothShellApiTest.ApiSanityCheck:BluetoothSocketApiTest.Listen:BluetoothSocketApiTest.PermissionDenied',
+        ],
+      },
       # https://crbug.com/1111979,
       'linux-lacros-code-coverage': {
         'args': [
@@ -2051,6 +2057,14 @@
       'fuchsia-fyi-x64-asan': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.extensions_unittests.filter',
+        ],
+      },
+      # https://crbug.com/1111979
+      'linux-lacros-asan-lsan-rel': {
+        'args': [
+          '--gtest_filter=-NativeExtensionBindingsSystemUnittest*:'
+          'BluetoothSocketApiUnittest.CreateThenClose:'
+          'FeatureProviderTest.PermissionFeatureAvailability',
         ],
       },
       # https://crbug.com/1111979,
@@ -3622,6 +3636,19 @@
       'fuchsia-fyi-arm64-dbg': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.views_unittests.filter',
+        ],
+      },
+      # https://crbug.com/1111979
+      'linux-lacros-asan-lsan-rel': {
+        'args': [
+          '--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:'
+          'DesktopWidgetTest*:'
+          'DesktopWindowTreeHostPlatformTest*:'
+          'EditableComboboxTest*:'
+          'MenuRunnerTest*:'
+          'TextfieldTest*:'
+          'TooltipControllerTest*:'
+          'TooltipStateManagerTest*'
         ],
       },
       # https://crbug.com/1111979,
