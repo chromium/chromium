@@ -304,7 +304,8 @@ bool ShouldSkipIPAddress(const re2::StringPiece& skipped) {
 #define PORT DIGIT "*"
 
 // This is a diversion of RFC 3987
-#define SCHEME NCG("http|https|ftp|chrome|chrome-extension|android|rtsp|file")
+#define SCHEME \
+  NCG("http|https|ftp|chrome|chrome-extension|android|rtsp|file|isolated-app")
 
 #define IPRIVATE            \
   "["                       \
