@@ -53,9 +53,11 @@
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 
+namespace app_list {
+
 namespace {
 
-class FakeAppContextMenuDelegate : public app_list::AppContextMenuDelegate {
+class FakeAppContextMenuDelegate : public AppContextMenuDelegate {
  public:
   FakeAppContextMenuDelegate() = default;
   FakeAppContextMenuDelegate(const FakeAppContextMenuDelegate&) = delete;
@@ -63,7 +65,7 @@ class FakeAppContextMenuDelegate : public app_list::AppContextMenuDelegate {
       delete;
   ~FakeAppContextMenuDelegate() override = default;
 
-  // app_list::AppContextMenuDelegate overrides:
+  // AppContextMenuDelegate overrides:
   void ExecuteLaunchCommand(int event_flags) override {}
 };
 
@@ -107,17 +109,16 @@ class FakeAppListControllerDelegate
 
 class FakeAppServiceAppItem : public AppServiceAppItem {
  public:
-  FakeAppServiceAppItem(
-      Profile* profile,
-      AppListModelUpdater* model_updater,
-      const app_list::AppListSyncableService::SyncItem* sync_item,
-      const apps::AppUpdate& app_update)
+  FakeAppServiceAppItem(Profile* profile,
+                        AppListModelUpdater* model_updater,
+                        const AppListSyncableService::SyncItem* sync_item,
+                        const apps::AppUpdate& app_update)
       : AppServiceAppItem(profile, model_updater, sync_item, app_update) {}
   FakeAppServiceAppItem(const FakeAppServiceAppItem&) = delete;
   FakeAppServiceAppItem& operator=(const FakeAppServiceAppItem&) = delete;
   ~FakeAppServiceAppItem() override = default;
 
-  // app_list::AppContextMenuDelegate overrides:
+  // AppContextMenuDelegate overrides:
   void ExecuteLaunchCommand(int event_flags) override {
     AppServiceAppItem::ExecuteLaunchCommand(event_flags);
 
@@ -173,7 +174,7 @@ std::unique_ptr<ui::SimpleMenuModel> GetContextMenuModel(
 }
 
 std::unique_ptr<ui::SimpleMenuModel> GetMenuModel(
-    app_list::AppContextMenu* context_menu) {
+    AppContextMenu* context_menu) {
   base::RunLoop run_loop;
   std::unique_ptr<ui::SimpleMenuModel> menu;
   context_menu->GetMenuModel(base::BindLambdaForTesting(
@@ -707,7 +708,7 @@ TEST_F(AppContextMenuTest, CommandIdsMatchEnumsForHistograms) {
 
 // Tests that internal app's context menu is correct.
 TEST_F(AppContextMenuTest, InternalAppMenu) {
-  for (const auto& internal_app : app_list::GetInternalAppList(profile())) {
+  for (const auto& internal_app : GetInternalAppList(profile())) {
     controller()->SetAppPinnable(internal_app.app_id,
                                  AppListControllerDelegate::PIN_EDITABLE);
 
@@ -776,3 +777,5 @@ TEST_F(AppContextMenuLacrosTest, LacrosApp) {
   AddToStates(menu, MenuState(ash::SHOW_APP_INFO), &states);
   ValidateMenuState(menu_model.get(), states);
 }
+
+}  // namespace app_list

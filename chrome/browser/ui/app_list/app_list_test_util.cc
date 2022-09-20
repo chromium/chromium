@@ -17,6 +17,8 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
 
+namespace app_list {
+
 const char AppListTestBase::kHostedAppId[] = "dceacbkfkmllgmjmbhgkpjegnodmildf";
 const char AppListTestBase::kPackagedApp1Id[] =
     "emfkafnhnpcmabnnkckkchdilgeoekbo";
@@ -135,3 +137,5 @@ syncer::SyncData CreateAppRemoteData(
   return syncer::SyncData::CreateRemoteData(
       specifics, syncer::ClientTagHash::FromHashed("unused"));
 }
+
+}  // namespace app_list

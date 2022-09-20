@@ -10,6 +10,10 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 
+namespace app_list {
+
+namespace {
+
 constexpr char kVpnAppName[] = "vpn.app.name";
 constexpr char kVpnAppNameUpdate[] = "vpn.app.name.update";
 constexpr char kVpnAppActivity[] = "vpn.app.activity";
@@ -18,7 +22,9 @@ constexpr char kNonVpnAppName[] = "non.vpn.app.name";
 constexpr char kNonVpnAppActivity[] = "non.vpn.app.activity";
 constexpr char kNonVpnPackageName[] = "non.vpn.app.package.name";
 
-class ArcVpnObserver : public app_list::ArcVpnProviderManager::Observer {
+}  // namespace
+
+class ArcVpnObserver : public ArcVpnProviderManager::Observer {
  public:
   ArcVpnObserver() = default;
 
@@ -33,15 +39,14 @@ class ArcVpnObserver : public app_list::ArcVpnProviderManager::Observer {
 
   // ArcVpnProviderManager::Observer::
   void OnArcVpnProvidersRefreshed(
-      const std::vector<
-          std::unique_ptr<app_list::ArcVpnProviderManager::ArcVpnProvider>>&
+      const std::vector<std::unique_ptr<ArcVpnProviderManager::ArcVpnProvider>>&
           arc_vpn_providers) override {
     for (const auto& arc_vpn_provider : arc_vpn_providers)
       arc_vpn_provider_counter_[arc_vpn_provider->package_name] = 1;
   }
 
-  void OnArcVpnProviderUpdated(app_list::ArcVpnProviderManager::ArcVpnProvider*
-                                   arc_vpn_provider) override {
+  void OnArcVpnProviderUpdated(
+      ArcVpnProviderManager::ArcVpnProvider* arc_vpn_provider) override {
     arc_vpn_provider_counter_[arc_vpn_provider->package_name] += 1;
   }
 
@@ -66,15 +71,15 @@ class ArcVpnProviderTest : public AppListTestBase {
   void SetUp() override {
     AppListTestBase::SetUp();
     arc_test_.SetUp(profile());
-    app_list::ArcVpnProviderManager* arc_vpn_provider_manager =
-        app_list::ArcVpnProviderManager::Get(profile());
+    ArcVpnProviderManager* arc_vpn_provider_manager =
+        ArcVpnProviderManager::Get(profile());
     DCHECK(arc_vpn_provider_manager);
     arc_vpn_provider_manager->AddObserver(&arc_vpn_observer_);
   }
 
   void TearDown() override {
-    app_list::ArcVpnProviderManager* arc_vpn_provider_manager =
-        app_list::ArcVpnProviderManager::Get(profile());
+    ArcVpnProviderManager* arc_vpn_provider_manager =
+        ArcVpnProviderManager::Get(profile());
     DCHECK(arc_vpn_provider_manager);
     arc_vpn_provider_manager->RemoveObserver(&arc_vpn_observer_);
     arc_test_.TearDown();
@@ -146,3 +151,5 @@ TEST_F(ArcVpnProviderTest, ArcVpnProviderUpdateCount) {
   RemovePackage(kVpnPackageName);
   EXPECT_EQ(0u, arc_vpn_observer().arc_vpn_provider_counter().size());
 }
+
+}  // namespace app_list

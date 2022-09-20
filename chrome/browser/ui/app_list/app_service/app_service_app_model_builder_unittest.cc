@@ -90,6 +90,8 @@ using plugin_vm::PluginVmTestHelper;
 using ::testing::_;
 using ::testing::Matcher;
 
+namespace app_list {
+
 namespace {
 
 const size_t kDefaultAppCount = 3u;
@@ -411,8 +413,8 @@ TEST_F(BuiltInAppTest, Build) {
   // internal_app_metadata.cc. Only count the apps can display in launcher.
   std::string built_in_apps_name;
   CreateBuilder(false);
-  EXPECT_EQ(app_list::GetNumberOfInternalAppsShowInLauncherForTest(
-                &built_in_apps_name, profile()),
+  EXPECT_EQ(GetNumberOfInternalAppsShowInLauncherForTest(&built_in_apps_name,
+                                                         profile()),
             model_updater_->ItemCount());
   EXPECT_EQ(built_in_apps_name,
             base::JoinString(GetModelContent(model_updater_.get()), ","));
@@ -423,8 +425,8 @@ TEST_F(BuiltInAppTest, BuildGuestMode) {
   // internal_app_metadata.cc. Only count the apps can display in launcher.
   std::string built_in_apps_name;
   CreateBuilder(true);
-  EXPECT_EQ(app_list::GetNumberOfInternalAppsShowInLauncherForTest(
-                &built_in_apps_name, profile()),
+  EXPECT_EQ(GetNumberOfInternalAppsShowInLauncherForTest(&built_in_apps_name,
+                                                         profile()),
             model_updater_->ItemCount());
   EXPECT_EQ(built_in_apps_name,
             base::JoinString(GetModelContent(model_updater_.get()), ","));
@@ -768,18 +770,17 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
 
   void CreateBuilder() {
     model_updater_factory_scope_ = std::make_unique<
-        app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
+        AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
         base::BindRepeating(
             [](Profile* profile,
-               app_list::reorder::AppListReorderDelegate* reorder_delegate)
+               reorder::AppListReorderDelegate* reorder_delegate)
                 -> std::unique_ptr<AppListModelUpdater> {
               return std::make_unique<FakeAppListModelUpdater>(
                   profile, reorder_delegate);
             },
             profile()));
     // The AppListSyncableService creates the CrostiniAppModelBuilder.
-    sync_service_ =
-        std::make_unique<app_list::AppListSyncableService>(profile_.get());
+    sync_service_ = std::make_unique<AppListSyncableService>(profile_.get());
     RemoveNonCrostiniApps();
   }
 
@@ -796,12 +797,11 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
     return l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_APP_NAME);
   }
 
-  std::unique_ptr<app_list::AppListSyncableService> sync_service_;
+  std::unique_ptr<AppListSyncableService> sync_service_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;
 
  private:
-  std::unique_ptr<
-      app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>
+  std::unique_ptr<AppListSyncableService::ScopedModelUpdaterFactoryForTest>
       model_updater_factory_scope_;
 };
 
@@ -1036,3 +1036,5 @@ TEST_F(PluginVmAppTest, PluginVmEnabled) {
                 IDS_PLUGIN_VM_APP_NAME)},
             GetModelContent(model_updater_.get()));
 }
+
+}  // namespace app_list

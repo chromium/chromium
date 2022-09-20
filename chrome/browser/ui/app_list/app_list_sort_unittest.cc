@@ -19,6 +19,8 @@
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_error_factory_mock.h"
 
+namespace app_list {
+
 using crx_file::id_util::GenerateId;
 
 class TemporaryAppListSortTest : public test::AppListSyncableServiceTestBase {
@@ -1375,3 +1377,5 @@ TEST_P(TemporaryAppListSortLocalUninstallationTest, Basics) {
   EXPECT_EQ(ash::AppListSortOrder::kNameReverseAlphabetical,
             GetSortOrderFromPrefs());
 }
+
+}  // namespace app_list

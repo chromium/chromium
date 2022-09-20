@@ -15,7 +15,7 @@ class ChromeAppListModelUpdater;
 
 namespace test {
 
-class AppListSyncableServiceTestBase : public AppListTestBase {
+class AppListSyncableServiceTestBase : public app_list::AppListTestBase {
  public:
   AppListSyncableServiceTestBase();
   AppListSyncableServiceTestBase(const AppListSyncableServiceTestBase&) =

@@ -54,6 +54,8 @@ using crx_file::id_util::GenerateId;
 using testing::ElementsAre;
 using ItemTestApi = ChromeAppListItem::TestApi;
 
+namespace app_list {
+
 namespace {
 
 const char kOsSettingsUrl[] = "chrome://os-settings/";
@@ -136,16 +138,16 @@ syncer::SyncDataList CreateBadAppRemoteData(const std::string& id) {
 }
 
 bool AreAllAppAtributesEqualInSync(
-    const app_list::AppListSyncableService::SyncItem* item1,
-    const app_list::AppListSyncableService::SyncItem* item2) {
+    const AppListSyncableService::SyncItem* item1,
+    const AppListSyncableService::SyncItem* item2) {
   return item1->parent_id == item2->parent_id &&
          item1->item_ordinal.EqualsOrBothInvalid(item2->item_ordinal) &&
          item1->item_pin_ordinal.EqualsOrBothInvalid(item2->item_pin_ordinal);
 }
 
 bool AreAllAppAtributesNotEqualInSync(
-    const app_list::AppListSyncableService::SyncItem* item1,
-    const app_list::AppListSyncableService::SyncItem* item2) {
+    const AppListSyncableService::SyncItem* item1,
+    const AppListSyncableService::SyncItem* item2) {
   return item1->parent_id != item2->parent_id &&
          !item1->item_ordinal.EqualsOrBothInvalid(item2->item_ordinal) &&
          !item1->item_pin_ordinal.EqualsOrBothInvalid(item2->item_pin_ordinal);
@@ -491,7 +493,7 @@ TEST_F(AppListSyncableServiceTest, OEMAppParentNotOverridenInSync) {
   EXPECT_EQ(oem_folder_item->position(), syncer::StringOrdinal("oemposition"));
 
   // Verify that the OEM parent has no changed in sync.
-  const app_list::AppListSyncableService::SyncItem* app_sync_item =
+  const AppListSyncableService::SyncItem* app_sync_item =
       GetSyncItem(oem_app_id);
   ASSERT_TRUE(app_sync_item);
   EXPECT_EQ(oem_app_parent_in_sync, app_sync_item->parent_id);
@@ -602,7 +604,7 @@ TEST_F(AppListSyncableServiceTest, InitialMerge) {
 
   // Default page breaks are not installed for non-first time users that don't
   // have them in their sync.
-  EXPECT_FALSE(GetSyncItem(app_list::kDefaultPageBreak1));
+  EXPECT_FALSE(GetSyncItem(kDefaultPageBreak1));
 }
 
 class AppListInternalAppSyncableServiceTest
@@ -625,7 +627,7 @@ TEST_F(AppListInternalAppSyncableServiceTest, ExistingDefaultPageBreak) {
   // Non-first time users have items in their remote sync data.
   syncer::SyncDataList sync_list;
   sync_list.push_back(CreateAppRemoteData(
-      app_list::kDefaultPageBreak1, "page_break_1", "", "ordinal", "pinordinal",
+      kDefaultPageBreak1, "page_break_1", "", "ordinal", "pinordinal",
       sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
 
   app_list_syncable_service()->MergeDataAndStartSyncing(
@@ -636,7 +638,7 @@ TEST_F(AppListInternalAppSyncableServiceTest, ExistingDefaultPageBreak) {
 
   // Existing page break item in remote sync will be added, and its data will be
   // updated with the item's remote sync data.
-  auto* page_break_sync_item = GetSyncItem(app_list::kDefaultPageBreak1);
+  auto* page_break_sync_item = GetSyncItem(kDefaultPageBreak1);
   ASSERT_TRUE(page_break_sync_item);
   EXPECT_EQ(page_break_sync_item->item_type,
             sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
@@ -657,7 +659,7 @@ TEST_F(AppListInternalAppSyncableServiceTest, DefaultPageBreakFirstTimeUser) {
       std::make_unique<syncer::SyncErrorFactoryMock>());
   content::RunAllTasksUntilIdle();
 
-  auto* page_break_sync_item = GetSyncItem(app_list::kDefaultPageBreak1);
+  auto* page_break_sync_item = GetSyncItem(kDefaultPageBreak1);
   ASSERT_TRUE(page_break_sync_item);
   EXPECT_EQ(page_break_sync_item->item_type,
             sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
@@ -1589,7 +1591,7 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
 
   // Webstore and Chrome items should exist now in sync and in model but not
   // Youtube.
-  const app_list::AppListSyncableService::SyncItem* webstore_sync_item =
+  const AppListSyncableService::SyncItem* webstore_sync_item =
       GetSyncItem(extensions::kWebStoreAppId);
   AppListModelUpdater* model_updater = GetModelUpdater();
   const ChromeAppListItem* webstore_item =
@@ -1597,7 +1599,7 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
   ASSERT_TRUE(webstore_item);
   ASSERT_TRUE(webstore_sync_item);
 
-  const app_list::AppListSyncableService::SyncItem* chrome_sync_item =
+  const AppListSyncableService::SyncItem* chrome_sync_item =
       GetSyncItem(app_constants::kChromeAppId);
   const ChromeAppListItem* chrome_item =
       model_updater->FindItem(app_constants::kChromeAppId);
@@ -1639,7 +1641,7 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
   // Install Youtube now.
   InstallExtension(youtube.get());
 
-  const app_list::AppListSyncableService::SyncItem* youtube_sync_item =
+  const AppListSyncableService::SyncItem* youtube_sync_item =
       GetSyncItem(extension_misc::kYoutubeAppId);
   const ChromeAppListItem* youtube_item =
       model_updater->FindItem(extension_misc::kYoutubeAppId);
@@ -2941,7 +2943,7 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
        SortMixedPositionValidityItems) {
   RemoveAllExistingItems();
 
-  using SyncItem = app_list::AppListSyncableService::SyncItem;
+  using SyncItem = AppListSyncableService::SyncItem;
   const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
   auto item1 =
       std::make_unique<SyncItem>(kItemId1, sync_pb::AppListSpecifics::TYPE_APP);
@@ -2992,7 +2994,7 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
        SortInvalidPositionItems) {
   RemoveAllExistingItems();
 
-  using SyncItem = app_list::AppListSyncableService::SyncItem;
+  using SyncItem = AppListSyncableService::SyncItem;
   const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
   auto item1 =
       std::make_unique<SyncItem>(kItemId1, sync_pb::AppListSpecifics::TYPE_APP);
@@ -3287,12 +3289,12 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest, NewAppPlacement) {
   AppListModelUpdater* model_updater = GetModelUpdater();
   EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
       0.f,
-      app_list::reorder::CalculateEntropyForTest(
+      reorder::CalculateEntropyForTest(
           ash::AppListSortOrder::kNameReverseAlphabetical, model_updater)));
 
   // The longest subsequence in alphabetical order has one element so the
   // entropy is (1 - 1/5) which is 0.8.
-  EXPECT_EQ(0.8f, app_list::reorder::CalculateEntropyForTest(
+  EXPECT_EQ(0.8f, reorder::CalculateEntropyForTest(
                       ash::AppListSortOrder::kNameAlphabetical, model_updater));
 
   app_list_syncable_service()->SetAppListPreferredOrder(
@@ -3308,7 +3310,7 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest, NewAppPlacement) {
   // The longest subsequence in order is ["A", "B", "D", "E"] so the entropy is
   // (1 - 4/5) which is 0.2.
   EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
-      0.2f, app_list::reorder::CalculateEntropyForTest(
+      0.2f, reorder::CalculateEntropyForTest(
                 ash::AppListSortOrder::kNameAlphabetical, model_updater)));
 
   // Install a new app. Verify its location.
@@ -3327,7 +3329,7 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest, NewAppPlacement) {
   // The longest subsequence in order is ["A", "C", "D", "E"] so the entropy is
   // (1 - 4/6).
   EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
-      1 / 3.f, app_list::reorder::CalculateEntropyForTest(
+      1 / 3.f, reorder::CalculateEntropyForTest(
                    ash::AppListSortOrder::kNameAlphabetical, model_updater)));
 
   // Install a new app.
@@ -3416,7 +3418,7 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
 
   // Verify that the entropy is zero.
   EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
-      0.f, app_list::reorder::CalculateEntropyForTest(
+      0.f, reorder::CalculateEntropyForTest(
                ash::AppListSortOrder::kNameAlphabetical, model_updater)));
 
   // Install the second app.
@@ -3437,7 +3439,7 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
 
   // There is one folder item out of order so the entropy should be 1/5 = 0.2.
   EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
-      0.2f, app_list::reorder::CalculateEntropyForTest(
+      0.2f, reorder::CalculateEntropyForTest(
                 ash::AppListSortOrder::kNameAlphabetical, model_updater)));
 
   // Install the third app. Verify the item order after installation.
@@ -3538,14 +3540,14 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
   sync_list.push_back(
       CreateAppRemoteData(kItemId2, "A", "", GetLastPositionString(), kUnset));
   sync_list.push_back(CreateAppRemoteData(
-      app_list::kDefaultPageBreak1, "page_break_1", "", GetLastPositionString(),
-      kUnset, sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
+      kDefaultPageBreak1, "page_break_1", "", GetLastPositionString(), kUnset,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
   const std::string kItemId3 = CreateNextAppId(kItemId2);
   sync_list.push_back(
       CreateAppRemoteData(kItemId3, "C", "", GetLastPositionString(), kUnset));
   sync_list.push_back(CreateAppRemoteData(
-      app_list::kDefaultPageBreak1, "page_break_2", "", GetLastPositionString(),
-      kUnset, sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
+      kDefaultPageBreak1, "page_break_2", "", GetLastPositionString(), kUnset,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
   const std::string kItemId4 = CreateNextAppId(kItemId3);
   sync_list.push_back(
       CreateAppRemoteData(kItemId4, "D", "", GetLastPositionString(), kUnset));
@@ -3793,3 +3795,5 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
                   "Item 36", "Item 37", "Item 38", "Item 39", "Item 4",
                   "Item 5",  "Item 6",  "Item 7",  "Item 8",  "Item 9"}}));
 }
+
+}  // namespace app_list
