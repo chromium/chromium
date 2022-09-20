@@ -577,15 +577,11 @@ void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
 
   // Structured names should not be simply overwritten but it should be
   // attempted to merge the names.
-  bool use_structured_name = base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForMoreStructureInNames);
   bool is_structured_name_mergeable = false;
   NameInfo name_info = GetNameInfo();
-  if (use_structured_name) {
-    is_structured_name_mergeable =
-        name_info.IsStructuredNameMergeable(profile.GetNameInfo());
-    name_info.MergeStructuredName(profile.GetNameInfo());
-  }
+  is_structured_name_mergeable =
+      name_info.IsStructuredNameMergeable(profile.GetNameInfo());
+  name_info.MergeStructuredName(profile.GetNameInfo());
 
   *this = profile;
 
@@ -604,11 +600,7 @@ void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
   // is empty.  For the legacy implementation, set the full name if |profile|
   // does not contain a full name.
   if (!HasRawInfo(NAME_FULL)) {
-    if (use_structured_name) {
-      name_ = name_info;
-    } else {
-      SetRawInfo(NAME_FULL, name_info.GetRawInfo(NAME_FULL));
-    }
+    name_ = name_info;
   }
 }
 
@@ -628,8 +620,7 @@ bool AutofillProfile::MergeStructuredDataFrom(const AutofillProfile& profile,
   // names and addresses are mergeable.
   // However, the structure should only be merged if the full names or addresses
   // are token equivalent.
-  if (structured_address::StructuredNamesEnabled() &&
-      structured_address::AreStringTokenEquivalent(
+  if (structured_address::AreStringTokenEquivalent(
           GetRawInfo(NAME_FULL), profile.GetRawInfo(NAME_FULL))) {
     NameInfo name;
     if (!comparator.MergeNames(profile, *this, name)) {
@@ -642,8 +633,7 @@ bool AutofillProfile::MergeStructuredDataFrom(const AutofillProfile& profile,
     }
   }
 
-  if (structured_address::StructuredAddressesEnabled() &&
-      structured_address::AreStringTokenEquivalent(
+  if (structured_address::AreStringTokenEquivalent(
           GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
           profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS))) {
     Address address;

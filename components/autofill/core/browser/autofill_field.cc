@@ -184,15 +184,10 @@ AutofillType AutofillField::ComputedType() const {
                                 FieldTypeGroup::kPasswordField &&
                             heuristic_type() == CREDIT_CARD_VERIFICATION_CODE);
 
-    // For new name tokens the heuristic predictions get precedence over the
-    // server predictions.
-    // TODO(crbug.com/1098943): Remove feature check once launched.
-    believe_server =
-        believe_server &&
-        !(base::FeatureList::IsEnabled(
-              features::kAutofillEnableSupportForMoreStructureInNames) &&
-          (heuristic_type() == NAME_LAST_SECOND ||
-           heuristic_type() == NAME_LAST_FIRST));
+    // For structured last name tokens the heuristic predictions get precedence
+    // over the server predictions.
+    believe_server = believe_server && heuristic_type() != NAME_LAST_SECOND &&
+                     heuristic_type() != NAME_LAST_FIRST;
 
     // For new address tokens the heuristic predictions get precedence over
     // the server predictions.

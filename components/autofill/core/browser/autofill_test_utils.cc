@@ -307,23 +307,13 @@ void CreateTestAddressFormData(FormData* form,
   types->push_back({NAME_MIDDLE});
   test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
   form->fields.push_back(field);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInNames)) {
-    types->push_back({NAME_LAST, NAME_LAST_SECOND});
-  } else {
-    types->push_back({NAME_LAST});
-  }
+  types->push_back({NAME_LAST, NAME_LAST_SECOND});
   test::CreateTestFormField("Address Line 1", "addr1", "", "text", &field);
   form->fields.push_back(field);
   types->push_back({ADDRESS_HOME_LINE1});
   test::CreateTestFormField("Address Line 2", "addr2", "", "text", &field);
   form->fields.push_back(field);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInAddresses)) {
-    types->push_back({ADDRESS_HOME_SUBPREMISE, ADDRESS_HOME_LINE2});
-  } else {
-    types->push_back({ADDRESS_HOME_LINE2});
-  }
+  types->push_back({ADDRESS_HOME_SUBPREMISE, ADDRESS_HOME_LINE2});
   test::CreateTestFormField("City", "city", "", "text", &field);
   form->fields.push_back(field);
   types->push_back({ADDRESS_HOME_CITY});

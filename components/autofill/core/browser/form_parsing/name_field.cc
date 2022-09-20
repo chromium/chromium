@@ -136,8 +136,7 @@ std::unique_ptr<FormField> NameField::Parse(AutofillScanner* scanner,
   // Try |FirstLastNameField| and |FirstTwoLastNamesField| first since they are
   // more specific.
   std::unique_ptr<FormField> field;
-  if (!field && base::FeatureList::IsEnabled(
-                    features::kAutofillEnableSupportForMoreStructureInNames)) {
+  if (!field) {
     field = FirstTwoLastNamesField::Parse(scanner, page_language,
                                           pattern_source, log_manager);
   }
@@ -452,16 +451,11 @@ FirstLastNameField::ParseSpecificComponentSequence(
     // Scan for the honorific prefix before checking for unrelated fields
     // because a honorific prefix field is expected to have very specific labels
     // including "Title:". The latter is matched with |kNameIgnoredRe|.
-    // TODO(crbug.com/1098943): Remove branching once feature is launched or
-    // removed.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForMoreStructureInNames)) {
-      if (!v->honorific_prefix_ &&
-          ParseField(scanner, kHonorificPrefixRe, honorific_prefix_patterns,
-                     &v->honorific_prefix_,
-                     {log_manager, "kHonorificPrefixRe"})) {
-        continue;
-      }
+    if (!v->honorific_prefix_ &&
+        ParseField(scanner, kHonorificPrefixRe, honorific_prefix_patterns,
+                   &v->honorific_prefix_,
+                   {log_manager, "kHonorificPrefixRe"})) {
+      continue;
     }
 
     // Skip over any unrelated name fields, e.g. "username" or "nickname".

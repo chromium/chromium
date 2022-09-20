@@ -434,53 +434,28 @@ bool AutofillProfileComparator::MergeNames(const AutofillProfile& p1,
   // structure should be possible.
   // * One name is a variant of the other. In this scenario, use the non-variant
   // name. Note, p1 is the newer profile.
-  if (structured_address::StructuredNamesEnabled()) {
-    // First, set info to the original profile.
-    name_info = p2.GetNameInfo();
-    // If the name of the |p1| is empty, just keep the state of p2.
-    if (HasOnlySkippableCharacters(full_name_1))
-      return true;
-    // Vice verse set name to the one of |p1| if |p2| has an empty name
-    if (HasOnlySkippableCharacters(full_name_2)) {
-      name_info = p1.GetNameInfo();
-      return true;
-    }
-    // Try to apply a direct merging.
-    if (name_info.MergeStructuredName(p1.GetNameInfo()))
-      return true;
-    // If the name in |p2| is a variant of |p1| use the one in |p1|.
-    if (IsNameVariantOf(NormalizeForComparison(full_name_1),
-                        NormalizeForComparison(full_name_2))) {
-      name_info = p1.GetNameInfo();
-      return true;
-    }
-    // The only left case is that |p1| is a variant of |p2|.
-    DCHECK(IsNameVariantOf(NormalizeForComparison(full_name_2),
-                           NormalizeForComparison(full_name_1)));
+  // First, set info to the original profile.
+  name_info = p2.GetNameInfo();
+  // If the name of the |p1| is empty, just keep the state of p2.
+  if (HasOnlySkippableCharacters(full_name_1))
+    return true;
+  // Vice verse set name to the one of |p1| if |p2| has an empty name
+  if (HasOnlySkippableCharacters(full_name_2)) {
+    name_info = p1.GetNameInfo();
     return true;
   }
-  const std::u16string* best_name = nullptr;
-  if (HasOnlySkippableCharacters(full_name_1)) {
-    // p1 has no name, so use the name from p2.
-    best_name = &full_name_2;
-  } else if (HasOnlySkippableCharacters(full_name_2)) {
-    // p2 has no name, so use the name from p1.
-    best_name = &full_name_1;
-  } else if (data_util::IsCJKName(full_name_1) &&
-             data_util::IsCJKName(full_name_2)) {
-    // Use a separate logic for CJK names.
-    return MergeCJKNames(p1, p2, name_info);
-  } else if (IsNameVariantOf(NormalizeForComparison(full_name_1),
-                             NormalizeForComparison(full_name_2))) {
-    // full_name_2 is a variant of full_name_1.
-    best_name = &full_name_1;
-  } else {
-    // If the assertion that p1 and p2 have mergeable names is true, then
-    // full_name_1 must be a name variant of full_name_2;
-    best_name = &full_name_2;
+  // Try to apply a direct merging.
+  if (name_info.MergeStructuredName(p1.GetNameInfo()))
+    return true;
+  // If the name in |p2| is a variant of |p1| use the one in |p1|.
+  if (IsNameVariantOf(NormalizeForComparison(full_name_1),
+                      NormalizeForComparison(full_name_2))) {
+    name_info = p1.GetNameInfo();
+    return true;
   }
-
-  name_info.SetInfo(AutofillType(NAME_FULL), *best_name, app_locale_);
+  // The only left case is that |p1| is a variant of |p2|.
+  DCHECK(IsNameVariantOf(NormalizeForComparison(full_name_2),
+                         NormalizeForComparison(full_name_1)));
   return true;
 }
 
@@ -1249,8 +1224,7 @@ bool AutofillProfileComparator::HaveMergeableNames(
 
   // If the two names are just a permutation of each other, they are mergeable
   // for structured names.
-  if (structured_address::StructuredNamesEnabled() &&
-      structured_address::AreStringTokenEquivalent(full_name_1, full_name_2))
+  if (structured_address::AreStringTokenEquivalent(full_name_1, full_name_2))
     return true;
 
   std::u16string canon_full_name_1 = NormalizeForComparison(full_name_1);

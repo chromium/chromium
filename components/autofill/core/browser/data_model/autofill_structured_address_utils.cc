@@ -62,11 +62,6 @@ bool SortedTokenComparisonResult::TokensMatch() const {
   return status == MATCH;
 }
 
-bool StructuredNamesEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-}
-
 bool StructuredAddressesEnabled() {
   return base::FeatureList::IsEnabled(
       features::kAutofillEnableSupportForMoreStructureInAddresses);
@@ -74,9 +69,7 @@ bool StructuredAddressesEnabled() {
 
 bool HonorificPrefixEnabled() {
   return base::FeatureList::IsEnabled(
-             features::kAutofillEnableSupportForHonorificPrefixes) &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnableSupportForMoreStructureInNames);
+      features::kAutofillEnableSupportForHonorificPrefixes);
 }
 
 Re2RegExCache::Re2RegExCache() = default;

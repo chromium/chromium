@@ -88,24 +88,6 @@ class NameInfo : public FormGroup {
   structured_address::VerificationStatus GetVerificationStatusImpl(
       ServerFieldType type) const override;
 
-  // Returns the full name, which is either |full_|, or if |full_| is empty,
-  // is composed of given, middle and family.
-  std::u16string FullName() const;
-
-  // Returns the middle initial if |middle_| is non-empty.  Returns an empty
-  // string otherwise.
-  std::u16string MiddleInitial() const;
-
-  // Sets |given_|, |middle_|, and |family_| to the tokenized |full|.
-  void SetFullName(const std::u16string& full);
-
-  // Legacy fields to store the unstructured representation of the name when
-  // |features::kAutofillEnableSupportForMoreStructureInNames| is not enabled.
-  std::u16string given_;
-  std::u16string middle_;
-  std::u16string family_;
-  std::u16string full_;
-
   // This data structure stores the more-structured representation of the name
   // when |features::kAutofillEnableSupportForMoreStructureInNames| is enabled.
   const std::unique_ptr<structured_address::AddressComponent> name_;

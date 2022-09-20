@@ -487,11 +487,6 @@ void SelectBetween(sql::Database* db,
   statement.BindInt64(1, high);
 }
 
-// Constant to assign an unset verification status to structured address
-// components stored for legacy profiles.
-constexpr structured_address::VerificationStatus kNoStatus =
-    structured_address::VerificationStatus::kNoStatus;
-
 // Helper struct for AutofillTable::RemoveFormElementsAddedBetween().
 // Contains all the necessary fields to update a row in the 'autofill' table.
 struct AutofillUpdate {
@@ -654,36 +649,23 @@ std::unique_ptr<IBAN> IBANFromStatement(
 
 bool AddAutofillProfileNames(const AutofillProfile& profile,
                              sql::Database* db) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInNames)) {
-    sql::Statement s;
-    InsertBuilder(
-        db, s, kAutofillProfileNamesTable,
-        {kGuid, kHonorificPrefix, kHonorificPrefixStatus, kFirstName,
-         kFirstNameStatus, kMiddleName, kMiddleNameStatus, kFirstLastName,
-         kFirstLastNameStatus, kConjunctionLastName, kConjunctionLastNameStatus,
-         kSecondLastName, kSecondLastNameStatus, kLastName, kLastNameStatus,
-         kFullName, kFullNameStatus, kFullNameWithHonorificPrefix,
-         kFullNameWithHonorificPrefixStatus});
-    s.BindString(0, profile.guid());
-    int index = 1;
-    for (ServerFieldType type :
-         {NAME_HONORIFIC_PREFIX, NAME_FIRST, NAME_MIDDLE, NAME_LAST_FIRST,
-          NAME_LAST_CONJUNCTION, NAME_LAST_SECOND, NAME_LAST, NAME_FULL,
-          NAME_FULL_WITH_HONORIFIC_PREFIX}) {
-      s.BindString16(index++, profile.GetRawInfo(type));
-      s.BindInt(index++, profile.GetVerificationStatusInt(type));
-    }
-    return s.Run();
-  }
-  // Add the new name.
   sql::Statement s;
-  InsertBuilder(db, s, kAutofillProfileNamesTable,
-                {kGuid, kFirstName, kMiddleName, kLastName, kFullName});
+  InsertBuilder(
+      db, s, kAutofillProfileNamesTable,
+      {kGuid, kHonorificPrefix, kHonorificPrefixStatus, kFirstName,
+       kFirstNameStatus, kMiddleName, kMiddleNameStatus, kFirstLastName,
+       kFirstLastNameStatus, kConjunctionLastName, kConjunctionLastNameStatus,
+       kSecondLastName, kSecondLastNameStatus, kLastName, kLastNameStatus,
+       kFullName, kFullNameStatus, kFullNameWithHonorificPrefix,
+       kFullNameWithHonorificPrefixStatus});
   s.BindString(0, profile.guid());
   int index = 1;
-  for (ServerFieldType type : {NAME_FIRST, NAME_MIDDLE, NAME_LAST, NAME_FULL}) {
+  for (ServerFieldType type :
+       {NAME_HONORIFIC_PREFIX, NAME_FIRST, NAME_MIDDLE, NAME_LAST_FIRST,
+        NAME_LAST_CONJUNCTION, NAME_LAST_SECOND, NAME_LAST, NAME_FULL,
+        NAME_FULL_WITH_HONORIFIC_PREFIX}) {
     s.BindString16(index++, profile.GetRawInfo(type));
+    s.BindInt(index++, profile.GetVerificationStatusInt(type));
   }
   return s.Run();
 }
@@ -758,31 +740,14 @@ bool AddAutofillProfileNamesToProfile(sql::Database* db,
           profile->guid())) {
     DCHECK_EQ(profile->guid(), s.ColumnString(0));
 
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForMoreStructureInNames)) {
-      // Whether or not the name has a legacy structure, set all
-      // components. The Profile can detect that it must be migrated because
-      // all values have the validation status |kNoStatus|.
-      int index = 1;
-      for (ServerFieldType type :
-           {NAME_HONORIFIC_PREFIX, NAME_FIRST, NAME_MIDDLE, NAME_LAST_FIRST,
-            NAME_LAST_CONJUNCTION, NAME_LAST_SECOND, NAME_LAST, NAME_FULL,
-            NAME_FULL_WITH_HONORIFIC_PREFIX}) {
-        profile->SetRawInfoWithVerificationStatusInt(
-            type, s.ColumnString16(index), s.ColumnInt(index + 1));
-        index += 2;
-      }
-    } else {
-      // If structured components are not enabled, only use the legacy
-      // structure.
-      profile->SetRawInfoWithVerificationStatus(NAME_FULL, s.ColumnString16(15),
-                                                kNoStatus);
-      profile->SetRawInfoWithVerificationStatus(NAME_FIRST, s.ColumnString16(3),
-                                                kNoStatus);
-      profile->SetRawInfoWithVerificationStatus(NAME_MIDDLE,
-                                                s.ColumnString16(5), kNoStatus);
-      profile->SetRawInfoWithVerificationStatus(NAME_LAST, s.ColumnString16(13),
-                                                kNoStatus);
+    int index = 1;
+    for (ServerFieldType type :
+         {NAME_HONORIFIC_PREFIX, NAME_FIRST, NAME_MIDDLE, NAME_LAST_FIRST,
+          NAME_LAST_CONJUNCTION, NAME_LAST_SECOND, NAME_LAST, NAME_FULL,
+          NAME_FULL_WITH_HONORIFIC_PREFIX}) {
+      profile->SetRawInfoWithVerificationStatusInt(
+          type, s.ColumnString16(index), s.ColumnInt(index + 1));
+      index += 2;
     }
   }
   return s.Succeeded();

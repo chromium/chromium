@@ -305,12 +305,6 @@ BASE_FEATURE(kAutofillEnableProfileDeduplication,
              "AutofillEnableProfileDeduplication",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls if Autofill supports new structure in names.
-// TODO(crbug.com/1098943): Remove once launched.
-BASE_FEATURE(kAutofillEnableSupportForMoreStructureInNames,
-             "AutofillEnableSupportForMoreStructureInNames",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls if Autofill supports new structure in addresses.
 // TODO(crbug.com/1098943): Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForMoreStructureInAddresses,
