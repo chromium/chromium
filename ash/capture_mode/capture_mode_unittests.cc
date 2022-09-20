@@ -124,6 +124,8 @@ namespace ash {
 
 namespace {
 
+using ::ui::mojom::CursorType;
+
 constexpr char kEndRecordingReasonInClamshellHistogramName[] =
     "Ash.CaptureModeController.EndRecordingReason.ClamshellMode";
 constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
@@ -473,7 +475,7 @@ TEST_F(CaptureModeTest, StartStop) {
 TEST_F(CaptureModeTest, CheckCursorVisibility) {
   // Hide cursor before entering capture mode.
   auto* cursor_manager = Shell::Get()->cursor_manager();
-  cursor_manager->SetCursor(ui::mojom::CursorType::kPointer);
+  cursor_manager->SetCursor(CursorType::kPointer);
   cursor_manager->HideCursor();
   cursor_manager->DisableMouseEvents();
   EXPECT_FALSE(cursor_manager->IsCursorVisible());
@@ -589,7 +591,7 @@ TEST_F(CaptureModeTest, VideoRecordingUiBehavior) {
   // Hit Enter to begin recording.
   auto* event_generator = GetEventGenerator();
   SendKey(ui::VKEY_RETURN, event_generator);
-  EXPECT_EQ(ui::mojom::CursorType::kPointer,
+  EXPECT_EQ(CursorType::kPointer,
             Shell::Get()->cursor_manager()->GetCursor().type());
   WaitForRecordingToStart();
   EXPECT_FALSE(controller->IsActive());
@@ -1283,7 +1285,6 @@ TEST_F(CaptureModeTest, MultiDisplayTouch) {
 
 TEST_F(CaptureModeTest, RegionCursorStates) {
   UpdateDisplay("800x700,801+0-800x700");
-  using ui::mojom::CursorType;
 
   auto* cursor_manager = Shell::Get()->cursor_manager();
   auto* event_generator = GetEventGenerator();
@@ -1418,7 +1419,6 @@ TEST_F(CaptureModeTest, RegionCursorStates) {
 // Regression testing for https://crbug.com/1334824.
 TEST_F(CaptureModeTest, CursorShouldNotChangeWhileAdjustingRegion) {
   UpdateDisplay("800x600");
-  using ui::mojom::CursorType;
 
   auto* cursor_manager = Shell::Get()->cursor_manager();
   auto* event_generator = GetEventGenerator();
@@ -1440,8 +1440,6 @@ TEST_F(CaptureModeTest, CursorShouldNotChangeWhileAdjustingRegion) {
 }
 
 TEST_F(CaptureModeTest, FullscreenCursorStates) {
-  using ui::mojom::CursorType;
-
   auto* cursor_manager = Shell::Get()->cursor_manager();
   CursorType original_cursor_type = cursor_manager->GetCursor().type();
   EXPECT_FALSE(cursor_manager->IsCursorLocked());
@@ -1514,8 +1512,6 @@ TEST_F(CaptureModeTest, FullscreenCursorStates) {
 }
 
 TEST_F(CaptureModeTest, WindowCursorStates) {
-  using ui::mojom::CursorType;
-
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(200, 200)));
 
   auto* cursor_manager = Shell::Get()->cursor_manager();
@@ -1594,8 +1590,6 @@ TEST_F(CaptureModeTest, WindowCursorStates) {
 
 // Tests that nothing crashes when windows are destroyed while being observed.
 TEST_F(CaptureModeTest, WindowDestruction) {
-  using ui::mojom::CursorType;
-
   // Create 2 windows that overlap with each other.
   const gfx::Rect bounds1(0, 0, 200, 200);
   const gfx::Rect bounds2(150, 150, 200, 200);
@@ -1671,8 +1665,6 @@ TEST_F(CaptureModeTest, WindowDestruction) {
 }
 
 TEST_F(CaptureModeTest, CursorUpdatedOnDisplayRotation) {
-  using ui::mojom::CursorType;
-
   UpdateDisplay("600x400");
   const int64_t display_id =
       display::Screen::GetScreen()->GetPrimaryDisplay().id();
@@ -4489,7 +4481,6 @@ TEST_F(CaptureModeTest, CaptureBarAndSettingsMenuVisibilityDrawingRegion) {
   // region.
   event_generator->MoveMouseTo(target_region.origin());
   auto* cursor_manager = Shell::Get()->cursor_manager();
-  using ui::mojom::CursorType;
   EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
 
   // Pressing outside the bounds of the settings should dismiss it immediately,
@@ -4961,6 +4952,46 @@ TEST_F(CaptureModeCursorOverlayTest, OverlayHidesWhenOutOfBounds) {
   EXPECT_TRUE(fake_overlay()->IsHidden());
 }
 
+TEST_F(CaptureModeCursorOverlayTest, OverlayWhenCursorIsHidden) {
+  StartRecordingAndSetupFakeOverlay(CaptureModeSource::kWindow);
+  EXPECT_FALSE(fake_overlay()->IsHidden());
+
+  // Move cursor, the overlay should update.
+  gfx::RectF last_bounds = fake_overlay()->last_bounds();
+  auto* generator = GetEventGenerator();
+  // Generate a click event to overcome throttling.
+  generator->MoveMouseBy(10, 10);
+  generator->ClickLeftButton();
+  FlushOverlay();
+  EXPECT_FALSE(fake_overlay()->IsHidden());
+  EXPECT_NE(fake_overlay()->last_bounds(), last_bounds);
+
+  // Hide cursor, the overlay should be empty and hidden.
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  cursor_manager->SetCursor(CursorType::kNone);
+  // Lock the cursor to prevent mouse events from changing it back.
+  cursor_manager->LockCursor();
+  generator->MoveMouseBy(10, 10);
+  generator->ClickLeftButton();
+  FlushOverlay();
+  EXPECT_TRUE(fake_overlay()->IsHidden());
+  EXPECT_EQ(fake_overlay()->last_bounds(), gfx::RectF());
+
+  // While the cursor is hidden, the overlay shouldn't change.
+  generator->MoveMouseBy(10, 10);
+  generator->ClickLeftButton();
+  FlushOverlay();
+  EXPECT_TRUE(fake_overlay()->IsHidden());
+  EXPECT_EQ(fake_overlay()->last_bounds(), gfx::RectF());
+
+  // Unhide cursor, the overlay should update.
+  cursor_manager->UnlockCursor();
+  generator->ClickLeftButton();
+  FlushOverlay();
+  EXPECT_FALSE(fake_overlay()->IsHidden());
+  EXPECT_NE(fake_overlay()->last_bounds(), gfx::RectF());
+}
+
 // Verifies that the cursor overlay bounds calculation takes into account the
 // cursor image scale factor. https://crbug.com/1222494.
 TEST_F(CaptureModeCursorOverlayTest, OverlayBoundsAccountForCursorScaleFactor) {
@@ -4971,7 +5002,7 @@ TEST_F(CaptureModeCursorOverlayTest, OverlayBoundsAccountForCursorScaleFactor) {
   auto* cursor_manager = Shell::Get()->cursor_manager();
   auto set_cursor = [cursor_manager](const gfx::Size& cursor_image_size,
                                      float cursor_image_scale_factor) {
-    const auto cursor_type = ui::mojom::CursorType::kCustom;
+    const auto cursor_type = CursorType::kCustom;
     gfx::NativeCursor cursor{cursor_type};
     SkBitmap cursor_image;
     cursor_image.allocN32Pixels(cursor_image_size.width(),
