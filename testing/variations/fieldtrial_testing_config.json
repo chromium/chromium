@@ -3494,6 +3494,8 @@
     "DesktopNtpModules": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
