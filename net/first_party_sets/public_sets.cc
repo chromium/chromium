@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
@@ -44,16 +45,20 @@ FlattenedSets SetListToFlattenedSets(const std::vector<SingleSet>& set_list) {
 
 // Adds all sets in a list of First-Party Sets into `site_to_entry` which maps
 // from a site to its entry.
-void UpdateCustomizationMap(
+void UpdateCustomizations(
     const std::vector<SingleSet>& set_list,
-    base::flat_map<SchemefulSite, absl::optional<FirstPartySetEntry>>&
+    std::vector<std::pair<SchemefulSite, absl::optional<FirstPartySetEntry>>>&
         site_to_entry) {
   for (const auto& set : set_list) {
     for (const auto& site_and_entry : set) {
-      bool inserted = site_to_entry.emplace(site_and_entry).second;
-      DCHECK(inserted);
+      site_to_entry.emplace_back(site_and_entry);
     }
   }
+}
+
+const SchemefulSite& ProjectKey(
+    const std::pair<SchemefulSite, absl::optional<FirstPartySetEntry>>& p) {
+  return p.first;
 }
 
 }  // namespace
@@ -153,7 +158,7 @@ FirstPartySetsContextConfig PublicSets::ComputeConfig(
     const std::vector<SingleSet>& replacement_sets,
     const std::vector<SingleSet>& addition_sets) const {
   // Maps a site to its new entry if it has one.
-  base::flat_map<SchemefulSite, absl::optional<FirstPartySetEntry>>
+  std::vector<std::pair<SchemefulSite, absl::optional<FirstPartySetEntry>>>
       site_to_entry;
 
   std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
@@ -166,8 +171,8 @@ FirstPartySetsContextConfig PublicSets::ComputeConfig(
       SetListToFlattenedSets(normalized_additions);
 
   // All of the custom sets are automatically inserted into site_to_owner.
-  UpdateCustomizationMap(replacement_sets, site_to_entry);
-  UpdateCustomizationMap(normalized_additions, site_to_entry);
+  UpdateCustomizations(replacement_sets, site_to_entry);
+  UpdateCustomizations(normalized_additions, site_to_entry);
 
   // Maps old owner to new entry.
   base::flat_map<SchemefulSite, FirstPartySetEntry> addition_intersected_owners;
@@ -216,12 +221,12 @@ FirstPartySetsContextConfig PublicSets::ComputeConfig(
     if (auto entry = addition_intersected_owners.find(set_entry.primary());
         entry != addition_intersected_owners.end() &&
         !flattened_replacements.contains(member)) {
-      site_to_entry.emplace(member,
-                            FirstPartySetEntry(entry->second.primary(),
-                                               member == entry->second.primary()
-                                                   ? SiteType::kPrimary
-                                                   : SiteType::kAssociated,
-                                               absl::nullopt));
+      site_to_entry.emplace_back(
+          member, FirstPartySetEntry(entry->second.primary(),
+                                     member == entry->second.primary()
+                                         ? SiteType::kPrimary
+                                         : SiteType::kAssociated,
+                                     absl::nullopt));
     }
     if (member == set_entry.primary())
       continue;
@@ -237,22 +242,21 @@ FirstPartySetsContextConfig PublicSets::ComputeConfig(
     if (replaced_existing_owners.contains(set_entry.primary()) &&
         !flattened_replacements.contains(member) &&
         !addition_intersected_owners.contains(set_entry.primary())) {
-      bool inserted = site_to_entry.emplace(member, absl::nullopt).second;
-      DCHECK(inserted);
+      site_to_entry.emplace_back(member, absl::nullopt);
     }
   }
   // Any owner remaining in `potential_singleton` is a real singleton, so delete
   // it:
   for (auto& [owner, members] : potential_singletons) {
-    bool inserted = site_to_entry.emplace(owner, absl::nullopt).second;
-    DCHECK(inserted);
+    site_to_entry.emplace_back(owner, absl::nullopt);
   }
 
   // For every public alias that would now refer to a site in the overlay, which
   // is not already contained in the overlay, we explicitly ignore that alias.
   for (const auto& [alias, site] : aliases_) {
-    if (site_to_entry.contains(site) && !site_to_entry.contains(alias)) {
-      site_to_entry.emplace(alias, absl::nullopt);
+    if (base::Contains(site_to_entry, site, ProjectKey) &&
+        !base::Contains(site_to_entry, alias, ProjectKey)) {
+      site_to_entry.emplace_back(alias, absl::nullopt);
     }
   }
 
