@@ -7,13 +7,10 @@
 #include "base/json/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
-#include "services/preferences/public/cpp/scoped_pref_update.h"
 
 namespace media_router {
-
-using ::prefs::DictionaryValueUpdate;
-using ::prefs::ScopedDictionaryPrefUpdate;
 
 AccessCodeCastPrefUpdater::AccessCodeCastPrefUpdater(PrefService* service)
     : pref_service_(service) {
@@ -39,16 +36,10 @@ AccessCodeCastPrefUpdater::~AccessCodeCastPrefUpdater() = default;
 
 void AccessCodeCastPrefUpdater::UpdateDevicesDict(
     const MediaSinkInternal& sink) {
-  ScopedDictionaryPrefUpdate update(pref_service_,
-                                    prefs::kAccessCodeCastDevices);
-  std::unique_ptr<DictionaryValueUpdate> devices_pref = update.Get();
-  DCHECK(devices_pref) << "The " << prefs::kAccessCodeCastDevices
-                       << " pref does not exist.";
+  ScopedDictPrefUpdate update(pref_service_, prefs::kAccessCodeCastDevices);
 
   // TODO(b/231748126): Add IP based-deduping for storing Access Code Cast Sinks
-  devices_pref->SetDictionary(
-      sink.id(), base::DictionaryValue::From(base::Value::ToUniquePtrValue(
-                     CreateValueDictFromMediaSinkInternal(sink))));
+  update->Set(sink.id(), CreateValueDictFromMediaSinkInternal(sink));
 }
 
 // This stored preference looks like:
@@ -60,16 +51,12 @@ void AccessCodeCastPrefUpdater::UpdateDevicesDict(
 //   }
 void AccessCodeCastPrefUpdater::UpdateDeviceAddedTimeDict(
     const MediaSink::Id sink_id) {
-  ScopedDictionaryPrefUpdate update(pref_service_,
-                                    prefs::kAccessCodeCastDeviceAdditionTime);
-
-  std::unique_ptr<DictionaryValueUpdate> device_time_pref = update.Get();
-  DCHECK(device_time_pref) << "The " << prefs::kAccessCodeCastDeviceAdditionTime
-                           << " pref does not exist.";
+  ScopedDictPrefUpdate update(pref_service_,
+                              prefs::kAccessCodeCastDeviceAdditionTime);
 
   // If the key doesn't exist, or exists but isn't a DictionaryValue, a new
   // DictionaryValue will be created and attached to the path in that location.
-  device_time_pref->SetKey(sink_id, base::TimeToValue(base::Time::Now()));
+  update->Set(sink_id, base::TimeToValue(base::Time::Now()));
 }
 
 const base::Value::Dict& AccessCodeCastPrefUpdater::GetDevicesDict() {
@@ -118,42 +105,24 @@ absl::optional<base::Time> AccessCodeCastPrefUpdater::GetDeviceAddedTime(
 
 void AccessCodeCastPrefUpdater::RemoveSinkIdFromDevicesDict(
     const MediaSink::Id sink_id) {
-  ScopedDictionaryPrefUpdate update(pref_service_,
-                                    prefs::kAccessCodeCastDevices);
-  std::unique_ptr<DictionaryValueUpdate> devices_pref = update.Get();
-  DCHECK(devices_pref) << "The " << prefs::kAccessCodeCastDevices
-                       << " pref does not exist.";
-  devices_pref->Remove(sink_id);
+  ScopedDictPrefUpdate update(pref_service_, prefs::kAccessCodeCastDevices);
+  update->Remove(sink_id);
 }
 
 void AccessCodeCastPrefUpdater::RemoveSinkIdFromDeviceAddedTimeDict(
     const MediaSink::Id sink_id) {
-  ScopedDictionaryPrefUpdate update(pref_service_,
-                                    prefs::kAccessCodeCastDeviceAdditionTime);
-
-  std::unique_ptr<DictionaryValueUpdate> device_time_pref = update.Get();
-  DCHECK(device_time_pref) << "The " << prefs::kAccessCodeCastDeviceAdditionTime
-                           << " pref does not exist.";
-  device_time_pref->Remove(sink_id);
+  ScopedDictPrefUpdate update(pref_service_,
+                              prefs::kAccessCodeCastDeviceAdditionTime);
+  update->Remove(sink_id);
 }
 
 void AccessCodeCastPrefUpdater::ClearDevicesDict() {
-  ScopedDictionaryPrefUpdate update(pref_service_,
-                                    prefs::kAccessCodeCastDevices);
-  std::unique_ptr<DictionaryValueUpdate> devices_pref = update.Get();
-  DCHECK(devices_pref) << "The " << prefs::kAccessCodeCastDevices
-                       << " pref does not exist.";
-  devices_pref->Clear();
+  pref_service_->SetDict(prefs::kAccessCodeCastDevices, base::Value::Dict());
 }
 
 void AccessCodeCastPrefUpdater::ClearDeviceAddedTimeDict() {
-  ScopedDictionaryPrefUpdate update(pref_service_,
-                                    prefs::kAccessCodeCastDeviceAdditionTime);
-
-  std::unique_ptr<DictionaryValueUpdate> device_time_pref = update.Get();
-  DCHECK(device_time_pref) << "The " << prefs::kAccessCodeCastDeviceAdditionTime
-                           << " pref does not exist.";
-  device_time_pref->Clear();
+  pref_service_->SetDict(prefs::kAccessCodeCastDeviceAdditionTime,
+                         base::Value::Dict());
 }
 
 base::WeakPtr<AccessCodeCastPrefUpdater>
