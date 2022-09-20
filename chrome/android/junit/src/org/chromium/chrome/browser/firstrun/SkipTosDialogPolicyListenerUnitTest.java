@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -363,7 +362,8 @@ public class SkipTosDialogPolicyListenerUnitTest {
     }
 
     @Test
-    public void testCreateAndOwnPolicyLoadListener() throws NoSuchFieldException {
+    public void testCreateAndOwnPolicyLoadListener()
+            throws NoSuchFieldException, IllegalAccessException {
         FirstRunAppRestrictionInfo mockAppRestrictionInfo =
                 Mockito.mock(FirstRunAppRestrictionInfo.class);
         OneshotSupplier<PolicyService> mockSupplier =
@@ -378,9 +378,10 @@ public class SkipTosDialogPolicyListenerUnitTest {
 
         PolicyLoadListener spyListener =
                 Mockito.spy(targetListener.getPolicyLoadListenerForTesting());
-        FieldSetter.setField(targetListener,
-                SkipTosDialogPolicyListener.class.getDeclaredField("mPolicyLoadListener"),
-                spyListener);
+
+        var field = SkipTosDialogPolicyListener.class.getDeclaredField("mPolicyLoadListener");
+        field.setAccessible(true);
+        field.set(targetListener, spyListener);
 
         targetListener.destroy();
         Mockito.verify(spyListener).destroy();
