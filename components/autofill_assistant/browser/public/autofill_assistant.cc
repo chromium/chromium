@@ -10,10 +10,7 @@
 #include "base/containers/span.h"
 #include "base/hash/legacy_hash.h"
 #include "base/strings/string_util.h"
-#include "build/build_config.h"
 #include "components/autofill/core/common/signatures.h"
-#include "components/autofill_assistant/browser/public/prefs.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -55,13 +52,5 @@ uint64_t AutofillAssistant::GetHashPrefix(uint32_t hash_prefix_length,
       base::as_bytes(base::make_span(canonicalized_url)));
   return hash >> (64u - hash_prefix_length);
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-// static
-void AutofillAssistant::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kAutofillAssistantEnabled, true);
-  registry->RegisterBooleanPref(prefs::kAutofillAssistantConsent, false);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill_assistant

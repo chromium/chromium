@@ -16,6 +16,7 @@
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/onboarding_result.h"
+#include "components/autofill_assistant/browser/preference_manager.h"
 #include "components/autofill_assistant/browser/public/headless_script_controller.h"
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
 #include "components/autofill_assistant/browser/starter.h"
@@ -90,6 +91,11 @@ class StarterDelegateAndroid
   const PlatformDependencies* GetPlatformDependencies() const override;
   base::WeakPtr<StarterPlatformDelegate> GetWeakPtr() override;
 
+  // Returns the `PreferenceManager` used to read and write Assistant-related
+  // prefs.
+  const PreferenceManager& GetPreferenceManager() const;
+  PreferenceManager& GetPreferenceManager();
+
   // Called by Java to start an autofill-assistant flow for an incoming intent.
   void Start(
       JNIEnv* env,
@@ -139,6 +145,7 @@ class StarterDelegateAndroid
   base::WeakPtr<Starter> starter_;
   // Contains AssistantStaticDependencies which do not change.
   const std::unique_ptr<const DependenciesAndroid> dependencies_;
+  PreferenceManager preference_manager_;
   std::unique_ptr<HeadlessScriptController> headless_script_controller_;
   std::unique_ptr<AssistantUiActionDelegate> assistant_ui_delegate_;
   // Can change based on activity attachment.

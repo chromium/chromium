@@ -124,6 +124,7 @@ source_set("unit_tests") {
     "autofill_assistant_unittest.cc",
     "password_change/save_password_leak_detection_delegate_unittest.cc",
     "password_change/website_login_manager_impl_unittest.cc",
+    "prefs_unittest.cc",
   ]
   deps = [
     ":password_change",

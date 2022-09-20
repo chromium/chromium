@@ -4,15 +4,23 @@
 
 #include "components/autofill_assistant/browser/public/prefs.h"
 
-#include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace autofill_assistant::prefs {
 
-#if !BUILDFLAG(IS_ANDROID)
-const char kAutofillAssistantEnabled[] = "autofill_assistant.enabled";
-
 const char kAutofillAssistantConsent[] = "autofill_assistant.consent";
-#endif  // !BUILDFLAG(IS_ANDROID)
+const char kAutofillAssistantEnabled[] = "autofill_assistant.enabled";
+const char kAutofillAssistantTriggerScriptsIsFirstTimeUser[] =
+    "autofill_assistant.trigger_scripts.is_first_time_user";
+
+const char kDeprecatedAutofillAssistantTriggerScriptsIsFirstTimeUser[] =
+    "Chrome.AutofillAssistant.LiteScriptFirstTimeUser";
+
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kAutofillAssistantEnabled, true);
+  registry->RegisterBooleanPref(prefs::kAutofillAssistantConsent, false);
+  registry->RegisterBooleanPref(
+      prefs::kAutofillAssistantTriggerScriptsIsFirstTimeUser, true);
+}
 
 }  // namespace autofill_assistant::prefs

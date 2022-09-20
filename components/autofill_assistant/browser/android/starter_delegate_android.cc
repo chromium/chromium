@@ -18,9 +18,12 @@
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/headless/client_headless.h"
 #include "components/autofill_assistant/browser/headless/headless_script_controller_impl.h"
+#include "components/autofill_assistant/browser/preference_manager.h"
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager_impl.h"
+#include "components/autofill_assistant/browser/public/prefs.h"
 #include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
 #include "components/autofill_assistant/browser/script_parameters.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/android/channel_getter.h"
 #include "components/version_info/channel.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -58,6 +61,7 @@ StarterDelegateAndroid::StarterDelegateAndroid(
     std::unique_ptr<DependenciesAndroid> dependencies)
     : content::WebContentsUserData<StarterDelegateAndroid>(*web_contents),
       dependencies_(std::move(dependencies)),
+      preference_manager_(GetCommonDependencies()->GetPrefs()),
       website_login_manager_(std::make_unique<WebsiteLoginManagerImpl>(
           GetCommonDependencies()->GetPasswordManagerClient(web_contents),
           web_contents)) {
@@ -159,12 +163,11 @@ void StarterDelegateAndroid::OnActivityAttachmentChanged(
 }
 
 bool StarterDelegateAndroid::GetIsFirstTimeUser() const {
-  return Java_Starter_getIsFirstTimeUser(base::android::AttachCurrentThread());
+  return GetPreferenceManager().GetIsFirstTimeTriggerScriptUser();
 }
 
 void StarterDelegateAndroid::SetIsFirstTimeUser(bool first_time_user) {
-  Java_Starter_setIsFirstTimeUser(base::android::AttachCurrentThread(),
-                                  first_time_user);
+  GetPreferenceManager().SetIsFirstTimeTriggerScriptUser(first_time_user);
 }
 
 bool StarterDelegateAndroid::GetOnboardingAccepted() const {
@@ -292,6 +295,14 @@ void StarterDelegateAndroid::HeadlessControllerDoneCallback(
     HeadlessScriptController::ScriptResult result) {
   assistant_ui_delegate_.reset();
   headless_script_controller_.reset();
+}
+
+const PreferenceManager& StarterDelegateAndroid::GetPreferenceManager() const {
+  return preference_manager_;
+}
+
+PreferenceManager& StarterDelegateAndroid::GetPreferenceManager() {
+  return preference_manager_;
 }
 
 void StarterDelegateAndroid::Start(

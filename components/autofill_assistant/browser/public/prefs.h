@@ -7,21 +7,35 @@
 
 #include "build/build_config.h"
 
+class PrefRegistrySimple;
+
 namespace autofill_assistant::prefs {
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/1359957): Migrate Android prefs to profile prefs and use these
-// keys. Once that is done, also consider syncing.
-
+// TODO(crbug.com/1359957): Migrate from Android to Desktop.
 // Boolean indicating whether the user has enabled Autofill Assistant.
 // Prefs are not currently synced across devices.
 extern const char kAutofillAssistantEnabled[];
 
+// TODO(crbug.com/1359957): Migrate from Android to Desktop.
 // Boolean indicating whether the user has given consent for Autofill
 // Assistant to communicate with Assistant servers.
 // Prefs are not synced across devices.
 extern const char kAutofillAssistantConsent[];
-#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Boolean indicating whether a user has seen a trigger script before or if they
+// are first time users. `true` by default. Reset to default on clearing
+// all-time browser history.
+extern const char kAutofillAssistantTriggerScriptsIsFirstTimeUser[];
+
+// Below are keys of Android `SharedPreferences`. These are deprecated and
+// currently being migrated to `PrefService`.
+// Migrated to `prefs::kAutofillAssistantTriggerScriptsIsFirstTimeUser`.
+extern const char kDeprecatedAutofillAssistantTriggerScriptsIsFirstTimeUser[];
+
+// Registers the Autofill Assistant profile prefs that are exposed to
+// users of the Autofill Assistant component, i.e. whether Autofill Assistant
+// is turned on and whether consent has been given.
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace autofill_assistant::prefs
 

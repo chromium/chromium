@@ -9,7 +9,9 @@ include_rules = [
   "+components/favicon",
   "+components/image_fetcher",
   "+components/module_installer",
+  "+components/prefs",
   "+components/signin",
+  "+components/user_prefs",
   "+content/public/android",
   "+ui/android",
 ]

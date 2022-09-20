@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptConditi
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptConditionsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptProto;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -70,6 +71,8 @@ import org.chromium.components.autofill_assistant.AssistantFeatures;
 import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.WebContents;
@@ -81,6 +84,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Integration tests for trigger scripts. */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -127,6 +131,16 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         startAutofillAssistantWithParams(mTestRule.getActivity(), getURL(pageToLoad), parameters);
     }
 
+    /** Returns the value of a boolean pref in the {@link PrefService} attached to the profile. */
+    private boolean getBooleanPref(String preference) {
+        AtomicBoolean result = new AtomicBoolean();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            result.set(prefService.getBoolean(preference));
+        });
+        return result.get();
+    }
+
     @Before
     public void setUp() {
         // Enable MSBB.
@@ -166,14 +180,15 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         .addTriggerScripts(firstTimeTriggerScript)
                         .addTriggerScripts(returningUserTriggerScript)
                         .build();
+
+        Assert.assertTrue(
+                getBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_IS_FIRST_TIME_USER));
         setupTriggerScripts(triggerScripts);
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
-        Assert.assertTrue(
-                AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeTriggerScriptUser());
         waitUntilViewMatchesCondition(withText("First time user"), isCompletelyDisplayed());
         Assert.assertFalse(
-                AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeTriggerScriptUser());
+                getBooleanPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_IS_FIRST_TIME_USER));
 
         onView(withText("Not now")).perform(click());
         waitUntilViewMatchesCondition(withText("Returning user"), isCompletelyDisplayed());

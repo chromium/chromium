@@ -221,16 +221,6 @@ public class Starter implements AssistantTabObserver, UserData {
     }
 
     @CalledByNative
-    private static boolean getIsFirstTimeUser() {
-        return AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeTriggerScriptUser();
-    }
-
-    @CalledByNative
-    private static void setIsFirstTimeUser(boolean firstTimeUser) {
-        AutofillAssistantPreferencesUtil.setFirstTimeTriggerScriptUserPreference(firstTimeUser);
-    }
-
-    @CalledByNative
     private static boolean getOnboardingAccepted() {
         return !AutofillAssistantPreferencesUtil.getShowOnboarding();
     }

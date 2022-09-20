@@ -16,9 +16,6 @@ public class AutofillAssistantPreferencesUtil {
     /** Whether the Autofill Assistant onboarding has been accepted. */
     private static final String AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED =
             "AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED";
-    /** Whether the user has seen a lite-script before or is a first-time user. */
-    private static final String AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER =
-            "Chrome.AutofillAssistant.LiteScriptFirstTimeUser";
     /** Whether proactive help is enabled. */
     private static final String AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED =
             "Chrome.AutofillAssistant.ProactiveHelp";
@@ -103,20 +100,6 @@ public class AutofillAssistantPreferencesUtil {
 
     public static void removeOnboardingAcceptedPreference() {
         remove(AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED);
-    }
-
-    /** Returns whether the user has seen a trigger script before or not. */
-    public static boolean isAutofillAssistantFirstTimeTriggerScriptUser() {
-        return readBoolean(AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER, true);
-    }
-
-    /** Marks a user as having seen a trigger script at least once before. */
-    public static void setFirstTimeTriggerScriptUserPreference(boolean firstTimeUser) {
-        writeBoolean(AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER, firstTimeUser);
-    }
-
-    public static void onClearBrowserHistory() {
-        remove(AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER);
     }
 
     public static boolean getProactiveHelpPreference(boolean defaultValue) {
