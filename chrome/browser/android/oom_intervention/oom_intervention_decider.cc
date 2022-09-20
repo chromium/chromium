@@ -140,8 +140,7 @@ void OomInterventionDecider::OnPrefInitialized(bool success) {
   const base::Value::List& old_pref_value = prefs_->GetList(kBlacklist);
   if (!old_pref_value.empty()) {
     prefs_->SetList(kBlocklist, old_pref_value.Clone());
-    ListPrefUpdate update(prefs_, kBlacklist);
-    update->GetList().clear();
+    prefs_->SetList(kBlacklist, base::Value::List());
   }
 
   if (delegate_->WasLastShutdownClean())
@@ -175,8 +174,8 @@ void OomInterventionDecider::AddToList(const char* list_name,
                                        const std::string& host) {
   if (IsInList(list_name, host))
     return;
-  ListPrefUpdate update(prefs_, list_name);
-  base::Value::List& update_list = update->GetList();
+  ScopedListPrefUpdate update(prefs_, list_name);
+  base::Value::List& update_list = update.Get();
   update_list.Append(host);
   if (update_list.size() > kMaxListSize)
     update_list.erase(update_list.begin());
