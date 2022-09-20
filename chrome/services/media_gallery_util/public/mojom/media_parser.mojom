@@ -61,7 +61,7 @@ interface MediaParser {
   GetCpuInfo() => (int64 libyuv_cpu_flags, int64 ffmpeg_cpu_flags);
 };
 
-[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface MediaParserFactory {
   // Creates a MediaParser. |libyuv_cpuf_lags| are the flags returned by
   // libyuv::InitCpuFlags() from third-party/libyuv and |libavutil_cpu_flags|
