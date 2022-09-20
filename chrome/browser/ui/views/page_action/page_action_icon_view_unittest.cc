@@ -69,6 +69,7 @@ class TestPageActionIconView : public PageActionIconView {
                            parent_delegate,
                            delegate,
                            "TestName",
+                           true,
                            font_list) {
     SetUpForInOutAnimation();
   }

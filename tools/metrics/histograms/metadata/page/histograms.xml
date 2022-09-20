@@ -60,6 +60,16 @@ chromium-metrics-reviews@google.com.
   <variant name="SessionWindow"/>
 </variants>
 
+<histogram name="PageActionController.ActionTypeShown"
+    enum="PageActionIconType" expires_after="2023-02-01">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The type of Page Action currently shown. Logged once per ephemeral page
+    action the first time it becomes visible on a given page.
+  </summary>
+</histogram>
+
 <histogram name="PageActionController.ExtensionsWithPageActions" units="units"
     expires_after="2023-02-12">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -68,6 +78,85 @@ chromium-metrics-reviews@google.com.
     The number of Extensions that have Page Actions. Measured once per startup
     per profile.
   </summary>
+</histogram>
+
+<histogram name="PageActionController.Icon.CTR" enum="PageActionCTREvent"
+    expires_after="2023-02-01">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records events related to overall ephemeral page action icon click through
+    rate (CTR) calculation.
+
+    The CTR can be calculated by computing &quot;Clicked&quot; /
+    &quot;Shown&quot;. &quot;Clicked&quot; means the page action icon was
+    clicked. &quot;Shown&quot; means that the page action icon was displayed.
+    &quot;Shown&quot; is logged once per page action the first time it becomes
+    visible on a given page, and &quot;Clicked&quot; is logged once per click.
+  </summary>
+</histogram>
+
+<histogram name="PageActionController.Icon.NumberActionsShownWhenClicked"
+    units="actions" expires_after="2023-02-01">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of ephemeral Page Actions currently shown. Measured each time a
+    page action icon is clicked.
+  </summary>
+</histogram>
+
+<histogram name="PageActionController.NumberActionsShown" units="actions"
+    expires_after="2023-02-01">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of ephemeral Page Actions currently shown. Measured each time a
+    new page is loaded, and then again when each new page action appears on the
+    same page.
+  </summary>
+</histogram>
+
+<histogram name="PageActionController.{PageActionType}.Icon.CTR"
+    enum="PageActionCTREvent" expires_after="2023-02-01">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records events related to {PageActionType} page action icon click through
+    rate (CTR) calculation.
+
+    The CTR can be calculated by computing &quot;Clicked&quot; /
+    &quot;Shown&quot;. &quot;Clicked&quot; means the page action icon was
+    clicked. &quot;Shown&quot; means that the page action icon was displayed.
+    &quot;Shown&quot; is logged once per page action the first time it becomes
+    visible on a given page, and &quot;Clicked&quot; is logged once per click.
+  </summary>
+  <token key="PageActionType">
+    <variant name="BookmarksStar"/>
+    <variant name="ClickToCall"/>
+    <variant name="CookieControls"/>
+    <variant name="FileSystemAccess"/>
+    <variant name="Find"/>
+    <variant name="HighEfficiency"/>
+    <variant name="IntentPicker"/>
+    <variant name="LocalCardMigration"/>
+    <variant name="ManagePasswords"/>
+    <variant name="PaymentsOfferNotification"/>
+    <variant name="PriceTracking"/>
+    <variant name="PWAInstall"/>
+    <variant name="QRCodeGenerator"/>
+    <variant name="ReaderMode"/>
+    <variant name="SaveAutofillAddress"/>
+    <variant name="SaveCard"/>
+    <variant name="SendTabToSelf"/>
+    <variant name="SharingHub"/>
+    <variant name="SideSearch"/>
+    <variant name="SMSRemoteFetcher"/>
+    <variant name="Translate"/>
+    <variant name="VirtualCardEnroll"/>
+    <variant name="VirtualCardManualFeedback"/>
+    <variant name="Zoom"/>
+  </token>
 </histogram>
 
 <histogram base="true"

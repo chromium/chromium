@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -20,6 +21,7 @@
 class CommandUpdater;
 class OmniboxView;
 class PageActionIconLoadingIndicatorView;
+class PageActionIconViewObserver;
 
 namespace content {
 class WebContents;
@@ -32,6 +34,13 @@ struct VectorIcon;
 namespace views {
 class BubbleDialogDelegate;
 }
+
+// Used for histograms, do not reorder.
+enum class PageActionCTREvent {
+  kShown = 0,
+  kClicked,
+  kMaxValue = kClicked,
+};
 
 // Represents an inbuilt (as opposed to an extension) page action icon that
 // shows a bubble when clicked.
@@ -62,6 +71,9 @@ class PageActionIconView : public IconLabelBubbleView {
   PageActionIconView& operator=(const PageActionIconView&) = delete;
   ~PageActionIconView() override;
 
+  void AddPageIconViewObserver(PageActionIconViewObserver* observer);
+  void RemovePageIconViewObserver(PageActionIconViewObserver* observer);
+
   // Updates the color of the icon, this must be set before the icon is drawn.
   void SetIconColor(SkColor icon_color);
   SkColor GetIconColor() const;
@@ -83,6 +95,14 @@ class PageActionIconView : public IconLabelBubbleView {
   SkColor GetLabelColorForTesting() const;
 
   const char* name_for_histograms() const { return name_for_histograms_; }
+  bool ephemeral() const { return ephemeral_; }
+
+  bool should_record_metrics_if_shown() const {
+    return should_record_metrics_if_shown_;
+  }
+  void set_should_record_metrics_if_shown(bool record) {
+    should_record_metrics_if_shown_ = record;
+  }
 
   void ExecuteForTesting();
 
@@ -91,6 +111,9 @@ class PageActionIconView : public IconLabelBubbleView {
   // SetIsLoading(), but local card migration icon has a weird behavior that
   // doing so will cause the indicator being invisible. Investigate and fix.
   void InstallLoadingIndicatorForTesting();
+
+  // IconLabelBubbleView:
+  void SetVisible(bool visible) override;
 
   PageActionIconLoadingIndicatorView* loading_indicator_for_testing() {
     return loading_indicator_;
@@ -108,6 +131,7 @@ class PageActionIconView : public IconLabelBubbleView {
                      IconLabelBubbleView::Delegate* parent_delegate,
                      Delegate* delegate,
                      const char* name_for_histograms,
+                     bool ephemeral = true,
                      const gfx::FontList& = gfx::FontList());
 
   // Returns true if a related bubble is showing.
@@ -191,13 +215,21 @@ class PageActionIconView : public IconLabelBubbleView {
   // String that represents the page action type for metrics purposes.
   const char* const name_for_histograms_;
 
+  // Should be true if this page action should only sometimes be displayed.
+  const bool ephemeral_;
+
   // The active node_data. The precise definition of "active" is unique to each
   // subclass, but generally indicates that the associated feature is acting on
   // the web page.
   bool active_ = false;
 
+  // Whether metrics should be recorded when setting this to visible.
+  bool should_record_metrics_if_shown_ = false;
+
   // The loading indicator, showing a throbber animation on top of the icon.
   raw_ptr<PageActionIconLoadingIndicatorView> loading_indicator_ = nullptr;
+
+  base::ObserverList<PageActionIconViewObserver>::Unchecked observer_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_VIEW_H_

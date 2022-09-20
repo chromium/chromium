@@ -98,6 +98,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
@@ -785,6 +786,9 @@ void LocationBarView::ChildPreferredSizeChanged(views::View* child) {
 }
 
 void LocationBarView::Update(WebContents* contents) {
+  if (contents)
+    page_action_icon_controller_->UpdateWebContents(contents);
+
   RefreshContentSettingViews();
 
   RefreshPageActionIconViews();

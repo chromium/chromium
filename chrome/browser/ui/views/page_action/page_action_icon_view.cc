@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_loading_indicator_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,12 +61,14 @@ PageActionIconView::PageActionIconView(
     IconLabelBubbleView::Delegate* parent_delegate,
     PageActionIconView::Delegate* delegate,
     const char* name_for_histograms,
+    bool ephemeral,
     const gfx::FontList& font_list)
     : IconLabelBubbleView(font_list, parent_delegate),
       command_updater_(command_updater),
       delegate_(delegate),
       command_id_(command_id),
-      name_for_histograms_(name_for_histograms) {
+      name_for_histograms_(name_for_histograms),
+      ephemeral_(ephemeral) {
   DCHECK(delegate_);
 
   image()->SetFlipCanvasOnPaintForRTLUI(true);
@@ -78,6 +81,16 @@ PageActionIconView::PageActionIconView(
 }
 
 PageActionIconView::~PageActionIconView() = default;
+
+void PageActionIconView::AddPageIconViewObserver(
+    PageActionIconViewObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void PageActionIconView::RemovePageIconViewObserver(
+    PageActionIconViewObserver* observer) {
+  observer_list_.RemoveObserver(observer);
+}
 
 bool PageActionIconView::IsBubbleShowing() const {
   // If the bubble is being destroyed, it's considered showing though it may be
@@ -134,6 +147,9 @@ bool PageActionIconView::ShouldShowSeparator() const {
 }
 
 void PageActionIconView::NotifyClick(const ui::Event& event) {
+  for (PageActionIconViewObserver& observer : observer_list_) {
+    observer.OnPageActionIconViewClicked(this);
+  }
   // Intentionally skip the immediate parent function
   // IconLabelBubbleView::NotifyClick(). It calls ShowBubble() which
   // is redundant here since we use Chrome command to show the bubble.
@@ -280,6 +296,16 @@ void PageActionIconView::InstallLoadingIndicator() {
   loading_indicator_ =
       AddChildView(std::make_unique<PageActionIconLoadingIndicatorView>(this));
   loading_indicator_->SetVisible(false);
+}
+
+void PageActionIconView::SetVisible(bool visible) {
+  bool was_visible = GetVisible();
+  IconLabelBubbleView::SetVisible(visible);
+  if (!was_visible && visible) {
+    for (PageActionIconViewObserver& observer : observer_list_) {
+      observer.OnPageActionIconViewShown(this);
+    }
+  }
 }
 
 BEGIN_METADATA(PageActionIconView, IconLabelBubbleView)
