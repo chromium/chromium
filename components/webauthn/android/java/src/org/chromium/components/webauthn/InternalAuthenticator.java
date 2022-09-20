@@ -122,6 +122,24 @@ public class InternalAuthenticator {
         });
     }
 
+    /**
+     * Called by InternalAuthenticatorAndroid, which facilitates WebAuthn for processes that
+     * originate from the browser process. The response will be passed through
+     * |invokeGetMatchingCredentialIdsResponse()|.
+     */
+    @CalledByNative
+    public void getMatchingCredentialIds(
+            String relyingPartyId, byte[][] credentialIds, boolean requireThirdPartyPayment) {
+        mAuthenticator.getMatchingCredentialIds(relyingPartyId, credentialIds,
+                requireThirdPartyPayment, (matchingCredentialIds) -> {
+                    if (mNativeInternalAuthenticatorAndroid != 0) {
+                        InternalAuthenticatorJni.get().invokeGetMatchingCredentialIdsResponse(
+                                mNativeInternalAuthenticatorAndroid,
+                                matchingCredentialIds.toArray(new byte[0][]));
+                    }
+                });
+    }
+
     @CalledByNative
     public void cancel() {
         mAuthenticator.cancel();
@@ -136,5 +154,7 @@ public class InternalAuthenticator {
                 long nativeInternalAuthenticatorAndroid, int status, ByteBuffer byteBuffer);
         void invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
                 long nativeInternalAuthenticatorAndroid, boolean isUVPAA);
+        void invokeGetMatchingCredentialIdsResponse(
+                long nativeInternalAuthenticatorAndroid, byte[][] matchingCredentialIds);
     }
 }

@@ -48,6 +48,11 @@ class InternalAuthenticatorImpl : public webauthn::InternalAuthenticator,
       blink::mojom::Authenticator::
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback)
       override;
+  void GetMatchingCredentialIds(
+      const std::string& relying_party_id,
+      const std::vector<std::vector<uint8_t>>& credential_ids,
+      bool require_third_party_payment_bit,
+      webauthn::GetMatchingCredentialIdsCallback callback) override;
   void Cancel() override;
   content::RenderFrameHost* GetRenderFrameHost() override;
 

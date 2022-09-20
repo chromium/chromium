@@ -61,6 +61,15 @@ void InternalAuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
       std::move(callback));
 }
 
+void InternalAuthenticatorImpl::GetMatchingCredentialIds(
+    const std::string& relying_party_id,
+    const std::vector<std::vector<uint8_t>>& credential_ids,
+    bool require_third_party_payment_bit,
+    webauthn::GetMatchingCredentialIdsCallback callback) {
+  // Not yet supported on any desktop platform.
+  NOTREACHED();
+}
+
 void InternalAuthenticatorImpl::Cancel() {
   authenticator_common_->Cancel();
 }

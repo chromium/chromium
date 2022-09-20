@@ -48,6 +48,22 @@ class SecurePaymentConfirmationAppFactory
       std::unique_ptr<Request> request,
       bool is_available);
 
+  // On platforms where we have credential-store level support for retrieving
+  // credentials (i.e., rather than using the user profile database), this
+  // callback will be called with the retrieved and matching credential ids.
+  //
+  // |relying_party_id| and |matching_credentials| are always std::move'd in,
+  // and so are not const-ref.
+  void OnGetMatchingCredentialIdsFromStore(
+      std::unique_ptr<Request> request,
+      std::string relying_party_id,
+      std::vector<std::vector<uint8_t>> matching_credentials);
+
+  void OnRetrievedCredentials(
+      std::unique_ptr<Request> request,
+      std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
+          credentials);
+
   void OnAppIcon(
       std::unique_ptr<SecurePaymentConfirmationCredential> credential,
       std::unique_ptr<Request> request,

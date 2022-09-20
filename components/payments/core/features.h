@@ -61,6 +61,10 @@ extern const base::Feature kEnforceFullDelegation;
 // GPay app and the browser for dynamic updates on shipping and payment data.
 extern const base::Feature kGPayAppDynamicUpdate;
 
+// Used to control whether SecurePaymentConfirmation is able to rely on OS-level
+// credential store APIs, or if it can only rely on the user-profile database.
+extern const base::Feature kSecurePaymentConfirmationUseCredentialStoreAPIs;
+
 }  // namespace features
 }  // namespace payments
 

@@ -14,7 +14,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
@@ -25,8 +24,8 @@ namespace payments {
 
 class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
  public:
-  MockPaymentAppFactoryDelegate(mojom::PaymentMethodDataPtr method_data,
-                                content::BrowserContext* context);
+  MockPaymentAppFactoryDelegate(content::WebContents* web_contents,
+                                mojom::PaymentMethodDataPtr method_data);
   ~MockPaymentAppFactoryDelegate() override;
 
   void SetRequestedPaymentMethod(mojom::PaymentMethodDataPtr method_data);
@@ -72,7 +71,6 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
   }
 
  private:
-  content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
   GURL top_origin_;
   GURL frame_origin_;

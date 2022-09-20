@@ -306,7 +306,7 @@ public final class Fido2Api {
         writeLength(b, parcel);
 
         // 12: extensions
-        if (options.devicePublicKey != null) {
+        if (options.devicePublicKey != null || options.isPaymentCredentialCreation) {
             b = writeHeader(12, parcel);
             appendMakeCredentialExtensionsToParcel(options, parcel);
             writeLength(b, parcel);
@@ -315,6 +315,12 @@ public final class Fido2Api {
         writeLength(a, parcel);
     }
 
+    /**
+     * Serialize known extensions for an app's makeCredential request to a {@link Parcel}.
+     *
+     * @param options the options passed from the renderer.
+     * @param parcel the {@link Parcel} to append the output to.
+     */
     private static void appendMakeCredentialExtensionsToParcel(
             PublicKeyCredentialCreationOptions options, Parcel parcel) {
         final int a = writeHeader(OBJECT_MAGIC, parcel);
@@ -322,6 +328,20 @@ public final class Fido2Api {
         // 8: devicePubKey
         if (options.devicePublicKey != null) {
             final int b = writeHeader(8, parcel);
+            final int c = writeHeader(OBJECT_MAGIC, parcel);
+            final int d = writeHeader(1, parcel);
+            parcel.writeInt(1);
+            writeLength(d, parcel);
+            writeLength(c, parcel);
+            writeLength(b, parcel);
+        }
+
+        // 10: GoogleThirdPartyPayment
+        //
+        // This only has effect if set to 'true' (i.e., omitting it and setting it to false are
+        // equivalent), so we only include the 'true' case.
+        if (options.isPaymentCredentialCreation) {
+            final int b = writeHeader(10, parcel);
             final int c = writeHeader(OBJECT_MAGIC, parcel);
             final int d = writeHeader(1, parcel);
             parcel.writeInt(1);

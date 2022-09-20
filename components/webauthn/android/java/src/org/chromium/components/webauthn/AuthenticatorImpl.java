@@ -30,6 +30,7 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.Origin;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -39,6 +40,7 @@ import java.util.Queue;
 public final class AuthenticatorImpl implements Authenticator {
     private static final String GMSCORE_PACKAGE_NAME = "com.google.android.gms";
     public static final int GMSCORE_MIN_VERSION = 16890000;
+    public static final int GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS = 22330000;
     private final WebAuthenticationDelegate.IntentSender mIntentSender;
     private final RenderFrameHost mRenderFrameHost;
     private final @WebAuthenticationDelegate.Support int mSupportLevel;
@@ -191,6 +193,27 @@ public final class AuthenticatorImpl implements Authenticator {
         getFido2CredentialRequest().handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
                 mRenderFrameHost,
                 isUvpaa -> onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
+    }
+
+    /**
+     * Retrieves the set of credentials for the given relying party, and filters them to match the
+     * given input credential IDs. Optionally, may also filter the credentials to only return those
+     * that are marked as third-party payment enabled.
+     *
+     * Because this functionality does not participate in the normal WebAuthn UI flow and is
+     * idempotent at the Fido2 layer, it does not adhere to the 'one call at a time' logic used for
+     * the create/get methods.
+     */
+    public void getMatchingCredentialIds(String relyingPartyId, byte[][] credentialIds,
+            boolean requireThirdPartyPayment, GetMatchingCredentialIdsResponseCallback callback) {
+        if (mGmsCorePackageVersion < GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS) {
+            callback.onResponse(new ArrayList<byte[]>());
+            return;
+        }
+
+        getFido2CredentialRequest().handleGetMatchingCredentialIdsRequest(mRenderFrameHost,
+                relyingPartyId, credentialIds, requireThirdPartyPayment, callback,
+                status -> onError(status));
     }
 
     @Override

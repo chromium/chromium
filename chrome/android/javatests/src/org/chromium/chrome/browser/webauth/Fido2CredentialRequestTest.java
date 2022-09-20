@@ -192,7 +192,7 @@ public class Fido2CredentialRequestTest {
     }
 
     private static class MockFido2ApiCallHelper extends Fido2ApiCallHelper {
-        private WebAuthnCredentialDetails mReturnedCredentialDetails;
+        private List<WebAuthnCredentialDetails> mReturnedCredentialDetails;
         private boolean mInvokeCallbackImmediately = true;
         private OnSuccessListener<List<WebAuthnCredentialDetails>> mSuccessCallback;
 
@@ -201,14 +201,13 @@ public class Fido2CredentialRequestTest {
                 OnSuccessListener<List<WebAuthnCredentialDetails>> successCallback,
                 OnFailureListener failureCallback) {
             if (mInvokeCallbackImmediately) {
-                successCallback.onSuccess(Arrays.asList(
-                        new WebAuthnCredentialDetails[] {mReturnedCredentialDetails}));
+                successCallback.onSuccess(mReturnedCredentialDetails);
                 return;
             }
             mSuccessCallback = successCallback;
         }
 
-        public void setReturnedCredentialDetails(WebAuthnCredentialDetails details) {
+        public void setReturnedCredentialDetails(List<WebAuthnCredentialDetails> details) {
             mReturnedCredentialDetails = details;
         }
 
@@ -217,8 +216,7 @@ public class Fido2CredentialRequestTest {
         }
 
         public void invokeSuccessCallback() {
-            mSuccessCallback.onSuccess(
-                    Arrays.asList(new WebAuthnCredentialDetails[] {mReturnedCredentialDetails}));
+            mSuccessCallback.onSuccess(mReturnedCredentialDetails);
         }
     }
 
@@ -226,6 +224,7 @@ public class Fido2CredentialRequestTest {
         private Integer mStatus;
         private MakeCredentialAuthenticatorResponse mMakeCredentialResponse;
         private GetAssertionAuthenticatorResponse mGetAssertionAuthenticatorResponse;
+        private List<byte[]> mGetMatchingCredentialIdsResponse;
 
         // Signals when request is complete.
         private final ConditionVariable mDone = new ConditionVariable();
@@ -247,6 +246,11 @@ public class Fido2CredentialRequestTest {
             unblock();
         }
 
+        public void onGetMatchingCredentialIds(List<byte[]> matchingCredentialIds) {
+            mGetMatchingCredentialIdsResponse = matchingCredentialIds;
+            unblock();
+        }
+
         public void onError(Integer status) {
             assert mStatus == null;
             mStatus = status;
@@ -263,6 +267,10 @@ public class Fido2CredentialRequestTest {
 
         public GetAssertionAuthenticatorResponse getGetAssertionResponse() {
             return mGetAssertionAuthenticatorResponse;
+        }
+
+        public List<byte[]> getGetMatchingCredentialIdsResponse() {
+            return mGetMatchingCredentialIdsResponse;
         }
 
         public void blockUntilCalled() {
@@ -301,6 +309,10 @@ public class Fido2CredentialRequestTest {
         @Override
         public void invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
                 long nativeInternalAuthenticator, boolean isUVPAA) {}
+
+        @Override
+        public void invokeGetMatchingCredentialIdsResponse(
+                long nativeInternalAuthenticator, byte[][] matchingCredentials) {}
     }
 
     private static class MockOrigin extends Origin {
@@ -465,7 +477,8 @@ public class Fido2CredentialRequestTest {
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mRequest);
 
         mFido2ApiCallHelper = new MockFido2ApiCallHelper();
-        mFido2ApiCallHelper.setReturnedCredentialDetails(Fido2ApiTestHelper.getCredentialDetails());
+        mFido2ApiCallHelper.setReturnedCredentialDetails(
+                Arrays.asList(Fido2ApiTestHelper.getCredentialDetails()));
         Fido2ApiCallHelper.overrideInstanceForTesting(mFido2ApiCallHelper);
 
         mMockBrowserBridge = new MockBrowserBridge();
@@ -1344,7 +1357,7 @@ public class Fido2CredentialRequestTest {
         WebAuthnCredentialDetails nonDiscoverableCredDetails =
                 Fido2ApiTestHelper.getCredentialDetails();
         nonDiscoverableCredDetails.mIsDiscoverable = false;
-        mFido2ApiCallHelper.setReturnedCredentialDetails(nonDiscoverableCredDetails);
+        mFido2ApiCallHelper.setReturnedCredentialDetails(Arrays.asList(nonDiscoverableCredDetails));
         mMockBrowserBridge.setExpectedCredentialDetailsList(new ArrayList<>());
 
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
@@ -1397,6 +1410,86 @@ public class Fido2CredentialRequestTest {
         mCallback.blockUntilCalled();
         Assert.assertEquals(
                 Integer.valueOf(AuthenticatorStatus.ABORT_ERROR), mCallback.getStatus());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetMatchingCredentialIds_success() {
+        String relyingPartyId = "subdomain.example.test";
+        byte[][] allowCredentialIds = new byte[][] {
+                {1, 2, 3},
+                {10, 11, 12},
+                {13, 14, 15},
+        };
+        boolean requireThirdPartyPayment = false;
+
+        WebAuthnCredentialDetails credential1 = Fido2ApiTestHelper.getCredentialDetails();
+        credential1.mCredentialId = new byte[] {1, 2, 3};
+        credential1.mIsPayment = true;
+
+        WebAuthnCredentialDetails credential2 = Fido2ApiTestHelper.getCredentialDetails();
+        credential2.mCredentialId = new byte[] {4, 5, 6};
+        credential2.mIsPayment = false;
+
+        WebAuthnCredentialDetails credential3 = Fido2ApiTestHelper.getCredentialDetails();
+        credential3.mCredentialId = new byte[] {7, 8, 9};
+        credential3.mIsPayment = true;
+
+        WebAuthnCredentialDetails credential4 = Fido2ApiTestHelper.getCredentialDetails();
+        credential4.mCredentialId = new byte[] {10, 11, 12};
+        credential4.mIsPayment = false;
+
+        mFido2ApiCallHelper.setReturnedCredentialDetails(
+                Arrays.asList(credential1, credential2, credential3, credential4));
+
+        mRequest.handleGetMatchingCredentialIdsRequest(mFrameHost, relyingPartyId,
+                allowCredentialIds, requireThirdPartyPayment,
+                (credentialIds)
+                        -> mCallback.onGetMatchingCredentialIds(credentialIds),
+                errorStatus -> mCallback.onError(errorStatus));
+        mCallback.blockUntilCalled();
+        Assert.assertArrayEquals(mCallback.getGetMatchingCredentialIdsResponse().toArray(),
+                new byte[][] {{1, 2, 3}, {10, 11, 12}});
+    }
+
+    @Test
+    @SmallTest
+    public void testGetMatchingCredentialIds_requireThirdPartyBit() {
+        String relyingPartyId = "subdomain.example.test";
+        byte[][] allowCredentialIds = new byte[][] {
+                {1, 2, 3},
+                {10, 11, 12},
+                {13, 14, 15},
+        };
+        boolean requireThirdPartyPayment = true;
+
+        WebAuthnCredentialDetails credential1 = Fido2ApiTestHelper.getCredentialDetails();
+        credential1.mCredentialId = new byte[] {1, 2, 3};
+        credential1.mIsPayment = true;
+
+        WebAuthnCredentialDetails credential2 = Fido2ApiTestHelper.getCredentialDetails();
+        credential2.mCredentialId = new byte[] {4, 5, 6};
+        credential2.mIsPayment = false;
+
+        WebAuthnCredentialDetails credential3 = Fido2ApiTestHelper.getCredentialDetails();
+        credential3.mCredentialId = new byte[] {7, 8, 9};
+        credential3.mIsPayment = true;
+
+        WebAuthnCredentialDetails credential4 = Fido2ApiTestHelper.getCredentialDetails();
+        credential4.mCredentialId = new byte[] {10, 11, 12};
+        credential4.mIsPayment = false;
+
+        mFido2ApiCallHelper.setReturnedCredentialDetails(
+                Arrays.asList(credential1, credential2, credential3, credential4));
+
+        mRequest.handleGetMatchingCredentialIdsRequest(mFrameHost, relyingPartyId,
+                allowCredentialIds, requireThirdPartyPayment,
+                (credentialIds)
+                        -> mCallback.onGetMatchingCredentialIds(credentialIds),
+                errorStatus -> mCallback.onError(errorStatus));
+        mCallback.blockUntilCalled();
+        Assert.assertArrayEquals(mCallback.getGetMatchingCredentialIdsResponse().toArray(),
+                new byte[][] {{1, 2, 3}});
     }
 
     private static class TestParcelable implements Parcelable {

@@ -20,6 +20,7 @@
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/secure_payment_confirmation_app.h"
+#include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
@@ -124,6 +125,20 @@ bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,
   return true;
 }
 
+// Determine if a given origin that is calling SPC with a given RP ID requires
+// the credentials to be third-party enabled (i.e., the calling party is not the
+// RP ID).
+//
+// TODO(crbug.com/1365347): Use OriginIsAllowedToClaimRelyingPartyId instead.
+bool RequiresThirdPartyPaymentBit(const url::Origin& caller_origin,
+                                  const std::string& relying_party_id) {
+  // An origin may utilize credentials (without the third-party payment bit) for
+  // either its own exact domain (e.g. 'www.site.example' on www.site.example),
+  // or if it is in the same domain (e.g., 'site.example' on www.site.example).
+  return caller_origin.host() != relying_party_id &&
+         !caller_origin.DomainIs(relying_party_id);
+}
+
 }  // namespace
 
 struct SecurePaymentConfirmationAppFactory::Request
@@ -169,21 +184,42 @@ void SecurePaymentConfirmationAppFactory::
 
   if (!request->authenticator ||
       (!is_available && !base::FeatureList::IsEnabled(
-                            features::kSecurePaymentConfirmationDebug))) {
+                            ::features::kSecurePaymentConfirmationDebug))) {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
 
-  // Regardless of whether `web_data_service` has any apps, canMakePayment() and
-  // hasEnrolledInstrument() should return true when a user-verifying platform
-  // authenticator device is available.
+  // Regardless of whether any credentials match, canMakePayment() and
+  // hasEnrolledInstrument() should return true for SPC when a user-verifying
+  // platform authenticator device is available.
   request->delegate->SetCanMakePaymentEvenWithoutApps();
 
-  WebDataServiceBase::Handle handle =
-      request->web_data_service->GetSecurePaymentConfirmationCredentials(
-          std::move(request->mojo_request->credential_ids),
-          std::move(request->mojo_request->rp_id), this);
-  requests_[handle] = std::move(request);
+  // If we have credential-store level support for SPC, we can query the store
+  // directly. Otherwise, we have to rely on the user profile database.
+  //
+  // Currently, credential store APIs are only available on Android.
+  if (base::FeatureList::IsEnabled(
+          features::kSecurePaymentConfirmationUseCredentialStoreAPIs)) {
+    std::string relying_party_id = request->mojo_request->rp_id;
+    const bool require_third_party_payment_bit = RequiresThirdPartyPaymentBit(
+        request->delegate->GetFrameSecurityOrigin(), relying_party_id);
+
+    auto* request_ptr = request.get();
+    request_ptr->authenticator->GetMatchingCredentialIds(
+        std::move(request_ptr->mojo_request->rp_id),
+        std::move(request_ptr->mojo_request->credential_ids),
+        require_third_party_payment_bit,
+        base::BindOnce(&SecurePaymentConfirmationAppFactory::
+                           OnGetMatchingCredentialIdsFromStore,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(request),
+                       std::move(relying_party_id)));
+  } else {
+    WebDataServiceBase::Handle handle =
+        request->web_data_service->GetSecurePaymentConfirmationCredentials(
+            std::move(request->mojo_request->credential_ids),
+            std::move(request->mojo_request->rp_id), this);
+    requests_[handle] = std::move(request);
+  }
 }
 
 SecurePaymentConfirmationAppFactory::SecurePaymentConfirmationAppFactory()
@@ -276,6 +312,27 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
                         result.get())
                         ->GetValue();
 
+  OnRetrievedCredentials(std::move(request), std::move(credentials));
+}
+
+void SecurePaymentConfirmationAppFactory::OnGetMatchingCredentialIdsFromStore(
+    std::unique_ptr<Request> request,
+    std::string relying_party_id,
+    std::vector<std::vector<uint8_t>> matching_credentials) {
+  std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>> credentials;
+  for (std::vector<uint8_t>& credential_id : matching_credentials) {
+    credentials.emplace_back(
+        std::make_unique<SecurePaymentConfirmationCredential>(
+            std::move(credential_id), relying_party_id,
+            /*user_id=*/std::vector<uint8_t>()));
+  }
+  OnRetrievedCredentials(std::move(request), std::move(credentials));
+}
+
+void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
+    std::unique_ptr<Request> request,
+    std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
+        credentials) {
   std::unique_ptr<SecurePaymentConfirmationCredential> credential;
 
   // For the pilot phase, arbitrarily use the first matching credential.

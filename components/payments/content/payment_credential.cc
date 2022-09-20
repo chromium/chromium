@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/core/features.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -24,7 +25,7 @@ bool PaymentCredential::IsFrameAllowedToUseSecurePaymentConfirmation(
   return rfh && rfh->IsActive() &&
          rfh->IsFeatureEnabled(
              blink::mojom::PermissionsPolicyFeature::kPayment) &&
-         base::FeatureList::IsEnabled(features::kSecurePaymentConfirmation);
+         base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation);
 }
 
 PaymentCredential::PaymentCredential(
@@ -53,6 +54,15 @@ void PaymentCredential::StorePaymentCredential(
 
   RecordFirstSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted);
+
+  // If credential-store level APIs are available, the credential information
+  // will already have been stored during creation.
+  if (base::FeatureList::IsEnabled(
+          features::kSecurePaymentConfirmationUseCredentialStoreAPIs)) {
+    Reset();
+    std::move(callback).Run(mojom::PaymentCredentialStorageStatus::SUCCESS);
+    return;
+  }
 
   storage_callback_ = std::move(callback);
   state_ = State::kStoringCredential;

@@ -62,5 +62,9 @@ const base::Feature kEnforceFullDelegation{"EnforceFullDelegation",
 const base::Feature kGPayAppDynamicUpdate{"GPayAppDynamicUpdate",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kSecurePaymentConfirmationUseCredentialStoreAPIs{
+    "SecurePaymentConfirmationUseCredentialStoreAPIs",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace payments

@@ -15,3 +15,18 @@ source_set("browser") {
     ]
   }
 }
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_internal_authenticator.cc",
+    "mock_internal_authenticator.h",
+  ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//content/public/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

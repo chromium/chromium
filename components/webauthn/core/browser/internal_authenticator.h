@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_INTERNAL_AUTHENTICATOR_H_
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_INTERNAL_AUTHENTICATOR_H_
 
+#include "base/callback.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
 
@@ -13,6 +14,11 @@ class RenderFrameHost;
 }  // namespace content
 
 namespace webauthn {
+
+// Callback for GetMatchingCredentialIds. This method is not exposed to the
+// renderer directly, and so its callback is not defined in mojom.
+using GetMatchingCredentialIdsCallback =
+    base::OnceCallback<void(std::vector<std::vector<uint8_t>>)>;
 
 // Interface similar to blink::mojom::Authenticator meant only for internal
 // components in Chrome to use in order to direct authenticators to create or
@@ -51,6 +57,16 @@ class InternalAuthenticator {
   virtual void IsUserVerifyingPlatformAuthenticatorAvailable(
       blink::mojom::Authenticator::
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) = 0;
+
+  // Queries the authenticator for known credentials for the given
+  // |relying_party_id| which are also in the input |credential_ids| list.
+  // Optionally, can restrict to only match third-party payment enabled
+  // credentials.
+  virtual void GetMatchingCredentialIds(
+      const std::string& relying_party_id,
+      const std::vector<std::vector<uint8_t>>& credential_ids,
+      bool require_third_party_payment_bit,
+      GetMatchingCredentialIdsCallback callback) = 0;
 
   // Cancel an ongoing MakeCredential or GetAssertion request.
   // Only one MakeCredential or GetAssertion call at a time is allowed,

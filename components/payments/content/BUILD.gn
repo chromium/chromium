@@ -241,6 +241,7 @@ source_set("unit_tests") {
 
   deps = [
     ":content",
+    ":test_support",
     ":utils",
     "//base",
     "//base/test:test_support",
@@ -252,6 +253,7 @@ source_set("unit_tests") {
     "//components/payments/core:test_support",
     "//components/strings:components_strings_grit",
     "//components/webauthn/core/browser",
+    "//components/webauthn/core/browser:test_support",
     "//components/webdata/common",
     "//content/test:test_support",
     "//net:test_support",
