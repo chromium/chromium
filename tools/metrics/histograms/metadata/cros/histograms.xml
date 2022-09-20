@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.FormatTime" units="ms"
-    expires_after="2023-01-15">
+    expires_after="2023-03-19">
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

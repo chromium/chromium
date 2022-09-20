@@ -960,7 +960,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.FramesRequested" units="frames"
-    expires_after="2023-01-15">
+    expires_after="2023-03-19">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -975,7 +975,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.GetSourceDataTime.WebRTC"
-    units="microseconds" expires_after="2023-01-15">
+    units="microseconds" expires_after="2023-03-19">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -1111,7 +1111,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.Audio.Render.SinkCache.GetOutputDeviceInfoCacheUtilization"
-    enum="GetOutputDeviceInfoCacheHit" expires_after="2023-01-15">
+    enum="GetOutputDeviceInfoCacheHit" expires_after="2023-03-19">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -2256,7 +2256,7 @@ chromium-metrics-reviews@google.com.
   <summary>The result from an attempt to load a library CDM.</summary>
 </histogram>
 
-<histogram name="Media.EME.CdmLoadTime" units="ms" expires_after="2023-01-15">
+<histogram name="Media.EME.CdmLoadTime" units="ms" expires_after="2023-03-19">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>The time spent to load a library CDM.</summary>
@@ -2582,7 +2582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.Widevine.VideoCapability.HasEmptyRobustness"
-    enum="BooleanEmpty" expires_after="2023-01-15">
+    enum="BooleanEmpty" expires_after="2023-03-19">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3310,7 +3310,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MeanTimeBetweenRebuffers" units="ms"
-    expires_after="2023-01-15">
+    expires_after="2023-03-19">
   <owner>dalecurtis@chromium.org</owner>
   <summary>
     The total watch time (see Media.WatchTime) of a given playback divided by

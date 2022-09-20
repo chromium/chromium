@@ -1431,7 +1431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.FromWebContent.DropInWebContent.Duration"
-    units="ms" expires_after="2023-01-15">
+    units="ms" expires_after="2023-03-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1544,7 +1544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Image.Size" units="KB"
-    expires_after="2023-01-15">
+    expires_after="2023-03-19">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1555,7 +1555,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Image.UriCreatedInterval" units="ms"
-    expires_after="2023-01-15">
+    expires_after="2023-03-19">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1684,7 +1684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.FontLookup.Blink.DLFontsLatencySuccess2"
-    units="microseconds" expires_after="2023-01-15">
+    units="microseconds" expires_after="2023-03-19">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -3823,7 +3823,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Callback.Counts" enum="WebViewCallbackType"
-    expires_after="2023-01-15">
+    expires_after="2023-03-19">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>Records the invocation count of WebView callbacks.</summary>
@@ -3861,7 +3861,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.ComponentUpdater.GetFilesResult"
-    enum="WebViewComponentUpdaterGetFilesResult" expires_after="2023-01-15">
+    enum="WebViewComponentUpdaterGetFilesResult" expires_after="2023-03-19">
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4246,7 +4246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Gfx.HardwareDrawType"
-    enum="WebViewDrawAndSubmissionType" expires_after="2023-01-15">
+    enum="WebViewDrawAndSubmissionType" expires_after="2023-03-19">
   <owner>vasilyt@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>
@@ -4258,7 +4258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.InputStreamTime" units="ms"
-    expires_after="2023-01-15">
+    expires_after="2023-03-19">
   <owner>jam@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
   <summary>
@@ -4296,7 +4296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Metrics.PackagesAllowList.RecordStatus"
-    enum="AppPackageNameLoggingRuleStatus" expires_after="2023-01-15">
+    enum="AppPackageNameLoggingRuleStatus" expires_after="2023-03-19">
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4310,7 +4310,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.Metrics.PackagesAllowList.ResultReceivingDelay"
-    units="ms" expires_after="2023-01-15">
+    units="ms" expires_after="2023-03-19">
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4645,7 +4645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SecureCookieAction" enum="SecureCookieAction"
-    expires_after="2023-01-15">
+    expires_after="2023-03-19">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

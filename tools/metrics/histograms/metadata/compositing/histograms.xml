@@ -40,7 +40,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Browser.LayersUpdateTime" units="microseconds"
-    expires_after="2023-01-15">
+    expires_after="2023-03-19">
   <owner>schenney@chromium.org</owner>
   <owner>animations-dev@chromium.org</owner>
   <summary>

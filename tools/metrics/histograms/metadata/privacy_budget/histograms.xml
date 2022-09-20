@@ -53,7 +53,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockSkew.FetchLatency" units="ms"
-    expires_after="2023-01-14">
+    expires_after="2023-03-19">
   <owner>antoniosartori@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>
   <summary>
@@ -64,7 +64,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockSkew.FetchLatencyJitter" units="ms"
-    expires_after="2023-01-14">
+    expires_after="2023-03-19">
   <owner>antoniosartori@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>
   <summary>
@@ -76,7 +76,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockSkew.Magnitude.Negative" units="ms"
-    expires_after="2023-01-14">
+    expires_after="2023-03-19">
   <owner>antoniosartori@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>
   <summary>
@@ -87,7 +87,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockSkew.Magnitude.Positive" units="ms"
-    expires_after="2023-01-14">
+    expires_after="2023-03-19">
   <owner>antoniosartori@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>
   <summary>

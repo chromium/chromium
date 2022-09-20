@@ -505,7 +505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.IncomingInvalidationStatus"
-    enum="SyncIncomingInvalidationStatus" expires_after="2023-01-15">
+    enum="SyncIncomingInvalidationStatus" expires_after="2023-03-19">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -575,7 +575,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.Local.FileSizeKB" units="KB" expires_after="2023-01-15">
+<histogram name="Sync.Local.FileSizeKB" units="KB" expires_after="2023-03-19">
   <owner>igorruvinov@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1243,7 +1243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.TrustedVaultAccessTokenFetchSuccess" enum="Boolean"
-    expires_after="2023-01-15">
+    expires_after="2023-03-19">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
