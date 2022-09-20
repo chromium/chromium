@@ -42,6 +42,7 @@
 
 namespace autofill {
 
+struct AutofillErrorDialogContext;
 class AutofillPopupControllerImpl;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
@@ -204,7 +205,8 @@ class ChromeAutofillClient
       const CreditCard* credit_card,
       const std::u16string& cvc,
       const gfx::Image& card_image) override;
-  void ShowVirtualCardErrorDialog(bool is_permanent_error) override;
+  void ShowVirtualCardErrorDialog(
+      const AutofillErrorDialogContext& context) override;
   void ShowAutofillProgressDialog(
       AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;

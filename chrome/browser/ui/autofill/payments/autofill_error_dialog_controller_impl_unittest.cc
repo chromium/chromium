@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_view.h"
@@ -15,8 +16,11 @@
 
 namespace autofill {
 
+// Param of the AutofillErrorDialogControllerImplTest:
+// -- bool server_did_return_decline_details;
 class AutofillErrorDialogControllerImplTest
-    : public ChromeRenderViewHostTestHarness {
+    : public ChromeRenderViewHostTestHarness,
+      public testing::WithParamInterface<bool> {
  public:
   AutofillErrorDialogControllerImplTest() = default;
 
@@ -30,16 +34,37 @@ class AutofillErrorDialogControllerImplTest
   raw_ptr<AutofillErrorDialogControllerImpl> controller_ = nullptr;
 };
 
-TEST_F(AutofillErrorDialogControllerImplTest, MetricsTest) {
+INSTANTIATE_TEST_SUITE_P(,
+                         AutofillErrorDialogControllerImplTest,
+                         testing::Bool());
+
+TEST_P(AutofillErrorDialogControllerImplTest, MetricsTest) {
   base::HistogramTester histogram_tester;
+  bool server_did_return_decline_details = GetParam();
   AutofillErrorDialogContext context;
   context.type = AutofillErrorDialogType::kVirtualCardTemporaryError;
+  if (server_did_return_decline_details) {
+    context.server_returned_title = "test_server_returned_title";
+    context.server_returned_description = "test_server_returned_description";
+  }
+
   controller()->Show(context);
+
+  if (server_did_return_decline_details) {
+    EXPECT_EQ(controller()->GetTitle(),
+              base::UTF8ToUTF16(*context.server_returned_title));
+    EXPECT_EQ(controller()->GetDescription(),
+              base::UTF8ToUTF16(*context.server_returned_description));
+  }
 
   // Verify that the metric for shown is incremented.
   histogram_tester.ExpectUniqueSample(
       "Autofill.ErrorDialogShown",
       AutofillErrorDialogType::kVirtualCardTemporaryError, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.ErrorDialogShown.WithServerText",
+      AutofillErrorDialogType::kVirtualCardTemporaryError,
+      /*expected_count=*/server_did_return_decline_details ? 1 : 0);
 }
 
 }  // namespace autofill

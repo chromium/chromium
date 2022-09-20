@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_iban_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
@@ -177,7 +178,8 @@ class TestAutofillClient : public AutofillClient {
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
                    PopupType popup_type) override;
   void HideAutofillPopup(PopupHidingReason reason) override;
-  void ShowVirtualCardErrorDialog(bool is_permanent_error) override;
+  void ShowVirtualCardErrorDialog(
+      const AutofillErrorDialogContext& context) override;
   bool IsAutocompleteEnabled() override;
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
@@ -292,7 +294,12 @@ class TestAutofillClient : public AutofillClient {
   }
 
   bool virtual_card_error_dialog_is_permanent_error() {
-    return virtual_card_error_dialog_is_permanent_error_;
+    return autofill_error_dialog_context().type ==
+           AutofillErrorDialogType::kVirtualCardPermanentError;
+  }
+
+  AutofillErrorDialogContext autofill_error_dialog_context() {
+    return autofill_error_dialog_context_;
   }
 
   SaveCreditCardOptions get_save_credit_card_options() {
@@ -369,7 +376,14 @@ class TestAutofillClient : public AutofillClient {
 
   bool virtual_card_error_dialog_shown_ = false;
 
-  bool virtual_card_error_dialog_is_permanent_error_ = false;
+  // Context parameters that are used to display an error dialog during card
+  // number retrieval. This context will have information that the autofill
+  // error dialog uses to display a dialog specific to the error that occurred.
+  // An example of where this dialog is used is if an error occurs during
+  // virtual card number retrieval, as this context is then filled with fields
+  // specific to the type of error that occurred, and then based on the contents
+  // of this context the dialog is shown.
+  AutofillErrorDialogContext autofill_error_dialog_context_;
 
   // Populated if save was offered. True if bubble was shown, false otherwise.
   absl::optional<bool> offer_to_save_credit_card_bubble_was_shown_;

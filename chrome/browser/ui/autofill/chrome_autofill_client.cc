@@ -377,14 +377,18 @@ void ChromeAutofillClient::OnUnmaskVerificationResult(
     PaymentsRpcResult result) {
   unmask_controller_.OnVerificationResult(result);
 #if BUILDFLAG(IS_ANDROID)
-  // For VCN related errors, on Android we show a new error dialog instead of
+  // For VCN-related errors, on Android we show a new error dialog instead of
   // updating the CVC unmask prompt with the error message.
   switch (result) {
     case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
-      ShowVirtualCardErrorDialog(/*is_permanent_error=*/true);
+      ShowVirtualCardErrorDialog(
+          AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+              /*is_permanent_error=*/true));
       break;
     case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
-      ShowVirtualCardErrorDialog(/*is_permanent_error=*/false);
+      ShowVirtualCardErrorDialog(
+          AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+              /*is_permanent_error=*/false));
       break;
     case AutofillClient::PaymentsRpcResult::kSuccess:
     case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
@@ -1008,11 +1012,8 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
 #endif
 }
 
-void ChromeAutofillClient::ShowVirtualCardErrorDialog(bool is_permanent_error) {
-  AutofillErrorDialogContext context;
-  context.type = is_permanent_error
-                     ? AutofillErrorDialogType::kVirtualCardPermanentError
-                     : AutofillErrorDialogType::kVirtualCardTemporaryError;
+void ChromeAutofillClient::ShowVirtualCardErrorDialog(
+    const AutofillErrorDialogContext& context) {
   autofill_error_dialog_controller_.Show(context);
 }
 

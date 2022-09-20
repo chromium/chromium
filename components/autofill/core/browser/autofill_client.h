@@ -56,13 +56,14 @@ enum class Channel;
 namespace autofill {
 
 class AddressNormalizer;
+class AutocompleteHistoryManager;
 class AutofillAblationStudy;
 class AutofillDriver;
+struct AutofillErrorDialogContext;
 class AutofillOfferData;
-class AutofillProfile;
-class AutocompleteHistoryManager;
 class AutofillOfferManager;
 class AutofillPopupDelegate;
+class AutofillProfile;
 enum class AutofillProgressDialogType;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
@@ -694,8 +695,13 @@ class AutofillClient : public RiskDataLoader {
       const gfx::Image& card_image = gfx::Image());
 
   // Called when some virtual card retrieval errors happened. Will show the
-  // error dialog with virtual card related messages.
-  virtual void ShowVirtualCardErrorDialog(bool is_permanent_error);
+  // error dialog with virtual card related messages. The type of error dialog
+  // that is shown will match the `type` in `context`. If the
+  // `server_returned_title` and `server_returned_description` in `context` are
+  // both set, the virtual card error dialog that is displayed will have these
+  // fields displayed for the title and description, respectively.
+  virtual void ShowVirtualCardErrorDialog(
+      const AutofillErrorDialogContext& context);
 
   // Show/dismiss the progress dialog which contains a throbber and a text
   // message indicating that something is in progress.

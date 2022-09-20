@@ -1158,12 +1158,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ErrorDialogShown" enum="AutofillErrorDialogType"
-    expires_after="2023-04-01">
+    expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
   <owner>siashah@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
     Log when an autofill error dialog is shown to the user along with its type.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ErrorDialogShown.WithServerText"
+    enum="AutofillErrorDialogType" expires_after="2023-09-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs when an autofill error dialog is shown to the user with server returned
+    text, along with its type.
   </summary>
 </histogram>
 

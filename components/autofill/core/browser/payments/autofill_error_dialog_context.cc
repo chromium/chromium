@@ -6,6 +6,17 @@
 
 namespace autofill {
 
+// static
+AutofillErrorDialogContext
+AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+    bool is_permanent_error) {
+  AutofillErrorDialogContext autofill_error_dialog_context;
+  autofill_error_dialog_context.type =
+      is_permanent_error ? AutofillErrorDialogType::kVirtualCardPermanentError
+                         : AutofillErrorDialogType::kVirtualCardTemporaryError;
+  return autofill_error_dialog_context;
+}
+
 AutofillErrorDialogContext::AutofillErrorDialogContext() = default;
 
 AutofillErrorDialogContext::AutofillErrorDialogContext(
