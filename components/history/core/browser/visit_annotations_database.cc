@@ -736,7 +736,7 @@ std::vector<VisitID> VisitAnnotationsDatabase::GetVisitIdsInCluster(
                                  "SELECT visit_id "
                                  "FROM clusters_and_visits "
                                  "WHERE cluster_id=? "
-                                 "ORDER BY visit_id DESC"));
+                                 "ORDER BY score DESC,visit_id DESC"));
   statement.BindInt64(0, cluster_id);
 
   std::vector<VisitID> visit_ids;

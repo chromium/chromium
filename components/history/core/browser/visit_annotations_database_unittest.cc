@@ -432,11 +432,19 @@ TEST_F(VisitAnnotationsDatabaseTest,
   // Add clustered visits.
   AddCluster({AddVisitWithTime(IntToTime(1))});
   AddCluster({AddVisitWithTime(IntToTime(3))});
-  AddCluster({AddVisitWithTime(IntToTime(5)), AddVisitWithTime(IntToTime(7))});
+  // Add a cluster with multiple visits.
+  auto cluster = CreateCluster(
+      {AddVisitWithTime(IntToTime(5)), AddVisitWithTime(IntToTime(7)),
+       AddVisitWithTime(IntToTime(9)), AddVisitWithTime(IntToTime(11))});
+  cluster.visits[0].score = .6;  // visit 6
+  cluster.visits[1].score = 1;   // visit 7
+  cluster.visits[2].score = .6;  // visit 8
+  cluster.visits[3].score = .8;  // visit 9
+  AddClusters({cluster});
 
   // GetVisitIdsInCluster
   EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre(4));
-  EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(7, 6));
+  EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(7, 9, 8, 6));
 
   // GetClusterIdContainingVisit
   EXPECT_EQ(GetClusterIdContainingVisit(1), 0);
