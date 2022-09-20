@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -650,5 +651,143 @@ class PageInfoBubbleViewHistoryDialogBrowserTest : public DialogBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewHistoryDialogBrowserTest,
                        InvokeUi_History) {
+  ShowAndVerifyUi();
+}
+
+class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
+ public:
+  PageInfoBubbleViewCookiesSubpageBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {page_info::kPageInfoCookiesSubpage,
+         privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
+        {});
+  }
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name_with_param_suffix) override {
+    // Bubble dialogs' bounds may exceed the display's work area.
+    // https://crbug.com/893292.
+    set_should_verify_dialog_bounds(false);
+
+    const std::string& name =
+        name_with_param_suffix.substr(0, name_with_param_suffix.find("/"));
+
+    constexpr char kCookiesSubpageFpsBlocked3pcAllowed[] =
+        "CookiesSubpageFpsBlocked3pcAllowed";
+    constexpr char kCookiesSubpageFpsAllowed3pcBlocked[] =
+        "CookiesSubpageFpsAllowed3pcBlocked";
+    constexpr char kCookiesSubpageFpsBlocked3pcBlocked[] =
+        "CookiesSubpageFpsBlocked3pcBlocked";
+    constexpr char kCookiesSubpageFpsAllowed3pcAllowed[] =
+        "CookiesSubpageFpsAllowed3pcAllowed";
+    constexpr char kCookiesSubpageFpsAllowed3pcEnforcedByPolicy[] =
+        "CookiesSubpageFpsAllowed3pcEnforcedByPolicy";
+    constexpr char kCookiesSubpageFpsAllowed3pcEnforcedByExtension[] =
+        "CookiesSubpageFpsAllowed3pcEnforcedByExtension";
+    constexpr char kCookiesSubpageFpsAllowed3pcEnforcedByCookieSetting[] =
+        "CookiesSubpageFpsAllowed3pcEnforcedByCookieSetting";
+
+    const int blocked_sites_count = 8;
+    const int allowed_sites_count = 9;
+    const std::u16string kSiteOrigin = u"example.com";
+
+    PageInfoUI::CookiesNewInfo cookie_info;
+    cookie_info.allowed_sites_count = allowed_sites_count;
+    cookie_info.blocked_sites_count = blocked_sites_count;
+    cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
+    cookie_info.status = CookieControlsStatus::kEnabled;
+    // TODO(crbug.com/1346305): Add fps enforcement info when finished
+    // implementing it.
+    if (name == kCookiesSubpageFpsAllowed3pcAllowed ||
+        name == kCookiesSubpageFpsAllowed3pcBlocked ||
+        name == kCookiesSubpageFpsAllowed3pcEnforcedByPolicy ||
+        name == kCookiesSubpageFpsAllowed3pcEnforcedByExtension ||
+        name == kCookiesSubpageFpsAllowed3pcEnforcedByCookieSetting) {
+      cookie_info.fps_info = {PageInfoUI::CookiesFpsInfo(kSiteOrigin)};
+    }  // Otherwise by default it's null
+
+    if (name == kCookiesSubpageFpsAllowed3pcBlocked ||
+        name == kCookiesSubpageFpsBlocked3pcBlocked ||
+        name == kCookiesSubpageFpsAllowed3pcEnforcedByPolicy ||
+        name == kCookiesSubpageFpsAllowed3pcEnforcedByExtension ||
+        name == kCookiesSubpageFpsAllowed3pcEnforcedByCookieSetting) {
+      cookie_info.status = CookieControlsStatus::kEnabled;
+      if (name == kCookiesSubpageFpsAllowed3pcEnforcedByPolicy) {
+        cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
+      } else if (name == kCookiesSubpageFpsAllowed3pcEnforcedByExtension) {
+        cookie_info.enforcement =
+            CookieControlsEnforcement::kEnforcedByExtension;
+      } else if (name == kCookiesSubpageFpsAllowed3pcEnforcedByCookieSetting) {
+        cookie_info.enforcement =
+            CookieControlsEnforcement::kEnforcedByCookieSetting;
+      }
+    } else if (name == kCookiesSubpageFpsAllowed3pcAllowed ||
+               name == kCookiesSubpageFpsBlocked3pcAllowed) {
+      cookie_info.status = CookieControlsStatus::kDisabled;
+    }
+
+    // Open Page Info and wait for it to be fully initialized.
+    base::RunLoop run_loop;
+    GetPageInfoDialogCreatedCallbackForTesting() = run_loop.QuitClosure();
+    OpenPageInfoBubble(browser());
+    run_loop.Run();
+
+    auto* bubble_view = static_cast<PageInfoBubbleView*>(
+        PageInfoBubbleView::GetPageInfoBubbleForTesting());
+    auto* presenter = bubble_view->presenter_for_testing();
+    EXPECT_TRUE(presenter);
+    EXPECT_TRUE(presenter->ui_for_testing());
+
+    // Open Cookies Subpage and wait for it to be fully initialized.
+    base::RunLoop run_loop2;
+    bubble_view->OpenCookiesPage();
+    auto* cookies_subpage_content = static_cast<PageInfoCookiesContentView*>(
+        bubble_view
+            ->GetViewByID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW)
+            ->children()[1]);
+    cookies_subpage_content->SetInitializedCallbackForTesting(
+        run_loop2.QuitClosure());
+    run_loop2.Run();
+
+    presenter->ui_for_testing()->SetCookieInfo(cookie_info);
+
+    // Removing the focus as with tests run in parallel it causes different
+    // outputs.
+    bubble_view->GetFocusManager()->SetFocusedView(nullptr);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
+                       InvokeUi_CookiesSubpageFpsBlocked3pcAllowed) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
+                       InvokeUi_CookiesSubpageFpsAllowed3pcBlocked) {
+  ShowAndVerifyUi();
+}
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
+                       InvokeUi_CookiesSubpageFpsBlocked3pcBlocked) {
+  ShowAndVerifyUi();
+}
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
+                       InvokeUi_CookiesSubpageFpsAllowed3pcAllowed) {
+  ShowAndVerifyUi();
+}
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
+                       InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByPolicy) {
+  ShowAndVerifyUi();
+}
+IN_PROC_BROWSER_TEST_F(
+    PageInfoBubbleViewCookiesSubpageBrowserTest,
+    InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByExtension) {
+  ShowAndVerifyUi();
+}
+IN_PROC_BROWSER_TEST_F(
+    PageInfoBubbleViewCookiesSubpageBrowserTest,
+    InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByCookieSetting) {
   ShowAndVerifyUi();
 }

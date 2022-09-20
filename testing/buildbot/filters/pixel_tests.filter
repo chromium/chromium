@@ -52,6 +52,7 @@ PageInfoBubbleViewAboutThisSiteDialogBrowserTest.*
 PageInfoBubbleViewDialogBrowserTest.*
 PageInfoBubbleViewPrivacySandboxDialogBrowserTest.*
 PageInfoBubbleViewHistoryDialogBrowserTest.*
+PageInfoBubbleViewCookiesSubpageBrowserTest.*
 *PasswordBubbleBrowserTest.*
 PasswordReuseModalWarningTest.*
 PermissionRequestChipDialogBrowserTest.*

@@ -1205,15 +1205,15 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
     cookies_info.blocked_sites_count =
         GetThirdPartySitesWithBlockedCookiesAccessCount(site_url_);
 
+#if !BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(
             privacy_sandbox::kPrivacySandboxFirstPartySetsUI)) {
-#if !BUILDFLAG(IS_ANDROID)
       auto fps_owner = delegate_->GetFpsOwner(site_url_);
       if (fps_owner)
         cookies_info.fps_info = PageInfoUI::CookiesFpsInfo(*fps_owner);
-
-#endif
     }
+#endif
+
     cookies_info.status = status_;
     cookies_info.enforcement = enforcement_;
     ui_->SetCookieInfo(cookies_info);

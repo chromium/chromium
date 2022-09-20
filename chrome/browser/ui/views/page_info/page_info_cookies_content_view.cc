@@ -274,9 +274,10 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesRow() {
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TITLE);
   const auto icon = PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon();
 
+  // |blocking_third_party_cookies_row_| has to be the first cookie button.
   blocking_third_party_cookies_row_ =
-      cookies_buttons_container_view_->AddChildView(
-          std::make_unique<PageInfoRowView>());
+      cookies_buttons_container_view_->AddChildViewAt(
+          std::make_unique<PageInfoRowView>(), 0);
   blocking_third_party_cookies_row_->SetTitle(title);
   blocking_third_party_cookies_row_->SetIcon(icon);
   blocking_third_party_cookies_row_->SetID(
