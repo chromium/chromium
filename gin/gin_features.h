@@ -12,43 +12,42 @@
 
 namespace features {
 
-GIN_EXPORT extern const base::Feature kV8CompactCodeSpaceWithStack;
-GIN_EXPORT extern const base::Feature kV8CompactMaps;
-GIN_EXPORT extern const base::Feature kV8CompactWithStack;
-GIN_EXPORT extern const base::Feature kV8ConcurrentSparkplug;
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8CompactCodeSpaceWithStack);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8CompactMaps);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8CompactWithStack);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8ConcurrentSparkplug);
 GIN_EXPORT extern const base::FeatureParam<int>
     kV8ConcurrentSparkplugMaxThreads;
-GIN_EXPORT extern const base::Feature kV8ConcurrentSparkplugHighPriorityThreads;
-GIN_EXPORT extern const base::Feature kV8CrashOnEvacuationFailure;
-GIN_EXPORT extern const base::Feature kV8ExperimentalRegexpEngine;
-GIN_EXPORT extern const base::Feature kV8FlushBytecode;
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8ConcurrentSparkplugHighPriorityThreads);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8CrashOnEvacuationFailure);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8ExperimentalRegexpEngine);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8FlushBytecode);
 GIN_EXPORT extern const base::FeatureParam<int> kV8FlushBytecodeOldAge;
-GIN_EXPORT extern const base::Feature kV8FlushBaselineCode;
-GIN_EXPORT extern const base::Feature kV8FlushEmbeddedBlobICache;
-GIN_EXPORT extern const base::Feature kV8LazyFeedbackAllocation;
-GIN_EXPORT extern const base::Feature kV8NoReclaimUnmodifiedWrappers;
-GIN_EXPORT extern const base::Feature kV8CodeMemoryWriteProtection;
-GIN_EXPORT extern const base::Feature kV8OffThreadFinalization;
-GIN_EXPORT extern const base::Feature kV8OptimizeJavascript;
-GIN_EXPORT extern const base::Feature kV8PerContextMarkingWorklist;
-GIN_EXPORT extern const base::Feature kV8ReduceConcurrentMarkingTasks;
-GIN_EXPORT extern const base::Feature kV8ScriptAblation;
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8FlushBaselineCode);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8FlushEmbeddedBlobICache);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8LazyFeedbackAllocation);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8NoReclaimUnmodifiedWrappers);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8CodeMemoryWriteProtection);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8OffThreadFinalization);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8OptimizeJavascript);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8PerContextMarkingWorklist);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8ReduceConcurrentMarkingTasks);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8ScriptAblation);
 GIN_EXPORT extern const base::FeatureParam<double> kV8ScriptDelayFraction;
 GIN_EXPORT extern const base::FeatureParam<int> kV8ScriptDelayMs;
 GIN_EXPORT extern const base::FeatureParam<int> kV8ScriptDelayOnceMs;
-GIN_EXPORT extern const base::Feature kV8ShortBuiltinCalls;
-GIN_EXPORT extern const base::Feature kV8SlowHistograms;
-GIN_EXPORT extern const base::Feature
-    kV8SlowHistogramsCodeMemoryWriteProtection;
-GIN_EXPORT extern const base::Feature kV8SlowHistogramsSparkplug;
-GIN_EXPORT extern const base::Feature kV8SlowHistogramsSparkplugAndroid;
-GIN_EXPORT extern const base::Feature kV8SlowHistogramsScriptAblation;
-GIN_EXPORT extern const base::Feature kV8Sparkplug;
-GIN_EXPORT extern const base::Feature kV8SparkplugNeedsShortBuiltinCalls;
-GIN_EXPORT extern const base::Feature kV8TurboFastApiCalls;
-GIN_EXPORT extern const base::Feature kV8Turboprop;
-GIN_EXPORT extern const base::Feature kV8UseMapSpace;
-GIN_EXPORT extern const base::Feature kV8DelayMemoryReducer;
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8ShortBuiltinCalls);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistograms);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsCodeMemoryWriteProtection);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsSparkplug);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsSparkplugAndroid);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsScriptAblation);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8Sparkplug);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8SparkplugNeedsShortBuiltinCalls);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8TurboFastApiCalls);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8Turboprop);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8UseMapSpace);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8DelayMemoryReducer);
 GIN_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kV8MemoryReducerStartDelay;
 
