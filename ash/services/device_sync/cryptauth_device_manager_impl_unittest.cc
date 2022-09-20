@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/multidevice/software_feature_state.h"
 #include "ash/services/device_sync/fake_cryptauth_gcm_manager.h"
 #include "ash/services/device_sync/mock_cryptauth_client.h"
 #include "ash/services/device_sync/mock_sync_scheduler.h"
@@ -25,6 +24,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
+#include "chromeos/ash/components/multidevice/software_feature_state.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"

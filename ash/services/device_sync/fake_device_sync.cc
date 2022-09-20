@@ -6,8 +6,8 @@
 
 #include "ash/services/device_sync/fake_device_sync.h"
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

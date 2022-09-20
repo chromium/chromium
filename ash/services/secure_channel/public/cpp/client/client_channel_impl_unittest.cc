@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/services/secure_channel/fake_channel.h"
 #include "ash/services/secure_channel/fake_secure_channel.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_attempt.h"
@@ -30,6 +29,7 @@
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

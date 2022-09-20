@@ -4,12 +4,12 @@
 
 #include "ash/system/phonehub/camera_roll_thumbnail.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/camera_roll_manager.h"
 #include "ash/components/phonehub/user_action_recorder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"

@@ -8,11 +8,11 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/components/phonehub/fake_browser_tabs_metadata_fetcher.h"
 #include "ash/components/phonehub/mutable_phone_model.h"
 #include "ash/components/phonehub/phone_model_test_util.h"
 #include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"

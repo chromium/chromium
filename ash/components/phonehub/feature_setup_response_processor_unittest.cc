@@ -6,7 +6,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/combined_access_setup_operation.h"
 #include "ash/components/phonehub/fake_message_receiver.h"
 #include "ash/components/phonehub/fake_multidevice_feature_access_manager.h"
@@ -14,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

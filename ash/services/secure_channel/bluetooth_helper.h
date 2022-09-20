@@ -9,9 +9,9 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/secure_channel/data_with_timestamp.h"
 #include "ash/services/secure_channel/device_id_pair.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {

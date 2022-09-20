@@ -6,11 +6,11 @@
 
 #include <utility>
 
-#include "ash/components/multidevice/logging/logging.h"
-#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/device_sync/cryptauth_client_impl.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/secure_message_delegate.h"
 #include "crypto/sha2.h"
 
 namespace ash {

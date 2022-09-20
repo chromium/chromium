@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "ash/components/multidevice/secure_message_delegate_impl.h"
 #include "ash/services/device_sync/cryptauth_enroller_impl.h"
+#include "chromeos/ash/components/multidevice/secure_message_delegate_impl.h"
 
 namespace ash {
 

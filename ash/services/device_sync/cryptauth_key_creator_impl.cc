@@ -4,12 +4,12 @@
 
 #include "ash/services/device_sync/cryptauth_key_creator_impl.h"
 
-#include "ash/components/multidevice/secure_message_delegate_impl.h"
 #include "ash/services/device_sync/cryptauth_enrollment_constants.h"
 #include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
+#include "chromeos/ash/components/multidevice/secure_message_delegate_impl.h"
 #include "crypto/hkdf.h"
 
 namespace ash {

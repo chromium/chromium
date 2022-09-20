@@ -12,9 +12,9 @@
 #include <netinet/in.h>
 #endif
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash::secure_channel::weave {
 

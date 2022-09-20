@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/components/tether/message_wrapper.h"
 #include "ash/components/tether/mock_tether_host_response_recorder.h"
 #include "ash/components/tether/proto/tether.pb.h"
@@ -23,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "ash/components/multidevice/remote_device.h"
 #include "ash/services/device_sync/cryptauth_device_registry.h"
 #include "base/callback.h"
+#include "chromeos/ash/components/multidevice/remote_device.h"
 
 namespace ash {
 

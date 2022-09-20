@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -23,6 +22,7 @@
 #include "chromeos/ash/components/dbus/easy_unlock/easy_unlock_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "crypto/encryptor.h"
 #include "crypto/random.h"
 #include "crypto/symmetric_key.h"

@@ -4,9 +4,9 @@
 
 #include "ash/services/secure_channel/bluetooth_helper.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash::secure_channel {
 

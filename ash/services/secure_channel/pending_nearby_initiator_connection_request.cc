@@ -4,9 +4,9 @@
 
 #include "ash/services/secure_channel/pending_nearby_initiator_connection_request.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash::secure_channel {

@@ -5,9 +5,9 @@
 #ifndef ASH_SERVICES_MULTIDEVICE_SETUP_ELIGIBLE_HOST_DEVICES_PROVIDER_IMPL_H_
 #define ASH_SERVICES_MULTIDEVICE_SETUP_ELIGIBLE_HOST_DEVICES_PROVIDER_IMPL_H_
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "ash/services/multidevice_setup/eligible_host_devices_provider.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 
 namespace ash {
 

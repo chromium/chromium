@@ -33,13 +33,13 @@ source_set("client") {
   ]
 
   deps = [
-    "//ash/components/multidevice/logging",
     "//ash/constants",
     "//ash/services/device_sync/public/cpp",
     "//ash/services/multidevice_setup/public/cpp",
     "//ash/services/secure_channel/public/cpp/shared",
     "//ash/services/secure_channel/public/mojom",
     "//base",
+    "//chromeos/ash/components/multidevice/logging",
     "//mojo/public/cpp/bindings",
   ]
 }
@@ -82,8 +82,6 @@ source_set("unit_tests") {
   deps = [
     ":client",
     ":test_support",
-    "//ash/components/multidevice",
-    "//ash/components/multidevice:test_support",
     "//ash/constants",
     "//ash/services/device_sync/public/cpp:test_support",
     "//ash/services/multidevice_setup/public/cpp:test_support",
@@ -93,6 +91,8 @@ source_set("unit_tests") {
     "//ash/services/secure_channel/public/mojom",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/multidevice",
+    "//chromeos/ash/components/multidevice:test_support",
     "//testing/gtest",
   ]
 }

@@ -8,8 +8,8 @@
 #include <ostream>
 #include <string>
 
-#include "ash/components/multidevice/software_feature.h"
 #include "base/containers/flat_set.h"
+#include "chromeos/ash/components/multidevice/software_feature.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

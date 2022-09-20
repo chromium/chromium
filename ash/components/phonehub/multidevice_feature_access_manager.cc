@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
+
 #include <memory>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/feature_setup_connection_operation.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace phonehub {

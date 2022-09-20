@@ -4,10 +4,10 @@
 
 #include "ash/services/secure_channel/secure_channel_initializer.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/secure_channel_impl.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 

@@ -4,10 +4,10 @@
 
 #include "ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 
 namespace ash::secure_channel {
 

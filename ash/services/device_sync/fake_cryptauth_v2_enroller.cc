@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/fake_cryptauth_v2_enroller.h"
 
-#include "ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 

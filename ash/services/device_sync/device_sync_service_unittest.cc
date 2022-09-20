@@ -7,8 +7,6 @@
 #include <tuple>
 #include <vector>
 
-#include "ash/components/multidevice/remote_device_test_util.h"
-#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/attestation_certificates_syncer.h"
 #include "ash/services/device_sync/cryptauth_device_manager_impl.h"
@@ -54,6 +52,8 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/components/multidevice/secure_message_delegate.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/prefs/pref_registry_simple.h"

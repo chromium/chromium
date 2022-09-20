@@ -5,8 +5,8 @@
 #ifndef ASH_SERVICES_DEVICE_SYNC_REMOTE_DEVICE_PROVIDER_H_
 #define ASH_SERVICES_DEVICE_SYNC_REMOTE_DEVICE_PROVIDER_H_
 
-#include "ash/components/multidevice/remote_device.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/components/multidevice/remote_device.h"
 
 namespace ash {
 

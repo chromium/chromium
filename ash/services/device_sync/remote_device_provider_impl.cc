@@ -4,8 +4,6 @@
 
 #include "ash/services/device_sync/remote_device_provider_impl.h"
 
-#include "ash/components/multidevice/logging/logging.h"
-#include "ash/components/multidevice/secure_message_delegate_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/remote_device_loader.h"
 #include "ash/services/device_sync/remote_device_v2_loader_impl.h"
@@ -14,10 +12,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/secure_message_delegate_impl.h"
 
-namespace ash {
-
-namespace device_sync {
+namespace ash::device_sync {
 
 namespace {
 
@@ -249,6 +247,4 @@ RemoteDeviceProviderImpl::GetSyncedDevices() const {
   return synced_remote_devices_;
 }
 
-}  // namespace device_sync
-
-}  // namespace ash
+}  // namespace ash::device_sync

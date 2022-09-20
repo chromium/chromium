@@ -4,7 +4,7 @@
 
 #include "ash/services/secure_channel/fake_ble_advertisement_generator.h"
 
-#include "ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 
 namespace ash::secure_channel {
 

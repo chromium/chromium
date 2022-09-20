@@ -4,8 +4,8 @@
 
 #include "ash/services/secure_channel/connection_attempt_details.h"
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "base/check.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 
 namespace ash::secure_channel {
 

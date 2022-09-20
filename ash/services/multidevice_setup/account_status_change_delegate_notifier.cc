@@ -4,8 +4,8 @@
 
 #include "ash/services/multidevice_setup/account_status_change_delegate_notifier.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "base/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 

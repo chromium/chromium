@@ -4,7 +4,6 @@
 
 #include "ash/components/phonehub/multidevice_feature_access_manager_impl.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/connection_scheduler.h"
 #include "ash/components/phonehub/message_sender.h"
 #include "ash/components/phonehub/pref_names.h"
@@ -12,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/webui/eche_app_ui/pref_names.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

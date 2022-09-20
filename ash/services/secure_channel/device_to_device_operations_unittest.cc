@@ -4,12 +4,12 @@
 
 #include <memory>
 
-#include "ash/components/multidevice/fake_secure_message_delegate.h"
 #include "ash/services/secure_channel/device_to_device_initiator_helper.h"
 #include "ash/services/secure_channel/device_to_device_responder_operations.h"
 #include "ash/services/secure_channel/session_keys.h"
 #include "base/base64url.h"
 #include "base/bind.h"
+#include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::secure_channel {

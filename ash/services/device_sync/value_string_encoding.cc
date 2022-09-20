@@ -4,8 +4,8 @@
 
 #include "ash/services/device_sync/value_string_encoding.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "base/base64url.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 

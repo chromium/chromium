@@ -4,12 +4,12 @@
 
 #include "ash/components/tether/wifi_hotspot_disconnector_impl.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/tether/network_configuration_remover.h"
 #include "ash/components/tether/pref_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"

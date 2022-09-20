@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/authenticated_channel_impl.h"
 #include "ash/services/secure_channel/ble_advertiser_impl.h"
 #include "ash/services/secure_channel/ble_constants.h"
@@ -20,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace ash::secure_channel {

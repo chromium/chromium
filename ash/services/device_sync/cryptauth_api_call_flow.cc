@@ -4,8 +4,8 @@
 
 #include "ash/services/device_sync/cryptauth_api_call_flow.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

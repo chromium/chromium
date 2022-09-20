@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/ash/multidevice_handler.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/components/phonehub/screen_lock_manager.h"
 #include "ash/components/phonehub/util/histogram_util.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"

@@ -1,7 +1,7 @@
 include_rules = [
-  "+ash/components/multidevice",
   "+ash/constants",
   "+ash/services/device_sync",
+  "+chromeos/ash/components/multidevice",
   "+components/keyed_service/core",
   "+components/session_manager/core",
   "+components/sync_preferences/testing_pref_service_syncable.h",

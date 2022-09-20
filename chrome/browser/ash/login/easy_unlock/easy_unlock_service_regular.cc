@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "apps/app_lifetime_monitor_factory.h"
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "ash/components/proximity_auth/proximity_auth_profile_pref_manager.h"
 #include "ash/components/proximity_auth/proximity_auth_system.h"
@@ -42,6 +41,7 @@
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"

@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {

@@ -4,8 +4,8 @@
 
 #include "ash/services/secure_channel/secure_channel_disconnector_impl.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash::secure_channel {
 

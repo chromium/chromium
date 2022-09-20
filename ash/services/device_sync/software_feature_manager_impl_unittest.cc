@@ -4,26 +4,24 @@
 
 #include "ash/services/device_sync/software_feature_manager_impl.h"
 
-#include "ash/components/multidevice/remote_device_ref.h"
-#include "ash/components/multidevice/remote_device_test_util.h"
-#include "ash/components/multidevice/software_feature.h"
 #include "ash/services/device_sync/fake_cryptauth_feature_status_setter.h"
 #include "ash/services/device_sync/feature_status_change.h"
 #include "ash/services/device_sync/mock_cryptauth_client.h"
 #include "ash/services/device_sync/proto/enum_util.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/components/multidevice/software_feature.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::Invoke;
-
-namespace ash {
-
-namespace device_sync {
+namespace ash::device_sync {
 
 namespace {
+
+using ::testing::_;
+using ::testing::Invoke;
 
 enum class Result {
   kSuccess,
@@ -566,6 +564,4 @@ TEST_F(DeviceSyncSoftwareFeatureManagerImplTest, TestEasyUnlockSpecialCase) {
   EXPECT_EQ(Result::kErrorSettingSoftwareFeature, GetResultAndReset());
 }
 
-}  // namespace device_sync
-
-}  // namespace ash
+}  // namespace ash::device_sync

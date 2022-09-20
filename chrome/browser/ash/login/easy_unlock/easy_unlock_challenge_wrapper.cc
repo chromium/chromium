@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_challenge_wrapper.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 
 namespace ash {

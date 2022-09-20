@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "ash/services/multidevice_setup/fake_eligible_host_devices_provider.h"
 #include "ash/services/multidevice_setup/fake_host_backend_delegate.h"
@@ -14,6 +13,7 @@
 #include "ash/services/multidevice_setup/fake_host_verifier.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

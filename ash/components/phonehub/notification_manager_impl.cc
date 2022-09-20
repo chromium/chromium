@@ -4,11 +4,11 @@
 
 #include "ash/components/phonehub/notification_manager_impl.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/message_sender.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/user_action_recorder.h"
 #include "base/containers/flat_set.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace phonehub {

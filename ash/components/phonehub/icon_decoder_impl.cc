@@ -7,7 +7,6 @@
 #include <functional>
 #include <utility>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
@@ -15,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "ubidiimp.h"

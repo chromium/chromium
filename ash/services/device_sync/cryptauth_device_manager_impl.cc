@@ -10,8 +10,6 @@
 #include <stdexcept>
 #include <utility>
 
-#include "ash/components/multidevice/logging/logging.h"
-#include "ash/components/multidevice/software_feature_state.h"
 #include "ash/services/device_sync/cryptauth_client.h"
 #include "ash/services/device_sync/pref_names.h"
 #include "ash/services/device_sync/proto/enum_util.h"
@@ -23,6 +21,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/software_feature_state.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"

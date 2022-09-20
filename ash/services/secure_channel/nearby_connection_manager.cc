@@ -4,9 +4,9 @@
 
 #include "ash/services/secure_channel/nearby_connection_manager.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/authenticated_channel.h"
 #include "base/containers/contains.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash::secure_channel {
 

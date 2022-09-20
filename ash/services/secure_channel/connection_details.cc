@@ -6,8 +6,8 @@
 
 #include <tuple>
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "base/check.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 
 namespace ash::secure_channel {
 

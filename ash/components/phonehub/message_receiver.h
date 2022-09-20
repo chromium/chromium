@@ -5,10 +5,10 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_MESSAGE_RECEIVER_H_
 #define ASH_COMPONENTS_PHONEHUB_MESSAGE_RECEIVER_H_
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 // Responsible for receiving message updates from the remote phone device.
 namespace ash {

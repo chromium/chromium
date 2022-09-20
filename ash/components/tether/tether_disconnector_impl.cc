@@ -4,7 +4,6 @@
 
 #include "ash/components/tether/tether_disconnector_impl.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/tether/active_host.h"
 #include "ash/components/tether/device_id_tether_network_guid_map.h"
 #include "ash/components/tether/disconnect_tethering_request_sender.h"
@@ -13,6 +12,7 @@
 #include "ash/components/tether/wifi_hotspot_disconnector.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"

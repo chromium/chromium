@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "ash/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
 #include "ash/services/multidevice_setup/fake_account_status_change_delegate.h"
@@ -22,6 +21,7 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"

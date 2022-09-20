@@ -9,8 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/multidevice/remote_device_ref.h"
-#include "ash/components/multidevice/software_feature.h"
 #include "ash/services/device_sync/feature_status_change.h"
 #include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
@@ -18,6 +16,8 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/components/multidevice/software_feature.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

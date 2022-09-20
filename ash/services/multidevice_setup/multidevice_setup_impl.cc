@@ -7,7 +7,6 @@
 
 #include "ash/services/multidevice_setup/multidevice_setup_impl.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/multidevice_setup/account_status_change_delegate_notifier_impl.h"
 #include "ash/services/multidevice_setup/android_sms_app_installing_status_observer.h"
@@ -33,6 +32,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 

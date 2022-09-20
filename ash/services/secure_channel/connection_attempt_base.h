@@ -5,7 +5,6 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_CONNECTION_ATTEMPT_BASE_H_
 #define ASH_SERVICES_SECURE_CHANNEL_CONNECTION_ATTEMPT_BASE_H_
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/connect_to_device_operation.h"
 #include "ash/services/secure_channel/connection_attempt.h"
@@ -19,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash::secure_channel {
 

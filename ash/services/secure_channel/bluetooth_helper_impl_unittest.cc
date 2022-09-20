@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/multidevice/remote_device_cache.h"
-#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/services/secure_channel/ble_advertisement_generator.h"
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/fake_background_eid_generator.h"
@@ -16,6 +14,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/multidevice/remote_device_cache.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::secure_channel {

@@ -9,14 +9,14 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/multidevice/remote_device_ref.h"
-#include "ash/components/multidevice/software_feature.h"
 #include "ash/services/device_sync/feature_status_change.h"
 #include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/components/multidevice/software_feature.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -6,8 +6,8 @@
 
 #include <functional>
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "base/hash/hash.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 
 namespace ash::secure_channel {
 

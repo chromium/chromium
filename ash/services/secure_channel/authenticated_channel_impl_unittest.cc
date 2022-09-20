@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/services/secure_channel/fake_authenticated_channel.h"
 #include "ash/services/secure_channel/fake_connection.h"
 #include "ash/services/secure_channel/fake_secure_channel_connection.h"
@@ -22,6 +21,7 @@
 #include "base/containers/contains.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::secure_channel {

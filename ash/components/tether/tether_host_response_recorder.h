@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 
 class PrefService;
 

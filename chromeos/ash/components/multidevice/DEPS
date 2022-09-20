@@ -1,0 +1,6 @@
+include_rules = [
+  "+ash/services/device_sync/proto",
+  "+chromeos/ash/components/dbus/easy_unlock",
+  "+device/bluetooth/public",
+  "+third_party/securemessage/proto",
+]

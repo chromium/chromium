@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "base/logging.h"
 #include "base/system/sys_info.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_signin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/secure_channel/nearby_endpoint_finder_impl.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "base/base64.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "chrome/browser/ash/secure_channel/util/histogram_util.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace secure_channel {

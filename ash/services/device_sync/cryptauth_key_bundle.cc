@@ -4,13 +4,13 @@
 
 #include "ash/services/device_sync/cryptauth_key_bundle.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/device_sync/cryptauth_enrollment_constants.h"
 #include "ash/services/device_sync/value_string_encoding.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 

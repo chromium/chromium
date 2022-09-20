@@ -8,14 +8,14 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/multidevice/expiring_remote_device_cache.h"
-#include "ash/components/multidevice/logging/logging.h"
-#include "ash/components/multidevice/remote_device.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/multidevice/expiring_remote_device_cache.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/remote_device.h"
 
 namespace ash {
 

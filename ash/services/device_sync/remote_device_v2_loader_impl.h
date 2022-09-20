@@ -8,12 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/multidevice/remote_device.h"
 #include "ash/services/device_sync/cryptauth_device.h"
 #include "ash/services/device_sync/cryptauth_device_registry.h"
 #include "ash/services/device_sync/remote_device_v2_loader.h"
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "chromeos/ash/components/multidevice/remote_device.h"
 
 namespace ash {
 

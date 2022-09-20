@@ -9,8 +9,6 @@
 #include <memory>
 #include <string>
 
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/components/multidevice/remote_device_cache.h"
 #include "ash/components/proximity_auth/screenlock_bridge.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
@@ -26,6 +24,10 @@ class ProximityAuthLocalStatePrefManager;
 
 namespace ash {
 class EasyUnlockChallengeWrapper;
+
+namespace multidevice {
+class RemoteDeviceCache;
+}
 
 // EasyUnlockService instance that should be used for signin profile.
 class EasyUnlockServiceSignin : public EasyUnlockService {

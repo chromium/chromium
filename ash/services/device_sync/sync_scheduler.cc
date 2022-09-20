@@ -4,7 +4,7 @@
 
 #include "ash/services/device_sync/sync_scheduler.h"
 
-#include "ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 

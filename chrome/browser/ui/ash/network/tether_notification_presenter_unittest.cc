@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/multidevice/remote_device_test_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -15,6 +14,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/network/network_connect.h"
 
 namespace ash::tether {

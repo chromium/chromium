@@ -9,7 +9,6 @@
 
 #include <limits>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "base/base64url.h"
 #include "base/big_endian.h"
 #include "base/containers/contains.h"
@@ -18,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash::secure_channel {
 

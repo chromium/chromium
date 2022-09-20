@@ -9,11 +9,11 @@
 #include <limits>
 #include <memory>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "base/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 

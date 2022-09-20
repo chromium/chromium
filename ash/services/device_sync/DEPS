@@ -1,6 +1,6 @@
 include_rules = [
-  "+ash/components/multidevice",
   "+ash/constants",
+  "+chromeos/ash/components/multidevice",
   "+components/gcm_driver",
   "+components/signin/public",
   "+components/version_info",

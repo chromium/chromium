@@ -66,6 +66,7 @@ include_rules = [
   "+chromeos/ash/components/human_presence",
   "+chromeos/ash/components/local_search_service",
   "+chromeos/ash/components/login/auth",
+  "+chromeos/ash/components/multidevice",
   "+chromeos/components/quick_answers",
   "+chromeos/components/security_token_pin",
   "+chromeos/components/sensors",

@@ -9,12 +9,12 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/multidevice/software_feature.h"
 #include "ash/services/device_sync/cryptauth_feature_status_setter.h"
 #include "ash/services/device_sync/cryptauth_feature_status_setter_impl.h"
 #include "ash/services/device_sync/network_request_error.h"
 #include "base/callback.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/multidevice/software_feature.h"
 
 namespace ash {
 

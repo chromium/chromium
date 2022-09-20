@@ -4,7 +4,6 @@
 
 #include "ash/services/secure_channel/multiplexed_channel_impl.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "ash/services/secure_channel/single_client_proxy_impl.h"
@@ -12,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash::secure_channel {
 

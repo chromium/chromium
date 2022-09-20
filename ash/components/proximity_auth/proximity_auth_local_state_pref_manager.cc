@@ -7,11 +7,11 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"

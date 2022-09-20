@@ -4,10 +4,10 @@
 
 #include "ash/webui/eche_app_ui/eche_signaler.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 

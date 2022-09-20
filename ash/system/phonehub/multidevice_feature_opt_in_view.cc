@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/util/histogram_util.h"
 #include "ash/constants/ash_features.h"
@@ -16,6 +15,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {

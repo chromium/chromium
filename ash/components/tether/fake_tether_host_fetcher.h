@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/tether/tether_host_fetcher.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 
 namespace ash {
 

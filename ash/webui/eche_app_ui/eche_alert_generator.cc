@@ -4,9 +4,9 @@
 
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {

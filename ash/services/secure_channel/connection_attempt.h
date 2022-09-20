@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/connection_attempt_delegate.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
@@ -19,6 +18,7 @@
 #include "ash/services/secure_channel/pending_connection_request_delegate.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash::secure_channel {
 

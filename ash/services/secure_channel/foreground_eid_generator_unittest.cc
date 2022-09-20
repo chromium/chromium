@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "ash/services/secure_channel/raw_eid_generator_impl.h"
 #include "base/strings/string_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -4,7 +4,7 @@
 
 module ash.secure_channel.mojom;
 
-import "ash/components/multidevice/mojom/multidevice_types.mojom";
+import "chromeos/ash/components/multidevice/mojom/multidevice_types.mojom";
 import "ash/services/secure_channel/public/mojom/nearby_connector.mojom";
 import "ash/services/secure_channel/public/mojom/secure_channel_types.mojom";
 import "mojo/public/mojom/base/time.mojom";

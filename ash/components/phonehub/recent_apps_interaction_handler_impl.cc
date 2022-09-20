@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/icon_decoder.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/pref_names.h"
@@ -16,6 +15,7 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/gfx/image/image.h"

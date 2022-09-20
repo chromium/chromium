@@ -27,11 +27,11 @@ grit("resources") {
   ]
 
   deps = [
-    "//ash/components/multidevice/mojom:mojom_js",
     "//ash/services/device_sync/public/mojom:mojom_js",
     "//ash/services/multidevice_setup/public/mojom:mojom_js",
     "//chromeos/ash/components/human_presence:human_presence_internals_ts",
     "//chromeos/ash/components/language/public/mojom:mojom_js",
+    "//chromeos/ash/components/multidevice/mojom:mojom_js",
     "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_js",
     "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_js",
     "//chromeos/ash/services/cellular_setup/public/mojom:mojom_js",

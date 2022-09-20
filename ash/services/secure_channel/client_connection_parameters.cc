@@ -4,7 +4,7 @@
 
 #include "ash/services/secure_channel/client_connection_parameters.h"
 
-#include "ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash::secure_channel {
 

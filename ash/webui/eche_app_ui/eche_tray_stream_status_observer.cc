@@ -4,12 +4,12 @@
 
 #include "ash/webui/eche_app_ui/eche_tray_stream_status_observer.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/eche/eche_tray.h"
 #include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {

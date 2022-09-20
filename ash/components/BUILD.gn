@@ -24,7 +24,6 @@ test("ash_components_unittests") {
     "//ash/components/arc/mojom:unit_tests",
     "//ash/components/arc/session:unit_tests",
     "//ash/components/fwupd:unit_tests",
-    "//ash/components/multidevice:unit_tests",
     "//ash/components/peripheral_notification:unit_tests",
     "//ash/components/phonehub:unit_tests",
     "//ash/components/policy:unit_tests",

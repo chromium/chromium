@@ -9,9 +9,9 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/multidevice/fake_secure_message_delegate.h"
 #include "ash/services/device_sync/proto/enum_util.h"
 #include "base/bind.h"
+#include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

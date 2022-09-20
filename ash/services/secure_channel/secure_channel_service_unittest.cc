@@ -4,8 +4,6 @@
 
 #include <memory>
 
-#include "ash/components/multidevice/remote_device_cache.h"
-#include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/services/secure_channel/active_connection_manager_impl.h"
 #include "ash/services/secure_channel/ble_connection_manager_impl.h"
 #include "ash/services/secure_channel/ble_scanner_impl.h"
@@ -39,6 +37,8 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
+#include "chromeos/ash/components/multidevice/remote_device_cache.h"
+#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"

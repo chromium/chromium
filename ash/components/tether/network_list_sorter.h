@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_TETHER_NETWORK_LIST_SORTER_H_
 #define ASH_COMPONENTS_TETHER_NETWORK_LIST_SORTER_H_
 
-#include "ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 
 namespace ash {

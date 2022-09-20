@@ -4,7 +4,7 @@
 
 #include "ash/services/multidevice_setup/feature_state_manager.h"
 
-#include "ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 

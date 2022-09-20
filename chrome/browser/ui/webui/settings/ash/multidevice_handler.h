@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_MULTIDEVICE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_MULTIDEVICE_HANDLER_H_
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/phonehub/camera_roll_manager.h"
 #include "ash/components/phonehub/combined_access_setup_operation.h"
 #include "ash/components/phonehub/feature_setup_connection_operation.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;

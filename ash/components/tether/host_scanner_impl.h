@@ -9,10 +9,10 @@
 #include <unordered_set>
 #include <vector>
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/tether/host_scanner.h"
 #include "ash/components/tether/host_scanner_operation.h"
 #include "ash/components/tether/notification_presenter.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/gtest_prod_util.h"

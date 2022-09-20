@@ -6,9 +6,6 @@
 
 #include <sstream>
 
-#include "ash/components/multidevice/logging/logging.h"
-#include "ash/components/multidevice/software_feature.h"
-#include "ash/components/multidevice/software_feature_state.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/feature_status_change.h"
 #include "ash/services/multidevice_setup/eligible_host_devices_provider.h"
@@ -16,12 +13,13 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/software_feature.h"
+#include "chromeos/ash/components/multidevice/software_feature_state.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-
-namespace multidevice_setup {
+namespace ash::multidevice_setup {
 
 namespace {
 
@@ -381,6 +379,4 @@ void HostBackendDelegateImpl::OnSetHostNetworkRequestFinished(
   }
 }
 
-}  // namespace multidevice_setup
-
-}  // namespace ash
+}  // namespace ash::multidevice_setup

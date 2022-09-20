@@ -5,8 +5,8 @@
 #ifndef ASH_COMPONENTS_PROXIMITY_AUTH_FAKE_REMOTE_DEVICE_LIFE_CYCLE_H_
 #define ASH_COMPONENTS_PROXIMITY_AUTH_FAKE_REMOTE_DEVICE_LIFE_CYCLE_H_
 
-#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/proximity_auth/remote_device_life_cycle.h"
+#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "base/observer_list.h"

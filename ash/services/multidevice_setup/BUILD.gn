@@ -60,8 +60,6 @@ static_library("multidevice_setup") {
   ]
 
   deps = [
-    "//ash/components/multidevice",
-    "//ash/components/multidevice/logging",
     "//ash/constants",
     "//ash/services/device_sync/proto:util",
     "//ash/services/device_sync/public/cpp",
@@ -75,6 +73,8 @@ static_library("multidevice_setup") {
     "//ash/services/secure_channel/public/cpp/client",
     "//ash/services/secure_channel/public/mojom",
     "//base",
+    "//chromeos/ash/components/multidevice",
+    "//chromeos/ash/components/multidevice/logging",
     "//components/pref_registry",
     "//components/prefs:prefs",
     "//components/session_manager/core",
@@ -123,9 +123,9 @@ static_library("test_support") {
 
   deps = [
     ":multidevice_setup",
-    "//ash/components/multidevice",
     "//ash/services/multidevice_setup/public/mojom",
     "//base",
+    "//chromeos/ash/components/multidevice",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -154,8 +154,6 @@ source_set("unit_tests") {
   deps = [
     ":multidevice_setup",
     ":test_support",
-    "//ash/components/multidevice",
-    "//ash/components/multidevice:test_support",
     "//ash/constants",
     "//ash/services/device_sync/public/cpp:test_support",
     "//ash/services/multidevice_setup/public/cpp:oobe_completion_tracker",
@@ -166,6 +164,8 @@ source_set("unit_tests") {
     "//ash/services/secure_channel/public/cpp/client:test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/multidevice",
+    "//chromeos/ash/components/multidevice:test_support",
     "//components/session_manager/core",
     "//components/sync_preferences:test_support",
     "//testing/gmock",

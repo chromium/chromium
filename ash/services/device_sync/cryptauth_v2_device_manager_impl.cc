@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/device_sync/attestation_certificates_syncer_impl.h"
 #include "ash/services/device_sync/cryptauth_client.h"
 #include "ash/services/device_sync/cryptauth_device_syncer_impl.h"
@@ -15,6 +14,7 @@
 #include "ash/services/device_sync/synced_bluetooth_address_tracker_impl.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 

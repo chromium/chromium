@@ -8,7 +8,6 @@
 #include <sstream>
 #include <utility>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/secure_channel/background_eid_generator.h"
 #include "ash/services/secure_channel/ble_weave_packet_generator.h"
 #include "ash/services/secure_channel/ble_weave_packet_receiver.h"
@@ -23,6 +22,7 @@
 #include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 
 namespace ash::secure_channel::weave {

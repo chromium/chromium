@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/secure_channel/presence_monitor_impl.h"
@@ -35,6 +34,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"

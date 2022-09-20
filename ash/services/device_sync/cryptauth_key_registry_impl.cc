@@ -4,9 +4,9 @@
 
 #include "ash/services/device_sync/cryptauth_key_registry_impl.h"
 
-#include "ash/components/multidevice/logging/logging.h"
 #include "ash/services/device_sync/pref_names.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
