@@ -139,7 +139,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   base::ScopedClosureRunner LockAppsGridOpacity() override;
 
   // PaginationModelObserver:
-  void TotalPagesChanged(int previous_page_count, int new_page_count) override;
   void SelectedPageChanged(int old_selected, int new_selected) override;
   void TransitionStarting() override;
   void TransitionStarted() override;

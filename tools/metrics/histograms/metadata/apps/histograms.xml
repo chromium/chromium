@@ -338,16 +338,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.AppsGridAddPage" enum="AppListAddPageType"
-    expires_after="2023-03-22">
-  <owner>anasalazar@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    The different ways to add page in app list's apps grid. Logged when the page
-    is created.
-  </summary>
-</histogram>
-
 <histogram
     name="Apps.AppList.CardifiedStateAnimation.AnimationSmoothness{EnterOrExitCardifiedState}"
     units="%" expires_after="2022-12-02">

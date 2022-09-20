@@ -2579,41 +2579,6 @@ TEST_P(AppsGridViewTabletTest, ControlArrowSwapsBetweenFullPages) {
   EXPECT_EQ(0, GetPaginationModel()->selected_page());
 }
 
-// Tests that a page can be deleted if a lonely app is moved down or right to
-// another page.
-TEST_F(AppsGridViewTest, ControlArrowUpOrLeftRemovesPage) {
-  base::HistogramTester histogram_tester;
-  // Move an app so it is by itself on page 1.
-  model_->PopulateApps(GetTilesPerPage(0));
-  AppListItemView* moving_item =
-      GetItemViewInTopLevelGrid(GetTilesPerPage(0) - 1);
-  apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
-  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
-  histogram_tester.ExpectBucketCount("Apps.AppListPageSwitcherSource", 7, 1);
-  EXPECT_EQ(1, GetPaginationModel()->selected_page());
-  EXPECT_EQ(2, GetPaginationModel()->total_pages());
-
-  // Move the app up, test that the page is deleted.
-  SimulateKeyPress(ui::VKEY_UP, ui::EF_CONTROL_DOWN);
-
-  histogram_tester.ExpectBucketCount("Apps.AppListPageSwitcherSource", 7, 2);
-  EXPECT_EQ(0, GetPaginationModel()->selected_page());
-  EXPECT_EQ(1, GetPaginationModel()->total_pages());
-
-  // Move the app to be by itself again on page 1.
-  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
-  histogram_tester.ExpectBucketCount("Apps.AppListPageSwitcherSource", 7, 3);
-  EXPECT_EQ(1, GetPaginationModel()->selected_page());
-  EXPECT_EQ(2, GetPaginationModel()->total_pages());
-
-  // Move the app left, test that the page is deleted.
-  SimulateKeyPress(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN);
-
-  histogram_tester.ExpectBucketCount("Apps.AppListPageSwitcherSource", 7, 4);
-  EXPECT_EQ(0, GetPaginationModel()->selected_page());
-  EXPECT_EQ(1, GetPaginationModel()->total_pages());
-}
-
 // Tests that moving a lonely app on the last page down is a no-op when there
 // are no pages below.
 TEST_P(AppsGridViewClamshellAndTabletTest,
@@ -2653,47 +2618,6 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
     EXPECT_EQ(1, GetPaginationModel()->selected_page());
     EXPECT_EQ(2, GetPaginationModel()->total_pages());
   }
-}
-
-// Test that moving an item down or right when it is by itself on a page with a
-// page below results in the page deletion.
-TEST_F(AppsGridViewTest, ControlArrowDownOrRightRemovesPage) {
-  // Move an app so it is by itself on page 1, with another app on page 2.
-  model_->PopulateApps(GetTilesPerPage(0));
-  AppListItemView* moving_item =
-      GetItemViewInTopLevelGrid(GetTilesPerPage(0) - 1);
-  apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
-  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
-  SimulateKeyPress(ui::VKEY_UP);
-  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
-  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
-  SimulateKeyPress(ui::VKEY_UP);
-  // The lonely app is selected on page 1, with a page below it containing one
-  // app.
-  EXPECT_EQ(1, GetPaginationModel()->selected_page());
-  EXPECT_EQ(3, GetPaginationModel()->total_pages());
-
-  // Test that moving the app on page 1 down, deletes the second page and
-  // creates a final page with 2 apps.
-  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
-
-  EXPECT_EQ(1, GetPaginationModel()->selected_page());
-  EXPECT_EQ(2, GetPaginationModel()->total_pages());
-  EXPECT_EQ(2, test_api_->AppsOnPage(1));
-
-  // Create a third page, with an app by itself.
-  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
-  SimulateKeyPress(ui::VKEY_UP);
-  EXPECT_EQ(1, GetPaginationModel()->selected_page());
-  EXPECT_EQ(3, GetPaginationModel()->total_pages());
-
-  // Test that moving the app right moves the selected app to the third page,
-  // and the second page is deleted.
-  SimulateKeyPress(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN);
-
-  EXPECT_EQ(1, GetPaginationModel()->selected_page());
-  EXPECT_EQ(2, GetPaginationModel()->total_pages());
-  EXPECT_EQ(2, test_api_->AppsOnPage(1));
 }
 
 // Tests that control + shift + arrow puts |selected_item_| into a folder or
@@ -4521,36 +4445,6 @@ TEST_P(AppsGridViewTabletTest, MoveItemToPreviousFullPage) {
               view_model->view_at(i)->item()->id());
   }
   EXPECT_EQ(1, GetHapticTickEventsCount());
-}
-
-TEST_F(AppsGridViewTest, CreateANewPageWithKeyboardLogsMetrics) {
-  base::HistogramTester histogram_tester;
-  model_->PopulateApps(2);
-
-  // Select first app and move it with the keyboard down to create a new page.
-  AppListItemView* moving_item = GetItemViewInTopLevelGrid(0);
-  apps_grid_view_->GetFocusManager()->SetFocusedView(moving_item);
-  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
-  SimulateKeyReleased(ui::VKEY_DOWN, ui::EF_NONE);
-
-  ASSERT_EQ(GetPaginationModel()->total_pages(), 2);
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppList.AppsGridAddPage",
-      AppListPageCreationType::kMovingAppWithKeyboard, 1);
-}
-
-TEST_F(AppsGridViewTest, CreateANewPageByAddingAppLogsMetrics) {
-  base::HistogramTester histogram_tester;
-  model_->PopulateApps(GetTilesPerPage(0));
-
-  // Add an item to simulate installing or syncing, the metric should be
-  // recorded.
-  model_->CreateAndAddItem("Extra App");
-
-  ASSERT_EQ(GetPaginationModel()->total_pages(), 2);
-  histogram_tester.ExpectBucketCount("Apps.AppList.AppsGridAddPage",
-                                     AppListPageCreationType::kSyncOrInstall,
-                                     1);
 }
 
 // Test that the background cards remain stacked as the bottom layer during

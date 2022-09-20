@@ -30,16 +30,6 @@ ASH_EXPORT extern const char kTabletReorderActionHistogram[];
 // needed in tests.
 ASH_EXPORT extern const char kContinueSectionFilesRemovedInSessionHistogram[];
 
-// The different ways to create a new page in the apps grid. These values are
-// written to logs. New enum values can be added, but existing enums must never
-// be renumbered or deleted and reused.
-enum class AppListPageCreationType {
-  kDraggingApp = 0,
-  kMovingAppWithKeyboard = 1,
-  kSyncOrInstall = 2,
-  kMaxValue = kSyncOrInstall,
-};
-
 // These are used in histograms, do not remove/renumber entries. If you're
 // adding to this enum with the intention that it will be logged, update the
 // AppListZeroStateSearchResultUserActionType enum listing in

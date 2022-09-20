@@ -3320,12 +3320,6 @@ Unknown properties are collapsed to zero. -->
   <int value="7" label="Cached Data Cleared"/>
 </enum>
 
-<enum name="AppListAddPageType">
-  <int value="0" label="By Dragging App"/>
-  <int value="1" label="By Moving App With Keyboard"/>
-  <int value="2" label="By Syncing or Intalling App"/>
-</enum>
-
 <enum name="AppListAppMovingType">
   <int value="0" label="MOVE_BY_DRAG_INTO_FOLDER"/>
   <int value="1" label="MOVE_BY_DRAG_OUT_OF_FOLDER"/>
