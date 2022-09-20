@@ -53,6 +53,10 @@ std::ostream& operator<<(std::ostream& os, const fuzzy::Edit& edit) {
       os << 'R';
       break;
     }
+    case fuzzy::Edit::Kind::TRANSPOSE: {
+      os << 'T';
+      break;
+    }
     default: {
       NOTREACHED();
       break;
@@ -443,6 +447,39 @@ TEST_F(HistoryFuzzyProviderTest, ToleranceScheduleIsEnforced) {
 
   VerifyCasesWithSchedule(&node, cases,
                           {.start_index = 2, .step_length = 4, .limit = 3});
+}
+
+// This test ensures that transposition swaps two adjacent characters with
+// a single operation at edit distance one. Only directly adjacent characters
+// can be transposed and nonadjacent character swaps still require two edits.
+TEST_F(HistoryFuzzyProviderTest, TransposeIsEditDistanceOne) {
+  fuzzy::Node node;
+  node.Insert(u"transpose", 0);
+
+  std::vector<TestCase> cases = {
+      {
+          // Direct transposition 'op' -> 'po'. Finding the correction
+          // with tolerance 1 implies a single transposition edit was enough.
+          1,
+          u"transopse",
+          false,
+          {
+              u"transpose",
+          },
+      },
+      {
+          // Not a direct transposition, as the 's' is in between,
+          // so this case requires insert + delete pair (tolerance 2).
+          2,
+          u"transpeso",
+          false,
+          {
+              u"transpose",
+          },
+      },
+  };
+
+  VerifyCases(&node, cases);
 }
 
 // This test covers a subtlety in the algorithm. It ensures we don't take

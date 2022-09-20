@@ -35,6 +35,7 @@ struct Edit {
     DELETE,
     INSERT,
     REPLACE,
+    TRANSPOSE,
   };
 
   Edit(Kind kind, size_t at, char16_t new_char);
@@ -45,7 +46,8 @@ struct Edit {
   // The edit operation, the kind of change to make to text.
   Kind kind;
 
-  // Character data; relevant only for REPLACE and INSERT.
+  // Character data; relevant for REPLACE and INSERT, and also for
+  // TRANSPOSE (as a minor optimization, first char is stored here).
   char16_t new_char;
 
   // Text index at which to apply change.
