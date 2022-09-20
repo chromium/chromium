@@ -95,16 +95,6 @@ JNI_AutofillAssistantClient_FromWebContents(
   return client_android->GetJavaObject();
 }
 
-static void JNI_AutofillAssistantClient_OnOnboardingUiChange(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
-    jboolean shown) {
-  RuntimeManager* runtime_manager = RuntimeManager::GetForWebContents(
-      content::WebContents::FromJavaWebContents(jweb_contents));
-  if (runtime_manager)
-    runtime_manager->SetUIState(shown ? UIState::kShown : UIState::kNotShown);
-}
-
 ClientAndroid::ClientAndroid(content::WebContents* web_contents,
                              const ScopedJavaGlobalRef<jobject>& jdependencies)
     : content::WebContentsUserData<ClientAndroid>(*web_contents),

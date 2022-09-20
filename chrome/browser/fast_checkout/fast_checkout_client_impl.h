@@ -17,6 +17,10 @@
 
 class FastCheckoutExternalActionDelegate;
 
+namespace autofill_assistant {
+class RuntimeManager;
+}
+
 class FastCheckoutClientImpl
     : public content::WebContentsUserData<FastCheckoutClientImpl>,
       public FastCheckoutClient,
@@ -55,6 +59,11 @@ class FastCheckoutClientImpl
   // Creates the UI controller.
   virtual std::unique_ptr<FastCheckoutController>
   CreateFastCheckoutController();
+
+  // Gets the RunTimeManager used to disable dialogs and prompts, such as
+  // password manager, translation dialogs and permissions. Protected to allow
+  // for overrides by test classes.
+  virtual autofill_assistant::RuntimeManager* GetRuntimeManager();
 
  private:
   friend class content::WebContentsUserData<FastCheckoutClientImpl>;

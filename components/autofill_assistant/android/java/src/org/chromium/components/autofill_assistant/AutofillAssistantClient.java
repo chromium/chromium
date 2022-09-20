@@ -85,13 +85,6 @@ public class AutofillAssistantClient {
         return AutofillAssistantClientJni.get().createForWebContents(webContents, dependencies);
     }
 
-    /**
-     * Notifies that an onboarding UI is shown or hidden.
-     */
-    public static void onOnboardingUiChange(WebContents webContents, boolean shown) {
-        AutofillAssistantClientJni.get().onOnboardingUiChange(webContents, shown);
-    }
-
     @CalledByNative
     private AutofillAssistantClient(
             long nativeClientAndroid, AssistantAccessTokenUtil accessTokenUtil) {
@@ -393,7 +386,6 @@ public class AutofillAssistantClient {
         AutofillAssistantClient fromWebContents(WebContents webContents);
         AutofillAssistantClient createForWebContents(
                 WebContents webContents, AssistantDependencies dependencies);
-        void onOnboardingUiChange(WebContents webContents, boolean shown);
         void onAccessToken(long nativeClientAndroid, AutofillAssistantClient caller,
                 boolean success, String accessToken);
         void onPaymentsClientToken(

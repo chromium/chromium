@@ -21,6 +21,7 @@
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
 #include "components/autofill_assistant/browser/public/headless_onboarding_result.h"
 #include "components/autofill_assistant/browser/public/public_script_parameters.h"
+#include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
@@ -182,6 +183,8 @@ void FastCheckoutClientImpl::ShowFastCheckoutUI() {
     return card->GetRawInfo(autofill::CREDIT_CARD_NUMBER).empty();
   });
 
+  GetRuntimeManager()->SetUIState(
+      autofill_assistant::UIState::kShownWithoutBrowsingFeatureSuppression);
   fast_checkout_controller_->Show(profiles_to_suggest, cards_to_suggest);
 }
 
@@ -198,12 +201,12 @@ void FastCheckoutClientImpl::SetShouldSuppressKeyboard(bool suppress) {
 void FastCheckoutClientImpl::OnRunComplete(
     autofill_assistant::HeadlessScriptController::ScriptResult result) {
   // TODO(crbug.com/1338522): Handle failed result.
-
   if (result.onboarding_result ==
       autofill_assistant::HeadlessOnboardingResult::kRejected) {
     fast_checkout_prefs_.DeclineOnboarding();
   }
 
+  OnHidden();
   Stop();
 }
 
@@ -212,6 +215,7 @@ void FastCheckoutClientImpl::Stop() {
   fast_checkout_controller_.reset();
   is_running_ = false;
   personal_data_manager_observation_.Reset();
+  GetRuntimeManager()->SetUIState(autofill_assistant::UIState::kNotShown);
 
   // `OnHidden` is not called if the bottom sheet never managed to show,
   // e.g. due to a failed onboarding. This ensures that keyboard suppression
@@ -270,6 +274,12 @@ FastCheckoutClientImpl::GetPersonalDataManager() {
       Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
   return autofill::PersonalDataManagerFactory::GetForProfile(
       profile->GetOriginalProfile());
+}
+
+autofill_assistant::RuntimeManager*
+FastCheckoutClientImpl::GetRuntimeManager() {
+  return autofill_assistant::RuntimeManager::GetOrCreateForWebContents(
+      &GetWebContents());
 }
 
 void FastCheckoutClientImpl::OnPersonalDataChanged() {

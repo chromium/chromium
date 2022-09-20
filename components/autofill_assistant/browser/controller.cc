@@ -194,6 +194,11 @@ void Controller::RequireUI() {
 }
 
 void Controller::SetUiShown(bool shown) {
+  if (trigger_context_ && trigger_context_->GetIsExternallyTriggered()) {
+    // UIState can only be modified by non-headless runs. For headless runs, the
+    // client is in charge of keeping the UIState value updated.
+    return;
+  }
   ui_shown_ = shown;
   if (runtime_manager_) {
     // By default, browsing features are suppressed during `UIState::kShown`.
