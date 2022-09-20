@@ -21,8 +21,6 @@ class LinkToTextTabHelper : public web::WebStateObserver,
  public:
   ~LinkToTextTabHelper() override;
 
-  static void CreateForWebState(web::WebState* web_state);
-
   // Returns whether the link to text feature should be offered for the current
   // user selection.
   bool ShouldOffer();

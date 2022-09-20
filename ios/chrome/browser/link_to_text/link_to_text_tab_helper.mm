@@ -84,15 +84,6 @@ LinkToTextTabHelper::LinkToTextTabHelper(web::WebState* web_state)
 
 LinkToTextTabHelper::~LinkToTextTabHelper() {}
 
-// static
-void LinkToTextTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(), base::WrapUnique(new LinkToTextTabHelper(web_state)));
-  }
-}
-
 bool LinkToTextTabHelper::ShouldOffer() {
   if (!shared_highlighting::ShouldOfferLinkToText(
           web_state_->GetLastCommittedURL())) {
