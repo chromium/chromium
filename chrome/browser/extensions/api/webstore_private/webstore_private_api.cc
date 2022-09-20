@@ -952,11 +952,6 @@ WebstorePrivateCompleteInstallFunction::Run() {
   if (profile->IsGuestSession() || profile->IsOffTheRecord()) {
     return RespondNow(Error(kIncognitoError));
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile->IsMainProfile()) {
-    return RespondNow(Error(kSecondaryProfileError));
-  }
-#endif
 
   if (!crx_file::id_util::IdIsValid(params->expected_id))
     return RespondNow(Error(kWebstoreInvalidIdError));
@@ -967,6 +962,19 @@ WebstorePrivateCompleteInstallFunction::Run() {
     return RespondNow(Error(kNoPreviousBeginInstallWithManifestError,
                             params->expected_id));
   }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(https://crbug.com/1365778): Centralize logic for disallowing
+  // installation with other installation paths.
+  if (!profile->IsMainProfile()) {
+    bool allowed = approval_->dummy_extension &&
+                   (approval_->dummy_extension->is_extension() ||
+                    approval_->dummy_extension->is_theme());
+    if (!allowed) {
+      return RespondNow(Error(kSecondaryProfileError));
+    }
+  }
+#endif
 
   content::WebContents* web_contents = GetSenderWebContents();
   if (!web_contents) {
