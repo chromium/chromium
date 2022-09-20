@@ -155,18 +155,13 @@ class MemberOnStackMatcher : public MatchFinder::MatchCallback {
       : diagnostics_(diagnostics) {}
 
   void Register(MatchFinder& match_finder) {
+    auto has_member_name = hasAnyName("::blink::Member", "::blink::WeakMember",
+                                      "::cppgc::internal::BasicMember");
     auto class_member_variable_matcher =
-        varDecl(hasType(recordDecl(
-                    hasAnyName("::blink::Member", "::blink::WeakMember",
-                               "::cppgc::internal::BasicMember"))))
+        varDecl(anyOf(hasType(recordDecl(has_member_name)),
+                      hasType(typeAliasTemplateDecl(has_member_name))))
             .bind("member");
     match_finder.addDynamicMatcher(class_member_variable_matcher, this);
-    auto alias_member_variable_matcher =
-        varDecl(hasType(typeAliasTemplateDecl(
-                    hasAnyName("::blink::Member", "::blink::WeakMember",
-                               "::cppgc::Member", "::cppgc::WeakMember"))))
-            .bind("member");
-    match_finder.addDynamicMatcher(alias_member_variable_matcher, this);
   }
 
   void run(const MatchFinder::MatchResult& result) override {
