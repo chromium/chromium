@@ -279,17 +279,18 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
 
 std::pair<SegmentId, float> SegmentSelectorImpl::FindBestSegment(
     const SegmentRanks& segment_results) {
-  int max_rank = 0;
+  const float kMinRank = 0;
+  float max_rank = kMinRank;
   SegmentId max_rank_id = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
   // Loop through all the results. Convert them to discrete ranks. Select the
   // one with highest discrete rank.
   for (const auto& pair : segment_results) {
     SegmentId id = pair.first;
-    int rank = pair.second;
+    float rank = pair.second;
     if (rank > max_rank) {
       max_rank = rank;
       max_rank_id = id;
-    } else if (rank == max_rank && rank > 0) {
+    } else if (rank == max_rank && rank > kMinRank) {
       // TODO(shaktisahu): Use fallback priority.
     }
   }
