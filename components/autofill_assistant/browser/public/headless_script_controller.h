@@ -5,11 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_HEADLESS_SCRIPT_CONTROLLER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_HEADLESS_SCRIPT_CONTROLLER_H_
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/public/external_action.pb.h"
-#include "components/autofill_assistant/browser/public/runtime_observer.h"
-#include "components/autofill_assistant/browser/public/ui_state.h"
+#include "components/autofill_assistant/browser/public/headless_onboarding_result.h"
 
 namespace autofill_assistant {
 
@@ -19,6 +18,8 @@ class HeadlessScriptController {
   struct ScriptResult {
     // TODO(b/209429727): use canonical status codes instead.
     bool success = false;
+    HeadlessOnboardingResult onboarding_result =
+        HeadlessOnboardingResult::kUndefined;
   };
 
   // Fetches and executes the script specified by `script_parameters`.

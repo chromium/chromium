@@ -14,6 +14,7 @@ static_library("public") {
     "autofill_assistant.h",
     "autofill_assistant_factory.h",
     "external_action_delegate.h",
+    "headless_onboarding_result.h",
     "headless_script_controller.h",
     "prefs.cc",
     "prefs.h",

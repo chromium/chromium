@@ -33,6 +33,7 @@
 #include "components/autofill_assistant/browser/mock_client.h"
 #include "components/autofill_assistant/browser/mock_controller_observer.h"
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
+#include "components/autofill_assistant/browser/public/headless_onboarding_result.h"
 #include "components/autofill_assistant/browser/public/mock_external_action_delegate.h"
 #include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
 #include "components/autofill_assistant/browser/service/mock_service.h"
@@ -138,20 +139,25 @@ class HeadlessScriptControllerImplTest : public testing::Test {
   // |mock_web_controller_to_inject_| so it should not be called more than once
   // per test.
   void Start(const base::flat_map<std::string, std::string>& params,
-             bool expect_success) {
+             bool expect_success,
+             HeadlessOnboardingResult expected_onboarding_result =
+                 HeadlessOnboardingResult::kSkipped,
+             bool use_onboarding = false) {
     // Since the callback is often called in a PostTask, we use this to make
     // sure the test does not finish before the callback is called.
     base::RunLoop run_loop;
 
     EXPECT_CALL(mock_script_ended_callback_, Run)
-        .WillOnce([&run_loop, &expect_success](
+        .WillOnce([&run_loop, &expect_success, &expected_onboarding_result](
                       HeadlessScriptController::ScriptResult result) {
           EXPECT_EQ(result.success, expect_success);
+          EXPECT_EQ(result.onboarding_result, expected_onboarding_result);
           run_loop.Quit();
         });
     headless_script_controller_->StartScript(
         params, mock_script_ended_callback_.Get(),
-        /* use_autofill_assistant_onboarding = */ false, base::DoNothing(),
+        /* use_autofill_assistant_onboarding = */ use_onboarding,
+        base::DoNothing(),
         /* suppress_browsing_features = */ true,
         std::move(mock_service_to_inject_),
         std::move(mock_web_controller_to_inject_));
@@ -225,7 +231,8 @@ TEST_F(HeadlessScriptControllerImplTest,
   // The startup will fail because we are missing the initial URL.
   base::flat_map<std::string, std::string> params = {
       {"ENABLED", "true"}, {"START_IMMEDIATELY", "true"}};
-  Start(params, /* expect_success= */ false);
+  Start(params, /* expect_success= */ false,
+        HeadlessOnboardingResult::kUndefined);
 }
 
 TEST_F(HeadlessScriptControllerImplTest, StartFailsIfNoScriptsAvailable) {
@@ -510,6 +517,69 @@ TEST_F(HeadlessScriptControllerImplTest,
   EXPECT_EQ(processed_actions_capture[1].status(), ACTION_APPLIED);
   EXPECT_TRUE(
       processed_actions_capture[0].external_action_result().has_result_info());
+}
+
+struct OnboardingTestParams {
+  bool onboarding_accepted_previously = false;
+  OnboardingResult onboarding_result = OnboardingResult::ACCEPTED;
+  HeadlessOnboardingResult expected_result =
+      HeadlessOnboardingResult::kAccepted;
+};
+
+const OnboardingTestParams onboarding_test_params[] = {
+    {.onboarding_accepted_previously = true,
+     .expected_result = HeadlessOnboardingResult::kNotShown},
+    {.onboarding_accepted_previously = false,
+     .onboarding_result = OnboardingResult::ACCEPTED,
+     .expected_result = HeadlessOnboardingResult::kAccepted},
+    {.onboarding_accepted_previously = false,
+     .onboarding_result = OnboardingResult::REJECTED,
+     .expected_result = HeadlessOnboardingResult::kRejected},
+    {.onboarding_accepted_previously = false,
+     .onboarding_result = OnboardingResult::DISMISSED,
+     .expected_result = HeadlessOnboardingResult::kDismissed},
+    {.onboarding_accepted_previously = false,
+     .onboarding_result = OnboardingResult::NAVIGATION,
+     .expected_result = HeadlessOnboardingResult::kNavigation}};
+
+class HeadlessScriptControllerImplTestParametrized
+    : public HeadlessScriptControllerImplTest,
+      public testing::WithParamInterface<OnboardingTestParams> {};
+
+INSTANTIATE_TEST_SUITE_P(HeadlessScriptControllerImplTest,
+                         HeadlessScriptControllerImplTestParametrized,
+                         ::testing::ValuesIn(onboarding_test_params));
+
+TEST_P(HeadlessScriptControllerImplTestParametrized,
+       OnboardingStateMapsCorrectlyToHeadlessOnboardingResult) {
+  bool expect_success =
+      GetParam().onboarding_result == OnboardingResult::ACCEPTED;
+
+  if (expect_success) {
+    SupportsScriptResponseProto script_response;
+    SupportedScriptProto* script =
+        AddRunnableScript(&script_response, "script");
+    script->mutable_presentation()->set_autostart(true);
+    SetupScripts(script_response);
+
+    ActionsResponseProto script_actions;
+    script_actions.add_actions()->mutable_stop();
+    SetupActionsForScript("script", script_actions);
+  }
+
+  fake_platform_delegate_.SetOnboardingAccepted(
+      GetParam().onboarding_accepted_previously);
+  fake_platform_delegate_.show_onboarding_result_ =
+      GetParam().onboarding_result;
+  fake_platform_delegate_.show_onboarding_result_shown_ = true;
+
+  base::flat_map<std::string, std::string> params = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "true"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  Start(params, /* expect_success= */ expect_success,
+        GetParam().expected_result,
+        /* use_onboarding= */ true);
 }
 
 }  // namespace autofill_assistant

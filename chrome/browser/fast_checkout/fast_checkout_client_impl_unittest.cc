@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill_assistant/browser/public/headless_onboarding_result.h"
 #include "components/autofill_assistant/browser/public/mock_headless_script_controller.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -431,6 +432,59 @@ TEST_P(FastCheckoutClientImplTestParametrized,
   std::move(external_script_controller_callback).Run(script_result);
 
   // `FastCheckoutClient` state was reset after run finished.
+  EXPECT_FALSE(fast_checkout_client()->IsRunning());
+}
+
+TEST_F(FastCheckoutClientImplTest, Start_OnboardingRejected_NotStartableAgain) {
+  // `FastCheckoutClient` is not running initially.
+  EXPECT_FALSE(fast_checkout_client()->IsRunning());
+
+  // Prepare to extract the callbacks to the external script controller.
+  base::OnceCallback<void(
+      autofill_assistant::HeadlessScriptController::ScriptResult)>
+      external_script_controller_callback;
+
+  EXPECT_CALL(*external_script_controller(),
+              StartScript(_, _, /*use_autofill_assistant_onboarding=*/
+                          true, _,
+                          /*suppress_browsing_features=*/false))
+      .Times(1)
+      .WillOnce(
+          [&](const base::flat_map<std::string, std::string>& script_parameters,
+              base::OnceCallback<void(
+                  autofill_assistant::HeadlessScriptController::ScriptResult)>
+                  script_ended_callback,
+              bool use_autofill_assistant_onboarding,
+              base::OnceCallback<void()>
+                  onboarding_successful_callback_parameter,
+              bool suppress_browsing_features) {
+            external_script_controller_callback =
+                std::move(script_ended_callback);
+          });
+
+  // Expect bottomsheet to show up.
+  EXPECT_CALL(*fast_checkout_controller(), Show(_, _)).Times(0);
+
+  // Starting the run successfully.
+  EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+
+  // `FastCheckoutClient` is running.
+  EXPECT_TRUE(fast_checkout_client()->IsRunning());
+
+  // Cannot start another run.
+  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
+
+  // Rejected onboarding.
+  autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
+      /* success= */ false, /* onboarding_result= */ autofill_assistant::
+          HeadlessOnboardingResult::kRejected};
+  std::move(external_script_controller_callback).Run(script_result);
+
+  // `FastCheckoutClient` state was reset after onboarding was rejected.
+  EXPECT_FALSE(fast_checkout_client()->IsRunning());
+
+  // Not startable again.
+  EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 }
 

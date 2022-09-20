@@ -467,6 +467,7 @@ void Starter::OnDependenciesInvalidated() {
 void Starter::CanStart(
     std::unique_ptr<TriggerContext> trigger_context,
     base::OnceCallback<void(bool success,
+                            const OnboardingState& onboarding_state,
                             absl::optional<GURL> url,
                             std::unique_ptr<TriggerContext> trigger_contexts)>
         preconditions_checked_callback) {
@@ -746,7 +747,10 @@ void Starter::MaybeShowOnboarding(
     Metrics::RecordRegularScriptOnboarding(ukm_recorder_,
                                            current_ukm_source_id_,
                                            Metrics::Onboarding::OB_EXTERNAL);
-    OnStartDone(/* start_script = */ true, trigger_script);
+    OnStartDone(/* start_script = */ true, trigger_script,
+                {.onboarding_shown = false,
+                 .onboarding_skipped = true,
+                 .onboarding_result = absl::nullopt});
     return;
   }
 
@@ -821,22 +825,29 @@ void Starter::OnOnboardingFinished(
 
   if (result != OnboardingResult::ACCEPTED) {
     runtime_manager_->SetUIState(UIState::kNotShown);
-    OnStartDone(/* start_script = */ false);
+    OnStartDone(/* start_script = */ false, trigger_script,
+                {.onboarding_shown = shown,
+                 .onboarding_skipped = false,
+                 .onboarding_result = result});
     return;
   }
 
   // Onboarding is the last step before regular startup.
   platform_delegate_->SetOnboardingAccepted(true);
   pending_trigger_context_->SetOnboardingShown(shown);
-  OnStartDone(/* start_script = */ true, trigger_script);
+  OnStartDone(/* start_script = */ true, trigger_script,
+              {.onboarding_shown = shown,
+               .onboarding_skipped = false,
+               .onboarding_result = result});
 }
 
 void Starter::OnStartDone(bool start_script,
-                          absl::optional<TriggerScriptProto> trigger_script) {
+                          absl::optional<TriggerScriptProto> trigger_script,
+                          OnboardingState onboarding_state) {
   // If a callback is present, we notify that the checks are done instead of
   // directly starting the script with the default UI.
   if (preconditions_checked_callback_) {
-    ReportPreconditionsChecked(start_script);
+    ReportPreconditionsChecked(start_script, onboarding_state);
     return;
   }
 
@@ -858,11 +869,13 @@ void Starter::OnStartDone(bool start_script,
       *startup_url, std::move(pending_trigger_context_), trigger_script);
 }
 
-void Starter::ReportPreconditionsChecked(bool start_script) {
+void Starter::ReportPreconditionsChecked(bool start_script,
+                                         OnboardingState onboarding_state) {
   auto startup_url =
       StartupUtil().ChooseStartupUrlForIntent(*pending_trigger_context_);
   std::move(preconditions_checked_callback_)
-      .Run(start_script, startup_url, std::move(pending_trigger_context_));
+      .Run(start_script, onboarding_state, startup_url,
+           std::move(pending_trigger_context_));
 }
 
 void Starter::DeleteTriggerScriptCoordinator() {

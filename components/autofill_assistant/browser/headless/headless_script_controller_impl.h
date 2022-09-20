@@ -13,7 +13,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/metrics.h"
+#include "components/autofill_assistant/browser/onboarding_result.h"
+#include "components/autofill_assistant/browser/public/headless_onboarding_result.h"
 #include "components/autofill_assistant/browser/public/headless_script_controller.h"
+#include "components/autofill_assistant/browser/starter.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -68,13 +71,15 @@ class HeadlessScriptControllerImpl : public HeadlessScriptController {
   void OnReadyToStart(std::unique_ptr<Service> service,
                       std::unique_ptr<WebController> web_controller,
                       bool can_start,
+                      const OnboardingState& onboarding_state,
                       absl::optional<GURL> url,
                       std::unique_ptr<TriggerContext> trigger_context);
 
   // Notifies the external caller that the script has ended. Note that the
   // external caller can decide to destroy this instance once it has been
   // notified so this method should not be called directly to avoid UAF issues.
-  void NotifyScriptEnded(Metrics::DropOutReason reason);
+  void NotifyScriptEnded(HeadlessOnboardingResult onboarding_result,
+                         Metrics::DropOutReason reason);
 
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<Starter> starter_;

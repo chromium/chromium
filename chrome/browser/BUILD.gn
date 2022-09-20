@@ -3042,6 +3042,8 @@ static_library("browser") {
       "fast_checkout/fast_checkout_client_impl.h",
       "fast_checkout/fast_checkout_external_action_delegate.cc",
       "fast_checkout/fast_checkout_external_action_delegate.h",
+      "fast_checkout/fast_checkout_prefs.cc",
+      "fast_checkout/fast_checkout_prefs.h",
       "fast_checkout/fast_checkout_tab_helper.cc",
       "fast_checkout/fast_checkout_tab_helper.h",
       "fast_checkout/fast_checkout_util.cc",

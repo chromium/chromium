@@ -2267,12 +2267,17 @@ TEST_F(StarterTest, CanStartSucceeds) {
       {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   TriggerContext::Options options;
   options.initial_url = "https://redirect.com/to/www/example/com";
-  base::MockCallback<
-      base::OnceCallback<void(bool success, absl::optional<GURL> url,
-                              std::unique_ptr<TriggerContext> trigger_context)>>
+  base::MockCallback<base::OnceCallback<void(
+      bool success, const OnboardingState& onboarding_state,
+      absl::optional<GURL> url,
+      std::unique_ptr<TriggerContext> trigger_context)>>
       mock_preconditions_checked_callback;
   EXPECT_CALL(mock_preconditions_checked_callback,
-              Run(true, Optional(GURL(kExampleDeeplink)), _));
+              Run(/*success=*/true,
+                  OnboardingState{
+                      /*onboarding_shown=*/false, /*onboarding_skipped=*/false,
+                      /*onboarding_result=*/OnboardingResult::ACCEPTED},
+                  Optional(GURL(kExampleDeeplink)), _));
 
   starter_->CanStart(
       std::make_unique<TriggerContext>(
@@ -2312,12 +2317,17 @@ TEST_F(StarterTest, FirstTimeUserNotShowOnboardingIfHandledExternally) {
   options.initial_url = "https://redirect.com/to/www/example/com";
   options.is_externally_triggered = true;
   options.skip_autofill_assistant_onboarding = true;
-  base::MockCallback<
-      base::OnceCallback<void(bool success, absl::optional<GURL> url,
-                              std::unique_ptr<TriggerContext> trigger_context)>>
+  base::MockCallback<base::OnceCallback<void(
+      bool success, const OnboardingState& onboarding_state,
+      absl::optional<GURL> url,
+      std::unique_ptr<TriggerContext> trigger_context)>>
       mock_preconditions_checked_callback;
   EXPECT_CALL(mock_preconditions_checked_callback,
-              Run(true, Optional(GURL(kExampleDeeplink)), _));
+              Run(/*success=*/true,
+                  OnboardingState{/*onboarding_shown=*/false,
+                                  /*onboarding_skipped=*/true,
+                                  /*onboarding_result=*/absl::nullopt},
+                  Optional(GURL(kExampleDeeplink)), _));
 
   starter_->CanStart(
       std::make_unique<TriggerContext>(
@@ -2352,12 +2362,17 @@ TEST_F(StarterTest,
   options.initial_url = "https://redirect.com/to/www/example/com";
   options.is_externally_triggered = true;
   options.skip_autofill_assistant_onboarding = false;
-  base::MockCallback<
-      base::OnceCallback<void(bool success, absl::optional<GURL> url,
-                              std::unique_ptr<TriggerContext> trigger_context)>>
+  base::MockCallback<base::OnceCallback<void(
+      bool success, const OnboardingState& onboarding_state,
+      absl::optional<GURL> url,
+      std::unique_ptr<TriggerContext> trigger_context)>>
       mock_preconditions_checked_callback;
   EXPECT_CALL(mock_preconditions_checked_callback,
-              Run(true, Optional(GURL(kExampleDeeplink)), _));
+              Run(/*success=*/true,
+                  OnboardingState{
+                      /*onboarding_shown=*/true, /*onboarding_skipped=*/false,
+                      /*onboarding_result=*/OnboardingResult::ACCEPTED},
+                  Optional(GURL(kExampleDeeplink)), _));
 
   starter_->CanStart(
       std::make_unique<TriggerContext>(

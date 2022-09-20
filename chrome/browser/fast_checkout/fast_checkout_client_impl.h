@@ -7,6 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client.h"
+#include "chrome/browser/fast_checkout/fast_checkout_prefs.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill_assistant/browser/public/headless_script_controller.h"
@@ -83,6 +84,9 @@ class FastCheckoutClientImpl
   // are ready to run.
   void OnOnboardingCompletedSuccessfully();
 
+  // Returns true if fast checkout should run, e.g. if the feature is enabled.
+  bool ShouldRun(bool script_supports_consentless_execution);
+
   // Delegate for the surface being shown.
   base::WeakPtr<autofill::FastCheckoutDelegate> delegate_;
 
@@ -110,6 +114,9 @@ class FastCheckoutClientImpl
   base::ScopedObservation<autofill::PersonalDataManager,
                           autofill::PersonalDataManagerObserver>
       personal_data_manager_observation_{this};
+
+  // Handles fast checkout profile prefs, i.e. declining onboarding.
+  FastCheckoutPrefs fast_checkout_prefs_;
 
   // content::WebContentsUserData:
   WEB_CONTENTS_USER_DATA_KEY_DECL();

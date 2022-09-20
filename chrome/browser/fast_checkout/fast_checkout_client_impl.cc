@@ -10,6 +10,7 @@
 #include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
 #include "chrome/browser/fast_checkout/fast_checkout_external_action_delegate.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
+#include "chrome/browser/fast_checkout/fast_checkout_prefs.h"
 #include "chrome/browser/fast_checkout/fast_checkout_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -18,8 +19,10 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/fast_checkout_delegate.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
+#include "components/autofill_assistant/browser/public/headless_onboarding_result.h"
 #include "components/autofill_assistant/browser/public/public_script_parameters.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "url/gurl.h"
 
 namespace {
 constexpr char kIntentValue[] = "CHROME_FAST_CHECKOUT";
@@ -52,17 +55,74 @@ std::vector<autofill::AutofillProfile*> GetValidAddressProfiles(
   return profiles;
 }
 
+// Create script parameters map for starting the script.
+base::flat_map<std::string, std::string> CreateScriptParameters(
+    bool run_consentless,
+    GURL url) {
+  return {{autofill_assistant::public_script_parameters::kIntentParameterName,
+           kIntentValue},
+          {autofill_assistant::public_script_parameters::
+               kOriginalDeeplinkParameterName,
+           url.spec()},
+          {autofill_assistant::public_script_parameters::kEnabledParameterName,
+           kTrue},
+          {autofill_assistant::public_script_parameters::
+               kStartImmediatelyParameterName,
+           kTrue},
+          {autofill_assistant::public_script_parameters::kCallerParameterName,
+           kCaller},
+          {autofill_assistant::public_script_parameters::kSourceParameterName,
+           kSource},
+          {kIsNoRoundTrip, run_consentless ? kTrue : kFalse},
+          // TODO(b/247072871): Remove once RPC signing works.
+          {"DISABLE_RPC_SIGNING", kTrue}};
+}
+
 }  // namespace
 
 FastCheckoutClientImpl::FastCheckoutClientImpl(
     content::WebContents* web_contents)
-    : content::WebContentsUserData<FastCheckoutClientImpl>(*web_contents) {}
+    : content::WebContentsUserData<FastCheckoutClientImpl>(*web_contents),
+      fast_checkout_prefs_(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())
+              ->GetPrefs()) {}
 
 FastCheckoutClientImpl::~FastCheckoutClientImpl() = default;
 
 bool FastCheckoutClientImpl::Start(
     base::WeakPtr<autofill::FastCheckoutDelegate> delegate,
     const GURL& url,
+    bool script_supports_consentless_execution) {
+  if (!ShouldRun(script_supports_consentless_execution))
+    return false;
+
+  bool run_consentless =
+      features::kFastCheckoutConsentlessExecutionParam.Get() &&
+      script_supports_consentless_execution;
+  is_running_ = true;
+  url_ = url;
+  delegate_ = std::move(delegate);
+  personal_data_manager_observation_.Observe(GetPersonalDataManager());
+
+  fast_checkout_external_action_delegate_ =
+      CreateFastCheckoutExternalActionDelegate();
+  external_script_controller_ = CreateHeadlessScriptController();
+
+  SetShouldSuppressKeyboard(true);
+
+  external_script_controller_->StartScript(
+      CreateScriptParameters(run_consentless, url_),
+      base::BindOnce(&FastCheckoutClientImpl::OnRunComplete,
+                     base::Unretained(this)),
+      /*use_autofill_assistant_onboarding=*/!run_consentless,
+      base::BindOnce(&FastCheckoutClientImpl::OnOnboardingCompletedSuccessfully,
+                     base::Unretained(this)),
+      /*suppress_browsing_features=*/false);
+
+  return true;
+}
+
+bool FastCheckoutClientImpl::ShouldRun(
     bool script_supports_consentless_execution) {
   if (!base::FeatureList::IsEnabled(features::kFastCheckout))
     return false;
@@ -76,10 +136,12 @@ bool FastCheckoutClientImpl::Start(
       client_supports_consentless_execution)
     return false;
 
-  bool run_consentless = client_supports_consentless_execution &&
-                         script_supports_consentless_execution;
-
   if (is_running_)
+    return false;
+
+  // Client requires consent and has declined onboarding previously.
+  if (fast_checkout_prefs_.IsOnboardingDeclined() &&
+      !client_supports_consentless_execution)
     return false;
 
   autofill::PersonalDataManager* pdm = GetPersonalDataManager();
@@ -98,45 +160,6 @@ bool FastCheckoutClientImpl::Start(
         autofill::FastCheckoutTriggerOutcome::kFailureNoValidCreditCard);
     return false;
   }
-
-  is_running_ = true;
-  url_ = url;
-  delegate_ = std::move(delegate);
-  personal_data_manager_observation_.Observe(GetPersonalDataManager());
-
-  base::flat_map<std::string, std::string> params_map{
-      {autofill_assistant::public_script_parameters::kIntentParameterName,
-       kIntentValue},
-      {autofill_assistant::public_script_parameters::
-           kOriginalDeeplinkParameterName,
-       url_.spec()},
-      {autofill_assistant::public_script_parameters::kEnabledParameterName,
-       kTrue},
-      {autofill_assistant::public_script_parameters::
-           kStartImmediatelyParameterName,
-       kTrue},
-      {autofill_assistant::public_script_parameters::kCallerParameterName,
-       kCaller},
-      {autofill_assistant::public_script_parameters::kSourceParameterName,
-       kSource},
-      {kIsNoRoundTrip, run_consentless ? kTrue : kFalse},
-      // TODO(b/247072871): Remove once RPC signing works.
-      {"DISABLE_RPC_SIGNING", kTrue}};
-
-  fast_checkout_external_action_delegate_ =
-      CreateFastCheckoutExternalActionDelegate();
-  external_script_controller_ = CreateHeadlessScriptController();
-
-  SetShouldSuppressKeyboard(true);
-
-  external_script_controller_->StartScript(
-      params_map,
-      base::BindOnce(&FastCheckoutClientImpl::OnRunComplete,
-                     base::Unretained(this)),
-      /*use_autofill_assistant_onboarding=*/!run_consentless,
-      base::BindOnce(&FastCheckoutClientImpl::OnOnboardingCompletedSuccessfully,
-                     base::Unretained(this)),
-      /*suppress_browsing_features=*/false);
 
   return true;
 }
@@ -175,6 +198,12 @@ void FastCheckoutClientImpl::SetShouldSuppressKeyboard(bool suppress) {
 void FastCheckoutClientImpl::OnRunComplete(
     autofill_assistant::HeadlessScriptController::ScriptResult result) {
   // TODO(crbug.com/1338522): Handle failed result.
+
+  if (result.onboarding_result ==
+      autofill_assistant::HeadlessOnboardingResult::kRejected) {
+    fast_checkout_prefs_.DeclineOnboarding();
+  }
+
   Stop();
 }
 
