@@ -23,67 +23,67 @@ namespace password_manager::features {
 // alongside the definition of their values in the .cc file.
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-extern const base::Feature kBiometricAuthenticationForFilling;
+BASE_DECLARE_FEATURE(kBiometricAuthenticationForFilling);
 #endif
 #if BUILDFLAG(IS_MAC)
-extern const base::Feature kBiometricAuthenticationInSettings;
+BASE_DECLARE_FEATURE(kBiometricAuthenticationInSettings);
 #endif
-extern const base::Feature kBiometricTouchToFill;
-extern const base::Feature kDetectFormSubmissionOnFormClear;
-extern const base::Feature kForceEnablePasswordDomainCapabilities;
-extern const base::Feature kEnableFaviconForPasswords;
-extern const base::Feature kEnableOverwritingPlaceholderUsernames;
-extern const base::Feature kEnablePasswordsAccountStorage;
+BASE_DECLARE_FEATURE(kBiometricTouchToFill);
+BASE_DECLARE_FEATURE(kDetectFormSubmissionOnFormClear);
+BASE_DECLARE_FEATURE(kForceEnablePasswordDomainCapabilities);
+BASE_DECLARE_FEATURE(kEnableFaviconForPasswords);
+BASE_DECLARE_FEATURE(kEnableOverwritingPlaceholderUsernames);
+BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
 extern const base::Feature KEnablePasswordGenerationForClearTextFields;
-extern const base::Feature kEnablePasswordManagerWithinFencedFrame;
-extern const base::Feature kFillingAcrossAffiliatedWebsites;
-extern const base::Feature kFillOnAccountSelect;
+BASE_DECLARE_FEATURE(kEnablePasswordManagerWithinFencedFrame);
+BASE_DECLARE_FEATURE(kFillingAcrossAffiliatedWebsites);
+BASE_DECLARE_FEATURE(kFillOnAccountSelect);
 #if BUILDFLAG(IS_LINUX)
-extern const base::Feature kForceInitialSyncWhenDecryptionFails;
+BASE_DECLARE_FEATURE(kForceInitialSyncWhenDecryptionFails);
 #endif
-extern const base::Feature kInferConfirmationPasswordField;
-extern const base::Feature kIOSEnablePasswordManagerBrandingUpdate;
+BASE_DECLARE_FEATURE(kInferConfirmationPasswordField);
+BASE_DECLARE_FEATURE(kIOSEnablePasswordManagerBrandingUpdate);
 #if BUILDFLAG(IS_IOS)
-extern const base::Feature kIOSPasswordUISplit;
-extern const base::Feature kIOSPasswordManagerCrossOriginIframeSupport;
+BASE_DECLARE_FEATURE(kIOSPasswordUISplit);
+BASE_DECLARE_FEATURE(kIOSPasswordManagerCrossOriginIframeSupport);
 #endif  // IS_IOS
-extern const base::Feature kMuteCompromisedPasswords;
+BASE_DECLARE_FEATURE(kMuteCompromisedPasswords);
 
 extern const base::FeatureParam<base::TimeDelta> kPasswordNotesAuthValidity;
-extern const base::Feature kPasswordNotes;
+BASE_DECLARE_FEATURE(kPasswordNotes);
 
-extern const base::Feature kPasswordViewPageInSettings;
-extern const base::Feature kSendPasswords;
-extern const base::Feature kLeakDetectionUnauthenticated;
-extern const base::Feature kPasswordChange;
-extern const base::Feature kPasswordChangeInSettings;
-extern const base::Feature kPasswordChangeWellKnown;
-extern const base::Feature kPasswordDomainCapabilitiesFetching;
-extern const base::Feature kPasswordImport;
+BASE_DECLARE_FEATURE(kPasswordViewPageInSettings);
+BASE_DECLARE_FEATURE(kSendPasswords);
+BASE_DECLARE_FEATURE(kLeakDetectionUnauthenticated);
+BASE_DECLARE_FEATURE(kPasswordChange);
+BASE_DECLARE_FEATURE(kPasswordChangeInSettings);
+BASE_DECLARE_FEATURE(kPasswordChangeWellKnown);
+BASE_DECLARE_FEATURE(kPasswordDomainCapabilitiesFetching);
+BASE_DECLARE_FEATURE(kPasswordImport);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-extern const base::Feature kPasswordManagerRedesign;
+BASE_DECLARE_FEATURE(kPasswordManagerRedesign);
 #endif
-extern const base::Feature kPasswordReuseDetectionEnabled;
-extern const base::Feature kPasswordScriptsFetching;
-extern const base::Feature kPasswordsGrouping;
-extern const base::Feature kPasswordStrengthIndicator;
-extern const base::Feature kRecoverFromNeverSaveAndroid;
+BASE_DECLARE_FEATURE(kPasswordReuseDetectionEnabled);
+BASE_DECLARE_FEATURE(kPasswordScriptsFetching);
+BASE_DECLARE_FEATURE(kPasswordsGrouping);
+BASE_DECLARE_FEATURE(kPasswordStrengthIndicator);
+BASE_DECLARE_FEATURE(kRecoverFromNeverSaveAndroid);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-extern const base::Feature kSkipUndecryptablePasswords;
+BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 #endif
 #if BUILDFLAG(IS_LINUX)
-extern const base::Feature kSyncUndecryptablePasswordsLinux;
+BASE_DECLARE_FEATURE(kSyncUndecryptablePasswordsLinux);
 #endif
 #if BUILDFLAG(IS_ANDROID)
-extern const base::Feature kPasswordEditDialogWithDetails;
-extern const base::Feature kShowUPMErrorNotification;
-extern const base::Feature kTouchToFillPasswordSubmission;
-extern const base::Feature kUnifiedCredentialManagerDryRun;
-extern const base::Feature kUnifiedPasswordManagerAndroid;
-extern const base::Feature kUnifiedPasswordManagerErrorMessages;
-extern const base::Feature kUnifiedPasswordManagerSyncUsingAndroidBackendOnly;
+BASE_DECLARE_FEATURE(kPasswordEditDialogWithDetails);
+BASE_DECLARE_FEATURE(kShowUPMErrorNotification);
+BASE_DECLARE_FEATURE(kTouchToFillPasswordSubmission);
+BASE_DECLARE_FEATURE(kUnifiedCredentialManagerDryRun);
+BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroid);
+BASE_DECLARE_FEATURE(kUnifiedPasswordManagerErrorMessages);
+BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly);
 #endif
-extern const base::Feature kUsernameFirstFlowFallbackCrowdsourcing;
+BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 
 // All features parameters are in alphabetical order.
 
