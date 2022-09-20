@@ -54,7 +54,8 @@ runSuite(
     'OnboardingEnterRsuWpDisableCodePageTest',
     onboardingEnterRsuWpDisableCodePageTest);
 runSuite('OnboardingLandingPageTest', onboardingLandingPageTest);
-runSuite('OnboardingNetworkPageTest', onboardingNetworkPageTest);
+// TODO(crbug/1296829): Re-enable once test is fixed.
+// runSuite('OnboardingNetworkPageTest', onboardingNetworkPageTest);
 runSuite(
     'OnboardingSelectComponentsPageTest', onboardingSelectComponentsPageTest);
 runSuite('OnboardingUpdatePageTest', onboardingUpdatePageTest);
