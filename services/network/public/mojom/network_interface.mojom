@@ -16,5 +16,5 @@ struct NetworkInterface {
   uint32 prefix_length;
   int32 ip_address_attributes;
   // Only EUI-48 addresses supported.
-  array<uint8>? mac_address;
+  array<uint8, 6>? mac_address;
 };
