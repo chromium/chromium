@@ -17,7 +17,7 @@ namespace ui {
 void AddSysColorMixer(ColorProvider* provider,
                       const ColorProviderManager::Key& key) {
   const bool dark_mode =
-      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+      key.color_mode == ColorProviderManager::ColorMode::kDark;
   ColorMixer& mixer = provider->AddMixer();
 
   mixer[kColorSysPrimary] = {dark_mode ? kColorRefPrimary80
@@ -63,6 +63,39 @@ void AddSysColorMixer(ColorProvider* provider,
 
   mixer[kColorSysOutline] = {dark_mode ? kColorRefNeutralVariant60
                                        : kColorRefNeutralVariant50};
+  mixer[kColorSysScrim] = {dark_mode
+                               ? SetAlpha({kColorRefNeutralVariant10}, 0x99)
+                               : SetAlpha({kColorRefNeutralVariant60}, 0x99)};
+  mixer[kColorSysSeparator] = {dark_mode
+                                   ? SetAlpha({kColorRefNeutral90}, 0x23)
+                                   : SetAlpha({kColorRefNeutral10}, 0x23)};
+  mixer[kColorSysSurface] = {dark_mode ? kColorRefNeutral10
+                                       : kColorRefNeutral99};
+  mixer[kColorSysSurface1] = {
+      dark_mode ? GetResultingPaintColor(SetAlpha({kColorRefPrimary80}, 0x0C),
+                                         {kColorRefNeutral10})
+                : GetResultingPaintColor(SetAlpha({kColorRefPrimary40}, 0x0C),
+                                         {kColorRefNeutral99})};
+  mixer[kColorSysSurface2] = {
+      dark_mode ? GetResultingPaintColor(SetAlpha({kColorRefPrimary80}, 0x14),
+                                         {kColorRefNeutral10})
+                : GetResultingPaintColor(SetAlpha({kColorRefPrimary40}, 0x14),
+                                         {kColorRefNeutral99})};
+  mixer[kColorSysSurface3] = {
+      dark_mode ? GetResultingPaintColor(SetAlpha({kColorRefPrimary80}, 0x1C),
+                                         {kColorRefNeutral10})
+                : GetResultingPaintColor(SetAlpha({kColorRefPrimary40}, 0x1C),
+                                         {kColorRefNeutral99})};
+  mixer[kColorSysSurface4] = {
+      dark_mode ? GetResultingPaintColor(SetAlpha({kColorRefPrimary80}, 0x1E),
+                                         {kColorRefNeutral10})
+                : GetResultingPaintColor(SetAlpha({kColorRefPrimary40}, 0x1E),
+                                         {kColorRefNeutral99})};
+  mixer[kColorSysSurface5] = {
+      dark_mode ? GetResultingPaintColor(SetAlpha({kColorRefPrimary80}, 0x23),
+                                         {kColorRefNeutral10})
+                : GetResultingPaintColor(SetAlpha({kColorRefPrimary40}, 0x23),
+                                         {kColorRefNeutral99})};
 }
 
 }  // namespace ui

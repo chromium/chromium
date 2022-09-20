@@ -112,6 +112,14 @@
   E_CPONLY(kColorSysSurfaceVariant) \
   E_CPONLY(kColorSysOnSurfaceVariant) \
   E_CPONLY(kColorSysOutline) \
+  E_CPONLY(kColorSysScrim) \
+  E_CPONLY(kColorSysSeparator) \
+  E_CPONLY(kColorSysSurface) \
+  E_CPONLY(kColorSysSurface1) \
+  E_CPONLY(kColorSysSurface2) \
+  E_CPONLY(kColorSysSurface3) \
+  E_CPONLY(kColorSysSurface4) \
+  E_CPONLY(kColorSysSurface5) \
   /* Core color concepts */ \
   /* The kColorAccent color id is used in color_provider_css_colors_test.ts. \
   If changing the variable name, the variable name in the test needs to be \
