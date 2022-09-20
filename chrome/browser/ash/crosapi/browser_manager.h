@@ -294,6 +294,63 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   };
 
  protected:
+  // The actual Lacros launch mode.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class LacrosLaunchMode {
+    // Indicates that Lacros is disabled.
+    kLacrosDisabled = 0,
+    // Indicates that Lacros and Ash are both enabled and accessible by the
+    // user.
+    kSideBySide = 1,
+    // Similar to kSideBySide but Lacros is the primary browser.
+    kLacrosPrimary = 2,
+    // Lacros is the only browser and Ash is disabled.
+    kLacrosOnly = 3,
+
+    kMaxValue = kLacrosOnly
+  };
+
+  // The actual Lacros launch mode.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class LacrosLaunchModeAndSource {
+    // Either set by user or system/flags, indicates that Lacros is disabled.
+    kPossiblySetByUserLacrosDisabled = 0,
+    // Either set by user or system/flags, indicates that Lacros and Ash are
+    // both
+    // enabled and accessible by the user.
+    kPossiblySetByUserSideBySide = 1,
+    // Either set by user or system/flags, indicates that Lacros is the primary
+    // (but not only) browser.
+    kPossiblySetByUserLacrosPrimary = 2,
+    // Either set by user or system/flags, Lacros is the only browser and Ash is
+    // disabled.
+    kPossiblySetByUserLacrosOnly = 3,
+    // Enforced by the user, indicates that Lacros is disabled.
+    kForcedByUserLacrosDisabled = 4 + kPossiblySetByUserLacrosDisabled,
+    // Enforced by the user, indicates that Lacros and Ash are both enabled and
+    // accessible by the user.
+    kForcedByUserSideBySide = 4 + kPossiblySetByUserSideBySide,
+    // Enforced by the user, indicates that Lacros is the primary (but not only)
+    // browser.
+    kForcedByUserLacrosPrimary = 4 + kPossiblySetByUserLacrosPrimary,
+    // Enforced by the user, Lacros is the only browser and Ash is disabled.
+    kForcedByUserLacrosOnly = 4 + kPossiblySetByUserLacrosOnly,
+    // Enforced by policy, indicates that Lacros is disabled.
+    kForcedByPolicyLacrosDisabled = 8 + kPossiblySetByUserLacrosDisabled,
+    // Enforced by policy, indicates that Lacros and Ash are both enabled and
+    // accessible by the user.
+    kForcedByPolicySideBySide = 8 + kPossiblySetByUserSideBySide,
+    // Enforced by policy, indicates that Lacros is the primary (but not only)
+    // browser.
+    kForcedByPolicyLacrosPrimary = 8 + kPossiblySetByUserLacrosPrimary,
+    // Enforced by policy, Lacros is the only browser and Ash is disabled.
+    kForcedByPolicyLacrosOnly = 8 + kPossiblySetByUserLacrosOnly,
+
+    kMaxValue = kForcedByPolicyLacrosOnly
+  };
+
   // NOTE: You may have to update tests if you make changes to State, as state_
   // is exposed via autotest_private.
   enum class State {
@@ -525,6 +582,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Creates windows from template data.
   void RestoreWindowsFromTemplate();
 
+  // Sending the LaunchMode state at least once a day.
+  // multiple events will get de-duped on the server side.
+  void OnDailyLaunchModeTimer();
+
   // NOTE: The state is exposed to tests via autotest_private.
   State state_ = State::NOT_INITIALIZED;
 
@@ -596,6 +657,15 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // The queue of actions to be performed when Lacros becomes ready.
   BrowserActionQueue pending_actions_;
+
+  // The timer used to periodically check if the daily event should be
+  // triggered.
+  base::RepeatingTimer daily_event_timer_;
+
+  // The launch mode and the launch mode with source which were used after
+  // deciding if Lacros should be used or not.
+  absl::optional<LacrosLaunchMode> lacros_mode_;
+  absl::optional<LacrosLaunchModeAndSource> lacros_mode_and_source_;
 
   base::WeakPtrFactory<BrowserManager> weak_factory_{this};
 };

@@ -2354,6 +2354,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Lacros.Launch.Mode.Daily" enum="LacrosLaunchMode"
+    expires_after="2023-07-15">
+  <owner>skuhne@chromium.org</owner>
+  <owner>lacros-team@google.com</owner>
+  <summary>
+    The Lacros operation mode. This will record if Ash is the only browser, both
+    browsers are running side by side or if Lacros is the only browser. It will
+    be emitted at least once a day.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Lacros.Launch.ModeAndSource"
     enum="LacrosLaunchModeAndSource" expires_after="2023-02-12">
   <owner>skuhne@chromium.org</owner>
@@ -2365,6 +2376,19 @@ chromium-metrics-reviews@google.com.
     by a policy or enforced by the user (overriding any given policy). It will
     be emitted shortly before Lacros gets started the first time from the system
     (Ash).
+  </summary>
+</histogram>
+
+<histogram name="Ash.Lacros.Launch.ModeAndSource.Daily"
+    enum="LacrosLaunchModeAndSource" expires_after="2023-07-12">
+  <owner>skuhne@chromium.org</owner>
+  <owner>lacros-team@google.com</owner>
+  <summary>
+    The Lacros operation mode and the origin of the setting. This will record if
+    Ash is the only browser, both browsers are running side by side or if Lacros
+    is the only browser as well as if the setting was set by the user, enforced
+    by a policy or enforced by the user (overriding any given policy). It will
+    be emitted at least once a day.
   </summary>
 </histogram>
 

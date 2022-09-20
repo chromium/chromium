@@ -385,6 +385,10 @@ bool IsAshBrowserSyncEnabled();
 // or another edge case.
 LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource();
 
+// Allow unit tests to simulate that the readout of policies has taken place
+// so that later DCHECKs do not fail.
+void SetLacrosLaunchSwitchSourceForTest(LacrosAvailability test_value);
+
 // Parses the string representation of LacrosAvailability policy value into
 // the enum value. Returns nullopt on unknown value.
 absl::optional<LacrosAvailability> ParseLacrosAvailability(

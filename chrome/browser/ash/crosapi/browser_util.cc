@@ -903,6 +903,10 @@ LacrosAvailability GetCachedLacrosAvailabilityForTesting() {
   return GetCachedLacrosAvailability();
 }
 
+void SetLacrosLaunchSwitchSourceForTest(LacrosAvailability test_value) {
+  g_lacros_availability_cache = test_value;
+}
+
 void ClearLacrosAvailabilityCacheForTest() {
   g_lacros_availability_cache.reset();
 }

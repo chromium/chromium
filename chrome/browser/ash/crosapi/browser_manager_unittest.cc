@@ -141,8 +141,19 @@ class BrowserManagerTest : public testing::Test {
         &testing_profile_, shelf_model_.get(), /*shelf_item_factory=*/nullptr);
     shelf_controller_->Init();
 
+    // We need to avoid a DCHECK which happens when the policies have not yet
+    // been loaded. As such we claim that the Lacros availability is allowed
+    // to be set by the user.
+    crosapi::browser_util::SetLacrosLaunchSwitchSourceForTest(
+        crosapi::browser_util::LacrosAvailability::kUserChoice);
+
     EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _)).Times(0);
     EXPECT_CALL(mock_browser_service_, OpenForFullRestore(_)).Times(0);
+  }
+
+  void TearDown() override {
+    // Need to reverse the state back to non set.
+    crosapi::browser_util::ClearLacrosAvailabilityCacheForTest();
   }
 
   void AddRegularUser(const std::string& email) {
