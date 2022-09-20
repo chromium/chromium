@@ -91,8 +91,8 @@ class MEDIA_BLINK_EXPORT MultiBuffer {
   // but we keep and compare pointers to Readers internally.
   class Reader {
    public:
-    Reader() {}
-    virtual ~Reader() {}
+    Reader();
+    virtual ~Reader();
     // Notifies the reader that the range of available blocks has changed.
     // The reader must call MultiBuffer::Observe() to activate this callback.
     virtual void NotifyAvailableRange(
