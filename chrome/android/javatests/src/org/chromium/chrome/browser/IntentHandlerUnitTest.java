@@ -481,6 +481,18 @@ public class IntentHandlerUnitTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
+    @Feature({"Android-AppBase"})
+    public void testIgnoreHeaderNewLineInValue() {
+        Bundle bundle = new Bundle();
+        bundle.putString("sec-ch-ua-full", "\nCookie: secret=cookie");
+        Intent headersIntent = new Intent(Intent.ACTION_VIEW);
+        headersIntent.putExtra(Browser.EXTRA_HEADERS, bundle);
+        Assert.assertNull(IntentHandler.getExtraHeadersFromIntent(headersIntent));
+    }
+
+    @Test
+    @SmallTest
     @Feature({"Android-AppBase"})
     public void testmaybeAddAdditionalContentHeaders() {
         String contentUrl = "content://com.example.org/document/1";
