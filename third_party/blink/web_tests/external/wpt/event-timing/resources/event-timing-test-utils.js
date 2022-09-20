@@ -300,13 +300,6 @@ async function pressKey(element, key) {
   await test_driver.send_keys(element, key);
 }
 
-// The testdriver.js, testdriver-vendor.js and testdriver-actions.js need to be
-// included to use this function.
-function addListenersAndTap(element, events) {
-  addListeners(element, events);
-  return tap(element);
-}
-
 // The testdriver.js, testdriver-vendor.js need to be included to use this
 // function.
 async function addListenersAndPress(element, key, events) {
@@ -329,4 +322,34 @@ function filterAndAddToMap(events, map) {
     }
     return false;
   }
+}
+
+function createPerformanceObserverPromise(observeTypes, callback, readyToResolve) {
+  return new Promise(resolve => {
+    new PerformanceObserver(entryList => {
+      callback(entryList);
+
+      if (readyToResolve())
+        resolve();
+    }).observe({ entryTypes: observeTypes });
+  });
+}
+
+// The testdriver.js, testdriver-vendor.js need to be included to use this
+// function.
+function interactAndObserve(interactionType, element, observerPromise) {
+  let interactionPromise;
+  switch (interactionType) {
+    case 'tap': {
+      addListeners(element, ['pointerdown', 'pointerup']);
+      interactionPromise = tap(element);
+      break;
+    }
+    case 'click': {
+      addListeners(element, ['mousedown', 'mouseup', 'pointerdown', 'pointerup', 'click']);
+      interactionPromise = test_driver.click(element);
+      break;
+    }
+  }
+  return Promise.all([interactionPromise, observerPromise]);
 }
