@@ -299,7 +299,7 @@ try_.orchestrator_builder(
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
-        "remove_src_checkout_experiment": 20,
+        "remove_src_checkout_experiment": 100,
     },
 )
 
