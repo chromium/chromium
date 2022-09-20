@@ -91,6 +91,10 @@ bool EventCaptureMac::PostCapturedEvent(NSEvent* event) {
              web_contents_view_ == view) {
     // We do not need to record mouse clicks outside of the web contents.
     event_handler_->OnMouseEvent(ui_event->AsMouseEvent());
+  } else if (type == ui::ET_MOUSE_MOVED && web_contents_view_ != view) {
+    // Manually set arrow cursor when region search UI is open and cursor is
+    // moved from web contents.
+    [[NSCursor arrowCursor] set];
   } else if (type == ui::ET_SCROLL) {
     event_handler_->OnScrollEvent(ui_event->AsScrollEvent());
   }
