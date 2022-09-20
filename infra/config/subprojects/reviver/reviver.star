@@ -86,6 +86,9 @@ builder(
     auto_builder_dimension = False,
     execution_timeout = 6 * time.hour,
     pool = ci.DEFAULT_POOL,
+    # TODO(crbug/1346396) Remove this once the reviver service account has
+    # necessary permissions
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     resultdb_bigquery_exports = [
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.reviver_test_results",
