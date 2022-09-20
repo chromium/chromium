@@ -369,6 +369,23 @@ void UninstallImpl(WebAppProvider* provider,
   }
 }
 
+RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
+    apps::mojom::RunOnOsLoginMode login_mode) {
+  RunOnOsLoginMode web_app_constant_login_mode = RunOnOsLoginMode::kMinValue;
+  switch (login_mode) {
+    case apps::mojom::RunOnOsLoginMode::kWindowed:
+      web_app_constant_login_mode = RunOnOsLoginMode::kWindowed;
+      break;
+    case apps::mojom::RunOnOsLoginMode::kNotRun:
+      web_app_constant_login_mode = RunOnOsLoginMode::kNotRun;
+      break;
+    case apps::mojom::RunOnOsLoginMode::kUnknown:
+      web_app_constant_login_mode = RunOnOsLoginMode::kNotRun;
+      break;
+  }
+  return web_app_constant_login_mode;
+}
+
 WebAppPublisherHelper::Delegate::Delegate() = default;
 
 WebAppPublisherHelper::Delegate::~Delegate() = default;
@@ -1229,23 +1246,6 @@ void WebAppPublisherHelper::SetRunOnOsLoginMode(
           &provider_->sync_bridge(), app_id,
           ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode),
           base::DoNothing()));
-}
-
-RunOnOsLoginMode WebAppPublisherHelper::ConvertOsLoginModeToWebAppConstants(
-    apps::mojom::RunOnOsLoginMode login_mode) {
-  RunOnOsLoginMode web_app_constant_login_mode = RunOnOsLoginMode::kMinValue;
-  switch (login_mode) {
-    case apps::mojom::RunOnOsLoginMode::kWindowed:
-      web_app_constant_login_mode = RunOnOsLoginMode::kWindowed;
-      break;
-    case apps::mojom::RunOnOsLoginMode::kNotRun:
-      web_app_constant_login_mode = RunOnOsLoginMode::kNotRun;
-      break;
-    case apps::mojom::RunOnOsLoginMode::kUnknown:
-      web_app_constant_login_mode = RunOnOsLoginMode::kNotRun;
-      break;
-  }
-  return web_app_constant_login_mode;
 }
 
 apps::WindowMode WebAppPublisherHelper::ConvertDisplayModeToWindowMode(

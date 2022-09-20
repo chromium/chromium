@@ -96,6 +96,11 @@ void UninstallImpl(WebAppProvider* provider,
                    apps::UninstallSource uninstall_source,
                    gfx::NativeWindow parent_window);
 
+// Converts RunOnOsLoginMode from apps::mojom::RunOnOsLoginMode to
+// RunOnOsLoginMode.
+RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
+    apps::mojom::RunOnOsLoginMode login_mode);
+
 class WebAppPublisherHelper : public AppRegistrarObserver,
                               public WebAppInstallManagerObserver,
 #if BUILDFLAG(IS_CHROMEOS)
@@ -244,11 +249,6 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   // Converts |display_mode| to a |window_mode|.
   apps::WindowMode ConvertDisplayModeToWindowMode(
       blink::mojom::DisplayMode display_mode);
-
-  // Converts RunOnOsLoginMode from apps::mojom::RunOnOsLoginMode to
-  // RunOnOsLoginMode.
-  RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
-      apps::mojom::RunOnOsLoginMode login_mode);
 
   void PublishWindowModeUpdate(const std::string& app_id,
                                blink::mojom::DisplayMode display_mode);
