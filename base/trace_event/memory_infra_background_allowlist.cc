@@ -259,6 +259,8 @@ constexpr auto kAllocatorDumpNameAllowlist = base::MakeFixedFlatSet<
         "v8/workers/heap/new_space/isolate_0x?",
         "v8/workers/heap/old_space/isolate_0x?",
         "v8/workers/heap/read_only_space/isolate_0x?",
+        "v8/workers/heap/shared_large_object_space/isolate_0x?",
+        "v8/workers/heap/shared_space/isolate_0x?",
         "v8/workers/malloc/isolate_0x?",
         "v8/workers/zapped_for_debug/isolate_0x?",
         "site_storage/index_db/db_0x?",
