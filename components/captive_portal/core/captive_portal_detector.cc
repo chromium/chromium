@@ -10,32 +10,12 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner_util.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/network/network_configuration_handler.h"
-#include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
-#endif
-
-namespace {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-GURL GetProbeUrl(const GURL& default_url) {
-  DCHECK_EQ(ash::NetworkHandler::Get()->task_runner(),
-            base::ThreadTaskRunnerHandle::Get().get());
-  const ash::NetworkState* network =
-      ash::NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-  return network && !network->probe_url().is_empty() ? network->probe_url()
-                                                     : default_url;
-}
-#endif
-}  // namespace
 
 namespace captive_portal {
 
@@ -44,13 +24,7 @@ const char CaptivePortalDetector::kDefaultURL[] =
 
 CaptivePortalDetector::CaptivePortalDetector(
     network::mojom::URLLoaderFactory* loader_factory)
-    : loader_factory_(loader_factory)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      ,
-      weak_factory_(this)
-#endif
-{
-}
+    : loader_factory_(loader_factory) {}
 
 CaptivePortalDetector::~CaptivePortalDetector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -67,16 +41,6 @@ void CaptivePortalDetector::DetectCaptivePortal(
 
   detection_callback_ = std::move(detection_callback);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::NetworkHandler::IsInitialized()) {
-    base::PostTaskAndReplyWithResult(
-        ash::NetworkHandler::Get()->task_runner(), FROM_HERE,
-        base::BindOnce(&GetProbeUrl, url),
-        base::BindOnce(&CaptivePortalDetector::StartProbe,
-                       weak_factory_.GetWeakPtr(), traffic_annotation));
-    return;
-  }
-#endif
   StartProbe(traffic_annotation, url);
 }
 
@@ -111,10 +75,6 @@ void CaptivePortalDetector::StartProbe(
 void CaptivePortalDetector::Cancel() {
   simple_loader_.reset();
   detection_callback_.Reset();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Cancel any pending calls to StartProbe().
-  weak_factory_.InvalidateWeakPtrs();
-#endif
   state_ = State::kCancelled;
 }
 

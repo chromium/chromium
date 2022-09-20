@@ -13,17 +13,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/captive_portal/core/captive_portal_export.h"
 #include "components/captive_portal/core/captive_portal_types.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/memory/weak_ptr.h"
-#endif
 
 class GURL;
 
@@ -123,10 +118,6 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
   State state_ = State::kInit;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::WeakPtrFactory<CaptivePortalDetector> weak_factory_;
-#endif
 };
 
 }  // namespace captive_portal

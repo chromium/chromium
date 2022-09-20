@@ -246,9 +246,19 @@ void NetworkPortalDetectorImpl::StartAttempt() {
 
   state_ = STATE_CHECKING_FOR_PORTAL;
 
-  NET_LOG(EVENT) << "Starting captive portal detection.";
+  const NetworkState* default_network = DefaultNetwork();
+  if (!default_network) {
+    NET_LOG(EVENT) << "Start attempt called with no default network, aborting.";
+    return;
+  }
+
+  GURL url = default_network->probe_url();
+  if (url.is_empty())
+    url = GURL(captive_portal::CaptivePortalDetector::kDefaultURL);
+  NET_LOG(EVENT) << "Starting captive portal detection for: "
+                 << NetworkId(default_network) << " Probe url: " << url;
   captive_portal_detector_->DetectCaptivePortal(
-      GURL(CaptivePortalDetector::kDefaultURL),
+      url,
       base::BindOnce(&NetworkPortalDetectorImpl::OnAttemptCompleted,
                      weak_factory_.GetWeakPtr()),
       NO_TRAFFIC_ANNOTATION_YET);
