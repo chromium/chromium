@@ -54,6 +54,8 @@ static_library("file_manager_ui") {
     "//ui/file_manager:file_manager_gen_resources",
     "//ui/file_manager:resources",
     "//ui/web_dialogs",
+    "//ui/webui:webui",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
   ]
 }
 

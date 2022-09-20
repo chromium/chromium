@@ -975,6 +975,8 @@ js_unittest("list_thumbnail_loader_unittest") {
 
 js_library("main") {
   visibility += [ "//ui/file_manager:*" ]
+  extra_deps =
+      [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
   deps = [
     ":file_manager",
     ":metrics_start",
@@ -1403,6 +1405,8 @@ optimize_webui("build") {
   external_paths = [
     "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
   ]
+
+  excludes = [ "chrome://resources/mojo/mojo/public/js/bindings.js" ]
 
   deps = [
     ":main",

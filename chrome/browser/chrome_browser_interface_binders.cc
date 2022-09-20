@@ -1354,6 +1354,8 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
     registry.ForWebUI<ash::ColorInternalsUI>()
         .Add<color_change_listener::mojom::PageHandler>();
   }
+  registry.ForWebUI<ash::file_manager::FileManagerUI>()
+      .Add<color_change_listener::mojom::PageHandler>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // --- Section 2: chrome-untrusted:// WebUIs:
