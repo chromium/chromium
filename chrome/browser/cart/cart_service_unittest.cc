@@ -2298,17 +2298,14 @@ TEST_F(CartServiceCouponTest, TestCartFeatureStatusUpdate) {
   profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
 
   EXPECT_CALL(coupon_service_, MaybeFeatureStatusChanged(false)).Times(2);
-  ListPrefUpdate(profile_->GetPrefs(), prefs::kNtpDisabledModules)
-      ->GetList()
-      .Append("chrome_cart");
-  ListPrefUpdate(profile_->GetPrefs(), prefs::kNtpDisabledModules)
-      ->GetList()
-      .Append("something_unrelated");
+  ScopedListPrefUpdate(profile_->GetPrefs(), prefs::kNtpDisabledModules)
+      ->Append("chrome_cart");
+  ScopedListPrefUpdate(profile_->GetPrefs(), prefs::kNtpDisabledModules)
+      ->Append("something_unrelated");
 
   EXPECT_CALL(coupon_service_, MaybeFeatureStatusChanged(true)).Times(1);
-  ListPrefUpdate(profile_->GetPrefs(), prefs::kNtpDisabledModules)
-      ->GetList()
-      .EraseValue(base::Value("chrome_cart"));
+  ScopedListPrefUpdate(profile_->GetPrefs(), prefs::kNtpDisabledModules)
+      ->EraseValue(base::Value("chrome_cart"));
 }
 
 TEST_F(CartServiceCouponTest, TestModuleFeatureStatusUpdate) {
