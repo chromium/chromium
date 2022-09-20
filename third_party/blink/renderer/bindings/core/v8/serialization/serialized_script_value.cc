@@ -74,6 +74,8 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
+namespace v8 { extern std::string RecordReplayGetScriptedCaller(); }
+
 namespace blink {
 
 scoped_refptr<SerializedScriptValue> SerializedScriptValue::Serialize(
@@ -267,7 +269,8 @@ SerializedScriptValue::SerializedScriptValue(DataBufferPtr data,
       data_buffer_size_(data_size),
       has_registered_external_allocation_(false) {
   // https://linear.app/replay/issue/RUN-490
-  recordreplay::Assert("SerializedScriptValue::SerializedScriptValue %zu", data_size);
+  recordreplay::Assert("SerializedScriptValue::SerializedScriptValue %zu",
+                       data_size, v8::RecordReplayGetScriptedCaller().c_str());
 }
 
 void SerializedScriptValue::SetImageBitmapContentsArray(
