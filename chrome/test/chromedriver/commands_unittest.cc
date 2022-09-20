@@ -507,14 +507,13 @@ TEST(CommandsTest, SuccessfulFindChildElement) {
   Session session("id");
   session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id3", std::string());
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetStringKey("using", "css selector");
-  params.SetStringKey("value", "div");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "div");
   std::string element_id = "1";
   std::unique_ptr<base::Value> result;
   ASSERT_EQ(kOk, ExecuteFindChildElement(1, &session, &web_view, element_id,
-                                         base::Value::AsDictionaryValue(params),
-                                         &result)
+                                         params, &result)
                      .code());
   base::Value locator_param(base::Value::Type::DICTIONARY);
   locator_param.SetStringKey("css selector", "div");
@@ -529,14 +528,13 @@ TEST(CommandsTest, SuccessfulFindChildElement) {
 TEST(CommandsTest, FailedFindChildElement) {
   Session session("id");
   FindElementWebView web_view(true, kElementNotExistsQueryOnce);
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetStringKey("using", "css selector");
-  params.SetStringKey("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::string element_id = "1";
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(kNoSuchElement, ExecuteFindChildElement(
-                                1, &session, &web_view, element_id,
-                                base::Value::AsDictionaryValue(params), &result)
+  ASSERT_EQ(kNoSuchElement, ExecuteFindChildElement(1, &session, &web_view,
+                                                    element_id, params, &result)
                                 .code());
 }
 
@@ -545,14 +543,13 @@ TEST(CommandsTest, SuccessfulFindChildElements) {
   Session session("id");
   session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id4", std::string());
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetStringKey("using", "css selector");
-  params.SetStringKey("value", ".c");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", ".c");
   std::string element_id = "1";
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(kOk, ExecuteFindChildElements(
-                     1, &session, &web_view, element_id,
-                     base::Value::AsDictionaryValue(params), &result)
+  ASSERT_EQ(kOk, ExecuteFindChildElements(1, &session, &web_view, element_id,
+                                          params, &result)
                      .code());
   base::Value locator_param(base::Value::Type::DICTIONARY);
   locator_param.SetStringKey("css selector", ".c");
@@ -567,14 +564,13 @@ TEST(CommandsTest, SuccessfulFindChildElements) {
 TEST(CommandsTest, FailedFindChildElements) {
   Session session("id");
   FindElementWebView web_view(false, kElementNotExistsQueryOnce);
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetStringKey("using", "css selector");
-  params.SetStringKey("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::string element_id = "1";
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(kOk, ExecuteFindChildElements(
-                     1, &session, &web_view, element_id,
-                     base::Value::AsDictionaryValue(params), &result)
+  ASSERT_EQ(kOk, ExecuteFindChildElements(1, &session, &web_view, element_id,
+                                          params, &result)
                      .code());
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(0U, result->GetList().size());
@@ -634,21 +630,19 @@ TEST(CommandsTest, ErrorFindElement) {
 TEST(CommandsTest, ErrorFindChildElement) {
   Session session("id");
   ErrorCallFunctionWebView web_view(kStaleElementReference);
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetStringKey("using", "css selector");
-  params.SetStringKey("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::string element_id = "1";
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(
-      kStaleElementReference,
-      ExecuteFindChildElement(1, &session, &web_view, element_id,
-                              base::Value::AsDictionaryValue(params), &result)
-          .code());
-  ASSERT_EQ(
-      kStaleElementReference,
-      ExecuteFindChildElements(1, &session, &web_view, element_id,
-                               base::Value::AsDictionaryValue(params), &result)
-          .code());
+  ASSERT_EQ(kStaleElementReference,
+            ExecuteFindChildElement(1, &session, &web_view, element_id, params,
+                                    &result)
+                .code());
+  ASSERT_EQ(kStaleElementReference,
+            ExecuteFindChildElements(1, &session, &web_view, element_id, params,
+                                     &result)
+                .code());
 }
 
 namespace {

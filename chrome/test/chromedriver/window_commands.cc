@@ -985,9 +985,8 @@ Status ExecuteFindElement(int interval_ms,
                           const base::Value::Dict& params,
                           std::unique_ptr<base::Value>* value,
                           Timeout* timeout) {
-  return FindElement(
-      interval_ms, true, nullptr, session, web_view,
-      base::Value::AsDictionaryValue(base::Value(params.Clone())), value);
+  return FindElement(interval_ms, true, nullptr, session, web_view, params,
+                     value);
 }
 
 Status ExecuteFindElements(int interval_ms,
@@ -996,9 +995,8 @@ Status ExecuteFindElements(int interval_ms,
                            const base::Value::Dict& params,
                            std::unique_ptr<base::Value>* value,
                            Timeout* timeout) {
-  return FindElement(
-      interval_ms, false, nullptr, session, web_view,
-      base::Value::AsDictionaryValue(base::Value(params.Clone())), value);
+  return FindElement(interval_ms, false, nullptr, session, web_view, params,
+                     value);
 }
 
 Status ExecuteGetCurrentUrl(Session* session,

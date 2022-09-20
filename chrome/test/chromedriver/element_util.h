@@ -29,7 +29,7 @@ Status FindElement(int interval_ms,
                    const std::string* root_element_id,
                    Session* session,
                    WebView* web_view,
-                   const base::DictionaryValue& params,
+                   const base::Value::Dict& params,
                    std::unique_ptr<base::Value>* value);
 
 Status FindShadowElement(int interval_ms,
@@ -37,7 +37,7 @@ Status FindShadowElement(int interval_ms,
                          const std::string* shadow_root_id,
                          Session* session,
                          WebView* web_view,
-                         const base::DictionaryValue& params,
+                         const base::Value::Dict& params,
                          std::unique_ptr<base::Value>* value);
 
 Status GetActiveElement(Session* session,

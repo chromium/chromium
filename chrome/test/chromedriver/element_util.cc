@@ -362,18 +362,15 @@ Status FindElementCommon(int interval_ms,
                          const std::string* root_element_id,
                          Session* session,
                          WebView* web_view,
-                         const base::DictionaryValue& params,
+                         const base::Value::Dict& params,
                          std::unique_ptr<base::Value>* value,
                          bool isShadowRoot) {
-  std::string strategy;
-  if (!params.GetString("using", &strategy))
+  const std::string* strategy = params.FindString("using");
+  if (!strategy)
     return Status(kInvalidArgument, "'using' must be a string");
-  if (session->w3c_compliant &&
-      strategy != "css selector" &&
-      strategy != "link text" &&
-      strategy != "partial link text" &&
-      strategy != "tag name" &&
-      strategy != "xpath")
+  if (session->w3c_compliant && *strategy != "css selector" &&
+      *strategy != "link text" && *strategy != "partial link text" &&
+      *strategy != "tag name" && *strategy != "xpath")
     return Status(kInvalidArgument, "invalid locator");
 
   /*
@@ -383,12 +380,12 @@ Status FindElementCommon(int interval_ms,
    * We have them disabled for now.
    * https://github.com/w3c/webdriver/issues/1610
    */
-  if (isShadowRoot && (strategy == "tag name" || strategy == "xpath")) {
+  if (isShadowRoot && (*strategy == "tag name" || *strategy == "xpath")) {
     return Status(kInvalidArgument, "invalid locator");
   }
 
-  std::string target;
-  if (!params.GetString("value", &target))
+  const std::string* target = params.FindString("value");
+  if (!target)
     return Status(kInvalidArgument, "'value' must be a string");
 
   std::string script;
@@ -396,10 +393,10 @@ Status FindElementCommon(int interval_ms,
     script = webdriver::atoms::asString(webdriver::atoms::FIND_ELEMENT);
   else
     script = webdriver::atoms::asString(webdriver::atoms::FIND_ELEMENTS);
-  std::unique_ptr<base::DictionaryValue> locator(new base::DictionaryValue());
-  locator->SetString(strategy, target);
+  base::Value::Dict locator;
+  locator.Set(*strategy, *target);
   base::Value::List arguments;
-  arguments.Append(base::Value::FromUniquePtrValue(std::move(locator)));
+  arguments.Append(std::move(locator));
   if (root_element_id) {
     if (isShadowRoot)
       arguments.Append(CreateShadowRoot(*root_element_id));
@@ -437,8 +434,9 @@ Status FindElementCommon(int interval_ms,
 
     if (base::TimeTicks::Now() - start_time >= session->implicit_wait) {
       if (only_one) {
-        return Status(kNoSuchElement, "Unable to locate element: {\"method\":\""
-         + strategy + "\",\"selector\":\"" + target + "\"}");
+        return Status(kNoSuchElement,
+                      "Unable to locate element: {\"method\":\"" + *strategy +
+                          "\",\"selector\":\"" + *target + "\"}");
       }
       *value =
           base::Value::ToUniquePtrValue(base::Value(base::Value::Type::LIST));
@@ -454,7 +452,7 @@ Status FindElement(int interval_ms,
                    const std::string* root_element_id,
                    Session* session,
                    WebView* web_view,
-                   const base::DictionaryValue& params,
+                   const base::Value::Dict& params,
                    std::unique_ptr<base::Value>* value) {
   return FindElementCommon(interval_ms, only_one, root_element_id, session,
                            web_view, params, value, false);
@@ -465,7 +463,7 @@ Status FindShadowElement(int interval_ms,
                          const std::string* shadow_root_id,
                          Session* session,
                          WebView* web_view,
-                         const base::DictionaryValue& params,
+                         const base::Value::Dict& params,
                          std::unique_ptr<base::Value>* value) {
   return FindElementCommon(interval_ms, only_one, shadow_root_id, session,
                            web_view, params, value, true);
