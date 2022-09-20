@@ -328,6 +328,17 @@ class ScopedDisableTimerTracking {
       performAction:grey_tap()];
 }
 
+- (void)tapPriceNotificationsMenuButton:(id<GREYMatcher>)buttonMatcher {
+  ScopedDisableTimerTracking disabler;
+  id<GREYMatcher> interactableButtonMatcher =
+      grey_allOf(buttonMatcher, grey_interactable(), nil);
+  [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
+         usingSearchAction:ScrollDown()
+      onElementWithMatcher:chrome_test_util::
+                               SettingsPriceNotificationsTableView()]
+      performAction:grey_tap()];
+}
+
 - (void)tapAccountsMenuButton:(id<GREYMatcher>)buttonMatcher {
   ScopedDisableTimerTracking disabler;
   [[[EarlGrey selectElementWithMatcher:buttonMatcher]

@@ -360,6 +360,10 @@ id<GREYMatcher> SettingsPrivacySafeBrowsingTableView() {
   return [ChromeMatchersAppInterface settingsPrivacySafeBrowsingTableView];
 }
 
+id<GREYMatcher> SettingsPriceNotificationsTableView() {
+  return [ChromeMatchersAppInterface settingsPriceNotificationsTableView];
+}
+
 id<GREYMatcher> ContentSettingsButton() {
   return [ChromeMatchersAppInterface contentSettingsButton];
 }
@@ -387,6 +391,10 @@ id<GREYMatcher> SettingsMenuBackButton(int window_number) {
 
 id<GREYMatcher> SettingsMenuPrivacyButton() {
   return [ChromeMatchersAppInterface settingsMenuPrivacyButton];
+}
+
+id<GREYMatcher> SettingsMenuPriceNotificationsButton() {
+  return [ChromeMatchersAppInterface settingsMenuPriceNotificationsButton];
 }
 
 id<GREYMatcher> SettingsMenuPasswordsButton() {

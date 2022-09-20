@@ -89,6 +89,12 @@
 // there will be a GREYAssert.
 - (void)tapPrivacySafeBrowsingMenuButton:(id<GREYMatcher>)buttonMatcher;
 
+// Scrolls to find the button in the Price Notifications menu with the
+// corresponding `buttonMatcher`, and then taps it. If `buttonMatcher` is not
+// found, or the Price Notifications menu is not open when this is called
+// there will be a GREYAssert.
+- (void)tapPriceNotificationsMenuButton:(id<GREYMatcher>)buttonMatcher;
+
 // Scrolls to find the button in the Clear Browsing Data menu with the
 // corresponding `buttonMatcher`, and then taps it. If `buttonMatcher` is
 // not found, or the Clear Browsing Data menu is not open when this is called

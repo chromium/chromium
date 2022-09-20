@@ -286,6 +286,9 @@ id<GREYMatcher> SettingsPrivacyTableView();
 // Returns a matcher for the privacy safe browsing settings table view.
 id<GREYMatcher> SettingsPrivacySafeBrowsingTableView();
 
+// Returns a matcher for the notifications settings table view.
+id<GREYMatcher> SettingsPriceNotificationsTableView();
+
 // Returns a matcher for the Content Settings button on the main Settings
 // screen.
 id<GREYMatcher> ContentSettingsButton();
@@ -313,6 +316,10 @@ id<GREYMatcher> SettingsMenuPrivacyButton();
 
 // Returns a matcher for the Save passwords cell on the main Settings screen.
 id<GREYMatcher> SettingsMenuPasswordsButton();
+
+// Returns a matcher for the Price Notifications cell on the main Settings
+// screen.
+id<GREYMatcher> SettingsMenuPriceNotificationsButton();
 
 // Returns a matcher for the payment request collection view.
 id<GREYMatcher> PaymentRequestView();
