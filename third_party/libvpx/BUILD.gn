@@ -37,6 +37,8 @@ if (current_cpu == "x86") {
   }
 } else if (current_cpu == "riscv64") {
   cpu_arch_full = "generic"
+} else if (current_cpu == "loong64") {
+  cpu_arch_full = "loongarch"
 } else {
   cpu_arch_full = current_cpu
 }
@@ -247,6 +249,16 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
   }
 }
 
+if (current_cpu == "loong64") {
+  source_set("libvpx_loongarch_lsx") {
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":libvpx_config" ]
+    cflags = [ "-mlsx" ]
+    sources = libvpx_srcs_loongarch_lsx
+  }
+}
+
 if (cpu_arch_full == "arm-neon-cpu-detect") {
   static_library("libvpx_intrinsics_neon") {
     configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
@@ -318,6 +330,10 @@ source_set("libvpx_x86_headers") {
 
 source_set("libvpx_x86_64_headers") {
   sources = libvpx_srcs_x86_64_headers
+}
+
+source_set("libvpx_loongarch_headers") {
+  sources = libvpx_srcs_loongarch_headers
 }
 
 source_set("libvpx_arm_headers") {
@@ -406,6 +422,9 @@ static_library("libvpx") {
   } else if (current_cpu == "riscv64") {
     sources = libvpx_srcs_generic
     public_deps = [ ":libvpx_generic_headers" ]
+  } else if (current_cpu == "loong64") {
+    sources = libvpx_srcs_loongarch
+    public_deps = [ ":libvpx_loongarch_headers" ]
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -432,6 +451,9 @@ static_library("libvpx") {
   }
   if (current_cpu == "arm" && arm_assembly_sources != []) {
     deps += [ ":libvpx_assembly_arm" ]
+  }
+  if (current_cpu == "loong64") {
+    deps += [ ":libvpx_loongarch_lsx" ]
   }
 
   public_configs = [ ":libvpx_external_config" ]

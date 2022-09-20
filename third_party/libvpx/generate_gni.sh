@@ -126,6 +126,7 @@ function convert_srcs_to_project_files() {
   source_list=$(echo -e "$source_list\\nvpx_ports/arm.h")
   source_list=$(echo -e "$source_list\\nvpx_ports/x86.h")
   source_list=$(echo -e "$source_list\\nvpx_ports/mips.h")
+  source_list=$(echo -e "$source_list\\nvpx_ports/loongarch.h")
   source_list=$(echo "$source_list" | sort -u)
 
   # The actual ARM files end in .asm. We have rules to translate them to .S
@@ -143,6 +144,11 @@ function convert_srcs_to_project_files() {
     # the pattern may need to be updated if vpx_scale gets intrinsics
     local intrinsic_list=$(echo "$source_list" \
       | egrep 'neon.*(\.c|\.asm)$')
+  fi
+
+  # Select loongarch lsx files ending in C from source_list.
+  if [[ `echo $2 | grep loongarch` ]]; then
+    local intrinsic_list=$(echo "$source_list" | egrep '(lsx).(c|h)$')
   fi
 
   # Remove these files from the main list.
@@ -176,17 +182,26 @@ function convert_srcs_to_project_files() {
     write_gni avx2_sources $2_avx2 "$BASE_DIR/libvpx_srcs.gni"
     write_gni avx512_sources $2_avx512 "$BASE_DIR/libvpx_srcs.gni"
   else
-    local c_sources=$(echo "$source_list" | egrep '\.c$')
-    local c_headers=$(echo "$source_list" | egrep '\.h$')
-    local assembly_sources=$(echo -e "$source_list\n$intrinsic_list" \
-      | egrep '\.asm$')
-    local neon_sources=$(echo "$intrinsic_list" | grep '_neon\.c$')
-    write_gni c_sources $2 "$BASE_DIR/libvpx_srcs.gni"
-    write_gni c_headers $2_headers "$BASE_DIR/libvpx_srcs.gni"
-    write_gni assembly_sources $2_assembly "$BASE_DIR/libvpx_srcs.gni"
-    if [[ ${#neon_sources} -ne 0 ]]; then
-      write_gni neon_sources $2_neon "$BASE_DIR/libvpx_srcs.gni"
-    fi
+    if [[ `echo $2 | grep loongarch` ]]; then
+      local c_sources=$(echo "$source_list" | egrep '\.c$')
+      local c_headers=$(echo "$source_list" | egrep '\.h$')
+      local lsx_sources=$(echo "$intrinsic_list" | egrep '_lsx\.(c|h)$')
+      write_gni c_sources $2 "$BASE_DIR/libvpx_srcs.gni"
+      write_gni c_headers $2_headers "$BASE_DIR/libvpx_srcs.gni"
+      write_gni lsx_sources $2_lsx "$BASE_DIR/libvpx_srcs.gni"
+    else
+      local c_sources=$(echo "$source_list" | egrep '\.c$')
+      local c_headers=$(echo "$source_list" | egrep '\.h$')
+      local assembly_sources=$(echo -e "$source_list\n$intrinsic_list" | \
+        egrep '\.asm$')
+      local neon_sources=$(echo "$intrinsic_list" | grep '_neon\.c$')
+      write_gni c_sources $2 "$BASE_DIR/libvpx_srcs.gni"
+      write_gni c_headers $2_headers "$BASE_DIR/libvpx_srcs.gni"
+      write_gni assembly_sources $2_assembly "$BASE_DIR/libvpx_srcs.gni"
+      if [ 0 -ne ${#neon_sources} ]; then
+        write_gni neon_sources $2_neon "$BASE_DIR/libvpx_srcs.gni"
+      fi
+     fi
   fi
 }
 
@@ -199,9 +214,10 @@ function make_clean() {
 # Lint a pair of vpx_config.h and vpx_config.asm to make sure they match.
 # $1 - Header file directory.
 function lint_config() {
-  # mips and native client do not contain any assembly so the headers do not
-  # need to be compared to the asm.
-  if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != nacl ]]; then
+  # mips, native and loongarch client do not contain any assembly so the
+  # headers do not need to be compared to the asm.
+  if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != nacl \
+      && "$1" != *loongarch ]]; then
     $BASE_DIR/lint_config.sh \
       -h $BASE_DIR/$LIBVPX_CONFIG_DIR/$1/vpx_config.h \
       -a $BASE_DIR/$LIBVPX_CONFIG_DIR/$1/vpx_config.asm
@@ -240,7 +256,8 @@ function gen_rtcd_header() {
   format="clang-format -i -style=Chromium"
 
   rm -rf $BASE_DIR/$TEMP_DIR/libvpx.config
-  if [[ "$2" == "mipsel" || "$2" == "mips64el" || "$2" == nacl ]]; then
+  if [[ "$2" == "mipsel" || "$2" == "mips64el" || "$2" == nacl \
+      || "$2" == "loongarch" ]]; then
     print_config_basic $1 > $BASE_DIR/$TEMP_DIR/libvpx.config
   else
     $BASE_DIR/lint_config.sh -p \
@@ -313,7 +330,8 @@ function gen_config_files() {
   fi
 
   # Generate vpx_config.asm. Do not create one for mips or native client.
-  if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != nacl ]]; then
+  if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != nacl \
+      && "$1" != *loongarch ]]; then
     if [[ "$1" == *x64* ]] || [[ "$1" == *ia32* ]]; then
       egrep "#define [A-Z0-9_]+ [01]" vpx_config.h \
         | awk '{print "%define " $2 " " $3}' > vpx_config.asm
@@ -385,6 +403,8 @@ gen_config_files linux/arm64-highbd \
   "--target=armv8-linux-gcc ${all_platforms} ${HIGHBD}"
 gen_config_files linux/mipsel "--target=mips32-linux-gcc ${all_platforms}"
 gen_config_files linux/mips64el "--target=mips64-linux-gcc ${all_platforms}"
+gen_config_files linux/loongarch \
+  "--target=loongarch64-linux-gcc ${all_platforms}"
 gen_config_files linux/ppc64 "--target=ppc64le-linux-gcc ${all_platforms}"
 gen_config_files linux/generic "--target=generic-gnu $HIGHBD ${all_platforms}"
 gen_config_files win/arm64 \
@@ -416,6 +436,7 @@ lint_config linux/arm-neon-highbd
 lint_config linux/arm64-highbd
 lint_config linux/mipsel
 lint_config linux/mips64el
+lint_config linux/loongarch
 lint_config linux/ppc64
 lint_config linux/generic
 lint_config win/arm64
@@ -446,6 +467,7 @@ gen_rtcd_header linux/arm-neon-highbd armv7
 gen_rtcd_header linux/arm64-highbd armv8
 gen_rtcd_header linux/mipsel mipsel
 gen_rtcd_header linux/mips64el mips64el
+gen_rtcd_header linux/loongarch loongarch
 gen_rtcd_header linux/ppc64 ppc
 gen_rtcd_header linux/generic generic
 gen_rtcd_header win/arm64 armv8
@@ -533,6 +555,12 @@ if [[ -z $ONLY_CONFIGS ]]; then
 
   echo "MIPS64 source list is identical to MIPS source list." \
        "No need to generate it."
+
+  echo "Generate LOONGARCH source list."
+  config=$(print_config_basic linux/loongarch)
+  make_clean
+  make libvpx_srcs.txt target=libs $config > /dev/null
+  convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_loongarch
 
   echo "Generate ppc64 source list."
   config=$(print_config_basic linux/ppc64)
