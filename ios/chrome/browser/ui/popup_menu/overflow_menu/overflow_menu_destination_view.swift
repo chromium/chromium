@@ -37,6 +37,9 @@ struct OverflowMenuDestinationButton: ButtonStyle {
     /// The image width, which controls the width of the overall view.
     static let imageWidth: CGFloat = 54
 
+    /// The size of the Symbol in the icon.
+    static let iconSymbolSize: CGFloat = 26
+
     /// The width of the icon, used for positioning the unread badge over the
     /// corner.
     static let iconWidth: CGFloat = 30
@@ -113,8 +116,28 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       spacing = 0
       interiorPadding = Dimensions.horizontalLayoutIconPadding
     }
-    return destination.image
-      .renderingMode(.template)
+    let image: Image
+    if !destination.symbolName.isEmpty {
+      image =
+        (destination.systemSymbol
+        ? Image(systemName: destination.symbolName) : Image(destination.symbolName)).renderingMode(
+          .template)
+    } else {
+      image = destination.image
+    }
+    return iconBuilder(
+      configuration: configuration, spacing: spacing, interiorPadding: interiorPadding, image: image
+    )
+  }
+
+  /// Build the image to be displayed, based on the configuration of the item.
+  /// TODO(crbug.com/1315544): Remove this once only the symbols are present.
+  @ViewBuilder
+  func iconBuilder(
+    configuration: Configuration, spacing: CGFloat, interiorPadding: CGFloat, image: Image
+  ) -> some View {
+    let configuredImage =
+      image
       .overlay {
         if destination.showBadge {
           Circle()
@@ -131,7 +154,6 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       .frame(width: Dimensions.imageWidth, height: Dimensions.imageWidth)
       .padding(interiorPadding)
       .background(iconBackground(configuration: configuration))
-      .foregroundColor(.blue600)
       .padding([.leading, .trailing], spacing)
       // Without explicitly removing the image from accessibility,
       // VoiceOver will occasionally read out icons it thinks it can
@@ -143,6 +165,14 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       .onDisappear {
         isIconVisible = false
       }
+
+    if !destination.symbolName.isEmpty {
+      configuredImage
+        .foregroundColor(.blue600).imageScale(.medium).font(
+          Font.system(size: Dimensions.iconSymbolSize, weight: .medium))
+    } else {
+      configuredImage
+    }
   }
 
   /// Text view for the destination.

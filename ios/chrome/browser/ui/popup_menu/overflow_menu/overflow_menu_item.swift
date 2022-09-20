@@ -6,19 +6,23 @@ import SwiftUI
 
 /// Represents an item in the overflow menu.
 @objcMembers public class OverflowMenuItem: NSObject, ObservableObject {
-  public enum ImageType {
-    case uiImage(UIImage)
-    case name(String)
-  }
   /// The user-visible name of the item.
   @Published public var name: String
 
+  /// The name of the symbol to be used.
+  @Published public var symbolName: String
+
+  /// Whether the symbol is a system one (or a custom one).
+  @Published public var systemSymbol: Bool
+
   /// The base `UIImage` used to load the image for SwiftUI.
+  /// TODO(crbug.com/1315544): Remove this once the symbols have shipped.
   @Published public var storedImage: UIImage
 
   /// The SwiftUI `Image` for the action icon.
+  /// TODO(crbug.com/1315544): Remove this once the symbols have shipped.
   public var image: Image {
-    return Image(uiImage: storedImage)
+    return Image(uiImage: self.storedImage)
   }
 
   /// The accessibility identifier for this item.
@@ -36,6 +40,22 @@ import SwiftUI
   ) {
     self.name = name
     storedImage = image
+    symbolName = ""
+    systemSymbol = false
+    self.accessibilityIdentifier = accessibilityIdentifier
+    self.enterpriseDisabled = enterpriseDisabled
+    self.handler = handler
+  }
+
+  public init(
+    name: String, symbolName: String, systemSymbol: Bool, accessibilityIdentifier: String,
+    enterpriseDisabled: Bool,
+    handler: @escaping () -> Void
+  ) {
+    self.name = name
+    self.storedImage = UIImage()
+    self.symbolName = symbolName
+    self.systemSymbol = systemSymbol
     self.accessibilityIdentifier = accessibilityIdentifier
     self.enterpriseDisabled = enterpriseDisabled
     self.handler = handler

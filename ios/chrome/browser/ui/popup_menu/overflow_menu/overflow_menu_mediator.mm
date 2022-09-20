@@ -89,11 +89,20 @@ using base::UserMetricsAction;
 
 namespace {
 
-// The size of overflow symbol images.
-NSInteger kOverflowActionSymbolPointSize = 18;
-NSInteger kOverflowDestinationSymbolPointSize = 26;
-
 typedef void (^Handler)(void);
+
+OverflowMenuAction* CreateOverflowMenuActionWithString(
+    NSString* name,
+    NSString* imageName,
+    NSString* accessibilityID,
+    Handler handler) {
+  DCHECK(!UseSymbols());
+  return [[OverflowMenuAction alloc] initWithName:name
+                                            image:[UIImage imageNamed:imageName]
+                          accessibilityIdentifier:accessibilityID
+                               enterpriseDisabled:NO
+                                          handler:handler];
+}
 
 OverflowMenuAction* CreateOverflowMenuAction(int nameID,
                                              NSString* imageName,
@@ -101,8 +110,20 @@ OverflowMenuAction* CreateOverflowMenuAction(int nameID,
                                              Handler handler) {
   DCHECK(!UseSymbols());
   NSString* name = l10n_util::GetNSString(nameID);
+  return CreateOverflowMenuActionWithString(name, imageName, accessibilityID,
+                                            handler);
+}
+
+OverflowMenuAction* CreateOverflowMenuActionWithString(
+    NSString* name,
+    NSString* symbolName,
+    bool systemSymbol,
+    NSString* accessibilityID,
+    Handler handler) {
+  DCHECK(UseSymbols());
   return [[OverflowMenuAction alloc] initWithName:name
-                                            image:[UIImage imageNamed:imageName]
+                                       symbolName:symbolName
+                                     systemSymbol:systemSymbol
                           accessibilityIdentifier:accessibilityID
                                enterpriseDisabled:NO
                                           handler:handler];
@@ -114,21 +135,10 @@ OverflowMenuAction* CreateOverflowMenuAction(int nameID,
                                              NSString* accessibilityID,
                                              Handler handler) {
   DCHECK(UseSymbols());
-  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kOverflowActionSymbolPointSize
-                          weight:UIImageSymbolWeightLight
-                           scale:UIImageSymbolScaleMedium];
   NSString* name = l10n_util::GetNSString(nameID);
-  UIImage* symbolImage =
-      [systemSymbol ? DefaultSymbolWithConfiguration(symbolName, configuration)
-                    : CustomSymbolWithConfiguration(symbolName, configuration)
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
-  return [[OverflowMenuAction alloc] initWithName:name
-                                            image:symbolImage
-                          accessibilityIdentifier:accessibilityID
-                               enterpriseDisabled:NO
-                                          handler:handler];
+  return CreateOverflowMenuActionWithString(name, symbolName, systemSymbol,
+                                            accessibilityID, handler);
 }
 
 OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
@@ -674,24 +684,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
     if (!self.isIncognito && IsWebChannelsEnabled() &&
         GetFollowActionState(self.webState) != FollowActionStateHidden) {
-      DCHECK(UseSymbols());
-      UIImageConfiguration* configuration = [UIImageSymbolConfiguration
-          configurationWithPointSize:kOverflowActionSymbolPointSize
-                              weight:UIImageSymbolWeightLight
-                               scale:UIImageSymbolScaleMedium];
       NSString* name = l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
                                                base::SysNSStringToUTF16(@""));
-      UIImage* symbolImage =
-          [DefaultSymbolWithConfiguration(kPlusSymbol, configuration)
-              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      OverflowMenuAction* action = CreateOverflowMenuActionWithString(
+          name, kPlusSymbol, YES, kToolsMenuFollow,
+          ^{
+          });
 
-      OverflowMenuAction* action =
-          [[OverflowMenuAction alloc] initWithName:name
-                                             image:symbolImage
-                           accessibilityIdentifier:kToolsMenuFollow
-                                enterpriseDisabled:NO
-                                           handler:^{
-                                           }];
       action.enabled = NO;
       self.followAction = action;
     }
@@ -942,17 +941,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   DCHECK(UseSymbols());
   __weak __typeof(self) weakSelf = self;
 
-  UIImage* symbol = nil;
-  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kOverflowDestinationSymbolPointSize
-                          weight:UIImageSymbolWeightRegular
-                           scale:UIImageSymbolScaleMedium];
-  if (systemSymbol) {
-    symbol = DefaultSymbolWithConfiguration(symbolName, configuration);
-  } else {
-    symbol = CustomSymbolWithConfiguration(symbolName, configuration);
-  }
-
   NSString* name = l10n_util::GetNSString(nameID);
 
   auto handlerWithMetrics = ^{
@@ -969,7 +957,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
   OverflowMenuDestination* result =
       [[OverflowMenuDestination alloc] initWithName:name
-                                              image:symbol
+                                         symbolName:symbolName
+                                       systemSymbol:systemSymbol
                             accessibilityIdentifier:accessibilityID
                                  enterpriseDisabled:NO
                                             handler:handlerWithMetrics];
