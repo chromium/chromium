@@ -1,6 +1,4 @@
 # When making changes, also update ArcOwners in the GwsQ config:
 # http://google3/chrome/enterprise/gwsq/enterprise-policy-review.gwsq
-edman@chromium.org
-pbond@chromium.org
-peletskyi@chromium.org
-phweiss@chromium.org
+yaohuali@google.com
+mhasank@chromium.org
