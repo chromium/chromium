@@ -140,16 +140,11 @@ struct WebUiResource {
 };
 
 constexpr WebUiResource kResources[] = {
-    {"test_canceled.png",
-     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_HEALTH_TEST_CANCELED_PNG},
-    {"test_failed.png",
-     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_HEALTH_TEST_FAILED_PNG},
-    {"test_not_run.png",
-     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_HEALTH_TEST_NOT_RUN_PNG},
-    {"test_passed.png",
-     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_HEALTH_TEST_PASSED_PNG},
-    {"test_warning.png",
-     IDR_CR_COMPONENTS_CHROMEOS_NETWORK_HEALTH_TEST_WARNING_PNG},
+    {"test_canceled.png", IDR_ASH_COMMON_NETWORK_HEALTH_TEST_CANCELED_PNG},
+    {"test_failed.png", IDR_ASH_COMMON_NETWORK_HEALTH_TEST_FAILED_PNG},
+    {"test_not_run.png", IDR_ASH_COMMON_NETWORK_HEALTH_TEST_NOT_RUN_PNG},
+    {"test_passed.png", IDR_ASH_COMMON_NETWORK_HEALTH_TEST_PASSED_PNG},
+    {"test_warning.png", IDR_ASH_COMMON_NETWORK_HEALTH_TEST_WARNING_PNG},
 };
 
 struct StringMap {

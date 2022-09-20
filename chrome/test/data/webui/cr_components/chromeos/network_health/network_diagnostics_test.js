@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import 'chrome://connectivity-diagnostics/strings.m.js';
-import 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics.js';
+import 'chrome://resources/ash/common/network_health/network_diagnostics.js';
 
-import {setNetworkDiagnosticsServiceForTesting} from 'chrome://resources/cr_components/chromeos/network_health/mojo_interface_provider.js';
-import {Icons} from 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics_types.js';
+import {setNetworkDiagnosticsServiceForTesting} from 'chrome://resources/ash/common/network_health/mojo_interface_provider.js';
+import {Icons} from 'chrome://resources/ash/common/network_health/network_diagnostics_types.js';
 import {RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 
 import {assertEquals, assertFalse, assertGT, assertNotReached, assertTrue} from '../../../chai_assert.js';

@@ -8,5 +8,5 @@ chrome/browser/ash/net/network_health/ because it has Chrome dependencies,
 e.g. for Captive Portal state.
 
 The mojom lives here so that it is available to other components, e.g. as a
-WebUI component in ui/webui/resources/cr_components/chromeos/network_health/.
+WebUI component in ash/webui/common/resources/network_health/.
 

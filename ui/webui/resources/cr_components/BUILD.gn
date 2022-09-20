@@ -50,11 +50,6 @@ if (is_chromeos_ash) {
       "chromeos/network/wifi_3.svg",
       "chromeos/network/wifi_4.svg",
       "chromeos/network/wifi_off.svg",
-      "chromeos/network_health/test_canceled.png",
-      "chromeos/network_health/test_failed.png",
-      "chromeos/network_health/test_not_run.png",
-      "chromeos/network_health/test_passed.png",
-      "chromeos/network_health/test_warning.png",
     ]
 
     manifest_files = [
@@ -104,8 +99,6 @@ if (is_chromeos_ash) {
       "chromeos/network/network_listener_behavior.js",
       "chromeos/network/network_list_types.js",
       "chromeos/network/onc_mojo.js",
-      "chromeos/network_health/mojo_interface_provider.js",
-      "chromeos/network_health/network_diagnostics_types.js",
     ]
   }
 
@@ -144,10 +137,6 @@ if (is_chromeos_ash) {
       "chromeos/cellular_setup/psim_flow_ui.js",
       "chromeos/cellular_setup/cellular_eid_dialog.js",
       "chromeos/cellular_setup/setup_loading_page.js",
-      "chromeos/network_health/network_health_container.js",
-      "chromeos/network_health/network_health_summary.js",
-      "chromeos/network_health/network_diagnostics.js",
-      "chromeos/network_health/routine_group.js",
       "chromeos/network/cr_policy_network_indicator_mojo.js",
       "chromeos/network/network_apnlist.js",
       "chromeos/network/network_choose_mobile.js",

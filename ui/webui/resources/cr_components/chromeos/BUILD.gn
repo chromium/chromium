@@ -11,7 +11,6 @@ group("closure_compile") {
     "bluetooth:closure_compile_module",
     "cellular_setup:closure_compile_module",
     "network:closure_compile_module",
-    "network_health:closure_compile_module",
   ]
 }
 
@@ -20,6 +19,5 @@ group("web_components") {
     "bluetooth:web_components",
     "cellular_setup:web_components",
     "network:web_components",
-    "network_health:web_components",
   ]
 }

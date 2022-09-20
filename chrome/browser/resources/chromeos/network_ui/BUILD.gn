@@ -84,8 +84,8 @@ js_type_check("closure_compile") {
 js_library("network_ui") {
   deps = [
     ":network_ui_browser_proxy",
+    "//ash/webui/common/resources/network_health:network_diagnostics",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
-    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics",
     "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:load_time_data.m",
   ]

@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../../cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../network/network_shared_css.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {Network, NetworkHealthService, NetworkHealthServiceRemote, NetworkHealthState, NetworkState, UInt32Value} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js';
 
-import {assertNotReached} from '../../../js/assert.m.js';
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 import {OncMojo} from '../network/onc_mojo.js';
+
+import {getTemplate} from './network_health_summary.html.js';
 
 const TechnologyIcons = {
   CELLULAR: 'cellular_0.svg',
@@ -24,7 +26,7 @@ const TechnologyIcons = {
  * @fileoverview Polymer element for displaying NetworkHealth properties.
  */
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'network-health-summary',
 
   behaviors: [
