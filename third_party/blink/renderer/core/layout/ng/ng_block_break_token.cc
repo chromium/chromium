@@ -109,12 +109,21 @@ String NGBlockBreakToken::ToString() const {
   StringBuilder string_builder;
   string_builder.Append("(");
   string_builder.Append(InputNode().ToString());
-  string_builder.Append(") consumed:");
+  string_builder.Append(")");
+  if (is_break_before_) {
+    string_builder.Append(" break-before");
+  } else {
+    string_builder.Append(" sequence:");
+    string_builder.AppendNumber(SequenceNumber());
+  }
+  if (is_repeated_)
+    string_builder.Append(" (repeated)");
+  string_builder.Append(" consumed:");
   string_builder.Append(ConsumedBlockSize().ToString());
   string_builder.Append("px");
 
-  if (ConsumedBlockSizeForLegacy()) {
-    string_builder.Append(" legacy adjustment:");
+  if (ConsumedBlockSizeForLegacy() != ConsumedBlockSize()) {
+    string_builder.Append(" legacy consumed:");
     string_builder.Append(ConsumedBlockSizeForLegacy().ToString());
     string_builder.Append("px");
   }

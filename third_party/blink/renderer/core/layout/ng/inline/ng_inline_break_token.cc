@@ -110,7 +110,6 @@ bool NGInlineBreakToken::IsAfterBlockInInline() const {
 
 String NGInlineBreakToken::ToString() const {
   StringBuilder string_builder;
-  string_builder.Append(NGBreakToken::ToString());
   string_builder.Append(
       String::Format(" index:%u offset:%u", ItemIndex(), TextOffset()));
   if (IsForcedBreak())
