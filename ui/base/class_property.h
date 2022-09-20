@@ -192,6 +192,22 @@ class ClassPropertyCaster<base::TimeDelta> {
   static int64_t ToInt64(base::TimeDelta x) { return x.InMicroseconds(); }
   static base::TimeDelta FromInt64(int64_t x) { return base::Microseconds(x); }
 };
+template <>
+class ClassPropertyCaster<float> {
+ public:
+  static int64_t ToInt64(float x) {
+    static_assert(sizeof(float) <= sizeof(int64_t),
+                  "expected float size <= 8 bytes");
+    int64_t ret = 0;
+    memcpy(&ret, &x, sizeof(float));
+    return ret;
+  }
+  static float FromInt64(int64_t x) {
+    float ret = 0.0;
+    memcpy(&ret, &x, sizeof(float));
+    return ret;
+  }
+};
 
 namespace subtle {
 

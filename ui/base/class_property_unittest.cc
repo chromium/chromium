@@ -17,6 +17,7 @@
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(const char*)
 DEFINE_UI_CLASS_PROPERTY_TYPE(int)
+DEFINE_UI_CLASS_PROPERTY_TYPE(float)
 
 namespace {
 
@@ -115,9 +116,11 @@ class TestPropertyHandler : public PropertyHandler {
 const int kDefaultIntValue = -2;
 const char* kDefaultStringValue = "squeamish";
 const char* kTestStringValue = "ossifrage";
+const float kDefaultFloatValue = 3.0;
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kIntKey, kDefaultIntValue)
 DEFINE_UI_CLASS_PROPERTY_KEY(const char*, kStringKey, kDefaultStringValue)
+DEFINE_UI_CLASS_PROPERTY_KEY(float, kFloatKey, kDefaultFloatValue)
 }
 
 TEST(PropertyTest, Property) {
@@ -126,6 +129,7 @@ TEST(PropertyTest, Property) {
   // Non-existent properties should return the default values.
   EXPECT_EQ(kDefaultIntValue, h.GetProperty(kIntKey));
   EXPECT_EQ(std::string(kDefaultStringValue), h.GetProperty(kStringKey));
+  EXPECT_EQ(kDefaultFloatValue, h.GetProperty(kFloatKey));
 
   // A set property value should be returned again (even if it's the default
   // value).
@@ -142,6 +146,13 @@ TEST(PropertyTest, Property) {
   EXPECT_EQ(std::string(kDefaultStringValue), h.GetProperty(kStringKey));
   h.SetProperty(kStringKey, kTestStringValue);
   EXPECT_EQ(std::string(kTestStringValue), h.GetProperty(kStringKey));
+
+  h.SetProperty(kFloatKey, 3.14f);
+  EXPECT_EQ(3.14f, h.GetProperty(kFloatKey));
+  h.SetProperty(kFloatKey, kDefaultFloatValue);
+  EXPECT_EQ(kDefaultFloatValue, h.GetProperty(kFloatKey));
+  h.SetProperty(kFloatKey, -234.5678f);
+  EXPECT_EQ(-234.5678f, h.GetProperty(kFloatKey));
 
   // ClearProperty should restore the default value.
   h.ClearProperty(kIntKey);
