@@ -5,11 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_PRERENDER_PRERENDER_PREF_H_
 #define IOS_CHROME_BROWSER_PRERENDER_PRERENDER_PREF_H_
 
-class PrefService;
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
-
 namespace prerender_prefs {
 
 // Setting for prerender network prediction.
@@ -19,13 +14,6 @@ enum class NetworkPredictionSetting {
   kEnabledWifiOnly = 1,
   kEnabledWifiAndCellular = 2,
 };
-
-// Register prerender network prediction preferences.
-void RegisterNetworkPredictionPrefs(user_prefs::PrefRegistrySyncable* registry);
-
-// Migrate kNetworkPredictionEnabled, kNetworkPredictionWifiOnly to the new
-// kNetworkPredictionSetting pref.
-void MigrateNetworkPredictionPrefs(PrefService* prefs);
 
 }  // namespace prerender_prefs
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 
+#import "base/stl_util.h"
 #import "base/time/time.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/browsing_data/core/pref_names.h"
@@ -219,7 +220,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   payments::RegisterProfilePrefs(registry);
   policy::URLBlocklistManager::RegisterProfilePrefs(registry);
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(registry);
-  prerender_prefs::RegisterNetworkPredictionPrefs(registry);
   RegisterVoiceSearchBrowserStatePrefs(registry);
   safe_browsing::RegisterProfilePrefs(registry);
   segmentation_platform::SegmentationPlatformService::RegisterProfilePrefs(
@@ -309,7 +309,15 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(prefs::kIosShareChromeLastShare, base::Time(),
                              PrefRegistry::LOSSY_PREF);
 
+
   registry->RegisterDictionaryPref(kPrefPromoObject);
+
+  // Register prerender network prediction preferences.
+  registry->RegisterIntegerPref(
+      prefs::kNetworkPredictionSetting,
+      base::to_underlying(
+          prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -334,9 +342,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
-
-  // Added 9/2020.
-  prerender_prefs::MigrateNetworkPredictionPrefs(prefs);
 
   // Added 03/2022
   prefs->ClearPref(kShowReadingListInBookmarkBar);
