@@ -57470,6 +57470,7 @@ from previous Chrome versions.
   <int value="-1447314734" label="QuerySearchBurnInPeriod:enabled"/>
   <int value="-1447147245" label="VideoPlayerNativeControls:enabled"/>
   <int value="-1446625028" label="CrostiniUsbAllowUnsupported:enabled"/>
+  <int value="-1446427484" label="FilesSearchV2:disabled"/>
   <int value="-1446425986" label="ProtectSyncCredentialOnReauth:disabled"/>
   <int value="-1444051091" label="ash-disable-night-light"/>
   <int value="-1443796945" label="OfflinePagesSharing:disabled"/>
@@ -59876,6 +59877,7 @@ from previous Chrome versions.
   <int value="11924259"
       label="AutofillEnableUpdateVirtualCardEnrollment:enabled"/>
   <int value="12016364" label="OmniboxBubbleUrlSuggestions:enabled"/>
+  <int value="14817184" label="FilesSearchV2:enabled"/>
   <int value="15614295" label="Portals:enabled"/>
   <int value="18571458" label="VmPerBootShaderCache:disabled"/>
   <int value="19629326" label="OmniboxExperimentalKeywordMode:enabled"/>

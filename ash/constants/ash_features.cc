@@ -766,6 +766,10 @@ const base::Feature kFilesExtractArchive{"FilesExtractArchive",
 const base::Feature kFilesInlineSyncStatus{"FilesInlineSyncStatus",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables V2 of search functionality in files.
+const base::Feature kFilesSearchV2{"FilesSearchV2",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables partitioning of removable disks in file manager.
 const base::Feature kFilesSinglePartitionFormat{
     "FilesSinglePartitionFormat", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -2075,6 +2079,10 @@ bool IsFileManagerFuseBoxEnabled() {
 
 bool IsFileManagerFuseBoxDebugEnabled() {
   return base::FeatureList::IsEnabled(kFuseBoxDebug);
+}
+
+bool IsFileManagerSearchV2Enabled() {
+  return base::FeatureList::IsEnabled(kFilesSearchV2);
 }
 
 bool IsFirmwareUpdaterAppEnabled() {

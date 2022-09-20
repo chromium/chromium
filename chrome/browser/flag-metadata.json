@@ -3581,6 +3581,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "files-search-v2",
+    "owners": [ "majewski", "simmonsjosh@google.com" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "files-single-partition-format",
     "owners": [ "austinct", "petermarshall" ],
     "expiry_milestone": 104

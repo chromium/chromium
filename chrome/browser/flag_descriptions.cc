@@ -5471,6 +5471,9 @@ const char kFilesInlineSyncStatusDescription[] =
     "Enable displaying the sync status of each file next to its name in Files "
     "app.";
 
+const char kFilesSearchV2Name[] = "V2 generation of file search.";
+const char kFilesSearchV2Description[] = "Enable V2 generation of file search.";
+
 const char kFilesSinglePartitionFormatName[] =
     "Enable Partitioning of Removable Disks.";
 const char kFilesSinglePartitionFormatDescription[] =

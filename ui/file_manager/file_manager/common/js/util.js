@@ -1270,29 +1270,12 @@ util.isCopyImageEnabled = () => {
 };
 
 /**
- * Returns true if filters in Recents view V2 is enabled.
- * @return {boolean}
- */
-util.isRecentsFilterV2Enabled = () => {
-  return loadTimeData.valueExists('FILTERS_IN_RECENTS_V2_ENABLED') &&
-      loadTimeData.getBoolean('FILTERS_IN_RECENTS_V2_ENABLED');
-};
-
-/**
- * Returns true if FilesTrash feature flag is enabled.
+ * Whether the Files app integration with DLP (Data Loss Prevention) is enabled.
  * @returns {boolean}
  */
-util.isTrashEnabled = () => {
-  return loadTimeData.valueExists('FILES_TRASH_ENABLED') &&
-      loadTimeData.getBoolean('FILES_TRASH_ENABLED');
-};
-
-/**
- * Returns true if FilesSinglePartitionFormat flag is enabled.
- * @return {boolean}
- */
-util.isSinglePartitionFormatEnabled = () => {
-  return loadTimeData.getBoolean('FILES_SINGLE_PARTITION_FORMAT_ENABLED');
+util.isDlpEnabled = () => {
+  return loadTimeData.valueExists('DLP_ENABLED') &&
+      loadTimeData.getBoolean('DLP_ENABLED');
 };
 
 /**
@@ -1313,12 +1296,13 @@ util.isFilesAppExperimental = () => {
 };
 
 /**
- * Whether the Files app integration with DLP (Data Loss Prevention) is enabled.
- * @returns {boolean}
+ * Returns true if FuseBoxDebug flag is enabled.
+ * @return {boolean}
  */
-util.isDlpEnabled = () => {
-  return loadTimeData.valueExists('DLP_ENABLED') &&
-      loadTimeData.getBoolean('DLP_ENABLED');
+util.isFuseBoxDebugEnabled = () => {
+  return loadTimeData.isInitialized() &&
+      loadTimeData.valueExists('FUSEBOX_DEBUG') &&
+      loadTimeData.getBoolean('FUSEBOX_DEBUG');
 };
 
 /**
@@ -1327,16 +1311,6 @@ util.isDlpEnabled = () => {
  */
 util.isFuseBoxEnabled = () => {
   return loadTimeData.getBoolean('FUSEBOX');
-};
-
-/**
- * Returns true if FuseBoxDebug flag is enabled.
- * @return {boolean}
- */
-util.isFuseBoxDebugEnabled = () => {
-  return loadTimeData.isInitialized() &&
-      loadTimeData.valueExists('FUSEBOX_DEBUG') &&
-      loadTimeData.getBoolean('FUSEBOX_DEBUG');
 };
 
 /**
@@ -1355,6 +1329,40 @@ util.isMirrorSyncEnabled = () => {
   return loadTimeData.isInitialized() &&
       loadTimeData.valueExists('DRIVEFS_MIRRORING') &&
       loadTimeData.getBoolean('DRIVEFS_MIRRORING');
+};
+
+/**
+ * Returns true if filters in Recents view V2 is enabled.
+ * @return {boolean}
+ */
+util.isRecentsFilterV2Enabled = () => {
+  return loadTimeData.valueExists('FILTERS_IN_RECENTS_V2_ENABLED') &&
+      loadTimeData.getBoolean('FILTERS_IN_RECENTS_V2_ENABLED');
+};
+
+/**
+ * Returns true if search v2 feature flag is enabled.
+ * @return {boolean}
+ */
+util.isSearchV2Enabled = () => {
+  return loadTimeData.getBoolean('FILES_SEARCH_V2');
+};
+
+/**
+ * Returns true if FilesSinglePartitionFormat flag is enabled.
+ * @return {boolean}
+ */
+util.isSinglePartitionFormatEnabled = () => {
+  return loadTimeData.getBoolean('FILES_SINGLE_PARTITION_FORMAT_ENABLED');
+};
+
+/**
+ * Returns true if FilesTrash feature flag is enabled.
+ * @returns {boolean}
+ */
+util.isTrashEnabled = () => {
+  return loadTimeData.valueExists('FILES_TRASH_ENABLED') &&
+      loadTimeData.getBoolean('FILES_TRASH_ENABLED');
 };
 
 /**
