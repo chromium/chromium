@@ -160,7 +160,11 @@ export const HelpBubbleMixin = dedupingMixin(
           const bubble = document.createElement('help-bubble');
           const anchor = this.findAnchorElement_(anchorId);
           assert(anchor, 'Help bubble anchor element not found ' + anchorId);
-          anchor.parentNode!.insertBefore(bubble, anchor);
+
+          // insert after anchor - if nextSibling is null, bubble will
+          // be added as the last child of parentNode
+          anchor.parentNode!.insertBefore(bubble, anchor.nextSibling);
+
           this.dismissedEventTracker_.add(
               bubble, HELP_BUBBLE_DISMISSED_EVENT,
               this.onHelpBubbleDismissed_.bind(this));

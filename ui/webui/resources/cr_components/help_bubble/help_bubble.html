@@ -111,21 +111,24 @@
     background-color: var(--help-bubble-background);
   }
 
-  .body {
+  #topBody,
+  #mainBody {
     flex: 1;
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
     letter-spacing: 0.3px;
     line-height: 20px;
+    margin: 0;
   }
 
-  .title {
+  #title {
     flex: 1;
     font-size: 18px;
     font-style: normal;
     font-weight: 500;
     line-height: 22px;
+    margin: 0;
   }
 
   /* Note: help bubbles have the same color treatment in both light and dark
@@ -230,36 +233,44 @@
   }
 </style>
 
-<div class="help-bubble">
+<div class="help-bubble" role="alertdialog" aria-modal="true"
+  aria-labelledby="title" aria-describedby="body">
   <div id="topContainer">
     <div id="bodyIcon" hidden$="[[!shouldShowBodyIcon_(bodyIconName)]]"
       aria-label$="[[bodyIconAltText]]">
       <iron-icon icon="iph:[[bodyIconName]]"></iron-icon>
     </div>
-    <div id="progress" hidden$="[[!progress]]">
+    <div id="progress" hidden$="[[!progress]]" role="progressbar"
+      aria-valuenow$="[[progress.current]]" aria-valuemin="1"
+      aria-valuemax$="[[progress.total]]">
       <template is="dom-repeat" items="[[progressData_]]">
         <div class$="[[getProgressClass_(index)]]"></div>
       </template>
     </div>
-    <div class="title" hidden$="[[!shouldShowTitleInTopContainer_(progress, titleText)]]">
+    <h1 id="title" hidden$="[[!shouldShowTitleInTopContainer_(progress, titleText)]]">
       [[titleText]]
-    </div>
-    <div class="body" hidden$="[[!shouldShowBodyInTopContainer_(progress, titleText)]]">
+    </h1>
+    <p id="topBody" hidden$="[[!shouldShowBodyInTopContainer_(progress, titleText)]]">
       [[bodyText]]
-    </div>
+    </p>
     <cr-icon-button id="close" iron-icon="cr:close"
       hidden$="[[!shouldShowCloseButton_(buttons, forceCloseButton)]]"
-      aria-label$="[[closeButtonAltText]]" on-click="dismiss_">
+      aria-label$="[[closeButtonAltText]]"
+      on-click="dismiss_" tabindex$="[[closeButtonTabIndex]]"
+    >
     </cr-icon-button>
   </div>
   <div id="main" hidden$="[[!shouldShowBodyInMain_(progress, titleText)]]">
     <div id="middleRowSpacer" hidden$="[[!shouldShowBodyIcon_(bodyIconName)]]"></div>
-    <div class="body">[[bodyText]]</div>
+    <p id="mainBody">[[bodyText]]</p>
   </div>
   <div id="buttons" hidden$="[[!buttons.length]]">
     <template is="dom-repeat" items="[[buttons]]" sort="buttonSortFunc_">
-      <cr-button id$="[[getButtonId_(itemsIndex)]]" tabindex$="[[getButtonTabIndex_(itemsIndex, item.isDefault)]]"
-        class$="[[getButtonClass_(item.isDefault)]]" on-click="onButtonClick_">[[item.text]]</cr-button>
+      <cr-button id$="[[getButtonId_(itemsIndex)]]"
+        tabindex$="[[getButtonTabIndex_(itemsIndex, item.isDefault)]]"
+        class$="[[getButtonClass_(item.isDefault)]]"
+        on-click="onButtonClick_" role="button"
+        aria-label="[[item.text]]">[[item.text]]</cr-button>
     </template>
   </div>
   <div id="arrow" class$="[[getArrowClass_(position)]]">

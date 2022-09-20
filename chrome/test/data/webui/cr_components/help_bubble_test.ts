@@ -30,33 +30,58 @@ suite('CrComponentsHelpBubbleTest', () => {
   }
 
   /**
-   * Finds and returns an element with class `name` that can be in the
-   * topContainer or in the main container of the HelpBubbleElement. If
-   * `inTopContainer` is true, will locate the element in the top container and
-   * fail the test if the element is (also) visible in the main body. If
-   * `inTopContainer` is false, the reverse applies.
+   * Asserts that body element is only visible in topContainer
    */
-  function getMovableElement(
-      name: string, inTopContainer: boolean): HTMLElement {
-    const query = `.${name}`;
-    const headerEl =
-        helpBubble.$.topContainer.querySelector<HTMLElement>(query);
-    const mainEl = helpBubble.$.main.querySelector<HTMLElement>(query);
+  function assertBodyInTop() {
+    const fnName = 'assertBodyInTop';
     assertTrue(
-        !!headerEl,
-        `getMovableElement - ${query} element should exist in header`);
+        !!helpBubble.$.topBody,
+        `${fnName} - body element should exist in topContainer`);
     assertTrue(
-        !!mainEl, `getMovableElement - ${query} element should exist in main`);
-    if (inTopContainer) {
-      assertFalse(
-          isVisible(mainEl),
-          'getMovableElement - element in main should not be visible');
-      return headerEl;
-    }
+        !!helpBubble.$.mainBody,
+        `${fnName} - body element should exist in main`);
+
+    assertTrue(
+        isVisible(helpBubble.$.topBody),
+        `${fnName} - body element should be visible in topContainer`);
     assertFalse(
-        isVisible(headerEl),
-        'getMovableElement - element in header should not be visible');
-    return mainEl;
+        isVisible(helpBubble.$.mainBody),
+        `${fnName} - body element should not be visible in main`);
+
+    assertFalse(
+        helpBubble.$.topBody.hidden,
+        `${fnName} - body element should not be hidden in topContainer`);
+    // notice: we hide the entire main section here, not just the mainBody
+    assertTrue(
+        helpBubble.$.main.hidden, `${fnName} - main element should be hidden`);
+  }
+
+  /**
+   * Asserts that body element is only visible in main
+   */
+  function assertBodyInMain() {
+    const fnName = 'assertBodyInMain';
+    assertTrue(
+        !!helpBubble.$.topBody,
+        `${fnName} - body element should exist in topContainer`);
+    assertTrue(
+        !!helpBubble.$.mainBody,
+        `${fnName} - body element should exist in main`);
+
+    assertFalse(
+        isVisible(helpBubble.$.topBody),
+        `${fnName} - body element should not be visible in topContainer`);
+    assertTrue(
+        isVisible(helpBubble.$.mainBody),
+        `${fnName} - body element should be visible in main`);
+
+    assertTrue(
+        helpBubble.$.topBody.hidden,
+        `${fnName} - body element should be hidden in topContainer`);
+    // notice: we show the entire main section here, not just the mainBody
+    assertFalse(
+        helpBubble.$.main.hidden,
+        `${fnName} - main element should not be hidden`);
   }
 
   /**
@@ -142,10 +167,9 @@ suite('CrComponentsHelpBubbleTest', () => {
         document.querySelector<HTMLElement>('#p1'),
         helpBubble.getAnchorElement(),
         'help bubble should have correct anchor element');
-    const bodyElement = getMovableElement('body', true);
-    assertFalse(bodyElement.hidden, 'body should not be hidden');
+    assertBodyInTop();
     assertEquals(
-        HELP_BUBBLE_BODY, bodyElement.textContent!.trim(),
+        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent!.trim(),
         'body content show match');
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
   });
@@ -158,8 +182,7 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.show();
 
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
-    const titleElement =
-        helpBubble.$.topContainer.querySelector<HTMLElement>('.title');
+    const titleElement = helpBubble.$.title;
     assertTrue(!!titleElement, 'title element should exist');
     assertFalse(titleElement.hidden, 'title element should not be hidden');
     assertEquals(
@@ -175,8 +198,7 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.show();
 
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
-    const titleElement =
-        helpBubble.$.topContainer.querySelector<HTMLElement>('.title');
+    const titleElement = helpBubble.$.title;
     assertTrue(!!titleElement, 'title element should exist');
     assertTrue(titleElement.hidden, 'title element should be hidden');
   });
@@ -244,10 +266,9 @@ suite('CrComponentsHelpBubbleTest', () => {
         document.querySelector<HTMLElement>('#title'),
         helpBubble.getAnchorElement(),
         'title element should be anchor element');
-    const bodyElement = getMovableElement('body', true);
-    assertFalse(bodyElement.hidden, 'body element should not be hidden');
+    assertBodyInTop();
     assertEquals(
-        HELP_BUBBLE_BODY, bodyElement.textContent!.trim(),
+        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent!.trim(),
         'body content should match');
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
   });
@@ -255,11 +276,17 @@ suite('CrComponentsHelpBubbleTest', () => {
   test('help bubble close button has correct alt text', () => {
     const CLOSE_TEXT: string = 'Close button text.';
     const ICON_TEXT: string = 'Body icon text.';
+    helpBubble.anchorId = 'title';
     helpBubble.closeButtonAltText = CLOSE_TEXT;
     helpBubble.bodyIconAltText = ICON_TEXT;
+    helpBubble.show();
+
     assertEquals(
         CLOSE_TEXT, helpBubble.$.close.getAttribute('aria-label'),
         'close button should have aria-label content');
+    assertEquals(
+        1, (helpBubble.$.close as HTMLElement).tabIndex,
+        'close button should have tab index 1');
     assertEquals(
         ICON_TEXT, helpBubble.$.bodyIcon.getAttribute('aria-label'),
         'body icon should have aria-label content');
@@ -411,6 +438,7 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
+    helpBubble.forceCloseButton = true;
     helpBubble.show();
     await waitAfterNextRender(helpBubble);
     assertEquals(3, getNumButtons(), 'there should be three buttons');
@@ -439,6 +467,27 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertEquals(
         defaultButton, helpBubble.$.buttons.children.item(expectedIndex),
         'default button should be at correct index');
+
+    // Verify tab indices
+    let highestTabIndex = 0;
+    for (const button of helpBubble.$.buttons.querySelectorAll<HTMLElement>(
+             '[id*="action-button"')) {
+      if (button.classList.contains('default-button')) {
+        assertEquals(
+            button.tabIndex, 1, 'default button should have tab index 1');
+      } else {
+        assertTrue(
+            button.tabIndex > 1,
+            'buttons should have tab index greater than 1');
+      }
+      highestTabIndex = Math.max(highestTabIndex, button.tabIndex);
+    }
+
+    assertFalse(helpBubble.$.close.hidden, 'close button should not be hidden');
+    assertTrue(isVisible(helpBubble.$.close), 'close button should be visible');
+    assertTrue(
+        (helpBubble.$.close as HTMLElement).tabIndex > highestTabIndex,
+        'close button should have highest tab index');
   });
 
   test('help bubble click action button generates event', async () => {
@@ -483,8 +532,7 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertEquals(
         0, getProgressIndicators().length,
         'there should not be progress indicators');
-    const bodyElement = getMovableElement('body', true);
-    assertFalse(bodyElement.hidden, 'body element should not be hidden');
+    assertBodyInTop();
   });
 
   test(
@@ -502,13 +550,10 @@ suite('CrComponentsHelpBubbleTest', () => {
         assertEquals(
             0, getProgressIndicators().length,
             'there should not be progress indicators');
-        const titleElement =
-            helpBubble.$.topContainer.querySelector<HTMLElement>('.title');
+        const titleElement = helpBubble.$.title;
         assertTrue(!!titleElement, 'title element should exist');
         assertFalse(titleElement.hidden, 'title element should not be hidden');
-        assertFalse(
-            getMovableElement('body', false).hidden,
-            'body element should not be hidden');
+        assertBodyInMain();
       });
 
   test('help bubble with progress shows progress', async () => {
@@ -532,7 +577,17 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertTrue(
         elements.item(2)!.classList.contains('total-progress'),
         'element 2 should have total-progress class');
-    assertFalse(getMovableElement('body', false).hidden);
+    assertBodyInMain();
+
+    assertEquals(
+        '1', helpBubble.$.progress.ariaValueMin,
+        'progress start aria should be 1');
+    assertEquals(
+        '1', helpBubble.$.progress.ariaValueNow,
+        'current progress aria should be 1');
+    assertEquals(
+        '3', helpBubble.$.progress.ariaValueMax,
+        'total progress aria should be 3');
   });
 
   test('help bubble with progress and title shows progress', async () => {
@@ -555,13 +610,10 @@ suite('CrComponentsHelpBubbleTest', () => {
         elements.item(1)!.classList.contains('total-progress'),
         'element 1 should have total-progress class');
 
-    const titleElement =
-        helpBubble.$.topContainer.querySelector<HTMLElement>('.title');
+    const titleElement = helpBubble.$.title;
     assertTrue(!!titleElement, 'title element should exist');
     assertTrue(titleElement.hidden, 'title element should be hidden');
-    assertFalse(
-        getMovableElement('body', false).hidden,
-        'body element should not be hidden');
+    assertBodyInMain();
   });
 
   test('help bubble with full progress', async () => {

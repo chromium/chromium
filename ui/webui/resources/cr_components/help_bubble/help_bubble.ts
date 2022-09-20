@@ -45,11 +45,14 @@ export type HelpBubbleTimedOutEvent = CustomEvent<{
 export interface HelpBubbleElement {
   $: {
     arrow: HTMLElement,
+    bodyIcon: HTMLElement,
     buttons: HTMLElement,
     close: CrIconButtonElement,
-    bodyIcon: HTMLElement,
     main: HTMLElement,
+    mainBody: HTMLElement,
     progress: HTMLElement,
+    title: HTMLElement,
+    topBody: HTMLElement,
     topContainer: HTMLElement,
   };
 }
@@ -70,9 +73,6 @@ export class HelpBubbleElement extends PolymerElement {
         value: '',
         reflectToAttribute: true,
       },
-
-      closeText: String,
-
       position: {
         type: HelpBubbleArrowPosition,
         value: HelpBubbleArrowPosition.TOP_CENTER,
@@ -85,6 +85,7 @@ export class HelpBubbleElement extends PolymerElement {
   bodyText: string;
   titleText: string;
   closeButtonAltText: string;
+  closeButtonTabIndex: number = 0;
   position: HelpBubbleArrowPosition;
   buttons: HelpBubbleButtonParams[] = [];
   progress: Progress|null = null;
@@ -115,6 +116,9 @@ export class HelpBubbleElement extends PolymerElement {
     } else {
       this.progressData_ = [];
     }
+
+    this.closeButtonTabIndex =
+        this.buttons.length ? this.buttons.length + 2 : 1;
 
     this.anchorElement_ =
         this.parentElement!.querySelector<HTMLElement>(`#${this.anchorId}`)!;
@@ -347,7 +351,9 @@ export class HelpBubbleElement extends PolymerElement {
     const anchorRect = this.anchorElement_.getBoundingClientRect();
     const helpBubbleRect = this.getBoundingClientRect();
 
-    let transform = '';
+    // component is inserted after anchor so start with a reset
+    let transform = `translateY(-${anchorRect.height}px) `;
+
     // Move HelpBubble to correct side of the anchorElement
     switch (this.position) {
       case HelpBubbleArrowPosition.TOP_LEFT:
