@@ -348,31 +348,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Event.Latency.Scroll.Wheel.TimeToHandled2"
-    units="microseconds" expires_after="2021-12-19">
-  <obsolete>
-    Removed in 2022-09. Replaced by Graphics.Smoothness.EventLatency UKM
-    metrics.
-  </obsolete>
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Time between initial creation of a wheel event and the generated
-    ScrollUpdate gesture event is handled on main/impl thread (specified by
-    suffix). If no swap was induced by the ScrollUpdate gesture event, no
-    recording is made. Unlike Event.Latency.ScrollUpdate.Wheel.TimeToHandled2
-    this metric includes the first GSU of every scrolling sequence as well.
-
-    Team: input-dev@chromium.org.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram
     name="Event.Latency.ScrollBegin.Scrollbar.BrowserNotifiedToBeforeGpuSwap2"
     units="microseconds" expires_after="2023-01-01">

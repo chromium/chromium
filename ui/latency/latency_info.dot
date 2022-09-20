@@ -15,7 +15,6 @@ Event.Latency.EndToEnd.TouchpadPinch2\n"];
     scroll_to_schedule_metrics
       [label="\
 Event.Latency.<scroll_name>.<input_modality>.TimeToHandled2_<thread_name>\n\
-Event.Latency.Scroll.Wheel.TimeToHandled2_<thread_name>\n\
 UKM: Event.<scroll_name>.<input_modality>.TimeToHandled\n"];
     "Event.Latency.<scroll_name>.<input_modality>.HandledToRendererSwap2_<thread_name>";
     "Event.Latency.<scroll_name>.<input_modality>.RendererSwapToBrowserNotified2";

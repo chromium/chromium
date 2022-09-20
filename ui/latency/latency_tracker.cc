@@ -414,12 +414,6 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
           ".TimeToHandled2_" + thread_name,
       original_timestamp, rendering_scheduled_timestamp);
 
-  if (input_modality == "Wheel") {
-    UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2(
-        "Event.Latency.Scroll.Wheel.TimeToHandled2_" + thread_name,
-        original_timestamp, rendering_scheduled_timestamp);
-  }
-
   base::TimeTicks renderer_swap_timestamp;
   bool found_renderer_swap_component =
       latency.FindLatency(ui::INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT,

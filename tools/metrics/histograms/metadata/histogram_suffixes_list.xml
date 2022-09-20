@@ -9022,7 +9022,6 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="ScrollUpdateHandledThread" separator="_">
   <suffix name="Impl" label="ScrollUpdate handled on impl thread"/>
   <suffix name="Main" label="ScrollUpdate handled on main thread"/>
-  <affected-histogram name="Event.Latency.Scroll.Wheel.TimeToHandled2"/>
   <affected-histogram
       name="Event.Latency.ScrollBegin.Scrollbar.HandledToRendererSwap2"/>
   <affected-histogram
