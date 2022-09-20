@@ -108,7 +108,7 @@ void AddUrlConditions(url_matcher::URLMatcher* matcher,
   std::string path;
   std::string query;
   bool match_subdomains = true;
-  for (const auto& list_entry : urls->GetListDeprecated()) {
+  for (const auto& list_entry : urls->GetList()) {
     std::string url = list_entry.GetString();
     if (!url_matcher::util::FilterToComponents(
             url, &scheme, &host, &match_subdomains, &port, &path, &query)) {
@@ -557,8 +557,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     const auto* destinations_components =
         destinations ? destinations->FindListKey("components") : nullptr;
     if (destinations_components) {
-      for (const auto& component :
-           destinations_components->GetListDeprecated()) {
+      for (const auto& component : destinations_components->GetList()) {
         DCHECK(component.is_string());
         components_rules_[GetComponentMapping(component.GetString())].insert(
             rules_counter);
@@ -567,7 +566,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
 
     const auto* restrictions = rule.FindListKey("restrictions");
     DCHECK(restrictions);
-    for (const auto& restriction : restrictions->GetListDeprecated()) {
+    for (const auto& restriction : restrictions->GetList()) {
       const auto* rule_class_str = restriction.FindStringKey("class");
       DCHECK(rule_class_str);
       const auto* rule_level_str = restriction.FindStringKey("level");
