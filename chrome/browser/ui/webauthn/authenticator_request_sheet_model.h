@@ -56,6 +56,7 @@ class AuthenticatorRequestSheetModel {
   virtual std::u16string GetAcceptButtonLabel() const = 0;
 
   virtual bool IsManageDevicesButtonVisible() const;
+  virtual bool IsOtherMechanismButtonVisible() const;
 
   virtual const gfx::VectorIcon& GetStepIllustration(
       ImageColorScheme color_scheme) const = 0;

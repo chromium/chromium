@@ -133,6 +133,11 @@ constexpr bool kShowCreatePlatformPasskeyStep = BUILDFLAG(IS_MAC);
 }  // namespace
 
 AuthenticatorRequestDialogModel::EphemeralState::EphemeralState() = default;
+AuthenticatorRequestDialogModel::EphemeralState::EphemeralState(
+    EphemeralState&&) = default;
+AuthenticatorRequestDialogModel::EphemeralState&
+AuthenticatorRequestDialogModel::EphemeralState::operator=(EphemeralState&&) =
+    default;
 AuthenticatorRequestDialogModel::EphemeralState::~EphemeralState() = default;
 
 AuthenticatorRequestDialogModel::Mechanism::Mechanism(
@@ -166,10 +171,8 @@ AuthenticatorRequestDialogModel::PairedPhone&
 AuthenticatorRequestDialogModel::PairedPhone::operator=(const PairedPhone&) =
     default;
 
-void AuthenticatorRequestDialogModel::EphemeralState::Reset() {
-  selected_authenticator_id_ = absl::nullopt;
-  saved_authenticators_.RemoveAllAuthenticators();
-  creds_.clear();
+void AuthenticatorRequestDialogModel::ResetEphemeralState() {
+  ephemeral_state_ = {};
 }
 
 AuthenticatorRequestDialogModel::AuthenticatorRequestDialogModel(
@@ -210,7 +213,7 @@ void AuthenticatorRequestDialogModel::StartFlow(
 }
 
 void AuthenticatorRequestDialogModel::StartOver() {
-  ephemeral_state_.Reset();
+  ResetEphemeralState();
 
   for (auto& observer : observers_)
     observer.OnStartOver();
@@ -220,6 +223,7 @@ void AuthenticatorRequestDialogModel::StartOver() {
     return;
   }
   current_mechanism_.reset();
+  current_step_ = Step::kNotStarted;
   SetCurrentStep(Step::kMechanismSelection);
 }
 
@@ -238,9 +242,6 @@ void AuthenticatorRequestDialogModel::TransitionToModalWebAuthnRequest() {
 
 void AuthenticatorRequestDialogModel::
     StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection() {
-  DCHECK(current_step() == Step::kNotStarted ||
-         current_step() == Step::kConditionalMediation);
-
   const auto priority_mechanism_it =
       std::find_if(mechanisms_.begin(), mechanisms_.end(),
                    [](const Mechanism& m) -> bool { return m.priority; });
@@ -297,6 +298,9 @@ void AuthenticatorRequestDialogModel::
          current_step() == Step::kCableActivate ||
          current_step() == Step::kAndroidAccessory ||
          current_step() == Step::kOffTheRecordInterstitial ||
+         current_step() == Step::kPreSelectAccount ||
+         current_step() == Step::kSelectAccount ||
+         current_step() == Step::kMechanismSelection ||
          current_step() == Step::kNotStarted);
 
 #if BUILDFLAG(IS_MAC)
@@ -922,6 +926,8 @@ void AuthenticatorRequestDialogModel::StartGuidedFlowForTransport(
          current_step() == Step::kAndroidAccessory ||
          current_step() == Step::kConditionalMediation ||
          current_step() == Step::kCreatePasskey ||
+         current_step() == Step::kPreSelectAccount ||
+         current_step() == Step::kSelectAccount ||
          current_step() == Step::kNotStarted);
   switch (transport) {
     case AuthenticatorTransport::kUsbHumanInterfaceDevice:

@@ -11,6 +11,12 @@
 
 ObservableAuthenticatorList::ObservableAuthenticatorList() = default;
 
+ObservableAuthenticatorList::ObservableAuthenticatorList(
+    ObservableAuthenticatorList&&) = default;
+
+ObservableAuthenticatorList& ObservableAuthenticatorList::operator=(
+    ObservableAuthenticatorList&&) = default;
+
 ObservableAuthenticatorList::~ObservableAuthenticatorList() = default;
 
 void ObservableAuthenticatorList::AddAuthenticator(

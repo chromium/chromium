@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webauthn/account_hover_list_model.h"
 
+#include <string>
+
+#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -17,60 +20,66 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 
+constexpr size_t kIconSize = 20;
+
+namespace {
+std::u16string NameTokenForDisplay(base::StringPiece name_token) {
+  if (name_token.empty())
+    return l10n_util::GetStringUTF16(IDS_WEBAUTHN_UNKNOWN_ACCOUNT);
+  return base::UTF8ToUTF16(name_token);
+}
+}  // namespace
+
 AccountHoverListModel::AccountHoverListModel(
-    const std::vector<device::DiscoverableCredentialMetadata>* creds,
+    base::span<const device::DiscoverableCredentialMetadata> creds,
     Delegate* delegate)
-    : creds_(creds), delegate_(delegate) {}
+    : delegate_(delegate) {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    for (const device::DiscoverableCredentialMetadata& cred : creds) {
+      items_.emplace_back(
+          NameTokenForDisplay(cred.user.name.value_or("")), u"",
+          ui::ImageModel::FromVectorIcon(vector_icons::kPasskeyIcon,
+                                         ui::kColorAccent, kIconSize));
+    }
+    return;
+  }
+
+  for (const device::DiscoverableCredentialMetadata& cred : creds) {
+    items_.emplace_back(
+        NameTokenForDisplay(cred.user.display_name.value_or("")),
+        NameTokenForDisplay(cred.user.name.value_or("")), ui::ImageModel());
+  }
+}
 
 AccountHoverListModel::~AccountHoverListModel() = default;
 
 std::vector<int> AccountHoverListModel::GetButtonTags() const {
-  std::vector<int> tag_list(creds_->size());
-  for (size_t i = 0; i < creds_->size(); ++i)
+  std::vector<int> tag_list(items_.size());
+  for (size_t i = 0; i < items_.size(); ++i) {
     tag_list[i] = i;
+  }
   return tag_list;
 }
 
 std::u16string AccountHoverListModel::GetItemText(int item_tag) const {
-  const device::PublicKeyCredentialUserEntity& user = creds_->at(item_tag).user;
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnNewDiscoverableCredentialsUi)) {
-    if (!user.name || user.name->empty())
-      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_UNKNOWN_ACCOUNT);
-
-    return base::UTF8ToUTF16(*user.name);
-  }
-
-  if (!user.display_name || user.display_name->empty())
-    return l10n_util::GetStringUTF16(IDS_WEBAUTHN_UNKNOWN_ACCOUNT);
-
-  return base::UTF8ToUTF16(user.display_name.value());
+  return items_.at(item_tag).text;
 }
 
 std::u16string AccountHoverListModel::GetDescriptionText(int item_tag) const {
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnNewDiscoverableCredentialsUi)) {
-    return u"";
-  }
-  const device::PublicKeyCredentialUserEntity& user = creds_->at(item_tag).user;
-  return base::UTF8ToUTF16(user.name.value_or(""));
+  return items_.at(item_tag).description;
 }
 
 ui::ImageModel AccountHoverListModel::GetItemIcon(int item_tag) const {
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnNewDiscoverableCredentialsUi)) {
-    return ui::ImageModel::FromVectorIcon(vector_icons::kPasskeyIcon,
-                                          ui::kColorAccent, 20);
-  }
-  return ui::ImageModel();
+  return items_.at(item_tag).icon;
 }
 
 void AccountHoverListModel::OnListItemSelected(int item_tag) {
-  delegate_->OnItemSelected(item_tag);
+  delegate_->CredentialSelected(item_tag);
 }
 
 size_t AccountHoverListModel::GetPreferredItemCount() const {
-  return creds_->size();
+  return items_.size();
 }
 
 bool AccountHoverListModel::StyleForTwoLines() const {
@@ -78,3 +87,12 @@ bool AccountHoverListModel::StyleForTwoLines() const {
   return !base::FeatureList::IsEnabled(
       device::kWebAuthnNewDiscoverableCredentialsUi);
 }
+
+AccountHoverListModel::Item::Item(std::u16string text,
+                                  std::u16string description,
+                                  ui::ImageModel icon)
+    : text(std::move(text)), description(std::move(description)), icon(icon) {}
+AccountHoverListModel::Item::Item(Item&&) = default;
+AccountHoverListModel::Item& AccountHoverListModel::Item::operator=(Item&&) =
+    default;
+AccountHoverListModel::Item::~Item() = default;

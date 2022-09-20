@@ -631,9 +631,9 @@ class AuthenticatorRequestDialogModel {
   // might be called at an arbitrary point of execution.
   struct EphemeralState {
     EphemeralState();
+    EphemeralState(EphemeralState&&);
+    EphemeralState& operator=(EphemeralState&&);
     ~EphemeralState();
-
-    void Reset();
 
     // Represents the id of the Bluetooth authenticator that the user is trying
     // to connect to or conduct WebAuthN request to via the WebAuthN UI.
@@ -653,6 +653,8 @@ class AuthenticatorRequestDialogModel {
     // authenticator has responded to a request.
     std::vector<device::DiscoverableCredentialMetadata> creds_;
   };
+
+  void ResetEphemeralState();
 
   // Can return nullptr in tests.
   content::WebContents* GetWebContents();

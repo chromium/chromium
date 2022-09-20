@@ -22,9 +22,11 @@ class ObservableAuthenticatorList {
  public:
   ObservableAuthenticatorList();
 
-  ObservableAuthenticatorList(const ObservableAuthenticatorList&) = delete;
+  ObservableAuthenticatorList(const ObservableAuthenticatorList&);
+  ObservableAuthenticatorList(ObservableAuthenticatorList&&);
   ObservableAuthenticatorList& operator=(const ObservableAuthenticatorList&) =
       delete;
+  ObservableAuthenticatorList& operator=(ObservableAuthenticatorList&&);
 
   ~ObservableAuthenticatorList();
 

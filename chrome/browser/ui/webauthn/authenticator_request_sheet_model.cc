@@ -29,4 +29,8 @@ bool AuthenticatorRequestSheetModel::IsManageDevicesButtonVisible() const {
   return false;
 }
 
+bool AuthenticatorRequestSheetModel::IsOtherMechanismButtonVisible() const {
+  return false;
+}
+
 void AuthenticatorRequestSheetModel::OnManageDevices() {}

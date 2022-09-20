@@ -38,7 +38,7 @@ class AuthenticatorSelectAccountSheetView
       override;
 
   // AccountHoverListModel::Delegate:
-  void OnItemSelected(int index) override;
+  void CredentialSelected(size_t index) override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_SELECT_ACCOUNT_SHEET_VIEW_H_

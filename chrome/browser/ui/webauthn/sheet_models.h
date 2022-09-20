@@ -31,8 +31,20 @@ class AuthenticatorSheetModelBase
     : public AuthenticatorRequestSheetModel,
       public AuthenticatorRequestDialogModel::Observer {
  public:
+  // Determines whether the button in the lower-left corner of the dialog to
+  // display other available mechanisms is shown on a sheet.
+  enum OtherMechanismButtonVisibility {
+    // The button is not shown (default).
+    kHidden,
+    // The button is shown if there is more than one mechanism to choose from.
+    kVisible,
+  };
+
   explicit AuthenticatorSheetModelBase(
       AuthenticatorRequestDialogModel* dialog_model);
+  AuthenticatorSheetModelBase(
+      AuthenticatorRequestDialogModel* dialog_model,
+      OtherMechanismButtonVisibility other_mechanism_button_visibility);
 
   AuthenticatorSheetModelBase(const AuthenticatorSheetModelBase&) = delete;
   AuthenticatorSheetModelBase& operator=(const AuthenticatorSheetModelBase&) =
@@ -54,6 +66,7 @@ class AuthenticatorSheetModelBase
   bool IsActivityIndicatorVisible() const override;
   bool IsBackButtonVisible() const override;
   bool IsCancelButtonVisible() const override;
+  bool IsOtherMechanismButtonVisible() const override;
   std::u16string GetCancelButtonLabel() const override;
   bool IsAcceptButtonVisible() const override;
   bool IsAcceptButtonEnabled() const override;
@@ -67,6 +80,8 @@ class AuthenticatorSheetModelBase
 
  private:
   raw_ptr<AuthenticatorRequestDialogModel> dialog_model_;
+  OtherMechanismButtonVisibility other_mechanism_button_visibility_ =
+      OtherMechanismButtonVisibility::kHidden;
 };
 
 // The sheet shown for selecting the transport over which the security key
@@ -196,7 +211,8 @@ class AuthenticatorInternalUnrecognizedErrorSheetModel
 class AuthenticatorBlePowerOnManualSheetModel
     : public AuthenticatorSheetModelBase {
  public:
-  using AuthenticatorSheetModelBase::AuthenticatorSheetModelBase;
+  explicit AuthenticatorBlePowerOnManualSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -216,7 +232,8 @@ class AuthenticatorBlePowerOnManualSheetModel
 class AuthenticatorBlePowerOnAutomaticSheetModel
     : public AuthenticatorSheetModelBase {
  public:
-  using AuthenticatorSheetModelBase::AuthenticatorSheetModelBase;
+  explicit AuthenticatorBlePowerOnAutomaticSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -238,7 +255,8 @@ class AuthenticatorBlePowerOnAutomaticSheetModel
 class AuthenticatorBlePermissionMacSheetModel
     : public AuthenticatorSheetModelBase {
  public:
-  using AuthenticatorSheetModelBase::AuthenticatorSheetModelBase;
+  explicit AuthenticatorBlePermissionMacSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -600,9 +618,6 @@ class AuthenticatorCreatePasskeySheetModel
   bool IsAcceptButtonEnabled() const override;
   void OnAccept() override;
   std::u16string GetAcceptButtonLabel() const override;
-  ui::MenuModel* GetOtherMechanismsMenuModel() override;
-
-  std::unique_ptr<OtherMechanismsMenuModel> other_mechanisms_menu_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -61,6 +62,13 @@ AuthenticatorSheetModelBase::AuthenticatorSheetModelBase(
   dialog_model_->AddObserver(this);
 }
 
+AuthenticatorSheetModelBase::AuthenticatorSheetModelBase(
+    AuthenticatorRequestDialogModel* dialog_model,
+    OtherMechanismButtonVisibility other_mechanism_button_visibility)
+    : AuthenticatorSheetModelBase(dialog_model) {
+  other_mechanism_button_visibility_ = other_mechanism_button_visibility;
+}
+
 AuthenticatorSheetModelBase::~AuthenticatorSheetModelBase() {
   if (dialog_model_) {
     dialog_model_->RemoveObserver(this);
@@ -88,6 +96,14 @@ bool AuthenticatorSheetModelBase::IsBackButtonVisible() const {
 
 bool AuthenticatorSheetModelBase::IsCancelButtonVisible() const {
   return true;
+}
+
+bool AuthenticatorSheetModelBase::IsOtherMechanismButtonVisible() const {
+  DCHECK(base::FeatureList::IsEnabled(
+      device::kWebAuthnNewDiscoverableCredentialsUi));
+  return other_mechanism_button_visibility_ ==
+             OtherMechanismButtonVisibility::kVisible &&
+         dialog_model_->mechanisms().size() > 1;
 }
 
 std::u16string AuthenticatorSheetModelBase::GetCancelButtonLabel() const {
@@ -145,12 +161,36 @@ AuthenticatorMechanismSelectorSheetModel::GetStepIllustration(
 }
 
 std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepTitle() const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    switch (dialog_model()->transport_availability()->request_type) {
+      case device::FidoRequestType::kMakeCredential:
+        // TODO(1358719): i18n
+        return u"Create a passkey";
+      case device::FidoRequestType::kGetAssertion:
+        // TODO(1358719): i18n
+        return u"Sign-in with a passkey";
+    }
+  }
   return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_TRANSPORT_SELECTION_TITLE,
                                     GetRelyingPartyIdString(dialog_model()));
 }
 
 std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepDescription()
     const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    switch (dialog_model()->transport_availability()->request_type) {
+      case device::FidoRequestType::kMakeCredential:
+        // TODO(1358719): i18n
+        return u"Choose a device on which to create a passkey for " +
+               GetRelyingPartyIdString(dialog_model());
+      case device::FidoRequestType::kGetAssertion:
+        // TODO(1358719): i18n
+        return u"Choose a device to sign into " +
+               GetRelyingPartyIdString(dialog_model());
+    }
+  }
   return l10n_util::GetStringUTF16(
       IDS_WEBAUTHN_TRANSPORT_SELECTION_DESCRIPTION);
 }
@@ -178,7 +218,8 @@ void AuthenticatorMechanismSelectorSheetModel::OnManageDevices() {
 AuthenticatorInsertAndActivateUsbSheetModel::
     AuthenticatorInsertAndActivateUsbSheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model),
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible),
       other_mechanisms_menu_model_(
           std::make_unique<OtherMechanismsMenuModel>(dialog_model)) {}
 
@@ -361,8 +402,8 @@ void AuthenticatorAlreadyRegisteredErrorModel::OnAccept() {
   dialog_model()->StartOver();
 }
 
-// AuthenticatorInternalUnrecognizedErrorSheetModel
-// -----------------------------------
+// AuthenticatorInternalUnrecognizedErrorSheetModel ---------------------------
+
 bool AuthenticatorInternalUnrecognizedErrorSheetModel::IsBackButtonVisible()
     const {
   return dialog_model()->offer_try_again_in_ui();
@@ -408,6 +449,12 @@ void AuthenticatorInternalUnrecognizedErrorSheetModel::OnAccept() {
 
 // AuthenticatorBlePowerOnManualSheetModel ------------------------------------
 
+AuthenticatorBlePowerOnManualSheetModel::
+    AuthenticatorBlePowerOnManualSheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {}
+
 const gfx::VectorIcon&
 AuthenticatorBlePowerOnManualSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
@@ -450,6 +497,12 @@ void AuthenticatorBlePowerOnManualSheetModel::OnAccept() {
 
 // AuthenticatorBlePowerOnAutomaticSheetModel
 // ------------------------------------
+
+AuthenticatorBlePowerOnAutomaticSheetModel::
+    AuthenticatorBlePowerOnAutomaticSheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {}
 
 bool AuthenticatorBlePowerOnAutomaticSheetModel::IsActivityIndicatorVisible()
     const {
@@ -498,6 +551,12 @@ void AuthenticatorBlePowerOnAutomaticSheetModel::OnAccept() {
 
 // AuthenticatorBlePermissionMacSheetModel
 // ------------------------------------
+
+AuthenticatorBlePermissionMacSheetModel::
+    AuthenticatorBlePermissionMacSheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {}
 
 bool AuthenticatorBlePermissionMacSheetModel::ShouldFocusBackArrow() const {
   return true;
@@ -611,7 +670,8 @@ AuthenticatorOffTheRecordInterstitialSheetModel::GetCancelButtonLabel() const {
 
 AuthenticatorPaaskSheetModel::AuthenticatorPaaskSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model),
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible),
       other_mechanisms_menu_model_(
           std::make_unique<OtherMechanismsMenuModel>(dialog_model)) {}
 
@@ -644,6 +704,13 @@ bool AuthenticatorPaaskSheetModel::IsCloseButtonVisible() const {
 }
 
 bool AuthenticatorPaaskSheetModel::IsCancelButtonVisible() const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    // Don't hide the Cancel button in the new UI. Back and close do not exist
+    // there.
+    return true;
+  }
+
   switch (dialog_model()->experiment_server_link_sheet_) {
     case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::CONTROL:
       return true;
@@ -734,13 +801,13 @@ void AuthenticatorPaaskSheetModel::OnBack() {
   }
 }
 
-// AuthenticatorAndroidAccessorySheetModel
-// -----------------------------------------
+// AuthenticatorAndroidAccessorySheetModel ------------------------------------
 
 AuthenticatorAndroidAccessorySheetModel::
     AuthenticatorAndroidAccessorySheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model),
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible),
       other_mechanisms_menu_model_(
           std::make_unique<OtherMechanismsMenuModel>(dialog_model)) {}
 
@@ -783,7 +850,9 @@ AuthenticatorClientPinEntrySheetModel::AuthenticatorClientPinEntrySheetModel(
     AuthenticatorRequestDialogModel* dialog_model,
     Mode mode,
     device::pin::PINEntryError error)
-    : AuthenticatorSheetModelBase(dialog_model), mode_(mode) {
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible),
+      mode_(mode) {
   switch (error) {
     case device::pin::PINEntryError::kNoError:
       break;
@@ -987,7 +1056,8 @@ void AuthenticatorBioEnrollmentSheetModel::OnCancel() {
 
 AuthenticatorRetryUvSheetModel::AuthenticatorRetryUvSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model) {}
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {}
 
 AuthenticatorRetryUvSheetModel::~AuthenticatorRetryUvSheetModel() = default;
 
@@ -1179,7 +1249,11 @@ AuthenticatorSelectAccountSheetModel::AuthenticatorSelectAccountSheetModel(
     AuthenticatorRequestDialogModel* dialog_model,
     UserVerificationMode mode,
     SelectionType type)
-    : AuthenticatorSheetModelBase(dialog_model),
+    : AuthenticatorSheetModelBase(
+          dialog_model,
+          mode == kPreUserVerification
+              ? OtherMechanismButtonVisibility::kVisible
+              : OtherMechanismButtonVisibility::kHidden),
       user_verification_mode_(mode),
       selection_type_(type) {}
 
@@ -1364,7 +1438,8 @@ EnterpriseAttestationPermissionRequestSheetModel::GetStepDescription() const {
 
 AuthenticatorQRSheetModel::AuthenticatorQRSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model) {}
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {}
 
 AuthenticatorQRSheetModel::~AuthenticatorQRSheetModel() = default;
 
@@ -1387,9 +1462,8 @@ std::u16string AuthenticatorQRSheetModel::GetStepDescription() const {
 
 AuthenticatorCreatePasskeySheetModel::AuthenticatorCreatePasskeySheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model),
-      other_mechanisms_menu_model_(
-          std::make_unique<OtherMechanismsMenuModel>(dialog_model)) {}
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {}
 
 AuthenticatorCreatePasskeySheetModel::~AuthenticatorCreatePasskeySheetModel() =
     default;
@@ -1434,9 +1508,4 @@ std::u16string AuthenticatorCreatePasskeySheetModel::GetAcceptButtonLabel()
 
 void AuthenticatorCreatePasskeySheetModel::OnAccept() {
   dialog_model()->HideDialogAndDispatchToPlatformAuthenticator();
-}
-
-ui::MenuModel*
-AuthenticatorCreatePasskeySheetModel::GetOtherMechanismsMenuModel() {
-  return other_mechanisms_menu_model_.get();
 }

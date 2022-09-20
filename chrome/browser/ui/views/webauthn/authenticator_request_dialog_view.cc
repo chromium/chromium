@@ -18,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
+#include "device/fido/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_utils.h"
@@ -147,6 +148,10 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
 
 bool AuthenticatorRequestDialogView::ShouldOtherMechanismsButtonBeVisible()
     const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return sheet_->model()->IsOtherMechanismButtonVisible();
+  }
   return sheet_->model()->GetOtherMechanismsMenuModel() &&
          sheet_->model()->GetOtherMechanismsMenuModel()->GetItemCount();
 }
@@ -265,11 +270,21 @@ AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
   hbox->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
 
-  other_mechanisms_button_ = new views::MdTextButtonWithDownArrow(
-      base::BindRepeating(
-          &AuthenticatorRequestDialogView::OtherMechanismsButtonPressed,
-          base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_POPUP_LABEL));
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    other_mechanisms_button_ = new views::MdTextButton(
+        base::BindRepeating(
+            &AuthenticatorRequestDialogView::OtherMechanismsButtonPressed,
+            base::Unretained(this)),
+        // TODO(1358719): i18n
+        u"Choose another way");
+  } else {
+    other_mechanisms_button_ = new views::MdTextButtonWithDownArrow(
+        base::BindRepeating(
+            &AuthenticatorRequestDialogView::OtherMechanismsButtonPressed,
+            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_POPUP_LABEL));
+  }
   hbox->AddChildView(other_mechanisms_button_.get());
 
   manage_devices_button_ = new views::MdTextButton(
@@ -317,6 +332,12 @@ void AuthenticatorRequestDialogView::Show() {
 }
 
 void AuthenticatorRequestDialogView::OtherMechanismsButtonPressed() {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    sheet_->model()->OnBack();
+    return;
+  }
+
   auto* other_mechanisms_menu_model =
       sheet_->model()->GetOtherMechanismsMenuModel();
   DCHECK(other_mechanisms_menu_model);
