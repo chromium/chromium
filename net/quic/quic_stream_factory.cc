@@ -1226,7 +1226,7 @@ QuicStreamFactory::QuicStreamFactory(
   DCHECK(transport_security_state_);
   DCHECK(http_server_properties_);
   if (params_.disable_tls_zero_rtt)
-    SetQuicFlag(FLAGS_quic_disable_client_tls_zero_rtt, true);
+    SetQuicFlag(quic_disable_client_tls_zero_rtt, true);
   InitializeMigrationOptions();
 }
 

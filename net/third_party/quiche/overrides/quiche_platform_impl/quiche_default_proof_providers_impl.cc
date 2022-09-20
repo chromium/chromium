@@ -45,7 +45,7 @@ namespace quiche {
 namespace {
 
 std::set<std::string> UnknownRootAllowlistForHost(std::string host) {
-  if (!GetQuicFlag(FLAGS_allow_unknown_root_cert)) {
+  if (!GetQuicFlag(allow_unknown_root_cert)) {
     return std::set<std::string>();
   }
   return {host};
@@ -88,12 +88,12 @@ std::unique_ptr<quic::ProofSource> CreateDefaultProofSourceImpl() {
       quic::QuicChromiumClock::GetInstance()));
   CHECK(proof_source->Initialize(
 #if BUILDFLAG(IS_WIN)
-      base::FilePath(base::UTF8ToWide(GetQuicFlag(FLAGS_certificate_file))),
-      base::FilePath(base::UTF8ToWide(GetQuicFlag(FLAGS_key_file))),
+      base::FilePath(base::UTF8ToWide(GetQuicFlag(certificate_file))),
+      base::FilePath(base::UTF8ToWide(GetQuicFlag(key_file))),
       base::FilePath()));
 #else
-      base::FilePath(GetQuicFlag(FLAGS_certificate_file)),
-      base::FilePath(GetQuicFlag(FLAGS_key_file)), base::FilePath()));
+      base::FilePath(GetQuicFlag(certificate_file)),
+      base::FilePath(GetQuicFlag(key_file)), base::FilePath()));
 #endif
   return std::move(proof_source);
 }

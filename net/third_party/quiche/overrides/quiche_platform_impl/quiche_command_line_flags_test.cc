@@ -56,9 +56,9 @@ class QuicheCommandLineFlagTest : public QuicheTest {
 };
 
 TEST_F(QuicheCommandLineFlagTest, DefaultValues) {
-  EXPECT_EQ(false, GetQuicheFlag(FLAGS_foo));
-  EXPECT_EQ(123, GetQuicheFlag(FLAGS_bar));
-  EXPECT_EQ("splash!", GetQuicheFlag(FLAGS_baz));
+  EXPECT_EQ(false, GetQuicheFlag(foo));
+  EXPECT_EQ(123, GetQuicheFlag(bar));
+  EXPECT_EQ("splash!", GetQuicheFlag(baz));
 }
 
 TEST_F(QuicheCommandLineFlagTest, NotSpecified) {
@@ -69,36 +69,36 @@ TEST_F(QuicheCommandLineFlagTest, NotSpecified) {
   std::vector<std::string> expected_args{"two", "three"};
   EXPECT_EQ(expected_args, parse_result.non_flag_args);
 
-  EXPECT_EQ(false, GetQuicheFlag(FLAGS_foo));
-  EXPECT_EQ(123, GetQuicheFlag(FLAGS_bar));
-  EXPECT_EQ("splash!", GetQuicheFlag(FLAGS_baz));
+  EXPECT_EQ(false, GetQuicheFlag(foo));
+  EXPECT_EQ(123, GetQuicheFlag(bar));
+  EXPECT_EQ("splash!", GetQuicheFlag(baz));
 }
 
 TEST_F(QuicheCommandLineFlagTest, BoolFlag) {
   for (const char* s :
        {"--foo", "--foo=1", "--foo=t", "--foo=True", "--foo=Y", "--foo=yes"}) {
-    SetQuicheFlag(FLAGS_foo, false);
+    SetQuicheFlag(foo, false);
     const char* argv[]{"argv0", s};
     auto parse_result = QuicheParseCommandLineFlagsForTest(
         "usage message", std::size(argv), argv);
     EXPECT_FALSE(parse_result.exit_status.has_value());
     EXPECT_TRUE(parse_result.non_flag_args.empty());
-    EXPECT_TRUE(GetQuicheFlag(FLAGS_foo));
+    EXPECT_TRUE(GetQuicheFlag(foo));
   }
 
   for (const char* s :
        {"--foo=0", "--foo=f", "--foo=False", "--foo=N", "--foo=no"}) {
-    SetQuicheFlag(FLAGS_foo, true);
+    SetQuicheFlag(foo, true);
     const char* argv[]{"argv0", s};
     auto parse_result = QuicheParseCommandLineFlagsForTest(
         "usage message", std::size(argv), argv);
     EXPECT_FALSE(parse_result.exit_status.has_value());
     EXPECT_TRUE(parse_result.non_flag_args.empty());
-    EXPECT_FALSE(GetQuicheFlag(FLAGS_foo));
+    EXPECT_FALSE(GetQuicheFlag(foo));
   }
 
   for (const char* s : {"--foo=7", "--foo=abc", "--foo=trueish"}) {
-    SetQuicheFlag(FLAGS_foo, false);
+    SetQuicheFlag(foo, false);
     const char* argv[]{"argv0", s};
 
     testing::internal::CaptureStderr();
@@ -111,24 +111,24 @@ TEST_F(QuicheCommandLineFlagTest, BoolFlag) {
     EXPECT_THAT(captured_stderr,
                 testing::ContainsRegex("Invalid value.*for flag --foo"));
     EXPECT_TRUE(parse_result.non_flag_args.empty());
-    EXPECT_FALSE(GetQuicheFlag(FLAGS_foo));
+    EXPECT_FALSE(GetQuicheFlag(foo));
   }
 }
 
 TEST_F(QuicheCommandLineFlagTest, Int32Flag) {
   for (const int i : {-1, 0, 100, 38239832}) {
-    SetQuicheFlag(FLAGS_bar, 0);
+    SetQuicheFlag(bar, 0);
     std::string flag_str = base::StringPrintf("--bar=%d", i);
     const char* argv[]{"argv0", flag_str.c_str()};
     auto parse_result = QuicheParseCommandLineFlagsForTest(
         "usage message", std::size(argv), argv);
     EXPECT_FALSE(parse_result.exit_status.has_value());
     EXPECT_TRUE(parse_result.non_flag_args.empty());
-    EXPECT_EQ(i, GetQuicheFlag(FLAGS_bar));
+    EXPECT_EQ(i, GetQuicheFlag(bar));
   }
 
   for (const char* s : {"--bar", "--bar=a", "--bar=9999999999999"}) {
-    SetQuicheFlag(FLAGS_bar, 0);
+    SetQuicheFlag(bar, 0);
     const char* argv[]{"argv0", s};
 
     testing::internal::CaptureStderr();
@@ -141,30 +141,30 @@ TEST_F(QuicheCommandLineFlagTest, Int32Flag) {
     EXPECT_THAT(captured_stderr,
                 testing::ContainsRegex("Invalid value.*for flag --bar"));
     EXPECT_TRUE(parse_result.non_flag_args.empty());
-    EXPECT_EQ(0, GetQuicheFlag(FLAGS_bar));
+    EXPECT_EQ(0, GetQuicheFlag(bar));
   }
 }
 
 TEST_F(QuicheCommandLineFlagTest, StringFlag) {
   {
-    SetQuicheFlag(FLAGS_baz, "whee");
+    SetQuicheFlag(baz, "whee");
     const char* argv[]{"argv0", "--baz"};
     auto parse_result = QuicheParseCommandLineFlagsForTest(
         "usage message", std::size(argv), argv);
     EXPECT_FALSE(parse_result.exit_status.has_value());
     EXPECT_TRUE(parse_result.non_flag_args.empty());
-    EXPECT_EQ("", GetQuicheFlag(FLAGS_baz));
+    EXPECT_EQ("", GetQuicheFlag(baz));
   }
 
   for (const char* s : {"", "12345", "abcdefg"}) {
-    SetQuicheFlag(FLAGS_baz, "qux");
+    SetQuicheFlag(baz, "qux");
     std::string flag_str = base::StrCat({"--baz=", s});
     const char* argv[]{"argv0", flag_str.c_str()};
     auto parse_result = QuicheParseCommandLineFlagsForTest(
         "usage message", std::size(argv), argv);
     EXPECT_FALSE(parse_result.exit_status.has_value());
     EXPECT_TRUE(parse_result.non_flag_args.empty());
-    EXPECT_EQ(s, GetQuicheFlag(FLAGS_baz));
+    EXPECT_EQ(s, GetQuicheFlag(baz));
   }
 }
 
