@@ -5,10 +5,16 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/grit/repack.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
+
+preprocessed_dir = "preprocessed"
+preprocess_folder = "$target_gen_dir/preprocessed"
+preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
+mojom_webui_folder = "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom"
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -435,43 +441,6 @@ js_library("wifi_info") {
   ]
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "battery_status_card.js",
-    "cellular_info.js",
-    "connectivity_card.js",
-    "cpu_card.js",
-    "data_point.js",
-    "diagnostics_app.js",
-    "diagnostics_card.js",
-    "diagnostics_card_frame.js",
-
-    "diagnostics_network_icon.js",
-    "diagnostics_sticky_banner.js",
-    "diagnostics_shared_css.js",
-    "ethernet_info.js",
-    "icons.js",
-    "input_card.js",
-    "input_list.js",
-    "ip_config_info_drawer.js",
-    "keyboard_tester.js",
-    "memory_card.js",
-    "network_card.js",
-    "network_info.js",
-    "network_list.js",
-    "network_troubleshooting.js",
-    "overview_card.js",
-    "percent_bar_chart.js",
-    "realtime_cpu_chart.js",
-    "routine_result_entry.js",
-    "routine_result_list.js",
-    "routine_section.js",
-    "system_page.js",
-    "text_badge.js",
-    "wifi_info.js",
-  ]
-}
-
 copy("copy_webui_mojo") {
   deps = [ "../mojom:mojom_webui_js" ]
   sources = [
@@ -481,4 +450,96 @@ copy("copy_webui_mojo") {
     "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom-webui.js",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+polymer_element_files = [
+  "battery_status_card.js",
+  "cellular_info.js",
+  "connectivity_card.js",
+  "cpu_card.js",
+  "data_point.js",
+  "diagnostics_app.js",
+  "diagnostics_card.js",
+  "diagnostics_card_frame.js",
+  "diagnostics_network_icon.js",
+  "diagnostics_shared_css.js",
+  "diagnostics_sticky_banner.js",
+  "ethernet_info.js",
+  "icons.js",
+  "input_card.js",
+  "input_list.js",
+  "ip_config_info_drawer.js",
+  "keyboard_tester.js",
+  "memory_card.js",
+  "network_card.js",
+  "network_info.js",
+  "network_list.js",
+  "network_troubleshooting.js",
+  "overview_card.js",
+  "percent_bar_chart.js",
+  "realtime_cpu_chart.js",
+  "routine_result_entry.js",
+  "routine_result_list.js",
+  "routine_section.js",
+  "system_page.js",
+  "text_badge.js",
+  "wifi_info.js",
+]
+
+preprocess_if_expr("preprocess_mojo") {
+  in_folder = mojom_webui_folder
+  in_files = [
+    "input_data_provider.mojom-webui.js",
+    "network_health_provider.mojom-webui.js",
+    "system_data_provider.mojom-webui.js",
+    "system_routine_controller.mojom-webui.js",
+  ]
+  out_folder = preprocess_folder
+  out_manifest = "$target_gen_dir/manifest_preprocess_mojo.json"
+  deps = [ "//ash/webui/diagnostics_ui/mojom:mojom_webui_js" ]
+}
+
+generate_grd("build_grd") {
+  input_files = [
+    "app_icon_192.png",
+    "diagnostics_browser_proxy.js",
+    "diagnostics_types.js",
+    "diagnostics_utils.js",
+    "fake_data.js",
+    "fake_input_data_provider.js",
+    "fake_network_health_provider.js",
+    "fake_system_data_provider.js",
+    "fake_system_routine_controller.js",
+    "frequency_channel_utils.js",
+    "index.html",
+    "mojo_interface_provider.js",
+    "mojo_utils.js",
+    "routine_group.js",
+    "routine_list_executor.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [
+    ":preprocess_generated",
+    ":preprocess_mojo",
+    "//third_party/d3:build_grdp",
+  ]
+  manifest_files = [
+    "$target_gen_dir/$preprocessed_gen_manifest",
+    "$target_gen_dir/manifest_preprocess_mojo.json",
+  ]
+  grdp_files = [ "$root_gen_dir/third_party/d3/d3_resources.grdp" ]
+  grd_prefix = "ash_diagnostics_app"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/$preprocessed_gen_manifest"
+  in_files = polymer_element_files
+}
+
+html_to_js("web_components") {
+  js_files = polymer_element_files
 }

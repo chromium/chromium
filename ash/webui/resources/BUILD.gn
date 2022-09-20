@@ -141,24 +141,6 @@ grit("scanning_app_resources") {
   output_dir = "$ash_webui_grit_output_dir"
 }
 
-grit("diagnostics_app_resources") {
-  source = "//ash/webui/diagnostics_ui/resources/diagnostics_app_resources.grd"
-
-  deps = [
-    "//ash/webui/diagnostics_ui/resources:copy_webui_mojo",
-    "//ash/webui/diagnostics_ui/resources:web_components",
-  ]
-
-  outputs = [
-    "ash_diagnostics_app_resources.pak",
-    "grit/ash_diagnostics_app_resources.h",
-    "grit/ash_diagnostics_app_resources_map.cc",
-    "grit/ash_diagnostics_app_resources_map.h",
-  ]
-
-  output_dir = "$ash_webui_grit_output_dir"
-}
-
 # Resources used by chrome://help-app, and parts of the sandboxed app it hosts
 # that do not come from the app bundle (below).
 grit("help_app_resources") {
@@ -266,6 +248,11 @@ grit("media_app_bundle_resources") {
     "chromeos_media_app_bundle_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos"
+}
+
+ash_generated_grit("diagnostics_app_resources") {
+  source = "$root_gen_dir/ash/webui/diagnostics_ui/resources/ash_diagnostics_app_resources.grd"
+  deps = [ "//ash/webui/diagnostics_ui/resources:build_grd" ]
 }
 
 ash_generated_grit("print_management_resources") {

@@ -526,7 +526,8 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [2960],
   },
-  "ash/webui/diagnostics_ui/resources/diagnostics_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/diagnostics_ui/resources/ash_diagnostics_app_resources.grd": {
+    "META": {"sizes": {"includes": [200],}},
     "includes": [2980],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/file_manager/resources/file_manager_swa_resources.grd": {
