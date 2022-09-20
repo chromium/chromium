@@ -22,7 +22,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
-#include "ui/gfx/color_palette.h"
 
 namespace ash {
 namespace {
@@ -230,7 +229,8 @@ TEST_F(ShelfBackgroundAnimatorTest, DefaultBackground) {
 
   EXPECT_EQ(ShelfBackgroundType::kDefaultBg,
             animator_->target_background_type());
-  EXPECT_EQ((int)SkColorGetA(ShelfConfig::Get()->GetDefaultShelfColor()),
+  EXPECT_EQ((int)SkColorGetA(ShelfConfig::Get()->GetDefaultShelfColor(
+                GetPrimaryShelf()->shelf_widget())),
             observer_.GetBackgroundAlpha());
 }
 
@@ -240,7 +240,8 @@ TEST_F(ShelfBackgroundAnimatorTest, MaximizedBackground) {
 
   EXPECT_EQ(ShelfBackgroundType::kMaximized,
             animator_->target_background_type());
-  EXPECT_EQ((int)SkColorGetA(ShelfConfig::Get()->GetMaximizedShelfColor()),
+  EXPECT_EQ((int)SkColorGetA(ShelfConfig::Get()->GetMaximizedShelfColor(
+                GetPrimaryShelf()->shelf_widget())),
             observer_.GetBackgroundAlpha());
 }
 
@@ -355,7 +356,8 @@ TEST_F(ShelfBackgroundTargetColorTest, ShelfBackgroundColorUpdatedFromLogin) {
 
   NotifySessionStateChanged(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(test_api.shelf_background_target_color(),
-            ShelfConfig::Get()->GetDefaultShelfColor());
+            ShelfConfig::Get()->GetDefaultShelfColor(
+                GetPrimaryShelf()->shelf_widget()));
 }
 
 // Verify the target color of the shelf background is updated based on session
@@ -377,7 +379,8 @@ TEST_F(ShelfBackgroundTargetColorTest, ShelfBackgroundColorUpdatedFromOOBE) {
 
   NotifySessionStateChanged(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(test_api.shelf_background_target_color(),
-            ShelfConfig::Get()->GetDefaultShelfColor());
+            ShelfConfig::Get()->GetDefaultShelfColor(
+                GetPrimaryShelf()->shelf_widget()));
 }
 
 }  // namespace ash

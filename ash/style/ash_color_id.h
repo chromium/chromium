@@ -60,6 +60,7 @@ namespace ash {
   E_CPONLY(kColorAshIconColorSecondaryBackground) \
   /* The default color for button labels. */ \
   E_CPONLY(kColorAshButtonLabelColor) \
+  E_CPONLY(kColorAshButtonLabelColorLight) \
   /* Inverted `kColorAshButtonLabelColor` on current color mode. */ \
   E_CPONLY(kColorAshInvertedButtonLabelColor) \
   E_CPONLY(kColorAshTextColorSuggestion) \
@@ -69,6 +70,7 @@ namespace ash {
   /* Color for blue button labels, e.g, 'Retry' button of the system toast. */ \
   E_CPONLY(kColorAshButtonLabelColorBlue) \
   E_CPONLY(kColorAshButtonIconColor) \
+  E_CPONLY(kColorAshButtonIconColorLight) \
   E_CPONLY(kColorAshButtonIconColorPrimary) \
   E_CPONLY(kColorAshAppStateIndicatorColor) \
   E_CPONLY(kColorAshAppStateIndicatorColorInactive) \

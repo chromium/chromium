@@ -505,6 +505,8 @@ std::unique_ptr<ui::Layer> TrayBackgroundView::RecreateLayer() {
 void TrayBackgroundView::OnThemeChanged() {
   ActionableView::OnThemeChanged();
   UpdateBackground();
+  layer()->SetColor(
+      ShelfConfig::Get()->GetShelfControlButtonColor(GetWidget()));
   StyleUtil::ConfigureInkDropAttributes(this, StyleUtil::kBaseColor |
                                                   StyleUtil::kInkDropOpacity |
                                                   StyleUtil::kHighlightOpacity);
@@ -554,7 +556,6 @@ void TrayBackgroundView::UpdateBackground() {
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetBackgroundBlur(
       ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
-  layer()->SetColor(ShelfConfig::Get()->GetShelfControlButtonColor());
   layer()->SetClipRect(GetBackgroundBounds());
 }
 

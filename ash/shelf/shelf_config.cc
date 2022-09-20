@@ -10,18 +10,14 @@
 #include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
-#include "ui/gfx/color_analysis.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
 
 namespace ash {
 
@@ -213,7 +209,7 @@ void ShelfConfig::Shutdown() {
 
 void ShelfConfig::OnOverviewModeWillStart() {
   DCHECK(!overview_mode_);
-  use_in_app_shelf_in_overview_ = is_in_app();
+  use_in_app_shelf_in_overview_ = is_in_app_;
   overview_mode_ = true;
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
@@ -366,7 +362,7 @@ int ShelfConfig::control_size() const {
 }
 
 int ShelfConfig::control_border_radius() const {
-  return (is_in_app() && in_tablet_mode_)
+  return (is_in_app_ && in_tablet_mode_)
              ? control_size() / 2 - in_app_control_button_height_inset_
              : control_size() / 2;
 }
@@ -456,57 +452,59 @@ int ShelfConfig::GetShelfSize(bool ignore_in_app_state) const {
     return 48;
 
   // Use in app shelf when split view is enabled.
-  if (!ignore_in_app_state && (is_in_app() || in_split_view_with_overview_))
+  if (!ignore_in_app_state && (is_in_app_ || in_split_view_with_overview_))
     return in_app_shelf_size();
 
   return is_dense_ ? 48 : 56;
 }
 
-SkColor ShelfConfig::GetShelfControlButtonColor() const {
+SkColor ShelfConfig::GetShelfControlButtonColor(
+    const views::Widget* widget) const {
+  DCHECK(widget);
+
   const session_manager::SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
 
   if (in_tablet_mode_ &&
       session_state == session_manager::SessionState::ACTIVE) {
-    return is_in_app() ? SK_ColorTRANSPARENT : GetDefaultShelfColor();
+    return is_in_app_ ? SK_ColorTRANSPARENT : GetDefaultShelfColor(widget);
   }
   if (!features::IsDarkLightModeEnabled() &&
       session_state == session_manager::SessionState::OOBE) {
     return SkColorSetA(SK_ColorBLACK, 16);  // 6% opacity
   }
-  return AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  return widget->GetColorProvider()->GetColor(
+      kColorAshControlBackgroundColorInactive);
 }
 
-SkColor ShelfConfig::GetMaximizedShelfColor() const {
-  return SkColorSetA(GetDefaultShelfColor(), 0xFF);  // 100% opacity
+SkColor ShelfConfig::GetMaximizedShelfColor(const views::Widget* widget) const {
+  return SkColorSetA(GetDefaultShelfColor(widget), 0xFF);  // 100% opacity
 }
 
-AshColorProvider::BaseLayerType ShelfConfig::GetShelfBaseLayerType() const {
+ui::ColorId ShelfConfig::GetShelfBaseLayerColorId() const {
   if (!in_tablet_mode_)
-    return AshColorProvider::BaseLayerType::kTransparent80;
+    return kColorAshShieldAndBase80;
 
-  if (!is_in_app())
-    return AshColorProvider::BaseLayerType::kTransparent60;
+  if (!is_in_app_)
+    return kColorAshShieldAndBase60;
 
   return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-             ? AshColorProvider::BaseLayerType::kTransparent90
-             : AshColorProvider::BaseLayerType::kOpaque;
+             ? kColorAshShieldAndBase90
+             : kColorAshShieldAndBaseOpaque;
 }
 
-SkColor ShelfConfig::GetDefaultShelfColor() const {
-  if (!features::IsBackgroundBlurEnabled()) {
-    return AshColorProvider::Get()->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent90);
-  }
+SkColor ShelfConfig::GetDefaultShelfColor(const views::Widget* widget) const {
+  DCHECK(widget);
 
-  AshColorProvider::BaseLayerType layer_type = GetShelfBaseLayerType();
+  const auto* color_provider = widget->GetColorProvider();
+  if (!features::IsBackgroundBlurEnabled())
+    return color_provider->GetColor(kColorAshShieldAndBase90);
 
-  return AshColorProvider::Get()->GetBaseLayerColor(layer_type);
+  return color_provider->GetColor(GetShelfBaseLayerColorId());
 }
 
 int ShelfConfig::GetShelfControlButtonBlurRadius() const {
-  if (features::IsBackgroundBlurEnabled() && in_tablet_mode_ && !is_in_app())
+  if (features::IsBackgroundBlurEnabled() && in_tablet_mode_ && !is_in_app_)
     return shelf_blur_radius_;
   return 0;
 }

@@ -120,7 +120,7 @@ class SystemNudge::SystemNudgeView : public views::View {
   // views::View:
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    layer()->SetColor(ShelfConfig::Get()->GetDefaultShelfColor());
+    layer()->SetColor(ShelfConfig::Get()->GetDefaultShelfColor(GetWidget()));
   }
 
   views::View* label_ = nullptr;

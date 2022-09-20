@@ -124,7 +124,7 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
   // Note: The icon color (both fg and bg) changes when the UI in in OOBE mode.
   const SkColor icon_fg_color = TrayIconColor(session_state_);
   const SkColor icon_bg_color = color_utils::GetResultingPaintColor(
-      ShelfConfig::Get()->GetShelfControlButtonColor(),
+      ShelfConfig::Get()->GetShelfControlButtonColor(GetWidget()),
       GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque));
 
   image_view()->SetImage(PowerStatus::GetBatteryImage(

@@ -155,6 +155,7 @@ void AddContentColors(ui::ColorMixer& mixer,
       use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey100)
                      : ui::ColorTransform(gfx::kGoogleGrey800);
   mixer[kColorAshButtonLabelColor] = {kColorAshTextColorPrimary};
+  mixer[kColorAshButtonLabelColorLight] = {cros_tokens::kColorSecondaryLight};
   mixer[kColorAshButtonLabelColorPrimary] = {
       cros_tokens::kColorPrimaryInverted};
   mixer[kColorAshTextOnBackgroundColor] = {cros_tokens::kColorPrimaryInverted};
@@ -164,6 +165,7 @@ void AddContentColors(ui::ColorMixer& mixer,
   mixer[kColorAshTextColorSuggestion] = {cros_tokens::kColorDisabled};
   mixer[kColorAshButtonLabelColorBlue] = {kColorAshTextColorURL};
   mixer[kColorAshButtonIconColor] = {kColorAshTextColorPrimary};
+  mixer[kColorAshButtonIconColorLight] = {cros_tokens::kColorSecondaryLight};
   mixer[kColorAshButtonIconColorPrimary] = {kColorAshButtonLabelColorPrimary};
   mixer[kColorAshAppStateIndicatorColor] = {kColorAshTextColorPrimary};
   mixer[kColorAshAppStateIndicatorColorInactive] =

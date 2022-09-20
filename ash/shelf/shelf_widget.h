@@ -62,9 +62,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
 
   ShelfBackgroundType GetBackgroundType() const;
 
-  // Gets the alpha value of |background_type|.
-  int GetBackgroundAlphaValue(ShelfBackgroundType background_type) const;
-
   const Shelf* shelf() const { return shelf_; }
   void RegisterHotseatWidget(HotseatWidget* hotseat_widget);
   ShelfLayoutManager* shelf_layout_manager() { return shelf_layout_manager_; }

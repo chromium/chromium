@@ -440,7 +440,6 @@ ShelfWidget::DelegateView::DelegateView(ShelfWidget* shelf_widget, Shelf* shelf)
 
   // |animating_background_| will be made visible during hotseat animations.
   ShowAnimatingBackground(false);
-  animating_background_.SetColor(ShelfConfig::Get()->GetMaximizedShelfColor());
 
   drag_handle_ = AddChildView(
       std::make_unique<DragHandle>(kDragHandleCornerRadius, shelf));
@@ -479,6 +478,8 @@ void ShelfWidget::DelegateView::ShowOpaqueBackground() {
 
 void ShelfWidget::DelegateView::OnThemeChanged() {
   views::AccessiblePaneView::OnThemeChanged();
+  animating_background_.SetColor(
+      ShelfConfig::Get()->GetMaximizedShelfColor(GetWidget()));
   shelf_widget_->background_animator_.PaintBackground(
       shelf_widget_->shelf_layout_manager()->GetShelfBackgroundType(),
       AnimationChangeType::IMMEDIATE);
@@ -830,11 +831,6 @@ void ShelfWidget::Shutdown() {
 
 ShelfBackgroundType ShelfWidget::GetBackgroundType() const {
   return background_animator_.target_background_type();
-}
-
-int ShelfWidget::GetBackgroundAlphaValue(
-    ShelfBackgroundType background_type) const {
-  return SkColorGetA(background_animator_.GetBackgroundColor(background_type));
 }
 
 void ShelfWidget::RegisterHotseatWidget(HotseatWidget* hotseat_widget) {

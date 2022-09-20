@@ -120,7 +120,7 @@ void HotseatTransitionAnimator::DoAnimation(HotseatState old_state,
   StopObservingImplicitAnimations();
 
   shelf_widget_->GetAnimatingBackground()->SetColor(
-      ShelfConfig::Get()->GetMaximizedShelfColor());
+      ShelfConfig::Get()->GetMaximizedShelfColor(shelf_widget_));
 
   gfx::Rect drag_handle_bounds(shelf_widget_->GetAnimatingBackground()->size());
   drag_handle_bounds.ClampToCenteredSize(ShelfConfig::Get()->DragHandleSize());

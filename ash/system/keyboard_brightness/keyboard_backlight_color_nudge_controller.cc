@@ -89,7 +89,8 @@ void KeyboardBacklightColorNudgeController::MaybeShowEducationNudge(
   education_nudge_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
 
   ui::Layer* layer = education_nudge_->layer();
-  layer->SetColor(ShelfConfig::Get()->GetDefaultShelfColor());
+  layer->SetColor(
+      ShelfConfig::Get()->GetDefaultShelfColor(education_nudge_->GetWidget()));
   layer->SetRoundedCornerRadius(
       gfx::RoundedCornersF{static_cast<float>(kBubbleCornerRadius)});
   layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);

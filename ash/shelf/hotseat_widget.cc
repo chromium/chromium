@@ -13,7 +13,6 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/shelf/hotseat_transition_animator.h"
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf_app_button.h"
@@ -23,7 +22,6 @@
 #include "ash/shell.h"
 #include "ash/style/system_shadow.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -34,9 +32,6 @@
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/color_analysis.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
@@ -398,8 +393,7 @@ class HotseatWindowTargeter : public aura::WindowTargeter {
 class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
                                     public views::WidgetDelegateView,
                                     public views::ViewTargeterDelegate,
-                                    public OverviewObserver,
-                                    public WallpaperControllerObserver {
+                                    public OverviewObserver {
  public:
   DelegateView() {
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
@@ -456,9 +450,6 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
   void OnOverviewModeWillStart() override;
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
-  // WallpaperControllerObserver:
-  void OnWallpaperColorsChanged() override;
-
   void set_focus_cycler(FocusCycler* focus_cycler) {
     focus_cycler_ = focus_cycler;
   }
@@ -488,11 +479,7 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
 };
 
 HotseatWidget::DelegateView::~DelegateView() {
-  WallpaperControllerImpl* wallpaper_controller =
-      Shell::Get()->wallpaper_controller();
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  if (wallpaper_controller)
-    wallpaper_controller->RemoveObserver(this);
   if (overview_controller)
     overview_controller->RemoveObserver(this);
 }
@@ -503,11 +490,7 @@ void HotseatWidget::DelegateView::Init(
   hotseat_widget_ = hotseat_widget;
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  WallpaperControllerImpl* wallpaper_controller =
-      Shell::Get()->wallpaper_controller();
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  if (wallpaper_controller)
-    wallpaper_controller->AddObserver(this);
   if (overview_controller) {
     overview_controller->AddObserver(this);
     if (overview_controller->InOverviewSession())
@@ -580,10 +563,12 @@ void HotseatWidget::DelegateView::SetTranslucentBackground(
                      hotseat_widget_->GetTranslucentBackgroundReportCallback());
   }
 
-  if (ShelfConfig::Get()->GetDefaultShelfColor() != target_color_) {
+  const auto* widget = GetWidget();
+  DCHECK(widget);
+  if (ShelfConfig::Get()->GetDefaultShelfColor(widget) != target_color_) {
     ui::ScopedLayerAnimationSettings color_animation_setter(animator);
     DoScopedAnimationSetting(&color_animation_setter);
-    target_color_ = ShelfConfig::Get()->GetDefaultShelfColor();
+    target_color_ = ShelfConfig::Get()->GetDefaultShelfColor(widget);
     if (features::IsDarkLightModeEnabled()) {
       translucent_background_->SetBackground(
           views::CreateSolidBackground(target_color_));
@@ -685,10 +670,6 @@ void HotseatWidget::DelegateView::OnOverviewModeEndingAnimationComplete(
 
   --blur_lock_;
   SetBackgroundBlur(true);
-}
-
-void HotseatWidget::DelegateView::OnWallpaperColorsChanged() {
-  UpdateTranslucentBackground();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

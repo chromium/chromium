@@ -22,7 +22,6 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/kiosk_app_instruction_bubble.h"
 #include "ash/shelf/shelf.h"
@@ -30,9 +29,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/system/model/enterprise_domain_model.h"
@@ -41,7 +38,6 @@
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "ash/system/tray/tray_popup_utils.h"
 #include "ash/wm/lock_state_controller.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -56,6 +52,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/events/types/event_type.h"
@@ -71,7 +68,6 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/controls/button/menu_button.h"
-#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_types.h"
@@ -104,29 +100,18 @@ constexpr LoginShelfView::ButtonId kButtonIds[] = {
     LoginShelfView::kOsInstall,
 };
 
-// The color of the button text and icon in light mode. This is
-// the mode used during OOBE, but color mode is under feature flag
-// at the moment so only dark mode is available.
-constexpr SkColor kButtonTextAndIconColorLight = gfx::kGoogleGrey700;
-
 // TODO(1190978): Remove this check once light mode is the default mode.
 bool IsOobe() {
   return Shell::Get()->session_controller()->GetSessionState() ==
          SessionState::OOBE;
 }
 
-SkColor GetButtonTextColor() {
-  if (IsOobe())
-    return kButtonTextAndIconColorLight;
-  return AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonLabelColor);
+ui::ColorId GetButtonTextColorId() {
+  return IsOobe() ? kColorAshButtonLabelColorLight : kColorAshButtonLabelColor;
 }
 
-SkColor GetButtonIconColor() {
-  if (IsOobe())
-    return kButtonTextAndIconColorLight;
-  return AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
+ui::ColorId GetButtonIconColorId() {
+  return IsOobe() ? kColorAshButtonIconColorLight : kColorAshButtonIconColor;
 }
 
 LoginMetricsRecorder::ShelfButtonClickTarget GetUserClickTarget(int button_id) {
@@ -220,9 +205,10 @@ class LoginShelfButton : public PillButton {
   }
 
   void UpdateButtonColors() {
-    SetEnabledTextColors(GetButtonTextColor());
-    SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(icon_, GetButtonIconColor()));
+    SetEnabledTextColors(GetColorProvider()->GetColor(GetButtonTextColorId()));
+    SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(icon_, GetButtonIconColorId()));
   }
 
   void OnFocus() override {
@@ -339,7 +325,7 @@ class KioskAppsButton : public views::MenuButton,
   void PaintButtonContents(gfx::Canvas* canvas) override {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(ShelfConfig::Get()->GetShelfControlButtonColor());
+    flags.setColor(ShelfConfig::Get()->GetShelfControlButtonColor(GetWidget()));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawPath(GetButtonHighlightPath(this), flags);
   }
@@ -351,9 +337,10 @@ class KioskAppsButton : public views::MenuButton,
   }
 
   void UpdateButtonColors() {
-    SetEnabledTextColors(GetButtonTextColor());
-    SetImage(views::Button::STATE_NORMAL,
-             CreateVectorIcon(kShelfAppsButtonIcon, GetButtonIconColor()));
+    SetEnabledTextColors(GetColorProvider()->GetColor(GetButtonTextColorId()));
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(kShelfAppsButtonIcon,
+                                                 GetButtonIconColorId()));
   }
 
   void DisplayMenu() {
