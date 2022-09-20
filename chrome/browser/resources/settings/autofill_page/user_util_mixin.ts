@@ -118,17 +118,12 @@ export const UserUtilMixin = dedupingMixin(
               this.addWebUIListener('sync-prefs-changed', syncPrefsChanged);
               syncBrowserProxy.sendSyncPrefsChanged();
 
-
-              // <if expr="not is_chromeos">
-              // For non-ChromeOS, non-Lacros, also check whether accounts are
-              // available.
               const storedAccountsChanged = (accounts: StoredAccount[]) => {
                 this.storedAccounts_ = accounts;
               };
               syncBrowserProxy.getStoredAccounts().then(storedAccountsChanged);
               this.addWebUIListener(
                   'stored-accounts-updated', storedAccountsChanged);
-              // </if>
             }
 
             override disconnectedCallback() {
