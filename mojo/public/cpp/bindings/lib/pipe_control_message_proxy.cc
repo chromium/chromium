@@ -43,6 +43,12 @@ PipeControlMessageProxy::PipeControlMessageProxy(MessageReceiver* receiver)
 void PipeControlMessageProxy::NotifyPeerEndpointClosed(
     InterfaceId id,
     const base::Optional<DisconnectReason>& reason) {
+  // IPC messages can't be sent at non-deterministic points, so just drop the
+  // close notification in that situation.
+  if (recordreplay::AreEventsDisallowed()) {
+    return;
+  }
+
   Message message(ConstructPeerEndpointClosedMessage(id, reason));
   message.set_heap_profiler_tag(kMessageTag);
   ignore_result(receiver_->Accept(&message));
