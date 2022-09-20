@@ -100,6 +100,15 @@ public class PrefService {
         return PrefServiceJni.get().isManagedPreference(mNativePrefServiceAndroid, preference);
     }
 
+    /**
+     * @param preference The name of the preference
+     * @return Whether the specified preference is currently using its default value
+     * and has not been set by any higher-priority source (even with the same value).
+     */
+    public boolean isDefaultValuePreference(@NonNull String preference) {
+        return PrefServiceJni.get().isDefaultValuePreference(mNativePrefServiceAndroid, preference);
+    }
+
     @NativeMethods
     interface Natives {
         void clearPref(long nativePrefServiceAndroid, String preference);
@@ -111,5 +120,6 @@ public class PrefService {
         String getString(long nativePrefServiceAndroid, String preference);
         void setString(long nativePrefServiceAndroid, String preference, String value);
         boolean isManagedPreference(long nativePrefServiceAndroid, String preference);
+        boolean isDefaultValuePreference(long nativePrefServiceAndroid, String preference);
     }
 }

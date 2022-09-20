@@ -48,6 +48,9 @@ class PrefServiceAndroid {
   jboolean IsManagedPreference(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_preference);
+  jboolean IsDefaultValuePreference(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& j_preference);
 
  private:
   raw_ptr<PrefService> pref_service_;

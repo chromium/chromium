@@ -105,4 +105,12 @@ public class PrefServiceTest {
 
         assertEquals(expected, mPrefService.isManagedPreference(PREF));
     }
+
+    @Test
+    public void testIsDefaultValuePreference() {
+        for (boolean expected : new boolean[] {false, true}) {
+            doReturn(expected).when(mNativeMock).isDefaultValuePreference(NATIVE_HANDLE, PREF);
+            assertEquals(expected, mPrefService.isDefaultValuePreference(PREF));
+        }
+    }
 }
