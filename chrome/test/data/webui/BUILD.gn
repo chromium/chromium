@@ -217,11 +217,6 @@ if (include_js_tests) {
 
     data = [ "$root_gen_dir/ui/webui/resources/js/load_time_data.js" ]
 
-    if (is_chromeos_ash || is_win || is_mac) {
-      deps += [ "inline_login:preprocess" ]
-      data += [ "$root_gen_dir/chrome/test/data/webui/inline_login/inline_login_test_util.js" ]
-    }
-
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
 
@@ -490,7 +485,25 @@ generate_grd("build_grd") {
     "test_browser_proxy.js",
     "test_plural_string_proxy.js",
     "test_util.js",
+    "usb_internals_test.js",
+
+    "invalidations/invalidations_test.js",
   ]
+
+  if (is_chromeos_ash) {
+    input_files += [ "chromeos/arc_account_picker/test_util.js" ]
+  }
+
+  if (enable_webui_certificate_viewer) {
+    input_files += [ "certificate_viewer_dialog_test.js" ]
+  }
+
+  if (!is_chromeos_lacros) {
+    input_files += [
+      "bluetooth_internals/bluetooth_internals_test.js",
+      "bluetooth_internals/test_utils.js",
+    ]
+  }
 
   deps = [
     ":build_chai_grdp",
@@ -617,6 +630,11 @@ generate_grd("build_grd") {
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",
     ]
+  }
+
+  if (is_chromeos_ash || is_win || is_mac) {
+    deps += [ "inline_login:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/inline_login/resources.grdp" ]
   }
 
   manifest_files =

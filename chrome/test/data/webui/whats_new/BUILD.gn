@@ -28,6 +28,13 @@ generate_grd("build_grdp") {
   grd_prefix = "webui_whats_new"
   out_grd = "$target_gen_dir/resources.grdp"
 
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [
+    "test.html",
+    "test_with_command_3.html",
+    "test_with_command_3.js",
+  ]
+
   deps = [ ":build_ts" ]
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])

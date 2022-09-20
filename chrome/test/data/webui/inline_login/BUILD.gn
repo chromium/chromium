@@ -4,11 +4,32 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir"
-  in_files = [ "inline_login_test_util.js" ]
+  in_folder = "."
+  out_folder = target_gen_dir
+  out_manifest = "$target_gen_dir/preprocessed_manifest.json"
+  in_files = [
+    "inline_login_test.js",
+    "inline_login_test_util.js",
+  ]
+
+  if (is_chromeos_ash) {
+    in_files += [
+      "arc_account_picker_page_test.js",
+      "inline_login_signin_blocked_by_policy_page_test.js",
+      "inline_login_welcome_page_test.js",
+    ]
+  }
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_inline_login"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":preprocess" ]
+  manifest_files = [ "$target_gen_dir/preprocessed_manifest.json" ]
+  resource_path_prefix = "inline_login"
 }
 
 js_type_check("closure_compile") {

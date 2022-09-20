@@ -39,7 +39,7 @@ TEST_F('UsbInternalsTest', 'WebUIValueRenderTest', function() {
   };
   const staticUrlPolicy = trustedTypes.createPolicy(
       'usb-test-static',
-      {createScriptURL: () => 'chrome://test/usb_internals_test.js'});
+      {createScriptURL: () => 'chrome://webui-test/usb_internals_test.js'});
   script.src = staticUrlPolicy.createScriptURL('');
   document.body.appendChild(script);
 });

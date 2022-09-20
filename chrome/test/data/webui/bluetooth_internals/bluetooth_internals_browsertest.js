@@ -20,7 +20,7 @@ BluetoothInternalsTest.prototype = {
 
   /** @override */
   browsePreload:
-      'chrome://bluetooth-internals/bluetooth_internals.html?module=bluetooth_internals/bluetooth_internals_test.js&host=test',
+      'chrome://bluetooth-internals/bluetooth_internals.html?module=bluetooth_internals/bluetooth_internals_test.js',
 
   /** @override */
   isAsync: true,
