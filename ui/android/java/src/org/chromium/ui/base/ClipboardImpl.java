@@ -16,7 +16,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PersistableBundle;
-import android.os.SystemClock;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -40,7 +39,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.base.compat.ApiHelperForS;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -304,16 +302,12 @@ public class ClipboardImpl
             // Android system clipboard contains an image, but it is not a PNG.
             // Try reading it as a bitmap and encoding to a PNG.
             try {
-                final long startTime = SystemClock.elapsedRealtime();
                 // TODO(crbug.com/1280468): This uses the unsafe ImageDecoder class.
                 Bitmap bitmap = ApiCompatibilityUtils.getBitmapByUri(cr, uri);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 // |quality| is ignored since PNG encoding is lossless. See
                 // https://developer.android.com/reference/android/graphics/Bitmap.CompressFormat#PNG.
                 bitmap.compress(Bitmap.CompressFormat.PNG, /*quality=*/100, baos);
-                RecordHistogram.recordMediumTimesHistogram(
-                        "Android.ClipBoard.getImageDuration.NonPngImages",
-                        SystemClock.elapsedRealtime() - startTime);
                 if (baos.size() > MAX_ALLOWED_PNG_SIZE_BYTES) return null;
 
                 return baos.toByteArray();
@@ -330,12 +324,8 @@ public class ClipboardImpl
                 return null;
             }
             byte[] data = new byte[(int) afd.getLength()];
-            final long startTime = SystemClock.elapsedRealtime();
             fileStream = new FileInputStream(afd.getFileDescriptor());
             fileStream.read(data);
-            RecordHistogram.recordMediumTimesHistogram(
-                    "Android.ClipBoard.getImageDuration.PngImages",
-                    SystemClock.elapsedRealtime() - startTime);
             return data;
         } catch (IOException e) {
             return null;

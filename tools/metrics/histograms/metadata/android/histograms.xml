@@ -953,26 +953,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.ClipBoard.getImageDuration{ImageType}" units="ms"
-    expires_after="2022-10-31">
-  <owner>gangwu@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Records the duration for Android Clipboard to load the images from Uri
-    backed by a temporary file. Recorded when image is requested from Clipboard
-    (e.g Image paste), and read into memory as bytes. Record for {ImageType}
-  </summary>
-  <token key="ImageType">
-    <variant name=".NonPngImages"
-        summary="image with type other than png, so encoding is needed. The
-                 duration includes reading image as bitmap, and conversion
-                 into png."/>
-    <variant name=".PngImages"
-        summary="image with type as png, so no encoding is needed. The
-                 duration includes reading bytes from the file stream."/>
-  </token>
-</histogram>
-
 <histogram name="Android.ContactsPicker.ContactCount" units="Contacts"
     expires_after="2023-06-01">
   <owner>finnur@chromium.org</owner>
