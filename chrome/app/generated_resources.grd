@@ -9230,6 +9230,42 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_BUTTON_COPY" desc="The button text for the image editor's copy to clipboard button.">
           Copy to Clipboard
         </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TITLE" desc="The text for the image editor's dedicated page title.">
+          Screenshot Image Editor
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_BUTTON_TEXT_CLEAR" desc="The text for the image editor's clear canvas button.">
+          Clear Canvas
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_ALIGN_LEFT" desc="The text for the image editor's text align-left radio button.">
+          Align left
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_ALIGN_CENTER" desc="The text for the image editor's text align-center radio button.">
+          Align center
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_ALIGN_RIGHT" desc="The text for the image editor's text align-right radio button.">
+          Align right
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_SHADOW_NONE" desc="The text for the image editor's text no shadow radio button.">
+          No shadow
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_SHADOW_SMALL" desc="The text for the image editor's text small shadow radio button.">
+          Small shadow
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_SHADOW_LARGE" desc="The text for the image editor's text large shadow radio button.">
+          Large shadow
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_FONT_DEFAULT" desc="The text for the image editor's text default font selector.">
+          Default font
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_FONT_MONOSPACE" desc="The text for the image editor's text monospace font selector.">
+          Monospace font
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_FONT_ITALIC" desc="The text for the image editor's text italic font selector.">
+          Italic font
+        </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_IMAGE_EDITOR_TOOLTIP_FONT_OUTLINE" desc="The text for the image editor's text outlne font selector.">
+          Outline font
+        </message>
       </if>
 
       <!-- Clipboard History Menu feature. -->
