@@ -93,14 +93,13 @@ void DeclaredStylePropertyMap::RemoveAllProperties() {
   GetStyleRule()->MutableProperties().Clear();
 }
 
-void DeclaredStylePropertyMap::ForEachProperty(
-    const IterationCallback& callback) {
+void DeclaredStylePropertyMap::ForEachProperty(IterationFunction visitor) {
   if (!GetStyleRule())
     return;
   const CSSPropertyValueSet& declared_style_set = GetStyleRule()->Properties();
   for (unsigned i = 0; i < declared_style_set.PropertyCount(); i++) {
     const auto& property_reference = declared_style_set.PropertyAt(i);
-    callback(property_reference.Name(), property_reference.Value());
+    visitor(property_reference.Name(), property_reference.Value());
   }
 }
 

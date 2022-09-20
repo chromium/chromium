@@ -101,8 +101,7 @@ const CSSValue* ComputedStylePropertyMap::GetCustomProperty(
       *style, nullptr /* layout_object */, false /* allow_visited_style */);
 }
 
-void ComputedStylePropertyMap::ForEachProperty(
-    const IterationCallback& callback) {
+void ComputedStylePropertyMap::ForEachProperty(IterationFunction visitor) {
   const ComputedStyle* style = UpdateStyle();
   if (!style)
     return;
@@ -135,7 +134,7 @@ void ComputedStylePropertyMap::ForEachProperty(
   });
 
   for (const auto& value : values)
-    callback(value.first, *value.second);
+    visitor(value.first, *value.second);
 }
 
 String ComputedStylePropertyMap::SerializationForShorthand(
