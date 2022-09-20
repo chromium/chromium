@@ -19,110 +19,100 @@ namespace features {
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
-CONTENT_EXPORT extern const base::Feature
-    kAllowContentInitiatedDataUrlNavigations;
-CONTENT_EXPORT extern const base::Feature kAndroidDownloadableFontsMatching;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAllowContentInitiatedDataUrlNavigations);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidDownloadableFontsMatching);
 #if BUILDFLAG(IS_WIN)
-CONTENT_EXPORT extern const base::Feature kAudioProcessHighPriorityWin;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioProcessHighPriorityWin);
 #endif
-CONTENT_EXPORT extern const base::Feature kAudioServiceLaunchOnStartup;
-CONTENT_EXPORT extern const base::Feature kAudioServiceOutOfProcess;
-CONTENT_EXPORT extern const base::Feature kAudioServiceSandbox;
-CONTENT_EXPORT extern const base::Feature
-    kAvoidUnnecessaryBeforeUnloadCheckPostTask;
-CONTENT_EXPORT extern const base::Feature
-    kAvoidUnnecessaryBeforeUnloadCheckSync;
-CONTENT_EXPORT extern const base::Feature kBackgroundFetch;
-CONTENT_EXPORT extern const base::Feature kBackForwardCache;
-CONTENT_EXPORT extern const base::Feature kBackForwardCacheMemoryControls;
-CONTENT_EXPORT extern const base::Feature kBackForwardCacheMediaSessionService;
-CONTENT_EXPORT extern const base::Feature kBlockInsecurePrivateNetworkRequests;
-CONTENT_EXPORT extern const base::Feature
-    kBlockInsecurePrivateNetworkRequestsFromPrivate;
-CONTENT_EXPORT extern const base::Feature
-    kBlockInsecurePrivateNetworkRequestsFromUnknown;
-CONTENT_EXPORT extern const base::Feature
-    kBlockInsecurePrivateNetworkRequestsDeprecationTrial;
-CONTENT_EXPORT extern const base::Feature
-    kBlockInsecurePrivateNetworkRequestsForNavigations;
-CONTENT_EXPORT extern const base::Feature
-    kBrokerFileOperationsOnDiskCacheInNetworkService;
-CONTENT_EXPORT extern const base::Feature
-    kBrowserVerifiedUserActivationKeyboard;
-CONTENT_EXPORT extern const base::Feature kBrowserVerifiedUserActivationMouse;
-CONTENT_EXPORT extern const base::Feature kCanvas2DImageChromium;
-CONTENT_EXPORT extern const base::Feature
-    kClearCrossSiteCrossBrowsingContextGroupWindowName;
-CONTENT_EXPORT extern const base::Feature kCompositeBGColorAnimation;
-CONTENT_EXPORT extern const base::Feature kCodeCacheDeletionWithoutFilter;
-CONTENT_EXPORT extern const base::Feature kConsolidatedMovementXY;
-CONTENT_EXPORT extern const base::Feature kCooperativeScheduling;
-CONTENT_EXPORT extern const base::Feature kCrashReporting;
-CONTENT_EXPORT extern const base::Feature kCriticalClientHint;
-CONTENT_EXPORT extern const base::Feature
-    kDebugHistoryInterventionNoUserActivation;
-CONTENT_EXPORT extern const base::Feature kDesktopCaptureChangeSource;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceLaunchOnStartup);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceOutOfProcess);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceSandbox);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckPostTask);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackgroundFetch);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCache);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheMemoryControls);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheMediaSessionService);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBlockInsecurePrivateNetworkRequests);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kBlockInsecurePrivateNetworkRequestsFromPrivate);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kBlockInsecurePrivateNetworkRequestsFromUnknown);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kBlockInsecurePrivateNetworkRequestsDeprecationTrial);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kBlockInsecurePrivateNetworkRequestsForNavigations);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kBrokerFileOperationsOnDiskCacheInNetworkService);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBrowserVerifiedUserActivationKeyboard);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBrowserVerifiedUserActivationMouse);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kCanvas2DImageChromium);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kClearCrossSiteCrossBrowsingContextGroupWindowName);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kCompositeBGColorAnimation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kCodeCacheDeletionWithoutFilter);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kConsolidatedMovementXY);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kCooperativeScheduling);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kCrashReporting);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kCriticalClientHint);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDebugHistoryInterventionNoUserActivation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDesktopCaptureChangeSource);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-CONTENT_EXPORT extern const base::Feature kDesktopCaptureLacrosV2;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDesktopCaptureLacrosV2);
 #endif
-CONTENT_EXPORT extern const base::Feature kDesktopPWAsTabStrip;
-CONTENT_EXPORT extern const base::Feature kDevicePosture;
-CONTENT_EXPORT extern const base::Feature kDigitalGoodsApi;
-CONTENT_EXPORT extern const base::Feature kDocumentPolicy;
-CONTENT_EXPORT extern const base::Feature kDocumentPolicyNegotiation;
-CONTENT_EXPORT extern const base::Feature kEarlyEstablishGpuChannel;
-CONTENT_EXPORT extern const base::Feature kEarlyHintsPreloadForNavigation;
-CONTENT_EXPORT extern const base::Feature kEmbeddingRequiresOptIn;
-CONTENT_EXPORT extern const base::Feature
-    kEnableBackForwardCacheForScreenReader;
-CONTENT_EXPORT extern const base::Feature kEnableCanvas2DLayers;
-CONTENT_EXPORT extern const base::Feature
-    kEnableMachineLearningModelLoaderWebPlatformApi;
-CONTENT_EXPORT extern const base::Feature
-    kEnableServiceWorkersForChromeUntrusted;
-CONTENT_EXPORT extern const base::Feature kEnumerateDevicesHideDeviceIDs;
-CONTENT_EXPORT extern const base::Feature kExperimentalAccessibilityLabels;
-CONTENT_EXPORT extern const base::Feature
-    kExperimentalContentSecurityPolicyFeatures;
-CONTENT_EXPORT extern const base::Feature
-    kExtraSafelistedRequestHeadersForOutOfBlinkCors;
-CONTENT_EXPORT extern const base::Feature kFedCm;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDesktopPWAsTabStrip);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDevicePosture);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDigitalGoodsApi);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDocumentPolicy);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDocumentPolicyNegotiation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kEarlyEstablishGpuChannel);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kEarlyHintsPreloadForNavigation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kEmbeddingRequiresOptIn);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBackForwardCacheForScreenReader);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableCanvas2DLayers);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kEnableMachineLearningModelLoaderWebPlatformApi);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableServiceWorkersForChromeUntrusted);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnumerateDevicesHideDeviceIDs);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kExperimentalAccessibilityLabels);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kExperimentalContentSecurityPolicyFeatures);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kExtraSafelistedRequestHeadersForOutOfBlinkCors);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCm);
 CONTENT_EXPORT extern const char kFedCmAutoSigninFieldTrialParamName[];
 CONTENT_EXPORT extern const char kFedCmIdpSignoutFieldTrialParamName[];
 CONTENT_EXPORT extern const char kFedCmIframeSupportFieldTrialParamName[];
 CONTENT_EXPORT extern const char kFedCmIdpSigninStatusFieldTrialParamName[];
-CONTENT_EXPORT extern const base::Feature kFedCmManifestValidation;
-CONTENT_EXPORT extern const base::Feature kFedCmMultipleIdentityProviders;
-CONTENT_EXPORT extern const base::Feature kFirstPartySets;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmManifestValidation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmMultipleIdentityProviders);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFirstPartySets);
 CONTENT_EXPORT extern const base::FeatureParam<bool> kFirstPartySetsIsDogfooder;
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kFirstPartySetsMaxAssociatedSites;
-CONTENT_EXPORT extern const base::Feature kFontManagerEarlyInit;
-CONTENT_EXPORT extern const base::Feature kFontSrcLocalMatching;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontManagerEarlyInit);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontSrcLocalMatching);
 #if !BUILDFLAG(IS_ANDROID)
-CONTENT_EXPORT extern const base::Feature
-    kForwardMemoryPressureEventsToGpuProcess;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kForwardMemoryPressureEventsToGpuProcess);
 #endif
-CONTENT_EXPORT extern const base::Feature kFledgeLimitNumAuctions;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeLimitNumAuctions);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kFledgeLimitNumAuctionsParam;
-CONTENT_EXPORT extern const base::Feature kFractionalScrollOffsets;
-CONTENT_EXPORT extern const base::Feature kGetDisplayMediaSet;
-CONTENT_EXPORT extern const base::Feature
-    kGetDisplayMediaSetAutoSelectAllScreens;
-CONTENT_EXPORT extern const base::Feature kGreaseUACH;
-CONTENT_EXPORT extern const base::Feature kIdentityInCanMakePaymentEventFeature;
-CONTENT_EXPORT extern const base::Feature kIdleDetection;
-CONTENT_EXPORT extern const base::Feature kInMemoryCodeCache;
-CONTENT_EXPORT extern const base::Feature kIncludeIpcOverheadInNavigationStart;
-CONTENT_EXPORT extern const base::Feature kInstalledApp;
-CONTENT_EXPORT extern const base::Feature kInstalledAppProvider;
-CONTENT_EXPORT extern const base::Feature kInstalledAppsInCbd;
-CONTENT_EXPORT extern const base::Feature kIsolatedWebApps;
-CONTENT_EXPORT extern const base::Feature kIsolateFencedFrames;
-CONTENT_EXPORT extern const base::Feature kIsolateOrigins;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFractionalScrollOffsets);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kGetDisplayMediaSet);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kGetDisplayMediaSetAutoSelectAllScreens);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kGreaseUACH);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kIdentityInCanMakePaymentEventFeature);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kIdleDetection);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kInMemoryCodeCache);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kIncludeIpcOverheadInNavigationStart);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledApp);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledAppProvider);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledAppsInCbd);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kIsolatedWebApps);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kIsolateFencedFrames);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kIsolateOrigins);
 CONTENT_EXPORT extern const char kIsolateOriginsFieldTrialParamName[];
-CONTENT_EXPORT extern const base::Feature kIsolateSandboxedIframes;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kIsolateSandboxedIframes);
 enum class IsolateSandboxedIframesGrouping {
   // In this grouping, all isolated sandboxed iframes whose URLs share the same
   // site in a given BrowsingInstance will share a process.
@@ -138,15 +128,15 @@ enum class IsolateSandboxedIframesGrouping {
 };
 CONTENT_EXPORT extern const base::FeatureParam<IsolateSandboxedIframesGrouping>
     kIsolateSandboxedIframesGroupingParam;
-CONTENT_EXPORT extern const base::Feature kLazyFrameLoading;
-CONTENT_EXPORT extern const base::Feature kLazyFrameVisibleLoadTimeMetrics;
-CONTENT_EXPORT extern const base::Feature kLazyImageLoading;
-CONTENT_EXPORT extern const base::Feature kLazyImageVisibleLoadTimeMetrics;
-CONTENT_EXPORT extern const base::Feature kLazyInitializeMediaControls;
-CONTENT_EXPORT extern const base::Feature kLegacyWindowsDWriteFontFallback;
-CONTENT_EXPORT extern const base::Feature kLogJsConsoleMessages;
-CONTENT_EXPORT extern const base::Feature kLowerMemoryLimitForNonMainRenderers;
-CONTENT_EXPORT extern const base::Feature kMBIMode;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyFrameLoading);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyFrameVisibleLoadTimeMetrics);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyImageLoading);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyImageVisibleLoadTimeMetrics);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyInitializeMediaControls);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kLegacyWindowsDWriteFontFallback);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kLogJsConsoleMessages);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kLowerMemoryLimitForNonMainRenderers);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kMBIMode);
 enum class MBIMode {
   // In this mode, the AgentSchedulingGroup will use the process-wide legacy IPC
   // channel for communication with the renderer process and to associate its
@@ -168,85 +158,76 @@ enum class MBIMode {
   kEnabledPerSiteInstance,
 };
 CONTENT_EXPORT extern const base::FeatureParam<MBIMode> kMBIModeParam;
-CONTENT_EXPORT extern const base::Feature kMediaDevicesSystemMonitorCache;
-CONTENT_EXPORT extern const base::Feature kMediaStreamTrackTransfer;
-CONTENT_EXPORT extern const base::Feature kMojoDedicatedThread;
-CONTENT_EXPORT extern const base::Feature kMojoVideoCapture;
-CONTENT_EXPORT extern const base::Feature kMojoVideoCaptureSecondary;
-CONTENT_EXPORT extern const base::Feature kMouseSubframeNoImplicitCapture;
-CONTENT_EXPORT extern const base::Feature kNavigationNetworkResponseQueue;
-CONTENT_EXPORT extern const base::Feature kNavigationRequestPreconnect;
-CONTENT_EXPORT extern const base::Feature kNavigationThreadingOptimizations;
-CONTENT_EXPORT extern const base::Feature kNetworkQualityEstimatorWebHoldback;
-CONTENT_EXPORT extern const base::Feature kNetworkServiceInProcess;
-CONTENT_EXPORT extern const base::Feature kNeverSlowMode;
-CONTENT_EXPORT extern const base::Feature kNotificationContentImage;
-CONTENT_EXPORT extern const base::Feature kNotificationTriggers;
-CONTENT_EXPORT extern const base::Feature kOriginIsolationHeader;
-CONTENT_EXPORT extern const base::Feature kOverscrollHistoryNavigation;
-CONTENT_EXPORT extern const base::Feature kWebPaymentAPICSP;
-CONTENT_EXPORT extern const base::Feature kPeriodicBackgroundSync;
-CONTENT_EXPORT extern const base::Feature kFeaturePolicyHeader;
-CONTENT_EXPORT extern const base::Feature kPepper3DImageChromium;
-CONTENT_EXPORT extern const base::Feature kPepperCrossOriginRedirectRestriction;
-CONTENT_EXPORT extern const base::Feature kDocumentPictureInPictureAPI;
-CONTENT_EXPORT extern const base::Feature kHighPriorityBeforeUnload;
-CONTENT_EXPORT extern const base::Feature kPreloadCookies;
-CONTENT_EXPORT extern const base::Feature kPrerender2Holdback;
-CONTENT_EXPORT extern const base::Feature kPrivacySandboxAdsAPIsOverride;
-CONTENT_EXPORT extern const base::Feature kPrivateNetworkAccessForWorkers;
-CONTENT_EXPORT extern const base::Feature
-    kPrivateNetworkAccessRespectPreflightResults;
-CONTENT_EXPORT extern const base::Feature kPrivateNetworkAccessSendPreflights;
-CONTENT_EXPORT extern const base::Feature kPrivateNetworkAccessPermissionPrompt;
-CONTENT_EXPORT extern const base::Feature kProactivelySwapBrowsingInstance;
-CONTENT_EXPORT extern const base::Feature
-    kProcessSharingWithDefaultSiteInstances;
-CONTENT_EXPORT extern const base::Feature
-    kProcessSharingWithStrictSiteInstances;
-CONTENT_EXPORT extern const base::Feature kPushSubscriptionChangeEvent;
-CONTENT_EXPORT extern const base::Feature kReloadHiddenTabsWithCrashedSubframes;
-CONTENT_EXPORT extern const base::Feature
-    kRenderAccessibilityHostDeserializationOffMainThread;
-CONTENT_EXPORT extern const base::Feature kRenderDocument;
-CONTENT_EXPORT extern const base::Feature
-    kRunVideoCaptureServiceInBrowserProcess;
-CONTENT_EXPORT extern const base::Feature kSavePageAsWebBundle;
-CONTENT_EXPORT extern const base::Feature kSecurePaymentConfirmation;
-CONTENT_EXPORT extern const base::Feature kSecurePaymentConfirmationDebug;
-CONTENT_EXPORT extern const base::Feature
-    kSendBeaconThrowForBlobWithNonSimpleType;
-CONTENT_EXPORT extern const base::Feature kServiceWorkerPaymentApps;
-CONTENT_EXPORT extern const base::Feature
-    kServiceWorkerTerminationOnNoControllee;
-CONTENT_EXPORT extern const base::Feature kSharedArrayBuffer;
-CONTENT_EXPORT extern const base::Feature kSharedArrayBufferOnDesktop;
-CONTENT_EXPORT extern const base::Feature
-    kSignedExchangeReportingForDistributors;
-CONTENT_EXPORT extern const base::Feature kSignedHTTPExchange;
-CONTENT_EXPORT extern const base::Feature
-    kSiteIsolationForCrossOriginOpenerPolicy;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kMediaDevicesSystemMonitorCache);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kMediaStreamTrackTransfer);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kMojoDedicatedThread);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kMojoVideoCapture);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kMojoVideoCaptureSecondary);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kMouseSubframeNoImplicitCapture);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationNetworkResponseQueue);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationRequestPreconnect);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationThreadingOptimizations);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kNetworkQualityEstimatorWebHoldback);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kNetworkServiceInProcess);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kNeverSlowMode);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kNotificationContentImage);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kNotificationTriggers);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kOriginIsolationHeader);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kOverscrollHistoryNavigation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebPaymentAPICSP);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPeriodicBackgroundSync);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFeaturePolicyHeader);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPepper3DImageChromium);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPepperCrossOriginRedirectRestriction);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDocumentPictureInPictureAPI);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kHighPriorityBeforeUnload);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreloadCookies);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2Holdback);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivacySandboxAdsAPIsOverride);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateNetworkAccessForWorkers);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kPrivateNetworkAccessRespectPreflightResults);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateNetworkAccessSendPreflights);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateNetworkAccessPermissionPrompt);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kProactivelySwapBrowsingInstance);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessSharingWithDefaultSiteInstances);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessSharingWithStrictSiteInstances);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPushSubscriptionChangeEvent);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kReloadHiddenTabsWithCrashedSubframes);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kRenderAccessibilityHostDeserializationOffMainThread);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kRenderDocument);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kRunVideoCaptureServiceInBrowserProcess);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSavePageAsWebBundle);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSecurePaymentConfirmation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSecurePaymentConfirmationDebug);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerPaymentApps);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerTerminationOnNoControllee);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSharedArrayBuffer);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSharedArrayBufferOnDesktop);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSignedExchangeReportingForDistributors);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSignedHTTPExchange);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSiteIsolationForCrossOriginOpenerPolicy);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kSiteIsolationForCrossOriginOpenerPolicyShouldPersistParam;
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kSiteIsolationForCrossOriginOpenerPolicyMaxSitesParam;
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam;
-CONTENT_EXPORT extern const base::Feature kSiteIsolationForGuests;
-CONTENT_EXPORT extern const base::Feature kDisableProcessReuse;
-CONTENT_EXPORT extern const base::Feature
-    kSkipEarlyCommitPendingForCrashedFrame;
-CONTENT_EXPORT extern const base::Feature
-    kServiceWorkerSkipIgnorableFetchHandler;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSiteIsolationForGuests);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDisableProcessReuse);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerSkipIgnorableFetchHandler);
 CONTENT_EXPORT extern const base::FeatureParam<bool> kSkipEmptyFetchHandler;
-CONTENT_EXPORT extern const base::Feature kUserMediaCaptureOnFocus;
-CONTENT_EXPORT extern const base::Feature kWebLockScreenApi;
-CONTENT_EXPORT extern const base::Feature kWebOTP;
-CONTENT_EXPORT extern const base::Feature kWebOTPAssertionFeaturePolicy;
-CONTENT_EXPORT extern const base::Feature kSpareRendererForSitePerProcess;
-CONTENT_EXPORT extern const base::Feature kStopVideoCaptureOnScreenLock;
-CONTENT_EXPORT extern const base::Feature kStrictOriginIsolation;
-CONTENT_EXPORT extern const base::Feature kSubframeShutdownDelay;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserMediaCaptureOnFocus);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebLockScreenApi);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebOTP);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebOTPAssertionFeaturePolicy);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSpareRendererForSitePerProcess);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kStopVideoCaptureOnScreenLock);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kStrictOriginIsolation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSubframeShutdownDelay);
 enum class SubframeShutdownDelayType {
   // A flat 2s shutdown delay.
   kConstant,
@@ -266,88 +247,85 @@ enum class SubframeShutdownDelayType {
 };
 CONTENT_EXPORT extern const base::FeatureParam<SubframeShutdownDelayType>
     kSubframeShutdownDelayTypeParam;
-CONTENT_EXPORT extern const base::Feature kSubresourceWebBundles;
-CONTENT_EXPORT extern const base::Feature
-    kSuppressDifferentOriginSubframeJSDialogs;
-CONTENT_EXPORT extern const base::Feature kSyntheticPointerActions;
-CONTENT_EXPORT extern const base::Feature kThreadingOptimizationsOnIO;
-CONTENT_EXPORT extern const base::Feature kTouchDragAndContextMenu;
-CONTENT_EXPORT extern const base::Feature kTouchpadAsyncPinchEvents;
-CONTENT_EXPORT extern const base::Feature kTouchpadOverscrollHistoryNavigation;
-CONTENT_EXPORT extern const base::Feature kTreatBootstrapAsDefault;
-CONTENT_EXPORT extern const base::Feature kUnrestrictedSharedArrayBuffer;
-CONTENT_EXPORT extern const base::Feature kUserActivationSameOriginVisibility;
-CONTENT_EXPORT extern const base::Feature kVerifyDidCommitParams;
-CONTENT_EXPORT extern const base::Feature kVideoPlaybackQuality;
-CONTENT_EXPORT extern const base::Feature kV8VmFuture;
-CONTENT_EXPORT extern const base::Feature kJavaScriptExperimentalSharedMemory;
-CONTENT_EXPORT extern const base::Feature kWebAppWindowControlsOverlay;
-CONTENT_EXPORT extern const base::Feature kWebAssemblyBaseline;
-CONTENT_EXPORT extern const base::Feature kWebAssemblyCodeProtection;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSubresourceWebBundles);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSuppressDifferentOriginSubframeJSDialogs);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSyntheticPointerActions);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kThreadingOptimizationsOnIO);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchDragAndContextMenu);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchpadAsyncPinchEvents);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchpadOverscrollHistoryNavigation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kTreatBootstrapAsDefault);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kUnrestrictedSharedArrayBuffer);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserActivationSameOriginVisibility);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kVerifyDidCommitParams);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kVideoPlaybackQuality);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kV8VmFuture);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kJavaScriptExperimentalSharedMemory);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAppWindowControlsOverlay);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyBaseline);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyCodeProtection);
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
-CONTENT_EXPORT extern const base::Feature kWebAssemblyCodeProtectionPku;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyCodeProtectionPku);
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(ARCH_CPU_X86_64)
-CONTENT_EXPORT extern const base::Feature kWebAssemblyDynamicTiering;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyDynamicTiering);
 #if defined(ARCH_CPU_X86_64)
-CONTENT_EXPORT extern const base::Feature
-    kEnableExperimentalWebAssemblyStackSwitching;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kEnableExperimentalWebAssemblyStackSwitching);
 #endif  // defined(ARCH_CPU_X86_64)
-CONTENT_EXPORT extern const base::Feature kWebAssemblyLazyCompilation;
-CONTENT_EXPORT extern const base::Feature kWebAssemblySimd;
-CONTENT_EXPORT extern const base::Feature kWebAssemblyTiering;
-CONTENT_EXPORT extern const base::Feature kWebAssemblyTrapHandler;
-CONTENT_EXPORT extern const base::Feature kWebAuthConditionalUI;
-CONTENT_EXPORT extern const base::Feature kWebBluetooth;
-CONTENT_EXPORT extern const base::Feature kWebBluetoothNewPermissionsBackend;
-CONTENT_EXPORT extern const base::Feature kWebBundles;
-CONTENT_EXPORT extern const base::Feature kWebBundlesFromNetwork;
-CONTENT_EXPORT extern const base::Feature kWebGLImageChromium;
-CONTENT_EXPORT extern const base::Feature kWebMidi;
-CONTENT_EXPORT extern const base::Feature kWebOtpBackendAuto;
-CONTENT_EXPORT extern const base::Feature kWebPayments;
-CONTENT_EXPORT extern const base::Feature kWebRtcUseGpuMemoryBufferVideoFrames;
-CONTENT_EXPORT extern const base::Feature kWebUICodeCache;
-CONTENT_EXPORT extern const base::Feature kWebUIReportOnlyTrustedTypes;
-CONTENT_EXPORT extern const base::Feature kWebUsb;
-CONTENT_EXPORT extern const base::Feature kWebXr;
-CONTENT_EXPORT extern const base::Feature kWebXrArModule;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyLazyCompilation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblySimd);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTiering);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTrapHandler);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAuthConditionalUI);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebBluetooth);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebBluetoothNewPermissionsBackend);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebBundles);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebBundlesFromNetwork);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebGLImageChromium);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebMidi);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebOtpBackendAuto);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebPayments);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebRtcUseGpuMemoryBufferVideoFrames);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUICodeCache);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUIReportOnlyTrustedTypes);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebUsb);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebXr);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebXrArModule);
 
 #if BUILDFLAG(IS_ANDROID)
-CONTENT_EXPORT extern const base::Feature kAccessibilityAsyncTreeConstruction;
-CONTENT_EXPORT extern const base::Feature kAccessibilityPageZoom;
-CONTENT_EXPORT extern const base::Feature
-    kBackgroundMediaRendererHasModerateBinding;
-CONTENT_EXPORT extern const base::Feature kBindingManagerConnectionLimit;
-CONTENT_EXPORT extern const base::Feature
-    kBindingManagerUseNotPerceptibleBinding;
-CONTENT_EXPORT extern const base::Feature kReduceGpuPriorityOnBackground;
-CONTENT_EXPORT extern const base::Feature kOnDemandAccessibilityEvents;
-CONTENT_EXPORT extern const base::Feature kRequestDesktopSiteAdditions;
-CONTENT_EXPORT extern const base::Feature kRequestDesktopSiteExceptions;
-CONTENT_EXPORT extern const base::Feature kUserMediaScreenCapturing;
-CONTENT_EXPORT extern const base::Feature kWarmUpNetworkProcess;
-CONTENT_EXPORT extern const base::Feature kWebNfc;
-CONTENT_EXPORT extern const base::Feature kWebViewThrottleBackgroundBeginFrame;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityAsyncTreeConstruction);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPageZoom);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackgroundMediaRendererHasModerateBinding);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBindingManagerConnectionLimit);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBindingManagerUseNotPerceptibleBinding);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kReduceGpuPriorityOnBackground);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kOnDemandAccessibilityEvents);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kRequestDesktopSiteAdditions);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kRequestDesktopSiteExceptions);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserMediaScreenCapturing);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWarmUpNetworkProcess);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebNfc);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebViewThrottleBackgroundBeginFrame);
 
 extern const char kDragAndDropMovementThresholdDipParam[];
 
-CONTENT_EXPORT extern const base::Feature kOptimizeEarlyNavigation;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kOptimizeEarlyNavigation);
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kCompositorLockTimeout;
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
-CONTENT_EXPORT extern const base::Feature kDeviceMonitorMac;
-CONTENT_EXPORT extern const base::Feature kIOSurfaceCapturer;
-CONTENT_EXPORT extern const base::Feature kMacSyscallSandbox;
-CONTENT_EXPORT extern const base::Feature kMacWebContentsOcclusion;
-CONTENT_EXPORT extern const base::Feature kRetryGetVideoCaptureDeviceInfos;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeviceMonitorMac);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kIOSurfaceCapturer);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacSyscallSandbox);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacWebContentsOcclusion);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kRetryGetVideoCaptureDeviceInfos);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if defined(WEBRTC_USE_PIPEWIRE)
-CONTENT_EXPORT extern const base::Feature kWebRtcPipeWireCapturer;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebRtcPipeWireCapturer);
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
 
 // DON'T ADD RANDOM STUFF HERE. Put it in the main section above in
