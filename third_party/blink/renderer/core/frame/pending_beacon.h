@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/pending_beacon_dispatcher.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -25,10 +26,12 @@ class ExecutionContext;
 // scope where the instance is created. Rather, it stays alive until
 //   - roughly when `sendNow()` or `deactivate()` is called (may still be alive
 //     for a while after this point).
-//   - when the document where it was created is destroyed.
+//   - when the document where it was created is destroyed, e.g. at navigation
+//     or frame detach.
 // See `PendingBeaconDispatcher` for more details.
 class CORE_EXPORT PendingBeacon
     : public ScriptWrappable,
+      public ExecutionContextLifecycleObserver,
       public PendingBeaconDispatcher::PendingBeacon {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -55,12 +58,17 @@ class CORE_EXPORT PendingBeacon
 
   void Trace(Visitor*) const override;
 
+  // `ExecutionContextLifecycleObserver` implementation.
+  void ContextDestroyed() override;
+
   // `PendingBeaconDispatcher::PendingBeacon` implementation.
   base::TimeDelta GetBackgroundTimeout() const override;
   void Send() override;
   bool IsPending() const override { return pending_; }
   void MarkNotPending() override { pending_ = false; }
-  ExecutionContext* GetExecutionContext() override { return ec_; }
+  ExecutionContext* GetExecutionContext() override {
+    return ExecutionContextLifecycleObserver::GetExecutionContext();
+  }
 
  protected:
   explicit PendingBeacon(ExecutionContext* context,

@@ -1239,7 +1239,9 @@
     "prefix": "pending-beacon",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/pending_beacon"],
-    "args": ["--enable-features=PendingBeaconAPI"]
+    "args": [
+      "--enable-features=PendingBeaconAPI:requires_origin_trial/false"
+    ]
   },
   {
     "prefix": "pending-beacon-origin-trial",
