@@ -24,6 +24,10 @@ TEST(VersionStringTest, VersionStringIsCorrect) {
             "1.51.224083.1.51.eng");
 }
 
+TEST(VersionStringTest, EmptyVersionStringIsCorrect) {
+  ASSERT_FALSE(GetVersionString("", "").empty());
+}
+
 TEST(VersionStringTest, ReleaseVersionUnchanged) {
   ASSERT_EQ(VersionToCrashString(kReleaseBuild), kReleaseBuild);
 }

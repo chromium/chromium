@@ -35,6 +35,9 @@ const std::string GetVersionString() {
 
 const std::string GetVersionString(const std::string& cast_release_number,
                                    const std::string& cast_incremental_number) {
+  if (cast_release_number.empty() || cast_incremental_number.empty()) {
+    return VersionToCrashString(CAST_BUILD_REVISION);
+  }
   return VersionToCrashString(
       base::JoinString({cast_release_number, cast_incremental_number}, "."));
 }
