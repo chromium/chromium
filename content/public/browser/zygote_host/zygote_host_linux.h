@@ -8,7 +8,12 @@
 #include <unistd.h>
 
 #include "base/process/process.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/files/platform_file.h"
+#endif
 
 namespace content {
 
@@ -35,6 +40,13 @@ class ZygoteHost {
   // likely to be killed by the OOM killer.
   virtual void AdjustRendererOOMScore(base::ProcessHandle process_handle,
                                       int score) = 0;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Reinitialize logging for the Zygote processes. Needed on ChromeOS, which
+  // switches to a log file in the user's home directory once they log in.
+  virtual void ReinitializeLogging(uint32_t logging_dest,
+                                   base::PlatformFile log_file_fd) = 0;
+#endif
 };
 
 }  // namespace content

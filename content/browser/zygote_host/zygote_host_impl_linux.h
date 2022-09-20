@@ -15,8 +15,13 @@
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/zygote_host/zygote_host_linux.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/files/platform_file.h"
+#endif
 
 namespace base {
 template <typename Type>
@@ -44,6 +49,11 @@ class CONTENT_EXPORT ZygoteHostImpl : public ZygoteHost {
 
   void AdjustRendererOOMScore(base::ProcessHandle process_handle,
                               int score) override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void ReinitializeLogging(uint32_t logging_dest,
+                           base::PlatformFile log_file_fd) override;
+#endif
+
   bool HasZygote() { return !zygote_pids_.empty(); }
 
  private:

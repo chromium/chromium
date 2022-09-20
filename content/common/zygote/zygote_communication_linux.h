@@ -13,6 +13,7 @@
 #include <sys/types.h>
 
 #include "base/callback.h"
+#include "base/files/platform_file.h"
 #include "base/files/scoped_file.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -37,6 +38,11 @@ class CONTENT_EXPORT ZygoteCommunication {
 
   void Init(
       base::OnceCallback<pid_t(base::CommandLine*, base::ScopedFD*)> launcher);
+
+  // Reinitialize logging. Needed on ChromeOS, which switches to a log file
+  // in the user's home directory once they log in.
+  void ReinitializeLogging(uint32_t logging_dest,
+                           base::PlatformFile log_file_fd);
 
   // Tries to start a process of type indicated by process_type.
   // Returns its pid on success, otherwise base::kNullProcessHandle;

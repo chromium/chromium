@@ -9,6 +9,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/files/platform_file.h"
 #include "base/i18n/unicodestring.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -73,6 +74,21 @@ ssize_t ZygoteCommunication::ReadReply(void* buf, size_t buf_len) {
   }
 
   return HANDLE_EINTR(read(control_fd_.get(), buf, buf_len));
+}
+
+void ZygoteCommunication::ReinitializeLogging(
+    uint32_t logging_dest,
+    base::PlatformFile raw_log_file_fd) {
+  DCHECK(init_);
+
+  base::Pickle pickle;
+  pickle.WriteInt(kZygoteCommandReinitializeLogging);
+  pickle.WriteUInt32(logging_dest);
+  std::vector<int> fds = {raw_log_file_fd};
+
+  base::AutoLock lock(control_lock_);
+  if (!SendMessage(pickle, &fds))
+    DLOG(WARNING) << "Unable to reinitialize logging";
 }
 
 pid_t ZygoteCommunication::ForkRequest(

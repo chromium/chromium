@@ -19,8 +19,10 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/files/platform_file.h"
 #include "base/linux_util.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"
@@ -270,6 +272,9 @@ bool Zygote::HandleRequestFromBrowser(int fd) {
         // could leave this command pending on the socket.
         LOG(ERROR) << "Unexpected real PID message from browser";
         NOTREACHED();
+        return false;
+      case kZygoteCommandReinitializeLogging:
+        HandleReinitializeLoggingRequest(iter, std::move(fds));
         return false;
       default:
         NOTREACHED();
@@ -650,6 +655,37 @@ bool Zygote::HandleGetSandboxStatus(int fd, base::PickleIterator iter) {
   }
 
   return false;
+}
+
+void Zygote::HandleReinitializeLoggingRequest(base::PickleIterator iter,
+                                              std::vector<base::ScopedFD> fds) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  uint32_t logging_dest;
+  if (!iter.ReadUInt32(&logging_dest)) {
+    LOG(ERROR) << "Missing logging_dest parameter";
+    return;
+  }
+
+  if (fds.size() != 1) {
+    LOG(ERROR) << "Wrong number of log fds was passed";
+    return;
+  }
+  base::PlatformFile log_fd = fds[0].release();
+
+  logging::LoggingSettings logging_settings;
+  logging_settings.logging_dest = logging_dest;
+  logging_settings.log_file = fdopen(log_fd, "a");
+  if (!logging_settings.log_file) {
+    close(log_fd);
+    LOG(ERROR) << "Failed to open new log file handle";
+    return;
+  }
+  if (!logging::InitLogging(logging_settings))
+    LOG(ERROR) << "Unable to reinitialize logging";
+#else
+  // This method should only be used in ChromeOS (Ash).
+  NOTREACHED();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace content

@@ -16,13 +16,23 @@
 #include "base/process/memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/zygote/zygote_commands_linux.h"
+#include "content/common/zygote/zygote_communication_linux.h"
+#include "content/common/zygote/zygote_handle_impl_linux.h"
+#include "content/public/common/zygote/zygote_handle.h"
 #include "sandbox/linux/services/credentials.h"
 #include "sandbox/linux/services/namespace_sandbox.h"
 #include "sandbox/linux/suid/client/setuid_sandbox_host.h"
 #include "sandbox/linux/suid/common/sandbox.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "sandbox/policy/switches.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "content/common/zygote/zygote_communication_linux.h"
+#include "content/common/zygote/zygote_handle_impl_linux.h"
+#include "content/public/common/zygote/zygote_handle.h"
+#endif
 
 namespace content {
 
@@ -281,6 +291,18 @@ void ZygoteHostImpl::AdjustRendererOOMScore(base::ProcessHandle pid,
       base::LaunchProcess(adj_oom_score_cmdline, options);
   if (sandbox_helper_process.IsValid())
     base::EnsureProcessGetsReaped(std::move(sandbox_helper_process));
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ZygoteHostImpl::ReinitializeLogging(uint32_t logging_dest,
+                                         base::PlatformFile log_file_fd) {
+  content::ZygoteHandle generic_zygote = content::GetGenericZygote();
+  content::ZygoteHandle unsandboxed_zygote = content::GetUnsandboxedZygote();
+  if (generic_zygote)
+    generic_zygote->ReinitializeLogging(logging_dest, log_file_fd);
+  if (unsandboxed_zygote)
+    unsandboxed_zygote->ReinitializeLogging(logging_dest, log_file_fd);
 }
 #endif
 

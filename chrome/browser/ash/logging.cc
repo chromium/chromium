@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/zygote_host/zygote_host_linux.h"
 #include "content/public/common/child_process_host.h"
 
 namespace ash {
@@ -74,6 +75,10 @@ void LogFileSetUp(const base::CommandLine& command_line,
     DLOG(WARNING) << "Unable to duplicate log file handle";
     return;
   }
+
+  // Redirect Zygote and future children's logs.
+  content::ZygoteHost::GetInstance()->ReinitializeLogging(settings.logging_dest,
+                                                          log_file_fd);
 
   // Redirect child processes' logs.
   for (content::BrowserChildProcessHostIterator it; !it.Done(); ++it)
