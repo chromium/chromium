@@ -7,14 +7,10 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
 #include "chromeos/ash/components/network/network_event_log.h"
-#include "chromeos/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
-
-namespace hotspot_config {
-namespace mojom = ::chromeos::hotspot_config::mojom;
-}  // namespace hotspot_config
 
 HotspotController::HotspotControlRequest::HotspotControlRequest(
     bool enabled,

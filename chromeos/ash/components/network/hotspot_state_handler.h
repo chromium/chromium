@@ -16,8 +16,8 @@
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -52,12 +52,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   // 2. List of allowed WiFi security modes for WiFi downstream.
   struct HotspotCapabilities {
     HotspotCapabilities(
-        const chromeos::hotspot_config::mojom::HotspotAllowStatus allow_status);
+        const hotspot_config::mojom::HotspotAllowStatus allow_status);
     ~HotspotCapabilities();
 
-    chromeos::hotspot_config::mojom::HotspotAllowStatus allow_status;
-    std::vector<chromeos::hotspot_config::mojom::WiFiSecurityMode>
-        allowed_security_modes;
+    hotspot_config::mojom::HotspotAllowStatus allow_status;
+    std::vector<hotspot_config::mojom::WiFiSecurityMode> allowed_security_modes;
   };
 
   // Represents the check tethering readiness result.
@@ -74,23 +73,22 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
 
   void Init(NetworkStateHandler* network_state_handler);
   // Return the latest hotspot state
-  const chromeos::hotspot_config::mojom::HotspotState& GetHotspotState() const;
+  const hotspot_config::mojom::HotspotState& GetHotspotState() const;
   // Return the latest hotspot active client count
   size_t GetHotspotActiveClientCount() const;
   // Return the current hotspot configuration
-  chromeos::hotspot_config::mojom::HotspotConfigPtr GetHotspotConfig() const;
+  hotspot_config::mojom::HotspotConfigPtr GetHotspotConfig() const;
   // Return the latest hotspot capabilities
   const HotspotCapabilities& GetHotspotCapabilities() const;
   // Return callback for the SetHotspotConfig method. |success| indicates
   // whether the operation is success or not.
   using SetHotspotConfigCallback = base::OnceCallback<void(
-      chromeos::hotspot_config::mojom::SetHotspotConfigResult result)>;
+      hotspot_config::mojom::SetHotspotConfigResult result)>;
 
   // Set hotspot configuration with given |config|. |callback| is called with
   // the success result of SetHotspotConfig operation.
-  void SetHotspotConfig(
-      chromeos::hotspot_config::mojom::HotspotConfigPtr config,
-      SetHotspotConfigCallback callback);
+  void SetHotspotConfig(hotspot_config::mojom::HotspotConfigPtr config,
+                        SetHotspotConfigCallback callback);
 
   using CheckTetheringReadinessCallback =
       base::OnceCallback<void(CheckTetheringReadinessResult result)>;
@@ -167,15 +165,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   // Update the hotspot_capabilities_ with the given |new_allow_status|
   // and then notify observers if it changes.
   void SetHotspotCapablities(
-      chromeos::hotspot_config::mojom::HotspotAllowStatus new_allow_status);
+      hotspot_config::mojom::HotspotAllowStatus new_allow_status);
 
   void ResetNetworkStateHandler();
 
-  chromeos::hotspot_config::mojom::HotspotState hotspot_state_ =
-      chromeos::hotspot_config::mojom::HotspotState::kDisabled;
+  hotspot_config::mojom::HotspotState hotspot_state_ =
+      hotspot_config::mojom::HotspotState::kDisabled;
   HotspotCapabilities hotspot_capabilities_{
-      chromeos::hotspot_config::mojom::HotspotAllowStatus::
-          kDisallowedNoCellularUpstream};
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoCellularUpstream};
   absl::optional<base::Value> hotspot_config_ = absl::nullopt;
   size_t active_client_count_ = 0;
 

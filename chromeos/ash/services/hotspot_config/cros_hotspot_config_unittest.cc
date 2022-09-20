@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/hotspot_config/cros_hotspot_config.h"
+#include "chromeos/ash/services/hotspot_config/cros_hotspot_config.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
@@ -11,14 +11,13 @@
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_observer.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/services/hotspot_config/public/cpp/cros_hotspot_config_test_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
-namespace hotspot_config {
+namespace ash::hotspot_config {
 
 namespace {
 
@@ -49,7 +48,7 @@ class CrosHotspotConfigTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(ash::features::kHotspot);
+    feature_list_.InitAndEnableFeature(features::kHotspot);
     LoginState::Initialize();
     LoginState::Get()->set_always_logged_in(false);
 
@@ -118,7 +117,7 @@ class CrosHotspotConfigTest : public testing::Test {
   void SetReadinessCheckResultReady() {
     network_handler_test_helper_->manager_test()
         ->SetSimulateCheckTetheringReadinessResult(
-            ash::FakeShillSimulatedResult::kSuccess,
+            FakeShillSimulatedResult::kSuccess,
             shill::kTetheringReadinessReady);
     base::RunLoop().RunUntilIdle();
   }
@@ -282,7 +281,7 @@ TEST_F(CrosHotspotConfigTest, EnableHotspot) {
 
   // Simulate check tethering readiness operation fail.
   helper()->manager_test()->SetSimulateCheckTetheringReadinessResult(
-      ash::FakeShillSimulatedResult::kFailure,
+      FakeShillSimulatedResult::kFailure,
       /*readiness_status=*/std::string());
   base::RunLoop().RunUntilIdle();
 
@@ -294,5 +293,4 @@ TEST_F(CrosHotspotConfigTest, DisableHotspot) {
   EXPECT_EQ(mojom::HotspotControlResult::kSuccess, DisableHotspot());
 }
 
-}  // namespace hotspot_config
-}  // namespace chromeos
+}  // namespace ash::hotspot_config

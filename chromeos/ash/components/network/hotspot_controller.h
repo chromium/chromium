@@ -11,7 +11,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
-#include "chromeos/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-forward.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-forward.h"
 
 namespace ash {
 
@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController {
   void Init(HotspotStateHandler* hotspot_state_handler);
   // Return callback for the EnableHotspot or DisableHotspot method.
   using HotspotControlCallback = base::OnceCallback<void(
-      chromeos::hotspot_config::mojom::HotspotControlResult control_result)>;
+      hotspot_config::mojom::HotspotControlResult control_result)>;
   // Push the enable or disable hotspot request to the request queue and try to
   // execute. If another request is already being processed, the current request
   // will wait until the previous one is completed.
@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController {
   void OnSetTetheringEnabledFailure(const std::string& error_name,
                                     const std::string& error_message);
   void CompleteCurrentRequest(
-      chromeos::hotspot_config::mojom::HotspotControlResult result);
+      hotspot_config::mojom::HotspotControlResult result);
 
   std::unique_ptr<HotspotControlRequest> current_request_;
   base::queue<std::unique_ptr<HotspotControlRequest>> queued_requests_;

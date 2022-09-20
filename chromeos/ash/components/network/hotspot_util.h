@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "chromeos/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-forward.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-forward.h"
 
 namespace base {
 class Value;
@@ -18,30 +18,30 @@ namespace ash {
 
 // Convert shill tethering state string value to mojom::HotspotState enum
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-chromeos::hotspot_config::mojom::HotspotState ShillTetheringStateToMojomState(
+hotspot_config::mojom::HotspotState ShillTetheringStateToMojomState(
     const std::string& shill_state);
 
 // Convert shill security mode string value to mojom::WiFiSecurityMode enum
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-chromeos::hotspot_config::mojom::WiFiSecurityMode ShillSecurityToMojom(
+hotspot_config::mojom::WiFiSecurityMode ShillSecurityToMojom(
     const std::string& shill_security);
 
 // Convert shill tethering config dictionary value to mojom::HotspotConfigPtr
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-chromeos::hotspot_config::mojom::HotspotConfigPtr
-ShillTetheringConfigToMojomConfig(const base::Value& shill_tethering_config);
+hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
+    const base::Value& shill_tethering_config);
 
 // Convert mojom::HotspotConfigPtr to the corresponding shill tethering config
 // value
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 base::Value MojomConfigToShillConfig(
-    const chromeos::hotspot_config::mojom::HotspotConfigPtr mojom_config);
+    const hotspot_config::mojom::HotspotConfigPtr mojom_config);
 
 // Convert enable or disable tethering result string from shill to
 // mojom::HotspotControlResult
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-chromeos::hotspot_config::mojom::HotspotControlResult
-SetTetheringEnabledResultToMojom(const std::string& shill_enabled_result);
+hotspot_config::mojom::HotspotControlResult SetTetheringEnabledResultToMojom(
+    const std::string& shill_enabled_result);
 
 }  // namespace ash
 

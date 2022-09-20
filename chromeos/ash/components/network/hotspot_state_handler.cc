@@ -11,10 +11,6 @@
 
 namespace ash {
 
-namespace hotspot_config {
-namespace mojom = ::chromeos::hotspot_config::mojom;
-}  // namespace hotspot_config
-
 namespace {
 
 size_t GetActiveClientCount(const base::Value& status) {

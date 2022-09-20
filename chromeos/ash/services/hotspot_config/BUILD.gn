@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 static_library("hotspot_config") {
   sources = [
@@ -14,7 +16,7 @@ static_library("hotspot_config") {
     "//base",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
-    "//chromeos/services/hotspot_config/public/mojom",
+    "//chromeos/ash/services/hotspot_config/public/mojom",
   ]
 }
 
@@ -30,8 +32,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/shill:test_support",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/services/hotspot_config/public/cpp:test_support",
     "//chromeos/login/login_state",
-    "//chromeos/services/hotspot_config/public/cpp:test_support",
     "//testing/gtest",
   ]
 }

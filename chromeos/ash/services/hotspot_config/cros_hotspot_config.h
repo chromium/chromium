@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_HOTSPOT_CONFIG_CROS_HOTSPOT_CONFIG_H_
-#define CHROMEOS_SERVICES_HOTSPOT_CONFIG_CROS_HOTSPOT_CONFIG_H_
+#ifndef CHROMEOS_ASH_SERVICES_HOTSPOT_CONFIG_CROS_HOTSPOT_CONFIG_H_
+#define CHROMEOS_ASH_SERVICES_HOTSPOT_CONFIG_CROS_HOTSPOT_CONFIG_H_
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
-#include "chromeos/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -17,14 +17,10 @@ namespace ash {
 
 class HotspotController;
 
-}  // namespace ash
-
-namespace chromeos {
-
 namespace hotspot_config {
 
 class CrosHotspotConfig : public mojom::CrosHotspotConfig,
-                          public ash::HotspotStateHandler::Observer {
+                          public HotspotStateHandler::Observer {
  public:
   // Constructs an instance of CrosHotspotConfig with default network subsystem
   // dependencies appropriate for a production environment.
@@ -54,14 +50,14 @@ class CrosHotspotConfig : public mojom::CrosHotspotConfig,
 
   // Constructs an instance of CrosHotspotConfig with specific network subsystem
   // dependencies. This should only be used in test.
-  CrosHotspotConfig(ash::HotspotStateHandler* hotspot_state_handler,
-                    ash::HotspotController* hotspot_controller);
+  CrosHotspotConfig(HotspotStateHandler* hotspot_state_handler,
+                    HotspotController* hotspot_controller);
   // HotspotStateHandler::Observer:
   void OnHotspotStatusChanged() override;
   void OnHotspotStateFailed(const std::string& error) override;
   void OnHotspotCapabilitiesChanged() override;
 
-  ash::HotspotStateHandler* hotspot_state_handler_;
+  HotspotStateHandler* hotspot_state_handler_;
   ash::HotspotController* hotspot_controller_;
 
   mojo::RemoteSet<mojom::CrosHotspotConfigObserver> observers_;
@@ -71,6 +67,6 @@ class CrosHotspotConfig : public mojom::CrosHotspotConfig,
 };
 
 }  // namespace hotspot_config
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_SERVICES_HOTSPOT_CONFIG_CROS_HOTSPOT_CONFIG_H_
+#endif  // CHROMEOS_ASH_SERVICES_HOTSPOT_CONFIG_CROS_HOTSPOT_CONFIG_H_

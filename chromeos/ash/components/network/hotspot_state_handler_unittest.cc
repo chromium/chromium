@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
-#include "chromeos/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -27,12 +27,11 @@ const char kCellularServicePath[] = "/service/cellular0";
 const char kCellularServiceGuid[] = "cellular_guid0";
 const char kCellularServiceName[] = "cellular_name0";
 
-chromeos::hotspot_config::mojom::HotspotConfigPtr GenerateTestConfig() {
-  auto mojom_config = chromeos::hotspot_config::mojom::HotspotConfig::New();
+hotspot_config::mojom::HotspotConfigPtr GenerateTestConfig() {
+  auto mojom_config = hotspot_config::mojom::HotspotConfig::New();
   mojom_config->auto_disable = false;
-  mojom_config->band = chromeos::hotspot_config::mojom::WiFiBand::k5GHz;
-  mojom_config->security =
-      chromeos::hotspot_config::mojom::WiFiSecurityMode::kWpa2;
+  mojom_config->band = hotspot_config::mojom::WiFiBand::k5GHz;
+  mojom_config->security = hotspot_config::mojom::WiFiSecurityMode::kWpa2;
   mojom_config->ssid = kHotspotConfigSSID;
   mojom_config->passphrase = kHotspotConfigPassphrase;
   mojom_config->bssid_randomization = false;
@@ -105,15 +104,14 @@ class HotspotStateHandlerTest : public ::testing::Test {
     LoginState::Shutdown();
   }
 
-  chromeos::hotspot_config::mojom::SetHotspotConfigResult SetHotspotConfig(
-      chromeos::hotspot_config::mojom::HotspotConfigPtr mojom_config) {
+  hotspot_config::mojom::SetHotspotConfigResult SetHotspotConfig(
+      hotspot_config::mojom::HotspotConfigPtr mojom_config) {
     base::RunLoop run_loop;
-    chromeos::hotspot_config::mojom::SetHotspotConfigResult result;
+    hotspot_config::mojom::SetHotspotConfigResult result;
     hotspot_state_handler_->SetHotspotConfig(
         std::move(mojom_config),
         base::BindLambdaForTesting(
-            [&](chromeos::hotspot_config::mojom::SetHotspotConfigResult
-                    success) {
+            [&](hotspot_config::mojom::SetHotspotConfigResult success) {
               result = success;
               run_loop.QuitClosure();
             }));
@@ -157,7 +155,7 @@ class HotspotStateHandlerTest : public ::testing::Test {
 
 TEST_F(HotspotStateHandlerTest, GetHotspotState) {
   EXPECT_EQ(hotspot_state_handler_->GetHotspotState(),
-            chromeos::hotspot_config::mojom::HotspotState::kDisabled);
+            hotspot_config::mojom::HotspotState::kDisabled);
 
   // Update tethering status to active in Shill.
   base::Value status_dict(base::Value::Type::DICTIONARY);
@@ -168,7 +166,7 @@ TEST_F(HotspotStateHandlerTest, GetHotspotState) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(hotspot_state_handler_->GetHotspotState(),
-            chromeos::hotspot_config::mojom::HotspotState::kEnabled);
+            hotspot_config::mojom::HotspotState::kEnabled);
   EXPECT_EQ(1u, observer_.hotspot_status_changed_count());
   EXPECT_EQ(0u, observer_.hotspot_state_failed_count());
 
@@ -180,7 +178,7 @@ TEST_F(HotspotStateHandlerTest, GetHotspotState) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(hotspot_state_handler_->GetHotspotState(),
-            chromeos::hotspot_config::mojom::HotspotState::kDisabled);
+            hotspot_config::mojom::HotspotState::kDisabled);
   EXPECT_EQ(2u, observer_.hotspot_status_changed_count());
   EXPECT_EQ(0u, observer_.hotspot_state_failed_count());
 
@@ -201,7 +199,7 @@ TEST_F(HotspotStateHandlerTest, GetHotspotState) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(hotspot_state_handler_->GetHotspotState(),
-            chromeos::hotspot_config::mojom::HotspotState::kDisabled);
+            hotspot_config::mojom::HotspotState::kDisabled);
   EXPECT_EQ(4u, observer_.hotspot_status_changed_count());
   EXPECT_EQ(1u, observer_.hotspot_state_failed_count());
   EXPECT_EQ(shill::kTetheringErrorUpstreamNotReady,
@@ -221,7 +219,7 @@ TEST_F(HotspotStateHandlerTest, GetHotspotState) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(hotspot_state_handler_->GetHotspotState(),
-            chromeos::hotspot_config::mojom::HotspotState::kDisabled);
+            hotspot_config::mojom::HotspotState::kDisabled);
   EXPECT_EQ(6u, observer_.hotspot_status_changed_count());
   EXPECT_EQ(2u, observer_.hotspot_state_failed_count());
   EXPECT_EQ(std::string(), observer_.last_hotspot_failed_error());
@@ -271,9 +269,9 @@ TEST_F(HotspotStateHandlerTest, GetHotspotActiveClientCount) {
 }
 
 TEST_F(HotspotStateHandlerTest, GetHotspotCapabilities) {
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotAllowStatus::
-                kDisallowedNoCellularUpstream,
-            hotspot_state_handler_->GetHotspotCapabilities().allow_status);
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoCellularUpstream,
+      hotspot_state_handler_->GetHotspotCapabilities().allow_status);
   EXPECT_EQ(0u, observer_.hotspot_capabilities_changed_count());
 
   base::Value capabilities_dict(base::Value::Type::DICTIONARY);
@@ -287,9 +285,9 @@ TEST_F(HotspotStateHandlerTest, GetHotspotCapabilities) {
       shill::kTetheringCapabilitiesProperty, capabilities_dict);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotAllowStatus::
-                kDisallowedNoCellularUpstream,
-            hotspot_state_handler_->GetHotspotCapabilities().allow_status);
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoCellularUpstream,
+      hotspot_state_handler_->GetHotspotCapabilities().allow_status);
   EXPECT_EQ(0u, observer_.hotspot_capabilities_changed_count());
 
   base::Value upstream_list(base::Value::Type::LIST);
@@ -300,9 +298,9 @@ TEST_F(HotspotStateHandlerTest, GetHotspotCapabilities) {
       shill::kTetheringCapabilitiesProperty, capabilities_dict);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotAllowStatus::
-                kDisallowedNoWiFiDownstream,
-            hotspot_state_handler_->GetHotspotCapabilities().allow_status);
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoWiFiDownstream,
+      hotspot_state_handler_->GetHotspotCapabilities().allow_status);
   EXPECT_EQ(1u, observer_.hotspot_capabilities_changed_count());
 
   // Add WiFi to the downstream technology list in Shill
@@ -319,8 +317,7 @@ TEST_F(HotspotStateHandlerTest, GetHotspotCapabilities) {
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringCapabilitiesProperty, capabilities_dict);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotAllowStatus::
-                kDisallowedNoMobileData,
+  EXPECT_EQ(hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoMobileData,
             hotspot_state_handler_->GetHotspotCapabilities().allow_status);
   EXPECT_EQ(2u, hotspot_state_handler_->GetHotspotCapabilities()
                     .allowed_security_modes.size());
@@ -339,17 +336,16 @@ TEST_F(HotspotStateHandlerTest, GetHotspotCapabilities) {
                            shill::kStateOnline, /*visible=*/true);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotAllowStatus::
-                kDisallowedReadinessCheckFail,
-            hotspot_state_handler_->GetHotspotCapabilities().allow_status);
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedReadinessCheckFail,
+      hotspot_state_handler_->GetHotspotCapabilities().allow_status);
   EXPECT_EQ(3u, observer_.hotspot_capabilities_changed_count());
 
   // Disconnect the active cellular network
   service_test->SetServiceProperty(kCellularServicePath, shill::kStateProperty,
                                    base::Value(shill::kStateIdle));
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotAllowStatus::
-                kDisallowedNoMobileData,
+  EXPECT_EQ(hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoMobileData,
             hotspot_state_handler_->GetHotspotCapabilities().allow_status);
   EXPECT_EQ(4u, observer_.hotspot_capabilities_changed_count());
 
@@ -362,7 +358,7 @@ TEST_F(HotspotStateHandlerTest, GetHotspotCapabilities) {
                                    base::Value(shill::kStateOnline));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotAllowStatus::kAllowed,
+  EXPECT_EQ(hotspot_config::mojom::HotspotAllowStatus::kAllowed,
             hotspot_state_handler_->GetHotspotCapabilities().allow_status);
   EXPECT_EQ(5u, observer_.hotspot_capabilities_changed_count());
 
@@ -370,29 +366,26 @@ TEST_F(HotspotStateHandlerTest, GetHotspotCapabilities) {
   base::RunLoop().RunUntilIdle();
   // TODO (jiajunz): Should expect equal after SetPolicyAllowHotspot() is
   // implemented.
-  EXPECT_NE(
-      chromeos::hotspot_config::mojom::HotspotAllowStatus::kDisallowedByPolicy,
-      hotspot_state_handler_->GetHotspotCapabilities().allow_status);
+  EXPECT_NE(hotspot_config::mojom::HotspotAllowStatus::kDisallowedByPolicy,
+            hotspot_state_handler_->GetHotspotCapabilities().allow_status);
 }
 
 TEST_F(HotspotStateHandlerTest, SetAndGetHotspotConfig) {
-  EXPECT_EQ(
-      chromeos::hotspot_config::mojom::SetHotspotConfigResult::kFailedNotLogin,
-      SetHotspotConfig(GenerateTestConfig()));
+  EXPECT_EQ(hotspot_config::mojom::SetHotspotConfigResult::kFailedNotLogin,
+            SetHotspotConfig(GenerateTestConfig()));
   ASSERT_FALSE(hotspot_state_handler_->GetHotspotConfig());
   EXPECT_EQ(0u, observer_.hotspot_status_changed_count());
 
   LoginToRegularUser();
-  EXPECT_EQ(chromeos::hotspot_config::mojom::SetHotspotConfigResult::kSuccess,
+  EXPECT_EQ(hotspot_config::mojom::SetHotspotConfigResult::kSuccess,
             SetHotspotConfig(GenerateTestConfig()));
   EXPECT_EQ(1u, observer_.hotspot_status_changed_count());
   auto hotspot_config = hotspot_state_handler_->GetHotspotConfig();
   EXPECT_TRUE(hotspot_config);
   EXPECT_FALSE(hotspot_config->auto_disable);
-  EXPECT_EQ(hotspot_config->band,
-            chromeos::hotspot_config::mojom::WiFiBand::k5GHz);
+  EXPECT_EQ(hotspot_config->band, hotspot_config::mojom::WiFiBand::k5GHz);
   EXPECT_EQ(hotspot_config->security,
-            chromeos::hotspot_config::mojom::WiFiSecurityMode::kWpa2);
+            hotspot_config::mojom::WiFiSecurityMode::kWpa2);
   EXPECT_EQ(hotspot_config->ssid, kHotspotConfigSSID);
   EXPECT_EQ(hotspot_config->passphrase, kHotspotConfigPassphrase);
   EXPECT_FALSE(hotspot_config->bssid_randomization);

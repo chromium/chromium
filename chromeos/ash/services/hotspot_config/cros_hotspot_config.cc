@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/hotspot_config/cros_hotspot_config.h"
+#include "chromeos/ash/services/hotspot_config/cros_hotspot_config.h"
 
 #include "chromeos/ash/components/network/hotspot_controller.h"
 #include "chromeos/ash/components/network/network_handler.h"
 
-namespace chromeos {
-namespace hotspot_config {
+namespace ash::hotspot_config {
 
 CrosHotspotConfig::CrosHotspotConfig()
     : CrosHotspotConfig(NetworkHandler::Get()->hotspot_state_handler(),
@@ -83,5 +82,4 @@ void CrosHotspotConfig::OnHotspotStateFailed(const std::string& error) {
     observer->OnHotspotStateFailed(error);
 }
 
-}  // namespace hotspot_config
-}  // namespace chromeos
+}  // namespace ash::hotspot_config

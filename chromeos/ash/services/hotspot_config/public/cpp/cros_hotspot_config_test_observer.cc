@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/hotspot_config/public/cpp/cros_hotspot_config_test_observer.h"
+#include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_observer.h"
 
-namespace chromeos {
-namespace hotspot_config {
+namespace ash::hotspot_config {
 
 CrosHotspotConfigTestObserver::CrosHotspotConfigTestObserver() = default;
 CrosHotspotConfigTestObserver::~CrosHotspotConfigTestObserver() = default;
@@ -25,5 +24,4 @@ void CrosHotspotConfigTestObserver::OnHotspotStateFailed(
   last_hotspot_failed_error_ = error_code;
 }
 
-}  // namespace hotspot_config
-}  // namespace chromeos
+}  // namespace ash::hotspot_config

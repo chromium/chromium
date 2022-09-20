@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
-#include "chromeos/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -84,11 +84,11 @@ class HotspotControllerTest : public ::testing::Test {
                              shill::kStateOnline, /*visible=*/true);
   }
 
-  chromeos::hotspot_config::mojom::HotspotControlResult EnableHotspot() {
+  hotspot_config::mojom::HotspotControlResult EnableHotspot() {
     base::RunLoop run_loop;
-    chromeos::hotspot_config::mojom::HotspotControlResult return_result;
+    hotspot_config::mojom::HotspotControlResult return_result;
     hotspot_controller_->EnableHotspot(base::BindLambdaForTesting(
-        [&](chromeos::hotspot_config::mojom::HotspotControlResult result) {
+        [&](hotspot_config::mojom::HotspotControlResult result) {
           return_result = result;
           run_loop.QuitClosure();
         }));
@@ -96,11 +96,11 @@ class HotspotControllerTest : public ::testing::Test {
     return return_result;
   }
 
-  chromeos::hotspot_config::mojom::HotspotControlResult DisableHotspot() {
+  hotspot_config::mojom::HotspotControlResult DisableHotspot() {
     base::RunLoop run_loop;
-    chromeos::hotspot_config::mojom::HotspotControlResult return_result;
+    hotspot_config::mojom::HotspotControlResult return_result;
     hotspot_controller_->DisableHotspot(base::BindLambdaForTesting(
-        [&](chromeos::hotspot_config::mojom::HotspotControlResult result) {
+        [&](hotspot_config::mojom::HotspotControlResult result) {
           return_result = result;
           run_loop.QuitClosure();
         }));
@@ -109,16 +109,16 @@ class HotspotControllerTest : public ::testing::Test {
   }
 
   void EnableAndDisableHotspot(
-      chromeos::hotspot_config::mojom::HotspotControlResult& enable_result,
-      chromeos::hotspot_config::mojom::HotspotControlResult& disable_result) {
+      hotspot_config::mojom::HotspotControlResult& enable_result,
+      hotspot_config::mojom::HotspotControlResult& disable_result) {
     base::RunLoop run_loop;
     hotspot_controller_->EnableHotspot(base::BindLambdaForTesting(
-        [&](chromeos::hotspot_config::mojom::HotspotControlResult result) {
+        [&](hotspot_config::mojom::HotspotControlResult result) {
           enable_result = result;
           run_loop.QuitClosure();
         }));
     hotspot_controller_->DisableHotspot(base::BindLambdaForTesting(
-        [&](chromeos::hotspot_config::mojom::HotspotControlResult result) {
+        [&](hotspot_config::mojom::HotspotControlResult result) {
           disable_result = result;
           run_loop.QuitClosure();
         }));
@@ -135,7 +135,7 @@ class HotspotControllerTest : public ::testing::Test {
 };
 
 TEST_F(HotspotControllerTest, EnableTetheringCapabilitiesNotAllowed) {
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotControlResult::kNotAllowed,
+  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kNotAllowed,
             EnableHotspot());
 }
 
@@ -144,7 +144,7 @@ TEST_F(HotspotControllerTest, EnableTetheringSuccess) {
   AddActiveCellularServivce();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotControlResult::kSuccess,
+  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
             EnableHotspot());
 }
 
@@ -162,12 +162,11 @@ TEST_F(HotspotControllerTest, EnableTetheringReadinessCheckFailure) {
           /*readiness_status=*/std::string());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotControlResult::
-                kReadinessCheckFailed,
+  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kReadinessCheckFailed,
             EnableHotspot());
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotAllowStatus::
-                kDisallowedReadinessCheckFail,
-            hotspot_state_handler_->GetHotspotCapabilities().allow_status);
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedReadinessCheckFail,
+      hotspot_state_handler_->GetHotspotCapabilities().allow_status);
 }
 
 TEST_F(HotspotControllerTest, EnableTetheringNetworkSetupFailure) {
@@ -183,13 +182,12 @@ TEST_F(HotspotControllerTest, EnableTetheringNetworkSetupFailure) {
       FakeShillSimulatedResult::kFailure, kShillNetworkingFailure);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotControlResult::
-                kNetworkSetupFailure,
+  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kNetworkSetupFailure,
             EnableHotspot());
 }
 
 TEST_F(HotspotControllerTest, DisableTetheringSuccess) {
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotControlResult::kSuccess,
+  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
             DisableHotspot());
 }
 
@@ -198,12 +196,11 @@ TEST_F(HotspotControllerTest, QueuedRequests) {
   AddActiveCellularServivce();
   base::RunLoop().RunUntilIdle();
 
-  chromeos::hotspot_config::mojom::HotspotControlResult enable_result,
-      disable_result;
+  hotspot_config::mojom::HotspotControlResult enable_result, disable_result;
   EnableAndDisableHotspot(enable_result, disable_result);
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotControlResult::kSuccess,
+  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
             enable_result);
-  EXPECT_EQ(chromeos::hotspot_config::mojom::HotspotControlResult::kSuccess,
+  EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
             disable_result);
 }
 

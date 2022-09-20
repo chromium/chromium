@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_HOTSPOT_CONFIG_PUBLIC_CPP_CROS_HOTSPOT_CONFIG_OBSERVER_H_
-#define CHROMEOS_SERVICES_HOTSPOT_CONFIG_PUBLIC_CPP_CROS_HOTSPOT_CONFIG_OBSERVER_H_
+#ifndef CHROMEOS_ASH_SERVICES_HOTSPOT_CONFIG_PUBLIC_CPP_CROS_HOTSPOT_CONFIG_OBSERVER_H_
+#define CHROMEOS_ASH_SERVICES_HOTSPOT_CONFIG_PUBLIC_CPP_CROS_HOTSPOT_CONFIG_OBSERVER_H_
 
-#include "chromeos/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 
-namespace chromeos::hotspot_config {
+namespace ash::hotspot_config {
 
 // This class allows derived observers to override only the methods that they
 // need.
@@ -19,6 +19,6 @@ class CrosHotspotConfigObserver : public mojom::CrosHotspotConfigObserver {
   void OnHotspotStateFailed(const std::string& error_code) override;
 };
 
-}  // namespace chromeos::hotspot_config
+}  // namespace ash::hotspot_config
 
-#endif  // CHROMEOS_SERVICES_HOTSPOT_CONFIG_PUBLIC_CPP_CROS_HOTSPOT_CONFIG_OBSERVER_H_
+#endif  // CHROMEOS_ASH_SERVICES_HOTSPOT_CONFIG_PUBLIC_CPP_CROS_HOTSPOT_CONFIG_OBSERVER_H_

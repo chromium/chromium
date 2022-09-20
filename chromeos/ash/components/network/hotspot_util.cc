@@ -7,15 +7,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_event_log.h"
-#include "chromeos/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
-
-namespace hotspot_config {
-namespace mojom = ::chromeos::hotspot_config::mojom;
-}  // namespace hotspot_config
 
 namespace {
 
@@ -201,8 +197,8 @@ base::Value MojomConfigToShillConfig(
   return result;
 }
 
-chromeos::hotspot_config::mojom::HotspotControlResult
-SetTetheringEnabledResultToMojom(const std::string& shill_enabled_result) {
+hotspot_config::mojom::HotspotControlResult SetTetheringEnabledResultToMojom(
+    const std::string& shill_enabled_result) {
   using hotspot_config::mojom::HotspotControlResult;
 
   if (shill_enabled_result == kShillEnableTetheringSuccess) {

@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_HOTSPOT_CONFIG_PUBLIC_CPP_CROS_HOTSPOT_CONFIG_TEST_OBSERVER_H_
-#define CHROMEOS_SERVICES_HOTSPOT_CONFIG_PUBLIC_CPP_CROS_HOTSPOT_CONFIG_TEST_OBSERVER_H_
+#ifndef CHROMEOS_ASH_SERVICES_HOTSPOT_CONFIG_PUBLIC_CPP_CROS_HOTSPOT_CONFIG_TEST_OBSERVER_H_
+#define CHROMEOS_ASH_SERVICES_HOTSPOT_CONFIG_PUBLIC_CPP_CROS_HOTSPOT_CONFIG_TEST_OBSERVER_H_
 
 #include <string>
 
-#include "chromeos/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace hotspot_config {
+namespace ash::hotspot_config {
 
 class CrosHotspotConfigTestObserver : public mojom::CrosHotspotConfigObserver {
  public:
@@ -51,7 +50,6 @@ class CrosHotspotConfigTestObserver : public mojom::CrosHotspotConfigObserver {
   std::string last_hotspot_failed_error_;
 };
 
-}  // namespace hotspot_config
-}  // namespace chromeos
+}  // namespace ash::hotspot_config
 
-#endif  // CHROMEOS_SERVICES_HOTSPOT_CONFIG_PUBLIC_CPP_CROS_HOTSPOT_CONFIG_TEST_OBSERVER_H_
+#endif  // CHROMEOS_ASH_SERVICES_HOTSPOT_CONFIG_PUBLIC_CPP_CROS_HOTSPOT_CONFIG_TEST_OBSERVER_H_
