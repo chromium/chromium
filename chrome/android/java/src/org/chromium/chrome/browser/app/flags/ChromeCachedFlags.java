@@ -116,6 +116,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sQueryTilesOnStart);
                 add(ChromeFeatureList.sReadLater);
                 add(ChromeFeatureList.sStartSurfaceAndroid);
+                add(ChromeFeatureList.sStartSurfaceReturnTime);
                 add(ChromeFeatureList.sStartSurfaceRefactor);
                 add(ChromeFeatureList.sStoreHoursAndroid);
                 add(ChromeFeatureList.sSwapPixelFormatToFixConvertFromTranslucent);
