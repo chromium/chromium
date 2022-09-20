@@ -83,28 +83,17 @@ void AssociateInputAndOutputForAec(
 }
 }  // namespace
 
-AudioInputIPCFactory& AudioInputIPCFactory::GetInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      AudioInputIPCFactory, instance,
-      (Thread::MainThread()->GetDeprecatedTaskRunner()));
-  return instance;
-}
-
-AudioInputIPCFactory::AudioInputIPCFactory(
-    scoped_refptr<base::SequencedTaskRunner> main_task_runner)
-    : main_task_runner_(std::move(main_task_runner)) {}
-
-AudioInputIPCFactory::~AudioInputIPCFactory() = default;
-
+// static
 std::unique_ptr<media::AudioInputIPC> AudioInputIPCFactory::CreateAudioInputIPC(
     const blink::LocalFrameToken& frame_token,
-    const media::AudioSourceParameters& source_params) const {
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+    const media::AudioSourceParameters& source_params) {
   CHECK(!source_params.session_id.is_empty());
   return std::make_unique<MojoAudioInputIPC>(
       source_params,
-      base::BindRepeating(&CreateMojoAudioInputStream, main_task_runner_,
+      base::BindRepeating(&CreateMojoAudioInputStream, main_task_runner,
                           frame_token),
-      base::BindRepeating(&AssociateInputAndOutputForAec, main_task_runner_,
+      base::BindRepeating(&AssociateInputAndOutputForAec, main_task_runner,
                           frame_token));
 }
 

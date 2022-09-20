@@ -499,7 +499,7 @@ RendererBlinkPlatformImpl::NewAudioCapturerSource(
     blink::WebLocalFrame* web_frame,
     const media::AudioSourceParameters& params) {
   return blink::AudioDeviceFactory::GetInstance()->NewAudioCapturerSource(
-      web_frame->GetLocalFrameToken(), params);
+      web_frame, params);
 }
 
 scoped_refptr<viz::RasterContextProvider>

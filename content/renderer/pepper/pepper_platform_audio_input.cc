@@ -171,9 +171,11 @@ void PepperPlatformAudioInput::InitializeOnIOThread(
     const base::UnguessableToken& session_id) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
-  if (ipc_startup_state_ != kStopped)
-    ipc_ = blink::AudioInputIPCFactory::GetInstance().CreateAudioInputIPC(
-        render_frame_token_, media::AudioSourceParameters(session_id));
+  if (ipc_startup_state_ != kStopped) {
+    ipc_ = blink::AudioInputIPCFactory::CreateAudioInputIPC(
+        render_frame_token_, main_task_runner_,
+        media::AudioSourceParameters(session_id));
+  }
   if (!ipc_)
     return;
 

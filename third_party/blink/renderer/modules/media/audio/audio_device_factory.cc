@@ -22,6 +22,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_input_ipc_factory.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_manager.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -148,11 +149,12 @@ AudioDeviceFactory::NewSwitchableAudioRendererSink(
 
 scoped_refptr<media::AudioCapturerSource>
 AudioDeviceFactory::NewAudioCapturerSource(
-    const blink::LocalFrameToken& frame_token,
+    WebLocalFrame* web_frame,
     const media::AudioSourceParameters& params) {
   return base::MakeRefCounted<media::AudioInputDevice>(
-      blink::AudioInputIPCFactory::GetInstance().CreateAudioInputIPC(
-          frame_token, params),
+      blink::AudioInputIPCFactory::CreateAudioInputIPC(
+          web_frame->GetLocalFrameToken(),
+          web_frame->GetTaskRunner(TaskType::kInternalMedia), params),
       media::AudioInputDevice::Purpose::kUserInput,
       media::AudioInputDevice::DeadStreamDetection::kEnabled);
 }

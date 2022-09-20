@@ -25,21 +25,15 @@ namespace blink {
 // This is a thread-safe factory for AudioInputIPC objects.
 class BLINK_MODULES_EXPORT AudioInputIPCFactory {
  public:
-  explicit AudioInputIPCFactory(
-      scoped_refptr<base::SequencedTaskRunner> main_task_runner);
-  AudioInputIPCFactory(const AudioInputIPCFactory&) = delete;
-  AudioInputIPCFactory& operator=(const AudioInputIPCFactory&) = delete;
-  ~AudioInputIPCFactory();
-
-  static AudioInputIPCFactory& GetInstance();
-
-  // The returned object may only be used on io_task_runner().
-  std::unique_ptr<media::AudioInputIPC> CreateAudioInputIPC(
+  // This method can be called from any thread but requires a `frame_token`
+  // and a `main_task_runner` so that the associated WebLocalFrame can be
+  // found to asssocaite the audio channel with the frame.
+  static std::unique_ptr<media::AudioInputIPC> CreateAudioInputIPC(
       const blink::LocalFrameToken& frame_token,
-      const media::AudioSourceParameters& source_params) const;
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+      const media::AudioSourceParameters& source_params);
 
- private:
-  const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+  AudioInputIPCFactory() = delete;
 };
 
 }  // namespace blink
