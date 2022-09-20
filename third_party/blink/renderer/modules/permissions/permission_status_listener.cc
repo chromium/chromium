@@ -62,7 +62,17 @@ void PermissionStatusListener::OnPermissionStatusChange(
 
   status_ = status;
 
+  // The `observers_` list can change in response to permission status change
+  // events as the observers map to PermissionStatus JS objects which can be
+  // created and destroyed in the JS event handler function. To avoid UAF and
+  // list modification issues, a temporary snapshot of the observers is made and
+  // used instead.
+  HeapHashSet<WeakMember<Observer>> observers;
   for (const auto& observer : observers_) {
+    observers.insert(observer);
+  }
+
+  for (const auto& observer : observers) {
     if (observer)
       observer->OnPermissionStatusChange(status);
     else
