@@ -35,7 +35,7 @@ namespace {
 #if BUILDFLAG(LARGE_VARIATION_KEY_SIZE)
 constexpr size_t kVariationsKeySize = 8192;
 #else
-constexpr size_t kVariationsKeySize = 4096;
+constexpr size_t kVariationsKeySize = 6144;
 #endif
 
 // Crash key reporting the number of experiments. 8 is the size of the crash key
