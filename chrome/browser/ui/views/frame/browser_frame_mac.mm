@@ -294,7 +294,7 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
   }
 }
 
-bool BrowserFrameMac::ExecuteCommand(
+bool BrowserFrameMac::WillExecuteCommand(
     int32_t command,
     WindowOpenDisposition window_open_disposition,
     bool is_before_first_responder) {
@@ -322,6 +322,19 @@ bool BrowserFrameMac::ExecuteCommand(
       return false;
     }
   }
+
+  return true;
+}
+
+bool BrowserFrameMac::ExecuteCommand(
+    int32_t command,
+    WindowOpenDisposition window_open_disposition,
+    bool is_before_first_responder) {
+  if (!WillExecuteCommand(command, window_open_disposition,
+                          is_before_first_responder))
+    return false;
+
+  Browser* browser = browser_view_->browser();
 
   chrome::ExecuteCommandWithDisposition(browser, command,
                                         window_open_disposition);

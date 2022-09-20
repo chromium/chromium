@@ -33,6 +33,32 @@ NSMenuItem* MenuItemForKeyEquivalentEventInMenu(NSEvent* event, NSMenu* menu) {
   return result;
 }
 
+// Searches |menu| and its submenus for a NSMenuItem with |tag|.
+// Returns the menu item or nil if no menu item matches.
+NSMenuItem* MenuItemWithTagInMenu(int tag, NSMenu* menu) {
+  for (NSMenuItem* item in [menu itemArray]) {
+    if ([item tag] == tag)
+      return item;
+
+    if ([item hasSubmenu]) {
+      NSMenuItem* the_item = MenuItemWithTagInMenu(tag, [item submenu]);
+      if (the_item != nil)
+        return the_item;
+    }
+  }
+
+  return nil;
+}
+
+NSMenuItem* MenuItemWithTag(int tag) {
+  NSMenu* mainMenu = [[NSApplication sharedApplication] mainMenu];
+
+  // Validate menu items before searching.
+  [mainMenu update];
+
+  return MenuItemWithTagInMenu(tag, mainMenu);
+}
+
 }  // namespace
 
 @implementation NSMenu (ChromeAdditions)
@@ -56,6 +82,34 @@ NSMenuItem* MenuItemForKeyEquivalentEventInMenu(NSEvent* event, NSMenu* menu) {
   [self update];
 
   return MenuItemForKeyEquivalentEventInMenu(event, self);
+}
+
++ (BOOL)flashMenuForChromeCommand:(int)chromeCommand {
+  NSMenuItem* menuItem = MenuItemWithTag(chromeCommand);
+  if (menuItem == nil)
+    return NO;
+
+  // Swap out the menu item's existing target/action for a fake pair,
+  // so that we can flash the menu item without executing anything.
+  id origTarget = [menuItem target];
+  SEL origAction = [menuItem action];
+  [menuItem setTarget:self];
+  [menuItem setAction:@selector(cr_executeDummyCommand:)];
+
+  // -performActionForItemAtIndex: is documented as triggering highlighting in
+  // the menu bar as well as sending out appropriate accessibility notifications
+  // indicating the item was selected.
+  NSMenu* owningMenu = [menuItem menu];
+  [owningMenu performActionForItemAtIndex:[owningMenu indexOfItem:menuItem]];
+
+  // Restore.
+  [menuItem setTarget:origTarget];
+  [menuItem setAction:origAction];
+
+  return YES;
+}
+
++ (void)cr_executeDummyCommand:(id)sender {
 }
 
 @end

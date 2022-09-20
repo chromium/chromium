@@ -88,6 +88,13 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
       int32_t command,
       remote_cocoa::mojom::ValidateUserInterfaceItemResult* result) {}
 
+  // Returns in |will_execute| whether or not ExecuteCommand() will execute
+  // the chrome command |command| with |window_open_disposition| and
+  // |is_before_first_responder|.
+  virtual bool WillExecuteCommand(int32_t command,
+                                  WindowOpenDisposition window_open_disposition,
+                                  bool is_before_first_responder);
+
   // Execute the chrome command |command| with |window_open_disposition|. If
   // |is_before_first_responder| then only call ExecuteCommand if the command
   // is reserved and extension shortcut handling is not suspended. Returns in

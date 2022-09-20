@@ -224,6 +224,14 @@ interface NativeWidgetNSWindowHost {
   ValidateUserInterfaceItem(int32 command) =>
       (ValidateUserInterfaceItemResult result);
 
+  // Returns in |will_execute| whether or not ExecuteCommand() will execute
+  // the chrome command |command| with |window_open_disposition| and
+  // |is_before_first_responder|.
+  [Sync]
+  WillExecuteCommand(int32 command,
+                     ui.mojom.WindowOpenDisposition window_open_disposition,
+                     bool is_before_first_responder) => (bool will_execute);
+
   // Execute the chrome command |command| with |window_open_disposition|. If
   // |is_before_first_responder| then only call ExecuteCommand if the command
   // is reserved and extension shortcut handling is not suspended. Returns in

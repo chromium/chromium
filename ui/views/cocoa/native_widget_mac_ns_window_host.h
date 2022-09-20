@@ -351,6 +351,10 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
       int32_t command,
       remote_cocoa::mojom::ValidateUserInterfaceItemResultPtr* out_result)
       override;
+  bool WillExecuteCommand(int32_t command,
+                          WindowOpenDisposition window_open_disposition,
+                          bool is_before_first_responder,
+                          bool* will_execute) override;
   bool ExecuteCommand(int32_t command,
                       WindowOpenDisposition window_open_disposition,
                       bool is_before_first_responder,
@@ -394,6 +398,10 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void ValidateUserInterfaceItem(
       int32_t command,
       ValidateUserInterfaceItemCallback callback) override;
+  void WillExecuteCommand(int32_t command,
+                          WindowOpenDisposition window_open_disposition,
+                          bool is_before_first_responder,
+                          ExecuteCommandCallback callback) override;
   void ExecuteCommand(int32_t command,
                       WindowOpenDisposition window_open_disposition,
                       bool is_before_first_responder,

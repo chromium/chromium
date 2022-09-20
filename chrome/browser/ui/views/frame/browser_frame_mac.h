@@ -62,6 +62,9 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   void ValidateUserInterfaceItem(
       int32_t command,
       remote_cocoa::mojom::ValidateUserInterfaceItemResult* result) override;
+  bool WillExecuteCommand(int32_t command,
+                          WindowOpenDisposition window_open_disposition,
+                          bool is_before_first_responder) override;
   bool ExecuteCommand(int32_t command,
                       WindowOpenDisposition window_open_disposition,
                       bool is_before_first_responder) override;

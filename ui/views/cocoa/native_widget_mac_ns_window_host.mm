@@ -193,6 +193,13 @@ class BridgedNativeWidgetHostDummy
     remote_cocoa::mojom::ValidateUserInterfaceItemResultPtr result;
     std::move(callback).Run(std::move(result));
   }
+  void WillExecuteCommand(int32_t command,
+                          WindowOpenDisposition window_open_disposition,
+                          bool is_before_first_responder,
+                          ExecuteCommandCallback callback) override {
+    bool will_execute = false;
+    std::move(callback).Run(will_execute);
+  }
   void ExecuteCommand(int32_t command,
                       WindowOpenDisposition window_open_disposition,
                       bool is_before_first_responder,
@@ -1344,6 +1351,16 @@ bool NativeWidgetMacNSWindowHost::ValidateUserInterfaceItem(
   return true;
 }
 
+bool NativeWidgetMacNSWindowHost::WillExecuteCommand(
+    int32_t command,
+    WindowOpenDisposition window_open_disposition,
+    bool is_before_first_responder,
+    bool* will_execute) {
+  *will_execute = native_widget_mac_->WillExecuteCommand(
+      command, window_open_disposition, is_before_first_responder);
+  return true;
+}
+
 bool NativeWidgetMacNSWindowHost::ExecuteCommand(
     int32_t command,
     WindowOpenDisposition window_open_disposition,
@@ -1509,6 +1526,17 @@ void NativeWidgetMacNSWindowHost::ValidateUserInterfaceItem(
   remote_cocoa::mojom::ValidateUserInterfaceItemResultPtr result;
   ValidateUserInterfaceItem(command, &result);
   std::move(callback).Run(std::move(result));
+}
+
+void NativeWidgetMacNSWindowHost::WillExecuteCommand(
+    int32_t command,
+    WindowOpenDisposition window_open_disposition,
+    bool is_before_first_responder,
+    ExecuteCommandCallback callback) {
+  bool will_execute = false;
+  WillExecuteCommand(command, window_open_disposition,
+                     is_before_first_responder, &will_execute);
+  std::move(callback).Run(will_execute);
 }
 
 void NativeWidgetMacNSWindowHost::ExecuteCommand(

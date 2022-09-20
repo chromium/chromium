@@ -23,6 +23,12 @@
 // menu item exists.
 - (NSMenuItem*)cr_menuItemForKeyEquivalentEvent:(NSEvent*)event;
 
+// Locates the menu item corresponding to `chromeCommand` and flashes
+// its owning menu title in the menu bar (without executing the command).
+// Also causes VoiceOver to speak the menu item. Returns NO if the
+// command wasn't found in the menus.
++ (BOOL)flashMenuForChromeCommand:(int)chromeCommand;
+
 @end
 
 #endif  // UI_BASE_COCOA_NSMENU_ADDITIONS_H_
