@@ -60,6 +60,7 @@ class WaylandServerTestBase : public TestBase {
 };
 
 // A class to support a client side code on a separate thread.
+// TODO(yzshen): Remove this class.
 class WaylandClientRunner : base::Thread {
  public:
   WaylandClientRunner(Server* server, const std::string& name);

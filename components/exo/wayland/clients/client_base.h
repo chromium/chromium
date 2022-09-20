@@ -96,6 +96,8 @@ class ClientBase {
     std::unique_ptr<zcr_vsync_feedback_v1> vsync_feedback;
     std::unique_ptr<zcr_color_manager_v1> color_manager;
     std::unique_ptr<zcr_stylus_v2> stylus;
+    std::unique_ptr<zcr_remote_shell_v1> cr_remote_shell_v1;
+    std::unique_ptr<zcr_remote_shell_v2> cr_remote_shell_v2;
   };
 
   struct Buffer {

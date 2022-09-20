@@ -258,12 +258,19 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "clients/security_delegate_binding_test.cc",
     "server_unittest.cc",
+    "test/test_client.h",
+    "test/test_wayland_client_thread.cc",
+    "test/test_wayland_client_thread.h",
+    "test/wayland_server_test.cc",
+    "test/wayland_server_test.h",
     "test/wayland_server_test_base.cc",
     "test/wayland_server_test_base.h",
   ]
 
   deps = [
+    ":client_support",
     ":wayland",
     "//base",
     "//base/test:test_support",
@@ -610,7 +617,6 @@ test("wayland_client_tests") {
 
   sources = [
     "clients/interface_binding_test.cc",
-    "clients/security_delegate_binding_test.cc",
     "clients/test/run_all_client_tests.cc",
   ]
 

@@ -193,6 +193,14 @@ void RegistryHandler(void* data,
   } else if (strcmp(interface, "zcr_stylus_v2") == 0) {
     globals->stylus.reset(static_cast<zcr_stylus_v2*>(
         wl_registry_bind(registry, id, &zcr_stylus_v2_interface, version)));
+  } else if (strcmp(interface, zcr_remote_shell_v1_interface.name) == 0) {
+    globals->cr_remote_shell_v1.reset(
+        static_cast<zcr_remote_shell_v1*>(wl_registry_bind(
+            registry, id, &zcr_remote_shell_v1_interface, version)));
+  } else if (strcmp(interface, zcr_remote_shell_v2_interface.name) == 0) {
+    globals->cr_remote_shell_v2.reset(
+        static_cast<zcr_remote_shell_v2*>(wl_registry_bind(
+            registry, id, &zcr_remote_shell_v2_interface, version)));
   }
 }
 

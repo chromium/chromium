@@ -493,7 +493,7 @@ void Server::StartWithDefaultPath(StartCallback callback) {
   Finalize(std::move(callback), /*success=*/true);
 }
 
-bool Server::AddSocket(const std::string name) {
+bool Server::AddSocket(const std::string& name) {
   DCHECK(!name.empty());
   return !wl_display_add_socket(wl_display_.get(), name.c_str());
 }

@@ -78,7 +78,7 @@ class Server : public display::DisplayObserver {
 
   // This adds a Unix socket to the Wayland display server which can be used
   // by clients to connect to the display server.
-  bool AddSocket(const std::string name);
+  bool AddSocket(const std::string& name);
 
   // Returns the file descriptor associated with the server.
   int GetFileDescriptor() const;
