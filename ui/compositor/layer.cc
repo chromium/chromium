@@ -218,6 +218,9 @@ Layer::Layer(LayerType type)
 }
 
 Layer::~Layer() {
+  CHECK(!in_send_damaged_rects_);
+  CHECK(!sending_damaged_rects_for_descendants_);
+
   for (auto& observer : observer_list_)
     observer.LayerDestroyed(this);
 
@@ -1207,6 +1210,8 @@ void Layer::ScheduleDraw() {
 }
 
 void Layer::SendDamagedRects() {
+  CHECK(!in_send_damaged_rects_);
+  base::AutoReset<bool> setter(&in_send_damaged_rects_, true);
   if (layer_mask_)
     layer_mask_->SendDamagedRects();
   if (delegate_)

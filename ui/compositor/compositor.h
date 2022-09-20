@@ -462,6 +462,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   friend class base::RefCounted<Compositor>;
   friend class TotalAnimationThroughputReporter;
 
+  static void SendDamagedRectsRecursive(Layer* layer);
+
   // Called when collected metrics for the tracker of |tracker_id| is ready.
   void ReportMetricsForTracker(
       int tracker_id,

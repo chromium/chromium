@@ -711,10 +711,13 @@ void Compositor::BeginMainFrameNotExpectedSoon() {}
 
 void Compositor::BeginMainFrameNotExpectedUntil(base::TimeTicks time) {}
 
-static void SendDamagedRectsRecursive(ui::Layer* layer) {
+// static
+void Compositor::SendDamagedRectsRecursive(Layer* layer) {
   layer->SendDamagedRects();
   // Iterate using the size for the case of mutation during sending damaged
   // regions. https://crbug.com/1242257.
+  base::AutoReset<bool> setter(&(layer->sending_damaged_rects_for_descendants_),
+                               true);
   for (size_t i = 0; i < layer->children().size(); ++i)
     SendDamagedRectsRecursive(layer->children()[i]);
 }
