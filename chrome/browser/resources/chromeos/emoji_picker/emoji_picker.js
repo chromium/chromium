@@ -711,6 +711,13 @@ export class EmojiPicker extends PolymerElement {
     }
   }
 
+  preventV2TabScrolling() {
+    if (this.v2Enabled) {
+      this.$.tabs.scrollLeft =
+          this.calculateTabScrollLeftPosition(this.pagination);
+    }
+  }
+
   hideDialogs() {
     this.hideEmojiVariants();
 
@@ -1066,6 +1073,15 @@ export class EmojiPicker extends PolymerElement {
     const offsetByLeftChevron = constants.V2_EMOJI_ICON_SIZE + chevronMargin;
     return (page === 1) ? 0 :
         (page - 1) * constants.EMOJI_PICKER_WIDTH - offsetByLeftChevron;
+  }
+
+  /**
+   * @param {number} itemPagination
+   * @param {number} currentPagination
+   * @returns {number}
+   */
+  getTabIndex(itemPagination, currentPagination) {
+    return itemPagination === currentPagination ? 0 : -1;
   }
 
   /**

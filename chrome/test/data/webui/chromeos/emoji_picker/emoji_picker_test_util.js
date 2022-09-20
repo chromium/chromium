@@ -76,6 +76,16 @@ export function timeout(ms) {
 }
 
 /**
+ * Constructs a promise which resolves after 0 seconds.
+ * @return {!Promise} timeout promise.
+ */
+export function completePendingMicrotasks() {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 0);
+  });
+}
+
+/**
  * Constructs a promise which resolves when the given promise resolves,
  * or fails after the given timeout - whichever occurs first.
  * @param {!Promise<T>} promise promise to wait for.

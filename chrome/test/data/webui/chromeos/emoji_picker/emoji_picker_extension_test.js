@@ -8,9 +8,9 @@ import {EMOJI_PICKER_READY} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertFalse} from '../../chai_assert.js';
+import {assertEquals, assertFalse} from '../../chai_assert.js';
 
-import {deepQuerySelector, isGroupButtonActive, waitForCondition} from './emoji_picker_test_util.js';
+import {completePendingMicrotasks, deepQuerySelector, isGroupButtonActive, timeout, waitForCondition} from './emoji_picker_test_util.js';
 
 const ACTIVE_CATEGORY_BUTTON = 'category-button-active';
 
@@ -164,5 +164,41 @@ suite('emoji-picker-extension', () => {
 
         await waitForCondition(() => emojiGroups.scrollTop === targetScroll);
         assertFalse(findInEmojiPicker('emoji-search').searchNotEmpty());
+      });
+
+  test(
+      'Focusing on emoji tab groups does should not scroll the tabs section',
+      async () => {
+        const emojiGroupButton = findInEmojiPicker(
+            '#tabs', 'emoji-group-button:last-of-type', 'cr-icon-button');
+        emojiGroupButton.focus();
+        await waitForCondition(
+            () => findInEmojiPicker(
+                '#tabs', 'emoji-group-button:last-of-type:focus-within'));
+        // wait for any potential smooth scrolling to take place
+        await timeout(400);
+
+        assertEquals(findInEmojiPicker('#tabs').scrollLeft, 0);
+      });
+
+  test(
+      'Focusing on emoticon tab groups does should not scroll the tabs section',
+      async () => {
+        const categoryButton = findInEmojiPicker(
+            'emoji-search', 'emoji-category-button:last-of-type',
+            'cr-icon-button');
+        categoryButton.click();
+        await waitForCondition(() => isCategoryButtonActive(categoryButton));
+        await completePendingMicrotasks();
+        const emojiGroupButton = findInEmojiPicker(
+            '#tabs', 'text-group-button:last-of-type', 'cr-button');
+        emojiGroupButton.focus();
+        await waitForCondition(
+            () => findInEmojiPicker(
+                '#tabs', 'text-group-button:last-of-type:focus-within'));
+        // wait for any potential smooth scrolling to take place
+        await timeout(400);
+
+        assertEquals(findInEmojiPicker('#tabs').scrollLeft, 0);
       });
 });

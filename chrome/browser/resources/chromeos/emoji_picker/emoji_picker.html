@@ -282,7 +282,9 @@
             active="[[item.active]]"
             disabled="[[item.disabled]]"
             icon="[[item.icon]]" name="[[item.name]]"
-            v2-enabled$="[[v2Enabled]]">>
+            v2-enabled$="[[v2Enabled]]"
+            on-focus="preventV2TabScrolling"
+            custom-tab-index="[[getTabIndex(item.pagination,pagination)]]">>
           </emoji-group-button>
         </template>
         <!--Fake group button to increase maximum scrolling, need an icon to
@@ -316,7 +318,9 @@
             icon="[[emojiGroupTabs.0.icon]]"
             name="[[emojiGroupTabs.0.name]]"
             class="tab"
-            v2-enabled$="[[v2Enabled]]">
+            v2-enabled$="[[v2Enabled]]"
+            on-focus="preventV2TabScrolling"
+            custom-tab-index="[[getTabIndex(item.pagination,pagination)]]">
           </emoji-group-button>
           <!-- Render non history tab. -->
           <template is="dom-repeat"
@@ -327,7 +331,10 @@
               active="[[item.active]]"
               disabled="[[item.disabled]]"
               name="[[item.name]]"
-              class="tab">
+              class="tab"
+              on-focus="preventV2TabScrolling"
+              custom-tab-index=
+              "[[getTabIndex(item.pagination,pagination)]]">
             </text-group-button>
           </template>
         </div>
@@ -342,7 +349,10 @@
                 active="[[item.active]]"
                 disabled="[[item.disabled]]"
                 name="[[item.name]]"
-                class="tab">
+                class="tab"
+                on-focus="preventV2TabScrolling"
+                custom-tab-index=
+                "[[getTabIndex(item.pagination,pagination)]]">
               </text-group-button>
             </template>
           </div>
