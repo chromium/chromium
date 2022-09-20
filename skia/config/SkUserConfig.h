@@ -214,11 +214,7 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_SUPPORT_LEGACY_DRAWLOOPER
 
-#define SK_SUPPORT_LEGACY_RUNTIME_EFFECTS
-
 #define SK_SUPPORT_LEGACY_DITHER
-
-#define SK_LEGACY_INNER_JOINS
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
