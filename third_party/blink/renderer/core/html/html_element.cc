@@ -1831,11 +1831,14 @@ void HTMLElement::HandleKeypressEvent(KeyboardEvent& event) {
 }
 
 int HTMLElement::offsetLeftForBinding() {
+  // Both of the following calls may update style and layout:
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
+  Element* offset_parent = unclosedOffsetParent();
+
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-               layout_object->OffsetLeft(unclosedOffsetParent()),
+               layout_object->OffsetLeft(offset_parent),
                layout_object->StyleRef())
         .Round();
   }
@@ -1843,11 +1846,14 @@ int HTMLElement::offsetLeftForBinding() {
 }
 
 int HTMLElement::offsetTopForBinding() {
+  // Both of the following calls may update style and layout:
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
+  Element* offset_parent = unclosedOffsetParent();
+
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-               layout_object->OffsetTop(unclosedOffsetParent()),
+               layout_object->OffsetTop(offset_parent),
                layout_object->StyleRef())
         .Round();
   }
