@@ -57,8 +57,8 @@ public class TabGridDialogView extends FrameLayout {
     private static final int DIALOG_UNGROUP_ALPHA_ANIMATION_DURATION = 200;
     private static final int DIALOG_ALPHA_ANIMATION_DURATION = 150;
     private static final int CARD_FADE_ANIMATION_DURATION = 50;
-    private static final int Y_TRANSLATE_DURATION_MS = 400;
-    private static final int SCRIM_FADE_DURATION_MS = 450;
+    private static final int Y_TRANSLATE_DURATION_MS = 300;
+    private static final int SCRIM_FADE_DURATION_MS = 350;
 
     private static Callback<RectF> sSourceRectCallbackForTesting;
 

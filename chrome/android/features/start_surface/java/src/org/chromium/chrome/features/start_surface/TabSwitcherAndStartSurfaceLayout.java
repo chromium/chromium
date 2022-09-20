@@ -71,9 +71,9 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
     // Duration of the transition animation
     public static final long ZOOMING_DURATION = 300;
-    private static final int TRANSLATE_DURATION_MS = 400;
+    private static final int TRANSLATE_DURATION_MS = 300;
     private static final int BACKGROUND_FADING_DURATION_MS = 150;
-    private static final int SCRIM_FADE_DURATION_MS = 450;
+    private static final int SCRIM_FADE_DURATION_MS = 350;
 
     private static final String TRACE_SHOW_TAB_SWITCHER = "StartSurfaceLayout.Show.TabSwitcher";
     private static final String TRACE_HIDE_TAB_SWITCHER = "StartSurfaceLayout.Hide.TabSwitcher";
