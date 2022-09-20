@@ -171,10 +171,12 @@ bool UseBoringSSLForRandBytes() {
 
 }  // namespace internal
 
-void RandBytes(void* output, size_t output_length) {
+namespace {
+
+void RandBytes(void* output, size_t output_length, bool avoid_allocation) {
 #if !BUILDFLAG(IS_NACL)
   // The BoringSSL experiment takes priority over everything else.
-  if (internal::UseBoringSSLForRandBytes()) {
+  if (!avoid_allocation && internal::UseBoringSSLForRandBytes()) {
     // Ensure BoringSSL is initialized so it can use things like RDRAND.
     CRYPTO_library_init();
     // BoringSSL's RAND_bytes always returns 1. Any error aborts the program.
@@ -185,7 +187,7 @@ void RandBytes(void* output, size_t output_length) {
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
      BUILDFLAG(IS_ANDROID)) &&                        \
     !BUILDFLAG(IS_NACL)
-  if (UseGetrandom()) {
+  if (avoid_allocation || UseGetrandom()) {
     // On Android it is mandatory to check that the kernel _version_ has the
     // support for a syscall before calling. The same check is made on Linux and
     // ChromeOS to avoid making a syscall that predictably returns ENOSYS.
@@ -210,6 +212,23 @@ void RandBytes(void* output, size_t output_length) {
   const bool success =
       ReadFromFD(urandom_fd, static_cast<char*>(output), output_length);
   CHECK(success);
+}
+
+}  // namespace
+
+namespace internal {
+
+double RandDoubleAvoidAllocation() {
+  uint64_t number;
+  RandBytes(&number, sizeof(number), /*avoid_allocation=*/true);
+  // This transformation is explained in rand_util.cc.
+  return (number >> 11) * 0x1.0p-53;
+}
+
+}  // namespace internal
+
+void RandBytes(void* output, size_t output_length) {
+  RandBytes(output, output_length, /*avoid_allocation=*/false);
 }
 
 int GetUrandomFD() {

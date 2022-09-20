@@ -50,4 +50,15 @@ void RandBytes(void* output, size_t output_length) {
   zx_cprng_draw(output, output_length);
 }
 
+namespace internal {
+
+double RandDoubleAvoidAllocation() {
+  uint64_t number;
+  zx_cprng_draw(&number, sizeof(number));
+  // This transformation is explained in rand_util.cc.
+  return (number >> 11) * 0x1.0p-53;
+}
+
+}  // namespace internal
+
 }  // namespace base

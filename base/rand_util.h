@@ -30,6 +30,10 @@ void ConfigureRandBytesFieldTrial();
 void ConfigureBoringSSLBackedRandBytesFieldTrial();
 #endif
 
+// Returns a random double in range [0, 1). For use in allocator shim to avoid
+// infinite recursion. Thread-safe.
+BASE_EXPORT double RandDoubleAvoidAllocation();
+
 }  // namespace internal
 
 // Returns a random number in range [0, UINT64_MAX]. Thread-safe.

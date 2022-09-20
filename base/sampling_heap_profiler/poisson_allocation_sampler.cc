@@ -254,7 +254,9 @@ size_t PoissonAllocationSampler::GetNextSampleInterval(size_t interval) {
   // between samples.
   // Let u be a uniformly distributed random number between 0 and 1, then
   // next_sample = -ln(u) / λ
-  double uniform = RandDouble();
+  // The allocator shim uses the PoissonAllocationSampler, hence avoid
+  // allocation to avoid infinite recursion.
+  double uniform = internal::RandDoubleAvoidAllocation();
   double value = -log(uniform) * interval;
   size_t min_value = sizeof(intptr_t);
   // We limit the upper bound of a sample interval to make sure we don't have
