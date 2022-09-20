@@ -188,7 +188,7 @@
 <translation id="2491955442992294626">وقتی درحال استفاده از پنجره دیگری هستید، کلیدها آزمایش نمی‌شوند</translation>
 <translation id="2493126929778606526">بهترین عکس‌هایتان که به‌طور خودکار انتخاب شده‌اند</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
-<translation id="2505327257735685095">بازخوانی کاغذدیواری کنونی</translation>
+<translation id="2505327257735685095">بازآوری کاغذدیواری کنونی</translation>
 <translation id="2513396635448525189">تصویر ورود به سیستم</translation>
 <translation id="2517472476991765520">اسکن</translation>
 <translation id="2526590354069164005">دسک تاپ</translation>
@@ -197,7 +197,7 @@
 <translation id="2536159006530886390">اتصال به اینترنت ممکن نیست.</translation>
 <translation id="2570743873672969996">درحال اجرای آزمایش <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">برای راه‌اندازی، به «تنظیمات» بروید</translation>
-<translation id="2619761439309613843">بازخوانی روزانه</translation>
+<translation id="2619761439309613843">بازآوری روزانه</translation>
 <translation id="2620436844016719705">سیستم</translation>
 <translation id="2638662041295312666">تصویر ورود به سیستم</translation>
 <translation id="2640549051766135490">آلبوم <ph name="TITLE" /> <ph name="DESC" /> انتخاب شد</translation>
@@ -220,7 +220,7 @@
 <translation id="2878387241690264070"><ph name="RATE" /> در <ph name="NUM_SECONDS" /> ثانیه تخلیه شد.</translation>
 <translation id="291142119251986300">دستگاه‌های فاقد شرایط</translation>
 <translation id="2926057806159140518">نام کاربری و گذرواژه‌تان را وارد کنید یا رمزینه پاسخ‌سریع را اسکن کنید</translation>
-<translation id="3008341117444806826">بازخوانی</translation>
+<translation id="3008341117444806826">بازآوری</translation>
 <translation id="3009958530611748826">پوشه‌ای را برای ذخیره در آن انتخاب کنید</translation>
 <translation id="3017079585324758401">پس‌زمینه</translation>
 <translation id="3027578600144895987">بستن دوربین</translation>
@@ -692,7 +692,7 @@
 <translation id="7172721935181587524">یک تصویر</translation>
 <translation id="7175037578838465313">پیکربندی <ph name="NAME" /></translation>
 <translation id="7177485034254901881">این <ph name="DEVICE_TYPE" /> توسط <ph name="MANAGER" /> مدیریت می‌شود. سرپرستان می‌توانند این دستگاه را ازراه‌دور پیکربندی کنند.</translation>
-<translation id="7180611975245234373">بازخوانی</translation>
+<translation id="7180611975245234373">بازآوری</translation>
 <translation id="7212734716605298123">به‌روزرسانی‌های سفت‌افزار برای دستگاه‌های خارجی</translation>
 <translation id="7216409898977639127">ارائه‌دهنده شبکه تلفن همراه</translation>
 <translation id="7271040990581020067">اسکنر درحال استفاده است. بعداً دوباره امتحان کنید.</translation>
@@ -795,7 +795,7 @@
 <translation id="8246209727385807362">شرکت مخابراتی ناشناس</translation>
 <translation id="827422111966801947">نیلی سیر</translation>
 <translation id="8281886186245836920">رد شدن</translation>
-<translation id="8286154143153872371">لطفاً برای مشاهده کاغذدیواری، به شبکه متصل شوید و صفحه را تازه‌سازی کنید.</translation>
+<translation id="8286154143153872371">لطفاً برای مشاهده کاغذدیواری، به شبکه متصل شوید و صفحه را بار کردن مجدد کنید.</translation>
 <translation id="8291967909914612644">کشور ارائه‌دهنده اصلی</translation>
 <translation id="8294431847097064396">منبع</translation>
 <translation id="8297006494302853456">ضعیف</translation>
@@ -900,7 +900,7 @@
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="90977145661420967">باید دستگاه را جداسازی کنید</translation>
 <translation id="9098156406873149060">حفظ داده‌های کاربر</translation>
-<translation id="910415269708673980">بازخوانی بلیت برای <ph name="PRINCIPAL_NAME" /></translation>
+<translation id="910415269708673980">بازآوری بلیت برای <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">باز کردن قفل</translation>
 <translation id="9122602430962285795">برای اتصال مجدد، به «تنظیمات» بروید</translation>
