@@ -24,6 +24,7 @@
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "chromeos/ui/wm/features.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -158,6 +159,8 @@ class FrameSizeButtonTest : public AshTestBase {
 
     widget_delegate_ = new TestWidgetDelegate(resizable_);
     widget_ = CreateWidget(widget_delegate_);
+    widget_->GetNativeWindow()->SetProperty(aura::client::kAppType,
+                                            static_cast<int>(AppType::BROWSER));
     window_state_ = WindowState::Get(widget_->GetNativeWindow());
 
     FrameCaptionButtonContainerView::TestApi test(

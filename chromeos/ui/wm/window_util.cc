@@ -4,6 +4,7 @@
 
 #include "chromeos/ui/wm/window_util.h"
 
+#include "ash/constants/app_types.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/wm/constants.h"
@@ -96,6 +97,12 @@ gfx::Size GetPreferredFloatedWindowTabletSize(const gfx::Rect& work_area,
 }
 
 bool CanFloatWindow(aura::Window* window) {
+  // Only app window can be floated.
+  // Only app window can be floated.
+  if (window->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(ash::AppType::NON_APP)) {
+    return false;
+  }
   return TabletState::Get()->InTabletMode() ? CanFloatWindowInTablet(window)
                                             : CanFloatWindowInClamshell(window);
 }

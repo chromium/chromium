@@ -38,6 +38,7 @@ source_set("wm") {
 
   if (is_chromeos_ash) {
     sources += [ "desks/ash/desks_helper.cc" ]
+    deps += [ "//ash/constants" ]
   }
 
   if (is_chromeos_lacros) {

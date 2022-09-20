@@ -16,6 +16,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "chromeos/ui/wm/features.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/test_views.h"
@@ -372,6 +373,8 @@ TEST_F(FrameCaptionButtonContainerViewTest, ResizeButtonRestoreBehavior) {
 TEST_F(WindowFloatButtonTest, TestFloatButtonBehavior) {
   auto* widget = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
                                   CLOSE_BUTTON_VISIBLE);
+  widget->GetNativeWindow()->SetProperty(
+      aura::client::kAppType, static_cast<int>(ash::AppType::BROWSER));
   widget->Show();
 
   FrameCaptionButtonContainerView container(widget);

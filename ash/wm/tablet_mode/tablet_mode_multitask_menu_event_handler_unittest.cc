@@ -184,7 +184,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, GestureEventGeneration) {
 // Tests that a scroll down gesture from the top center activates the
 // multitask menu.
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, ShowMultitaskMenu) {
-  auto window = CreateTestWindow();
+  auto window = CreateAppWindow();
 
   ShowMultitaskMenu(*window);
 

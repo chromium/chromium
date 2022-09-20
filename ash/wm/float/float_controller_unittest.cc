@@ -90,18 +90,11 @@ class WindowFloatTest : public AshTestBase {
 
 // Test float/unfloat window.
 TEST_F(WindowFloatTest, WindowFloatingSwitch) {
-  std::unique_ptr<aura::Window> window_1(CreateTestWindow());
-  std::unique_ptr<aura::Window> window_2(CreateTestWindow());
-
   // Activate `window_1` and perform floating.
-  wm::ActivateWindow(window_1.get());
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(WindowState::Get(window_1.get())->IsFloated());
+  std::unique_ptr<aura::Window> window_1(CreateFloatedWindow());
 
   // Activate `window_2` and perform floating.
-  wm::ActivateWindow(window_2.get());
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(WindowState::Get(window_2.get())->IsFloated());
+  std::unique_ptr<aura::Window> window_2(CreateFloatedWindow());
 
   // Only one floated window is allowed so when a different window is floated,
   // the previously floated window will be unfloated.
@@ -133,7 +126,7 @@ TEST_F(WindowFloatTest, DoubleClickOnCaption) {
 // Tests that a floated window animates to and from overview.
 TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
   std::unique_ptr<aura::Window> floated_window = CreateFloatedWindow();
-  std::unique_ptr<aura::Window> maximized_window = CreateTestWindow();
+  std::unique_ptr<aura::Window> maximized_window = CreateAppWindow();
 
   const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
   WindowState::Get(maximized_window.get())->OnWMEvent(&maximize_event);
@@ -272,19 +265,16 @@ TEST_F(WindowFloatTest, OneFloatWindowPerDeskLogic) {
   auto* desks_controller = DesksController::Get();
   NewDesk();
   ASSERT_EQ(2u, desks_controller->desks().size());
-  std::unique_ptr<aura::Window> window_1(CreateTestWindow());
 
   // Test creating floating window on different desk.
   // Float `window_1`.
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(WindowState::Get(window_1.get())->IsFloated());
+  std::unique_ptr<aura::Window> window_1(CreateFloatedWindow());
   // Move to desk 2.
   auto* desk_2 = desks_controller->desks()[1].get();
   ActivateDesk(desk_2);
   // `window_1` should not be visible since it's a different desk.
   EXPECT_FALSE(window_1->IsVisible());
-  std::unique_ptr<aura::Window> window_2(CreateTestWindow());
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  std::unique_ptr<aura::Window> window_2(CreateFloatedWindow());
   // Both `window_1` and `window_2` should be floated since we allow one float
   // window per desk.
   EXPECT_TRUE(desk_2->is_active());
@@ -298,9 +288,7 @@ TEST_F(WindowFloatTest, FloatWindowWithDeskRemoval) {
   NewDesk();
   auto* desk_1 = desks_controller->desks()[0].get();
   auto* desk_2 = desks_controller->desks()[1].get();
-  std::unique_ptr<aura::Window> window_1(CreateTestWindow());
-  // Float `window_1` at `desk_1`.
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  std::unique_ptr<aura::Window> window_1(CreateFloatedWindow());
   // Move to `desk 2`.
   ActivateDesk(desk_2);
   // Float `window_2` at `desk_2`.
@@ -427,7 +415,6 @@ class TabletWindowFloatTest : public WindowFloatTest {
 
 TEST_F(TabletWindowFloatTest, TabletClamshellTransition) {
   auto window1 = CreateFloatedWindow();
-  ASSERT_TRUE(WindowState::Get(window1.get())->IsFloated());
 
   // Test that on entering tablet mode, we maintain float state.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -437,7 +424,6 @@ TEST_F(TabletWindowFloatTest, TabletClamshellTransition) {
   // floated window.
   auto window2 = CreateFloatedWindow();
   EXPECT_FALSE(WindowState::Get(window1.get())->IsFloated());
-  EXPECT_TRUE(WindowState::Get(window2.get())->IsFloated());
 
   // Test that on exiting tablet mode, we maintain float state.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
@@ -452,6 +438,8 @@ TEST_F(TabletWindowFloatTest, TabletPositioningLandscape) {
   aura::test::TestWindowDelegate window_delegate;
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
       &window_delegate, /*id=*/-1, gfx::Rect(300, 300)));
+  window->SetProperty(aura::client::kAppType,
+                      static_cast<int>(AppType::BROWSER));
   wm::ActivateWindow(window.get());
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -476,6 +464,8 @@ TEST_F(TabletWindowFloatTest, FloatWindowUnfloatsEnterTablet) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
       &window_delegate, /*id=*/-1, gfx::Rect(850, 850)));
   window_delegate.set_minimum_size(gfx::Size(500, 500));
+  window->SetProperty(aura::client::kAppType,
+                      static_cast<int>(ash::AppType::BROWSER));
   wm::ActivateWindow(window.get());
 
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
@@ -494,6 +484,8 @@ TEST_F(TabletWindowFloatTest, FloatWindowUnfloatsDisplayChange) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
       &window_delegate, /*id=*/-1, gfx::Rect(300, 300)));
   window_delegate.set_minimum_size(gfx::Size(400, 400));
+  window->SetProperty(aura::client::kAppType,
+                      static_cast<int>(ash::AppType::BROWSER));
   wm::ActivateWindow(window.get());
 
   // Enter tablet mode and float `window`.
