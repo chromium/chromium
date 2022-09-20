@@ -189,11 +189,12 @@ class MediaGalleriesPreferencesTest : public testing::Test {
 
   void RemovePersistedDefaultGalleryValues() {
     PrefService* prefs = profile_->GetPrefs();
-    std::unique_ptr<ListPrefUpdate> update(
-        new ListPrefUpdate(prefs, prefs::kMediaGalleriesRememberedGalleries));
-    base::Value* list = update->Get();
+    std::unique_ptr<ScopedListPrefUpdate> update =
+        std::make_unique<ScopedListPrefUpdate>(
+            prefs, prefs::kMediaGalleriesRememberedGalleries);
+    base::Value::List& list = update->Get();
 
-    for (auto& entry : list->GetList()) {
+    for (auto& entry : list) {
       if (entry.is_dict()) {
         base::Value::Dict& dict = entry.GetDict();
         // Setting the prefs version to 2 which is the version before

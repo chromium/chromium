@@ -802,9 +802,9 @@ MediaGalleryPrefId MediaGalleriesPreferences::AddOrUpdateGalleryInternal(
       return *pref_id_it;
 
     PrefService* prefs = profile_->GetPrefs();
-    auto update = std::make_unique<ListPrefUpdate>(
+    auto update = std::make_unique<ScopedListPrefUpdate>(
         prefs, prefs::kMediaGalleriesRememberedGalleries);
-    base::Value::List& list = update->Get()->GetList();
+    base::Value::List& list = update->Get();
 
     for (auto& gallery_value : list) {
       base::Value::Dict* gallery_dict = gallery_value.GetIfDict();
@@ -872,9 +872,9 @@ MediaGalleryPrefId MediaGalleriesPreferences::AddOrUpdateGalleryInternal(
   gallery_info.default_gallery_type = default_gallery_type;
 
   {
-    ListPrefUpdate update(prefs, prefs::kMediaGalleriesRememberedGalleries);
-    base::Value::List& list = update->GetList();
-    list.Append(CreateGalleryPrefInfoDictionary(gallery_info));
+    ScopedListPrefUpdate update(prefs,
+                                prefs::kMediaGalleriesRememberedGalleries);
+    update->Append(CreateGalleryPrefInfoDictionary(gallery_info));
   }
   InitFromPrefs();
   for (auto& observer : gallery_change_observers_)
@@ -895,9 +895,9 @@ void MediaGalleriesPreferences::UpdateDefaultGalleriesPaths() {
       base::PathService::Get(chrome::DIR_USER_VIDEOS, &videos_path);
 
   PrefService* prefs = profile_->GetPrefs();
-  auto update = std::make_unique<ListPrefUpdate>(
+  auto update = std::make_unique<ScopedListPrefUpdate>(
       prefs, prefs::kMediaGalleriesRememberedGalleries);
-  base::Value::List& list = update->Get()->GetList();
+  base::Value::List& list = update->Get();
 
   std::vector<MediaGalleryPrefId> pref_ids;
 
@@ -989,9 +989,9 @@ void MediaGalleriesPreferences::EraseOrBlocklistGalleryById(
     bool erase) {
   DCHECK(IsInitialized());
   PrefService* prefs = profile_->GetPrefs();
-  auto update = std::make_unique<ListPrefUpdate>(
+  auto update = std::make_unique<ScopedListPrefUpdate>(
       prefs, prefs::kMediaGalleriesRememberedGalleries);
-  base::Value::List& list = update->Get()->GetList();
+  base::Value::List& list = update->Get();
 
   if (!base::Contains(known_galleries_, id))
     return;
