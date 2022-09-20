@@ -164,6 +164,7 @@ fyi_reclient_staging_builder(
     os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
+    priority = 35,
 )
 
 fyi_reclient_test_builder(
@@ -186,6 +187,7 @@ fyi_reclient_test_builder(
     os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
+    priority = 35,
 )
 
 fyi_reclient_staging_builder(
@@ -297,6 +299,7 @@ fyi_reclient_test_builder(
     builderless = True,
     cores = None,
     xcode = xcode.x13main,
+    priority = 35,
 )
 
 fyi_reclient_staging_builder(
@@ -320,6 +323,7 @@ fyi_reclient_staging_builder(
     builderless = True,
     cores = None,
     xcode = xcode.x13main,
+    priority = 35,
 )
 
 fyi_reclient_staging_builder(
@@ -342,6 +346,7 @@ fyi_reclient_staging_builder(
     os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
+    priority = 35,
 )
 
 fyi_reclient_test_builder(
@@ -364,4 +369,5 @@ fyi_reclient_test_builder(
     os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
+    priority = 35,
 )
