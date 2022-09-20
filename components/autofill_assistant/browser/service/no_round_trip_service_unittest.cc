@@ -30,6 +30,7 @@ using ::testing::SaveArg;
 
 namespace {
 const char kEndpointRPC[] = "https://www.fake.backend.com/no_roundtrip";
+const char kProgressReportRPC[] = "https://www.fake.backend.com/progress";
 const char kFakeUrl[] = "https://www.example.com";
 constexpr uint32_t kHashPrefixLength = 15;
 
@@ -80,7 +81,8 @@ class NoRoundTripServiceTest : public testing::Test {
 
   NoRoundTripService GetCompleteService() {
     return NoRoundTripService(std::move(mock_request_sender_),
-                              GURL(kEndpointRPC), &mock_client_);
+                              GURL(kEndpointRPC), GURL(kProgressReportRPC),
+                              &mock_client_);
   }
 
   uint64_t GetHashPrefix() {
@@ -290,6 +292,71 @@ TEST_F(NoRoundTripServiceTest,
                          std::vector<ProcessedActionProto>(),
                          RoundtripTimingStats(), RoundtripNetworkStats(),
                          mock_response_callback_.Get());
+}
+
+TEST_F(NoRoundTripServiceTest, ReportProgress) {
+  const std::string token = "token";
+  const std::string payload = "payload";
+
+  EXPECT_CALL(mock_client_, GetMakeSearchesAndBrowsingBetterEnabled)
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_client_, GetMetricsReportingEnabled)
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      *mock_request_sender_.get(),
+      OnSendRequest(GURL(kProgressReportRPC),
+                    ProtocolUtils::CreateReportProgressRequest(token, payload),
+                    _, RpcType::REPORT_PROGRESS))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string(""),
+                                   ServiceRequestSender::ResponseInfo{}));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, std::string(""), _));
+
+  GetCompleteService().ReportProgress("token", "payload",
+                                      mock_response_callback_.Get());
+}
+
+TEST_F(NoRoundTripServiceTest, ReportProgressMSBBDisabled) {
+  const std::string token = "token";
+  const std::string payload = "payload";
+
+  EXPECT_CALL(mock_client_, GetMakeSearchesAndBrowsingBetterEnabled)
+      .Times(1)
+      .WillOnce(Return(false));
+  EXPECT_CALL(mock_client_, GetMetricsReportingEnabled).Times(0);
+
+  EXPECT_CALL(
+      *mock_request_sender_.get(),
+      OnSendRequest(GURL(kProgressReportRPC),
+                    ProtocolUtils::CreateReportProgressRequest(token, payload),
+                    _, RpcType::REPORT_PROGRESS))
+      .Times(0);
+
+  GetCompleteService().ReportProgress("token", "payload",
+                                      mock_response_callback_.Get());
+}
+
+TEST_F(NoRoundTripServiceTest, ReportProgressMetricsDisabled) {
+  const std::string token = "token";
+  const std::string payload = "payload";
+
+  EXPECT_CALL(mock_client_, GetMakeSearchesAndBrowsingBetterEnabled)
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_client_, GetMetricsReportingEnabled)
+      .Times(1)
+      .WillOnce(Return(false));
+
+  EXPECT_CALL(
+      *mock_request_sender_.get(),
+      OnSendRequest(GURL(kProgressReportRPC),
+                    ProtocolUtils::CreateReportProgressRequest(token, payload),
+                    _, RpcType::REPORT_PROGRESS))
+      .Times(0);
+
+  GetCompleteService().ReportProgress("token", "payload",
+                                      mock_response_callback_.Get());
 }
 
 TEST_F(NoRoundTripServiceTest, WithExistingPathGetActionsSucceeds) {

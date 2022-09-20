@@ -77,8 +77,10 @@ std::unique_ptr<LocalScriptStore> CreateStoreFromMatch(
 NoRoundTripService::NoRoundTripService(
     std::unique_ptr<ServiceRequestSender> request_sender,
     const GURL& get_scripts_endpoint,
+    const GURL& progress_endpoint,
     Client* client)
     : get_scripts_endpoint_(get_scripts_endpoint),
+      progress_endpoint_(progress_endpoint),
       client_(client),
       request_sender_(std::move(request_sender)) {}
 
@@ -122,7 +124,8 @@ std::unique_ptr<NoRoundTripService> NoRoundTripService::Create(
 
   return std::make_unique<NoRoundTripService>(
       std::move(request_sender),
-      url_fetcher.GetNoRoundTripScriptsByHashEndpoint(), client);
+      url_fetcher.GetNoRoundTripScriptsByHashEndpoint(),
+      url_fetcher.GetReportProgressEndpoint(), client);
 }
 
 void NoRoundTripService::SetScriptStoreConfig(
@@ -222,7 +225,16 @@ void NoRoundTripService::UpdateJsFlowLibraryLoaded(
 void NoRoundTripService::ReportProgress(
     const std::string& token,
     const std::string& payload,
-    ServiceRequestSender::ResponseCallback callback) {}
+    ServiceRequestSender::ResponseCallback callback) {
+  if (!client_->GetMakeSearchesAndBrowsingBetterEnabled() ||
+      !client_->GetMetricsReportingEnabled()) {
+    return;
+  }
+  request_sender_->SendRequest(
+      progress_endpoint_,
+      ProtocolUtils::CreateReportProgressRequest(token, payload),
+      GetDefaultAuthMode(), std::move(callback), RpcType::REPORT_PROGRESS);
+}
 
 void NoRoundTripService::OnNoRountripByHashPrefixResponse(
     const GURL& url,

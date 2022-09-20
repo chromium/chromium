@@ -42,6 +42,7 @@ class NoRoundTripService : public Service {
   // calls are instead made in the first call to GetScripts.
   NoRoundTripService(std::unique_ptr<ServiceRequestSender> request_sender,
                      const GURL& get_scripts_endpoint,
+                     const GURL& progress_endpoint,
                      Client* client);
 
   // Initializes a NoRoundTripService, only used for testing purposes.
@@ -121,8 +122,9 @@ class NoRoundTripService : public Service {
       const GURL& url,
       const ScriptParameters& script_parameters);
 
-  // RPC endpoint
+  // RPC endpoints.
   GURL get_scripts_endpoint_;
+  GURL progress_endpoint_;
 
   raw_ptr<Client> client_;
 
