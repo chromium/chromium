@@ -20,7 +20,6 @@ class NetworkState;
 
 namespace ash {
 struct HatsConfig;
-class HatsDialog;
 
 // TODO(jackshira): Extract non-notification specific code into a manager class.
 // Happiness tracking survey (HaTS) notification controller is responsible for
@@ -109,7 +108,6 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   const HatsConfig& hats_config_;
   base::flat_map<std::string, std::string> product_specific_data_;
   std::unique_ptr<message_center::Notification> notification_;
-  std::unique_ptr<HatsDialog> hats_dialog_;
 
   HatsState state_ = HatsState::kDeviceSelected;
 

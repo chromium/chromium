@@ -273,10 +273,8 @@ void HatsNotificationController::ShowDialog(const std::string& site_context) {
     return;
   }
 
-  hats_dialog_ =
-      std::make_unique<HatsDialog>(HatsFinchHelper::GetTriggerID(hats_config_),
-                                   profile_, hats_config_.histogram_name);
-  hats_dialog_->Show(site_context);
+  HatsDialog::Show(HatsFinchHelper::GetTriggerID(hats_config_),
+                   hats_config_.histogram_name, site_context);
 }
 
 // message_center::NotificationDelegate override:
