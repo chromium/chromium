@@ -4011,6 +4011,11 @@ const char kSiteDataImprovementsName[] = "Site data improvements";
 const char kSiteDataImprovementsDescription[] =
     "Improved 'All sites' and 'Site settings' pages on Android.";
 
+const char kStartSurfaceDisabledFeedImprovementName[] =
+    "Start Surface Disabled Feed Improvement";
+const char kStartSurfaceDisabledFeedImprovementDescription[] =
+    "Enable improving Start surface when Feed is disabled";
+
 const char kStartSurfaceRefactorName[] = "Start Surface Refactor";
 const char kStartSurfaceRefactorDescription[] =
     "Enable splitting Tab switcher from Start surface";

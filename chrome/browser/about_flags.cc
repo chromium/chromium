@@ -6167,6 +6167,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInstantStartDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kInstantStart)},
 
+    {"enable-start-surface-disabled-feed-improvement",
+     flag_descriptions::kStartSurfaceDisabledFeedImprovementName,
+     flag_descriptions::kStartSurfaceDisabledFeedImprovementDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kStartSurfaceDisabledFeedImprovement)},
+
     {"enable-start-surface-refactor",
      flag_descriptions::kStartSurfaceRefactorName,
      flag_descriptions::kStartSurfaceRefactorDescription, kOsAndroid,

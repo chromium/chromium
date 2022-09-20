@@ -2288,6 +2288,9 @@ extern const char kSearchResumptionModuleAndroidDescription[];
 extern const char kSiteDataImprovementsName[];
 extern const char kSiteDataImprovementsDescription[];
 
+extern const char kStartSurfaceDisabledFeedImprovementName[];
+extern const char kStartSurfaceDisabledFeedImprovementDescription[];
+
 extern const char kStartSurfaceRefactorName[];
 extern const char kStartSurfaceRefactorDescription[];
 

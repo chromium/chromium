@@ -2927,6 +2927,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "enable-start-surface-disabled-feed-improvement",
+    "owners": [ "hanxi", "spdonghao" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "enable-start-surface-refactor",
     "owners": [ "hanxi", "spdonghao" ],
     "expiry_milestone": 115
