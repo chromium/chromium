@@ -7,15 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
-@class ChromeIdentity;
-@protocol SingleSignOnService;
 enum class LensEntrypoint;
+@protocol SingleSignOnService;
+@protocol SystemIdentity;
 
 // Configuration object used by the LensProvider.
 @interface LensConfiguration : NSObject
 
 // The current identity associated with the browser.
-@property(nonatomic, strong) ChromeIdentity* identity;
+@property(nonatomic, strong) id<SystemIdentity> identity;
 
 // Whether or not the browser is currently in incognito mode.
 @property(nonatomic, assign) BOOL isIncognito;
