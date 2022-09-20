@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/service_proxy_impl.h"
 
 #include <inttypes.h>
+#include <limits>
 #include <memory>
 #include <sstream>
 
@@ -21,6 +22,7 @@
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/segment_selection_result.h"
 
 namespace segmentation_platform {
 
@@ -35,9 +37,15 @@ std::string SegmentMetadataToString(const proto::SegmentInfo& segment_info) {
          " }";
 }
 
-std::string PredictionResultToString(const proto::SegmentInfo& segment_info) {
-  if (!segment_info.has_prediction_result())
-    return std::string();
+std::string PredictionResultToString(
+    const proto::SegmentInfo& segment_info,
+    const absl::optional<float>& segment_rank) {
+  if (!segment_info.has_prediction_result()) {
+    if (!segment_rank)
+      return std::string();
+    // Rank maybe available without segment info since it is stored in prefs.
+    return base::StringPrintf("rank: %f", *segment_rank);
+  }
   const auto prediction_result = segment_info.prediction_result();
   base::Time time;
   if (prediction_result.has_timestamp_us()) {
@@ -46,10 +54,11 @@ std::string PredictionResultToString(const proto::SegmentInfo& segment_info) {
   }
   std::ostringstream time_string;
   time_string << time;
+  const float kInvalidScore = -1;
   return base::StringPrintf(
-      "result: %f, time: %s",
+      "result: %f, time: %s, rank: %f",
       prediction_result.has_result() ? prediction_result.result() : 0,
-      time_string.str().c_str());
+      time_string.str().c_str(), segment_rank ? *segment_rank : kInvalidScore);
 }
 
 base::flat_set<proto::SegmentId> GetAllSegemntIds(
@@ -190,21 +199,28 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
   std::vector<ServiceProxy::ClientInfo> result;
   for (const auto& config : *configs_) {
     SegmentId selected = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
+    absl::optional<float> selected_segment_rank;
     if (segment_selectors_ &&
         segment_selectors_->find(config->segmentation_key) !=
             segment_selectors_->end()) {
-      absl::optional<proto::SegmentId> target =
+      absl::optional<SegmentSelectionResult> selection =
           segment_selectors_->at(config->segmentation_key)
-              ->GetCachedSegmentResult()
-              .segment;
-      if (target.has_value()) {
-        selected = *target;
+              ->GetCachedSegmentResult();
+      if (selection && selection->segment) {
+        selected = *selection->segment;
+        if (selection->rank)
+          selected_segment_rank = selection->rank;
       }
     }
     result.emplace_back(config->segmentation_key, selected);
     for (const auto& segment_id : config->segments) {
       if (!segment_ids.contains(segment_id.first))
         continue;
+      // TODO(ssid): Currently only selected segment rank is available in prefs,
+      // so add rank only to the one segment. We should expand to include ranks
+      // from all segments once we have ranking API support.
+      absl::optional<float> current_segment_rank =
+          segment_id.first == selected ? selected_segment_rank : absl::nullopt;
       const auto& info = segment_ids[segment_id.first];
       bool can_execute_segment =
           force_refresh_results_ ||
@@ -213,7 +229,8 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
                info.model_metadata()));
       result.back().segment_status.emplace_back(
           segment_id.first, SegmentMetadataToString(info),
-          PredictionResultToString(info), can_execute_segment);
+          PredictionResultToString(info, current_segment_rank),
+          can_execute_segment);
     }
   }
 
