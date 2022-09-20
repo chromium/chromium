@@ -4,27 +4,33 @@
 
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/common/pref_names.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view_class_properties.h"
 
 PriceTrackingIconView::PriceTrackingIconView(
     IconLabelBubbleView::Delegate* parent_delegate,
-    Delegate* delegate)
+    Delegate* delegate,
+    Profile* profile)
     : PageActionIconView(nullptr,
                          0,
                          parent_delegate,
                          delegate,
-                         "PriceTracking") {
+                         "PriceTracking"),
+      profile_(profile),
+      bubble_coordinator_(this) {
   SetProperty(views::kElementIdentifierKey, kPriceTrackingChipElementId);
 }
 
 views::BubbleDialogDelegate* PriceTrackingIconView::GetBubble() const {
-  // TODO(meiliang@): Return pointer for the shown bubble.
-  return nullptr;
+  return bubble_coordinator_.GetBubble();
 }
 
 std::u16string PriceTrackingIconView::GetTextForTooltipAndAccessibleName()
@@ -37,11 +43,20 @@ std::u16string PriceTrackingIconView::GetTextForTooltipAndAccessibleName()
 
 void PriceTrackingIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
-  NOTIMPLEMENTED();
-  // TODO(meiliang@): show bubble
+  if (profile_->GetPrefs()->GetBoolean(prefs::kShouldShowPriceTrackFUEBubble)) {
+    bubble_coordinator_.Show(GetWebContents(),
+                             base::BindOnce(&PriceTrackingIconView::TrackPrice,
+                                            base::Unretained(this)),
+                             PriceTrackingBubbleDialogView::Type::TYPE_FUE);
+  } else {
+    bubble_coordinator_.Show(GetWebContents(),
+                             base::BindOnce(&PriceTrackingIconView::TrackPrice,
+                                            base::Unretained(this)),
+                             PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
 
-  // TODO(meiliang@): Call enable price tracking util and use UpdateImpl() as
-  // the callback.
+    // TODO(meiliang@): Call enable price tracking util and use UpdateImpl() as
+    // the callback if the page is not price tracked yet.
+  }
 }
 
 const gfx::VectorIcon& PriceTrackingIconView::GetVectorIcon() const {
@@ -62,4 +77,12 @@ void PriceTrackingIconView::ForceVisibleForTesting(bool is_tracking_price) {
   is_visible_ = true;
   is_tracking_price_ = is_tracking_price;
   UpdateImpl();
+}
+
+void PriceTrackingIconView::TrackPrice() {
+  if (profile_->GetPrefs()->GetBoolean(prefs::kShouldShowPriceTrackFUEBubble)) {
+    profile_->GetPrefs()->SetBoolean(prefs::kShouldShowPriceTrackFUEBubble,
+                                     false);
+  }
+  // TODO(meiliang@): Call commerce::SetPriceTrackingStateForBookmark
 }

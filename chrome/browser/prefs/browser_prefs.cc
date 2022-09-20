@@ -248,6 +248,7 @@
 #include "components/query_tiles/tile_service_prefs.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/cart/cart_service.h"
+#include "chrome/browser/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
@@ -1453,6 +1454,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   RecipesService::RegisterProfilePrefs(registry);
   UnifiedAutoplayConfig::RegisterProfilePrefs(registry);
   CartService::RegisterProfilePrefs(registry);
+  commerce::ShoppingListUiTabHelper::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -4464,6 +4464,7 @@ static_library("browser") {
       "//chrome/app/vector_icons",
       "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/cart:mojo_bindings",
+      "//chrome/browser/commerce/price_tracking:shopping_list",
       "//chrome/browser/enterprise/connectors/analysis:features",
       "//chrome/browser/enterprise/connectors/device_trust:prefs",
       "//chrome/browser/enterprise/signals:utils",
