@@ -54,6 +54,9 @@ class FollowTabHelper : public web::WebStateObserver,
   // Removes the follow menu updater.
   void RemoveFollowMenuUpdater();
 
+  // Updates the follow menu item.
+  void UpdateFollowMenuItem();
+
  private:
   friend class web::WebStateUserData<FollowTabHelper>;
 
@@ -88,7 +91,7 @@ class FollowTabHelper : public web::WebStateObserver,
 
   // Updates follow menu item. `web_page_urls` is the page url object used to
   // check follow status.
-  void UpdateFollowMenuItem(WebPageURLs* web_page_urls);
+  void UpdateFollowMenuItemWithURL(WebPageURLs* web_page_urls);
 
   // Presents the Follow in-product help (IPH) for `recommended_url`.
   void PresentFollowIPH(NSURL* recommended_url);
