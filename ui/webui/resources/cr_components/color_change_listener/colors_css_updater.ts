@@ -29,11 +29,28 @@ export function refreshColorCss(): boolean {
   if (!href) {
     return false;
   }
+
   const hrefURL = new URL(href);
   const params = new URLSearchParams(hrefURL.search);
   params.set('version', new Date().getTime().toString());
   const newHref = `${hrefURL.origin}${hrefURL.pathname}?${params.toString()}`;
-  colorCssNode.setAttribute('href', newHref);
+
+  // A flickering effect may take place when setting the href property of the
+  // existing color css node with a new value. In order to avoid flickering, we
+  // create a new link element and once it is loaded we remove the old one. See
+  // crbug.com/1365320 for additional details.
+  const newColorsCssLink = document.createElement('link');
+  newColorsCssLink.setAttribute('href', newHref);
+  newColorsCssLink.rel = 'stylesheet';
+  newColorsCssLink.type = 'text/css';
+  newColorsCssLink.onload = (() => {
+    const oldColorCssNode = document.querySelector(COLORS_CSS_SELECTOR);
+    if (oldColorCssNode) {
+      oldColorCssNode.remove();
+    }
+  });
+  document.getElementsByTagName('body')[0]!.appendChild(newColorsCssLink);
+
   return true;
 }
 
