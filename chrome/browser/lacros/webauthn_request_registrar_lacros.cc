@@ -26,10 +26,15 @@ WebAuthnRequestRegistrarLacros::GetRegisterCallback(aura::Window* window) {
     return base::BindRepeating([] { return std::string(); });
   }
 
-  std::string unique_id =
-      views::DesktopWindowTreeHostLacros::From(window->GetHost())
-          ->platform_window()
-          ->GetWindowUniqueId();
+  auto* host = views::DesktopWindowTreeHostLacros::From(window->GetHost());
+  if (!host) {
+    return base::BindRepeating([] { return std::string(); });
+  }
+  auto* platform_window = host->platform_window();
+  if (!platform_window) {
+    return base::BindRepeating([] { return std::string(); });
+  }
+  std::string unique_id = platform_window->GetWindowUniqueId();
 
   return base::BindRepeating(
       [](const std::string& unique_id) { return unique_id; }, unique_id);
