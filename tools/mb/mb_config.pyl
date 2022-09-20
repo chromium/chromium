@@ -415,7 +415,6 @@
       'fuchsia-fyi-arm64-rel': 'release_bot_fuchsia_arm64',
       'fuchsia-fyi-cfv2-script': 'release_bot_fuchsia_cfv2_script',
       'fuchsia-fyi-x64-rel': 'release_bot_fuchsia',
-      'fuchsia-fyi-x64-reviver': 'release_bot_fuchsia',
       'fuchsia-fyi-x64-wst': 'fuchsia_workstation_bot',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',

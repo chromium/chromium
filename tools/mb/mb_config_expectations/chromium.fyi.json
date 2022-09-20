@@ -863,15 +863,6 @@
       "use_goma": true
     }
   },
-  "fuchsia-fyi-x64-reviver": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "target_os": "fuchsia",
-      "use_goma": true
-    }
-  },
   "fuchsia-fyi-x64-wst": {
     "gn_args": {
       "dcheck_always_on": false,
