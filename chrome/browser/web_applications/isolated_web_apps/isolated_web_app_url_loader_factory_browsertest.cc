@@ -187,6 +187,27 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest, LoadsBundle) {
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
+                       LoadsSubResourcesFromBundle) {
+  web_package::WebBundleBuilder builder;
+  builder.AddPrimaryURL(kPrimaryUrl);
+  builder.AddExchange(kPrimaryUrl,
+                      {{":status", "200"}, {"content-type", "text/html"}},
+                      "<script src=\"script.js\"></script>");
+  builder.AddExchange(
+      kPrimaryUrl + "/script.js",
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "document.title = 'title from js';");
+  base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
+
+  std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
+      GURL(kPrimaryUrl), IsolationData{IsolationData::InstalledBundle{
+                             .path = bundle_path.MaybeAsASCII()}});
+  RegisterWebApp(std::move(iwa));
+
+  NavigateAndWaitForTitle(GURL(kPrimaryUrl), u"title from js");
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
                        InvalidStatusCode) {
   web_package::WebBundleBuilder builder;
   builder.AddPrimaryURL(kPrimaryUrl);
