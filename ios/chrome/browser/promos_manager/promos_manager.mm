@@ -43,8 +43,8 @@ void ConditionallyAppendPromoToPrefList(promos_manager::Promo promo,
                                         PrefService* local_state) {
   DCHECK(local_state);
 
-  ListPrefUpdate update(local_state, pref_path);
-  base::Value::List& active_promos = update->GetList();
+  ScopedListPrefUpdate update(local_state, pref_path);
+  base::Value::List& active_promos = update.Get();
   std::string promo_name = promos_manager::NameForPromo(promo);
 
   // Erase `promo_name` if it already exists in `active_promos`; avoid polluting
@@ -94,9 +94,9 @@ void PromosManager::RecordImpression(promos_manager::Promo promo) {
                  promos_manager::NameForPromo(promo));
   impression.Set(promos_manager::kImpressionDayKey, TodaysDay());
 
-  ListPrefUpdate update(local_state_, prefs::kIosPromosManagerImpressions);
-  base::Value::List& impression_history = update->GetList();
-  impression_history.Append(std::move(impression));
+  ScopedListPrefUpdate update(local_state_,
+                              prefs::kIosPromosManagerImpressions);
+  update->Append(std::move(impression));
 
   impression_history_ = ImpressionHistory(
       local_state_->GetList(prefs::kIosPromosManagerImpressions));
@@ -122,14 +122,13 @@ void PromosManager::RegisterPromoForSingleDisplay(promos_manager::Promo promo) {
 void PromosManager::DeregisterPromo(promos_manager::Promo promo) {
   DCHECK(local_state_);
 
-  ListPrefUpdate active_promos_update(local_state_,
-                                      prefs::kIosPromosManagerActivePromos);
-  ListPrefUpdate single_display_promos_update(
+  ScopedListPrefUpdate active_promos_update(
+      local_state_, prefs::kIosPromosManagerActivePromos);
+  ScopedListPrefUpdate single_display_promos_update(
       local_state_, prefs::kIosPromosManagerSingleDisplayActivePromos);
 
-  base::Value::List& active_promos = active_promos_update->GetList();
-  base::Value::List& single_display_promos =
-      single_display_promos_update->GetList();
+  base::Value::List& active_promos = active_promos_update.Get();
+  base::Value::List& single_display_promos = single_display_promos_update.Get();
 
   std::string promo_name = promos_manager::NameForPromo(promo);
 
