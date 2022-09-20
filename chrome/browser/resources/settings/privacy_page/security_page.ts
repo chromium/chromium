@@ -14,9 +14,10 @@ import '../prefs/prefs.js';
 import '../settings_shared.css.js';
 import './disable_safebrowsing_dialog.js';
 
+import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
@@ -60,9 +61,11 @@ export interface SettingsSecurityPageElement {
 }
 
 const SettingsSecurityPageElementBase =
-    RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement))) as {
+    HelpBubbleMixin(
+        RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement)))) as {
       new (): PolymerElement & I18nMixinInterface &
-          RouteObserverMixinInterface & PrefsMixinInterface,
+          RouteObserverMixinInterface & PrefsMixinInterface &
+          HelpBubbleMixinInterface,
     };
 
 export class SettingsSecurityPageElement extends
@@ -227,6 +230,9 @@ export class SettingsSecurityPageElement extends
         this.$.safeBrowsingStandard.expanded = true;
       }
     });
+
+    this.registerHelpBubbleIdentifier(
+        'kEnhancedProtectionSettingElementId', 'safeBrowsingEnhanced');
   }
 
   /**

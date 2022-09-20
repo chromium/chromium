@@ -950,7 +950,8 @@ void PopulateChromeWebUIFrameBinders(
       >(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      help_bubble::mojom::HelpBubbleHandlerFactory, InternalsUI>(map);
+      help_bubble::mojom::HelpBubbleHandlerFactory, InternalsUI,
+      settings::SettingsUI>(map);
 
 #if !defined(OFFICIAL_BUILD)
   RegisterWebUIControllerInterfaceBinder<foo::mojom::FooHandler, NewTabPageUI>(
