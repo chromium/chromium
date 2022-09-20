@@ -611,9 +611,21 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
     if (opener_context_observer_)
       opener_context_observer_->SetContextLifecycleNotifier(nullptr);
     AttachToNewFrame();
+  } else if (opener_document_ == GetDocument()) {
+    // The element is moving back to the player's opener, so stop worrying.
+    DCHECK(opener_context_observer_);
+    opener_context_observer_->SetContextLifecycleNotifier(
+        opener_document_->GetExecutionContext());
+    opener_context_observer_ = nullptr;
+    opener_document_ = nullptr;
   } else {
-    opener_document_ = old_document;
+    // Moving to a new document, so make sure that the player's opener is not
+    // closed while we're still using it.
     if (!opener_context_observer_) {
+      DCHECK(!opener_document_);
+      // Only set this when we're going from "original opener" to "elsewhere",
+      // in case we're moved from one same-origin window to another.
+      opener_document_ = old_document;
       opener_context_observer_ =
           MakeGarbageCollected<OpenerContextObserver>(this);
     }
@@ -630,6 +642,7 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
 }
 
 void HTMLMediaElement::AttachToNewFrame() {
+  // The opener has closed, so definitely nothing else should use this.
   opener_document_ = nullptr;
   // Do not ask it to stop notifying us -- if this is a callback from the
   // listener, then it's ExecutionContext has been destroyed and it's not
@@ -3895,6 +3908,7 @@ void HTMLMediaElement::
   if (web_media_player_) {
     audio_source_provider_.Wrap(nullptr);
     web_media_player_.reset();
+    // Do not clear `opener_document_` here; new players might still use it.
 
     // The lifetime of the mojo endpoints are tied to the WebMediaPlayer's, so
     // we need to reset those as well.

@@ -439,7 +439,9 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   }
 
   // Move Media() from a document in `old_origin` to  one in `new_origin`, and
-  // expect that `should_destroy` matches whether the player is destroyed.
+  // expect that `should_destroy` matches whether the player is destroyed.  If
+  // the player should not be destroyed, then we also move it back to the
+  // original document and verify that it works in both directions.
   void MoveElementAndTestPlayerDestruction(const char* old_origin,
                                            const char* new_origin,
                                            bool should_destroy) {
@@ -448,6 +450,8 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     // Player should not be destroyed yet.
     EXPECT_FALSE(WasPlayerDestroyed());
 
+    auto& original_document = Media()->GetDocument();
+
     // Make another document with the correct security origin.
     auto new_dummy_page_holder = CreatePageWithSecurityOrigin(new_origin);
     Document& new_document = new_dummy_page_holder->GetDocument();
@@ -455,6 +459,15 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     // Move the element.
     new_document.adoptNode(Media(), ASSERT_NO_EXCEPTION);
     EXPECT_EQ(should_destroy, WasPlayerDestroyed());
+
+    // If the player should be destroyed, then that's everything.
+    if (should_destroy)
+      return;
+
+    // The move should always work in zero or two directions, so move it back
+    // and make sure that the player is retained.
+    original_document.adoptNode(Media(), ASSERT_NO_EXCEPTION);
+    EXPECT_FALSE(WasPlayerDestroyed());
   }
 
  private:
