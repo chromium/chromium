@@ -1347,6 +1347,11 @@ BASE_FEATURE(kAccessibilityPageZoom,
              "AccessibilityPageZoom",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Automatically disables accessibility on Android when no assistive
+// technologies are present
+const base::Feature kAutoDisableAccessibilityV2{
+    "AutoDisableAccessibilityV2", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Sets moderate binding to background renderers playing media, when enabled.
 // Else the renderer will have strong binding.
 BASE_FEATURE(kBackgroundMediaRendererHasModerateBinding,

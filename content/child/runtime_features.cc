@@ -193,6 +193,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kEnableAccessibilityExposeIgnoredNodes},
 #if BUILDFLAG(IS_ANDROID)
     {wf::EnableAccessibilityPageZoom, features::kAccessibilityPageZoom},
+    {wf::EnableAutoDisableAccessibilityV2,
+     features::kAutoDisableAccessibilityV2},
 #endif
     {wf::EnableAccessibilityUseAXPositionForDocumentMarkers,
      features::kUseAXPositionForDocumentMarkers},

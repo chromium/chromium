@@ -297,6 +297,10 @@
       origin_trial_feature_name: "AutoDarkMode",
     },
     {
+      name: "AutoDisableAccessibilityV2",
+      public: true,
+    },
+    {
       // TODO(crbug.com/1185950): Remove this flag when the feature is fully
       // launched and released to stable with no issues.
       name: "AutoExpandDetailsElement",

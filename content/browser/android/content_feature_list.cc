@@ -23,8 +23,9 @@ namespace {
 // in other locations in the code base (e.g. content_features.h).
 const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kPrefetchAndroidFonts,
-    &features::kAutoDisableAccessibility,
     &features::kAccessibilityPageZoom,
+    &features::kAutoDisableAccessibility,
+    &features::kAutoDisableAccessibilityV2,
     &features::kBackgroundMediaRendererHasModerateBinding,
     &features::kBindingManagerConnectionLimit,
     &features::kBindingManagerUseNotPerceptibleBinding,
