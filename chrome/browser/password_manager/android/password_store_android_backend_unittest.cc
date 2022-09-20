@@ -181,6 +181,8 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   PasswordStoreAndroidBackendTest() {
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kSavePasswordsSuspendedByError, false);
     prefs_.registry()->RegisterIntegerPref(
         prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
     prefs_.registry()->RegisterIntegerPref(
@@ -711,6 +713,80 @@ TEST_F(PasswordStoreAndroidBackendTest,
 
   histogram_tester.ExpectBucketCount(kErrorCodeMetric, 7, 1);
   histogram_tester.ExpectBucketCount(kAPIErrorMetric, kBadRequestErrorCode, 1);
+}
+
+TEST_F(PasswordStoreAndroidBackendTest,
+       OnExternalAuthErrorKeepSavingWithoutErrorMessageFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kUnifiedPasswordManagerErrorMessages);
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(mock_reply, Run(ExpectError(kUnrecoverableError)));
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
+  // Simulate receiving RESOLVABLE_AUTH_ERROR code.
+  int kUnresolvableAuthErrorCode =
+      static_cast<int>(AndroidBackendAPIErrorCode::kAuthErrorUnresolvable);
+  error.api_error_code = absl::optional<int>(kUnresolvableAuthErrorCode);
+  consumer().OnError(kJobId, std::move(error));
+  RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+}
+
+TEST_F(PasswordStoreAndroidBackendTest,
+       OnExternalAuthErrorNotCausingExperimentUnenrollmentButSuspendsSaving) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kUnifiedPasswordManagerErrorMessages);
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+  ASSERT_FALSE(prefs()->GetBoolean(
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(mock_reply, Run(ExpectError(kRecoverableError)));
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
+  // Simulate receiving RESOLVABLE_AUTH_ERROR code.
+  int kUnresolvableAuthErrorCode =
+      static_cast<int>(AndroidBackendAPIErrorCode::kAuthErrorUnresolvable);
+  error.api_error_code = absl::optional<int>(kUnresolvableAuthErrorCode);
+  consumer().OnError(kJobId, std::move(error));
+  RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
+}
+
+TEST_F(PasswordStoreAndroidBackendTest,
+       ResetTemporarySavingSuspensionAfterSuccessfulLogin) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kUnifiedPasswordManagerErrorMessages);
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+  prefs()->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
+
+  // Simulate a successful logins call.
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(mock_reply, Run(_));
+  task_environment_.FastForwardBy(kTestLatencyDelta);
+  consumer().OnCompleteWithLogins(kJobId, {});
+  RunUntilIdle();
+
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kSavePasswordsSuspendedByError));
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,

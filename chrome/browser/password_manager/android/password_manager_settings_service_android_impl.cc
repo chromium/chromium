@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_manager_settings_service_android_impl.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
@@ -20,6 +21,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using password_manager::PasswordManagerSetting;
 using password_manager::PasswordSettingsUpdaterAndroidBridge;
@@ -71,6 +73,21 @@ bool HasChosenToSyncPreferences(const syncer::SyncService* sync_service) {
 bool IsUnenrolledFromUPM(PrefService* pref_service) {
   return pref_service->GetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
+}
+
+// In error cases, the UPM can set the kSavePasswordsSuspendedByError
+// pref to temporarily prevent password saves. If the user doesn't use GMS,
+// saving keeps working and only the syncing of changes is delayed.
+bool ShouldSuspendPasswordSavingDueToError(PrefService* pref_service) {
+  // The messages feature is a subset of UPM. The actual feature is irrelevant.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerErrorMessages)) {
+    return false;  // Non-UPM users can still save.
+  }
+  // Ensure the user is still enrolled. Evicted users can still save normally.
+  return !IsUnenrolledFromUPM(pref_service) &&
+         pref_service->GetBoolean(
+             password_manager::prefs::kSavePasswordsSuspendedByError);
 }
 
 }  // namespace
@@ -131,6 +148,10 @@ PasswordManagerSettingsServiceAndroidImpl::
 
 bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
     PasswordManagerSetting setting) {
+  if (setting == PasswordManagerSetting::kOfferToSavePasswords &&
+      ShouldSuspendPasswordSavingDueToError(pref_service_)) {
+    return false;
+  }
   const PrefService::Preference* regular_pref =
       GetRegularPrefFromSetting(pref_service_, setting);
   DCHECK(regular_pref);
