@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 60 tests; 59 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 61 tests; 60 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS <length> values computed are correctly via var()-reference
 PASS <length> values computed are correctly via var()-reference when font-size is inherited
 PASS <length> values are computed correctly when font-size is inherited [14em]
@@ -60,5 +60,6 @@ PASS * values are computed correctly [50dpi]
 PASS <resolution> values are computed correctly [1dppx]
 PASS <resolution> values are computed correctly [96dpi]
 FAIL <resolution> values are computed correctly [calc(1dppx + 96dpi)] assert_equals: expected "2dppx" but got "0dppx"
+PASS * values are computed correctly [url(why)]
 Harness: the test ran to completion.
 

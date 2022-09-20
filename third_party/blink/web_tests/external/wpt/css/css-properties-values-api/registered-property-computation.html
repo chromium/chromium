@@ -167,4 +167,6 @@ test_computed_value('<resolution>', '1dppx', '1dppx');
 test_computed_value('<resolution>', '96dpi', '1dppx');
 test_computed_value('<resolution>', 'calc(1dppx + 96dpi)', '2dppx');
 
+test_computed_value('*', 'url(why)', 'url(why)');
+
 </script>
