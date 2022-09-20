@@ -50,32 +50,24 @@ const char* TimedCloudDpcOpToString(mojom::TimedCloudDpcOp op) {
       return "";
     case mojom::TimedCloudDpcOp::SETUP_TOTAL:
       return "SetupService.Total";
-    case mojom::TimedCloudDpcOp::SETUP_CHECK_FOR_ANDROID_ID:
-      return "SetupService.CheckForAndroidId";
-    case mojom::TimedCloudDpcOp::SETUP_CHECK_FOR_FIRST_ACCOUNT_READY:
-      return "SetupService.CheckForFirstAccountReady";
-    case mojom::TimedCloudDpcOp::SETUP_REGISTER:
-      return "SetupService.Register";
     case mojom::TimedCloudDpcOp::SETUP_PULL_AND_APPLY_POLICIES:
       return "SetupService.PullAndApplyPolicies";
-    case mojom::TimedCloudDpcOp::SETUP_REPORT_POLICY_COMPLIANCE:
-      return "SetupService.ReportPolicyCompliance";
-    case mojom::TimedCloudDpcOp::SETUP_QUARANTINED:
-      return "SetupService.QuarantinedRevised";
     case mojom::TimedCloudDpcOp::SETUP_ADD_ACCOUNT:
       return "SetupService.AddAccount";
     case mojom::TimedCloudDpcOp::SETUP_INSTALL_APPS:
       return "SetupService.InstallApps";
-    case mojom::TimedCloudDpcOp::SETUP_INSTALL_APPS_RETRY:
-      return "SetupService.InstallAppsRetry";
-    case mojom::TimedCloudDpcOp::SETUP_UPDATE_PLAY_SERVICES:
-      return "SetupService.UpdatePlayServices";
-    case mojom::TimedCloudDpcOp::SETUP_CHECK_REGISTRATION_TOKEN:
-      return "SetupService.CheckRegistrationToken";
-    case mojom::TimedCloudDpcOp::SETUP_THIRD_PARTY_SIGNIN:
-      return "SetupService.ThirdPartySignin";
     case mojom::TimedCloudDpcOp::DEVICE_SETUP:
       return "DeviceSetup";
+    case mojom::TimedCloudDpcOp::SETUP_CHECK_FOR_ANDROID_ID:
+    case mojom::TimedCloudDpcOp::SETUP_CHECK_FOR_FIRST_ACCOUNT_READY:
+    case mojom::TimedCloudDpcOp::SETUP_REGISTER:
+    case mojom::TimedCloudDpcOp::SETUP_REPORT_POLICY_COMPLIANCE:
+    case mojom::TimedCloudDpcOp::SETUP_QUARANTINED:
+    case mojom::TimedCloudDpcOp::SETUP_INSTALL_APPS_RETRY:
+    case mojom::TimedCloudDpcOp::SETUP_UPDATE_PLAY_SERVICES:
+    case mojom::TimedCloudDpcOp::SETUP_CHECK_REGISTRATION_TOKEN:
+    case mojom::TimedCloudDpcOp::SETUP_THIRD_PARTY_SIGNIN:
+      return ""; // Deprecated and unused
   }
 
   NOTREACHED();

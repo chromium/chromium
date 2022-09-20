@@ -129,31 +129,12 @@ chromium-metrics-reviews@google.com.
       summary="Step during ManagedProvisioning app to setup the device"/>
   <variant name=".SetupService.AddAccount"
       summary="Step during the setup service that adds the account"/>
-  <variant name=".SetupService.CheckForAndroidId"
-      summary="Step during the setup service that checks android ID"/>
-  <variant name=".SetupService.CheckForFirstAccountReady"
-      summary="Step during the setup service that checks for first account
-               ready"/>
-  <variant name=".SetupService.CheckRegistrationToken"
-      summary="Step during the setup service that checks registration token"/>
   <variant name=".SetupService.InstallApps"
       summary="Step during the setup service that installs apps"/>
-  <variant name=".SetupService.InstallAppsRetry"
-      summary="Step during the setup service that retries installing apps"/>
   <variant name=".SetupService.PullAndApplyPolicies"
       summary="Step during the setup service that pulls and applies policies"/>
-  <variant name=".SetupService.QuarantinedRevised"
-      summary="Step during the setup service for a quarantined device"/>
-  <variant name=".SetupService.Register"
-      summary="Step during the setup service that registers"/>
-  <variant name=".SetupService.ReportPolicyCompliance"
-      summary="Step during the setup service that reports policy compliance"/>
-  <variant name=".SetupService.ThirdPartySignin"
-      summary="Step during the setup service that does third party sign in"/>
   <variant name=".SetupService.Total"
       summary="All steps that occur during the setup service"/>
-  <variant name=".SetupService.UpdatePlayServices"
-      summary="Step during the setup service that updates play services"/>
 </variants>
 
 <variants name="WaylandEventType">
