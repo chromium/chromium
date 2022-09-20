@@ -578,7 +578,8 @@ scoped_refptr<ParsedCertificate> OCSPParseCertificate(base::StringPiece der) {
   // The Authorized Responder must be directly signed by the issuer of the
   // certificate being checked.
   // TODO(eroman): Must check the signature algorithm against policy.
-  if (!VerifySignedData(responder_certificate->signature_algorithm(),
+  if (!responder_certificate->signature_algorithm().has_value() ||
+      !VerifySignedData(*responder_certificate->signature_algorithm(),
                         responder_certificate->tbs_certificate_tlv(),
                         responder_certificate->signature_value(),
                         issuer_certificate->tbs().spki_tlv)) {

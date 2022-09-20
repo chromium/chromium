@@ -20,8 +20,6 @@ namespace {
 DEFINE_CERT_ERROR_ID(kFailedParsingCertificate, "Failed parsing Certificate");
 DEFINE_CERT_ERROR_ID(kFailedParsingTbsCertificate,
                      "Failed parsing TBSCertificate");
-DEFINE_CERT_ERROR_ID(kFailedParsingSignatureAlgorithm,
-                     "Failed parsing SignatureAlgorithm");
 DEFINE_CERT_ERROR_ID(kFailedReadingIssuerOrSubject,
                      "Failed reading issuer or subject");
 DEFINE_CERT_ERROR_ID(kFailedNormalizingSubject, "Failed normalizing subject");
@@ -106,13 +104,8 @@ scoped_refptr<ParsedCertificate> ParsedCertificate::Create(
   }
 
   // Attempt to parse the signature algorithm contained in the Certificate.
-  absl::optional<SignatureAlgorithm> sigalg =
+  result->signature_algorithm_ =
       ParseSignatureAlgorithm(result->signature_algorithm_tlv_, errors);
-  if (!sigalg) {
-    errors->AddError(kFailedParsingSignatureAlgorithm);
-    return nullptr;
-  }
-  result->signature_algorithm_ = *sigalg;
 
   der::Input subject_value;
   if (!GetSequenceValue(result->tbs_.subject_tlv, &subject_value)) {

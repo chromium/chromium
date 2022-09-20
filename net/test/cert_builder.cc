@@ -691,6 +691,12 @@ void CertBuilder::SetSignatureAlgorithm(
   Invalidate();
 }
 
+void CertBuilder::SetSignatureAlgorithmTLV(
+    base::StringPiece signature_algorithm_tlv) {
+  signature_algorithm_tlv_ = std::string(signature_algorithm_tlv);
+  Invalidate();
+}
+
 void CertBuilder::SetRandomSerialNumber() {
   serial_number_ = base::RandUint64();
   Invalidate();
@@ -983,8 +989,10 @@ void CertBuilder::GenerateCertificate() {
     signature_algorithm = DefaultSignatureAlgorithmForKey(issuer_->GetKey());
   ASSERT_TRUE(signature_algorithm.has_value());
 
-  std::string signature_algorithm_tlv =
-      SignatureAlgorithmToDer(*signature_algorithm);
+  std::string signature_algorithm_tlv = signature_algorithm_tlv_;
+  if (signature_algorithm_tlv.empty()) {
+    signature_algorithm_tlv = SignatureAlgorithmToDer(*signature_algorithm);
+  }
   ASSERT_FALSE(signature_algorithm_tlv.empty());
 
   std::string tbs_cert;

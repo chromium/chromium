@@ -5,5 +5,4 @@ key_purpose: SERVER_AUTH
 expected_errors:
 ----- Certificate i=0 (CN=Target) -----
 ERROR: Unacceptable signature algorithm
-ERROR: VerifySignedData failed
 

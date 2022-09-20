@@ -148,7 +148,10 @@ TEST(ParsedCertificateTest, BadPolicyQualifiers) {
 
 // Parses a certificate that uses an unknown signature algorithm OID (00).
 TEST(ParsedCertificateTest, BadSignatureAlgorithmOid) {
-  ASSERT_FALSE(ParseCertificateFromFile("bad_signature_algorithm_oid.pem", {}));
+  scoped_refptr<ParsedCertificate> cert =
+      ParseCertificateFromFile("bad_signature_algorithm_oid.pem", {});
+  ASSERT_TRUE(cert);
+  ASSERT_FALSE(cert->signature_algorithm());
 }
 
 //  The validity encodes time as UTCTime but following the BER rules rather than
@@ -159,7 +162,10 @@ TEST(ParsedCertificateTest, BadValidity) {
 
 // The signature algorithm contains an unexpected parameters field.
 TEST(ParsedCertificateTest, FailedSignatureAlgorithm) {
-  ASSERT_FALSE(ParseCertificateFromFile("failed_signature_algorithm.pem", {}));
+  scoped_refptr<ParsedCertificate> cert =
+      ParseCertificateFromFile("failed_signature_algorithm.pem", {});
+  ASSERT_TRUE(cert);
+  ASSERT_FALSE(cert->signature_algorithm());
 }
 
 TEST(ParsedCertificateTest, IssuerBadPrintableString) {

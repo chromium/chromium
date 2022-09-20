@@ -85,7 +85,8 @@ class NET_EXPORT ParsedCertificate
   const ParsedTbsCertificate& tbs() const { return tbs_; }
 
   // Returns the signatureAlgorithm of the Certificate (not the tbsCertificate).
-  SignatureAlgorithm signature_algorithm() const {
+  // If the signature algorithm is unknown/unsupported, this returns nullopt.
+  absl::optional<SignatureAlgorithm> signature_algorithm() const {
     return signature_algorithm_;
   }
 
@@ -260,14 +261,7 @@ class NET_EXPORT ParsedCertificate
   ParsedTbsCertificate tbs_;
 
   // The signatureAlgorithm from the Certificate.
-  //
-  // TODO(crbug.com/1321688): This class requires that we recognize the
-  // signature algorithm, but there are some self-signed root certificates with
-  // weak signature algorithms like MD2. We never verify those signatures, but
-  // this means we must include MD2, etc., in the `SignatureAlgorithm` enum.
-  // Instead, make this an `absl::optional<SignatureAlgorithm>` and make the
-  // call sites handle recognized and unrecognized algorithms.
-  SignatureAlgorithm signature_algorithm_;
+  absl::optional<SignatureAlgorithm> signature_algorithm_;
 
   // Normalized DER-encoded Subject (not including outer Sequence tag).
   std::string normalized_subject_;
