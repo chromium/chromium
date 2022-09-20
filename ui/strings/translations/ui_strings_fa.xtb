@@ -190,7 +190,7 @@
 <translation id="8090736967111090568">شماره از <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{۱ ساعت قبل}one{# ساعت قبل}other{# ساعت قبل}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{۱ ثانیه باقی مانده است}one{# ثانیه باقی مانده است}other{# ثانیه باقی مانده است}}</translation>
-<translation id="8134065097954893699">درحال تازه‌سازی این صفحه</translation>
+<translation id="8134065097954893699">درحال بار کردن مجدد این صفحه</translation>
 <translation id="815598010540052116">پیمایش به پایین</translation>
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8210608804940886430">صفحه پایین</translation>

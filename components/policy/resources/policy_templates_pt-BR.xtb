@@ -2445,6 +2445,7 @@ Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EX
           A mensagem de aviso só será mostrada se a ação de inatividade for para sair ou encerrar.</translation>
 <translation id="3360490004791301756">Permitir que os usuários resgatem ofertas pelo Registro do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3363360928811201045">Adicionar restrições em contas gerenciadas</translation>
+<translation id="3364400740222114778">Recuperação de conta</translation>
 <translation id="3373381043600809954">Ativar "<ph name="PRODUCT_NAME" />".</translation>
 <translation id="3374587000313305002">Configura o diretório que o <ph name="PRODUCT_NAME" /> usará para armazenar dados do usuário.
 
@@ -3388,6 +3389,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="4389073105055031853">Permitir que os usuários gerenciem todos os certificados</translation>
 <translation id="4389091865841123886">Configurar a declaração remota com mecanismo TPM</translation>
+<translation id="4397045637922200204">Desativar a recuperação de conta</translation>
 <translation id="4397464099112037398">Configuração padrão da permissão para posicionamento de janelas</translation>
 <translation id="4401496838830169080">Permite que você controle se o recurso "Navegação segura" do <ph name="PRODUCT_NAME" /> está ativado e em que modo ele opera.
 
@@ -6309,6 +6311,15 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7482768039644066614">Ativar a busca de metadados para carregamento de página e dos modelos de aprendizado de máquina para melhorar a experiência de navegação</translation>
 <translation id="7485481791539008776">Regras de seleção de impressora padrão</translation>
 <translation id="7486205887492534734">Pedir quando houver várias correspondências de certificado na tela de login</translation>
+<translation id="7489661071474025727">Especifica se o serviço de recuperação de conta está ativado para usuários em dispositivos <ph name="PRODUCT_OS_NAME" />.
+
+      Quando a política está ativada, a recuperação de dados do usuário é acionada. Quando a política está desativada ou sem definição, a recuperação de dados do usuário não é acionada.
+      Se o nível da política for definido como recomendado, os usuários vão poder mudar a ativação da recuperação de conta na página de configurações. Se ele for definido como obrigatório, os usuários não vão poder mudar a ativação da recuperação de conta.
+
+      Na mudança do valor da política, o processo de atualização é concluído no próximo login no dispositivo <ph name="PRODUCT_OS_NAME" />, depois que o novo valor é buscado.
+
+      Observação: essa configuração só se aplica a novas contas adicionadas em dispositivos <ph name="PRODUCT_OS_NAME" />.
+      </translation>
 <translation id="7491720878670299691">Frequência da pesquisa por dados de rede e da verificação de eventos. O mínimo permitido é de um minuto.
 
       Se deixada sem definição, a frequência padrão de um minuto será aplicada.</translation>
@@ -7321,6 +7332,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8543108307976719751">Impedir conexões de acesso remoto a esta máquina</translation>
 <translation id="8544375438507658205">Renderizador padrão de HTML para o <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Permite a sincronização de mensagens SMS do smartphone com o Chromebook.</translation>
+<translation id="8549906780629620346">Ativar a recuperação de conta</translation>
 <translation id="8553955290407912156">Se a política for definida, é possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que o usuário conceda permissão de acesso ao dispositivo HID.
 
       Se esta política for deixada sem definição, a <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> vai ser aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários vão ser aplicadas.

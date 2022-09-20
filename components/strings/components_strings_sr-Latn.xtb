@@ -260,6 +260,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="156703335097561114">Informacije o mrežama poput adresa, konfiguracije interfejsa i kvaliteta veze</translation>
 <translation id="1567040042588613346">Ove smernice rade kao što je predviđeno, ali ista vrednost je podešena na drugom mestu i zamenjuju je ove smernice.</translation>
 <translation id="1569487616857761740">Unesite datum isteka</translation>
+<translation id="1569694109004336106">Google Chrome pokušava da uključi Windows Hello za popunjavanje lozinki.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Došlo je do greške pri prikazivanju ove veb-stranice.</translation>
 <translation id="1586541204584340881">dodatke koje ste instalirali</translation>
@@ -398,6 +399,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1958218078413065209">Vaš najviši rezultat je <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Pomozite da poboljšamo bezbednost na vebu za sve tako što ćete slati <ph name="BEGIN_WHITEPAPER_LINK" />URL-ove nekih stranica koje posećujete, ograničene informacije o sistemu i određeni sadržaj stranica<ph name="END_WHITEPAPER_LINK" /> Google-u <ph name="BEGIN_PRIVACY_PAGE_LINK" />Politika privatnosti<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> – obeleživači</translation>
+<translation id="1971033026002113380">Zaštitite lozinke pomoću TouchID-ja</translation>
 <translation id="1973335181906896915">Greška pri serijalizaciji</translation>
 <translation id="1974060860693918893">Napredne opcije</translation>
 <translation id="1975457531113383421">Ulazna fioka</translation>
@@ -725,6 +727,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2881276955470682203">Želite li da sačuvate karticu?</translation>
 <translation id="2882949212241984732">Dvostruko presavijanje u obliku prozora</translation>
 <translation id="2893773853358652045">Četvrti kotur</translation>
+<translation id="289834758818479772">Ako delite ovaj uređaj sa drugima, možete da uključite TouchID da biste potvrdili da ste to vi kada god koristite sačuvanu lozinku</translation>
 <translation id="2900528713135656174">Napravite događaj</translation>
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="290376772003165898">Ova stranica nije na jeziku <ph name="LANGUAGE" />?</translation>
@@ -801,6 +804,8 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3108943290502734357">Srednja fioka</translation>
 <translation id="3109728660330352905">Nemate ovlašćenje da pregledate ovu stranicu.</translation>
 <translation id="3113284927548439113">Treća smena</translation>
+<translation id="3114040155724590991">Ažuriranje Android sistema
+    Pokretanje aplikacije može da traje duže nego obično.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Želite da preuzmete poverljiv fajl?}one{Želite da preuzmete poverljive fajlove?}few{Želite da preuzmete poverljive fajlove?}other{Želite da preuzmete poverljive fajlove?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> zahteva da napravite rezervnu kopiju podataka i da vratite ovaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Laminiranje</translation>
@@ -1255,6 +1260,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4306812610847412719">privremena memorija</translation>
 <translation id="4308567447483056043">Ove smernice se ignorišu zato što korisnik nije povezan. Da bi se ove smernice primenjivale, ista organizacija mora da upravlja Chrome pregledačem i profilom preko Administratorske konzole.</translation>
 <translation id="4310070645992025887">Pretražite svoje puteve</translation>
+<translation id="4310496734563057511">Ako delite ovaj uređaj sa drugima, možete da uključite Windows Hello da biste potvrdili da ste to vi kada god koristite sačuvanu lozinku</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokiraj (podrazumevano)</translation>
 <translation id="4314815835985389558">Upravljajte sinhronizacijom</translation>
@@ -1469,6 +1475,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4880827082731008257">Pretraži istoriju</translation>
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="4885256590493466218">Plaćajte pomoću kartice <ph name="CARD_DETAIL" /></translation>
+<translation id="4887406273302438710">Zaštitite lozinke pomoću Windows Hello-a</translation>
 <translation id="4888600795924685526">Studije stranih jezika</translation>
 <translation id="4889420713887366944">Dugme Otvori prozor bez arhiviranja, pritisnite Enter da biste otvorili nov prozor bez arhiviranja i pregledali privatno</translation>
 <translation id="4892518386797173871">Zadnji deo</translation>
@@ -1687,6 +1694,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5426179911063097041"><ph name="SITE" /> želi da vam šalje obaveštenja</translation>
 <translation id="5428105026674456456">španski</translation>
 <translation id="5430298929874300616">Uklonite obeleživač</translation>
+<translation id="5434423669266814150">uključi TouchID za popunjavanje lozinki</translation>
 <translation id="5443468954631487277">Obrnutim redosledom sa odštampanom stranom nagore</translation>
 <translation id="5447765697759493033">Ovaj sajt se neće prevoditi</translation>
 <translation id="5452270690849572955">Nije moguće pronaći ovu stranicu hosta <ph name="HOST_NAME" /></translation>
@@ -2462,6 +2470,7 @@ Dodatni detalji:
 <translation id="7564049878696755256">Možete da izgubite pristup nalogu za <ph name="ORG_NAME" /> ili bi moglo da dođe do krađe identiteta. Chrome vam preporučuje da odmah promenite lozinku.</translation>
 <translation id="7564680668369175887">Karavan vozila</translation>
 <translation id="7567204685887185387">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat je možda lažno izdat. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
+<translation id="7568616151991626879">Google Chrome pokušava da unese lozinku na <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569761772822664555">Dugme Upravljaj pretraživačima, pritisnite Enter da biste upravljali podrazumevanim pretraživačem i pretragom sajta</translation>
 <translation id="7569952961197462199">Želite li da uklonite kreditnu karticu iz Chrome-a?</translation>
@@ -2492,6 +2501,7 @@ Dodatni detalji:
 <translation id="7637586430889951925">{COUNT,plural, =0{Nijedna}=1{1 lozinka na nalogu (za <ph name="DOMAIN_LIST" />)}one{# lozinka na nalogu (za <ph name="DOMAIN_LIST" />)}few{# lozinke na nalogu (za <ph name="DOMAIN_LIST" />)}other{# lozinki na nalogu (za <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Serijski portovi</translation>
 <translation id="7639968568612851608">Tamnosiva</translation>
+<translation id="7646681339175747202">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Google menadžer lozinki preporučuje da odmah promenite lozinku.</translation>
 <translation id="7647206758853451655">Kvalitet štampanja</translation>
 <translation id="7648992873808071793">skladišti datoteke na ovom uređaju</translation>
 <translation id="7653957176542370971">Stranica obrađivača plaćanja je zatvorena</translation>

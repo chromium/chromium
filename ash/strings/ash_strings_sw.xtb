@@ -214,6 +214,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2132302418721800944">Rekodi skrini nzima</translation>
 <translation id="2135456203358955318">Kikuzaji kilichofungwa</translation>
 <translation id="2148716181193084225">Leo</translation>
+<translation id="2161132820593978283">Jaribu kutumia kipengele cha kukuza picha kiotomatiki ili uonekane katikati ya skrini wakati wa simu za video. Washa kipengele cha kukuza kiotomatiki kwenye Mipangilio ya Haraka.</translation>
 <translation id="2170530631236737939">Telezesha vidole vitatu chini ili ufunge Muhtasari</translation>
 <translation id="219905428774326614">Kifungua Programu, programu zote</translation>
 <translation id="2201071101391734388">Picha ya hivi majuzi ya <ph name="INDEX" /> kati ya <ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +253,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2405664212338326887">Haijaunganishwa</translation>
 <translation id="2408955596600435184">Weka PIN yako</translation>
 <translation id="2412593942846481727">Sasisho linapatikana</translation>
+<translation id="2426051945783024481">Fremu ya kamera imewekwa katikati kiotomatiki</translation>
 <translation id="2427507373259914951">Mbofyo wa kushoto</translation>
 <translation id="2429753432712299108">Kifaa cha Bluetooth cha "<ph name="DEVICE_NAME" />" kinaomba idhini ya kuoanisha. Kabla hujakubali, tafadhali thibitisha kwamba nenosiri hili linaonyeshwa kwenye kifaa hicho: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Onyesha nenosiri</translation>
@@ -1038,6 +1040,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6960565108681981554">Haijawashwa. Wasiliana na mtoa huduma wako.</translation>
 <translation id="6961121602502368900">Kipengele cha kuzima mlio wa simu hakipatikani kwenye wasifu wa kazini</translation>
 <translation id="6961840794482373852">Mikato ya kibodi ya Alt + Kishale cha Juu imebadilika. Ili utumie kitufe cha Page Up, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Juu.</translation>
+<translation id="696267987219125751">Kipengele cha kukuza picha kiotomatiki kimezimwa.</translation>
 <translation id="6965382102122355670">Sawa</translation>
 <translation id="6972754398087986839">Anza</translation>
 <translation id="6979158407327259162">Hifadhi ya Google</translation>
@@ -1128,6 +1131,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7513922695575567867">Kalenda, wiki ya <ph name="DATE" />, kwa sasa umechagua <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Pakua</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Kipengele cha kukuza picha kiotomatiki kimewashwa.</translation>
 <translation id="7526573455193969409">Huenda mtandao unafuatiliwa</translation>
 <translation id="7536035074519304529">Anwani ya IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Programu za Linux pamoja na madirisha fiche hayawezi kutumika kwa sasa. Programu nyingine zitahifadhiwa.</translation>
@@ -1147,6 +1151,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7607002721634913082">Imepumzishwa</translation>
 <translation id="7609951632080598826">Mwonekano wa kalenda, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera imeunganishwa upya.</translation>
+<translation id="761736749114493194">Washa au zima kipengele cha kukuza picha kiotomatiki. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Onyesha mipangilio ya kipengele cha Uhamishaji wa Karibu.</translation>
 <translation id="7634648064048557203">Onyesho la kukagua kamera limelinganishwa kwenye kona ya chini kulia</translation>
@@ -1307,6 +1312,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="851458219935658693">Onyesha madirisha yaliyo kwenye eneokazi la sasa, umechagua kitufe cha mviringo</translation>
 <translation id="8517041960877371778">Huenda kifaa chako cha <ph name="DEVICE_TYPE" /> kisichaji kikiwa kimewashwa.</translation>
 <translation id="8535393432370007982">Tendua utaratibu wa kupanga kulingana na rangi</translation>
+<translation id="8541078764854166027">Kipengele cha kukuza picha kiotomatiki</translation>
 <translation id="8542053257095774575">Hakuna maeneokazi au violezo vilivyohifadhiwa</translation>
 <translation id="8546059259582788728">Imefanikiwa kutendua upangaji</translation>
 <translation id="8551588720239073785">Mipangilio ya saa na tarehe</translation>

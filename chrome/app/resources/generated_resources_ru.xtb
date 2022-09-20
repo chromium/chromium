@@ -696,6 +696,7 @@
 <translation id="1640283014264083726">PKCS #1 MD4 с шифрованием RSA</translation>
 <translation id="1641113438599504367">Безопасный просмотр</translation>
 <translation id="1641496881756082050">Другие действия с сетью "<ph name="NETWORK_NAME" />"</translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Не удалось импортировать 1 пароль. У него неверный формат.}one{Не удалось импортировать {NUM_PASSWORDS} пароль. У них неверный формат.}few{Не удалось импортировать {NUM_PASSWORDS} пароля. У них неверный формат.}many{Не удалось импортировать {NUM_PASSWORDS} паролей. У них неверный формат.}other{Не удалось импортировать {NUM_PASSWORDS} пароля. У них неверный формат.}}</translation>
 <translation id="1642492862748815878">Установлено подключение к устройству "<ph name="DEVICE" />" и другим устройствам Bluetooth (<ph name="NUMBER_OF_DEVICES" />)</translation>
 <translation id="1642494467033190216">Перед включением других функций отладки отключите защиту корневой файловой системы и перезагрузите устройство.</translation>
 <translation id="1643072738649235303">Подпись ECDSA X9.62 с SHA-1</translation>
@@ -1834,6 +1835,7 @@
 <translation id="2673135533890720193">Чтение истории просмотров</translation>
 <translation id="2674764818721168631">Отключено</translation>
 <translation id="2678063897982469759">Включить снова</translation>
+<translation id="2678100101831051676">Не удалось запустить трансляцию</translation>
 <translation id="268053382412112343">&amp;История</translation>
 <translation id="2681124317993121768">Гостевые профили не поддерживаются.</translation>
 <translation id="2682498795777673382">Ваш родитель изменил настройки</translation>
@@ -3870,6 +3872,7 @@
 <translation id="4617019240346358451">Чтобы использовать расширение "<ph name="EXTENSION_NAME" />", обновите страницу</translation>
 <translation id="4617270414136722281">Параметры расширений</translation>
 <translation id="4617880081511131945">Не удается подключиться</translation>
+<translation id="4618195822946934889">URL может содержать только символы стандарта ASCII.</translation>
 <translation id="4619564267100705184">Подтвердить личность</translation>
 <translation id="4619615317237390068">Вкладки с других устройств</translation>
 <translation id="4620809267248568679">Этот параметр определяется расширением.</translation>
@@ -5070,6 +5073,7 @@
 <translation id="5800351251499368110">Вы можете закрыть боковое окно поиска. Сейчас оно открыто.</translation>
 <translation id="5801568494490449797">Настройки</translation>
 <translation id="5804241973901381774">Разрешения</translation>
+<translation id="5805268472388605531">Нажмите и удерживайте клавиши, чтобы увидеть диакритические знаки и специальные символы</translation>
 <translation id="5805697420284793859">Менеджер окон</translation>
 <translation id="5806447147478173900">Объем хранилища, занятый указанными сайтами: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (по умолчанию)</translation>
@@ -5711,6 +5715,7 @@
 <translation id="642469772702851743">Устройство (серийный номер <ph name="SERIAL_NUMBER" />) заблокировано владельцем.</translation>
 <translation id="6425556984042222041">Скорость озвучивания текста</translation>
 <translation id="642729974267661262">Запретить сайтам воспроизводить звук</translation>
+<translation id="6427608534767366138">Для доступа к сети "<ph name="NETWORK_ID" />" требуется аутентификация на прокси-сервере.</translation>
 <translation id="6429384232893414837">Ошибка обновления</translation>
 <translation id="6430814529589430811">Единый сертификат ASCII с кодировкой Base64</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> настроит автоматические обновления для всех пользователей на этом компьютере.</translation>
@@ -7850,6 +7855,7 @@
 <translation id="844063558976952706">Всегда на этом сайте</translation>
 <translation id="8441313165929432954">Включение/отключение режима модема</translation>
 <translation id="8443795068008423036">Обновите операционную систему устройства и повторите попытку.</translation>
+<translation id="8443986842926457191">URL должен быть не длиннее 2048 символов.</translation>
 <translation id="8446884382197647889">Подробнее...</translation>
 <translation id="8447409163267621480">Сочетание должно начинаться с клавиши Ctrl или Alt</translation>
 <translation id="844850004779619592">Команды не найдены</translation>
@@ -7915,6 +7921,7 @@
 <translation id="851263357009351303">Всегда показывать изображения с сайта <ph name="HOST" /></translation>
 <translation id="8513108775083588393">Автоповорот</translation>
 <translation id="8514746246728959655">Попробуйте применить другой электронный ключ</translation>
+<translation id="8519895319663397036">Не удалось импортировать пароли. Размер файла должен быть меньше 150 КБ.</translation>
 <translation id="8523493869875972733">Закрыть</translation>
 <translation id="8523849605371521713">Добавлено по правилу</translation>
 <translation id="8524783101666974011">Сохраните карты в аккаунте Google</translation>

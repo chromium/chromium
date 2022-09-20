@@ -2174,6 +2174,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2977480621796371840">Uit groep verwijderen</translation>
 <translation id="2979639724566107830">Openen in nieuw venster</translation>
 <translation id="2981113813906970160">Grote muisaanwijzer bekijken</translation>
+<translation id="2981293774053328982">Dit bestand bevat malware die misschien een risico vormt voor je persoonlijke of socialmedia-accounts.</translation>
 <translation id="2983373101216420412">Batterijniveau case: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Een verzoek naar je beheerder sturen om '<ph name="EXTENSION_NAME" />' te installeren?</translation>
 <translation id="2987620471460279764">Gedeelde tekst van ander apparaat</translation>
@@ -3757,6 +3758,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4514610446763173167">Video schakelen tussen afspelen en pauzeren</translation>
 <translation id="451515744433878153">Verwijderen</translation>
 <translation id="4515872537870654449">Neem contact op met Dell voor service. Het dock wordt uitgezet als de ventilator niet werkt.</translation>
+<translation id="4518840066030486079">Modusstijl Shift-toets</translation>
 <translation id="4519331665958994620">Sites kunnen toegang tot je camera vragen</translation>
 <translation id="4519935350946509010">Verbindingsfout.</translation>
 <translation id="4520385623207007473">Gebruikte cookies</translation>
@@ -3852,6 +3854,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4598345735110653698">Toegangscodes beheren</translation>
 <translation id="4598556348158889687">Opslagbeheer</translation>
 <translation id="4598776695426288251">Wifi beschikbaar via meerdere apparaten</translation>
+<translation id="4600071396330666617">Aantal suggesties</translation>
 <translation id="4601426376352205922">Markeren als ongelezen</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> altijd toegang geven tot je camera en microfoon</translation>
 <translation id="4606551464649945562">Niet toestaan dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
@@ -4297,6 +4300,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5043913660911154449">Of geef de PPD van je printer op. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
 <translation id="504561833207953641">Wordt geopend in een bestaande browsersessie.</translation>
+<translation id="5049614114599109018">Invoergeschiedenis gebruiken</translation>
 <translation id="5051836348807686060">De spellingcontrole wordt niet ondersteund voor de talen die je hebt geselecteerd</translation>
 <translation id="5052499409147950210">Site bewerken</translation>
 <translation id="505347685865235222">Naamloze groep - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -6716,6 +6720,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7404065585741198296">Je telefoon met een USB-kabel</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Veiligheidscheck is 1 uur geleden uitgevoerd}other{Veiligheidscheck is {NUM_HOURS} uur geleden uitgevoerd}}</translation>
 <translation id="740624631517654988">Pop-up geblokkeerd</translation>
+<translation id="7406912950279255498">Modus voor kleurinversie</translation>
 <translation id="7407430846095439694">Importeren en binden</translation>
 <translation id="7407504355934009739">De meeste mensen blokkeren meldingen van deze site</translation>
 <translation id="740810853557944681">Een printerserver toevoegen</translation>
@@ -7663,6 +7668,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
     <ph name="BEGIN_PARAGRAPH3" />De eigenaar kan deze functie beheren via Instellingen &gt; Geavanceerd &gt; Automatisch diagnostische en gebruiksgegevens naar Google sturen.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Als de instelling Aanvullende web- en app-activiteit is aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind. Ga naar families.google.com voor meer informatie over deze instellingen en hoe je ze kunt aanpassen.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Ongeldig clientcertificaat</translation>
+<translation id="8270162672241199380">Steam-installatieprogramma</translation>
 <translation id="827097179112817503">Homepage-knop bekijken</translation>
 <translation id="8271268254812352141">Als je met de rechtermuisknop op tekst klikt of op tekst tikt en deze vasthoudt, kun je definities, vertalingen of eenheidsconversies opvragen. Pas de talen voor vertaling aan in <ph name="LINK_BEGIN" />Websitetalen<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">De volgende stappen zijn bedoeld voor ouders. Als het account is ingesteld, kun je de <ph name="DEVICE_TYPE" /> teruggeven aan je kind.</translation>

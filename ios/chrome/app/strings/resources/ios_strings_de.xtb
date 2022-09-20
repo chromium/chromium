@@ -42,6 +42,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="1229222343402087523">In Chrome nach ${searchPhrase} suchen</translation>
 <translation id="1242044645101871359">Noch einmal anmelden</translation>
 <translation id="1254117744268754948">Ordner wählen</translation>
+<translation id="1258491128795710625">Neue Funktionen</translation>
 <translation id="1265739287306757398">Weitere Informationen</translation>
 <translation id="1272079795634619415">Stoppen</translation>
 <translation id="1275718070701477396">Ausgewählt</translation>
@@ -564,6 +565,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5728700505257787410">Beim Anmelden in deinem Konto ist ein Fehler aufgetreten.</translation>
 <translation id="5731784586962650619">Passwörter in anderen Apps</translation>
 <translation id="5737974891429562743">Die Anmeldeinformationen für das Konto sind veraltet. Aktualisiere sie zur Synchronisierung.</translation>
+<translation id="5738385766833540397">Lege fest, wie du über Preisnachlässe bei beobachteten Produkten benachrichtigt werden willst</translation>
 <translation id="5738887413654608789">Dann kannst du relevante Webseiten zu Objekten in deiner Umgebung entdecken.</translation>
 <translation id="5758631781033351321">Hier wird deine Leseliste angezeigt</translation>
 <translation id="5765456154762864099">„Menü“ → „Einstellungen“ → „Standardbrowser“</translation>

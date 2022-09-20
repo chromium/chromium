@@ -42,6 +42,7 @@
 <translation id="1229222343402087523">在 Chrome 中搜索 ${searchPhrase}</translation>
 <translation id="1242044645101871359">重新登录</translation>
 <translation id="1254117744268754948">选择文件夹</translation>
+<translation id="1258491128795710625">新变化</translation>
 <translation id="1265739287306757398">了解如何操作</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275718070701477396">已选择</translation>
@@ -55,6 +56,7 @@
 <translation id="1322735045095424339">贵单位要求使用无痕模式</translation>
 <translation id="1323735185997015385">删除</translation>
 <translation id="132683371494960526">点按两次即可更改父文件夹。</translation>
+<translation id="1335348992705722518">管理设置…</translation>
 <translation id="1340643665687018190">关闭菜单</translation>
 <translation id="1358214951266274152">访问您复制的链接</translation>
 <translation id="1360432990279830238">退出帐号并关闭同步功能？</translation>
@@ -383,6 +385,7 @@
 <translation id="4187450337729239226">粘贴并搜索</translation>
 <translation id="4223967053752765281">贵单位关闭了登录功能。您仍可在此设备上查看自己的书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的帐号。</translation>
 <translation id="4233831822770018312">修改权限</translation>
+<translation id="4236584471598725073">正在跟踪价格</translation>
 <translation id="4237377247299956313">点按<ph name="BEGIN_BOLD" />默认浏览器应用<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">请输入密码</translation>
 <translation id="4249955472157341256">按新近度排序</translation>
@@ -562,6 +565,7 @@
 <translation id="5728700505257787410">很抱歉，登录您的帐号时出现问题。</translation>
 <translation id="5731784586962650619">在其他应用中填充密码</translation>
 <translation id="5737974891429562743">帐号登录详细信息已过期，请进行更新以开始同步。</translation>
+<translation id="5738385766833540397">管理您所跟踪商品的降价提醒接收方式</translation>
 <translation id="5738887413654608789">这样可让您找到与目前周遭环境相关的网页。</translation>
 <translation id="5758631781033351321">您的阅读清单会显示在此处</translation>
 <translation id="5765456154762864099">菜单 → 设置 → 默认浏览器</translation>

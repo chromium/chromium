@@ -42,6 +42,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1229222343402087523">Buscar ${searchPhrase} en Chrome</translation>
 <translation id="1242044645101871359">Volver a acceder</translation>
 <translation id="1254117744268754948">Seleccionar carpeta</translation>
+<translation id="1258491128795710625">Novedades</translation>
 <translation id="1265739287306757398">Más información</translation>
 <translation id="1272079795634619415">Interrumpir</translation>
 <translation id="1275718070701477396">Seleccionada</translation>
@@ -55,6 +56,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1322735045095424339">Tu organización requiere que utilices el modo Incógnito</translation>
 <translation id="1323735185997015385">Borrar</translation>
 <translation id="132683371494960526">Presiona dos veces para cambiar la carpeta principal.</translation>
+<translation id="1335348992705722518">Administrar configuración…</translation>
 <translation id="1340643665687018190">Cerrar menú</translation>
 <translation id="1358214951266274152">Visita el vínculo que copiaste</translation>
 <translation id="1360432990279830238">¿Salir y desactivar la sincronización?</translation>
@@ -383,6 +385,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4187450337729239226">Pegar y buscar</translation>
 <translation id="4223967053752765281">Tu organización desactivó el acceso. Podrás seguir viendo tus favoritos, el historial, las contraseñas y otras opciones de configuración en este dispositivo. Si realizas cambios, no se sincronizarán con tu cuenta.</translation>
 <translation id="4233831822770018312">Modificar permisos</translation>
+<translation id="4236584471598725073">Se está haciendo el seguimiento de precios</translation>
 <translation id="4237377247299956313">Presiona <ph name="BEGIN_BOLD" />App de navegador predeterminada<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Ingresar frase de contraseña</translation>
 <translation id="4249955472157341256">Ordenar por más recientes</translation>
@@ -562,6 +565,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5728700505257787410">Se produjo un error al acceder a tu cuenta.</translation>
 <translation id="5731784586962650619">Contraseñas en otras apps</translation>
 <translation id="5737974891429562743">Los detalles de acceso de la cuenta están desactualizados. Actualízalos para comenzar la sincronización.</translation>
+<translation id="5738385766833540397">Administra cómo recibes alertas de descuentos para los productos que sigues.</translation>
 <translation id="5738887413654608789">Esta capacidad te permite descubrir páginas web relevantes en función de tu entorno.</translation>
 <translation id="5758631781033351321">Aquí encontrarás tu lista de lectura</translation>
 <translation id="5765456154762864099">Menú → Configuración → Navegador predeterminado</translation>

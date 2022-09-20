@@ -42,6 +42,7 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="1229222343402087523">Leita að ${searchPhrase} í Chrome</translation>
 <translation id="1242044645101871359">Skrá inn aftur</translation>
 <translation id="1254117744268754948">Velja möppu</translation>
+<translation id="1258491128795710625">Nýjungar</translation>
 <translation id="1265739287306757398">Kynntu þér hvernig</translation>
 <translation id="1272079795634619415">Stöðva</translation>
 <translation id="1275718070701477396">Valið</translation>
@@ -55,6 +56,7 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="1322735045095424339">Fyrirtækið þitt krefst huliðsstillingar</translation>
 <translation id="1323735185997015385">Eyða</translation>
 <translation id="132683371494960526">Ýttu tvisvar til að breyta yfirmöppu.</translation>
+<translation id="1335348992705722518">Stjórna stillingum...</translation>
 <translation id="1340643665687018190">Loka valmynd</translation>
 <translation id="1358214951266274152">Opna tengil sem þú afritaðir</translation>
 <translation id="1360432990279830238">Skrá út og slökkva á samstillingu?</translation>
@@ -383,6 +385,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4187450337729239226">Líma og leita</translation>
 <translation id="4223967053752765281">Fyrirtækið þitt slökkti á innskráningu. Þú getur áfram séð bókamerki, feril, aðgangsorð og aðrar stillingar í þessu tæki. Breytingar verða ekki samstilltar við reikninginn þinn.</translation>
 <translation id="4233831822770018312">Breyta heimildum</translation>
+<translation id="4236584471598725073">Vaktar verð</translation>
 <translation id="4237377247299956313">Ýttu á <ph name="BEGIN_BOLD" />Sjálfgefið vafraforrit<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Sláðu inn aðgangsorð</translation>
 <translation id="4249955472157341256">Raða eftir nýjasta</translation>
@@ -562,6 +565,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5728700505257787410">Því miður kom upp vandamál við að skrá þig inn á reikninginn.</translation>
 <translation id="5731784586962650619">Aðgangsorð í öðrum tækjum</translation>
 <translation id="5737974891429562743">Innskráningarupplýsingar reikningsins eru úreltar. Uppfærðu þær til að hefja samstillingu.</translation>
+<translation id="5738385766833540397">Stjórnaðu því hvernig þú færð tilkynningar um verðlækkanir á vörum sem þú vaktar</translation>
 <translation id="5738887413654608789">Þetta gerir þér kleift að finna viðeigandi vefsíður út frá nánasta umhverfi þínu.</translation>
 <translation id="5758631781033351321">Þú finnur leslistann þinn hér</translation>
 <translation id="5765456154762864099">Valmynd → Stillingar → Sjálfgefinn vafri</translation>

@@ -23,6 +23,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1104948393051856124">Prihvati i nastavi</translation>
 <translation id="110724200315609752">Pređi na otvoren prozor</translation>
 <translation id="1112015203684611006">Štampanje nije uspelo.</translation>
+<translation id="1118569444314402022">Dobro došli nazad, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Napravi novu karticu.</translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih veb-sajtova, preuzimanja i dodataka. U drugim Google uslugama, kao što su Gmail i Pretraga, i dalje ćete imati zaštitu pomoću Bezbednog pregledanja kada je dostupna.</translation>
 <translation id="1135212215217513471">Nabavite Chrome za iOS</translation>
@@ -42,6 +43,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1229222343402087523">Pretražite frazu ${searchPhrase} u Chrome-u</translation>
 <translation id="1242044645101871359">Prijavite se ponovo</translation>
 <translation id="1254117744268754948">Izbor direktorijuma</translation>
+<translation id="1258491128795710625">Šta je novo</translation>
 <translation id="1265739287306757398">Saznajte kako</translation>
 <translation id="1272079795634619415">Zaustavi</translation>
 <translation id="1275718070701477396">Izabrano je</translation>
@@ -63,6 +65,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1377255359165588604">Sinhronizacija više ne funkcioniše.</translation>
 <translation id="1377321085342047638">Broj kartice</translation>
 <translation id="1383876407941801731">Pretraži</translation>
+<translation id="138618066238211776">Nastavi kao <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Poslednje 4 nedelje</translation>
 <translation id="1404330357948037222">Odjavljeni ste</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
@@ -176,6 +179,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2421044535038393232">Nastavi izmene</translation>
 <translation id="2434405374328098816">Već ste sačuvali lozinku za „<ph name="USERNAME" />“ na <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
+<translation id="2461070143328828326">Podešavanja lozinke</translation>
 <translation id="2469960372084740698">Želite da isključite Bezbednosno pregledanje?</translation>
 <translation id="2473876017985765807">Već ste sačuvali lozinku za <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Nije izabrano</translation>
@@ -330,6 +334,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3709582977625132201">Označi kao nepročitano</translation>
 <translation id="371230970611282515">Otkriva opasne događaje pre nego što se dogode i upozorava vas na njih.</translation>
 <translation id="37207012422556617">Pretrage u trendu</translation>
+<translation id="3726360487031500941">Ponovo se prijavite na nalog <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Otvara unete URL-ove u Google Chrome-u u režimu bez arhiviranja.</translation>
 <translation id="3762232513783804601">Napravljeno za iPad</translation>
 <translation id="3771033907050503522">Kartice Bez arhiviranja</translation>
@@ -564,6 +569,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5728700505257787410">Žao nam je, došlo je do problema pri prijavljivanju na nalog.</translation>
 <translation id="5731784586962650619">Lozinke u drugim aplikacijama</translation>
 <translation id="5737974891429562743">Podaci za prijavljivanje na nalog su zastareli. Ažurirajte ih da biste započeli sinhronizaciju.</translation>
+<translation id="5738385766833540397">Upravljajte načinom na koji primate obaveštenja o sniženjima za proizvode koje pratite</translation>
 <translation id="5738887413654608789">Ovo vam omogućava da otkrijete relevantne veb-stranice na osnovu okruženja.</translation>
 <translation id="5758631781033351321">Ovde ćete pronaći listu za čitanje</translation>
 <translation id="5765456154762864099">Meni → Podešavanja → Podrazumevani pregledač</translation>

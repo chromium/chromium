@@ -46,7 +46,7 @@
 <translation id="1209206284964581585">فعلاً پنهان شود</translation>
 <translation id="1227058898775614466">سابقه پیمایش</translation>
 <translation id="1231733316453485619">همگام‌سازی روشن شود؟</translation>
-<translation id="123724288017357924">تازه‌سازی صفحه اصلی با نادیده گرفتن محتوای حافظه پنهان</translation>
+<translation id="123724288017357924">بار کردن مجدد صفحه اصلی با نادیده گرفتن محتوای حافظه پنهان</translation>
 <translation id="1239792311949352652">به‌سرعت این صفحه را هم‌رسانی کنید. برای ویرایش این میان‌بر، به «تنظیمات» بروید.</translation>
 <translation id="1240190568154816272">‏نکته‌های Chrome</translation>
 <translation id="1240288207750131269">درحال بار کردن <ph name="LANG" /></translation>
@@ -429,7 +429,7 @@
 <translation id="3282568296779691940">‏ورود به Chrome</translation>
 <translation id="3284510035090979597">کمک کنش‌گرایانه</translation>
 <translation id="3285080554353377245">‏ویدیوهایی درباره نحوه استفاده از Chrome</translation>
-<translation id="3288003805934695103">تازه‌سازی صفحه</translation>
+<translation id="3288003805934695103">بار کردن مجدد صفحه</translation>
 <translation id="3290249595466894471">نمونه کوچکی از صفحات، بارگیری‌ها، فعالیت افزونه، و اطلاعات سیستم را هم ارسال می‌کند تا به کشف تهدیدهای جدید کمک کند</translation>
 <translation id="3297344142967351106">دستیار صوتی</translation>
 <translation id="3303414029551471755">ادامه می‌دهید و محتوا را بارگیری می‌کنید؟</translation>
@@ -452,7 +452,7 @@
 <translation id="3428747202529429621">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chrome حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود</translation>
 <translation id="3429160811076349561">ویژگی‌های آزمایشی خاموش است</translation>
 <translation id="3435465986463792564">پنجره‌های زیادی دارید؟ می‌توانید از اینجا مدیریتشان کنید</translation>
-<translation id="3443221991560634068">تازه‌سازی صفحه کنونی</translation>
+<translation id="3443221991560634068">بار کردن مجدد صفحه کنونی</translation>
 <translation id="3444179773590444986">مایلید بازخوردتان را درباره زمینه تیره برای سایت‌ها هم‌رسانی کنید؟</translation>
 <translation id="3452832259067974318">‏برای حفظ حریم‌خصوصی‌تان، Chrome گذرواژه‌تان را به‌طور خودکار در این فیلد وارد نخواهد کرد.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{یک بارگیری زمان‌بندی شد}one{# بارگیری زمان‌بندی شد}other{# بارگیری زمان‌بندی شد}}</translation>
@@ -759,7 +759,7 @@
 <translation id="5126510351761255129">کارتتان را تأیید کنید</translation>
 <translation id="5132942445612118989">همگام‌سازی گذرواژه‌ها، سابقه و موارد دیگر در همه دستگاه‌ها</translation>
 <translation id="5139940364318403933">‏آشنایی با نحوه استفاده از Google Drive</translation>
-<translation id="5142281402488957685">برای داستان‌های جدید، صفحه را به‌طرف پایین بکشید تا بازخوانی شود</translation>
+<translation id="5142281402488957685">برای داستان‌های جدید، صفحه را به‌طرف پایین بکشید تا بازآوری شود</translation>
 <translation id="5152843274749979095">هیچ برنامه پشتیبانی‌شده‌ای نصب نشده است</translation>
 <translation id="5161254044473106830">عنوان مورد نیاز است</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
@@ -828,7 +828,7 @@
 <translation id="5524843473235508879">هدایت کردن مسدود شد.</translation>
 <translation id="5548606607480005320">بررسی ایمنی</translation>
 <translation id="5555525474779371165">انتخاب ویژگی حفاظتی «مرور ایمن»</translation>
-<translation id="5556459405103347317">تازه‌سازی</translation>
+<translation id="5556459405103347317">بار کردن مجدد</translation>
 <translation id="555816257274242153">پیگیری قیمت متوقف شد</translation>
 <translation id="5561162485081632007">رویدادهای خطرناک را درصورت وقوع شناسایی می‌کند و به شما هشدار می‌دهد</translation>
 <translation id="5561549206367097665">در انتظار شبکه…</translation>
@@ -861,7 +861,7 @@
 <translation id="5749237766298580851">خاموش <ph name="SEPARATOR" /> توصیه نمی‌شود</translation>
 <translation id="5752232708629533680">‏فقط هم‌رسانی GIF</translation>
 <translation id="5753139477036638699">‏می‌توانید از صدایتان برای جستجو در Chrome استفاده کنید</translation>
-<translation id="5754350196967618083">«یافته‌ها» بازخوانی نمی‌شود</translation>
+<translation id="5754350196967618083">«یافته‌ها» بازآوری نمی‌شود</translation>
 <translation id="5763382633136178763">برگه‌های ناشناس</translation>
 <translation id="5763514718066511291">برای کپی کردن نشانی وب این برنامه ضربه بزنید</translation>
 <translation id="5765517223145864268">درباره تجربه‌تان به ما بگویید. یا <ph name="BEGIN_LINK" />تنظیماتتان را تغییر دهید<ph name="END_LINK" />.</translation>

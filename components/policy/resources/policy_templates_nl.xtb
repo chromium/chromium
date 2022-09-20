@@ -1804,6 +1804,7 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 <translation id="2799297758492717491">Automatisch afspelen van media toestaan op een witte lijst met URL-patronen</translation>
 <translation id="2801065672151277034">Instellingen voor certificaatbeheer</translation>
 <translation id="2801155097555584385">Een custom startpunt voor batterijoplading opgeven in procenten</translation>
+<translation id="2801378553855965587"><ph name="GOOGLE_CALENDAR_NAME" />-integratie uitzetten.</translation>
 <translation id="2805707493867224476">Alle sites toestaan pop-ups te tonen</translation>
 <translation id="2818074121667686266">Als je het beleid toepast of niet instelt, wordt gebruikers in een prompt om toegang tot audio-opnamen gevraagd, met uitzondering van de URL's die zijn ingesteld in de lijst AudioCaptureAllowedUrls.
 
@@ -2401,6 +2402,7 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
           Het waarschuwingsbericht wordt alleen getoond als de inactieve actie 'uitloggen' of 'afsluiten' is.</translation>
 <translation id="3360490004791301756">Gebruikers toestaan aanbiedingen in te wisselen via <ph name="PRODUCT_OS_NAME" />-registratie</translation>
 <translation id="3363360928811201045">Beperkingen op beheerde accounts beheren</translation>
+<translation id="3364400740222114778">Accountherstel</translation>
 <translation id="3373381043600809954"><ph name="PRODUCT_NAME" /> aanzetten</translation>
 <translation id="3374587000313305002">Hiermee wordt de directory geconfigureerd die <ph name="PRODUCT_NAME" /> gebruikt voor het opslaan van gebruikersgegevens.
 
@@ -2422,6 +2424,7 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
       Als het beleid <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> niet is ingesteld, heeft dit beleid geen effect.</translation>
 <translation id="3397883909301547525">Geen app-aanbevelingen laten zien in de <ph name="PRODUCT_OS_NAME" />-launcher</translation>
 <translation id="3399859571630358395">Snel koppelen (snelle bluetooth-koppeling) geforceerd uitzetten.</translation>
+<translation id="3404681701763345449"><ph name="GOOGLE_CALENDAR_NAME" />-integratie aanzetten.</translation>
 <translation id="3408078762098350617">Hiermee beheer je de gebruikerservaring voor uitgezette functies die worden vermeld in <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
 
       Als je dit beleid instelt op Geblokkeerd, kunnen gebruikers de uitgezette functies niet gebruiken maar wel zien.
@@ -3322,6 +3325,7 @@ Als dit beleid is ingesteld, staat <ph name="PRODUCT_OS_NAME" /> gebruikers alle
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="4389073105055031853">Gebruikers toestaan alle certificaten te beheren</translation>
 <translation id="4389091865841123886">De externe bevestiging configureren met een TPM-mechanisme.</translation>
+<translation id="4397045637922200204">Accountherstel deactiveren</translation>
 <translation id="4397464099112037398">Standaardinstelling voor het recht voor vensterplaatsing</translation>
 <translation id="4401496838830169080">Hiermee kun je bepalen of je de Safe Browsing-functie van <ph name="PRODUCT_NAME" /> wilt aanzetten en in welke modus de functie actief moet zijn.
 
@@ -3736,6 +3740,7 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="4913065710388638917">Attestproces aanzetten voor een lijst met URL's</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918261735182294270">Gebruikers toestaan om te kiezen of <ph name="CHROME_SYNC_NAME" /> moet worden aangezet</translation>
+<translation id="491889618361437456"><ph name="GOOGLE_CALENDAR_NAME" />-integratie aanzetten</translation>
 <translation id="4919122295221518724">Strengere behandeling van gecombineerde content aanzetten</translation>
 <translation id="4920367374739265095">Als je dit beleid instelt, kun je aangeven welk toegangsbeleid wordt toegepast op bulksgewijze printerconfiguratie en beheren welke printers van <ph name="DEVICE_PRINTERS_POLICY_NAME" /> beschikbaar zijn voor gebruikers.
 
@@ -3892,6 +3897,13 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 
       Als je dit beleid niet instelt of niet toepast, werkt webkitRequestFileSystem met het permanente type met een tijdelijk quotum.
       </translation>
+<translation id="5099372083252975644"><ph name="GOOGLE_CALENDAR_NAME" />-integratie aanzetten, zodat <ph name="PRODUCT_OS_NAME" />-gebruikers afspraken kunnen ophalen uit <ph name="GOOGLE_CALENDAR_NAME" /> om de <ph name="PRODUCT_OS_NAME" />-agendawidget in de systeemstatusbalk in te vullen.
+
+          Als je dit beleid toepast, kan het <ph name="PRODUCT_OS_NAME" />-apparaat <ph name="GOOGLE_CALENDAR_NAME" />-afspraken ophalen om de <ph name="PRODUCT_OS_NAME" />-agendawidget in de systeemstatusbalk in te vullen voor de ingelogde gebruiker.
+
+          Als je dit beleid niet toepast, kan het <ph name="PRODUCT_OS_NAME" />-apparaat <ph name="GOOGLE_CALENDAR_NAME" />-afspraken niet ophalen om de <ph name="PRODUCT_OS_NAME" />-agendawidget in de systeemstatusbalk in te vullen voor de ingelogde gebruiker.
+
+          Als je dit beleid niet instelt, staat de <ph name="GOOGLE_CALENDAR_NAME" />-functie standaard uit voor zakelijke gebruikers.</translation>
 <translation id="5103112931744164177">Dit beleid beheert welke softwarestack wordt gebruikt voor communicatie met de DNS-server: de DNS-client van het besturingssysteem of de ingebouwde DNS-client van <ph name="PRODUCT_NAME" />. Dit beleid heeft geen invloed op welke DNS-servers worden gebruikt: als het besturingssysteem bijvoorbeeld is geconfigureerd voor gebruik van een zakelijke DNS-server, wordt diezelfde server gebruikt door de ingebouwde DNS-client. Ook wordt met dit beleid niet beheerd of DNS-over-HTTPS wordt gebruikt: <ph name="PRODUCT_NAME" /> gebruikt altijd de ingebouwde resolver voor DNS-over-HTTPS-verzoeken. Zie het <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />-beleid voor informatie over het beheer van DNS-over-HTTPS.
 
       Als dit beleid is toegepast, wordt de ingebouwde DNS-client gebruikt (indien beschikbaar).
@@ -6220,6 +6232,15 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 <translation id="7482768039644066614">Ophalen aanzetten van metadata voor het laden van pagina's en machinelearning-modellen die de browsefunctionaliteit verbeteren</translation>
 <translation id="7485481791539008776">Regels voor selectie van standaardprinter</translation>
 <translation id="7486205887492534734">Prompt voor als meerdere certificaten overeenkomen op het inlogscherm</translation>
+<translation id="7489661071474025727">Hiermee bepaal je of de service voor accountherstel is geactiveerd voor je gebruikers op <ph name="PRODUCT_OS_NAME" />-apparaten.
+
+      Als je het beleid toepast, wordt herstel van gebruikersgegevens geactiveerd. Als je het beleid niet toepast of niet instelt, wordt herstel van gebruikersgegevens niet geactiveerd.
+      Stel je het beleid in op aanbevolen, dan kunnen gebruikers de activering van accountherstel wijzigen via de instellingenpagina. Als je het beleid instelt op verplicht, kunnen gebruikers de activering van accountherstel niet wijzigen.
+
+      Bij wijziging van de beleidswaarde wordt het updateproces afgerond wanneer er weer wordt ingelogd bij <ph name="PRODUCT_OS_NAME" />, nadat de nieuwe beleidswaarde is opgehaald.
+
+      Opmerking: Deze instelling geldt alleen voor nieuwe accounts die worden toegevoegd op <ph name="PRODUCT_OS_NAME" />-apparaten.
+      </translation>
 <translation id="7491720878670299691">Snelheid waarmee netwerkgegevens worden opgevraagd en gecheckt op gebeurtenissen. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 1 minuut van toepassing.</translation>
@@ -7226,6 +7247,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8543108307976719751">Verbindingen voor externe toegang tot deze machine voorkomen</translation>
 <translation id="8544375438507658205">Standaard HTML-renderer voor <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Toestaan dat sms-berichten worden gesynchroniseerd tussen telefoon en Chromebook.</translation>
+<translation id="8549906780629620346">Accountherstel activeren</translation>
 <translation id="8553955290407912156">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers niet mogen vragen om toegang tot een HID-apparaat.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van gebruikers.

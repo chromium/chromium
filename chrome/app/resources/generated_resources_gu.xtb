@@ -2172,6 +2172,7 @@
 <translation id="2977480621796371840">ગ્રૂપમાંથી દૂર કરો</translation>
 <translation id="2979639724566107830">નવી વિંડોમાં ખોલો</translation>
 <translation id="2981113813906970160">મોટું માઉસ કર્સર બતાવો</translation>
+<translation id="2981293774053328982">આ ફાઇલ એવું માલવેર ધરાવે છે જે તમારા વ્યક્તિગત કે સોશિયલ નેટવર્ક એકાઉન્ટ સાથે ચેડાં કરી શકે છે</translation>
 <translation id="2983373101216420412">કેસમાં બૅટરીનું લેવલ <ph name="PERCENTAGE" />% છે.</translation>
 <translation id="2985348301114641460">તમારા વ્યવસ્થાપકને "<ph name="EXTENSION_NAME" />" ઇન્સ્ટૉલ કરવાની વિનંતી મોકલીએ?</translation>
 <translation id="2987620471460279764">બીજા ડિવાઇસ પરથી શેર થયેલી ટેક્સ્ટ</translation>
@@ -3756,6 +3757,7 @@
 <translation id="4514610446763173167">વીડિઓ ચલાવવા અથવા થોભાવવા માટે તેને ટૉગલ કરો</translation>
 <translation id="451515744433878153">દૂર કરો</translation>
 <translation id="4515872537870654449">સર્વિસ માટે Dellનો સંપર્ક કરો. જો પંખો ચાલી રહ્યો ન હોય તો ડૉક શટ ડાઉન થઈ જશે.</translation>
+<translation id="4518840066030486079">શિફ્ટ કી મોડ શૈલી</translation>
 <translation id="4519331665958994620">સાઇટ તમારા કૅમેરાનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
 <translation id="4519935350946509010">કનેક્શનમાં ભૂલ.</translation>
 <translation id="4520385623207007473">ઉપયોગમાંની કુકી</translation>
@@ -3851,6 +3853,7 @@
 <translation id="4598345735110653698">પાસકી મેનેજ કરો</translation>
 <translation id="4598556348158889687">સ્ટોરેજ સંચાલન</translation>
 <translation id="4598776695426288251">બહુવિધ ડિવાઇસ દ્વારા વાઇ-ફાઇ ઉપલબ્ધ</translation>
+<translation id="4600071396330666617">સૂચનોની સંખ્યા:</translation>
 <translation id="4601426376352205922">વાંચ્યા વગરનું તરીકે માર્ક કરો</translation>
 <translation id="4602466770786743961">તમારા કૅમેરા અને માઇક્રોફોનને ઍક્સેસ કરવા માટે હંમેશાં <ph name="HOST" />ને મંજૂરી આપો</translation>
 <translation id="4606551464649945562">કોઈ સાઇટને તમારી આજુબાજુનો 3D નકશો બનાવવાની અથવા કૅમેરાનું સ્ટેટસ ટ્રૅક કરવાની મંજૂરી આપશો નહીં</translation>
@@ -4297,6 +4300,7 @@
 <translation id="5043913660911154449">તમારા પ્રિન્ટરની PPD ફાઇલનો ઉલ્લેખ કરો <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">ખોટો પાસવર્ડ</translation>
 <translation id="504561833207953641">હાલના બ્રાઉઝર સત્રમાં ખોલી રહ્યા છીએ.</translation>
+<translation id="5049614114599109018">ઇનપુટ ઇતિહાસનો ઉપયોગ કરો</translation>
 <translation id="5051836348807686060">તમે પસંદ કરેલી ભાષાઓ માટે જોડણીતપાસ સમર્થિત નથી</translation>
 <translation id="5052499409147950210">સાઇટમાં ફેરફાર કરો</translation>
 <translation id="505347685865235222">નામ વિનાનું ગ્રૂપ - <ph name="GROUP_CONTENT_STRING" /></translation>

@@ -693,6 +693,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1640283014264083726">PKCS #1 MD4 con cifrado RSA</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1641496881756082050">Máis accións para <ph name="NETWORK_NAME" /></translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Hai 1 contrasinal que non se importou porque ten un formato incorrecto}other{Hai {NUM_PASSWORDS} contrasinais que non se importaron porque teñen un formato incorrecto}}</translation>
 <translation id="1642492862748815878">Conexión establecida cos seguintes dispositivos Bluetooth: <ph name="DEVICE" /> e <ph name="NUMBER_OF_DEVICES" /> máis</translation>
 <translation id="1642494467033190216">Necesítase a eliminación e o reinicio da protección rootfs antes de activar outras funcións de depuración.</translation>
 <translation id="1643072738649235303">Sinatura X9.62 ECDSA con SHA-1</translation>
@@ -1831,6 +1832,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2673135533890720193">Ler o teu historial de navegación</translation>
 <translation id="2674764818721168631">Non</translation>
 <translation id="2678063897982469759">Reactivar</translation>
+<translation id="2678100101831051676">Non se puido emitir contido.</translation>
 <translation id="268053382412112343">Hi&amp;storial</translation>
 <translation id="2681124317993121768">Os perfís de invitado non son compatibles</translation>
 <translation id="2682498795777673382">Cambio feito polo teu pai ou nai</translation>
@@ -3867,6 +3869,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4617019240346358451">Para usar "<ph name="EXTENSION_NAME" />", volve cargar a páxina</translation>
 <translation id="4617270414136722281">Opcións de extensión</translation>
 <translation id="4617880081511131945">Non se puido establecer conexión</translation>
+<translation id="4618195822946934889">O URL só pode conter caracteres ASCII</translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
 <translation id="4619615317237390068">Pestanas doutros dispositivos</translation>
 <translation id="4620809267248568679">Unha extensión aplica esta configuración.</translation>
@@ -5065,6 +5068,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5800351251499368110">Pechar busca no panel lateral. A busca está aberta no panel lateral.</translation>
 <translation id="5801568494490449797">Preferencias</translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5805268472388605531">Mantén premidas as teclas para ver os acentos gráficos e outros caracteres especiais</translation>
 <translation id="5805697420284793859">Xestor de ventás</translation>
 <translation id="5806447147478173900">Almacenamento total usado polos sitios mostrados: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (predeterminado)</translation>
@@ -5705,6 +5709,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="642469772702851743">O propietario bloqueou este dispositivo (número de serie: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6425556984042222041">Velocidade da saída de texto a voz</translation>
 <translation id="642729974267661262">Sitios que non poden reproducir son</translation>
+<translation id="6427608534767366138">Requírese autenticación proxy para "<ph name="NETWORK_ID" />"</translation>
 <translation id="6429384232893414837">Produciuse un erro na actualización</translation>
 <translation id="6430814529589430811">ASCII con codificación Base64, certificado único</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> configurará actualizacións automáticas para todos os usuarios deste ordenador.</translation>
@@ -7837,6 +7842,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="844063558976952706">Sempre neste sitio</translation>
 <translation id="8441313165929432954">Activar/Desactivar conexión compartida</translation>
 <translation id="8443795068008423036">Asegúrate de que o dispositivo estea actualizado e téntao de novo</translation>
+<translation id="8443986842926457191">O URL contén máis de 2048 caracteres</translation>
 <translation id="8446884382197647889">Máis información</translation>
 <translation id="8447409163267621480">Utiliza a tecla Ctrl ou Alt</translation>
 <translation id="844850004779619592">Non se atoparon comandos</translation>
@@ -7902,6 +7908,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="851263357009351303">Permitir sempre a <ph name="HOST" /> mostrar imaxes</translation>
 <translation id="8513108775083588393">Xirar autom.</translation>
 <translation id="8514746246728959655">Proba a utilizar unha chave de seguranza distinta</translation>
+<translation id="8519895319663397036">Non se puideron importar os contrasinais. O ficheiro debe ocupar menos de 150 kB.</translation>
 <translation id="8523493869875972733">Manter cambios</translation>
 <translation id="8523849605371521713">Engadida pola política</translation>
 <translation id="8524783101666974011">Garda tarxetas na túa Conta de Google</translation>

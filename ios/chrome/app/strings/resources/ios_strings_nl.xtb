@@ -23,6 +23,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1104948393051856124">Accepteren en doorgaan</translation>
 <translation id="110724200315609752">Overschakelen naar geopend venster</translation>
 <translation id="1112015203684611006">Afdrukken mislukt.</translation>
+<translation id="1118569444314402022">Welkom terug, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Nieuw tabblad maken.</translation>
 <translation id="1126809382673880764">Beschermt je niet tegen gevaarlijke websites, downloads en extensies. Je wordt voor andere services, zoals Gmail en Zoeken, nog steeds beschermd door Safe Browsing als dat beschikbaar is.</translation>
 <translation id="1135212215217513471">Chrome voor iOS downloaden</translation>
@@ -42,6 +43,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1229222343402087523">Zoek naar ${searchPhrase} in Chrome</translation>
 <translation id="1242044645101871359">Opnieuw inloggen</translation>
 <translation id="1254117744268754948">Map kiezen</translation>
+<translation id="1258491128795710625">Wat is er nieuw</translation>
 <translation id="1265739287306757398">Meer informatie</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Geselecteerd</translation>
@@ -63,6 +65,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1377255359165588604">Synchronisatie werkt niet meer.</translation>
 <translation id="1377321085342047638">Kaartnummer</translation>
 <translation id="1383876407941801731">Zoeken</translation>
+<translation id="138618066238211776">Doorgaan als <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Afgelopen 4 weken</translation>
 <translation id="1404330357948037222">Je bent uitgelogd</translation>
 <translation id="1407135791313364759">Alles openen</translation>
@@ -176,6 +179,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2421044535038393232">Doorgaan met bewerken</translation>
 <translation id="2434405374328098816">Je hebt al een wachtwoord voor <ph name="USERNAME" /> opgeslagen op <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Wachtwoord bekijken</translation>
+<translation id="2461070143328828326">Wachtwoordinstellingen</translation>
 <translation id="2469960372084740698">Safe Browsing uitzetten?</translation>
 <translation id="2473876017985765807">Je hebt al een wachtwoord opgeslagen voor <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Niet geselecteerd</translation>
@@ -330,6 +334,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3709582977625132201">Markeren als ongelezen</translation>
 <translation id="371230970611282515">Voorspelt en waarschuwt je voor gevaarlijke gebeurtenissen voordat deze plaatsvinden.</translation>
 <translation id="37207012422556617">Trending zoekopdrachten</translation>
+<translation id="3726360487031500941">Log weer in op je account <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Hiermee worden de ingevoerde URL's in Google Chrome geopend in de incognitomodus.</translation>
 <translation id="3762232513783804601">Ontworpen voor je iPad</translation>
 <translation id="3771033907050503522">Incognitotabbladen</translation>
@@ -564,6 +569,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5728700505257787410">Er is een probleem opgetreden met het inloggen op je account.</translation>
 <translation id="5731784586962650619">Wachtwoorden in andere apps</translation>
 <translation id="5737974891429562743">De inloggegevens voor het account zijn verouderd. Voer een update uit om te synchroniseren.</translation>
+<translation id="5738385766833540397">Beheren hoe je meldingen over prijsdalingen krijgt voor producten die je volgt</translation>
 <translation id="5738887413654608789">Hiermee kun je relevante webpagina's vinden op basis van je omgeving.</translation>
 <translation id="5758631781033351321">Hier vind je je leeslijst</translation>
 <translation id="5765456154762864099">Menu → Instellingen → Standaardbrowser</translation>

@@ -214,6 +214,7 @@
 <translation id="2132302418721800944">錄製全螢幕畫面</translation>
 <translation id="2135456203358955318">停駐放大鏡</translation>
 <translation id="2148716181193084225">今天</translation>
+<translation id="2161132820593978283">試用相機取景功能，讓你在視訊通話時處於畫面中央。你可以在「快速設定」中開啟這項功能。</translation>
 <translation id="2170530631236737939">以三指向下滑動即可結束「總覽」</translation>
 <translation id="219905428774326614">啟動器，所有應用程式</translation>
 <translation id="2201071101391734388">第 <ph name="INDEX" /> 張近期相片，共 <ph name="TOTAL_COUNT" /> 張。</translation>
@@ -252,6 +253,7 @@
 <translation id="2405664212338326887">未連線</translation>
 <translation id="2408955596600435184">請輸入你的 PIN 碼</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
+<translation id="2426051945783024481">相機鏡頭會自動置中</translation>
 <translation id="2427507373259914951">按左鍵</translation>
 <translation id="2429753432712299108">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。接受要求前，請確認裝置顯示以下密碼金鑰：<ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">顯示密碼</translation>
@@ -1037,6 +1039,7 @@
 <translation id="6960565108681981554">未啟用。請與你的電信業者聯絡。</translation>
 <translation id="6961121602502368900">工作資料夾不支援將手機設為靜音</translation>
 <translation id="6961840794482373852">「Alt + 向上鍵」的鍵盤快速鍵已變更。如要使用 Page Up 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向上鍵。</translation>
+<translation id="696267987219125751">已關閉相機取景功能。</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6972754398087986839">開始使用</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
@@ -1127,6 +1130,7 @@
 <translation id="7513922695575567867">日曆，<ph name="DATE" />當週，目前已選取 <ph name="SELECTED_DATE" /> 日。</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">已開啟相機取景功能。</translation>
 <translation id="7526573455193969409">網路可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">目前不支援 Linux 應用程式和無痕式視窗。系統將儲存其他應用程式。</translation>
@@ -1145,10 +1149,12 @@
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7609951632080598826">日曆檢視畫面，<ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">已重新連接攝影機。</translation>
+<translation id="761736749114493194">切換相機取景功能。<ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
 <translation id="7633755430369750696">顯示鄰近分享設定。</translation>
 <translation id="7634648064048557203">攝影機已對齊右下角</translation>
 <translation id="7641938616688887143">錄影</translation>
+<translation id="7642106959537987271">色彩反轉模式</translation>
 <translation id="7642647758716480637">開啟「<ph name="NETWORK_NAME" />」設定，<ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (擁有者)</translation>
 <translation id="7647488630410863958">解鎖裝置即可查看通知</translation>
@@ -1254,6 +1260,7 @@
 <translation id="8209010265547628927">重設</translation>
 <translation id="8214996719228530800">Canary 版</translation>
 <translation id="8219451629189078428">在這段期間內，你的 Chromebook 需要保持開啟並接上電源。請確認充電器或變壓器電源線已完全插入 Chromebook 和電源插座。請勿將 Chromebook 關機。</translation>
+<translation id="8230305195727960608">色彩反轉模式</translation>
 <translation id="8236042855478648955">休息時間到了</translation>
 <translation id="8246282815785366524">歡迎回來，<ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，手機電量：<ph name="BATTERY_STATUS" /></translation>
@@ -1305,6 +1312,7 @@
 <translation id="851458219935658693">顯示目前桌面的視窗，已點選圓形按鈕</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> 在開啟時可能無法充電。</translation>
 <translation id="8535393432370007982">復原依顏色排列順序</translation>
+<translation id="8541078764854166027">相機取景</translation>
 <translation id="8542053257095774575">沒有已儲存的桌面或範本</translation>
 <translation id="8546059259582788728">已成功復原排列順序</translation>
 <translation id="8551588720239073785">日期和時間設定</translation>
@@ -1379,6 +1387,7 @@
 <translation id="8982906748181120328">鄰近分享瀏覽權限</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">目前使用<ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">色彩反轉模式已啟用，再次按下 Ctrl 鍵 + 搜尋鍵 + H 鍵即可停用。</translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 帳戶解鎖裝置，即可執行通知動作</translation>
 <translation id="9000771174482730261">管理儲存空間</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>
@@ -1427,6 +1436,7 @@
 <translation id="921989828232331238">你的家長今天已鎖定這部裝置</translation>
 <translation id="9220525904950070496">移除帳戶</translation>
 <translation id="923686485342484400">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
+<translation id="92580429198593979">你已按下色彩反轉模式的鍵盤快速鍵。要開啟這項功能嗎？</translation>
 <translation id="925832987464884575">隱藏預覽</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> 要求你立即更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">我的日曆上有什麼活動？</translation>

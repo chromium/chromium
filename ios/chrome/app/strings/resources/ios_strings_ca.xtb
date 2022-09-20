@@ -42,6 +42,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="1229222343402087523">Cerca ${searchPhrase} a Chrome</translation>
 <translation id="1242044645101871359">Torna a iniciar la sessió</translation>
 <translation id="1254117744268754948">Tria la carpeta</translation>
+<translation id="1258491128795710625">Novetats</translation>
 <translation id="1265739287306757398">Informació</translation>
 <translation id="1272079795634619415">Atura</translation>
 <translation id="1275718070701477396">Seleccionada</translation>
@@ -564,6 +565,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5728700505257787410">S'ha produït un problema en iniciar la sessió al vostre compte.</translation>
 <translation id="5731784586962650619">Contrasenyes en altres aplicacions</translation>
 <translation id="5737974891429562743">Actualitza les dades d'inici de sessió del compte per iniciar la sincronització.</translation>
+<translation id="5738385766833540397">Gestiona com reps les alertes de baixada de preu dels productes que segueixes</translation>
 <translation id="5738887413654608789">Això et permet detectar pàgines web rellevants del teu entorn.</translation>
 <translation id="5758631781033351321">Trobaràs la llista de lectura aquí</translation>
 <translation id="5765456154762864099">Menú → Configuració → Navegador predeterminat</translation>

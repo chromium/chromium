@@ -43,6 +43,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1229222343402087523">Search ${searchPhrase} in Chrome</translation>
 <translation id="1242044645101871359">Sign in again</translation>
 <translation id="1254117744268754948">Choose folder</translation>
+<translation id="1258491128795710625">What’s new</translation>
 <translation id="1265739287306757398">Learn How</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Selected</translation>
@@ -568,6 +569,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5728700505257787410">Sorry, there was a problem signing in to your account.</translation>
 <translation id="5731784586962650619">Passwords in other apps</translation>
 <translation id="5737974891429562743">Account sign-in details are out of date. Update to start sync.</translation>
+<translation id="5738385766833540397">Manage how you receive price drop alerts for products that you track</translation>
 <translation id="5738887413654608789">This lets you discover relevant web pages based on your surroundings.</translation>
 <translation id="5758631781033351321">You'll find your reading list here</translation>
 <translation id="5765456154762864099">Menu → Settings → Default browser</translation>
@@ -754,6 +756,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6988572888918530647">Manage your Google Account</translation>
 <translation id="6989674195860388998">Switch in settings…</translation>
 <translation id="6998989275928107238">To</translation>
+<translation id="699954956411469731">Mobile notifications</translation>
 <translation id="7004032350256606903">Your organisation requires you to browse privately.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Recent tabs</translation>

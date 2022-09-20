@@ -42,6 +42,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1229222343402087523">Telusuri ${searchPhrase} di Chrome</translation>
 <translation id="1242044645101871359">Login Lagi</translation>
 <translation id="1254117744268754948">Pilih Folder</translation>
+<translation id="1258491128795710625">Yang Baru</translation>
 <translation id="1265739287306757398">Pelajari Caranya</translation>
 <translation id="1272079795634619415">Berhenti</translation>
 <translation id="1275718070701477396">Dipilih</translation>
@@ -564,6 +565,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5728700505257787410">Maaf, terjadi error saat masuk ke akun Anda.</translation>
 <translation id="5731784586962650619">Sandi di Aplikasi Lain</translation>
 <translation id="5737974891429562743">Detail proses masuk akun sudah tidak berlaku lagi. Perbarui untuk memulai sinkronisasi.</translation>
+<translation id="5738385766833540397">Kelola cara Anda menerima notifikasi diskon untuk produk yang dipantau</translation>
 <translation id="5738887413654608789">Hal ini memungkinkan Anda menemukan halaman web yang relevan berdasarkan berbagai hal di sekitar.</translation>
 <translation id="5758631781033351321">Daftar bacaan Anda akan ditampilkan di sini</translation>
 <translation id="5765456154762864099">Menu → Setelan → Browser Default</translation>

@@ -174,6 +174,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1380591466760231819">Presavijanje u obliku pisma</translation>
 <translation id="138218114945450791">Svijetloplava</translation>
 <translation id="1382194467192730611">USB uređaj koji je dopustio vaš administrator</translation>
+<translation id="1382378825779654399">Ako se cijena snizi na bilo kojoj web-lokaciji, dobit ćete upozorenja e-porukom. Ova će se stranica spremiti u mapu <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Ne vidite svoje trenutačne podatke? Obratite se svojoj banci da biste ih ažurirali.</translation>
 <translation id="1384725838384960382">List s autentifikacijom za vjerodajnicu sigurnog plaćanja</translation>
 <translation id="1386623374109090026">Napomene</translation>
@@ -421,6 +422,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2034971124472263449">Svejedno spremi</translation>
 <translation id="2035400064145347639">Turistički vodiči i putopisi</translation>
 <translation id="2036983605131262583">Alternativni kolut</translation>
+<translation id="2040463897538655645">Prijenosna pohrana</translation>
 <translation id="2040894699575719559">Lokacija je blokirana</translation>
 <translation id="2042213636306070719">Ladica 7</translation>
 <translation id="204357726431741734">Prijavite se kako biste upotrebljavali zaporke spremljene na Google računu</translation>
@@ -1518,6 +1520,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5018422839182700155">Stranica se ne može otvoriti</translation>
 <translation id="5019198164206649151">Sigurnosno pohranjivanje u neispravnom je stanju</translation>
 <translation id="5020776957610079374">Svjetska glazba</translation>
+<translation id="5021557570875267742">Praćenje cijena pomoću Chromea</translation>
 <translation id="5023310440958281426">Provjerite pravila svojeg administratora</translation>
 <translation id="5029568752722684782">Izbriši kopiju</translation>
 <translation id="5030338702439866405">Izdaje</translation>
@@ -2238,6 +2241,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6993898126790112050">6x9 (omotnica)</translation>
 <translation id="6996312675313362352">Uvijek prevodi <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Industrija zabave</translation>
+<translation id="7003335073762455340">Pratite ovaj proizvod. Ova je stranica spremljena u mapu <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Za brže potvrđivanje kartica upotrijebite značajku Windows Hello</translation>
 <translation id="7006930604109697472">Svejedno pošalji</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3034,6 +3038,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9174623988242579721">Prilagođena i posebna vozila</translation>
 <translation id="9174917557437862841">Gumb za promjenu kartice, pritisnite Enter za prebacivanje na tu karticu</translation>
 <translation id="9179703756951298733">Upravljanje podacima o plaćanjima i kreditnim karticama u postavkama Chromea</translation>
+<translation id="9179907736442194268">Dobivajte upozorenja e-porukom ako se cijena snizi na bilo kojoj web-lokaciji</translation>
 <translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9183425211371246419">Host <ph name="HOST_NAME" /> upotrebljava nepodržane protokole.</translation>
 <translation id="9187461866967718678">Ekstremni sportovi</translation>

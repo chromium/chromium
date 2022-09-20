@@ -42,6 +42,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1229222343402087523">Vyhledat v Chromu ${searchPhrase}</translation>
 <translation id="1242044645101871359">Znovu se přihlaste</translation>
 <translation id="1254117744268754948">Výběr složky</translation>
+<translation id="1258491128795710625">Novinky</translation>
 <translation id="1265739287306757398">Postup</translation>
 <translation id="1272079795634619415">Zastavit</translation>
 <translation id="1275718070701477396">Vybráno</translation>
@@ -383,6 +384,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4187450337729239226">Vložit a vyhledat</translation>
 <translation id="4223967053752765281">Vaše organizace vypnula přihlašování. Záložky, historii, hesla a další nastavení na tomto zařízení nadále uvidíte. Pokud provedete nějaké změny, nesynchronizují se do účtu.</translation>
 <translation id="4233831822770018312">Upravit oprávnění</translation>
+<translation id="4236584471598725073">Sledujete cenu</translation>
 <translation id="4237377247299956313">Klepněte na <ph name="BEGIN_BOLD" />Výchozí prohlížeč<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Zadání heslové fráze</translation>
 <translation id="4249955472157341256">Seřadit podle nejnovější</translation>
@@ -562,6 +564,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5728700505257787410">Litujeme, při přihlašování k vašemu účtu se vyskytl problém.</translation>
 <translation id="5731784586962650619">Hesla v jiných aplikacích</translation>
 <translation id="5737974891429562743">Přihlašovací údaje k účtu jsou zastaralé. Chcete-li zahájit synchronizaci, aktualizujte je.</translation>
+<translation id="5738385766833540397">Nastavte, jak chcete dostávat upozornění na pokles cen produktů, které sledujete</translation>
 <translation id="5738887413654608789">Umožňuje vám objevovat relevantní webové stránky na základě vašeho okolí.</translation>
 <translation id="5758631781033351321">Zde najdete svůj seznam četby</translation>
 <translation id="5765456154762864099">Nabídka → Nastavení → Výchozí prohlížeč</translation>

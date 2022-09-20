@@ -57,6 +57,7 @@
 <translation id="2094648590148273905">Uvjeti za ChromeOS Flex</translation>
 <translation id="2094919256425865063">Želite li ipak zatvoriti Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex omogućuje dodatni <ph name="BEGIN_LINK_CROS_OSS" />softver otvorenog izvornog koda<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />razvojno okruženje Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Kada je to uključeno, Chrome vraća memoriju s kartica koje ne upotrebljavate aktivno. Time se resursi računala oslobađaju za druge zadatke i ubrzava se rad Chromea. Neaktivne kartice prikazuju se prazne i automatski se ponovno učitavaju kad ih kliknete. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> ili <ph name="BEGIN_LINK_2" />pošaljite povratne informacije<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Time će se izbrisati sljedeći broj stavki s uređaja: <ph name="ITEMS_COUNT" />. Da biste kasnije dohvatili svoje podatke, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Ponovno pokretanje radi ažuriranja &amp;Chromea</translation>
 <translation id="2123055963409958220">Pomognite poboljšati Chrome tako što ćete prijaviti <ph name="BEGIN_LINK" />trenutačne postavke<ph name="END_LINK" /></translation>

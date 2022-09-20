@@ -1155,6 +1155,7 @@ Nova namestitev</translation>
 <translation id="7633755430369750696">Prikaz nastavitev deljenja v bližini.</translation>
 <translation id="7634648064048557203">Fotoaparat je pripet v spodnji desni kot</translation>
 <translation id="7641938616688887143">Snemaj</translation>
+<translation id="7642106959537987271">način inverzije barv</translation>
 <translation id="7642647758716480637">Odpiranje nastavitev za omrežje <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (lastnik)</translation>
 <translation id="7647488630410863958">Če si želite ogledati obvestila, odklenite napravo</translation>
@@ -1260,6 +1261,7 @@ Nova namestitev</translation>
 <translation id="8209010265547628927">Ponastavi</translation>
 <translation id="8214996719228530800">Kanal Canary</translation>
 <translation id="8219451629189078428">Chromebook mora medtem ostati vklopljen in priklopljen na vir napajanja. Poskrbite, da so kabli polnilnika ali napajalnika do konca priklopljeni v Chromebook in električno vtičnico. Chromebooka ne izklopite.</translation>
+<translation id="8230305195727960608">Način inverzije barv</translation>
 <translation id="8236042855478648955">Čas je za premor</translation>
 <translation id="8246282815785366524">Dobrodošli nazaj, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />, stanje baterije telefona je <ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1388,7 @@ Nova namestitev</translation>
 <translation id="8982906748181120328">Vidnost v bližini</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Uporaba tega: <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Način inverzije barv je omogočen. Če ga želite izklopiti, znova pritisnite Ctrl + tipko za iskanje + H.</translation>
 <translation id="899350903320462459">Odklenite napravo kot <ph name="LOGIN_ID" />, da izvedete dejanje v obvestilu</translation>
 <translation id="9000771174482730261">UPRAVLJANJE PROSTORA ZA SHRANJEVANJE</translation>
 <translation id="9017320285115481645">Vnesite kodo za dostop starša za Family Link.</translation>
@@ -1434,6 +1437,7 @@ Nova namestitev</translation>
 <translation id="921989828232331238">Tvoj starš je zaklenil napravo za ves dan</translation>
 <translation id="9220525904950070496">Odstranitev računa</translation>
 <translation id="923686485342484400">Dvakrat pritisnite Control Shift Q, če se želite odjaviti.</translation>
+<translation id="92580429198593979">Pritisnili ste bližnjično tipko za inverzijo barv. Ali jo želite vklopiti?</translation>
 <translation id="925832987464884575">Skrivanje predogledov</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> zahteva, da takoj posodobite napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="938963181863597773">Kaj je v mojem koledarju?</translation>

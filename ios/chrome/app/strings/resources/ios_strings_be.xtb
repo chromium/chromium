@@ -42,6 +42,7 @@
 <translation id="1229222343402087523">Шукаць у Chrome: ${searchPhrase}</translation>
 <translation id="1242044645101871359">Увайдзіце яшчэ раз</translation>
 <translation id="1254117744268754948">Выбраць папку</translation>
+<translation id="1258491128795710625">Што новага</translation>
 <translation id="1265739287306757398">Даведацца больш</translation>
 <translation id="1272079795634619415">Спыніць</translation>
 <translation id="1275718070701477396">Выбрана</translation>
@@ -55,6 +56,7 @@
 <translation id="1322735045095424339">Ваша арганізацыя патрабуе выкарыстання рэжыму інкогніта</translation>
 <translation id="1323735185997015385">Выдаліць</translation>
 <translation id="132683371494960526">Каб змяніць бацькоўскую папку, націсніце двойчы.</translation>
+<translation id="1335348992705722518">Кіраваць наладамі…</translation>
 <translation id="1340643665687018190">Закрыць меню</translation>
 <translation id="1358214951266274152">Перайсці па скапіраванай спасылцы</translation>
 <translation id="1360432990279830238">Выйсці і выключыць сінхранізацыю?</translation>
@@ -383,6 +385,7 @@
 <translation id="4187450337729239226">Уставіць і выканаць пошук</translation>
 <translation id="4223967053752765281">Ваша арганізацыя адключыла магчымасць уваходу. Як і раней, вы можаце праглядаць свае закладкі, гісторыю, паролі і іншыя налады на гэтай прыладзе. Зробленыя вамі змяненні не будуць сінхранізавацца з вашым уліковым запісам.</translation>
 <translation id="4233831822770018312">Змяненне дазволаў</translation>
+<translation id="4236584471598725073">Адсочванне цэн</translation>
 <translation id="4237377247299956313">Націсніце <ph name="BEGIN_BOLD" />Стандартны браўзер<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Увядз. фразу-пароль</translation>
 <translation id="4249955472157341256">Сартаваць па апошняй даце</translation>
@@ -474,6 +477,7 @@
 <translation id="4901778704868714008">Захаваць...</translation>
 <translation id="4904877109095351937">Пазначыць як прачытанае</translation>
 <translation id="4908869848243824489">Рэкамендацыі ад Google</translation>
+<translation id="4916679969857390442">Аб'ектыў</translation>
 <translation id="4930714375720679147">Уключыць</translation>
 <translation id="4941089862236492464">Узнікла праблема з абагульваннем вашага элемента.</translation>
 <translation id="4944543191714094452">Пошук на старонцы…</translation>
@@ -561,6 +565,7 @@
 <translation id="5728700505257787410">Праблема з уваходам у ваш уліковы запіс.</translation>
 <translation id="5731784586962650619">Паролі ў іншых праграмах</translation>
 <translation id="5737974891429562743">Даныя ўліковага запісу для ўваходу састарэлі. Каб запусціць сінхранізацыю, абнавіце іх.</translation>
+<translation id="5738385766833540397">Выберыце, куды павінны прыходзіць абвесткі пра зніжэнне цэн на тавары, за якімі вы сочыце</translation>
 <translation id="5738887413654608789">Гэта дазваляе на аснове даных пра наваколле знаходзіць адпаведныя вэб-старонкі.</translation>
 <translation id="5758631781033351321">Ваш спіс чытання знаходзіцца тут</translation>
 <translation id="5765456154762864099">Меню → Налады → Стандартны браўзер</translation>

@@ -53,6 +53,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2384373936468275798">System operacyjny Chromium nie może zsynchronizować danych, ponieważ dane logowania na Twoje konto są nieaktualne.</translation>
 <translation id="2396765026452590966">Rozszerzenie „<ph name="EXTENSION_NAME" />” ustawiło inną stronę wyświetlaną po uruchomieniu Chromium.</translation>
+<translation id="2400844369696905771">Gdy ta funkcja jest włączona, Chromium odzyskuje pamięć z kart, których aktywnie nie używasz. Powoduje to zwolnienie zasobów komputera na potrzeby innych zadań i przyspiesza działanie Chromium. Nieaktywne karty wyglądają na puste i automatycznie ładują się ponownie po kliknięciu. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Ta strona musi mieć w Chromium dostęp do aparatu i mikrofonu</translation>
 <translation id="2483889755041906834">W Chromium</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
@@ -140,6 +141,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="4285930937574705105">Instalacja nie powiodła się z powodu nieokreślonego błędu. Jeśli Chromium jest aktualnie uruchomiony, zamknij go i spróbuj ponownie.</translation>
 <translation id="4304713468139749426">Menedżer haseł</translation>
 <translation id="4334294535648607276">Pobieranie ukończone.</translation>
+<translation id="437317747729858884">Aby przyspieszyć przeglądanie, Chromium odzyskuje pamięć z nieużywanych kart.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> wymaga, aby przed korzystaniem z tego urządzenia przeczytać i zaakceptować Warunki korzystania z usługi. Nie rozszerzają, nie zmieniają ani nie ograniczają one Warunków korzystania z Chromium OS.</translation>
 <translation id="4407044323746248786">Zamknąć Chromium mimo to?</translation>
 <translation id="4415566066719264597">Zezwalaj Chromium na działanie w tle</translation>
@@ -299,7 +301,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7682601070171973634">Testujemy nowe funkcje Chromium, dzięki którym witryny będą mogły zapewniać użytkownikom taką samą wygodę przeglądania treści przy wykorzystaniu mniejszej ilości danych</translation>
 <translation id="7686590090926151193">Chromium nie jest domyślną przeglądarką</translation>
 <translation id="7689606757190482937">Synchronizuj dane Chromium i korzystaj z własnych ustawień przeglądarki na wielu urządzeniach</translation>
-<translation id="7714577916146996629">Gdy ta funkcja jest włączona, Chromium odzyskuje pamięć z kart, których aktywnie nie używasz. Powoduje to zwolnienie zasobów komputera na potrzeby innych zadań i przyspiesza działanie Chromium. Nieaktywne karty wyglądają na puste i automatycznie ładują się ponownie po kliknięciu. <ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> lub <ph name="BEGIN_LINK_2" />prześlij opinię<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">Spowoduje to usunięcie danych przeglądania z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instalator nie mógł utworzyć katalogu tymczasowego. Sprawdź, czy na dysku jest dość wolnego miejsca oraz sprawdź, czy posiadasz uprawnienia do instalowania programów.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -309,6 +310,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7872446069773932638">Pobieram… Pozostało: <ph name="SECONDS" /> s.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />W jaki sposób możesz zarządzać swoimi danymi:<ph name="END_BOLD" /> żeby chronić Twoją prywatność, automatycznie usuwamy Twoje zainteresowania, które są starsze niż 4 tygodnie. Podczas dalszego przeglądania zainteresowanie może się pojawić ponownie na liście. Możesz też usunąć zainteresowania, których Chrome ma nie brać pod uwagę.</translation>
 <translation id="7937630085815544518">Byłeś zalogowany w Chromium jako <ph name="USER_EMAIL_ADDRESS" />. Zaloguj się ponownie, korzystając z tego samego konta.</translation>
+<translation id="7947085610734123927">Przeglądarka Chromium włączyła Oszczędzanie pamięci</translation>
 <translation id="7975919845073681630">To jest druga instalacja Chromium. Nie można ustawić jej jako przeglądarki domyślnej.</translation>
 <translation id="7997934263947464652">Rozszerzenia, aplikacje i motywy z nieznanych źródeł mogą wyrządzić szkody na Twoim urządzeniu. Chromium zaleca, aby instalować je tylko ze sklepu <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Gdy Chromium będzie mieć dostęp, strony będą mogły prosić Cię o dostęp.</translation>
@@ -334,6 +336,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8558383651099478961">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” dla Chromium. Dodanie elementu <ph name="EXTENSION_TYPE_PARAMETER" /> jest niedozwolone.</translation>
 <translation id="8561285221328166383">Aby otrzymywać w przyszłości aktualizacje Chromium, musisz mieć system macOS 10.13 lub nowszy. Na tym komputerze jest zainstalowany system macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium może sprawdzić Twoje hasła, gdy zalogujesz się na swoje konto Google</translation>
+<translation id="8574036838419011058">Gdy ta funkcja jest włączona, Chromium oszczędza baterię, ograniczając aktywność w tle i efekty wizualne, takie jak płynne przewijanie i liczba klatek w filmie. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Jak używamy tych danych:<ph name="END_BOLD" /> w Chromium witryny mogą przechowywać informacje o Twoich zainteresowaniach Na przykład jeśli odwiedzasz stronę internetową, żeby kupić buty na maraton, strona może zidentyfikować bieganie w maratonach jako Twoje zainteresowanie. Jeśli później odwiedzisz inną witrynę, żeby zapisać się na jakiś bieg, witryna ta może wyświetlić reklamę butów do biegania na podstawie Twoich zainteresowań.</translation>
 <translation id="8619360774459241877">Uruchamiam Chromium…</translation>

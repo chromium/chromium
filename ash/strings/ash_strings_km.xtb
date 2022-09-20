@@ -1155,6 +1155,7 @@
 <translation id="7633755430369750696">បង្ហាញ​ការកំណត់​ការចែករំលែកនៅជិត។</translation>
 <translation id="7634648064048557203">បានតម្រៀប​កាមេរ៉ាទៅ​ជ្រុងខាងស្ដាំ​ផ្នែកខាងក្រោម</translation>
 <translation id="7641938616688887143">ថតវីដេអូ</translation>
+<translation id="7642106959537987271">មុខងារ​បញ្ច្រាស​ពណ៌</translation>
 <translation id="7642647758716480637">បើក​ការកំណត់​សម្រាប់ <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ម្ចាស់)</translation>
 <translation id="7647488630410863958">ដោះសោឧបករណ៍ដើម្បីមើលការជូនដំណឹងរបស់អ្នក</translation>
@@ -1260,6 +1261,7 @@
 <translation id="8209010265547628927">កំណត់​ឡើងវិញ</translation>
 <translation id="8214996719228530800">បណ្តាញ Canary</translation>
 <translation id="8219451629189078428">Chromebook របស់អ្នកត្រូវបន្តបើក និងភ្ជាប់ទៅថាមពលនៅអំឡុងពេលនេះ។ ត្រូវប្រាកដថា ខ្សែសាក ឬឆ្នាំងសាកត្រូវបានដោតត្រឹមត្រូវ ទាំងនៅលើ Chromebook របស់អ្នក និង​ព្រីភ្លើង។ សូមកុំបិទ Chromebook ​របស់អ្នក។</translation>
+<translation id="8230305195727960608">មុខងារ​បញ្ច្រាស​ពណ៌</translation>
 <translation id="8236042855478648955">ដល់​ពេល​សម្រាក​ហើយ</translation>
 <translation id="8246282815785366524">សូមស្វាគមន៍​សម្រាប់ការវិលត្រឡប់មកវិញ <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" />, ថ្មទូរសព្ទ <ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1388,7 @@
 <translation id="8982906748181120328">លទ្ធភាពមើលឃើញនៅជិត</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">កំពុងប្រើ <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">បាន​បើក​មុខងារ​បញ្ច្រាស​ពណ៌។ ចុចគ្រាប់ចុច Ctrl+ស្វែងរក+H ម្ដងទៀត ដើម្បីបិទ​មុខងារនេះ។</translation>
 <translation id="899350903320462459">ដោះសោ​ឧបករណ៍ជា <ph name="LOGIN_ID" /> ដើម្បី​ធ្វើសកម្មភាព​ជូន​ដំណឹង</translation>
 <translation id="9000771174482730261">គ្រប់គ្រងទំហំផ្ទុក</translation>
 <translation id="9017320285115481645">បញ្ចូលលេខកូដ​ចូលប្រើប្រាស់​របស់មាតាបិតា​សម្រាប់ Family Link ។</translation>
@@ -1434,6 +1437,7 @@
 <translation id="921989828232331238">មាតា​បិតា​របស់អ្នក​បាន​ចាក់​សោ​ឧបករណ៍​របស់អ្នក​ពេញ​មួយ​ថ្ងៃ</translation>
 <translation id="9220525904950070496">ដកគណនីចេញ</translation>
 <translation id="923686485342484400">ចុច Control Shift Q ពីរដងដើម្បីចាកចេញ។</translation>
+<translation id="92580429198593979">អ្នក​បាន​ចុច​ផ្លូវកាត់​ក្ដារចុច​សម្រាប់​ការបញ្ច្រាស​ពណ៌។ តើអ្នក​ចង់​បើក​វា​ដែរឬទេ?</translation>
 <translation id="925832987464884575">លាក់​ការមើល​សាកល្បង</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> តម្រូវឱ្យអ្នក​ដំឡើងកំណែ <ph name="DEVICE_TYPE" /> របស់អ្នក​ភ្លាមៗ</translation>
 <translation id="938963181863597773">តើ​មានអ្វី​នៅលើ​ប្រតិទិន​របស់ខ្ញុំ?</translation>

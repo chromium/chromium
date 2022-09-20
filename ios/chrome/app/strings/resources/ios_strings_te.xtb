@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">అంగీకరించు &amp; కొనసాగు</translation>
 <translation id="110724200315609752">తెరిచి ఉన్న విండోకు స్విచ్ అవ్వండి</translation>
 <translation id="1112015203684611006">ముద్రణ విఫలమైంది.</translation>
+<translation id="1118569444314402022">తిరిగి స్వాగతం, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">కొత్త ట్యాబ్‌ను క్రియేట్ చేయండి.</translation>
 <translation id="1126809382673880764">ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు మరియు ఎక్స్‌టెన్షన్‌ల నుండి మిమ్మల్ని రక్షించదు. Gmail, Search వంటి ఇతర Google సర్వీస్‌లలో, సురక్షిత బ్రౌజింగ్ అందుబాటులో ఉన్న చోట మీరు ఇప్పటికీ రక్షణను పొందుతారు.</translation>
 <translation id="1135212215217513471">iOS కోసం Chromeను పొందండి</translation>
@@ -42,6 +43,7 @@
 <translation id="1229222343402087523">Chromeలో ${searchPhrase}ను సెర్చ్ చేయండి</translation>
 <translation id="1242044645101871359">మళ్ళీ సైన్ ఇన్ చేయండి</translation>
 <translation id="1254117744268754948">ఫోల్డర్‌ను ఎంచుకోండి</translation>
+<translation id="1258491128795710625">కొత్తగా ఏమి ఉన్నాయి</translation>
 <translation id="1265739287306757398">ఎలాగో తెలుసుకోండి</translation>
 <translation id="1272079795634619415">ఆపు</translation>
 <translation id="1275718070701477396">ఎంచుకోబడింది</translation>
@@ -63,6 +65,7 @@
 <translation id="1377255359165588604">సింక్‌ పని చేయడం ఆపివేయబడింది.</translation>
 <translation id="1377321085342047638">కార్డ్ నంబర్</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
+<translation id="138618066238211776"><ph name="USER_NAME" />గా కొనసాగించండి</translation>
 <translation id="1400642268715879018">గత 4 వారాలు</translation>
 <translation id="1404330357948037222">మీరు సైన్ అవుట్ చేశారు</translation>
 <translation id="1407135791313364759">అన్నీ తెరువు</translation>
@@ -176,6 +179,7 @@
 <translation id="2421044535038393232">ఎడిట్‌ను కొనసాగించు</translation>
 <translation id="2434405374328098816">మీరు "<ph name="USERNAME" />" కోసం పాస్‌వర్డ్‌ను <ph name="WEBSITE" />లో ఇప్పటికే సేవ్ చేశారు</translation>
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
+<translation id="2461070143328828326">పాస్‌వర్డ్ సెట్టింగ్‌లు</translation>
 <translation id="2469960372084740698">సురక్షిత బ్రౌజింగ్‌ను ఆఫ్ చేయాలా?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" />లో మీరు ఇప్పటికే పాస్‌వర్డ్‌ను సేవ్ చేశారు</translation>
 <translation id="2476359652512522418">ఎంచుకోబడలేదు</translation>
@@ -330,6 +334,7 @@
 <translation id="3709582977625132201">చదవనిదిగా గుర్తు పెట్టు</translation>
 <translation id="371230970611282515">ప్రమాదకరమైన సంఘటనలు జరగడానికి ముందే, వాటిని గుర్తించి, మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
 <translation id="37207012422556617">ట్రెండింగ్ సెర్చ్‌లు</translation>
+<translation id="3726360487031500941">మీ ఖాతా <ph name="USER_NAME" />కు తిరిగి సైన్ ఇన్ చేయండి</translation>
 <translation id="3740397331642243698">ఇన్‌పుట్ చేసిన URLలను Google Chromeలో అజ్ఞాత మోడ్‌లో తెరుస్తుంది.</translation>
 <translation id="3762232513783804601">మీ iPad కోసం రూపొందించబడింది</translation>
 <translation id="3771033907050503522">అజ్ఞాత ట్యాబ్‌లు</translation>
@@ -564,6 +569,7 @@
 <translation id="5728700505257787410">క్షమించండి, మీ ఖాతాకు సైన్ ఇన్ చేయడంలో సమస్య ఉంది.</translation>
 <translation id="5731784586962650619">ఇతర యాప్‌లలోని పాస్‌వర్డ్‌లు</translation>
 <translation id="5737974891429562743">ఖాతా సైన్-ఇన్ వివరాలు పాతవి. సింక్‌ను ప్రారంభించడానికి అప్‌డేట్ చేయండి.</translation>
+<translation id="5738385766833540397">మీరు ట్రాక్ చేసే ప్రోడక్ట్‌లకు సంబంధించి మీరు ధర తగ్గుదల అలర్ట్‌లను స్వీకరించే విధానాన్ని మేనేజ్ చేయండి</translation>
 <translation id="5738887413654608789">దీని వ‌ల్ల‌ మీరు మీ పరిసరాల ఆధారంగా సంబంధిత వెబ్‌ పేజీలను కనుగొనగలుగుతారు.</translation>
 <translation id="5758631781033351321">మీ చదివే అంశాల లిస్ట్‌ను ఇక్కడ చూడగలరు</translation>
 <translation id="5765456154762864099">మెనూ → సెట్టింగ్‌లు → ఆటోమేటిక్ సెట్టింగ్ బ్రౌజర్</translation>

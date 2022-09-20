@@ -174,6 +174,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1380591466760231819">Letter fold</translation>
 <translation id="138218114945450791">Light Blue</translation>
 <translation id="1382194467192730611">USB device na pinapayagan ng iyong administrator</translation>
+<translation id="1382378825779654399">Makakatanggap ka ng mga alerto sa email kung bababa ang presyo sa anumang site. Mase-save ang page na ito sa <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Hindi mo nakikita ang iyong kasalukuyan impormasyon? Makipag-ugnayan sa iyong bangko para ma-update ito.</translation>
 <translation id="1384725838384960382">Sheet para sa pag-authenticate ng kredensyal sa secure na pagbabayad</translation>
 <translation id="1386623374109090026">Mga Anotasyon</translation>
@@ -1520,6 +1521,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5018422839182700155">Hindi mabuksan ang page na ito</translation>
 <translation id="5019198164206649151">Hindi maganda ang katayuan ng backing store</translation>
 <translation id="5020776957610079374">Musika ng mundo</translation>
+<translation id="5021557570875267742">I-track ang mga presyo gamit ang Chrome</translation>
 <translation id="5023310440958281426">Suriin ang mga patakaran ng iyong administrator</translation>
 <translation id="5029568752722684782">I-clear ang kopya</translation>
 <translation id="5030338702439866405">Ibinigay Ni</translation>
@@ -2240,6 +2242,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6993898126790112050">6x9 (Envelope)</translation>
 <translation id="6996312675313362352">Palaging i-translate ang <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Industriya ng entertainment</translation>
+<translation id="7003335073762455340">Tina-track mo ang produktong ito. Naka-save ang page na ito sa <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Gamitin ang Windows Hello para kumpirmahin nang mas mabilis ang mga card</translation>
 <translation id="7006930604109697472">Ipadala pa rin</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3034,6 +3037,7 @@ Mga karagdagang detalye:
 <translation id="9174623988242579721">Mga custom at performance na sasakyan</translation>
 <translation id="9174917557437862841">Button na lumipat ng tab, pindutin ang Enter para lumipat sa tab na ito</translation>
 <translation id="9179703756951298733">Pamahalaan ang iyong mga pagbabayad at impormasyon ng credit card sa mga setting ng Chrome</translation>
+<translation id="9179907736442194268">Makatanggap ng mga alerto sa email kung bababa ang presyo sa anumang site</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419">Gumagamit ng hindi sinusuportahang protocol ang <ph name="HOST_NAME" />.</translation>
 <translation id="9187461866967718678">Mga extreme sport</translation>

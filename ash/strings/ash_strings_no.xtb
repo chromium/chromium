@@ -214,6 +214,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2132302418721800944">Ta opp hele skjermen</translation>
 <translation id="2135456203358955318">Dokket lupe</translation>
 <translation id="2148716181193084225">I dag</translation>
+<translation id="2161132820593978283">Prøv kamerainnramming, så du er midt på skjermen i videosamtaler. Slå det på i hurtiginnstillingene.</translation>
 <translation id="2170530631236737939">Sveip ned med tre fingre for å lukke Oversikt</translation>
 <translation id="219905428774326614">Appoversikt, alle apper</translation>
 <translation id="2201071101391734388">Nylig bilde <ph name="INDEX" /> av <ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +253,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2405664212338326887">Ikke tilkoblet</translation>
 <translation id="2408955596600435184">Skriv inn PIN-koden din</translation>
 <translation id="2412593942846481727">En oppdatering er tilgjengelig</translation>
+<translation id="2426051945783024481">Kamerarammen er midtstilt automatisk</translation>
 <translation id="2427507373259914951">Venstreklikk</translation>
 <translation id="2429753432712299108">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Før du godtar dette, må du bekrefte at denne tilgangskoden vises på den aktuelle enheten: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Vis passord</translation>
@@ -1038,6 +1040,7 @@ Nylig installert</translation>
 <translation id="6960565108681981554">Ikke aktivert. Kontakt operatøren din.</translation>
 <translation id="6961121602502368900">Demp telefonen er ikke tilgjengelig for jobbprofiler</translation>
 <translation id="6961840794482373852">Hurtigtasten Alt + oppoverpil er endret. For å bruke Page Up-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + oppoverpilen.</translation>
+<translation id="696267987219125751">Kamerainnramming er av.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Kom i gang</translation>
 <translation id="6979158407327259162">Google Disk</translation>
@@ -1128,6 +1131,7 @@ Nylig installert</translation>
 <translation id="7513922695575567867">Kalender – uken som inneholder <ph name="DATE" />. For øyeblikket er <ph name="SELECTED_DATE" /> valgt.</translation>
 <translation id="7514365320538308">Last ned</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Kamerainnramming er på.</translation>
 <translation id="7526573455193969409">Nettverket kan være overvåket</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux-apper og inkognitovinduer støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
@@ -1146,6 +1150,7 @@ Nylig installert</translation>
 <translation id="7607002721634913082">Satt på pause</translation>
 <translation id="7609951632080598826">Kalendervisning, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kameraet er koblet til igjen.</translation>
+<translation id="761736749114493194">Slå av/på kamerainnramming. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Vis innstillinger for nærdeling.</translation>
 <translation id="7634648064048557203">Kameraet er festet til nedre høyre hjørne</translation>
@@ -1306,6 +1311,7 @@ Nylig installert</translation>
 <translation id="851458219935658693">Vis vinduer fra det gjeldende skrivebordet – alternativknappen er valgt</translation>
 <translation id="8517041960877371778">Det kan hende at din <ph name="DEVICE_TYPE" /> ikke lader når den er slått på.</translation>
 <translation id="8535393432370007982">Angre sortering etter farge</translation>
+<translation id="8541078764854166027">Kamerainnramming</translation>
 <translation id="8542053257095774575">Ingen lagrede skrivebord eller maler</translation>
 <translation id="8546059259582788728">Sorteringen ble angret</translation>
 <translation id="8551588720239073785">Innstillinger for dato og klokkeslett</translation>

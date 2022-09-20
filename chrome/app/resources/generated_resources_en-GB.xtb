@@ -2311,6 +2311,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3090819949319990166">Can't copy external crx file to <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" paired</translation>
 <translation id="3093714882666365141">Don't allow sites to install payment handlers</translation>
+<translation id="3093958632721393232">Turn on only when my battery is low</translation>
 <translation id="3094141017404513551">This will separate your browsing from <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Bookmarks, passwords and other browser data are synced with the primary account.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potentially harmful extension is off. You can also remove it.}other{{NUM_EXTENSIONS} potentially harmful extensions are off. You can also remove them.}}</translation>
@@ -5033,6 +5034,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5747552184818312860">Expires</translation>
 <translation id="5747785204778348146">Developer - unstable</translation>
 <translation id="5747809636523347288">Paste and go to <ph name="URL" /></translation>
+<translation id="5748137879145720682">Turn on when my computer is unplugged</translation>
 <translation id="5751345516399502412">Check tethering readiness</translation>
 <translation id="5755022574660047665">memories from Google Photos</translation>
 <translation id="5756163054456765343">Help centre</translation>
@@ -7667,6 +7669,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8248381369318572865">Access your microphone and analyse your speech</translation>
 <translation id="8248887045858762645">Chrome tip</translation>
 <translation id="8249048954461686687">OEM folder</translation>
+<translation id="8249239468199142122">Battery Saver</translation>
 <translation id="8249615410597138718">Send to Your Devices</translation>
 <translation id="8250210000648910632">Out of storage space</translation>
 <translation id="8251441930213048644">Refresh now</translation>

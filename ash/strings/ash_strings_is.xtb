@@ -214,6 +214,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2132302418721800944">Taka upp á öllum skjánum</translation>
 <translation id="2135456203358955318">Stækkunargler í föstum glugga</translation>
 <translation id="2148716181193084225">Í dag</translation>
+<translation id="2161132820593978283">Prófaðu myndavélarramma svo þú sért á miðjum skjánum í myndsímtölum. Kveiktu á honum í flýtistillingum.</translation>
 <translation id="2170530631236737939">Strjúktu niður með þremur fingrum til að loka Yfirliti.</translation>
 <translation id="219905428774326614">Ræsiforrit, öll forrit</translation>
 <translation id="2201071101391734388">Nýleg mynd <ph name="INDEX" /> af <ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +253,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2405664212338326887">Ekki tengt</translation>
 <translation id="2408955596600435184">Sláðu inn PIN-númerið þitt</translation>
 <translation id="2412593942846481727">Uppfærsla í boði</translation>
+<translation id="2426051945783024481">Myndavélarrammi miðjusettur sjálfkrafa</translation>
 <translation id="2427507373259914951">Vinstrismella</translation>
 <translation id="2429753432712299108">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ vill fá heimild til að parast. Áður en þú samþykkir skaltu staðfesta að þessi aðgangslykill birtist á því tæki: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
@@ -1038,6 +1040,7 @@ Ný uppsetning</translation>
 <translation id="6960565108681981554">Ekki virkt. Hafðu samband við símafyrirtækið.</translation>
 <translation id="6961121602502368900">Ekki er hægt að slökkva á hljóði símans í vinnusniði</translation>
 <translation id="6961840794482373852">Flýtilyklinum „Alt + ör upp“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + ör upp til að nota Page Up-lykilinn.</translation>
+<translation id="696267987219125751">Slökkt er á myndavélarramma.</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6972754398087986839">Byrja</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1128,6 +1131,7 @@ Ný uppsetning</translation>
 <translation id="7513922695575567867">Dagatal, vikan <ph name="DATE" />, núverandi val er <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Sækja</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Kveikt er á myndavélarramma.</translation>
 <translation id="7526573455193969409">Hugsanlega er fylgst með netinu</translation>
 <translation id="7536035074519304529">IP-tala: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux forrit og huliðsgluggar eru ekki studdir eins og er. Önnur forrit verða vistuð.</translation>
@@ -1146,6 +1150,7 @@ Ný uppsetning</translation>
 <translation id="7607002721634913082">Hlé</translation>
 <translation id="7609951632080598826">Dagatalsyfirlit, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Myndavél tengd aftur.</translation>
+<translation id="761736749114493194">Kveikja/slökkva á myndavélarramma. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Sýna stillingar nærdeilingar.</translation>
 <translation id="7634648064048557203">Myndavél fest við neðra horn hægra megin</translation>
@@ -1306,6 +1311,7 @@ Ný uppsetning</translation>
 <translation id="851458219935658693">Sýna glugga á núverandi skrifborði, hringhnappur valinn</translation>
 <translation id="8517041960877371778">Ekki er víst að <ph name="DEVICE_TYPE" /> hlaðist á meðan kveikt er á tölvunni.</translation>
 <translation id="8535393432370007982">Afturkalla röðun eftir lit</translation>
+<translation id="8541078764854166027">Myndavélarrammi</translation>
 <translation id="8542053257095774575">Engin vistuð skrifborð eða sniðmát</translation>
 <translation id="8546059259582788728">Röðun var afturkölluð</translation>
 <translation id="8551588720239073785">Dagsetningar- og tímastillingar</translation>

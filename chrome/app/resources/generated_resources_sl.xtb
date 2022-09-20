@@ -6750,6 +6750,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7404065585741198296">Vaš telefon s kablom USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Varnostno preverjanje je bilo izvedeno pred 1 uro}one{Varnostno preverjanje je bilo izvedeno pred {NUM_HOURS} uro}two{Varnostno preverjanje je bilo izvedeno pred {NUM_HOURS} urama}few{Varnostno preverjanje je bilo izvedeno pred {NUM_HOURS} urami}other{Varnostno preverjanje je bilo izvedeno pred {NUM_HOURS} urami}}</translation>
 <translation id="740624631517654988">Pojavno okno je blokirano</translation>
+<translation id="7406912950279255498">Način inverzije barv</translation>
 <translation id="7407430846095439694">Uvozi in poveži</translation>
 <translation id="7407504355934009739">Večina ljudi blokira obvestila s tega spletnega mesta</translation>
 <translation id="740810853557944681">Dodajanje tiskalnega strežnika</translation>
@@ -7700,6 +7701,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
     <ph name="BEGIN_PARAGRAPH3" />Lastnik lahko nadzira to funkcijo v »Nastavitve« &gt; »Dodatno« &gt; »Samodejno pošiljanje diagnostičnih podatkov in podatkov o uporabi Googlu«.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem Google Računu. Na spletnem mestu families.google.com si podatke lahko ogledate, jih izbrišete ter spremenite nastavitve računa.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Neveljavno potrdilo odjemalca</translation>
+<translation id="8270162672241199380">Namestitveni program za storitev Steam</translation>
 <translation id="827097179112817503">Pokaži gumb za domačo stran</translation>
 <translation id="8271268254812352141">Zagotovite si definicije, prevode ali pretvorbe enot, ko besedilo kliknete z desnim gumbom ali se ga dotaknete in pridržite. Prilagodite jezike za prevajanje v razdelku z <ph name="LINK_BEGIN" />jeziki spletnih mest<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Starši, naslednji koraki so za vas. Po nastavitvi računa lahko napravo <ph name="DEVICE_TYPE" /> vrnete otroku.</translation>

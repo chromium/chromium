@@ -42,6 +42,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1229222343402087523">Rechercher ${searchPhrase} dans Chrome</translation>
 <translation id="1242044645101871359">Reconnectez-vous</translation>
 <translation id="1254117744268754948">Sélectionner un dossier</translation>
+<translation id="1258491128795710625">Nouveautés</translation>
 <translation id="1265739287306757398">Découvrir comment</translation>
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1275718070701477396">Sélectionné</translation>
@@ -384,6 +385,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4187450337729239226">Coller et rechercher</translation>
 <translation id="4223967053752765281">Votre organisation a désactivé la connexion. Vous pouvez tout de même voir vos favoris, votre historique, vos mots de passe et d'autres paramètres sur cet appareil. Si vous apportez des modifications, elles ne seront pas synchronisées avec votre compte.</translation>
 <translation id="4233831822770018312">Modifier les autorisations</translation>
+<translation id="4236584471598725073">Suivi des prix activé</translation>
 <translation id="4237377247299956313">Touchez <ph name="BEGIN_BOLD" />Navigateur par défaut<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Entrer la phrase de passe</translation>
 <translation id="4249955472157341256">Trier par Plus récents</translation>
@@ -563,6 +565,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5728700505257787410">Un problème est survenu lors de la connexion à votre compte.</translation>
 <translation id="5731784586962650619">Mots de passe dans d'autres applications</translation>
 <translation id="5737974891429562743">Les renseignements de connexion au compte ne sont plus à jour. Mettez-les à jour pour commencer la synchronisation.</translation>
+<translation id="5738385766833540397">Gérez la façon dont vous recevez des alertes de réduction pour les produits que vous suivez</translation>
 <translation id="5738887413654608789">Cela vous permet de découvrir des pages Web pertinentes en fonction de votre environnement.</translation>
 <translation id="5758631781033351321">Vous trouverez votre liste de lecture ici</translation>
 <translation id="5765456154762864099">Menu → Paramètres → Navigateur par défaut</translation>

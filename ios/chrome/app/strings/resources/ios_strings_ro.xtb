@@ -42,6 +42,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1229222343402087523">Caută ${searchPhrase} în Chrome</translation>
 <translation id="1242044645101871359">Reconectează-te</translation>
 <translation id="1254117744268754948">Alegeți dosarul</translation>
+<translation id="1258491128795710625">Noutăți</translation>
 <translation id="1265739287306757398">Află cum</translation>
 <translation id="1272079795634619415">Oprește</translation>
 <translation id="1275718070701477396">Selectat</translation>
@@ -564,6 +565,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5728700505257787410">A apărut o problemă de conectare la cont.</translation>
 <translation id="5731784586962650619">Parole din alte aplicații</translation>
 <translation id="5737974891429562743">Datele de conectare la cont sunt învechite. Actualizează pentru a începe sincronizarea.</translation>
+<translation id="5738385766833540397">Gestionează modul în care primești alertele de scădere de preț pentru produsele pe care le urmărești</translation>
 <translation id="5738887413654608789">Astfel, poți descoperi pagini web relevante în funcție de lucrurile din jurul tău.</translation>
 <translation id="5758631781033351321">Aici vei vedea lista de lectură</translation>
 <translation id="5765456154762864099">Meniu → Setări → Browser prestabilit</translation>

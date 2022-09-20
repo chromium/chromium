@@ -42,6 +42,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1229222343402087523">Rechercher ${searchPhrase} dans Chrome</translation>
 <translation id="1242044645101871359">Se reconnecter</translation>
 <translation id="1254117744268754948">Sélectionner un dossier</translation>
+<translation id="1258491128795710625">Nouveautés</translation>
 <translation id="1265739287306757398">En savoir plus</translation>
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1275718070701477396">Sélectionnée</translation>
@@ -55,6 +56,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1322735045095424339">Votre organisation exige d'utiliser le mode navigation privée</translation>
 <translation id="1323735185997015385">Supprimer</translation>
 <translation id="132683371494960526">Appuyez deux fois pour modifier le dossier parent.</translation>
+<translation id="1335348992705722518">Gérer les paramètres</translation>
 <translation id="1340643665687018190">Fermer le menu</translation>
 <translation id="1358214951266274152">Consulter le lien copié</translation>
 <translation id="1360432990279830238">Se déconnecter et arrêter la synchro. ?</translation>
@@ -383,6 +385,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4187450337729239226">Coller et rechercher</translation>
 <translation id="4223967053752765281">Votre organisation a désactivé la connexion. Vos favoris, historique, mots de passe et autres paramètres resteront accessibles sur cet appareil, mais les modifications ne seront pas synchronisées avec votre compte.</translation>
 <translation id="4233831822770018312">Modifier les autorisations</translation>
+<translation id="4236584471598725073">Suivi des prix…</translation>
 <translation id="4237377247299956313">Appuyez sur <ph name="BEGIN_BOLD" />Navigateur par défaut<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Saisir la phrase secrète</translation>
 <translation id="4249955472157341256">Trier par "Les plus récents"</translation>
@@ -562,6 +565,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5728700505257787410">Désolé, problème lors de la connexion à votre compte.</translation>
 <translation id="5731784586962650619">Mots de passe dans d'autres applis</translation>
 <translation id="5737974891429562743">Informations de connexion au compte obsolètes. Mettez-les à jour pour lancer la synchronisation.</translation>
+<translation id="5738385766833540397">Gérez la réception d'alertes en cas de baisse de prix des produits que vous suivez</translation>
 <translation id="5738887413654608789">Vous permet de découvrir les pages Web pertinentes en fonction de votre environnement.</translation>
 <translation id="5758631781033351321">Votre liste de lecture s'affichera ici</translation>
 <translation id="5765456154762864099">Menu → Paramètres → Navigateur par défaut</translation>

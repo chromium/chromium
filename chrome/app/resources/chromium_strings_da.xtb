@@ -302,7 +302,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7682601070171973634">Chromium afprøver nye funktioner, der giver websites mulighed for at levere den samme browseroplevelse med færre af dine data</translation>
 <translation id="7686590090926151193">Chromium er ikke din standardbrowser</translation>
 <translation id="7689606757190482937">Synkroniser og tilpas Chromium på alle dine enheder</translation>
-<translation id="7714577916146996629">Når indstillingen er aktiveret, bruger Chromium hukommelse fra faner, du ikke aktivt bruger. Dette frigør din computers ressourcer til andre opgaver og sørger for, at Chromium er hurtigt. Inaktive faner fremstår som tomme og genindlæses automatisk, når du klikker på dem. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />, eller <ph name="BEGIN_LINK_2" />send feedback<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">Denne handling sletter dine browserdata på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Installationsprogrammet kunne ikke oprette en midlertidig mappe. Tjek, om der er tilstrækkelig diskplads, og om der er tilladelse til at installere software.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>

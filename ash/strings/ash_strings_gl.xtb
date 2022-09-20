@@ -214,6 +214,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2132302418721800944">Gravar pantalla completa</translation>
 <translation id="2135456203358955318">Lupa ancorada</translation>
 <translation id="2148716181193084225">Hoxe</translation>
+<translation id="2161132820593978283">Proba o zoom automático para aparecer no centro da pantalla durante as videochamadas. Actívao en Configuración rápida.</translation>
 <translation id="2170530631236737939">Para saír do modo Visión xeral, pasa tres dedos cara abaixo</translation>
 <translation id="219905428774326614">Menú de aplicacións, todas as aplicacións</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +253,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2405664212338326887">Función non conectada</translation>
 <translation id="2408955596600435184">Introduce o PIN</translation>
 <translation id="2412593942846481727">Hai unha actualización dispoñible</translation>
+<translation id="2426051945783024481">O encadramento da cámara centrouse automaticamente</translation>
 <translation id="2427507373259914951">Clic co botón esquerdo do rato</translation>
 <translation id="2429753432712299108">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" quere recibir permiso para sincronizarse. Antes de aceptalo, confirma que se mostra esta clave de acceso nese dispositivo: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
@@ -1039,6 +1041,7 @@ Nova instalación</translation>
 <translation id="6960565108681981554">Non activada. Contacta co teu operador.</translation>
 <translation id="6961121602502368900">A opción Silenciar teléfono non está dispoñible no perfil de traballo</translation>
 <translation id="6961840794482373852">O atallo Alt + Frecha arriba cambiou. Para usar a tecla Retroceder páxina, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha arriba.</translation>
+<translation id="696267987219125751">O zoom automático está desactivado.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6972754398087986839">Introdución</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1129,6 +1132,7 @@ Nova instalación</translation>
 <translation id="7513922695575567867">Calendario, semana do <ph name="DATE" />; nestes momentos está seleccionada a data <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">O zoom automático está activado.</translation>
 <translation id="7526573455193969409">É posible que se controle a rede</translation>
 <translation id="7536035074519304529">Enderezo IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">As aplicacións de Linux e as ventás do modo de incógnito agora mesmo non son compatibles. Gardaranse outras aplicacións.</translation>
@@ -1147,6 +1151,7 @@ Nova instalación</translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7609951632080598826">Vista de calendario, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Reconectouse a cámara.</translation>
+<translation id="761736749114493194">Activar/desactivar zoom automático. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Mostrar a configuración da función Compartir por Nearby.</translation>
 <translation id="7634648064048557203">Cámara axustada á esquina inferior dereita</translation>
@@ -1307,6 +1312,7 @@ Nova instalación</translation>
 <translation id="851458219935658693">Seleccionouse o botón de opción para mostrar as ventás do escritorio actual</translation>
 <translation id="8517041960877371778">É posible que o teu <ph name="DEVICE_TYPE" /> non cargue mentres estea acendido.</translation>
 <translation id="8535393432370007982">Desfacer orde de clasificación por cor</translation>
+<translation id="8541078764854166027">Zoom automát.</translation>
 <translation id="8542053257095774575">Non hai modelos nin escritorios gardados</translation>
 <translation id="8546059259582788728">A orde desfíxose correctamente</translation>
 <translation id="8551588720239073785">Configuración de data e hora</translation>

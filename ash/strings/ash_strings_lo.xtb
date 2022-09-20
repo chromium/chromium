@@ -214,6 +214,7 @@
 <translation id="2132302418721800944">ບັນທຶກໜ້າຈໍເຕັມ</translation>
 <translation id="2135456203358955318">ແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້ແລ້ວ</translation>
 <translation id="2148716181193084225">ມື້​ນີ້</translation>
+<translation id="2161132820593978283">ລອງໃຊ້ການວາງເຟຣມກ້ອງຖ່າຍຮູບເພື່ອໃຫ້ທ່ານຢູ່ກາງຈໍໃນເວລາໂທວິດີໂອ ເປີດໃຊ້ມັນໃນການຕັ້ງຄ່າດ່ວນ.</translation>
 <translation id="2170530631236737939">ໃຊ້ສາມນິ້ວມືປັດລົງເພື່ອອອກຈາກພາບຮວມ</translation>
 <translation id="219905428774326614">ຕົວເປີດນຳໃຊ້, ແອັບທັງໝົດ</translation>
 <translation id="2201071101391734388">ຮູບຫຼ້າສຸດທີ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +253,7 @@
 <translation id="2405664212338326887">ບໍ່ໄດ້ເຊື່ອມຕໍ່</translation>
 <translation id="2408955596600435184">​ປ້ອນ​ລະ​ຫັດ PIN ຂອງ​ທ່ານ</translation>
 <translation id="2412593942846481727">ມີການອັບເດດໃໝ່</translation>
+<translation id="2426051945783024481">ວາງເຟຣມກ້ອງຖ່າຍຮູບໄວ້ທາງກາງອັດຕະໂນມັດແລ້ວ</translation>
 <translation id="2427507373259914951">ຄລິກຊ້າຍ</translation>
 <translation id="2429753432712299108">ອຸປະກອນ Bluetooth "<ph name="DEVICE_NAME" />" ຢາກໄດ້ການອະນຸຍາດຈັບຄູ່. ກ່ອນຍອມຮັບ, ກະລຸນາຢືນຢັນວ່າ ປຸ່ມຜ່ານສະແດງຂຶ້ນຢູ່ອຸປະກອນນັ້ນແລ້ວ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">ສະ​ແດງ​ລະ​ຫັດ​ຜ່ານ</translation>
@@ -1038,6 +1040,7 @@
 <translation id="6960565108681981554">ບໍ່ໄດ້ເປີດນຳໃຊ້. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການຂອງທ່ານ.</translation>
 <translation id="6961121602502368900">ປິດສຽງໂທລະສັບບໍ່ສາມາດໃຊ້ໄດ້ໃນໂປຣໄຟລ໌ບ່ອນເຮັດວຽກ</translation>
 <translation id="6961840794482373852">ຄີລັດ Alt + ລູກສອນຂຶ້ນຖືກປ່ຽນແປງແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ Page Up, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ລູກສອນຂຶ້ນ.</translation>
+<translation id="696267987219125751">ການວາງເຟຣມກ້ອງຖ່າຍຮູບປິດຢູ່</translation>
 <translation id="6965382102122355670">ຕົກລົງ</translation>
 <translation id="6972754398087986839">ເລີ່ມຕົ້ນ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1128,6 +1131,7 @@
 <translation id="7513922695575567867">ປະຕິທິນ, ອາທິດຂອງ <ph name="DATE" />, ຕອນນີ້ເລືອກ <ph name="SELECTED_DATE" /> ຢູ່.</translation>
 <translation id="7514365320538308">ດາວ​ໂຫລດ</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">ເປີດໃຊ້ການວາງເຟຣມກ້ອງຖ່າຍຮູບແລ້ວ.</translation>
 <translation id="7526573455193969409">ອາດມີການຕິດຕາມເບິ່ງເຄືອຂ່າຍ</translation>
 <translation id="7536035074519304529">ທີ່ຢູ່ IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">ຕອນນີ້ບໍ່ຮອງຮັບແອັບ Linux ແລະ ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນເທື່ອ. ແອັບອື່ນໆຈະຖືກບັນທຶກໄວ້.</translation>
@@ -1146,6 +1150,7 @@
 <translation id="7607002721634913082">ຢຸດແລ້ວ</translation>
 <translation id="7609951632080598826">ມຸມມອງປະຕິທິນ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ເຊື່ອມຕໍ່ກ້ອງຖ່າຍຮູບຄືນໃໝ່ແລ້ວ.</translation>
+<translation id="761736749114493194">ສະຫຼັບການວາງເຟຣມກ້ອງຖ່າຍຮູບ. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">ສະແດງການຕັ້ງຄ່າການແບ່ງປັນໃກ້ຄຽງ.</translation>
 <translation id="7634648064048557203">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຂວາລຸ່ມແລ້ວ</translation>
@@ -1308,6 +1313,7 @@
 <translation id="851458219935658693">ສະແດງໜ້າຈໍຈາກໂຕະປັດຈຸບັນ, ເລືອກປຸ່ມວິທະຍຸແລ້ວ</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ​ບໍ່ອາດ​ສາກ​ໄດ້ໃນ​ຂະ​ນະ​ທີ່​ມັນ​ເປີດ.</translation>
 <translation id="8535393432370007982">ຍົກເລີກການຈັດຮຽງລຳດັບຕາມສີ</translation>
+<translation id="8541078764854166027">ການວາງເຟຣມກ້ອງຖ່າຍຮູບ</translation>
 <translation id="8542053257095774575">ບໍ່ມີໂຕະ ຫຼື ແມ່ແບບທີ່ບັນທຶກໄວ້</translation>
 <translation id="8546059259582788728">ຍົກເລີກການຈັດຮຽງສຳເລັດແລ້ວ</translation>
 <translation id="8551588720239073785">ການຕັ້ງຄ່າວັນທີ ແລະ ເວລາ</translation>

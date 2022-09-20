@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">包二摺</translation>
 <translation id="138218114945450791">淺藍色</translation>
 <translation id="1382194467192730611">系統管理員允許使用的 USB 裝置</translation>
+<translation id="1382378825779654399">產品在任何網站上降價時都會透過電子郵件通知你。這個網頁將儲存到「<ph name="LAST_BOOKMARKS_FOLDER" />」。</translation>
 <translation id="1382912999714108023">資料與現況不符嗎？請洽詢銀行以更新這筆資料。</translation>
 <translation id="1384725838384960382">安全付款憑證驗證表</translation>
 <translation id="1386623374109090026">註解</translation>
@@ -421,6 +422,7 @@
 <translation id="2034971124472263449">繼續儲存</translation>
 <translation id="2035400064145347639">旅遊指南與遊記</translation>
 <translation id="2036983605131262583">替用卷</translation>
+<translation id="2040463897538655645">外接儲存裝置</translation>
 <translation id="2040894699575719559">禁止取得位置資訊</translation>
 <translation id="2042213636306070719">紙匣 7</translation>
 <translation id="204357726431741734">登入以使用儲存在 Google 帳戶中的密碼</translation>
@@ -1519,6 +1521,7 @@
 <translation id="5018422839182700155">無法開啟這個網頁</translation>
 <translation id="5019198164206649151">備份儲存狀態不佳</translation>
 <translation id="5020776957610079374">世界音樂</translation>
+<translation id="5021557570875267742">使用 Chrome 追蹤價格</translation>
 <translation id="5023310440958281426">請查看你的管理員政策</translation>
 <translation id="5029568752722684782">清除複本</translation>
 <translation id="5030338702439866405">發行者</translation>
@@ -2239,6 +2242,7 @@
 <translation id="6993898126790112050">6x9 (信封)</translation>
 <translation id="6996312675313362352">一律翻譯<ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">娛樂業</translation>
+<translation id="7003335073762455340">你正在追蹤這項產品，這個網頁已儲存到「<ph name="LAST_BOOKMARKS_FOLDER" />」。</translation>
 <translation id="7004583254764674281">使用 Windows Hello 加快卡片驗證速度</translation>
 <translation id="7006930604109697472">仍要傳送</translation>
 <translation id="7012363358306927923">中國銀聯</translation>
@@ -3033,6 +3037,7 @@
 <translation id="9174623988242579721">改裝車與性能車</translation>
 <translation id="9174917557437862841">分頁切換按鈕，按下 Enter 鍵即可切換到這個分頁</translation>
 <translation id="9179703756951298733">在 Chrome 設定中管理付款和信用卡資訊</translation>
+<translation id="9179907736442194268">產品在任何網站上降價時都會通知你</translation>
 <translation id="9183302530794969518">Google 文件</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> 使用了不支援的通訊協定。</translation>
 <translation id="9187461866967718678">極限運動</translation>

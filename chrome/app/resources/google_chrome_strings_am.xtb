@@ -60,6 +60,7 @@
 <translation id="2094648590148273905">የChromeOS Flex ደንቦች</translation>
 <translation id="2094919256425865063">የሆነው ሆኖ Chrome ይቁም?</translation>
 <translation id="2106831557840787829">ChromeOS Flex እና <ph name="BEGIN_LINK_LINUX_OSS" />የLinux ግንባታ አካባቢ<ph name="END_LINK_LINUX_OSS" /> ሊሠሩ የቻሉት በተጨማሪ <ph name="BEGIN_LINK_CROS_OSS" />የክፍት ምንጭ ሶፍትዌር<ph name="END_LINK_CROS_OSS" /> ነው።</translation>
+<translation id="2112742052114331084">ሲበራ፣ Chrome በንቃት እየተጠቀሟቸው ካልሆኑ ትሮች ማህደረ ትውስታን መልሶ ይወስዳል። ይህ የእርስዎን ኮምፒውተር ንብረቶች ለሌሎች ተግባሮች ቦታ ያስለቅቃል እና Chromeን ፈጣን ሆኖ እንዲቆይ ያደርጋል። ንቁ ያልሆኑ ትሮች ባዶ ሆነው ይታያሉ እና ጠቅ ሲያደርጓቸው በራስ-ሰር እንደገና ይጭናሉ። <ph name="BEGIN_LINK" />የበለጠ ይወቁ<ph name="END_LINK" /> ወይም <ph name="BEGIN_LINK_2" />ግብረመልስ ይላኩ<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">ይሄ <ph name="ITEMS_COUNT" /> ንጥሎችን ከዚህ መሣሪያ ይሰርዛል። ውሂብዎን በኋላ ላይ ሰርስረው ለማውጣት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chrome ይግቡ።</translation>
 <translation id="2121284319307530122">&amp;Chromeን ለማዘመን ዳግም ያስነሱት</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />የአሁኖቹን ቅንብሮች<ph name="END_LINK" /> ሪፖርት በማድረግ Chromium የተሻለ እንዲሆን ያግዙ።</translation>

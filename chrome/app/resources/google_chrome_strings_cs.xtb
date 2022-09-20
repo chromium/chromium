@@ -61,6 +61,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2094648590148273905">Smluvní podmínky systému ChromeOS Flex</translation>
 <translation id="2094919256425865063">Přesto Chrome ukončit?</translation>
 <translation id="2106831557840787829">Systém ChromeOS Flex by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />, jako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostředí Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Když je tato možnost zapnutá, Chrome bude využívat paměť z karet, které aktivně nepoužíváte. Uvolní se tak zdroje vašeho počítače k dalším úkolům a prohlížeč Chrome zůstane rychlý. Neaktivní karty se zobrazují prázdné a po kliknutí se automaticky znovu načtou. Můžete si přečíst <ph name="BEGIN_LINK" />další informace<ph name="END_LINK" /> nebo <ph name="BEGIN_LINK_2" />odeslat zpětnou vazbu<ph name="END_LINK_2" />.</translation>
 <translation id="2120620239521071941">Ze zařízení bude smazán následující počet položek: <ph name="ITEMS_COUNT" />. Budete-li chtít své údaje později načíst, přihlaste se do Chromu jako <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Znovu spustit a aktualizovat &amp;Chrome</translation>
 <translation id="2123055963409958220">Pomozte s vylepšováním prohlížeče Chrome tím, že nahlásíte <ph name="BEGIN_LINK" />aktuální nastavení<ph name="END_LINK" /></translation>

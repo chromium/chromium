@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">Превиткување писмо</translation>
 <translation id="138218114945450791">Светлосина</translation>
 <translation id="1382194467192730611">USB-уред дозволен од администраторот</translation>
+<translation id="1382378825779654399">Ќе добиете известувања по е-пошта ако цената се намали на кој било сајт. Страницава ќе биде зачувана во <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Ова не се вашите тековни податоци? Контактирајте со вашата банка за да ги ажурирате.</translation>
 <translation id="1384725838384960382">Лист за проверка на акредитиви за безбедно плаќање</translation>
 <translation id="1386623374109090026">Прибелешки</translation>
@@ -260,6 +261,7 @@
 <translation id="156703335097561114">Мрежните податоци, како што се адресите, конфигурацијата на интерфејсот и квалитетот на врската</translation>
 <translation id="1567040042588613346">Правилово работи како што е предвидено, но истата вредност е поставена некаде на друго место и е заменета од правилово.</translation>
 <translation id="1569487616857761740">Внесете датум на истекување</translation>
+<translation id="1569694109004336106">Google Chrome се обидува да вклучи Windows Hello за пополнување лозинки.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Нешто тргна наопаку при прикажувањето на оваа веб-страница.</translation>
 <translation id="1586541204584340881">кои екстензии сте ги инсталирале</translation>
@@ -398,6 +400,7 @@
 <translation id="1958218078413065209">Вашиот најдобар резултат е <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Помогнете да се подобри безбедноста на интернет за сите преку испраќање <ph name="BEGIN_WHITEPAPER_LINK" />URL-адреси од некои страници што ги посетувате, ограничени податоци за системот и некои содржини од страниците<ph name="END_WHITEPAPER_LINK" /> до Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Политика за приватност<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Обележувачи на <ph name="DOMAIN" /></translation>
+<translation id="1971033026002113380">Заштитете ги лозинките со Touch ID</translation>
 <translation id="1973335181906896915">Грешка во серијализацијата</translation>
 <translation id="1974060860693918893">Напредни</translation>
 <translation id="1975457531113383421">Влезна фиока</translation>
@@ -725,6 +728,7 @@
 <translation id="2881276955470682203">Сакате ли да ја зачувате картичката?</translation>
 <translation id="2882949212241984732">Двојно превиткување како брошура</translation>
 <translation id="2893773853358652045">Четврта ролна</translation>
+<translation id="289834758818479772">Ако го споделувате овој уред со други, може да вклучите Touch ID за да потврдувате дека сте вие секогаш кога користите зачувана лозинка</translation>
 <translation id="2900528713135656174">Создаjте настан</translation>
 <translation id="2903493209154104877">Адреси</translation>
 <translation id="290376772003165898">Страницата не е на <ph name="LANGUAGE" />?</translation>
@@ -801,6 +805,8 @@
 <translation id="3108943290502734357">Средна фиока</translation>
 <translation id="3109728660330352905">Немате авторизација да ја видите страницата.</translation>
 <translation id="3113284927548439113">Трета смена</translation>
+<translation id="3114040155724590991">Се ажурира системот на Android
+    Стартувањето на апликацијата може да трае подолго од вообичаено.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Да се преземе доверлива датотека?}one{Да се преземат доверливи датотеки?}other{Да се преземат доверливи датотеки?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Пластифицирање</translation>
@@ -1255,6 +1261,7 @@
 <translation id="4306812610847412719">привремена меморија</translation>
 <translation id="4308567447483056043">Правилово се игнорира бидејќи корисникот е самостоен. За да се примени правилово, истата организација мора да управува со прелистувачот и профилот на Chrome преку администраторска конзола.</translation>
 <translation id="4310070645992025887">Пребарајте ги вашите „Патувања“</translation>
+<translation id="4310496734563057511">Ако го споделувате овој уред со други, може да вклучите Windows Hello за да потврдувате дека сте вие секогаш кога користите зачувана лозинка</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокирај (стандардно)</translation>
 <translation id="4314815835985389558">Управувајте со синхронизацијата</translation>
@@ -1469,6 +1476,7 @@
 <translation id="4880827082731008257">Историја на пребарување</translation>
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="4885256590493466218">Платете со <ph name="CARD_DETAIL" /> при наплатата</translation>
+<translation id="4887406273302438710">Заштитете ги лозинките со Windows Hello</translation>
 <translation id="4888600795924685526">Учење странски јазици</translation>
 <translation id="4889420713887366944">Копче „Отвори прозорец Инкогнито“, притиснете Enter за да отворите нов прозорец „Инкогнито“ и да прелистувате приватно</translation>
 <translation id="4892518386797173871">Заден дел</translation>
@@ -1520,6 +1528,7 @@
 <translation id="5018422839182700155">Не може да се отвори страницава</translation>
 <translation id="5019198164206649151">Продавницата за резервни копии е во лоша состојба</translation>
 <translation id="5020776957610079374">Светска музика</translation>
+<translation id="5021557570875267742">Следете ги цените со Chrome</translation>
 <translation id="5023310440958281426">Проверете ги правилата на вашиот администратор</translation>
 <translation id="5029568752722684782">Исчисти копија</translation>
 <translation id="5030338702439866405">Издадено од</translation>
@@ -1687,6 +1696,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> сака да ви испраќа известувања</translation>
 <translation id="5428105026674456456">шпански</translation>
 <translation id="5430298929874300616">Отстрани обележувач</translation>
+<translation id="5434423669266814150">вклучи Touch ID за пополнување лозинки</translation>
 <translation id="5443468954631487277">Обратен редослед со лицето нагоре</translation>
 <translation id="5447765697759493033">Сајтов нема да се преведе</translation>
 <translation id="5452270690849572955">Оваа страница на <ph name="HOST_NAME" /> не може да се најде</translation>
@@ -2240,6 +2250,7 @@
 <translation id="6993898126790112050">6x9 (плик)</translation>
 <translation id="6996312675313362352">Секогаш преведувај <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Забавна индустрија</translation>
+<translation id="7003335073762455340">Го следите производов. Страницава е зачувана во <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Користете Windows Hello за побрзо потврдување на картичките</translation>
 <translation id="7006930604109697472">Сепак испрати</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2463,6 +2474,7 @@
 <translation id="7564049878696755256">Може да го изгубите пристапот до вашата сметка на <ph name="ORG_NAME" /> или да ви го украдат идентитетот. Chrome препорачува да ја смените лозинката веднаш.</translation>
 <translation id="7564680668369175887">Караван автомобили</translation>
 <translation id="7567204685887185387">Серверот не може да докаже дека е <ph name="DOMAIN" />; можеби неговиот безбедносен сертификат е издаден лажно. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
+<translation id="7568616151991626879">Google Chrome се обидува да ја пополни вашата лозинка на <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Голф</translation>
 <translation id="7569761772822664555">Управувајте со копчето за пребарувачи, притиснете го копчето Enter за да управувате со стандардниот пребарувач и пребарувањето сајтови</translation>
 <translation id="7569952961197462199">Отстрани ја кредитната картичка од Chrome?</translation>
@@ -2493,6 +2505,7 @@
 <translation id="7637586430889951925">{COUNT,plural, =0{Ниедна}=1{1 лозинка во вашата сметка (за <ph name="DOMAIN_LIST" />)}one{# лозинка во вашата сметка (за <ph name="DOMAIN_LIST" />)}other{# лозинки во вашата сметка (за <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Сериски порти</translation>
 <translation id="7639968568612851608">Темносива</translation>
+<translation id="7646681339175747202">Лозинката која штотуку ја употребивте е откриена при упад во податоци. Google Password Manager ви препорачува да ја промените лозинката веднаш.</translation>
 <translation id="7647206758853451655">Квалитет на печатењето</translation>
 <translation id="7648992873808071793">Складирај датотеки на уредов</translation>
 <translation id="7653957176542370971">Листот на ракувачот со плаќања е затворен</translation>
@@ -3034,6 +3047,7 @@
 <translation id="9174623988242579721">Приспособени возила и возила за изведба</translation>
 <translation id="9174917557437862841">Копче за префрлање помеѓу картички, притиснете Enter за да се префрлите во картичкава</translation>
 <translation id="9179703756951298733">Управувајте со плаќањата и податоците за кредитните картички во поставките за Chrome</translation>
+<translation id="9179907736442194268">Добивајте предупредувања по е-пошта ако цената се намали на кој било сајт</translation>
 <translation id="9183302530794969518">Документи на Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> користи неподдржан протокол.</translation>
 <translation id="9187461866967718678">Екстремни спортови</translation>

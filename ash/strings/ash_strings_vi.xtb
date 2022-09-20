@@ -1155,6 +1155,7 @@ Mới cài đặt</translation>
 <translation id="7633755430369750696">Hiện tùy chọn cài đặt Chia sẻ lân cận.</translation>
 <translation id="7634648064048557203">Máy ảnh đang bám theo góc dưới bên phải</translation>
 <translation id="7641938616688887143">Ghi hình</translation>
+<translation id="7642106959537987271">chế độ đảo màu</translation>
 <translation id="7642647758716480637">Mở phần cài đặt <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (chủ sở hữu)</translation>
 <translation id="7647488630410863958">Mở khóa thiết bị để xem thông báo của bạn</translation>
@@ -1260,6 +1261,7 @@ Mới cài đặt</translation>
 <translation id="8209010265547628927">Đặt lại</translation>
 <translation id="8214996719228530800">Kênh Canary</translation>
 <translation id="8219451629189078428">Bạn cần phải luôn bật và kết nối Chromebook với nguồn điện trong thời gian này. Hãy đảm bảo bạn đã cắm chắc chắn cáp bộ sạc hoặc bộ đổi nguồn vào cả Chromebook lẫn ổ cắm điện. Không tắt Chromebook.</translation>
+<translation id="8230305195727960608">Chế độ đảo màu</translation>
 <translation id="8236042855478648955">Giờ nghỉ giải lao</translation>
 <translation id="8246282815785366524"><ph name="GIVEN_NAME" /> thân mến, chào mừng bạn quay lại!</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Pin điện thoại <ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1388,7 @@ Mới cài đặt</translation>
 <translation id="8982906748181120328">Chế độ hiển thị lân cận</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Đang dùng <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Đã bật Chế độ đảo màu. Nhấn tổ hợp phím Ctrl+Search+H một lần nữa để tắt chế độ này.</translation>
 <translation id="899350903320462459">Mở khóa thiết bị bằng <ph name="LOGIN_ID" /> để thực hiện hành động thông báo</translation>
 <translation id="9000771174482730261">QUẢN LÝ BỘ NHỚ</translation>
 <translation id="9017320285115481645">Nhập mã truy cập dành cho cha mẹ của Family Link.</translation>
@@ -1434,6 +1437,7 @@ Mới cài đặt</translation>
 <translation id="921989828232331238">Cha mẹ đã khóa thiết bị của bạn cả ngày</translation>
 <translation id="9220525904950070496">Xóa tài khoản</translation>
 <translation id="923686485342484400">Nhấn Control Shift Q hai lần để đăng xuất.</translation>
+<translation id="92580429198593979">Bạn đã nhấn phím tắt cho chế độ đảo màu. Bạn có muốn bật chế độ này không?</translation>
 <translation id="925832987464884575">Ẩn bản xem trước</translation>
 <translation id="937214777182567951">Theo yêu cầu của <ph name="MANAGER" />, bạn phải cập nhật thiết bị <ph name="DEVICE_TYPE" /> của mình ngay lập tức</translation>
 <translation id="938963181863597773">Trên lịch của tôi có sự kiện gì?</translation>

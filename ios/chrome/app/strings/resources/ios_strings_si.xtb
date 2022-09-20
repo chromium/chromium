@@ -42,6 +42,7 @@
 <translation id="1229222343402087523">Chrome තුළ ${searchPhrase} සොයන්න</translation>
 <translation id="1242044645101871359">නැවත පුරන්න</translation>
 <translation id="1254117744268754948">ෆෝල්ඩරය තෝරන්න</translation>
+<translation id="1258491128795710625">අලුත් මොනවාද</translation>
 <translation id="1265739287306757398">කෙසේදැයි දැන ගන්න</translation>
 <translation id="1272079795634619415">නවතන්න</translation>
 <translation id="1275718070701477396">තෝරාගත්</translation>
@@ -55,6 +56,7 @@
 <translation id="1322735045095424339">ඔබගේ සංවිධානයට අප්‍රසිද්ධ ප්‍රකාරය අවශ්‍යයි</translation>
 <translation id="1323735185997015385">මකන්න</translation>
 <translation id="132683371494960526">මාපිය ෆෝල්ඩරය වෙනස් කිරීමට දෙවරක් තට්ටු කරන්න.</translation>
+<translation id="1335348992705722518">සැකසීම් කළමනාකරණය කරන්න...</translation>
 <translation id="1340643665687018190">මෙනුව වසන්න</translation>
 <translation id="1358214951266274152">ඔබ පිටපත් කළ සබැඳියට පැමිණෙන්න</translation>
 <translation id="1360432990279830238">වැරී, සමමුහුර්ත කිරීම අක්‍රිය කරන්නේද?</translation>
@@ -383,6 +385,7 @@
 <translation id="4187450337729239226">අලවා සොයන්න</translation>
 <translation id="4223967053752765281">ඔබගේ සංවිධානය පිරීම ක්‍රියාවිරහිත කර දැමීය. ඔබට තවම ඔබගේ පිටුසන්, ඉතිහාසය, මුරපද සහ වෙනත් සැකසීම් මෙම උපාංගයෙහි බැලිය හැකිය. ඔබ වෙනස් කිරීම් සිදු කළහොත්, ඒවා ඔබගේ ගිණුමට සමමුහුර්ත නොවනු ඇත.</translation>
 <translation id="4233831822770018312">අවසර සංස්කරණය කරන්න</translation>
+<translation id="4236584471598725073">මිල හඹා යාම</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />පෙරනිමි බ්‍රව්සර යෙදුම<ph name="END_BOLD" /> තට්ටු කරන්න</translation>
 <translation id="424315890655130736">මුර-වැකිකඩ ඇතුළත් කරන්න</translation>
 <translation id="4249955472157341256">නවතම අනුව පිළිවෙලට සකසන්න</translation>
@@ -562,6 +565,7 @@
 <translation id="5728700505257787410">කනගාටුයි, ඔබේ ගිණුම වෙත පුරනය විමේදි ගැටලුවක් තිබේ.</translation>
 <translation id="5731784586962650619">වෙනත් යෙදුම්වල මුරපද</translation>
 <translation id="5737974891429562743">ගිණුමේ පිරීම් විස්තර කල් පැන ඇත. සමමුහුර්ත කිරීම ආරම්භ කිරීමට යාවත්කාලීන කරන්න.</translation>
+<translation id="5738385766833540397">ඔබ නිරීක්ෂණය කරන නිෂ්පාදන සඳහා මිල පහත වැටීමේ ඇඟවීම් ලැබෙන ආකාරය කළමනා කරන්න</translation>
 <translation id="5738887413654608789">මෙය ඔබට ඔබේ වටපිටාව මත පදනම්ව අදාළ වෙබ් පිටු සොයා ගැනීමට ඉඩ දෙයි.</translation>
 <translation id="5758631781033351321">ඔබට ඔබේ කියවීමේ ලැයිස්තුව මෙහි හමුවනු ඇත</translation>
 <translation id="5765456154762864099">මෙනුව → සැකසීම් → පෙරනිමි බ්‍රවුසරය</translation>

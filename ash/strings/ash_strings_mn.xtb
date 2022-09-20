@@ -235,6 +235,7 @@
 <translation id="2298170939937364391">Бүтэн дэлгэц томруулагчийг идэвхжүүлсэн. Үүнийг унтраахын тулд Ctrl+Хайх+M-г дахин дарна уу.</translation>
 <translation id="2302092602801625023">Энэ бүртгэлийг Family Link-р удирддаг</translation>
 <translation id="2303600792989757991">Цонхыг тоймлож харах</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: сүүлийн үеийн дэлгэцийн зураг, татаж авсан файл болон бэхэлсэн файл</translation>
 <translation id="2318576281648121272">Өнөөдөр <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , хайлтын илэрцийн ангилал</translation>
 <translation id="2322173485024759474">Нэг үсгээр буцаах</translation>
@@ -1156,6 +1157,7 @@
 <translation id="7633755430369750696">Ойролцоо хуваалцах тохиргоог харуулна.</translation>
 <translation id="7634648064048557203">Камерыг баруун доод булан руу зэрэгцүүлсэн</translation>
 <translation id="7641938616688887143">Бичих</translation>
+<translation id="7642106959537987271">өнгө урвуулах горим</translation>
 <translation id="7642647758716480637"><ph name="CONNECTION_STATUS" /> статустай <ph name="NETWORK_NAME" />-н тохиргоог нээх</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (эзэмшигч)</translation>
 <translation id="7647488630410863958">Мэдэгдлээ харахын тулд төхөөрөмжийн түгжээг тайлна уу</translation>
@@ -1261,6 +1263,7 @@
 <translation id="8209010265547628927">Шинэчлэх</translation>
 <translation id="8214996719228530800">Канар суваг</translation>
 <translation id="8219451629189078428">Энэ хугацаанд Chromebook тань асаалттай, мөн тэжээлд залгаатай байх шаардлагатай. Цэнэглэгчийн эсвэл адаптерын утас Chromebook, цахилгааны залгуур хоёрт хоёуланд нь бүрэн залгаатай байгаа эсэхийг шалгаарай. Chromebook-ээ унтрааж болохгүй.</translation>
+<translation id="8230305195727960608">Өнгө урвуулах горим</translation>
 <translation id="8236042855478648955">Завсарлах цаг</translation>
 <translation id="8246282815785366524">Дахин тавтай морилно уу, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, утасны батарей <ph name="BATTERY_STATUS" /></translation>
@@ -1388,6 +1391,7 @@
 <translation id="8982906748181120328">Ойролцоо харагдац</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" />-г ашиглаж байна</translation>
+<translation id="8991617137207906966">Өнгө урвуулах горимыг идэвхжүүлсэн. Үүнийг унтраахын тулд Ctrl+Search+H дээр дахин дарна уу.</translation>
 <translation id="899350903320462459">Мэдэгдлийн үйлдлийг гүйцэтгэхийн тулд төхөөрөмжийн түгжээг <ph name="LOGIN_ID" />-р тайлна уу</translation>
 <translation id="9000771174482730261">ХАДГАЛАХ САНГ УДИРДАХ</translation>
 <translation id="9017320285115481645">Family Link-н эцэг эхийн нэвтрэх кодоо оруулна уу.</translation>
@@ -1436,6 +1440,7 @@
 <translation id="921989828232331238">Таны эцэг эх таны төхөөрөмжийг өдрийн турш түгжсэн байна</translation>
 <translation id="9220525904950070496">Бүртгэлийг хасах</translation>
 <translation id="923686485342484400">Гарахын тулд Control Shift Q дээр хоёр удаа дарна уу.</translation>
+<translation id="92580429198593979">Та өнгө урвуулах горимын товчлуурын шууд холбоосыг дарсан байна. Та үүнийг асаахыг хүсэж байна уу?</translation>
 <translation id="925832987464884575">Урьдчилан үзэлтийг нуух</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> таныг өөрийн <ph name="DEVICE_TYPE" />-г нэн даруй шинэчлэхийг шаардаж байна</translation>
 <translation id="938963181863597773">Миний календарьд юу байна вэ?</translation>

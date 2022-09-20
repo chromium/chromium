@@ -57,6 +57,7 @@
 <translation id="2094648590148273905">A ChromeOS Flex feltételei</translation>
 <translation id="2094919256425865063">Biztosan kilép a Chrome-ból?</translation>
 <translation id="2106831557840787829">A ChromeOS Flex létrejöttéhez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak, például a <ph name="BEGIN_LINK_LINUX_OSS" />Linux fejlesztői környezet<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Ha be van kapcsolva, a Chrome visszaveszi a memóriát azoktól a lapoktól, amelyeket nem használ aktívan. Ez felszabadítja a számítógép erőforrásait más feladatok elvégzéséhez, így a Chrome gyors marad. Az inaktív lapok üresnek látszanak, és ha rájuk kattint, automatikusan újratöltődnek. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /> vagy <ph name="BEGIN_LINK_2" />visszajelzés küldése<ph name="END_LINK_2" />.</translation>
 <translation id="2120620239521071941">Ezzel <ph name="ITEMS_COUNT" /> elemet töröl az eszközről. Az adatok későbbi lekéréséhez jelentkezzen be a Chrome-ba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Indítsa újra a Chrome frissítéshez</translation>
 <translation id="2123055963409958220">Segítsen a Chrome fejlesztésében a <ph name="BEGIN_LINK" />jelenlegi beállítások<ph name="END_LINK" /> elküldésével</translation>

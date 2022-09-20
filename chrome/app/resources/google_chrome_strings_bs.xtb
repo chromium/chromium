@@ -61,6 +61,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2094648590148273905">Uslovi za ChromeOS Flex</translation>
 <translation id="2094919256425865063">Ipak želite napustiti Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, kao što je <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Kada je uključeno, Chrome preuzima memorijski prostor od kartica koje ne koristite aktivno. Time se oslobađaju izvori računara za druge zadatke i održava brzi rad Chromea. Neaktivne kartice izgledaju prazno i automatski se ponovo učitavaju kada kliknete na njih. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> ili <ph name="BEGIN_LINK_2" />pošaljite povratne informacije<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Ovim će se s ovog uređaja izbrisati sljedeći broj stavki: <ph name="ITEMS_COUNT" />. Da preuzmete svoje podatke kasnije, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Ponovo pokrenite da ažurirate &amp;Chrome</translation>
 <translation id="2123055963409958220">Pomozite nam da poboljšamo Chrome izvještavanjem o <ph name="BEGIN_LINK" />trenutnim postavkama<ph name="END_LINK" /></translation>
@@ -277,7 +278,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="6735387454586646204">Sistem ChromeOS Flex</translation>
 <translation id="6739177684496155661">Želite li nastaviti na novi Chrome profil?</translation>
 <translation id="6750954913813541382">Za ispravak pravopisnih grešaka, Chrome šalje Googleu tekst koji napišete u pregledniku</translation>
-<translation id="6756581345161130259">Chrome prema potrebi vraća memoriju s kartica koje ne upotrebljavate aktivno. To uvijek možete promijeniti u postavkama.</translation>
+<translation id="6756581345161130259">Chrome po potrebi preuzima memorijski prostor od kartica koje ne koristite aktivno. Ovo možete promijeniti bilo kada u postavkama.</translation>
 <translation id="677276454032249905">Ipak želite napustiti Chrome?</translation>
 <translation id="6785872064505734160">Google Asistent u Chromeu može za vas završavati radnje na svim web lokacijama</translation>
 <translation id="683440813066116847">Ulazno pravilo da Google Chrome Canary dozvoli mDNS saobraćaj.</translation>

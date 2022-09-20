@@ -214,6 +214,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2132302418721800944">Ierakstīt visu ekrānu</translation>
 <translation id="2135456203358955318">Dokota lupa</translation>
 <translation id="2148716181193084225">Šodien</translation>
+<translation id="2161132820593978283">Izmēģiniet kameras kadrēšanu, lai videozvanu laikā jūs būtu ekrāna centrā. Varat to ieslēgt ātrajos iestatījumos.</translation>
 <translation id="2170530631236737939">Lai aizvērtu pārskatu, ar trim pirkstiem velciet lejup</translation>
 <translation id="219905428774326614">Palaišanas programma, visas lietotnes</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. jaunākais fotoattēls no <ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +253,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2405664212338326887">Nav savienojuma</translation>
 <translation id="2408955596600435184">Ievadiet PIN kodu</translation>
 <translation id="2412593942846481727">Ir pieejams atjauninājums</translation>
+<translation id="2426051945783024481">Kameras kadrs tiek automātiski centrēts</translation>
 <translation id="2427507373259914951">Noklikšķināt ar peles kreiso pogu</translation>
 <translation id="2429753432712299108">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī. Pirms piekrītat, lūdzu, pārliecinieties, vai ierīcē tiek parādīta šī ieejas atslēga: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
@@ -1038,6 +1040,7 @@ Jauna instalācija</translation>
 <translation id="6960565108681981554">Nav aktivizēts. Sazinieties ar mobilo sakaru operatoru.</translation>
 <translation id="6961121602502368900">Darba profilā tālruņa skaņu nevar izslēgt.</translation>
 <translation id="6961840794482373852">Šie īsinājumtaustiņi ir mainījušies: Alt + augšupvērstais bulttaustiņš. Lai izmantotu augšupšķiršanas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + augšupvērstais bulttaustiņš.</translation>
+<translation id="696267987219125751">Kameras kadrēšana ir izslēgta.</translation>
 <translation id="6965382102122355670">Labi</translation>
 <translation id="6972754398087986839">Sākt darbu</translation>
 <translation id="6979158407327259162">Google disks</translation>
@@ -1128,6 +1131,7 @@ Jauna instalācija</translation>
 <translation id="7513922695575567867">Kalendārs, nedēļa, kas sākas datumā <ph name="DATE" />, pašlaik atlasītais datums ir <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Lejupielādēt</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Kameras kadrēšana ir ieslēgta.</translation>
 <translation id="7526573455193969409">Var tikt pārraudzītas tīklā veiktās darbības</translation>
 <translation id="7536035074519304529">IP adrese: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux lietotnes un inkognito režīma logi pašlaik netiek atbalstīti. Citas lietotnes tiks saglabātas.</translation>
@@ -1146,6 +1150,7 @@ Jauna instalācija</translation>
 <translation id="7607002721634913082">Apturēta</translation>
 <translation id="7609951632080598826">Kalendāra skats, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera atkal pievienota.</translation>
+<translation id="761736749114493194">Pārslēgt kameras kadrēšanu. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Rādīt funkcijas “Kopīgošana tuvumā” iestatījumus.</translation>
 <translation id="7634648064048557203">Kamera pārnesta uz labo apakšējo stūri</translation>
@@ -1306,6 +1311,7 @@ Jauna instalācija</translation>
 <translation id="851458219935658693">Atlasīta poga “Rādīt pašreizējās darbvietas logus”</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ierīce, iespējams, netiks uzlādēta, kamēr tā būs ieslēgta.</translation>
 <translation id="8535393432370007982">Atsaukt kārtošanu pēc krāsas</translation>
+<translation id="8541078764854166027">Kadrēšana</translation>
 <translation id="8542053257095774575">Nav saglabātu darbvietu vai veidņu</translation>
 <translation id="8546059259582788728">Kārtošana sekmīgi atsaukta</translation>
 <translation id="8551588720239073785">Datuma un laika iestatījumi</translation>

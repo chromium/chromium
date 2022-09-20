@@ -1155,6 +1155,7 @@ Kaka-install lang</translation>
 <translation id="7633755430369750696">Ipakita ang mga setting ng Nearby Share.</translation>
 <translation id="7634648064048557203">Nag-snap ang camera sa kanang sulok sa ibaba</translation>
 <translation id="7641938616688887143">I-record</translation>
+<translation id="7642106959537987271">color inversion mode</translation>
 <translation id="7642647758716480637">Buksan ang mga setting para sa <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (may-ari)</translation>
 <translation id="7647488630410863958">I-unlock ang device upang tingnan ang iyong mga notification</translation>
@@ -1260,6 +1261,7 @@ Kaka-install lang</translation>
 <translation id="8209010265547628927">I-reset</translation>
 <translation id="8214996719228530800">Canary Channel</translation>
 <translation id="8219451629189078428">Kailangang manatiling naka-on at nakasaksak ang iyong Chromebook sa panahong ito. Tiyaking nakasaksak nang maayos ang charger o mga adapter cable, sa iyong Chromebook at sa saksakan. Huwag i-off ang iyong Chromebook.</translation>
+<translation id="8230305195727960608">Color Inversion Mode</translation>
 <translation id="8236042855478648955">Oras na para magpahinga</translation>
 <translation id="8246282815785366524">Maligayang pagbabalik, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Baterya ng Telepono <ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1388,7 @@ Kaka-install lang</translation>
 <translation id="8982906748181120328">Visible Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Gamit ang <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Naka-enable ang Color Inversion Mode. Pindutin ulit ang Ctrl+Search+H para i-off ito.</translation>
 <translation id="899350903320462459">I-unlock ang device bilang <ph name="LOGIN_ID" /> para maisagawa ang pagkilos sa notification</translation>
 <translation id="9000771174482730261">PAMAHALAAN ANG STORAGE</translation>
 <translation id="9017320285115481645">Ilagay ang access code ng magulang sa Family Link.</translation>
@@ -1434,6 +1437,7 @@ Kaka-install lang</translation>
 <translation id="921989828232331238">Ni-lock ng iyong magulang ang device mo para sa araw na ito</translation>
 <translation id="9220525904950070496">Alisin ang account</translation>
 <translation id="923686485342484400">Pindutin ang Control Shift Q nang dalawang beses upang mag-sign out.</translation>
+<translation id="92580429198593979">Napindot mo ang keyboard shortcut para sa pag-invert ng kulay. Gusto mo ba itong i-on?</translation>
 <translation id="925832987464884575">Itago ang mga preview</translation>
 <translation id="937214777182567951">Hinihiling sa iyo ng <ph name="MANAGER" /> na i-update kaagad ang <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="938963181863597773">Ano'ng nakaiskedyul sa kalendaryo ko?</translation>

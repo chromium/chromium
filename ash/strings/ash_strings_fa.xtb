@@ -1078,7 +1078,7 @@
 <translation id="7144942256906679589">وضعیت باتری</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">برگرداندن به وضوح قدیمی در <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7180611975245234373">بازخوانی</translation>
+<translation id="7180611975245234373">بازآوری</translation>
 <translation id="7188494361780961876">منو به گوشه راست بالای صفحه منتقل شد.</translation>
 <translation id="7189412385142492784">‏How far is Venus (فاصله سیاره ناهید از ما چقدر است)</translation>
 <translation id="7198435252016571249">دوربین به گوشه پایین سمت راست چسبید. تداخلی با سطح سیستم روی داد.</translation>
@@ -1155,6 +1155,7 @@
 <translation id="7633755430369750696">نمایش تنظیمات «هم‌رسانی با اطراف».</translation>
 <translation id="7634648064048557203">دوربین به گوشه پایین سمت راست چسبید</translation>
 <translation id="7641938616688887143">ضبط</translation>
+<translation id="7642106959537987271">حالت وارونگی رنگ</translation>
 <translation id="7642647758716480637">باز کردن تنظیمات <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (مالک)</translation>
 <translation id="7647488630410863958">برای مشاهده اعلان‌هایتان، قفل دستگاه را باز کنید</translation>
@@ -1260,6 +1261,7 @@
 <translation id="8209010265547628927">بازنشانی</translation>
 <translation id="8214996719228530800">‏کانال Canary</translation>
 <translation id="8219451629189078428">‏Chromebook باید در این مدت روشن بماند و به برق متصل باشد. مطمئن شوید سیم شارژر یا آداپتور کاملاً متصل باشد، هم به Chromebook و هم به پریز برق. Chromebook را خاموش نکنید.</translation>
+<translation id="8230305195727960608">حالت وارونگی رنگ</translation>
 <translation id="8236042855478648955">وقت استراحت</translation>
 <translation id="8246282815785366524"><ph name="GIVEN_NAME" />، دوباره خوش آمدید</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، باتری تلفن<ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1388,7 @@
 <translation id="8982906748181120328">نمایان برای اطراف</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">درحال استفاده از <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">‏حالت «وارونگی رنگ» فعال شد. برای خاموش کردن آن، Ctrl+Search+H را دوباره فشار دهید.</translation>
 <translation id="899350903320462459">به‌عنوان <ph name="LOGIN_ID" />، قفل دستگاه را باز کنید تا کنش اعلان اجرا شود</translation>
 <translation id="9000771174482730261">مدیریت فضای ذخیره‌سازی</translation>
 <translation id="9017320285115481645">‏کد دسترسی ولی Family Link را وارد کنید</translation>
@@ -1434,6 +1437,7 @@
 <translation id="921989828232331238">پدر یا مادرتان دستگاهتان را برای تمام روز قفل کرده‌ است</translation>
 <translation id="9220525904950070496">حذف حساب</translation>
 <translation id="923686485342484400">‏برای خروج از سیستم Control Shift Q را دو بار فشار دهید.</translation>
+<translation id="92580429198593979">میان‌بر صفحه‌کلید مربوط به «وارونگی رنگ» را فشار دادید. آیا می‌خواهید آن را روشن کنید؟</translation>
 <translation id="925832987464884575">پنهان کردن پیش‌نمایش‌ها</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> از شما می‌خواهد <ph name="DEVICE_TYPE" /> را فوراً به‌روزرسانی کنید</translation>
 <translation id="938963181863597773">‏?What's on my calendar (در تقویم من چه رویدادی هست؟)</translation>

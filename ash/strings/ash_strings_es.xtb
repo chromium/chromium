@@ -1156,6 +1156,7 @@ Nueva instalación</translation>
 <translation id="7633755430369750696">Muestra los ajustes de Compartir con Nearby.</translation>
 <translation id="7634648064048557203">Cámara ajustada a la esquina inferior derecha</translation>
 <translation id="7641938616688887143">Grabar</translation>
+<translation id="7642106959537987271">modo Inversión de colores</translation>
 <translation id="7642647758716480637">Abrir la configuración de <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario)</translation>
 <translation id="7647488630410863958">Desbloquear el dispositivo para ver las notificaciones</translation>
@@ -1261,6 +1262,7 @@ Nueva instalación</translation>
 <translation id="8209010265547628927">Reiniciar</translation>
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">Mientras tanto, tu Chromebook debe estar encendido y conectado a la corriente. Asegúrate de que los cables del cargador o del adaptador estén enchufados correctamente al Chromebook y a la toma de corriente. No apagues el Chromebook.</translation>
+<translation id="8230305195727960608">Modo Inversión de colores</translation>
 <translation id="8236042855478648955">Es hora de descansar</translation>
 <translation id="8246282815785366524">Te damos la bienvenida de nuevo, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, batería del teléfono: <ph name="BATTERY_STATUS" /></translation>
@@ -1387,6 +1389,7 @@ Nueva instalación</translation>
 <translation id="8982906748181120328">Visibilidad Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Estás usando <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Modo Inversión de colores habilitado. Pulsa Ctrl + tecla de búsqueda + H para desactivarla.</translation>
 <translation id="899350903320462459">Desbloquea el dispositivo como <ph name="LOGIN_ID" /> para hacer lo que indica la notificación</translation>
 <translation id="9000771174482730261">GESTIONAR ALMACENAMIENTO</translation>
 <translation id="9017320285115481645">Introduce el código de acceso parental de Family Link.</translation>
@@ -1435,6 +1438,7 @@ Nueva instalación</translation>
 <translation id="921989828232331238">Tu padre, madre o tutor/a han bloqueado tu dispositivo todo el día</translation>
 <translation id="9220525904950070496">Quitar cuenta</translation>
 <translation id="923686485342484400">Pulsa Control Mayús Q dos veces para cerrar sesión.</translation>
+<translation id="92580429198593979">Has pulsado la combinación de teclas para invertir los colores. ¿Quieres activar la función?</translation>
 <translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> requiere que actualices tu <ph name="DEVICE_TYPE" /> inmediatamente</translation>
 <translation id="938963181863597773">¿Qué tengo en el calendario?</translation>

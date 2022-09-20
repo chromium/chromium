@@ -214,6 +214,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2132302418721800944">Tallenna koko näyttö</translation>
 <translation id="2135456203358955318">Kiinnitetty suurennus</translation>
 <translation id="2148716181193084225">Tänään</translation>
+<translation id="2161132820593978283">Kokeile kameran kehystystä, jotta näyt näytön keskellä videopuheluissa. Voit laittaa sen päälle pika-asetuksista.</translation>
 <translation id="2170530631236737939">Poistu Viimeisimmät-osiosta pyyhkäisemällä kolmella sormella alaspäin</translation>
 <translation id="219905428774326614">Käynnistysohjelma, kaikki sovellukset</translation>
 <translation id="2201071101391734388">Viimeisin kuva <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +253,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2405664212338326887">Ei yhdistetty</translation>
 <translation id="2408955596600435184">Lisää PIN-koodi</translation>
 <translation id="2412593942846481727">Päivitys saatavilla</translation>
+<translation id="2426051945783024481">Kameran kehys keskitetty automaattisesti</translation>
 <translation id="2427507373259914951">Ykköspainikkeen klikkaus</translation>
 <translation id="2429753432712299108">Bluetooth-laite <ph name="DEVICE_NAME" /> pyytää lupaa laiteparin muodostamiseen. Ennen kuin hyväksyt pyynnön, varmista, että laitteella näkyy tämä avain: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
@@ -1038,6 +1040,7 @@ Uusi asennus</translation>
 <translation id="6960565108681981554">Ei aktivoitu. Ota yhteyttä operaattoriin.</translation>
 <translation id="6961121602502368900">Puhelimen hiljentäminen ei ole käytettävissä työprofiililla</translation>
 <translation id="6961840794482373852">Pikanäppäinyhdistelmä Alt + ylänuoli on muuttunut. Jos haluat käyttää Page Up ‑näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + ylänuoli.</translation>
+<translation id="696267987219125751">Kameran kehystys on pois päältä.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Aloitusopas</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1128,6 +1131,7 @@ Uusi asennus</translation>
 <translation id="7513922695575567867">Kalenteri, viikko johon kuuluu <ph name="DATE" />, <ph name="SELECTED_DATE" /> on valittuna.</translation>
 <translation id="7514365320538308">Lataa</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Kameran kehystys on päällä.</translation>
 <translation id="7526573455193969409">Verkkoa saatetaan valvoa</translation>
 <translation id="7536035074519304529">IP-osoite: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux-sovelluksia ja incognito-ikkunoita ei tällä hetkellä tueta. Muut sovellukset tallennetaan.</translation>
@@ -1146,6 +1150,7 @@ Uusi asennus</translation>
 <translation id="7607002721634913082">Keskeytetty</translation>
 <translation id="7609951632080598826">Kalenterinäkymä, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera yhdistetty uudelleen.</translation>
+<translation id="761736749114493194">Laita kameran kehystys päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Näytä lähijakamisen asetukset.</translation>
 <translation id="7634648064048557203">Kamera kohdistettu oikeaan alakulmaan</translation>
@@ -1306,6 +1311,7 @@ Uusi asennus</translation>
 <translation id="851458219935658693">Näytä ikkunat nykyiseltä työpöydältä, valintanappi valittu</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ei välttämättä lataudu, kun se on käynnissä.</translation>
 <translation id="8535393432370007982">Kumoa värin mukaan lajittelu</translation>
+<translation id="8541078764854166027">Kamerakehystys</translation>
 <translation id="8542053257095774575">Ei tallennettuja virtuaalityöpöytiä tai malleja</translation>
 <translation id="8546059259582788728">Lajittelun kumoaminen ei onnistunut</translation>
 <translation id="8551588720239073785">Aika- ja päivämääräasetukset</translation>

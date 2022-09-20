@@ -331,6 +331,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8453117565092476964">安裝程式封存檔案已毀損或無效，請重新下載 Chromium。</translation>
 <translation id="8463672209299734063">選用：自動將診斷資訊和使用資料傳送給 Google，協助改善 Chromium OS 的功能與效能。</translation>
 <translation id="8493179195440786826">Chromium 版本過舊</translation>
+<translation id="8522220489792889625">如有需要，Chromium 會針對目前未使用的分頁回收記憶體。你隨時可以在「設定」中進行變更。</translation>
 <translation id="8550334526674375523">這個工作資料夾與個人資料夾各自獨立。</translation>
 <translation id="8558383651099478961">你的家長已停用 Chromium 的「網站、應用程式和擴充功能的權限」設定，因此你無法新增這個<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="8561285221328166383">如要取得日後的 Chromium 更新，必須使用 macOS 10.13 以上版本。這部電腦目前版本為 OS X 10.12。</translation>

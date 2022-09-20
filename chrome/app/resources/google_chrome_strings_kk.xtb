@@ -60,6 +60,7 @@
 <translation id="2094648590148273905">ChromeOS Flex шарттары</translation>
 <translation id="2094919256425865063">Chrome браузерінен бәрібір шығасыз ба?</translation>
 <translation id="2106831557840787829">ChromeOS Flex операциялық жүйесі де <ph name="BEGIN_LINK_LINUX_OSS" />Linux әзірлеу ортасы<ph name="END_LINK_LINUX_OSS" /> сияқты қосымша <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
+<translation id="2112742052114331084">Қосулы болса, Chrome браузері белсенді түрде пайдаланылмайтын қойындыларды өшіріп, жадты босатады. Мұндайда компьютер ресурстары басқа тапсырмалар үшін босап, Chrome браузері жылдам жұмыс істейді. Белсенді емес қойындылар бос тұрады және оларды басқан кезде, автоматты түрде қайта жүктеледі. <ph name="BEGIN_LINK" />Толық ақпарат алыңыз<ph name="END_LINK" /> немесе <ph name="BEGIN_LINK_2" />пікір жіберіңіз<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> элемент бұл құрылғыдан жойылады. Деректерді кейінірек алу үшін Chrome жүйесіне <ph name="USER_EMAIL" /> болып кіріңіз.</translation>
 <translation id="2121284319307530122">&amp;Chrome-ды жаңарту үшін қайта іске қосу</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Ағымдағы параметрлерді<ph name="END_LINK" /> хабарлау арқылы Chrome браузерін жақсартуға көмектесіңіз</translation>

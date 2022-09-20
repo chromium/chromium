@@ -42,6 +42,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="1229222343402087523">Iskanje poizvedbe ${searchPhrase} v Chromu</translation>
 <translation id="1242044645101871359">Prijavite se znova</translation>
 <translation id="1254117744268754948">Izbira mape</translation>
+<translation id="1258491128795710625">Novosti</translation>
 <translation id="1265739287306757398">Več o tem</translation>
 <translation id="1272079795634619415">Ustavi</translation>
 <translation id="1275718070701477396">Izbrano</translation>
@@ -564,6 +565,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5728700505257787410">Žal je bila pri prijavi v račun težava.</translation>
 <translation id="5731784586962650619">Gesla v drugih aplikacijah</translation>
 <translation id="5737974891429562743">Account sign-in details are out of date. Update to start sync.</translation>
+<translation id="5738385766833540397">Upravljanje načina prejemanja opozoril o znižanju cen za izdelke, ki jih spremljate.</translation>
 <translation id="5738887413654608789">To vam omogoča odkrivanje pomembnih spletnih strani glede na vašo okolico.</translation>
 <translation id="5758631781033351321">Tukaj bo prikazan seznam za branje</translation>
 <translation id="5765456154762864099">Meni → Nastavitve → Privzeti brskalnik</translation>

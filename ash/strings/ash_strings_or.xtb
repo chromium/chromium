@@ -1154,6 +1154,7 @@
 <translation id="7633755430369750696">Nearby Share ସେଟିଂସ୍ ଦେଖାନ୍ତୁ।</translation>
 <translation id="7634648064048557203">କ୍ୟାମେରାକୁ ନିମ୍ନ ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
 <translation id="7641938616688887143">ରେକର୍ଡ କରନ୍ତୁ</translation>
+<translation id="7642106959537987271">କଲର ଇନଭର୍ସନ ମୋଡ</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> ପାଇଁ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ମାଲିକ)</translation>
 <translation id="7647488630410863958">ଆପଣଙ୍କର ବିଜ୍ଞପ୍ତି ଦେଖିବାକୁ ଡିଭାଇସ୍‌ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
@@ -1259,6 +1260,7 @@
 <translation id="8209010265547628927">ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="8214996719228530800">କାନାରି ଚ୍ୟାନେଲ</translation>
 <translation id="8219451629189078428">ଏହି ସମୟରେ ଆପଣଙ୍କ Chromebook ଚାଲୁ ରହି ପାୱାର୍ ସହିତ ସଂଯୁକ୍ତ ରହିବା ଆବଶ୍ୟକ। ଆପଣଙ୍କର ଉଭୟ Chromebook ଓ ପାୱାର୍ ଆଉଟଲେଟ୍ ସହ ଚାର୍ଜର କିମ୍ବା ଆଡପ୍ଟର କେବୁଲଗୁଡ଼ିକ ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ପ୍ଲଗ୍ ଇନ୍ ହୋଇଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ। ଆପଣଙ୍କ Chromebookକୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ।</translation>
+<translation id="8230305195727960608">କଲର ଇନଭର୍ସନ ମୋଡ</translation>
 <translation id="8236042855478648955">ବିରତିର ସମୟ ହୋଇଛି</translation>
 <translation id="8246282815785366524">ଆପଣଙ୍କୁ ପୁଣି ସ୍ୱାଗତ, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଫୋନ୍ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" /></translation>
@@ -1385,6 +1387,7 @@
 <translation id="8982906748181120328">Nearby ଭିଜିବିଲିଟୀ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ବ୍ୟବହାର କରି</translation>
+<translation id="8991617137207906966">କଲର ଇନଭର୍ସନ ମୋଡକୁ ସକ୍ଷମ କରାଯାଇଛି। ଏହାକୁ ଟୋଗଲ କରି ବନ୍ଦ କରିବା ପାଇଁ ପୁଣି Ctrl+Search+H ଦବାନ୍ତୁ।</translation>
 <translation id="899350903320462459">ବିଜ୍ଞପ୍ତି କାର୍ଯ୍ୟ ସମ୍ପାଦନ କରିବାକୁ ଡିଭାଇସ୍‌କୁ <ph name="LOGIN_ID" /> ଭାବେ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
 <translation id="9000771174482730261">ଷ୍ଟୋରେଜ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="9017320285115481645">Family Linkର ପ୍ୟାରେଣ୍ଟ ଆକ୍ସେସ୍ କୋଡ୍ ଲେଖନ୍ତୁ।</translation>
@@ -1433,6 +1436,7 @@
 <translation id="921989828232331238">ଆପଣଙ୍କ ମାତା-ପିତା ଆଜି ପାଇଁ ଆପଣଙ୍କର ଡିଭାଇସ୍‌କୁ ଲକ୍ କରିଦେଇଛନ୍ତି</translation>
 <translation id="9220525904950070496">ଆକାଉଣ୍ଟ କାଢ଼ିଦିଅନ୍ତୁ</translation>
 <translation id="923686485342484400">ସାଇନ୍‍ ଆଉଟ୍‍ ହେବାକୁ ଦୁଇଥର Control Shift Q ଦବାନ୍ତୁ।</translation>
+<translation id="92580429198593979">କଲର ଇନଭର୍ସନ ପାଇଁ ଆପଣ କୀବୋର୍ଡ ସର୍ଟକଟ ଦବାଇଛନ୍ତି। ଆପଣ ଏହାକୁ ଚାଲୁ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="925832987464884575">ପ୍ରିଭ୍ୟୁଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> ପାଇଁ ଆପଣ ତୁରନ୍ତ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ କରିବା ଆବଶ୍ୟକ</translation>
 <translation id="938963181863597773">ମୋ କ୍ୟାଲେଣ୍ଡରରେ କ’ଣ ଅଛି?</translation>

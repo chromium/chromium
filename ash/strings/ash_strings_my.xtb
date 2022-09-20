@@ -1155,6 +1155,7 @@
 <translation id="7633755430369750696">'အနီးတစ်ဝိုက် မျှဝေခြင်း' ဆက်တင်များ ပြပေးသည်။</translation>
 <translation id="7634648064048557203">ကင်မရာကို အောက်ညာဘက်ထောင့်သို့ ကပ်ထားသည်</translation>
 <translation id="7641938616688887143">ရိုက်ကူးရန်</translation>
+<translation id="7642106959537987271">အရောင်ပြောင်းပြန်ပြုလုပ်သည့်မုဒ်</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" /> အတွက် ဆက်တင်များကို ဖွင့်ရန်</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ပိုင်ရှင်)</translation>
 <translation id="7647488630410863958">အကြောင်းကြားချက်များကို ကြည့်ရန် စက်ပစ္စည်းကို လော့ခ်ဖွင့်ပါ</translation>
@@ -1260,6 +1261,7 @@
 <translation id="8209010265547628927">ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="8214996719228530800">Canary ချန်နယ်</translation>
 <translation id="8219451629189078428">ဤအချိန်အတွင်းတွင် သင့် Chromebook ကို ဖွင့်ထားပြီး ပါဝါချိတ်ဆက်ထားရန် လိုအပ်ပါသည်။ အားသွင်းကိရိယာ သို့မဟုတ် ကြားခံကိရိယာကြိုးများကို သင့် Chromebook နှင့် ပလတ်ပေါက် နှစ်ခုစလုံးတွင် တပ်ထားကြောင်း သေချာပါစေ။ သင့် Chromebook ကို မပိတ်ပါနှင့်။</translation>
+<translation id="8230305195727960608">အရောင်ပြောင်းပြန်ပြုလုပ်သည့်မုဒ်</translation>
 <translation id="8236042855478648955">နားချိန် ရောက်ပါပြီ</translation>
 <translation id="8246282815785366524">ပြန်လည်ကြိုဆိုပါသည် <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1388,7 @@
 <translation id="8982906748181120328">အနီးတစ်ဝိုက် မြင်နိုင်မှု</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ကို အသုံးပြုနေသည်</translation>
+<translation id="8991617137207906966">‘အရောင်ပြောင်းပြန်ပြုလုပ်သည့်မုဒ်’ ဖွင့်ထားသည်။ ၎င်းကိုပိတ်ရန် Ctrl+Search+H ကို ပြန်နှိပ်ပါ။</translation>
 <translation id="899350903320462459">အကြောင်းကြားခြင်း လုပ်ဆောင်ရန်အတွက် <ph name="LOGIN_ID" /> အဖြစ် စက်ပစ္စည်းကို လော့ခ်ဖွင့်ပါ</translation>
 <translation id="9000771174482730261">သိုလှောင်ခန်း စီမံခန့်ခွဲရန်</translation>
 <translation id="9017320285115481645">Family Link မိဘသုံးကုဒ် ထည့်ပါ။</translation>
@@ -1434,6 +1437,7 @@
 <translation id="921989828232331238">သင်၏စက်ကို သင့်မိဘက ဤနေ့အဖို့ လော့ခ်ချထားပါပြီ</translation>
 <translation id="9220525904950070496">အကောင့်ကို ဖယ်ရှားရန်</translation>
 <translation id="923686485342484400">ထွက်ခွာရန် Control Shift Q နှစ်ကြိမ် နှိပ်ပါ။</translation>
+<translation id="92580429198593979">အရောင်ပြောင်းပြန်ပြုလုပ်ခြင်းအတွက် လက်ကွက်ဖြတ်လမ်းကို နှိပ်လိုက်သည်။ ၎င်းကို ဖွင့်လိုပါသလား။</translation>
 <translation id="925832987464884575">အစမ်းကြည့်ရှုခြင်းများ ဖျောက်ရန်</translation>
 <translation id="937214777182567951">သင့် <ph name="DEVICE_TYPE" /> ကို ချက်ချင်း အပ်ဒိတ်လုပ်ရန် <ph name="MANAGER" /> ကသတ်မှတ်ထားသည်</translation>
 <translation id="938963181863597773">ကျွန်ုပ်၏ ပြက္ခဒိန်မှာ ဘာတွေရှိလဲ။</translation>

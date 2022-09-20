@@ -23,6 +23,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1104948393051856124">Aceitar e Continuar</translation>
 <translation id="110724200315609752">Mudar para a janela aberta</translation>
 <translation id="1112015203684611006">Falha ao imprimir.</translation>
+<translation id="1118569444314402022">Damos-lhe as boas-vindas de volta, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Criar novo separador</translation>
 <translation id="1126809382673880764">Não protege contra transferências, extensões ou Websites perigosos. Continuará a obter a proteção da Navegação segura, quando disponível, noutros Serviços Google, como o Gmail e a Pesquisa.</translation>
 <translation id="1135212215217513471">Obtenha o Chrome para iOS</translation>
@@ -42,6 +43,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1229222343402087523">Pesquise ${searchPhrase} no Chrome</translation>
 <translation id="1242044645101871359">Inicie sessão novamente</translation>
 <translation id="1254117744268754948">Escolher Pasta</translation>
+<translation id="1258491128795710625">Novidades</translation>
 <translation id="1265739287306757398">Saiba como</translation>
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1275718070701477396">Linha selecionada</translation>
@@ -63,6 +65,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1377255359165588604">A sincronização deixou de funcionar.</translation>
 <translation id="1377321085342047638">N.º cartão</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
+<translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Últimas 4 semanas</translation>
 <translation id="1404330357948037222">Não tem sessão iniciada</translation>
 <translation id="1407135791313364759">Abrir tudo</translation>
@@ -176,6 +179,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2421044535038393232">Continuar a editar</translation>
 <translation id="2434405374328098816">Já guardou uma palavra-passe para "<ph name="USERNAME" />" em <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
+<translation id="2461070143328828326">Definições de palavra-passe</translation>
 <translation id="2469960372084740698">Desativar a Navegação segura?</translation>
 <translation id="2473876017985765807">Já guardou uma palavra-passe para <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Não selecionado</translation>
@@ -330,6 +334,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3709582977625132201">Marcar como não lido</translation>
 <translation id="371230970611282515">Prevê e envia-lhe avisos sobre eventos perigosos antes da sua ocorrência.</translation>
 <translation id="37207012422556617">Pesquisas populares</translation>
+<translation id="3726360487031500941">Inicie sessão novamente na sua conta, <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Abre os URLs introduzidos no Google Chrome na Navegação anónima.</translation>
 <translation id="3762232513783804601">Concebido para o iPad</translation>
 <translation id="3771033907050503522">Sep. nav. anónima</translation>
@@ -564,6 +569,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5728700505257787410">Lamentamos, mas houve um problema ao iniciar sessão na sua conta.</translation>
 <translation id="5731784586962650619">Palavras-passe noutras apps</translation>
 <translation id="5737974891429562743">Os detalhes de início de sessão na conta estão desatualizados. Atualize-os para iniciar a sincronização.</translation>
+<translation id="5738385766833540397">Faça a gestão da forma como recebe alertas de descida do preço relativos a produtos que monitoriza</translation>
 <translation id="5738887413654608789">Isto permite descobrir páginas Web relevantes com base no ambiente à sua volta.</translation>
 <translation id="5758631781033351321">A sua lista de leitura será apresentada aqui</translation>
 <translation id="5765456154762864099">Menu → Definições → Navegador predefinido</translation>

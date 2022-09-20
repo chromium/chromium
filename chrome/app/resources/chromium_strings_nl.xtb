@@ -63,6 +63,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="2583187216237139145">Alle Chromium-gegevens die worden gegenereerd bij het gebruik van dit profiel (zoals bookmarks, geschiedenis, wachtwoorden en andere instellingen) kunnen worden verwijderd door de beheerder van het werkprofiel. <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">Er is tijdens de installatie een fout opgetreden in het besturingssysteem. Download Chromium opnieuw.</translation>
 <translation id="2661879430930417727">Als je een apparaat deelt, kunnen vrienden en familie afzonderlijk surfen en Chromium instellen zoals zij dat willen.</translation>
+<translation id="2669853942967761236">Chromium heeft dit archiefbestand geblokkeerd omdat het misschien malware bevat</translation>
 <translation id="268602741124540128">Welkom bij Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium-tabblad</translation>
 <translation id="2718390899429598676">Je gegevens worden voor extra beveiliging door Chromium gecodeerd.</translation>
@@ -303,7 +304,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7682601070171973634">Chromium bevat nieuwe experimentele functies waarmee sites dezelfde browsefunctionaliteit kunnen leveren terwijl er minder van je gegevens worden gebruikt</translation>
 <translation id="7686590090926151193">Chromium is niet je standaardbrowser</translation>
 <translation id="7689606757190482937">Chromium synchroniseren en personaliseren op al je apparaten</translation>
-<translation id="7714577916146996629">Als deze instelling aanstaat, claimt Chromium geheugen terug van tabbladen die je niet actief gebruikt. Zo worden de resources van je computer vrijgemaakt voor andere taken en blijft Chromium snel. Inactieve tabbladen worden leeg weergegeven en worden automatisch opnieuw geladen als je erop klikt. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> of <ph name="BEGIN_LINK_2" />feedback sturen<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">Hiermee worden je browsegegevens verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Het installatieprogramma kan geen tijdelijke directory maken. Controleer of je nog schijfruimte hebt en of je rechten hebt om software te installeren.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>

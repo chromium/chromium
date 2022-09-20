@@ -42,6 +42,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1229222343402087523">Wyszukaj ${searchPhrase} w Chrome</translation>
 <translation id="1242044645101871359">Zaloguj się ponownie</translation>
 <translation id="1254117744268754948">Wybierz folder</translation>
+<translation id="1258491128795710625">Nowe funkcje</translation>
 <translation id="1265739287306757398">Instrukcje</translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
 <translation id="1275718070701477396">Zaznaczony</translation>
@@ -564,6 +565,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5728700505257787410">Niestety, wystąpił problem z zalogowaniem się na konto.</translation>
 <translation id="5731784586962650619">Hasła w innych aplikacjach</translation>
 <translation id="5737974891429562743">Dane logowania na konto są nieaktualne. Zaktualizuj je, by rozpocząć synchronizację.</translation>
+<translation id="5738385766833540397">Zarządzaj sposobami otrzymywania alertów o obniżkach cen produktów, które śledzisz</translation>
 <translation id="5738887413654608789">Pozwoli Ci to odkrywać strony internetowe dotyczące rzeczy z Twojego otoczenia.</translation>
 <translation id="5758631781033351321">Znajdziesz tu swoją listę Do przeczytania</translation>
 <translation id="5765456154762864099">Menu → Ustawienia → Domyślna przeglądarka</translation>
@@ -750,6 +752,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6988572888918530647">Zarządzaj kontem Google</translation>
 <translation id="6989674195860388998">Przełącz w ustawieniach…</translation>
 <translation id="6998989275928107238">Do</translation>
+<translation id="699954956411469731">Powiadomienia na urządzeniach mobilnych</translation>
 <translation id="7004032350256606903">Twoja organizacja wymaga przeglądania prywatnego.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Ostatnie karty</translation>

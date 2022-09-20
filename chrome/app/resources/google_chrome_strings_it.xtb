@@ -56,6 +56,7 @@
 <translation id="2094648590148273905">Termini di Chrome OS Flex</translation>
 <translation id="2094919256425865063">Vuoi chiudere comunque Chrome?</translation>
 <translation id="2106831557840787829">La realizzazione di Chrome OS Flex è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Quando questa impostazione è attiva, Chrome recupera memoria dalle schede che non utilizzi attivamente. Questo consente di liberare risorse del computer da usare per altre attività e di fare in modo che Chrome sia sempre veloce. Le schede non attive appaiono vuote e vengono ricaricate automaticamente quando ci fai clic sopra. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /> o <ph name="BEGIN_LINK_2" />invia feedback<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Verranno eliminati <ph name="ITEMS_COUNT" /> elementi da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chrome come <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Riavvia per aggiornare &amp;Chrome</translation>
 <translation id="2123055963409958220">Contribuisci a migliorare Chrome indicando le <ph name="BEGIN_LINK" />impostazioni attuali<ph name="END_LINK" /></translation>

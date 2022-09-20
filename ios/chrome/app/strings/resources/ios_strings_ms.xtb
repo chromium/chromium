@@ -42,6 +42,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1229222343402087523">Cari ${searchPhrase} dalam Chrome</translation>
 <translation id="1242044645101871359">Log Masuk Semula</translation>
 <translation id="1254117744268754948">Pilih Folder</translation>
+<translation id="1258491128795710625">Perkara Baharu</translation>
 <translation id="1265739287306757398">Ketahui Caranya</translation>
 <translation id="1272079795634619415">Berhenti</translation>
 <translation id="1275718070701477396">Dipilih</translation>
@@ -55,6 +56,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1322735045095424339">Organisasi anda menghendaki Mod inkognito digunakan</translation>
 <translation id="1323735185997015385">Padam</translation>
 <translation id="132683371494960526">Ketik dua kali untuk menukar folder induk.</translation>
+<translation id="1335348992705722518">Urus Tetapan...</translation>
 <translation id="1340643665687018190">Tutup Menu</translation>
 <translation id="1358214951266274152">Lawati Pautan yang Disalin</translation>
 <translation id="1360432990279830238">Log keluar dan matikan penyegerakan?</translation>
@@ -383,6 +385,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4187450337729239226">Tampal dan Cari</translation>
 <translation id="4223967053752765281">Organisasi anda telah mematikan log masuk. Anda masih boleh melihat penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada peranti ini. Jika perubahan dibuat, perubahan itu tidak akan disegerakkan ke akaun anda.</translation>
 <translation id="4233831822770018312">Edit Kebenaran</translation>
+<translation id="4236584471598725073">Menjejak Harga</translation>
 <translation id="4237377247299956313">Ketik <ph name="BEGIN_BOLD" />Apl Penyemak Imbas Lalai<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Masukkan Ungkapan Laluan</translation>
 <translation id="4249955472157341256">Isih mengikut yang Terbaharu</translation>
@@ -562,6 +565,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5728700505257787410">Maaf, terdapat masalah untuk log masuk ke akaun anda.</translation>
 <translation id="5731784586962650619">Kata Laluan Dalam Apl Lain</translation>
 <translation id="5737974891429562743">Butiran log masuk akaun sudah lapuk. Sila kemas kini untuk memulakan penyegerakan.</translation>
+<translation id="5738385766833540397">Urus cara anda menerima makluman penurunan harga untuk produk yang anda jejaki</translation>
 <translation id="5738887413654608789">Langkah ini membolehkan anda menemui halaman web yang berkaitan berdasarkan persekitaran anda.</translation>
 <translation id="5758631781033351321">Anda dapat menemukan senarai bacaan anda di sini</translation>
 <translation id="5765456154762864099">Menu → Tetapan → Penyemak Imbas Lalai</translation>

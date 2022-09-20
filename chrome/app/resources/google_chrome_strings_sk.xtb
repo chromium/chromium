@@ -32,6 +32,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1587223624401073077">Google Chrome používa vašu kameru.</translation>
 <translation id="1587325591171447154">Súbor <ph name="FILE_NAME" /> je nebezpečný, a preto ho Chrome zablokoval.</translation>
 <translation id="1597911401261118146">Ak chcete skontrolovať, či sú vaše heslá chránené pred porušením ochrany údajov a inými bezpečnostnými hrozbami, <ph name="BEGIN_LINK" />prihláste sa do Chromu<ph name="END_LINK" />.</translation>
+<translation id="1599904803480101533">Chrome tento súbor archívu zablokoval, pretože môže skrývať malvér</translation>
 <translation id="1619887657840448962">Z dôvodu zvýšenia bezpečnosti prehliadača Chrome sme zakázali nasledujúce rozšírenie, ktoré nie je uvedené v službe <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohlo byť pridané bez vášho vedomia.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Ako môžete spravovať svoje údaje:<ph name="END_BOLD" /> v rámci ochrany vášho súkromia automaticky odstraňujeme záujmy, ktoré sú staršie ako štyri týždne. Pri ďalšom prehliadaní sa v zozname môže znova zobraziť určitý záujem. Prípadne môžete odstrániť záujmy, ktoré nemá Chrome posudzovať.</translation>
 <translation id="1628000112320670027">Pomoc s Chromom</translation>

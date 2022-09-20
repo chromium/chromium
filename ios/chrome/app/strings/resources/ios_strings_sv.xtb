@@ -42,6 +42,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1229222343402087523">Sök efter ${searchPhrase} i Chrome</translation>
 <translation id="1242044645101871359">Logga in igen</translation>
 <translation id="1254117744268754948">Välj mapp</translation>
+<translation id="1258491128795710625">Nyheter</translation>
 <translation id="1265739287306757398">Läs mer</translation>
 <translation id="1272079795634619415">Stopp</translation>
 <translation id="1275718070701477396">Markerad</translation>
@@ -55,6 +56,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1322735045095424339">Organisationen kräver att du använder inkognitoläge</translation>
 <translation id="1323735185997015385">Radera</translation>
 <translation id="132683371494960526">Tryck snabbt två gånger om du vill ändra överordnad mapp.</translation>
+<translation id="1335348992705722518">Hantera inställningar …</translation>
 <translation id="1340643665687018190">Stäng menyn</translation>
 <translation id="1358214951266274152">Besök den kopierade länken</translation>
 <translation id="1360432990279830238">Logga ut och inaktivera synkronisering?</translation>
@@ -383,6 +385,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4187450337729239226">Klistra in och sök</translation>
 <translation id="4223967053752765281">Organisationen har inaktiverat inloggning. Bokmärken, lösenord, historik och andra inställningar finns fortfarande kvar på enheten. Om du ändrar något synkroniseras inte detta med kontot.</translation>
 <translation id="4233831822770018312">Redigera behörigheter</translation>
+<translation id="4236584471598725073">Bevakar pris</translation>
 <translation id="4237377247299956313">Tryck på <ph name="BEGIN_BOLD" />Standardwebbläsarapp<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Ange lösenfras</translation>
 <translation id="4249955472157341256">Sortera efter senaste</translation>
@@ -562,6 +565,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5728700505257787410">Det gick inte att logga in på ditt konto.</translation>
 <translation id="5731784586962650619">Lösenord i andra appar</translation>
 <translation id="5737974891429562743">Inloggningsuppgifterna för kontot är inte aktuella. Starta synkroniseringen genom att uppdatera.</translation>
+<translation id="5738385766833540397">Hantera hur du får sänkt pris-aviseringar för produkter du bevakar</translation>
 <translation id="5738887413654608789">Detta gör det möjligt att upptäcka relevanta webbsidor utifrån din omgivning.</translation>
 <translation id="5758631781033351321">Du hittar läslistan här</translation>
 <translation id="5765456154762864099">Menyn → Inställningar → Standardwebbläsare</translation>

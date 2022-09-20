@@ -6744,6 +6744,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7404065585741198296">Seu smartphone usando um cabo USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{A confirmação de segurança foi executada há 1 hora}one{A confirmação de segurança foi executada há {NUM_HOURS} hora}other{A confirmação de segurança foi executada há {NUM_HOURS} horas}}</translation>
 <translation id="740624631517654988">Pop-up bloqueado</translation>
+<translation id="7406912950279255498">Modo de inversão de cores</translation>
 <translation id="7407430846095439694">Importar e vincular</translation>
 <translation id="7407504355934009739">A maior parte das pessoas bloqueia as notificações deste site</translation>
 <translation id="740810853557944681">Adicionar um servidor de impressão</translation>
@@ -7694,6 +7695,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
     <ph name="BEGIN_PARAGRAPH3" />O proprietário pode controlar esse recurso em "Configurações" &gt; "Avançado" &gt; "Enviar automaticamente dados de uso e diagnóstico ao Google".<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Se a configuração "Atividade na Web e de apps" adicional estiver ativada para seu filho, esses dados poderão ser salvos na Conta do Google dele. Saiba mais sobre essas configurações e como ajustá-las em families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificado do cliente inválido</translation>
+<translation id="8270162672241199380">Instalador do Steam</translation>
 <translation id="827097179112817503">Mostrar botão "Página inicial"</translation>
 <translation id="8271268254812352141">Veja definições, traduções ou conversões de unidades ao clicar com o botão direito do mouse no texto ou tocar nele e mantê-lo pressionado. Personalize os idiomas da tradução em <ph name="LINK_BEGIN" />Idiomas de sites<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Pai/mãe, as próximas etapas precisam ser feitas por você. Devolva o <ph name="DEVICE_TYPE" /> para a criança depois de terminar a configuração da conta.</translation>

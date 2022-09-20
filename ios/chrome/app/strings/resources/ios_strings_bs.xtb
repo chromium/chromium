@@ -42,6 +42,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1229222343402087523">Pretražite ${searchPhrase} u Chromeu</translation>
 <translation id="1242044645101871359">Prijavite se ponovo</translation>
 <translation id="1254117744268754948">Odaberite folder</translation>
+<translation id="1258491128795710625">Šta je novo</translation>
 <translation id="1265739287306757398">Saznajte kako</translation>
 <translation id="1272079795634619415">Zaustavi</translation>
 <translation id="1275718070701477396">Odabrano</translation>
@@ -55,7 +56,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1322735045095424339">Vaša organizacija zahtijeva anonimni način rada</translation>
 <translation id="1323735185997015385">Izbriši</translation>
 <translation id="132683371494960526">Dodirnite dvaput da promijenite nadređeni folder.</translation>
-<translation id="1335348992705722518">Upravljajte postavkama...</translation>
+<translation id="1335348992705722518">Upravljajte Postavkama...</translation>
 <translation id="1340643665687018190">Zatvori izbornik</translation>
 <translation id="1358214951266274152">Posjetite link koji ste kopirali</translation>
 <translation id="1360432990279830238">Odjaviti se i isključiti sinkronizaciju?</translation>
@@ -384,6 +385,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4187450337729239226">Lijepljenje i pretraživanje</translation>
 <translation id="4223967053752765281">Vaša organizacija je isključila prijave. I dalje ćete moći pregledati svoje oznake, historiju, lozinke i druge postavke na ovom uređaju. Ako nešto promijenite, te promjene se neće sinhronizirati s vašim računom.</translation>
 <translation id="4233831822770018312">Uredite odobrenja</translation>
+<translation id="4236584471598725073">Praćenje cijene</translation>
 <translation id="4237377247299956313">Dodirnite <ph name="BEGIN_BOLD" />Zadana aplikacija preglednika<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Unesite pristupni izraz</translation>
 <translation id="4249955472157341256">Poredaj po najnovijem</translation>
@@ -563,6 +565,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5728700505257787410">Žao nam je, došlo je do problema s prijavom na vaš račun.</translation>
 <translation id="5731784586962650619">Lozinke u drugim aplikacijama</translation>
 <translation id="5737974891429562743">Detalji o prijavi za račun su zastarjeli. Ažurirajte da pokrenete sinhronizaciju.</translation>
+<translation id="5738385766833540397">Upravljajte načinom na koji primate obavještenja o padu cijene za proizvode koje pratite</translation>
 <translation id="5738887413654608789">Ovako možete otkriti relevantne web lokacije na osnovu vašeg okruženja.</translation>
 <translation id="5758631781033351321">Listu za čitanje ćete pronaći ovdje</translation>
 <translation id="5765456154762864099">Meni → Postavke → Zadani preglednik</translation>

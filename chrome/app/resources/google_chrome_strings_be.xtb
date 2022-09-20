@@ -60,6 +60,7 @@
 <translation id="2094648590148273905">Умовы Chrome OS Flex</translation>
 <translation id="2094919256425865063">Усё роўна выйсці з Chrome?</translation>
 <translation id="2106831557840787829">Chrome OS Flex, як і <ph name="BEGIN_LINK_LINUX_OSS" />Асяроддзе распрацоўкі Linux<ph name="END_LINK_LINUX_OSS" />, працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="2112742052114331084">Калі гэта налада ўключана, Chrome не трымае ў аператыўнай памяці ўкладкі, якімі вы актыўна не карыстаецеся. Гэта дазваляе вызваляць рэсурсы камп'ютара для іншых задач і падтрымліваць хуткасць работы Chrome. Неактыўныя ўкладкі пры гэтым паказваюцца як пустыя і аўтаматычна перазагружаюцца, калі вы на іх націскаеце. <ph name="BEGIN_LINK" />Даведайцеся больш<ph name="END_LINK" /> або <ph name="BEGIN_LINK_2" />адпраўце водгук<ph name="END_LINK_2" />.</translation>
 <translation id="2120620239521071941">З гэтай прылады будзе выдалена наступная колькасць элементаў: <ph name="ITEMS_COUNT" />. Каб потым атрымаць свае даныя, увайдзіце ў Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Перазапусціць, каб абнавіць &amp;Chrome</translation>
 <translation id="2123055963409958220">Дапамажыце палепшыць Chrome, паведаміўшы <ph name="BEGIN_LINK" />бягучыя налады<ph name="END_LINK" /></translation>
@@ -278,6 +279,7 @@
 <translation id="6735387454586646204">Сістэма Chrome OS Flex</translation>
 <translation id="6739177684496155661">Працягнуць працу ў новым профілі Chrome?</translation>
 <translation id="6750954913813541382">Для выпраўлення арфаграфічных памылак Chrome адпраўляе ў Google тэкст, які вы набіраеце ў браўзеры</translation>
+<translation id="6756581345161130259">Па меры неабходнасці Chrome перастае трымаць у аператыўнай памяці ўкладкі, якімі вы актыўна не карыстаецеся. Гэты параметр можна змяніць у любы час у наладах.</translation>
 <translation id="677276454032249905">Усё роўна выйсці з Chrome?</translation>
 <translation id="6785872064505734160">Памочнік Google у браўзеры Chrome можа завяршаць за вас дзеянні на розных вэб-сайтах</translation>
 <translation id="683440813066116847">Уваходнае правіла для Google Chrome Canary, якое дазваляе трафік mDNS.</translation>

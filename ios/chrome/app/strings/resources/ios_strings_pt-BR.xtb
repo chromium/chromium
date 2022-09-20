@@ -42,6 +42,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="1229222343402087523">Pesquisar "${searchPhrase}" no Chrome</translation>
 <translation id="1242044645101871359">Fazer login novamente</translation>
 <translation id="1254117744268754948">Escolher pasta</translation>
+<translation id="1258491128795710625">O que há de novo</translation>
 <translation id="1265739287306757398">Saiba como</translation>
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1275718070701477396">Linha selecionada</translation>
@@ -564,6 +565,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5728700505257787410">Houve um problema durante o login em sua conta.</translation>
 <translation id="5731784586962650619">Senhas em outros apps</translation>
 <translation id="5737974891429562743">Os detalhes de login da conta estão desatualizados. Atualize-os para iniciar a sincronização.</translation>
+<translation id="5738385766833540397">Gerencie como você recebe alertas de redução no preço de produtos monitorados.</translation>
 <translation id="5738887413654608789">Isso permite que você descubra páginas da Web relevantes com base nos seus arredores.</translation>
 <translation id="5758631781033351321">Você encontrará sua lista de leituras aqui</translation>
 <translation id="5765456154762864099">Menu → Configurações → Navegador padrão</translation>

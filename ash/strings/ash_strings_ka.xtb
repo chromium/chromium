@@ -214,6 +214,7 @@
 <translation id="2132302418721800944">ეკრანის სრულად ჩაწერა</translation>
 <translation id="2135456203358955318">ჩამაგრებული ლუპა</translation>
 <translation id="2148716181193084225">დღეს</translation>
+<translation id="2161132820593978283">ცადეთ კამერის კადრირება, რის მეშვეობითაც, ვიდეოზარების დროს, ეკრანის ცენტრში იქნებით მოქცეული. მისი ჩართვა შეგიძლიათ სწრაფი პარამეტრებიდან.</translation>
 <translation id="2170530631236737939">მიმოხილვიდან გასასვლელად გადაფურცლეთ ქვემოთ სამი თითით</translation>
 <translation id="219905428774326614">გამშვები, ყველა აპი</translation>
 <translation id="2201071101391734388">ბოლოდროინდელი ფოტო <ph name="INDEX" /> / <ph name="TOTAL_COUNT" />-დან.</translation>
@@ -252,6 +253,7 @@
 <translation id="2405664212338326887">არ არის დაკავშირებული</translation>
 <translation id="2408955596600435184">შეიყვანეთ თქვენი PIN-კოდი</translation>
 <translation id="2412593942846481727">ხელმისაწვდომია განახლება</translation>
+<translation id="2426051945783024481">კამერის კადრი ავტომატურად ექცევა ცენტრში</translation>
 <translation id="2427507373259914951">მარცხენა დაწკაპუნება</translation>
 <translation id="2429753432712299108">Bluetooth მოწყობილობა „<ph name="DEVICE_NAME" />“ მოითხოვს ნებართვას დაწყვილებისთვის. დათანხმებამდე, დაადასტურეთ, რომ ეს კოდი მითითებულია მოწყობილობაში: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">პაროლის ჩვენება</translation>
@@ -1038,6 +1040,7 @@
 <translation id="6960565108681981554">არ არის გააქტიურებული. დაუკავშირდით თქვენს ოპერატორს.</translation>
 <translation id="6961121602502368900">ტელეფონის ჩაჩუმება მიუწვდომელია სამსახურის პროფილში</translation>
 <translation id="6961840794482373852">კლავიატურის მალსახმობი „Alt + ზემოთ მიმართული ისარი“ შეიცვალა. Page Up კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + ზემოთ მიმართულ ისარს.</translation>
+<translation id="696267987219125751">კამერის კადრირება გამორთულია.</translation>
 <translation id="6965382102122355670">კარგი</translation>
 <translation id="6972754398087986839">დაწყება</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1128,6 +1131,7 @@
 <translation id="7513922695575567867">კალენდარი, <ph name="DATE" />-ის კვირა, ამჟამად არჩეულია <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">ჩამოტვირთვა</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">კამერის კადრირება ჩართულია.</translation>
 <translation id="7526573455193969409">ქსელზე შესაძლოა ხორციელდებოდეს მონიტორინგი</translation>
 <translation id="7536035074519304529">IP მისამართი: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux აპები და ინკოგნიტო ფანჯრები ამჟამად მხარდაუჭერელია. სხვა აპები შეინახება.</translation>
@@ -1146,6 +1150,7 @@
 <translation id="7607002721634913082">დაპაუზებული</translation>
 <translation id="7609951632080598826">კალენდრის ხედი, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">კამერა ხელახლა დაკავშირდა.</translation>
+<translation id="761736749114493194">კამერის კადრირების გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7633755430369750696">მახლობლად გაზიარების პარამეტრების ჩვენება.</translation>
 <translation id="7634648064048557203">კამერა მიზიდულია ქვედა მარჯვენა კუთხეში</translation>
@@ -1308,6 +1313,7 @@
 <translation id="851458219935658693">ამჟამინდელი სამუშაო მაგიდის ფანჯრების ჩვენება, არჩეულია არჩევანის ღილაკი</translation>
 <translation id="8517041960877371778">თქვენი <ph name="DEVICE_TYPE" /> შეიძლება არ დაიტენოს, როცა ის ჩართულია.</translation>
 <translation id="8535393432370007982">ფერის მიხედვით დალაგების გაუქმება</translation>
+<translation id="8541078764854166027">კამერის კადრირება</translation>
 <translation id="8542053257095774575">სამუშაო მაგიდები ან შაბლონები არ არის შენახული</translation>
 <translation id="8546059259582788728">დალაგება წარმატებით გაუქმდა</translation>
 <translation id="8551588720239073785">თარიღისა და დროის პარამეტრები</translation>

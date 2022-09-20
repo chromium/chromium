@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">Хүлээн авах &amp; Үргэлжлүүлэх</translation>
 <translation id="110724200315609752">Нээлттэй цонх руу сэлгэх</translation>
 <translation id="1112015203684611006">Хэвлэж чадсангүй.</translation>
+<translation id="1118569444314402022">Дахин тавтай морилно уу, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Шинэ таб үүсгэнэ үү.</translation>
 <translation id="1126809382673880764">Таныг аюултай вебсайт, таталт болон өргөтгөлөөс хамгаалахгүй. Гэхдээ та Аюулгүй үзэх хамгаалалтыг Gmail, Хайлт зэрэг Google-н боломжтой бусад үйлчилгээнд авсан хэвээр байна.</translation>
 <translation id="1135212215217513471">iOS-т зориулсан Chrome-г авах</translation>
@@ -42,6 +43,7 @@
 <translation id="1229222343402087523">Chrome-с ${searchPhrase}-г хайх</translation>
 <translation id="1242044645101871359">Дахин нэвтэрнэ үү</translation>
 <translation id="1254117744268754948">Хавтсыг сонгох</translation>
+<translation id="1258491128795710625">Шинэ юм юу байна</translation>
 <translation id="1265739287306757398">Заавар харах</translation>
 <translation id="1272079795634619415">Зогс</translation>
 <translation id="1275718070701477396">Сонгогдсон</translation>
@@ -63,6 +65,7 @@
 <translation id="1377255359165588604">Синк ажиллахаа больсон байна.</translation>
 <translation id="1377321085342047638">Картын дугаар</translation>
 <translation id="1383876407941801731">Хайлт</translation>
+<translation id="138618066238211776"><ph name="USER_NAME" />-р үргэлжлүүлэх</translation>
 <translation id="1400642268715879018">Сүүлийн 4 долоо хоног</translation>
 <translation id="1404330357948037222">Та гарлаа</translation>
 <translation id="1407135791313364759">Бүгдийг нээ</translation>
@@ -176,6 +179,7 @@
 <translation id="2421044535038393232">Үргэлжлүүлэн засах</translation>
 <translation id="2434405374328098816">Та <ph name="WEBSITE" />-д аль хэдийн "<ph name="USERNAME" />"-н нууц үгийг хадгалсан</translation>
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
+<translation id="2461070143328828326">Нууц үгний тохиргоо</translation>
 <translation id="2469960372084740698">Аюулгүй үзэхийг унтраах уу?</translation>
 <translation id="2473876017985765807">Та <ph name="WEBSITE" />-н нууц үгийг аль хэдийн хадгалсан</translation>
 <translation id="2476359652512522418">Сонгоогүй</translation>
@@ -330,6 +334,7 @@
 <translation id="3709582977625132201">Уншаагүй болгож тэмдэглэх</translation>
 <translation id="371230970611282515">Аюултай үйл явдлын тухай урьдчилан таамаглаж, тохиолдохоос нь өмнө танд анхааруулга өгдөг.</translation>
 <translation id="37207012422556617">Тренд болж буй хайлт</translation>
+<translation id="3726360487031500941"><ph name="USER_NAME" /> бүртгэлдээ дахин нэвтэрнэ үү</translation>
 <translation id="3740397331642243698">Оруулсан URL-г Google Chrome дээр нууцлалтайгаар нээдэг.</translation>
 <translation id="3762232513783804601">Таны iPad-д зориулан бүтээсэн</translation>
 <translation id="3771033907050503522">Мэдээний нууцлалтай цонх</translation>
@@ -563,6 +568,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5728700505257787410">Уучлаарай, таны акаунт руу нэвтрэх үед алдаа гарсан байна.</translation>
 <translation id="5731784586962650619">Бусад апп дахь нууц үгнүүд</translation>
 <translation id="5737974891429562743">Бүртгэлийн нэвтрэх мэдээлэл хуучирсан байна. Синкийг эхлүүлэхийн тулд шинэчилнэ үү.</translation>
+<translation id="5738385766833540397">Та хянаж буй бүтээгдэхүүнүүдийнхээ үнэ хямдарсан талаарх сэрэмжлүүлгийг хэрхэн хүлээн авахаа удирдана уу</translation>
 <translation id="5738887413654608789">Та үүгээр ойролцоох хамааралтай веб хуудсыг олох боломжтой.</translation>
 <translation id="5758631781033351321">Та унших жагсаалтаа эндээс олох болно</translation>
 <translation id="5765456154762864099">Цэс → Тохиргоо → Өгөгдмөл хөтөч</translation>

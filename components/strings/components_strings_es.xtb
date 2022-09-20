@@ -174,6 +174,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1380591466760231819">Tríptico</translation>
 <translation id="138218114945450791">Azul claro</translation>
 <translation id="1382194467192730611">Dispositivo USB autorizado por tu administrador</translation>
+<translation id="1382378825779654399">Recibirás alertas por correo electrónico si el precio baja en algún sitio. Esta página se guardará en <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">¿No está actualizada tu información? Ponte en contacto con tu banco para actualizarla.</translation>
 <translation id="1384725838384960382">Hoja de autenticación de credenciales de pago seguras</translation>
 <translation id="1386623374109090026">Anotaciones</translation>
@@ -421,6 +422,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2034971124472263449">Guardar de todos modos</translation>
 <translation id="2035400064145347639">Guías y diarios de viaje</translation>
 <translation id="2036983605131262583">Rollo alternativo</translation>
+<translation id="2040463897538655645">Almacenamiento extraíble</translation>
 <translation id="2040894699575719559">Ubicación bloqueada</translation>
 <translation id="2042213636306070719">Bandeja 7</translation>
 <translation id="204357726431741734">Inicia sesión para poder usar las contraseñas guardadas en tu cuenta de Google</translation>
@@ -1519,6 +1521,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5018422839182700155">No se puede abrir esta página</translation>
 <translation id="5019198164206649151">El almacén secundario está en mal estado.</translation>
 <translation id="5020776957610079374">Música del mundo</translation>
+<translation id="5021557570875267742">Hacer un seguimiento de los precios con Chrome</translation>
 <translation id="5023310440958281426">Consulta las políticas del administrador</translation>
 <translation id="5029568752722684782">Borrar copia</translation>
 <translation id="5030338702439866405">Emitido por</translation>
@@ -2239,6 +2242,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6993898126790112050">6x9 (sobre)</translation>
 <translation id="6996312675313362352">Traducir siempre del <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Industria del entretenimiento</translation>
+<translation id="7003335073762455340">Estás haciendo el seguimiento de este producto. Esta página se ha guardado en <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Usa Windows Hello para confirmar tarjetas más rápido</translation>
 <translation id="7006930604109697472">Enviar de todos modos</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3033,6 +3037,7 @@ Más información:
 <translation id="9174623988242579721">Vehículos personalizados y de alto rendimiento</translation>
 <translation id="9174917557437862841">Botón de cambio de pestaña; pulsa Intro para cambiar a esta pestaña</translation>
 <translation id="9179703756951298733">Gestiona la información de tus pagos y tarjetas de crédito desde la configuración de Chrome</translation>
+<translation id="9179907736442194268">Recibe alertas por correo electrónico si el precio baja en algún sitio</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9183425211371246419">La página <ph name="HOST_NAME" /> utiliza un protocolo no admitido.</translation>
 <translation id="9187461866967718678">Deportes de riesgo</translation>

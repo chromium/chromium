@@ -214,6 +214,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2132302418721800944">Regjistro ekranin e plotë</translation>
 <translation id="2135456203358955318">Zmadhuesi i stacionuar</translation>
 <translation id="2148716181193084225">Sot</translation>
+<translation id="2161132820593978283">Provo inkuadrimin e kamerës që të shfaqesh në qendër të ekranit në videotelefonata. Aktivizoje te "Cilësimet e shpejta".</translation>
 <translation id="2170530631236737939">Rrëshqit shpejt poshtë me tre gishta për të dalë nga "Përmbledhja"</translation>
 <translation id="219905428774326614">Launcher, të gjitha aplikacionet</translation>
 <translation id="2201071101391734388">Fotografia e fundit <ph name="INDEX" /> nga <ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +253,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2405664212338326887">Nuk është i lidhur</translation>
 <translation id="2408955596600435184">Fut kodin PIN</translation>
 <translation id="2412593942846481727">Ka përditësim</translation>
+<translation id="2426051945783024481">Kuadri i kamerës u vendos automatikisht në qendër</translation>
 <translation id="2427507373259914951">Klikimi me butonin majtas</translation>
 <translation id="2429753432712299108">Pajisja me Bluetooth, "<ph name="DEVICE_NAME" />" kërkon leje për çiftim. Përpara se të pranosh, konfirmo që ky çelës kalimi shfaqet në atë pajisje: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
@@ -1038,6 +1040,7 @@ Instalim i ri</translation>
 <translation id="6960565108681981554">Nuk është aktivizuar. Kontakto me operatorin celular.</translation>
 <translation id="6961121602502368900">"Vendose telefonin në heshtje" nuk ofrohet në profilin e punës</translation>
 <translation id="6961840794482373852">Shkurtorja e tastierës për Alt + Shigjeta lart është ndryshuar. Për të përdorur tastin Page Up, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shigjeta lart.</translation>
+<translation id="696267987219125751">Inkuadrimi i kamerës është joaktiv.</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6972754398087986839">Fillo</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
@@ -1128,6 +1131,7 @@ Instalim i ri</translation>
 <translation id="7513922695575567867">Kalendari, java e datës <ph name="DATE" />, aktualisht është zgjedhur <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Shkarko</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Inkuadrimi i kamerës është aktiv.</translation>
 <translation id="7526573455193969409">Rrjeti mund të jetë i monitoruar</translation>
 <translation id="7536035074519304529">Adresa IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Aplikacionet për Linux dhe dritaret "E fshehta" nuk mbështeten aktualisht. Aplikacionet e tjera do të ruhen.</translation>
@@ -1146,6 +1150,7 @@ Instalim i ri</translation>
 <translation id="7607002721634913082">Ndërprerë</translation>
 <translation id="7609951632080598826">Pamja e kalendarit, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera u rilidh.</translation>
+<translation id="761736749114493194">Aktivizo/çaktivizo inkuadrimin e kamerës. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Shfaq cilësimet e "Ndarjes në afërsi".</translation>
 <translation id="7634648064048557203">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas</translation>
@@ -1306,6 +1311,7 @@ Instalim i ri</translation>
 <translation id="851458219935658693">Shfaq dritaret nga tavolina aktuale e punës, butoni i radios i zgjedhur</translation>
 <translation id="8517041960877371778">Pajisja jote <ph name="DEVICE_TYPE" /> mund të mos ngarkohet kur është e ndezur.</translation>
 <translation id="8535393432370007982">Zhbëj mënyrën e renditjes sipas ngjyrës</translation>
+<translation id="8541078764854166027">Inkuadrimi i kamerës</translation>
 <translation id="8542053257095774575">Nuk ka asnjë tavolinë pune apo shabllon të ruajtur</translation>
 <translation id="8546059259582788728">Mënyra e renditjes u zhbë me sukses</translation>
 <translation id="8551588720239073785">Cilësimet e datës dhe orës</translation>

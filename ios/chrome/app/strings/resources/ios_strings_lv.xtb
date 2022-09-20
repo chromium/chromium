@@ -42,6 +42,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="1229222343402087523">Meklēt “${searchPhrase}” pārlūkprogrammā Chrome</translation>
 <translation id="1242044645101871359">Pierakstieties vēlreiz</translation>
 <translation id="1254117744268754948">Mapes izvēle</translation>
+<translation id="1258491128795710625">Jaunumi</translation>
 <translation id="1265739287306757398">Uzzināt, kā to izdarīt</translation>
 <translation id="1272079795634619415">Apturēt</translation>
 <translation id="1275718070701477396">Atlasīta</translation>
@@ -55,6 +56,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="1322735045095424339">Saskaņā ar jūsu organizācijas politiku jums ir jāizmanto inkognito režīms</translation>
 <translation id="1323735185997015385">Dzēst</translation>
 <translation id="132683371494960526">Veiciet dubultskārienu, lai mainītu vecākmapi.</translation>
+<translation id="1335348992705722518">Pārvaldīt iestatījumus…</translation>
 <translation id="1340643665687018190">Aizvērt izvēlni</translation>
 <translation id="1358214951266274152">Apmeklēt kopēto saiti</translation>
 <translation id="1360432990279830238">Izrakstīties un izslēgt sinhronizēšanu?</translation>
@@ -383,6 +385,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4187450337729239226">Ielīmēt un meklēt</translation>
 <translation id="4223967053752765281">Jūsu organizācija izslēdza pierakstīšanos. Šajā ierīcē joprojām varat skatīt savas grāmatzīmes, vēsturi, paroles un citus iestatījumus. Ja veiksiet izmaiņas, tās netiks sinhronizētas ar jūsu kontu.</translation>
 <translation id="4233831822770018312">Atļauju rediģēšana</translation>
+<translation id="4236584471598725073">Notiek cenas izsekošana</translation>
 <translation id="4237377247299956313">Pieskarieties vienumam <ph name="BEGIN_BOLD" />Noklusējuma pārlūka lietotne<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Ieejas frāzes ievade</translation>
 <translation id="4249955472157341256">Kārtot, sākot ar jaunāko saturu</translation>
@@ -562,6 +565,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5728700505257787410">Diemžēl, pierakstoties kontā, radās problēma.</translation>
 <translation id="5731784586962650619">Paroles citās lietotnēs</translation>
 <translation id="5737974891429562743">Konta pieteikuminformācija ir novecojusi. Atjauniniet to, lai sāktu sinhronizāciju.</translation>
+<translation id="5738385766833540397">Pārvaldiet, kā saņemt paziņojumus par izsekoto produktu cenu kritumu</translation>
 <translation id="5738887413654608789">Tādējādi varat atklāt atbilstošas tīmekļa lapas, pamatojoties uz datiem par jūsu apkārtni.</translation>
 <translation id="5758631781033351321">Šeit varēsiet skatīt savu lasīšanas sarakstu</translation>
 <translation id="5765456154762864099">Izvēlne → Iestatījumi → Noklusējuma pārlūks</translation>

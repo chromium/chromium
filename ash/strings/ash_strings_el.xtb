@@ -235,6 +235,7 @@
 <translation id="2298170939937364391">Η Μεγέθυνση πλήρους οθόνης ενεργοποιήθηκε. Πατήστε Ctrl+Search+M ξανά για να τον απενεργοποιήσετε.</translation>
 <translation id="2302092602801625023">Αυτός ο λογαριασμός είναι διαχειριζόμενος από το Family Link</translation>
 <translation id="2303600792989757991">Επισκόπηση εναλλαγής παραθύρων</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: Πρόσφατες καταγραφές οθόνης, λήψεις και καρφιτσωμένα αρχεία</translation>
 <translation id="2318576281648121272">Σήμερα <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , κατηγορία αποτελέσματος αναζήτησης</translation>
 <translation id="2322173485024759474">Πίσω ανά γράμμα</translation>
@@ -1155,6 +1156,7 @@
 <translation id="7633755430369750696">Εμφάνιση ρυθμίσεων της λειτουργίας Κοινοποίηση κοντά.</translation>
 <translation id="7634648064048557203">Η προεπισκόπηση κάμερας τοποθετήθηκε στην κάτω δεξιά γωνία</translation>
 <translation id="7641938616688887143">Εγγραφή</translation>
+<translation id="7642106959537987271">λειτουργία αντιστροφής χρωμάτων</translation>
 <translation id="7642647758716480637">Άνοιγμα ρυθμίσεων για το δίκτυο <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (κάτοχος)</translation>
 <translation id="7647488630410863958">Ξεκλειδώστε τη συσκευή για να δείτε τις ειδοποιήσεις σας</translation>
@@ -1260,6 +1262,7 @@
 <translation id="8209010265547628927">Επαναφορά</translation>
 <translation id="8214996719228530800">Κανάλι Canary</translation>
 <translation id="8219451629189078428">Το Chromebook πρέπει να παραμείνει ενεργοποιημένο και συνδεδεμένο σε παροχή ρεύματος. Βεβαιωθείτε ότι τα καλώδια του φορτιστή ή του μετασχηματιστή είναι συνδεδεμένα σωστά, τόσο στο Chromebook όσο και στην πρίζα. Μην απενεργοποιήσετε το Chromebook.</translation>
+<translation id="8230305195727960608">Λειτουργία αντιστροφής χρωμάτων</translation>
 <translation id="8236042855478648955">Ώρα για διάλειμμα</translation>
 <translation id="8246282815785366524">Καλώς ορίσατε και πάλι, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1389,7 @@
 <translation id="8982906748181120328">Ορατότ. κοντά</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Χρήση <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Η λειτουργία αντιστροφής χρωμάτων ενεργοποιήθηκε. Πατήστε ξανά Ctrl+Search+H για να την απενεργοποιήσετε.</translation>
 <translation id="899350903320462459">Ξεκλειδώστε τη συσκευή ως <ph name="LOGIN_ID" /> για εκτέλεση της ενέργειας ειδοποίησης</translation>
 <translation id="9000771174482730261">ΔΙΑΧΕΙΡΙΣΗ ΑΠΟΘΗΚΕΥΤΙΚΟΥ ΧΩΡΟΥ</translation>
 <translation id="9017320285115481645">Εισαγάγετε τον κωδικό πρόσβασης γονέα του Family Link.</translation>
@@ -1434,6 +1438,7 @@
 <translation id="921989828232331238">Ο γονέας σας κλείδωσε τη συσκευή σας για σήμερα</translation>
 <translation id="9220525904950070496">Κατάργηση λογαριασμού</translation>
 <translation id="923686485342484400">Πατήστε Ctrl + Shift + Q δύο φορές για να αποσυνδεθείτε.</translation>
+<translation id="92580429198593979">Πατήσατε τη συντόμευση πληκτρολογίου για την αντιστροφή χρωμάτων. Θέλετε να την απενεργοποιήσετε;</translation>
 <translation id="925832987464884575">Απόκρυψη προεπισκοπήσεων</translation>
 <translation id="937214777182567951">Ο τομέας <ph name="MANAGER" /> απαιτεί να ενημερώσετε άμεσα τη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Τι υπάρχει στο ημερολόγιό μου;</translation>

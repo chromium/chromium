@@ -42,6 +42,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1229222343402087523">Søg efter ${searchPhrase} i Chrome</translation>
 <translation id="1242044645101871359">Log ind igen</translation>
 <translation id="1254117744268754948">Vælg mappe</translation>
+<translation id="1258491128795710625">Nyheder</translation>
 <translation id="1265739287306757398">Se, hvordan du gør</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Valgt</translation>
@@ -564,6 +565,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5728700505257787410">Der var et problem med at logge ind på din konto.</translation>
 <translation id="5731784586962650619">Adgangskoder i andre apps</translation>
 <translation id="5737974891429562743">Loginoplysningerne for kontoen er forældede. Opdater dem for at påbegynde synkroniseringen.</translation>
+<translation id="5738385766833540397">Administrer, hvordan du modtager underretninger om prisfald på produkter, du holder øje med</translation>
 <translation id="5738887413654608789">Dette giver dig mulighed for at opdage relevante websider baseret på dine omgivelser.</translation>
 <translation id="5758631781033351321">Her finder du din læseliste</translation>
 <translation id="5765456154762864099">Menu → Indstillinger → Standardbrowser</translation>

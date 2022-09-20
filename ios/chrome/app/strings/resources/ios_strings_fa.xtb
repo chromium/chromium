@@ -42,6 +42,7 @@
 <translation id="1229222343402087523">‏جستجوی ${searchPhrase} در Chrome</translation>
 <translation id="1242044645101871359">دوباره به سیستم وارد شوید</translation>
 <translation id="1254117744268754948">انتخاب پوشه</translation>
+<translation id="1258491128795710625">ویژگی‌های جدید</translation>
 <translation id="1265739287306757398">با نحوه انجام کار آشنا شوید</translation>
 <translation id="1272079795634619415">توقف</translation>
 <translation id="1275718070701477396">انتخاب شد</translation>
@@ -509,7 +510,7 @@
 <translation id="5181140330217080051">در حال بارگیری</translation>
 <translation id="5184329579814168207">‏باز کردن در Chrome</translation>
 <translation id="5186185447130319458">خصوصی</translation>
-<translation id="5188482106078495165">تنظیمات کوکی برای همه برگه‌ها اعمال می‌شود. برای اعمال تنظیم جدید در یکی از برگه‌های باز، برگه را تازه‌سازی کنید.</translation>
+<translation id="5188482106078495165">تنظیمات کوکی برای همه برگه‌ها اعمال می‌شود. برای اعمال تنظیم جدید در یکی از برگه‌های باز، برگه را بار کردن مجدد کنید.</translation>
 <translation id="5190835502935405962">نوار نشانک‌ها</translation>
 <translation id="519530786644929958">بارگیری موفق نبود و نمی‌توان آن را دوباره انجام داد.</translation>
 <translation id="5197255632782567636">اینترنت</translation>
@@ -545,7 +546,7 @@
 
 Handoff باید در بخش عمومی تنظیمات نیز فعال شود و دستگاه‌های شما باید از یک حساب iCloud استفاده کنند.</translation>
 <translation id="5551897871312988470">پیشنهاد برای ترجمه</translation>
-<translation id="5556459405103347317">تازه‌سازی</translation>
+<translation id="5556459405103347317">بار کردن مجدد</translation>
 <translation id="556042886152191864">دکمه</translation>
 <translation id="5580834567471114021">برای فرصتی دیگر به «فهرست خواندن» اضافه شود؟</translation>
 <translation id="560322036295180549">سازمانتان آن را خاموش کرده است.</translation>
@@ -564,6 +565,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5728700505257787410">متأسفیم، مشکلی در ورود به حساب شما وجود داشت.</translation>
 <translation id="5731784586962650619">گذرواژه‌ها در برنامه‌های دیگر</translation>
 <translation id="5737974891429562743">جزئیات ورود به سیستم قدیمی است. برای شروع همگام‌سازی، به‌روزرسانی کنید.</translation>
+<translation id="5738385766833540397">مدیریت نحوه دریافت هشدارهای کاهش قیمت برای محصولاتی که ردیابی می‌کنید</translation>
 <translation id="5738887413654608789">با این کار می‌توانید صفحه‌های وب مرتبط را براساس محیط اطرافتان کاوش کنید.</translation>
 <translation id="5758631781033351321">فهرست مطالعه را اینجا خواهید دید</translation>
 <translation id="5765456154762864099">منو ← تنظیمات ← مرورگر پیش‌فرض</translation>

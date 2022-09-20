@@ -60,6 +60,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2094648590148273905">Conditions de Chrome OS Flex</translation>
 <translation id="2094919256425865063">Quitter Chrome quand même?</translation>
 <translation id="2106831557840787829">Chrome OS Flex fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels libres<ph name="END_LINK_CROS_OSS" />, tout comme l'<ph name="BEGIN_LINK_LINUX_OSS" />environnement de développement Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Lorsque cette option est activée, Chrome récupère la mémoire des onglets que vous n'utilisez pas activement. Cela libère les ressources de votre ordinateur pour d'autres tâches et maintient la rapidité de Chrome. Les onglets inactifs apparaissent vides et s'actualisent automatiquement lorsque vous cliquez dessus. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> ou <ph name="BEGIN_LINK_2" />envoyer des commentaires<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Cette action entraînera la suppression de <ph name="ITEMS_COUNT" /> éléments sur cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relancer &amp;Chrome pour le mettre à jour</translation>
 <translation id="2123055963409958220">Aidez-nous à améliorer Google Chrome en nous signalant les <ph name="BEGIN_LINK" />paramètres actuels<ph name="END_LINK" /></translation>

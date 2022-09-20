@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">Прифати и продолжи</translation>
 <translation id="110724200315609752">Префрлете се на отворениот прозорец</translation>
 <translation id="1112015203684611006">Печатењето не успеа.</translation>
+<translation id="1118569444314402022">Добре дојдовте назад, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Создај нова картичка.</translation>
 <translation id="1126809382673880764">Не ве заштитува од опасни веб-сајтови, преземања и екстензии. Сѐ уште ќе имате заштита со „Безбедно прелистување“, каде што е достапно, во другите услуги на Google, како Gmail и „Пребарување“.</translation>
 <translation id="1135212215217513471">Преземете ја Chrome за iOS</translation>
@@ -42,6 +43,7 @@
 <translation id="1229222343402087523">Пребарајте ${searchPhrase} во Chrome</translation>
 <translation id="1242044645101871359">Најавете се повторно</translation>
 <translation id="1254117744268754948">Одбери Папка</translation>
+<translation id="1258491128795710625">Што има ново</translation>
 <translation id="1265739287306757398">Дознајте како</translation>
 <translation id="1272079795634619415">Запри</translation>
 <translation id="1275718070701477396">Избран</translation>
@@ -63,6 +65,7 @@
 <translation id="1377255359165588604">Синхронизацијата престана да работи.</translation>
 <translation id="1377321085342047638">Број на картичка</translation>
 <translation id="1383876407941801731">Барај</translation>
+<translation id="138618066238211776">Продолжете како <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Минатите 4 седмици</translation>
 <translation id="1404330357948037222">Одјавени сте</translation>
 <translation id="1407135791313364759">Отвори ги сите</translation>
@@ -176,6 +179,7 @@
 <translation id="2421044535038393232">Продолжи со изменување</translation>
 <translation id="2434405374328098816">Веќе зачувавте лозинка за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
+<translation id="2461070143328828326">Поставки за лозинка</translation>
 <translation id="2469960372084740698">Да се исклучи „Безбедно прелистување“?</translation>
 <translation id="2473876017985765807">Веќе зачувавте лозинка за <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не е избрано</translation>
@@ -330,6 +334,7 @@
 <translation id="3709582977625132201">Обележи како непрочитано</translation>
 <translation id="371230970611282515">Предвидува опасни настани и ве предупредува пред да се случат.</translation>
 <translation id="37207012422556617">Пребарувања во тренд</translation>
+<translation id="3726360487031500941">Најавете се повторно на вашата сметка <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Ги отвора внесените URL-адреси во Google Chrome во „Инкогнито“.</translation>
 <translation id="3762232513783804601">Создаден за вашиот iPad</translation>
 <translation id="3771033907050503522">Инкогнито картички</translation>
@@ -564,6 +569,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5728700505257787410">Се извинуваме, настана проблем при најавување на сметката.</translation>
 <translation id="5731784586962650619">Лозинки во други апликации</translation>
 <translation id="5737974891429562743">Деталите за најавување на сметката се застарени. Ажурирајте ги за да започне синхронизацијата.</translation>
+<translation id="5738385766833540397">Управувајте како ќе добивате известувања за намалени цени за производите што ги следите</translation>
 <translation id="5738887413654608789">Ова ви овозможува да откриете релевантни веб-страници врз основа на вашата околина.</translation>
 <translation id="5758631781033351321">Списокот за читање ќе го најдете тука</translation>
 <translation id="5765456154762864099">Мени → Поставки → Стандарден прелистувач</translation>

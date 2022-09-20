@@ -6742,6 +6742,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7404065585741198296">Ang telepono mo na may USB cable</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Nagpatakbo ng pag-check sa kaligtasan 1 oras ang nakalipas}one{Nagpatakbo ng pag-check sa kaligtasan {NUM_HOURS} oras ang nakalipas}other{Nagpatakbo ng pag-check sa kaligtasan {NUM_HOURS} na oras ang nakalipas}}</translation>
 <translation id="740624631517654988">Naka-block ang pop-up</translation>
+<translation id="7406912950279255498">Color inversion mode</translation>
 <translation id="7407430846095439694">I-import at I-bind</translation>
 <translation id="7407504355934009739">Bina-block ng karamihan ng mga tao ang mga notification mula sa site na ito</translation>
 <translation id="740810853557944681">Magdagdag ng server sa pag-print</translation>
@@ -7692,6 +7693,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
     <ph name="BEGIN_PARAGRAPH3" />Makokontrol ng may-ari ang feature na ito mula sa Mga Setting &gt; Advanced &gt; Awtomatikong ipadala sa Google ang data ng diagnostic at paggamit.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Kung naka-on ang karagdagang Aktibidad sa Web at App para sa iyong anak, maaaring ma-save ang data na ito sa kanyang Google Account. Matuto pa tungkol sa mga setting na ito at kung paano isaayos ang mga ito sa families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Di-wasto ang certificate ng client</translation>
+<translation id="8270162672241199380">Installer ng Steam</translation>
 <translation id="827097179112817503">Ipakita ang button ng home</translation>
 <translation id="8271268254812352141">Makakuha ng mga kahulugan, pagsasalin, o pag-convert ng unit kapag nag-right click ka o pinindot mo nang matagal ang text. I-customize ang mga wika sa pagsasalin sa <ph name="LINK_BEGIN" />Mga wika ng website<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Mga magulang, para sa inyo ang ilang susunod na hakbang. Puwede ninyong ibalik ang <ph name="DEVICE_TYPE" /> sa bata pagkatapos ng pag-setup ng account.</translation>

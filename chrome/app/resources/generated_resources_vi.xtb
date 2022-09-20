@@ -5385,7 +5385,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" muốn kết nối với một thiết bị HID (thiết bị giao diện tương tác với con người)</translation>
 <translation id="608029822688206592">Không tìm thấy mạng. Vui lòng lắp SIM rồi thử lại.</translation>
 <translation id="6080689532560039067">Kiểm tra giờ hệ thống của bạn</translation>
-<translation id="6082877069782862752">Chỉ định khoá</translation>
+<translation id="6082877069782862752">Sơ đồ phím</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Thuộc nhóm chưa có tên</translation>
 <translation id="6085886413119427067">Xác định cách kết nối với các trang web qua đường kết nối an toàn</translation>
 <translation id="6086004606538989567">Tài khoản mà bạn đã xác minh không được phép truy cập vào thiết bị này.</translation>
@@ -6739,6 +6739,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7404065585741198296">Điện thoại có cáp USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Tính năng Kiểm tra an toàn đã chạy 1 giờ trước}other{Tính năng Kiểm tra an toàn đã chạy {NUM_HOURS} giờ trước}}</translation>
 <translation id="740624631517654988">Đã chặn cửa sổ bật lên</translation>
+<translation id="7406912950279255498">Chế độ đảo màu</translation>
 <translation id="7407430846095439694">Nhập và liên kết</translation>
 <translation id="7407504355934009739">Hầu hết mọi người đều chặn thông báo từ trang web này</translation>
 <translation id="740810853557944681">Thêm máy chủ máy in</translation>
@@ -7689,6 +7690,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
     <ph name="BEGIN_PARAGRAPH3" />Chủ sở hữu có thể kiểm soát tính năng này trong mục Cài đặt &gt; Nâng cao &gt; Tự động gửi dữ liệu chẩn đoán và dữ liệu sử dụng cho Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Nếu bạn bật tùy chọn cài đặt Hoạt động trên web và ứng dụng bổ sung cho con bạn, thì dữ liệu này có thể được lưu vào Tài khoản Google của con. Bạn có thể tìm hiểu thêm về các tùy chọn cài đặt này cùng cách điều chỉnh tại families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Chứng chỉ ứng dụng khách không hợp lệ</translation>
+<translation id="8270162672241199380">Trình cài đặt Steam</translation>
 <translation id="827097179112817503">Hiển thị nút trang chủ</translation>
 <translation id="8271268254812352141">Xem định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị bằng cách nhấp chuột phải hoặc chạm và giữ văn bản. Tùy chỉnh ngôn ngữ dịch trong <ph name="LINK_BEGIN" />Ngôn ngữ cho trang web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Cha mẹ chỉ cần thực hiện một vài bước nữa là xong. Bạn có thể đưa <ph name="DEVICE_TYPE" /> lại cho trẻ sau khi thiết lập tài khoản.</translation>

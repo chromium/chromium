@@ -214,6 +214,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2132302418721800944">Enregistrer tout l'écran</translation>
 <translation id="2135456203358955318">Loupe ancrée</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
+<translation id="2161132820593978283">Essayez le cadrage de la caméra pour être au centre de l'écran lors d'appels vidéo. Activez-le dans les Réglages rapides.</translation>
 <translation id="2170530631236737939">Balayez l'écran vers le bas avec trois doigts pour quitter l'Aperçu</translation>
 <translation id="219905428774326614">Lanceur d'applications, toutes les applications</translation>
 <translation id="2201071101391734388">Photo récente <ph name="INDEX" /> sur <ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +253,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2405664212338326887">Non connecté</translation>
 <translation id="2408955596600435184">Saisissez votre code.</translation>
 <translation id="2412593942846481727">Mise à jour disponible</translation>
+<translation id="2426051945783024481">Cadre de la caméra centré automatiquement</translation>
 <translation id="2427507373259914951">Clic gauche</translation>
 <translation id="2429753432712299108">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer. Avant d'accepter, veuillez confirmer que le code d'authentification suivant s'affiche sur l'appareil : <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
@@ -1038,6 +1040,7 @@ Nouvelle installation</translation>
 <translation id="6960565108681981554">Désactivé. Contactez votre opérateur.</translation>
 <translation id="6961121602502368900">Couper le son du téléphone n'est pas disponible dans le profil professionnel</translation>
 <translation id="6961840794482373852">Le raccourci clavier Alt+Flèche vers le haut a été modifié. Pour utiliser la touche Page précédente, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers le haut.</translation>
+<translation id="696267987219125751">Le cadrage de la caméra est désactivé.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Démarrer</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1128,6 +1131,7 @@ Nouvelle installation</translation>
 <translation id="7513922695575567867">Agenda, semaine du <ph name="DATE" />, le <ph name="SELECTED_DATE" /> est actuellement sélectionné.</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Le cadrage de la caméra est activé.</translation>
 <translation id="7526573455193969409">Il est possible que le réseau soit surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Les applis Linux et les fenêtres de navigation privée ne sont pas prises en charge pour le moment. Les autres applis seront enregistrées.</translation>
@@ -1146,6 +1150,7 @@ Nouvelle installation</translation>
 <translation id="7607002721634913082">Suspendu</translation>
 <translation id="7609951632080598826">Vue de l'agenda, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Appareil photo reconnecté.</translation>
+<translation id="761736749114493194">Activer/Désactiver le cadrage de la caméra. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Afficher les paramètres du Partage à proximité.</translation>
 <translation id="7634648064048557203">Appareil photo aligné sur l'angle inférieur droit</translation>
@@ -1306,6 +1311,7 @@ Nouvelle installation</translation>
 <translation id="851458219935658693">Afficher les fenêtres du bureau actuel, case d'option cochée</translation>
 <translation id="8517041960877371778">Il est possible que votre appareil <ph name="DEVICE_TYPE" /> ne se recharge pas lorsqu'il est allumé.</translation>
 <translation id="8535393432370007982">Annuler le tri par couleur</translation>
+<translation id="8541078764854166027">Cadrage caméra</translation>
 <translation id="8542053257095774575">Aucun bureau ni modèle enregistré</translation>
 <translation id="8546059259582788728">Le tri a bien été annulé</translation>
 <translation id="8551588720239073785">Paramètres de date et d'heure</translation>

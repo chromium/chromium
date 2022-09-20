@@ -42,6 +42,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="1229222343402087523">Otsi Chrome'is päringut ${searchPhrase}</translation>
 <translation id="1242044645101871359">Logige uuesti sisse</translation>
 <translation id="1254117744268754948">Kausta valimine</translation>
+<translation id="1258491128795710625">Mis on uut?</translation>
 <translation id="1265739287306757398">Lisateave</translation>
 <translation id="1272079795634619415">Peata</translation>
 <translation id="1275718070701477396">Valitud</translation>
@@ -384,6 +385,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4187450337729239226">Kleepimine ja otsimine</translation>
 <translation id="4223967053752765281">Teie organisatsioon lülitas sisselogimise välja. Näete selles seadmes endiselt oma järjehoidjaid, ajalugu, paroole ja muid seadeid. Muudatuste tegemisel neid teie kontoga ei sünkroonita.</translation>
 <translation id="4233831822770018312">Lubade muutmine</translation>
+<translation id="4236584471598725073">Hinna jälgimine</translation>
 <translation id="4237377247299956313">Puudutage valikut <ph name="BEGIN_BOLD" />Vaikebrauserirakendus<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Sisestage parool</translation>
 <translation id="4249955472157341256">Sordi uusimate järgi</translation>
@@ -563,6 +565,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5728700505257787410">Kahjuks ilmnes kontole sisselogimisel probleem.</translation>
 <translation id="5731784586962650619">Paroolid muudes rakendustes</translation>
 <translation id="5737974891429562743">Konto sisselogimisandmed on aegunud. Värskendage andmeid sünkroonimise alustamiseks.</translation>
+<translation id="5738385766833540397">Hallake, kuidas saate jälgitavate toodete puhul hinnaalanduse märguandeid</translation>
 <translation id="5738887413654608789">See võimaldab teil ümbruskonna järgi asjakohaseid veebilehti avastada.</translation>
 <translation id="5758631781033351321">Oma lugemisloendi leiate siit</translation>
 <translation id="5765456154762864099">Menüü → Seaded → Vaikebrauser</translation>

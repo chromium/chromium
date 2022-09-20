@@ -42,6 +42,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1229222343402087523">Keresés a következőre a Chrome-ban: ${searchPhrase}</translation>
 <translation id="1242044645101871359">Bejelentkezés újra</translation>
 <translation id="1254117744268754948">Mappa kiválasztása</translation>
+<translation id="1258491128795710625">Újdonságok</translation>
 <translation id="1265739287306757398">További információ</translation>
 <translation id="1272079795634619415">Leállítás</translation>
 <translation id="1275718070701477396">Kijelölve</translation>
@@ -384,6 +385,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="4187450337729239226">Beillesztés és keresés</translation>
 <translation id="4223967053752765281">Szervezete kikapcsolta a bejelentkezést. Továbbra is láthatja könyvjelzőit, előzményeit, jelszavait és más beállításait ezen az eszközön. A módosítások azonban nem szinkronizálódnak az Ön fiókjába.</translation>
 <translation id="4233831822770018312">Engedélyek módosítása</translation>
+<translation id="4236584471598725073">Ár nyomon követve</translation>
 <translation id="4237377247299956313">Koppintson az <ph name="BEGIN_BOLD" />Alapértelmezett böngésző<ph name="END_BOLD" /> lehetőségre.</translation>
 <translation id="424315890655130736">Összetett jelszó megadása</translation>
 <translation id="4249955472157341256">Rendezés a legutóbbiak szerint</translation>
@@ -563,6 +565,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5728700505257787410">A fiókjába történő bejelentkezés során hiba történt.</translation>
 <translation id="5731784586962650619">Más alkalmazásoknál használt jelszavak</translation>
 <translation id="5737974891429562743">A fiók bejelentkezési adatai elavultak. Frissítsen a szinkronizálás megkezdéséhez.</translation>
+<translation id="5738385766833540397">Kezelheti a nyomon követett termékekkel kapcsolatos árcsökkenési értesítések fogadásának módját</translation>
 <translation id="5738887413654608789">Lehetővé teszi a felhasználó számára, hogy közvetlen környezete alapján fedezzen fel releváns weboldalakat.</translation>
 <translation id="5758631781033351321">Itt láthatja majd az olvasólistáját</translation>
 <translation id="5765456154762864099">Menü → Beállítások → Alapértelmezett böngésző</translation>

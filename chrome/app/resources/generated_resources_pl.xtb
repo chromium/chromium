@@ -2282,6 +2282,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3090819949319990166">Nie można skopiować zewnętrznego pliku CRX jako <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Sparowano „<ph name="DEVICE_NAME" />”</translation>
 <translation id="3093714882666365141">Nie zezwalaj witrynom na instalowanie modułów do obsługi płatności</translation>
+<translation id="3093958632721393232">Włączaj tylko wtedy, gdy bateria jest słaba</translation>
 <translation id="3094141017404513551">Spowoduje to oddzielenie Twoich danych przeglądania od danych użytkownika <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Zakładki, hasła i inne dane przeglądarki są zsynchronizowane z kontem głównym.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potencjalnie niebezpieczne rozszerzenie zostało wyłączone. Możesz je też usunąć.}few{{NUM_EXTENSIONS} potencjalnie niebezpieczne rozszerzenia zostały wyłączone. Możesz je też usunąć.}many{{NUM_EXTENSIONS} potencjalnie niebezpiecznych rozszerzeń zostało wyłączonych. Możesz je też usunąć.}other{{NUM_EXTENSIONS} potencjalnie niebezpiecznego rozszerzenia zostało wyłączone. Możesz je też usunąć.}}</translation>
@@ -4999,6 +5000,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5747552184818312860">Wygasa</translation>
 <translation id="5747785204778348146">Deweloperska – niestabilna</translation>
 <translation id="5747809636523347288">&amp;Wklej i otwórz <ph name="URL" /></translation>
+<translation id="5748137879145720682">Włączaj, gdy komputer jest odłączony od zasilania</translation>
 <translation id="5751345516399502412">Sprawdź gotowość do obsługi tetheringu</translation>
 <translation id="5755022574660047665">wspomnień ze Zdjęć Google</translation>
 <translation id="5756163054456765343">C&amp;entrum pomocy</translation>
@@ -7634,6 +7636,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8248381369318572865">Dostęp do mikrofonu i analizowanie Twojej mowy</translation>
 <translation id="8248887045858762645">Wskazówka dotycząca Chrome</translation>
 <translation id="8249048954461686687">Folder OEM</translation>
+<translation id="8249239468199142122">Oszczędzanie baterii</translation>
 <translation id="8249615410597138718">Wyślij na swoje urządzenia</translation>
 <translation id="8250210000648910632">Brak dostępnego miejsca</translation>
 <translation id="8251441930213048644">Odśwież teraz</translation>

@@ -214,6 +214,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2132302418721800944">Rakam skrin penuh</translation>
 <translation id="2135456203358955318">Penggadang didok</translation>
 <translation id="2148716181193084225">Hari ini</translation>
+<translation id="2161132820593978283">Cuba pembingkaian kamera supaya anda berada di tengah-tengah skrin semasa membuat panggilan video. Hidupkan autozum dalam Tetapan Pantas.</translation>
 <translation id="2170530631236737939">Leret ke bawah dengan tiga jari untuk keluar daripada Ikhtisar</translation>
 <translation id="219905428774326614">Pelancar, semua apl</translation>
 <translation id="2201071101391734388">Foto baru-baru ini <ph name="INDEX" /> daripada <ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +253,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2405664212338326887">Tidak disambungkan</translation>
 <translation id="2408955596600435184">Masukkan PIN anda</translation>
 <translation id="2412593942846481727">Kemas kini tersedia</translation>
+<translation id="2426051945783024481">Bingkai kamera dipusatkan secara automatik</translation>
 <translation id="2427507373259914951">Klik kiri</translation>
 <translation id="2429753432712299108">Peranti Bluetooth "<ph name="DEVICE_NAME" />" ingin kebenaran untuk berpasangan. Sebelum menerimanya, sila sahkan bahawa kekunci laluan ini dipaparkan pada peranti tersebut: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Paparkan kata laluan</translation>
@@ -1039,6 +1041,7 @@ Pemasangan baharu</translation>
 <translation id="6960565108681981554">Tidak diaktifkan. Hubungi pembawa anda.</translation>
 <translation id="6961121602502368900">Ciri Senyapkan telefon tidak tersedia pada profil kerja</translation>
 <translation id="6961840794482373852">Pintasan papan kekunci Alt + Anak Panah ke Atas telah berubah. Untuk menggunakan kekunci Page Up, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Anak Panah ke Atas.</translation>
+<translation id="696267987219125751">Pembingkaian kamera dimatikan.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Bermula</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1129,6 +1132,7 @@ Pemasangan baharu</translation>
 <translation id="7513922695575567867">Kalendar, minggu <ph name="DATE" />, <ph name="SELECTED_DATE" /> dipilih pada masa ini.</translation>
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Pembingkaian kamera dihidupkan.</translation>
 <translation id="7526573455193969409">Rangkaian mungkin dipantau</translation>
 <translation id="7536035074519304529">Alamat IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Apl Linux dan tetingkap inkognito tidak disokong pada masa ini. Apl lain akan disimpan.</translation>
@@ -1147,6 +1151,7 @@ Pemasangan baharu</translation>
 <translation id="7607002721634913082">Dijeda</translation>
 <translation id="7609951632080598826">Paparan kalendar, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera disambung semula.</translation>
+<translation id="761736749114493194">Togol pembingkaian kamera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Paparkan tetapan Kongsi Berdekatan.</translation>
 <translation id="7634648064048557203">Kamera diautojajar ke penjuru kanan sebelah bawah</translation>
@@ -1307,6 +1312,7 @@ Pemasangan baharu</translation>
 <translation id="851458219935658693">Tunjukkan tetingkap daripada meja semasa, butang radio dipilih</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> anda mungkin tidak akan dicas semasa dihidupkan.</translation>
 <translation id="8535393432370007982">Buat asal tertib isihan mengikut warna</translation>
+<translation id="8541078764854166027">Bingkai kamera</translation>
 <translation id="8542053257095774575">Tiada meja atau templat yang disimpan</translation>
 <translation id="8546059259582788728">Isih buat asal berjaya</translation>
 <translation id="8551588720239073785">Tetapan tarikh dan masa</translation>

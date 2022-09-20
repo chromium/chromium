@@ -214,6 +214,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2132302418721800944">Spela in hela skärmen</translation>
 <translation id="2135456203358955318">Dockad skärmförstoring</translation>
 <translation id="2148716181193084225">Idag</translation>
+<translation id="2161132820593978283">Testa kamerainramning så att du hamnar i mitten av skärmen i videosamtal. Aktivera det i snabbinställningarna.</translation>
 <translation id="2170530631236737939">Stäng översikten genom att svepa nedåt med tre fingrar</translation>
 <translation id="219905428774326614">Startprogram, alla appar</translation>
 <translation id="2201071101391734388">Foto <ph name="INDEX" /> av <ph name="TOTAL_COUNT" /> nya foton.</translation>
@@ -252,6 +253,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2405664212338326887">Inte ansluten</translation>
 <translation id="2408955596600435184">Ange din pinkod</translation>
 <translation id="2412593942846481727">Det finns en uppdatering</translation>
+<translation id="2426051945783024481">Kameraramen har centrerats automatiskt</translation>
 <translation id="2427507373259914951">Vänsterklicka</translation>
 <translation id="2429753432712299108">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Innan du godkänner bekräftar du att den här lösenordsnyckeln visas på den enheten: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
@@ -1038,6 +1040,7 @@ Nyligen installerad</translation>
 <translation id="6960565108681981554">Inte aktiverat. Kontakta operatören.</translation>
 <translation id="6961121602502368900">Funktionen Inga telefonljud är inte tillgänglig i jobbprofilen</translation>
 <translation id="6961840794482373852">Kortkommandot Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + uppåtpil för att använda Page Up-tangenten.</translation>
+<translation id="696267987219125751">Kamerainramning är av.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Komma igång</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1128,6 +1131,7 @@ Nyligen installerad</translation>
 <translation id="7513922695575567867">Kalender, veckan med den <ph name="DATE" />, just nu är <ph name="SELECTED_DATE" /> markerat.</translation>
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Kamerainramning är på.</translation>
 <translation id="7526573455193969409">Nätverket kan vara övervakat</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux-appar och inkognitofönster stöds inte för närvarande. Andra appar sparas.</translation>
@@ -1146,6 +1150,7 @@ Nyligen installerad</translation>
 <translation id="7607002721634913082">Pausad</translation>
 <translation id="7609951632080598826">Kalendervy: <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kameran har återanslutits.</translation>
+<translation id="761736749114493194">Aktivera och inaktivera kamerainramning. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Visa inställningar för Närdelning</translation>
 <translation id="7634648064048557203">Kameran har fästs i det nedre högra hörnet</translation>
@@ -1306,6 +1311,7 @@ Nyligen installerad</translation>
 <translation id="851458219935658693">Visa fönster från det aktuella skrivbordet, alternativknapp har markerats</translation>
 <translation id="8517041960877371778">Din <ph name="DEVICE_TYPE" /> laddas eventuellt inte så länge den är på.</translation>
 <translation id="8535393432370007982">Ångra sortering efter färg</translation>
+<translation id="8541078764854166027">Inramning</translation>
 <translation id="8542053257095774575">Det finns inga sparade skrivbord eller mallar</translation>
 <translation id="8546059259582788728">Sorteringen har ångrats.</translation>
 <translation id="8551588720239073785">Inställningar för datum och tid</translation>

@@ -42,6 +42,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1229222343402087523">Chrome'da ${searchPhrase} için arama yap</translation>
 <translation id="1242044645101871359">Tekrar Oturum Açın</translation>
 <translation id="1254117744268754948">Klasör Seçin</translation>
+<translation id="1258491128795710625">Yenilikler</translation>
 <translation id="1265739287306757398">Nasıl Yapacağınızı Öğrenin</translation>
 <translation id="1272079795634619415">Durdur</translation>
 <translation id="1275718070701477396">Seçildi</translation>
@@ -564,6 +565,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5728700505257787410">Maalesef hesabınızda oturum açmayla ilgili bir sorun oldu.</translation>
 <translation id="5731784586962650619">Diğer Uygulamalardaki Şifreler</translation>
 <translation id="5737974891429562743">Hesap oturum açma ayrıntıları eski. Senkronizasyonu başlatmak için güncelleyin.</translation>
+<translation id="5738385766833540397">Takip ettiğiniz ürünlerle ilgili fiyat düşüşü uyarılarını nasıl alacağınızı yönetin</translation>
 <translation id="5738887413654608789">Bu işlem çevrenizdeki öğelere dayalı olarak ilgili web sayfalarını keşfetmenize olanak sağlar.</translation>
 <translation id="5758631781033351321">Okuma listenizi burada bulabilirsiniz</translation>
 <translation id="5765456154762864099">Menü → Ayarlar → Varsayılan Tarayıcı</translation>

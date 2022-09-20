@@ -42,6 +42,7 @@
 <translation id="1229222343402087523">Chrome で ${searchPhrase} を検索</translation>
 <translation id="1242044645101871359">もう一度ログインしてください</translation>
 <translation id="1254117744268754948">フォルダの選択</translation>
+<translation id="1258491128795710625">最新情報</translation>
 <translation id="1265739287306757398">詳細</translation>
 <translation id="1272079795634619415">中止</translation>
 <translation id="1275718070701477396">選択中</translation>
@@ -562,6 +563,7 @@
 <translation id="5728700505257787410">アカウントへのログイン中に問題が発生しました。</translation>
 <translation id="5731784586962650619">他のアプリのパスワード</translation>
 <translation id="5737974891429562743">アカウントのログイン情報が古くなっています。同期を開始するには更新してください。</translation>
+<translation id="5738385766833540397">トラッキングしている商品の値下げアラートを受け取る方法を管理します</translation>
 <translation id="5738887413654608789">この機能を使用すると、周囲で発信されているデータを受信して関連のあるウェブページを表示することができます。</translation>
 <translation id="5758631781033351321">リーディング リストはここに表示されます</translation>
 <translation id="5765456154762864099">メニュー → 設定 → 既定のブラウザ</translation>

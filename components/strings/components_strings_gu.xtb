@@ -260,6 +260,7 @@
 <translation id="156703335097561114">ઍડ્રેસ, ઇન્ટરફેસ કન્ફિગ્યુરેશન અને કનેક્શન ક્વૉલિટી જેવી નેટવર્કની માહિતી</translation>
 <translation id="1567040042588613346">આ પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે પરંતુ સમાન મૂલ્ય બીજે ક્યાંક સેટ કરવામાં આવ્યું છે અને આ પૉલિસી તેની જગ્યા લે છે.</translation>
 <translation id="1569487616857761740">સમાપ્તિ તારીખ દાખલ કરો</translation>
+<translation id="1569694109004336106">Google Chrome પાસવર્ડ ભરવા માટે Windows Hello ચાલુ કરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">આ વેબપેજ બતાવતી વખતે કંઈક ખોટું થયું.</translation>
 <translation id="1586541204584340881">તમે કયા એક્સ્ટેંશન ઇન્સ્ટૉલ કર્યા છે</translation>
@@ -398,6 +399,7 @@
 <translation id="1958218078413065209">તમારો સૌથી વધુ સ્કોર <ph name="SCORE" /> છે.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />તમે મુલાકાત લો તે કેટલાક પેજના URLs, સિસ્ટમ વિશેની સીમિત માહિતી અને પેજનું કેટલુંક કન્ટેન્ટ<ph name="END_WHITEPAPER_LINK" /> Googleને મોકલીને વેબ પર દરેક જણ માટે સુરક્ષા વધુ સારી બનાવવામાં સહાય કરો. <ph name="BEGIN_PRIVACY_PAGE_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> બુકમાર્ક</translation>
+<translation id="1971033026002113380">TouchID વડે પાસવર્ડની સુરક્ષા કરો</translation>
 <translation id="1973335181906896915">અનુક્રમાંકન ભૂલ</translation>
 <translation id="1974060860693918893">વિગતવાર</translation>
 <translation id="1975457531113383421">ઇનપુટ ટ્રે</translation>
@@ -725,6 +727,7 @@
 <translation id="2881276955470682203">કાર્ડ સાચવીએ?</translation>
 <translation id="2882949212241984732">ડબલ-ગેટ ફોલ્ડ</translation>
 <translation id="2893773853358652045">ચોથો રોલ</translation>
+<translation id="289834758818479772">જો તમે આ ડિવાઇસ અન્ય લોકો સાથે શેર કરો છો, તો જ્યારે પણ તમે કોઈ સાચવેલા પાસવર્ડનો ઉપયોગ કરો ત્યારે એ તમે જ છો તેની ચકાસણી કરવા માટે તમે TouchID ચાલુ કરી શકો છો</translation>
 <translation id="2900528713135656174">ઇવેન્ટ બનાવો</translation>
 <translation id="2903493209154104877">સરનામાંઓ</translation>
 <translation id="290376772003165898">પેજ <ph name="LANGUAGE" />માં નથી?</translation>
@@ -801,6 +804,8 @@
 <translation id="3108943290502734357">વચ્ચેની ટ્રે</translation>
 <translation id="3109728660330352905">તમને આ પેજને જોવાનો અધિકાર નથી.</translation>
 <translation id="3113284927548439113">ત્રીજી પાળી</translation>
+<translation id="3114040155724590991">Android System અપડેટ કરી રહ્યાં છીએ
+    તમારી ઍપ ચાલુ થવામાં સામાન્ય કરતાં વધુ સમય લાગી શકે છે.</translation>
 <translation id="3115363211799416195">{0,plural, =1{શું ગોપનીય ફાઇલ ડાઉનલોડ કરીએ?}one{શું ગોપનીય ફાઇલ ડાઉનલોડ કરીએ?}other{શું આ ગોપનીય ફાઇલો ડાઉનલોડ કરીએ?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લઈને આ <ph name="DEVICE_TYPE" /> પરત કરો.</translation>
 <translation id="3116158981186517402">લૅમિનેટ કરો</translation>
@@ -1255,6 +1260,7 @@
 <translation id="4306812610847412719">ક્લિપબોર્ડ</translation>
 <translation id="4308567447483056043">આ પૉલિસીને અવગણવામાં આવે છે કારણ કે વપરાશકર્તા સંકળાયેલા નથી. આ પૉલિસી લાગુ થાય તે માટે, એ જ સંસ્થા દ્વારા Chrome બ્રાઉઝર અને પ્રોફાઇલ ઍડમિન કન્સોલ મારફતે મેનેજ થવા આવશ્યક છે.</translation>
 <translation id="4310070645992025887">તમારા પ્રવાસ શોધો</translation>
+<translation id="4310496734563057511">જો તમે આ ડિવાઇસ અન્ય લોકો સાથે શેર કરો છો, તો જ્યારે પણ તમે કોઈ સાચવેલા પાસવર્ડનો ઉપયોગ કરો ત્યારે એ તમે જ છો તેની ચકાસણી કરવા માટે તમે Windows Hello ચાલુ કરી શકો છો</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">અવરોધિત કરો (ડિફૉલ્ટ)</translation>
 <translation id="4314815835985389558">સિંક મેનેજ કરો</translation>
@@ -1469,6 +1475,7 @@
 <translation id="4880827082731008257">શોધ ઇતિહાસ</translation>
 <translation id="4881695831933465202">ખોલો</translation>
 <translation id="4885256590493466218">ચેકઆઉટ કરતી વખતે <ph name="CARD_DETAIL" /> વડે ચુકવણી કરો</translation>
+<translation id="4887406273302438710">Windows Hello વડે પાસવર્ડની સુરક્ષા કરો</translation>
 <translation id="4888600795924685526">વિદેશી ભાષાનો અભ્યાસ</translation>
 <translation id="4889420713887366944">છુપી વિન્ડો ખોલો બટન, ખાનગી રીતે બ્રાઉઝ કરવા, નવી છુપી વિન્ડો ખોલવા માટે Enter દબાવો</translation>
 <translation id="4892518386797173871">પાછળ</translation>
@@ -1687,6 +1694,7 @@
 <translation id="5426179911063097041"><ph name="SITE" />તમને નોટિફિકેશનો મોકલવા માગે છે</translation>
 <translation id="5428105026674456456">સ્પેનિશ</translation>
 <translation id="5430298929874300616">બુકમાર્ક દૂર કરો</translation>
+<translation id="5434423669266814150">પાસવર્ડ ભરવા માટે TouchID ચાલુ કરો</translation>
 <translation id="5443468954631487277">ઉલટા ક્રમમાં ઉપર તરફ</translation>
 <translation id="5447765697759493033">આ સાઇટનો અનુવાદ થશે નહીં</translation>
 <translation id="5452270690849572955">આ <ph name="HOST_NAME" /> પેજ શોધી શકાતું નથી</translation>
@@ -2463,6 +2471,7 @@
 <translation id="7564049878696755256">તમે તમારા <ph name="ORG_NAME" /> એકાઉન્ટનો ઍક્સેસ ગુમાવી શકો છો અથવા તમને ઓળખ ચોરીનો અનુભવ થઈ શકે છે. Chrome તમને હમણાં જ તમારો પાસવર્ડ બદલવાની ભલામણ કરે છે.</translation>
 <translation id="7564680668369175887">સ્ટેશન વૅગન</translation>
 <translation id="7567204685887185387">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર કપટપૂર્વક રજૂ કરવામાં આવેલ હોઈ શકે છે. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
+<translation id="7568616151991626879">Google Chrome <ph name="APP_NAME" /> પર તમારો પાસવર્ડ ભરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="7569490014721427265">ગોલ્ફ</translation>
 <translation id="7569761772822664555">શોધ એન્જિનને મેનેજ કરવા માટેનું બટન, તમારું ડિફૉલ્ટ શોધ એન્જિન અને સાઇટમાં શોધવાની સુવિધા મેનેજ કરવા માટે Enter કી દબાવો</translation>
 <translation id="7569952961197462199">Chrome માંથી ક્રેડિટ કાર્ડ દૂર કરીએ?</translation>
@@ -2493,6 +2502,7 @@
 <translation id="7637586430889951925">{COUNT,plural, =0{કોઈ નહીં}=1{તમારા એકાઉન્ટમાં 1 પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે)}one{તમારા એકાઉન્ટમાં # પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે)}other{તમારા એકાઉન્ટમાં # પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે)}}</translation>
 <translation id="7638605456503525968">સીરિયલ પોર્ટ</translation>
 <translation id="7639968568612851608">ઘાટો ગ્રે</translation>
+<translation id="7646681339175747202">તમે હાલમાં જ ઉપયોગમાં લીધેલો પાસવર્ડ કોઈ ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. Google Password Manager હમણાં જ તમારો પાસવર્ડ બદલવાનો સુઝાવ આપે છે.</translation>
 <translation id="7647206758853451655">પ્રિન્ટની ક્વૉલિટી</translation>
 <translation id="7648992873808071793">આ ડિવાઇસ પર ફાઇલો સાચવો</translation>
 <translation id="7653957176542370971">ચુકવણી માટેની હૅન્ડલર શીટ બંધ છે</translation>

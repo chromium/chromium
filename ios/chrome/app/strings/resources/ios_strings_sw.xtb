@@ -42,6 +42,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="1229222343402087523">Tafuta ${searchPhrase} kwenye Chrome</translation>
 <translation id="1242044645101871359">Ingia Katika Akaunti Tena</translation>
 <translation id="1254117744268754948">Chagua Folda</translation>
+<translation id="1258491128795710625">Mapya</translation>
 <translation id="1265739287306757398">Pata Maelezo Zaidi</translation>
 <translation id="1272079795634619415">Simamisha</translation>
 <translation id="1275718070701477396">Umeichagua</translation>
@@ -55,6 +56,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="1322735045095424339">Shirika lako linahitaji utumie hali Fiche</translation>
 <translation id="1323735185997015385">Futa</translation>
 <translation id="132683371494960526">Gusa mara mbili ili ubadilishe folda kuu.</translation>
+<translation id="1335348992705722518">Dhibiti Mipangilio...</translation>
 <translation id="1340643665687018190">Funga Menyu</translation>
 <translation id="1358214951266274152">Fungua Kiungo Ulichonakili</translation>
 <translation id="1360432990279830238">Utaondoka na uzime usawazishaji?</translation>
@@ -383,6 +385,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4187450337729239226">Bandika na Utafute</translation>
 <translation id="4223967053752765281">Shirika lako limezima kipengele cha uingiaji katika akaunti. Bado unaweza kuona alamisho, historia, manenosiri na mipangilio mingine kwenye kifaa hiki. Iwapo utafanya mabadiliko, hayatasawazishwa kwenye akaunti yako.</translation>
 <translation id="4233831822770018312">Badilisha ruhusa</translation>
+<translation id="4236584471598725073">Kufuatilia Bei</translation>
 <translation id="4237377247299956313">Gusa <ph name="BEGIN_BOLD" />Programu ya Kivinjari Chaguomsingi<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Weka Kauli ya Siri</translation>
 <translation id="4249955472157341256">Panga kulingana na zilizoingia hivi karibuni</translation>
@@ -562,6 +565,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5728700505257787410">Samahani, kulikuwa na tatizo wakati wa kuingia kwenye akaunti yako.</translation>
 <translation id="5731784586962650619">Manenosiri Katika Programu Zingine</translation>
 <translation id="5737974891429562743">Maelezo ya kuingia kwenye akaunti hayatumiki tena. Sasisha ili uanze kusawazisha.</translation>
+<translation id="5738385766833540397">Dhibiti jinsi unavyopokea arifa za kushuka kwa bei ya bidhaa unazofuatilia</translation>
 <translation id="5738887413654608789">Hii inakuwezesha kugundua kurasa za wavuti zinazokufaa kulingana na mazingira yako.</translation>
 <translation id="5758631781033351321">Utapata orodha yako ya kusoma hapa</translation>
 <translation id="5765456154762864099">Menyu → Mipangilio → Kivinjari Chaguomsingi</translation>

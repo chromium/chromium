@@ -42,6 +42,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1229222343402087523">Cerca ${searchPhrase} in Chrome</translation>
 <translation id="1242044645101871359">Accedi di nuovo</translation>
 <translation id="1254117744268754948">Scegli cartella</translation>
+<translation id="1258491128795710625">Novità</translation>
 <translation id="1265739287306757398">Scopri come</translation>
 <translation id="1272079795634619415">Interrompi</translation>
 <translation id="1275718070701477396">Selezionato</translation>
@@ -384,6 +385,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4187450337729239226">Incolla e cerca</translation>
 <translation id="4223967053752765281">La tua organizzazione ha disattivato l'accesso. Puoi trovare ancora i tuoi preferiti, la cronologia, le password e altre impostazioni su questo dispositivo. Le eventuali modifiche apportate non verranno sincronizzate con il tuo account.</translation>
 <translation id="4233831822770018312">Modifica autorizzazioni</translation>
+<translation id="4236584471598725073">Monitoraggio del prezzo</translation>
 <translation id="4237377247299956313">Tocca <ph name="BEGIN_BOLD" />App browser predefinita<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Inserisci passphrase</translation>
 <translation id="4249955472157341256">Ordina per Più recenti</translation>
@@ -563,6 +565,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5728700505257787410">Spiacenti, problema durante l'accesso all'account.</translation>
 <translation id="5731784586962650619">Password in altre app</translation>
 <translation id="5737974891429562743">I dati di accesso dell'account sono obsoleti. Aggiorna per avviare la sincronizzazione.</translation>
+<translation id="5738385766833540397">Gestisci la modalità di ricezione degli avvisi relativi ai cali di prezzo dei prodotti monitorati</translation>
 <translation id="5738887413654608789">Puoi trovare pagine web pertinenti basate sui dintorni.</translation>
 <translation id="5758631781033351321">Qui troverai il tuo elenco di lettura</translation>
 <translation id="5765456154762864099">Menu → Impostazioni → Browser predefinito</translation>

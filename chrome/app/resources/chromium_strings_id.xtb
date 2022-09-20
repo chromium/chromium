@@ -302,7 +302,6 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7682601070171973634">Chromium sedang menjelajahi fitur baru yang memungkinkan situs memberikan pengalaman penjelajahan yang sama dengan menggunakan lebih sedikit data Anda</translation>
 <translation id="7686590090926151193">Chromium bukan browser default</translation>
 <translation id="7689606757190482937">Menyinkronkan dan mempersonalisasi Chromium di perangkat Anda</translation>
-<translation id="7714577916146996629">Jika diaktifkan, Chromium menggunakan kembali memori dari tab yang tidak digunakan secara aktif. Tindakan ini akan membebaskan resource komputer Anda untuk melakukan tugas-tugas lain dan menjaga Chromium tetap cepat. Tab yang tidak aktif tampak kosong dan otomatis dimuat ulang saat Anda mengkliknya. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> atau <ph name="BEGIN_LINK_2" />kirim masukan<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">Tindakan ini akan menghapus data browsing dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat membuat direktori sementara. Periksa kapasitas kosong pada disk dan izin untuk memasang software.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>

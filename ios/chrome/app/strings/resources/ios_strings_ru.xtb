@@ -42,6 +42,7 @@
 <translation id="1229222343402087523">Искать "${searchPhrase}" в Chrome</translation>
 <translation id="1242044645101871359">Повторите вход</translation>
 <translation id="1254117744268754948">Выбор папки</translation>
+<translation id="1258491128795710625">Что нового</translation>
 <translation id="1265739287306757398">Подробнее</translation>
 <translation id="1272079795634619415">Остановить</translation>
 <translation id="1275718070701477396">Выбрано</translation>
@@ -55,6 +56,7 @@
 <translation id="1322735045095424339">В вашей организации обязательно использовать режим инкогнито.</translation>
 <translation id="1323735185997015385">Удалить</translation>
 <translation id="132683371494960526">Чтобы изменить родительскую папку, нажмите дважды.</translation>
+<translation id="1335348992705722518">Открыть настройки</translation>
 <translation id="1340643665687018190">Закрыть меню</translation>
 <translation id="1358214951266274152">Открыть скопированную ссылку</translation>
 <translation id="1360432990279830238">Выйти и отключить синхронизацию?</translation>
@@ -563,6 +565,7 @@
 <translation id="5728700505257787410">Не удалось войти в аккаунт.</translation>
 <translation id="5731784586962650619">Пароли в других приложениях</translation>
 <translation id="5737974891429562743">Данные для входа в аккаунт устарели. Чтобы начать синхронизацию, обновите их.</translation>
+<translation id="5738385766833540397">Выберите, куда будут приходить оповещения о скидках на отслеживаемые товары.</translation>
 <translation id="5738887413654608789">Вы сможете узнавать о сайтах, связанных с объектами вокруг вас.</translation>
 <translation id="5758631781033351321">Здесь вы найдете свой список для чтения</translation>
 <translation id="5765456154762864099">Меню → Настройки → Браузер по умолчанию</translation>

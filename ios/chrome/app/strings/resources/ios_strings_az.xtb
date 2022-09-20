@@ -42,6 +42,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1229222343402087523">Chrome'da ${searchPhrase} axtarın</translation>
 <translation id="1242044645101871359">Yenidən daxil olun</translation>
 <translation id="1254117744268754948">Qovluq seçin</translation>
+<translation id="1258491128795710625">Yeniliklər</translation>
 <translation id="1265739287306757398">Məlumat əldə edin</translation>
 <translation id="1272079795634619415">Dayandırın</translation>
 <translation id="1275718070701477396">Seçilib</translation>
@@ -55,6 +56,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1322735045095424339">Təşkilatınız Anonim rejimi tələb edir</translation>
 <translation id="1323735185997015385">Silin</translation>
 <translation id="132683371494960526">Valideyn qovluğunu dəyişmək üçün iki dəfə tıklayın.</translation>
+<translation id="1335348992705722518">Ayarları idarə edin...</translation>
 <translation id="1340643665687018190">Menyunu Bağlayın</translation>
 <translation id="1358214951266274152">Kopyalanmış Linkə Daxil Olun</translation>
 <translation id="1360432990279830238">Sinxronizasiya deaktiv edilsin?</translation>
@@ -383,6 +385,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4187450337729239226">Yerləşdirin və Axtarın</translation>
 <translation id="4223967053752765281">Təşkilatınız girişi deaktiv edib. Hələ də bu cihazda bütün əlfəcinlər, tarixçə, parol və digər ayarları görə bilərsiniz. Dəyişiklik etsəniz, onlar hesabınızla sinxronizasiya edilməyəcək.</translation>
 <translation id="4233831822770018312">İcazələri redaktə edin</translation>
+<translation id="4236584471598725073">Qiymət izlənir</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />Defolt Brauzer Tətbiqi<ph name="END_BOLD" /> seçiminə toxunun</translation>
 <translation id="424315890655130736">Parol sözü daxil edin</translation>
 <translation id="4249955472157341256">Ən sonuncular üzrə sıalayın</translation>
@@ -562,6 +565,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5728700505257787410">Üzr istəyirik, hesabınıza daxil olarkən problem baş verdi.</translation>
 <translation id="5731784586962650619">Digər Tətbiqlərdə Parollar</translation>
 <translation id="5737974891429562743">Hesaba avtomatik giriş detallarının vaxtı keçib. Sinxronizasiyanı başlamaq üçün yeniləyin.</translation>
+<translation id="5738385766833540397">İzlədiyiniz məhsullar üçün qiymət endirimi xəbərdarlıqlarını necə alacağınızı idarə edin</translation>
 <translation id="5738887413654608789">Ətrafınızda uyğun veb səhifələri kəşf etməyə imkan verir.</translation>
 <translation id="5758631781033351321">Oxu siyahısını burada tapa bilərsiniz</translation>
 <translation id="5765456154762864099">Menyu → Ayarlar → Defolt Brauzer</translation>

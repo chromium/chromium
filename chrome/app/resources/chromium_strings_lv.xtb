@@ -328,6 +328,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8453117565092476964">Instalēšanas programmas arhīvs ir bojāts vai nav derīgs. Lejupielādējiet Chromium vēlreiz.</translation>
 <translation id="8463672209299734063">Neobligāti: palīdziet uzlabot Chromium OS funkcijas un veiktspēju, automātiski nosūtot Google serveriem diagnostikas un lietojuma datus.</translation>
 <translation id="8493179195440786826">Chromium versija ir novecojusi</translation>
+<translation id="8522220489792889625">Chromium pēc vajadzības atgūst atmiņas lietojumu no cilnēm, kuras jūs aktīvi neizmantojat. Iestatījumos varat jebkurā laikā to mainīt.</translation>
 <translation id="8550334526674375523">Šis darba profils ir pilnīgi nesaistīts ar jūsu personīgo profilu.</translation>
 <translation id="8558383651099478961">Viens no jūsu vecākiem ir izslēdzis “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chromium. Nav atļauts pievienot šo: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Lai saņemtu turpmākus Chromium atjauninājumus, ir nepieciešama operētājsistēma macOS 10.13 vai jaunāka versija. Šajā datorā tiek izmantota macOS 10.12. versija</translation>

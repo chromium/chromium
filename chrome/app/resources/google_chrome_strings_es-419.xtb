@@ -57,6 +57,7 @@
 <translation id="2094648590148273905">Condiciones de Chrome OS Flex</translation>
 <translation id="2094919256425865063">¿Deseas salir de Chrome de todos modos?</translation>
 <translation id="2106831557840787829">Chrome OS Flex funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional, como <ph name="BEGIN_LINK_LINUX_OSS" />el entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Cuando está activado, Chrome recupera la memoria de las pestañas que no estás usando activamente. Esto libera los recursos de tu computadora para otras tareas y mantiene la velocidad de Chrome. Las pestañas inactivas aparecen vacías y se vuelven a cargar automáticamente cuando haces clic en ellas. <ph name="BEGIN_LINK" />Obtén más información<ph name="END_LINK" /> o <ph name="BEGIN_LINK_2" />envía comentarios<ph name="END_LINK_2" />.</translation>
 <translation id="2120620239521071941">Esta acción borrará <ph name="ITEMS_COUNT" /> elementos de este dispositivo. Si más adelante deseas recuperar los datos, accede a tu cuenta en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa tu <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para ayudarnos a mejorar Chrome</translation>
@@ -271,6 +272,7 @@
 <translation id="6735387454586646204">Sistema de Chrome OS Flex</translation>
 <translation id="6739177684496155661">¿Deseas continuar en un nuevo perfil de Chrome?</translation>
 <translation id="6750954913813541382">Para corregir los errores ortográficos, Chrome envía a Google lo que escribes en el navegador</translation>
+<translation id="6756581345161130259">Según sea necesario, Chrome recupera la memoria de las pestañas que no estás usando activamente. Puedes cambiar este parámetro cuando lo desees en Configuración.</translation>
 <translation id="677276454032249905">¿Deseas salir de Chrome de todos modos?</translation>
 <translation id="6785872064505734160">El Asistente de Google en Chrome puede completar acciones por ti en diferentes sitios web</translation>
 <translation id="683440813066116847">Regla de entrada para que Google Chrome Canary permita el tráfico mDNS.</translation>

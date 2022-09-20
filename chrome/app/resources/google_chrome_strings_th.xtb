@@ -57,6 +57,7 @@
 <translation id="2094648590148273905">ข้อกำหนดของ Chrome OS Flex</translation>
 <translation id="2094919256425865063">ปิด Chrome ใช่ไหม</translation>
 <translation id="2106831557840787829">Chrome OS Flex เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />เพิ่มเติม เช่นเดียวกับ<ph name="BEGIN_LINK_LINUX_OSS" />สภาพแวดล้อมในการพัฒนาซอฟต์แวร์ Linux<ph name="END_LINK_LINUX_OSS" /></translation>
+<translation id="2112742052114331084">เมื่อเปิดไว้ Chrome จะเรียกคืนหน่วยความจำจากแท็บที่คุณไม่ได้ใช้งานอยู่ ซึ่งช่วยให้คอมพิวเตอร์มีทรัพยากรสำหรับงานอื่นๆ มากขึ้นและ คงความเร็วของ Chrome ไว้ได้ แท็บที่ไม่ได้ใช้งานจะปรากฏเป็นแท็บว่างและโหลดซ้ำโดยอัตโนมัติเมื่อคุณคลิก <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />หรือ<ph name="BEGIN_LINK_2" />ส่งความคิดเห็น<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">การดำเนินการนี้จะลบ <ph name="ITEMS_COUNT" /> รายการออกจากอุปกรณ์นี้ หากต้องการดึงข้อมูลภายหลัง ให้ลงชื่อเข้าใช้ Chrome ด้วย <ph name="USER_EMAIL" /></translation>
 <translation id="2121284319307530122">เปิดอีกครั้งเพื่ออัปเดต Chrome</translation>
 <translation id="2123055963409958220">ช่วยให้ Chrome ดียิ่งขึ้นด้วยการรายงาน<ph name="BEGIN_LINK" />การตั้งค่าปัจจุบัน<ph name="END_LINK" /></translation>

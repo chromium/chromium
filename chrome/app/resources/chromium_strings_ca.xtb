@@ -302,7 +302,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7682601070171973634">Chromium està explorant noves funcions que permetin als llocs web oferir la mateixa experiència de navegació utilitzant menys dades</translation>
 <translation id="7686590090926151193">Chromium no és el navegador predeterminat</translation>
 <translation id="7689606757190482937">Sincronitza i personalitza Chromium en tots els teus dispositius</translation>
-<translation id="7714577916146996629">Quan aquesta opció està activada, Chromium es reapropia de la memòria de les pestanyes que no estàs utilitzant activament. Així, s'alliberen els recursos de l'ordinador per a altres tasques i es manté l'agilitat de Chromium. Les pestanyes inactives es mostren buides i es tornen a carregar automàticament quan hi fas clic. <ph name="BEGIN_LINK" />Obtén més informació<ph name="END_LINK" /> o <ph name="BEGIN_LINK_2" />envia suggeriments<ph name="END_LINK_2" />.</translation>
 <translation id="7745317241717453663">Amb aquesta acció, se suprimiran les teves dades de navegació d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chromium com a <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">L'instal·lador no ha pogut crear un directori temporal. Comprova que hi ha espai lliure al disc i que tens permís per instal·lar el programari.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>

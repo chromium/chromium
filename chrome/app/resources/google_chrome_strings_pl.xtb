@@ -223,6 +223,7 @@
 <translation id="5386244825306882791">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chrome lub wyszukiwaniu w omniboksie.</translation>
 <translation id="5394833366792865639">Udostępnij kartę Chrome</translation>
 <translation id="5412485296464121825">W Chrome witryny mogą przechowywać informacje o Twoich zainteresowaniach. Na przykład jeśli odwiedzasz stronę internetową, żeby kupić buty na maraton, strona może zidentyfikować bieganie w maratonach jako Twoje zainteresowanie. Jeśli później odwiedzisz inną witrynę, żeby zapisać się na jakiś bieg, witryna ta może wyświetlić reklamę butów do biegania na podstawie Twoich zainteresowań.</translation>
+<translation id="5416870378730196769">Przeglądarka Chrome włączyła Oszczędzanie pamięci</translation>
 <translation id="5430073640787465221">Plik ustawień jest uszkodzony lub nieprawidłowy. Google Chrome nie może odzyskać ustawień.</translation>
 <translation id="5524761631371622910">Gdy testy są włączone i w wyniku losowego wyboru Chrome obejmuje Cię aktywny test, Twoja historia przeglądania wpływa na wyświetlane reklamy i oszacowane zainteresowania (patrz poniżej). Żeby chronić Twoją prywatność, Chrome co miesiąc automatycznie usuwa Twoje zainteresowania.</translation>
 <translation id="556024056938947818">Google Chrome próbuje pokazać hasła.</translation>
@@ -319,6 +320,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="7655455401911432608">Twoja historia przeglądania, czyli rejestr witryn, które odwiedzasz w Chrome na tym urządzeniu.</translation>
+<translation id="7726773885101561560">Aby przyspieszyć przeglądanie, Chrome odzyskuje pamięć z nieużywanych kart.</translation>
 <translation id="7747138024166251722">Instalator nie mógł utworzyć katalogu tymczasowego. Sprawdź, czy na dysku jest dość wolnego miejsca oraz sprawdź, czy posiadasz uprawnienia do instalowania programów.</translation>
 <translation id="7761834446675418963">Otwórz Chrome, klikając swoją nazwę, i rozpocznij przeglądanie.</translation>
 <translation id="7777080907402804672">Jeśli obraz nie ma przydatnego opisu, Chrome spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google. W każdej chwili możesz wyłączyć tę funkcję w ustawieniach.</translation>
@@ -391,6 +393,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8986207147630327271">Dodajesz profil służbowy w tej przeglądarce i dajesz swojemu administratorowi kontrolę tylko nad tym profilem.</translation>
 <translation id="8989968390305463310">Historia przeglądania wpływa na wyświetlane reklamy i oszacowane zainteresowania (patrz poniżej). Żeby chronić Twoją prywatność, Chrome co miesiąc automatycznie usuwa Twoje zainteresowania. Zainteresowania mogą być odświeżane, chyba że je usuniesz.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostępna jest aktualizacja Chrome}=1{Dostępna jest aktualizacja Chrome}few{Aktualizacja Chrome jest dostępna od # dni}many{Aktualizacja Chrome jest dostępna od # dni}other{Aktualizacja Chrome jest dostępna od # dnia}}</translation>
+<translation id="9003498785844995646">Gdy ta funkcja jest włączona, Chrome oszczędza baterię, ograniczając aktywność w tle i efekty wizualne, takie jak płynne przewijanie i liczba klatek w filmie. <ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> lub <ph name="BEGIN_LINK_2" />prześlij opinię<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">System ChromeOS Flex</translation>
 <translation id="9067395829937117663">Google Chrome wymaga systemu Windows 7 lub nowszego.</translation>
 <translation id="911206726377975832">Czy usunąć także dane przeglądania?</translation>

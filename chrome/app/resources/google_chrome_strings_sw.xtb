@@ -61,6 +61,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2094648590148273905">Sheria na masharti ya ChromeOS Flex</translation>
 <translation id="2094919256425865063">Ungependa kufunga Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex imewezeshwa na <ph name="BEGIN_LINK_CROS_OSS" />programu huria<ph name="END_LINK_CROS_OSS" /> za ziada kama vile, <ph name="BEGIN_LINK_LINUX_OSS" />mazingira ya wasanidi programu wa Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Ukiwasha mipangilio hii, Chrome hurejesha hifadhi ya vichupo ambavyo huendelei kutumia. Hatua hii hufuta nyenzo katika kompyuta yako na kuongeza nafasi kwa ajili ya shughuli zingine na kuifanya Chrome kufanya kazi kwa kasi. Vichupo visivyotumika huonekana vitupu na hupakia kiotomatiki unapovibofya. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /> au <ph name="BEGIN_LINK_2" />tuma maoni<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Hatua hii itafuta vipengee <ph name="ITEMS_COUNT" /> kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chrome ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Fungua tena ili Usasishe &amp;Chrome</translation>
 <translation id="2123055963409958220">Saidia kuboresha Chrome kwa kuripoti kuhusu <ph name="BEGIN_LINK" />mipangilio ya sasa<ph name="END_LINK" /></translation>
@@ -279,6 +280,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6735387454586646204">Mfumo wa ChromeOS Flex</translation>
 <translation id="6739177684496155661">Ungependa kutumia wasifu mpya kwenye Chrome?</translation>
 <translation id="6750954913813541382">Ili kurekebisha makosa ya tahajia, Chrome hutuma kwa Google maandishi unayoandika kwenye kivinjari</translation>
+<translation id="6756581345161130259">Kulingana na mahitaji, Chrome hurejesha hifadhi ya vichupo ambavyo huendelei kutumia. Unaweza kubadilisha hali hii wakati wowote katika mipangilio.</translation>
 <translation id="677276454032249905">Ungependa kufunga Chrome?</translation>
 <translation id="6785872064505734160">Programu ya Mratibu wa Google katika Chrome inaweza kukukamilishia vitendo kwenye tovuti</translation>
 <translation id="683440813066116847">Sheria ya ndani ya Google Chrome Canary ili kuruhusu trafiki ya mDNS.</translation>

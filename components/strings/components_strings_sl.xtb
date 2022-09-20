@@ -174,6 +174,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1380591466760231819">Prepogibanje v obliki pisma</translation>
 <translation id="138218114945450791">Svetlo modra</translation>
 <translation id="1382194467192730611">Naprava USB, ki jo je dovolil skrbnik</translation>
+<translation id="1382378825779654399">Če se cena zniža na katerem koli spletnem mestu, boste prejeli e-poštna opozorila. Ta stran bo shranjena v mapi <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Niso prikazani najnovejši podatki? Obrnite se na banko in jih posodobite.</translation>
 <translation id="1384725838384960382">Preglednica za preverjanje pristnosti poverilnice za varno plačilo</translation>
 <translation id="1386623374109090026">Pripisi</translation>
@@ -1520,6 +1521,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5018422839182700155">Te strani ni mogoče odpreti</translation>
 <translation id="5019198164206649151">Neprimerno stanje rezervne shrambe</translation>
 <translation id="5020776957610079374">Svetovna glasba</translation>
+<translation id="5021557570875267742">Spremljanje cen v Chromu</translation>
 <translation id="5023310440958281426">Preverite skrbnikove pravilnike</translation>
 <translation id="5029568752722684782">Počisti kopijo</translation>
 <translation id="5030338702439866405">Izdajatelj</translation>
@@ -2240,6 +2242,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6993898126790112050">6x9 (Envelope)</translation>
 <translation id="6996312675313362352">Vedno prevedi ta jezik: <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Zabavna industrija</translation>
+<translation id="7003335073762455340">Spremljate ta izdelek. Ta stran je shranjena v mapi <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Uporabite Windows Hello za hitrejše potrjevanje kartic</translation>
 <translation id="7006930604109697472">Vseeno pošlji</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3034,6 +3037,7 @@ Dodatne podrobnosti:
 <translation id="9174623988242579721">Vozila po meri in predelana vozila</translation>
 <translation id="9174917557437862841">Gumb za preklop zavihkov, pritisnite Enter, če želite preklopiti na ta zavihek</translation>
 <translation id="9179703756951298733">Upravljanje plačil in podatkov o kreditnih karticah v nastavitvah v Chromu</translation>
+<translation id="9179907736442194268">Prejmite e-poštna opozorila, če se cena zniža na katerem koli spletnem mestu.</translation>
 <translation id="9183302530794969518">Google Dokumenti</translation>
 <translation id="9183425211371246419">Spletno mesto <ph name="HOST_NAME" /> uporablja nepodprt protokol.</translation>
 <translation id="9187461866967718678">Ekstremni športi</translation>

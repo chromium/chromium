@@ -230,6 +230,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5386244825306882791">It also controls what page is shown when you start Chrome or search from the Omnibox.</translation>
 <translation id="5394833366792865639">Share a Chrome tab</translation>
 <translation id="5412485296464121825">Sites can store information with Chrome about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>
+<translation id="5416870378730196769">Chrome turned on Memory Saver</translation>
 <translation id="5430073640787465221">Your preferences file is corrupt or invalid.
 
 Google Chrome is unable to recover your settings.</translation>
@@ -328,6 +329,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7649070708921625228">Help</translation>
 <translation id="7651907282515937834">Chrome Enterprise logo</translation>
 <translation id="7655455401911432608">Your browsing history, a record of sites that you've visited using Chrome on this device.</translation>
+<translation id="7726773885101561560">To make your browsing faster, Chrome reclaims memory from tabs that you aren't using.</translation>
 <translation id="7747138024166251722">The installer couldn't create a temporary directory. Please check for free disk space and permission to install software.</translation>
 <translation id="7761834446675418963">Click your name to open Chrome and start browsing.</translation>
 <translation id="7777080907402804672">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>
@@ -400,6 +402,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8986207147630327271">You are adding a work profile to this browser and giving your administrator control over just the work profile.</translation>
 <translation id="8989968390305463310">Your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.</translation>
 <translation id="8999208279178790196">{0,plural, =0{A Chrome update is available}=1{A Chrome update is available}other{A Chrome update has been available for # days}}</translation>
+<translation id="9003498785844995646">When on, Chrome conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /> or <ph name="BEGIN_LINK_2" />send feedback<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">Chrome OS Flex system</translation>
 <translation id="9067395829937117663">Google Chrome requires Windows 7 or higher.</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>

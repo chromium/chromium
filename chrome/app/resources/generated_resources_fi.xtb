@@ -697,6 +697,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1640283014264083726">PKCS #1 MD4 ja RSA-salaus</translation>
 <translation id="1641113438599504367">Selaussuoja</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" />: lisää toimintoja</translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Toista salasanaa ei tuotu, koska se on muotoiltu virheellisesti}other{{NUM_PASSWORDS} muuta salasanaa ei tuotu, koska ne on muotoiltu virheellisesti}}</translation>
 <translation id="1642492862748815878">Yhdistetty laitteeseen <ph name="DEVICE" /> ja <ph name="NUMBER_OF_DEVICES" /> muuhun Bluetooth-laitteeseen</translation>
 <translation id="1642494467033190216">Rootfs-suojauksen poisto ja uudelleenkäynnistys vaaditaan, ennen kuin muut virheenkorjausominaisuudet voidaan ottaa käyttöön.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA ‑allekirjoitus, jossa on SHA-1</translation>
@@ -1846,6 +1847,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2673135533890720193">Tarkastella selaushistoriaasi</translation>
 <translation id="2674764818721168631">Pois päältä</translation>
 <translation id="2678063897982469759">Ota uudelleen käyttöön</translation>
+<translation id="2678100101831051676">Striimaus ei onnistu.</translation>
 <translation id="268053382412112343">Hi&amp;storia</translation>
 <translation id="2681124317993121768">Vierasprofiileja ei tueta</translation>
 <translation id="2682498795777673382">Päivitys vanhemmalta</translation>
@@ -3880,6 +3882,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4617019240346358451">Päivitä sivu käyttääksesi laajennusta: <ph name="EXTENSION_NAME" /></translation>
 <translation id="4617270414136722281">Laajennusasetukset</translation>
 <translation id="4617880081511131945">Yhteyttä ei voi muodostaa</translation>
+<translation id="4618195822946934889">URL-osoite voi sisältää vain ASCII-merkkejä</translation>
 <translation id="4619564267100705184">Todenna henkilöllisyytesi</translation>
 <translation id="4619615317237390068">Välilehdet muista laitteista</translation>
 <translation id="4620809267248568679">Laajennus on ottanut käyttöön tämän asetuksen.</translation>
@@ -5080,6 +5083,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5800351251499368110">Sulje haku sivupaneelista. Haku on avoinna sivupaneelissa.</translation>
 <translation id="5801568494490449797">Asetukset</translation>
 <translation id="5804241973901381774">Luvat</translation>
+<translation id="5805268472388605531">Näet aksenttimerkit ja erikoismerkit painamalla näppäimiä pitkään</translation>
 <translation id="5805697420284793859">Ikkunat</translation>
 <translation id="5806447147478173900">Näkyvien sivustojen käyttämä tallennustila yhteensä: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (oletus)</translation>
@@ -5721,6 +5725,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="642469772702851743">Omistaja on lukinnut laitteen (sarjanumero <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6425556984042222041">Tekstistä puheeksi ‑nopeus</translation>
 <translation id="642729974267661262">Äänten toistaminen kielletty</translation>
+<translation id="6427608534767366138"><ph name="NETWORK_ID" />: Välityspalvelimen todennus vaaditaan</translation>
 <translation id="6429384232893414837">Päivitysvirhe</translation>
 <translation id="6430814529589430811">Base64-koodattu ASCII, yksittäinen varmenne</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> ottaa käyttöön automaattiset päivitykset kaikille tämän tietokoneen käyttäjille.</translation>
@@ -7854,6 +7859,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="844063558976952706">Aina tässä sivustossa</translation>
 <translation id="8441313165929432954">Laita yhteyden jakaminen päälle tai pois päältä</translation>
 <translation id="8443795068008423036">Varmista, että laite on ajan tasalla, ja yritä uudelleen</translation>
+<translation id="8443986842926457191">URL-osoitteessa on yli 2 048 merkkiä</translation>
 <translation id="8446884382197647889">Lisätietoja</translation>
 <translation id="8447409163267621480">Lisää alkuun joko Ctrl tai Alt</translation>
 <translation id="844850004779619592">Komentoja ei löydy</translation>
@@ -7919,6 +7925,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="851263357009351303">Salli aina sivuston <ph name="HOST" /> näyttää kuvia</translation>
 <translation id="8513108775083588393">Autom. kääntö</translation>
 <translation id="8514746246728959655">Kokeile toista suojausavainta</translation>
+<translation id="8519895319663397036">Salasanojen siirto ei onnistu. Tiedostokoon täytyy olla alle 150 kt.</translation>
 <translation id="8523493869875972733">Säilytä muutokset</translation>
 <translation id="8523849605371521713">Käytännön lisäämä</translation>
 <translation id="8524783101666974011">Tallenna kortteja Google-tilillesi</translation>

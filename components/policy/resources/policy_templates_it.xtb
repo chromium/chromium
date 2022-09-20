@@ -6001,6 +6001,15 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7200364929485466022">L'ora in cui dovrebbe essere eseguito il controllo della disponibilità di aggiornamenti, nel fuso orario locale del dispositivo.</translation>
 <translation id="7202925763179776247">Consenti limitazioni dei download</translation>
 <translation id="7207095846245296855">Forza il filtro SafeSearch di Google</translation>
+<translation id="7208483746373960784">Questa impostazione consente di stabilire la quantità di dati utente da conservare dopo la disattivazione di <ph name="LACROS_NAME" />.
+
+      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_NONE" />, la migrazione dei dati a ritroso non viene eseguita.
+
+      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, tutti i dati utente vengono rimossi. Questa è l'opzione più sicura.
+
+      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, la maggior parte dei dati utente viene rimossa. Vengono conservati solo i file indipendenti dal browser (come i download).
+
+      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, tutti i dati utente vengono conservati. Questa opzione presenta un rischio elevato di errore, che richiede il Powerwash per il ripristino.</translation>
 <translation id="7211368186050418507">Non rilevare mai automaticamente il fuso orario</translation>
 <translation id="7216442368414164495">Consenti agli utenti di attivare i rapporti estesi di Navigazione sicura</translation>
 <translation id="721970071627370558">Disattiva i report sullo stato di alimentazione del dispositivo</translation>

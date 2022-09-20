@@ -42,6 +42,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1229222343402087523">Kërko ${searchPhrase} në Chrome</translation>
 <translation id="1242044645101871359">Identifikohu përsëri</translation>
 <translation id="1254117744268754948">Zgjidh dosjen</translation>
+<translation id="1258491128795710625">Më të rejat</translation>
 <translation id="1265739287306757398">Mëso se si</translation>
 <translation id="1272079795634619415">Ndalo</translation>
 <translation id="1275718070701477396">Përzgjedhur</translation>
@@ -55,6 +56,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1322735045095424339">Organizata jote kërkon modalitetin "e fshehtë"</translation>
 <translation id="1323735185997015385">Fshi</translation>
 <translation id="132683371494960526">Trokit dy herë për të ndryshuar dosjen mëmë.</translation>
+<translation id="1335348992705722518">Menaxho "Cilësimet"...</translation>
 <translation id="1340643665687018190">Mbylle menynë</translation>
 <translation id="1358214951266274152">Vizito lidhjen që kopjove</translation>
 <translation id="1360432990279830238">Do të dalësh dhe çaktivizosh sinkronizimin?</translation>
@@ -383,6 +385,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4187450337729239226">Ngjit dhe kërko</translation>
 <translation id="4223967053752765281">Organizata jote ka e çaktivizuar identifikimin. Mund të shikosh ende faqeshënuesit, historikun, fjalëkalimet dhe cilësime të tjera në këtë pajisje. Nëse bën ndryshime, ato nuk do të sinkronizohen me llogarinë tënde.</translation>
 <translation id="4233831822770018312">Modifiko lejet</translation>
+<translation id="4236584471598725073">Çmimi po monitorohet</translation>
 <translation id="4237377247299956313">Trokit <ph name="BEGIN_BOLD" />Aplikacionin e parazgjedhur të shfletuesit<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Fut frazën e kalimit</translation>
 <translation id="4249955472157341256">Rendit sipas "Më të fundit"</translation>
@@ -562,6 +565,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5728700505257787410">Na vjen keq, ka pasur një problem identifikimi në llogarinë tënde.</translation>
 <translation id="5731784586962650619">Fjalëkalimet në aplikacionet e tjera</translation>
 <translation id="5737974891429562743">Detajet e identifikimit të llogarisë nuk janë të përditësuara. Përditësoji për të filluar sinkronizimin.</translation>
+<translation id="5738385766833540397">Menaxho se si i merr sinjalizimet për uljet e çmimeve për produktet që monitoron</translation>
 <translation id="5738887413654608789">Kjo të lejon të zbulosh faqe uebi që kanë lidhje bazuar në ambientin rrethues.</translation>
 <translation id="5758631781033351321">Këtu do të gjesh listën tënde të leximit</translation>
 <translation id="5765456154762864099">"Menyja → Cilësimet→ Shfletuesi i parazgjedhur"</translation>

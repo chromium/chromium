@@ -301,7 +301,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7682601070171973634">Chromium utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av dataene dine og likevel gi deg den samme nettlesingsopplevelsen</translation>
 <translation id="7686590090926151193">Chromium er ikke standardnettleseren din</translation>
 <translation id="7689606757190482937">Synkroniser og gi Chromium et personlig preg på alle enhetene dine</translation>
-<translation id="7714577916146996629">Når denne innstillingen er på, gjenvinner Chromium minne fra faner du ikke bruker aktivt. Dette frigjør datamaskinens ressurser til andre oppgaver og sørger for at Chromium holder seg rask. Inaktive faner vises som tomme og lastes automatisk inn på nytt når du klikker på dem. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" />, eller <ph name="BEGIN_LINK_2" />send en tilbakemelding<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">Dette sletter nettlesingsdataene dine fra denne enheten. For å hente dataene dine igjen senere må du logge på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Installasjonsprogrammet kunne ikke opprette en midlertidig katalog. Kontroller at du har nok ledig diskplass og tillatelse til å installere programvare.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -331,6 +330,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8453117565092476964">Installasjonsarkivet er skadet eller ugyldig. Last ned Chromium på nytt.</translation>
 <translation id="8463672209299734063">Valgfritt: Bidra til å gjøre funksjonene og ytelsen til ChromiumOS bedre ved å sende diagnostikk og bruksdata automatisk til Google.</translation>
 <translation id="8493179195440786826">Chromium er utdatert</translation>
+<translation id="8522220489792889625">Ved behov tar Chromium tilbake minne fra faner du ikke bruker aktivt. Du kan når som helst endre dette i innstillingene.</translation>
 <translation id="8550334526674375523">Denne jobbprofilen er helt separat fra den personlige profilen din.</translation>
 <translation id="8558383651099478961">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chromium. Du har ikke tillatelse til å legge til denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">For å få fremtidige Chromium-oppdateringer må du ha macOS 10.13 eller nyere. Denne datamaskinen bruker macOS 10.12.</translation>

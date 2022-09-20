@@ -175,6 +175,7 @@
 <translation id="1380591466760231819">បត់ជា​សំបុត្រ</translation>
 <translation id="138218114945450791">ខៀវខ្ចី</translation>
 <translation id="1382194467192730611">អ្នក​គ្រប់គ្រង​របស់អ្នកបានអនុញ្ញាត​ឧបករណ៍ USB</translation>
+<translation id="1382378825779654399">អ្នក​នឹង​ទទួលបាន​ការជូនដំណឹង​តាមអ៊ីមែល ប្រសិនបើ​មាន​ការធ្លាក់ថ្លៃ​នៅលើ​គេហទំព័រ​ណាមួយ។ ទំព័រ​នេះ​នឹង​ត្រូវបាន​រក្សាទុក​ទៅ<ph name="LAST_BOOKMARKS_FOLDER" />។</translation>
 <translation id="1382912999714108023">មិនឃើញព័ត៌មាន​បច្ចុប្បន្នរបស់អ្នក​ឬ? សូមទាក់ទង​ធនាគាររបស់អ្នក ដើម្បីធ្វើបច្ចុប្បន្នភាពវា។</translation>
 <translation id="1384725838384960382">បញ្ជីផ្ទៀងផ្ទាត់ព័ត៌មានបង់ប្រាក់ដែលមានសុវត្ថិភាព</translation>
 <translation id="1386623374109090026">ចំណារ</translation>
@@ -1524,6 +1525,7 @@
 <translation id="5018422839182700155">មិនអាចបើកទំព័រនេះបានទេ</translation>
 <translation id="5019198164206649151">កន្លែងផ្ទុកមូលដ្ឋាននៅក្នុងស្ថានភាពមិនល្អ</translation>
 <translation id="5020776957610079374">តន្ត្រី​ពិភពលោក</translation>
+<translation id="5021557570875267742">តាមដាន​តម្លៃ​ដោយប្រើ Chrome</translation>
 <translation id="5023310440958281426">ពិនិត្យគោលការណ៍អ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="5029568752722684782">ជម្រះការថតចម្លង</translation>
 <translation id="5030338702439866405">ចេញដោយ</translation>
@@ -2244,6 +2246,7 @@
 <translation id="6993898126790112050">6x9 (ស្រោម​សំបុត្រ)</translation>
 <translation id="6996312675313362352">បកប្រែ <ph name="ORIGINAL_LANGUAGE" /> ជានិច្ច</translation>
 <translation id="6999969238895751684">ឧស្សាហកម្ម​កម្សាន្ត</translation>
+<translation id="7003335073762455340">អ្នក​កំពុងតាមដាន​ផលិតផល​នេះ។ ទំព័រ​នេះ​ត្រូវបាន​រក្សាទុក​នៅក្នុង<ph name="LAST_BOOKMARKS_FOLDER" />។</translation>
 <translation id="7004583254764674281">ប្រើ Windows Hello ដើម្បី​បញ្ជាក់​បណ្ណ​ឱ្យ​បាន​រហ័ស​ជាងមុន</translation>
 <translation id="7006930604109697472">មិនអីទេ ផ្ញើចុះ</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3040,6 +3043,7 @@
 <translation id="9174623988242579721">យានជំនិះ​ល្បឿនលឿន និង​កែច្នៃ</translation>
 <translation id="9174917557437862841">ចុច​ប៊ូតុង​ប្ដូរ រួចចុច "Enter" ដើម្បី​ប្ដូរ​ទៅ​ផ្ទាំងនេះ</translation>
 <translation id="9179703756951298733">គ្រប់គ្រងការបង់ប្រាក់ និងព័ត៌មានអំពី​បណ្ណឥណទានរបស់អ្នក​នៅក្នុងការកំណត់ Chrome</translation>
+<translation id="9179907736442194268">ទទួលបាន​ការជូនដំណឹងតាមអ៊ីមែល ប្រសិនបើ​មាន​ការធ្លាក់ថ្លៃ​នៅលើ​គេហទំព័រ​ណាមួយ</translation>
 <translation id="9183302530794969518">Google ឯកសារ</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ប្រើប្រូតូកូលដែលមិនត្រូវបានគាំទ្រ</translation>
 <translation id="9187461866967718678">កីឡា​គ្រោះថ្នាក់​ខ្លាំង</translation>

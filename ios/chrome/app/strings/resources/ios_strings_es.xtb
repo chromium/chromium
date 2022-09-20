@@ -42,6 +42,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1229222343402087523">Buscar ${searchPhrase} en Chrome</translation>
 <translation id="1242044645101871359">Vuelve a iniciar sesión</translation>
 <translation id="1254117744268754948">Seleccionar carpeta</translation>
+<translation id="1258491128795710625">Novedades</translation>
 <translation id="1265739287306757398">Más información</translation>
 <translation id="1272079795634619415">Detener</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
@@ -384,6 +385,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4187450337729239226">Pegar y buscar</translation>
 <translation id="4223967053752765281">Tu organización ha desactivado el inicio de sesión. Podrás seguir viendo tus marcadores, el historial, las contraseñas y otros ajustes en este dispositivo. Si realizas cambios, no se sincronizarán con tu cuenta.</translation>
 <translation id="4233831822770018312">Editar permisos</translation>
+<translation id="4236584471598725073">Seguimiento de precios</translation>
 <translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />App del navegador por omisión<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Introduce tu frase de contraseña</translation>
 <translation id="4249955472157341256">Ordenar por más recientes</translation>
@@ -563,6 +565,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5728700505257787410">Error al iniciar sesión en tu cuenta</translation>
 <translation id="5731784586962650619">Contraseñas en otras aplicaciones</translation>
 <translation id="5737974891429562743">Información de inicio de sesión de la cuenta obsoleta. Actualízala para iniciar la sincronización.</translation>
+<translation id="5738385766833540397">Gestiona cómo recibes las alertas de bajadas de precio de los productos que sigues</translation>
 <translation id="5738887413654608789">Esto te permite descubrir páginas web relevantes según lo que te rodea.</translation>
 <translation id="5758631781033351321">Aquí verás tu lista de lectura</translation>
 <translation id="5765456154762864099">Menú → Configuración → Navegador predeterminado</translation>

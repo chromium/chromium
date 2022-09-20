@@ -42,6 +42,7 @@
 <translation id="1229222343402087523">在 Chrome 中搜尋「${searchPhrase}」</translation>
 <translation id="1242044645101871359">重新登入</translation>
 <translation id="1254117744268754948">選擇資料夾</translation>
+<translation id="1258491128795710625">新功能</translation>
 <translation id="1265739287306757398">操作說明</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275718070701477396">已選取</translation>
@@ -55,6 +56,7 @@
 <translation id="1322735045095424339">貴機構規定必須使用無痕模式</translation>
 <translation id="1323735185997015385">刪除</translation>
 <translation id="132683371494960526">輕觸兩下即可變更上層資料夾。</translation>
+<translation id="1335348992705722518">管理設定...</translation>
 <translation id="1340643665687018190">關閉選單</translation>
 <translation id="1358214951266274152">前往你複製的連結</translation>
 <translation id="1360432990279830238">要登出並關閉同步處理功能嗎？</translation>
@@ -383,6 +385,7 @@
 <translation id="4187450337729239226">貼上並搜尋</translation>
 <translation id="4223967053752765281">貴機構已關閉登入功能。你仍然可以在這部裝置上查看自己的書籤、歷史記錄、密碼和其他設定，但你所做的變更將不會同步到帳戶。</translation>
 <translation id="4233831822770018312">編輯權限</translation>
+<translation id="4236584471598725073">追蹤價格</translation>
 <translation id="4237377247299956313">輕觸 [預設的瀏覽器應用程式]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">輸入通關密語</translation>
 <translation id="4249955472157341256">依最新時間排序</translation>
@@ -562,6 +565,7 @@
 <translation id="5728700505257787410">很抱歉，登入您的帳戶時發生問題。</translation>
 <translation id="5731784586962650619">其他應用程式中的密碼</translation>
 <translation id="5737974891429562743">帳戶登入詳細資訊過舊。請先更新，再開始進行同步處理。</translation>
+<translation id="5738385766833540397">管理如何接收追蹤產品的降價快訊</translation>
 <translation id="5738887413654608789">可讓你找到與目前周遭環境相關的網頁。</translation>
 <translation id="5758631781033351321">這裡會顯示你的閱讀清單</translation>
 <translation id="5765456154762864099">「選單」→「設定」→「預設瀏覽器」</translation>

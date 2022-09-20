@@ -2393,6 +2393,7 @@
           只有當閒置動作設為登出或關機時，系統才會顯示警告訊息。</translation>
 <translation id="3360490004791301756">允許使用者透過 <ph name="PRODUCT_OS_NAME" /> 註冊機制兌換優惠</translation>
 <translation id="3363360928811201045">對受管理帳戶設定限制</translation>
+<translation id="3364400740222114778">帳戶救援</translation>
 <translation id="3373381043600809954">啟用「<ph name="PRODUCT_NAME" />」</translation>
 <translation id="3374587000313305002">設定 <ph name="PRODUCT_NAME" /> 用來儲存使用者資料的目錄。
 
@@ -3304,6 +3305,7 @@
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="4389073105055031853">允許使用者管理所有憑證</translation>
 <translation id="4389091865841123886">使用 TPM 機制設定遠端證明。</translation>
+<translation id="4397045637922200204">停用帳戶救援服務</translation>
 <translation id="4397464099112037398">預設的視窗放置權限設定</translation>
 <translation id="4401496838830169080">可讓你控管是否要啟用 <ph name="PRODUCT_NAME" /> 的安全瀏覽功能，以及這項功能要在哪種模式下運作。
 
@@ -6187,6 +6189,15 @@
 <translation id="7482768039644066614">啟用網頁載入中繼資料擷取功能和強化瀏覽體驗的機器學習模型</translation>
 <translation id="7485481791539008776">預設印表機選取規則</translation>
 <translation id="7486205887492534734">當有多個憑證相符時，在登入畫面中顯示提示訊息</translation>
+<translation id="7489661071474025727">指定是否要在 <ph name="PRODUCT_OS_NAME" /> 裝置上為使用者啟用帳戶救援服務。
+
+      如果啟用這項政策，系統就會啟用使用者資料復原功能。如果未啟用或未設定這項政策，系統就不會啟用使用者資料復原功能。
+      如果政策層級設為「建議採用」，使用者就能透過設定頁面變更帳戶救援的啟用程序；如果政策層級設為「強制」，表示使用者無法變更帳戶救援服務的啟用程序。
+
+      政策值變更後，更新程序會在下一次登入 <ph name="PRODUCT_OS_NAME" /> 裝置時完成 (即系統擷取到新的政策值之後)。
+
+      注意：這項設定僅適用於加到 <ph name="PRODUCT_OS_NAME" /> 裝置的新帳戶。
+      </translation>
 <translation id="7491720878670299691">系統針對事件輪詢和檢查網路資料的頻率。下限值是 1 分鐘。
 
       如果未設定，系統會套用 1 分鐘的預設頻率。</translation>
@@ -7172,6 +7183,7 @@
 <translation id="8543108307976719751">禁止與這部裝置建立遠端存取連線</translation>
 <translation id="8544375438507658205">預設 <ph name="PRODUCT_FRAME_NAME" /> 的 HTML 轉譯器</translation>
 <translation id="8544465954173828789">允許將簡訊從手機同步至 Chromebook。</translation>
+<translation id="8549906780629620346">啟用帳戶救援服務</translation>
 <translation id="8553955290407912156">你可以透過這項政策建立網址模式清單，用於指定無法要求使用者授予 HID 裝置存取權的網站。
 
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。

@@ -260,6 +260,7 @@
 <translation id="156703335097561114">Информације о мрежама попут адреса, конфигурације интерфејса и квалитета везе</translation>
 <translation id="1567040042588613346">Ове смернице раде као што је предвиђено, али иста вредност је подешена на другом месту и замењују је ове смернице.</translation>
 <translation id="1569487616857761740">Унесите датум истека</translation>
+<translation id="1569694109004336106">Google Chrome покушава да укључи Windows Hello за попуњавање лозинки.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Дошло је до грешке при приказивању ове веб-странице.</translation>
 <translation id="1586541204584340881">додатке које сте инсталирали</translation>
@@ -398,6 +399,7 @@
 <translation id="1958218078413065209">Ваш највиши резултат је <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Помозите да побољшамо безбедност на вебу за све тако што ћете слати <ph name="BEGIN_WHITEPAPER_LINK" />URL-ове неких страница које посећујете, ограничене информације о систему и одређени садржај страница<ph name="END_WHITEPAPER_LINK" /> Google-у <ph name="BEGIN_PRIVACY_PAGE_LINK" />Политика приватности<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> – обележивачи</translation>
+<translation id="1971033026002113380">Заштитите лозинке помоћу TouchID-ја</translation>
 <translation id="1973335181906896915">Грешка при серијализацији</translation>
 <translation id="1974060860693918893">Напредне опције</translation>
 <translation id="1975457531113383421">Улазна фиока</translation>
@@ -725,6 +727,7 @@
 <translation id="2881276955470682203">Желите ли да сачувате картицу?</translation>
 <translation id="2882949212241984732">Двоструко пресавијање у облику прозора</translation>
 <translation id="2893773853358652045">Четврти котур</translation>
+<translation id="289834758818479772">Ако делите овај уређај са другима, можете да укључите TouchID да бисте потврдили да сте то ви када год користите сачувану лозинку</translation>
 <translation id="2900528713135656174">Направите догађај</translation>
 <translation id="2903493209154104877">Адресе</translation>
 <translation id="290376772003165898">Ова страница није на језику <ph name="LANGUAGE" />?</translation>
@@ -801,6 +804,8 @@
 <translation id="3108943290502734357">Средња фиока</translation>
 <translation id="3109728660330352905">Немате овлашћење да прегледате ову страницу.</translation>
 <translation id="3113284927548439113">Трећа смена</translation>
+<translation id="3114040155724590991">Ажурирање Android система
+    Покретање апликације може да траје дуже него обично.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Желите да преузмете поверљив фајл?}one{Желите да преузмете поверљиве фајлове?}few{Желите да преузмете поверљиве фајлове?}other{Желите да преузмете поверљиве фајлове?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Ламинирање</translation>
@@ -1255,6 +1260,7 @@
 <translation id="4306812610847412719">привремена меморија</translation>
 <translation id="4308567447483056043">Ове смернице се игноришу зато што корисник није повезан. Да би се ове смернице примењивале, иста организација мора да управља Chrome прегледачем и профилом преко Администраторске конзоле.</translation>
 <translation id="4310070645992025887">Претражите своје путеве</translation>
+<translation id="4310496734563057511">Ако делите овај уређај са другима, можете да укључите Windows Hello да бисте потврдили да сте то ви када год користите сачувану лозинку</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокирај (подразумевано)</translation>
 <translation id="4314815835985389558">Управљајте синхронизацијом</translation>
@@ -1469,6 +1475,7 @@
 <translation id="4880827082731008257">Претражи историју</translation>
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="4885256590493466218">Плаћајте помоћу картице <ph name="CARD_DETAIL" /></translation>
+<translation id="4887406273302438710">Заштитите лозинке помоћу Windows Hello-а</translation>
 <translation id="4888600795924685526">Студије страних језика</translation>
 <translation id="4889420713887366944">Дугме Отвори прозор без архивирања, притисните Enter да бисте отворили нов прозор без архивирања и прегледали приватно</translation>
 <translation id="4892518386797173871">Задњи део</translation>
@@ -1687,6 +1694,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> жели да вам шаље обавештења</translation>
 <translation id="5428105026674456456">шпански</translation>
 <translation id="5430298929874300616">Уклоните обележивач</translation>
+<translation id="5434423669266814150">укључи TouchID за попуњавање лозинки</translation>
 <translation id="5443468954631487277">Обрнутим редоследом са одштампаном страном нагоре</translation>
 <translation id="5447765697759493033">Овај сајт се неће преводити</translation>
 <translation id="5452270690849572955">Није могуће пронаћи ову страницу хоста <ph name="HOST_NAME" /></translation>
@@ -2462,6 +2470,7 @@
 <translation id="7564049878696755256">Можете да изгубите приступ налогу за <ph name="ORG_NAME" /> или би могло да дође до крађе идентитета. Chrome вам препоручује да одмах промените лозинку.</translation>
 <translation id="7564680668369175887">Караван возила</translation>
 <translation id="7567204685887185387">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат је можда лажно издат. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
+<translation id="7568616151991626879">Google Chrome покушава да унесе лозинку на <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Голф</translation>
 <translation id="7569761772822664555">Дугме Управљај претраживачима, притисните Enter да бисте управљали подразумеваним претраживачем и претрагом сајта</translation>
 <translation id="7569952961197462199">Желите ли да уклоните кредитну картицу из Chrome-а?</translation>
@@ -2492,6 +2501,7 @@
 <translation id="7637586430889951925">{COUNT,plural, =0{Ниједна}=1{1 лозинка на налогу (за <ph name="DOMAIN_LIST" />)}one{# лозинка на налогу (за <ph name="DOMAIN_LIST" />)}few{# лозинке на налогу (за <ph name="DOMAIN_LIST" />)}other{# лозинки на налогу (за <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Серијски портови</translation>
 <translation id="7639968568612851608">Тамносива</translation>
+<translation id="7646681339175747202">Лозинка коју сте управо користили је пронађена при повреди података. Google менаџер лозинки препоручује да одмах промените лозинку.</translation>
 <translation id="7647206758853451655">Квалитет штампања</translation>
 <translation id="7648992873808071793">складишти датотеке на овом уређају</translation>
 <translation id="7653957176542370971">Страница обрађивача плаћања је затворена</translation>

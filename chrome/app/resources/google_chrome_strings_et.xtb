@@ -58,6 +58,7 @@
 <translation id="2094648590148273905">Chrome OS Flexi tingimused</translation>
 <translation id="2094919256425865063">Kas väljuda Chrome'ist ikkagi?</translation>
 <translation id="2106831557840787829">Chrome OS Flexi ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="2112742052114331084">Kui see on sisse lülitatud, võtab Chrome mälu tagasi vahelehtedelt, mida te aktiivselt ei kasuta. See võimaldab teie arvuti ressursse muude ülesannete jaoks kasutada ja aitab Chrome'il kiiresti töötada. Passiivsed vahelehed kuvatakse tühjana ja laaditakse automaatselt uuesti, kui nendel klõpsate. <ph name="BEGIN_LINK" />Lugege lisateavet<ph name="END_LINK" /> või <ph name="BEGIN_LINK_2" />saatke tagasisidet<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">See kustutab sellest seadmest <ph name="ITEMS_COUNT" /> üksust. Hiljem oma andmete toomiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Taaskäivitage &amp;Chrome'i värskendamiseks</translation>
 <translation id="2123055963409958220">Aidake Chrome paremaks muuta, teavitades meid <ph name="BEGIN_LINK" />praegustest seadetest<ph name="END_LINK" /></translation>

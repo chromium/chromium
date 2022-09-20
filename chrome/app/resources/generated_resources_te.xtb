@@ -2188,6 +2188,7 @@
 <translation id="2977480621796371840">గుంపు నుండి తీసివేయండి</translation>
 <translation id="2979639724566107830">కొత్త విండోలో తెరువు</translation>
 <translation id="2981113813906970160">పెద్ద మౌస్ కర్సర్‌ను చూపు</translation>
+<translation id="2981293774053328982">ఈ ఫైల్ మాల్‌వేర్‌ను కలిగి ఉంది, దీని వలన మీ వ్యక్తిగత లేదా సోషల్ నెట్‌వర్క్ ఖాతాలకు ప్రమాదం కలగవచ్చు</translation>
 <translation id="2983373101216420412">కేస్ బ్యాటరీ స్థాయి <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />"ను ఇన్‌స్టాల్ చేయడానికి మీ అడ్మినిస్ట్రేటర్‌కు రిక్వెస్ట్‌ పంపాలా?</translation>
 <translation id="2987620471460279764">ఇతర పరికరం నుండి షేర్ చేయబడిన వచనం</translation>
@@ -3773,6 +3774,7 @@
 <translation id="4514610446763173167">ప్లే లేదా పాజ్ చేయడానికి వీడియోని టోగుల్ చేయండి</translation>
 <translation id="451515744433878153">తీసివేయండి</translation>
 <translation id="4515872537870654449">సేవ పొందడానికి డెల్‌ను సంప్రదించండి. ఫ్యాన్ పని చేయలేదంటే, ఈ డాక్ షట్ డౌన్ అవుతుంది.</translation>
+<translation id="4518840066030486079">Shift కీ మోడ్ స్టయిల్</translation>
 <translation id="4519331665958994620">మీ కెమెరాను ఉపయోగించడానికి సైట్‌లు అడగవచ్చు</translation>
 <translation id="4519935350946509010">కనెక్షన్ ఎర్రర్.</translation>
 <translation id="4520385623207007473">ఉపయోగంలో ఉన్న కుక్కీలు</translation>
@@ -3868,6 +3870,7 @@
 <translation id="4598345735110653698">పాస్-కీలను మేనేజ్ చేయండి</translation>
 <translation id="4598556348158889687">నిల్వ నిర్వహణ</translation>
 <translation id="4598776695426288251">బహుళ పరికరాల ద్వారా Wi-Fi అందుబాటులో ఉంది</translation>
+<translation id="4600071396330666617">సూచనల సంఖ్య</translation>
 <translation id="4601426376352205922">చదవనిదిగా మార్క్ చేయండి</translation>
 <translation id="4602466770786743961">మీ కెమెరా మరియు మైక్రోఫోన్‌ను యాక్సెస్ చేయడానికి <ph name="HOST" />ను ఎల్లప్పుడూ అనుమతించండి</translation>
 <translation id="4606551464649945562">మీ పరిసరాల 3D మ్యాప్‌ను రూపొందించడానికి లేదా కెమెరా పొజిషన్‌ను ట్రాక్ చేయడానికి సైట్‌లను అనుమతించవద్దు</translation>
@@ -4314,6 +4317,7 @@
 <translation id="5043913660911154449">లేదా మీ ప్రింటర్ PPDని పేర్కొనండి <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
 <translation id="504561833207953641">ఇప్పటికే ఉన్న బ్రౌజర్ సెషన్‌లో తెరుస్తోంది.</translation>
+<translation id="5049614114599109018">ఇన్‌పుట్ హిస్టరీని ఉపయోగించండి</translation>
 <translation id="5051836348807686060">మీరు ఎంచుకున్న భాషలకు స్పెల్‌చెక్ మద్దతు లేదు</translation>
 <translation id="5052499409147950210">సైట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="505347685865235222">పేరు లేని గ్రూప్ - <ph name="GROUP_CONTENT_STRING" /></translation>

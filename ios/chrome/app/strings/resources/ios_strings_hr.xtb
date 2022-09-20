@@ -42,6 +42,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="1229222343402087523">Pretraži ${searchPhrase} u Chromeu</translation>
 <translation id="1242044645101871359">Prijavite se ponovo</translation>
 <translation id="1254117744268754948">Odabir mape</translation>
+<translation id="1258491128795710625">Što je novo</translation>
 <translation id="1265739287306757398">Saznajte kako</translation>
 <translation id="1272079795634619415">Zaustavi</translation>
 <translation id="1275718070701477396">Odabrano</translation>
@@ -384,6 +385,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4187450337729239226">Zalijepi i pretraži</translation>
 <translation id="4223967053752765281">Vaša organizacija isključila je prijavljivanje. Vaše oznake, povijest, zaporke i druge postavke i dalje su vam vidljive na ovom uređaju. Ako nešto promijenite, te se promjene neće sinkronizirati s vašim računom.</translation>
 <translation id="4233831822770018312">Uređivanje dopuštenja</translation>
+<translation id="4236584471598725073">Praćenje cijene</translation>
 <translation id="4237377247299956313">Dodirnite opciju <ph name="BEGIN_BOLD" />Zadana aplikacija preglednika<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Unesite šifru</translation>
 <translation id="4249955472157341256">Poredaj po najnovijem</translation>
@@ -563,6 +565,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5728700505257787410">Došlo je do problema prilikom prijave na vaš račun.</translation>
 <translation id="5731784586962650619">Zaporke u drugim aplikacijama</translation>
 <translation id="5737974891429562743">Pojedinosti prijave na račun su zastarjele. Ažurirajte ih da biste pokrenuli sinkronizaciju.</translation>
+<translation id="5738385766833540397">Upravljajte načinom na koji primate upozorenja o sniženju cijena za proizvode koje pratite</translation>
 <translation id="5738887413654608789">To vam omogućuje da otkrijete relevantne web-stranice na temelju svojeg okruženja.</translation>
 <translation id="5758631781033351321">Ovdje ćete pronaći svoj popis za čitanje</translation>
 <translation id="5765456154762864099">Izbornik → Postavke → Zadani preglednik</translation>

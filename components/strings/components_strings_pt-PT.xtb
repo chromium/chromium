@@ -261,6 +261,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="156703335097561114">Informações de rede, tais como endereços, a configuração da interface e a qualidade da ligação</translation>
 <translation id="1567040042588613346">Esta política está a funcionar conforme esperado, mas o mesmo valor está definido noutro local e foi substituído por esta política.</translation>
 <translation id="1569487616857761740">Introduza a data de validade</translation>
+<translation id="1569694109004336106">O Google Chrome está a tentar ativar o Windows Hello para preencher palavras-passe.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Ocorreu um erro ao apresentar esta página Web.</translation>
 <translation id="1586541204584340881">As extensões que instalou.</translation>
@@ -399,6 +400,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1958218078413065209">A sua pontuação mais alta é <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Ajude a melhorar a segurança na Web para todos ao enviar <ph name="BEGIN_WHITEPAPER_LINK" />os URLs de algumas páginas que visita, informações limitadas do sistema e algum conteúdo das páginas<ph name="END_WHITEPAPER_LINK" /> para a Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Política de Privacidade<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Marcadores de <ph name="DOMAIN" /></translation>
+<translation id="1971033026002113380">Proteja palavras-passe com o TouchID</translation>
 <translation id="1973335181906896915">Erro de serialização</translation>
 <translation id="1974060860693918893">Avançadas</translation>
 <translation id="1975457531113383421">Tabuleiro de entrada</translation>
@@ -726,6 +728,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2881276955470682203">Pretende guardar o cartão?</translation>
 <translation id="2882949212241984732">Dobra simétrica dupla</translation>
 <translation id="2893773853358652045">Quarto rolo</translation>
+<translation id="289834758818479772">Se partilhar este dispositivo com outras pessoas, pode ativar o TouchID para validar a sua identidade sempre que usar uma palavra-passe guardada</translation>
 <translation id="2900528713135656174">Criar evento</translation>
 <translation id="2903493209154104877">Endereços</translation>
 <translation id="290376772003165898">A página não está em <ph name="LANGUAGE" />?</translation>
@@ -802,6 +805,8 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3108943290502734357">Tabuleiro central</translation>
 <translation id="3109728660330352905">Não tem autorização para ver esta página.</translation>
 <translation id="3113284927548439113">Terceiro turno</translation>
+<translation id="3114040155724590991">A atualizar o sistema Android
+    Iniciar a sua app pode demorar mais tempo do que o habitual.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Transferir o ficheiro confidencial?}other{Transferir os ficheiros confidenciais?}}</translation>
 <translation id="3115874930288085374">O domínio <ph name="ENROLLMENT_DOMAIN" /> requer que faça uma cópia de segurança dos seus dados e devolva este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Laminar</translation>
@@ -1256,6 +1261,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4306812610847412719">área de transferência</translation>
 <translation id="4308567447483056043">Esta política é ignorada porque o utilizador não está afiliado. Para que esta política seja aplicada, o navegador Chrome e o perfil têm de ser geridos através da consola do administrador pela mesma organização.</translation>
 <translation id="4310070645992025887">Pesquise os seus percursos</translation>
+<translation id="4310496734563057511">Se partilhar este dispositivo com outras pessoas, pode ativar o Windows Hello para validar a sua identidade sempre que usar uma palavra-passe guardada</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (predefinição)</translation>
 <translation id="4314815835985389558">Gerir sincronização</translation>
@@ -1470,6 +1476,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4880827082731008257">Pesquisar histórico</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4885256590493466218">Utilize o <ph name="CARD_DETAIL" /> no pagamento.</translation>
+<translation id="4887406273302438710">Proteja as palavras-passe com o Windows Hello</translation>
 <translation id="4888600795924685526">Estudo de línguas estrangeiras</translation>
 <translation id="4889420713887366944">Botão Abrir janela de navegação anónima; prima Enter para abrir uma nova janela de navegação anónima para navegar em privado.</translation>
 <translation id="4892518386797173871">Traseiro</translation>
@@ -1689,6 +1696,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5426179911063097041"><ph name="SITE" /> pretende enviar-lhe notificações.</translation>
 <translation id="5428105026674456456">Espanhol</translation>
 <translation id="5430298929874300616">Remover marcador</translation>
+<translation id="5434423669266814150">ativar o TouchID para preencher palavras-passe</translation>
 <translation id="5443468954631487277">Ordem inversa, com orientação para cima</translation>
 <translation id="5447765697759493033">Este site não será traduzido.</translation>
 <translation id="5452270690849572955">Não é possível encontrar esta página de <ph name="HOST_NAME" /></translation>
@@ -2465,6 +2473,7 @@ Detalhes adicionais:
 <translation id="7564049878696755256">Pode perder o acesso à sua conta do serviço <ph name="ORG_NAME" /> ou ser vítima de roubo de identidade. O Chrome recomenda a alteração da palavra-passe agora.</translation>
 <translation id="7564680668369175887">Carrinhas</translation>
 <translation id="7567204685887185387">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o respetivo certificado de segurança poderá ter sido emitido de forma fraudulenta. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
+<translation id="7568616151991626879">O Google Chrome está a tentar preencher a sua palavra-passe na app <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Golfe</translation>
 <translation id="7569761772822664555">Botão Gerir motores de pesquisa, prima Enter para gerir o seu motor de pesquisa e pesquisa de sites predefinidos</translation>
 <translation id="7569952961197462199">Remover o cartão de crédito do Chrome?</translation>
@@ -2495,6 +2504,7 @@ Detalhes adicionais:
 <translation id="7637586430889951925">{COUNT,plural, =0{Nenhuma}=1{1 palavra-passe na sua conta (para <ph name="DOMAIN_LIST" />)}other{# palavras-passe na sua conta (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Portas de série</translation>
 <translation id="7639968568612851608">Cinzento-escuro</translation>
+<translation id="7646681339175747202">A palavra-passe que acabou de usar foi encontrada numa violação de dados. O Gestor de Palavras-passe da Google recomenda que altere a palavra-passe agora.</translation>
 <translation id="7647206758853451655">Qualidade de impressão</translation>
 <translation id="7648992873808071793">Armazenar ficheiros neste dispositivo</translation>
 <translation id="7653957176542370971">A página do controlador do pagamento está fechada.</translation>
