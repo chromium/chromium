@@ -450,6 +450,7 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
                              const wchar_t* ap,
                              const wchar_t* version,
                              const wchar_t* existence_checker_path,
+                             const wchar_t* client_install_data,
                              const wchar_t* install_data_index,
                              LONG priority,
                              IUpdaterObserver* observer) {
@@ -459,9 +460,10 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
   // Validates that string parameters are not longer than 16K characters.
   absl::optional<RegistrationRequest> request =
       [app_id, brand_code, brand_path, ap, version, existence_checker_path,
-       install_data_index]() -> decltype(request) {
-    for (const auto* str : {app_id, brand_code, brand_path, ap, version,
-                            existence_checker_path, install_data_index}) {
+       client_install_data, install_data_index]() -> decltype(request) {
+    for (const auto* str :
+         {app_id, brand_code, brand_path, ap, version, existence_checker_path,
+          client_install_data, install_data_index}) {
       if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
         return absl::nullopt;
       }
@@ -511,10 +513,11 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
           [](scoped_refptr<UpdateService> update_service,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
              const RegistrationRequest& request,
+             const std::string& client_install_data,
              const std::string& install_data_index,
              UpdateService::Priority priority, IUpdaterObserverPtr observer) {
             update_service->Install(
-                request, install_data_index, priority,
+                request, client_install_data, install_data_index, priority,
                 base::BindRepeating(&StateChangeCallbackFilter::OnStateChange,
                                     base::Owned(new StateChangeCallbackFilter(
                                         task_runner, observer))),
@@ -536,6 +539,7 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
                     task_runner, observer));
           },
           com_server->update_service(), task_runner, *request,
+          base::WideToUTF8(client_install_data),
           base::WideToUTF8(install_data_index),
           static_cast<UpdateService::Priority>(priority), observer_local));
 

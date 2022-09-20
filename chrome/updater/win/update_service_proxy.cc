@@ -462,6 +462,7 @@ void UpdateServiceProxy::Update(
 }
 
 void UpdateServiceProxy::Install(const RegistrationRequest& registration,
+                                 const std::string& client_install_data,
                                  const std::string& install_data_index,
                                  Priority priority,
                                  StateChangeCallback state_update,
@@ -473,7 +474,7 @@ void UpdateServiceProxy::Install(const RegistrationRequest& registration,
       base::BindOnce(&UpdateServiceProxy::InitializeSTA, this)
           .Then(base::BindOnce(
               &UpdateServiceProxy::InstallOnSTA, this, registration,
-              install_data_index, priority,
+              client_install_data, install_data_index, priority,
               base::BindPostTask(main_task_runner_, state_update),
               base::BindPostTask(main_task_runner_, std::move(callback)))));
 }
@@ -732,6 +733,7 @@ void UpdateServiceProxy::UpdateOnSTA(
 }
 
 void UpdateServiceProxy::InstallOnSTA(const RegistrationRequest& request,
+                                      const std::string& client_install_data,
                                       const std::string& install_data_index,
                                       Priority priority,
                                       StateChangeCallback state_update,
@@ -783,6 +785,7 @@ void UpdateServiceProxy::InstallOnSTA(const RegistrationRequest& request,
   HRESULT hr = updater_->Install(
       app_id.c_str(), brand_code.c_str(), brand_path.c_str(), ap.c_str(),
       version.c_str(), existence_checker_path.c_str(),
+      base::UTF8ToWide(client_install_data).c_str(),
       base::UTF8ToWide(install_data_index).c_str(), static_cast<int>(priority),
       observer.Get());
   if (FAILED(hr)) {

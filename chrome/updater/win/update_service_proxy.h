@@ -61,6 +61,7 @@ class UpdateServiceProxy : public UpdateService {
               StateChangeCallback state_update,
               Callback callback) override;
   void Install(const RegistrationRequest& registration,
+               const std::string& client_install_data,
                const std::string& install_data_index,
                Priority priority,
                StateChangeCallback state_update,
@@ -104,6 +105,7 @@ class UpdateServiceProxy : public UpdateService {
                    HRESULT prev_hr);
 
   void InstallOnSTA(const RegistrationRequest& registration,
+                    const std::string& client_install_data,
                     const std::string& install_data_index,
                     Priority priority,
                     StateChangeCallback state_update,

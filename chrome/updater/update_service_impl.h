@@ -34,6 +34,7 @@ class PersistedData;
 struct RegistrationRequest;
 struct RegistrationResponse;
 
+using AppClientInstallData = base::flat_map<std::string, std::string>;
 using AppInstallDataIndex = base::flat_map<std::string, std::string>;
 
 // All functions and callbacks must be called on the same sequence.
@@ -59,6 +60,7 @@ class UpdateServiceImpl : public UpdateService {
               StateChangeCallback state_update,
               Callback callback) override;
   void Install(const RegistrationRequest& registration,
+               const std::string& client_install_data,
                const std::string& install_data_index,
                Priority priority,
                StateChangeCallback state_update,
@@ -99,6 +101,8 @@ class UpdateServiceImpl : public UpdateService {
   void OnShouldBlockUpdateForMeteredNetwork(
       StateChangeCallback state_update,
       Callback callback,
+      const std::vector<std::string>& app_ids,
+      const AppClientInstallData& app_client_install_data,
       const AppInstallDataIndex& app_install_data_index,
       Priority priority,
       PolicySameVersionUpdate policy_same_version_update,

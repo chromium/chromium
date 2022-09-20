@@ -79,6 +79,7 @@ class UpdateServiceImplInactive : public UpdateService {
   }
 
   void Install(const RegistrationRequest& /*registration*/,
+               const std::string& /*client_install_data*/,
                const std::string& /*install_data_index*/,
                Priority /*priority*/,
                StateChangeCallback /*state_update*/,

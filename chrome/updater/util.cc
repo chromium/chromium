@@ -21,6 +21,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -212,6 +213,23 @@ absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id) {
       });
   return it != std::end(apps_args) ? absl::optional<tagging::AppArgs>(*it)
                                    : absl::nullopt;
+}
+
+std::string GetDecodedInstallDataFromAppArgs(const std::string& app_id) {
+  const absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
+  if (!app_args)
+    return std::string();
+
+  std::string decoded_installer_data;
+  const bool result = base::UnescapeBinaryURLComponentSafe(
+      app_args->encoded_installer_data,
+      /*fail_on_path_separators=*/false, &decoded_installer_data);
+  VLOG_IF(1, !result) << "Failed to decode encoded installer data: ["
+                      << app_args->encoded_installer_data << "]";
+
+  // `decoded_installer_data` is set to empty if
+  // `UnescapeBinaryURLComponentSafe` fails.
+  return decoded_installer_data;
 }
 
 std::string GetInstallDataIndexFromAppArgs(const std::string& app_id) {

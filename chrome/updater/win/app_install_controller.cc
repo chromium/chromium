@@ -686,6 +686,7 @@ void AppInstallControllerImpl::DoInstallApp() {
                          *tag_args->usage_stats_enable),
       base::BindOnce(
           &UpdateService::Install, update_service_, request,
+          GetDecodedInstallDataFromAppArgs(app_id_),
           GetInstallDataIndexFromAppArgs(app_id_),
           UpdateService::Priority::kForeground,
           base::BindRepeating(&AppInstallControllerImpl::StateChange, this),
@@ -720,16 +721,17 @@ void AppInstallControllerImpl::InstallAppOffline(
                       base::FilePath installer_path;
                       std::string install_args;
                       std::string install_data;
-
-                      absl::optional<tagging::AppArgs> app_args =
-                          GetAppArgs(app_id);
                       ReadInstallCommandFromManifest(
                           offline_dir, app_id,
-                          app_args ? app_args->install_data_index
-                                   : std::string(),
+                          GetInstallDataIndexFromAppArgs(app_id),
                           installer_path, install_args, install_data);
+
+                      const std::string client_install_data =
+                          GetDecodedInstallDataFromAppArgs(app_id);
                       return std::make_tuple(installer_path, install_args,
-                                             install_data);
+                                             client_install_data.empty()
+                                                 ? install_data
+                                                 : client_install_data);
                     },
                     offline_dir, self->app_id_),
                 base::BindOnce(

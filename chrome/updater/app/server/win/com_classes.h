@@ -117,6 +117,7 @@ class UpdaterImpl
                          const wchar_t* tag,
                          const wchar_t* version,
                          const wchar_t* existence_checker_path,
+                         const wchar_t* client_install_data,
                          const wchar_t* install_data_index,
                          LONG priority,
                          IUpdaterObserver* observer) override;

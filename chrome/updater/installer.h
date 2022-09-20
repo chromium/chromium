@@ -76,6 +76,7 @@ AppInstallerResult RunApplicationInstaller(
 class Installer final : public update_client::CrxInstaller {
  public:
   Installer(const std::string& app_id,
+            const std::string& client_install_data,
             const std::string& install_data_index,
             const std::string& target_channel,
             const std::string& target_version_prefix,
@@ -135,6 +136,7 @@ class Installer final : public update_client::CrxInstaller {
   UpdaterScope updater_scope_;
 
   const std::string app_id_;
+  const std::string client_install_data_;
   const std::string install_data_index_;
   const bool rollback_allowed_;
   const std::string target_channel_;

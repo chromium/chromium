@@ -262,7 +262,9 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   //
   // Args:
   //   `registration`: Registration data about the app.
-  //   `install_data_index`: Index of the server install data.
+  //   `client_install_data`: User provided install data.
+  //   `install_data_index`: Index of the server install data. Effective only
+  //     when `client_install_data` is not set.
   //   `priority`: Priority for processing this update.
   //   `state_update`: The callback will be invoked every time the update
   //     changes state when the engine starts. It will be called on the
@@ -277,6 +279,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   //   `callback` arg:
   //     Result: the final result from the update engine.
   virtual void Install(const RegistrationRequest& registration,
+                       const std::string& client_install_data,
                        const std::string& install_data_index,
                        Priority priority,
                        StateChangeCallback state_update,

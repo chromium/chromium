@@ -761,6 +761,7 @@ EXTERN_C const IID IID_IUpdater;
             /* [string][in] */ const WCHAR *tag,
             /* [string][in] */ const WCHAR *version,
             /* [string][in] */ const WCHAR *existence_checker_path,
+            /* [string][in] */ const WCHAR *client_install_data,
             /* [string][in] */ const WCHAR *install_data_index,
             /* [in] */ LONG priority,
             /* [in] */ IUpdaterObserver *observer) = 0;
@@ -854,6 +855,7 @@ EXTERN_C const IID IID_IUpdater;
             /* [string][in] */ const WCHAR *tag,
             /* [string][in] */ const WCHAR *version,
             /* [string][in] */ const WCHAR *existence_checker_path,
+            /* [string][in] */ const WCHAR *client_install_data,
             /* [string][in] */ const WCHAR *install_data_index,
             /* [in] */ LONG priority,
             /* [in] */ IUpdaterObserver *observer);
@@ -917,8 +919,8 @@ EXTERN_C const IID IID_IUpdater;
 #define IUpdater_UpdateAll(This,observer)	\
     ( (This)->lpVtbl -> UpdateAll(This,observer) ) 
 
-#define IUpdater_Install(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,install_data_index,priority,observer)	\
-    ( (This)->lpVtbl -> Install(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,install_data_index,priority,observer) ) 
+#define IUpdater_Install(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,client_install_data,install_data_index,priority,observer)	\
+    ( (This)->lpVtbl -> Install(This,app_id,brand_code,brand_path,tag,version,existence_checker_path,client_install_data,install_data_index,priority,observer) ) 
 
 #define IUpdater_CancelInstalls(This,app_id)	\
     ( (This)->lpVtbl -> CancelInstalls(This,app_id) ) 

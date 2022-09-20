@@ -125,6 +125,7 @@ TagParsingResult GetTagArgs();
 // Returns the arguments corresponding to `app_id` from the command line tag.
 absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id);
 
+std::string GetDecodedInstallDataFromAppArgs(const std::string& app_id);
 std::string GetInstallDataIndexFromAppArgs(const std::string& app_id);
 
 // Returns true if the user running the updater also owns the `path`.

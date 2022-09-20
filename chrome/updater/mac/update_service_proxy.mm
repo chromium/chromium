@@ -191,6 +191,7 @@ using base::SysUTF8ToNSString;
                      tag:(NSString* _Nullable)ap
                  version:(NSString* _Nullable)version
     existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
+       clientInstallData:(NSString* _Nullable)clientInstallData
         installDataIndex:(NSString* _Nullable)installDataIndex
                 priority:(CRUPriorityWrapper* _Nonnull)priority
              updateState:(id<CRUUpdateStateObserving> _Nonnull)updateState
@@ -208,6 +209,7 @@ using base::SysUTF8ToNSString;
                        tag:ap
                    version:version
       existenceCheckerPath:existenceCheckerPath
+         clientInstallData:clientInstallData
           installDataIndex:installDataIndex
                   priority:priority
                updateState:updateState
@@ -409,6 +411,7 @@ void UpdateServiceProxy::Update(
 }
 
 void UpdateServiceProxy::Install(const RegistrationRequest& registration,
+                                 const std::string& client_install_data,
                                  const std::string& install_data_index,
                                  Priority priority,
                                  StateChangeCallback state_update,
@@ -439,6 +442,7 @@ void UpdateServiceProxy::Install(const RegistrationRequest& registration,
                     version:SysUTF8ToNSString(registration.version.GetString())
        existenceCheckerPath:base::mac::FilePathToNSString(
                                 registration.existence_checker_path)
+          clientInstallData:SysUTF8ToNSString(client_install_data)
            installDataIndex:SysUTF8ToNSString(install_data_index)
                    priority:priorityWrapper.get()
                 updateState:stateObserver.get()
