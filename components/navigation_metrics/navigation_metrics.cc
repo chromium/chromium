@@ -52,6 +52,7 @@ const char* const kSchemeNames[] = {
     "chrome-extension",
     "view-source",
     "externalfile",
+    "isolated-app",
 };
 
 static_assert(std::size(kSchemeNames) == static_cast<int>(Scheme::COUNT),

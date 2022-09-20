@@ -68107,6 +68107,7 @@ Called by update_use_counter_css.py.-->
   <int value="15" label="chrome-extension"/>
   <int value="16" label="view-source"/>
   <int value="17" label="externalfile"/>
+  <int value="18" label="isolated-app"/>
 </enum>
 
 <enum name="NavigationSuggestionDigitalAssetLinkValidationEvent">

@@ -51,6 +51,7 @@ enum class Scheme {
   CHROME_EXTENSION = 15,
   VIEW_SOURCE = 16,
   EXTERNALFILE = 17,
+  ISOLATED_APP = 18,
   COUNT,
 };
 
