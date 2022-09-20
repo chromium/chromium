@@ -8,27 +8,32 @@ namespace arc {
 
 // Controls ACTION_BOOT_COMPLETED broadcast for third party applications on ARC.
 // When disabled, third party apps will not receive this broadcast.
-const base::Feature kBootCompletedBroadcastFeature{
-    "ArcBootCompletedBroadcast", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kBootCompletedBroadcastFeature,
+             "ArcBootCompletedBroadcast",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls experimental Custom Tabs feature for ARC.
-const base::Feature kCustomTabsExperimentFeature{
-    "ArcCustomTabsExperiment", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCustomTabsExperimentFeature,
+             "ArcCustomTabsExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to handle files with unknown size.
-const base::Feature kDocumentsProviderUnknownSizeFeature{
-    "ArcDocumentsProviderUnknownSize", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDocumentsProviderUnknownSizeFeature,
+             "ArcDocumentsProviderUnknownSize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls ARC Nearby Share support.
 // When enabled, Android apps will show the Nearby Share as a share target in
 // its sharesheet.
-const base::Feature kEnableArcNearbyShare{"ArcNearbySharing",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableArcNearbyShare,
+             "ArcNearbySharing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether files shared to ARC Nearby Share are shared through the
 // FuseBox filesystem, instead of creating a temporary copy.
-const base::Feature kEnableArcNearbyShareFuseBox{
-    "ArcNearbyShareFuseBox", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableArcNearbyShareFuseBox,
+             "ArcNearbyShareFuseBox",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether crosvm for ARCVM does per-VM core scheduling on devices with
 // MDS/L1TF vulnerabilities. When this feature is disabled, crosvm does per-vCPU
@@ -42,45 +47,51 @@ const base::Feature kEnableArcNearbyShareFuseBox{
 // 3) Monitor arc.Boot.vm at go/stainless after Chrome is rolled.
 // 4) Ask ARC team (//ash/components/arc/OWNERS) to update arc.CPUSet.vm test
 //    so the Tast test uses the updated ArcEnablePerVmCoreScheduling setting.
-const base::Feature kEnablePerVmCoreScheduling{
-    "ArcEnablePerVmCoreScheduling", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnablePerVmCoreScheduling,
+             "ArcEnablePerVmCoreScheduling",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to use ARC TTS caching to optimize ARC boot.
-const base::Feature kEnableTTSCaching{"ArcEnableTTSCaching",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableTTSCaching,
+             "ArcEnableTTSCaching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to use pregenerated ARC TTS cache to optimize ARC boot and
 // also whether or not TTS cache is used.
-const base::Feature kEnableTTSCacheSetup{"ArcEnableTTSCacheSetup",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableTTSCacheSetup,
+             "ArcEnableTTSCacheSetup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether we should delegate audio focus requests from ARC to Chrome.
-const base::Feature kEnableUnifiedAudioFocusFeature{
-    "ArcEnableUnifiedAudioFocus", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableUnifiedAudioFocusFeature,
+             "ArcEnableUnifiedAudioFocus",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether ARC handles unmanaged->managed account transition.
-const base::Feature kEnableUnmanagedToManagedTransitionFeature{
-    "ArcEnableUnmanagedToManagedTransitionFeature",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableUnmanagedToManagedTransitionFeature,
+             "ArcEnableUnmanagedToManagedTransitionFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls ARC Unspecialized Application Processes.
 // When enabled, Android creates a pool of processes
 // that will start applications so that zygote doesn't have to wake.
-const base::Feature kEnableUsap{"ArcEnableUsap",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableUsap, "ArcEnableUsap", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to use virtio-blk for Android /data instead of using
 // virtio-fs.
-const base::Feature kEnableVirtioBlkForData{"ArcEnableVirtioBlkForData",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableVirtioBlkForData,
+             "ArcEnableVirtioBlkForData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to pop up ghost window for ARC app before fixup finishes.
-const base::Feature kFixupWindowFeature{"ArcFixupWindowFeature",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kFixupWindowFeature,
+             "ArcFixupWindowFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Used for overriding config params for the virtio-blk feature above.
-const base::Feature kVirtioBlkDataConfigOverride{
-    "ArcVirtioBlkDataConfigOverride", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kVirtioBlkDataConfigOverride,
+             "ArcVirtioBlkDataConfigOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to use the LVM-provided disk as the backend device for
 // Android /data instead of using the concierge-provided disk.
@@ -88,21 +99,23 @@ const base::FeatureParam<bool> kVirtioBlkDataConfigUseLvm{
     &kVirtioBlkDataConfigOverride, "use_lvm", false};
 
 // Indicates whether LVM application containers feature is supported.
-const base::Feature kLvmApplicationContainers{
-    "ArcLvmApplicationContainers", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLvmApplicationContainers,
+             "ArcLvmApplicationContainers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls experimental file picker feature for ARC.
-const base::Feature kFilePickerExperimentFeature{
-    "ArcFilePickerExperiment", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kFilePickerExperimentFeature,
+             "ArcFilePickerExperiment",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether ARCVM can request resourced make more resources available
 // for a currently-active ARCVM game.
-const base::Feature kGameModeFeature{
-    "ArcGameModeFeature", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kGameModeFeature,
+             "ArcGameModeFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the guest zram is enabled. This is only for ARCVM.
-const base::Feature kGuestZram{"ArcGuestZram",
-                               base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kGuestZram, "ArcGuestZram", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the size of the guest zram.
 const base::FeatureParam<int> kGuestZramSize{&kGuestZram, "size", 0};
@@ -113,12 +126,14 @@ const base::FeatureParam<int> kGuestZramSwappiness{&kGuestZram, "swappiness",
 
 // Enables/disables mlock() of guest memory for ARCVM.
 // Often used in combination with kGuestZram.
-const base::Feature kLockGuestMemory{"ArcLockGuestMemory",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLockGuestMemory,
+             "ArcLockGuestMemory",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Control properties of Logd at boot time. This is only for ARCVM.
-const base::Feature kLogdConfig{"ArcGuestLogdConfig",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLogdConfig,
+             "ArcGuestLogdConfig",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the size in KB of logd. Only a few sizes are supported,
 // see kLogdConfigSize* private constants in arc_vm_client_adapter.cc.
@@ -128,77 +143,90 @@ const base::Feature kLogdConfig{"ArcGuestLogdConfig",
 const base::FeatureParam<int> kLogdConfigSize{&kLogdConfig, "size", 0};
 
 // Controls keyboard shortcut helper integration feature in ARC.
-const base::Feature kKeyboardShortcutHelperIntegrationFeature{
-    "ArcKeyboardShortcutHelperIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kKeyboardShortcutHelperIntegrationFeature,
+             "ArcKeyboardShortcutHelperIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Toggles between native bridge implementations for ARC.
 // Note, that we keep the original feature name to preserve
 // corresponding metrics.
-const base::Feature kNativeBridgeToggleFeature{
-    "ArcNativeBridgeExperiment", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNativeBridgeToggleFeature,
+             "ArcNativeBridgeExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, utility processes are spawned to perform hardware decode
 // acceleration on behalf of ARC++/ARCVM instead of using the GPU process.
-const base::Feature kOutOfProcessVideoDecoding{
-    "OutOfProcessVideoDecoding", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOutOfProcessVideoDecoding,
+             "OutOfProcessVideoDecoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls ARC picture-in-picture feature. If this is enabled, then Android
 // will control which apps can enter PIP. If this is disabled, then ARC PIP
 // will be disabled.
-const base::Feature kPictureInPictureFeature{"ArcPictureInPicture",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPictureInPictureFeature,
+             "ArcPictureInPicture",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls ARCVM real time vcpu feature on a device with 2 logical cores
 // online.
 // When you change the default, you also need to change the chromeExtraAgas
 // in tast-tests/src/chromiumos/tast/local/bundles/cros/arc/cpu_set.go to
 // match it to the new default.
-const base::Feature kRtVcpuDualCore{"ArcRtVcpuDualCore",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRtVcpuDualCore,
+             "ArcRtVcpuDualCore",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls ARCVM real time vcpu feature on a device with 3+ logical cores
 // online.
 // When you change the default, you also need to modify the chromeExtraAgas
 // in tast-tests/src/chromiumos/tast/local/bundles/cros/arc/cpu_set.go to
 // add ArcRtVcpuQuadCore there. Otherwise, the test will start failing.
-const base::Feature kRtVcpuQuadCore{"ArcRtVcpuQuadCore",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRtVcpuQuadCore,
+             "ArcRtVcpuQuadCore",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, tracing raw files are saved in order to help debug failures.
-const base::Feature kSaveRawFilesOnTracing{"ArcSaveRawFilesOnTracing",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSaveRawFilesOnTracing,
+             "ArcSaveRawFilesOnTracing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, unclaimed USB device will be attached to ARCVM by default.
-const base::Feature kUsbDeviceDefaultAttachToArcVm{
-    "UsbDeviceDefaultAttachToArcVm", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUsbDeviceDefaultAttachToArcVm,
+             "UsbDeviceDefaultAttachToArcVm",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls ARC USB Storage UI feature.
 // When enabled, chrome://settings and Files.app will ask if the user wants
 // to expose USB storage devices to ARC.
-const base::Feature kUsbStorageUIFeature{"ArcUsbStorageUI",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUsbStorageUIFeature,
+             "ArcUsbStorageUI",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls ARC dalvik memory profile in ARCVM.
 // When enabled, Android tries to use dalvik memory profile tuned based on the
 // device memory size.
-const base::Feature kUseDalvikMemoryProfile{"ArcUseDalvikMemoryProfile",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUseDalvikMemoryProfile,
+             "ArcUseDalvikMemoryProfile",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the system/vendor images are mounted without specifying a
 // block size.
-const base::Feature kUseDefaultBlockSize{"ArcVmUseDefaultBlockSize",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseDefaultBlockSize,
+             "ArcVmUseDefaultBlockSize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether ARC uses VideoDecoder-backed video decoding.
 // When enabled, GpuArcVideoDecodeAccelerator will use VdVideoDecodeAccelerator
 // to delegate decoding tasks to VideoDecoder implementations, instead of using
 // VDA implementations created by GpuVideoDecodeAcceleratorFactory.
-const base::Feature kVideoDecoder{"ArcVideoDecoder",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kVideoDecoder,
+             "ArcVideoDecoder",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature to continuously log PSI memory pressure data to Chrome.
-const base::Feature kVmMemoryPSIReports{"ArcVmMemoryPSIReports",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kVmMemoryPSIReports,
+             "ArcVmMemoryPSIReports",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls how frequently memory pressure data is logged
 const base::FeatureParam<int> kVmMemoryPSIReportsPeriod{&kVmMemoryPSIReports,
@@ -209,8 +237,9 @@ const base::FeatureParam<int> kVmMemoryPSIReportsPeriod{&kVmMemoryPSIReports,
 //  min(max_mib, RAM + shift_mib)
 // If disabled, memory is sized by concierge which, at the time of writing, uses
 // RAM - 1024 MiB.
-const base::Feature kVmMemorySize{"ArcVmMemorySize",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kVmMemorySize,
+             "ArcVmMemorySize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the amount to "shift" system RAM when sizing ARCVM. The default
 // value of 0 means that ARCVM's memory will be thr same as the system.
@@ -235,8 +264,9 @@ const base::FeatureParam<int> kVmMemorySizeMaxMiB{&kVmMemorySize, "max_mib",
 // we want to stop LMKD killing things out of turn. We do this by making sure
 // ARCVM never has it's kernel page cache drop below the level that LMKD will
 // start killing.
-const base::Feature kVmBalloonPolicy{"ArcVmBalloonPolicy",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kVmBalloonPolicy,
+             "ArcVmBalloonPolicy",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The maximum amount of kernel page cache ARCVM can have when ChromeOS is under
 // moderate memory pressure. 0 for no limit.
@@ -258,13 +288,15 @@ const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB{&kVmBalloonPolicy,
 
 // Controls experimental key GMS Core and related services protection against to
 // be killed by low memory killer in ARCVM.
-const base::Feature kVmGmsCoreLowMemoryKillerProtection{
-    "ArcVmGmsCoreLowMemoryKillerProtection", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kVmGmsCoreLowMemoryKillerProtection,
+             "ArcVmGmsCoreLowMemoryKillerProtection",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls experimental key to enable pre-ANR handling for BroadcastQueue in
 // ARCVM.
-const base::Feature kVmBroadcastPreNotifyANR{"ArcVmBroadcastPreAnrHandling",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kVmBroadcastPreNotifyANR,
+             "ArcVmBroadcastPreAnrHandling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If set, enable responsive balloon sizing. Concierge will listen on a VSOCK
 // for connections from LMKD in Android. When LMKD is about to kill an App, it
