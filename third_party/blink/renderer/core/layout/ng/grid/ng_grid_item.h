@@ -15,7 +15,7 @@ namespace blink {
 
 class NGGridPlacement;
 
-enum class AxisEdge { kStart, kCenter, kEnd, kBaseline };
+enum class AxisEdge { kStart, kCenter, kEnd, kFirstBaseline, kLastBaseline };
 enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
 
 struct GridItemIndices {
@@ -54,14 +54,25 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   bool IsBaselineAlignedForDirection(
       const GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns)
-               ? InlineAxisAlignment() == AxisEdge::kBaseline
-               : BlockAxisAlignment() == AxisEdge::kBaseline;
+               ? (InlineAxisAlignment() == AxisEdge::kFirstBaseline ||
+                  InlineAxisAlignment() == AxisEdge::kLastBaseline)
+               : (BlockAxisAlignment() == AxisEdge::kFirstBaseline ||
+                  BlockAxisAlignment() == AxisEdge::kLastBaseline);
+  }
+
+  bool IsLastBaselineSpecifiedForDirection(
+      const GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns)
+               ? inline_axis_alignment == AxisEdge::kLastBaseline
+               : block_axis_alignment == AxisEdge::kLastBaseline;
   }
   bool IsBaselineSpecifiedForDirection(
       const GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns)
-               ? inline_axis_alignment == AxisEdge::kBaseline
-               : block_axis_alignment == AxisEdge::kBaseline;
+               ? (inline_axis_alignment == AxisEdge::kFirstBaseline ||
+                  inline_axis_alignment == AxisEdge::kLastBaseline)
+               : (block_axis_alignment == AxisEdge::kFirstBaseline ||
+                  block_axis_alignment == AxisEdge::kLastBaseline);
   }
 
   // For this item and track direction, computes the pair of indices |begin| and

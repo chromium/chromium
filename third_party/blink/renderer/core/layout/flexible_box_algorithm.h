@@ -175,7 +175,7 @@ class FlexItem {
   LayoutUnit MainAxisMarginExtent() const;
   LayoutUnit CrossAxisMarginExtent() const;
 
-  LayoutUnit MarginBoxAscent(bool is_wrap_reverse) const;
+  LayoutUnit MarginBoxAscent(bool is_last_baseline, bool is_wrap_reverse) const;
 
   LayoutUnit AvailableAlignmentSpace() const;
 

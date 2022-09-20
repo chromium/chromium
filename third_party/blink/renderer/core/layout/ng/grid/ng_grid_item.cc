@@ -94,8 +94,9 @@ AxisEdge AxisEdgeFromItemPosition(const bool is_inline_axis,
       *auto_behavior = NGAutoBehavior::kStretchExplicit;
       return AxisEdge::kStart;
     case ItemPosition::kBaseline:
+      return AxisEdge::kFirstBaseline;
     case ItemPosition::kLastBaseline:
-      return AxisEdge::kBaseline;
+      return AxisEdge::kLastBaseline;
     case ItemPosition::kLeft:
       DCHECK(is_inline_axis);
       return container_writing_direction.IsLtr() ? AxisEdge::kStart
@@ -157,10 +158,12 @@ GridItemData::GridItemData(const NGBlockNode node,
 
   column_baseline_group = DetermineBaselineGroup(
       container_writing_direction, column_baseline_writing_mode,
-      /* is_parallel_context */ false);
-  row_baseline_group = DetermineBaselineGroup(container_writing_direction,
-                                              row_baseline_writing_mode,
-                                              /* is_parallel_context */ true);
+      /* is_parallel_context */ false,
+      /* is_last_baseline */ inline_axis_alignment == AxisEdge::kLastBaseline);
+  row_baseline_group = DetermineBaselineGroup(
+      container_writing_direction, row_baseline_writing_mode,
+      /* is_parallel_context */ true,
+      /* is_last_baseline */ block_axis_alignment == AxisEdge::kLastBaseline);
 }
 
 void GridItemData::SetAlignmentFallback(

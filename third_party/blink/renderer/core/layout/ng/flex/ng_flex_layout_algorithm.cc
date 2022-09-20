@@ -837,12 +837,15 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
     const NGBoxStrut scrollbars = ComputeScrollbarsForNonAnonymous(child);
 
+    bool is_last_baseline =
+        FlexLayoutAlgorithm::AlignmentForChild(Style(), child_style) ==
+        ItemPosition::kLastBaseline;
     const auto baseline_writing_mode = DetermineBaselineWritingMode(
         ConstraintSpace().GetWritingMode(), child_writing_mode,
         /* is_parallel_context */ !is_column_);
     const auto baseline_group = DetermineBaselineGroup(
         ConstraintSpace().GetWritingDirection(), baseline_writing_mode,
-        /* is_parallel_context */ !is_column_,
+        /* is_parallel_context */ !is_column_, is_last_baseline,
         /* is_flipped */ is_wrap_reverse);
     algorithm_
         .emplace_back(nullptr, child.Style(), flex_base_content_size,
@@ -1835,10 +1838,10 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::PropagateFlexItemInfo(
     // devtools uses margin box.
     item_rect.Expand(flex_item->physical_margins_);
     DCHECK_GE(layout_info_for_devtools_->lines.size(), 1u);
-    DevtoolsFlexInfo::Item item(item_rect,
-                                flex_item->MarginBoxAscent(
-                                    /* is_wrap_reverse */ Style().FlexWrap() ==
-                                    EFlexWrap::kWrapReverse));
+    DevtoolsFlexInfo::Item item(
+        item_rect, flex_item->MarginBoxAscent(
+                       flex_item->Alignment() == ItemPosition::kLastBaseline,
+                       Style().FlexWrap() == EFlexWrap::kWrapReverse));
     layout_info_for_devtools_->lines[flex_line_idx].items.push_back(item);
   }
 

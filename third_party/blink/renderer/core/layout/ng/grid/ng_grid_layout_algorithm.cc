@@ -852,8 +852,13 @@ const NGLayoutResult* LayoutGridItemForMeasure(
 
 LayoutUnit NGGridLayoutAlgorithm::GetLogicalBaseline(
     const NGBoxFragment& baseline_fragment,
-    BaselineGroup baseline_group) const {
-  return baseline_fragment.FirstBaselineOrSynthesize(Style().GetFontBaseline());
+    BaselineGroup baseline_group,
+    bool is_last_baseline) const {
+  const auto font_baseline = Style().GetFontBaseline();
+  return is_last_baseline
+             ? baseline_fragment.BlockSize() -
+                   baseline_fragment.LastBaselineOrSynthesize(font_baseline)
+             : baseline_fragment.FirstBaselineOrSynthesize(font_baseline);
 }
 
 LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
@@ -954,7 +959,9 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
         baseline_shim =
             track_baseline -
             GetLogicalBaseline(baseline_fragment,
-                               grid_item->BaselineGroup(track_direction));
+                               grid_item->BaselineGroup(track_direction),
+                               grid_item->IsLastBaselineSpecifiedForDirection(
+                                   track_direction));
 
         // Subtract out the start margin so it doesn't get added a second time
         // at the end of |NGGridLayoutAlgorithm::ContributionSizeForGridItem|.
@@ -1314,7 +1321,6 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
     NGGridSizingTrackCollection* track_collection,
     bool* needs_additional_pass) const {
   DCHECK(grid_items && track_collection);
-
   const auto track_direction = track_collection->Direction();
 
   track_collection->ResetBaselines();
@@ -1361,9 +1367,13 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
 
     const auto baseline_writing_direction =
         grid_item.BaselineWritingDirection(track_direction);
-    NGBoxFragment baseline_fragment(
+    const auto margins =
+        ComputeMarginsFor(space, item_style, baseline_writing_direction);
+    const NGBoxFragment baseline_fragment(
         baseline_writing_direction,
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+    const bool is_last_baseline =
+        grid_item.IsLastBaselineSpecifiedForDirection(track_direction);
 
     grid_item.SetAlignmentFallback(
         track_direction, Style(),
@@ -1371,10 +1381,10 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
         !baseline_fragment.FirstBaseline().has_value());
 
     LayoutUnit baseline =
-        ComputeMarginsFor(space, item_style, baseline_writing_direction)
-            .block_start +
+        (is_last_baseline ? margins.block_end : margins.block_start) +
         GetLogicalBaseline(baseline_fragment,
-                           grid_item.BaselineGroup(track_direction));
+                           grid_item.BaselineGroup(track_direction),
+                           is_last_baseline);
 
     // TODO(kschmi): The IsReplaced() check here is a bit strange, but is
     // necessary to pass some of the tests. Follow-up to see if there's
@@ -2619,7 +2629,8 @@ LayoutUnit AlignmentOffset(LayoutUnit container_size,
       return margin_start + (free_space / 2);
     case AxisEdge::kEnd:
       return margin_start + free_space;
-    case AxisEdge::kBaseline:
+    case AxisEdge::kFirstBaseline:
+    case AxisEdge::kLastBaseline:
       return baseline_offset;
   }
   NOTREACHED();
@@ -2638,7 +2649,7 @@ void AlignmentOffsetForOutOfFlow(
 
   switch (inline_axis_edge) {
     case AxisEdge::kStart:
-    case AxisEdge::kBaseline:
+    case AxisEdge::kFirstBaseline:
       *inline_edge = InlineEdge::kInlineStart;
       break;
     case AxisEdge::kCenter:
@@ -2646,6 +2657,7 @@ void AlignmentOffsetForOutOfFlow(
       offset->inline_offset += container_size.inline_size / 2;
       break;
     case AxisEdge::kEnd:
+    case AxisEdge::kLastBaseline:
       *inline_edge = InlineEdge::kInlineEnd;
       offset->inline_offset += container_size.inline_size;
       break;
@@ -2653,7 +2665,7 @@ void AlignmentOffsetForOutOfFlow(
 
   switch (block_axis_edge) {
     case AxisEdge::kStart:
-    case AxisEdge::kBaseline:
+    case AxisEdge::kFirstBaseline:
       *block_edge = BlockEdge::kBlockStart;
       break;
     case AxisEdge::kCenter:
@@ -2661,6 +2673,7 @@ void AlignmentOffsetForOutOfFlow(
       offset->block_offset += container_size.block_size / 2;
       break;
     case AxisEdge::kEnd:
+    case AxisEdge::kLastBaseline:
       *block_edge = BlockEdge::kBlockEnd;
       offset->block_offset += container_size.block_size;
       break;
@@ -2894,7 +2907,9 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
       // and its track baseline.
       const LayoutUnit baseline_delta =
           Baseline(layout_data, grid_item, track_direction) -
-          GetLogicalBaseline(baseline_fragment, baseline_group);
+          GetLogicalBaseline(
+              baseline_fragment, baseline_group,
+              grid_item.IsLastBaselineSpecifiedForDirection(track_direction));
       if (baseline_group == BaselineGroup::kMajor)
         return baseline_delta;
 

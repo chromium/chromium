@@ -50,12 +50,15 @@ inline BaselineGroup DetermineBaselineGroup(
     const WritingDirectionMode container_writing_direction,
     const WritingMode baseline_writing_mode,
     bool is_parallel_context,
+    bool is_last_baseline,
     bool is_flipped = false) {
   const auto container_writing_mode =
       container_writing_direction.GetWritingMode();
 
   auto start_group = BaselineGroup::kMajor;
   auto end_group = BaselineGroup::kMinor;
+  if (is_last_baseline)
+    std::swap(start_group, end_group);
   if (is_flipped)
     std::swap(start_group, end_group);
 

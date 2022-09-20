@@ -180,7 +180,8 @@ LayoutUnit FlexItem::CrossAxisMarginExtent() const {
                                         : physical_margins_.HorizontalSum();
 }
 
-LayoutUnit FlexItem::MarginBoxAscent(bool is_wrap_reverse) const {
+LayoutUnit FlexItem::MarginBoxAscent(bool is_last_baseline,
+                                     bool is_wrap_reverse) const {
   if (box_) {
     LayoutUnit ascent(box_->FirstLineBoxBaseline());
     if (ascent == -1)
@@ -195,8 +196,10 @@ LayoutUnit FlexItem::MarginBoxAscent(bool is_wrap_reverse) const {
 
   const auto font_baseline = algorithm_->StyleRef().GetFontBaseline();
   LayoutUnit baseline =
-      baseline_fragment.FirstBaselineOrSynthesize(font_baseline);
-  if (is_wrap_reverse)
+      is_last_baseline
+          ? baseline_fragment.LastBaselineOrSynthesize(font_baseline)
+          : baseline_fragment.FirstBaselineOrSynthesize(font_baseline);
+  if (is_wrap_reverse != is_last_baseline)
     baseline = baseline_fragment.BlockSize() - baseline;
 
   return baseline_group_ == BaselineGroup::kMajor
@@ -572,8 +575,11 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
     flex_item.UpdateAutoMarginsInMainAxis(auto_margin_offset);
 
     LayoutUnit child_cross_axis_margin_box_extent;
-    if (flex_item.Alignment() == ItemPosition::kBaseline) {
-      LayoutUnit ascent = flex_item.MarginBoxAscent(is_wrap_reverse);
+    const auto alignment = flex_item.Alignment();
+    if (alignment == ItemPosition::kBaseline ||
+        alignment == ItemPosition::kLastBaseline) {
+      LayoutUnit ascent = flex_item.MarginBoxAscent(
+          alignment == ItemPosition::kLastBaseline, is_wrap_reverse);
       LayoutUnit descent =
           (flex_item.CrossAxisMarginExtent() + flex_item.cross_axis_size_) -
           ascent;
@@ -905,9 +911,11 @@ void FlexLayoutAlgorithm::AlignChildren() {
       }
       LayoutUnit available_space = flex_item.AvailableAlignmentSpace();
       LayoutUnit baseline_offset;
-      if (position == ItemPosition::kBaseline) {
+      if (position == ItemPosition::kBaseline ||
+          position == ItemPosition::kLastBaseline) {
         bool is_major = flex_item.baseline_group_ == BaselineGroup::kMajor;
-        LayoutUnit ascent = flex_item.MarginBoxAscent(is_wrap_reverse);
+        LayoutUnit ascent = flex_item.MarginBoxAscent(
+            position == ItemPosition::kLastBaseline, is_wrap_reverse);
         LayoutUnit max_ascent = is_major ? line_context.max_major_ascent_
                                          : line_context.max_minor_ascent_;
 

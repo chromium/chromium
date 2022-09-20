@@ -50,6 +50,16 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
     return PhysicalBoxFragment().LastBaseline();
   }
 
+  LayoutUnit LastBaselineOrSynthesize(FontBaseline baseline_type) const {
+    if (auto last_baseline = LastBaseline())
+      return *last_baseline;
+
+    if (baseline_type == kAlphabeticBaseline)
+      return writing_direction_.IsFlippedLines() ? LayoutUnit() : BlockSize();
+
+    return BlockSize() / 2;
+  }
+
   // Compute baseline metrics (ascent/descent) for this box.
   //
   // This will synthesize baseline metrics if no baseline is available. See
