@@ -109,8 +109,10 @@ void FirstPartySetsLoader::DisposeFile(base::File sets_file) {
 
 void FirstPartySetsLoader::MaybeFinishLoading() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!HasAllInputs())
+  if (component_sets_parse_progress_ != Progress::kFinished ||
+      !manually_specified_set_.has_value()) {
     return;
+  }
   if (!manually_specified_set_->empty()) {
     public_sets_->ApplyManuallySpecifiedSet(
         manually_specified_set_->GetPrimary(),
@@ -118,12 +120,6 @@ void FirstPartySetsLoader::MaybeFinishLoading() {
         manually_specified_set_->GetAliases());
   }
   std::move(on_load_complete_).Run(std::move(public_sets_).value());
-}
-
-bool FirstPartySetsLoader::HasAllInputs() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return component_sets_parse_progress_ == Progress::kFinished &&
-         manually_specified_set_.has_value();
 }
 
 }  // namespace content
