@@ -10,15 +10,10 @@
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shelf_config.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/cursor_manager_chromeos.h"
-#include "ash/wm/desks/desk.h"
-#include "ash/wm/desks/desks_test_api.h"
-#include "ash/wm/desks/desks_test_util.h"
-#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
@@ -27,22 +22,17 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/features.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
-#include "ui/display/test/display_manager_test_api.h"
-#include "ui/views/controls/button/label_button.h"
-#include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/wm/core/window_util.h"
 
@@ -78,9 +68,9 @@ class WindowFloatTest : public AshTestBase {
   }
 
   void SetUp() override {
-    // Enable float feature and desks close all feature.
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::wm::features::kFloatWindow}, {features::kDesksCloseAll});
+    // Ensure float feature is enabled.
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::wm::features::kFloatWindow);
     AshTestBase::SetUp();
   }
 
@@ -93,12 +83,12 @@ TEST_F(WindowFloatTest, WindowFloatingSwitch) {
   std::unique_ptr<aura::Window> window_1(CreateTestWindow());
   std::unique_ptr<aura::Window> window_2(CreateTestWindow());
 
-  // Activate `window_1` and perform floating.
+  // Activate 'window_1' and perform floating.
   wm::ActivateWindow(window_1.get());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(WindowState::Get(window_1.get())->IsFloated());
 
-  // Activate `window_2` and perform floating.
+  // Activate 'window_2' and perform floating.
   wm::ActivateWindow(window_2.get());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(WindowState::Get(window_2.get())->IsFloated());
@@ -107,7 +97,7 @@ TEST_F(WindowFloatTest, WindowFloatingSwitch) {
   // the previously floated window will be unfloated.
   EXPECT_FALSE(WindowState::Get(window_1.get())->IsFloated());
 
-  // When try to float the already floated `window_2`, it will unfloat this
+  // When try to float the already floated 'window_2', it will unfloat this
   // window.
   wm::ActivateWindow(window_2.get());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
@@ -138,7 +128,7 @@ TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
   const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
   WindowState::Get(maximized_window.get())->OnWMEvent(&maximize_event);
 
-  // Activate `maximized_window`. If the other window was not floated, then it
+  // Activate 'maximized_window'. If the other window was not floated, then it
   // would be hidden behind the maximized window and not animate.
   wm::ActivateWindow(maximized_window.get());
 
@@ -264,149 +254,6 @@ TEST_F(WindowFloatTest, DragToOtherDisplayThenMaximize) {
   const WMEvent maximize(WM_EVENT_MAXIMIZE);
   window_state->OnWMEvent(&maximize);
   EXPECT_EQ(Shell::GetAllRootWindows()[1], window->GetRootWindow());
-}
-
-// Test float window per desk logic.
-TEST_F(WindowFloatTest, OneFloatWindowPerDeskLogic) {
-  // Test one float window per desk is allowed.
-  auto* desks_controller = DesksController::Get();
-  NewDesk();
-  ASSERT_EQ(2u, desks_controller->desks().size());
-  std::unique_ptr<aura::Window> window_1(CreateTestWindow());
-
-  // Test creating floating window on different desk.
-  // Float `window_1`.
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  EXPECT_TRUE(WindowState::Get(window_1.get())->IsFloated());
-  // Move to desk 2.
-  auto* desk_2 = desks_controller->desks()[1].get();
-  ActivateDesk(desk_2);
-  // `window_1` should not be visible since it's a different desk.
-  EXPECT_FALSE(window_1->IsVisible());
-  std::unique_ptr<aura::Window> window_2(CreateTestWindow());
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  // Both `window_1` and `window_2` should be floated since we allow one float
-  // window per desk.
-  EXPECT_TRUE(desk_2->is_active());
-  EXPECT_TRUE(WindowState::Get(window_1.get())->IsFloated());
-  EXPECT_TRUE(WindowState::Get(window_2.get())->IsFloated());
-}
-
-// Test Desk removal for floating window.
-TEST_F(WindowFloatTest, FloatWindowWithDeskRemoval) {
-  auto* desks_controller = DesksController::Get();
-  NewDesk();
-  auto* desk_1 = desks_controller->desks()[0].get();
-  auto* desk_2 = desks_controller->desks()[1].get();
-  std::unique_ptr<aura::Window> window_1(CreateTestWindow());
-  // Float `window_1` at `desk_1`.
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  // Move to `desk 2`.
-  ActivateDesk(desk_2);
-  // Float `window_2` at `desk_2`.
-  std::unique_ptr<aura::Window> window_2(CreateFloatedWindow());
-
-  // Verify `window_2` belongs to `desk_2`.
-  auto* float_controller = Shell::Get()->float_controller();
-  ASSERT_EQ(float_controller->FindDeskOfFloatedWindow(window_2.get()), desk_2);
-
-  // Delete `desk_2` and `window_2` should be un-floated while `window_1` should
-  // remain floated. As `window_1` is in the target desk and has higher
-  // priority over `window_2` from the removed desk.
-  RemoveDesk(desk_2);
-  EXPECT_TRUE(WindowState::Get(window_1.get())->IsFloated());
-  EXPECT_FALSE(WindowState::Get(window_2.get())->IsFloated());
-  EXPECT_TRUE(window_1->IsVisible());
-  EXPECT_TRUE(window_2->IsVisible());
-
-  // Recreate `desk_2` without any floated window.
-  NewDesk();
-  desk_2 = desks_controller->desks()[1].get();
-  ActivateDesk(desk_2);
-  // Remove `desk_1` will move all windows from `desk_1` to the newly created
-  // `desk_2` and the floated window should remain floated.
-  RemoveDesk(desk_1);
-  EXPECT_TRUE(WindowState::Get(window_1.get())->IsFloated());
-}
-
-// Test Close-all desk removal undo.
-TEST_F(WindowFloatTest, FloatWindowWithDeskRemovalUndo) {
-  // Test close all undo will restore float window.
-  auto* desks_controller = DesksController::Get();
-  NewDesk();
-  auto* desk_2 = desks_controller->desks()[1].get();
-  // Move to `desk_2`.
-  ActivateDesk(desk_2);
-  // Float `window` at `desk_2`.
-  std::unique_ptr<aura::Window> window(CreateFloatedWindow());
-  // Verify `window` belongs to `desk_2`.
-  auto* float_controller = Shell::Get()->float_controller();
-  ASSERT_EQ(float_controller->FindDeskOfFloatedWindow(window.get()), desk_2);
-  EnterOverview();
-  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
-  RemoveDesk(desk_2, DeskCloseType::kCloseAllWindowsAndWait);
-  ASSERT_TRUE(desk_2->is_desk_being_removed());
-  // During desk removal, float window should be hidden.
-  EXPECT_FALSE(window->IsVisible());
-  // When `desk_2` is restored the floated window should remain floated and
-  // shown.
-  views::LabelButton* dismiss_button =
-      DesksTestApi::GetCloseAllUndoToastDismissButton();
-  const gfx::Point button_center =
-      dismiss_button->GetBoundsInScreen().CenterPoint();
-  auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(button_center);
-  event_generator->ClickLeftButton();
-  // Canceling close-all will bring the floated window back to shown.
-  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
-  // Check if `window` still belongs to `desk_2`.
-  ASSERT_EQ(float_controller->FindFloatedWindowOfDesk(desk_2), window.get());
-  EXPECT_TRUE(window->IsVisible());
-
-  // Commit desk removal should also delete the floated window on that desk.
-  auto* window_widget = views::Widget::GetWidgetForNativeView(window.get());
-  views::test::TestWidgetObserver observer(window_widget);
-  // Release the unique_ptr for `window` here, as in close-all desk,
-  // we will delete it below when the desk is removed. but since the unique_ptr
-  // tries to delete it again, it will cause a crash in this test.
-  window.release();
-  RemoveDesk(desk_2, DeskCloseType::kCloseAllWindows);
-  ASSERT_TRUE(desk_2->is_desk_being_removed());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(observer.widget_closed());
-}
-
-// Test float window is included when building MRU window list.
-TEST_F(WindowFloatTest, FloatWindowWithMRUWindowList) {
-  auto* desks_controller = DesksController::Get();
-  // Float `window_1` at `desk_1`.
-  auto* desk_1 = desks_controller->desks()[0].get();
-  std::unique_ptr<aura::Window> window_1(CreateFloatedWindow());
-  NewDesk();
-  auto* desk_2 = desks_controller->desks()[1].get();
-  // Move to `desk_2`.
-  ActivateDesk(desk_2);
-  // Float `window_2` at `desk_2`.
-  std::unique_ptr<aura::Window> window_2(CreateFloatedWindow());
-  // Verify `window_2` belongs to `desk_2`.
-  auto* float_controller = Shell::Get()->float_controller();
-  ASSERT_EQ(float_controller->FindDeskOfFloatedWindow(window_2.get()), desk_2);
-  // Move to `desk_1`.
-  ActivateDesk(desk_1);
-  // Calling MruWindowTracker::BuildMruWindowList(kActiveDesk) should return a
-  // list that doesn't contain floated windows from inactive desk but contains
-  // floated window on active desk.
-  EXPECT_FALSE(desk_2->is_active());
-  auto active_only_list =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  EXPECT_TRUE(base::Contains(active_only_list, window_1.get()));
-  EXPECT_FALSE(base::Contains(active_only_list, window_2.get()));
-  // Calling MruWindowTracker::BuildMruWindowList(kAllDesks) should return a
-  // list that contains all windows
-  auto all_desks_mru_list =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
-  EXPECT_TRUE(base::Contains(all_desks_mru_list, window_1.get()));
-  EXPECT_TRUE(base::Contains(all_desks_mru_list, window_2.get()));
 }
 
 class TabletWindowFloatTest : public WindowFloatTest {
