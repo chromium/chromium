@@ -234,6 +234,7 @@ android_library("browserfragment_java") {
     "org/chromium/browserfragment/TabObserver.java",
     "org/chromium/browserfragment/TabObserverDelegate.java",
     "org/chromium/browserfragment/TabRegistry.java",
+    "org/chromium/browserfragment/ThreadCheck.java",
     "org/chromium/browserfragment/WebMessageCallback.java",
     "org/chromium/browserfragment/WebMessageReplyProxy.java",
   ]

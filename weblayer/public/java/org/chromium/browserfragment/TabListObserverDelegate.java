@@ -22,21 +22,28 @@ class TabListObserverDelegate extends ITabListObserverDelegate.Stub {
 
     private ObserverList<TabListObserver> mTabListObservers = new ObserverList<TabListObserver>();
 
+    public TabListObserverDelegate() {
+        // Assert on UI thread as ObserverList can only be accessed from one thread.
+        ThreadCheck.ensureOnUiThread();
+    }
+
     /**
-     * Register a TabListObserver.
+     * Register a TabListObserver. Call only from the UI thread.
      *
      * @return true if the observer was added to the list of observers.
      */
     boolean registerObserver(TabListObserver tabListObserver) {
+        ThreadCheck.ensureOnUiThread();
         return mTabListObservers.addObserver(tabListObserver);
     }
 
     /**
-     * Unregister a TabListObserver.
+     * Unregister a TabListObserver. Call only from the UI thread.
      *
      * @return true if the observer was removed from the list of observers.
      */
     boolean unregisterObserver(TabListObserver tabListObserver) {
+        ThreadCheck.ensureOnUiThread();
         return mTabListObservers.removeObserver(tabListObserver);
     }
 
