@@ -255,11 +255,6 @@ ash_generated_grit("diagnostics_app_resources") {
   deps = [ "//ash/webui/diagnostics_ui/resources:build_grd" ]
 }
 
-ash_generated_grit("print_management_resources") {
-  source = "$root_gen_dir/ash/webui/print_management/resources/ash_print_management_resources.grd"
-  deps = [ "//ash/webui/print_management/resources:build_grd" ]
-}
-
 # Resources used by chrome-untrusted://projector SWA.
 ash_generated_grit("projector_app_untrusted_resources") {
   source = "$root_gen_dir/ash/webui/projector_app/resources/app/untrusted/ash_projector_app_untrusted_resources.grd"
