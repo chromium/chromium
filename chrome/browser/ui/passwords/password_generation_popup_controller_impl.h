@@ -88,8 +88,7 @@ class PasswordGenerationPopupControllerImpl
   ~PasswordGenerationPopupControllerImpl() override;
 
   // Create a PasswordGenerationPopupView if one doesn't already exist.
-  // Returns |true| in case of success, |false| otherwise.
-  bool Show(GenerationUIState state);
+  void Show(GenerationUIState state);
 
   // Update the password typed by the user.
   void UpdateTypedPassword(const std::u16string& new_user_typed_password);
@@ -112,9 +111,14 @@ class PasswordGenerationPopupControllerImpl
   // automatically on that field.
   void GeneratedPasswordRejected();
 
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> GetWeakPtr();
+
   // content::WebContentsObserver overrides
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
+
+  // Returns true if the popup is visible, or false otherwise.
+  bool IsVisible() const;
 
 #if !BUILDFLAG(IS_ANDROID)
   // ZoomObserver implementation.
@@ -158,8 +162,6 @@ class PasswordGenerationPopupControllerImpl
   const std::u16string& password() const override;
   std::u16string SuggestedText() override;
   const std::u16string& HelpText() override;
-
-  base::WeakPtr<PasswordGenerationPopupControllerImpl> GetWeakPtr();
 
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
 

@@ -188,6 +188,10 @@ bool PasswordGenerationPopupControllerImpl::HandleKeyPressEvent(
   }
 }
 
+bool PasswordGenerationPopupControllerImpl::IsVisible() const {
+  return view_;
+}
+
 bool PasswordGenerationPopupControllerImpl::PossiblyAcceptPassword() {
   if (password_selected_) {
     PasswordAccepted();  // This will delete |this|.
@@ -222,7 +226,7 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
     weak_this->HideImpl();
 }
 
-bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
+void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
   // When switching from editing to generation state, regenerate the password.
   if (state == kOfferGeneration &&
       (state_ != state || current_generated_password_.empty())) {
@@ -233,13 +237,16 @@ bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
   }
   state_ = state;
 
+  // TODO(crbug.com/1345766): Call the password strength calculation from the
+  // utility process. Store the strength and use it accordingly in the
+  // PasswordGenerationPopupViewViews.
   if (!view_) {
     view_ = PasswordGenerationPopupView::Create(GetWeakPtr());
 
     // Treat popup as being hidden if creation fails.
     if (!view_) {
       HideImpl();
-      return false;
+      return;
     }
     key_press_handler_manager_->RegisterKeyPressHandler(base::BindRepeating(
         [](base::WeakPtr<PasswordGenerationPopupControllerImpl> weak_this,
@@ -249,20 +256,18 @@ bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
         GetWeakPtr()));
     if (!view_->Show()) {
       // The instance is deleted after this point.
-      return false;
+      return;
     }
   } else {
     view_->UpdateState();
     if (!view_->UpdateBoundsAndRedrawPopup()) {
       // The instance is deleted after this point.
-      return false;
+      return;
     }
   }
 
   if (observer_)
     observer_->OnPopupShown(state_);
-
-  return true;
 }
 
 void PasswordGenerationPopupControllerImpl::UpdateTypedPassword(

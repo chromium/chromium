@@ -81,8 +81,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
                        MouseMovementInEditingPopup) {
   controller_ =
       new autofill::TestPasswordGenerationPopupController(GetWebContents());
-  EXPECT_TRUE(controller_->Show(
-      PasswordGenerationPopupController::kEditGeneratedPassword));
+  controller_->Show(PasswordGenerationPopupController::kEditGeneratedPassword);
+  EXPECT_TRUE(controller_->IsVisible());
 
   GetViewTester()->SimulateMouseMovementAt(
       gfx::Point(GetWebContents()->GetContainerBounds().x() + 1,
@@ -97,8 +97,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
                        CloseWebContentsWithVisiblePopup) {
   controller_ =
       new autofill::TestPasswordGenerationPopupController(GetWebContents());
-  EXPECT_TRUE(controller_->Show(
-      PasswordGenerationPopupController::kEditGeneratedPassword));
+  controller_->Show(PasswordGenerationPopupController::kEditGeneratedPassword);
+  EXPECT_TRUE(controller_->IsVisible());
 
   GetWebContents()->Close();
 }
@@ -107,10 +107,16 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
 // for showing popup.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
                        DoNotCrashInCaseOfInsuffucientVertialSpace) {
+  // TODO(crbug.com/1365893): Remove TestPasswordGenerationPopupController class
+  // so that only GetOrCreate() would be used and then GetWeakPtr() won't be
+  // needed.
   controller_ = new autofill::TestPasswordGenerationPopupController(
       GetWebContents(), /*vertical_offset=*/-20);
-  EXPECT_FALSE(controller_->Show(
-      PasswordGenerationPopupController::kEditGeneratedPassword));
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> weak_controller =
+      controller_->GetWeakPtr();
+  controller_->Show(PasswordGenerationPopupController::kEditGeneratedPassword);
+  // Check that the object |controller_| points to was invalidated.
+  EXPECT_FALSE(weak_controller);
 }
 
 }  // namespace autofill
