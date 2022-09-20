@@ -35,7 +35,8 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/color_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_dimmer.h"
@@ -53,6 +54,7 @@
 #include "ui/aura/window_tracker.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_type.h"
@@ -381,6 +383,13 @@ bool IsWidgetOverlappedWithCameraPreview(views::Widget* widget) {
          camera_preview_widget->GetLayer()->GetTargetOpacity() > 0.f &&
          camera_preview_widget->GetWindowBoundsInScreen().Intersects(
              widget->GetWindowBoundsInScreen());
+}
+
+// Returns the color provider for the native theme.
+ui::ColorProvider* GetColorProvider() {
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  return ui::ColorProviderManager::Get().GetColorProviderFor(
+      native_theme->GetColorProviderKey(nullptr));
 }
 
 }  // namespace
@@ -1064,6 +1073,7 @@ void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
   }
 
   ui::PaintRecorder recorder(context, layer()->size());
+  // TODO(crbug.com/1364248): Make the dimming shield color a dynamic color.
   recorder.canvas()->DrawColor(capture_mode::kDimmingShieldColor);
 
   PaintCaptureRegion(recorder.canvas());
@@ -1755,11 +1765,12 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
   const float dsf = canvas->UndoDeviceScaleFactor();
   region = gfx::ScaleToEnclosingRect(region, dsf);
 
+  const auto* color_provider = GetColorProvider();
+
   if (!adjustable_region) {
     canvas->FillRect(region, SK_ColorTRANSPARENT, SkBlendMode::kClear);
-    canvas->FillRect(
-        region, AshColorProvider::Get()->GetContentLayerColor(
-                    AshColorProvider::ContentLayerType::kCaptureRegionColor));
+    canvas->FillRect(region,
+                     color_provider->GetColor(kColorAshCaptureRegionColor));
     return;
   }
 
@@ -1776,15 +1787,14 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
 
   // Draws the focus ring if the region or one of the affordance circles
   // currently has focus.
-  auto maybe_draw_focus_ring = [&canvas, &region,
-                                &dsf](FineTunePosition position) {
+  auto maybe_draw_focus_ring = [&canvas, &region, dsf,
+                                color_provider](FineTunePosition position) {
     if (position == FineTunePosition::kNone)
       return;
 
     cc::PaintFlags focus_ring_flags;
     focus_ring_flags.setAntiAlias(true);
-    focus_ring_flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kFocusRingColor));
+    focus_ring_flags.setColor(color_provider->GetColor(ui::kColorAshFocusRing));
     focus_ring_flags.setStyle(cc::PaintFlags::kStroke_Style);
     focus_ring_flags.setStrokeWidth(kFocusRingStrokeWidthDp);
 
@@ -2256,13 +2266,9 @@ void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
         CreateWidgetParams(parent, gfx::Rect(), "CaptureModeDimensionsLabel"));
 
     auto size_label = std::make_unique<views::Label>();
-    auto* color_provider = AshColorProvider::Get();
-    size_label->SetEnabledColor(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
-    size_label->SetBackground(views::CreateRoundedRectBackground(
-        color_provider->GetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent80),
-        kSizeLabelBorderRadius));
+    size_label->SetEnabledColorId(kColorAshTextColorPrimary);
+    size_label->SetBackground(views::CreateThemedRoundedRectBackground(
+        kColorAshShieldAndBase80, kSizeLabelBorderRadius));
     size_label->SetAutoColorReadabilityEnabled(false);
     dimensions_label_widget_->SetContentsView(std::move(size_label));
 
@@ -2623,6 +2629,8 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
   layer()->SetBounds(new_parent->bounds());
 
   current_root_ = new_root;
+  // TODO(conniekxu): Observe the new color provider source from the `new_root`
+  // when we support wallpaper per display.
 
   // Update the bounds of the widgets after setting the new root. For region
   // capture, the capture bar will move at a later time, when the mouse is

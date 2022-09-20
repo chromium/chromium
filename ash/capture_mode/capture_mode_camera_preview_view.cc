@@ -12,7 +12,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "ui/aura/window_tree_host.h"
@@ -115,9 +115,8 @@ CameraPreviewView::CameraPreviewView(
 
   resize_button_->SetPaintToLayer();
   resize_button_->layer()->SetFillsBoundsOpaquely(false);
-  resize_button_->SetBackground(views::CreateRoundedRectBackground(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80),
+  resize_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+      kColorAshShieldAndBase80,
       resize_button_->GetPreferredSize().height() / 2.f));
 
   accessibility_observation_.Observe(Shell::Get()->accessibility_controller());
@@ -367,13 +366,12 @@ void CameraPreviewView::OnResizeButtonPressed() {
 }
 
 void CameraPreviewView::UpdateResizeButton() {
-  resize_button_->SetImage(
+  resize_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(
+      ui::ImageModel::FromVectorIcon(
           GetIconOfResizeButton(
               camera_controller_->is_camera_preview_collapsed()),
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kIconColorPrimary)));
+          kColorAshIconColorPrimary));
   UpdateResizeButtonTooltip();
 }
 

@@ -9,9 +9,11 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
@@ -180,20 +182,14 @@ void CaptureModeToastController::BuildCaptureToastWidget(
   toast_label_view_ = capture_toast_widget_->SetContentsView(
       std::make_unique<views::Label>(label));
   toast_label_view_->SetMultiLine(true);
-  auto* color_provider = AshColorProvider::Get();
-  SkColor background_color = color_provider->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
   toast_label_view_->SetBackground(
-      views::CreateSolidBackground(background_color));
+      views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   const float toast_corner_radius = toast_widget_screen_bounds.height() / 2.f;
-  toast_label_view_->SetBorder(views::CreateRoundedRectBorder(
+  toast_label_view_->SetBorder(views::CreateThemedRoundedRectBorder(
       kToastBorderThickness, toast_corner_radius,
-      color_provider->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kHighlightColor1)));
+      ui::kColorHighlightBorderHighlight1));
   toast_label_view_->SetAutoColorReadabilityEnabled(false);
-  const SkColor text_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  toast_label_view_->SetEnabledColor(text_color);
+  toast_label_view_->SetEnabledColorId(kColorAshTextColorPrimary);
   toast_label_view_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   toast_label_view_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
 

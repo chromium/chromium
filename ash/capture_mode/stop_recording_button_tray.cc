@@ -6,9 +6,9 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
-#include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "base/metrics/user_metrics.h"
@@ -51,8 +51,7 @@ void StopRecordingButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
   image_view_->SetImage(gfx::CreateVectorIcon(
       kCaptureModeCircleStopIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorAlert)));
+      GetColorProvider()->GetColor(kColorAshIconColorAlert)));
 }
 
 }  // namespace ash

@@ -5,15 +5,12 @@
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 
 #include "ash/capture_mode/capture_mode_button.h"
-#include "ash/capture_mode/capture_mode_constants.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/color_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -21,13 +18,12 @@ namespace ash {
 
 CaptureModeToggleButton::CaptureModeToggleButton(
     views::Button::PressedCallback callback,
-    const gfx::VectorIcon& icon)
-    : views::ToggleImageButton(callback) {
+    const gfx::VectorIcon& icon,
+    ui::ColorId toggled_background_color_id)
+    : views::ToggleImageButton(callback),
+      toggled_background_color_id_(toggled_background_color_id) {
   CaptureModeButton::ConfigureButton(this, views::FocusRing::Get(this));
-
   SetIcon(icon);
-  toggled_background_color_ = AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
 }
 
 void CaptureModeToggleButton::OnPaintBackground(gfx::Canvas* canvas) {
@@ -37,7 +33,7 @@ void CaptureModeToggleButton::OnPaintBackground(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(toggled_background_color_);
+  flags.setColor(GetColorProvider()->GetColor(toggled_background_color_id_));
   const gfx::RectF bounds(GetContentsBounds());
   canvas->DrawCircle(bounds.CenterPoint(), bounds.width() / 2, flags);
 }
@@ -57,21 +53,16 @@ views::View* CaptureModeToggleButton::GetView() {
 }
 
 void CaptureModeToggleButton::SetIcon(const gfx::VectorIcon& icon) {
-  auto* color_provider = AshColorProvider::Get();
-  const SkColor normal_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
-  const SkColor toggled_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColorPrimary);
-
   SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(icon, normal_color));
-  SetImageModel(views::Button::STATE_DISABLED,
-                ui::ImageModel::FromVectorIcon(
-                    icon, ColorUtil::GetDisabledColor(normal_color)));
+                ui::ImageModel::FromVectorIcon(icon, kColorAshButtonIconColor));
+  SetImageModel(
+      views::Button::STATE_DISABLED,
+      ui::ImageModel::FromVectorIcon(icon, kColorAshButtonIconDisabledColor));
   // Note that a disabled button cannot be toggled, so we don't need to set a
   // toggled icon for the disabled state.
-  const auto toggled_icon = ui::ImageModel::FromVectorIcon(icon, toggled_color);
-  SetToggledImageModel(views::Button::STATE_NORMAL, toggled_icon);
+  SetToggledImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(icon, kColorAshButtonIconColorPrimary));
 }
 
 BEGIN_METADATA(CaptureModeToggleButton, views::ToggleImageButton)

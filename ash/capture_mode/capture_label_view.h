@@ -59,6 +59,7 @@ class ASH_EXPORT CaptureLabelView
   // views::View:
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
+  void OnThemeChanged() override;
 
   // CaptureModeSessionFocusCycler::HighlightableView:
   views::View* GetView() override;

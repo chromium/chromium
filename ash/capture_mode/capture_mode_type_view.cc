@@ -13,6 +13,7 @@
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -65,11 +66,8 @@ CaptureModeTypeView::CaptureModeTypeView(bool projector_mode)
               base::BindRepeating(&CaptureModeTypeView::OnVideoToggle,
                                   base::Unretained(this)),
               kCaptureModeVideoIcon))) {
-  auto* color_provider = AshColorProvider::Get();
-  const SkColor bg_color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
-  SetBackground(
-      views::CreateRoundedRectBackground(bg_color, kBackgroundCornerRadius));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      kColorAshControlBackgroundColorInactive, kBackgroundCornerRadius));
   SetBorder(views::CreateEmptyBorder(kViewInsets));
   auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(0),

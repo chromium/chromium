@@ -6,7 +6,7 @@
 
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -23,10 +23,8 @@ CaptureModeButton::CaptureModeButton(views::Button::PressedCallback callback,
                                      const gfx::VectorIcon& icon)
     : views::ImageButton(callback) {
   ConfigureButton(this, views::FocusRing::Get(this));
-  const SkColor normal_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(icon, normal_color));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(icon, kColorAshButtonIconColor));
 }
 
 // static

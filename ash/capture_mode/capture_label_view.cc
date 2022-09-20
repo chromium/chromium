@@ -13,7 +13,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
@@ -153,21 +153,15 @@ CaptureLabelView::CaptureLabelView(
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  auto* color_provider = AshColorProvider::Get();
-  SkColor background_color = color_provider->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-  SetBackground(views::CreateSolidBackground(background_color));
+  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCaptureLabelRadius));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
-  SkColor text_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
   label_button_ = AddChildView(std::make_unique<views::LabelButton>(
       std::move(on_capture_button_pressed), std::u16string()));
   label_button_->SetPaintToLayer();
   label_button_->layer()->SetFillsBoundsOpaquely(false);
-  label_button_->SetEnabledTextColors(text_color);
   label_button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label_button_->SetNotifyEnterExitOnChild(true);
 
@@ -180,10 +174,8 @@ CaptureLabelView::CaptureLabelView(
   label_ = AddChildView(std::make_unique<views::Label>(std::u16string()));
   label_->SetPaintToLayer();
   label_->layer()->SetFillsBoundsOpaquely(false);
-  label_->SetEnabledColor(text_color);
+  label_->SetEnabledColorId(kColorAshTextColorPrimary);
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
-
-  UpdateIconAndText();
 
   if (features::IsDarkLightModeEnabled()) {
     SetBorder(std::make_unique<views::HighlightBorder>(
@@ -199,9 +191,8 @@ void CaptureLabelView::UpdateIconAndText() {
   const CaptureModeSource source = controller->source();
   const bool is_capturing_image = controller->type() == CaptureModeType::kImage;
   const bool in_tablet_mode = TabletModeController::Get()->InTabletMode();
-  auto* color_provider = AshColorProvider::Get();
-  SkColor icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  const SkColor icon_color =
+      GetColorProvider()->GetColor(kColorAshIconColorPrimary);
 
   gfx::ImageSkia icon;
   std::u16string text;
@@ -338,6 +329,14 @@ gfx::Size CaptureLabelView::CalculatePreferredSize() const {
   DCHECK(is_label_visible && !is_label_button_visible);
   return gfx::Size(label_->GetPreferredSize().width() + kCaptureLabelRadius * 2,
                    kCaptureLabelRadius * 2);
+}
+
+void CaptureLabelView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  UpdateIconAndText();
+  label_button_->SetEnabledTextColors(
+      GetColorProvider()->GetColor(kColorAshTextColorPrimary));
 }
 
 views::View* CaptureLabelView::GetView() {

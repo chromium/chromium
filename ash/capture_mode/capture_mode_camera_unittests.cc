@@ -31,7 +31,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
@@ -336,8 +336,8 @@ class CaptureModeCameraTest : public AshTestBase {
   // Verifies that the icon image and the tooltip of the resize button gets
   // updated correctly when pressed.
   void VerifyResizeButton(bool is_collapsed, CaptureModeButton* resize_button) {
-    SkColor color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorPrimary);
+    SkColor color =
+        resize_button->GetColorProvider()->GetColor(kColorAshIconColorPrimary);
     const gfx::ImageSkia collapse_icon_image =
         gfx::CreateVectorIcon(kCaptureModeCameraPreviewCollapseIcon, color);
     const gfx::ImageSkia expand_icon_image =

@@ -13,9 +13,10 @@
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -124,9 +125,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
   }
 
   SetPaintToLayer();
-  SetBackground(
-      views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80)));
+  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(kBorderRadius);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);

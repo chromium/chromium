@@ -207,7 +207,9 @@ void Label::SetEnabledColor(SkColor color) {
     return;
 
   enabled_color_set_ = true;
-  UpdateEnabledColor(color);
+  requested_enabled_color_ = color;
+  RecalculateColors();
+  OnPropertyChanged(&requested_enabled_color_, kPropertyEffectsPaint);
 }
 
 void Label::SetEnabledColorId(absl::optional<ui::ColorId> enabled_color_id) {
@@ -216,15 +218,6 @@ void Label::SetEnabledColorId(absl::optional<ui::ColorId> enabled_color_id) {
 
   enabled_color_id_ = enabled_color_id;
   OnPropertyChanged(&enabled_color_id_, kPropertyEffectsPaint);
-}
-
-void Label::UpdateEnabledColor(SkColor color) {
-  if (requested_enabled_color_ == color)
-    return;
-
-  requested_enabled_color_ = color;
-  RecalculateColors();
-  OnPropertyChanged(&requested_enabled_color_, kPropertyEffectsPaint);
 }
 
 SkColor Label::GetBackgroundColor() const {
@@ -238,6 +231,15 @@ void Label::SetBackgroundColor(SkColor color) {
   background_color_set_ = true;
   RecalculateColors();
   OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
+}
+
+void Label::SetBackgroundColorId(
+    absl::optional<ui::ColorId> background_color_id) {
+  if (background_color_id_ == background_color_id)
+    return;
+
+  background_color_id_ = background_color_id;
+  OnPropertyChanged(&background_color_id_, kPropertyEffectsPaint);
 }
 
 SkColor Label::GetSelectionTextColor() const {
@@ -823,8 +825,6 @@ void Label::OnPaint(gfx::Canvas* canvas) {
 void Label::OnThemeChanged() {
   View::OnThemeChanged();
   UpdateColorsFromTheme();
-  if (enabled_color_id_)
-    UpdateEnabledColor(GetColorProvider()->GetColor(*enabled_color_id_));
 }
 
 ui::Cursor Label::GetCursor(const ui::MouseEvent& event) {
@@ -1230,15 +1230,20 @@ void Label::ApplyTextColors() const {
 
 void Label::UpdateColorsFromTheme() {
   ui::ColorProvider* color_provider = GetColorProvider();
-  if (!enabled_color_set_ && !enabled_color_id_.has_value()) {
+  if (enabled_color_id_.has_value()) {
+    requested_enabled_color_ = color_provider->GetColor(*enabled_color_id_);
+  } else if (!enabled_color_set_) {
     const absl::optional<SkColor> cascading_color =
         GetCascadingProperty(this, kCascadingLabelEnabledColor);
     requested_enabled_color_ = cascading_color.value_or(
         style::GetColor(*this, text_context_, text_style_));
   }
-  if (!background_color_set_) {
+
+  if (background_color_id_.has_value())
+    background_color_ = color_provider->GetColor(*background_color_id_);
+  else if (!background_color_set_)
     background_color_ = color_provider->GetColor(ui::kColorDialogBackground);
-  }
+
   if (!selection_text_color_set_) {
     requested_selection_text_color_ =
         color_provider->GetColor(ui::kColorLabelSelectionForeground);

@@ -20,7 +20,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "base/bind.h"
 #include "ui/aura/window.h"
@@ -36,7 +36,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/style/platform_style.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -69,7 +69,8 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
       settings_button_(AddChildView(std::make_unique<CaptureModeToggleButton>(
           base::BindRepeating(&CaptureModeBarView::OnSettingsButtonPressed,
                               base::Unretained(this)),
-          kCaptureModeSettingsIcon))),
+          kCaptureModeSettingsIcon,
+          kColorAshControlBackgroundColorInactive))),
       close_button_(AddChildView(std::make_unique<CaptureModeButton>(
           base::BindRepeating(&CaptureModeBarView::OnCloseButtonPressed,
                               base::Unretained(this)),
@@ -78,10 +79,7 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
           this,
           SystemShadow::Type::kElevation12)) {
   SetPaintToLayer();
-  auto* color_provider = AshColorProvider::Get();
-  SkColor background_color = color_provider->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-  SetBackground(views::CreateSolidBackground(background_color));
+  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kBorderRadius));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
@@ -93,18 +91,10 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  // Custom styling for the settings button, which has a dark background and a
-  // light colored icon when selected.
-  const auto normal_icon = ui::ImageModel::FromVectorIcon(
-      kCaptureModeSettingsIcon,
-      color_provider->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonIconColor));
-  settings_button_->SetToggledImageModel(views::Button::STATE_NORMAL,
-                                         normal_icon);
-  settings_button_->set_toggled_background_color(
-      color_provider->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::
-              kControlBackgroundColorInactive));
+  settings_button_->SetToggledImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(kCaptureModeSettingsIcon,
+                                     kColorAshButtonIconColor));
   settings_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SETTINGS));
 

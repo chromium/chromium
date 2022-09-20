@@ -5,10 +5,6 @@
 #include "ash/capture_mode/capture_mode_ash_notification_view.h"
 
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
-#include "ash/shell.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/views/background.h"
 #include "ui/views/view.h"
 
 namespace ash {

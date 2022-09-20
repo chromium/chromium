@@ -18,21 +18,22 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform_util.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/message_center/views/notification_background_painter.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash::capture_mode_util {
@@ -270,14 +271,6 @@ std::unique_ptr<views::View> CreateClipboardShortcutView() {
   std::unique_ptr<views::View> clipboard_shortcut_view =
       std::make_unique<views::View>();
 
-  auto* color_provider = AshColorProvider::Get();
-  const SkColor background_color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
-  // The text and icon are showing on the background with |background_color|
-  // so its color is same with kButtonLabelColorPrimary although they're
-  // not theoretically showing on a button.
-  const SkColor text_icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonLabelColorPrimary);
   clipboard_shortcut_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
 
@@ -291,8 +284,8 @@ std::unique_ptr<views::View> CreateClipboardShortcutView() {
   views::Label* shortcut_label =
       clipboard_shortcut_view->AddChildView(std::make_unique<views::Label>());
   shortcut_label->SetText(label_text);
-  shortcut_label->SetBackgroundColor(background_color);
-  shortcut_label->SetEnabledColor(text_icon_color);
+  shortcut_label->SetBackgroundColorId(kColorAshControlBackgroundColorActive);
+  shortcut_label->SetEnabledColorId(kColorAshTextOnBackgroundColor);
 
   return clipboard_shortcut_view;
 }
@@ -300,19 +293,10 @@ std::unique_ptr<views::View> CreateClipboardShortcutView() {
 // Creates the banner view that will show on top of the notification image.
 std::unique_ptr<views::View> CreateBannerView() {
   std::unique_ptr<views::View> banner_view = std::make_unique<views::View>();
-
   // Use the light mode as default as notification is still using light
   // theme as the default theme.
   ScopedLightModeAsDefault scoped_light_mode_as_default;
 
-  auto* color_provider = AshColorProvider::Get();
-  const SkColor background_color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
-  // The text and icon are showing on the background with |background_color|
-  // so its color is same with kButtonLabelColorPrimary although they're
-  // not theoretically showing on a button.
-  const SkColor text_icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonLabelColorPrimary);
   auto* layout =
       banner_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
@@ -320,24 +304,26 @@ std::unique_ptr<views::View> CreateBannerView() {
           kBannerIconTextSpacingDip));
 
   if (features::IsNotificationsRefreshEnabled()) {
-    banner_view->SetBackground(views::CreateBackgroundFromPainter(
-        std::make_unique<message_center::NotificationBackgroundPainter>(
-            kBannerViewTopRadius, kBannerViewBottomRadius, background_color)));
+    banner_view->SetBackground(views::CreateThemedRoundedRectBackground(
+        kColorAshControlBackgroundColorActive, kBannerViewTopRadius,
+        kBannerViewBottomRadius, /*for_border_thickness=*/0));
   } else {
-    banner_view->SetBackground(views::CreateSolidBackground(background_color));
+    banner_view->SetBackground(views::CreateThemedSolidBackground(
+        kColorAshControlBackgroundColorActive));
   }
 
   views::ImageView* icon =
       banner_view->AddChildView(std::make_unique<views::ImageView>());
-  icon->SetImage(gfx::CreateVectorIcon(kCaptureModeCopiedToClipboardIcon,
-                                       kBannerIconSizeDip, text_icon_color));
+  icon->SetImage(ui::ImageModel::FromVectorIcon(
+      kCaptureModeCopiedToClipboardIcon, kColorAshIconOnBackgroundColor,
+      kBannerIconSizeDip));
 
   views::Label* label = banner_view->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_COPIED_TO_CLIPBOARD)));
-  label->SetBackgroundColor(background_color);
+  label->SetBackgroundColorId(kColorAshControlBackgroundColorActive);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetEnabledColor(text_icon_color);
+  label->SetEnabledColorId(kColorAshTextOnBackgroundColor);
 
   if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     banner_view->AddChildView(CreateClipboardShortcutView());
@@ -353,17 +339,12 @@ std::unique_ptr<views::View> CreateBannerView() {
 // notification.
 std::unique_ptr<views::View> CreatePlayIconView() {
   auto play_view = std::make_unique<views::ImageView>();
-  auto* color_provider = AshColorProvider::Get();
-  const SkColor icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  play_view->SetImage(gfx::CreateVectorIcon(kCaptureModePlayIcon,
-                                            kPlayIconSizeDip, icon_color));
+  play_view->SetImage(ui::ImageModel::FromVectorIcon(
+      kCaptureModePlayIcon, kColorAshIconColorPrimary, kPlayIconSizeDip));
   play_view->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   play_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-  const SkColor background_color = color_provider->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-  play_view->SetBackground(views::CreateRoundedRectBackground(
-      background_color, kPlayIconBackgroundCornerRadiusDip));
+  play_view->SetBackground(views::CreateThemedRoundedRectBackground(
+      kColorAshShieldAndBase80, kPlayIconBackgroundCornerRadiusDip));
   return play_view;
 }
 

@@ -64,6 +64,8 @@ namespace ash {
   E_CPONLY(kColorAshInvertedButtonLabelColor) \
   E_CPONLY(kColorAshTextColorSuggestion) \
   E_CPONLY(kColorAshButtonLabelColorPrimary) \
+  E_CPONLY(kColorAshTextOnBackgroundColor) \
+  E_CPONLY(kColorAshIconOnBackgroundColor) \
   /* Color for blue button labels, e.g, 'Retry' button of the system toast. */ \
   E_CPONLY(kColorAshButtonLabelColorBlue) \
   E_CPONLY(kColorAshButtonIconColor) \
@@ -108,7 +110,9 @@ namespace ash {
   E_CPONLY(kColorAshAssistantQueryLowConfidenceLabel) \
   E_CPONLY(kColorAshAssistantTextColorPrimary) \
   /* Color for dialog background in arc */ \
-  E_CPONLY(kColorAshDialogBackgroundColor)
+  E_CPONLY(kColorAshDialogBackgroundColor) \
+  /* Color for disabled button icon */ \
+  E_CPONLY(kColorAshButtonIconDisabledColor)
 
 #include "ui/color/color_id_macros.inc"
 
