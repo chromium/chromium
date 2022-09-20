@@ -54,11 +54,6 @@ const base::Feature kAutofillAssistantDialogOnboarding{
 const base::Feature kAutofillAssistantDirectActions{
     "AutofillAssistantDirectActions", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to disable onboarding flow for Autofill Assistant
-const base::Feature kAutofillAssistantDisableOnboardingFlow{
-    "AutofillAssistantDisableOnboardingFlow",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // By default, proactive help is only offered if MSBB is turned on. This feature
 // flag allows disabling the link. Proactive help can still be offered to users
 // so long as no communication to a remote backend is required. Specifically,

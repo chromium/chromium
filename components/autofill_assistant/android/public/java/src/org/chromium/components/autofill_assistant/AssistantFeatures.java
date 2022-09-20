@@ -22,8 +22,6 @@ public class AssistantFeatures extends Features {
             "AutofillAssistantChromeEntry";
     public static final String AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME =
             "AutofillAssistantDirectActions";
-    public static final String AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW_NAME =
-            "AutofillAssistantDisableOnboardingFlow";
     public static final String AUTOFILL_ASSISTANT_DISABLE_PROACTIVE_HELP_TIED_TO_MSBB_NAME =
             "AutofillAssistantDisableProactiveHelpTiedToMSBB";
     public static final String AUTOFILL_ASSISTANT_FEEDBACK_CHIP_NAME =
@@ -33,23 +31,21 @@ public class AssistantFeatures extends Features {
     public static final String AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME =
             "AutofillAssistantProactiveHelp";
 
-    // This list must be kept in sync with kFeaturesExposedToJava in features.cc.
+    // This list must be kept in sync with kFeaturesExposedToJava in features_android.cc.
     public static final AssistantFeatures AUTOFILL_ASSISTANT =
             new AssistantFeatures(0, AUTOFILL_ASSISTANT_NAME);
     public static final AssistantFeatures AUTOFILL_ASSISTANT_CHROME_ENTRY =
             new AssistantFeatures(1, AUTOFILL_ASSISTANT_CHROME_ENTRY_NAME);
     public static final AssistantFeatures AUTOFILL_ASSISTANT_DIRECT_ACTIONS =
             new AssistantFeatures(2, AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME);
-    public static final AssistantFeatures AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW =
-            new AssistantFeatures(3, AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW_NAME);
     public static final AssistantFeatures AUTOFILL_ASSISTANT_DISABLE_PROACTIVE_HELP_TIED_TO_MSBB =
-            new AssistantFeatures(4, AUTOFILL_ASSISTANT_DISABLE_PROACTIVE_HELP_TIED_TO_MSBB_NAME);
+            new AssistantFeatures(3, AUTOFILL_ASSISTANT_DISABLE_PROACTIVE_HELP_TIED_TO_MSBB_NAME);
     public static final AssistantFeatures AUTOFILL_ASSISTANT_FEEDBACK_CHIP =
-            new AssistantFeatures(5, AUTOFILL_ASSISTANT_FEEDBACK_CHIP_NAME);
+            new AssistantFeatures(4, AUTOFILL_ASSISTANT_FEEDBACK_CHIP_NAME);
     public static final AssistantFeatures AUTOFILL_ASSISTANT_LOAD_DFM_FOR_TRIGGER_SCRIPTS =
-            new AssistantFeatures(6, AUTOFILL_ASSISTANT_LOAD_DFM_FOR_TRIGGER_SCRIPTS_NAME);
+            new AssistantFeatures(5, AUTOFILL_ASSISTANT_LOAD_DFM_FOR_TRIGGER_SCRIPTS_NAME);
     public static final AssistantFeatures AUTOFILL_ASSISTANT_PROACTIVE_HELP =
-            new AssistantFeatures(7, AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME);
+            new AssistantFeatures(6, AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME);
 
     private final int mOrdinal;
 

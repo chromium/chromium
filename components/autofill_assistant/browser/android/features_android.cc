@@ -12,11 +12,10 @@ namespace {
 
 // Array of features exposed through the Java Features bridge class. Entries in
 // this array must be replicated in the same order in AssistantFeatures.java.
-const std::array<const base::Feature*, 8> kFeaturesExposedToJava = {
+const std::array<const base::Feature*, 7> kFeaturesExposedToJava = {
     &features::kAutofillAssistant,
     &features::kAutofillAssistantChromeEntry,
     &features::kAutofillAssistantDirectActions,
-    &features::kAutofillAssistantDisableOnboardingFlow,
     &features::kAutofillAssistantDisableProactiveHelpTiedToMSBB,
     &features::kAutofillAssistantFeedbackChip,
     &features::kAutofillAssistantLoadDFMForTriggerScripts,

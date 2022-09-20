@@ -60,9 +60,6 @@ public class AutofillAssistantPreferencesUtil {
 
     /** Checks whether the Autofill Assistant onboarding screen should be shown. */
     public static boolean getShowOnboarding() {
-        if (AssistantFeatures.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW.isEnabled()) {
-            return false;
-        }
         return !isAutofillAssistantSwitchOn() || !isAutofillOnboardingAccepted();
     }
 
