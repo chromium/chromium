@@ -72,6 +72,21 @@ TEST_F(IsolatedWebAppUrlInfoTest, ParseSignedWebBundleIdSucceedWithValidUrl) {
               Eq("aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"));
 }
 
+TEST_F(IsolatedWebAppUrlInfoTest, ParseSignedWebBundleIdFailsWithSubdomain) {
+  GURL gurl(
+      "isolated-app://"
+      "foo.aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/");
+
+  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+      IsolatedWebAppUrlInfo::Create(gurl);
+  base::expected<web_package::SignedWebBundleId, std::string> bundle_id =
+      url_info->ParseSignedWebBundleId();
+
+  EXPECT_THAT(bundle_id.has_value(), IsFalse());
+  EXPECT_THAT(bundle_id.error(),
+              StartsWith("The host of isolated-app:// URLs must be a valid"));
+}
+
 TEST_F(IsolatedWebAppUrlInfoTest, ParseSignedWebBundleIdFailsWithBadHostname) {
   GURL gurl(
       "isolated-app://"
