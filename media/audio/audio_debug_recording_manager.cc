@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_checker.h"
 
 namespace media {
 
@@ -17,15 +17,15 @@ namespace {
 uint32_t g_next_stream_id = 1;
 }
 
-AudioDebugRecordingManager::AudioDebugRecordingManager(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)) {}
+AudioDebugRecordingManager::AudioDebugRecordingManager() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 AudioDebugRecordingManager::~AudioDebugRecordingManager() = default;
 
 void AudioDebugRecordingManager::EnableDebugRecording(
     CreateWavFileCallback create_file_callback) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!create_file_callback.is_null());
   create_file_callback_ = std::move(create_file_callback);
 
@@ -39,7 +39,7 @@ void AudioDebugRecordingManager::EnableDebugRecording(
 }
 
 void AudioDebugRecordingManager::DisableDebugRecording() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!create_file_callback_.is_null());
   for (const auto& it : debug_recording_helpers_) {
     AudioDebugRecordingHelper* recording_helper = it.second.first;
@@ -52,7 +52,7 @@ std::unique_ptr<AudioDebugRecorder>
 AudioDebugRecordingManager::RegisterDebugRecordingSource(
     AudioDebugRecordingStreamType stream_type,
     const AudioParameters& params) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const uint32_t id = g_next_stream_id++;
 
@@ -60,7 +60,7 @@ AudioDebugRecordingManager::RegisterDebugRecordingSource(
   // returned recorder. But to not require this we use a weak pointer.
   std::unique_ptr<AudioDebugRecordingHelper> recording_helper =
       CreateAudioDebugRecordingHelper(
-          params, task_runner_,
+          params,
           base::BindOnce(
               &AudioDebugRecordingManager::UnregisterDebugRecordingSource,
               weak_factory_.GetWeakPtr(), id));
@@ -77,7 +77,7 @@ AudioDebugRecordingManager::RegisterDebugRecordingSource(
 }
 
 void AudioDebugRecordingManager::UnregisterDebugRecordingSource(uint32_t id) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = debug_recording_helpers_.find(id);
   DCHECK(it != debug_recording_helpers_.end());
   debug_recording_helpers_.erase(id);
@@ -86,14 +86,13 @@ void AudioDebugRecordingManager::UnregisterDebugRecordingSource(uint32_t id) {
 std::unique_ptr<AudioDebugRecordingHelper>
 AudioDebugRecordingManager::CreateAudioDebugRecordingHelper(
     const AudioParameters& params,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::OnceClosure on_destruction_closure) {
   return std::make_unique<AudioDebugRecordingHelper>(
-      params, task_runner, std::move(on_destruction_closure));
+      params, std::move(on_destruction_closure));
 }
 
 bool AudioDebugRecordingManager::IsDebugRecordingEnabled() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !create_file_callback_.is_null();
 }
 

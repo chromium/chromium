@@ -5,12 +5,11 @@
 #ifndef MEDIA_AUDIO_AUDIO_DEBUG_RECORDING_HELPER_H_
 #define MEDIA_AUDIO_AUDIO_DEBUG_RECORDING_HELPER_H_
 
-#include <memory>
-
 #include "base/atomicops.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/audio_debug_file_writer.h"
 #include "media/base/audio_parameters.h"
@@ -18,7 +17,6 @@
 
 namespace base {
 class File;
-class SingleThreadTaskRunner;
 }
 
 namespace media {
@@ -39,16 +37,9 @@ class AudioDebugRecorder {
 };
 
 // A helper class for those who want to use AudioDebugFileWriter. It handles
-// copying AudioBus data, thread jump (OnData() can be called on any
-// thread), and creating and deleting the AudioDebugFileWriter at enable and
-// disable. All functions except OnData() must be called on the thread
-// |task_runner| belongs to.
-// TODO(grunell): When input debug recording is moved to AudioManager, it should
-// be possible to merge this class into AudioDebugFileWriter. One thread jump
-// could be skipped then. Currently we have
-// soundcard thread -> control thread -> file thread,
-// and with the merge we should be able to do
-// soundcard thread -> file thread.
+// copying AudioBus data, thread jump (OnData() can be called on any thread),
+// and creating and deleting the AudioDebugFileWriter at enable and disable. All
+// public methods except OnData() must be called on the same sequence.
 class MEDIA_EXPORT AudioDebugRecordingHelper : public AudioDebugRecorder {
  public:
   using CreateWavFileCallback = base::OnceCallback<void(
@@ -56,10 +47,8 @@ class MEDIA_EXPORT AudioDebugRecordingHelper : public AudioDebugRecorder {
       uint32_t id,
       base::OnceCallback<void(base::File)> reply_callback)>;
 
-  AudioDebugRecordingHelper(
-      const AudioParameters& params,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      base::OnceClosure on_destruction_closure);
+  AudioDebugRecordingHelper(const AudioParameters& params,
+                            base::OnceClosure on_destruction_closure);
 
   AudioDebugRecordingHelper(const AudioDebugRecordingHelper&) = delete;
   AudioDebugRecordingHelper& operator=(const AudioDebugRecordingHelper&) =
@@ -67,13 +56,12 @@ class MEDIA_EXPORT AudioDebugRecordingHelper : public AudioDebugRecorder {
 
   ~AudioDebugRecordingHelper() override;
 
-  // Enable debug recording. Creates |debug_writer_| and runs
-  // |create_file_callback| to create debug recording file.
+  // Enable debug recording. Runs |create_file_callback| synchronously to create
+  // the debug recording file.
   virtual void EnableDebugRecording(AudioDebugRecordingStreamType stream_type,
                                     uint32_t id,
                                     CreateWavFileCallback create_file_callback);
 
-  // Disable debug recording. Destroys |debug_writer_|.
   virtual void DisableDebugRecording();
 
   // AudioDebugRecorder implementation. Can be called on any thread.
@@ -83,29 +71,26 @@ class MEDIA_EXPORT AudioDebugRecordingHelper : public AudioDebugRecorder {
   FRIEND_TEST_ALL_PREFIXES(AudioDebugRecordingHelperTest, EnableDisable);
   FRIEND_TEST_ALL_PREFIXES(AudioDebugRecordingHelperTest, OnData);
 
-  // Writes debug data to |debug_writer_|.
-  void DoWrite(std::unique_ptr<media::AudioBus> data);
-
   // Creates an AudioDebugFileWriter. Overridden by test.
-  virtual std::unique_ptr<AudioDebugFileWriter> CreateAudioDebugFileWriter(
-      const AudioParameters& params);
+  virtual AudioDebugFileWriter::Ptr CreateAudioDebugFileWriter(
+      const AudioParameters& params,
+      base::File file);
 
   // Passed to |create_file_callback| in EnableDebugRecording, to be called
   // after debug recording file was created.
   void StartDebugRecordingToFile(base::File file);
 
   const AudioParameters params_;
-  std::unique_ptr<AudioDebugFileWriter> debug_writer_;
 
-  // Used as a flag to indicate if recording is enabled, accessed on different
-  // threads.
-  base::subtle::Atomic32 recording_enabled_;
+  // Locks access to the |file_writer_|.
+  base::Lock file_writer_lock_;
 
-  // The task runner for accessing |debug_writer_|.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  AudioDebugFileWriter::Ptr file_writer_ GUARDED_BY(file_writer_lock_);
 
   // Runs in destructor if set.
   base::OnceClosure on_destruction_closure_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AudioDebugRecordingHelper> weak_factory_{this};
 };

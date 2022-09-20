@@ -7,13 +7,16 @@
 #include <stdint.h>
 #include <array>
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/sys_byteorder.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 
@@ -136,82 +139,37 @@ void WriteWavHeader(WavHeaderBuffer* buf,
 
 }  // namespace
 
-// Manages the debug recording file and writes to it. Can be created on any
-// thread. All the operations must be executed on a thread that has IO
-// permissions.
-class AudioDebugFileWriter::AudioFileWriter {
- public:
-  static AudioFileWriterUniquePtr Create(
-      base::File file,
-      const AudioParameters& params,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
-
-  ~AudioFileWriter();
-
-  // Write data from |data| to file.
-  void Write(const AudioBus* data);
-
- private:
-  explicit AudioFileWriter(const AudioParameters& params);
-
-  // Write wave header to file. Called on the |task_runner_| twice: on
-  // construction
-  // of AudioFileWriter size of the wave data is unknown, so the header is
-  // written with zero sizes; then on destruction it is re-written with the
-  // actual size info accumulated throughout the object lifetime.
-  void WriteHeader();
-
-  void StartRecording(base::File file);
-
-  // The file to write to.
-  base::File file_;
-
-  // Number of written samples.
-  uint64_t samples_;
-
-  // Audio parameters required to build wave header. Number of channels and
-  // sample rate are used.
-  const AudioParameters params_;
-
-  // Intermediate buffer to be written to file. Interleaved 16 bit audio data.
-  std::unique_ptr<int16_t[]> interleaved_data_;
-  int interleaved_data_size_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-};
-
-// static
-AudioDebugFileWriter::AudioFileWriterUniquePtr
-AudioDebugFileWriter::AudioFileWriter::Create(
-    base::File file,
-    const AudioParameters& params,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  AudioFileWriterUniquePtr file_writer(new AudioFileWriter(params),
-                                       base::OnTaskRunnerDeleter(task_runner));
-
-  // base::Unretained is safe, because destructor is called on
-  // |task_runner|.
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AudioFileWriter::StartRecording,
-                     base::Unretained(file_writer.get()), std::move(file)));
-  return file_writer;
-}
-
-AudioDebugFileWriter::AudioFileWriter::AudioFileWriter(
-    const AudioParameters& params)
-    : samples_(0), params_(params), interleaved_data_size_(0) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
-
-AudioDebugFileWriter::AudioFileWriter::~AudioFileWriter() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+AudioDebugFileWriter::~AudioDebugFileWriter() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (file_.IsValid())
     WriteHeader();
 }
 
-void AudioDebugFileWriter::AudioFileWriter::Write(const AudioBus* data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+AudioDebugFileWriter::AudioDebugFileWriter(const AudioParameters& params,
+                                           base::File file)
+    : params_(params), file_(std::move(file)) {
+  weak_this_ = weak_factory_.GetWeakPtr();
+}
+
+void AudioDebugFileWriter::Write(std::unique_ptr<AudioBus> data) {
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&AudioDebugFileWriter::DoWrite, weak_this_,
+                                std::move(data)));
+}
+
+AudioDebugFileWriter::Ptr AudioDebugFileWriter::Create(
+    const AudioParameters& params,
+    base::File file) {
+  AudioDebugFileWriter* writer =
+      new AudioDebugFileWriter(params, std::move(file));
+  writer->task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AudioDebugFileWriter::WriteHeader, writer->weak_this_));
+  return Ptr(writer, base::OnTaskRunnerDeleter(writer->task_runner_));
+}
+
+void AudioDebugFileWriter::DoWrite(std::unique_ptr<AudioBus> data) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(params_.channels(), data->channels());
   if (!file_.IsValid())
     return;
@@ -237,8 +195,8 @@ void AudioDebugFileWriter::AudioFileWriter::Write(const AudioBus* data) {
                           data_size * sizeof(interleaved_data_[0]));
 }
 
-void AudioDebugFileWriter::AudioFileWriter::WriteHeader() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+void AudioDebugFileWriter::WriteHeader() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (!file_.IsValid())
     return;
   WavHeaderBuffer buf;
@@ -248,61 +206,6 @@ void AudioDebugFileWriter::AudioFileWriter::WriteHeader() {
   // Write() does not move the cursor if file is not in APPEND mode; Seek() so
   // that the header is not overwritten by the following writes.
   file_.Seek(base::File::FROM_BEGIN, kWavHeaderSize);
-}
-
-void AudioDebugFileWriter::AudioFileWriter::StartRecording(base::File file) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!file_.IsValid());
-
-  file_ = std::move(file);
-  WriteHeader();
-}
-
-AudioDebugFileWriter::AudioDebugFileWriter(const AudioParameters& params)
-    : params_(params),
-      file_writer_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
-  DETACH_FROM_SEQUENCE(client_sequence_checker_);
-}
-
-AudioDebugFileWriter::~AudioDebugFileWriter() {
-  // |file_writer_| will be deleted on |task_runner_|.
-}
-
-void AudioDebugFileWriter::Start(base::File file) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  DCHECK(!file_writer_);
-  file_writer_ =
-      AudioFileWriter::Create(std::move(file), params_, file_task_runner_);
-}
-
-void AudioDebugFileWriter::Stop() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  // |file_writer_| is deleted on FILE thread.
-  file_writer_.reset();
-  DETACH_FROM_SEQUENCE(client_sequence_checker_);
-}
-
-void AudioDebugFileWriter::Write(std::unique_ptr<AudioBus> data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  if (!file_writer_)
-    return;
-
-  // base::Unretained for |file_writer_| is safe, see the destructor.
-  file_task_runner_->PostTask(
-      FROM_HERE,
-      // Callback takes ownership of |data|:
-      base::BindOnce(&AudioFileWriter::Write,
-                     base::Unretained(file_writer_.get()),
-                     base::Owned(data.release())));
-}
-
-bool AudioDebugFileWriter::WillWrite() {
-  // Note that if this is called from any place other than
-  // |client_sequence_checker_| then there is a data race here, but it's fine,
-  // because Write() will check for |file_writer_|. So, we are not very precise
-  // here, but it's fine: we can afford missing some data or scheduling some
-  // no-op writes.
-  return !!file_writer_;
 }
 
 }  // namespace media

@@ -13,8 +13,7 @@ namespace media {
 
 class MockAudioDebugRecordingManager : public AudioDebugRecordingManager {
  public:
-  explicit MockAudioDebugRecordingManager(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  MockAudioDebugRecordingManager();
 
   MockAudioDebugRecordingManager(const MockAudioDebugRecordingManager&) =
       delete;

@@ -11,7 +11,9 @@
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
+#include "base/task/bind_post_task.h"
 #include "media/audio/audio_debug_file_writer.h"
 #include "media/base/audio_bus.h"
 
@@ -19,14 +21,15 @@ namespace media {
 
 AudioDebugRecordingHelper::AudioDebugRecordingHelper(
     const AudioParameters& params,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::OnceClosure on_destruction_closure)
     : params_(params),
-      recording_enabled_(0),
-      task_runner_(std::move(task_runner)),
-      on_destruction_closure_(std::move(on_destruction_closure)) {}
+      file_writer_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
+      on_destruction_closure_(std::move(on_destruction_closure)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 AudioDebugRecordingHelper::~AudioDebugRecordingHelper() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (on_destruction_closure_)
     std::move(on_destruction_closure_).Run();
 }
@@ -35,10 +38,8 @@ void AudioDebugRecordingHelper::EnableDebugRecording(
     AudioDebugRecordingStreamType stream_type,
     uint32_t id,
     CreateWavFileCallback create_file_callback) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!debug_writer_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  debug_writer_ = CreateAudioDebugFileWriter(params_);
   std::move(create_file_callback)
       .Run(stream_type, id,
            base::BindOnce(&AudioDebugRecordingHelper::StartDebugRecordingToFile,
@@ -46,41 +47,41 @@ void AudioDebugRecordingHelper::EnableDebugRecording(
 }
 
 void AudioDebugRecordingHelper::StartDebugRecordingToFile(base::File file) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!file.IsValid()) {
-    PLOG(ERROR) << "Invalid debug recording file, error="
-                << file.error_details();
-    debug_writer_.reset();
-    return;
+  {
+    base::AutoLock auto_lock(file_writer_lock_);
+
+    if (!file.IsValid()) {
+      PLOG(ERROR) << "Invalid debug recording file, error="
+                  << file.error_details();
+      file_writer_.reset();
+      return;
+    }
+
+    file_writer_ = CreateAudioDebugFileWriter(params_, std::move(file));
   }
-
-  debug_writer_->Start(std::move(file));
-
-  base::subtle::NoBarrier_Store(&recording_enabled_, 1);
 }
 
 void AudioDebugRecordingHelper::DisableDebugRecording() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::subtle::NoBarrier_Store(&recording_enabled_, 0);
-
-  if (debug_writer_) {
-    debug_writer_->Stop();
-    debug_writer_.reset();
+  {
+    base::AutoLock auto_lock(file_writer_lock_);
+    if (file_writer_) {
+      file_writer_.reset();
+    }
   }
 }
 
 void AudioDebugRecordingHelper::OnData(const AudioBus* source) {
-  // Check if debug recording is enabled to avoid an unecessary copy and thread
-  // jump if not. Recording can be disabled between the atomic Load() here and
-  // DoWrite(), but it's fine with a single unnecessary copy+jump at disable
-  // time. We use an atomic operation for accessing the flag on different
-  // threads. No memory barrier is needed for the same reason; a race is no
-  // problem at enable and disable time. Missing one buffer of data doesn't
-  // matter.
-  base::subtle::Atomic32 recording_enabled =
-      base::subtle::NoBarrier_Load(&recording_enabled_);
+  // Check if debug recording is enabled to avoid an unnecessary copy and thread
+  // jump if not.
+  bool recording_enabled = false;
+  if (file_writer_lock_.Try()) {
+    recording_enabled = static_cast<bool>(file_writer_);
+    file_writer_lock_.Release();
+  }
   if (!recording_enabled)
     return;
 
@@ -96,23 +97,19 @@ void AudioDebugRecordingHelper::OnData(const AudioBus* source) {
       AudioBus::Create(source->channels(), source->frames());
   source->CopyTo(audio_bus_copy.get());
 
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AudioDebugRecordingHelper::DoWrite,
-                     weak_factory_.GetWeakPtr(), std::move(audio_bus_copy)));
+  if (file_writer_lock_.Try()) {
+    if (file_writer_) {
+      file_writer_->Write(std::move(audio_bus_copy));
+    }
+    file_writer_lock_.Release();
+  }
 }
 
-void AudioDebugRecordingHelper::DoWrite(std::unique_ptr<media::AudioBus> data) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-
-  if (debug_writer_)
-    debug_writer_->Write(std::move(data));
-}
-
-std::unique_ptr<AudioDebugFileWriter>
-AudioDebugRecordingHelper::CreateAudioDebugFileWriter(
-    const AudioParameters& params) {
-  return std::make_unique<AudioDebugFileWriter>(params);
+AudioDebugFileWriter::Ptr AudioDebugRecordingHelper::CreateAudioDebugFileWriter(
+    const AudioParameters& params,
+    base::File file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return AudioDebugFileWriter::Create(params, std::move(file));
 }
 
 }  // namespace media

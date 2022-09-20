@@ -11,6 +11,7 @@
 
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -21,56 +22,61 @@ namespace media {
 
 class AudioBus;
 
-// Writes audio data to a 16 bit PCM WAVE file used for debugging purposes. All
-// operations are non-blocking.
-// Functions are virtual for the purpose of test mocking.
+// Writes audio data to a 16 bit PCM WAVE file used for debugging purposes.
+// Functions are virtual for the purpose of test mocking. This class can be
+// created and used anywhere, but must be destroyed using the
+// OnTaskRunnerDeleter provided by Create(). It starts writing on Create(), and
+// stops writing on destruction.
 class MEDIA_EXPORT AudioDebugFileWriter {
  public:
-  // Number of channels and sample rate are used from |params|, the other
-  // parameters are ignored. The number of channels in the data passed to
-  // Write() must match |params|.
-  explicit AudioDebugFileWriter(const AudioParameters& params);
-
   AudioDebugFileWriter(const AudioDebugFileWriter&) = delete;
   AudioDebugFileWriter& operator=(const AudioDebugFileWriter&) = delete;
 
   virtual ~AudioDebugFileWriter();
 
-  // Must be called before calling Write() for the first time after creation or
-  // Stop() call. Can be called on any sequence; Write() and Stop() must be
-  // called on the same sequence as Start().
-  virtual void Start(base::File file);
-
-  // Must be called to finish recording. Each call to Start() requires a call to
-  // Stop(). Will be automatically called on destruction.
-  virtual void Stop();
-
   // Write |data| to file.
   virtual void Write(std::unique_ptr<AudioBus> data);
 
-  // Returns true if Write() call scheduled at this point will most likely write
-  // data to the file, and false if it most likely will be a no-op. The result
-  // may be ambigulous if Start() or Stop() is executed at the moment. Can be
-  // called from any sequence.
-  virtual bool WillWrite();
+  using Ptr = std::unique_ptr<AudioDebugFileWriter, base::OnTaskRunnerDeleter>;
+
+  // Number of channels and sample rate are used from |params|, the other
+  // parameters are ignored. The number of channels in the data passed to
+  // Write() must match |params|. Write() must be called on the sequence that
+  // task_runner belongs to.
+  static Ptr Create(const AudioParameters& params, base::File file);
 
  protected:
+  // Protected for testing.
+  AudioDebugFileWriter(const AudioParameters& params, base::File file);
+
   const AudioParameters params_;
 
- private:
-  class AudioFileWriter;
-
-  using AudioFileWriterUniquePtr =
-      std::unique_ptr<AudioFileWriter, base::OnTaskRunnerDeleter>;
-
-  // The task runner to do file output operations on.
-  const scoped_refptr<base::SequencedTaskRunner> file_task_runner_ =
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
-  AudioFileWriterUniquePtr file_writer_;
-  SEQUENCE_CHECKER(client_sequence_checker_);
+ private:
+  // Write wave header to file. Called twice: on Create() the size of the wave
+  // data is unknown, so the header is written with zero sizes; then on
+  // destruction it is re-written with the actual size info accumulated
+  // throughout the object lifetime.
+  void WriteHeader();
+
+  void DoWrite(std::unique_ptr<AudioBus> data);
+
+  // The file to write to.
+  base::File file_;
+
+  // Number of written samples.
+  uint64_t samples_ = 0;
+
+  // Intermediate buffer to be written to file. Interleaved 16 bit audio data.
+  std::unique_ptr<int16_t[]> interleaved_data_;
+  int interleaved_data_size_ = 0;
+
+  base::WeakPtr<AudioDebugFileWriter> weak_this_;
+  base::WeakPtrFactory<AudioDebugFileWriter> weak_factory_{this};
 };
 
 }  // namespace media

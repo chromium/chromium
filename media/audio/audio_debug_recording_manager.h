@@ -59,8 +59,7 @@ class MEDIA_EXPORT AudioDebugRecordingManager {
       uint32_t id,
       base::OnceCallback<void(base::File)> reply_callback)>;
 
-  AudioDebugRecordingManager(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  AudioDebugRecordingManager();
 
   AudioDebugRecordingManager(const AudioDebugRecordingManager&) = delete;
   AudioDebugRecordingManager& operator=(const AudioDebugRecordingManager&) =
@@ -81,14 +80,8 @@ class MEDIA_EXPORT AudioDebugRecordingManager {
  protected:
   // Creates an AudioDebugRecordingHelper. Overridden by test.
   virtual std::unique_ptr<AudioDebugRecordingHelper>
-  CreateAudioDebugRecordingHelper(
-      const AudioParameters& params,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      base::OnceClosure on_destruction_closure);
-
-  // The task runner this class lives on. Also handed to
-  // AudioDebugRecordingHelpers.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  CreateAudioDebugRecordingHelper(const AudioParameters& params,
+                                  base::OnceClosure on_destruction_closure);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AudioDebugRecordingManagerTest,
@@ -114,6 +107,8 @@ class MEDIA_EXPORT AudioDebugRecordingManager {
   // Callback for creating debug recording files. When this is not null, debug
   // recording is enabled.
   CreateWavFileCallback create_file_callback_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AudioDebugRecordingManager> weak_factory_{this};
 };

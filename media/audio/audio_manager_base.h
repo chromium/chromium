@@ -161,8 +161,7 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
   std::string GetCommunicationsOutputDeviceID() override;
 
   virtual std::unique_ptr<AudioDebugRecordingManager>
-  CreateAudioDebugRecordingManager(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  CreateAudioDebugRecordingManager();
   AudioDebugRecordingManager* GetAudioDebugRecordingManager() final;
 
   void SetAecDumpRecordingManager(base::WeakPtr<AecdumpRecordingManager>

@@ -10,13 +10,18 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
@@ -38,17 +43,16 @@ const base::FilePath::CharType kFileName[] =
 // Mock class for the audio file writer that the helper wraps.
 class MockAudioDebugFileWriter : public AudioDebugFileWriter {
  public:
-  explicit MockAudioDebugFileWriter(const AudioParameters& params)
-      : AudioDebugFileWriter(params), reference_data_(nullptr) {}
+  explicit MockAudioDebugFileWriter(const AudioParameters& params,
+                                    base::File file)
+      : AudioDebugFileWriter(params, std::move(file)),
+        reference_data_(nullptr) {}
 
   MockAudioDebugFileWriter(const MockAudioDebugFileWriter&) = delete;
   MockAudioDebugFileWriter& operator=(const MockAudioDebugFileWriter&) = delete;
 
-  ~MockAudioDebugFileWriter() override = default;
-
-  MOCK_METHOD1(DoStart, void(bool));
-  void Start(base::File file) override { DoStart(file.IsValid()); }
-  MOCK_METHOD0(Stop, void());
+  MOCK_METHOD0(DestructorCalled, void());
+  ~MockAudioDebugFileWriter() override { DestructorCalled(); }
 
   // Functions with move-only types as arguments can't be mocked directly, so
   // we pass on to DoWrite(). Also, we can verify the data this way.
@@ -66,14 +70,16 @@ class MockAudioDebugFileWriter : public AudioDebugFileWriter {
     DoWrite(data.get());
   }
 
-  MOCK_METHOD0(WillWrite, bool());
-
   // Set reference data to compare against. Must be called before Write() is
   // called.
   void SetReferenceData(AudioBus* reference_data) {
     EXPECT_EQ(params_.channels(), reference_data->channels());
     EXPECT_EQ(params_.frames_per_buffer(), reference_data->frames());
     reference_data_ = reference_data;
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() {
+    return task_runner_;
   }
 
  private:
@@ -84,13 +90,15 @@ class MockAudioDebugFileWriter : public AudioDebugFileWriter {
 // function to create the above mock instead.
 class AudioDebugRecordingHelperUnderTest : public AudioDebugRecordingHelper {
  public:
+  using CreatedWriterCallback =
+      base::RepeatingCallback<void(MockAudioDebugFileWriter*)>;
+
   AudioDebugRecordingHelperUnderTest(
       const AudioParameters& params,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      base::OnceClosure on_destruction_closure)
-      : AudioDebugRecordingHelper(params,
-                                  std::move(task_runner),
-                                  std::move(on_destruction_closure)) {}
+      base::OnceClosure on_destruction_closure,
+      CreatedWriterCallback created_writer_callback)
+      : AudioDebugRecordingHelper(params, std::move(on_destruction_closure)),
+        created_writer_callback_(std::move(created_writer_callback)) {}
 
   AudioDebugRecordingHelperUnderTest(
       const AudioDebugRecordingHelperUnderTest&) = delete;
@@ -100,19 +108,23 @@ class AudioDebugRecordingHelperUnderTest : public AudioDebugRecordingHelper {
   ~AudioDebugRecordingHelperUnderTest() override = default;
 
  private:
-  // Creates the mock writer. After the mock writer is returned, we always
-  // expect Start() to be called on it by the helper.
-  std::unique_ptr<AudioDebugFileWriter> CreateAudioDebugFileWriter(
-      const AudioParameters& params) override {
-    MockAudioDebugFileWriter* writer = new MockAudioDebugFileWriter(params);
-    EXPECT_CALL(*writer, DoStart(true));
-    return base::WrapUnique<AudioDebugFileWriter>(writer);
+  // Creates the mock writer.
+  AudioDebugFileWriter::Ptr CreateAudioDebugFileWriter(
+      const AudioParameters& params,
+      base::File file) override {
+    MockAudioDebugFileWriter* writer =
+        new MockAudioDebugFileWriter(params, std::move(file));
+    created_writer_callback_.Run(writer);
+    return AudioDebugFileWriter::Ptr(
+        writer, base::OnTaskRunnerDeleter(writer->GetTaskRunner()));
   }
+
+  CreatedWriterCallback created_writer_callback_;
 };
 
 class AudioDebugRecordingHelperTest : public ::testing::Test {
  public:
-  AudioDebugRecordingHelperTest() {}
+  AudioDebugRecordingHelperTest() = default;
 
   AudioDebugRecordingHelperTest(const AudioDebugRecordingHelperTest&) = delete;
   AudioDebugRecordingHelperTest& operator=(
@@ -125,8 +137,11 @@ class AudioDebugRecordingHelperTest : public ::testing::Test {
       const AudioParameters& params,
       base::OnceClosure on_destruction_closure) {
     return std::make_unique<AudioDebugRecordingHelperUnderTest>(
-        params, task_environment_.GetMainThreadTaskRunner(),
-        std::move(on_destruction_closure));
+        params, std::move(on_destruction_closure),
+        base::BindLambdaForTesting(
+            [&](MockAudioDebugFileWriter* mock_audio_file_writer) {
+              mock_audio_file_writer_ = mock_audio_file_writer;
+            }));
   }
 
   MOCK_METHOD0(OnAudioDebugRecordingHelperDestruction, void());
@@ -148,9 +163,16 @@ class AudioDebugRecordingHelperTest : public ::testing::Test {
     // Run |reply_callback| with a valid file for expected
     // MockAudioDebugFileWriter::Start mocked call to happen.
     std::move(reply_callback).Run(std::move(debug_file));
-    // File can be removed right away because MockAudioDebugFileWriter::Start is
-    // called synchronously.
-    ASSERT_TRUE(base::DeleteFile(path));
+    paths_.push_back(std::move(path));
+  }
+
+  void VerifyAndDeleteWavFiles(size_t expected_file_count) {
+    DCHECK_EQ(expected_file_count, paths_.size());
+    task_environment_.RunUntilIdle();
+    for (base::FilePath& path : paths_) {
+      ASSERT_TRUE(base::DeleteFile(path));
+    }
+    paths_.clear();
   }
 
  protected:
@@ -160,6 +182,12 @@ class AudioDebugRecordingHelperTest : public ::testing::Test {
 
   // The test task environment.
   base::test::TaskEnvironment task_environment_;
+
+  // Used for testing to access the file writer having to go through the
+  // internal |file_writer_lock_|.
+  MockAudioDebugFileWriter* mock_audio_file_writer_;
+
+  std::vector<base::FilePath> paths_;
 };
 
 // Creates a helper with an on destruction closure, and verifies that it's run.
@@ -172,6 +200,8 @@ TEST_F(AudioDebugRecordingHelperTest, TestDestructionClosure) {
                                  base::Unretained(this)));
 
   EXPECT_CALL(*this, OnAudioDebugRecordingHelperDestruction());
+
+  VerifyAndDeleteWavFiles(0);
 }
 
 // Verifies that disable can be called without being enabled.
@@ -181,6 +211,8 @@ TEST_F(AudioDebugRecordingHelperTest, OnlyDisable) {
       CreateRecordingHelper(params, base::OnceClosure());
 
   recording_helper->DisableDebugRecording();
+
+  VerifyAndDeleteWavFiles(0);
 }
 
 TEST_F(AudioDebugRecordingHelperTest, EnableDisable) {
@@ -192,19 +224,17 @@ TEST_F(AudioDebugRecordingHelperTest, EnableDisable) {
       stream_type_, id_,
       base::BindOnce(&AudioDebugRecordingHelperTest::CreateWavFile,
                      base::Unretained(this)));
-  EXPECT_CALL(*static_cast<MockAudioDebugFileWriter*>(
-                  recording_helper->debug_writer_.get()),
-              Stop());
+  EXPECT_CALL(*mock_audio_file_writer_, DestructorCalled());
   recording_helper->DisableDebugRecording();
 
   recording_helper->EnableDebugRecording(
       stream_type_, id_,
       base::BindOnce(&AudioDebugRecordingHelperTest::CreateWavFile,
                      base::Unretained(this)));
-  EXPECT_CALL(*static_cast<MockAudioDebugFileWriter*>(
-                  recording_helper->debug_writer_.get()),
-              Stop());
+  EXPECT_CALL(*mock_audio_file_writer_, DestructorCalled());
   recording_helper->DisableDebugRecording();
+
+  VerifyAndDeleteWavFiles(2);
 }
 
 TEST_F(AudioDebugRecordingHelperTest, OnData) {
@@ -235,16 +265,13 @@ TEST_F(AudioDebugRecordingHelperTest, OnData) {
       stream_type_, id_,
       base::BindOnce(&AudioDebugRecordingHelperTest::CreateWavFile,
                      base::Unretained(this)));
-  MockAudioDebugFileWriter* mock_audio_file_writer =
-      static_cast<MockAudioDebugFileWriter*>(
-          recording_helper->debug_writer_.get());
-  mock_audio_file_writer->SetReferenceData(audio_bus.get());
+  mock_audio_file_writer_->SetReferenceData(audio_bus.get());
 
-  EXPECT_CALL(*mock_audio_file_writer, DoWrite(_));
+  EXPECT_CALL(*mock_audio_file_writer_, DoWrite(_));
   recording_helper->OnData(audio_bus.get());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_CALL(*mock_audio_file_writer, Stop());
+  EXPECT_CALL(*mock_audio_file_writer_, DestructorCalled());
   recording_helper->DisableDebugRecording();
 
   // Make sure we clear the loop before enabling again.
@@ -257,26 +284,21 @@ TEST_F(AudioDebugRecordingHelperTest, OnData) {
       stream_type_, id_,
       base::BindOnce(&AudioDebugRecordingHelperTest::CreateWavFile,
                      base::Unretained(this)));
-  mock_audio_file_writer = static_cast<MockAudioDebugFileWriter*>(
-      recording_helper->debug_writer_.get());
-  mock_audio_file_writer->SetReferenceData(audio_bus.get());
+  mock_audio_file_writer_->SetReferenceData(audio_bus.get());
 
-  EXPECT_CALL(*mock_audio_file_writer, DoWrite(_)).Times(2);
+  EXPECT_CALL(*mock_audio_file_writer_, DoWrite(_)).Times(2);
   recording_helper->OnData(audio_bus.get());
   recording_helper->OnData(audio_bus.get());
   base::RunLoop().RunUntilIdle();
 
-  // This call should not yield a DoWrite() call on the mock, since the message
-  // loop isn't run until after disabling. WillWrite() is expected since
-  // recording is enabled.
-  recording_helper->OnData(audio_bus.get());
-
-  EXPECT_CALL(*mock_audio_file_writer, Stop());
+  EXPECT_CALL(*mock_audio_file_writer_, DestructorCalled());
   recording_helper->DisableDebugRecording();
 
-  // This call should not yield a DoWrite() call on the mock either.
+  // This call should not yield a DoWrite() call on the mock.
   recording_helper->OnData(audio_bus.get());
   base::RunLoop().RunUntilIdle();
+
+  VerifyAndDeleteWavFiles(2);
 }
 
 }  // namespace media

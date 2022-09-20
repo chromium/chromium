@@ -620,13 +620,12 @@ void AudioManagerBase::InitializeDebugRecording() {
   }
 
   DCHECK(!debug_recording_manager_);
-  debug_recording_manager_ = CreateAudioDebugRecordingManager(GetTaskRunner());
+  debug_recording_manager_ = CreateAudioDebugRecordingManager();
 }
 
 std::unique_ptr<AudioDebugRecordingManager>
-AudioManagerBase::CreateAudioDebugRecordingManager(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  return std::make_unique<AudioDebugRecordingManager>(std::move(task_runner));
+AudioManagerBase::CreateAudioDebugRecordingManager() {
+  return std::make_unique<AudioDebugRecordingManager>();
 }
 
 AudioDebugRecordingManager* AudioManagerBase::GetAudioDebugRecordingManager() {

@@ -8,9 +8,7 @@
 
 namespace media {
 
-MockAudioDebugRecordingManager::MockAudioDebugRecordingManager(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : AudioDebugRecordingManager(std::move(task_runner)) {}
+MockAudioDebugRecordingManager::MockAudioDebugRecordingManager() = default;
 
 MockAudioDebugRecordingManager::~MockAudioDebugRecordingManager() = default;
 

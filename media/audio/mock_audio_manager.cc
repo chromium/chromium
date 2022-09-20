@@ -132,8 +132,7 @@ void MockAudioManager::InitializeDebugRecording() {
   }
 
   DCHECK(!debug_recording_manager_);
-  debug_recording_manager_ =
-      std::make_unique<MockAudioDebugRecordingManager>(GetTaskRunner());
+  debug_recording_manager_ = std::make_unique<MockAudioDebugRecordingManager>();
 }
 
 AudioDebugRecordingManager* MockAudioManager::GetAudioDebugRecordingManager() {

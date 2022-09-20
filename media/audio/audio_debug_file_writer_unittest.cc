@@ -56,6 +56,7 @@ class AudioDebugFileWriterTest
       base::test::TaskEnvironment::ThreadPoolExecutionMode execution_mode)
       : task_environment_(base::test::TaskEnvironment::MainThreadType::DEFAULT,
                           execution_mode),
+        debug_writer_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
         params_(AudioParameters::Format::AUDIO_PCM_LINEAR,
                 std::get<0>(GetParam()),
                 std::get<1>(GetParam()),
@@ -184,36 +185,12 @@ class AudioDebugFileWriterTest
     }
   }
 
-  void RecordAndVerifyOnce() {
-    base::FilePath file_path;
-    ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
-    base::File file = OpenFile(file_path);
-    ASSERT_TRUE(file.IsValid());
-
-    debug_writer_->Start(std::move(file));
-
-    DoDebugRecording();
-
-    debug_writer_->Stop();
-
-    task_environment_.RunUntilIdle();
-
-    VerifyRecording(file_path);
-
-    if (::testing::Test::HasFailure()) {
-      LOG(ERROR) << "Test failed; keeping recording(s) at ["
-                 << file_path.value().c_str() << "].";
-    } else {
-      ASSERT_TRUE(base::DeleteFile(file_path));
-    }
-  }
-
  protected:
   // The test task environment.
   base::test::TaskEnvironment task_environment_;
 
   // Writer under test.
-  std::unique_ptr<AudioDebugFileWriter> debug_writer_;
+  AudioDebugFileWriter::Ptr debug_writer_;
 
   // AudioBus parameters.
   AudioParameters params_;
@@ -238,25 +215,40 @@ class AudioDebugFileWriterSingleThreadTest : public AudioDebugFileWriterTest {
 };
 
 TEST_P(AudioDebugFileWriterTest, WaveRecordingTest) {
-  debug_writer_ = std::make_unique<AudioDebugFileWriter>(params_);
-  RecordAndVerifyOnce();
-}
-
-TEST_P(AudioDebugFileWriterSingleThreadTest,
-       DeletedBeforeRecordingFinishedOnFileThread) {
-  debug_writer_ = std::make_unique<AudioDebugFileWriter>(params_);
-
   base::FilePath file_path;
   ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
   base::File file = OpenFile(file_path);
   ASSERT_TRUE(file.IsValid());
 
-  debug_writer_->Start(std::move(file));
+  debug_writer_ = AudioDebugFileWriter::Create(params_, std::move(file));
 
   DoDebugRecording();
 
   debug_writer_.reset();
+  task_environment_.RunUntilIdle();
 
+  VerifyRecording(file_path);
+
+  if (::testing::Test::HasFailure()) {
+    LOG(ERROR) << "Test failed; keeping recording(s) at ["
+               << file_path.value().c_str() << "].";
+  } else {
+    ASSERT_TRUE(base::DeleteFile(file_path));
+  }
+}
+
+TEST_P(AudioDebugFileWriterSingleThreadTest,
+       DeletedBeforeRecordingFinishedOnFileThread) {
+  base::FilePath file_path;
+  ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
+  base::File file = OpenFile(file_path);
+  ASSERT_TRUE(file.IsValid());
+
+  debug_writer_ = AudioDebugFileWriter::Create(params_, std::move(file));
+
+  DoDebugRecording();
+
+  debug_writer_.reset();
   task_environment_.RunUntilIdle();
 
   VerifyRecording(file_path);
@@ -270,31 +262,53 @@ TEST_P(AudioDebugFileWriterSingleThreadTest,
 }
 
 TEST_P(AudioDebugFileWriterBehavioralTest, StartWithInvalidFile) {
-  debug_writer_ = std::make_unique<AudioDebugFileWriter>(params_);
   base::File file;  // Invalid file, recording should not crash
-  debug_writer_->Start(std::move(file));
+  debug_writer_ = AudioDebugFileWriter::Create(params_, std::move(file));
+
   DoDebugRecording();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_P(AudioDebugFileWriterBehavioralTest, StartStopStartStop) {
-  debug_writer_ = std::make_unique<AudioDebugFileWriter>(params_);
-  RecordAndVerifyOnce();
-  RecordAndVerifyOnce();
-}
+  base::FilePath file_path1;
+  ASSERT_TRUE(base::CreateTemporaryFile(&file_path1));
+  base::File file1 = OpenFile(file_path1);
+  ASSERT_TRUE(file1.IsValid());
 
-TEST_P(AudioDebugFileWriterBehavioralTest, DestroyNotStarted) {
-  debug_writer_ = std::make_unique<AudioDebugFileWriter>(params_);
+  base::FilePath file_path2;
+  ASSERT_TRUE(base::CreateTemporaryFile(&file_path2));
+  base::File file2 = OpenFile(file_path2);
+  ASSERT_TRUE(file2.IsValid());
+
+  debug_writer_ = AudioDebugFileWriter::Create(params_, std::move(file1));
+  DoDebugRecording();
+  debug_writer_ = AudioDebugFileWriter::Create(params_, std::move(file2));
+  DoDebugRecording();
   debug_writer_.reset();
+  task_environment_.RunUntilIdle();
+
+  VerifyRecording(file_path1);
+  VerifyRecording(file_path2);
+
+  if (::testing::Test::HasFailure()) {
+    LOG(ERROR) << "Test failed; keeping recording(s) at ["
+               << file_path1.value().c_str() << ", "
+               << file_path2.value().c_str() << "].";
+  } else {
+    ASSERT_TRUE(base::DeleteFile(file_path1));
+    ASSERT_TRUE(base::DeleteFile(file_path2));
+  }
 }
 
 TEST_P(AudioDebugFileWriterBehavioralTest, DestroyStarted) {
-  debug_writer_ = std::make_unique<AudioDebugFileWriter>(params_);
   base::FilePath file_path;
   ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
   base::File file = OpenFile(file_path);
   ASSERT_TRUE(file.IsValid());
-  debug_writer_->Start(std::move(file));
+  debug_writer_ = AudioDebugFileWriter::Create(params_, std::move(file));
+
   debug_writer_.reset();
+  task_environment_.RunUntilIdle();
 }
 
 INSTANTIATE_TEST_SUITE_P(
