@@ -127,15 +127,15 @@ class BaselineOptimizer(object):
                 _log.debug(
                     'Optimizing flag-specific virtual fallback path '
                     'for "%s".', flag_specific)
-                self._optimize_single_baseline(test_name, extension,
-                                               flag_spec_port)
+                self._optimize_single_baseline_flag_specific(
+                    test_name, extension, flag_spec_port)
             else:
                 non_virtual_test_name = test_name
             _log.debug(
                 'Optimizing flag-specific non-virtual fallback path '
                 'for "%s".', flag_specific)
-            self._optimize_single_baseline(non_virtual_test_name, extension,
-                                           flag_spec_port)
+            self._optimize_single_baseline_flag_specific(
+                non_virtual_test_name, extension, flag_spec_port)
 
     def _get_baseline_paths(self, test_name, extension, port):
         """Get paths to baselines that the provided port would search.
@@ -161,13 +161,17 @@ class BaselineOptimizer(object):
         ]
         return baseline_paths
 
-    def _optimize_single_baseline(self, test_name, extension, port):
+    def _optimize_single_baseline_flag_specific(self, test_name, extension,
+                                                port):
         """Optimize a baseline directly by simulating the fallback algorithm."""
         baseline_paths = self._get_baseline_paths(test_name, extension, port)
         if not baseline_paths:
             # The baseline for this test does not exist.
             return
         baseline_to_optimize = baseline_paths[0]
+        if (("flag-specific" not in baseline_to_optimize)
+                or (not self._filesystem.exists(baseline_to_optimize))):
+            return
         basename = self._filesystem.basename(baseline_to_optimize)
         if len(baseline_paths) < 2:
             _log.debug('  %s: (no baselines found)', basename)
