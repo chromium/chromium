@@ -212,8 +212,6 @@ ci.gpu.mac_builder(
         category = "ToT|Mac|Builder",
         short_name = "x64",
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.gpu.mac_builder(

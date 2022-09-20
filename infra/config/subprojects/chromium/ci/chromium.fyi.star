@@ -2123,6 +2123,9 @@ fyi_ios_builder(
     schedule = "0 1-23/6 * * *",
     triggered_by = [],
     xcode = xcode.x13wk,
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 fyi_ios_builder(

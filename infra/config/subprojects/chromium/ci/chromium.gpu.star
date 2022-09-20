@@ -130,8 +130,6 @@ ci.gpu.mac_builder(
         category = "Mac",
     ),
     cq_mirrors_console_view = "mirrors",
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.gpu.mac_builder(

@@ -232,7 +232,7 @@
       'Dawn Linux x64 Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
       'Dawn Linux x64 DEPS Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
 
-      'Dawn Mac x64 Builder': 'dawn_tests_release_bot_dcheck_always_on_alloc_none',
+      'Dawn Mac x64 Builder': 'dawn_tests_release_bot_dcheck_always_on_alloc_none_reclient',
       'Dawn Mac x64 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on_alloc_none',
 
       'Dawn Win10 x64 ASAN Release': 'dawn_tests_asan_release_bot_dcheck_always_on_reclient',
@@ -425,7 +425,7 @@
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-cronet': 'ios_cronet_xctest_reclient',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest',
-      'ios-webkit-tot': 'ios_simulator_debug_static_bot_xctest',
+      'ios-webkit-tot': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-wpt-fyi-rel': 'ios_simulator_debug_static_bot_xctest',
       'ios15-beta-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios15-sdk-device': 'ios_device_release_static_bot_xctest_reclient',
@@ -564,7 +564,7 @@
       'Android Release (Nexus 5X)': 'gpu_tests_android_release_bot_dcheck_always_on_arm64_fastbuild_reclient',
       'GPU Linux Builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'GPU Linux Builder (dbg)': 'gpu_tests_debug_bot_reclient',
-      'GPU Mac Builder': 'gpu_tests_release_trybot_minimal_symbols',
+      'GPU Mac Builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'GPU Mac Builder (dbg)': 'gpu_tests_debug_bot',
       'GPU Mac Builder (reclient shadow)': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'GPU Win x64 Builder': 'gpu_tests_release_bot_dcheck_always_on_resource_allowlisting_reclient',
@@ -2454,6 +2454,10 @@
     # while we investigate a crash in the mac AMD shader compiler.
     'dawn_tests_release_bot_dcheck_always_on_alloc_none': [
       'dawn_tests', 'release_trybot_minimal_symbols', 'padisabled',
+    ],
+
+    'dawn_tests_release_bot_dcheck_always_on_alloc_none_reclient': [
+      'dawn_tests', 'release_trybot_minimal_symbols_reclient', 'padisabled',
     ],
 
     'dawn_tests_release_bot_dcheck_always_on_reclient': [
