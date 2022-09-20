@@ -941,6 +941,13 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
     dict.Set("archive_summary", std::move(dict_archive_summary));
   }
 
+  if (cdr.has_tailored_info()) {
+    base::Value::Dict dict_tailored_info;
+    auto tailored_info = cdr.tailored_info();
+    dict_tailored_info.Set("version", tailored_info.version());
+    dict.Set("tailored_info", std::move(dict_tailored_info));
+  }
+
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
   serializer.set_pretty_print(true);
@@ -991,6 +998,39 @@ std::string SerializeClientDownloadResponse(const ClientDownloadResponse& cdr) {
 
   if (cdr.has_request_deep_scan()) {
     dict.Set("request_deep_scan", cdr.request_deep_scan());
+  }
+
+  if (cdr.has_tailored_verdict()) {
+    base::Value::Dict dict_tailored_verdict;
+    auto tailored_verdict = cdr.tailored_verdict();
+    std::string tailored_verdict_type;
+    switch (tailored_verdict.tailored_verdict_type()) {
+      case ClientDownloadResponse::TailoredVerdict::VERDICT_TYPE_UNSPECIFIED:
+        tailored_verdict_type = "VERDICT_TYPE_UNSPECIFIED";
+        break;
+      case ClientDownloadResponse::TailoredVerdict::COOKIE_THEFT:
+        tailored_verdict_type = "COOKIE_THEFT";
+        break;
+      case ClientDownloadResponse::TailoredVerdict::SUSPICIOUS_ARCHIVE:
+        tailored_verdict_type = "SUSPICIOUS_ARCHIVE";
+        break;
+    }
+    dict_tailored_verdict.Set("tailored_verdict_type", tailored_verdict_type);
+    base::Value::List adjustments;
+    for (const auto& adjustment : tailored_verdict.adjustments()) {
+      std::string adjustment_string;
+      switch (adjustment) {
+        case ClientDownloadResponse::TailoredVerdict::ADJUSTMENT_UNSPECIFIED:
+          adjustment_string = "ADJUSTMENT_UNSPECIFIED";
+          break;
+        case ClientDownloadResponse::TailoredVerdict::ACCOUNT_INFO_STRING:
+          adjustment_string = "ACCOUNT_INFO_STRING";
+          break;
+      }
+      adjustments.Append(adjustment_string);
+    }
+    dict_tailored_verdict.Set("adjustments", std::move(adjustments));
+    dict.Set("tailored_verdict", std::move(dict_tailored_verdict));
   }
 
   std::string request_serialized;
