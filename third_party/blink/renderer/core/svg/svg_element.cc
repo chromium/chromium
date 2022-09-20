@@ -522,8 +522,15 @@ void SVGElement::UpdateRelativeLengthsInformation(
 
 void SVGElement::InvalidateRelativeLengthClients(
     SubtreeLayoutScope* layout_scope) {
-  if (!isConnected())
+  // https://linear.app/replay/issue/RUN-569
+  recordreplay::Assert("SVGElement::InvalidateRelativeLengthClients Start %d",
+                       recordreplay::PointerId(this));
+
+  if (!isConnected()) {
+    // https://linear.app/replay/issue/RUN-569
+    recordreplay::Assert("SVGElement::InvalidateRelativeLengthClients #1");
     return;
+  }
 
 #if DCHECK_IS_ON()
   DCHECK(!in_relative_length_clients_invalidation_);
@@ -543,9 +550,17 @@ void SVGElement::InvalidateRelativeLengthClients(
     }
   }
 
+  HeapVector<Member<SVGElement>> elements_with_relative_lengths_vector;
   for (SVGElement* element : elements_with_relative_lengths_) {
     if (element != this)
-      element->InvalidateRelativeLengthClients(layout_scope);
+      elements_with_relative_lengths_vector.push_back(element);
+  }
+  std::sort(elements_with_relative_lengths_vector.begin(),
+            elements_with_relative_lengths_vector.end(),
+            recordreplay::CompareMemberByPointerId<Member<SVGElement>>());
+
+  for (SVGElement* element : elements_with_relative_lengths_vector) {
+    element->InvalidateRelativeLengthClients(layout_scope);
   }
 }
 
