@@ -55,7 +55,7 @@ struct IppRequest {
 
 // Implemented by the CupsIppParserService; supports parsing arbitrary IPP
 // requests.
-[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface IppParser {
   // Treats |to_parse| as an IPP request and attempts to parse into IppRequest
   // format. Returns empty IppRequest on failure.
