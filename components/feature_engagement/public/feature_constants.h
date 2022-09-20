@@ -13,50 +13,50 @@ namespace feature_engagement {
 // A feature for enabling automatic snooze mode for In-Product Help (IPH). When
 // this flag is enabled, we don't show snooze button/UI on the IPH, but on
 // dismiss we will implicitly snooze it until the snooze limit count is reached.
-extern const base::Feature kEnableAutomaticSnooze;
+BASE_DECLARE_FEATURE(kEnableAutomaticSnooze);
 
 // A feature for enabling a demonstration mode for In-Product Help (IPH).
-extern const base::Feature kIPHDemoMode;
+BASE_DECLARE_FEATURE(kIPHDemoMode);
 
 // A feature for enabling a snooze mode for In-Product Help (IPH).
-extern const base::Feature kIPHSnooze;
+BASE_DECLARE_FEATURE(kIPHSnooze);
 
 // A feature for enabling In-Product Help (IPH) to use client side
 // configuration. When this flag is enabled, finch config will be ignored for
 // all IPHs.
-extern const base::Feature kUseClientConfigIPH;
+BASE_DECLARE_FEATURE(kUseClientConfigIPH);
 
 // A feature to ensure all arrays can contain at least one feature.
-extern const base::Feature kIPHDummyFeature;
+BASE_DECLARE_FEATURE(kIPHDummyFeature);
 
-extern const base::Feature kEnableIPH;
+BASE_DECLARE_FEATURE(kEnableIPH);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-extern const base::Feature kIPHBatterySaverModeFeature;
-extern const base::Feature kIPHDesktopSharedHighlightingFeature;
-extern const base::Feature kIPHDesktopTabGroupsNewGroupFeature;
-extern const base::Feature kIPHExtensionsMenuFeature;
-extern const base::Feature kIPHFocusHelpBubbleScreenReaderPromoFeature;
-extern const base::Feature kIPHGMCCastStartStopFeature;
-extern const base::Feature kIPHHighEfficiencyInfoModeFeature;
-extern const base::Feature kIPHLiveCaptionFeature;
-extern const base::Feature kIPHTabAudioMutingFeature;
-extern const base::Feature kIPHPasswordsAccountStorageFeature;
-extern const base::Feature kIPHReadingListDiscoveryFeature;
-extern const base::Feature kIPHReadingListEntryPointFeature;
-extern const base::Feature kIPHIntentChipFeature;
-extern const base::Feature kIPHReadingListInSidePanelFeature;
-extern const base::Feature kIPHReopenTabFeature;
-extern const base::Feature kIPHSideSearchAutoTriggeringFeature;
-extern const base::Feature kIPHSideSearchFeature;
-extern const base::Feature kIPHSideSearchPageActionLabelFeature;
-extern const base::Feature kIPHTabSearchFeature;
-extern const base::Feature kIPHWebUITabStripFeature;
-extern const base::Feature kIPHDesktopSnoozeFeature;
-extern const base::Feature kIPHDesktopPwaInstallFeature;
-extern const base::Feature kIPHProfileSwitchFeature;
-extern const base::Feature kIPHWebUiHelpBubbleTestFeature;
+BASE_DECLARE_FEATURE(kIPHBatterySaverModeFeature);
+BASE_DECLARE_FEATURE(kIPHDesktopSharedHighlightingFeature);
+BASE_DECLARE_FEATURE(kIPHDesktopTabGroupsNewGroupFeature);
+BASE_DECLARE_FEATURE(kIPHExtensionsMenuFeature);
+BASE_DECLARE_FEATURE(kIPHFocusHelpBubbleScreenReaderPromoFeature);
+BASE_DECLARE_FEATURE(kIPHGMCCastStartStopFeature);
+BASE_DECLARE_FEATURE(kIPHHighEfficiencyInfoModeFeature);
+BASE_DECLARE_FEATURE(kIPHLiveCaptionFeature);
+BASE_DECLARE_FEATURE(kIPHTabAudioMutingFeature);
+BASE_DECLARE_FEATURE(kIPHPasswordsAccountStorageFeature);
+BASE_DECLARE_FEATURE(kIPHReadingListDiscoveryFeature);
+BASE_DECLARE_FEATURE(kIPHReadingListEntryPointFeature);
+BASE_DECLARE_FEATURE(kIPHIntentChipFeature);
+BASE_DECLARE_FEATURE(kIPHReadingListInSidePanelFeature);
+BASE_DECLARE_FEATURE(kIPHReopenTabFeature);
+BASE_DECLARE_FEATURE(kIPHSideSearchAutoTriggeringFeature);
+BASE_DECLARE_FEATURE(kIPHSideSearchFeature);
+BASE_DECLARE_FEATURE(kIPHSideSearchPageActionLabelFeature);
+BASE_DECLARE_FEATURE(kIPHTabSearchFeature);
+BASE_DECLARE_FEATURE(kIPHWebUITabStripFeature);
+BASE_DECLARE_FEATURE(kIPHDesktopSnoozeFeature);
+BASE_DECLARE_FEATURE(kIPHDesktopPwaInstallFeature);
+BASE_DECLARE_FEATURE(kIPHProfileSwitchFeature);
+BASE_DECLARE_FEATURE(kIPHWebUiHelpBubbleTestFeature);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
@@ -64,127 +64,121 @@ extern const base::Feature kIPHWebUiHelpBubbleTestFeature;
 // should also be declared in:
 // org.chromium.components.feature_engagement.FeatureConstants.
 #if BUILDFLAG(IS_ANDROID)
-extern const base::Feature
-    kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature;
-extern const base::Feature
-    kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature;
-extern const base::Feature
-    kIPHAdaptiveButtonInTopToolbarCustomizationVoiceSearchFeature;
-extern const base::Feature kIPHAddToHomescreenMessageFeature;
-extern const base::Feature kIPHAutoDarkOptOutFeature;
-extern const base::Feature kIPHAutoDarkUserEducationMessageFeature;
-extern const base::Feature kIPHAutoDarkUserEducationMessageOptInFeature;
-extern const base::Feature kIPHContextualPageActionsPriceTrackingFeature;
-extern const base::Feature
-    kIPHContextualPageActionsPriceTrackingActionChipFeature;
-extern const base::Feature kIPHCrowFeature;
-extern const base::Feature kIPHDataSaverDetailFeature;
-extern const base::Feature kIPHDataSaverMilestonePromoFeature;
-extern const base::Feature kIPHDataSaverPreviewFeature;
-extern const base::Feature kIPHDownloadHomeFeature;
-extern const base::Feature kIPHDownloadIndicatorFeature;
-extern const base::Feature kIPHDownloadPageFeature;
-extern const base::Feature kIPHDownloadPageScreenshotFeature;
-extern const base::Feature kIPHChromeHomeExpandFeature;
-extern const base::Feature kIPHChromeHomePullToRefreshFeature;
-extern const base::Feature kIPHDownloadSettingsFeature;
-extern const base::Feature kIPHDownloadInfoBarDownloadContinuingFeature;
-extern const base::Feature kIPHDownloadInfoBarDownloadsAreFasterFeature;
-extern const base::Feature kIPHEphemeralTabFeature;
-extern const base::Feature
-    kIPHFeatureNotificationGuideDefaultBrowserNotificationShownFeature;
-extern const base::Feature
-    kIPHFeatureNotificationGuideSignInNotificationShownFeature;
-extern const base::Feature
-    kIPHFeatureNotificationGuideIncognitoTabNotificationShownFeature;
-extern const base::Feature
-    kIPHFeatureNotificationGuideNTPSuggestionCardNotificationShownFeature;
-extern const base::Feature
-    kIPHFeatureNotificationGuideVoiceSearchNotificationShownFeature;
-extern const base::Feature
-    kIPHFeatureNotificationGuideDefaultBrowserPromoFeature;
-extern const base::Feature kIPHFeatureNotificationGuideSignInHelpBubbleFeature;
-extern const base::Feature
-    kIPHFeatureNotificationGuideIncognitoTabHelpBubbleFeature;
-extern const base::Feature
-    kIPHFeatureNotificationGuideNTPSuggestionCardHelpBubbleFeature;
-extern const base::Feature
-    kIPHFeatureNotificationGuideVoiceSearchHelpBubbleFeature;
-extern const base::Feature kIPHFeatureNotificationGuideIncognitoTabUsedFeature;
-extern const base::Feature kIPHFeatureNotificationGuideVoiceSearchUsedFeature;
-extern const base::Feature kIPHFeedCardMenuFeature;
-extern const base::Feature kIPHGenericAlwaysTriggerHelpUiFeature;
-extern const base::Feature kIPHHomePageButtonFeature;
-extern const base::Feature kIPHHomepageTileFeature;
-extern const base::Feature kIPHIdentityDiscFeature;
-extern const base::Feature kIPHInstanceSwitcherFeature;
-extern const base::Feature kIPHKeyboardAccessoryAddressFillingFeature;
-extern const base::Feature kIPHKeyboardAccessoryBarSwipingFeature;
-extern const base::Feature kIPHKeyboardAccessoryPasswordFillingFeature;
-extern const base::Feature kIPHKeyboardAccessoryPaymentFillingFeature;
-extern const base::Feature kIPHKeyboardAccessoryPaymentOfferFeature;
-extern const base::Feature kIPHLowUserEngagementDetectorFeature;
-extern const base::Feature kIPHMicToolbarFeature;
-extern const base::Feature kIPHNewTabPageHomeButtonFeature;
-extern const base::Feature kIPHPageInfoFeature;
-extern const base::Feature kIPHPageInfoStoreInfoFeature;
-extern const base::Feature kIPHPreviewsOmniboxUIFeature;
-extern const base::Feature kIPHPriceDropNTPFeature;
-extern const base::Feature kIPHQuietNotificationPromptsFeature;
-extern const base::Feature kIPHReadLaterContextMenuFeature;
-extern const base::Feature kIPHReadLaterAppMenuBookmarkThisPageFeature;
-extern const base::Feature kIPHReadLaterAppMenuBookmarksFeature;
-extern const base::Feature kIPHReadLaterBottomSheetFeature;
-extern const base::Feature kIPHRequestDesktopSiteAppMenuFeature;
-extern const base::Feature kIPHShoppingListMenuItemFeature;
-extern const base::Feature kIPHShoppingListSaveFlowFeature;
-extern const base::Feature kIPHTabGroupsQuicklyComparePagesFeature;
-extern const base::Feature kIPHTabGroupsTapToSeeAnotherTabFeature;
-extern const base::Feature kIPHTabGroupsYourTabsAreTogetherFeature;
-extern const base::Feature kIPHTabGroupsDragAndDropFeature;
-extern const base::Feature kIPHTabSwitcherButtonFeature;
-extern const base::Feature kIPHTranslateMenuButtonFeature;
-extern const base::Feature kIPHVideoTutorialNTPChromeIntroFeature;
-extern const base::Feature kIPHVideoTutorialNTPDownloadFeature;
-extern const base::Feature kIPHVideoTutorialNTPSearchFeature;
-extern const base::Feature kIPHVideoTutorialNTPVoiceSearchFeature;
-extern const base::Feature kIPHVideoTutorialNTPSummaryFeature;
-extern const base::Feature kIPHVideoTutorialTryNowFeature;
-extern const base::Feature kIPHExploreSitesTileFeature;
-extern const base::Feature kIPHFeedHeaderMenuFeature;
-extern const base::Feature kIPHWebFeedAwarenessFeature;
-extern const base::Feature kIPHFeedSwipeRefresh;
-extern const base::Feature kIPHChromeReengagementNotification1Feature;
-extern const base::Feature kIPHChromeReengagementNotification2Feature;
-extern const base::Feature kIPHChromeReengagementNotification3Feature;
-extern const base::Feature kIPHPwaInstallAvailableFeature;
-extern const base::Feature kIPHShareScreenshotFeature;
-extern const base::Feature kIPHSharingHubLinkToggleFeature;
-extern const base::Feature kIPHWebFeedFollowFeature;
-extern const base::Feature kIPHWebFeedPostFollowDialogFeature;
-extern const base::Feature kIPHSharedHighlightingBuilder;
-extern const base::Feature kIPHSharedHighlightingReceiverFeature;
-extern const base::Feature kIPHSharingHubWebnotesStylizeFeature;
+BASE_DECLARE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature);
+BASE_DECLARE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature);
+BASE_DECLARE_FEATURE(
+    kIPHAdaptiveButtonInTopToolbarCustomizationVoiceSearchFeature);
+BASE_DECLARE_FEATURE(kIPHAddToHomescreenMessageFeature);
+BASE_DECLARE_FEATURE(kIPHAutoDarkOptOutFeature);
+BASE_DECLARE_FEATURE(kIPHAutoDarkUserEducationMessageFeature);
+BASE_DECLARE_FEATURE(kIPHAutoDarkUserEducationMessageOptInFeature);
+BASE_DECLARE_FEATURE(kIPHContextualPageActionsPriceTrackingFeature);
+BASE_DECLARE_FEATURE(kIPHContextualPageActionsPriceTrackingActionChipFeature);
+BASE_DECLARE_FEATURE(kIPHCrowFeature);
+BASE_DECLARE_FEATURE(kIPHDataSaverDetailFeature);
+BASE_DECLARE_FEATURE(kIPHDataSaverMilestonePromoFeature);
+BASE_DECLARE_FEATURE(kIPHDataSaverPreviewFeature);
+BASE_DECLARE_FEATURE(kIPHDownloadHomeFeature);
+BASE_DECLARE_FEATURE(kIPHDownloadIndicatorFeature);
+BASE_DECLARE_FEATURE(kIPHDownloadPageFeature);
+BASE_DECLARE_FEATURE(kIPHDownloadPageScreenshotFeature);
+BASE_DECLARE_FEATURE(kIPHChromeHomeExpandFeature);
+BASE_DECLARE_FEATURE(kIPHChromeHomePullToRefreshFeature);
+BASE_DECLARE_FEATURE(kIPHDownloadSettingsFeature);
+BASE_DECLARE_FEATURE(kIPHDownloadInfoBarDownloadContinuingFeature);
+BASE_DECLARE_FEATURE(kIPHDownloadInfoBarDownloadsAreFasterFeature);
+BASE_DECLARE_FEATURE(kIPHEphemeralTabFeature);
+BASE_DECLARE_FEATURE(
+    kIPHFeatureNotificationGuideDefaultBrowserNotificationShownFeature);
+BASE_DECLARE_FEATURE(
+    kIPHFeatureNotificationGuideSignInNotificationShownFeature);
+BASE_DECLARE_FEATURE(
+    kIPHFeatureNotificationGuideIncognitoTabNotificationShownFeature);
+BASE_DECLARE_FEATURE(
+    kIPHFeatureNotificationGuideNTPSuggestionCardNotificationShownFeature);
+BASE_DECLARE_FEATURE(
+    kIPHFeatureNotificationGuideVoiceSearchNotificationShownFeature);
+BASE_DECLARE_FEATURE(kIPHFeatureNotificationGuideDefaultBrowserPromoFeature);
+BASE_DECLARE_FEATURE(kIPHFeatureNotificationGuideSignInHelpBubbleFeature);
+BASE_DECLARE_FEATURE(kIPHFeatureNotificationGuideIncognitoTabHelpBubbleFeature);
+BASE_DECLARE_FEATURE(
+    kIPHFeatureNotificationGuideNTPSuggestionCardHelpBubbleFeature);
+BASE_DECLARE_FEATURE(kIPHFeatureNotificationGuideVoiceSearchHelpBubbleFeature);
+BASE_DECLARE_FEATURE(kIPHFeatureNotificationGuideIncognitoTabUsedFeature);
+BASE_DECLARE_FEATURE(kIPHFeatureNotificationGuideVoiceSearchUsedFeature);
+BASE_DECLARE_FEATURE(kIPHFeedCardMenuFeature);
+BASE_DECLARE_FEATURE(kIPHGenericAlwaysTriggerHelpUiFeature);
+BASE_DECLARE_FEATURE(kIPHHomePageButtonFeature);
+BASE_DECLARE_FEATURE(kIPHHomepageTileFeature);
+BASE_DECLARE_FEATURE(kIPHIdentityDiscFeature);
+BASE_DECLARE_FEATURE(kIPHInstanceSwitcherFeature);
+BASE_DECLARE_FEATURE(kIPHKeyboardAccessoryAddressFillingFeature);
+BASE_DECLARE_FEATURE(kIPHKeyboardAccessoryBarSwipingFeature);
+BASE_DECLARE_FEATURE(kIPHKeyboardAccessoryPasswordFillingFeature);
+BASE_DECLARE_FEATURE(kIPHKeyboardAccessoryPaymentFillingFeature);
+BASE_DECLARE_FEATURE(kIPHKeyboardAccessoryPaymentOfferFeature);
+BASE_DECLARE_FEATURE(kIPHLowUserEngagementDetectorFeature);
+BASE_DECLARE_FEATURE(kIPHMicToolbarFeature);
+BASE_DECLARE_FEATURE(kIPHNewTabPageHomeButtonFeature);
+BASE_DECLARE_FEATURE(kIPHPageInfoFeature);
+BASE_DECLARE_FEATURE(kIPHPageInfoStoreInfoFeature);
+BASE_DECLARE_FEATURE(kIPHPreviewsOmniboxUIFeature);
+BASE_DECLARE_FEATURE(kIPHPriceDropNTPFeature);
+BASE_DECLARE_FEATURE(kIPHQuietNotificationPromptsFeature);
+BASE_DECLARE_FEATURE(kIPHReadLaterContextMenuFeature);
+BASE_DECLARE_FEATURE(kIPHReadLaterAppMenuBookmarkThisPageFeature);
+BASE_DECLARE_FEATURE(kIPHReadLaterAppMenuBookmarksFeature);
+BASE_DECLARE_FEATURE(kIPHReadLaterBottomSheetFeature);
+BASE_DECLARE_FEATURE(kIPHRequestDesktopSiteAppMenuFeature);
+BASE_DECLARE_FEATURE(kIPHShoppingListMenuItemFeature);
+BASE_DECLARE_FEATURE(kIPHShoppingListSaveFlowFeature);
+BASE_DECLARE_FEATURE(kIPHTabGroupsQuicklyComparePagesFeature);
+BASE_DECLARE_FEATURE(kIPHTabGroupsTapToSeeAnotherTabFeature);
+BASE_DECLARE_FEATURE(kIPHTabGroupsYourTabsAreTogetherFeature);
+BASE_DECLARE_FEATURE(kIPHTabGroupsDragAndDropFeature);
+BASE_DECLARE_FEATURE(kIPHTabSwitcherButtonFeature);
+BASE_DECLARE_FEATURE(kIPHTranslateMenuButtonFeature);
+BASE_DECLARE_FEATURE(kIPHVideoTutorialNTPChromeIntroFeature);
+BASE_DECLARE_FEATURE(kIPHVideoTutorialNTPDownloadFeature);
+BASE_DECLARE_FEATURE(kIPHVideoTutorialNTPSearchFeature);
+BASE_DECLARE_FEATURE(kIPHVideoTutorialNTPVoiceSearchFeature);
+BASE_DECLARE_FEATURE(kIPHVideoTutorialNTPSummaryFeature);
+BASE_DECLARE_FEATURE(kIPHVideoTutorialTryNowFeature);
+BASE_DECLARE_FEATURE(kIPHExploreSitesTileFeature);
+BASE_DECLARE_FEATURE(kIPHFeedHeaderMenuFeature);
+BASE_DECLARE_FEATURE(kIPHWebFeedAwarenessFeature);
+BASE_DECLARE_FEATURE(kIPHFeedSwipeRefresh);
+BASE_DECLARE_FEATURE(kIPHChromeReengagementNotification1Feature);
+BASE_DECLARE_FEATURE(kIPHChromeReengagementNotification2Feature);
+BASE_DECLARE_FEATURE(kIPHChromeReengagementNotification3Feature);
+BASE_DECLARE_FEATURE(kIPHPwaInstallAvailableFeature);
+BASE_DECLARE_FEATURE(kIPHShareScreenshotFeature);
+BASE_DECLARE_FEATURE(kIPHSharingHubLinkToggleFeature);
+BASE_DECLARE_FEATURE(kIPHWebFeedFollowFeature);
+BASE_DECLARE_FEATURE(kIPHWebFeedPostFollowDialogFeature);
+BASE_DECLARE_FEATURE(kIPHSharedHighlightingBuilder);
+BASE_DECLARE_FEATURE(kIPHSharedHighlightingReceiverFeature);
+BASE_DECLARE_FEATURE(kIPHSharingHubWebnotesStylizeFeature);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
-extern const base::Feature kIPHBottomToolbarTipFeature;
-extern const base::Feature kIPHLongPressToolbarTipFeature;
-extern const base::Feature kIPHNewTabTipFeature;
-extern const base::Feature kIPHNewIncognitoTabTipFeature;
-extern const base::Feature kIPHBadgedReadingListFeature;
-extern const base::Feature kIPHReadingListMessagesFeature;
-extern const base::Feature kIPHBadgedTranslateManualTriggerFeature;
-extern const base::Feature kIPHDiscoverFeedHeaderFeature;
-extern const base::Feature kIPHDefaultSiteViewFeature;
-extern const base::Feature kIPHPasswordSuggestionsFeature;
-extern const base::Feature kIPHFollowWhileBrowsingFeature;
-extern const base::Feature kIPHOverflowMenuTipFeature;
+BASE_DECLARE_FEATURE(kIPHBottomToolbarTipFeature);
+BASE_DECLARE_FEATURE(kIPHLongPressToolbarTipFeature);
+BASE_DECLARE_FEATURE(kIPHNewTabTipFeature);
+BASE_DECLARE_FEATURE(kIPHNewIncognitoTabTipFeature);
+BASE_DECLARE_FEATURE(kIPHBadgedReadingListFeature);
+BASE_DECLARE_FEATURE(kIPHReadingListMessagesFeature);
+BASE_DECLARE_FEATURE(kIPHBadgedTranslateManualTriggerFeature);
+BASE_DECLARE_FEATURE(kIPHDiscoverFeedHeaderFeature);
+BASE_DECLARE_FEATURE(kIPHDefaultSiteViewFeature);
+BASE_DECLARE_FEATURE(kIPHPasswordSuggestionsFeature);
+BASE_DECLARE_FEATURE(kIPHFollowWhileBrowsingFeature);
+BASE_DECLARE_FEATURE(kIPHOverflowMenuTipFeature);
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-extern const base::Feature kIPHAutofillVirtualCardSuggestionFeature;
+BASE_DECLARE_FEATURE(kIPHAutofillVirtualCardSuggestionFeature);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_FUCHSIA)
