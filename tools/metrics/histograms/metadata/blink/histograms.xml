@@ -2402,7 +2402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.PendingOriginCount" units="origins"
-    expires_after="2022-10-30">
+    expires_after="2023-03-05">
   <owner>yigu@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
   <summary>
@@ -2423,7 +2423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.Infobar" enum="WebOTPServiceInfobarAction"
-    expires_after="2023-02-12">
+    expires_after="2023-03-05">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
@@ -2454,7 +2454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeCancel" units="ms"
-    expires_after="2022-10-30">
+    expires_after="2023-03-05">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
@@ -2465,7 +2465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeCancelOnKeyboardDismissal" units="ms"
-    expires_after="2022-10-30">
+    expires_after="2023-03-05">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
@@ -2476,7 +2476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeCancelOnSuccess" units="ms"
-    expires_after="2022-10-30">
+    expires_after="2023-03-05">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
@@ -2487,7 +2487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeContinueOnSuccess" units="ms"
-    expires_after="2023-02-12">
+    expires_after="2023-03-05">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
@@ -2498,7 +2498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeSmsReceive" units="ms"
-    expires_after="2022-10-30">
+    expires_after="2023-03-05">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
@@ -2509,7 +2509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeSuccess" units="ms"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
@@ -2521,7 +2521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeUserCancel" units="ms"
-    expires_after="2023-02-12">
+    expires_after="2023-03-05">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
