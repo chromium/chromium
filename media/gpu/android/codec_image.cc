@@ -10,6 +10,7 @@
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/callback_helpers.h"
+#include "base/debug/dump_without_crashing.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -115,6 +116,18 @@ bool CodecImage::CopyTexImage(unsigned target) {
       static_cast<unsigned>(texture_id) !=
           output_buffer_renderer_->texture_owner()->GetTextureId()) {
     return false;
+  }
+
+  // Our hypothesis is that in actuality the rendering to the front buffer and
+  // binding of the image, if possible, have always already occurred by the time
+  // that this method is called. The below DumpWithoutCrashing() call serves to
+  // verify whether this hypothesis is correct. See crbug.com/1310020 for
+  // details.
+  // TODO(crbug.com/1310020): Remove this code as part of removing this entire
+  // function once we have verified that it is indeed no longer needed.
+  if (!output_buffer_renderer_
+           ->render_to_front_buffer_will_be_noop_for_debugging()) {
+    base::debug::DumpWithoutCrashing();
   }
 
   // On some devices GL_TEXTURE_BINDING_EXTERNAL_OES is not supported as
