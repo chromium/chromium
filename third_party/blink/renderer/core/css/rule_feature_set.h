@@ -193,13 +193,12 @@ class CORE_EXPORT RuleFeatureSet {
   // See InvalidationSet::ToString for more information.
   String ToString() const;
 
- protected:
+ private:
   enum PositionType { kSubject, kAncestor };
   InvalidationSet* InvalidationSetForSimpleSelector(const CSSSelector&,
                                                     InvalidationType,
                                                     PositionType);
 
- private:
   // Each map entry is either a DescendantInvalidationSet or
   // SiblingInvalidationSet.
   // When both are needed, we store the SiblingInvalidationSet, and use it to
