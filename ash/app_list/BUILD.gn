@@ -322,6 +322,7 @@ source_set("unit_tests") {
     ":app_list",
     ":test_support",
     "//ash:test_support",
+    "//ash/app_menu",
     "//ash/assistant/model",
     "//ash/assistant/ui",
     "//ash/assistant/ui:constants",
