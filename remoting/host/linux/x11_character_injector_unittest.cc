@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -102,10 +103,11 @@ void FakeX11Keyboard::PressKey(uint32_t keycode, uint32_t modifiers) {
 bool FakeX11Keyboard::FindKeycode(uint32_t code_point,
                                   uint32_t* keycode,
                                   uint32_t* modifiers) {
-  auto position = std::find_if(keycode_mapping_.begin(), keycode_mapping_.end(),
-               [code_point](const std::pair<uint32_t, MappingInfo>& pair) {
-    return pair.second.code_point == code_point;
-  });
+  auto position =
+      base::ranges::find(keycode_mapping_, code_point,
+                         [](const std::pair<uint32_t, MappingInfo>& pair) {
+                           return pair.second.code_point;
+                         });
   if (position == keycode_mapping_.end()) {
     return false;
   }

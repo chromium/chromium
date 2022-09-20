@@ -4,12 +4,12 @@
 
 #include "remoting/host/webauthn/remote_webauthn_native_messaging_host.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -493,11 +493,9 @@ void RemoteWebAuthnNativeMessagingHost::OnRequestCancellerDisconnected(
     mojo::RemoteSetElementId disconnecting_canceller) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  auto it = std::find_if(id_to_request_canceller_.begin(),
-                         id_to_request_canceller_.end(),
-                         [disconnecting_canceller](const auto& pair) {
-                           return pair.second == disconnecting_canceller;
-                         });
+  auto it =
+      base::ranges::find(id_to_request_canceller_, disconnecting_canceller,
+                         &IdToRequestMap::value_type::second);
   if (it != id_to_request_canceller_.end()) {
     id_to_request_canceller_.erase(it);
   }

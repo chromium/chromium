@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "net/http/http_status_code.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -60,13 +61,9 @@ GURL GstaticJsonFetcher::GetFullUrl(const std::string& relative_path) {
 void GstaticJsonFetcher::OnURLLoadComplete(
     const network::SimpleURLLoader* source,
     std::unique_ptr<std::string> body) {
-  auto find_fetcher =
-      [source](const std::pair<std::unique_ptr<network::SimpleURLLoader>,
-                               FetchJsonFileCallback>& pair) {
-        return pair.first.get() == source;
-      };
-  auto it = std::find_if(loader_callback_map_.begin(),
-                         loader_callback_map_.end(), find_fetcher);
+  auto it =
+      base::ranges::find(loader_callback_map_, source,
+                         [](const auto& pair) { return pair.first.get(); });
   if (it == loader_callback_map_.end()) {
     LOG(DFATAL) << "Fetcher not found in the map";
     return;

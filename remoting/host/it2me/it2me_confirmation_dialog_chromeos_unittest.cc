@@ -4,12 +4,12 @@
 
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 
-#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <string>
 
 #include "base/i18n/message_formatter.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -67,11 +67,8 @@ class It2MeConfirmationDialogChromeOSTest
 
   int FindIndex(const std::vector<message_center::ButtonInfo>& array,
                 const std::u16string& button_title) {
-    auto button_iter =
-        std::find_if(array.cbegin(), array.cend(),
-                     [button_title](const message_center::ButtonInfo& button) {
-                       return button.title == button_title;
-                     });
+    auto button_iter = base::ranges::find(array, button_title,
+                                          &message_center::ButtonInfo::title);
     if (button_iter == array.cend())
       return -1;
 

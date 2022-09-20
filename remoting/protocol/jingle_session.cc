@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -456,11 +457,8 @@ void JingleSession::OnMessageResponse(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Delete the request from the list of pending requests.
-  pending_requests_.erase(
-      std::find_if(pending_requests_.begin(), pending_requests_.end(),
-                   [request](const std::unique_ptr<IqRequest>& ptr) {
-                     return ptr.get() == request;
-                   }));
+  pending_requests_.erase(base::ranges::find(pending_requests_, request,
+                                             &std::unique_ptr<IqRequest>::get));
 
   // Ignore all responses after session was closed.
   if (state_ == CLOSED || state_ == FAILED)
@@ -495,11 +493,8 @@ void JingleSession::OnTransportInfoResponse(IqRequest* request,
 
   // Consider transport-info requests sent before this one lost and delete
   // all IqRequest objects in front of |request|.
-  auto request_it = std::find_if(
-      transport_info_requests_.begin(), transport_info_requests_.end(),
-      [request](const std::unique_ptr<IqRequest>& ptr) {
-        return ptr.get() == request;
-      });
+  auto request_it = base::ranges::find(transport_info_requests_, request,
+                                       &std::unique_ptr<IqRequest>::get);
   DCHECK(request_it != transport_info_requests_.end());
   transport_info_requests_.erase(transport_info_requests_.begin(),
                                  request_it + 1);

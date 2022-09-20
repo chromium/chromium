@@ -48,7 +48,7 @@ bool IsVisiblePixel(uint32_t pixel) {
 
 // Returns true if there is at least one visible pixel in the given range.
 bool IsVisibleRow(const uint32_t* begin, const uint32_t* end) {
-  return std::find_if(begin, end, &IsVisiblePixel) != end;
+  return std::any_of(begin, end, &IsVisiblePixel);
 }
 
 }  // namespace

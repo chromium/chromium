@@ -42,6 +42,8 @@ class RemoteWebAuthnNativeMessagingHost final
  private:
   friend class RemoteWebAuthnNativeMessagingHostTest;
 
+  using IdToRequestMap = base::flat_map<base::Value, mojo::RemoteSetElementId>;
+
   RemoteWebAuthnNativeMessagingHost(
       std::unique_ptr<ChromotingHostServicesProvider> host_service_api_client,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -101,8 +103,7 @@ class RemoteWebAuthnNativeMessagingHost final
   std::unique_ptr<ChromotingHostServicesProvider> host_service_api_client_;
   mojo::Remote<mojom::WebAuthnProxy> remote_;
   mojo::RemoteSet<mojom::WebAuthnRequestCanceller> request_cancellers_;
-  base::flat_map<base::Value, mojo::RemoteSetElementId>
-      id_to_request_canceller_;
+  IdToRequestMap id_to_request_canceller_;
 
   // Only available after Start() is called.
   raw_ptr<extensions::NativeMessageHost::Client> client_ = nullptr;

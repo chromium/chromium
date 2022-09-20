@@ -4,9 +4,8 @@
 
 #include "remoting/host/linux/x11_character_injector.h"
 
-#include <algorithm>
-
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "remoting/host/linux/x11_keyboard.h"
 
@@ -97,9 +96,8 @@ X11CharacterInjector::MapResult X11CharacterInjector::MapCharacter(
 
   if (keyboard_->FindKeycode(code_point, &result.keycode, &result.modifiers)) {
     uint32_t keycode = result.keycode;
-    auto position = std::find_if(
-        available_keycodes_.begin(), available_keycodes_.end(),
-        [keycode](const KeyInfo& info) { return info.keycode == keycode; });
+    auto position =
+        base::ranges::find(available_keycodes_, keycode, &KeyInfo::keycode);
     if (position != available_keycodes_.end()) {
       ResetKeyInfoExpirationTime(now, position);
     }
