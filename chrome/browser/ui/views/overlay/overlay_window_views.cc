@@ -521,7 +521,8 @@ void OverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area) {
   if (work_area.IsEmpty())
     return;
 
-  auto new_max_size = gfx::Size(work_area.width() / 2, work_area.height() / 2);
+  auto new_max_size =
+      gfx::Size(work_area.width() * 0.8, work_area.height() * 0.8);
 
   // Ensure |new_max_size| is not smaller than |min_size_|, or else we will
   // crash.

@@ -193,9 +193,9 @@ TEST_F(DocumentOverlayWindowViewsTest, Letterboxing) {
 
   // Must fit within the minimum height of 146. But with the aspect ratio of
   // 40:1 the width gets exceedingly big and must be limited to the maximum of
-  // 500. Thus, letterboxing is unavoidable.
-  EXPECT_EQ(gfx::Size(500, 100), overlay_window().GetBounds().size());
-  EXPECT_EQ(gfx::Size(500, 0),
+  // 800. Thus, letterboxing is unavoidable.
+  EXPECT_EQ(gfx::Size(800, 100), overlay_window().GetBounds().size());
+  EXPECT_EQ(gfx::Size(800, 0),
             overlay_window().document_layer_for_testing()->size());
 }
 
@@ -204,9 +204,9 @@ TEST_F(DocumentOverlayWindowViewsTest, Pillarboxing) {
 
   // Must fit within the minimum width of 260. But with the aspect ratio of
   // 1:40 the height gets exceedingly big and must be limited to the maximum of
-  // 500. Thus, pillarboxing is unavoidable.
-  EXPECT_EQ(gfx::Size(200, 500), overlay_window().GetBounds().size());
-  EXPECT_EQ(gfx::Size(13, 470),
+  // 800. Thus, pillarboxing is unavoidable.
+  EXPECT_EQ(gfx::Size(200, 800), overlay_window().GetBounds().size());
+  EXPECT_EQ(gfx::Size(20, 770),
             overlay_window().document_layer_for_testing()->size());
 }
 
@@ -306,25 +306,25 @@ TEST_F(DocumentOverlayWindowViewsTest, UpdateMaximumSize) {
   // The initial size is determined by the work area and the video natural size
   // (aspect ratio).
   EXPECT_EQ(gfx::Size(1200, 800), overlay_window().GetBounds().size());
-  // The initial maximum size is a quarter of the work area.
-  EXPECT_EQ(gfx::Size(2000, 2000), overlay_window().GetMaximumSize());
+  // The initial maximum size is 80% of the work area.
+  EXPECT_EQ(gfx::Size(3200, 3200), overlay_window().GetMaximumSize());
 
   // If the maximum size increases then we should keep the existing window size.
   SetDisplayWorkArea({0, 0, 8000, 8000});
   EXPECT_EQ(gfx::Size(1200, 800), overlay_window().GetBounds().size());
-  EXPECT_EQ(gfx::Size(4000, 4000), overlay_window().GetMaximumSize());
+  EXPECT_EQ(gfx::Size(6400, 6400), overlay_window().GetMaximumSize());
 
   // If the maximum size decreases then we should shrink to fit.
   SetDisplayWorkArea({0, 0, 1000, 2000});
-  EXPECT_EQ(gfx::Size(500, 800), overlay_window().GetBounds().size());
-  EXPECT_EQ(gfx::Size(500, 1000), overlay_window().GetMaximumSize());
+  EXPECT_EQ(gfx::Size(800, 800), overlay_window().GetBounds().size());
+  EXPECT_EQ(gfx::Size(800, 1600), overlay_window().GetMaximumSize());
 }
 
 TEST_F(DocumentOverlayWindowViewsTest, IgnoreInvalidMaximumSize) {
-  ASSERT_EQ(gfx::Size(500, 500), overlay_window().GetMaximumSize());
+  ASSERT_EQ(gfx::Size(800, 800), overlay_window().GetMaximumSize());
 
   SetDisplayWorkArea({0, 0, 0, 0});
-  EXPECT_EQ(gfx::Size(500, 500), overlay_window().GetMaximumSize());
+  EXPECT_EQ(gfx::Size(800, 800), overlay_window().GetMaximumSize());
 }
 
 TEST_F(DocumentOverlayWindowViewsTest, UpdateNaturalSizeDoesNotMoveWindow) {
@@ -342,9 +342,9 @@ TEST_F(DocumentOverlayWindowViewsTest, UpdateNaturalSizeDoesNotMoveWindow) {
 
   // The window should not move.
   // The window size will be adjusted according to the new aspect ratio, and
-  // clamped to 500x250 to fit within the maximum size for the work area of
+  // clamped to 600x300 to fit within the maximum size for the work area of
   // 1000x1000.
-  EXPECT_EQ(gfx::Rect(100, 100, 500, 250), overlay_window().GetBounds());
+  EXPECT_EQ(gfx::Rect(100, 100, 600, 300), overlay_window().GetBounds());
 }
 
 // Tests that the OverlayWindowFrameView does not accept events so they can
@@ -435,7 +435,7 @@ TEST_F(DocumentOverlayWindowViewsTest, PauseOnWidgetClose) {
 }
 
 TEST_F(DocumentOverlayWindowViewsTest, SmallDisplayWorkAreaDoesNotCrash) {
-  SetDisplayWorkArea({0, 0, 300, 200});
+  SetDisplayWorkArea({0, 0, 240, 120});
   overlay_window().UpdateNaturalSize({400, 300});
 
   // Since the work area would force a max size smaller than the minimum size,
