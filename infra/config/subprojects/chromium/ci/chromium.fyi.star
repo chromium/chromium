@@ -2151,6 +2151,9 @@ fyi_ios_builder(
         ),
     ],
     os = os.MAC_12,
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 fyi_ios_builder(
@@ -2176,6 +2179,9 @@ fyi_ios_builder(
         ),
     ],
     os = os.MAC_12,
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 fyi_ios_builder(
