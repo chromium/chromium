@@ -491,6 +491,14 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
   }
 }
 
+void PermissionDecisionAutoBlocker::AddObserver(Observer* obs) {
+  observers_.AddObserver(obs);
+}
+
+void PermissionDecisionAutoBlocker::RemoveObserver(Observer* obs) {
+  observers_.RemoveObserver(obs);
+}
+
 // static
 const char*
 PermissionDecisionAutoBlocker::GetPromptDismissCountKeyForTesting() {
@@ -516,6 +524,14 @@ void PermissionDecisionAutoBlocker::PlaceUnderEmbargo(
   settings_map_->SetWebsiteSettingDefaultScope(
       request_origin, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
       base::Value::FromUniquePtrValue(std::move(dict)));
+  NotifyEmbargoStarted(request_origin, permission);
+}
+
+void PermissionDecisionAutoBlocker::NotifyEmbargoStarted(
+    const GURL& origin,
+    ContentSettingsType content_setting) {
+  for (Observer& obs : observers_)
+    obs.OnEmbargoStarted(origin, content_setting);
 }
 
 void PermissionDecisionAutoBlocker::SetClockForTesting(base::Clock* clock) {

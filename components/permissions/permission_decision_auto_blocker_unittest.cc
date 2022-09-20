@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/test/test_permissions_client.h"
@@ -70,6 +71,21 @@ class PermissionDecisionAutoBlockerUnitTest : public testing::Test {
   TestPermissionsClient permissions_client_;
   bool last_embargoed_status_;
   bool callback_was_run_;
+};
+
+class MockObserver : public PermissionDecisionAutoBlocker::Observer {
+ public:
+  void OnEmbargoStarted(const GURL& origin,
+                        ContentSettingsType content_setting) override {
+    callbacks_[origin].push_back(content_setting);
+  }
+
+  std::map<GURL, std::vector<ContentSettingsType>>& GetCallbacks() {
+    return callbacks_;
+  }
+
+ private:
+  std::map<GURL, std::vector<ContentSettingsType>> callbacks_;
 };
 
 // Check removing the the embargo for a single permission on a site works, and
@@ -859,6 +875,49 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest,
       url, ContentSettingsType::FEDERATED_IDENTITY_API, false));
   CheckFederatedIdentityApiEmbargoLiftedAfterTimeElapsing(
       autoblocker(), clock(), url, base::Hours(2));
+}
+
+TEST_F(PermissionDecisionAutoBlockerUnitTest,
+       ObserverIsNotifiedWhenEmbargoStarts) {
+  GURL url("https://www.google.com");
+  MockObserver observer;
+  autoblocker()->AddObserver(&observer);
+
+  EXPECT_FALSE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::GEOLOCATION, false));
+  EXPECT_EQ(0u, observer.GetCallbacks().size());
+
+  EXPECT_FALSE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::GEOLOCATION, false));
+  EXPECT_EQ(0u, observer.GetCallbacks().size());
+
+  EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::GEOLOCATION, false));
+  EXPECT_EQ(1u, observer.GetCallbacks().size());
+  EXPECT_EQ(url, observer.GetCallbacks().begin()->first);
+  EXPECT_EQ(ContentSettingsType::GEOLOCATION, observer.GetCallbacks()[url][0]);
+
+  autoblocker()->RemoveObserver(&observer);
+}
+
+TEST_F(PermissionDecisionAutoBlockerUnitTest,
+       RemovedObserverIsNotNotifiedWhenEmbargoStarts) {
+  GURL url("https://www.google.com");
+  MockObserver observer;
+  autoblocker()->AddObserver(&observer);
+
+  EXPECT_FALSE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::GEOLOCATION, false));
+  EXPECT_EQ(0u, observer.GetCallbacks().size());
+
+  EXPECT_FALSE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::GEOLOCATION, false));
+  EXPECT_EQ(0u, observer.GetCallbacks().size());
+  autoblocker()->RemoveObserver(&observer);
+
+  EXPECT_TRUE(autoblocker()->RecordDismissAndEmbargo(
+      url, ContentSettingsType::GEOLOCATION, false));
+  EXPECT_EQ(0u, observer.GetCallbacks().size());
 }
 
 }  // namespace permissions

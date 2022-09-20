@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list_types.h"
 #include "base/time/default_clock.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -41,6 +42,12 @@ namespace permissions {
 // threshold.
 class PermissionDecisionAutoBlocker : public KeyedService {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnEmbargoStarted(const GURL& origin,
+                                  ContentSettingsType content_setting) = 0;
+  };
+
   PermissionDecisionAutoBlocker() = delete;
 
   explicit PermissionDecisionAutoBlocker(HostContentSettingsMap* settings_map);
@@ -79,8 +86,8 @@ class PermissionDecisionAutoBlocker : public KeyedService {
       ContentSettingsType permission);
 
   // Returns the most recent recorded time either an ignore or dismiss embargo
-  // was started. Records of embargo start times persist beyond the duration of
-  // the embargo, but are removed along with embargoes when
+  // was started. Records of embargo start times persist beyond the duration
+  // of the embargo, but are removed along with embargoes when
   // RemoveEmbargoAndResetCounts is used. Returns base::Time() if no record is
   // found.
   base::Time GetEmbargoStartTime(const GURL& request_origin,
@@ -112,19 +119,20 @@ class PermissionDecisionAutoBlocker : public KeyedService {
                                ContentSettingsType permission,
                                bool dismissed_prompt_was_quiet);
 
-  // Records that an ignore of a prompt for |permission| was made. If the total
-  // number of ignores exceeds a threshold and
-  // features::kBlockPromptsIfIgnoredOften is enabled, it will place |url| under
-  // embargo for |permission|. |ignored_prompt_was_quiet| will inform the
-  // decision of which threshold to pick, depending on whether the prompt that
-  // was presented to the user was quiet or not.
+  // Records that an ignore of a prompt for |permission| was made. If the
+  // total number of ignores exceeds a threshold and
+  // features::kBlockPromptsIfIgnoredOften is enabled, it will place |url|
+  // under embargo for |permission|. |ignored_prompt_was_quiet| will inform
+  // the decision of which threshold to pick, depending on whether the prompt
+  // that was presented to the user was quiet or not.
   bool RecordIgnoreAndEmbargo(const GURL& url,
                               ContentSettingsType permission,
                               bool ignored_prompt_was_quiet);
 
-  // Clears any existing embargo status for |url|, |permission|. For permissions
-  // embargoed under repeated dismissals, this means a prompt will be shown to
-  // the user on next permission request. Clears dismiss and ignore counts.
+  // Clears any existing embargo status for |url|, |permission|. For
+  // permissions embargoed under repeated dismissals, this means a prompt will
+  // be shown to the user on next permission request. Clears dismiss and
+  // ignore counts.
   void RemoveEmbargoAndResetCounts(const GURL& url,
                                    ContentSettingsType permission);
 
@@ -132,6 +140,10 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   // matching |filter|.
   void RemoveEmbargoAndResetCounts(
       base::RepeatingCallback<bool(const GURL& url)> filter);
+
+  // Add and remove observers that want to receive embargo status updates.
+  void AddObserver(Observer* obs);
+  void RemoveObserver(Observer* obs);
 
   static const char* GetPromptDismissCountKeyForTesting();
 
@@ -147,6 +159,9 @@ class PermissionDecisionAutoBlocker : public KeyedService {
                          ContentSettingsType permission,
                          const char* key);
 
+  void NotifyEmbargoStarted(const GURL& origin,
+                            ContentSettingsType content_setting);
+
   void SetClockForTesting(base::Clock* clock);
 
   // Keys used for storing count data in a website setting.
@@ -160,6 +175,8 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   raw_ptr<HostContentSettingsMap> settings_map_;
 
   raw_ptr<base::Clock> clock_;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace permissions

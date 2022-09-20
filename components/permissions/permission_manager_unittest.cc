@@ -249,6 +249,10 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
 
   PermissionStatus callback_result() const { return callback_result_; }
 
+  content::TestBrowserContext* browser_context() const {
+    return browser_context_.get();
+  }
+
   void Reset() {
     callback_called_ = false;
     callback_count_ = 0;
@@ -1049,6 +1053,40 @@ TEST_F(PermissionManagerTest, RequestPermissionInDifferentStoragePartition) {
             GetPermissionStatusForWorker(
                 PermissionType::NOTIFICATIONS, partitioned_child->GetProcess(),
                 partitioned_child->GetLastCommittedOrigin().GetURL()));
+}
+
+TEST_F(PermissionManagerTest, SubscribersAreNotifedOfEmbargoEvents) {
+  const char* kOrigin1 = "https://example.com";
+  NavigateAndCommit(GURL(kOrigin1));
+
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
+      SubscribePermissionStatusChange(
+          PermissionType::GEOLOCATION, /*render_process_host=*/nullptr,
+          main_rfh(), GURL(kOrigin1),
+          base::BindRepeating(&PermissionManagerTest::OnPermissionChange,
+                              base::Unretained(this)));
+  EXPECT_EQ(callback_count(), 0);
+
+  auto* autoblocker =
+      permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
+          browser_context());
+
+  // 3 dismisses will trigger embargo, which should call the subscription
+  // callback.
+  autoblocker->RecordDismissAndEmbargo(GURL(kOrigin1),
+                                       ContentSettingsType::GEOLOCATION,
+                                       false /* dismissed_prompt_was_quiet */);
+  EXPECT_EQ(callback_count(), 0);
+  autoblocker->RecordDismissAndEmbargo(GURL(kOrigin1),
+                                       ContentSettingsType::GEOLOCATION,
+                                       false /* dismissed_prompt_was_quiet */);
+  EXPECT_EQ(callback_count(), 0);
+  autoblocker->RecordDismissAndEmbargo(GURL(kOrigin1),
+                                       ContentSettingsType::GEOLOCATION,
+                                       false /* dismissed_prompt_was_quiet */);
+  EXPECT_EQ(callback_count(), 1);
+
+  UnsubscribePermissionStatusChange(subscription_id);
 }
 
 }  // namespace permissions

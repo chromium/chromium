@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_id.h"
@@ -166,7 +167,14 @@ struct PermissionManager::Subscription {
 PermissionManager::PermissionManager(content::BrowserContext* browser_context,
                                      PermissionContextMap permission_contexts)
     : browser_context_(browser_context),
-      permission_contexts_(std::move(permission_contexts)) {}
+      permission_contexts_(std::move(permission_contexts)) {
+  auto* autoblocker =
+      permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
+          browser_context_);
+  if (autoblocker) {
+    autoblocker->AddObserver(this);
+  }
+}
 
 PermissionManager::~PermissionManager() {
   DCHECK(pending_requests_.IsEmpty());
@@ -188,6 +196,20 @@ void PermissionManager::Shutdown() {
     subscription_type_counts_.clear();
   }
   permission_contexts_.clear();
+
+  auto* autoblocker =
+      permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
+          browser_context_);
+  if (autoblocker) {
+    autoblocker->RemoveObserver(this);
+  }
+}
+
+void PermissionManager::OnEmbargoStarted(const GURL& origin,
+                                         ContentSettingsType content_setting) {
+  auto primary_pattern = ContentSettingsPattern::FromURL(origin);
+  OnPermissionChanged(primary_pattern, ContentSettingsPattern::Wildcard(),
+                      ContentSettingsTypeSet(content_setting));
 }
 
 PermissionContextBase* PermissionManager::GetPermissionContextForTesting(

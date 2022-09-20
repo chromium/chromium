@@ -16,6 +16,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_context_base.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller_delegate.h"
@@ -42,7 +43,8 @@ class PermissionManagerTest;
 
 class PermissionManager : public KeyedService,
                           public content::PermissionControllerDelegate,
-                          public permissions::Observer {
+                          public permissions::Observer,
+                          public PermissionDecisionAutoBlocker::Observer {
  public:
   using PermissionContextMap =
       std::unordered_map<ContentSettingsType,
@@ -58,6 +60,10 @@ class PermissionManager : public KeyedService,
 
   // KeyedService implementation.
   void Shutdown() override;
+
+  // PermissionDecisionAutoBlocker::Observer
+  void OnEmbargoStarted(const GURL& origin,
+                        ContentSettingsType content_setting) override;
 
   PermissionContextBase* GetPermissionContextForTesting(
       ContentSettingsType type);
