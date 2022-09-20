@@ -660,17 +660,6 @@ BubbleViewType BubbleTypeFromFeature() {
     return;
   }
 
-  // Return if the user shouldn't see an IPH.
-  // This is done after ShouldTriggerHelpUI so that metrics regarding IPH are
-  // logged similarly for experimental groups and for the control group.
-  if (!base::FeatureList::IsEnabled(kBubbleRichIPH)) {
-    // Immediately mark the IPH as dismissed. It is required everytime
-    // ShouldTriggerHelpUI returns `true`.
-    [self IPHDidDismissWithSnoozeAction:feature_engagement::Tracker::
-                                            SnoozeAction::DISMISSED];
-    return;
-  }
-
   // Show the highlight suggestion now.
   [self.formInputAccessoryViewController animateSuggestionLabel];
 
