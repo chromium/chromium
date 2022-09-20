@@ -507,7 +507,7 @@ TEST_F(FirstPartySetsHandlerGetCustomizationForPolicyTest,
   InitPublicFirstPartySets();
   // We don't care what the customizations are, here; we only care that they're
   // not a no-op.
-  EXPECT_THAT(GetConfig().customizations(), testing::Not(IsEmpty()));
+  EXPECT_FALSE(GetConfig().empty());
 }
 
 }  // namespace content

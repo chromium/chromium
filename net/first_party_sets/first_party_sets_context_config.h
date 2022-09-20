@@ -10,6 +10,14 @@
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace mojo {
+template <typename DataViewType, typename T>
+struct StructTraits;
+}  // namespace mojo
+namespace network::mojom {
+class FirstPartySetsContextConfigDataView;
+}  // namespace network::mojom
+
 namespace net {
 
 // This struct bundles together the customized settings to First-Party Sets
@@ -48,9 +56,14 @@ class NET_EXPORT FirstPartySetsContextConfig {
   // `aliases`.
   void IngestAliases(base::flat_map<SchemefulSite, SchemefulSite> aliases);
 
+ private:
+  // mojo (de)serialization needs access to private details.
+  friend struct mojo::StructTraits<
+      network::mojom::FirstPartySetsContextConfigDataView,
+      FirstPartySetsContextConfig>;
+
   const OverrideSets& customizations() const { return customizations_; }
 
- private:
   OverrideSets customizations_;
 };
 
