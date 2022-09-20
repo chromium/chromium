@@ -9,43 +9,43 @@
 
 namespace extensions_features {
 
-extern const base::Feature kSafeBrowsingCrxAllowlistShowWarnings;
-extern const base::Feature kSafeBrowsingCrxAllowlistAutoDisable;
+BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistShowWarnings);
+BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable);
 
-extern const base::Feature kForceWebRequestProxyForTest;
+BASE_DECLARE_FEATURE(kForceWebRequestProxyForTest);
 
-extern const base::Feature kAllowWithholdingExtensionPermissionsOnInstall;
+BASE_DECLARE_FEATURE(kAllowWithholdingExtensionPermissionsOnInstall);
 
-extern const base::Feature kContentScriptsMatchOriginAsFallback;
+BASE_DECLARE_FEATURE(kContentScriptsMatchOriginAsFallback);
 
-extern const base::Feature kReportKeepaliveUkm;
+BASE_DECLARE_FEATURE(kReportKeepaliveUkm);
 
-extern const base::Feature kAllowSharedArrayBuffersUnconditionally;
+BASE_DECLARE_FEATURE(kAllowSharedArrayBuffersUnconditionally);
 
-extern const base::Feature kLoadCryptoTokenExtension;
+BASE_DECLARE_FEATURE(kLoadCryptoTokenExtension);
 
-extern const base::Feature kU2FSecurityKeyAPI;
+BASE_DECLARE_FEATURE(kU2FSecurityKeyAPI);
 
-extern const base::Feature kStructuredCloningForMV3Messaging;
+BASE_DECLARE_FEATURE(kStructuredCloningForMV3Messaging);
 
-extern const base::Feature kRestrictDeveloperModeAPIs;
+BASE_DECLARE_FEATURE(kRestrictDeveloperModeAPIs);
 
-extern const base::Feature kCheckingUnexpectedExtensionIdInContentScriptIpcs;
-extern const base::Feature kCheckingNoExtensionIdInExtensionIpcs;
+BASE_DECLARE_FEATURE(kCheckingUnexpectedExtensionIdInContentScriptIpcs);
+BASE_DECLARE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs);
 
-extern const base::Feature kNewExtensionFaviconHandling;
+BASE_DECLARE_FEATURE(kNewExtensionFaviconHandling);
 
-extern const base::Feature kExtensionDynamicURLRedirection;
+BASE_DECLARE_FEATURE(kExtensionDynamicURLRedirection);
 
-extern const base::Feature kExtensionsMenuAccessControl;
+BASE_DECLARE_FEATURE(kExtensionsMenuAccessControl);
 
-extern const base::Feature kAvoidEarlyExtensionScriptContextCreation;
+BASE_DECLARE_FEATURE(kAvoidEarlyExtensionScriptContextCreation);
 
-extern const base::Feature kExtensionsOffscreenDocuments;
+BASE_DECLARE_FEATURE(kExtensionsOffscreenDocuments);
 
-extern const base::Feature kNewWebstoreDomain;
+BASE_DECLARE_FEATURE(kNewWebstoreDomain);
 
-extern const base::Feature kExtensionSidePanelIntegration;
+BASE_DECLARE_FEATURE(kExtensionSidePanelIntegration);
 
 }  // namespace extensions_features
 
