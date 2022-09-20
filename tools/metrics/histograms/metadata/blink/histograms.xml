@@ -1096,9 +1096,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Fetch.RequestResourceTime2{Scheme}" units="microseconds"
-    expires_after="2022-11-02">
-  <owner>csharrison@chromium.org</owner>
+    expires_after="2023-05-02">
   <owner>cduvall@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
   <summary>
     The total microseconds spent in ResourceFetcher::requestResource for
     {Scheme}.
