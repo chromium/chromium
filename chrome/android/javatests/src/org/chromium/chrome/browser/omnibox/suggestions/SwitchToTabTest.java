@@ -148,7 +148,7 @@ public class SwitchToTabTest {
      *
      * @param locationBarLayout The layout which omnibox suggestions will show in.
      * @param tab The tab which the AutocompleteMatch should suggest.
-     * @return The suggesstion which suggests the |tab|.
+     * @return The suggestion which suggests the |tab|.
      */
     private AutocompleteMatch findTabMatchOmniboxSuggestion(
             LocationBarLayout locationBarLayout, Tab tab) {
@@ -237,7 +237,7 @@ public class SwitchToTabTest {
     }
 
     /**
-     * Launch the SearchActiviy.
+     * Launch the SearchActivity.
      */
     private SearchActivity startSearchActivity() {
         final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
@@ -265,6 +265,7 @@ public class SwitchToTabTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({"disable-features=OmniboxUpdateResultDebounce"})
     public void testSwitchToTabSuggestion() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
@@ -358,6 +359,7 @@ public class SwitchToTabTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({"disable-features=OmniboxUpdateResultDebounce"})
     public void testSwitchToTabInSearchActivity() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),

@@ -53,6 +53,7 @@
 #include "components/omnibox/browser/voice_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_verbatim_match_provider.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -162,6 +163,15 @@ bool ShouldPreserveDefault(bool in_start, size_t input_length) {
     return OmniboxFieldTrial::
         kAutocompleteStabilityPreserveDefaultForAsyncUpdates.Get();
   }
+}
+
+// The feature is checked frequently, so cache it to avoid performance costs.
+bool DebouncingEnabled() {
+  // Wrapped in a function to avoid static initialization. But uses a static
+  // bool cache to avoid re-invoking `FeatureList::IsEnabled()`.
+  static const bool debouncing_enabled =
+      base::FeatureList::IsEnabled(omnibox::kUpdateResultDebounce);
+  return debouncing_enabled;
 }
 
 }  // namespace
@@ -872,6 +882,10 @@ void AutocompleteController::SetTailSuggestCommonPrefixes() {
   result_.SetTailSuggestCommonPrefixes();
 }
 
+const AutocompleteResult& AutocompleteController::result() const {
+  return DebouncingEnabled() ? published_result_ : result_;
+}
+
 void AutocompleteController::UpdateResult(
     bool regenerate_result,
     bool force_notify_default_match_changed) {
@@ -1192,6 +1206,10 @@ void AutocompleteController::UpdateAssistedQueryStats(
 }
 
 void AutocompleteController::NotifyChanged() {
+  // `CopyFrom()` does a vector copy, and `NotifyChanged()` is called a lot, so
+  // guard the copy to measure performance regressions.
+  if (DebouncingEnabled())
+    published_result_.CopyFrom(result_);
   for (Observer& obs : observers_)
     obs.OnResultChanged(this, notify_changed_default_match_);
   notify_changed_debouncer_.CancelRequest();
