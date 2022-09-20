@@ -8675,6 +8675,9 @@ interface SharedWorker : EventTarget
     getter port
     method constructor
     setter onerror
+interface SoftNavigationEntry : PerformanceEntry
+    attribute @@toStringTag
+    method constructor
 interface SourceBuffer : EventTarget
     attribute @@toStringTag
     getter appendWindowEnd

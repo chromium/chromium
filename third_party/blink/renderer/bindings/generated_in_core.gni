@@ -1243,6 +1243,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_shared_worker.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_shared_worker_global_scope.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_shared_worker_global_scope.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_soft_navigation_entry.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_soft_navigation_entry.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_static_range.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_static_range.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_style_media.cc",

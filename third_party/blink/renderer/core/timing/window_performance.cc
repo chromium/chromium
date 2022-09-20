@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_entry.h"
 #include "third_party/blink/renderer/core/timing/visibility_state_entry.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -652,6 +653,20 @@ void WindowPerformance::AddVisibilityStateEntry(bool is_visible,
 
   if (visibility_state_buffer_.size() < kDefaultVisibilityStateEntrySize)
     visibility_state_buffer_.push_back(entry);
+}
+
+void WindowPerformance::AddSoftNavigationEntry(const AtomicString& name) {
+  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled()) {
+    return;
+  }
+  SoftNavigationEntry* entry = MakeGarbageCollected<SoftNavigationEntry>(
+      name, MonotonicTimeToDOMHighResTimeStamp(base::TimeTicks::Now()),
+      PerformanceEntry::GetNavigationId(GetExecutionContext()));
+
+  if (HasObserverFor(PerformanceEntry::kSoftNavigation))
+    NotifyObserversOfEntry(*entry);
+
+  AddSoftNavigationToPerformanceTimeline(entry);
 }
 
 void WindowPerformance::PageVisibilityChanged() {

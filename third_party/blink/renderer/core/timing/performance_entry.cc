@@ -127,6 +127,8 @@ PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
     return kVisibilityState;
   if (entry_type == performance_entry_names::kBackForwardCacheRestoration)
     return kBackForwardCacheRestoration;
+  if (entry_type == performance_entry_names::kSoftNavigation)
+    return kSoftNavigation;
   return kInvalid;
 }
 

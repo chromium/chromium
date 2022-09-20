@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/timing/performance_user_timing.h"
 #include "third_party/blink/renderer/core/timing/profiler.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_entry.h"
 #include "third_party/blink/renderer/core/timing/time_clamper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -139,6 +140,7 @@ PerformanceEntry::EntryType kDroppableEntryTypes[] = {
     PerformanceEntry::kLayoutShift,
     PerformanceEntry::kLargestContentfulPaint,
     PerformanceEntry::kBackForwardCacheRestoration,
+    PerformanceEntry::kSoftNavigation,
 };
 
 }  // namespace
@@ -152,6 +154,7 @@ constexpr size_t kDefaultLayoutShiftBufferSize = 150;
 constexpr size_t kDefaultLargestContenfulPaintSize = 150;
 constexpr size_t kDefaultLongTaskBufferSize = 200;
 constexpr size_t kDefaultBackForwardCacheRestorationBufferSize = 200;
+constexpr size_t kDefaultSoftNavigationBufferSize = 50;
 
 Performance::Performance(
     base::TimeTicks time_origin,
@@ -248,6 +251,9 @@ PerformanceEntryVector Performance::getEntries() {
 
   if (RuntimeEnabledFeatures::NavigationIdEnabled())
     entries.AppendVector(back_forward_cache_restoration_buffer_);
+
+  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled())
+    entries.AppendVector(soft_navigation_buffer_);
 
   std::sort(entries.begin(), entries.end(),
             PerformanceEntry::StartTimeCompareLessThan);
@@ -347,6 +353,10 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
     case PerformanceEntry::kBackForwardCacheRestoration:
       if (RuntimeEnabledFeatures::NavigationIdEnabled())
         entries.AppendVector(back_forward_cache_restoration_buffer_);
+      break;
+    case PerformanceEntry::kSoftNavigation:
+      if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled())
+        entries.AppendVector(soft_navigation_buffer_);
       break;
     case PerformanceEntry::kInvalid:
       break;
@@ -650,6 +660,17 @@ void Performance::AddLargestContentfulPaint(LargestContentfulPaint* entry) {
   } else {
     ++(dropped_entries_count_map_
            .find(PerformanceEntry::kLargestContentfulPaint)
+           ->value);
+  }
+}
+
+void Performance::AddSoftNavigationToPerformanceTimeline(
+    SoftNavigationEntry* entry) {
+  probe::PerformanceEntryAdded(GetExecutionContext(), entry);
+  if (soft_navigation_buffer_.size() < kDefaultSoftNavigationBufferSize) {
+    soft_navigation_buffer_.push_back(entry);
+  } else {
+    ++(dropped_entries_count_map_.find(PerformanceEntry::kSoftNavigation)
            ->value);
   }
 }
@@ -1092,6 +1113,7 @@ void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(longtask_buffer_);
   visitor->Trace(visibility_state_buffer_);
   visitor->Trace(back_forward_cache_restoration_buffer_);
+  visitor->Trace(soft_navigation_buffer_);
   visitor->Trace(navigation_timing_);
   visitor->Trace(user_timing_);
   visitor->Trace(first_paint_timing_);

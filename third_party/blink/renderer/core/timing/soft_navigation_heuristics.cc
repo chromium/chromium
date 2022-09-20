@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
@@ -18,7 +19,7 @@ namespace {
 void LogToConsole(LocalFrame* frame,
                   mojom::blink::ConsoleMessageLevel level,
                   const String& message) {
-  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsLoggingEnabled()) {
+  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled()) {
     return;
   }
   if (!frame || !frame->IsMainFrame()) {
@@ -110,23 +111,28 @@ void SoftNavigationHeuristics::ClickEventEnded(ScriptState* script_state) {
   ThreadScheduler* scheduler = ThreadScheduler::Current();
   DCHECK(scheduler);
   scheduler->GetTaskAttributionTracker()->UnregisterObserver();
-  CheckSoftNavigation(script_state);
+  CheckAndReportSoftNavigation(script_state);
 }
 
 bool SoftNavigationHeuristics::SetFlagIfDescendantAndCheck(
     ScriptState* script_state,
-    FlagType type) {
+    FlagType type,
+    absl::optional<String> url) {
   if (!IsCurrentTaskDescendantOfClickEventHandler(script_state)) {
     // A non-descendent URL change should not set the flag.
     return false;
   }
   flag_set_.Put(type);
-  CheckSoftNavigation(script_state);
+  if (url) {
+    url_ = *url;
+  }
+  CheckAndReportSoftNavigation(script_state);
   return true;
 }
 
-void SoftNavigationHeuristics::SawURLChange(ScriptState* script_state) {
-  if (!SetFlagIfDescendantAndCheck(script_state, FlagType::kURLChange)) {
+void SoftNavigationHeuristics::SawURLChange(ScriptState* script_state,
+                                            const String& url) {
+  if (!SetFlagIfDescendantAndCheck(script_state, FlagType::kURLChange, url)) {
     ResetHeuristic();
   } else {
     LogToConsole(script_state, mojom::blink::ConsoleMessageLevel::kVerbose,
@@ -142,7 +148,8 @@ void SoftNavigationHeuristics::ModifiedMain(ScriptState* script_state) {
   SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
 }
 
-void SoftNavigationHeuristics::CheckSoftNavigation(ScriptState* script_state) {
+void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
+    ScriptState* script_state) {
   if (flag_set_ != FlagTypeSet::All()) {
     return;
   }
@@ -152,6 +159,16 @@ void SoftNavigationHeuristics::CheckSoftNavigation(ScriptState* script_state) {
     return;
   }
   ++soft_navigation_count_;
+  frame->IncrementNavigationId();
+  LocalDOMWindow* window = frame->DomWindow();
+  if (window) {
+    auto* performance = DOMWindowPerformance::performance(*window);
+    // TODO(yoav): url_ can be NULL here, if it wasn't passed to pushState by
+    // the developer. That's not great, and it'd be better to pass the
+    // post-resolution URL when calling this.
+    performance->AddSoftNavigationEntry(AtomicString(url_));
+  }
+
   ResetHeuristic();
   LogToConsole(frame, mojom::blink::ConsoleMessageLevel::kInfo,
                String("A soft navigation has been detected."));

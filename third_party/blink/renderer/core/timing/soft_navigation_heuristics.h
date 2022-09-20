@@ -36,7 +36,7 @@ class SoftNavigationHeuristics
   // The class's API.
   void UserInitiatedClick(ScriptState*);
   void ClickEventEnded(ScriptState*);
-  void SawURLChange(ScriptState*);
+  void SawURLChange(ScriptState*, const String& url);
   void ModifiedMain(ScriptState*);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
@@ -44,7 +44,7 @@ class SoftNavigationHeuristics
   void OnCreateTaskScope(const scheduler::TaskAttributionId&) override;
 
  private:
-  void CheckSoftNavigation(ScriptState*);
+  void CheckAndReportSoftNavigation(ScriptState*);
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
   enum FlagType : uint8_t {
     kURLChange,
@@ -53,12 +53,15 @@ class SoftNavigationHeuristics
   using FlagTypeSet = base::EnumSet<FlagType, kURLChange, kMainModification>;
 
   bool IsCurrentTaskDescendantOfClickEventHandler(ScriptState*);
-  bool SetFlagIfDescendantAndCheck(ScriptState*, FlagType);
+  bool SetFlagIfDescendantAndCheck(ScriptState*,
+                                   FlagType,
+                                   absl::optional<String> url = absl::nullopt);
   void ResetHeuristic();
 
   WTF::HashSet<scheduler::TaskAttributionIdType>
       potential_soft_navigation_task_ids_;
   FlagTypeSet flag_set_;
+  String url_;
   uint32_t soft_navigation_count_ = 0;
 };
 

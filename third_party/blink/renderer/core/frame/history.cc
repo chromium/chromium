@@ -51,13 +51,15 @@
 namespace blink {
 
 namespace {
-void ReportURLChange(LocalDOMWindow* window, ScriptState* script_state) {
+void ReportURLChange(LocalDOMWindow* window,
+                     ScriptState* script_state,
+                     const String& url) {
   DCHECK(window);
   DCHECK(window->GetFrame());
   if (window->GetFrame()->IsMainFrame()) {
     SoftNavigationHeuristics* heuristics =
         SoftNavigationHeuristics::From(*window);
-    heuristics->SawURLChange(script_state);
+    heuristics->SawURLChange(script_state, url);
   }
 }
 }  // namespace
@@ -243,7 +245,7 @@ void History::pushState(ScriptState* script_state,
           /* discard_duplicates */ true);
       load_type = WebFrameLoadType::kReplaceCurrentItem;
     }
-    ReportURLChange(window, script_state);
+    ReportURLChange(window, script_state, url);
   }
 
   scoped_refptr<SerializedScriptValue> serialized_data =
@@ -273,7 +275,7 @@ void History::replaceState(ScriptState* script_state,
     return;
 
   if (LocalDOMWindow* window = DomWindow()) {
-    ReportURLChange(window, script_state);
+    ReportURLChange(window, script_state, url);
   }
 
   StateObjectAdded(std::move(serialized_data), title, url,
