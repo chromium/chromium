@@ -1687,6 +1687,10 @@
     'profile_keyed_service': {
       'filepath': 'chrome/browser/profiles/profile_keyed_service_browsertest.cc',
     },
+    'psm_libs': {
+      'filepath': 'third_party/private_membership/|' \
+                  'third_party/shell-encryption/'
+    },
     'push_messaging': {
       'filepath': 'push_messaging'
     },
@@ -2179,11 +2183,6 @@
                   '|content/browser/storage_partition_impl' \
                   '|content/public/browser/host_zoom_map.h' \
                   '|content/public/browser/storage_partition.h'
-    },
-    'zte': {
-      'filepath': 'chrome/browser/ash/login/enrollment/.*auto_enrollment|' \
-                  'chrome/browser/ash/policy/enrollment/.*auto_enrollment|' \
-                  'chrome/browser/ash/policy/enrollment/private_membership/'
     },
   },
 
@@ -2854,6 +2853,7 @@
     'print_preview': ['print-reviews+preview@chromium.org'],
     'privacy_budget': ['antoniosartori+watch-privacy_budget@chromium.org'],
     'profile_keyed_service': ['rsult@google.com'],
+    'psm_libs': ['amraboelkher+watch@chromium.org'],
     'push_messaging': ['peter@chromium.org'],
     'quick_answers': ['croissant-eng+reviews@chromium.org'],
     'relaunch_notification': ['grt+watch@chromium.org'],
@@ -3058,6 +3058,5 @@
             'yusukes+watch@chromium.org'],
     'zlib': ['cblume+zlib@chromium.org'],
     'zoom': ['wjmaclean@chromium.org'],
-    'zte': ['amraboelkher+watch@chromium.org'],
   },
 }
