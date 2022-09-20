@@ -475,28 +475,28 @@ class WebTestBluetoothAdapterProvider {
   //   - ErrorsDevice
   //      - ErrorsService errorUUID(0xA0)
   //          - ErrorCharacteristic(
-  //              BluetoothGattService::GATT_ERROR_UNKNOWN)
+  //              BluetoothGattService::GattErrorCode::kUnknown)
   //              errorUUID(0xA1)
   //          - ErrorCharacteristic(
-  //              BluetoothGattService::GATT_ERROR_FAILED)
+  //              BluetoothGattService::GattErrorCode::kFailed)
   //              errorUUID(0xA2)
   //          - ErrorCharacteristic(
-  //              BluetoothGattService::GATT_ERROR_IN_PROGRESS)
+  //              BluetoothGattService::GattErrorCode::kInProgress)
   //              errorUUID(0xA3)
   //          - ErrorCharacteristic(
-  //              BluetoothGattService::GATT_ERROR_INVALID_LENGTH)
+  //              BluetoothGattService::GattErrorCode::kInvalidLength)
   //              errorUUID(0xA4)
   //          - ErrorCharacteristic(
-  //              BluetoothGattService::GATT_ERROR_NOT_PERMITTED)
+  //              BluetoothGattService::GattErrorCode::kNotPermitted)
   //              errorUUID(0xA5)
   //          - ErrorCharacteristic(
-  //              BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED)
+  //              BluetoothGattService::GattErrorCode::kNotAuthorized)
   //              errorUUID(0xA6)
   //          - ErrorCharacteristic(
-  //              BluetoothGattService::GATT_ERROR_NOT_PAIRED)
+  //              BluetoothGattService::GattErrorCode::kNotPaired)
   //              errorUUID(0xA7)
   //          - ErrorCharacteristic(
-  //              BluetoothGattService::GATT_ERROR_NOT_SUPPORTED)
+  //              BluetoothGattService::GattErrorCode::kNotSupported)
   //              errorUUID(0xA8)
   //      - Request Disconnection Service: - Characteristics as described in
   //          GetDisconnectingService

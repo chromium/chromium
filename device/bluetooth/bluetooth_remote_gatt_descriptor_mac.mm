@@ -76,12 +76,12 @@ BluetoothRemoteGattDescriptorMac::~BluetoothRemoteGattDescriptorMac() {
   destructor_called_ = true;
   if (HasPendingRead()) {
     std::move(read_value_callback_)
-        .Run(BluetoothGattService::GATT_ERROR_FAILED,
+        .Run(BluetoothGattService::GattErrorCode::kFailed,
              /*value=*/std::vector<uint8_t>());
   }
   if (HasPendingWrite()) {
     std::move(write_value_callbacks_)
-        .second.Run(BluetoothGattService::GATT_ERROR_FAILED);
+        .second.Run(BluetoothGattService::GattErrorCode::kFailed);
   }
 }
 
@@ -98,9 +98,10 @@ void BluetoothRemoteGattDescriptorMac::ReadRemoteDescriptor(
   if (destructor_called_ || HasPendingRead() || HasPendingWrite()) {
     DVLOG(1) << *this << ": Read failed, already in progress.";
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  BluetoothGattService::GATT_ERROR_IN_PROGRESS,
-                                  /*value=*/std::vector<uint8_t>()));
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       BluetoothGattService::GattErrorCode::kInProgress,
+                       /*value=*/std::vector<uint8_t>()));
     return;
   }
   DVLOG(1) << *this << ": Read value.";
@@ -117,7 +118,7 @@ void BluetoothRemoteGattDescriptorMac::WriteRemoteDescriptor(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(error_callback),
-                       BluetoothGattService::GATT_ERROR_IN_PROGRESS));
+                       BluetoothGattService::GattErrorCode::kInProgress));
     return;
   }
   DVLOG(1) << *this << ": Write value.";

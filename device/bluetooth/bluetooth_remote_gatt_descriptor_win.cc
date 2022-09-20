@@ -73,7 +73,7 @@ void BluetoothRemoteGattDescriptorWin::ReadRemoteDescriptor(
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
 
   NOTIMPLEMENTED();
-  std::move(callback).Run(BluetoothGattService::GATT_ERROR_NOT_SUPPORTED,
+  std::move(callback).Run(BluetoothGattService::GattErrorCode::kNotSupported,
                           /*value=*/std::vector<uint8_t>());
 }
 
@@ -84,7 +84,8 @@ void BluetoothRemoteGattDescriptorWin::WriteRemoteDescriptor(
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
 
   NOTIMPLEMENTED();
-  std::move(error_callback).Run(BluetoothGattService::GATT_ERROR_NOT_SUPPORTED);
+  std::move(error_callback)
+      .Run(BluetoothGattService::GattErrorCode::kNotSupported);
 }
 
 uint16_t BluetoothRemoteGattDescriptorWin::GetAttributeHandle() const {

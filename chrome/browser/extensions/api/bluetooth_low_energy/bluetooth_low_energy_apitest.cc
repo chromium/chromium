@@ -720,9 +720,9 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, ReadCharacteristicValue) {
   std::vector<uint8_t> value;
   EXPECT_CALL(*chrc0_, ReadRemoteCharacteristic_(_))
       .Times(2)
-      .WillOnce(
-          InvokeCallbackArgument<0>(BluetoothGattService::GATT_ERROR_FAILED,
-                                    /*value=*/std::vector<uint8_t>()))
+      .WillOnce(InvokeCallbackArgument<0>(
+          BluetoothGattService::GattErrorCode::kFailed,
+          /*value=*/std::vector<uint8_t>()))
       .WillOnce(InvokeCallbackArgument<0>(absl::nullopt, value));
 
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
@@ -763,8 +763,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, WriteCharacteristicValue) {
   std::vector<uint8_t> write_value;
   EXPECT_CALL(*chrc0_, DeprecatedWriteRemoteCharacteristic_(_, _, _))
       .Times(2)
-      .WillOnce(
-          InvokeCallbackArgument<2>(BluetoothGattService::GATT_ERROR_FAILED))
+      .WillOnce(InvokeCallbackArgument<2>(
+          BluetoothGattService::GattErrorCode::kFailed))
       .WillOnce(DoAll(SaveArg<0>(&write_value), InvokeCallbackArgument<1>()));
 
   EXPECT_CALL(*chrc0_, GetValue()).Times(1).WillOnce(ReturnRef(write_value));
@@ -988,26 +988,26 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, ReadDescriptorValue) {
   std::vector<uint8_t> value;
   EXPECT_CALL(*desc0_, ReadRemoteDescriptor_(_))
       .Times(8)
-      .WillOnce(
-          InvokeCallbackArgument<0>(BluetoothGattService::GATT_ERROR_FAILED,
-                                    /*value=*/std::vector<uint8_t>()))
       .WillOnce(InvokeCallbackArgument<0>(
-          BluetoothGattService::GATT_ERROR_INVALID_LENGTH,
+          BluetoothGattService::GattErrorCode::kFailed,
           /*value=*/std::vector<uint8_t>()))
       .WillOnce(InvokeCallbackArgument<0>(
-          BluetoothGattService::GATT_ERROR_NOT_PERMITTED,
+          BluetoothGattService::GattErrorCode::kInvalidLength,
           /*value=*/std::vector<uint8_t>()))
       .WillOnce(InvokeCallbackArgument<0>(
-          BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED,
-          /*value=*/std::vector<uint8_t>()))
-      .WillOnce(
-          InvokeCallbackArgument<0>(BluetoothGattService::GATT_ERROR_NOT_PAIRED,
-                                    /*value=*/std::vector<uint8_t>()))
-      .WillOnce(InvokeCallbackArgument<0>(
-          BluetoothGattService::GATT_ERROR_NOT_SUPPORTED,
+          BluetoothGattService::GattErrorCode::kNotPermitted,
           /*value=*/std::vector<uint8_t>()))
       .WillOnce(InvokeCallbackArgument<0>(
-          BluetoothGattService::GATT_ERROR_IN_PROGRESS,
+          BluetoothGattService::GattErrorCode::kNotAuthorized,
+          /*value=*/std::vector<uint8_t>()))
+      .WillOnce(InvokeCallbackArgument<0>(
+          BluetoothGattService::GattErrorCode::kNotPaired,
+          /*value=*/std::vector<uint8_t>()))
+      .WillOnce(InvokeCallbackArgument<0>(
+          BluetoothGattService::GattErrorCode::kNotSupported,
+          /*value=*/std::vector<uint8_t>()))
+      .WillOnce(InvokeCallbackArgument<0>(
+          BluetoothGattService::GattErrorCode::kInProgress,
           /*value=*/std::vector<uint8_t>()))
       .WillOnce(InvokeCallbackArgument<0>(/*error_code=*/absl::nullopt, value));
 
@@ -1055,8 +1055,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, WriteDescriptorValue) {
   std::vector<uint8_t> write_value;
   EXPECT_CALL(*desc0_, WriteRemoteDescriptor_(_, _, _))
       .Times(2)
-      .WillOnce(
-          InvokeCallbackArgument<2>(BluetoothGattService::GATT_ERROR_FAILED))
+      .WillOnce(InvokeCallbackArgument<2>(
+          BluetoothGattService::GattErrorCode::kFailed))
       .WillOnce(DoAll(SaveArg<0>(&write_value), InvokeCallbackArgument<1>()));
 
   EXPECT_CALL(*desc0_, GetValue()).Times(1).WillOnce(ReturnRef(write_value));
@@ -1307,8 +1307,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, StartStopNotifications) {
 
   EXPECT_CALL(*chrc0_, StartNotifySession_(_, _))
       .Times(2)
-      .WillOnce(
-          InvokeCallbackArgument<1>(BluetoothGattService::GATT_ERROR_FAILED))
+      .WillOnce(InvokeCallbackArgument<1>(
+          BluetoothGattService::GattErrorCode::kFailed))
       .WillOnce(InvokeCallbackWithScopedPtrArg<0, BluetoothGattNotifySession>(
           session0));
   EXPECT_CALL(*chrc1_, StartNotifySession_(_, _))

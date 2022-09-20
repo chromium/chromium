@@ -50,21 +50,21 @@ std::string MessageTypeToString(
 std::string GattErrorToString(
     device::BluetoothGattService::GattErrorCode error_code) {
   switch (error_code) {
-    case device::BluetoothGattService::GATT_ERROR_UNKNOWN:
+    case device::BluetoothGattService::GattErrorCode::kUnknown:
       return "[GATT_ERROR_UNKNOWN]";
-    case device::BluetoothGattService::GATT_ERROR_FAILED:
+    case device::BluetoothGattService::GattErrorCode::kFailed:
       return "[GATT_ERROR_FAILED]";
-    case device::BluetoothGattService::GATT_ERROR_IN_PROGRESS:
+    case device::BluetoothGattService::GattErrorCode::kInProgress:
       return "[GATT_ERROR_IN_PROGRESS]";
-    case device::BluetoothGattService::GATT_ERROR_INVALID_LENGTH:
+    case device::BluetoothGattService::GattErrorCode::kInvalidLength:
       return "[GATT_ERROR_INVALID_LENGTH]";
-    case device::BluetoothGattService::GATT_ERROR_NOT_PERMITTED:
+    case device::BluetoothGattService::GattErrorCode::kNotPermitted:
       return "[GATT_ERROR_NOT_PERMITTED]";
-    case device::BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED:
+    case device::BluetoothGattService::GattErrorCode::kNotAuthorized:
       return "[GATT_ERROR_NOT_AUTHORIZED]";
-    case device::BluetoothGattService::GATT_ERROR_NOT_PAIRED:
+    case device::BluetoothGattService::GattErrorCode::kNotPaired:
       return "[GATT_ERROR_NOT_PAIRED]";
-    case device::BluetoothGattService::GATT_ERROR_NOT_SUPPORTED:
+    case device::BluetoothGattService::GattErrorCode::kNotSupported:
       return "[GATT_ERROR_NOT_SUPPORTED]";
     default:
       NOTREACHED();

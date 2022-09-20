@@ -62,12 +62,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceWinrt
     if (FAILED(hr)) {
       DVLOG(2) << "Getting Protocol Error Reference failed: "
                << logging::SystemErrorCodeToString(hr);
-      return GattErrorCode::GATT_ERROR_UNKNOWN;
+      return GattErrorCode::kUnknown;
     }
 
     if (!protocol_error_ref) {
       DVLOG(2) << "Got Null Protocol Error Reference.";
-      return GattErrorCode::GATT_ERROR_UNKNOWN;
+      return GattErrorCode::kUnknown;
     }
 
     uint8_t protocol_error;
@@ -75,7 +75,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceWinrt
     if (FAILED(hr)) {
       DVLOG(2) << "Getting Protocol Error Value failed: "
                << logging::SystemErrorCodeToString(hr);
-      return GattErrorCode::GATT_ERROR_UNKNOWN;
+      return GattErrorCode::kUnknown;
     }
 
     DVLOG(2) << "Got Protocol Error: " << static_cast<int>(protocol_error);
@@ -84,41 +84,41 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceWinrt
     // Version 5.0 Vol 3, Part F, 3.4.1.1.
     switch (protocol_error) {
       case 0x01:  // Invalid Handle
-        return GATT_ERROR_FAILED;
+        return GattErrorCode::kFailed;
       case 0x02:  // Read Not Permitted
-        return GATT_ERROR_NOT_PERMITTED;
+        return GattErrorCode::kNotPermitted;
       case 0x03:  // Write Not Permitted
-        return GATT_ERROR_NOT_PERMITTED;
+        return GattErrorCode::kNotPermitted;
       case 0x04:  // Invalid PDU
-        return GATT_ERROR_FAILED;
+        return GattErrorCode::kFailed;
       case 0x05:  // Insufficient Authentication
-        return GATT_ERROR_NOT_AUTHORIZED;
+        return GattErrorCode::kNotAuthorized;
       case 0x06:  // Request Not Supported
-        return GATT_ERROR_NOT_SUPPORTED;
+        return GattErrorCode::kNotSupported;
       case 0x07:  // Invalid Offset
-        return GATT_ERROR_INVALID_LENGTH;
+        return GattErrorCode::kInvalidLength;
       case 0x08:  // Insufficient Authorization
-        return GATT_ERROR_NOT_AUTHORIZED;
+        return GattErrorCode::kNotAuthorized;
       case 0x09:  // Prepare Queue Full
-        return GATT_ERROR_IN_PROGRESS;
+        return GattErrorCode::kInProgress;
       case 0x0A:  // Attribute Not Found
-        return GATT_ERROR_FAILED;
+        return GattErrorCode::kFailed;
       case 0x0B:  // Attribute Not Long
-        return GATT_ERROR_FAILED;
+        return GattErrorCode::kFailed;
       case 0x0C:  // Insufficient Encryption Key Size
-        return GATT_ERROR_FAILED;
+        return GattErrorCode::kFailed;
       case 0x0D:  // Invalid Attribute Value Length
-        return GATT_ERROR_INVALID_LENGTH;
+        return GattErrorCode::kInvalidLength;
       case 0x0E:  // Unlikely Error
-        return GATT_ERROR_FAILED;
+        return GattErrorCode::kFailed;
       case 0x0F:  // Insufficient Encryption
-        return GATT_ERROR_NOT_PAIRED;
+        return GattErrorCode::kNotPaired;
       case 0x10:  // Unsupported Group Type
-        return GATT_ERROR_FAILED;
+        return GattErrorCode::kFailed;
       case 0x11:  // Insufficient Resources
-        return GATT_ERROR_FAILED;
+        return GattErrorCode::kFailed;
       default:
-        return GATT_ERROR_UNKNOWN;
+        return GattErrorCode::kUnknown;
     }
   }
 

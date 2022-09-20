@@ -1574,7 +1574,7 @@ void BluetoothAdapterBlueZ::RegisterGattService(
     BLUETOOTH_LOG(ERROR)
         << "Re-registering a service that is already registered!";
     std::move(error_callback)
-        .Run(device::BluetoothGattService::GATT_ERROR_FAILED);
+        .Run(device::BluetoothGattService::GattErrorCode::kFailed);
     return;
   }
 
@@ -1600,7 +1600,7 @@ void BluetoothAdapterBlueZ::UnregisterGattService(
         << "Unregistering a service that isn't registered! path: "
         << service->object_path().value();
     std::move(error_callback)
-        .Run(device::BluetoothGattService::GATT_ERROR_FAILED);
+        .Run(device::BluetoothGattService::GattErrorCode::kFailed);
     return;
   }
 

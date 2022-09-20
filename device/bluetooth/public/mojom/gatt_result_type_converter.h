@@ -23,25 +23,21 @@ struct TypeConverter<bluetooth::mojom::GattResult,
   static bluetooth::mojom::GattResult Convert(
       const device::BluetoothGattService::GattErrorCode& input) {
     switch (input) {
-      case device::BluetoothGattService::GattErrorCode::GATT_ERROR_UNKNOWN:
+      case device::BluetoothGattService::GattErrorCode::kUnknown:
         return bluetooth::mojom::GattResult::UNKNOWN;
-      case device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED:
+      case device::BluetoothGattService::GattErrorCode::kFailed:
         return bluetooth::mojom::GattResult::FAILED;
-      case device::BluetoothGattService::GattErrorCode::GATT_ERROR_IN_PROGRESS:
+      case device::BluetoothGattService::GattErrorCode::kInProgress:
         return bluetooth::mojom::GattResult::IN_PROGRESS;
-      case device::BluetoothGattService::GattErrorCode::
-          GATT_ERROR_INVALID_LENGTH:
+      case device::BluetoothGattService::GattErrorCode::kInvalidLength:
         return bluetooth::mojom::GattResult::INVALID_LENGTH;
-      case device::BluetoothGattService::GattErrorCode::
-          GATT_ERROR_NOT_PERMITTED:
+      case device::BluetoothGattService::GattErrorCode::kNotPermitted:
         return bluetooth::mojom::GattResult::NOT_PERMITTED;
-      case device::BluetoothGattService::GattErrorCode::
-          GATT_ERROR_NOT_AUTHORIZED:
+      case device::BluetoothGattService::GattErrorCode::kNotAuthorized:
         return bluetooth::mojom::GattResult::NOT_AUTHORIZED;
-      case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_PAIRED:
+      case device::BluetoothGattService::GattErrorCode::kNotPaired:
         return bluetooth::mojom::GattResult::NOT_PAIRED;
-      case device::BluetoothGattService::GattErrorCode::
-          GATT_ERROR_NOT_SUPPORTED:
+      case device::BluetoothGattService::GattErrorCode::kNotSupported:
         return bluetooth::mojom::GattResult::NOT_SUPPORTED;
     }
     NOTREACHED();

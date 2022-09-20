@@ -224,20 +224,20 @@ arc::mojom::BluetoothGattStatus ConvertGattErrorCodeToStatus(
     const device::BluetoothGattService::GattErrorCode& error_code,
     bool is_read_operation) {
   switch (error_code) {
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_INVALID_LENGTH:
+    case device::BluetoothGattService::GattErrorCode::kInvalidLength:
       return arc::mojom::BluetoothGattStatus::GATT_INVALID_ATTRIBUTE_LENGTH;
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_PERMITTED:
+    case device::BluetoothGattService::GattErrorCode::kNotPermitted:
       return is_read_operation
                  ? arc::mojom::BluetoothGattStatus::GATT_READ_NOT_PERMITTED
                  : arc::mojom::BluetoothGattStatus::GATT_WRITE_NOT_PERMITTED;
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_AUTHORIZED:
+    case device::BluetoothGattService::GattErrorCode::kNotAuthorized:
       return arc::mojom::BluetoothGattStatus::GATT_INSUFFICIENT_AUTHENTICATION;
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_SUPPORTED:
+    case device::BluetoothGattService::GattErrorCode::kNotSupported:
       return arc::mojom::BluetoothGattStatus::GATT_REQUEST_NOT_SUPPORTED;
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_UNKNOWN:
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED:
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_IN_PROGRESS:
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_PAIRED:
+    case device::BluetoothGattService::GattErrorCode::kUnknown:
+    case device::BluetoothGattService::GattErrorCode::kFailed:
+    case device::BluetoothGattService::GattErrorCode::kInProgress:
+    case device::BluetoothGattService::GattErrorCode::kNotPaired:
     default:
       return arc::mojom::BluetoothGattStatus::GATT_FAILURE;
   }
@@ -327,7 +327,7 @@ void OnGattServerRead(
   if (status == arc::mojom::BluetoothGattStatus::GATT_SUCCESS) {
     std::move(callback).Run(/*error_code=*/absl::nullopt, value);
   } else {
-    std::move(callback).Run(BluetoothGattService::GATT_ERROR_FAILED,
+    std::move(callback).Run(BluetoothGattService::GattErrorCode::kFailed,
                             /*value=*/std::vector<uint8_t>());
   }
 }
@@ -885,7 +885,7 @@ void ArcBluetoothBridge::OnGattAttributeReadRequest(
   auto* bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->bluetooth(), RequestGattRead);
   if (!bluetooth_instance || !IsGattOffsetValid(offset)) {
-    std::move(callback).Run(BluetoothGattService::GATT_ERROR_FAILED,
+    std::move(callback).Run(BluetoothGattService::GattErrorCode::kFailed,
                             /*value=*/std::vector<uint8_t>());
     return;
   }
@@ -1728,7 +1728,8 @@ void ArcBluetoothBridge::ReadGattCharacteristic(
     // TODO(b/201737474): Investigate in what case this could happen.
     LOG(ERROR) << "Requested GATT characteristic does not exist";
     OnGattRead(std::move(callback),
-               device::BluetoothGattService::GATT_ERROR_FAILED, /*result=*/{});
+               device::BluetoothGattService::GattErrorCode::kFailed,
+               /*result=*/{});
     return;
   }
 

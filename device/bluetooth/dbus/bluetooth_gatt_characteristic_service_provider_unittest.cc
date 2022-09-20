@@ -82,7 +82,7 @@ TEST(BluetoothGattCharacteristicServiceProviderTest, ReadValueFailure) {
             EXPECT_FALSE(reader.PopArrayOfBytes(&bytes, &length));
             callback_called = true;
           }),
-      device::BluetoothGattService::GATT_ERROR_FAILED, read_value);
+      device::BluetoothGattService::GattErrorCode::kFailed, read_value);
 
   EXPECT_TRUE(callback_called);
 }

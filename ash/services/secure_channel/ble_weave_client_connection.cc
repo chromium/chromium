@@ -1014,28 +1014,28 @@ BluetoothLowEnergyWeaveClientConnection::
     BluetoothRemoteDeviceGattServiceGattErrorCodeToGattServiceOperationResult(
         device::BluetoothGattService::GattErrorCode error_code) {
   switch (error_code) {
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_UNKNOWN:
+    case device::BluetoothGattService::GattErrorCode::kUnknown:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_UNKNOWN;
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED:
+    case device::BluetoothGattService::GattErrorCode::kFailed:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_FAILED;
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_IN_PROGRESS:
+    case device::BluetoothGattService::GattErrorCode::kInProgress:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_IN_PROGRESS;
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_INVALID_LENGTH:
+    case device::BluetoothGattService::GattErrorCode::kInvalidLength:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_INVALID_LENGTH;
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_PERMITTED:
+    case device::BluetoothGattService::GattErrorCode::kNotPermitted:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_NOT_PERMITTED;
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_AUTHORIZED:
+    case device::BluetoothGattService::GattErrorCode::kNotAuthorized:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_NOT_AUTHORIZED;
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_PAIRED:
+    case device::BluetoothGattService::GattErrorCode::kNotPaired:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_NOT_PAIRED;
-    case device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_SUPPORTED:
+    case device::BluetoothGattService::GattErrorCode::kNotSupported:
       return GattServiceOperationResult::
           GATT_SERVICE_OPERATION_RESULT_GATT_ERROR_NOT_SUPPORTED;
     default:

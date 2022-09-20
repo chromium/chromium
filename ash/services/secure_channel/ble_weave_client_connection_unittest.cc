@@ -927,7 +927,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
   ASSERT_FALSE(notify_session_error_callback_.is_null());
 
   std::move(notify_session_error_callback_)
-      .Run(device::BluetoothGattService::GATT_ERROR_UNKNOWN);
+      .Run(device::BluetoothGattService::GattErrorCode::kUnknown);
 
   VerifyGattNotifySessionResult(false);
 
@@ -964,7 +964,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
     ASSERT_FALSE(write_remote_characteristic_error_callback_.is_null());
     EXPECT_FALSE(write_remote_characteristic_success_callback_.is_null());
     std::move(write_remote_characteristic_error_callback_)
-        .Run(device::BluetoothGattService::GATT_ERROR_UNKNOWN);
+        .Run(device::BluetoothGattService::GattErrorCode::kUnknown);
     task_runner_->RunUntilIdle();
     VerifyGattWriteCharacteristicResult(false /* success */,
                                         i + 1 /* num_writes */);
@@ -1130,7 +1130,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
     ASSERT_FALSE(write_remote_characteristic_error_callback_.is_null());
     EXPECT_FALSE(write_remote_characteristic_success_callback_.is_null());
     std::move(write_remote_characteristic_error_callback_)
-        .Run(device::BluetoothGattService::GATT_ERROR_UNKNOWN);
+        .Run(device::BluetoothGattService::GattErrorCode::kUnknown);
     task_runner_->RunUntilIdle();
     VerifyGattWriteCharacteristicResult(false /* success */,
                                         i + 1 /* num_writes */);
@@ -1346,7 +1346,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
     }
 
     std::move(write_remote_characteristic_error_callback_)
-        .Run(device::BluetoothGattService::GATT_ERROR_UNKNOWN);
+        .Run(device::BluetoothGattService::GattErrorCode::kUnknown);
     task_runner_->RunUntilIdle();
     VerifyGattWriteCharacteristicResult(false /* success */,
                                         i + 1 /* num_writes */);

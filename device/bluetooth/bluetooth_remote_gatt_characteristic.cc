@@ -153,7 +153,7 @@ void BluetoothRemoteGattCharacteristic::StartNotifySessionInternal(
           &BluetoothRemoteGattCharacteristic::CancelStartNotifySession,
           GetWeakPtr(),
           base::BindOnce(std::move(split_error_callback.second),
-                         BluetoothGattService::GATT_ERROR_FAILED)));
+                         BluetoothGattService::GattErrorCode::kFailed)));
 
   if (!notify_command_running_ && pending_notify_commands_.size() == 1) {
     notify_command_running_ = true;
@@ -199,7 +199,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
         base::BindOnce(
             &BluetoothRemoteGattCharacteristic::OnStartNotifySessionError,
             GetWeakPtr(), std::move(error_callback),
-            BluetoothGattService::GATT_ERROR_NOT_SUPPORTED));
+            BluetoothGattService::GattErrorCode::kNotSupported));
     return;
   }
 
@@ -229,8 +229,8 @@ void BluetoothRemoteGattCharacteristic::ExecuteStartNotifySession(
             &BluetoothRemoteGattCharacteristic::OnStartNotifySessionError,
             GetWeakPtr(), std::move(error_callback),
             (ccc_descriptor.size() == 0)
-                ? BluetoothGattService::GATT_ERROR_NOT_SUPPORTED
-                : BluetoothGattService::GATT_ERROR_FAILED));
+                ? BluetoothGattService::GattErrorCode::kNotSupported
+                : BluetoothGattService::GattErrorCode::kFailed));
     return;
   }
 
@@ -337,7 +337,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession(
         base::BindOnce(
             &BluetoothRemoteGattCharacteristic::OnStopNotifySessionError,
             GetWeakPtr(), session, std::move(callback),
-            BluetoothGattService::GATT_ERROR_FAILED));
+            BluetoothGattService::GattErrorCode::kFailed));
     return;
   }
 
@@ -364,7 +364,7 @@ void BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession(
         base::BindOnce(
             &BluetoothRemoteGattCharacteristic::OnStopNotifySessionError,
             GetWeakPtr(), session, std::move(callback),
-            BluetoothGattService::GATT_ERROR_FAILED));
+            BluetoothGattService::GattErrorCode::kFailed));
     return;
   }
 

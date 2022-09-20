@@ -208,7 +208,7 @@ class FakeBluetoothGattCharacteristic
                           ErrorCallback error_callback) override {
     if (notify_session_error_) {
       std::move(error_callback)
-          .Run(device::BluetoothGattService::GATT_ERROR_NOT_PERMITTED);
+          .Run(device::BluetoothGattService::GattErrorCode::kNotPermitted);
       return;
     }
 
@@ -228,7 +228,7 @@ class FakeBluetoothGattCharacteristic
                                  ErrorCallback error_callback) override {
     if (write_remote_error_) {
       std::move(error_callback)
-          .Run(device::BluetoothGattService::GATT_ERROR_NOT_PERMITTED);
+          .Run(device::BluetoothGattService::GattErrorCode::kNotPermitted);
       return;
     }
 

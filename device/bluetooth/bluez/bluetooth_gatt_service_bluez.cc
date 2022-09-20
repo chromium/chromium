@@ -27,21 +27,21 @@ std::string BluetoothGattServiceBlueZ::GetIdentifier() const {
 // static
 device::BluetoothGattService::GattErrorCode
 BluetoothGattServiceBlueZ::DBusErrorToServiceError(std::string error_name) {
-  device::BluetoothGattService::GattErrorCode code = GATT_ERROR_UNKNOWN;
+  auto code = device::BluetoothGattService::GattErrorCode::kUnknown;
   if (error_name == bluetooth_gatt_service::kErrorFailed) {
-    code = GATT_ERROR_FAILED;
+    code = device::BluetoothGattService::GattErrorCode::kFailed;
   } else if (error_name == bluetooth_gatt_service::kErrorInProgress) {
-    code = GATT_ERROR_IN_PROGRESS;
+    code = device::BluetoothGattService::GattErrorCode::kInProgress;
   } else if (error_name == bluetooth_gatt_service::kErrorInvalidValueLength) {
-    code = GATT_ERROR_INVALID_LENGTH;
+    code = device::BluetoothGattService::GattErrorCode::kInvalidLength;
   } else if (error_name == bluetooth_gatt_service::kErrorNotPermitted) {
-    code = GATT_ERROR_NOT_PERMITTED;
+    code = device::BluetoothGattService::GattErrorCode::kNotPermitted;
   } else if (error_name == bluetooth_gatt_service::kErrorNotAuthorized) {
-    code = GATT_ERROR_NOT_AUTHORIZED;
+    code = device::BluetoothGattService::GattErrorCode::kNotAuthorized;
   } else if (error_name == bluetooth_gatt_service::kErrorNotPaired) {
-    code = GATT_ERROR_NOT_PAIRED;
+    code = device::BluetoothGattService::GattErrorCode::kNotPaired;
   } else if (error_name == bluetooth_gatt_service::kErrorNotSupported) {
-    code = GATT_ERROR_NOT_SUPPORTED;
+    code = device::BluetoothGattService::GattErrorCode::kNotSupported;
   }
   return code;
 }

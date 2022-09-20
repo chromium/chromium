@@ -716,7 +716,7 @@ class BluetoothTestBase : public testing::Test {
   std::vector<uint8_t> last_read_value_;
   std::vector<uint8_t> last_write_value_;
   BluetoothGattService::GattErrorCode last_gatt_error_code_ =
-      BluetoothGattService::GATT_ERROR_UNKNOWN;
+      BluetoothGattService::GattErrorCode::kUnknown;
 
   int callback_count_ = 0;
   int error_callback_count_ = 0;

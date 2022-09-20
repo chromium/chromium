@@ -116,14 +116,14 @@ void FakeBluetoothGattDescriptorServiceProvider::GetValue(
           characteristic->service_path())) {
     DVLOG(1) << "GATT descriptor not registered.";
     std::move(callback).Run(
-        device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED,
+        device::BluetoothGattService::GattErrorCode::kFailed,
         /*value=*/std::vector<uint8_t>());
     return;
   }
 
   if (!CanRead(flags_)) {
     std::move(callback).Run(
-        device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED,
+        device::BluetoothGattService::GattErrorCode::kFailed,
         /*value=*/std::vector<uint8_t>());
     return;
   }

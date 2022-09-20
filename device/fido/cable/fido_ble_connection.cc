@@ -56,21 +56,21 @@ constexpr const char* ToString(BluetoothDevice::ConnectErrorCode error_code) {
 
 constexpr const char* ToString(BluetoothGattService::GattErrorCode error_code) {
   switch (error_code) {
-    case BluetoothGattService::GATT_ERROR_UNKNOWN:
+    case BluetoothGattService::GattErrorCode::kUnknown:
       return "GATT_ERROR_UNKNOWN";
-    case BluetoothGattService::GATT_ERROR_FAILED:
+    case BluetoothGattService::GattErrorCode::kFailed:
       return "GATT_ERROR_FAILED";
-    case BluetoothGattService::GATT_ERROR_IN_PROGRESS:
+    case BluetoothGattService::GattErrorCode::kInProgress:
       return "GATT_ERROR_IN_PROGRESS";
-    case BluetoothGattService::GATT_ERROR_INVALID_LENGTH:
+    case BluetoothGattService::GattErrorCode::kInvalidLength:
       return "GATT_ERROR_INVALID_LENGTH";
-    case BluetoothGattService::GATT_ERROR_NOT_PERMITTED:
+    case BluetoothGattService::GattErrorCode::kNotPermitted:
       return "GATT_ERROR_NOT_PERMITTED";
-    case BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED:
+    case BluetoothGattService::GattErrorCode::kNotAuthorized:
       return "GATT_ERROR_NOT_AUTHORIZED";
-    case BluetoothGattService::GATT_ERROR_NOT_PAIRED:
+    case BluetoothGattService::GattErrorCode::kNotPaired:
       return "GATT_ERROR_NOT_PAIRED";
-    case BluetoothGattService::GATT_ERROR_NOT_SUPPORTED:
+    case BluetoothGattService::GattErrorCode::kNotSupported:
       return "GATT_ERROR_NOT_SUPPORTED";
     default:
       NOTREACHED();

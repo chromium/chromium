@@ -429,7 +429,7 @@ void BluetoothTestBase::ReentrantStartNotifySessionErrorCallback(
 
   if (error_in_reentrant) {
     SimulateGattNotifySessionStartError(
-        characteristic, BluetoothGattService::GATT_ERROR_UNKNOWN);
+        characteristic, BluetoothGattService::GattErrorCode::kUnknown);
     characteristic->StartNotifySession(GetNotifyCallback(Call::NOT_EXPECTED),
                                        GetGattErrorCallback(Call::EXPECTED));
   } else {

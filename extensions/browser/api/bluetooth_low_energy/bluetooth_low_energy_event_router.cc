@@ -172,22 +172,24 @@ extensions::BluetoothLowEnergyEventRouter::Status GattErrorToRouterError(
     BluetoothGattService::GattErrorCode error_code) {
   extensions::BluetoothLowEnergyEventRouter::Status error_status =
       extensions::BluetoothLowEnergyEventRouter::kStatusErrorFailed;
-  if (error_code == BluetoothGattService::GATT_ERROR_IN_PROGRESS) {
+  if (error_code == BluetoothGattService::GattErrorCode::kInProgress) {
     error_status =
         extensions::BluetoothLowEnergyEventRouter::kStatusErrorInProgress;
-  } else if (error_code == BluetoothGattService::GATT_ERROR_INVALID_LENGTH) {
+  } else if (error_code ==
+             BluetoothGattService::GattErrorCode::kInvalidLength) {
     error_status =
         extensions::BluetoothLowEnergyEventRouter::kStatusErrorInvalidLength;
-  } else if (error_code == BluetoothGattService::GATT_ERROR_NOT_PERMITTED) {
+  } else if (error_code == BluetoothGattService::GattErrorCode::kNotPermitted) {
     error_status =
         extensions::BluetoothLowEnergyEventRouter::kStatusErrorPermissionDenied;
-  } else if (error_code == BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED) {
+  } else if (error_code ==
+             BluetoothGattService::GattErrorCode::kNotAuthorized) {
     error_status = extensions::BluetoothLowEnergyEventRouter::
         kStatusErrorInsufficientAuthorization;
-  } else if (error_code == BluetoothGattService::GATT_ERROR_NOT_PAIRED) {
+  } else if (error_code == BluetoothGattService::GattErrorCode::kNotPaired) {
     error_status =
         extensions::BluetoothLowEnergyEventRouter::kStatusErrorHigherSecurity;
-  } else if (error_code == BluetoothGattService::GATT_ERROR_NOT_SUPPORTED) {
+  } else if (error_code == BluetoothGattService::GattErrorCode::kNotSupported) {
     error_status =
         extensions::BluetoothLowEnergyEventRouter::kStatusErrorGattNotSupported;
   }

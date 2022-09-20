@@ -94,8 +94,9 @@ void FakeRemoteGattDescriptor::DispatchReadResponse(ValueCallback callback) {
       break;
     case mojom::kGATTInvalidHandle:
       DCHECK(!value);
-      std::move(callback).Run(device::BluetoothGattService::GATT_ERROR_FAILED,
-                              /*value=*/std::vector<uint8_t>());
+      std::move(callback).Run(
+          device::BluetoothGattService::GattErrorCode::kFailed,
+          /*value=*/std::vector<uint8_t>());
       break;
     default:
       NOTREACHED();
@@ -117,7 +118,7 @@ void FakeRemoteGattDescriptor::DispatchWriteResponse(
       break;
     case mojom::kGATTInvalidHandle:
       std::move(error_callback)
-          .Run(device::BluetoothGattService::GATT_ERROR_FAILED);
+          .Run(device::BluetoothGattService::GattErrorCode::kFailed);
       break;
     default:
       NOTREACHED();

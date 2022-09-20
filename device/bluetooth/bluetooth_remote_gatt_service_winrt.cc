@@ -116,21 +116,21 @@ BluetoothRemoteGattServiceWinrt::GetDeviceServiceForTesting() {
 uint8_t BluetoothRemoteGattServiceWinrt::ToProtocolError(
     GattErrorCode error_code) {
   switch (error_code) {
-    case GATT_ERROR_UNKNOWN:
+    case GattErrorCode::kUnknown:
       return 0xF0;
-    case GATT_ERROR_FAILED:
+    case GattErrorCode::kFailed:
       return 0x01;
-    case GATT_ERROR_IN_PROGRESS:
+    case GattErrorCode::kInProgress:
       return 0x09;
-    case GATT_ERROR_INVALID_LENGTH:
+    case GattErrorCode::kInvalidLength:
       return 0x0D;
-    case GATT_ERROR_NOT_PERMITTED:
+    case GattErrorCode::kNotPermitted:
       return 0x02;
-    case GATT_ERROR_NOT_AUTHORIZED:
+    case GattErrorCode::kNotAuthorized:
       return 0x08;
-    case GATT_ERROR_NOT_PAIRED:
+    case GattErrorCode::kNotPaired:
       return 0x0F;
-    case GATT_ERROR_NOT_SUPPORTED:
+    case GattErrorCode::kNotSupported:
       return 0x06;
   }
 

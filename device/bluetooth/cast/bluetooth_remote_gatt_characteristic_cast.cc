@@ -82,7 +82,7 @@ void OnSubscribeOrUnsubscribe(
   if (success)
     std::move(callback).Run();
   else
-    std::move(error_callback).Run(BluetoothGattService::GATT_ERROR_FAILED);
+    std::move(error_callback).Run(BluetoothGattService::GattErrorCode::kFailed);
 }
 
 }  // namespace
@@ -216,7 +216,7 @@ void BluetoothRemoteGattCharacteristicCast::OnReadRemoteCharacteristic(
     std::move(callback).Run(/*error_code=*/absl::nullopt, result);
     return;
   }
-  std::move(callback).Run(BluetoothGattService::GATT_ERROR_FAILED,
+  std::move(callback).Run(BluetoothGattService::GattErrorCode::kFailed,
                           /*value=*/std::vector<uint8_t>());
 }
 
@@ -230,7 +230,7 @@ void BluetoothRemoteGattCharacteristicCast::OnWriteRemoteCharacteristic(
     std::move(callback).Run();
     return;
   }
-  std::move(error_callback).Run(BluetoothGattService::GATT_ERROR_FAILED);
+  std::move(error_callback).Run(BluetoothGattService::GattErrorCode::kFailed);
 }
 
 }  // namespace device

@@ -181,7 +181,8 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
                 value =
                     correct_eid ? GetCorrectEidValue() : GetIncorrectEidValue();
               } else {
-                error_code = device::BluetoothGattService::GATT_ERROR_FAILED;
+                error_code =
+                    device::BluetoothGattService::GattErrorCode::kFailed;
               }
               base::ThreadTaskRunnerHandle::Get()->PostTask(
                   FROM_HERE,

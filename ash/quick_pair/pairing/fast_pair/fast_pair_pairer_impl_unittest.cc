@@ -1521,7 +1521,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_GattErrorFailed) {
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED);
+      device::BluetoothGattService::GattErrorCode::kFailed);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1559,7 +1559,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::GATT_ERROR_UNKNOWN);
+      device::BluetoothGattService::GattErrorCode::kUnknown);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1597,7 +1597,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::GATT_ERROR_IN_PROGRESS);
+      device::BluetoothGattService::GattErrorCode::kInProgress);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1635,7 +1635,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::GATT_ERROR_INVALID_LENGTH);
+      device::BluetoothGattService::GattErrorCode::kInvalidLength);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1673,7 +1673,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_PERMITTED);
+      device::BluetoothGattService::GattErrorCode::kNotPermitted);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1711,7 +1711,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_AUTHORIZED);
+      device::BluetoothGattService::GattErrorCode::kNotAuthorized);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1749,7 +1749,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_PAIRED);
+      device::BluetoothGattService::GattErrorCode::kNotPaired);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1787,7 +1787,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_CALL(account_key_failure_callback_, Run);
   RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::GATT_ERROR_NOT_SUPPORTED);
+      device::BluetoothGattService::GattErrorCode::kNotSupported);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);

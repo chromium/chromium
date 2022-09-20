@@ -857,7 +857,8 @@ TEST_F(WebBluetoothServiceImplTest,
                 result);
             EXPECT_FALSE(value.has_value());
           }),
-      device::BluetoothGattService::GATT_ERROR_IN_PROGRESS, read_error_value);
+      device::BluetoothGattService::GattErrorCode::kInProgress,
+      read_error_value);
   EXPECT_TRUE(callback_called);
 
   // This test doesn't invoke any methods of the mock adapter. Allow it to be
@@ -892,7 +893,7 @@ TEST_F(WebBluetoothServiceImplTest, ReadCharacteristicValueNotAuthorized) {
                       result);
             EXPECT_FALSE(value.has_value());
           }),
-      device::BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED,
+      device::BluetoothGattService::GattErrorCode::kNotAuthorized,
       read_error_value);
   EXPECT_FALSE(read_value_callback_called);
 }
@@ -902,7 +903,7 @@ TEST_F(WebBluetoothServiceImplTest, IncompletePairingOnShutdown) {
 
   EXPECT_CALL(test_bundle().characteristic(), ReadRemoteCharacteristic_(_))
       .WillOnce(base::test::RunOnceCallback<0>(
-          device::BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED,
+          device::BluetoothGattService::GattErrorCode::kNotAuthorized,
           std::vector<uint8_t>()));
 
   base::MockCallback<
@@ -933,7 +934,7 @@ TEST_F(WebBluetoothServiceImplTest, DeferredStartNotifySession) {
     int outstanding_callbacks = 2;
 
     test_characteristic.DeferNextStartNotification(
-        BluetoothGattService::GATT_ERROR_FAILED);
+        BluetoothGattService::GattErrorCode::kFailed);
 
     auto callback = base::BindLambdaForTesting(
         [&run_loop, &outstanding_callbacks](WebBluetoothResult result) {

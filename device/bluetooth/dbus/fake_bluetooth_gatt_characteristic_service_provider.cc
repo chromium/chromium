@@ -127,15 +127,17 @@ void FakeBluetoothGattCharacteristicServiceProvider::GetValue(
           bluez::BluezDBusManager::Get()->GetBluetoothGattManagerClient());
   if (!fake_bluetooth_gatt_manager_client->IsServiceRegistered(service_path_)) {
     DVLOG(1) << "GATT characteristic not registered.";
-    std::move(callback).Run(device::BluetoothGattService::GATT_ERROR_FAILED,
-                            /*value=*/std::vector<uint8_t>());
+    std::move(callback).Run(
+        device::BluetoothGattService::GattErrorCode::kFailed,
+        /*value=*/std::vector<uint8_t>());
     return;
   }
 
   if (!CanRead(flags_)) {
     DVLOG(1) << "GATT characteristic not readable.";
-    std::move(callback).Run(device::BluetoothGattService::GATT_ERROR_FAILED,
-                            /*value=*/std::vector<uint8_t>());
+    std::move(callback).Run(
+        device::BluetoothGattService::GattErrorCode::kFailed,
+        /*value=*/std::vector<uint8_t>());
     return;
   }
 
