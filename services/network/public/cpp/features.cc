@@ -17,13 +17,15 @@ namespace features {
 
 // Enables Expect CT reporting, which sends reports for opted-in sites
 // that don't serve sufficient Certificate Transparency information.
-const base::Feature kExpectCTReporting{"ExpectCTReporting",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kExpectCTReporting,
+             "ExpectCTReporting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kNetworkErrorLogging{"NetworkErrorLogging",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kNetworkErrorLogging,
+             "NetworkErrorLogging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kReporting{"Reporting", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kReporting, "Reporting", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Based on the field trial parameters, this feature will override the value of
 // the maximum number of delayable requests allowed in flight. The number of
@@ -33,15 +35,17 @@ const base::Feature kReporting{"Reporting", base::FEATURE_ENABLED_BY_DEFAULT};
 // experiment configuration. Based on field trial parameters, this experiment
 // may also throttle delayable requests based on the number of non-delayable
 // requests in-flight times a weighting factor.
-const base::Feature kThrottleDelayable{"ThrottleDelayable",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kThrottleDelayable,
+             "ThrottleDelayable",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When kPriorityRequestsDelayableOnSlowConnections is enabled, HTTP
 // requests fetched from a SPDY/QUIC/H2 proxies can be delayed by the
 // ResourceScheduler just as HTTP/1.1 resources are. However, requests from such
 // servers are not subject to kMaxNumDelayableRequestsPerHostPerClient limit.
-const base::Feature kDelayRequestsOnMultiplexedConnections{
-    "DelayRequestsOnMultiplexedConnections", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDelayRequestsOnMultiplexedConnections,
+             "DelayRequestsOnMultiplexedConnections",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When kPauseBrowserInitiatedHeavyTrafficForP2P is enabled, then a subset of
 // the browser initiated traffic may be paused if there is at least one active
@@ -49,64 +53,70 @@ const base::Feature kDelayRequestsOnMultiplexedConnections{
 // intended to throttle only the browser initiated traffic that is expected to
 // be heavy (has large request/response sizes) when real time content might be
 // streaming over an active P2P connection.
-const base::Feature kPauseBrowserInitiatedHeavyTrafficForP2P{
-    "PauseBrowserInitiatedHeavyTrafficForP2P",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPauseBrowserInitiatedHeavyTrafficForP2P,
+             "PauseBrowserInitiatedHeavyTrafficForP2P",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When kCORBProtectionSniffing is enabled CORB sniffs additional same-origin
 // resources if they look sensitive.
-const base::Feature kCORBProtectionSniffing{"CORBProtectionSniffing",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCORBProtectionSniffing,
+             "CORBProtectionSniffing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When kProactivelyThrottleLowPriorityRequests is enabled,
 // resource scheduler proactively throttles low priority requests to avoid
 // network contention with high priority requests that may arrive soon.
-const base::Feature kProactivelyThrottleLowPriorityRequests{
-    "ProactivelyThrottleLowPriorityRequests",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kProactivelyThrottleLowPriorityRequests,
+             "ProactivelyThrottleLowPriorityRequests",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Cross-Origin Opener Policy (COOP).
 // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e
 // https://html.spec.whatwg.org/C/#cross-origin-opener-policy
 // Currently this feature is enabled for all platforms except WebView.
-const base::Feature kCrossOriginOpenerPolicy{"CrossOriginOpenerPolicy",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCrossOriginOpenerPolicy,
+             "CrossOriginOpenerPolicy",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Shift's COOP's default from `unsafe-none` to `same-origin-allow-popups`.
 // https://github.com/mikewest/coop-by-default/
-const base::Feature kCrossOriginOpenerPolicyByDefault{
-    "CrossOriginOpenerPolicyByDefault", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCrossOriginOpenerPolicyByDefault,
+             "CrossOriginOpenerPolicyByDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Introduce a new COOP value: restrict-properties. It restricts window
 // properties that can be accessed by other pages. This also grants
 // crossOriginIsolated if coupled with an appropriate COEP header.
 // This used solely for testing the process model and should not be enabled in
 // any production code. See https://crbug.com/1221127.
-const base::Feature kCoopRestrictProperties{"CoopRestrictProperties",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCoopRestrictProperties,
+             "CoopRestrictProperties",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or defaults splittup up server (not proxy) entries in the
 // HttpAuthCache.
-const base::Feature kSplitAuthCacheByNetworkIsolationKey{
-    "SplitAuthCacheByNetworkIsolationKey", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSplitAuthCacheByNetworkIsolationKey,
+             "SplitAuthCacheByNetworkIsolationKey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable usage of hardcoded DoH upgrade mapping for use in automatic mode.
-const base::Feature kDnsOverHttpsUpgrade {
-  "DnsOverHttpsUpgrade",
+BASE_FEATURE(kDnsOverHttpsUpgrade,
+             "DnsOverHttpsUpgrade",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 // If this feature is enabled, the mDNS responder service responds to queries
 // for TXT records associated with
 // "Generated-Names._mdns_name_generator._udp.local" with a list of generated
 // mDNS names (random UUIDs) in the TXT record data.
-const base::Feature kMdnsResponderGeneratedNameListing{
-    "MdnsResponderGeneratedNameListing", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMdnsResponderGeneratedNameListing,
+             "MdnsResponderGeneratedNameListing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Switches Cross-Origin Read Blocking (CORB) to use an early implementation of
 // Opaque Response Blocking (ORB, aka CORB++) behind the scenes.
@@ -121,21 +131,22 @@ const base::Feature kMdnsResponderGeneratedNameListing{
 //   //services/network/public/cpp/corb/README.md
 //
 // Implementing ORB in Chromium is tracked in https://crbug.com/1178928
-const base::Feature kOpaqueResponseBlockingV01{
-    "OpaqueResponseBlockingV01", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOpaqueResponseBlockingV01,
+             "OpaqueResponseBlockingV01",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables ORB blocked responses being treated as errors (according to the spec)
 // rather than the current, CORB-style handling of injecting an empty response.
 // This is ORB v0.2.
 // This should only be enabled when ORB v0.1 is, too.
-const base::Feature kOpaqueResponseBlockingV02{
-    "OpaqueResponseBlockingV02", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOpaqueResponseBlockingV02,
+             "OpaqueResponseBlockingV02",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables preprocessing requests with the Trust Tokens API Fetch flags set,
 // and handling their responses, according to the protocol.
 // (See https://github.com/WICG/trust-token-api.)
-const base::Feature kTrustTokens{"TrustTokens",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTrustTokens, "TrustTokens", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Determines which Trust Tokens operations require the TrustTokens origin trial
 // active in order to be used. This is runtime-configurable so that the Trust
@@ -176,20 +187,22 @@ const base::FeatureParam<TrustTokenOriginTrialSpec>
 const base::FeatureParam<bool> kPlatformProvidedTrustTokenIssuance{
     &kTrustTokens, "PlatformProvidedTrustTokenIssuance", false};
 
-const base::Feature kWebSocketReassembleShortMessages{
-    "WebSocketReassembleShortMessages", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kWebSocketReassembleShortMessages,
+             "WebSocketReassembleShortMessages",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable support for ACCEPT_CH H2/3 frame as part of Client Hint Reliability.
 // See:
 // https://tools.ietf.org/html/draft-davidben-http-client-hint-reliability-02#section-4.3
-const base::Feature kAcceptCHFrame{"AcceptCHFrame",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAcceptCHFrame, "AcceptCHFrame", base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSCTAuditingRetryReports{"SCTAuditingRetryReports",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSCTAuditingRetryReports,
+             "SCTAuditingRetryReports",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSCTAuditingPersistReports{
-    "SCTAuditingPersistReports", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSCTAuditingPersistReports,
+             "SCTAuditingPersistReports",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 // The default Mojo ring buffer size, used to send the content body.
@@ -238,39 +251,47 @@ uint32_t GetLoaderChunkSize() {
 }
 
 // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
-const base::Feature kCorsNonWildcardRequestHeadersSupport{
-    "CorsNonWildcardRequestHeadersSupport", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCorsNonWildcardRequestHeadersSupport,
+             "CorsNonWildcardRequestHeadersSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether the sync client optimization is used for communication between the
 // CorsURLLoader and URLLoader.
-const base::Feature kURLLoaderSyncClient{"URLLoaderSyncClient",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kURLLoaderSyncClient,
+             "URLLoaderSyncClient",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Don't wait for database write before responding to
 // RestrictedCookieManager::SetCookieFromString.
-const base::Feature kFasterSetCookie{"FasterSetCookie",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kFasterSetCookie,
+             "FasterSetCookie",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allow batching SimpleURLLoaders when the underlying network state is
 // inactive.
-const base::Feature kBatchSimpleURLLoader{"BatchSimpleURLLoader",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBatchSimpleURLLoader,
+             "BatchSimpleURLLoader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kNetworkServiceMemoryCache{
-    "NetworkServiceMemoryCache", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNetworkServiceMemoryCache,
+             "NetworkServiceMemoryCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Do not send TLS client certificates in CORS preflight. Omit all client certs
 // and continue the handshake without sending one if requested.
-const base::Feature kOmitCorsClientCert{"OmitCorsClientCert",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOmitCorsClientCert,
+             "OmitCorsClientCert",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allow pervasive payloads to use a single-keyed cache.
-const base::Feature kCacheTransparency{"CacheTransparency",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCacheTransparency,
+             "CacheTransparency",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Load Pervasive Payloads List for Cache Transparency.
-const base::Feature kPervasivePayloadsList{"PervasivePayloadsList",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPervasivePayloadsList,
+             "PervasivePayloadsList",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The list of pervasive payloads. A comma separated list starting with a
 // version number, followed one or more pairs of URL and checksum. The version
@@ -282,23 +303,26 @@ constexpr base::FeatureParam<std::string> kCacheTransparencyPervasivePayloads{
 
 // Enables support for the `Variants` response header and reduce
 // accept-language. https://github.com/Tanych/accept-language
-const base::Feature kReduceAcceptLanguage{"ReduceAcceptLanguage",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kReduceAcceptLanguage,
+             "ReduceAcceptLanguage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Disable ResourceScheduler.
-const base::Feature kDisableResourceScheduler{
-    "DisableResourceScheduler", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDisableResourceScheduler,
+             "DisableResourceScheduler",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Reduce PNA preflight response waiting time to 200ms.
 // See: https://wicg.github.io/private-network-access/#cors-preflight
-const base::Feature kPrivateNetworkAccessPreflightShortTimeout = {
-    "PrivateNetworkAccessPreflightReduceTimeout",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,
+             "PrivateNetworkAccessPreflightReduceTimeout",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Handle the Link header DNS prefetches and preconnects in the network
 // service instead of through the renderer process.
-const base::Feature kPreconnectInNetworkService = {
-    "PreconnectInNetworkService", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPreconnectInNetworkService,
+             "PreconnectInNetworkService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace network
