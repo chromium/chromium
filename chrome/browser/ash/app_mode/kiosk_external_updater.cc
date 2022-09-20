@@ -231,22 +231,21 @@ void KioskExternalUpdater::ProcessParsedManifest(
       continue;
     }
 
-    const base::DictionaryValue* extension = nullptr;
-    if (!manifest.second.GetAsDictionary(&extension)) {
+    if (!manifest.second.is_dict()) {
       LOG(ERROR) << "Found bad entry in manifest type "
                  << manifest.second.type();
       continue;
     }
+    const base::Value::Dict& extension = manifest.second.GetDict();
 
-    const std::string* external_crx_str =
-        extension->FindStringKey(kExternalCrx);
+    const std::string* external_crx_str = extension.FindString(kExternalCrx);
     if (!external_crx_str) {
       LOG(ERROR) << "Can't find external crx in manifest " << app_id;
       continue;
     }
 
     const std::string* external_version_str =
-        extension->FindStringKey(kExternalVersion);
+        extension.FindString(kExternalVersion);
     if (external_version_str) {
       if (!ShouldUpdateForHigherVersion(cached_version_str,
                                         *external_version_str, false)) {
