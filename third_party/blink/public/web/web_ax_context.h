@@ -24,9 +24,6 @@ class BLINK_EXPORT WebAXContext {
   explicit WebAXContext(WebDocument document, const ui::AXMode& mode);
   ~WebAXContext();
 
-  // Returns the root element of the document's accessibility tree.
-  WebAXObject Root() const;
-
   const ui::AXMode& GetAXMode() const;
 
   void SetAXMode(const ui::AXMode&) const;

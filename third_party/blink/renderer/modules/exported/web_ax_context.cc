@@ -18,20 +18,6 @@ WebAXContext::WebAXContext(WebDocument root_document, const ui::AXMode& mode)
 
 WebAXContext::~WebAXContext() {}
 
-WebAXObject WebAXContext::Root() const {
-  // It is an error to call AXContext::GetAXObjectCache() if the underlying
-  // document is no longer active, so early return in that case to prevent
-  // crashes that might otherwise happen in some cases (see crbug.com/1094576).
-  if (!private_->HasActiveDocument())
-    return WebAXObject();
-
-  // Make sure that layout is updated before a root ax object is created.
-  WebAXObject::UpdateLayout(WebDocument(private_->GetDocument()));
-
-  return WebAXObject(
-      static_cast<AXObjectCacheImpl*>(&private_->GetAXObjectCache())->Root());
-}
-
 const ui::AXMode& WebAXContext::GetAXMode() const {
   return private_->GetAXMode();
 }
