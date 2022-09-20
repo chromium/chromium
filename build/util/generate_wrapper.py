@@ -44,8 +44,10 @@ PY_TEMPLATE = textwrap.dedent("""\
     import os
     import re
     import shlex
+    import signal
     import subprocess
     import sys
+    import time
 
     _WRAPPED_PATH_RE = re.compile(r'@WrappedPath\(([^)]+)\)')
     _PATH_TO_OUTPUT_DIR = '{path_to_output_dir}'
@@ -142,6 +144,39 @@ PY_TEMPLATE = textwrap.dedent("""\
           i += 1
       return rargs
 
+    def ForwardSignals(proc):
+      def _sig_handler(sig, _):
+        if proc.poll() is not None:
+          return
+        # SIGBREAK is defined only for win32.
+        # pylint: disable=no-member
+        if sys.platform == 'win32' and sig == signal.SIGBREAK:
+          print("Received signal(%d), sending CTRL_BREAK_EVENT to process %d" % (sig, proc.pid))
+          proc.send_signal(signal.CTRL_BREAK_EVENT)
+        else:
+          print("Forwarding signal(%d) to process %d" % (sig, proc.pid))
+          proc.send_signal(sig)
+        # pylint: enable=no-member
+      if sys.platform == 'win32':
+        signal.signal(signal.SIGBREAK, _sig_handler) # pylint: disable=no-member
+      else:
+        signal.signal(signal.SIGTERM, _sig_handler)
+        signal.signal(signal.SIGINT, _sig_handler)
+
+    def Popen(*args, **kwargs):
+      assert 'creationflags' not in kwargs
+      if sys.platform == 'win32':
+        # Necessary for signal handling. See crbug.com/733612#c6.
+        kwargs['creationflags'] = subprocess.CREATE_NEW_PROCESS_GROUP
+      return subprocess.Popen(*args, **kwargs)
+
+    def RunCommand(cmd):
+      process = Popen(cmd)
+      ForwardSignals(process)
+      while process.poll() is None:
+        time.sleep(0.1)
+      return process.returncode
+
 
     def main(raw_args):
       executable_path = ExpandWrappedPath('{executable_path}')
@@ -153,7 +188,7 @@ PY_TEMPLATE = textwrap.dedent("""\
       cmd = [executable_path] + executable_args + remaining_args
       if executable_path.endswith('.py'):
         cmd = [sys.executable] + cmd
-      return subprocess.call(cmd)
+      return RunCommand(cmd)
 
 
     if __name__ == '__main__':
