@@ -317,10 +317,18 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
   requester_->OnOtpAuthenticationComplete(response);
   autofill_client_->OnUnmaskOtpVerificationResult(
       OtpUnmaskResult::kPermanentFailure);
-  autofill_client_->ShowVirtualCardErrorDialog(
-      AutofillErrorDialogContext::WithPermanentOrTemporaryError(
-          /*is_permanent_error=*/result ==
-          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+
+  // If the server returned error dialog fields to be displayed, we prefer them
+  // since they will be more detailed to the specific error that occurred.
+  if (response_details.autofill_error_dialog_context) {
+    autofill_client_->ShowVirtualCardErrorDialog(
+        *response_details.autofill_error_dialog_context);
+  } else {
+    autofill_client_->ShowVirtualCardErrorDialog(
+        AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+            /*is_permanent_error=*/result ==
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+  }
   Reset();
 }
 
