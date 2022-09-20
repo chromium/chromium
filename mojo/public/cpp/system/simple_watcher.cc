@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/record_replay.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/task/common/task_annotator.h"
@@ -122,15 +121,12 @@ SimpleWatcher::SimpleWatcher(const base::Location& from_here,
                               task_runner_ ==
                                   base::ThreadTaskRunnerHandle::Get()),
       handler_tag_(handler_tag ? handler_tag : from_here.file_name()) {
-  recordreplay::RegisterPointer(this);
   MojoResult rv = CreateTrap(&Context::CallNotify, &trap_handle_);
   DCHECK_EQ(MOJO_RESULT_OK, rv);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 }
 
 SimpleWatcher::~SimpleWatcher() {
-  recordreplay::Assert("SimpleWatcher::~SimpleWatcher %lu", recordreplay::PointerId(this));
-  recordreplay::UnregisterPointer(this);
   if (IsWatching())
     Cancel();
 }
@@ -197,8 +193,6 @@ void SimpleWatcher::Cancel() {
 
 MojoResult SimpleWatcher::Arm(MojoResult* ready_result,
                               HandleSignalsState* ready_state) {
-  recordreplay::Assert("SimpleWatcher::Arm Start");
-
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint32_t num_blocking_events = 1;
   MojoTrapEvent blocking_event = {sizeof(blocking_event)};
@@ -217,17 +211,14 @@ MojoResult SimpleWatcher::Arm(MojoResult* ready_result,
     }
   }
 
-  recordreplay::Assert("SimpleWatcher::Arm Done %d", rv);
   return rv;
 }
 
 void SimpleWatcher::ArmOrNotify() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  recordreplay::Assert("SimpleWatcher::ArmOrNotify Start");
 
   // Already cancelled, nothing to do.
   if (!IsWatching()) {
-    recordreplay::Assert("SimpleWatcher::ArmOrNotify #1");
     return;
   }
 
@@ -239,7 +230,6 @@ void SimpleWatcher::ArmOrNotify() {
   // MOJO_RESULT_NOT_FOUND. A MOJO_RESULT_CANCELLED notification will already
   // have been posted to this object as a result, so there's nothing else to do.
   if (rv == MOJO_RESULT_OK || rv == MOJO_RESULT_NOT_FOUND) {
-    recordreplay::Assert("SimpleWatcher::ArmOrNotify #2");
     return;
   }
 
@@ -252,8 +242,6 @@ void SimpleWatcher::ArmOrNotify() {
                                           weak_factory_.GetWeakPtr(), watch_id_,
                                           ready_result, ready_state));
   }
-
-  recordreplay::Assert("SimpleWatcher::ArmOrNotify Done");
 }
 
 void SimpleWatcher::OnHandleReady(int watch_id,
@@ -261,12 +249,9 @@ void SimpleWatcher::OnHandleReady(int watch_id,
                                   const HandleSignalsState& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  recordreplay::Assert("SimpleWatcher::OnHandleReady Start");
-
   // This notification may be for a previously watched context, in which case
   // we just ignore it.
   if (watch_id != watch_id_) {
-    recordreplay::Assert("SimpleWatcher::OnHandleReady #1");
     return;
   }
 
@@ -295,21 +280,17 @@ void SimpleWatcher::OnHandleReady(int watch_id,
     base::WeakPtr<SimpleWatcher> weak_self = weak_factory_.GetWeakPtr();
     callback.Run(result, state);
     if (!weak_self) {
-      recordreplay::Assert("SimpleWatcher::OnHandleReady #2");
       return;
     }
 
     // Prevent |MOJO_RESULT_FAILED_PRECONDITION| task spam by only notifying
     // at most once in AUTOMATIC arming mode.
     if (result == MOJO_RESULT_FAILED_PRECONDITION) {
-      recordreplay::Assert("SimpleWatcher::OnHandleReady #3");
       return;
     }
 
     if (arming_policy_ == ArmingPolicy::AUTOMATIC && IsWatching())
       ArmOrNotify();
   }
-
-  recordreplay::Assert("SimpleWatcher::OnHandleReady Done");
 }
 }  // namespace mojo
