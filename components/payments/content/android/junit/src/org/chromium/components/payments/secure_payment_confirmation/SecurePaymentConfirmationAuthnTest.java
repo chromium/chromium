@@ -148,8 +148,11 @@ public class SecurePaymentConfirmationAuthnTest {
         mIsPaymentCancelled = false;
         org.chromium.url.internal.mojom.Origin mojoOrigin =
                 new org.chromium.url.internal.mojom.Origin();
+        Runnable optOutCallback = () -> {};
+        boolean showOptOut = false;
+        String rpId = "";
         return mAuthnController.show(mDrawable, "paymentInstrumentLabel", mTotal, mCallback,
-                "payee name", new Origin(mojoOrigin));
+                optOutCallback, "payee name", new Origin(mojoOrigin), showOptOut, rpId);
     }
 
     private void setWindowAndroid(WindowAndroid windowAndroid, WebContents webContents) {

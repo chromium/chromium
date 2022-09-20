@@ -158,10 +158,23 @@ found in the LICENSE file.
                 android:layout_below="@id/total_label"
                 android:layout_marginVertical="@dimen/secure_payment_confirmation_ui_medium_padding"/>
 
+            <!-- Opt Out text, if requested by SPC caller -->
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/secure_payment_confirmation_nocredmatch_opt_out"
+                android:layout_below="@id/total_divider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:layout_marginHorizontal="@dimen/secure_payment_confirmation_ui_small_padding"
+                android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                android:text="@string/secure_payment_confirmation_opt_out_label"/>
+
             <!-- "Continue" button -->
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/continue_button"
-                android:layout_below="@id/total_divider"
+                android:layout_below="@id/secure_payment_confirmation_nocredmatch_opt_out"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:text="@string/payments_continue_button"

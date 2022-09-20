@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArrayMap;
 
+import org.chromium.base.Callback;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
@@ -635,17 +636,22 @@ public class PaymentRequestService
     public void disconnectFromClientWithDebugMessage(String debugMessage, int reason) {
         Log.d(TAG, debugMessage);
         if (mClient != null) {
-            boolean isSpc = PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                                    PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
-                    && mSpec != null && mSpec.isSecurePaymentConfirmationRequested()
-                    && mRejectShowErrorReason != AppCreationFailureReason.ICON_DOWNLOAD_FAILED;
             // Secure Payment Confirmation must make it indistinguishable to the merchant page as to
-            // whether an error is caused by user aborting or lack of credentials. An exception is
-            // erroring due to icon download failure; this happens before checking for credential
-            // matching and so is not a privacy leak.
-            mClient.onError(isSpc ? PaymentErrorReason.NOT_ALLOWED_ERROR : reason,
-                    isSpc ? ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED
-                          : debugMessage);
+            // whether an error is caused by user aborting or lack of credentials. There are two
+            // exceptions:
+            //
+            //   1. Erroring due to icon download failure; this happens before checking for
+            //      credential matching and so is not a privacy leak.
+            //   2. Handling the 'opt out' error - this error can be produced by both the matching
+            //      and non-matching credential UXs, and so is not a privacy leak.
+            boolean obscureRealError = PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                                               PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
+                    && mSpec != null && mSpec.isSecurePaymentConfirmationRequested()
+                    && mRejectShowErrorReason != AppCreationFailureReason.ICON_DOWNLOAD_FAILED
+                    && reason != PaymentErrorReason.USER_OPT_OUT;
+            mClient.onError(obscureRealError ? PaymentErrorReason.NOT_ALLOWED_ERROR : reason,
+                    obscureRealError ? ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED
+                                     : debugMessage);
         }
         close();
         if (sNativeObserverForTest != null) {
@@ -857,12 +863,23 @@ public class PaymentRequestService
                 && mRejectShowErrorReason != AppCreationFailureReason.ICON_DOWNLOAD_FAILED) {
             mNoMatchingController =
                     SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
-            mNoMatchingController.show(() -> {
+            Runnable continueCallback = () -> {
                 mJourneyLogger.setAborted(AbortReason.NO_MATCHING_PAYMENT_METHOD);
                 disconnectFromClientWithDebugMessage(
                         ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
                         PaymentErrorReason.NOT_ALLOWED_ERROR);
-            });
+            };
+            Runnable optOutCallback = () -> {
+                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                disconnectFromClientWithDebugMessage(
+                        ErrorStrings.SPC_USER_OPTED_OUT, PaymentErrorReason.USER_OPT_OUT);
+            };
+            PaymentMethodData spcMethodData =
+                    mSpec.getMethodData().get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
+            assert spcMethodData != null;
+            mNoMatchingController.show(continueCallback, optOutCallback,
+                    spcMethodData.securePaymentConfirmation.showOptOut,
+                    spcMethodData.securePaymentConfirmation.rpId);
             if (sNativeObserverForTest != null) sNativeObserverForTest.onErrorDisplayed();
             return null;
         }
@@ -907,22 +924,32 @@ public class PaymentRequestService
             Origin payeeOrigin = spcMethodData.securePaymentConfirmation.payeeOrigin != null
                     ? new Origin(spcMethodData.securePaymentConfirmation.payeeOrigin)
                     : null;
+            Callback<Boolean> responseCallback = (response) -> {
+                if (response) {
+                    onSecurePaymentConfirmationUiAccepted(
+                            mBrowserPaymentRequest.getSelectedPaymentApp());
+                } else {
+                    mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                    disconnectFromClientWithDebugMessage(
+                            ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                            PaymentErrorReason.NOT_ALLOWED_ERROR);
+                }
+
+                mSpcAuthnUiController = null;
+            };
+            Runnable optOutCallback = () -> {
+                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                disconnectFromClientWithDebugMessage(
+                        ErrorStrings.SPC_USER_OPTED_OUT, PaymentErrorReason.USER_OPT_OUT);
+                mSpcAuthnUiController = null;
+            };
             boolean success = mSpcAuthnUiController.show(
                     mBrowserPaymentRequest.getSelectedPaymentApp().getDrawableIcon(),
-                    mBrowserPaymentRequest.getSelectedPaymentApp().getLabel(),
-                    getRawTotal(), (response) -> {
-                        if (response) {
-                            onSecurePaymentConfirmationUiAccepted(
-                                    mBrowserPaymentRequest.getSelectedPaymentApp());
-                        } else {
-                            mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-                            disconnectFromClientWithDebugMessage(
-                                    ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
-                                    PaymentErrorReason.NOT_ALLOWED_ERROR);
-                        }
-
-                        mSpcAuthnUiController = null;
-                    }, spcMethodData.securePaymentConfirmation.payeeName, payeeOrigin);
+                    mBrowserPaymentRequest.getSelectedPaymentApp().getLabel(), getRawTotal(),
+                    responseCallback, optOutCallback,
+                    spcMethodData.securePaymentConfirmation.payeeName, payeeOrigin,
+                    spcMethodData.securePaymentConfirmation.showOptOut,
+                    spcMethodData.securePaymentConfirmation.rpId);
 
             if (success) {
                 mJourneyLogger.setShown();
@@ -1515,7 +1542,7 @@ public class PaymentRequestService
         }
 
         if (mNoMatchingController != null) {
-            mNoMatchingController.hide();
+            mNoMatchingController.close();
             mNoMatchingController = null;
         }
 
@@ -1820,6 +1847,13 @@ public class PaymentRequestService
         } else {
             mBrowserPaymentRequest.showAppSelectorAfterPaymentAppInvokeFailed();
         }
+    }
+
+    @VisibleForTesting
+    @Nullable
+    public static SecurePaymentConfirmationAuthnController
+    getSecurePaymentConfirmationAuthnUiForTesting() {
+        return sShowingPaymentRequest == null ? null : sShowingPaymentRequest.mSpcAuthnUiController;
     }
 
     @VisibleForTesting

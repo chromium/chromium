@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "chrome/browser/payments/secure_payment_confirmation_browsertest.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
@@ -11,11 +10,6 @@
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-// Opt Out is not yet implemented for Android.
-#if BUILDFLAG(IS_ANDROID)
-#error "These tests are unsupported on Android"
-#endif
 
 namespace payments {
 namespace {

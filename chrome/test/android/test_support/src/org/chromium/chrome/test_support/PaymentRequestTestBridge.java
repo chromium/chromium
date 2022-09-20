@@ -19,6 +19,7 @@ import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.NativeObserverForTest;
 import org.chromium.components.payments.PaymentUiServiceTestInterface;
+import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationAuthnController;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationNoMatchingCredController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentItem;
@@ -257,8 +258,19 @@ public class PaymentRequestTestBridge {
     private static boolean closeDialogForTest() {
         SecurePaymentConfirmationNoMatchingCredController noMatchingUi =
                 PaymentRequestService.getSecurePaymentConfirmationNoMatchingCredUiForTesting();
-        if (noMatchingUi != null) noMatchingUi.hide();
+        if (noMatchingUi != null) noMatchingUi.close();
         return sUiService == null || sUiService.closeDialogForTest();
+    }
+
+    @CalledByNative
+    private static boolean clickSecurePaymentConfirmationOptOutForTest() {
+        SecurePaymentConfirmationAuthnController authnUi =
+                PaymentRequestService.getSecurePaymentConfirmationAuthnUiForTesting();
+        if (authnUi != null) return authnUi.optOutForTest();
+        SecurePaymentConfirmationNoMatchingCredController noMatchingUi =
+                PaymentRequestService.getSecurePaymentConfirmationNoMatchingCredUiForTesting();
+        if (noMatchingUi != null) return noMatchingUi.optOutForTest();
+        return false;
     }
 
     @CalledByNative

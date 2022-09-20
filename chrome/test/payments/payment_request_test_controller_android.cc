@@ -38,8 +38,7 @@ bool PaymentRequestTestController::ConfirmPayment() {
 }
 
 bool PaymentRequestTestController::ClickOptOut() {
-  NOTIMPLEMENTED();
-  return false;
+  return ClickSecurePaymentConfirmationOptOutForTest();
 }
 
 bool PaymentRequestTestController::IsAndroidMarshmallowOrLollipop() {

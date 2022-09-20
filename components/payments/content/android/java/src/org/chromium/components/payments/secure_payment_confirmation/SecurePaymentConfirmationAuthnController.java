@@ -43,6 +43,7 @@ public class SecurePaymentConfirmationAuthnController {
     private final WebContents mWebContents;
     private Runnable mHider;
     private Callback<Boolean> mResponseCallback;
+    private Runnable mOptOutCallback;
     private SecurePaymentConfirmationAuthnView mView;
 
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
@@ -146,12 +147,16 @@ public class SecurePaymentConfirmationAuthnController {
      * @param paymentIcon The icon of the payment instrument.
      * @param paymentInstrumentLabel The label to display for the payment instrument.
      * @param total The total amount of the transaction.
-     * @param callback The function to call on sheet dismiss; false if it failed.
-     * @param payeeName The name of the payee, or null if not specified
-     * @param payeeOrigin The origin of the payee, or null if not specified
+     * @param responseCallback The function to call on sheet dismiss; false if it failed.
+     * @param optOutCallback The function to call on user opt out.
+     * @param payeeName The name of the payee, or null if not specified.
+     * @param payeeOrigin The origin of the payee, or null if not specified.
+     * @param showOptOut Whether to show the opt out UX to the user.
+     * @param rpId The relying party ID for the SPC credential.
      */
     public boolean show(Drawable paymentIcon, String paymentInstrumentLabel, PaymentItem total,
-            Callback<Boolean> callback, @Nullable String payeeName, @Nullable Origin payeeOrigin) {
+            Callback<Boolean> responseCallback, Runnable optOutCallback, @Nullable String payeeName,
+            @Nullable Origin payeeOrigin, boolean showOptOut, String rpId) {
         if (mHider != null) return false;
 
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
@@ -173,6 +178,9 @@ public class SecurePaymentConfirmationAuthnController {
             usingDefaultIcon = true;
         }
 
+        SecurePaymentConfirmationAuthnView.OptOutInfo optOutInfo =
+                new SecurePaymentConfirmationAuthnView.OptOutInfo(showOptOut, rpId, this::onOptOut);
+
         PropertyModel model =
                 new PropertyModel.Builder(SecurePaymentConfirmationAuthnProperties.ALL_KEYS)
                         .with(SecurePaymentConfirmationAuthnProperties.STORE_LABEL,
@@ -185,6 +193,7 @@ public class SecurePaymentConfirmationAuthnController {
                                 formatPaymentItem(total))
                         .with(SecurePaymentConfirmationAuthnProperties.CURRENCY,
                                 total.amount.currency)
+                        .with(SecurePaymentConfirmationAuthnProperties.OPT_OUT_INFO, optOutInfo)
                         .with(SecurePaymentConfirmationAuthnProperties.CONTINUE_BUTTON_CALLBACK,
                                 this::onConfirm)
                         .with(SecurePaymentConfirmationAuthnProperties.CANCEL_BUTTON_CALLBACK,
@@ -203,7 +212,8 @@ public class SecurePaymentConfirmationAuthnController {
             bottomSheet.hideContent(/*content=*/mBottomSheetContent, /*animate=*/true);
         };
 
-        mResponseCallback = callback;
+        mResponseCallback = responseCallback;
+        mOptOutCallback = showOptOut ? optOutCallback : null;
 
         boolean isShowSuccess =
                 bottomSheet.requestShowContent(mBottomSheetContent, /*animate=*/true);
@@ -261,5 +271,18 @@ public class SecurePaymentConfirmationAuthnController {
     private void onCancel() {
         hide();
         mResponseCallback.onResult(false);
+    }
+
+    private void onOptOut() {
+        assert mOptOutCallback != null;
+        hide();
+        mOptOutCallback.run();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean optOutForTest() {
+        if (mOptOutCallback == null) return false;
+        onOptOut();
+        return true;
     }
 }

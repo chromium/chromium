@@ -55,6 +55,12 @@ bool IsAndroidMarshmallowOrLollipopForTest() {
       base::android::AttachCurrentThread());
 }
 
+bool ClickSecurePaymentConfirmationOptOutForTest() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_PaymentRequestTestBridge_clickSecurePaymentConfirmationOptOutForTest(
+      env);
+}
+
 struct NativeObserverCallbacks {
   base::RepeatingClosure on_can_make_payment_called;
   base::RepeatingClosure on_can_make_payment_returned;

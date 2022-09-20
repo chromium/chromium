@@ -44,6 +44,10 @@ bool CloseDialogForTest();
 // Returns true when running on Android M or L.
 bool IsAndroidMarshmallowOrLollipopForTest();
 
+// Clicks on the 'opt out' link in the SPC dialog, if available. Returns true on
+// success, false if the opt out link wasn't being shown.
+bool ClickSecurePaymentConfirmationOptOutForTest();
+
 // Sets an observer on future Java PaymentRequests that will call these
 // callbacks when the events occur.
 void SetUseNativeObserverOnPaymentRequestForTesting(
