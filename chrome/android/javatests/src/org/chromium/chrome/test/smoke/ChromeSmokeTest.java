@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiAutomatorTestRule;
@@ -164,6 +165,8 @@ public class ChromeSmokeTest {
                 ChromeUiApplicationTestRule.PACKAGE_NAME_ARG, "org.chromium.chrome");
     }
 
+    // Test is flaky: https://crbug.com/1335513
+    @DisabledTest
     @Test
     public void testHello() {
         Context context = InstrumentationRegistry.getContext();
