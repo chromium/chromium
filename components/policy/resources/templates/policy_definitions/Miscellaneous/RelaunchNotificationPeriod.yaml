@@ -1,0 +1,24 @@
+caption: Set the time period for update notifications
+desc: |-
+  Allows you to set the time period, in milliseconds, over which users are notified that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> must be relaunched or that a <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device must be restarted to apply a pending update.
+
+        Over this time period, the user will be repeatedly informed of the need for an update. For <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices, a restart notification appears in the system tray according to the <ph name="RELAUNCH_HEADS_UP_PERIOD_POLICY_NAME">RelaunchHeadsUpPeriod</ph> policy. For <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> browsers, the app menu changes to indicate that a relaunch is needed once one third of the notification period passes. This notification changes color once two thirds of the notification period passes, and again once the full notification period has passed. The additional notifications enabled by the <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME">RelaunchNotification</ph> policy follow this same schedule.
+
+        If not set, the default period of 604800000 milliseconds (one week) is used.
+example_value: 604800000
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+label: Time period (milliseconds)
+owners:
+- grt@chromium.org
+schema:
+  minimum: 3600000
+  type: integer
+supported_on:
+- chrome.*:67-
+- chrome_os:67-
+tags: []
+type: int

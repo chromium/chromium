@@ -1,0 +1,28 @@
+caption: Allow coalescing of HTTP/2 connections for these hosts even when client certificates
+  are used
+desc: |-
+  This policy allows HTTP/2 connection coalescing when client certificates are in use. In order to coalesce, both the hostname of the potential new connection and the hostname of an existing connection must match one or more patterns described by this policy. The policy is a list of hosts using the <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph> filter format: "example.com" matches "example.com" and all subdomains (e.g. "sub.example.com"), while ".example.net" matches exactly "example.net".
+
+        Coalescing requests to different hosts over connections that use client certificates can create security and privacy issues, as the ambient authority will be conveyed to all requests, even if the user did not explicitly authorize this. This policy is temporary and will be removed in a future release. See https://crbug.com/855690.
+
+        If this policy is left unset, then the default behavior of not allowing any HTTP/2 connection coalescing on connections using client certificates will be used.
+example_value:
+- example.com
+features:
+  dynamic_refresh: true
+  internal_only: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- rsleevi@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:70-
+- android:70-
+- chrome_os:70-
+tags: []
+type: list

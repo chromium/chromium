@@ -1,0 +1,26 @@
+caption: Enable deprecated privet printing
+default: false
+deprecated: true
+desc: |-
+  This policy controls whether any available privet printers are shown to users in the print preview dialog.
+        Setting this policy to Enabled will show available privet printers.
+        Setting this policy to Disabled or leaving it unset will result in privet printers not appearing in print preview, as this printing method is deprecated.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable deprecated privet printing
+  value: true
+- caption: Disable deprecated privet printing
+  value: false
+owners:
+- file://printing/OWNERS
+- rbpotter@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:89-93
+- chrome_os:89-93
+tags: []
+type: main

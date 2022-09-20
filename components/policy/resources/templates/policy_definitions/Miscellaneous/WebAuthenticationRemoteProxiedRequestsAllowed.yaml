@@ -1,0 +1,34 @@
+caption: Allow <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME">Chrome Remote Desktop</ph>
+  to execute WebAuthn API requests proxied from a remote host.
+default: false
+desc: |-
+  If set to Enabled, <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME">Chrome Remote Desktop</ph> may execute WebAuthn API requests that originate from a browsing session on a remote host.
+
+        If the policy is set to Disabled or left unset, the default behavior will apply.
+
+        Note that this feature is only supported inside Google's internal network environment.
+example_value: true
+features:
+  dynamic_refresh: true
+  internal_only: true
+  per_profile: true
+  platform_only: true
+future_on:
+- fuchsia
+items:
+- caption: Allow CRD to execute WebAuthn API requests proxied from a remote host.
+  value: true
+- caption: Do not allow CRD to execute WebAuthn API requests proxied from a remote
+    host.
+  value: false
+owners:
+- martinkr@google.com
+- agl@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:103-
+- chrome_os:103-
+tags:
+- full-admin-access
+type: main

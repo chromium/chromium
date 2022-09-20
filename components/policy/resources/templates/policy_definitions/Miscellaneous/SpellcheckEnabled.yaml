@@ -1,0 +1,38 @@
+caption: Enable spellcheck
+default: null
+desc: "Setting the policy to Enabled turns spellcheck on, and users can't turn it\
+  \ off. On <ph name=\"MS_WIN_NAME\">Microsoft® Windows®</ph>, <ph name=\"PRODUCT_OS_NAME\"\
+  >$2<ex>Google ChromeOS</ex></ph> and <ph name=\"LINUX_OS_NAME\">Linux®</ph>, spellcheck\
+  \ languages can be switched on or off individually, so users can still turn spellcheck\
+  \ off by switching off every spellcheck language. To avoid that, use the <ph name=\"\
+  SPELLCHECK_LANGUAGE_POLICY_NAME\">SpellcheckLanguage</ph> to force-enable specific\
+  \ spellcheck languages.\n\n      Setting the policy to Disabled turns off spellcheck\
+  \ from all sources, and users can't turn it on. The <ph name=\"SPELL_CHECK_SERVICE_ENABLED_POLICY_NAME\"\
+  >SpellCheckServiceEnabled</ph>, <ph name=\"SPELLCHECK_LANGUAGE_POLICY_NAME\">SpellcheckLanguage</ph>\
+  \ and <ph name=\"SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME\">SpellcheckLanguageBlocklist</ph>\
+  \ policies have no effect when this policy is set to False.\n\n      Leaving the\
+  \ policy unset lets users turn spellcheck on or off in the language settings. "
+example_value: false
+features:
+  can_be_recommended: false
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Enable spellcheck
+  value: true
+- caption: Disable spellcheck
+  value: false
+- caption: Allow the user to enable or disable spellcheck
+  value: null
+owners:
+- macourteau@chromium.org
+- zmin@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:65-
+- chrome_os:65-
+tags: []
+type: main

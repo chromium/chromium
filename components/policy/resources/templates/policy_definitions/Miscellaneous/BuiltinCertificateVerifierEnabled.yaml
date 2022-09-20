@@ -1,0 +1,36 @@
+caption: Determines whether the built-in certificate verifier will be used to verify
+  server certificates
+default: null
+desc: "When this setting is enabled, <ph name=\"PRODUCT_NAME\">$1<ex>Google Chrome</ex></ph>\
+  \ will perform verification of server certificates using the built-in certificate\
+  \ verifier.\n      When this setting is disabled, <ph name=\"PRODUCT_NAME\">$1<ex>Google\
+  \ Chrome</ex></ph> will perform verification of server certificates using the legacy\
+  \ certificate verifier provided by the platform, unless <ph name=\"CHROME_ROOT_STORE_ENABLED_POLICY_NAME\"\
+  >ChromeRootStoreEnabled</ph> is enabled.\n      When this setting is not set, the\
+  \ built-in or the legacy certificate verifier may be used.\n\n      This policy\
+  \ is planned to be removed in <ph name=\"PRODUCT_NAME\">$1<ex>Google Chrome</ex></ph>\
+  \ for <ph name=\"MAC_OS_NAME\">macOS</ph> version 107, when support for the legacy\
+  \ certificate verifier on <ph name=\"MAC_OS_NAME\">macOS</ph> is planned to be removed.\n\
+  \      "
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: Use the built-in certificate verifier
+  value: true
+- caption: Use the legacy platform certificate verifier
+  value: false
+- caption: Use any certificate verifier
+  value: null
+owners:
+- file://components/policy/resources/OWNERS
+- pmarko@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:77-83
+- chrome.linux:79-83
+- chrome.mac:83-
+tags: []
+type: main

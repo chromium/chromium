@@ -1,0 +1,22 @@
+caption: Ask where to save each file before downloading
+desc: |-
+  Setting the policy to Enabled means users are asked where to save each file before downloading. Setting the policy to Disabled has downloads start immediately, and users aren't asked where to save the file.
+
+        Leaving the policy unset lets users change this setting.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- macourteau@chromium.org
+- zmin@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:64-
+- chrome_os:64-
+- android:92-
+tags: []
+type: main

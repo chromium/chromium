@@ -1,0 +1,33 @@
+caption: Show cards on the New Tab Page
+default: null
+desc: "This policy controls the visibility of cards on the New Tab Page. Cards surface\
+  \ entry points to launch common user journeys based on the user's browsing behavior.\n\
+  \n      If the policy is set to Enabled, the New Tab Page will show cards if content\
+  \ is available.\n\n      If the policy is set to Disabled, the New Tab Page won't\
+  \ show cards.\n\n      If the policy is not set, the user can control the card visibility.\
+  \ The default is visible.\n      "
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: New Tab Page will show cards if content is available
+  value: true
+- caption: New Tab Page will not show cards
+  value: false
+- caption: New Tab Page will show cards if content is available, but allow the user
+    to change this setting
+  value: null
+owners:
+- danielms@chromium.org
+- tiborg@chromium.org
+- yyushkina@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:88-
+- chrome_os:88-
+tags: []
+type: main

@@ -1,0 +1,23 @@
+caption: Enables managed extensions to use the Enterprise Hardware Platform API
+desc: |-
+  Setting the policy to True lets extensions installed by enterprise policy use the Enterprise Hardware Platform API.
+
+        Setting the policy to False or leaving it unset prevents extensions from using this API.
+
+        Note: This policy also applies to component extensions, such as the Hangout Services extension.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- guidou@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:71-
+- chrome_os:71-
+- android:71-
+tags: []
+type: main

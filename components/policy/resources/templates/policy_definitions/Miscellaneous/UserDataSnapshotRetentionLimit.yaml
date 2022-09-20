@@ -1,0 +1,25 @@
+caption: Limits the number of user data snapshots retained for use in case of emergency
+  rollback.
+default: 3
+desc: |-
+  Following each major version update, Chrome will create a snapshot of certain portions of the user's browsing data for use in case of a later emergency version rollback. If an emergency rollback is performed to a version for which a user has a corresponding snapshot, the data in the snapshot is restored. This allows users to retain such settings as bookmarks and autofill data.
+
+        If this policy is not set, the default value of 3 is used
+
+        If the policy is set, old snapshots are deleted as needed to respect the limit. If the policy is set to 0, no snapshots will be taken
+example_value: 3
+features:
+  dynamic_refresh: false
+  per_profile: false
+future_on:
+- fuchsia
+owners:
+- ydago@chromium.org
+- grt@chromium.org
+schema:
+  minimum: 0
+  type: integer
+supported_on:
+- chrome.*:83-
+tags: []
+type: int

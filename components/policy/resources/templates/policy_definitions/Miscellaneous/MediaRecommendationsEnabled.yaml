@@ -1,0 +1,28 @@
+caption: Enable Media Recommendations
+default: true
+desc: By default the browser will show media recommendations that are personalized
+  to the user. Setting this policy to Disabled will result in these recommendations
+  being hidden from the user. Setting this policy to Enabled or leaving it unset will
+  result in the media recommendations being shown to the user.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Show media recommendations to the user
+  value: true
+- caption: Hide media recommendations from the user
+  value: false
+owners:
+- beccahughes@chromium.org
+- steimel@chromium.org
+- mlamouri@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:87-
+- chrome_os:87-
+tags: []
+type: main

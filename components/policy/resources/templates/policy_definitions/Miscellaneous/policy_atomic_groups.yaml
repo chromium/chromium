@@ -1,0 +1,5 @@
+PrivateNetworkRequestSettings:
+  caption: Private network request settings
+  policies:
+  - InsecurePrivateNetworkRequestsAllowed
+  - InsecurePrivateNetworkRequestsAllowedForUrls

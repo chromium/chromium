@@ -1,0 +1,30 @@
+caption: List of file types that should be automatically opened on download
+desc: |-
+  List of file types that should be automatically opened on download. The leading separator should not be included when listing the file type, so list "txt" instead of ".txt".
+
+        Files with types that should be automatically opened will still be subject to the enabled safe browsing checks and won't be opened if they fail those checks.
+
+        If this policy isn't set, only file types that a user has already specified to automatically be opened will do so when downloaded.
+
+        On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this functionality is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, running on Windows 10 Pro, or enrolled in Chrome Browser Cloud Management. On <ph name="MAC_OS_NAME">macOS</ph>, this functionality is only available on instances that are managed via MDM, or joined to a domain via MCX.
+example_value:
+- exe
+- txt
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- csharp@chromium.org
+- qinmin@chromium.org
+- pastarmovj@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:84-
+- chrome_os:84-
+tags: []
+type: list

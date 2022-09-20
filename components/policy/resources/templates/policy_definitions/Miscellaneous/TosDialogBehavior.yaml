@@ -1,0 +1,39 @@
+caption: Configuring the ToS behavior during first-run for CCT
+default: 1
+desc: |-
+  By default the Terms of Service are shown when CCT is first-run. Setting this policy to <ph name="SKIP_TOS_DIALOG">SkipTosDialog</ph> will cause the Terms of Service dialog to not appear during the first-run-experience or subsequent runs. Setting this policy to <ph name="STANDARD_TOS_DIALOG">StandardTosDialog</ph> or leaving it unset will cause the Terms of Service dialog to appear during the first-run-experience. The other caveats are:
+
+        - This policy only works on fully managed Android devices that can be configured by Unified Endpoint Management vendors.
+
+        - If this policy is <ph name="SKIP_TOS_DIALOG">SkipTosDialog</ph> the BrowserSignin policy will have no effect.
+
+        - If this policy is <ph name="SKIP_TOS_DIALOG">SkipTosDialog</ph> metrics​ will not be sent to the server.
+
+        - If this policy is <ph name="SKIP_TOS_DIALOG">SkipTosDialog</ph> the browser will have limited functionality.
+
+        - If this policy is <ph name="SKIP_TOS_DIALOG">SkipTosDialog</ph> admins must communicate this to end users of the device.
+example_value: 2
+features:
+  dynamic_refresh: false
+  per_profile: false
+  platform_only: true
+items:
+- caption: Use default browser behavior, shows the ToS and waits for the user to accept.
+  name: StandardTosDialog
+  value: 1
+- caption: Automatically skips ToS and loads the browser.
+  name: SkipTosDialog
+  value: 2
+owners:
+- skym@chromium.org
+- wenyufu@chromium.org
+- twellington@chromium.org
+schema:
+  enum:
+  - 1
+  - 2
+  type: integer
+supported_on:
+- android:87-
+tags: []
+type: int-enum

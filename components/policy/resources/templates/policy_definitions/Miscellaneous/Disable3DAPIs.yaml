@@ -1,0 +1,26 @@
+caption: Disable support for 3D graphics APIs
+desc: |-
+  Setting the policy to True (or setting <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME">HardwareAccelerationModeEnabled</ph> to False) prevents webpages from accessing the WebGL API, and plugins can't use the Pepper 3D API.
+
+        Setting the policy to False or leaving it unset lets webpages use the WebGL API and plugins use the Pepper 3D API, but the browser's default settings might still require command line arguments to use these APIs.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Disable support for 3D graphics APIs
+  value: true
+- caption: Enable support for 3D graphics APIs
+  value: false
+owners:
+- kbr@chromium.org
+- zmo@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:9-
+- chrome_os:11-
+tags: []
+type: main

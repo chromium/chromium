@@ -1,0 +1,30 @@
+caption: Enable online OCSP/CRL checks
+desc: |-
+  Setting the policy to True means online <ph name="OCSP_CRL_LABEL">OCSP/CRL</ph> checks are performed.
+
+        Setting the policy to False or leaving it unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> won't perform online revocation checks in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 19 and later.
+
+        Note: <ph name="OCSP_CRL_LABEL">OCSP/CRL</ph> checks provide no effective security benefit.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+items:
+- caption: Allow online <ph name="OCSP_CRL_LABEL">OCSP/CRL</ph> checks to be performed
+  value: true
+- caption: Prevent online <ph name="OCSP_CRL_LABEL">OCSP/CRL</ph> checks from being
+    performed
+  value: false
+owners:
+- file://net/cert/OWNERS
+- mattm@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:19-
+- chrome_os:19-
+tags:
+- website-sharing
+type: main

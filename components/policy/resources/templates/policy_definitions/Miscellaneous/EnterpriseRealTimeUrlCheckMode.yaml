@@ -1,0 +1,37 @@
+caption: Check Safe Browsing status of URLs in real time
+default: 0
+desc: |-
+  This policy controls checking URLs in real time to identify unsafe URLs.
+
+        If this policy is left not set or set to ‘Disabled’, the consumer Safe Browsing checks will be applied. Consumer Safe Browsing checks can still include real time lookups, depending on the value of the “Make searches and browsing better” setting and the value of the UrlKeyedAnonymizedDataCollectionEnabled policy.
+
+        If this policy is set to ‘Enabled’, URLs will be sent to be scanned in real time under enterprise ToS. It will result in Chrome sending URLs to Google Cloud or third parties of your choosing to check them in real time. The consumer version of Safe Browsing real time lookup will be switched off.
+
+        This policy requires additional setup to take effect, please visit https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting for more information.
+example_value: 1
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Real time URL check is disabled.
+  name: Disabled
+  value: 0
+- caption: Real time check for main frame URLs is enabled.
+  name: Enabled
+  value: 1
+owners:
+- xinghuilu@chromium.org
+- file://components/safe_browsing/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+supported_on:
+- chrome.*:86-
+- chrome_os:86-
+tags: []
+type: int-enum

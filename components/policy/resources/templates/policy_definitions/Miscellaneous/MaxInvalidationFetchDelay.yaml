@@ -1,0 +1,24 @@
+caption: Maximum fetch delay after a policy invalidation
+default: 10000
+desc: |-
+  Setting the policy specifies the maximum delay in milliseconds between receiving a policy invalidation and fetching the new policy from the device management service. Valid values range from 1,000 (1 second) to 300,000 (5 minutes). Values outside this range will be clamped to the respective boundary.
+
+        Leaving the policy unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses the default value of 10 seconds.
+example_value: 10000
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- stepco@chromium.org
+- poromov@chromium.org
+schema:
+  maximum: 300000
+  minimum: 1000
+  type: integer
+supported_on:
+- chrome.*:30-
+- chrome_os:30-
+tags: []
+type: int

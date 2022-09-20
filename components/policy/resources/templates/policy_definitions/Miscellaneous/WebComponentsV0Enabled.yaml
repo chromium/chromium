@@ -1,0 +1,26 @@
+caption: Re-enable Web Components v0 API until M84.
+deprecated: true
+desc: |2-
+   The Web Components v0 APIs (Shadow DOM v0, Custom Elements v0, and HTML Imports) were deprecated in 2018, and have been disabled by default starting in M80. This policy allows these features to be selectively re-enabled until M84.
+
+        If this policy is set to True, the Web Components v0 features will be enabled for all sites.
+
+        If this policy is set to False or not set, the Web Components v0 features will be disabled by default, starting in M80.
+
+        This policy will be removed after Chrome 84.
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+owners:
+- masonf@chromium.org
+- chrishtr@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:80-84
+- chrome_os:80-84
+- android:80-84
+- webview_android:80-84
+tags: []
+type: main

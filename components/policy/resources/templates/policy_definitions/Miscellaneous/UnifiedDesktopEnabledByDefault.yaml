@@ -1,0 +1,18 @@
+caption: Make Unified Desktop available and turn on by default
+desc: |-
+  Setting the policy to True turns on Unified Desktop, which allows applications to span multiple displays. Users can turn off Unified Desktop for individual displays.
+
+        Setting the policy to False or leaving it unset turns off Unified Desktop, and users can't turn it on.
+example_value: true
+features:
+  can_be_recommended: false
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- phweiss@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:47-
+tags: []
+type: main

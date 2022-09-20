@@ -1,0 +1,37 @@
+caption: Control SafeSites adult content filtering.
+desc: |-
+  Setting the policy controls the SafeSites URL filter, which uses the Google Safe Search API to classify URLs as pornographic or not.
+
+        When this policy is set to:
+
+        * Do not filter sites for adult content, or not set, sites aren't filtered
+
+        * Filter top level sites for adult content, pornographic sites are filtered
+example_value: 0
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Do not filter sites for adult content
+  name: SafeSitesFilterDisabled
+  value: 0
+- caption: Filter top level sites (but not embedded iframes) for adult content
+  name: SafeSitesFilterEnabled
+  value: 1
+owners:
+- nwokedi@chromium.org
+- nparker@chromium.org
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+supported_on:
+- chrome.*:69-
+- chrome_os:69-
+tags:
+- filtering
+- google-sharing
+type: int-enum

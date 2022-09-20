@@ -1,0 +1,40 @@
+arc_support: Android apps may voluntarily choose to honor this list. You cannot force
+  them to honor it.
+caption: Block access to a list of URLs
+desc: |-
+  Setting the policy prevents webpages with prohibited URLs from loading. It provides a list of URL patterns that specify forbidden URLs. Leaving the policy unset means no URLs are prohibited in the browser. Format the URL pattern according to this format ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Up to 1,000 exceptions can be defined in <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph>.
+
+        From <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 73, you can block javascript://* URLs. However, it affects only JavaScript entered in the address bar (or, for example, bookmarklets). In-page JavaScript URLs with dynamically loaded data aren't subject to this policy. For example, if you block example.com/abc, then example.com can still load example.com/abc using XMLHTTPRequest.
+
+        From <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 92, this policy is also supported in the headless mode.
+
+        Note: Blocking internal chrome://* and chrome-untrusted://* URLs can lead to unexpected errors or may be circumvented in special cases. Instead of blocking certain internal URLs, see if there are more specific policies available. Common cases: Instead of blocking chrome://settings/certificates, use <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME">CACertificateManagementAllowed</ph>. Instead of blocking chrome-untrusted://crosh, use <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME">SystemFeaturesDisableList</ph>.
+example_value:
+- example.com
+- https://ssl.server.com
+- hosting.com/bad_path
+- https://server:8080/path
+- .exact.hostname.com
+- file://*
+- custom_scheme:*
+- '*'
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://components/policy/resources/OWNERS
+- hendrich@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:86-
+- chrome_os:86-
+- android:86-
+- webview_android:86-
+- ios:98-
+- fuchsia:106-
+tags:
+- filtering
+type: list

@@ -1,0 +1,22 @@
+caption: Allow origins to query for device attributes
+desc: |-
+  Setting the policy to allow some origins of force-installed web applications to get device attributes (e.g. serial number, hostname) by using Device Attributes API.
+
+        Device Attributes API is a list of web APIs, please see https://wicg.github.io/WebApiDevice/device_attributes. They are only available to origins which correspond to force-installed web applications via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME">WebAppInstallForceList</ph> or the one configured in the Kiosk session.
+example_value:
+- https://www.google.com
+- https://www.example.com
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://components/policy/resources/OWNERS
+- anqing@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome_os:93-
+tags: []
+type: list

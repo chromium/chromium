@@ -1,0 +1,29 @@
+caption: Allow Eche to be enabled.
+default: true
+desc: |-
+  If this setting is enabled, users will be able to launch the Eche application, for example by clicking on a Phone Hub notification.
+
+        If this setting is disabled, users will not be able to launch the Eche application.
+
+        If this policy is left not set, the default is allowed for both enterprise-managed users and non-managed users.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allows users to click on Phone Hub notification to launch Eche application.
+  value: true
+- caption: Disallows users to click on Phone Hub notification to launch Eche application.
+  value: false
+owners:
+- andychou@google.com
+- dhnishi@google.com
+- exo-core@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:99-
+tags:
+- local-data-access
+- google-sharing
+type: main
