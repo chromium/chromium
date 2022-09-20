@@ -21,41 +21,51 @@ namespace safe_browsing {
 // them to the ExperimentalFeaturesList below to start displaying their status
 // on the chrome://safe-browsing page.
 
-const base::Feature kAccuracyTipsFeature{"AccuracyTips",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAccuracyTipsFeature,
+             "AccuracyTips",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kAdSamplerTriggerFeature{"SafeBrowsingAdSamplerTrigger",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAdSamplerTriggerFeature,
+             "SafeBrowsingAdSamplerTrigger",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kBetterTelemetryAcrossReports{
-    "SafeBrowsingBetterTelemetryAcrossReports",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kBetterTelemetryAcrossReports,
+             "SafeBrowsingBetterTelemetryAcrossReports",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kClientSideDetectionModelIsFlatBuffer{
-    "ClientSideDetectionModelIsFlatBuffer", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kClientSideDetectionModelIsFlatBuffer,
+             "ClientSideDetectionModelIsFlatBuffer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-extern const base::Feature kClientSideDetectionModelTag{
-    "ClientSideDetectionTag", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kClientSideDetectionModelTag,
+             "ClientSideDetectionTag",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kClientSideDetectionReferrerChain{
-    "ClientSideDetectionReferrerChain", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kClientSideDetectionReferrerChain,
+             "ClientSideDetectionReferrerChain",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kClientSideDetectionKillswitch{
-    "ClientSideDetectionKillswitch", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kClientSideDetectionKillswitch,
+             "ClientSideDetectionKillswitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kConnectorsScanningAccessToken{
-    "ConnectorsScanningAccessToken", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kConnectorsScanningAccessToken,
+             "ConnectorsScanningAccessToken",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kConnectorsScanningReportOnlyUI{
-    "ConnectorsScanningReportOnlyUI", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kConnectorsScanningReportOnlyUI,
+             "ConnectorsScanningReportOnlyUI",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-const base::Feature kCreateSafebrowsingOnStartup{
-    "CreateSafebrowsingOnStartup", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCreateSafebrowsingOnStartup,
+             "CreateSafebrowsingOnStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-const base::Feature kDelayedWarnings{"SafeBrowsingDelayedWarnings",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDelayedWarnings,
+             "SafeBrowsingDelayedWarnings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If true, a delayed warning will be shown when the user clicks on the page.
 // If false, the warning won't be shown, but a metric will be recorded on the
@@ -64,28 +74,33 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
     &kDelayedWarnings, "mouse",
     /*default_value=*/false};
 
-const base::Feature kDownloadBubble{"DownloadBubble",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDownloadBubble,
+             "DownloadBubble",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kDownloadBubbleV2{"DownloadBubbleV2",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDownloadBubbleV2,
+             "DownloadBubbleV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kDownloadTailoredWarnings{"DownloadTailoredWarnings",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDownloadTailoredWarnings,
+             "DownloadTailoredWarnings",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kEnhancedProtection{"SafeBrowsingEnhancedProtection",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnhancedProtection,
+             "SafeBrowsingEnhancedProtection",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kEnhancedProtectionPhase2IOS{
-    "SafeBrowsingEnhancedProtectionPhase2IOS",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnhancedProtectionPhase2IOS,
+             "SafeBrowsingEnhancedProtectionPhase2IOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kExtensionTelemetry{"SafeBrowsingExtensionTelemetry",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kExtensionTelemetry,
+             "SafeBrowsingExtensionTelemetry",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kExtensionTelemetryPersistence{
-    "SafeBrowsingExtensionTelemetryPersistence",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kExtensionTelemetryPersistence,
+             "SafeBrowsingExtensionTelemetryPersistence",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds{
     &kExtensionTelemetry, "UploadIntervalSeconds",
@@ -95,88 +110,102 @@ const base::FeatureParam<int> kExtensionTelemetryWritesPerInterval{
     &kExtensionTelemetry, "NumberOfWritesInInterval",
     /*default_value=*/4};
 
-const base::Feature kExtensionTelemetryTabsExecuteScriptSignal{
-    "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal,
+             "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kExtensionTelemetryReportContactedHosts{
-    "SafeBrowsingExtensionTelemetryReportContactedHosts",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kExtensionTelemetryReportContactedHosts,
+             "SafeBrowsingExtensionTelemetryReportContactedHosts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kFileTypePoliciesTag{"FileTypePoliciesTag",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kFileTypePoliciesTag,
+             "FileTypePoliciesTag",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kLogAccountEnhancedProtectionStateInProtegoPings{
-    "TailoredSecurityLogAccountEnhancedProtectionStateInProtegoPings",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings,
+             "TailoredSecurityLogAccountEnhancedProtectionStateInProtegoPings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSimplifiedUrlDisplay{"SimplifiedUrlDisplay",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSimplifiedUrlDisplay,
+             "SimplifiedUrlDisplay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kTailoredSecurityDesktopNotice{
-    "TailoredSecurityDesktopNotice", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTailoredSecurityDesktopNotice,
+             "TailoredSecurityDesktopNotice",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kTailoredSecurityIntegration{
-  "TailoredSecurityIntegration",
+BASE_FEATURE(kTailoredSecurityIntegration,
+             "TailoredSecurityIntegration",
 #if BUILDFLAG(IS_IOS)
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #else
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #endif
-};
+);
 
-const base::Feature kOmitNonUserGesturesFromReferrerChain{
-    "SafeBrowsingOmitNonUserGesturesFromReferrerChain",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOmitNonUserGesturesFromReferrerChain,
+             "SafeBrowsingOmitNonUserGesturesFromReferrerChain",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kRealTimeUrlLookupForEnterpriseAllowlistBypass{
-    "SafeBrowsingRealTimeUrlLookupForEnterpriseAllowlistBypass",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRealTimeUrlLookupForEnterpriseAllowlistBypass,
+             "SafeBrowsingRealTimeUrlLookupForEnterpriseAllowlistBypass",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSafeBrowsingCsbrrWithToken{
-    "SafeBrowsingCsbrrWithToken", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSafeBrowsingCsbrrWithToken,
+             "SafeBrowsingCsbrrWithToken",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSafeBrowsingEnterpriseCsd{
-    "SafeBrowsingEnterpriseCsd", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSafeBrowsingEnterpriseCsd,
+             "SafeBrowsingEnterpriseCsd",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSafeBrowsingDisableConsumerCsdForEnterprise{
-    "SafeBrowsingDisableConsumerCsdForEnterprise",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSafeBrowsingDisableConsumerCsdForEnterprise,
+             "SafeBrowsingDisableConsumerCsdForEnterprise",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSafeBrowsingPageLoadToken{
-    "SafeBrowsingPageLoadToken", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSafeBrowsingPageLoadToken,
+             "SafeBrowsingPageLoadToken",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSafeBrowsingRemoveCookiesInAuthRequests{
-    "SafeBrowsingRemoveCookiesInAuthRequests",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests,
+             "SafeBrowsingRemoveCookiesInAuthRequests",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSendSampledPingsForProtegoAllowlistDomains{
-    "SafeBrowsingSendSampledPingsForProtegoAllowlistDomains",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSendSampledPingsForProtegoAllowlistDomains,
+             "SafeBrowsingSendSampledPingsForProtegoAllowlistDomains",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSevenZipReaderInInstaller{
-    "SafeBrowsingSevenZipReaderInInstaller", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSevenZipReaderInInstaller,
+             "SafeBrowsingSevenZipReaderInInstaller",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSevenZipEvaluationEnabled{
-    "SafeBrowsingSevenZipEvaluationEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSevenZipEvaluationEnabled,
+             "SafeBrowsingSevenZipEvaluationEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSuspiciousSiteTriggerQuotaFeature{
-    "SafeBrowsingSuspiciousSiteTriggerQuota", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
+             "SafeBrowsingSuspiciousSiteTriggerQuota",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kThreatDomDetailsTagAndAttributeFeature{
-    "ThreatDomDetailsTagAttributes", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kThreatDomDetailsTagAndAttributeFeature,
+             "ThreatDomDetailsTagAttributes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kUseNewDownloadWarnings{"UseNewDownloadWarnings",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseNewDownloadWarnings,
+             "UseNewDownloadWarnings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kVisualFeaturesSizes{"VisualFeaturesSizes",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kVisualFeaturesSizes,
+             "VisualFeaturesSizes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kVisualFeaturesInCsppPings{
-    "VisualFeaturesInCsppPings", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kVisualFeaturesInCsppPings,
+             "VisualFeaturesInCsppPings",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kVisualFeaturesForReusePings{
-    "VisualFeaturesInReusePings", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kVisualFeaturesForReusePings,
+             "VisualFeaturesInReusePings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 // List of Safe Browsing features. Boolean value for each list member should
