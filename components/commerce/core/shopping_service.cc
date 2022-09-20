@@ -14,9 +14,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/commerce/core/bookmark_update_manager.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/pref_names.h"
@@ -115,17 +117,21 @@ ShoppingService::ShoppingService(
         std::make_unique<ShoppingPowerBookmarkDataProvider>(
             power_bookmark_service_, this);
   }
+
+  bookmark_update_manager_ = std::make_unique<BookmarkUpdateManager>(
+      this, bookmark_model_, pref_service_);
 }
 
 void ShoppingService::RegisterPrefs(PrefRegistrySimple* registry) {
   // This pref value is queried from server. Set initial value as true so our
   // features can be correctly set up while waiting for the server response.
-  registry->RegisterBooleanPref(commerce::kWebAndAppActivityEnabledForShopping,
-                                true);
+  registry->RegisterBooleanPref(kWebAndAppActivityEnabledForShopping, true);
 
   registry->RegisterBooleanPref(
       commerce::kPriceEmailNotificationsEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  registry->RegisterTimePref(kShoppingListBookmarkLastUpdateTime, base::Time());
 }
 
 void ShoppingService::WebWrapperCreated(WebWrapper* web) {}

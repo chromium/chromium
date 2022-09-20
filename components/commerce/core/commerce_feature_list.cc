@@ -78,6 +78,9 @@ const char kEnableChromeCart[] = "enable-chrome-cart";
 const base::Feature kCommerceAllowLocalImages{
     "CommerceAllowLocalImages", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCommerceAllowOnDemandBookmarkUpdates{
+    "CommerceAllowOnDemandBookmarkUpdates", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kCommerceAllowServerImages{
     "CommerceAllowServerImages", base::FEATURE_ENABLED_BY_DEFAULT};
 
