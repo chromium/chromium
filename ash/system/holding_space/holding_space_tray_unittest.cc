@@ -52,9 +52,7 @@
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/transform_util.h"
-#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/skbitmap_operations.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -538,14 +536,11 @@ class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
     auto* prefs = GetSessionControllerClient()->GetUserPrefService(account_id);
     ASSERT_TRUE(prefs);
 
-    const auto expected_chevron_skia =
-        gfx::ImageSkiaOperations::CreateRotatedImage(
-            gfx::CreateVectorIcon(
-                kChevronRightIcon, kHoldingSpaceSectionChevronIconSize,
-                AshColorProvider::Get()->GetContentLayerColor(
-                    AshColorProvider::ContentLayerType::kIconColorSecondary)),
-            expanded ? SkBitmapOperations::ROTATION_270_CW
-                     : SkBitmapOperations::ROTATION_90_CW);
+    const auto expected_chevron_skia = gfx::CreateVectorIcon(
+        expanded ? kChevronUpSmallIcon : kChevronDownSmallIcon,
+        kHoldingSpaceSectionChevronIconSize,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorSecondary));
 
     // Changes to the section's expanded state should be stored persistently.
     EXPECT_EQ(holding_space_prefs::IsSuggestionsExpanded(prefs), expanded);

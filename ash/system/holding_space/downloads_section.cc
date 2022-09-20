@@ -89,7 +89,7 @@ class Header : public views::Button {
 
     // Chevron.
     chevron_->SetImage(gfx::CreateVectorIcon(
-        kChevronRightIcon, kHoldingSpaceSectionChevronIconSize,
+        kChevronRightSmallIcon, kHoldingSpaceSectionChevronIconSize,
         ash_color_provider->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorPrimary)));
   }

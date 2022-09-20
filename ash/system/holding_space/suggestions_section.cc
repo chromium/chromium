@@ -25,9 +25,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
-#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/skbitmap_operations.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -123,18 +121,13 @@ class Header : public views::Button {
   // orientation (based on whether the `section_` is `expanded_`).
   void UpdateChevron() {
     auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
-    chevron_->SetImage(gfx::ImageSkiaOperations::CreateRotatedImage(
-        gfx::CreateVectorIcon(
-            kChevronRightIcon, kHoldingSpaceSectionChevronIconSize,
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorSecondary)),
-        // Rotate `kChevronRightIcon` to the correct orientation rather than use
-        // `kChevronUpIcon` or `kChevronDownIcon`, which both have different
-        // internal padding and therefore appear as a different size than the
-        // downloads section's chevron.
+    chevron_->SetImage(gfx::CreateVectorIcon(
         holding_space_prefs::IsSuggestionsExpanded(prefs)
-            ? SkBitmapOperations::ROTATION_270_CW
-            : SkBitmapOperations::ROTATION_90_CW));
+            ? kChevronUpSmallIcon
+            : kChevronDownSmallIcon,
+        kHoldingSpaceSectionChevronIconSize,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorSecondary)));
   }
 
   // Owned by view hierarchy.
