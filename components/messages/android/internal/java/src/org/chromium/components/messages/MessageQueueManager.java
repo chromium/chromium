@@ -82,21 +82,24 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         messageQueue.add(messageState);
         mMessages.put(messageKey, messageState);
 
-        MessageState candidate = getNextMessage();
-        if (candidate != null) {
-            Log.w(TAG, "Currently displaying message with ID %s and key %s.",
-                    candidate.handler.getMessageIdentifier(), candidate.messageKey);
-        }
-        updateCurrentDisplayedMessage(candidate);
-
-        if (candidate == messageState) {
-            MessagesMetrics.recordMessageEnqueuedVisible(message.getMessageIdentifier());
+        if (MessageFeatureList.isStackAnimationEnabled()) {
+            updateCurrentDisplayedWithStacking();
         } else {
-            @MessageIdentifier
-            int visibleMessageId = MessageIdentifier.INVALID_MESSAGE;
-            if (candidate != null) visibleMessageId = candidate.handler.getMessageIdentifier();
-            MessagesMetrics.recordMessageEnqueuedHidden(
-                    message.getMessageIdentifier(), visibleMessageId);
+            MessageState candidate = updateCurrentDisplayedWithoutStacking();
+            if (candidate != null) {
+                Log.w(TAG, "Currently displaying message with ID %s and key %s.",
+                        candidate.handler.getMessageIdentifier(), candidate.messageKey);
+            }
+
+            if (candidate == messageState) {
+                MessagesMetrics.recordMessageEnqueuedVisible(message.getMessageIdentifier());
+            } else {
+                @MessageIdentifier
+                int visibleMessageId = MessageIdentifier.INVALID_MESSAGE;
+                if (candidate != null) visibleMessageId = candidate.handler.getMessageIdentifier();
+                MessagesMetrics.recordMessageEnqueuedHidden(
+                        message.getMessageIdentifier(), visibleMessageId);
+            }
         }
     }
 
@@ -111,15 +114,15 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         MessageState messageState = mMessages.get(messageKey);
         if (messageState == null) return;
         mMessages.remove(messageKey);
-        dismissMessageInternal(messageState, dismissReason, true);
+        dismissMessageInternal(messageState, dismissReason);
     }
 
     /**
      * This method updates related structure and dismiss the queue, but does not remove the
      * message state from the queue.
      */
-    private void dismissMessageInternal(@NonNull MessageState messageState,
-            @DismissReason int dismissReason, boolean updateCurrentMessage) {
+    private void dismissMessageInternal(
+            @NonNull MessageState messageState, @DismissReason int dismissReason) {
         MessageStateHandler message = messageState.handler;
         ScopeKey scopeKey = messageState.scopeKey;
 
@@ -134,7 +137,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         }
 
         message.dismiss(dismissReason);
-        updateCurrentDisplayedMessage(getNextMessage());
+        updateCurrentDisplayedMessages();
         MessagesMetrics.recordDismissReason(message.getMessageIdentifier(), dismissReason);
     }
 
@@ -166,33 +169,62 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
             }
         } else if (change.changeType == ChangeType.INACTIVE) {
             mScopeStates.put(scopeKey, false);
-            updateCurrentDisplayedMessage(getNextMessage());
+            updateCurrentDisplayedMessages();
         } else if (change.changeType == ChangeType.ACTIVE) {
             mScopeStates.put(scopeKey, true);
-            updateCurrentDisplayedMessage(getNextMessage());
+            updateCurrentDisplayedMessages();
         }
     }
 
     private void onSuspendedStateChange() {
-        updateCurrentDisplayedMessage(getNextMessage());
+        updateCurrentDisplayedMessages();
     }
 
     private boolean isQueueSuspended() {
         return mSuppressionTokenHolder.hasTokens();
     }
 
+    /**
+     * Update current displayed message(s). Stacking animation is triggered if it's enabled.
+     */
+    private void updateCurrentDisplayedMessages() {
+        if (MessageFeatureList.isStackAnimationEnabled()) {
+            updateCurrentDisplayedWithStacking();
+        } else {
+            updateCurrentDisplayedWithoutStacking();
+        }
+    }
+
+    /**
+     * Update current displayed messages with stacking.
+     * @return The candidates supposed to be displayed.
+     */
+    private List<MessageState> updateCurrentDisplayedWithStacking() {
+        var candidates = getNextMessages();
+        mAnimationCoordinator.updateWithStacking(
+                candidates, isQueueSuspended(), this::updateCurrentDisplayedWithStacking);
+        return candidates;
+    }
+
     // TODO(crbug.com/1163290): Rethink the case where a message show or dismiss animation is
     //      running when we get another scope change signal that should potentially either reverse
     //      the animation (i.e. going from inactive -> active quickly) or jump to the end (i.e.
     //      going from animate transition -> don't animate transition.
-    private void updateCurrentDisplayedMessage(MessageState candidate) {
-        mAnimationCoordinator.updateWithoutStacking(candidate, isQueueSuspended(),
-                () -> { updateCurrentDisplayedMessage(getNextMessage()); });
+
+    /**
+     * Update current displayed message without stacking.
+     * @return The candidate supposed to be displayed.
+     */
+    private MessageState updateCurrentDisplayedWithoutStacking() {
+        var candidate = getNextMessage();
+        mAnimationCoordinator.updateWithoutStacking(
+                candidate, isQueueSuspended(), this::updateCurrentDisplayedWithoutStacking);
+        return candidate;
     }
 
     void dismissAllMessages(@DismissReason int dismissReason) {
         for (MessageState m : mMessages.values()) {
-            dismissMessageInternal(m, dismissReason, false);
+            dismissMessageInternal(m, dismissReason);
         }
         mMessages.clear();
     }
