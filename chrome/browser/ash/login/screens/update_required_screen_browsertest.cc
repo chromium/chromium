@@ -564,6 +564,11 @@ class UpdateRequiredScreenPolicyPresentTest : public OobeBaseTest {
     policy_helper_.RefreshDevicePolicy();
   }
 
+  void SetAndRefreshMinimumChromeVersionPolicy(const base::Value::Dict& value) {
+    SetMinimumChromeVersionPolicy(base::Value(value.Clone()));
+    policy_helper_.RefreshDevicePolicy();
+  }
+
  protected:
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};

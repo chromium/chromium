@@ -78,7 +78,7 @@ class MinimumVersionPolicyHandlerTest
       const;
 
   // Set new value for policy pref.
-  void SetPolicyPref(base::Value value);
+  void SetPolicyPref(base::Value::Dict value);
 
   MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
     return minimum_version_policy_handler_.get();
@@ -172,9 +172,9 @@ base::Version MinimumVersionPolicyHandlerTest::GetCurrentVersion() const {
   return *current_version_;
 }
 
-void MinimumVersionPolicyHandlerTest::SetPolicyPref(base::Value value) {
+void MinimumVersionPolicyHandlerTest::SetPolicyPref(base::Value::Dict value) {
   scoped_testing_cros_settings_.device_settings()->Set(
-      ash::kDeviceMinimumVersion, value);
+      ash::kDeviceMinimumVersion, base::Value(std::move(value)));
 }
 
 TEST_F(MinimumVersionPolicyHandlerTest, RequirementsNotMetState) {
@@ -189,11 +189,12 @@ TEST_F(MinimumVersionPolicyHandlerTest, RequirementsNotMetState) {
       run_loop.QuitClosure());
 
   // Create policy value as a list of requirements.
-  base::Value requirement_list(base::Value::Type::LIST);
-  base::Value new_version_short_warning = CreateMinimumVersionPolicyRequirement(
-      kNewVersion, kShortWarning, kNoWarning);
+  base::Value::List requirement_list;
+  base::Value::Dict new_version_short_warning =
+      CreateMinimumVersionPolicyRequirement(kNewVersion, kShortWarning,
+                                            kNoWarning);
   auto strongest_requirement = MinimumVersionRequirement::CreateInstanceIfValid(
-      &base::Value::AsDictionaryValue(new_version_short_warning));
+      new_version_short_warning);
 
   requirement_list.Append(std::move(new_version_short_warning));
   requirement_list.Append(CreateMinimumVersionPolicyRequirement(
@@ -217,8 +218,7 @@ TEST_F(MinimumVersionPolicyHandlerTest, RequirementsNotMetState) {
             kShortWarning);
 
   // Reset the pref to empty list and verify state is reset.
-  base::Value requirement_list2(base::Value::Type::LIST);
-  SetPolicyPref(std::move(requirement_list2));
+  SetPolicyPref(base::Value::Dict());
   EXPECT_TRUE(GetMinimumVersionPolicyHandler()->RequirementsAreSatisfied());
   EXPECT_FALSE(GetState());
   EXPECT_FALSE(GetMinimumVersionPolicyHandler()->GetTimeRemainingInDays());
@@ -295,11 +295,10 @@ TEST_F(MinimumVersionPolicyHandlerTest, RequirementsMetState) {
   EXPECT_FALSE(GetState());
 
   // Create policy value as a list of requirements.
-  base::Value requirement_list(base::Value::Type::LIST);
-  base::Value current_version_no_warning =
-      CreateMinimumVersionPolicyRequirement(kFakeCurrentVersion, kNoWarning,
-                                            kNoWarning);
-  base::Value old_version_long_warning = CreateMinimumVersionPolicyRequirement(
+  base::Value::List requirement_list;
+  auto current_version_no_warning = CreateMinimumVersionPolicyRequirement(
+      kFakeCurrentVersion, kNoWarning, kNoWarning);
+  auto old_version_long_warning = CreateMinimumVersionPolicyRequirement(
       kOldVersion, kLongWarning, kNoWarning);
   requirement_list.Append(std::move(current_version_no_warning));
   requirement_list.Append(std::move(old_version_long_warning));

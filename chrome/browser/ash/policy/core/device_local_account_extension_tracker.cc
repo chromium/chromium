@@ -64,14 +64,13 @@ void DeviceLocalAccountExtensionTracker::UpdateFromStore() {
   policy_handler.ApplyPolicySettings(policy_map, &pref_value_map);
 
   const base::Value* value = nullptr;
-  const base::DictionaryValue* dict = nullptr;
   if (!pref_value_map.GetValue(extensions::pref_names::kInstallForceList,
                                &value) ||
-      !value->GetAsDictionary(&dict)) {
+      !value->is_dict()) {
     return;
   }
 
-  for (const auto item : dict->GetDict()) {
+  for (const auto item : value->GetDict()) {
     PolicyNamespace ns(POLICY_DOMAIN_EXTENSIONS, item.first);
     if (schema_registry_->schema_map()->GetSchema(ns)) {
       // Important detail: Don't register the component again if it already

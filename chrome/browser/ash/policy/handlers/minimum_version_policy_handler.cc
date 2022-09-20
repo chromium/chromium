@@ -119,17 +119,17 @@ MinimumVersionRequirement::MinimumVersionRequirement(
 
 std::unique_ptr<MinimumVersionRequirement>
 MinimumVersionRequirement::CreateInstanceIfValid(
-    const base::DictionaryValue* dict) {
-  const std::string* version = dict->FindStringKey(kChromeOsVersion);
+    const base::Value::Dict& dict) {
+  const std::string* version = dict.FindString(kChromeOsVersion);
   if (!version)
     return nullptr;
   base::Version minimum_version(*version);
   if (!minimum_version.IsValid())
     return nullptr;
-  auto warning = dict->FindIntKey(kWarningPeriod);
+  auto warning = dict.FindInt(kWarningPeriod);
   base::TimeDelta warning_time =
       base::Days(warning.has_value() ? warning.value() : 0);
-  auto eol_warning = dict->FindIntKey(kEolWarningPeriod);
+  auto eol_warning = dict.FindInt(kEolWarningPeriod);
   base::TimeDelta eol_warning_time =
       base::Days(eol_warning.has_value() ? eol_warning.value() : 0);
   return std::make_unique<MinimumVersionRequirement>(
@@ -242,13 +242,12 @@ void MinimumVersionPolicyHandler::OnPolicyChanged() {
 
   std::vector<std::unique_ptr<MinimumVersionRequirement>> configs;
   for (const auto& item : *entries) {
-    const base::DictionaryValue* dict;
-    if (item.GetAsDictionary(&dict)) {
-      std::unique_ptr<MinimumVersionRequirement> instance =
-          MinimumVersionRequirement::CreateInstanceIfValid(dict);
-      if (instance)
-        configs.push_back(std::move(instance));
-    }
+    if (!item.is_dict())
+      continue;
+    std::unique_ptr<MinimumVersionRequirement> instance =
+        MinimumVersionRequirement::CreateInstanceIfValid(item.GetDict());
+    if (instance)
+      configs.push_back(std::move(instance));
   }
 
   // Select the strongest config whose requirements are not satisfied by the

@@ -421,17 +421,13 @@ void CloudExternalDataManagerBase::SetPolicyStore(
     OnPolicyStoreLoaded();
 }
 
-// Extract a url and hash from |value|, and put them into |metadata|.
+// Extract a url and hash from |value_dict|, and put them into |metadata|.
 void AddMetadataFromValue(CloudExternalDataManagerBase::Metadata* metadata,
                           const std::string& policy_name,
                           const std::string& field_name,
-                          const base::Value* const value) {
-  DCHECK(metadata);
-  const base::DictionaryValue* dict = nullptr;
-  if (!value || !value->GetAsDictionary(&dict))
-    return;
-  const std::string* url = dict->FindStringKey(kUrlKey);
-  const std::string* hex_hash = dict->FindStringKey(kHashKey);
+                          const base::Value::Dict& value_dict) {
+  const std::string* url = value_dict.FindString(kUrlKey);
+  const std::string* hex_hash = value_dict.FindString(kHashKey);
   std::string hash;
   if (url && hex_hash && !url->empty() && !hex_hash->empty() &&
       base::HexStringToString(*hex_hash, &hash)) {
@@ -455,19 +451,22 @@ void CloudExternalDataManagerBase::OnPolicyStoreLoaded() {
       continue;
     }
     if (it.first != key::kWebAppInstallForceList) {
-      AddMetadataFromValue(metadata.get(), it.first, std::string(),
-                           it.second.value_unsafe());
+      if (it.second.value(base::Value::Type::DICT)) {
+        AddMetadataFromValue(
+            metadata.get(), it.first, std::string(),
+            it.second.value(base::Value::Type::DICT)->GetDict());
+      }
       continue;
     }
     if (it.second.value(base::Value::Type::LIST)) {
       for (const auto& app :
-           it.second.value(base::Value::Type::LIST)->GetListDeprecated()) {
-        const base::DictionaryValue* dict = nullptr;
-        if (app.GetAsDictionary(&dict)) {
-          const base::Value* const icon = dict->FindKey(kCustomIconKey);
-          const std::string* const url = dict->FindStringKey(kUrlKey);
+           it.second.value(base::Value::Type::LIST)->GetList()) {
+        if (app.is_dict()) {
+          const base::Value::Dict& dict = app.GetDict();
+          const base::Value::Dict* const icon = dict.FindDict(kCustomIconKey);
+          const std::string* const url = dict.FindString(kUrlKey);
           if (icon && url) {
-            AddMetadataFromValue(metadata.get(), it.first, *url, icon);
+            AddMetadataFromValue(metadata.get(), it.first, *url, *icon);
           }
         }
       }
