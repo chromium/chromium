@@ -280,6 +280,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             choices=sorted(_product_registry, key=len),
             help='Product (browser or browser component) to test.')
         parser.add_argument('--webdriver-binary',
+                            type=os.path.abspath,
                             help=('Path of the webdriver binary.'
                                   'It needs to have the same major version '
                                   'as the browser binary or APK.'))
@@ -405,16 +406,19 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             '--chrome-apk',
             '--system-webview-shell',
             '--weblayer-shell',
+            type=os.path.abspath,
             help=('Path to the browser APK to install and run. '
                   '(For WebView and WebLayer, this value is the shell. '
                   'Defaults to an on-device APK if not provided.)'))
         group.add_argument('--webview-provider',
+                           type=os.path.abspath,
                            help=('Path to a WebView provider APK to install. '
                                  '(WebView only.)'))
         group.add_argument(
             '--additional-apk',
             # Aliases for backwards compatibility.
             '--weblayer-support',
+            type=os.path.abspath,
             action='append',
             default=[],
             help='Paths to additional APKs to install.')
@@ -427,7 +431,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             '--chrome-package-name',
             help='Package name to run tests against.')
         group.add_argument('--adb-binary',
-                           type=os.path.realpath,
+                           type=os.path.abspath,
                            help='Path to adb binary to use.')
         return group
 
