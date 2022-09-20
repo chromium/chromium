@@ -470,6 +470,7 @@ group("gn_all") {
       "//ash/webui:ash_webui_unittests",
       "//chrome/browser/metrics/perf:profile_provider_unittest",
       "//chrome/test:ash_crosapi_browsertests",
+      "//chrome/test:ash_crosapi_tests",
       "//chrome/test:usage_time_limit_unittests",
       "//chromeos/components:chromeos_components_unittests",
       "//components/exo/wayland:wayland_client_compatibility_tests",
