@@ -60,6 +60,11 @@ public class BaseCarouselSuggestionView extends LinearLayout {
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(
                 new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        mRecyclerView.setClipToPadding(false);
+        mRecyclerView.setPaddingRelative(
+                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_list_padding_side),
+                mRecyclerView.getPaddingTop(), mRecyclerView.getPaddingEnd(),
+                mRecyclerView.getPaddingBottom());
 
         mSelectionManager =
                 new BaseCarouselSuggestionSelectionManager(mRecyclerView.getLayoutManager());
