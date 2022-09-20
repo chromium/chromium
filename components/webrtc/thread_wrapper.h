@@ -91,36 +91,22 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   // CurrentThread::DestructionObserver implementation.
   void WillDestroyCurrentMessageLoop() override;
 
-  // rtc::MessageQueue overrides.
-  void Post(const rtc::Location& posted_from,
-            rtc::MessageHandler* phandler,
-            uint32_t id,
-            rtc::MessageData* pdata,
-            bool time_sensitive) override;
-  void PostDelayed(const rtc::Location& posted_from,
-                   int delay_ms,
-                   rtc::MessageHandler* handler,
-                   uint32_t id,
-                   rtc::MessageData* data) override;
-  void Clear(rtc::MessageHandler* handler,
-             uint32_t id,
-             rtc::MessageList* removed) override;
-  void Dispatch(rtc::Message* message) override;
+  // TaskQueueBase overrides.
+  void PostTask(absl::AnyInvocable<void() &&> task) override;
+  void PostDelayedTask(absl::AnyInvocable<void() &&> task,
+                       webrtc::TimeDelta delay) override;
+  void PostDelayedHighPrecisionTask(absl::AnyInvocable<void() &&> task,
+                                    webrtc::TimeDelta delay) override;
+
   void BlockingCall(rtc::FunctionView<void()> functor) override;
 
-  // Quitting is not supported (see below); this method performs
-  // NOTIMPLEMENTED_LOG_ONCE() and returns false.
-  // TODO(https://crbug.com/webrtc/10364): When rtc::MessageQueue::Post()
-  // returns a bool, !IsQuitting() will not be needed to infer success and we
-  // may implement this as NOTREACHED() like the rest of the methods.
-  bool IsQuitting() override;
   // Following methods are not supported. They are overriden just to
   // ensure that they are not called (each of them contain NOTREACHED
   // in the body). Some of this methods can be implemented if it
-  // becomes necessary to use libjingle code that calls them.
+  // becomes necessary to use webrtc code that calls them.
+  bool IsQuitting() override;
   void Quit() override;
   void Restart() override;
-  bool Get(rtc::Message* message, int delay_ms, bool process_io) override;
   int GetDelay() override;
 
   // rtc::Thread overrides.
@@ -128,28 +114,13 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   void Run() override;
 
  private:
-  typedef std::map<int, rtc::Message> MessagesQueue;
   struct PendingSend;
   class PostTaskLatencySampler;
 
   explicit ThreadWrapper(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  void PostTaskInternal(const rtc::Location& posted_from,
-                        int delay_ms,
-                        rtc::MessageHandler* handler,
-                        uint32_t message_id,
-                        rtc::MessageData* data);
-  void RunTask(int task_id);
-  void RunTaskInternal(int task_id);
   void ProcessPendingSends();
-
-  // TaskQueueBase overrides.
-  void PostTask(absl::AnyInvocable<void() &&> task) override;
-  void PostDelayedTask(absl::AnyInvocable<void() &&> task,
-                       webrtc::TimeDelta delay) override;
-  void PostDelayedHighPrecisionTask(absl::AnyInvocable<void() &&> task,
-                                    webrtc::TimeDelta delay) override;
 
   // Executes WebRTC queued tasks from TaskQueueBase overrides on
   // |task_runner_|.
@@ -168,10 +139,8 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
 
   bool send_allowed_;
 
-  // |lock_| must be locked when accessing |messages_|.
+  // |lock_| must be locked when accessing |pending_send_messages_|.
   base::Lock lock_;
-  int last_task_id_;
-  MessagesQueue messages_;
   std::list<PendingSend*> pending_send_messages_;
   base::WaitableEvent pending_send_event_;
   std::unique_ptr<PostTaskLatencySampler> latency_sampler_;
