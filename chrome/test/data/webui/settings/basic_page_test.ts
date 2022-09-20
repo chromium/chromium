@@ -292,6 +292,7 @@ suite('PrivacyGuidePromo', () => {
   });
 
   setup(async function() {
+    loadTimeData.overrideValues({showPrivacyGuide: true});
     privacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
     PrivacyGuideBrowserProxyImpl.setInstance(privacyGuideBrowserProxy);
     document.body.innerHTML = '';
@@ -321,6 +322,25 @@ suite('PrivacyGuidePromo', () => {
 
   test('load page', function() {
     // This will fail if there are any asserts or errors in the Settings page.
+  });
+
+  test('promoNotShown', async function() {
+    loadTimeData.overrideValues({showPrivacyGuide: false});
+
+    page.remove();
+    page = document.createElement('settings-basic-page');
+    page.prefs = settingsPrefs.prefs!;
+    // The promo is only shown when privacy guide hasn't been visited yet.
+    page.setPrefValue('privacy_guide.viewed', false);
+    document.body.appendChild(page);
+
+    await flushTasks();
+    assertFalse(
+        loadTimeData.getBoolean('showPrivacyGuide'),
+        'showPrivacyGuide was not overwritten');
+    assertFalse(
+        isChildVisible(page, '#privacyGuidePromo'),
+        'privacyGuidePromo is visible');
   });
 
   // Same as the SometimesMoreSectionsShown test in the suite above, but

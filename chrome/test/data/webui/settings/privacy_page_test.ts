@@ -246,6 +246,7 @@ suite('PrivacyGuideRowTests', function() {
   });
 
   setup(function() {
+    loadTimeData.overrideValues({showPrivacyGuide: true});
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = '';
@@ -253,6 +254,22 @@ suite('PrivacyGuideRowTests', function() {
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
+  });
+
+  test('rowNotShown', async function() {
+    loadTimeData.overrideValues({showPrivacyGuide: false});
+
+    page.remove();
+    page = document.createElement('settings-privacy-page');
+    document.body.appendChild(page);
+
+    await flushTasks();
+    assertFalse(
+        loadTimeData.getBoolean('showPrivacyGuide'),
+        'showPrivacyGuide was not overwritten');
+    assertFalse(
+        isChildVisible(page, '#privacyGuideLinkRow'),
+        'privacyGuideLinkRow is visible');
   });
 
   test('privacyGuideRowVisibleChildAccount', function() {

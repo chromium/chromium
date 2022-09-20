@@ -163,7 +163,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
       showPrivacyGuideEntryPoint_: {
         type: Boolean,
-        value: true,
+        value: () => loadTimeData.getBoolean('showPrivacyGuide'),
       },
 
       enablePrivacyGuidePage_: {

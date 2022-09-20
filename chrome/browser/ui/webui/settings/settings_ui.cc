@@ -351,9 +351,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("userCannotManuallyEnterPassword", false);
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  html_source->AddBoolean(
-      "privacyGuide2Enabled",
-      base::FeatureList::IsEnabled(features::kPrivacyGuide2));
+  bool show_privacy_guide =
+      !chrome::ShouldDisplayManagedUi(profile) && !profile->IsChild();
+  html_source->AddBoolean("showPrivacyGuide", show_privacy_guide);
+
+  html_source->AddBoolean("privacyGuide2Enabled",
+                          show_privacy_guide && base::FeatureList::IsEnabled(
+                                                    features::kPrivacyGuide2));
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   html_source->AddBoolean(
