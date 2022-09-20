@@ -292,10 +292,50 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
 }
 
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
-                       InstallPumpkinForDictation) {
+                       InstallPumpkinForDictationFail) {
   // Enable Dictation to allow the API to work.
   Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
-  ASSERT_TRUE(RunSubtest("testInstallPumpkinForDictation")) << message_;
+  ASSERT_TRUE(RunSubtest("testInstallPumpkinForDictationFail")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
+                       InstallPumpkinForDictationSuccess) {
+  // Enable Dictation to allow the API to work.
+  Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
+
+  // Initialize Pumpkin DLC directory.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir pumpkin_root_dir;
+  ASSERT_TRUE(pumpkin_root_dir.CreateUniqueTempDir());
+  // Create subdirectories for each locale supported by Pumpkin.
+  std::vector<std::string> locales{"en_us", "fr_fr", "it_it", "de_de", "es_es"};
+  std::vector<base::ScopedTempDir> sub_dirs(locales.size());
+  for (size_t i = 0; i < locales.size(); ++i) {
+    ASSERT_TRUE(sub_dirs[i].Set(pumpkin_root_dir.GetPath().Append(locales[i])));
+  }
+
+  // Create fake DLC files.
+  AccessibilityManager::Get()->SetDlcPathForTest(pumpkin_root_dir.GetPath());
+  ASSERT_TRUE(base::WriteFile(
+      pumpkin_root_dir.GetPath().Append("js_pumpkin_tagger_bin.js"),
+      "Fake js pumpkin tagger"));
+  ASSERT_TRUE(
+      base::WriteFile(pumpkin_root_dir.GetPath().Append("tagger_wasm_main.js"),
+                      "Fake tagger wasm js"));
+  ASSERT_TRUE(base::WriteFile(
+      pumpkin_root_dir.GetPath().Append("tagger_wasm_main.wasm"),
+      "Fake tagger wasm wasm"));
+  for (size_t j = 0; j < locales.size(); ++j) {
+    std::string locale = locales[j];
+    ASSERT_TRUE(
+        base::WriteFile(sub_dirs[j].GetPath().Append("action_config.binarypb"),
+                        "Fake " + locale + " action config"));
+    ASSERT_TRUE(
+        base::WriteFile(sub_dirs[j].GetPath().Append("pumpkin_config.binarypb"),
+                        "Fake " + locale + " pumpkin config"));
+  }
+
+  ASSERT_TRUE(RunSubtest("testInstallPumpkinForDictationSuccess")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,

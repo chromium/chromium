@@ -153,9 +153,64 @@ var availableTests = [
     chrome.test.notifyPass();
   },
 
-  function testInstallPumpkinForDictation() {
-    chrome.accessibilityPrivate.installPumpkinForDictation((success) => {
-      chrome.test.assertTrue(success);
+  function testInstallPumpkinForDictationFail() {
+    const error = `Couldn't retrieve Pumpkin data.`;
+    chrome.accessibilityPrivate.installPumpkinForDictation((data) => {
+      chrome.test.assertLastError(error);
+      chrome.test.succeed();
+    });
+  },
+
+  function testInstallPumpkinForDictationSuccess() {
+    chrome.accessibilityPrivate.installPumpkinForDictation((data) => {
+      chrome.test.assertTrue(Boolean(data));
+      chrome.test.assertTrue(Object.keys(data).length === 13);
+      for (const [key, value] of Object.entries(data)) {
+        const fileContents = new TextDecoder().decode(value);
+        switch (key) {
+          case 'js_pumpkin_tagger_bin_js':
+            chrome.test.assertEq('Fake js pumpkin tagger', fileContents);
+            break;
+          case 'tagger_wasm_main_js':
+            chrome.test.assertEq('Fake tagger wasm js', fileContents);
+            break;
+          case 'tagger_wasm_main_wasm':
+            chrome.test.assertEq('Fake tagger wasm wasm', fileContents);
+            break;
+          case 'en_us_action_config_binarypb':
+            chrome.test.assertEq('Fake en_us action config', fileContents);
+            break;
+          case 'en_us_pumpkin_config_binarypb':
+            chrome.test.assertEq('Fake en_us pumpkin config', fileContents);
+            break;
+          case 'fr_fr_action_config_binarypb':
+            chrome.test.assertEq('Fake fr_fr action config', fileContents);
+            break;
+          case 'fr_fr_pumpkin_config_binarypb':
+            chrome.test.assertEq('Fake fr_fr pumpkin config', fileContents);
+            break;
+          case 'it_it_action_config_binarypb':
+            chrome.test.assertEq('Fake it_it action config', fileContents);
+            break;
+          case 'it_it_pumpkin_config_binarypb':
+            chrome.test.assertEq('Fake it_it pumpkin config', fileContents);
+            break;
+          case 'de_de_action_config_binarypb':
+            chrome.test.assertEq('Fake de_de action config', fileContents);
+            break;
+          case 'de_de_pumpkin_config_binarypb':
+            chrome.test.assertEq('Fake de_de pumpkin config', fileContents);
+            break;
+          case 'es_es_action_config_binarypb':
+            chrome.test.assertEq('Fake es_es action config', fileContents);
+            break;
+          case 'es_es_pumpkin_config_binarypb':
+            chrome.test.assertEq('Fake es_es pumpkin config', fileContents);
+            break;
+          default:
+            chrome.test.fail();
+        }
+      }
       chrome.test.succeed();
     });
   },

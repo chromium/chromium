@@ -141,11 +141,12 @@ TEST_F(PumpkinInstallerTest, AlreadyInstalled) {
   ASSERT_FALSE(install_succeeded());
   SetPumpkinAlreadyInstalled();
   MaybeInstallAndWait();
-  ASSERT_FALSE(install_succeeded());
-  ASSERT_TRUE(install_failed());
-  EXPECT_EQ("Pumpkin already installed.", last_error());
+  ASSERT_TRUE(install_succeeded());
+  ASSERT_FALSE(install_failed());
+  EXPECT_EQ("", last_error());
 
-  // No metrics are recorded because a download was never attempted.
+  // Pumpkin was already installed, so we shouldn't record any additional
+  // metrics.
   ExpectSuccessHistogramCount(0);
   ExpectFailureHistogramCount(0);
 }

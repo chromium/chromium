@@ -11,6 +11,8 @@
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/shell.h"
 #include "base/bind.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
@@ -18,6 +20,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -1696,6 +1700,39 @@ class DictationPumpkinInstallTest : public DictationTest {
     DictationTest::SetUpCommandLine(command_line);
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kExperimentalAccessibilityDictationWithPumpkin);
+  }
+
+  void SetUpOnMainThread() override {
+    // Initialize Pumpkin DLC directory.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::ScopedTempDir pumpkin_root_dir;
+    ASSERT_TRUE(pumpkin_root_dir.CreateUniqueTempDir());
+    // Create subdirectories for each locale supported by Pumpkin.
+    std::vector<std::string> locales{"en_us", "fr_fr", "it_it", "de_de",
+                                     "es_es"};
+    std::vector<base::ScopedTempDir> sub_dirs(locales.size());
+    for (size_t i = 0; i < locales.size(); ++i) {
+      ASSERT_TRUE(
+          sub_dirs[i].Set(pumpkin_root_dir.GetPath().Append(locales[i])));
+    }
+
+    // Create fake DLC files.
+    AccessibilityManager::Get()->SetDlcPathForTest(pumpkin_root_dir.GetPath());
+    std::string content = "Fake DLC file content";
+    std::vector<base::FilePath> files{
+        pumpkin_root_dir.GetPath().Append("js_pumpkin_tagger_bin.js"),
+        pumpkin_root_dir.GetPath().Append("tagger_wasm_main.js"),
+        pumpkin_root_dir.GetPath().Append("tagger_wasm_main.wasm"),
+    };
+    for (const auto& sub_dir : sub_dirs) {
+      files.push_back(sub_dir.GetPath().Append("action_config.binarypb"));
+      files.push_back(sub_dir.GetPath().Append("pumpkin_config.binarypb"));
+    }
+    for (const auto& file : files) {
+      ASSERT_TRUE(base::WriteFile(file, content));
+    }
+
+    DictationTest::SetUpOnMainThread();
   }
 
   void WaitForInstallToSucceed() {

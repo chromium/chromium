@@ -14,7 +14,6 @@ constexpr char kInstallationMetricName[] =
     "PumpkinInstaller.InstallationSuccess";
 constexpr char kPendingDlcRequestError[] =
     "Cannot install Pumpkin, DLC request in progress.";
-constexpr char kPumpkinInstalledError[] = "Pumpkin already installed.";
 constexpr char kPumpkinInstallingError[] = "Pumpkin already installing.";
 }  // namespace
 
@@ -58,10 +57,8 @@ void PumpkinInstaller::MaybeInstallHelper(
       OnError(kPumpkinInstallingError);
       return;
     case dlcservice::DlcState_State_INSTALLED:
-      // TODO(akihiroota): If pumpkin is already installed, we should do
-      // `std::move(on_installed_).Run(true) to communicate that Pumpkin files
-      // are available.
-      OnError(kPumpkinInstalledError);
+      CHECK(!on_installed_.is_null());
+      std::move(on_installed_).Run(true);
       return;
     default:
       break;
@@ -87,7 +84,7 @@ void PumpkinInstaller::OnInstalled(
     return;
   }
 
-  DCHECK(!on_installed_.is_null());
+  CHECK(!on_installed_.is_null());
   std::move(on_installed_).Run(true);
 }
 
@@ -96,7 +93,7 @@ void PumpkinInstaller::OnProgress(double progress) {
 }
 
 void PumpkinInstaller::OnError(const std::string& error) {
-  DCHECK(!on_error_.is_null());
+  CHECK(!on_error_.is_null());
   std::move(on_error_).Run(error);
 }
 

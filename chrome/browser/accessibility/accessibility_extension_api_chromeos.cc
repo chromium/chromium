@@ -231,8 +231,14 @@ AccessibilityPrivateInstallPumpkinForDictationFunction::Run() {
 }
 
 void AccessibilityPrivateInstallPumpkinForDictationFunction::
-    OnPumpkinInstallFinished(bool success) {
-  Respond(WithArguments(success));
+    OnPumpkinInstallFinished(
+        std::unique_ptr<accessibility_private::PumpkinData> data) {
+  if (!data) {
+    Respond(Error("Couldn't retrieve Pumpkin data."));
+    return;
+  }
+
+  Respond(OneArgument(base::Value(data->ToValue())));
 }
 
 ExtensionFunction::ResponseAction

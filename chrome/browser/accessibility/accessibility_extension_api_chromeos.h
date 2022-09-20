@@ -7,6 +7,7 @@
 
 // The functions in this file are alphabetized. Please insert new functions in
 // alphabetical order.
+#include <memory>
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
@@ -86,7 +87,8 @@ class AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction
       ACCESSIBILITY_PRIVATE_HANDLESCROLLABLEBOUNDSFORPOINTFOUND)
 };
 
-// API function that initiates a Pumpkin download for Dictation.
+// API function that initiates a Pumpkin download for Dictation and responds
+// with the file bytes via a callback.
 class AccessibilityPrivateInstallPumpkinForDictationFunction
     : public ExtensionFunction {
   ~AccessibilityPrivateInstallPumpkinForDictationFunction() override = default;
@@ -94,7 +96,9 @@ class AccessibilityPrivateInstallPumpkinForDictationFunction
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.installPumpkinForDictation",
                              ACCESSIBILITY_PRIVATE_INSTALLPUMPKINFORDICTATION)
  private:
-  void OnPumpkinInstallFinished(bool success);
+  void OnPumpkinInstallFinished(
+      std::unique_ptr<::extensions::api::accessibility_private::PumpkinData>
+          data);
 };
 
 // API function that determines if an accessibility feature is enabled.

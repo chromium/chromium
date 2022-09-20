@@ -291,6 +291,64 @@
         "type": "string",
         "enum": ["ttsEsUs"],
         "description": "Types of accessibility-specific DLCs."
+      },
+      {
+        "id": "PumpkinData",
+        "type": "object",
+        "properties": {
+          "js_pumpkin_tagger_bin_js": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "tagger_wasm_main_js": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "tagger_wasm_main_wasm": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "en_us_action_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "en_us_pumpkin_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "fr_fr_action_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "fr_fr_pumpkin_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "it_it_action_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "it_it_pumpkin_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "de_de_action_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "de_de_pumpkin_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "es_es_action_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "es_es_pumpkin_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          }
+        }
       }
     ],
     "properties": {
@@ -347,8 +405,8 @@
           "description": "Runs when Pumpkin download finishes.",
           "parameters": [
             {
-              "name": "success",
-              "type": "boolean"
+              "name": "data",
+              "$ref": "PumpkinData"
             }
           ]
         }

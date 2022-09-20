@@ -90,6 +90,8 @@ using AccessibilityStatusCallback =
 using GetDlcContentsCallback =
     base::OnceCallback<void(const std::vector<uint8_t>&,
                             absl::optional<std::string>)>;
+using InstallPumpkinCallback = base::OnceCallback<void(
+    std::unique_ptr<::extensions::api::accessibility_private::PumpkinData>)>;
 
 class AccessibilityPanelWidgetObserver;
 
@@ -397,7 +399,7 @@ class AccessibilityManager
   // Triggers a request to install Pumpkin. Runs `callback` with a value of
   // true if the install was successful. Otherwise, runs `callback` with a
   // value of false.
-  void InstallPumpkinForDictation(base::OnceCallback<void(bool)> callback);
+  void InstallPumpkinForDictation(InstallPumpkinCallback callback);
 
   // Reads the contents of a DLC file and runs `callback` with the results.
   void GetDlcContents(::extensions::api::accessibility_private::DlcType dlc,
@@ -519,6 +521,11 @@ class AccessibilityManager
 
   void OnPumpkinInstalled(bool success);
   void OnPumpkinError(const std::string& error);
+  std::unique_ptr<::extensions::api::accessibility_private::PumpkinData>
+  CreatePumpkinData();
+  void OnPumpkinDataCreated(
+      std::unique_ptr<::extensions::api::accessibility_private::PumpkinData>
+          data);
 
   void OnAppTerminating();
 
@@ -612,7 +619,7 @@ class AccessibilityManager
   // Whether the virtual keyboard was enabled before Switch Access loaded.
   bool was_vk_enabled_before_switch_access_ = false;
 
-  base::OnceCallback<void(bool)> install_pumpkin_callback_;
+  InstallPumpkinCallback install_pumpkin_callback_;
   bool is_pumpkin_installed_for_testing_ = false;
 
   base::FilePath dlc_path_for_test_;
