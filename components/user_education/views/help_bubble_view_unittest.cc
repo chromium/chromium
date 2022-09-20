@@ -16,6 +16,7 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
+#include "components/user_education/views/help_bubble_views_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -28,73 +29,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace user_education {
-
-namespace {
-
-// Fake delegate implementation that does not depend on the browser.
-class TestDelegate : public HelpBubbleDelegate {
- public:
-  TestDelegate() = default;
-  ~TestDelegate() override = default;
-
-  std::vector<ui::Accelerator> GetPaneNavigationAccelerators(
-      ui::TrackedElement* anchor_element) const override {
-    return std::vector<ui::Accelerator>();
-  }
-
-  // These methods return text contexts that will be handled by the app's
-  // typography system.
-  int GetTitleTextContext() const override { return 0; }
-  int GetBodyTextContext() const override { return 0; }
-  int GetButtonTextContext() const override { return 0; }
-
-  // These methods return color codes that will be handled by the app's theming
-  // system.
-  ui::ColorId GetHelpBubbleBackgroundColorId() const override { return 0; }
-  ui::ColorId GetHelpBubbleForegroundColorId() const override { return 0; }
-  ui::ColorId GetHelpBubbleDefaultButtonBackgroundColorId() const override {
-    return 0;
-  }
-  ui::ColorId GetHelpBubbleDefaultButtonForegroundColorId() const override {
-    return 0;
-  }
-  ui::ColorId GetHelpBubbleButtonBorderColorId() const override { return 0; }
-  ui::ColorId GetHelpBubbleCloseButtonInkDropColorId() const override {
-    return 0;
-  }
-};
-
-// Fake theme provider. There's a similar TestThemeProvider in chrome/test but
-// we're avoiding using chrome-specific code here.
-class TestThemeProvider : public ui::ThemeProvider {
- public:
-  TestThemeProvider() = default;
-  ~TestThemeProvider() override = default;
-
-  gfx::ImageSkia* GetImageSkiaNamed(int id) const override { return nullptr; }
-  color_utils::HSL GetTint(int id) const override { return color_utils::HSL(); }
-  int GetDisplayProperty(int id) const override { return 0; }
-  bool ShouldUseNativeFrame() const override { return false; }
-  bool HasCustomImage(int id) const override { return false; }
-  base::RefCountedMemory* GetRawData(
-      int id,
-      ui::ResourceScaleFactor scale_factor) const override {
-    return nullptr;
-  }
-};
-
-// A top-level widget that reports a dummy theme provider.
-class TestThemedWidget : public views::Widget {
- public:
-  const ui::ThemeProvider* GetThemeProvider() const override {
-    return &test_theme_provider_;
-  }
-
- private:
-  TestThemeProvider test_theme_provider_;
-};
-
-}  // namespace
 
 // Unit tests for HelpBubbleView. Timeout functionality isn't tested here due to
 // the vagaries of trying to get simulated timed events to run without a full
@@ -110,7 +44,7 @@ class HelpBubbleViewTest : public views::ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    widget_ = std::make_unique<TestThemedWidget>();
+    widget_ = std::make_unique<test::TestThemedWidget>();
     widget_->Init(CreateParamsForTestWidget());
     view_ = widget_->SetContentsView(std::make_unique<views::View>());
     widget_->Show();
@@ -142,7 +76,7 @@ class HelpBubbleViewTest : public views::ViewsTestBase {
     return CreateHelpBubbleView(std::move(params));
   }
 
-  TestDelegate test_delegate_;
+  test::TestHelpBubbleDelegate test_delegate_;
   base::raw_ptr<views::View> view_;
   std::unique_ptr<views::Widget> widget_;
 };

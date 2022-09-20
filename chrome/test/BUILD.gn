@@ -8681,6 +8681,7 @@ test("unit_tests") {
       "//components/media_router/browser:test_support",
       "//components/media_router/common:test_support",
       "//components/user_education/views",
+      "//components/user_education/views:test_support",
       "//components/user_notes/model:unit_tests",
       "//components/web_modal:test_support",
       "//content/test:test_support",
@@ -8817,6 +8818,7 @@ test("unit_tests") {
       "../browser/ui/views/user_education/browser_feature_promo_controller_unittest.cc",
       "../browser/ui/views/user_education/help_bubble_view_timeout_unittest.cc",
       "../browser/ui/views/user_education/tip_marquee_view_unittest.cc",
+      "../browser/ui/views/user_education/views_tutorial_unittest.cc",
       "../browser/ui/window_name_prompt/window_name_prompt_unittest.cc",
     ]
     if (is_linux) {

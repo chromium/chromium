@@ -37,8 +37,10 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryMac::CreateBubble(
   constexpr auto kMacMenuInsets = gfx::Insets::VH(10, -5);
   anchor_rect.Inset(kMacMenuInsets);
 
-  return base::WrapUnique(new HelpBubbleViews(new HelpBubbleView(
-      delegate_, anchor_view, std::move(params), anchor_rect)));
+  return base::WrapUnique(
+      new HelpBubbleViews(new HelpBubbleView(delegate_, anchor_view,
+                                             std::move(params), anchor_rect),
+                          element));
 }
 
 bool HelpBubbleFactoryMac::CanBuildBubbleForTrackedElement(

@@ -40,15 +40,36 @@ source_set("views") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "help_bubble_views_test_util.cc",
+    "help_bubble_views_test_util.h",
+  ]
+
+  deps = [
+    ":views",
+    "//base",
+    "//components/user_education/common",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "help_bubble_factory_views_unittest.cc",
     "help_bubble_view_unittest.cc",
     "new_badge_label_unittest.cc",
   ]
 
   deps = [
+    ":test_support",
     ":views",
     "//base",
     "//base/test:test_support",

@@ -72,6 +72,8 @@ base::Feature kCustomActionIPHFeature{"CustomActionTestIPHFeature",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 base::Feature kDefaultCustomActionIPHFeature{
     "DefaultCustomActionTestIPHFeature", base::FEATURE_ENABLED_BY_DEFAULT};
+base::Feature kCustomActionIPHFeature2{"CustomActionTestIPHFeature2",
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
 constexpr char kTestTutorialIdentifier[] = "Test Tutorial";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOneOffIPHElementId);
 }  // namespace
@@ -982,7 +984,7 @@ TEST_F(BrowserFeaturePromoControllerTest, PerformsCustomAction) {
       .WillOnce(Return(true));
   ASSERT_TRUE(controller_->MaybeShowPromo(kCustomActionIPHFeature));
 
-  // Simulate clicking the "Show Tutorial" button.
+  // Simulate clicking the custom action button.
   auto* const bubble = GetPromoBubble();
   ASSERT_TRUE(bubble);
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
@@ -1001,7 +1003,7 @@ TEST_F(BrowserFeaturePromoControllerTest, PerformsCustomActionAsDefault) {
       .WillOnce(Return(true));
   ASSERT_TRUE(controller_->MaybeShowPromo(kDefaultCustomActionIPHFeature));
 
-  // Simulate clicking the "Show Tutorial" button.
+  // Simulate clicking the custom action button.
   auto* const bubble = GetPromoBubble();
   ASSERT_TRUE(bubble);
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
@@ -1020,7 +1022,7 @@ TEST_F(BrowserFeaturePromoControllerTest, DoesNotPerformCustomAction) {
       .WillOnce(Return(true));
   ASSERT_TRUE(controller_->MaybeShowPromo(kCustomActionIPHFeature));
 
-  // Simulate clicking the "Show Tutorial" button.
+  // Simulate clicking the other button.
   auto* const bubble = GetPromoBubble();
   ASSERT_TRUE(bubble);
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
@@ -1040,7 +1042,7 @@ TEST_F(BrowserFeaturePromoControllerTest, DoesNotPerformDefaultCustomAction) {
       .WillOnce(Return(true));
   ASSERT_TRUE(controller_->MaybeShowPromo(kDefaultCustomActionIPHFeature));
 
-  // Simulate clicking the "Show Tutorial" button.
+  // Simulate clicking the other button.
   auto* const bubble = GetPromoBubble();
   ASSERT_TRUE(bubble);
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
@@ -1049,6 +1051,43 @@ TEST_F(BrowserFeaturePromoControllerTest, DoesNotPerformDefaultCustomAction) {
   waiter.Wait();
 
   EXPECT_EQ(0, custom_callback_count_);
+}
+
+// Test that the promo controller can handle the anchor view disappearing from
+// under the bubble during the button callback.
+TEST_F(BrowserFeaturePromoControllerTest, CustomActionHidesAnchorView) {
+  FeaturePromoHandle promo_handle;
+  registry()->RegisterFeature(FeaturePromoSpecification::CreateForCustomAction(
+      kCustomActionIPHFeature2, kAppMenuButtonElementId, IDS_REOPEN_TAB_PROMO,
+      IDS_REOPEN_TAB_PROMO,
+      base::BindLambdaForTesting(
+          [&](ui::ElementContext context, FeaturePromoHandle handle) {
+            views::ElementTrackerViews::GetInstance()
+                ->GetUniqueView(kAppMenuButtonElementId, context)
+                ->SetVisible(false);
+            promo_handle = std::move(handle);
+          })));
+
+  // Launch a feature promo that has a tutorial.
+  EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
+  EXPECT_CALL(*mock_tracker_,
+              ShouldTriggerHelpUI(Ref(kCustomActionIPHFeature2)))
+      .WillOnce(Return(true));
+  ASSERT_TRUE(controller_->MaybeShowPromo(kCustomActionIPHFeature2));
+
+  // Simulate clicking the custom action button.
+  auto* const bubble = GetPromoBubble();
+  ASSERT_TRUE(bubble);
+  views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      bubble->GetNonDefaultButtonForTesting(0));
+  waiter.Wait();
+  EXPECT_TRUE(promo_handle.is_valid());
+
+  // Promo is actually dismissed when the handle is released.
+  EXPECT_CALL(*mock_tracker_, Dismissed(testing::Ref(kCustomActionIPHFeature2)))
+      .Times(1);
+  promo_handle.Release();
 }
 
 TEST_F(BrowserFeaturePromoControllerTest, GetAnchorContext) {

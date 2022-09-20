@@ -42,7 +42,7 @@ class TutorialService {
   bool IsRunningTutorial() const;
 
   // Sets the current help bubble stored by the service.
-  void SetCurrentBubble(std::unique_ptr<HelpBubble> bubble);
+  void SetCurrentBubble(std::unique_ptr<HelpBubble> bubble, bool is_last_step);
 
   // Hides the current help bubble currently being shown by the service.
   void HideCurrentBubbleIfShowing();
@@ -69,7 +69,7 @@ class TutorialService {
   }
 
   // Accessors for the help bubble used in tests.
-  HelpBubble* currently_displayed_bubble() {
+  HelpBubble* currently_displayed_bubble_for_testing() {
     return currently_displayed_bubble_.get();
   }
 
@@ -126,6 +126,9 @@ class TutorialService {
   // The current help bubble displayed by the tutorial. This is owned by the
   // service so that when the tutorial exits, the bubble can continue existing.
   std::unique_ptr<HelpBubble> currently_displayed_bubble_;
+
+  // Listens for when the final bubble in a Tutorial is closed.
+  base::CallbackListSubscription final_bubble_closed_subscription_;
 
   // Pointers to the registries used for constructing and showing tutorials and
   // help bubbles.

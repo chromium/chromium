@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
       completed, Run,
       views::test::InteractionTestUtilSimulatorViews::PressButton(
           static_cast<HelpBubbleViews*>(
-              GetTutorialService()->currently_displayed_bubble())
+              GetTutorialService()->currently_displayed_bubble_for_testing())
               ->bubble_view()
               ->GetDefaultButtonForTesting(),
           ui::test::InteractionTestUtil::InputType::kKeyboard));

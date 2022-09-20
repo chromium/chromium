@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/callback_list.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/tutorial.h"
@@ -91,7 +92,7 @@ bool TutorialService::RestartTutorial() {
   DCHECK(running_tutorial_ && running_tutorial_creation_params_);
   base::AutoReset<bool> resetter(&is_restarting_, true);
 
-  currently_displayed_bubble_.reset();
+  HideCurrentBubbleIfShowing();
 
   running_tutorial_ = Tutorial::Builder::BuildFromDescription(
       *running_tutorial_creation_params_->description_, this,
@@ -172,15 +173,29 @@ void TutorialService::CompleteTutorial() {
   std::move(completed_callback_).Run();
 }
 
-void TutorialService::SetCurrentBubble(std::unique_ptr<HelpBubble> bubble) {
+void TutorialService::SetCurrentBubble(std::unique_ptr<HelpBubble> bubble,
+                                       bool is_last_step) {
   DCHECK(running_tutorial_);
   currently_displayed_bubble_ = std::move(bubble);
+  if (is_last_step) {
+    final_bubble_closed_subscription_ =
+        currently_displayed_bubble_->AddOnCloseCallback(base::BindOnce(
+            [](TutorialService* service, user_education::HelpBubble*) {
+              service->CompleteTutorial();
+            },
+            base::Unretained(this)));
+  } else {
+    // If this was not the final bubble, we shouldn't be subscribed to a
+    // different "final bubble".
+    DCHECK(!final_bubble_closed_subscription_);
+  }
 }
 
 void TutorialService::HideCurrentBubbleIfShowing() {
-  if (currently_displayed_bubble_) {
-    currently_displayed_bubble_.reset();
-  }
+  if (!currently_displayed_bubble_)
+    return;
+  final_bubble_closed_subscription_ = base::CallbackListSubscription();
+  currently_displayed_bubble_.reset();
 }
 
 bool TutorialService::IsRunningTutorial() const {
@@ -192,7 +207,7 @@ void TutorialService::ResetRunningTutorial() {
   running_tutorial_.reset();
   running_tutorial_creation_params_.reset();
   running_tutorial_was_restarted_ = false;
-  currently_displayed_bubble_.reset();
+  HideCurrentBubbleIfShowing();
 }
 
 void TutorialService::OnFocusToggledForAccessibility(HelpBubble* bubble) {

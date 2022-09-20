@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_USER_EDUCATION_VIEWS_HELP_BUBBLE_FACTORY_VIEWS_H_
 #define COMPONENTS_USER_EDUCATION_VIEWS_HELP_BUBBLE_FACTORY_VIEWS_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_factory.h"
@@ -57,7 +59,8 @@ class HelpBubbleViews : public HelpBubble,
   friend class HelpBubbleFactoryViews;
   friend class HelpBubbleFactoryMac;
 
-  explicit HelpBubbleViews(HelpBubbleView* help_bubble_view);
+  explicit HelpBubbleViews(HelpBubbleView* help_bubble_view,
+                           ui::TrackedElement* anchor_element);
 
   // Clean up properties on the anchor view, if applicable.
   void MaybeResetAnchorView();
@@ -68,9 +71,17 @@ class HelpBubbleViews : public HelpBubble,
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  void OnElementHidden(ui::TrackedElement* element);
+
   raw_ptr<HelpBubbleView> help_bubble_view_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       scoped_observation_{this};
+
+  // Track the anchor element to determine if/when it goes away.
+  base::raw_ptr<const ui::TrackedElement> anchor_element_;
+  base::CallbackListSubscription anchor_subscription_;
+
+  base::WeakPtrFactory<HelpBubbleViews> weak_ptr_factory_{this};
 };
 
 // Factory implementation for HelpBubbleViews.
