@@ -56,9 +56,9 @@ TEST_F(DeviceInfoPrefsTest, ShouldCleanUpCorruptEntriesUponGarbageCollection) {
 
   // Manipulate the preference directly to add a corrupt entry to the list,
   // which is a string instead of a dictionary.
-  ListPrefUpdate cache_guids_update(&pref_service_,
-                                    kDeviceInfoRecentGUIDsWithTimestamps);
-  base::Value::List& update_list = cache_guids_update->GetList();
+  ScopedListPrefUpdate cache_guids_update(&pref_service_,
+                                          kDeviceInfoRecentGUIDsWithTimestamps);
+  base::Value::List& update_list = cache_guids_update.Get();
   update_list.Insert(update_list.begin(), base::Value("corrupt_string_entry"));
 
   // Add another corrupt entry: in this case the entry is a dictionary, but it

@@ -74,9 +74,9 @@ bool DeviceInfoPrefs::IsRecentLocalCacheGuid(
 }
 
 void DeviceInfoPrefs::AddLocalCacheGuid(const std::string& cache_guid) {
-  ListPrefUpdate update_cache_guids(pref_service_,
-                                    kDeviceInfoRecentGUIDsWithTimestamps);
-  base::Value::List& update_list = update_cache_guids->GetList();
+  ScopedListPrefUpdate update_cache_guids(pref_service_,
+                                          kDeviceInfoRecentGUIDsWithTimestamps);
+  base::Value::List& update_list = update_cache_guids.Get();
 
   for (auto it = update_list.begin(); it != update_list.end(); it++) {
     if (MatchesGuidInDictionary(*it, cache_guid)) {
@@ -101,9 +101,9 @@ void DeviceInfoPrefs::AddLocalCacheGuid(const std::string& cache_guid) {
 }
 
 void DeviceInfoPrefs::GarbageCollectExpiredCacheGuids() {
-  ListPrefUpdate update_cache_guids(pref_service_,
-                                    kDeviceInfoRecentGUIDsWithTimestamps);
-  update_cache_guids->GetList().EraseIf([this](const auto& dict) {
+  ScopedListPrefUpdate update_cache_guids(pref_service_,
+                                          kDeviceInfoRecentGUIDsWithTimestamps);
+  update_cache_guids->EraseIf([this](const auto& dict) {
     // Avoid crashes if the preference contains corrupt entries that are not
     // dictionaries, and meanwhile clean up these corrupt entries.
     if (!dict.is_dict()) {
