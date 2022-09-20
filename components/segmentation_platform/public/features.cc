@@ -40,6 +40,9 @@ const base::Feature kSegmentationPlatformFeedSegmentFeature{
 const base::Feature kResumeHeavyUserSegmentFeature{
     "ResumeHeavyUserSegment", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kSegmentationPlatformPowerUserFeature{
+    "SegmentationPlatformPowerUserFeature", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kContextualPageActions{"ContextualPageActions",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 

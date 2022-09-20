@@ -32,6 +32,9 @@ extern const base::Feature kSegmentationPlatformFeedSegmentFeature;
 // Feature flag for enabling categorization into resume heavy user.
 extern const base::Feature kResumeHeavyUserSegmentFeature;
 
+// Feature flag for enabling Power user segmentation.
+extern const base::Feature kSegmentationPlatformPowerUserFeature;
+
 // Feature flag for enabling contextual page actions. Only effective when at
 // least one action is enabled.
 extern const base::Feature kContextualPageActions;

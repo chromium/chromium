@@ -101,8 +101,7 @@ void MetadataWriter::AddBooleanSegmentDiscreteMappingWithSubsegments(
     subsegment_mapping.emplace_back(i, i);
   }
   AddDiscreteMappingEntries(
-      base::StrCat(
-          {key, segmentation_platform::kSubsegmentDiscreteMappingSuffix}),
+      base::StrCat({key, kSubsegmentDiscreteMappingSuffix}),
       subsegment_mapping.data(), subsegment_mapping.size());
 }
 

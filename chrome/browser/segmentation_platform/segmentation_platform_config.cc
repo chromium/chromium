@@ -38,6 +38,7 @@
 #include "components/commerce/core/shopping_service.h"
 #include "components/query_tiles/switches.h"
 #include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
+#include "components/segmentation_platform/embedder/default_model/power_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/price_tracking_action_model.h"
 #include "components/segmentation_platform/embedder/default_model/query_tiles_model.h"
 #include "components/segmentation_platform/embedder/input_delegate/price_tracking_input_delegate.h"
@@ -216,8 +217,20 @@ std::unique_ptr<Config> GetConfigForIntentionalUser() {
   config->segmentation_uma_name = kIntentionalUserUmaName;
   config->AddSegmentId(SegmentId::INTENTIONAL_USER_SEGMENT,
                        std::make_unique<IntentionalUserModel>());
-  config->segment_selection_ttl = base::Days(28);
-  config->unknown_selection_ttl = base::Days(28);
+  config->segment_selection_ttl = base::Days(7);
+  config->unknown_selection_ttl = base::Days(7);
+
+  return config;
+}
+
+std::unique_ptr<Config> GetConfigForPowerUser() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kPowerUserKey;
+  config->segmentation_uma_name = kPowerUserUmaName;
+  config->AddSegmentId(SegmentId::POWER_USER_SEGMENT,
+                       std::make_unique<PowerUserSegment>());
+  config->segment_selection_ttl = base::Days(7);
+  config->unknown_selection_ttl = base::Days(7);
 
   return config;
 }
@@ -428,6 +441,11 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
 
   configs.emplace_back(GetConfigForChromeStartAndroidV2());
   configs.emplace_back(GetConfigForIntentionalUser());
+
+  if (base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformPowerUserFeature)) {
+    configs.emplace_back(GetConfigForPowerUser());
+  }
 #endif
   if (IsLowEngagementFeatureEnabled()) {
     configs.emplace_back(GetConfigForChromeLowUserEngagement());
