@@ -563,15 +563,36 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         // We have to iterate all menu items since same menu item ID may be associated with more
         // than one menu items.
         boolean isOverviewModeMenu = menuGroup == MenuGroup.OVERVIEW_MODE_MENU;
-        boolean isMenuGroupTabsVisible = isOverviewModeMenu
+
+        // Disable incognito group and select tabs when a re-authentication screen is shown.
+        // We show the re-auth screen only in Incognito mode.
+        boolean isIncognitoReauthShowing = isIncognito && (mIncognitoReauthController != null)
+                && mIncognitoReauthController.isReauthPageShowing();
+        boolean isTabSelectionEditorContext = isOverviewModeMenu
                 && TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)
                 && !DeviceClassManager.enableAccessibilityLayout(mContext);
-        boolean isMenuGroupTabsEnabled = isMenuGroupTabsVisible
-                && mTabModelSelector.getTabModelFilterProvider()
-                                .getCurrentTabModelFilter()
-                                .getTabsWithNoOtherRelatedTabs()
-                                .size()
-                        > 1;
+
+        boolean isMenuSelectTabsEnabled = false;
+        boolean isMenuSelectTabsVisible = false;
+        boolean isMenuGroupTabsEnabled = false;
+        boolean isMenuGroupTabsVisible = false;
+        if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
+            isMenuSelectTabsVisible = isTabSelectionEditorContext;
+            isMenuSelectTabsEnabled = !isIncognitoReauthShowing && isMenuSelectTabsVisible
+                    && mTabModelSelector.getTabModelFilterProvider()
+                                    .getCurrentTabModelFilter()
+                                    .getCount()
+                            > 1;
+        } else {
+            isMenuGroupTabsVisible = isTabSelectionEditorContext;
+            isMenuGroupTabsEnabled = !isIncognitoReauthShowing && isMenuGroupTabsVisible
+                    && mTabModelSelector.getTabModelFilterProvider()
+                                    .getCurrentTabModelFilter()
+                                    .getTabsWithNoOtherRelatedTabs()
+                                    .size()
+                            > 1;
+        }
+
         boolean isPriceTrackingVisible = isOverviewModeMenu
                 && PriceTrackingUtilities.shouldShowPriceTrackingMenu()
                 && !DeviceClassManager.enableAccessibilityLayout(mContext) && !isIncognito;
@@ -623,14 +644,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 item.setVisible(!isIncognito);
             }
             if (item.getItemId() == R.id.menu_group_tabs) {
-                // Disable incognito group tabs when a re-authentication screen is shown.
-                // We show the re-auth screen only in Incognito mode.
-                boolean isIncognitoReauthShowing = isIncognito
-                        && (mIncognitoReauthController != null)
-                        && mIncognitoReauthController.isReauthPageShowing();
-
                 item.setVisible(isMenuGroupTabsVisible);
-                item.setEnabled(!isIncognitoReauthShowing && isMenuGroupTabsEnabled);
+                item.setEnabled(isMenuGroupTabsEnabled);
+            }
+            if (item.getItemId() == R.id.menu_select_tabs) {
+                item.setVisible(isMenuSelectTabsVisible);
+                item.setEnabled(isMenuSelectTabsEnabled);
             }
             if (item.getItemId() == R.id.track_prices_row_menu_id) {
                 item.setVisible(isPriceTrackingVisible);

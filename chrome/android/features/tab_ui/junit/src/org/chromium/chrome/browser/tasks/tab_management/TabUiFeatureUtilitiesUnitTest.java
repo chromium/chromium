@@ -72,7 +72,8 @@ public class TabUiFeatureUtilitiesUnitTest {
     private void cacheFeatureFlags() {
         List<CachedFlag> featuresToCache = Arrays.asList(ChromeFeatureList.sTabGridLayoutAndroid,
                 ChromeFeatureList.sTabGroupsAndroid,
-                ChromeFeatureList.sTabGroupsContinuationAndroid);
+                ChromeFeatureList.sTabGroupsContinuationAndroid,
+                ChromeFeatureList.sTabSelectionEditorV2);
         CachedFeatureFlags.cacheNativeFlags(featuresToCache);
     }
 
@@ -80,7 +81,8 @@ public class TabUiFeatureUtilitiesUnitTest {
     // clang-format off
     @Features.DisableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                                 ChromeFeatureList.TAB_GROUPS_ANDROID,
-                                ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+                                ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_LowEnd_NoEnabledFlags() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -107,7 +109,8 @@ public class TabUiFeatureUtilitiesUnitTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-                                ChromeFeatureList.TAB_GROUPS_ANDROID})
+                                ChromeFeatureList.TAB_GROUPS_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_HighEnd_Layout() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -138,7 +141,8 @@ public class TabUiFeatureUtilitiesUnitTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-                                ChromeFeatureList.TAB_GROUPS_ANDROID})
+                                ChromeFeatureList.TAB_GROUPS_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_LowEnd_Layout() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -169,7 +173,8 @@ public class TabUiFeatureUtilitiesUnitTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                                 ChromeFeatureList.TAB_GROUPS_ANDROID})
-    @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_HighEnd_LayoutGroup() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -200,7 +205,8 @@ public class TabUiFeatureUtilitiesUnitTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                                 ChromeFeatureList.TAB_GROUPS_ANDROID})
-    @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_LowEnd_LayoutGroup() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -230,7 +236,8 @@ public class TabUiFeatureUtilitiesUnitTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                                ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+                                ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_HighEnd_Group() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -260,7 +267,8 @@ public class TabUiFeatureUtilitiesUnitTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                                ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+                                ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_LowEnd_Group() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -290,7 +298,8 @@ public class TabUiFeatureUtilitiesUnitTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     @Features.DisableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                                ChromeFeatureList.TAB_GROUPS_ANDROID})
+                                ChromeFeatureList.TAB_GROUPS_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_LowEnd_Continuation() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -318,9 +327,45 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Test
     // clang-format off
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+    @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @Features.DisableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                                 ChromeFeatureList.TAB_GROUPS_ANDROID,
                                 ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    public void testCacheGridTabSwitcher_LowEnd_SelectionEditorV2() {
+        // clang-format on
+        when(mCommandLine.hasSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
+        cacheFeatureFlags();
+
+        CachedFeatureFlags.resetFlagsForTesting();
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
+                ContextUtils.getApplicationContext()));
+
+        setAccessibilityEnabledForTesting(true);
+        DeviceClassManager.resetForTesting();
+        cacheFeatureFlags();
+
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                ContextUtils.getApplicationContext()));
+        assertFalse(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
+                ContextUtils.getApplicationContext()));
+    }
+
+    @Test
+    // clang-format off
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                                ChromeFeatureList.TAB_GROUPS_ANDROID,
+                                ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_HighEnd_AllFlags() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -333,6 +378,8 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
+                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -344,13 +391,16 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
+                ContextUtils.getApplicationContext()));
     }
 
     @Test
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                                 ChromeFeatureList.TAB_GROUPS_ANDROID,
-                                ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+                                ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_LowEnd_AllFlags() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -364,6 +414,8 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
+                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -375,13 +427,16 @@ public class TabUiFeatureUtilitiesUnitTest {
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
+        assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
+                ContextUtils.getApplicationContext()));
     }
 
     @Test
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                                 ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
-    @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_HighEnd_LayoutContinuation() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -411,7 +466,8 @@ public class TabUiFeatureUtilitiesUnitTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                                 ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
-    @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_LowEnd_LayoutContinuation() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -441,7 +497,8 @@ public class TabUiFeatureUtilitiesUnitTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
                                 ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
-    @Features.DisableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_HighEnd_GroupContinuation() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -471,7 +528,8 @@ public class TabUiFeatureUtilitiesUnitTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
                                 ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
-    @Features.DisableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridTabSwitcher_LowEnd_GroupContinuation() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)).thenReturn(true);
@@ -501,7 +559,8 @@ public class TabUiFeatureUtilitiesUnitTest {
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
-    @Features.DisableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
+    @Features.DisableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                                ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testCacheGridAndGroup_LowEnd_enabledThenDisabled_withContinuationFlag() {
         // clang-format on
         when(mCommandLine.hasSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)).thenReturn(true);

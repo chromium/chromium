@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -44,6 +45,9 @@ import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
+import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsOrchestrator;
@@ -59,6 +63,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -126,6 +131,8 @@ public class TabSwitcherCoordinator
     private TabSelectionEditorCoordinator mTabSelectionEditorCoordinator;
     @Nullable
     private TabGroupManualSelectionMode mTabGroupManualSelectionMode;
+    @Nullable
+    private List<TabSelectionEditorAction> mTabSelectionEditorActions;
     private TabSuggestionsOrchestrator mTabSuggestionsOrchestrator;
     private TabAttributeCache mTabAttributeCache;
     private ViewGroup mContainer;
@@ -172,6 +179,10 @@ public class TabSwitcherCoordinator
                                         .getCurrentTabModelFilter()
                                         .getTabsWithNoOtherRelatedTabs());
                         RecordUserAction.record("MobileMenuGroupTabs");
+                        return true;
+                    } else if (id == R.id.menu_select_tabs) {
+                        showTabSelectionEditorV2();
+                        RecordUserAction.record("MobileMenuSelectTabs");
                         return true;
                     } else if (id == R.id.track_prices_row_menu_id) {
                         assert mPriceTrackingDialogCoordinator != null;
@@ -402,17 +413,24 @@ public class TabSwitcherCoordinator
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherCoordinator.initWithNative")) {
             mTabListCoordinator.initWithNative(mDynamicResourceLoaderSupplier.get());
 
-            // Selector editor required for tab groups and close tab suggestions.
-            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)
-                    || ChromeFeatureList.sCloseTabSuggestions.isEnabled()) {
-                setUpTabSelectionEditorCoordinator(mActivity, mTabContentManager);
-            }
-            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)) {
-                setUpTabGroupManualSelectionMode(mActivity);
-                if (mTabGridDialogCoordinator != null) {
-                    mTabGridDialogCoordinator.initWithNative(mActivity, mTabModelSelector,
-                            mTabContentManager, mTabListCoordinator.getTabGroupTitleEditor());
+            // TODO(ckitagawa): TabSelectionEditorV2 lazily loads the TabSelectionEditor which
+            // prevents the CloseTabSuggestions feature from running. Unblock the close suggestions
+            // feature if the V2 editor is enabled.
+            if (!TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mActivity)) {
+                // Selector editor required for tab groups if not using the V2 editor and close tab
+                // suggestions.
+                if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)
+                        || ChromeFeatureList.sCloseTabSuggestions.isEnabled()) {
+                    setUpTabSelectionEditorCoordinator(mActivity, mTabContentManager);
                 }
+                if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)) {
+                    setUpTabGroupManualSelectionMode(mActivity);
+                }
+            }
+            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)
+                    && mTabGridDialogCoordinator != null) {
+                mTabGridDialogCoordinator.initWithNative(mActivity, mTabModelSelector,
+                        mTabContentManager, mTabListCoordinator.getTabGroupTitleEditor());
             }
 
             final TabSelectionEditorController controller = mTabSelectionEditorCoordinator != null
@@ -420,7 +438,8 @@ public class TabSwitcherCoordinator
                     : null;
 
             if (mMode == TabListCoordinator.TabListMode.GRID) {
-                if (ChromeFeatureList.sCloseTabSuggestions.isEnabled()) {
+                if (ChromeFeatureList.sCloseTabSuggestions.isEnabled()
+                        && !TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mActivity)) {
                     mTabSuggestionsOrchestrator = new TabSuggestionsOrchestrator(
                             mActivity, mTabModelSelector, mLifecycleDispatcher);
                     TabSuggestionMessageService tabSuggestionMessageService =
@@ -485,6 +504,42 @@ public class TabSwitcherCoordinator
         mTabSelectionEditorCoordinator =
                 new TabSelectionEditorCoordinator(context, mCoordinatorView, mTabModelSelector,
                         tabContentManager, selectionEditorMode, mRootView, /*displayGroups=*/false);
+    }
+
+    private void showTabSelectionEditorV2() {
+        assert TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mActivity);
+
+        if (mTabSelectionEditorCoordinator == null) {
+            int selectionEditorMode = mMode == TabListMode.CAROUSEL ? TabListMode.GRID : mMode;
+            mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(mActivity,
+                    mCoordinatorView, mTabModelSelector, mTabContentManager, selectionEditorMode,
+                    mRootView, /*displayGroups=*/true);
+            mMediator.setTabSelectionEditorController(
+                    mTabSelectionEditorCoordinator.getController());
+        }
+
+        if (mTabSelectionEditorActions == null) {
+            mTabSelectionEditorActions = new ArrayList<>();
+            mTabSelectionEditorActions.add(TabSelectionEditorSelectionAction.createAction(mActivity,
+                    ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END,
+                    mTabModelSelector.getCurrentModel().isIncognito()));
+            mTabSelectionEditorActions.add(TabSelectionEditorCloseAction.createAction(
+                    ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+            mTabSelectionEditorActions.add(TabSelectionEditorGroupAction.createAction(
+                    ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+        }
+
+        mTabSelectionEditorCoordinator.getController().configureToolbarWithMenuItems(
+                mTabSelectionEditorActions,
+                new TabSelectionEditorNavigationProvider(
+                        mTabSelectionEditorCoordinator.getController()));
+
+        List<Tab> tabs = new ArrayList<>();
+        TabList list = mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+        for (int i = 0; i < list.getCount(); i++) {
+            tabs.add(list.getTabAt(i));
+        }
+        mTabSelectionEditorCoordinator.getController().show(tabs);
     }
 
     private void setUpPriceTracking(Context context, ModalDialogManager modalDialogManager) {

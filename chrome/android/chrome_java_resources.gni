@@ -399,6 +399,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_person_add_40dp.xml",
   "java/res/drawable/ic_reading_list_folder_24dp.xml",
   "java/res/drawable/ic_recent_tabs_bulk_20dp.xml",
+  "java/res/drawable/ic_select_tabs.xml",
   "java/res/drawable/ic_select_window.xml",
   "java/res/drawable/ic_signout_40dp.xml",
   "java/res/drawable/ic_site_timer.xml",

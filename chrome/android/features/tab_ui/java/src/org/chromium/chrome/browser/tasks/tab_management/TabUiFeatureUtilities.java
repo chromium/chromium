@@ -226,6 +226,15 @@ public class TabUiFeatureUtilities {
     }
 
     /**
+     * @return Whether the tab selection editor v2 is enabled and available for use.
+     * @param context The activity context.
+     */
+    public static boolean isTabSelectionEditorV2Enabled(Context context) {
+        return isTabGroupsAndroidEnabled(context)
+                && ChromeFeatureList.sTabSelectionEditorV2.isEnabled();
+    }
+
+    /**
      * @return Whether the conditional tab strip feature is enabled and available for use.
      */
     public static boolean isConditionalTabStripEnabled() {

@@ -1506,6 +1506,29 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
+                     ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    // TODO(ckitagawa): Re-enable accessibility checks after UX polish is landed.
+    @DisabledTest(message = "Accessibility touch target too small for default menu button.")
+    public void testTabSelectionEditorV2Shown() throws InterruptedException {
+        // clang-format on
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
+        createTabs(cta, false, 3);
+        enterTabSwitcher(cta);
+        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(3));
+
+        enterTabSelectionEditorV2(cta);
+        robot.resultRobot.verifyTabSelectionEditorIsVisible();
+
+        Espresso.pressBack();
+        robot.resultRobot.verifyTabSelectionEditorIsHidden();
+    }
+
+    @Test
+    @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void testTabGroupManualSelection_DisabledForSingleTab() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1817,6 +1840,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     private void enterTabGroupManualSelection(ChromeTabbedActivity cta) {
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.menu_group_tabs);
+    }
+
+    private void enterTabSelectionEditorV2(ChromeTabbedActivity cta) {
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(), cta, R.id.menu_select_tabs);
     }
 
     /**

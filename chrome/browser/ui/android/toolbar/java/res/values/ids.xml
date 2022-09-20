@@ -12,6 +12,7 @@ found in the LICENSE file.
     <item type="id" name="ungroup_tab" />
     <item type="id" name="share_tab_group" />
     <item type="id" name="edit_group_name" />
+    <item type="id" name="select_tabs" />
 
     <!-- Menu IDs -->
     <item type="id" name="customize_adaptive_button_menu_id" />

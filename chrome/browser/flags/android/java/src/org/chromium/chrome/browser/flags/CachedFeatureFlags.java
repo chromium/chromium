@@ -102,6 +102,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.TAB_GROUPS_ANDROID, true)
                     .put(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, false)
                     .put(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS, false)
+                    .put(ChromeFeatureList.TAB_SELECTION_EDITOR_V2, false)
                     .put(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS, false)
                     .put(ChromeFeatureList.TAB_TO_GTS_ANIMATION, true)
                     .put(ChromeFeatureList.TEST_DEFAULT_DISABLED, false)

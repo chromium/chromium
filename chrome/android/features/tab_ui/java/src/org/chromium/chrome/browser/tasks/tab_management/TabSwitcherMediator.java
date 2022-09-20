@@ -491,12 +491,22 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     public void initWithNative(@Nullable TabSelectionEditorCoordinator
                                        .TabSelectionEditorController tabSelectionEditorController,
             @Nullable SnackbarManager snackbarManager) {
+        setTabSelectionEditorController(tabSelectionEditorController);
+        mSnackbarManager = snackbarManager;
+    }
+
+    /**
+     * Initialization of the {@link TabSelectionEditorCoordinator}.
+     * @param controller the controller to use.
+     */
+    public void setTabSelectionEditorController(
+            @Nullable TabSelectionEditorCoordinator
+                    .TabSelectionEditorController tabSelectionEditorController) {
         if (tabSelectionEditorController != null) {
             mTabSelectionEditorController = tabSelectionEditorController;
             mTabSelectionEditorController.getHandleBackPressChangedSupplier().addObserver(
                     this::notifyBackPressStateChanged);
         }
-        mSnackbarManager = snackbarManager;
     }
 
     /**

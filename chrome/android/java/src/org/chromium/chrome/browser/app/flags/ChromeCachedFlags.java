@@ -124,6 +124,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sTabGroupsAndroid);
                 add(ChromeFeatureList.sTabGroupsContinuationAndroid);
                 add(ChromeFeatureList.sTabGroupsForTablets);
+                add(ChromeFeatureList.sTabSelectionEditorV2);
                 add(ChromeFeatureList.sTabStripImprovements);
                 add(ChromeFeatureList.sTabToGTSAnimation);
                 add(ChromeFeatureList.sToolbarUseHardwareBitmapDraw);

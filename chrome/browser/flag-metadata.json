@@ -6348,6 +6348,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "tab-selection-editor-v2",
+    "owners": [ "ckitagawa", "fredmello" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "tangible-sync",
     "owners": [ "aliceywang", "chrome-signin-team" ],
     "expiry_milestone":120

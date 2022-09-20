@@ -9540,6 +9540,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardArtImageDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardArtImage)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"tab-selection-editor-v2", flag_descriptions::kTabSelectionEditorV2Name,
+     flag_descriptions::kTabSelectionEditorV2Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabSelectionEditorV2)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
