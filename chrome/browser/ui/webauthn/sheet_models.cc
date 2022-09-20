@@ -29,6 +29,7 @@
 #include "device/fido/fido_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_utils.h"
 #include "url/gurl.h"
 
@@ -1445,15 +1446,43 @@ AuthenticatorQRSheetModel::~AuthenticatorQRSheetModel() = default;
 
 const gfx::VectorIcon& AuthenticatorQRSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return gfx::kNoneIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnPhoneDarkIcon
                                                  : kWebauthnPhoneIcon;
 }
 
 std::u16string AuthenticatorQRSheetModel::GetStepTitle() const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    switch (dialog_model()->transport_availability()->request_type) {
+      case device::FidoRequestType::kMakeCredential:
+        // TODO(1358719): i18n
+        return u"Create a passkey on another device";
+      case device::FidoRequestType::kGetAssertion:
+        // TODO(1358719): i18n
+        return u"Use a passkey from another device";
+    }
+  }
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ADD_PHONE);
 }
 
 std::u16string AuthenticatorQRSheetModel::GetStepDescription() const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    switch (dialog_model()->transport_availability()->request_type) {
+      case device::FidoRequestType::kMakeCredential:
+        // TODO(1358719): i18n
+        return u"Scan this QR code with your phone to create a passkey for " +
+               GetRelyingPartyIdString(dialog_model());
+      case device::FidoRequestType::kGetAssertion:
+        // TODO(1358719): i18n
+        return u"Scan this QR code to use a passkey for " +
+               GetRelyingPartyIdString(dialog_model()) + u" from your phone";
+    }
+  }
   return l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_QR_CODE_DIALOG_TOOLTIP);
 }
 

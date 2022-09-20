@@ -87,6 +87,16 @@ AuthenticatorRequestSheetView::BuildStepSpecificContent() {
 
 std::unique_ptr<views::View>
 AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    // Some sheets do not have an illustration.
+    const gfx::VectorIcon& illustration =
+        model()->GetStepIllustration(ImageColorScheme::kLight);
+    if (&illustration == &gfx::kNoneIcon) {
+      return std::make_unique<views::View>();
+    }
+  }
+
   const int illustration_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
   const gfx::Size illustration_size(illustration_width, kIllustrationHeight);
