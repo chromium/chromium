@@ -32,7 +32,7 @@ struct WebAppOriginAssociationError {
 
 // Interface for parsing web app origin association files. Lives in a utility
 // process, and used as part of the "PWAs as URL Handlers" feature.
-[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface WebAppOriginAssociationParser {
   // Parses the |raw_json| into a WebAppOriginAssociation object, along
   // with any errors. If parsing failed, |association| will be null. If no
