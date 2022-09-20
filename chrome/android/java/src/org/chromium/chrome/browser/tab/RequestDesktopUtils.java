@@ -82,8 +82,6 @@ public class RequestDesktopUtils {
             Double.MAX_VALUE;
 
     // Global defaults experiment constants.
-    static final String SYNTHETIC_TRIAL_SUFFIX = "SyntheticTrial";
-    static final String SYNTHETIC_FEATURE_SUFFIX = "_Synthetic";
     static final String ENABLED_GROUP_SUFFIX = "_Enabled";
     static final String CONTROL_GROUP_SUFFIX = "_Control";
     static final String DEFAULT_ON_GROUP_NAME_PREFIX = "DefaultOn_";
@@ -324,17 +322,23 @@ public class RequestDesktopUtils {
             return false;
         }
 
+        // Ascertain if the device is assigned to the control group in the Finch experiment based on
+        // the status of the Finch flag.
+        boolean isControlGroup = ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL);
+
+        String feature = isControlGroup ? ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL
+                                        : ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS;
+
         // If the device is part of an opt-in experiment arm, avoid default-enabling the setting.
         if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
-                    PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, false)) {
+                    feature, PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, false)) {
             return false;
         }
 
         // Check whether default-on for low end devices is disabled.
         if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
-                    PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_LOW_END_DEVICES, true)
+                    feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_LOW_END_DEVICES, true)
                 && SysUtils.isLowEndDevice()) {
             return false;
         }
@@ -347,14 +351,7 @@ public class RequestDesktopUtils {
                 SingleCategorySettingsConstants
                         .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
 
-        // Ascertain if the device is assigned to the control group in the Finch experiment based on
-        // the status of the Finch flag.
-        boolean isControlGroup = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL);
-
-        double screenSizeThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                isControlGroup ? ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL
-                               : ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
+        double screenSizeThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(feature,
                 PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
                 DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
 
@@ -508,33 +505,32 @@ public class RequestDesktopUtils {
     }
 
     /**
+     * Determines whether a message to opt-in to the desktop site global setting should be shown.
+     * Also contains logic to support extra GWS visibility for the Finch experiment; see
+     * crbug.com/1362914 for details.
      * @param displaySizeInInches The device primary display size, in inches.
      * @param profile The current {@link Profile}.
      * @return Whether the message to opt-in to the desktop site global setting should be shown.
      */
     static boolean shouldShowGlobalSettingOptInMessage(
             double displaySizeInInches, Profile profile) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS)
+                && !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL)) {
             return false;
         }
+
+        // Ascertain if the device is assigned to the control group in the Finch experiment based on
+        // the status of the Finch flag.
+        boolean isControlGroup = ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL);
+
+        String feature = isControlGroup ? ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL
+                                        : ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS;
 
         // Present the message only if opt-in is enabled.
         if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
-                    PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, false)) {
-            return false;
-        }
-
-        // Present the message at most once on a device.
-        if (SharedPreferencesManager.getInstance().contains(
-                    ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN)) {
-            return false;
-        }
-
-        // Present the message only if the user has not previously updated the global setting.
-        if (SharedPreferencesManager.getInstance().contains(
-                    SingleCategorySettingsConstants
-                            .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY)) {
+                    feature, PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, false)) {
             return false;
         }
 
@@ -544,19 +540,40 @@ public class RequestDesktopUtils {
             return false;
         }
 
-        // TODO(crbug.com/1362914): Add logic for extra GWS visibility for the opt-in experiment
-        // arm.
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
 
-        // Present the message only if the device falls within the range of screen sizes for the
-        // opt-in.
-        return displaySizeInInches >= ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                       ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
-                       PARAM_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
-                       DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES)
-                && displaySizeInInches < ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                           ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
-                           PARAM_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES,
-                           DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES);
+        boolean previouslyShowedOptIn = sharedPreferencesManager.contains(
+                ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN);
+        boolean previouslyUpdatedByUser = sharedPreferencesManager.contains(
+                SingleCategorySettingsConstants
+                        .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
+
+        double minScreenSizeThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                feature, PARAM_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
+                DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES);
+        double maxScreenSizeThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                feature, PARAM_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES,
+                DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MAX_THRESHOLD_INCHES);
+
+        boolean inCohort = !previouslyUpdatedByUser && displaySizeInInches >= minScreenSizeThreshold
+                && displaySizeInInches < maxScreenSizeThreshold;
+        boolean wouldShowOptIn = !previouslyShowedOptIn && inCohort;
+        if (wouldShowOptIn) {
+            // Store a SharedPreferences key to tag the device as qualified for the feature
+            // experiment for ongoing tracking in both enabled and control groups.
+            sharedPreferencesManager.writeBoolean(
+                    ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT, true);
+        }
+
+        if (inCohort
+                || sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT)) {
+            maybeRegisterSyntheticFieldTrials(
+                    isControlGroup, minScreenSizeThreshold, /*isOptInArm*/ true);
+        }
+
+        // Should show the opt-in message only in the enabled (not control) experiment group.
+        return !isControlGroup && wouldShowOptIn;
     }
 
     /**
@@ -679,22 +696,26 @@ public class RequestDesktopUtils {
             return;
         }
 
-        if (!isControlGroup
-                && !ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS
-                        + SYNTHETIC_FEATURE_SUFFIX)) {
+        String thresholdAsString = String.valueOf(screenSizeThreshold).replace('.', '_');
+        String baseGroupName =
+                (isOptInArm ? OPT_IN_GROUP_NAME_PREFIX : DEFAULT_ON_GROUP_NAME_PREFIX)
+                + thresholdAsString;
+
+        String syntheticFeatureName = isControlGroup
+                ? ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL_SYNTHETIC
+                : ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_SYNTHETIC;
+        if (isOptInArm) {
+            syntheticFeatureName = isControlGroup
+                    ? ChromeFeatureList.REQUEST_DESKTOP_SITE_OPT_IN_CONTROL_SYNTHETIC
+                    : ChromeFeatureList.REQUEST_DESKTOP_SITE_OPT_IN_SYNTHETIC;
+        }
+
+        if (!isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
             UmaSessionStats.registerSyntheticFieldTrial(
-                    ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS + SYNTHETIC_TRIAL_SUFFIX,
-                    createGlobalDefaultsSyntheticTrialGroupName(
-                            screenSizeThreshold, ENABLED_GROUP_SUFFIX, isOptInArm));
-        } else if (isControlGroup
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL
-                        + SYNTHETIC_FEATURE_SUFFIX)) {
+                    syntheticFeatureName, baseGroupName + ENABLED_GROUP_SUFFIX);
+        } else if (isControlGroup && !ChromeFeatureList.isEnabled(syntheticFeatureName)) {
             UmaSessionStats.registerSyntheticFieldTrial(
-                    ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL
-                            + SYNTHETIC_TRIAL_SUFFIX,
-                    createGlobalDefaultsSyntheticTrialGroupName(
-                            screenSizeThreshold, CONTROL_GROUP_SUFFIX, isOptInArm));
+                    syntheticFeatureName, baseGroupName + CONTROL_GROUP_SUFFIX);
         }
     }
 
@@ -708,11 +729,5 @@ public class RequestDesktopUtils {
                 .readStringSet(
                         ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET)
                 .contains(String.valueOf(tabId));
-    }
-
-    private static String createGlobalDefaultsSyntheticTrialGroupName(
-            double threshold, String suffix, boolean isOptInArm) {
-        return (isOptInArm ? OPT_IN_GROUP_NAME_PREFIX : DEFAULT_ON_GROUP_NAME_PREFIX)
-                + String.valueOf(threshold).replace('.', '_') + suffix;
     }
 }
