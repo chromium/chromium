@@ -6,7 +6,9 @@
 #include "base/unguessable_token.h"
 #include "net/base/features.h"
 #include "net/base/net_export.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
@@ -21,6 +23,42 @@ NetworkAnonymizationKey::NetworkAnonymizationKey(
       is_cross_site_(IsCrossSiteFlagSchemeEnabled() ? is_cross_site
                                                     : absl::nullopt),
       nonce_(nonce) {}
+
+NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+    const net::NetworkIsolationKey& network_isolation_key) {
+  // If NIK is a double key, NAK must also be a double key.
+  DCHECK(NetworkIsolationKey::IsFrameSiteEnabled() ||
+         (!NetworkIsolationKey::IsFrameSiteEnabled() &&
+          !NetworkAnonymizationKey::IsFrameSiteEnabled()));
+
+  // We cannot create a valid NetworkAnonymizationKey from a NetworkIsolationKey
+  // that is not fully populated.
+  if (!network_isolation_key.IsFullyPopulated()) {
+    return NetworkAnonymizationKey();
+  }
+
+  absl::optional<SchemefulSite> nak_frame_site =
+      NetworkAnonymizationKey::IsFrameSiteEnabled()
+          ? network_isolation_key.GetFrameSite()
+          : absl::nullopt;
+
+  // If we are unable to determine the value of `is_cross_site` from the
+  // NetworkIsolationKey, we default the value to `nullopt`. Otherwise we
+  // calculate what the value will be. If the NetworkAnonymizationKey is being
+  // constructed in a scheme where the is cross site value is not used this
+  // value will be overridden in the constructor and set to `nullopt`.
+  absl::optional<bool> nak_is_cross_site = absl::nullopt;
+  if (NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled()) {
+    SiteForCookies site_for_cookies =
+        net::SiteForCookies(network_isolation_key.GetTopFrameSite().value());
+    nak_is_cross_site = !site_for_cookies.IsFirstParty(
+        network_isolation_key.GetFrameSite()->GetURL());
+  }
+
+  return NetworkAnonymizationKey(
+      network_isolation_key.GetTopFrameSite().value(), nak_frame_site,
+      nak_is_cross_site, network_isolation_key.GetNonce());
+}
 
 NetworkAnonymizationKey::NetworkAnonymizationKey() = default;
 

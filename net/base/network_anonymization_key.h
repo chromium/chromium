@@ -10,6 +10,7 @@
 
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -92,6 +93,12 @@ class NET_EXPORT NetworkAnonymizationKey {
            std::tie(other.top_frame_site_, other.frame_site_,
                     other.is_cross_site_, other.nonce_);
   }
+
+  // Creates a NetworkAnonymizationKey from a NetworkIsolationKey. This is
+  // possible because a NetworkIsolationKey must always be more granular than a
+  // NetworkAnonymizationKey.
+  static NetworkAnonymizationKey CreateFromNetworkIsolationKey(
+      const net::NetworkIsolationKey& network_isolation_key);
 
   // Returns the string representation of the key.
   std::string ToDebugString() const;
