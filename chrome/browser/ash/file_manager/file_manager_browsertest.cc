@@ -1483,7 +1483,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("trashTogglingTrashEnabledNavigatesAwayFromTrashRoot")
             .EnableTrash(),
         TestCase("trashTogglingTrashEnabledPrefUpdatesDirectoryTree")
-            .EnableTrash()));
+            .EnableTrash(),
+        TestCase("trashCantRestoreWhenParentDoesntExist").EnableTrash()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */

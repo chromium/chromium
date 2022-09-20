@@ -81,7 +81,8 @@ export class ProgressCenterPanel {
           if (item.type === ProgressItemType.TRASH) {
             return strf('MOVE_TO_TRASH_FILE_NAME', source);
           }
-          if (item.type === ProgressItemType.RESTORE_TO_DESTINATION) {
+          if (item.type === ProgressItemType.RESTORE_TO_DESTINATION ||
+              item.type === ProgressItemType.RESTORE) {
             return strf('RESTORE_FROM_TRASH_FILE_NAME', source);
           }
           return item.message;
@@ -103,7 +104,8 @@ export class ProgressCenterPanel {
         if (item.type === ProgressItemType.TRASH) {
           return strf('MOVE_TO_TRASH_ITEMS_REMAINING', count);
         }
-        if (item.type === ProgressItemType.RESTORE_TO_DESTINATION) {
+        if (item.type === ProgressItemType.RESTORE_TO_DESTINATION ||
+            item.type === ProgressItemType.RESTORE) {
           return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', count);
         }
         return item.message;
@@ -184,7 +186,8 @@ export class ProgressCenterPanel {
                 strf('MOVE_TO_TRASH_FILE_NAME', source) :
                 strf('UNDO_DELETE_ONE', source);
           }
-          if (item.type === ProgressItemType.RESTORE_TO_DESTINATION) {
+          if (item.type === ProgressItemType.RESTORE_TO_DESTINATION ||
+              item.type === ProgressItemType.RESTORE) {
             return strf('RESTORE_FROM_TRASH_FILE_NAME', source);
           }
           return item.message;
@@ -217,7 +220,8 @@ export class ProgressCenterPanel {
               strf('MOVE_TO_TRASH_ITEMS_REMAINING', count) :
               strf('UNDO_DELETE_SOME', count);
         }
-        if (item.type === ProgressItemType.RESTORE_TO_DESTINATION) {
+        if (item.type === ProgressItemType.RESTORE_TO_DESTINATION ||
+            item.type === ProgressItemType.RESTORE) {
           return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', count);
         }
         return item.message;
@@ -370,7 +374,8 @@ export class ProgressCenterPanel {
               item.type === ProgressItemType.ZIP ||
               item.type === ProgressItemType.DELETE ||
               item.type === ProgressItemType.TRASH ||
-              item.type === ProgressItemType.RESTORE_TO_DESTINATION) {
+              item.type === ProgressItemType.RESTORE_TO_DESTINATION ||
+              item.type === ProgressItemType.RESTORE) {
             const donePanelItem = this.feedbackHost_.addPanelItem(item.id);
             if (item.extraButton.has(ProgressItemState.COMPLETED)) {
               extraButton = item.extraButton.get(ProgressItemState.COMPLETED);

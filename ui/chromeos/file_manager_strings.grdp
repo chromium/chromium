@@ -830,6 +830,18 @@
  <message name="IDS_FILE_BROWSER_CONFIRM_EMPTY_TRASH" desc="Asks the user if they are sure they want to empty the trash / recylce bin.">
    Are you sure you want to empty Trash?
  </message>
+  <message name="IDS_FILE_BROWSER_CANT_RESTORE_TRASHED_SINGLE_ITEM" desc="Dialog title to show to a user when the item they're trying to restore is missing its parent">
+    To restore this item, drag it to a new folder outside of trash. The original folder "<ph name="PARENT_FOLDER_NAME">$1<ex>Parent folder name</ex></ph>" for this item has been deleted.
+  </message>
+  <message name="IDS_FILE_BROWSER_CANT_RESTORE_TRASHED_MULTIPLE_ITEMS_SAME_PARENTS" desc="Dialog title to show a user that all the files they've selected to restore can't be as the parent folder has been removed.">
+    To restore these items, drag them to a new folder outside of trash. The original folder "<ph name="PARENT_FOLDER_NAME">$1<ex>Parent folder name</ex></ph>" for these item has been deleted.
+  </message>
+  <message name="IDS_FILE_BROWSER_CANT_RESTORE_TRASHED_MULTIPLE_ITEMS_DIFFERENT_PARENTS" desc="Dialog description to show a user that all the files they've selected to restore can't be as the parent folder has been removed.">
+    To restore these items, drag them to a new folder outside of trash. The original folders for these items have been deleted.
+  </message>
+  <message name="IDS_FILE_BROWSER_CANT_RESTORE_TRASHED_SOME_ITEMS" desc="Dialog title to show a user that all the files they've selected to restore can't be as the parent folder has been removed.">
+    To restore these items, drag them to a new folder. The original folders for some of these items have been deleted.
+  </message>
 
   <message name="IDS_FILE_BROWSER_UNKNOWN_FILESYSTEM_WARNING" desc="Displayed when device contents cannot be read because filesystem is unknown.">
     This device cannot be opened because its filesystem was not recognized.

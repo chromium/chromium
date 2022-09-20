@@ -8,7 +8,7 @@ import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DOWNLOADS_FAKE_TASKS} from './tasks.js';
-import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
+import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
 
 /**
  * Clicks the enabled and visible move to trash button and ensures the delete
@@ -920,4 +920,49 @@ testcase.trashTogglingTrashEnabledNavigatesAwayFromTrashRoot = async () => {
 
   // Ensure the new root is now at My files.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
+};
+
+
+/**
+ * Verify that files that have their parents trashed show an alert dialog to
+ * indicate that restoration is not possible.
+ */
+testcase.trashCantRestoreWhenParentDoesntExist = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, NESTED_ENTRY_SET, []);
+
+  // Navigate to the "A" directory.
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/A');
+
+  // Ensure the "B" directory exists within "A".
+  await remoteCall.waitForFiles(appId, [ENTRIES.directoryB.getExpectedRow()]);
+
+  // Select the "B" directory.
+  await remoteCall.waitAndClickElement(appId, '#file-list [file-name="B"]');
+
+  // Delete item and wait for it to be removed (no dialog).
+  await clickTrashButton(appId);
+  await remoteCall.waitForElementLost(appId, '#file-list [file-name="B"]');
+
+  // Navigate to /My files/Downloads and click the "A" directory.
+  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+  await remoteCall.waitAndClickElement(appId, '#file-list [file-name="A"]');
+
+  // Delete item and wait for it to be removed (no dialog).
+  await clickTrashButton(appId);
+  await remoteCall.waitForElementLost(appId, '#file-list [file-name="A"]');
+
+  // Navigate to Trash and click the "B" directory of which the parent "A"
+  // directory has been removed.
+  await navigateWithDirectoryTree(appId, '/Trash');
+  await remoteCall.waitAndClickElement(appId, '#file-list [file-name="B"]');
+
+  // Right-click the selected file to validate context menu.
+  await remoteCall.waitAndRightClick(appId, '.table-row[selected]');
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Restore item and expect the alert dialog is shown as the parent has been
+  // removed.
+  await remoteCall.waitAndClickElement(appId, '#restore-from-trash-button');
+  await remoteCall.waitForElement(appId, '.files-alert-dialog');
 };
