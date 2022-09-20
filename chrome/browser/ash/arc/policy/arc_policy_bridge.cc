@@ -683,10 +683,9 @@ void ArcPolicyBridge::OnReportComplianceParse(
   Profile::FromBrowserContext(context_)->GetPrefs()->SetBoolean(
       prefs::kArcPolicyComplianceReported, true);
 
-  const base::DictionaryValue* dict = nullptr;
-  if (result->GetAsDictionary(&dict)) {
+  if (result->is_dict()) {
     JSONStringValueSerializer serializer(&arc_policy_compliance_report_);
-    serializer.Serialize(*dict);
+    serializer.Serialize(*result);
     for (Observer& observer : observers_) {
       observer.OnComplianceReportReceived(&*result);
     }
