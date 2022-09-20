@@ -86,6 +86,7 @@ class LiveCaptionController : public KeyedService,
   friend class LiveCaptionControllerFactory;
   friend class LiveCaptionControllerTest;
   friend class LiveCaptionSpeechRecognitionHostTest;
+  friend class LiveCaptionUnavailabilityNotifierTest;
 
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;

@@ -67,6 +67,7 @@ class CaptionBubbleController {
  private:
   friend class LiveCaptionControllerTest;
   friend class LiveCaptionSpeechRecognitionHostTest;
+  friend class LiveCaptionUnavailabilityNotifierTest;
 
   virtual bool IsWidgetVisibleForTesting() = 0;
   virtual std::string GetBubbleLabelTextForTesting() = 0;

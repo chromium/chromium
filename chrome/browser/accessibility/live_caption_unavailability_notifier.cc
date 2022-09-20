@@ -67,8 +67,11 @@ LiveCaptionUnavailabilityNotifier::LiveCaptionUnavailabilityNotifier(
                           base::Unretained(this)));
 }
 
-LiveCaptionUnavailabilityNotifier::~LiveCaptionUnavailabilityNotifier() =
-    default;
+LiveCaptionUnavailabilityNotifier::~LiveCaptionUnavailabilityNotifier() {
+  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
+  if (live_caption_controller)
+    live_caption_controller->OnAudioStreamEnd(context_.get());
+}
 
 void LiveCaptionUnavailabilityNotifier::MediaFoundationRendererCreated(
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererObserver>

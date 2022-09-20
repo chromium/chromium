@@ -59,6 +59,7 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
 
  private:
   friend class CaptionBubbleControllerViewsTest;
+  friend class LiveCaptionUnavailabilityNotifierTest;
 
   // A callback passed to the CaptionBubble which is called when the
   // CaptionBubble is destroyed.
