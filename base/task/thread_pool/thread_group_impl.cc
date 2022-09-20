@@ -354,6 +354,7 @@ void ThreadGroupImpl::Start(
 
   DCHECK(!replacement_thread_group_);
 
+  in_start().no_worker_reclaim = FeatureList::IsEnabled(kNoWorkerThreadReclaim);
   in_start().may_block_threshold =
       may_block_threshold ? may_block_threshold.value()
                           : (thread_type_hint_ == ThreadType::kDefault
@@ -373,7 +374,6 @@ void ThreadGroupImpl::Start(
   DCHECK_LE(in_start().initial_max_tasks, kMaxNumberOfWorkers);
   max_best_effort_tasks_ = max_best_effort_tasks;
   in_start().suggested_reclaim_time = suggested_reclaim_time;
-  in_start().no_worker_reclaim = FeatureList::IsEnabled(kNoWorkerThreadReclaim);
   in_start().worker_environment = worker_environment;
   in_start().service_thread_task_runner = std::move(service_thread_task_runner);
   in_start().worker_thread_observer = worker_thread_observer;
