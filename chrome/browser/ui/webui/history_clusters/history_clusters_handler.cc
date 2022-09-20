@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/time/time_to_iso8601.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
@@ -176,6 +177,8 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile,
     visit_mojom->debug_info["visit_id"] =
         base::NumberToString(annotated_visit.visit_row.visit_id);
     visit_mojom->debug_info["score"] = base::NumberToString(visit.score);
+    visit_mojom->debug_info["visit_time"] =
+        base::TimeToISO8601(visit.annotated_visit.visit_row.visit_time);
     visit_mojom->debug_info["visit_duration"] = base::NumberToString(
         annotated_visit.visit_row.visit_duration.InSecondsF());
   }
