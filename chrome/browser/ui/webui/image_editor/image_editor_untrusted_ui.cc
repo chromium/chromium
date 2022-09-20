@@ -77,8 +77,6 @@ ImageEditorUntrustedUI::ImageEditorUntrustedUI(content::WebUI* web_ui)
           profile->GetUserData(image_editor::ScreenshotCapturedData::kDataKey));
   if (screenshot_data) {
     screenshot_filepath_ = screenshot_data->screenshot_filepath;
-    profile->SetUserData(image_editor::ScreenshotCapturedData::kDataKey,
-                         nullptr);
   }
 
   CreateAndAddImageEditorUntrustedDataSource(web_ui);
