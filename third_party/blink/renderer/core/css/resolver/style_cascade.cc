@@ -1134,7 +1134,7 @@ bool StyleCascade::HasFontSizeDependency(const CustomProperty& property,
                                          CSSVariableData* data) const {
   if (!property.IsRegistered() || !data)
     return false;
-  if (data->HasFontUnits())
+  if (data->HasFontUnits() || data->HasLineHeightUnits())
     return true;
   if (data->HasRootFontUnits() && IsRootElement())
     return true;

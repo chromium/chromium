@@ -18,6 +18,7 @@
     register_length('--font-size-ex');
     register_length('--font-size-ch');
     register_length('--font-size-px');
+    register_length('--font-size-lh');
     register_length('--font-size-em-via-var');
     register_length('--font-size-rem-via-var');
     register_length('--font-size-ex-via-var');
@@ -44,6 +45,7 @@
         --font-size-ex: 2ex;
         --font-size-ch: 2ch;
         --font-size-px: 42px;
+        --font-size-lh: 2lh;
         --line-height-lh: 2lh;
         --font-size-em-via-var: var(--unregistered-em);
         --font-size-rem-via-var: var(--unregistered-rem);
@@ -119,6 +121,12 @@
         assert_property_equals('font-size', unsetFontSize);
         assert_property_equals('--font-size-ch', '0px');
     }, 'Lengths with ch units may not be referenced from font-size');
+
+    test(function() {
+        target.style = 'font-size: var(--font-size-lh);';
+        assert_property_equals('font-size', unsetFontSize);
+        assert_property_equals('--font-size-lh', '0px');
+    }, 'Lengths with lh units may not be referenced from font-size');
 
     test(function() {
         target.style = 'font-size: var(--font-size-rem);';
