@@ -1535,11 +1535,11 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   local_state->SetString(prefs::kProfileLastUsed, profile_name1);
 
   // Set the last used profiles.
-  ListPrefUpdate update(local_state, prefs::kProfilesLastActive);
-  base::Value* initial_last_active_profile_list = update.Get();
-  initial_last_active_profile_list->Append(
+  ScopedListPrefUpdate update(local_state, prefs::kProfilesLastActive);
+  base::Value::List& initial_last_active_profile_list = update.Get();
+  initial_last_active_profile_list.Append(
       base::Value(path1.BaseName().MaybeAsASCII()));
-  initial_last_active_profile_list->Append(
+  initial_last_active_profile_list.Append(
       base::Value(path2.BaseName().MaybeAsASCII()));
 
   profile_manager->CleanUpEphemeralProfiles();
@@ -1606,11 +1606,11 @@ TEST_F(ProfileManagerGuestTest, CleanUpOnlyEphemeralProfiles) {
   local_state->SetString(prefs::kProfileLastUsed, guest_profile_name);
 
   // Set the last used profiles.
-  ListPrefUpdate update(local_state, prefs::kProfilesLastActive);
-  base::Value* initial_last_active_profile_list = update.Get();
-  initial_last_active_profile_list->Append(
+  ScopedListPrefUpdate update(local_state, prefs::kProfilesLastActive);
+  base::Value::List& initial_last_active_profile_list = update.Get();
+  initial_last_active_profile_list.Append(
       base::Value(guest_path.BaseName().MaybeAsASCII()));
-  initial_last_active_profile_list->Append(
+  initial_last_active_profile_list.Append(
       base::Value(path.BaseName().MaybeAsASCII()));
 
   profile_manager->CleanUpEphemeralProfiles();

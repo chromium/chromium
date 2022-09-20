@@ -762,19 +762,14 @@ void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,
 
   {
     // Bundle the changes in a single update.
-    DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
-    base::Value* attributes_dict = update.Get();
-    base::Value* entry = attributes_dict->FindDictKey(storage_key_);
-    if (!entry) {
-      entry = attributes_dict->SetKey(
-          storage_key_, base::Value(base::Value::Type::DICTIONARY));
-    }
-    entry->SetStringKey(kGAIAIdKey, gaia_id);
-    entry->SetStringKey(kUserNameKey, user_name);
+    ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
+    base::Value::Dict& attributes_dict = update.Get();
+    base::Value::Dict* entry = attributes_dict.EnsureDict(storage_key_);
+    entry->Set(kGAIAIdKey, gaia_id);
+    entry->Set(kUserNameKey, user_name);
     DCHECK(!is_consented_primary_account || !gaia_id.empty() ||
            !user_name.empty());
-    entry->SetBoolKey(kIsConsentedPrimaryAccountKey,
-                      is_consented_primary_account);
+    entry->Set(kIsConsentedPrimaryAccountKey, is_consented_primary_account);
   }
 
   profile_attributes_storage_->NotifyProfileAuthInfoChanged(profile_path_);
@@ -979,14 +974,10 @@ bool ProfileAttributesEntry::SetValue(const char* key, base::Value value) {
   if (old_value && *old_value == value)
     return false;
 
-  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
-  base::Value* attributes_dict = update.Get();
-  base::Value* entry = attributes_dict->FindDictKey(storage_key_);
-  if (!entry) {
-    entry = attributes_dict->SetKey(storage_key_,
-                                    base::Value(base::Value::Type::DICTIONARY));
-  }
-  entry->SetKey(key, std::move(value));
+  ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::Value::Dict& attributes_dict = update.Get();
+  base::Value::Dict* entry = attributes_dict.EnsureDict(storage_key_);
+  entry->Set(key, std::move(value));
   return true;
 }
 
@@ -995,11 +986,11 @@ bool ProfileAttributesEntry::ClearValue(const char* key) {
   if (!old_value)
     return false;
 
-  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
-  base::Value* attributes_dict = update.Get();
-  base::Value* entry = attributes_dict->FindDictKey(storage_key_);
+  ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::Value::Dict& attributes_dict = update.Get();
+  base::Value::Dict* entry = attributes_dict.FindDict(storage_key_);
   DCHECK(entry);
-  entry->RemoveKey(key);
+  entry->Remove(key);
   return true;
 }
 

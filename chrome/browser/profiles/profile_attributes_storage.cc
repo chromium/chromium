@@ -270,9 +270,9 @@ ProfileAttributesStorage::ProfileAttributesStorage(
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       user_data_dir_(user_data_dir) {
   // Populate the attributes storage.
-  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
-  base::Value* attributes = update.Get();
-  for (auto kv : attributes->DictItems()) {
+  ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::Value::Dict& attributes = update.Get();
+  for (auto kv : attributes) {
     base::Value& info = kv.second;
     std::string* name = info.FindStringKey(ProfileAttributesEntry::kNameKey);
 
@@ -346,8 +346,8 @@ void ProfileAttributesStorage::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void ProfileAttributesStorage::AddProfile(ProfileAttributesInitParams params) {
   std::string key = StorageKeyFromProfilePath(params.profile_path);
-  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
-  base::Value* attributes = update.Get();
+  ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::Value::Dict& attributes = update.Get();
 
   base::Value info(base::Value::Type::DICTIONARY);
   info.SetStringKey(ProfileAttributesEntry::kNameKey, params.profile_name);
@@ -379,7 +379,7 @@ void ProfileAttributesStorage::AddProfile(ProfileAttributesInitParams params) {
                       params.account_id.GetAccountIdKey());
   info.SetBoolKey(prefs::kSignedInWithCredentialProvider,
                   params.is_signed_in_with_credential_provider);
-  attributes->SetKey(key, std::move(info));
+  attributes.Set(key, std::move(info));
 
   ProfileAttributesEntry* entry = InitEntryWithKey(key, params.is_omitted);
   entry->InitializeLastNameToDisplay();
@@ -429,10 +429,10 @@ void ProfileAttributesStorage::RemoveProfile(
   for (auto& observer : observer_list_)
     observer.OnProfileWillBeRemoved(profile_path);
 
-  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
-  base::Value* attributes = update.Get();
+  ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::Value::Dict& attributes = update.Get();
   std::string key = StorageKeyFromProfilePath(profile_path);
-  attributes->RemoveKey(key);
+  attributes.Remove(key);
   profile_attributes_entries_.erase(profile_path.value());
 
   // `OnProfileWasRemoved()` must be the first observer method being called

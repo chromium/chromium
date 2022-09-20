@@ -290,8 +290,8 @@ void MarkProfileDirectoryForDeletion(const base::FilePath& path) {
   ProfilesToDelete()[path] = ProfileDeletionStage::MARKED;
   // Remember that this profile was deleted and files should have been deleted
   // on shutdown. In case of a crash remaining files are removed on next start.
-  ListPrefUpdate deleted_profiles(g_browser_process->local_state(),
-                                  prefs::kProfilesDeleted);
+  ScopedListPrefUpdate deleted_profiles(g_browser_process->local_state(),
+                                        prefs::kProfilesDeleted);
   deleted_profiles->Append(base::FilePathToValue(path));
 }
 
@@ -366,9 +366,9 @@ void NukeProfileFromDisk(const base::FilePath& profile_path,
 
 // Called after a deleted profile was checked and cleaned up.
 void ProfileCleanedUp(base::Value profile_path_value) {
-  ListPrefUpdate deleted_profiles(g_browser_process->local_state(),
-                                  prefs::kProfilesDeleted);
-  deleted_profiles->GetList().EraseValue(profile_path_value);
+  ScopedListPrefUpdate deleted_profiles(g_browser_process->local_state(),
+                                        prefs::kProfilesDeleted);
+  deleted_profiles->EraseValue(profile_path_value);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -421,8 +421,8 @@ bool IsRegisteredAsEphemeral(ProfileAttributesStorage* storage,
 void RemoveFromLastActiveProfilesPrefList(base::FilePath path) {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  ListPrefUpdate update(local_state, prefs::kProfilesLastActive);
-  base::Value::List& profile_list = update->GetList();
+  ScopedListPrefUpdate update(local_state, prefs::kProfilesLastActive);
+  base::Value::List& profile_list = update.Get();
   base::Value entry_value = base::Value(path.BaseName().AsUTF8Unsafe());
   profile_list.EraseValue(entry_value);
 }
@@ -2337,8 +2337,8 @@ bool ProfileManager::ShouldGoOffTheRecord(Profile* profile) {
 void ProfileManager::SaveActiveProfiles() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  ListPrefUpdate update(local_state, prefs::kProfilesLastActive);
-  base::Value::List& profile_list = update->GetList();
+  ScopedListPrefUpdate update(local_state, prefs::kProfilesLastActive);
+  base::Value::List& profile_list = update.Get();
 
   profile_list.clear();
 
