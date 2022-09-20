@@ -262,12 +262,6 @@
     "args": ["--disable-features=SchemefulSameSite"]
   },
   {
-    "prefix": "layout_ng_printing",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["printing"],
-    "args": ["--enable-blink-features=LayoutNGPrinting"]
-  },
-  {
     "prefix": "dark-mode-default",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["dark-mode/colors",

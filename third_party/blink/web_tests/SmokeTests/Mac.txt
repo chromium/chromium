@@ -1486,13 +1486,6 @@ virtual/gpu-rasterization/images/yuv-decode-eligible/jpeg-missing-eoi.html
 virtual/gpu-rasterization/images/yuv-decode-eligible/webp-no-color-profile-lossy.html
 virtual/gpu/fast/canvas/canvas-textMetrics-width.html
 virtual/jxl-enabled/images/jxl/jxl-images.html
-virtual/layout_ng_printing/printing/avoid-setting-header-offset-on-header.html
-virtual/layout_ng_printing/printing/iframe-print.html
-virtual/layout_ng_printing/printing/page-orientation-propagated.html
-virtual/layout_ng_printing/printing/tfoot-repeats-at-bottom-of-each-page-multiple-tables.html
-virtual/layout_ng_printing/printing/tfoot-repeats-at-bottom-of-each-page.html
-virtual/layout_ng_printing/printing/thead-repeats-at-top-of-each-page-multiple-tables.html
-virtual/layout_ng_printing/printing/thead-repeats-at-top-of-each-page.html
 virtual/no-alloc-direct-call/external/wpt/html/canvas/element/compositing/2d.composite.canvas.source-out.html
 virtual/no-alloc-direct-call/external/wpt/html/canvas/element/compositing/2d.composite.clip.xor.html
 virtual/no-alloc-direct-call/external/wpt/html/canvas/element/compositing/2d.composite.operation.darker.html
