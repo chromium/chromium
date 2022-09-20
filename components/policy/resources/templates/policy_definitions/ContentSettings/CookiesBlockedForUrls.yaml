@@ -1,0 +1,30 @@
+caption: Block cookies on these sites
+desc: |-
+  Setting the policy lets you make a list of URL patterns that specify sites that can't set cookies.
+
+        Leaving the policy unset results in the use of <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME">DefaultCookiesSetting</ph> for all sites, if it's set. If not, the user's personal setting applies.
+
+        While no specific policy takes precedence, see <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME">CookiesAllowedForUrls</ph> and <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME">CookiesSessionOnlyForUrls</ph>. URL patterns among these 3 policies must not conflict.
+
+        For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- dullweber@google.com
+- file://components/content_settings/OWNERS
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:11-
+- chrome_os:11-
+- android:30-
+tags: []
+type: list
