@@ -667,19 +667,35 @@ class CORE_EXPORT RuleFeatureSet {
       CSSSelector::RelationType previous_combinator,
       AddFeaturesMethodForLogicalCombinationInHas);
 
+  // Make sure that the pointer in “invalidation_set” has a single,
+  // reference that can be modified safely. (This is done through
+  // copy-on-write, if needed, so that it can be modified without
+  // disturbing unrelated invalidation sets that shared the pointer.)
+  // If invalidation_set is nullptr, a new one is created. If an existing
+  // InvalidationSet is used as base, it is extended to the right type
+  // (descendant, sibling, self -- n-th sibling is treated as sibling)
+  // if needed.
+  //
+  // The return value is the invalidation set to be modified. This is
+  // identical to the new value of invalidation_set in all cases _except_
+  // if the existing invalidation was a sibling invalidation set and
+  // you requested a descendant invalidation set -- if so, it it a reference
+  // to the DescendantInvalidationSet embedded within that set.
+  // In other words, you must ignore the value of invalidation_set
+  // after this function, since it is not what you requested.
   static InvalidationSet& EnsureMutableInvalidationSet(
-      scoped_refptr<InvalidationSet>&,
-      InvalidationType,
-      PositionType);
+      InvalidationType type,
+      PositionType position,
+      scoped_refptr<InvalidationSet>& invalidation_set);
 
-  InvalidationSet& EnsureInvalidationSet(InvalidationSetMap&,
-                                         const AtomicString& key,
-                                         InvalidationType,
-                                         PositionType);
-  InvalidationSet& EnsureInvalidationSet(PseudoTypeInvalidationSetMap&,
-                                         CSSSelector::PseudoType key,
-                                         InvalidationType,
-                                         PositionType);
+  static InvalidationSet& EnsureInvalidationSet(InvalidationSetMap&,
+                                                const AtomicString& key,
+                                                InvalidationType,
+                                                PositionType);
+  static InvalidationSet& EnsureInvalidationSet(PseudoTypeInvalidationSetMap&,
+                                                CSSSelector::PseudoType key,
+                                                InvalidationType,
+                                                PositionType);
 
   // Adds an InvalidationSet to this RuleFeatureSet.
   //

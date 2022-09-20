@@ -300,25 +300,11 @@ void ExtractInvalidationSets(InvalidationSet* invalidation_set,
 }  // anonymous namespace
 
 InvalidationSet& RuleFeatureSet::EnsureMutableInvalidationSet(
-    scoped_refptr<InvalidationSet>& invalidation_set,
     InvalidationType type,
-    PositionType position) {
-  if (invalidation_set && invalidation_set->IsSelfInvalidationSet()) {
-    if (type == InvalidationType::kInvalidateDescendants &&
-        position == kSubject)
-      return *invalidation_set;
-    // If we are retrieving the invalidation set for a simple selector in a non-
-    // rightmost compound, it means we plan to add features to the set. If so,
-    // create a DescendantInvalidationSet we are allowed to modify.
-    //
-    // Note that we also construct a DescendantInvalidationSet instead of using
-    // the SelfInvalidationSet() when we create a SiblingInvalidationSet. We may
-    // be able to let SiblingInvalidationSets reference the singleton set for
-    // descendants as well. TODO(futhark@chromium.org)
-    invalidation_set = CopyInvalidationSet(*invalidation_set);
-    DCHECK(invalidation_set->HasOneRef());
-  }
+    PositionType position,
+    scoped_refptr<InvalidationSet>& invalidation_set) {
   if (!invalidation_set) {
+    // Create a new invalidation set of the right type.
     if (type == InvalidationType::kInvalidateDescendants) {
       if (position == kSubject)
         invalidation_set = InvalidationSet::SelfInvalidationSet();
@@ -329,22 +315,53 @@ InvalidationSet& RuleFeatureSet::EnsureMutableInvalidationSet(
     }
     return *invalidation_set;
   }
+
+  if (invalidation_set->IsSelfInvalidationSet() &&
+      type == InvalidationType::kInvalidateDescendants &&
+      position == kSubject) {
+    // NOTE: This is fairly dodgy; we're returning the singleton
+    // self-invalidation set (which is very much immutable) from a
+    // function promising to return something mutable. We pretty much
+    // rely on the caller to do the right thing and not mutate the
+    // self-invalidation set if asking for it (ie., giving this
+    // combination of type/position).
+    return *invalidation_set;
+  }
+
   // If the currently stored invalidation_set is shared with other
-  // RuleFeatureSets (for example), we must copy it before modifying it.
-  if (!invalidation_set->HasOneRef()) {
+  // RuleFeatureSets, or it is the SelfInvalidationSet() singleton,
+  // we must copy it before modifying it.
+  //
+  // If we are retrieving the invalidation set for a simple selector in a non-
+  // rightmost compound, it means we plan to add features to the set. If so,
+  // create a DescendantInvalidationSet we are allowed to modify.
+  //
+  // Note that we also construct a DescendantInvalidationSet instead of using
+  // the SelfInvalidationSet() when we create a SiblingInvalidationSet. We may
+  // be able to let SiblingInvalidationSets reference the singleton set for
+  // descendants as well. TODO(futhark@chromium.org)
+  if (invalidation_set->IsSelfInvalidationSet() ||
+      !invalidation_set->HasOneRef()) {
     invalidation_set = CopyInvalidationSet(*invalidation_set);
     DCHECK(invalidation_set->HasOneRef());
   }
-  if (invalidation_set->GetType() == type)
+
+  if (invalidation_set->GetType() == type) {
     return *invalidation_set;
+  }
 
-  if (type == InvalidationType::kInvalidateDescendants)
-    return To<SiblingInvalidationSet>(*invalidation_set).EnsureDescendants();
-
-  scoped_refptr<InvalidationSet> descendants = invalidation_set;
-  invalidation_set = SiblingInvalidationSet::Create(
-      To<DescendantInvalidationSet>(descendants.get()));
-  return *invalidation_set;
+  if (type == InvalidationType::kInvalidateDescendants) {
+    // sibling → sibling+descendant.
+    DescendantInvalidationSet& embedded_invalidation_set =
+        To<SiblingInvalidationSet>(*invalidation_set).EnsureDescendants();
+    return embedded_invalidation_set;
+  } else {
+    // descendant → sibling+descendant.
+    scoped_refptr<InvalidationSet> descendants = invalidation_set;
+    invalidation_set = SiblingInvalidationSet::Create(
+        To<DescendantInvalidationSet>(descendants.get()));
+    return *invalidation_set;
+  }
 }
 
 InvalidationSet& RuleFeatureSet::EnsureInvalidationSet(InvalidationSetMap& map,
@@ -353,7 +370,7 @@ InvalidationSet& RuleFeatureSet::EnsureInvalidationSet(InvalidationSetMap& map,
                                                        PositionType position) {
   scoped_refptr<InvalidationSet>& invalidation_set =
       map.insert(key, nullptr).stored_value->value;
-  return EnsureMutableInvalidationSet(invalidation_set, type, position);
+  return EnsureMutableInvalidationSet(type, position, invalidation_set);
 }
 
 InvalidationSet& RuleFeatureSet::EnsureInvalidationSet(
@@ -363,7 +380,7 @@ InvalidationSet& RuleFeatureSet::EnsureInvalidationSet(
     PositionType position) {
   scoped_refptr<InvalidationSet>& invalidation_set =
       map.insert(key, nullptr).stored_value->value;
-  return EnsureMutableInvalidationSet(invalidation_set, type, position);
+  return EnsureMutableInvalidationSet(type, position, invalidation_set);
 }
 
 void RuleFeatureSet::AddInvalidationSet(
@@ -377,8 +394,8 @@ void RuleFeatureSet::AddInvalidationSet(
     slot = std::move(invalidation_set);
   } else {
     EnsureMutableInvalidationSet(
-        slot, invalidation_set->GetType(),
-        invalidation_set->IsSelfInvalidationSet() ? kSubject : kAncestor)
+        invalidation_set->GetType(),
+        invalidation_set->IsSelfInvalidationSet() ? kSubject : kAncestor, slot)
         .Combine(*invalidation_set);
   }
 }
@@ -394,8 +411,8 @@ void RuleFeatureSet::AddInvalidationSet(
     slot = std::move(invalidation_set);
   } else {
     EnsureMutableInvalidationSet(
-        slot, invalidation_set->GetType(),
-        invalidation_set->IsSelfInvalidationSet() ? kSubject : kAncestor)
+        invalidation_set->GetType(),
+        invalidation_set->IsSelfInvalidationSet() ? kSubject : kAncestor, slot)
         .Combine(*invalidation_set);
   }
 }
