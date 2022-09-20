@@ -396,7 +396,8 @@ void RuleSet::AddRule(StyleRule* rule,
   RuleData rule_data(rule, selector_index, rule_count_, extra_specificity,
                      add_rule_flags);
   ++rule_count_;
-  if (features_.CollectFeaturesFromRuleData(&rule_data, style_scope) ==
+  if (features_.CollectFeaturesFromSelector(rule_data.Selector(),
+                                            style_scope) ==
       RuleFeatureSet::kSelectorNeverMatches)
     return;
 

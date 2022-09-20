@@ -37,13 +37,13 @@
 namespace blink {
 
 class ContainerNode;
+class CSSSelector;
 struct InvalidationLists;
 class QualifiedName;
-class RuleData;
 class StyleScope;
 
-// Summarizes and indexes the contents of RuleData objects. It creates
-// invalidation sets from rule data and makes them available via several
+// Summarizes and indexes the contents of CSS selectors. It creates
+// invalidation sets from them and makes them available via several
 // CollectInvalidationSetForFoo methods which use the indices to quickly gather
 // the relevant InvalidationSets for a particular DOM mutation.
 class CORE_EXPORT RuleFeatureSet {
@@ -64,7 +64,10 @@ class CORE_EXPORT RuleFeatureSet {
 
   enum SelectorPreMatch { kSelectorNeverMatches, kSelectorMayMatch };
 
-  SelectorPreMatch CollectFeaturesFromRuleData(const RuleData*,
+  // Creates invalidation sets for the given CSS selector. This is done as part
+  // of creating the RuleSet for the style sheet, i.e., before matching or
+  // mutation begins.
+  SelectorPreMatch CollectFeaturesFromSelector(const CSSSelector&,
                                                const StyleScope*);
 
   // Methods for accessing the data in this object.
@@ -250,7 +253,7 @@ class CORE_EXPORT RuleFeatureSet {
   DescendantInvalidationSet& EnsureTypeRuleInvalidationSet();
   DescendantInvalidationSet& EnsurePartInvalidationSet();
 
-  void UpdateInvalidationSets(const RuleData*, const StyleScope*);
+  void UpdateInvalidationSets(const CSSSelector&, const StyleScope*);
 
   struct InvalidationSetFeatures {
     DISALLOW_NEW();

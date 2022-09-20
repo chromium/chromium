@@ -703,13 +703,12 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
   return nullptr;
 }
 
-void RuleFeatureSet::UpdateInvalidationSets(const RuleData* rule_data,
+void RuleFeatureSet::UpdateInvalidationSets(const CSSSelector& selector,
                                             const StyleScope* style_scope) {
   InvalidationSetFeatures features;
   FeatureInvalidationType feature_invalidation_type =
-      UpdateInvalidationSetsForComplex(rule_data->Selector(), style_scope,
-                                       features, kSubject,
-                                       CSSSelector::kPseudoUnknown);
+      UpdateInvalidationSetsForComplex(selector, style_scope, features,
+                                       kSubject, CSSSelector::kPseudoUnknown);
   if (feature_invalidation_type ==
       FeatureInvalidationType::kRequiresSubtreeInvalidation) {
     features.invalidation_flags.SetWholeSubtreeInvalid(true);
@@ -1552,13 +1551,13 @@ void RuleFeatureSet::AddFeaturesToInvalidationSets(
   }
 }
 
-RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromRuleData(
-    const RuleData* rule_data,
+RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromSelector(
+    const CSSSelector& selector,
     const StyleScope* style_scope) {
   CHECK(is_alive_);
   FeatureMetadata metadata;
   const unsigned max_direct_adjacent_selectors = 0;
-  if (CollectFeaturesFromSelector(rule_data->Selector(), metadata,
+  if (CollectFeaturesFromSelector(selector, metadata,
                                   max_direct_adjacent_selectors) ==
       kSelectorNeverMatches) {
     return kSelectorNeverMatches;
@@ -1566,7 +1565,7 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromRuleData(
 
   metadata_.Add(metadata);
 
-  UpdateInvalidationSets(rule_data, style_scope);
+  UpdateInvalidationSets(selector, style_scope);
   return kSelectorMayMatch;
 }
 

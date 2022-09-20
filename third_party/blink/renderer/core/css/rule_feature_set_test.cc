@@ -62,17 +62,11 @@ class RuleFeatureSetTest : public testing::Test {
       StyleRule* style_rule,
       const StyleScope* style_scope,
       RuleFeatureSet& set) {
-    Vector<wtf_size_t> indices;
-    for (const CSSSelector* s = style_rule->FirstSelector(); s;
-         s = CSSSelectorList::Next(*s)) {
-      indices.push_back(style_rule->SelectorIndex(*s));
-    }
-
     RuleFeatureSet::SelectorPreMatch result =
         RuleFeatureSet::SelectorPreMatch::kSelectorNeverMatches;
-    for (wtf_size_t index : indices) {
-      RuleData rule_data(style_rule, index, 0, 0, kRuleHasNoSpecialState);
-      if (set.CollectFeaturesFromRuleData(&rule_data, style_scope))
+    for (const CSSSelector* s = style_rule->FirstSelector(); s;
+         s = CSSSelectorList::Next(*s)) {
+      if (set.CollectFeaturesFromSelector(*s, style_scope))
         result = RuleFeatureSet::SelectorPreMatch::kSelectorMayMatch;
     }
     return result;
