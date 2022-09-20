@@ -5964,6 +5964,76 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.PriceTracking.SidePanel.ClickedTrackedProduct">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when the product item is clicked in the price tracking list in
+    side panel. This can be triggered by both regular click and auxclick.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.SidePanel.Track.BellButton">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when users stop tracking price for a product from side panel via
+    bell button.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.SidePanel.Track.ContextMenu">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when users stop tracking price for a product from side panel via
+    context menu.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.SidePanel.TrackedProductsCollapsed">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when the price tracking list in side panel has collapsed.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.SidePanel.TrackedProductsExpanded">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when the price tracking list in side panel has expanded.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.SidePanel.TrackedProductsShown">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when the price tracking list in side panel shows (regardless of
+    being expanded or collapsed).
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.SidePanel.Untrack.BellButton">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when users stop tracking price for a product from side panel via
+    bell button.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.SidePanel.Untrack.ContextMenu">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when users stop tracking price for a product from side panel via
+    context menu.
+  </description>
+</action>
+
 <action name="Commerce.PriceWelcomeMessageCard.Dismissed">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
