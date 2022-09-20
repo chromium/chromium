@@ -614,7 +614,6 @@ PermissionRequestManager::PermissionRequestManager(
               web_contents->GetBrowserContext())) {}
 
 void PermissionRequestManager::ScheduleShowBubble() {
-  base::RecordAction(base::UserMetricsAction("PermissionBubbleRequest"));
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&PermissionRequestManager::ShowBubble,
                                 weak_factory_.GetWeakPtr()));
