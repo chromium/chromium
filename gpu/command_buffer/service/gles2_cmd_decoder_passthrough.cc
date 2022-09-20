@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
@@ -2506,11 +2507,9 @@ bool GLES2DecoderPassthroughImpl::IsEmulatedQueryTarget(GLenum target) const {
 }
 
 bool GLES2DecoderPassthroughImpl::OnlyHasPendingProgramCompletionQueries() {
-  return std::find_if(pending_queries_.begin(), pending_queries_.end(),
-                      [](const auto& query) {
-                        return query.target !=
-                               GL_PROGRAM_COMPLETION_QUERY_CHROMIUM;
-                      }) == pending_queries_.end();
+  return base::ranges::all_of(pending_queries_, [](const auto& query) {
+    return query.target == GL_PROGRAM_COMPLETION_QUERY_CHROMIUM;
+  });
 }
 
 error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
@@ -2699,11 +2698,8 @@ error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
 }
 
 void GLES2DecoderPassthroughImpl::RemovePendingQuery(GLuint service_id) {
-  auto pending_iter =
-      std::find_if(pending_queries_.begin(), pending_queries_.end(),
-                   [service_id](const PendingQuery& pending_query) {
-                     return pending_query.service_id == service_id;
-                   });
+  auto pending_iter = base::ranges::find(pending_queries_, service_id,
+                                         &PendingQuery::service_id);
   if (pending_iter != pending_queries_.end()) {
     QuerySync* sync = pending_iter->sync;
     sync->result = 0;

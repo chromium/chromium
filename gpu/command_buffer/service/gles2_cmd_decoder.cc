@@ -9,7 +9,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <list>
@@ -34,6 +33,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -274,8 +274,7 @@ static bool CharacterIsValidForGLES(unsigned char c) {
 
 static bool StringIsValidForGLES(const std::string& str) {
   return str.length() == 0 ||
-         std::find_if_not(str.begin(), str.end(), CharacterIsValidForGLES) ==
-             str.end();
+         base::ranges::all_of(str, CharacterIsValidForGLES);
 }
 
 DisallowedFeatures::DisallowedFeatures() = default;

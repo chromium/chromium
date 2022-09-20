@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -294,12 +295,12 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
   instance.DiscoverDefaultAdapters();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
-  auto adapter_it = std::find_if(
-      adapters.begin(), adapters.end(), [](dawn::native::Adapter adapter) {
-        wgpu::AdapterProperties properties;
-        adapter.GetProperties(&properties);
-        return properties.backendType == wgpu::BackendType::Metal;
-      });
+  auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Metal,
+                                       [](dawn::native::Adapter adapter) {
+                                         wgpu::AdapterProperties properties;
+                                         adapter.GetProperties(&properties);
+                                         return properties.backendType;
+                                       });
   ASSERT_NE(adapter_it, adapters.end());
 
   dawn::native::DawnDeviceDescriptor device_descriptor;
@@ -444,12 +445,12 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   instance.DiscoverDefaultAdapters();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
-  auto adapter_it = std::find_if(
-      adapters.begin(), adapters.end(), [](dawn::native::Adapter adapter) {
-        wgpu::AdapterProperties properties;
-        adapter.GetProperties(&properties);
-        return properties.backendType == wgpu::BackendType::Metal;
-      });
+  auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Metal,
+                                       [](dawn::native::Adapter adapter) {
+                                         wgpu::AdapterProperties properties;
+                                         adapter.GetProperties(&properties);
+                                         return properties.backendType;
+                                       });
   ASSERT_NE(adapter_it, adapters.end());
 
   dawn::native::DawnDeviceDescriptor device_descriptor;
@@ -534,12 +535,12 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   instance.DiscoverDefaultAdapters();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
-  auto adapter_it = std::find_if(
-      adapters.begin(), adapters.end(), [](dawn::native::Adapter adapter) {
-        wgpu::AdapterProperties properties;
-        adapter.GetProperties(&properties);
-        return properties.backendType == wgpu::BackendType::Metal;
-      });
+  auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Metal,
+                                       [](dawn::native::Adapter adapter) {
+                                         wgpu::AdapterProperties properties;
+                                         adapter.GetProperties(&properties);
+                                         return properties.backendType;
+                                       });
   ASSERT_NE(adapter_it, adapters.end());
 
   dawn::native::DawnDeviceDescriptor device_descriptor;

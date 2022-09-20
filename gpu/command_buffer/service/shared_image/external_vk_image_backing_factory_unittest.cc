@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_dawn_representation.h"
@@ -97,12 +98,12 @@ class ExternalVkImageBackingFactoryTest : public testing::Test {
     dawn_instance_.DiscoverDefaultAdapters();
 
     std::vector<dawn::native::Adapter> adapters = dawn_instance_.GetAdapters();
-    auto adapter_it = std::find_if(
-        adapters.begin(), adapters.end(), [](dawn::native::Adapter adapter) {
-          wgpu::AdapterProperties properties;
-          adapter.GetProperties(&properties);
-          return properties.backendType == wgpu::BackendType::Vulkan;
-        });
+    auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Vulkan,
+                                         [](dawn::native::Adapter adapter) {
+                                           wgpu::AdapterProperties properties;
+                                           adapter.GetProperties(&properties);
+                                           return properties.backendType;
+                                         });
     ASSERT_NE(adapter_it, adapters.end());
 
     DawnProcTable procs = dawn::native::GetProcs();
