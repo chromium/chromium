@@ -19,50 +19,49 @@
 
 namespace features {
 
-VIZ_COMMON_EXPORT extern const base::Feature kAdpf;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdpf);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int> kAdpfTargetDurationMs;
-VIZ_COMMON_EXPORT extern const base::Feature kEnableOverlayPrioritization;
-VIZ_COMMON_EXPORT extern const base::Feature kDelegatedCompositing;
-VIZ_COMMON_EXPORT extern const base::Feature kRecordSkPicture;
-VIZ_COMMON_EXPORT extern const base::Feature kDisableDeJelly;
-VIZ_COMMON_EXPORT extern const base::Feature kUseMultipleOverlays;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableOverlayPrioritization);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegatedCompositing);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRecordSkPicture);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDisableDeJelly);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseMultipleOverlays);
 VIZ_COMMON_EXPORT extern const char kMaxOverlaysParam[];
-VIZ_COMMON_EXPORT extern const base::Feature kVideoDetectorIgnoreNonVideos;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVideoDetectorIgnoreNonVideos);
 #if BUILDFLAG(IS_ANDROID)
-VIZ_COMMON_EXPORT extern const base::Feature kDynamicColorGamut;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDynamicColorGamut);
 #endif
-VIZ_COMMON_EXPORT extern const base::Feature kVizFrameSubmissionForWebView;
-VIZ_COMMON_EXPORT extern const base::Feature kUseRealBuffersForPageFlipTest;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVizFrameSubmissionForWebView);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseRealBuffersForPageFlipTest);
 #if BUILDFLAG(IS_FUCHSIA)
-VIZ_COMMON_EXPORT extern const base::Feature kUseSkiaOutputDeviceBufferQueue;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSkiaOutputDeviceBufferQueue);
 #endif
-VIZ_COMMON_EXPORT extern const base::Feature kWebRtcLogCapturePipeline;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcLogCapturePipeline);
 #if BUILDFLAG(IS_WIN)
-VIZ_COMMON_EXPORT extern const base::Feature kUseSetPresentDuration;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSetPresentDuration);
 #endif  // BUILDFLAG(IS_WIN)
-VIZ_COMMON_EXPORT extern const base::Feature kWebViewVulkanIntermediateBuffer;
-VIZ_COMMON_EXPORT extern const base::Feature kUsePlatformDelegatedInk;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewVulkanIntermediateBuffer);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUsePlatformDelegatedInk);
 #if BUILDFLAG(IS_ANDROID)
-VIZ_COMMON_EXPORT extern const base::Feature kUseSurfaceLayerForVideoDefault;
-VIZ_COMMON_EXPORT extern const base::Feature kWebViewNewInvalidateHeuristic;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSurfaceLayerForVideoDefault);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewNewInvalidateHeuristic);
 #endif
-VIZ_COMMON_EXPORT extern const base::Feature kSurfaceSyncThrottling;
-VIZ_COMMON_EXPORT extern const base::Feature kDynamicSchedulerForDraw;
-VIZ_COMMON_EXPORT extern const base::Feature kDynamicSchedulerForClients;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSurfaceSyncThrottling);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDynamicSchedulerForDraw);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDynamicSchedulerForClients);
 #if BUILDFLAG(IS_MAC)
-VIZ_COMMON_EXPORT extern const base::Feature kMacCAOverlayQuad;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kMacCAOverlayQuad);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int> kMacCAOverlayQuadMaxNum;
 #endif
 
 #if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-VIZ_COMMON_EXPORT extern const base::Feature kCanSkipRenderPassOverlay;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanSkipRenderPassOverlay);
 #endif
 
-VIZ_COMMON_EXPORT extern const base::Feature kDrawPredictedInkPoint;
-VIZ_COMMON_EXPORT extern const base::Feature
-    kAllowUndamagedNonrootRenderPassToSkip;
-VIZ_COMMON_EXPORT extern const base::Feature kAggressiveFrameCulling;
-VIZ_COMMON_EXPORT extern const base::Feature kEagerSurfaceGarbageCollection;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDrawPredictedInkPoint);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAggressiveFrameCulling);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEagerSurfaceGarbageCollection);
 
 VIZ_COMMON_EXPORT extern const char kDraw1Point12Ms[];
 VIZ_COMMON_EXPORT extern const char kDraw2Points6Ms[];
