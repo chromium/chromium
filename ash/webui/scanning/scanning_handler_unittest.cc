@@ -235,11 +235,10 @@ TEST_F(ScanningHandlerTest, SelectDirectory) {
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
-  const base::DictionaryValue* selected_path_dict;
-  EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
-  EXPECT_EQ(base_file_path.value(),
-            *selected_path_dict->FindStringPath("filePath"));
-  EXPECT_EQ("Base Name", *selected_path_dict->FindStringPath("baseName"));
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+  const base::Value::Dict& selected_path_dict = call_data.arg3()->GetDict();
+  EXPECT_EQ(base_file_path.value(), *selected_path_dict.FindString("filePath"));
+  EXPECT_EQ("Base Name", *selected_path_dict.FindString("baseName"));
 }
 
 // Validates that invoking the requestScanToLocation Web UI event opens the
@@ -256,10 +255,10 @@ TEST_F(ScanningHandlerTest, CancelDialog) {
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
-  const base::DictionaryValue* selected_path_dict;
-  EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
-  EXPECT_EQ("", *selected_path_dict->FindStringPath("filePath"));
-  EXPECT_EQ("", *selected_path_dict->FindStringPath("baseName"));
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+  const base::Value::Dict& selected_path_dict = call_data.arg3()->GetDict();
+  EXPECT_EQ("", *selected_path_dict.FindString("filePath"));
+  EXPECT_EQ("", *selected_path_dict.FindString("baseName"));
 }
 
 // Validates that invoking the showFileInLocation Web UI event calls the
@@ -359,11 +358,10 @@ TEST_F(ScanningHandlerTest, ValidFilePathExists) {
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
-  const base::DictionaryValue* selected_path_dict;
-  EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
-  EXPECT_EQ(myScanPath.value(),
-            *selected_path_dict->FindStringPath("filePath"));
-  EXPECT_EQ("myScanPath", *selected_path_dict->FindStringPath("baseName"));
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+  const base::Value::Dict& selected_path_dict = call_data.arg3()->GetDict();
+  EXPECT_EQ(myScanPath.value(), *selected_path_dict.FindString("filePath"));
+  EXPECT_EQ("myScanPath", *selected_path_dict.FindString("baseName"));
 }
 
 // Validates that invoking the ensureValidFilePath Web UI event with an invalid
@@ -380,10 +378,10 @@ TEST_F(ScanningHandlerTest, InvalidFilePath) {
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
-  const base::DictionaryValue* selected_path_dict;
-  EXPECT_TRUE(call_data.arg3()->GetAsDictionary(&selected_path_dict));
-  EXPECT_EQ(std::string(), *selected_path_dict->FindStringPath("filePath"));
-  EXPECT_EQ(std::string(), *selected_path_dict->FindStringPath("baseName"));
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+  const base::Value::Dict& selected_path_dict = call_data.arg3()->GetDict();
+  EXPECT_EQ(std::string(), *selected_path_dict.FindString("filePath"));
+  EXPECT_EQ(std::string(), *selected_path_dict.FindString("baseName"));
 }
 
 // Validates a request for a plural string with a key missing in the plural
