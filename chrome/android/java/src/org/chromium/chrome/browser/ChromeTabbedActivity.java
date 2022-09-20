@@ -2825,7 +2825,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         assert mInactivityTracker != null;
         assert getTabModelSelector() != null;
         return ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                this, getIntent(), getTabModelSelector(), mInactivityTracker);
+                this, getIntent(), getTabModelSelector(), mInactivityTracker, isTablet());
     }
 
     @Override
