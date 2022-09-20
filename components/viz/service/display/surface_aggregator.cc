@@ -776,11 +776,9 @@ void SurfaceAggregator::EmitSurfaceContent(
   }
 
   if (frame.metadata.delegated_ink_metadata) {
-    // The metadata must be taken off of the surface, rather than a copy being
-    // made, in order to ensure that the delegated ink metadata is used for
-    // exactly one frame. Otherwise, it could potentially end up being used to
-    // draw the same trail on multiple frames if a new CompositorFrame wasn't
-    // generated.
+    // Copy delegated ink metadata from the compositor frame metadata. This
+    // prevents the delegated ink trail from flickering if a compositor frame
+    // is not generated due to a delayed main frame.
     TransformAndStoreDelegatedInkMetadata(
         gfx::Transform(dest_pass->transform_to_root_target, combined_transform),
         frame.metadata.delegated_ink_metadata.get());
@@ -1376,11 +1374,9 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
   if (frame.metadata.delegated_ink_metadata) {
     DCHECK(surface->GetActiveFrameMetadata().delegated_ink_metadata ==
            frame.metadata.delegated_ink_metadata);
-    // The metadata must be taken off of the surface, rather than a copy being
-    // made, in order to ensure that the delegated ink metadata is used for
-    // exactly one frame. Otherwise, it could potentially end up being used to
-    // draw the same trail on multiple frames if a new CompositorFrame wasn't
-    // generated.
+    // Copy delegated ink metadata from the compositor frame metadata. This
+    // prevents the delegated ink trail from flickering if a compositor frame
+    // is not generated due to a delayed main frame.
     TransformAndStoreDelegatedInkMetadata(
         gfx::Transform(source_pass_list.back()->transform_to_root_target,
                        surface_transform),
