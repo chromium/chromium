@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_BACKING_H_
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
@@ -247,6 +248,17 @@ class GPU_GLES2_EXPORT GLImageBacking
   // to the GL texture, and un-set |image_bind_or_copy_needed_|.
   bool BindOrCopyImageIfNeeded();
   bool image_bind_or_copy_needed_ = true;
+
+  // TODO(blundell): Eliminate all usage of BUILDFLAG(IS_MAC) in this file (as
+  // well as the .cc file) once GLImageBacking is used only on Mac.
+#if BUILDFLAG(IS_MAC)
+  // Used to determine whether to release the texture in EndAccess() in use
+  // cases that need to ensure IOSurface synchronization.
+  uint num_ongoing_read_accesses_ = 0;
+  // Used with the above variable to catch cases where clients are performing
+  // disallowed concurrent read/write accesses.
+  bool ongoing_write_access_ = false;
+#endif
 
   void RetainGLTexture();
   void ReleaseGLTexture(bool have_context);

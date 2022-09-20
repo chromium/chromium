@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_image_shared_memory.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/progress_reporter.h"
 
 namespace gpu {
@@ -265,6 +266,23 @@ bool GLImageBackingFactory::IsSupported(uint32_t usage,
 #if BUILDFLAG(IS_MAC)
   // On macOS, there is no separate interop factory. Any GpuMemoryBuffer-backed
   // image can be used with both OpenGL and Metal
+
+  // In certain modes on Mac, Angle needs the image to be released when ending a
+  // write. To avoid that release resulting in the GLES2 command decoders
+  // needing to perform on-demand binding, we disallow concurrent read/write in
+  // these modes. See GLImageBacking::GLTextureImageRepresentationEndAccess()
+  // for further details.
+  // TODO(https://anglebug.com/7626): Adjust the Metal-related conditions here
+  // if/as they are adjusted in
+  // GLImageBacking::GLTextureImageRepresentationEndAccess().
+  if (use_passthrough_ &&
+      (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
+       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
+    if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
+      return false;
+    }
+  }
+
   return true;
 #else
   // Doesn't support contexts other than GL for OOPR Canvas

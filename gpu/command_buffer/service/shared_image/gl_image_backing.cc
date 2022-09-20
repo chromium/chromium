@@ -622,6 +622,18 @@ void GLImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 }
 
 bool GLImageBacking::GLTextureImageRepresentationBeginAccess(bool readonly) {
+#if BUILDFLAG(IS_MAC)
+  DCHECK(!ongoing_write_access_);
+  if (readonly) {
+    num_ongoing_read_accesses_++;
+  } else {
+    if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+      DCHECK(num_ongoing_read_accesses_ == 0);
+    }
+    ongoing_write_access_ = true;
+  }
+#endif
+
   if (!release_fence_.is_null()) {
     auto fence = gfx::GpuFence(std::move(release_fence_));
     if (gl::GLFence::IsGpuFenceSupported()) {
@@ -635,6 +647,20 @@ bool GLImageBacking::GLTextureImageRepresentationBeginAccess(bool readonly) {
 
 void GLImageBacking::GLTextureImageRepresentationEndAccess(bool readonly) {
 #if BUILDFLAG(IS_MAC)
+  if (readonly) {
+    DCHECK(num_ongoing_read_accesses_ > 0);
+    if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+      DCHECK(!ongoing_write_access_);
+    }
+    num_ongoing_read_accesses_--;
+  } else {
+    DCHECK(ongoing_write_access_);
+    if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+      DCHECK(num_ongoing_read_accesses_ == 0);
+    }
+    ongoing_write_access_ = false;
+  }
+
   // If this image could potentially be shared with Metal via WebGPU, then flush
   // the GL context to ensure Metal will see it.
   if (usage() & SHARED_IMAGE_USAGE_WEBGPU) {
@@ -642,20 +668,39 @@ void GLImageBacking::GLTextureImageRepresentationEndAccess(bool readonly) {
     api->glFlushFn();
   }
 
-  // When SwANGLE is used as the GL implementation, we have to call
-  // ReleaseTexImage to signal an UnlockIOSurface call to sync the surface
-  // between the CPU and GPU. The next time this texture is accessed we will
-  // call BindTexImage to signal a LockIOSurface call before rendering to it via
-  // the CPU.
+  // When SwANGLE is used as the GL implementation, it holds an internal
+  // texture. We have to call ReleaseTexImage here to trigger a copy from that
+  // internal texture to the IOSurface (the next Bind() will then trigger an
+  // IOSurface->internal texture copy). We do this only when there are no
+  // ongoing reads in order to ensure that it does not result in the GLES2
+  // decoders needing to perform on-demand binding (rather, the binding will be
+  // performed at the next BeginAccess()). Note that it is not sufficient to
+  // release the image only at the end of a write: the CPU can write directly to
+  // the IOSurface when the GPU is not accessing the internal texture (in the
+  // case of zero-copy raster), and any such IOSurface-side modifications need
+  // to be copied to the internal texture via a Bind() when the GPU starts a
+  // subsequent read. Note also that this logic assumes that writes are
+  // serialized with respect to reads (so that the end of a write always
+  // triggers a release and copy). By design, GLImageBackingFactory enforces
+  // this property for this use case.
+  bool needs_sync_for_swangle =
+      (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader &&
+       (num_ongoing_read_accesses_ == 0));
+
   // Similarly, when ANGLE's metal backend is used, we have to signal a call to
   // waitUntilScheduled() using the same method on EndAccess to ensure IOSurface
-  // synchronization.
-  // TODO(https://anglebug.com/7626): Enable on Metal only when CPU_READ or
-  // SCANOUT is specified.
+  // synchronization. In this case, it is sufficient to release the image at the
+  // end of a write. As above, GLImageBackingFactory enforces serialization of
+  // reads and writes for this use case.
+  // TODO(https://anglebug.com/7626): Enable on Metal only when
+  // CPU_READ or SCANOUT is specified. When doing so, adjust the conditions for
+  // disallowing concurrent read/write in GLImageBackingFactory as suitable.
+  bool needs_sync_for_metal =
+      (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal &&
+       !readonly);
+
   bool needs_synchronization =
-      IsPassthrough() &&
-      (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
-       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal);
+      IsPassthrough() && (needs_sync_for_swangle || needs_sync_for_metal);
   if (needs_synchronization &&
       image_->ShouldBindOrCopy() == gl::GLImage::BIND) {
     const GLenum target = GetGLTarget();
