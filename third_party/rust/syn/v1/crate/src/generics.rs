@@ -844,8 +844,12 @@ pub mod parsing {
             let lifetimes: Option<BoundLifetimes> = input.parse()?;
 
             let mut path: Path = input.parse()?;
-            if path.segments.last().unwrap().arguments.is_empty() && input.peek(token::Paren) {
-                let parenthesized = PathArguments::Parenthesized(input.parse()?);
+            if path.segments.last().unwrap().arguments.is_empty()
+                && (input.peek(token::Paren) || input.peek(Token![::]) && input.peek3(token::Paren))
+            {
+                input.parse::<Option<Token![::]>>()?;
+                let args: ParenthesizedGenericArguments = input.parse()?;
+                let parenthesized = PathArguments::Parenthesized(args);
                 path.segments.last_mut().unwrap().arguments = parenthesized;
             }
 

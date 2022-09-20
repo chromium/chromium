@@ -203,8 +203,6 @@ pub const RTLD_DEFAULT: *mut ::c_void = -1isize as *mut ::c_void;
 
 pub const PTRACE_GETFPREGS: ::c_int = 14;
 pub const PTRACE_SETFPREGS: ::c_int = 15;
-pub const PTRACE_GETREGS: ::c_int = 12;
-pub const PTRACE_SETREGS: ::c_int = 13;
 
 pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t { value: 0 };
 pub const PTHREAD_COND_INITIALIZER: pthread_cond_t = pthread_cond_t { value: 0 };

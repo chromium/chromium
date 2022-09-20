@@ -1,7 +1,7 @@
-diff --git a/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn b/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
-index fe406a9f2e5dd..3cfe7dfba38f2 100644
---- a/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
-+++ b/third_party/rust/autocxx_bindgen/v0_59/BUILD.gn
+diff --git a/third_party/rust/autocxx_bindgen/v0_60/BUILD.gn b/third_party/rust/autocxx_bindgen/v0_60/BUILD.gn
+index 3fca887f2acb7..63129d6dec0e5 100644
+--- a/third_party/rust/autocxx_bindgen/v0_60/BUILD.gn
++++ b/third_party/rust/autocxx_bindgen/v0_60/BUILD.gn
 @@ -40,7 +40,9 @@ cargo_crate("autocxx_bindgen") {
      "env_logger",
      "log",

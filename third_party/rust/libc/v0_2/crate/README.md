@@ -35,13 +35,16 @@ libc = "0.2"
   This feature derives `Debug`, `Eq`, `Hash`, and `PartialEq`.
 
 * `const-extern-fn`: Changes some `extern fn`s into `const extern fn`s.
-   This feature requires a nightly rustc.
+  If you use Rust >= 1.62, this feature is implicitly enabled.
+  Otherwise it requires a nightly rustc.
 
 * **deprecated**: `use_std` is deprecated, and is equivalent to `std`.
 
 ## Rust version support
 
-The minimum supported Rust toolchain version is **Rust 1.13.0** . APIs requiring
+The minimum supported Rust toolchain version is currently **Rust 1.13.0**.
+(libc does not currently have any policy regarding changes to the minimum
+supported Rust version; such policy is a work in progress.) APIs requiring
 newer Rust features are only available on newer Rust toolchains:
 
 | Feature              | Version |
@@ -53,6 +56,7 @@ newer Rust features are only available on newer Rust toolchains:
 | `core::ffi::c_void`  |  1.30.0 |
 | `repr(packed(N))`    |  1.33.0 |
 | `cfg(target_vendor)` |  1.33.0 |
+| `const-extern-fn`    |  1.62.0 |
 
 ## Platform support
 

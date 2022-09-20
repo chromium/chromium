@@ -1,14 +1,13 @@
-extern crate tempdir;
 extern crate which;
 
-#[cfg(feature = "regex")]
+#[cfg(all(unix, feature = "regex"))]
 use regex::Regex;
 use std::ffi::{OsStr, OsString};
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::{env, vec};
-use tempdir::TempDir;
+use tempfile::TempDir;
 
 struct TestFixture {
     /// Temp directory.
@@ -19,8 +18,8 @@ struct TestFixture {
     pub bins: Vec<PathBuf>,
 }
 
-const SUBDIRS: &'static [&'static str] = &["a", "b", "c"];
-const BIN_NAME: &'static str = "bin";
+const SUBDIRS: &[&str] = &["a", "b", "c"];
+const BIN_NAME: &str = "bin";
 
 #[cfg(unix)]
 fn mk_bin(dir: &Path, path: &str, extension: &str) -> io::Result<PathBuf> {
@@ -55,7 +54,7 @@ impl TestFixture {
     // tmp/c/bin.exe
     // tmp/c/bin.cmd
     pub fn new() -> TestFixture {
-        let tempdir = TempDir::new("which_tests").unwrap();
+        let tempdir = tempfile::tempdir().unwrap();
         let mut builder = fs::DirBuilder::new();
         builder.recursive(true);
         let mut paths = vec![];
@@ -63,25 +62,29 @@ impl TestFixture {
         for d in SUBDIRS.iter() {
             let p = tempdir.path().join(d);
             builder.create(&p).unwrap();
-            bins.push(mk_bin(&p, &BIN_NAME, "").unwrap());
-            bins.push(mk_bin(&p, &BIN_NAME, "exe").unwrap());
-            bins.push(mk_bin(&p, &BIN_NAME, "cmd").unwrap());
+            bins.push(mk_bin(&p, BIN_NAME, "").unwrap());
+            bins.push(mk_bin(&p, BIN_NAME, "exe").unwrap());
+            bins.push(mk_bin(&p, BIN_NAME, "cmd").unwrap());
             paths.push(p);
         }
+        let p = tempdir.path().join("win-bin");
+        builder.create(&p).unwrap();
+        bins.push(mk_bin(&p, "win-bin", "exe").unwrap());
+        paths.push(p);
         TestFixture {
-            tempdir: tempdir,
+            tempdir,
             paths: env::join_paths(paths).unwrap(),
-            bins: bins,
+            bins,
         }
     }
 
     #[allow(dead_code)]
     pub fn touch(&self, path: &str, extension: &str) -> io::Result<PathBuf> {
-        touch(self.tempdir.path(), &path, &extension)
+        touch(self.tempdir.path(), path, extension)
     }
 
     pub fn mk_bin(&self, path: &str, extension: &str) -> io::Result<PathBuf> {
-        mk_bin(self.tempdir.path(), &path, &extension)
+        mk_bin(self.tempdir.path(), path, extension)
     }
 }
 
@@ -89,11 +92,11 @@ fn _which<T: AsRef<OsStr>>(f: &TestFixture, path: T) -> which::Result<which::Can
     which::CanonicalPath::new_in(path, Some(f.paths.clone()), f.tempdir.path())
 }
 
-fn _which_all<T: AsRef<OsStr>>(
-    f: &TestFixture,
+fn _which_all<'a, T: AsRef<OsStr> + 'a>(
+    f: &'a TestFixture,
     path: T,
-) -> which::Result<impl Iterator<Item = which::Result<which::CanonicalPath>>> {
-    which::CanonicalPath::all_in(path, Some(f.paths.clone()), f.tempdir.path().to_path_buf())
+) -> which::Result<impl Iterator<Item = which::Result<which::CanonicalPath>> + '_> {
+    which::CanonicalPath::all_in(path, Some(f.paths.clone()), f.tempdir.path())
 }
 
 #[test]
@@ -165,10 +168,18 @@ fn test_which_re_in_without_matches() {
 #[test]
 #[cfg(all(unix, feature = "regex"))]
 fn test_which_re_accepts_owned_and_borrow() {
-    which::which_re(Regex::new(r".").unwrap());
-    which::which_re(&Regex::new(r".").unwrap());
-    which::which_re_in(Regex::new(r".").unwrap(), Some("pth"));
-    which::which_re_in(&Regex::new(r".").unwrap(), Some("pth"));
+    which::which_re(Regex::new(r".").unwrap())
+        .unwrap()
+        .for_each(drop);
+    which::which_re(&Regex::new(r".").unwrap())
+        .unwrap()
+        .for_each(drop);
+    which::which_re_in(Regex::new(r".").unwrap(), Some("pth"))
+        .unwrap()
+        .for_each(drop);
+    which::which_re_in(&Regex::new(r".").unwrap(), Some("pth"))
+        .unwrap()
+        .for_each(drop);
 }
 
 #[test]
@@ -185,6 +196,17 @@ fn test_which_extension() {
     let f = TestFixture::new();
     let b = Path::new(&BIN_NAME).with_extension("cmd");
     assert_eq!(_which(&f, &b).unwrap(), f.bins[2])
+}
+
+#[test]
+#[cfg(windows)]
+fn test_which_no_extension() {
+    let f = TestFixture::new();
+    let b = Path::new("win-bin");
+    let which_result = which::which_in(&b, Some(&f.paths), ".").unwrap();
+    // Make sure the extension is the correct case.
+    assert_eq!(which_result.extension(), f.bins[9].extension());
+    assert_eq!(fs::canonicalize(&which_result).unwrap(), f.bins[9])
 }
 
 #[test]
@@ -214,6 +236,7 @@ fn test_which_all() {
         .collect::<Vec<_>>();
     #[cfg(windows)]
     {
+        expected.retain(|p| p.file_stem().unwrap() == BIN_NAME);
         expected.retain(|p| p.extension().map(|ext| ext == "exe" || ext == "cmd") == Some(true));
     }
     #[cfg(not(windows))]

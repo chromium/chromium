@@ -136,7 +136,7 @@ fn parse_delimited<'a>(
 #[cfg_attr(doc_cfg, doc(cfg(feature = "parsing")))]
 macro_rules! parenthesized {
     ($content:ident in $cursor:expr) => {
-        match $crate::group::parse_parens(&$cursor) {
+        match $crate::__private::parse_parens(&$cursor) {
             $crate::__private::Ok(parens) => {
                 $content = parens.content;
                 parens.token
@@ -214,7 +214,7 @@ macro_rules! parenthesized {
 #[cfg_attr(doc_cfg, doc(cfg(feature = "parsing")))]
 macro_rules! braced {
     ($content:ident in $cursor:expr) => {
-        match $crate::group::parse_braces(&$cursor) {
+        match $crate::__private::parse_braces(&$cursor) {
             $crate::__private::Ok(braces) => {
                 $content = braces.content;
                 braces.token
@@ -269,7 +269,7 @@ macro_rules! braced {
 #[cfg_attr(doc_cfg, doc(cfg(feature = "parsing")))]
 macro_rules! bracketed {
     ($content:ident in $cursor:expr) => {
-        match $crate::group::parse_brackets(&$cursor) {
+        match $crate::__private::parse_brackets(&$cursor) {
             $crate::__private::Ok(brackets) => {
                 $content = brackets.content;
                 brackets.token

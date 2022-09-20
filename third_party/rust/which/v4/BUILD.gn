@@ -18,7 +18,7 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "4.2.4"
+  cargo_pkg_version = "4.3.0"
   cargo_pkg_authors = "Harry Fei <tiziyuanfang@gmail.com>"
   cargo_pkg_name = "which"
   cargo_pkg_description = "A Rust equivalent of Unix command 'which'. Locate installed executable in cross platforms."
@@ -27,6 +27,6 @@ cargo_crate("lib") {
     "//third_party/rust/libc/v0_2:lib",
   ]
   if (is_win) {
-    deps += [ "//third_party/rust/lazy_static/v1:lib" ]
+    deps += [ "//third_party/rust/once_cell/v1:lib" ]
   }
 }

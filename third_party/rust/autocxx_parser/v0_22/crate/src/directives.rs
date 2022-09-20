@@ -268,10 +268,8 @@ impl Directive for Safety {
     ) -> Box<dyn Iterator<Item = TokenStream> + 'a> {
         let policy = &config.unsafe_policy;
         match config.unsafe_policy {
-            crate::UnsafePolicy::AllFunctionsSafe => {
-                Box::new(std::iter::once(policy.to_token_stream()))
-            }
             crate::UnsafePolicy::AllFunctionsUnsafe => Box::new(std::iter::empty()),
+            _ => Box::new(std::iter::once(policy.to_token_stream())),
         }
     }
 }

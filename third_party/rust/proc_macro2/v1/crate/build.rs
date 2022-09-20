@@ -41,7 +41,6 @@
 //     1.57+.
 
 use std::env;
-use std::iter;
 use std::process::{self, Command};
 use std::str;
 
@@ -58,7 +57,8 @@ fn main() {
         process::exit(1);
     }
 
-    let semver_exempt = cfg!(procmacro2_semver_exempt);
+    let docs_rs = env::var_os("DOCS_RS").is_some();
+    let semver_exempt = cfg!(procmacro2_semver_exempt) || docs_rs;
     if semver_exempt {
         // https://github.com/dtolnay/proc-macro2/issues/147
         println!("cargo:rustc-cfg=procmacro2_semver_exempt");
@@ -76,20 +76,28 @@ fn main() {
         println!("cargo:rustc-cfg=no_bind_by_move_pattern_guard");
     }
 
-    if version.minor >= 44 {
-        println!("cargo:rustc-cfg=lexerror_display");
+    if version.minor < 44 {
+        println!("cargo:rustc-cfg=no_lexerror_display");
     }
 
-    if version.minor >= 45 {
-        println!("cargo:rustc-cfg=hygiene");
+    if version.minor < 45 {
+        println!("cargo:rustc-cfg=no_hygiene");
     }
 
-    if version.minor >= 54 {
-        println!("cargo:rustc-cfg=literal_from_str");
+    if version.minor < 47 {
+        println!("cargo:rustc-cfg=no_ident_new_raw");
     }
 
-    if version.minor >= 57 {
-        println!("cargo:rustc-cfg=is_available");
+    if version.minor < 54 {
+        println!("cargo:rustc-cfg=no_literal_from_str");
+    }
+
+    if version.minor < 55 {
+        println!("cargo:rustc-cfg=no_group_open_close");
+    }
+
+    if version.minor < 57 {
+        println!("cargo:rustc-cfg=no_is_available");
     }
 
     let target = env::var("TARGET").unwrap();
@@ -149,23 +157,13 @@ fn feature_allowed(feature: &str) -> bool {
 
     let flags_var;
     let flags_var_string;
-    let mut flags_var_split;
-    let mut flags_none;
-    let flags: &mut dyn Iterator<Item = &str> =
-        if let Some(encoded_rustflags) = env::var_os("CARGO_ENCODED_RUSTFLAGS") {
-            flags_var = encoded_rustflags;
-            flags_var_string = flags_var.to_string_lossy();
-            flags_var_split = flags_var_string.split('\x1f');
-            &mut flags_var_split
-        } else if let Some(rustflags) = env::var_os("RUSTFLAGS") {
-            flags_var = rustflags;
-            flags_var_string = flags_var.to_string_lossy();
-            flags_var_split = flags_var_string.split(' ');
-            &mut flags_var_split
-        } else {
-            flags_none = iter::empty();
-            &mut flags_none
-        };
+    let flags = if let Some(encoded_rustflags) = env::var_os("CARGO_ENCODED_RUSTFLAGS") {
+        flags_var = encoded_rustflags;
+        flags_var_string = flags_var.to_string_lossy();
+        flags_var_string.split('\x1f')
+    } else {
+        return true;
+    };
 
     for mut flag in flags {
         if flag.starts_with("-Z") {

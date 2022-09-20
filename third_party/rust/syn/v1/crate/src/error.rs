@@ -28,6 +28,8 @@ pub type Result<T> = std::result::Result<T, Error>;
 /// When parsing macro input, the [`parse_macro_input!`] macro handles the
 /// conversion to `compile_error!` automatically.
 ///
+/// [`parse_macro_input!`]: crate::parse_macro_input!
+///
 /// ```
 /// # extern crate proc_macro;
 /// #
@@ -47,10 +49,11 @@ pub type Result<T> = std::result::Result<T, Error>;
 /// ```
 ///
 /// For errors that arise later than the initial parsing stage, the
-/// [`.to_compile_error()`] method can be used to perform an explicit conversion
-/// to `compile_error!`.
+/// [`.to_compile_error()`] or [`.into_compile_error()`] methods can be used to
+/// perform an explicit conversion to `compile_error!`.
 ///
 /// [`.to_compile_error()`]: Error::to_compile_error
+/// [`.into_compile_error()`]: Error::into_compile_error
 ///
 /// ```
 /// # extern crate proc_macro;
@@ -66,7 +69,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 ///
 ///     // fn(DeriveInput) -> syn::Result<proc_macro2::TokenStream>
 ///     expand::my_derive(input)
-///         .unwrap_or_else(|err| err.to_compile_error())
+///         .unwrap_or_else(syn::Error::into_compile_error)
 ///         .into()
 /// }
 /// #
@@ -190,6 +193,7 @@ impl Error {
     /// this method correctly in a procedural macro.
     ///
     /// [`compile_error!`]: std::compile_error!
+    /// [`parse_macro_input!`]: crate::parse_macro_input!
     pub fn to_compile_error(&self) -> TokenStream {
         self.messages
             .iter()

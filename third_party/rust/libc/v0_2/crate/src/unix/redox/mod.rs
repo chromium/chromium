@@ -151,10 +151,18 @@ s! {
     }
 
     pub struct sigaction {
-        pub sa_handler: ::sighandler_t,
+        pub sa_sigaction: ::sighandler_t,
         pub sa_flags: ::c_ulong,
         pub sa_restorer: ::Option<extern fn()>,
         pub sa_mask: ::sigset_t,
+    }
+
+    pub struct siginfo_t {
+        pub si_signo: ::c_int,
+        pub si_errno: ::c_int,
+        pub si_code: ::c_int,
+        _pad: [::c_int; 29],
+        _align: [usize; 0],
     }
 
     pub struct sockaddr {

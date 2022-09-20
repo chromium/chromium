@@ -1,7 +1,5 @@
 use crate::finder::Checker;
 #[cfg(unix)]
-use libc;
-#[cfg(unix)]
 use std::ffi::CString;
 use std::fs;
 #[cfg(unix)]
@@ -20,7 +18,7 @@ impl Checker for ExecutableChecker {
     #[cfg(unix)]
     fn is_valid(&self, path: &Path) -> bool {
         CString::new(path.as_os_str().as_bytes())
-            .and_then(|c| Ok(unsafe { libc::access(c.as_ptr(), libc::X_OK) == 0 }))
+            .map(|c| unsafe { libc::access(c.as_ptr(), libc::X_OK) == 0 })
             .unwrap_or(false)
     }
 

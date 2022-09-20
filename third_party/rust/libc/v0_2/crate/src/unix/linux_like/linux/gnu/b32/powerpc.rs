@@ -163,7 +163,6 @@ s! {
     }
 }
 
-pub const RLIM_INFINITY: ::rlim_t = !0;
 pub const VEOF: usize = 4;
 pub const RTLD_DEEPBIND: ::c_int = 0x8;
 pub const RTLD_GLOBAL: ::c_int = 0x100;
@@ -183,23 +182,9 @@ pub const O_DSYNC: ::c_int = 4096;
 pub const O_FSYNC: ::c_int = 0x101000;
 pub const O_ASYNC: ::c_int = 0x2000;
 pub const O_NDELAY: ::c_int = 0x800;
-pub const RLIMIT_NOFILE: ::__rlimit_resource_t = 7;
-pub const RLIMIT_NPROC: ::__rlimit_resource_t = 6;
-pub const RLIMIT_RSS: ::__rlimit_resource_t = 5;
-pub const RLIMIT_AS: ::__rlimit_resource_t = 9;
-pub const RLIMIT_MEMLOCK: ::__rlimit_resource_t = 8;
 pub const TCSANOW: ::c_int = 0;
 pub const TCSADRAIN: ::c_int = 1;
 pub const TCSAFLUSH: ::c_int = 2;
-
-pub const TIOCLINUX: ::c_ulong = 0x541C;
-pub const TIOCGSERIAL: ::c_ulong = 0x541E;
-pub const TIOCM_ST: ::c_int = 0x008;
-pub const TIOCM_SR: ::c_int = 0x010;
-pub const TIOCM_CTS: ::c_int = 0x020;
-pub const TIOCM_CAR: ::c_int = 0x040;
-pub const TIOCM_RNG: ::c_int = 0x080;
-pub const TIOCM_DSR: ::c_int = 0x100;
 
 pub const MADV_SOFT_OFFLINE: ::c_int = 101;
 pub const MAP_LOCKED: ::c_int = 0x00080;
@@ -306,10 +291,6 @@ pub const SA_NOCLDWAIT: ::c_int = 0x00000002;
 pub const SOCK_STREAM: ::c_int = 1;
 pub const SOCK_DGRAM: ::c_int = 2;
 
-pub const FIOCLEX: ::c_ulong = 0x20006601;
-pub const FIONCLEX: ::c_ulong = 0x20006602;
-pub const FIONBIO: ::c_ulong = 0x8004667e;
-
 pub const MCL_CURRENT: ::c_int = 0x2000;
 pub const MCL_FUTURE: ::c_int = 0x4000;
 
@@ -322,18 +303,6 @@ pub const F_SETOWN: ::c_int = 8;
 
 pub const EFD_NONBLOCK: ::c_int = 0x800;
 pub const SFD_NONBLOCK: ::c_int = 0x0800;
-
-pub const TIOCGSOFTCAR: ::c_ulong = 0x5419;
-pub const TIOCSSOFTCAR: ::c_ulong = 0x541A;
-pub const TIOCEXCL: ::c_ulong = 0x540C;
-pub const TIOCNXCL: ::c_ulong = 0x540D;
-pub const TIOCSCTTY: ::c_ulong = 0x540E;
-pub const TIOCSTI: ::c_ulong = 0x5412;
-pub const TIOCMGET: ::c_ulong = 0x5415;
-pub const TIOCMBIS: ::c_ulong = 0x5416;
-pub const TIOCMBIC: ::c_ulong = 0x5417;
-pub const TIOCMSET: ::c_ulong = 0x5418;
-pub const TIOCCONS: ::c_ulong = 0x541D;
 
 pub const SIGCHLD: ::c_int = 17;
 pub const SIGBUS: ::c_int = 7;
@@ -446,7 +415,6 @@ pub const B2500000: ::speed_t = 0o0033;
 pub const B3000000: ::speed_t = 0o0034;
 pub const B3500000: ::speed_t = 0o0035;
 pub const B4000000: ::speed_t = 0o0036;
-pub const BOTHER: ::speed_t = 0o0037;
 
 pub const VEOL: usize = 6;
 pub const VEOL2: usize = 8;
@@ -455,26 +423,6 @@ pub const IEXTEN: ::tcflag_t = 0x400;
 pub const TOSTOP: ::tcflag_t = 0x400000;
 pub const FLUSHO: ::tcflag_t = 0x800000;
 pub const EXTPROC: ::tcflag_t = 0x10000000;
-pub const TCGETS: ::c_ulong = 0x403c7413;
-pub const TCSETS: ::c_ulong = 0x803c7414;
-pub const TCSETSW: ::c_ulong = 0x803c7415;
-pub const TCSETSF: ::c_ulong = 0x803c7416;
-pub const TCGETA: ::c_ulong = 0x40147417;
-pub const TCSETA: ::c_ulong = 0x80147418;
-pub const TCSETAW: ::c_ulong = 0x80147419;
-pub const TCSETAF: ::c_ulong = 0x8014741c;
-pub const TCSBRK: ::c_ulong = 0x2000741d;
-pub const TCXONC: ::c_ulong = 0x2000741e;
-pub const TCFLSH: ::c_ulong = 0x2000741f;
-pub const TIOCINQ: ::c_ulong = 0x4004667f;
-pub const TIOCGPGRP: ::c_ulong = 0x40047477;
-pub const TIOCSPGRP: ::c_ulong = 0x80047476;
-pub const TIOCOUTQ: ::c_ulong = 0x40047473;
-pub const TIOCGWINSZ: ::c_ulong = 0x40087468;
-pub const TIOCSWINSZ: ::c_ulong = 0x80087467;
-pub const TIOCGRS485: ::c_int = 0x542e;
-pub const TIOCSRS485: ::c_int = 0x542f;
-pub const FIONREAD: ::c_ulong = 0x4004667f;
 
 pub const SYS_restart_syscall: ::c_long = 0;
 pub const SYS_exit: ::c_long = 1;
@@ -846,6 +794,7 @@ pub const SYS_preadv2: ::c_long = 380;
 pub const SYS_pwritev2: ::c_long = 381;
 pub const SYS_kexec_file_load: ::c_long = 382;
 pub const SYS_statx: ::c_long = 383;
+pub const SYS_rseq: ::c_long = 387;
 pub const SYS_pidfd_send_signal: ::c_long = 424;
 pub const SYS_io_uring_setup: ::c_long = 425;
 pub const SYS_io_uring_enter: ::c_long = 426;

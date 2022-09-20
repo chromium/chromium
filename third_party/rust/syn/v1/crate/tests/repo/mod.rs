@@ -1,4 +1,4 @@
-#![allow(clippy::if_then_panic)]
+#![allow(clippy::manual_assert)]
 
 mod progress;
 
@@ -10,7 +10,7 @@ use std::path::Path;
 use tar::Archive;
 use walkdir::DirEntry;
 
-const REVISION: &str = "ac2d9fc509e36d1b32513744adf58c34bcc4f43c";
+const REVISION: &str = "ee160f2f5e73b6f5954bc33f059c316d9e8582c4";
 
 #[rustfmt::skip]
 static EXCLUDE: &[&str] = &[
@@ -22,6 +22,9 @@ static EXCLUDE: &[&str] = &[
     "src/test/ui/const-generics/early/closing-args-token.rs",
     "src/test/ui/const-generics/early/const-expression-parameter.rs",
 
+    // Need at least one trait in impl Trait, no such type as impl 'static
+    "src/test/ui/type-alias-impl-trait/generic_type_does_not_live_long_enough.rs",
+
     // Deprecated anonymous parameter syntax in traits
     "src/test/ui/issues/issue-13105.rs",
     "src/test/ui/issues/issue-13775.rs",
@@ -29,6 +32,11 @@ static EXCLUDE: &[&str] = &[
     "src/test/ui/proc-macro/trait-fn-args-2015.rs",
     "src/tools/rustfmt/tests/source/trait.rs",
     "src/tools/rustfmt/tests/target/trait.rs",
+
+    // Placeholder syntax for "throw expressions"
+    "src/test/pretty/yeet-expr.rs",
+    "src/test/ui/try-trait/yeet-for-option.rs",
+    "src/test/ui/try-trait/yeet-for-result.rs",
 
     // Excessive nesting
     "src/test/ui/issues/issue-74564-if-expr-stack-overflow.rs",
@@ -46,16 +54,34 @@ static EXCLUDE: &[&str] = &[
     "src/tools/rustfmt/tests/target/configs/spaces_around_ranges/true.rs",
     "src/tools/rustfmt/tests/target/type.rs",
 
+    // Testing compiler diagnostic localization on invalid syntax
+    "src/test/run-make/translation/basic-translation.rs",
+
+    // Clippy lint lists represented as expressions
+    "src/tools/clippy/clippy_lints/src/lib.deprecated.rs",
+    "src/tools/clippy/clippy_lints/src/lib.register_all.rs",
+    "src/tools/clippy/clippy_lints/src/lib.register_cargo.rs",
+    "src/tools/clippy/clippy_lints/src/lib.register_complexity.rs",
+    "src/tools/clippy/clippy_lints/src/lib.register_correctness.rs",
+    "src/tools/clippy/clippy_lints/src/lib.register_internal.rs",
+    "src/tools/clippy/clippy_lints/src/lib.register_lints.rs",
+    "src/tools/clippy/clippy_lints/src/lib.register_nursery.rs",
+    "src/tools/clippy/clippy_lints/src/lib.register_pedantic.rs",
+    "src/tools/clippy/clippy_lints/src/lib.register_perf.rs",
+    "src/tools/clippy/clippy_lints/src/lib.register_restriction.rs",
+    "src/tools/clippy/clippy_lints/src/lib.register_style.rs",
+    "src/tools/clippy/clippy_lints/src/lib.register_suspicious.rs",
+
     // Not actually test cases
     "src/test/rustdoc-ui/test-compile-fail2.rs",
     "src/test/rustdoc-ui/test-compile-fail3.rs",
-    "src/test/ui/include-single-expr-helper.rs",
-    "src/test/ui/include-single-expr-helper-1.rs",
     "src/test/ui/json-bom-plus-crlf-multifile-aux.rs",
     "src/test/ui/lint/expansion-time-include.rs",
     "src/test/ui/macros/auxiliary/macro-comma-support.rs",
     "src/test/ui/macros/auxiliary/macro-include-items-expr.rs",
-    "src/test/ui/parser/auxiliary/issue-21146-inc.rs",
+    "src/test/ui/macros/include-single-expr-helper.rs",
+    "src/test/ui/macros/include-single-expr-helper-1.rs",
+    "src/test/ui/parser/issues/auxiliary/issue-21146-inc.rs",
 ];
 
 pub fn base_dir_filter(entry: &DirEntry) -> bool {

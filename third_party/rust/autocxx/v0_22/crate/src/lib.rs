@@ -14,9 +14,12 @@
 // do anything - all the magic is handled entirely by
 // autocxx_macro::include_cpp_impl.
 
+mod reference_wrapper;
 mod rvalue_param;
 pub mod subclass;
 mod value_param;
+
+pub use reference_wrapper::{CppMutRef, CppPin, CppRef};
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
 /// Include some C++ headers in your Rust project.
@@ -257,6 +260,14 @@ macro_rules! concrete {
 ///
 /// Generated C++ APIs which use raw pointers remain `unsafe`
 /// no matter what policy you choose.
+///
+/// There's an additional possible experimental safety
+/// policy available here:
+/// `safety!(unsafe_references_wrapped)`
+/// This policy treats C++ references as scary and requires
+/// them to be wrapped in a `CppRef` type. This `CppRef`
+/// type is implemented within the generated bindings but
+/// follows the contract of [`CppRef`].
 #[macro_export]
 macro_rules! safety {
     ($($tt:tt)*) => { $crate::usage!{$($tt)*} };
@@ -613,6 +624,9 @@ pub mod prelude {
     pub use crate::c_void;
     pub use crate::cpp_semantics;
     pub use crate::include_cpp;
+    pub use crate::CppMutRef;
+    pub use crate::CppPin;
+    pub use crate::CppRef;
     pub use crate::PinMut;
     pub use crate::RValueParam;
     pub use crate::ValueParam;

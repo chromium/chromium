@@ -28,7 +28,7 @@ jobs:
     name: Clippy [Linter]
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Setup | Checkout
@@ -46,7 +46,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: --workspace --all-targets --all-features
+          args: --workspace --all-targets --all-features -- -Dwarnings
 
   # Ensure that the project could be successfully compiled
   cargo_check:
@@ -75,7 +75,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         rust: [stable, nightly]
     steps:
       - name: Setup | Checkout

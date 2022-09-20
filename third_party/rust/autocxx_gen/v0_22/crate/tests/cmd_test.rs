@@ -14,21 +14,21 @@
 // these tests.
 //
 // use std::{convert::TryInto, fs::File, io::Write, path::Path};
-// 
+
 // use indexmap::map::IndexMap as HashMap;
-// 
+
 // use assert_cmd::Command;
 // use autocxx_integration_tests::{build_from_folder, RsFindMode};
 // use itertools::Itertools;
 // use tempfile::{tempdir, TempDir};
-// 
+
 // static MAIN_RS: &str = concat!(
 //     include_str!("../../../demo/src/main.rs"),
 //     "#[link(name = \"autocxx-demo\")]\nextern \"C\" {}"
 // );
 // static INPUT_H: &str = include_str!("../../../demo/src/input.h");
 // static BLANK: &str = "// Blank autocxx placeholder";
-// 
+
 // static MAIN2_RS: &str = concat!(
 //     include_str!("data/main2.rs"),
 //     "#[link(name = \"autocxx-demo\")]\nextern \"C\" {}"
@@ -37,21 +37,21 @@
 // static DIRECTIVE2_RS: &str = include_str!("data/directive2.rs");
 // static INPUT2_H: &str = include_str!("data/input2.h");
 // static INPUT3_H: &str = include_str!("data/input3.h");
-// 
+
 // const KEEP_TEMPDIRS: bool = true;
-// 
+
 // #[test]
 // fn test_help() -> Result<(), Box<dyn std::error::Error>> {
 //     let mut cmd = Command::cargo_bin("autocxx-gen")?;
 //     cmd.arg("-h").assert().success();
 //     Ok(())
 // }
-// 
+
 // enum RsGenMode {
 //     Single,
 //     Archive,
 // }
-// 
+
 // fn base_test<F>(
 //     tmp_dir: &TempDir,
 //     rs_gen_mode: RsGenMode,
@@ -73,7 +73,7 @@
 //     assert_contentful(tmp_dir, "gen0.cc");
 //     result
 // }
-// 
+
 // fn base_test_ex<F>(
 //     tmp_dir: &TempDir,
 //     rs_gen_mode: RsGenMode,
@@ -111,7 +111,7 @@
 //     cmd.assert().success();
 //     Ok(())
 // }
-// 
+
 // #[test]
 // fn test_gen() -> Result<(), Box<dyn std::error::Error>> {
 //     let tmp_dir = tempdir()?;
@@ -132,7 +132,7 @@
 //     r.unwrap();
 //     Ok(())
 // }
-// 
+
 // #[test]
 // fn test_gen_archive() -> Result<(), Box<dyn std::error::Error>> {
 //     let tmp_dir = tempdir()?;
@@ -152,11 +152,63 @@
 //     r.unwrap();
 //     Ok(())
 // }
-// 
+
+// #[test]
+// fn test_gen_archive_first_entry() -> Result<(), Box<dyn std::error::Error>> {
+//     let tmp_dir = tempdir()?;
+//     base_test(&tmp_dir, RsGenMode::Archive, |_| {})?;
+//     File::create(tmp_dir.path().join("cxx.h"))
+//         .and_then(|mut cxx_h| cxx_h.write_all(autocxx_engine::HEADER.as_bytes()))?;
+//     let r = build_from_folder(
+//         tmp_dir.path(),
+//         &tmp_dir.path().join("demo/main.rs"),
+//         vec![tmp_dir.path().join("gen.rs.json")],
+//         &["gen0.cc"],
+//         RsFindMode::Custom(Box::new(|path: &Path| {
+//             std::env::set_var(
+//                 "AUTOCXX_RS_JSON_ARCHIVE",
+//                 std::env::join_paths([&path.join("gen.rs.json"), Path::new("/nonexistent")])
+//                     .unwrap(),
+//             )
+//         })),
+//     );
+//     if KEEP_TEMPDIRS {
+//         println!("Tempdir: {:?}", tmp_dir.into_path().to_str());
+//     }
+//     r.unwrap();
+//     Ok(())
+// }
+
+// #[test]
+// fn test_gen_archive_second_entry() -> Result<(), Box<dyn std::error::Error>> {
+//     let tmp_dir = tempdir()?;
+//     base_test(&tmp_dir, RsGenMode::Archive, |_| {})?;
+//     File::create(tmp_dir.path().join("cxx.h"))
+//         .and_then(|mut cxx_h| cxx_h.write_all(autocxx_engine::HEADER.as_bytes()))?;
+//     let r = build_from_folder(
+//         tmp_dir.path(),
+//         &tmp_dir.path().join("demo/main.rs"),
+//         vec![tmp_dir.path().join("gen.rs.json")],
+//         &["gen0.cc"],
+//         RsFindMode::Custom(Box::new(|path: &Path| {
+//             std::env::set_var(
+//                 "AUTOCXX_RS_JSON_ARCHIVE",
+//                 std::env::join_paths([Path::new("/nonexistent"), &path.join("gen.rs.json")])
+//                     .unwrap(),
+//             )
+//         })),
+//     );
+//     if KEEP_TEMPDIRS {
+//         println!("Tempdir: {:?}", tmp_dir.into_path().to_str());
+//     }
+//     r.unwrap();
+//     Ok(())
+// }
+
 // #[test]
 // fn test_gen_multiple_in_archive() -> Result<(), Box<dyn std::error::Error>> {
 //     let tmp_dir = tempdir()?;
-// 
+
 //     let mut files = HashMap::new();
 //     files.insert("input2.h", INPUT2_H.as_bytes());
 //     files.insert("input3.h", INPUT3_H.as_bytes());
@@ -190,7 +242,7 @@
 //     r.unwrap();
 //     Ok(())
 // }
-// 
+
 // #[test]
 // fn test_include_prefixes() -> Result<(), Box<dyn std::error::Error>> {
 //     let tmp_dir = tempdir()?;
@@ -208,7 +260,7 @@
 //     // which doesn't refer to generated cxx header code.
 //     Ok(())
 // }
-// 
+
 // #[test]
 // fn test_gen_fixed_num() -> Result<(), Box<dyn std::error::Error>> {
 //     let tmp_dir = tempdir()?;
@@ -243,7 +295,7 @@
 //     r.unwrap();
 //     Ok(())
 // }
-// 
+
 // #[test]
 // fn test_gen_preprocess() -> Result<(), Box<dyn std::error::Error>> {
 //     let tmp_dir = tempdir()?;
@@ -257,7 +309,7 @@
 //     assert!(std::fs::read_to_string(prepro_path)?.contains("integer_sequence"));
 //     Ok(())
 // }
-// 
+
 // #[test]
 // fn test_gen_repro() -> Result<(), Box<dyn std::error::Error>> {
 //     let tmp_dir = tempdir()?;
@@ -271,13 +323,13 @@
 //     assert!(std::fs::read_to_string(repro_path)?.contains("integer_sequence"));
 //     Ok(())
 // }
-// 
+
 // fn write_to_file(dir: &Path, filename: &str, content: &[u8]) {
 //     let path = dir.join(filename);
 //     let mut f = File::create(&path).expect("Unable to create file");
 //     f.write_all(content).expect("Unable to write file");
 // }
-// 
+
 // fn assert_contentful(outdir: &TempDir, fname: &str) {
 //     let p = outdir.path().join(fname);
 //     if !p.exists() {
@@ -289,7 +341,7 @@
 //         fname
 //     );
 // }
-// 
+
 // fn assert_not_contentful(outdir: &TempDir, fname: &str) {
 //     let p = outdir.path().join(fname);
 //     if !p.exists() {
@@ -302,11 +354,10 @@
 //         std::fs::read_to_string(&p).unwrap_or_default()
 //     );
 // }
-// 
+
 // fn assert_contains(outdir: &TempDir, fname: &str, pattern: &str) {
 //     let p = outdir.path().join(fname);
 //     let content = std::fs::read_to_string(&p).expect(fname);
 //     eprintln!("content = {}", content);
 //     assert!(content.contains(pattern));
 // }
-// 

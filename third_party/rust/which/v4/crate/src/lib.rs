@@ -14,10 +14,6 @@
 //!
 //! ```
 
-#[cfg(windows)]
-#[macro_use]
-extern crate lazy_static;
-
 mod checker;
 mod error;
 mod finder;
@@ -38,7 +34,7 @@ use crate::checker::{CompositeChecker, ExecutableChecker, ExistedChecker};
 pub use crate::error::*;
 use crate::finder::Finder;
 
-/// Find a exectable binary's path by name.
+/// Find an executable binary's path by name.
 ///
 /// If given an absolute path, returns it if the file exists and is executable.
 ///

@@ -13,24 +13,42 @@
 edition = "2018"
 rust-version = "1.31"
 name = "proc-macro2"
-version = "1.0.32"
-authors = ["David Tolnay <dtolnay@gmail.com>", "Alex Crichton <alex@alexcrichton.com>"]
-description = "A substitute implementation of the compiler's `proc_macro` API to decouple\ntoken-based libraries from the procedural macro use case.\n"
+version = "1.0.43"
+authors = [
+    "David Tolnay <dtolnay@gmail.com>",
+    "Alex Crichton <alex@alexcrichton.com>",
+]
+autobenches = false
+description = "A substitute implementation of the compiler's `proc_macro` API to decouple token-based libraries from the procedural macro use case."
 documentation = "https://docs.rs/proc-macro2"
 readme = "README.md"
-keywords = ["macros"]
+keywords = [
+    "macros",
+    "syn",
+]
 categories = ["development-tools::procedural-macro-helpers"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/proc-macro2"
+
 [package.metadata.docs.rs]
-rustc-args = ["--cfg", "procmacro2_semver_exempt"]
-rustdoc-args = ["--cfg", "procmacro2_semver_exempt", "--cfg", "doc_cfg"]
+rustc-args = [
+    "--cfg",
+    "procmacro2_semver_exempt",
+]
+rustdoc-args = [
+    "--cfg",
+    "procmacro2_semver_exempt",
+    "--cfg",
+    "doc_cfg",
+]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [package.metadata.playground]
 features = ["span-locations"]
-[dependencies.unicode-xid]
-version = "0.2"
+
+[dependencies.unicode-ident]
+version = "1.0"
+
 [dev-dependencies.quote]
 version = "1.0"
 default_features = false

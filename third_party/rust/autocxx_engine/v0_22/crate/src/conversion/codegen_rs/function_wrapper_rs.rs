@@ -7,7 +7,7 @@
 // except according to those terms.
 
 use proc_macro2::TokenStream;
-use syn::{Pat, Type, TypePtr};
+use syn::{Expr, Type, TypePtr};
 
 use crate::{
     conversion::analysis::fun::function_wrapper::{RustConversionType, TypeConversionPolicy},
@@ -32,8 +32,7 @@ pub(super) enum RustParamConversion {
 }
 
 impl TypeConversionPolicy {
-    /// If returns `None` then this parameter should be omitted entirely.
-    pub(super) fn rust_conversion(&self, var: Pat) -> RustParamConversion {
+    pub(super) fn rust_conversion(&self, var: Expr, counter: &mut usize) -> RustParamConversion {
         match self.rust_conversion {
             RustConversionType::None => RustParamConversion::Param {
                 ty: self.converted_rust_type(),
@@ -63,8 +62,8 @@ impl TypeConversionPolicy {
                 }
             }
             RustConversionType::FromPinMaybeUninitToPtr => {
-                let ty = match &self.unwrapped_type {
-                    Type::Ptr(TypePtr { elem, .. }) => &*elem,
+                let ty = match self.cxxbridge_type() {
+                    Type::Ptr(TypePtr { elem, .. }) => elem,
                     _ => panic!("Not a ptr"),
                 };
                 let ty = parse_quote! {
@@ -80,8 +79,8 @@ impl TypeConversionPolicy {
                 }
             }
             RustConversionType::FromPinMoveRefToPtr => {
-                let ty = match &self.unwrapped_type {
-                    Type::Ptr(TypePtr { elem, .. }) => &*elem,
+                let ty = match self.cxxbridge_type() {
+                    Type::Ptr(TypePtr { elem, .. }) => elem,
                     _ => panic!("Not a ptr"),
                 };
                 let ty = parse_quote! {
@@ -99,8 +98,8 @@ impl TypeConversionPolicy {
                 }
             }
             RustConversionType::FromTypeToPtr => {
-                let ty = match &self.unwrapped_type {
-                    Type::Ptr(TypePtr { elem, .. }) => &*elem,
+                let ty = match self.cxxbridge_type() {
+                    Type::Ptr(TypePtr { elem, .. }) => elem,
                     _ => panic!("Not a ptr"),
                 };
                 let ty = parse_quote! { &mut #ty };
@@ -123,13 +122,11 @@ impl TypeConversionPolicy {
                 };
                 let handler_type = make_ident(handler_type);
                 let param_trait = make_ident(param_trait);
-                let var_name = if let Pat::Ident(pti) = &var {
-                    &pti.ident
-                } else {
-                    panic!("Unexpected non-ident parameter name");
-                };
-                let space_var_name = make_ident(format!("{}_space", var_name));
-                let ty = &self.unwrapped_type;
+                let var_counter = *counter;
+                *counter += 1;
+                let space_var_name = format!("space{}", var_counter);
+                let space_var_name = make_ident(space_var_name);
+                let ty = self.cxxbridge_type();
                 let ty = parse_quote! { impl autocxx::#param_trait<#ty> };
                 // This is the usual trick to put something on the stack, then
                 // immediately shadow the variable name so it can't be accessed or moved.
@@ -148,7 +145,7 @@ impl TypeConversionPolicy {
                             },
                         ),
                         MaybeUnsafeStmt::needs_unsafe(
-                            quote! { #space_var_name.as_mut().populate(#var_name); },
+                            quote! { #space_var_name.as_mut().populate(#var); },
                         ),
                     ],
                     conversion: quote! {
@@ -161,11 +158,54 @@ impl TypeConversionPolicy {
             // but not in the arguments for the wrapper function, because instead we return an
             // impl New which uses the cxx::bridge function's pointer parameter.
             RustConversionType::FromPlacementParamToNewReturn => {
-                let ty = match &self.unwrapped_type {
+                let ty = match self.cxxbridge_type() {
                     Type::Ptr(TypePtr { elem, .. }) => *(*elem).clone(),
                     _ => panic!("Not a ptr"),
                 };
                 RustParamConversion::ReturnValue { ty }
+            }
+            RustConversionType::FromPointerToReferenceWrapper => {
+                let (is_mut, ty) = match self.cxxbridge_type() {
+                    Type::Ptr(TypePtr {
+                        mutability, elem, ..
+                    }) => (mutability.is_some(), elem.as_ref()),
+                    _ => panic!("Not a pointer"),
+                };
+                let (ty, wrapper_name) = if is_mut {
+                    (parse_quote! { CppMutRef<'a, #ty> }, "CppMutRef")
+                } else {
+                    (parse_quote! { CppRef<'a, #ty> }, "CppRef")
+                };
+                let wrapper_name = make_ident(wrapper_name);
+                RustParamConversion::Param {
+                    ty,
+                    local_variables: Vec::new(),
+                    conversion: quote! {
+                        #wrapper_name (#var, std::marker::PhantomData)
+                    },
+                    conversion_requires_unsafe: false,
+                }
+            }
+            RustConversionType::FromReferenceWrapperToPointer => {
+                let (is_mut, ty) = match self.cxxbridge_type() {
+                    Type::Ptr(TypePtr {
+                        mutability, elem, ..
+                    }) => (mutability.is_some(), elem.as_ref()),
+                    _ => panic!("Not a pointer"),
+                };
+                let ty = if is_mut {
+                    parse_quote! { &mut CppMutRef<'a, #ty> }
+                } else {
+                    parse_quote! { &CppRef<'a, #ty> }
+                };
+                RustParamConversion::Param {
+                    ty,
+                    local_variables: Vec::new(),
+                    conversion: quote! {
+                        #var .0
+                    },
+                    conversion_requires_unsafe: false,
+                }
             }
         }
     }

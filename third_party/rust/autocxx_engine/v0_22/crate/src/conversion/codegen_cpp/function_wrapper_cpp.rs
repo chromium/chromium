@@ -6,8 +6,11 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use syn::{Type, TypePtr};
+
 use crate::conversion::{
     analysis::fun::function_wrapper::{CppConversionType, TypeConversionPolicy},
+    api::Pointerness,
     ConvertError,
 };
 
@@ -30,12 +33,39 @@ impl TypeConversionPolicy {
     pub(super) fn converted_type(&self, cpp_name_map: &CppNameMap) -> Result<String, ConvertError> {
         match self.cpp_conversion {
             CppConversionType::FromValueToUniquePtr => self.unique_ptr_wrapped_type(cpp_name_map),
+            CppConversionType::FromReferenceToPointer => {
+                let (const_string, ty) = match self.cxxbridge_type() {
+                    Type::Ptr(TypePtr {
+                        mutability: Some(_),
+                        elem,
+                        ..
+                    }) => ("", elem.as_ref()),
+                    Type::Ptr(TypePtr { elem, .. }) => ("const ", elem.as_ref()),
+                    _ => panic!("Not a pointer"),
+                };
+                Ok(format!(
+                    "{}{}*",
+                    const_string,
+                    type_to_cpp(ty, cpp_name_map)?
+                ))
+            }
             _ => self.unwrapped_type_as_string(cpp_name_map),
         }
     }
 
     fn unwrapped_type_as_string(&self, cpp_name_map: &CppNameMap) -> Result<String, ConvertError> {
-        type_to_cpp(&self.unwrapped_type, cpp_name_map)
+        type_to_cpp(self.cxxbridge_type(), cpp_name_map)
+    }
+
+    pub(crate) fn is_a_pointer(&self) -> Pointerness {
+        match self.cxxbridge_type() {
+            Type::Ptr(TypePtr {
+                mutability: Some(_),
+                ..
+            }) => Pointerness::MutPtr,
+            Type::Ptr(_) => Pointerness::ConstPtr,
+            _ => Pointerness::Not,
+        }
     }
 
     fn unique_ptr_wrapped_type(
@@ -60,6 +90,7 @@ impl TypeConversionPolicy {
             CppConversionType::None | CppConversionType::FromReturnValueToPlacementPtr => {
                 Some(var_name.to_string())
             }
+            CppConversionType::FromPointerToReference { .. } => Some(format!("(*{})", var_name)),
             CppConversionType::Move => Some(format!("std::move({})", var_name)),
             CppConversionType::FromUniquePtrToValue | CppConversionType::FromPtrToMove => {
                 Some(format!("std::move(*{})", var_name))
@@ -78,6 +109,7 @@ impl TypeConversionPolicy {
                 })
             }
             CppConversionType::IgnoredPlacementPtrParameter => None,
+            CppConversionType::FromReferenceToPointer { .. } => Some(format!("&{}", var_name)),
         })
     }
 }

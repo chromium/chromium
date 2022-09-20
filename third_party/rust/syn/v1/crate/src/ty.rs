@@ -14,6 +14,7 @@ ast_enum_of_structs! {
     ///
     /// [syntax tree enum]: Expr#syntax-tree-enums
     #[cfg_attr(doc_cfg, doc(cfg(any(feature = "full", feature = "derive"))))]
+    #[cfg_attr(not(syn_no_non_exhaustive), non_exhaustive)]
     pub enum Type {
         /// A fixed size array type: `[T; n]`.
         Array(TypeArray),
@@ -53,7 +54,7 @@ ast_enum_of_structs! {
         /// A dynamically sized slice type: `[T]`.
         Slice(TypeSlice),
 
-        /// A trait object type `Bound1 + Bound2 + Bound3` where `Bound` is a
+        /// A trait object type `dyn Bound1 + Bound2 + Bound3` where `Bound` is a
         /// trait or a lifetime.
         TraitObject(TypeTraitObject),
 
@@ -63,18 +64,17 @@ ast_enum_of_structs! {
         /// Tokens in type position not interpreted by Syn.
         Verbatim(TokenStream),
 
-        // The following is the only supported idiom for exhaustive matching of
-        // this enum.
+        // Not public API.
         //
-        //     match expr {
-        //         Type::Array(e) => {...}
-        //         Type::BareFn(e) => {...}
+        // For testing exhaustiveness in downstream code, use the following idiom:
+        //
+        //     match ty {
+        //         Type::Array(ty) => {...}
+        //         Type::BareFn(ty) => {...}
         //         ...
-        //         Type::Verbatim(e) => {...}
+        //         Type::Verbatim(ty) => {...}
         //
-        //         #[cfg(test)]
-        //         Type::__TestExhaustive(_) => unimplemented!(),
-        //         #[cfg(not(test))]
+        //         #[cfg_attr(test, deny(non_exhaustive_omitted_patterns))]
         //         _ => { /* some sane fallback */ }
         //     }
         //
@@ -82,12 +82,9 @@ ast_enum_of_structs! {
         // a variant. You will be notified by a test failure when a variant is
         // added, so that you can add code to handle it, but your library will
         // continue to compile and work for downstream users in the interim.
-        //
-        // Once `deny(reachable)` is available in rustc, Type will be
-        // reimplemented as a non_exhaustive enum.
-        // https://github.com/rust-lang/rust/issues/44109#issuecomment-521781237
+        #[cfg(syn_no_non_exhaustive)]
         #[doc(hidden)]
-        __TestExhaustive(crate::private),
+        __NonExhaustive,
     }
 }
 
@@ -247,7 +244,7 @@ ast_struct! {
 }
 
 ast_struct! {
-    /// A trait object type `Bound1 + Bound2 + Bound3` where `Bound` is a
+    /// A trait object type `dyn Bound1 + Bound2 + Bound3` where `Bound` is a
     /// trait or a lifetime.
     ///
     /// *This type is available only if Syn is built with the `"derive"` or
@@ -740,7 +737,10 @@ pub mod parsing {
                         break;
                     }
 
-                    inputs.push_punct(args.parse()?);
+                    let comma = args.parse()?;
+                    if !has_mut_self {
+                        inputs.push_punct(comma);
+                    }
                 }
 
                 inputs
@@ -821,7 +821,10 @@ pub mod parsing {
         fn parse(input: ParseStream) -> Result<Self> {
             let (qself, mut path) = path::parsing::qpath(input, false)?;
 
-            if path.segments.last().unwrap().arguments.is_empty() && input.peek(token::Paren) {
+            if path.segments.last().unwrap().arguments.is_empty()
+                && (input.peek(token::Paren) || input.peek(Token![::]) && input.peek3(token::Paren))
+            {
+                input.parse::<Option<Token![::]>>()?;
                 let args: ParenthesizedGenericArguments = input.parse()?;
                 let parenthesized = PathArguments::Parenthesized(args);
                 path.segments.last_mut().unwrap().arguments = parenthesized;
@@ -1157,7 +1160,7 @@ mod printing {
     #[cfg_attr(doc_cfg, doc(cfg(feature = "printing")))]
     impl ToTokens for TypePath {
         fn to_tokens(&self, tokens: &mut TokenStream) {
-            private::print_path(tokens, &self.qself, &self.path);
+            path::printing::print_path(tokens, &self.qself, &self.path);
         }
     }
 

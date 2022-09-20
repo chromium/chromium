@@ -1,9 +1,0 @@
-Name: unicode-xid
-URL: https://crates.io/crates/unicode-xid
-Description: Determine whether characters have the XID_Start
-or XID_Continue properties according to
-Unicode Standard Annex #31.
-
-Version: 0.2.2
-Security Critical: no
-License: Apache 2.0

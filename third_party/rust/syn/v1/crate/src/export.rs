@@ -12,6 +12,9 @@ pub extern crate quote;
 
 pub use proc_macro2::{Span, TokenStream as TokenStream2};
 
+#[cfg(feature = "parsing")]
+pub use crate::group::{parse_braces, parse_brackets, parse_parens};
+
 pub use crate::span::IntoSpans;
 
 #[cfg(all(

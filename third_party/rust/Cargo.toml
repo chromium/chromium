@@ -16,7 +16,7 @@ serde = "1"
 static_assertions = "1"
 
 [dependencies.autocxx-bindgen]
-version = "0.59"
+version = "0.60"
 features = ["static"]
 build-script-outputs = ["host-target.txt"]
 
@@ -90,8 +90,8 @@ package = "atty"
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/autocfg/v1/crate"
 package = "autocfg"
 
-[patch.crates-io.autocxx-bindgen_v0_59]
-path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/autocxx_bindgen/v0_59/crate"
+[patch.crates-io.autocxx-bindgen_v0_60]
+path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/autocxx_bindgen/v0_60/crate"
 package = "autocxx-bindgen"
 
 [patch.crates-io.autocxx-engine_v0_22]
@@ -322,6 +322,10 @@ package = "pathdiff"
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/peeking_take_while/v0_1/crate"
 package = "peeking_take_while"
 
+[patch.crates-io.prettyplease_v0_1]
+path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/prettyplease/v0_1/crate"
+package = "prettyplease"
+
 [patch.crates-io.proc-macro-error-attr_v1]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/proc_macro_error_attr/v1/crate"
 package = "proc-macro-error-attr"
@@ -470,6 +474,10 @@ package = "thiserror"
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/toml/v0_5/crate"
 package = "toml"
 
+[patch.crates-io.unicode-ident_v1]
+path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/unicode_ident/v1/crate"
+package = "unicode-ident"
+
 [patch.crates-io.unicode-linebreak_v0_1]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/unicode_linebreak/v0_1/crate"
 package = "unicode-linebreak"
@@ -477,10 +485,6 @@ package = "unicode-linebreak"
 [patch.crates-io.unicode-width_v0_1]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/unicode_width/v0_1/crate"
 package = "unicode-width"
-
-[patch.crates-io.unicode-xid_v0_2]
-path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/unicode_xid/v0_2/crate"
-package = "unicode-xid"
 
 [patch.crates-io.unindent_v0_1]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/unindent/v0_1/crate"

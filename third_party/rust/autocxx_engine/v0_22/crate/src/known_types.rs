@@ -143,7 +143,7 @@ pub(crate) fn known_types() -> &'static TypeDatabase {
 }
 
 /// The type of payload that a cxx generic can contain.
-#[derive(PartialEq, Clone, Copy)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum CxxGenericType {
     /// Not a generic at all
     Not,

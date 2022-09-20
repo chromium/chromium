@@ -143,8 +143,7 @@ impl<'a> BridgeConverter<'a> {
                 // Specifically, let's confirm that the items requested by the user to be
                 // POD really are POD, and duly mark any dependent types.
                 // This returns a new list of `Api`s, which will be parameterized with
-                // the analysis results. It also returns an object which can be used
-                // by subsequent phases to work out which objects are POD.
+                // the analysis results.
                 let analyzed_apis = analyze_pod_apis(apis, self.config)?;
                 Self::dump_apis("pod analysis", &analyzed_apis);
                 let analyzed_apis = replace_hopeless_typedef_targets(self.config, analyzed_apis);

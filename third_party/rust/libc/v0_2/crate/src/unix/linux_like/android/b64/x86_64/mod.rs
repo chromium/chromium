@@ -47,6 +47,61 @@ s! {
     pub struct _libc_xmmreg {
         pub element: [u32; 4],
     }
+
+    pub struct user_regs_struct {
+        pub r15: ::c_ulong,
+        pub r14: ::c_ulong,
+        pub r13: ::c_ulong,
+        pub r12: ::c_ulong,
+        pub rbp: ::c_ulong,
+        pub rbx: ::c_ulong,
+        pub r11: ::c_ulong,
+        pub r10: ::c_ulong,
+        pub r9: ::c_ulong,
+        pub r8: ::c_ulong,
+        pub rax: ::c_ulong,
+        pub rcx: ::c_ulong,
+        pub rdx: ::c_ulong,
+        pub rsi: ::c_ulong,
+        pub rdi: ::c_ulong,
+        pub orig_rax: ::c_ulong,
+        pub rip: ::c_ulong,
+        pub cs: ::c_ulong,
+        pub eflags: ::c_ulong,
+        pub rsp: ::c_ulong,
+        pub ss: ::c_ulong,
+        pub fs_base: ::c_ulong,
+        pub gs_base: ::c_ulong,
+        pub ds: ::c_ulong,
+        pub es: ::c_ulong,
+        pub fs: ::c_ulong,
+        pub gs: ::c_ulong,
+    }
+
+    pub struct user {
+        pub regs: user_regs_struct,
+        pub u_fpvalid: ::c_int,
+        pub i387: user_fpregs_struct,
+        pub u_tsize: ::c_ulong,
+        pub u_dsize: ::c_ulong,
+        pub u_ssize: ::c_ulong,
+        pub start_code: ::c_ulong,
+        pub start_stack: ::c_ulong,
+        pub signal: ::c_long,
+        __reserved: ::c_int,
+        #[cfg(target_pointer_width = "32")]
+        __pad1: u32,
+        pub u_ar0: *mut user_regs_struct,
+        #[cfg(target_pointer_width = "32")]
+        __pad2: u32,
+        pub u_fpstate: *mut user_fpregs_struct,
+        pub magic: ::c_ulong,
+        pub u_comm: [::c_char; 32],
+        pub u_debugreg: [::c_ulong; 8],
+        pub error_code: ::c_ulong,
+        pub fault_address: ::c_ulong,
+    }
+
 }
 
 cfg_if! {
@@ -117,6 +172,20 @@ s_no_extra_traits! {
         pub uc_mcontext: mcontext_t,
         pub uc_sigmask64: __c_anonymous_uc_sigmask,
         __fpregs_mem: _libc_fpstate,
+    }
+
+    pub struct user_fpregs_struct {
+        pub cwd: ::c_ushort,
+        pub swd: ::c_ushort,
+        pub ftw: ::c_ushort,
+        pub fop: ::c_ushort,
+        pub rip: ::c_ulong,
+        pub rdp: ::c_ulong,
+        pub mxcsr: ::c_uint,
+        pub mxcr_mask: ::c_uint,
+        pub st_space: [::c_uint; 32],
+        pub xmm_space: [::c_uint; 64],
+        padding: [::c_uint; 24],
     }
 }
 
@@ -251,6 +320,62 @@ cfg_if! {
                 self.uc_stack.hash(state);
                 self.uc_mcontext.hash(state);
                 self.uc_sigmask64.hash(state);
+                // Ignore padding field
+            }
+        }
+
+        impl PartialEq for user_fpregs_struct {
+            fn eq(&self, other: &user_fpregs_struct) -> bool {
+                self.cwd == other.cwd
+                    && self.swd == other.swd
+                    && self.ftw == other.ftw
+                    && self.fop == other.fop
+                    && self.rip == other.rip
+                    && self.rdp == other.rdp
+                    && self.mxcsr == other.mxcsr
+                    && self.mxcr_mask == other.mxcr_mask
+                    && self.st_space == other.st_space
+                    && self
+                    .xmm_space
+                    .iter()
+                    .zip(other.xmm_space.iter())
+                    .all(|(a,b)| a == b)
+                // Ignore padding field
+            }
+        }
+
+        impl Eq for user_fpregs_struct {}
+
+        impl ::fmt::Debug for user_fpregs_struct {
+            fn fmt(&self, f: &mut ::fmt::Formatter) -> ::fmt::Result {
+                f.debug_struct("user_fpregs_struct")
+                    .field("cwd", &self.cwd)
+                    .field("swd", &self.swd)
+                    .field("ftw", &self.ftw)
+                    .field("fop", &self.fop)
+                    .field("rip", &self.rip)
+                    .field("rdp", &self.rdp)
+                    .field("mxcsr", &self.mxcsr)
+                    .field("mxcr_mask", &self.mxcr_mask)
+                    .field("st_space", &self.st_space)
+                // FIXME: .field("xmm_space", &self.xmm_space)
+                // Ignore padding field
+                    .finish()
+            }
+        }
+
+        impl ::hash::Hash for user_fpregs_struct {
+            fn hash<H: ::hash::Hasher>(&self, state: &mut H) {
+                self.cwd.hash(state);
+                self.swd.hash(state);
+                self.ftw.hash(state);
+                self.fop.hash(state);
+                self.rip.hash(state);
+                self.rdp.hash(state);
+                self.mxcsr.hash(state);
+                self.mxcr_mask.hash(state);
+                self.st_space.hash(state);
+                self.xmm_space.hash(state);
                 // Ignore padding field
             }
         }

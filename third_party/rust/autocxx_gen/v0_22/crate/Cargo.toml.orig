@@ -8,7 +8,7 @@
 
 [package]
 name = "autocxx-gen"
-version = "0.22.2"
+version = "0.22.4"
 authors = ["Adrian Taylor <adetaylor@chromium.org>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -22,7 +22,7 @@ runtime = [ "autocxx-engine/runtime" ]
 static = [ "autocxx-engine/static" ]
 
 [dependencies]
-autocxx-engine = { version="=0.22.2", path="../../engine" }
+autocxx-engine = { version="=0.22.4", path="../../engine" }
 clap = { version = "3.1.2", features = ["cargo"] }
 proc-macro2 = "1.0"
 env_logger = "0.9.0"
@@ -33,7 +33,7 @@ indexmap = "1.8"
 [dev-dependencies]
 assert_cmd = "1.0.3"
 tempfile = "3.1"
-autocxx-integration-tests = { path = "../../integration-tests", version="=0.22.2" }
+autocxx-integration-tests = { path = "../../integration-tests", version="=0.22.4" }
 # This is necessary for building the projects created
 # by the trybuild test system...
 autocxx = { path="../.." }

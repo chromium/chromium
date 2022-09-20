@@ -9,7 +9,7 @@ use regex::Regex;
 use std::borrow::Borrow;
 use std::env;
 use std::ffi::OsStr;
-#[cfg(feature = "regex")]
+#[cfg(any(feature = "regex", target_os = "windows"))]
 use std::fs;
 use std::iter;
 use std::path::{Path, PathBuf};
@@ -80,7 +80,9 @@ impl Finder {
             }
         };
 
-        Ok(binary_path_candidates.filter(move |p| binary_checker.is_valid(p)))
+        Ok(binary_path_candidates
+            .filter(move |p| binary_checker.is_valid(p))
+            .map(correct_casing))
     }
 
     #[cfg(feature = "regex")]
@@ -94,6 +96,9 @@ impl Finder {
         T: AsRef<OsStr>,
     {
         let p = paths.ok_or(Error::CannotFindBinaryPath)?;
+        // Collect needs to happen in order to not have to
+        // change the API to borrow on `paths`.
+        #[allow(clippy::needless_collect)]
         let paths: Vec<_> = env::split_paths(&p).collect();
 
         let matching_re = paths
@@ -148,29 +153,31 @@ impl Finder {
     where
         P: IntoIterator<Item = PathBuf>,
     {
+        use once_cell::sync::Lazy;
+
         // Sample %PATHEXT%: .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
         // PATH_EXTENSIONS is then [".COM", ".EXE", ".BAT", …].
         // (In one use of PATH_EXTENSIONS we skip the dot, but in the other we need it;
         // hence its retention.)
-        lazy_static! {
-            static ref PATH_EXTENSIONS: Vec<String> =
-                env::var("PATHEXT")
-                    .map(|pathext| {
-                        pathext.split(';')
-                            .filter_map(|s| {
-                                if s.as_bytes().first() == Some(&b'.') {
-                                    Some(s.to_owned())
-                                } else {
-                                    // Invalid segment; just ignore it.
-                                    None
-                                }
-                            })
-                            .collect()
-                    })
-                    // PATHEXT not being set or not being a proper Unicode string is exceedingly
-                    // improbable and would probably break Windows badly. Still, don't crash:
-                    .unwrap_or(vec![]);
-        }
+        static PATH_EXTENSIONS: Lazy<Vec<String>> = Lazy::new(|| {
+            env::var("PATHEXT")
+                .map(|pathext| {
+                    pathext
+                        .split(';')
+                        .filter_map(|s| {
+                            if s.as_bytes().first() == Some(&b'.') {
+                                Some(s.to_owned())
+                            } else {
+                                // Invalid segment; just ignore it.
+                                None
+                            }
+                        })
+                        .collect()
+                })
+                // PATHEXT not being set or not being a proper Unicode string is exceedingly
+                // improbable and would probably break Windows badly. Still, don't crash:
+                .unwrap_or_default()
+        });
 
         paths
             .into_iter()
@@ -179,20 +186,47 @@ impl Finder {
                 if has_executable_extension(&p, &PATH_EXTENSIONS) {
                     Box::new(iter::once(p))
                 } else {
+                    let bare_file = p.extension().map(|_| p.clone());
                     // Appended paths with windows executable extensions.
-                    // e.g. path `c:/windows/bin` will expend to:
-                    // c:/windows/bin.COM
-                    // c:/windows/bin.EXE
-                    // c:/windows/bin.CMD
+                    // e.g. path `c:/windows/bin[.ext]` will expand to:
+                    // [c:/windows/bin.ext]
+                    // c:/windows/bin[.ext].COM
+                    // c:/windows/bin[.ext].EXE
+                    // c:/windows/bin[.ext].CMD
                     // ...
-                    Box::new(PATH_EXTENSIONS.iter().map(move |e| {
-                        // Append the extension.
-                        let mut p = p.clone().into_os_string();
-                        p.push(e);
+                    Box::new(
+                        bare_file
+                            .into_iter()
+                            .chain(PATH_EXTENSIONS.iter().map(move |e| {
+                                // Append the extension.
+                                let mut p = p.clone().into_os_string();
+                                p.push(e);
 
-                        PathBuf::from(p)
-                    }))
+                                PathBuf::from(p)
+                            })),
+                    )
                 }
             })
     }
+}
+
+#[cfg(target_os = "windows")]
+fn correct_casing(mut p: PathBuf) -> PathBuf {
+    if let (Some(parent), Some(file_name)) = (p.parent(), p.file_name()) {
+        if let Ok(iter) = fs::read_dir(parent) {
+            for e in iter.filter_map(std::result::Result::ok) {
+                if e.file_name().eq_ignore_ascii_case(file_name) {
+                    p.pop();
+                    p.push(e.file_name());
+                    break;
+                }
+            }
+        }
+    }
+    p
+}
+
+#[cfg(not(target_os = "windows"))]
+fn correct_casing(p: PathBuf) -> PathBuf {
+    p
 }

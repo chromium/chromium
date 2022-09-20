@@ -72,6 +72,10 @@ after a certain period. The steps are:
     If you're using it, please comment on #XXX").
 2. If we don't see any concerns for a while, do the change actually.
 
+## Supported target policy
+
+When Rust removes a support for a target, the libc crate also may remove the support anytime.
+
 ## Releasing your change to crates.io
 
 Now that you've done the amazing job of landing your new API or your new

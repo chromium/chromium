@@ -6,6 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use autocxx_parser::IncludeCppConfig;
 use indexmap::set::IndexSet as HashSet;
 use std::borrow::Cow;
 
@@ -23,15 +24,15 @@ use super::{
     function_wrapper_rs::RustParamConversion,
     maybe_unsafes_to_tokens,
     unqualify::{unqualify_params, unqualify_ret_type},
-    ImplBlockDetails, MaybeUnsafeStmt, RsCodegenResult, TraitImplBlockDetails, Use,
+    ImplBlockDetails, ImplBlockKey, MaybeUnsafeStmt, RsCodegenResult, TraitImplBlockDetails, Use,
 };
 use crate::{
     conversion::{
         analysis::fun::{
-            ArgumentAnalysis, FnAnalysis, FnKind, MethodKind, RustRenameStrategy,
-            TraitMethodDetails,
+            function_wrapper::TypeConversionPolicy, ArgumentAnalysis, FnAnalysis, FnKind,
+            MethodKind, RustRenameStrategy, TraitMethodDetails,
         },
-        api::UnsafetyNeeded,
+        api::{Pointerness, UnsafetyNeeded},
     },
     types::{Namespace, QualifiedName},
 };
@@ -89,6 +90,7 @@ pub(super) fn gen_function(
     analysis: FnAnalysis,
     cpp_call_name: String,
     non_pod_types: &HashSet<QualifiedName>,
+    config: &IncludeCppConfig,
 ) -> RsCodegenResult {
     if analysis.ignore_reason.is_err() || !analysis.externally_callable {
         return RsCodegenResult::default();
@@ -96,6 +98,7 @@ pub(super) fn gen_function(
     let cxxbridge_name = analysis.cxxbridge_name;
     let rust_name = &analysis.rust_name;
     let ret_type = analysis.ret_type;
+    let ret_conversion = analysis.ret_conversion;
     let param_details = analysis.param_details;
     let wrapper_function_needed = analysis.cpp_wrapper.is_some();
     let params = analysis.params;
@@ -119,6 +122,9 @@ pub(super) fn gen_function(
         always_unsafe_due_to_trait_definition,
         doc_attrs: &doc_attrs,
         non_pod_types,
+        ret_type: &ret_type,
+        ret_conversion: &ret_conversion,
+        reference_wrappers: config.unsafe_policy.requires_cpprefs(),
     };
     // In rare occasions, we might need to give an explicit lifetime.
     let (lifetime_tokens, params, ret_type) = add_explicit_lifetime_if_necessary(
@@ -148,15 +154,14 @@ pub(super) fn gen_function(
                 impl_entry = Some(fn_generator.generate_method_impl(
                     matches!(method_kind, MethodKind::Constructor { .. }),
                     impl_for,
-                    &ret_type,
                 ));
             }
             FnKind::TraitMethod { ref details, .. } => {
-                trait_impl_entry = Some(fn_generator.generate_trait_impl(details, &ret_type));
+                trait_impl_entry = Some(fn_generator.generate_trait_impl(details));
             }
             _ => {
                 // Generate plain old function
-                bindgen_mod_items.push(fn_generator.generate_function_impl(&ret_type));
+                bindgen_mod_items.push(fn_generator.generate_function_impl());
             }
         }
     }
@@ -225,20 +230,23 @@ pub(super) fn gen_function(
 #[derive(Clone)]
 struct FnGenerator<'a> {
     param_details: &'a [ArgumentAnalysis],
+    ret_conversion: &'a Option<TypeConversionPolicy>,
+    ret_type: &'a ReturnType,
     cxxbridge_name: &'a Ident,
     rust_name: &'a str,
     unsafety: &'a UnsafetyNeeded,
     always_unsafe_due_to_trait_definition: bool,
     doc_attrs: &'a Vec<Attribute>,
     non_pod_types: &'a HashSet<QualifiedName>,
+    reference_wrappers: bool,
 }
 
 impl<'a> FnGenerator<'a> {
     fn common_parts<'b>(
-        &self,
+        &'b self,
         avoid_self: bool,
         parameter_reordering: &Option<Vec<usize>>,
-        ret_type: &'b ReturnType,
+        ret_type: Option<ReturnType>,
     ) -> (
         Option<TokenStream>,
         Punctuated<FnArg, Comma>,
@@ -249,15 +257,20 @@ impl<'a> FnGenerator<'a> {
         let mut local_variables = Vec::new();
         let mut arg_list = Vec::new();
         let mut ptr_arg_name = None;
-        let mut ret_type = Cow::Borrowed(ret_type);
+        let mut ret_type: Cow<'a, _> = ret_type
+            .map(Cow::Owned)
+            .unwrap_or(Cow::Borrowed(self.ret_type));
         let mut any_conversion_requires_unsafe = false;
+        let mut variable_counter = 0usize;
         for pd in self.param_details {
             let wrapper_arg_name = if pd.self_type.is_some() && !avoid_self {
                 parse_quote!(self)
             } else {
                 pd.name.clone()
             };
-            let rust_for_param = pd.conversion.rust_conversion(wrapper_arg_name.clone());
+            let rust_for_param = pd
+                .conversion
+                .rust_conversion(parse_quote! { #wrapper_arg_name }, &mut variable_counter);
             match rust_for_param {
                 RustParamConversion::Param {
                     ty,
@@ -305,6 +318,39 @@ impl<'a> FnGenerator<'a> {
             },
             any_conversion_requires_unsafe || matches!(self.unsafety, UnsafetyNeeded::JustBridge),
         );
+        let context_is_unsafe = matches!(self.unsafety, UnsafetyNeeded::Always)
+            || self.always_unsafe_due_to_trait_definition;
+        let (call_body, ret_type) = match self.ret_conversion {
+            Some(ret_conversion) if ret_conversion.rust_work_needed() => {
+                let expr = maybe_unsafes_to_tokens(vec![call_body], context_is_unsafe);
+                let conv =
+                    ret_conversion.rust_conversion(parse_quote! { #expr }, &mut variable_counter);
+                let (conversion, requires_unsafe, ty) = match conv {
+                    RustParamConversion::Param {
+                        local_variables, ..
+                    } if !local_variables.is_empty() => panic!("return type required variables"),
+                    RustParamConversion::Param {
+                        conversion,
+                        conversion_requires_unsafe,
+                        ty,
+                        ..
+                    } => (conversion, conversion_requires_unsafe, ty),
+                    _ => panic!(
+                        "Unexpected - return type is supposed to be converted to a return type"
+                    ),
+                };
+                (
+                    if requires_unsafe {
+                        MaybeUnsafeStmt::NeedsUnsafe(conversion)
+                    } else {
+                        MaybeUnsafeStmt::Normal(conversion)
+                    },
+                    Cow::Owned(parse_quote! { -> #ty }),
+                )
+            }
+            _ => (call_body, ret_type),
+        };
+
         let call_stmts = if let Some(ptr_arg_name) = ptr_arg_name {
             let mut closure_stmts = local_variables;
             closure_stmts.push(MaybeUnsafeStmt::binary(
@@ -323,8 +369,6 @@ impl<'a> FnGenerator<'a> {
             call_stmts.push(call_body);
             call_stmts
         };
-        let context_is_unsafe = matches!(self.unsafety, UnsafetyNeeded::Always)
-            || self.always_unsafe_due_to_trait_definition;
         let call_body = maybe_unsafes_to_tokens(call_stmts, context_is_unsafe);
         (lifetime_tokens, wrapper_params, ret_type, call_body)
     }
@@ -334,13 +378,44 @@ impl<'a> FnGenerator<'a> {
         &self,
         avoid_self: bool,
         impl_block_type_name: &QualifiedName,
-        ret_type: &ReturnType,
     ) -> Box<ImplBlockDetails> {
         let (lifetime_tokens, wrapper_params, ret_type, call_body) =
-            self.common_parts(avoid_self, &None, ret_type);
+            self.common_parts(avoid_self, &None, None);
         let rust_name = make_ident(self.rust_name);
         let unsafety = self.unsafety.wrapper_token();
         let doc_attrs = self.doc_attrs;
+        let receiver_pointerness = self
+            .param_details
+            .iter()
+            .next()
+            .map(|pd| pd.conversion.is_a_pointer())
+            .unwrap_or(Pointerness::Not);
+        let ty = impl_block_type_name.get_final_ident();
+        let ty = if self.reference_wrappers {
+            match receiver_pointerness {
+                Pointerness::MutPtr => ImplBlockKey {
+                    ty: parse_quote! {
+                        CppMutRef< 'a, #ty>
+                    },
+                    lifetime: Some(parse_quote! { 'a }),
+                },
+                Pointerness::ConstPtr => ImplBlockKey {
+                    ty: parse_quote! {
+                        CppRef< 'a, #ty>
+                    },
+                    lifetime: Some(parse_quote! { 'a }),
+                },
+                Pointerness::Not => ImplBlockKey {
+                    ty: parse_quote! { # ty },
+                    lifetime: None,
+                },
+            }
+        } else {
+            ImplBlockKey {
+                ty: parse_quote! { # ty },
+                lifetime: None,
+            }
+        };
         Box::new(ImplBlockDetails {
             item: ImplItem::Method(parse_quote! {
                 #(#doc_attrs)*
@@ -348,18 +423,14 @@ impl<'a> FnGenerator<'a> {
                     #call_body
                 }
             }),
-            ty: impl_block_type_name.get_final_ident(),
+            ty,
         })
     }
 
     /// Generate an 'impl Trait for Type { methods-go-here }' in its entrety.
-    fn generate_trait_impl(
-        &self,
-        details: &TraitMethodDetails,
-        ret_type: &ReturnType,
-    ) -> Box<TraitImplBlockDetails> {
+    fn generate_trait_impl(&self, details: &TraitMethodDetails) -> Box<TraitImplBlockDetails> {
         let (lifetime_tokens, wrapper_params, ret_type, call_body) =
-            self.common_parts(details.avoid_self, &details.parameter_reordering, ret_type);
+            self.common_parts(details.avoid_self, &details.parameter_reordering, None);
         let doc_attrs = self.doc_attrs;
         let unsafety = self.unsafety.wrapper_token();
         let key = details.trt.clone();
@@ -381,25 +452,28 @@ impl<'a> FnGenerator<'a> {
     ) -> Box<ImplBlockDetails> {
         let ret_type: ReturnType = parse_quote! { -> impl autocxx::moveit::new::New<Output=Self> };
         let (lifetime_tokens, wrapper_params, ret_type, call_body) =
-            self.common_parts(true, &None, &ret_type);
+            self.common_parts(true, &None, Some(ret_type));
         let rust_name = make_ident(&self.rust_name);
         let doc_attrs = self.doc_attrs;
         let unsafety = self.unsafety.wrapper_token();
-        Box::new(ImplBlockDetails {
-            item: ImplItem::Method(parse_quote! {
+        let ty = impl_block_type_name.get_final_ident();
+        let ty = parse_quote! { #ty };
+        let stuff = quote! {
                 #(#doc_attrs)*
                 pub #unsafety fn #rust_name #lifetime_tokens ( #wrapper_params ) #ret_type {
                     #call_body
                 }
-            }),
-            ty: impl_block_type_name.get_final_ident(),
+        };
+        Box::new(ImplBlockDetails {
+            item: ImplItem::Method(parse_quote! { #stuff }),
+            ty: ImplBlockKey { ty, lifetime: None },
         })
     }
 
     /// Generate a function call wrapper
-    fn generate_function_impl(&self, ret_type: &ReturnType) -> Item {
+    fn generate_function_impl(&self) -> Item {
         let (lifetime_tokens, wrapper_params, ret_type, call_body) =
-            self.common_parts(false, &None, ret_type);
+            self.common_parts(false, &None, None);
         let rust_name = make_ident(self.rust_name);
         let doc_attrs = self.doc_attrs;
         let unsafety = self.unsafety.wrapper_token();

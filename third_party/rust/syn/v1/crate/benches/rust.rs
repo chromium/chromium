@@ -5,6 +5,7 @@
 
 #![cfg_attr(not(syn_only), feature(rustc_private))]
 #![recursion_limit = "1024"]
+#![allow(clippy::cast_lossless, clippy::unnecessary_wraps)]
 
 #[macro_use]
 #[path = "../tests/macros/mod.rs"]
@@ -37,12 +38,14 @@ mod syn_parse {
 #[cfg(not(syn_only))]
 mod librustc_parse {
     extern crate rustc_data_structures;
+    extern crate rustc_error_messages;
     extern crate rustc_errors;
     extern crate rustc_parse;
     extern crate rustc_session;
     extern crate rustc_span;
 
     use rustc_data_structures::sync::Lrc;
+    use rustc_error_messages::FluentBundle;
     use rustc_errors::{emitter::Emitter, Diagnostic, Handler};
     use rustc_session::parse::ParseSess;
     use rustc_span::source_map::{FilePathMapping, SourceMap};
@@ -56,6 +59,12 @@ mod librustc_parse {
             fn source_map(&self) -> Option<&Lrc<SourceMap>> {
                 None
             }
+            fn fluent_bundle(&self) -> Option<&Lrc<FluentBundle>> {
+                None
+            }
+            fn fallback_fluent_bundle(&self) -> &FluentBundle {
+                panic!("silent emitter attempted to translate a diagnostic");
+            }
         }
 
         rustc_span::create_session_if_not_set_then(Edition::Edition2018, |_| {
@@ -63,7 +72,7 @@ mod librustc_parse {
             let emitter = Box::new(SilentEmitter);
             let handler = Handler::with_emitter(false, None, emitter);
             let sess = ParseSess::with_span_handler(handler, cm);
-            if let Err(mut diagnostic) = rustc_parse::parse_crate_from_source_str(
+            if let Err(diagnostic) = rustc_parse::parse_crate_from_source_str(
                 FileName::Custom("bench".to_owned()),
                 content.to_owned(),
                 &sess,
@@ -116,7 +125,7 @@ fn main() {
 
     macro_rules! testcases {
         ($($(#[$cfg:meta])* $name:ident,)*) => {
-            vec![
+            [
                 $(
                     $(#[$cfg])*
                     (stringify!($name), $name::bench as fn(&str) -> Result<(), ()>),

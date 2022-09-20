@@ -95,7 +95,7 @@ pub mod parsing {
     #[cfg_attr(doc_cfg, doc(cfg(feature = "parsing")))]
     impl Parse for DeriveInput {
         fn parse(input: ParseStream) -> Result<Self> {
-            let mut attrs = input.call(Attribute::parse_outer)?;
+            let attrs = input.call(Attribute::parse_outer)?;
             let vis = input.parse::<Visibility>()?;
 
             let lookahead = input.lookahead1();
@@ -103,7 +103,7 @@ pub mod parsing {
                 let struct_token = input.parse::<Token![struct]>()?;
                 let ident = input.parse::<Ident>()?;
                 let generics = input.parse::<Generics>()?;
-                let (where_clause, fields, semi) = data_struct(input, &mut attrs)?;
+                let (where_clause, fields, semi) = data_struct(input)?;
                 Ok(DeriveInput {
                     attrs,
                     vis,
@@ -122,7 +122,7 @@ pub mod parsing {
                 let enum_token = input.parse::<Token![enum]>()?;
                 let ident = input.parse::<Ident>()?;
                 let generics = input.parse::<Generics>()?;
-                let (where_clause, brace, variants) = data_enum(input, &mut attrs)?;
+                let (where_clause, brace, variants) = data_enum(input)?;
                 Ok(DeriveInput {
                     attrs,
                     vis,
@@ -141,7 +141,7 @@ pub mod parsing {
                 let union_token = input.parse::<Token![union]>()?;
                 let ident = input.parse::<Ident>()?;
                 let generics = input.parse::<Generics>()?;
-                let (where_clause, fields) = data_union(input, &mut attrs)?;
+                let (where_clause, fields) = data_union(input)?;
                 Ok(DeriveInput {
                     attrs,
                     vis,
@@ -163,7 +163,6 @@ pub mod parsing {
 
     pub fn data_struct(
         input: ParseStream,
-        attrs: &mut Vec<Attribute>,
     ) -> Result<(Option<WhereClause>, Fields, Option<Token![;]>)> {
         let mut lookahead = input.lookahead1();
         let mut where_clause = None;
@@ -188,7 +187,7 @@ pub mod parsing {
                 Err(lookahead.error())
             }
         } else if lookahead.peek(token::Brace) {
-            let fields = data::parsing::parse_braced(input, attrs)?;
+            let fields = input.parse()?;
             Ok((where_clause, Fields::Named(fields), None))
         } else if lookahead.peek(Token![;]) {
             let semi = input.parse()?;
@@ -200,7 +199,6 @@ pub mod parsing {
 
     pub fn data_enum(
         input: ParseStream,
-        attrs: &mut Vec<Attribute>,
     ) -> Result<(
         Option<WhereClause>,
         token::Brace,
@@ -210,18 +208,14 @@ pub mod parsing {
 
         let content;
         let brace = braced!(content in input);
-        attr::parsing::parse_inner(&content, attrs)?;
         let variants = content.parse_terminated(Variant::parse)?;
 
         Ok((where_clause, brace, variants))
     }
 
-    pub fn data_union(
-        input: ParseStream,
-        attrs: &mut Vec<Attribute>,
-    ) -> Result<(Option<WhereClause>, FieldsNamed)> {
+    pub fn data_union(input: ParseStream) -> Result<(Option<WhereClause>, FieldsNamed)> {
         let where_clause = input.parse()?;
-        let fields = data::parsing::parse_braced(input, attrs)?;
+        let fields = input.parse()?;
         Ok((where_clause, fields))
     }
 }

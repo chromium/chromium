@@ -31,7 +31,7 @@ pub use autocxx_macro::subclass as is_subclass;
 ///   #[subclass(superclass("MyCppSuperclass"))]
 ///   struct Bar {};
 ///   ```
-/// * as a directive within the [include_cpp] macro, in which case you
+/// * as a directive within the [crate::include_cpp] macro, in which case you
 ///   must provide two arguments of the superclass and then the
 ///   subclass:
 ///   ```

@@ -10,7 +10,8 @@ use crate::{
     conversion::api::SubclassName,
     types::{Namespace, QualifiedName},
 };
-use syn::{parse_quote, Ident, Type};
+use quote::ToTokens;
+use syn::{parse_quote, Ident, Type, TypeReference};
 
 #[derive(Clone, Debug)]
 pub(crate) enum CppConversionType {
@@ -23,6 +24,8 @@ pub(crate) enum CppConversionType {
     /// Ignored in the sense that it isn't passed into the C++ function.
     IgnoredPlacementPtrParameter,
     FromReturnValueToPlacementPtr,
+    FromPointerToReference, // unwrapped_type is always Type::Ptr
+    FromReferenceToPointer, // unwrapped_type is always Type::Ptr
 }
 
 impl CppConversionType {
@@ -36,6 +39,8 @@ impl CppConversionType {
                 CppConversionType::FromValueToUniquePtr
             }
             CppConversionType::FromValueToUniquePtr => CppConversionType::FromUniquePtrToValue,
+            CppConversionType::FromPointerToReference => CppConversionType::FromReferenceToPointer,
+            CppConversionType::FromReferenceToPointer => CppConversionType::FromPointerToReference,
             _ => panic!("Did not expect to have to invert this conversion"),
         }
     }
@@ -52,6 +57,8 @@ pub(crate) enum RustConversionType {
     FromValueParamToPtr,
     FromPlacementParamToNewReturn,
     FromRValueParamToPtr,
+    FromReferenceWrapperToPointer, // unwrapped_type is always Type::Ptr
+    FromPointerToReferenceWrapper, // unwrapped_type is always Type::Ptr
 }
 
 impl RustConversionType {
@@ -74,19 +81,53 @@ impl RustConversionType {
 /// * Finally, the actual C++ API receives a `std::string` by value.
 /// The implementation here is distributed across this file, and
 /// `function_wrapper_rs` and `function_wrapper_cpp`.
+/// TODO: we should make this into a single enum, with the Type as enum
+/// variant params. That would remove the possibility of various runtime
+/// panics by enforcing (for example) that conversion from a pointer always
+/// has a Type::Ptr.
 #[derive(Clone)]
 pub(crate) struct TypeConversionPolicy {
-    pub(crate) unwrapped_type: Type,
+    unwrapped_type: Type,
     pub(crate) cpp_conversion: CppConversionType,
     pub(crate) rust_conversion: RustConversionType,
 }
 
 impl TypeConversionPolicy {
     pub(crate) fn new_unconverted(ty: Type) -> Self {
-        TypeConversionPolicy {
+        Self::new(ty, CppConversionType::None, RustConversionType::None)
+    }
+
+    pub(crate) fn new(
+        ty: Type,
+        cpp_conversion: CppConversionType,
+        rust_conversion: RustConversionType,
+    ) -> Self {
+        Self {
             unwrapped_type: ty,
-            cpp_conversion: CppConversionType::None,
-            rust_conversion: RustConversionType::None,
+            cpp_conversion,
+            rust_conversion,
+        }
+    }
+
+    pub(crate) fn cxxbridge_type(&self) -> &Type {
+        &self.unwrapped_type
+    }
+
+    pub(crate) fn return_reference_into_wrapper(ty: Type) -> Self {
+        let (unwrapped_type, is_mut) = match ty {
+            Type::Reference(TypeReference {
+                elem, mutability, ..
+            }) => (*elem, mutability.is_some()),
+            _ => panic!("Not a ptr: {}", ty.to_token_stream()),
+        };
+        TypeConversionPolicy {
+            unwrapped_type: if is_mut {
+                parse_quote! { *mut #unwrapped_type }
+            } else {
+                parse_quote! { *const #unwrapped_type }
+            },
+            cpp_conversion: CppConversionType::FromReferenceToPointer,
+            rust_conversion: RustConversionType::FromPointerToReferenceWrapper,
         }
     }
 
@@ -161,6 +202,8 @@ impl TypeConversionPolicy {
             RustConversionType::FromValueParamToPtr
                 | RustConversionType::FromRValueParamToPtr
                 | RustConversionType::FromPlacementParamToNewReturn
+                | RustConversionType::FromPointerToReferenceWrapper { .. }
+                | RustConversionType::FromReferenceWrapperToPointer { .. }
         )
     }
 

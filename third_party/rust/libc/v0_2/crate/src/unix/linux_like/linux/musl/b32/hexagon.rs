@@ -129,17 +129,6 @@ s! {
         pub f_namemax: ::c_ulong,
         __f_spare: [::c_int; 6],
     }
-
-    pub struct termios2 {
-        pub c_iflag: ::tcflag_t,
-        pub c_oflag: ::tcflag_t,
-        pub c_cflag: ::tcflag_t,
-        pub c_lflag: ::tcflag_t,
-        pub c_line: ::cc_t,
-        pub c_cc: [::cc_t; 19],
-        pub c_ispeed: ::speed_t,
-        pub c_ospeed: ::speed_t,
-    }
 }
 
 pub const AF_FILE: ::c_int = 1;
@@ -234,12 +223,6 @@ pub const F_GETOWN: ::c_int = 9;
 pub const F_GETOWNER_UIDS: ::c_int = 17;
 pub const F_GETOWN_EX: ::c_int = 16;
 pub const F_GETSIG: ::c_int = 11;
-pub const FIOASYNC: ::c_int = 21586;
-pub const FIOCLEX: ::c_int = 21585;
-pub const FIONBIO: ::c_int = 21537;
-pub const FIONCLEX: ::c_int = 21584;
-pub const FIONREAD: ::c_int = 21531;
-pub const FIOQSIZE: ::c_int = 21600;
 pub const F_LINUX_SPECIFIC_BASE: ::c_int = 1024;
 pub const FLUSHO: ::c_int = 4096;
 pub const F_OFD_GETLK: ::c_int = 36;
@@ -282,13 +265,7 @@ pub const PF_FILE: ::c_int = 1;
 pub const PF_KCM: ::c_int = 41;
 pub const PF_MAX: ::c_int = 43;
 pub const PF_QIPCRTR: ::c_int = 42;
-pub const RLIMIT_AS: ::c_int = 9;
-pub const RLIMIT_MEMLOCK: ::c_int = 8;
-pub const RLIMIT_NOFILE: ::c_int = 7;
-pub const RLIMIT_NPROC: ::c_int = 6;
-pub const RLIMIT_RSS: ::c_int = 5;
 #[deprecated(since = "0.2.64", note = "Not stable across OS versions")]
-pub const RLIM_NLIMITS: ::c_int = 16;
 pub const SA_ONSTACK: ::c_int = 0x08000000;
 pub const SA_SIGINFO: ::c_int = 0x00000004;
 pub const SA_NOCLDWAIT: ::c_int = 0x00000002;
@@ -666,83 +643,29 @@ pub const SYS_waitid: ::c_int = 95;
 pub const SYS_write: ::c_int = 64;
 pub const SYS_writev: ::c_int = 66;
 pub const SYS_statx: ::c_int = 291;
-pub const TCFLSH: ::c_int = 21515;
-pub const TCGETA: ::c_int = 21509;
-pub const TCGETS: ::c_int = 21505;
-pub const TCGETX: ::c_int = 21554;
-pub const TCSBRK: ::c_int = 21513;
-pub const TCSBRKP: ::c_int = 21541;
-pub const TCSETA: ::c_int = 21510;
-pub const TCSETAF: ::c_int = 21512;
-pub const TCSETAW: ::c_int = 21511;
-pub const TCSETS: ::c_int = 21506;
-pub const TCSETSF: ::c_int = 21508;
-pub const TCSETSW: ::c_int = 21507;
-pub const TCSETX: ::c_int = 21555;
-pub const TCSETXF: ::c_int = 21556;
-pub const TCSETXW: ::c_int = 21557;
-pub const TCXONC: ::c_int = 21514;
-pub const TIOCCONS: ::c_int = 21533;
-pub const TIOCEXCL: ::c_int = 21516;
-pub const TIOCGETD: ::c_int = 21540;
-pub const TIOCGICOUNT: ::c_int = 21597;
-pub const TIOCGLCKTRMIOS: ::c_int = 21590;
-pub const TIOCGPGRP: ::c_int = 21519;
-pub const TIOCGRS485: ::c_int = 21550;
-pub const TIOCGSERIAL: ::c_int = 21534;
-pub const TIOCGSID: ::c_int = 21545;
-pub const TIOCGSOFTCAR: ::c_int = 21529;
-pub const TIOCGWINSZ: ::c_int = 21523;
-pub const TIOCLINUX: ::c_int = 21532;
-pub const TIOCMBIC: ::c_int = 21527;
-pub const TIOCMBIS: ::c_int = 21526;
-pub const TIOCM_CAR: ::c_int = 64;
-pub const TIOCM_CD: ::c_int = 64;
-pub const TIOCM_CTS: ::c_int = 32;
-pub const TIOCM_DSR: ::c_int = 256;
-pub const TIOCM_DTR: ::c_int = 2;
-pub const TIOCMGET: ::c_int = 21525;
-pub const TIOCMIWAIT: ::c_int = 21596;
-pub const TIOCM_LE: ::c_int = 1;
+pub const SYS_pidfd_send_signal: ::c_long = 424;
+pub const SYS_io_uring_setup: ::c_long = 425;
+pub const SYS_io_uring_enter: ::c_long = 426;
+pub const SYS_io_uring_register: ::c_long = 427;
+pub const SYS_open_tree: ::c_long = 428;
+pub const SYS_move_mount: ::c_long = 429;
+pub const SYS_fsopen: ::c_long = 430;
+pub const SYS_fsconfig: ::c_long = 431;
+pub const SYS_fsmount: ::c_long = 432;
+pub const SYS_fspick: ::c_long = 433;
+pub const SYS_pidfd_open: ::c_long = 434;
+pub const SYS_clone3: ::c_long = 435;
+pub const SYS_close_range: ::c_long = 436;
+pub const SYS_openat2: ::c_long = 437;
+pub const SYS_pidfd_getfd: ::c_long = 438;
+pub const SYS_faccessat2: ::c_long = 439;
+pub const SYS_process_madvise: ::c_long = 440;
+pub const SYS_epoll_pwait2: ::c_long = 441;
+pub const SYS_mount_setattr: ::c_long = 442;
 pub const TIOCM_LOOP: ::c_int = 32768;
 pub const TIOCM_OUT1: ::c_int = 8192;
 pub const TIOCM_OUT2: ::c_int = 16384;
-pub const TIOCM_RI: ::c_int = 128;
-pub const TIOCM_RNG: ::c_int = 128;
-pub const TIOCM_RTS: ::c_int = 4;
-pub const TIOCMSET: ::c_int = 21528;
-pub const TIOCM_SR: ::c_int = 16;
-pub const TIOCM_ST: ::c_int = 8;
-pub const TIOCNOTTY: ::c_int = 21538;
-pub const TIOCNXCL: ::c_int = 21517;
-pub const TIOCOUTQ: ::c_int = 21521;
-pub const TIOCPKT: ::c_int = 21536;
-pub const TIOCPKT_DATA: ::c_int = 0;
-pub const TIOCPKT_DOSTOP: ::c_int = 32;
-pub const TIOCPKT_FLUSHREAD: ::c_int = 1;
-pub const TIOCPKT_FLUSHWRITE: ::c_int = 2;
-pub const TIOCPKT_IOCTL: ::c_int = 64;
-pub const TIOCPKT_NOSTOP: ::c_int = 16;
-pub const TIOCPKT_START: ::c_int = 8;
-pub const TIOCPKT_STOP: ::c_int = 4;
-pub const TIOCSCTTY: ::c_int = 21518;
-pub const TIOCSERCONFIG: ::c_int = 21587;
-pub const TIOCSERGETLSR: ::c_int = 21593;
-pub const TIOCSERGETMULTI: ::c_int = 21594;
-pub const TIOCSERGSTRUCT: ::c_int = 21592;
-pub const TIOCSERGWILD: ::c_int = 21588;
-pub const TIOCSERSETMULTI: ::c_int = 21595;
-pub const TIOCSERSWILD: ::c_int = 21589;
 pub const TIOCSER_TEMT: ::c_int = 1;
-pub const TIOCSETD: ::c_int = 21539;
-pub const TIOCSLCKTRMIOS: ::c_int = 21591;
-pub const TIOCSPGRP: ::c_int = 21520;
-pub const TIOCSRS485: ::c_int = 21551;
-pub const TIOCSSERIAL: ::c_int = 21535;
-pub const TIOCSSOFTCAR: ::c_int = 21530;
-pub const TIOCSTI: ::c_int = 21522;
-pub const TIOCSWINSZ: ::c_int = 21524;
-pub const TIOCVHANGUP: ::c_int = 21559;
 pub const TOSTOP: ::c_int = 256;
 pub const VEOF: ::c_int = 4;
 pub const VEOL2: ::c_int = 16;

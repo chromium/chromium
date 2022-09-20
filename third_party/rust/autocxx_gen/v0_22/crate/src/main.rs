@@ -74,7 +74,11 @@ filenames, then you should use
 instead of
   --gen-rs-include
 and you will need to give AUTOCXX_RS_JSON_ARCHIVE when building the Rust code.
-The output filename is named gen.rs.json.
+The output filename is named gen.rs.json. AUTOCXX_RS_JSON_ARCHIVE should be set
+to the path to gen.rs.json. It may optionally have multiple paths separated the
+way as the PATH environment variable for the current platform, see
+[`std::env::split_paths`] for details. The first path which is successfully
+opened will be used.
 
 This teaches rustc (and the autocxx macro) that all the different Rust bindings
 for multiple different autocxx macros have been archived into this single file.

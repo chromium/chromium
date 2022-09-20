@@ -102,3 +102,25 @@ fn print_incomplete_qpath() {
     "###);
     assert!(ty.path.segments.pop().is_none());
 }
+
+#[test]
+fn parse_parenthesized_path_arguments_with_disambiguator() {
+    #[rustfmt::skip]
+    let tokens = quote!(FnOnce::() -> !);
+    snapshot!(tokens as Type, @r###"
+    Type::Path {
+        path: Path {
+            segments: [
+                PathSegment {
+                    ident: "FnOnce",
+                    arguments: PathArguments::Parenthesized {
+                        output: Type(
+                            Type::Never,
+                        ),
+                    },
+                },
+            ],
+        },
+    }
+    "###);
+}

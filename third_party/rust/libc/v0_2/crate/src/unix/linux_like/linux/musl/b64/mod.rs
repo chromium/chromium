@@ -133,12 +133,6 @@ s! {
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 56;
 pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 40;
 
-pub const RLIMIT_RSS: ::c_int = 5;
-pub const RLIMIT_NOFILE: ::c_int = 7;
-pub const RLIMIT_AS: ::c_int = 9;
-pub const RLIMIT_NPROC: ::c_int = 6;
-pub const RLIMIT_MEMLOCK: ::c_int = 8;
-
 pub const SOCK_NONBLOCK: ::c_int = 2048;
 
 pub const SOCK_SEQPACKET: ::c_int = 5;
@@ -163,6 +157,9 @@ cfg_if! {
     } else if #[cfg(any(target_arch = "x86_64"))] {
         mod x86_64;
         pub use self::x86_64::*;
+    } else if #[cfg(any(target_arch = "riscv64"))] {
+        mod riscv64;
+        pub use self::riscv64::*;
     } else {
         // Unknown target_arch
     }

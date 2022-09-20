@@ -1,12 +1,12 @@
 use crate::detection::inside_proc_macro;
 use crate::{fallback, Delimiter, Punct, Spacing, TokenTree};
-use std::fmt::{self, Debug, Display};
-use std::iter::FromIterator;
-use std::ops::RangeBounds;
+use core::fmt::{self, Debug, Display};
+use core::iter::FromIterator;
+use core::ops::RangeBounds;
+use core::str::FromStr;
 use std::panic;
 #[cfg(super_unstable)]
 use std::path::PathBuf;
-use std::str::FromStr;
 
 #[derive(Clone)]
 pub(crate) enum TokenStream {
@@ -69,7 +69,7 @@ impl DeferredTokenStream {
 }
 
 impl TokenStream {
-    pub fn new() -> TokenStream {
+    pub fn new() -> Self {
         if inside_proc_macro() {
             TokenStream::Compiler(DeferredTokenStream::new(proc_macro::TokenStream::new()))
         } else {
@@ -284,9 +284,9 @@ impl Debug for LexError {
 impl Display for LexError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            #[cfg(lexerror_display)]
+            #[cfg(not(no_lexerror_display))]
             LexError::Compiler(e) => Display::fmt(e, f),
-            #[cfg(not(lexerror_display))]
+            #[cfg(no_lexerror_display)]
             LexError::Compiler(_e) => Display::fmt(
                 &fallback::LexError {
                     span: fallback::Span::call_site(),
@@ -350,12 +350,6 @@ impl Iterator for TokenTreeIter {
     }
 }
 
-impl Debug for TokenTreeIter {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_struct("TokenTreeIter").finish()
-    }
-}
-
 #[derive(Clone, PartialEq, Eq)]
 #[cfg(super_unstable)]
 pub(crate) enum SourceFile {
@@ -408,7 +402,7 @@ pub(crate) enum Span {
 }
 
 impl Span {
-    pub fn call_site() -> Span {
+    pub fn call_site() -> Self {
         if inside_proc_macro() {
             Span::Compiler(proc_macro::Span::call_site())
         } else {
@@ -416,8 +410,8 @@ impl Span {
         }
     }
 
-    #[cfg(hygiene)]
-    pub fn mixed_site() -> Span {
+    #[cfg(not(no_hygiene))]
+    pub fn mixed_site() -> Self {
         if inside_proc_macro() {
             Span::Compiler(proc_macro::Span::mixed_site())
         } else {
@@ -426,7 +420,7 @@ impl Span {
     }
 
     #[cfg(super_unstable)]
-    pub fn def_site() -> Span {
+    pub fn def_site() -> Self {
         if inside_proc_macro() {
             Span::Compiler(proc_macro::Span::def_site())
         } else {
@@ -436,11 +430,11 @@ impl Span {
 
     pub fn resolved_at(&self, other: Span) -> Span {
         match (self, other) {
-            #[cfg(hygiene)]
+            #[cfg(not(no_hygiene))]
             (Span::Compiler(a), Span::Compiler(b)) => Span::Compiler(a.resolved_at(b)),
 
             // Name resolution affects semantics, but location is only cosmetic
-            #[cfg(not(hygiene))]
+            #[cfg(no_hygiene)]
             (Span::Compiler(_), Span::Compiler(_)) => other,
 
             (Span::Fallback(a), Span::Fallback(b)) => Span::Fallback(a.resolved_at(b)),
@@ -450,11 +444,11 @@ impl Span {
 
     pub fn located_at(&self, other: Span) -> Span {
         match (self, other) {
-            #[cfg(hygiene)]
+            #[cfg(not(no_hygiene))]
             (Span::Compiler(a), Span::Compiler(b)) => Span::Compiler(a.located_at(b)),
 
             // Name resolution affects semantics, but location is only cosmetic
-            #[cfg(not(hygiene))]
+            #[cfg(no_hygiene)]
             (Span::Compiler(_), Span::Compiler(_)) => *self,
 
             (Span::Fallback(a), Span::Fallback(b)) => Span::Fallback(a.located_at(b)),
@@ -575,7 +569,7 @@ pub(crate) enum Group {
 }
 
 impl Group {
-    pub fn new(delimiter: Delimiter, stream: TokenStream) -> Group {
+    pub fn new(delimiter: Delimiter, stream: TokenStream) -> Self {
         match stream {
             TokenStream::Compiler(tts) => {
                 let delimiter = match delimiter {
@@ -620,9 +614,9 @@ impl Group {
 
     pub fn span_open(&self) -> Span {
         match self {
-            #[cfg(proc_macro_span)]
+            #[cfg(not(no_group_open_close))]
             Group::Compiler(g) => Span::Compiler(g.span_open()),
-            #[cfg(not(proc_macro_span))]
+            #[cfg(no_group_open_close)]
             Group::Compiler(g) => Span::Compiler(g.span()),
             Group::Fallback(g) => Span::Fallback(g.span_open()),
         }
@@ -630,9 +624,9 @@ impl Group {
 
     pub fn span_close(&self) -> Span {
         match self {
-            #[cfg(proc_macro_span)]
+            #[cfg(not(no_group_open_close))]
             Group::Compiler(g) => Span::Compiler(g.span_close()),
-            #[cfg(not(proc_macro_span))]
+            #[cfg(no_group_open_close)]
             Group::Compiler(g) => Span::Compiler(g.span()),
             Group::Fallback(g) => Span::Fallback(g.span_close()),
         }
@@ -685,25 +679,35 @@ pub(crate) enum Ident {
 }
 
 impl Ident {
-    pub fn new(string: &str, span: Span) -> Ident {
+    pub fn new(string: &str, span: Span) -> Self {
         match span {
             Span::Compiler(s) => Ident::Compiler(proc_macro::Ident::new(string, s)),
             Span::Fallback(s) => Ident::Fallback(fallback::Ident::new(string, s)),
         }
     }
 
-    pub fn new_raw(string: &str, span: Span) -> Ident {
+    pub fn new_raw(string: &str, span: Span) -> Self {
         match span {
+            #[cfg(not(no_ident_new_raw))]
+            Span::Compiler(s) => Ident::Compiler(proc_macro::Ident::new_raw(string, s)),
+            #[cfg(no_ident_new_raw)]
             Span::Compiler(s) => {
-                let p: proc_macro::TokenStream = string.parse().unwrap();
-                let ident = match p.into_iter().next() {
-                    Some(proc_macro::TokenTree::Ident(mut i)) => {
-                        i.set_span(s);
-                        i
+                let _ = proc_macro::Ident::new(string, s);
+                // At this point the un-r#-prefixed string is known to be a
+                // valid identifier. Try to produce a valid raw identifier by
+                // running the `TokenStream` parser, and unwrapping the first
+                // token as an `Ident`.
+                let raw_prefixed = format!("r#{}", string);
+                if let Ok(ts) = raw_prefixed.parse::<proc_macro::TokenStream>() {
+                    let mut iter = ts.into_iter();
+                    if let (Some(proc_macro::TokenTree::Ident(mut id)), None) =
+                        (iter.next(), iter.next())
+                    {
+                        id.set_span(s);
+                        return Ident::Compiler(id);
                     }
-                    _ => panic!(),
-                };
-                Ident::Compiler(ident)
+                }
+                panic!("not allowed as a raw identifier: `{}`", raw_prefixed)
             }
             Span::Fallback(s) => Ident::Fallback(fallback::Ident::new_raw(string, s)),
         }
@@ -804,6 +808,14 @@ macro_rules! unsuffixed_integers {
 }
 
 impl Literal {
+    pub unsafe fn from_str_unchecked(repr: &str) -> Self {
+        if inside_proc_macro() {
+            Literal::Compiler(compiler_literal_from_str(repr).expect("invalid literal"))
+        } else {
+            Literal::Fallback(fallback::Literal::from_str_unchecked(repr))
+        }
+    }
+
     suffixed_numbers! {
         u8_suffixed => u8,
         u16_suffixed => u16,
@@ -921,29 +933,29 @@ impl FromStr for Literal {
 
     fn from_str(repr: &str) -> Result<Self, Self::Err> {
         if inside_proc_macro() {
-            #[cfg(literal_from_str)]
-            {
-                proc_macro::Literal::from_str(repr)
-                    .map(Literal::Compiler)
-                    .map_err(LexError::Compiler)
-            }
-            #[cfg(not(literal_from_str))]
-            {
-                let tokens = proc_macro_parse(repr)?;
-                let mut iter = tokens.into_iter();
-                if let (Some(proc_macro::TokenTree::Literal(literal)), None) =
-                    (iter.next(), iter.next())
-                {
-                    if literal.to_string().len() == repr.len() {
-                        return Ok(Literal::Compiler(literal));
-                    }
-                }
-                Err(LexError::call_site())
-            }
+            compiler_literal_from_str(repr).map(Literal::Compiler)
         } else {
             let literal = fallback::Literal::from_str(repr)?;
             Ok(Literal::Fallback(literal))
         }
+    }
+}
+
+fn compiler_literal_from_str(repr: &str) -> Result<proc_macro::Literal, LexError> {
+    #[cfg(not(no_literal_from_str))]
+    {
+        proc_macro::Literal::from_str(repr).map_err(LexError::Compiler)
+    }
+    #[cfg(no_literal_from_str)]
+    {
+        let tokens = proc_macro_parse(repr)?;
+        let mut iter = tokens.into_iter();
+        if let (Some(proc_macro::TokenTree::Literal(literal)), None) = (iter.next(), iter.next()) {
+            if literal.to_string().len() == repr.len() {
+                return Ok(literal);
+            }
+        }
+        Err(LexError::call_site())
     }
 }
 

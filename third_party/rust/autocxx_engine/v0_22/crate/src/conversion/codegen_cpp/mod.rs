@@ -559,7 +559,7 @@ impl<'a> CppCodeGenerator<'a> {
 
             underlying_function_call = match placement_param {
                 Some(placement_param) => {
-                    let tyname = type_to_cpp(&ret.unwrapped_type, &self.original_name_map)?;
+                    let tyname = type_to_cpp(ret.cxxbridge_type(), &self.original_name_map)?;
                     format!("new({}) {}({})", placement_param, tyname, call_itself)
                 }
                 None => format!("return {}", call_itself),

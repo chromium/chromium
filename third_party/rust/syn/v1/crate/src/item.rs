@@ -17,6 +17,7 @@ ast_enum_of_structs! {
     ///
     /// [syntax tree enum]: Expr#syntax-tree-enums
     #[cfg_attr(doc_cfg, doc(cfg(feature = "full")))]
+    #[cfg_attr(not(syn_no_non_exhaustive), non_exhaustive)]
     pub enum Item {
         /// A constant item: `const MAX: u16 = 65535`.
         Const(ItemConst),
@@ -71,18 +72,17 @@ ast_enum_of_structs! {
         /// Tokens forming an item not interpreted by Syn.
         Verbatim(TokenStream),
 
-        // The following is the only supported idiom for exhaustive matching of
-        // this enum.
+        // Not public API.
         //
-        //     match expr {
-        //         Item::Const(e) => {...}
-        //         Item::Enum(e) => {...}
+        // For testing exhaustiveness in downstream code, use the following idiom:
+        //
+        //     match item {
+        //         Item::Const(item) => {...}
+        //         Item::Enum(item) => {...}
         //         ...
-        //         Item::Verbatim(e) => {...}
+        //         Item::Verbatim(item) => {...}
         //
-        //         #[cfg(test)]
-        //         Item::__TestExhaustive(_) => unimplemented!(),
-        //         #[cfg(not(test))]
+        //         #[cfg_attr(test, deny(non_exhaustive_omitted_patterns))]
         //         _ => { /* some sane fallback */ }
         //     }
         //
@@ -90,12 +90,9 @@ ast_enum_of_structs! {
         // a variant. You will be notified by a test failure when a variant is
         // added, so that you can add code to handle it, but your library will
         // continue to compile and work for downstream users in the interim.
-        //
-        // Once `deny(reachable)` is available in rustc, Item will be
-        // reimplemented as a non_exhaustive enum.
-        // https://github.com/rust-lang/rust/issues/44109#issuecomment-521781237
+        #[cfg(syn_no_non_exhaustive)]
         #[doc(hidden)]
-        __TestExhaustive(crate::private),
+        __NonExhaustive,
     }
 }
 
@@ -381,9 +378,7 @@ impl Item {
             | Item::Macro2(ItemMacro2 { attrs, .. }) => mem::replace(attrs, new),
             Item::Verbatim(_) => Vec::new(),
 
-            #[cfg(test)]
-            Item::__TestExhaustive(_) => unimplemented!(),
-            #[cfg(not(test))]
+            #[cfg(syn_no_non_exhaustive)]
             _ => unreachable!(),
         }
     }
@@ -564,6 +559,7 @@ ast_enum_of_structs! {
     ///
     /// [syntax tree enum]: Expr#syntax-tree-enums
     #[cfg_attr(doc_cfg, doc(cfg(feature = "full")))]
+    #[cfg_attr(not(syn_no_non_exhaustive), non_exhaustive)]
     pub enum ForeignItem {
         /// A foreign function in an `extern` block.
         Fn(ForeignItemFn),
@@ -580,18 +576,17 @@ ast_enum_of_structs! {
         /// Tokens in an `extern` block not interpreted by Syn.
         Verbatim(TokenStream),
 
-        // The following is the only supported idiom for exhaustive matching of
-        // this enum.
+        // Not public API.
         //
-        //     match expr {
-        //         ForeignItem::Fn(e) => {...}
-        //         ForeignItem::Static(e) => {...}
+        // For testing exhaustiveness in downstream code, use the following idiom:
+        //
+        //     match item {
+        //         ForeignItem::Fn(item) => {...}
+        //         ForeignItem::Static(item) => {...}
         //         ...
-        //         ForeignItem::Verbatim(e) => {...}
+        //         ForeignItem::Verbatim(item) => {...}
         //
-        //         #[cfg(test)]
-        //         ForeignItem::__TestExhaustive(_) => unimplemented!(),
-        //         #[cfg(not(test))]
+        //         #[cfg_attr(test, deny(non_exhaustive_omitted_patterns))]
         //         _ => { /* some sane fallback */ }
         //     }
         //
@@ -599,12 +594,9 @@ ast_enum_of_structs! {
         // a variant. You will be notified by a test failure when a variant is
         // added, so that you can add code to handle it, but your library will
         // continue to compile and work for downstream users in the interim.
-        //
-        // Once `deny(reachable)` is available in rustc, ForeignItem will be
-        // reimplemented as a non_exhaustive enum.
-        // https://github.com/rust-lang/rust/issues/44109#issuecomment-521781237
+        #[cfg(syn_no_non_exhaustive)]
         #[doc(hidden)]
-        __TestExhaustive(crate::private),
+        __NonExhaustive,
     }
 }
 
@@ -675,6 +667,7 @@ ast_enum_of_structs! {
     ///
     /// [syntax tree enum]: Expr#syntax-tree-enums
     #[cfg_attr(doc_cfg, doc(cfg(feature = "full")))]
+    #[cfg_attr(not(syn_no_non_exhaustive), non_exhaustive)]
     pub enum TraitItem {
         /// An associated constant within the definition of a trait.
         Const(TraitItemConst),
@@ -691,18 +684,17 @@ ast_enum_of_structs! {
         /// Tokens within the definition of a trait not interpreted by Syn.
         Verbatim(TokenStream),
 
-        // The following is the only supported idiom for exhaustive matching of
-        // this enum.
+        // Not public API.
         //
-        //     match expr {
-        //         TraitItem::Const(e) => {...}
-        //         TraitItem::Method(e) => {...}
+        // For testing exhaustiveness in downstream code, use the following idiom:
+        //
+        //     match item {
+        //         TraitItem::Const(item) => {...}
+        //         TraitItem::Method(item) => {...}
         //         ...
-        //         TraitItem::Verbatim(e) => {...}
+        //         TraitItem::Verbatim(item) => {...}
         //
-        //         #[cfg(test)]
-        //         TraitItem::__TestExhaustive(_) => unimplemented!(),
-        //         #[cfg(not(test))]
+        //         #[cfg_attr(test, deny(non_exhaustive_omitted_patterns))]
         //         _ => { /* some sane fallback */ }
         //     }
         //
@@ -710,12 +702,9 @@ ast_enum_of_structs! {
         // a variant. You will be notified by a test failure when a variant is
         // added, so that you can add code to handle it, but your library will
         // continue to compile and work for downstream users in the interim.
-        //
-        // Once `deny(reachable)` is available in rustc, TraitItem will be
-        // reimplemented as a non_exhaustive enum.
-        // https://github.com/rust-lang/rust/issues/44109#issuecomment-521781237
+        #[cfg(syn_no_non_exhaustive)]
         #[doc(hidden)]
-        __TestExhaustive(crate::private),
+        __NonExhaustive,
     }
 }
 
@@ -788,6 +777,7 @@ ast_enum_of_structs! {
     ///
     /// [syntax tree enum]: Expr#syntax-tree-enums
     #[cfg_attr(doc_cfg, doc(cfg(feature = "full")))]
+    #[cfg_attr(not(syn_no_non_exhaustive), non_exhaustive)]
     pub enum ImplItem {
         /// An associated constant within an impl block.
         Const(ImplItemConst),
@@ -804,18 +794,17 @@ ast_enum_of_structs! {
         /// Tokens within an impl block not interpreted by Syn.
         Verbatim(TokenStream),
 
-        // The following is the only supported idiom for exhaustive matching of
-        // this enum.
+        // Not public API.
         //
-        //     match expr {
-        //         ImplItem::Const(e) => {...}
-        //         ImplItem::Method(e) => {...}
+        // For testing exhaustiveness in downstream code, use the following idiom:
+        //
+        //     match item {
+        //         ImplItem::Const(item) => {...}
+        //         ImplItem::Method(item) => {...}
         //         ...
-        //         ImplItem::Verbatim(e) => {...}
+        //         ImplItem::Verbatim(item) => {...}
         //
-        //         #[cfg(test)]
-        //         ImplItem::__TestExhaustive(_) => unimplemented!(),
-        //         #[cfg(not(test))]
+        //         #[cfg_attr(test, deny(non_exhaustive_omitted_patterns))]
         //         _ => { /* some sane fallback */ }
         //     }
         //
@@ -823,12 +812,9 @@ ast_enum_of_structs! {
         // a variant. You will be notified by a test failure when a variant is
         // added, so that you can add code to handle it, but your library will
         // continue to compile and work for downstream users in the interim.
-        //
-        // Once `deny(reachable)` is available in rustc, ImplItem will be
-        // reimplemented as a non_exhaustive enum.
-        // https://github.com/rust-lang/rust/issues/44109#issuecomment-521781237
+        #[cfg(syn_no_non_exhaustive)]
         #[doc(hidden)]
-        __TestExhaustive(crate::private),
+        __NonExhaustive,
     }
 }
 
@@ -1177,14 +1163,25 @@ pub mod parsing {
         semi_token: Token![;],
     }
 
-    impl Parse for FlexibleItemType {
-        fn parse(input: ParseStream) -> Result<Self> {
+    enum WhereClauseLocation {
+        // type Ty<T> where T: 'static = T;
+        BeforeEq,
+        // type Ty<T> = T where T: 'static;
+        #[allow(dead_code)]
+        AfterEq,
+        // TODO: goes away once the migration period on rust-lang/rust#89122 is over
+        Both,
+    }
+
+    impl FlexibleItemType {
+        fn parse(input: ParseStream, where_clause_location: WhereClauseLocation) -> Result<Self> {
             let vis: Visibility = input.parse()?;
             let defaultness: Option<Token![default]> = input.parse()?;
             let type_token: Token![type] = input.parse()?;
             let ident: Ident = input.parse()?;
             let mut generics: Generics = input.parse()?;
             let colon_token: Option<Token![:]> = input.parse()?;
+
             let mut bounds = Punctuated::new();
             if colon_token.is_some() {
                 loop {
@@ -1198,12 +1195,29 @@ pub mod parsing {
                     bounds.push_punct(input.parse::<Token![+]>()?);
                 }
             }
-            generics.where_clause = input.parse()?;
+
+            match where_clause_location {
+                WhereClauseLocation::BeforeEq | WhereClauseLocation::Both => {
+                    generics.where_clause = input.parse()?;
+                }
+                _ => {}
+            }
+
             let ty = if let Some(eq_token) = input.parse()? {
                 Some((eq_token, input.parse::<Type>()?))
             } else {
                 None
             };
+
+            match where_clause_location {
+                WhereClauseLocation::AfterEq | WhereClauseLocation::Both
+                    if generics.where_clause.is_none() =>
+                {
+                    generics.where_clause = input.parse()?;
+                }
+                _ => {}
+            }
+
             let semi_token: Token![;] = input.parse()?;
 
             Ok(FlexibleItemType {
@@ -1800,9 +1814,7 @@ pub mod parsing {
                 ForeignItem::Macro(item) => &mut item.attrs,
                 ForeignItem::Verbatim(_) => return Ok(item),
 
-                #[cfg(test)]
-                ForeignItem::__TestExhaustive(_) => unimplemented!(),
-                #[cfg(not(test))]
+                #[cfg(syn_no_non_exhaustive)]
                 _ => unreachable!(),
             };
             attrs.append(item_attrs);
@@ -1868,7 +1880,7 @@ pub mod parsing {
             bounds: _,
             ty,
             semi_token,
-        } = input.parse()?;
+        } = FlexibleItemType::parse(input, WhereClauseLocation::BeforeEq)?;
 
         if defaultness.is_some()
             || generics.lt_token.is_some()
@@ -1937,7 +1949,7 @@ pub mod parsing {
             bounds: _,
             ty,
             semi_token,
-        } = input.parse()?;
+        } = FlexibleItemType::parse(input, WhereClauseLocation::BeforeEq)?;
 
         if defaultness.is_some() || colon_token.is_some() || ty.is_none() {
             Ok(Item::Verbatim(verbatim::between(begin, input)))
@@ -1959,13 +1971,12 @@ pub mod parsing {
     #[cfg_attr(doc_cfg, doc(cfg(feature = "parsing")))]
     impl Parse for ItemStruct {
         fn parse(input: ParseStream) -> Result<Self> {
-            let mut attrs = input.call(Attribute::parse_outer)?;
+            let attrs = input.call(Attribute::parse_outer)?;
             let vis = input.parse::<Visibility>()?;
             let struct_token = input.parse::<Token![struct]>()?;
             let ident = input.parse::<Ident>()?;
             let generics = input.parse::<Generics>()?;
-            let (where_clause, fields, semi_token) =
-                derive::parsing::data_struct(input, &mut attrs)?;
+            let (where_clause, fields, semi_token) = derive::parsing::data_struct(input)?;
             Ok(ItemStruct {
                 attrs,
                 vis,
@@ -1984,13 +1995,12 @@ pub mod parsing {
     #[cfg_attr(doc_cfg, doc(cfg(feature = "parsing")))]
     impl Parse for ItemEnum {
         fn parse(input: ParseStream) -> Result<Self> {
-            let mut attrs = input.call(Attribute::parse_outer)?;
+            let attrs = input.call(Attribute::parse_outer)?;
             let vis = input.parse::<Visibility>()?;
             let enum_token = input.parse::<Token![enum]>()?;
             let ident = input.parse::<Ident>()?;
             let generics = input.parse::<Generics>()?;
-            let (where_clause, brace_token, variants) =
-                derive::parsing::data_enum(input, &mut attrs)?;
+            let (where_clause, brace_token, variants) = derive::parsing::data_enum(input)?;
             Ok(ItemEnum {
                 attrs,
                 vis,
@@ -2009,12 +2019,12 @@ pub mod parsing {
     #[cfg_attr(doc_cfg, doc(cfg(feature = "parsing")))]
     impl Parse for ItemUnion {
         fn parse(input: ParseStream) -> Result<Self> {
-            let mut attrs = input.call(Attribute::parse_outer)?;
+            let attrs = input.call(Attribute::parse_outer)?;
             let vis = input.parse::<Visibility>()?;
             let union_token = input.parse::<Token![union]>()?;
             let ident = input.parse::<Ident>()?;
             let generics = input.parse::<Generics>()?;
-            let (where_clause, fields) = derive::parsing::data_union(input, &mut attrs)?;
+            let (where_clause, fields) = derive::parsing::data_union(input)?;
             Ok(ItemUnion {
                 attrs,
                 vis,
@@ -2238,9 +2248,7 @@ pub mod parsing {
                 TraitItem::Macro(item) => &mut item.attrs,
                 TraitItem::Verbatim(_) => unreachable!(),
 
-                #[cfg(test)]
-                TraitItem::__TestExhaustive(_) => unimplemented!(),
-                #[cfg(not(test))]
+                #[cfg(syn_no_non_exhaustive)]
                 _ => unreachable!(),
             };
             attrs.append(item_attrs);
@@ -2328,7 +2336,6 @@ pub mod parsing {
                 }
             }
 
-            generics.where_clause = input.parse()?;
             let default = if input.peek(Token![=]) {
                 let eq_token: Token![=] = input.parse()?;
                 let default: Type = input.parse()?;
@@ -2336,6 +2343,8 @@ pub mod parsing {
             } else {
                 None
             };
+
+            generics.where_clause = input.parse()?;
             let semi_token: Token![;] = input.parse()?;
 
             Ok(TraitItemType {
@@ -2362,7 +2371,7 @@ pub mod parsing {
             bounds,
             ty,
             semi_token,
-        } = input.parse()?;
+        } = FlexibleItemType::parse(input, WhereClauseLocation::Both)?;
 
         if defaultness.is_some() || vis.is_some() {
             Ok(TraitItem::Verbatim(verbatim::between(begin, input)))
@@ -2455,7 +2464,7 @@ pub mod parsing {
             while let Type::Group(ty) = first_ty_ref {
                 first_ty_ref = &ty.elem;
             }
-            if let Type::Path(_) = first_ty_ref {
+            if let Type::Path(TypePath { qself: None, .. }) = first_ty_ref {
                 while let Type::Group(ty) = first_ty {
                     first_ty = *ty.elem;
                 }
@@ -2580,9 +2589,7 @@ pub mod parsing {
                     ImplItem::Macro(item) => &mut item.attrs,
                     ImplItem::Verbatim(_) => return Ok(item),
 
-                    #[cfg(test)]
-                    ImplItem::__TestExhaustive(_) => unimplemented!(),
-                    #[cfg(not(test))]
+                    #[cfg(syn_no_non_exhaustive)]
                     _ => unreachable!(),
                 };
                 attrs.append(item_attrs);
@@ -2661,20 +2668,26 @@ pub mod parsing {
     #[cfg_attr(doc_cfg, doc(cfg(feature = "parsing")))]
     impl Parse for ImplItemType {
         fn parse(input: ParseStream) -> Result<Self> {
+            let attrs = input.call(Attribute::parse_outer)?;
+            let vis: Visibility = input.parse()?;
+            let defaultness: Option<Token![default]> = input.parse()?;
+            let type_token: Token![type] = input.parse()?;
+            let ident: Ident = input.parse()?;
+            let mut generics: Generics = input.parse()?;
+            let eq_token: Token![=] = input.parse()?;
+            let ty: Type = input.parse()?;
+            generics.where_clause = input.parse()?;
+            let semi_token: Token![;] = input.parse()?;
             Ok(ImplItemType {
-                attrs: input.call(Attribute::parse_outer)?,
-                vis: input.parse()?,
-                defaultness: input.parse()?,
-                type_token: input.parse()?,
-                ident: input.parse()?,
-                generics: {
-                    let mut generics: Generics = input.parse()?;
-                    generics.where_clause = input.parse()?;
-                    generics
-                },
-                eq_token: input.parse()?,
-                ty: input.parse()?,
-                semi_token: input.parse()?,
+                attrs,
+                vis,
+                defaultness,
+                type_token,
+                ident,
+                generics,
+                eq_token,
+                ty,
+                semi_token,
             })
         }
     }
@@ -2690,7 +2703,7 @@ pub mod parsing {
             bounds: _,
             ty,
             semi_token,
-        } = input.parse()?;
+        } = FlexibleItemType::parse(input, WhereClauseLocation::Both)?;
 
         if colon_token.is_some() || ty.is_none() {
             Ok(ImplItem::Verbatim(verbatim::between(begin, input)))
@@ -3106,11 +3119,11 @@ mod printing {
                 TokensOrDefault(&self.colon_token).to_tokens(tokens);
                 self.bounds.to_tokens(tokens);
             }
-            self.generics.where_clause.to_tokens(tokens);
             if let Some((eq_token, default)) = &self.default {
                 eq_token.to_tokens(tokens);
                 default.to_tokens(tokens);
             }
+            self.generics.where_clause.to_tokens(tokens);
             self.semi_token.to_tokens(tokens);
         }
     }
@@ -3171,9 +3184,9 @@ mod printing {
             self.type_token.to_tokens(tokens);
             self.ident.to_tokens(tokens);
             self.generics.to_tokens(tokens);
-            self.generics.where_clause.to_tokens(tokens);
             self.eq_token.to_tokens(tokens);
             self.ty.to_tokens(tokens);
+            self.generics.where_clause.to_tokens(tokens);
             self.semi_token.to_tokens(tokens);
         }
     }

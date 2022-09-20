@@ -535,8 +535,8 @@ extern "C" {
     pub fn strtod_l(arg1: *const c_char, arg2: *mut *mut c_char, arg3: locale_t) -> f64;
     pub fn strtof_l(arg1: *const c_char, arg2: *mut *mut c_char, arg3: locale_t) -> f32;
     pub fn strtold_l(arg1: *const c_char, arg2: *mut *mut c_char, arg3: locale_t) -> f64;
-    pub fn _Exit(arg1: c_int);
-    pub fn abort();
+    pub fn _Exit(arg1: c_int) -> !;
+    pub fn abort() -> !;
     pub fn abs(arg1: c_int) -> c_int;
     pub fn atexit(arg1: ::Option<unsafe extern "C" fn()>) -> c_int;
     pub fn atoi(arg1: *const c_char) -> c_int;
@@ -553,7 +553,7 @@ extern "C" {
     ) -> *mut c_void;
     pub fn calloc(arg1: size_t, arg2: size_t) -> *mut c_void;
     pub fn div(arg1: c_int, arg2: c_int) -> div_t;
-    pub fn exit(arg1: c_int);
+    pub fn exit(arg1: c_int) -> !;
     pub fn free(arg1: *mut c_void);
     pub fn getenv(arg1: *const c_char) -> *mut c_char;
     pub fn labs(arg1: c_long) -> c_long;

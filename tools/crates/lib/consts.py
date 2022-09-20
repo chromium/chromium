@@ -27,6 +27,8 @@ ALLOWED_LICENSES = [
     ("ISC", "ISC"),
     ("MIT OR Zlib OR Apache-2.0", "Apache 2.0"),
     ("0BSD OR MIT OR Apache-2.0", "Apache 2.0"),
+    ("Unicode-DFS-2016",
+     "Unicode License Agreement - Data Files and Software (2016)"),
 ]
 
 # The subdirectory where crates are found, relative to the current working

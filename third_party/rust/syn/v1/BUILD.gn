@@ -14,14 +14,14 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "1.0.81"
+  cargo_pkg_version = "1.0.99"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "syn"
   cargo_pkg_description = "Parser for Rust source code"
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",
-    "//third_party/rust/unicode_xid/v0_2:lib",
+    "//third_party/rust/unicode_ident/v1:lib",
   ]
   features = [
     "clone-impls",
@@ -49,14 +49,14 @@ cargo_crate("test_support") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "1.0.81"
+  cargo_pkg_version = "1.0.99"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "syn"
   cargo_pkg_description = "Parser for Rust source code"
   deps = [
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",
-    "//third_party/rust/unicode_xid/v0_2:lib",
+    "//third_party/rust/unicode_ident/v1:lib",
   ]
   features = [
     "clone-impls",

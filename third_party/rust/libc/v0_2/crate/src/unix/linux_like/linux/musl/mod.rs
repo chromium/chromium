@@ -24,6 +24,16 @@ pub type rlim_t = ::c_ulonglong;
 
 pub type flock64 = flock;
 
+cfg_if! {
+    if #[cfg(doc)] {
+        // Used in `linux::arch` to define ioctl constants.
+        pub(crate) type Ioctl = ::c_int;
+    } else {
+        #[doc(hidden)]
+        pub type Ioctl = ::c_int;
+    }
+}
+
 impl siginfo_t {
     pub unsafe fn si_addr(&self) -> *mut ::c_void {
         #[repr(C)]
@@ -206,12 +216,6 @@ s! {
         pub rt_mtu: ::c_ulong,
         pub rt_window: ::c_ulong,
         pub rt_irtt: ::c_ushort,
-    }
-
-    pub struct ip_mreqn {
-        pub imr_multiaddr: ::in_addr,
-        pub imr_address: ::in_addr,
-        pub imr_ifindex: ::c_int,
     }
 
     pub struct __exit_status {
@@ -520,13 +524,12 @@ pub const PTHREAD_STACK_MIN: ::size_t = 2048;
 
 pub const POSIX_MADV_DONTNEED: ::c_int = 4;
 
-pub const RLIM_INFINITY: ::rlim_t = !0;
-pub const RLIMIT_RTTIME: ::c_int = 15;
-
 pub const MAP_ANONYMOUS: ::c_int = MAP_ANON;
 
 pub const SOCK_DCCP: ::c_int = 6;
 pub const SOCK_PACKET: ::c_int = 10;
+
+pub const SOMAXCONN: ::c_int = 128;
 
 #[deprecated(since = "0.2.55", note = "Use SIGSYS instead")]
 pub const SIGUNUSED: ::c_int = ::SIGSYS;
@@ -615,21 +618,7 @@ pub const B38400: ::speed_t = 0o000017;
 pub const EXTA: ::speed_t = B19200;
 pub const EXTB: ::speed_t = B38400;
 
-pub const RLIMIT_CPU: ::c_int = 0;
-pub const RLIMIT_FSIZE: ::c_int = 1;
-pub const RLIMIT_DATA: ::c_int = 2;
-pub const RLIMIT_STACK: ::c_int = 3;
-pub const RLIMIT_CORE: ::c_int = 4;
-pub const RLIMIT_LOCKS: ::c_int = 10;
-pub const RLIMIT_SIGPENDING: ::c_int = 11;
-pub const RLIMIT_MSGQUEUE: ::c_int = 12;
-pub const RLIMIT_NICE: ::c_int = 13;
-pub const RLIMIT_RTPRIO: ::c_int = 14;
-
 pub const REG_OK: ::c_int = 0;
-
-pub const TIOCSBRK: ::c_int = 0x5427;
-pub const TIOCCBRK: ::c_int = 0x5428;
 
 pub const PRIO_PROCESS: ::c_int = 0;
 pub const PRIO_PGRP: ::c_int = 1;
@@ -735,6 +724,7 @@ extern "C" {
         old_limit: *mut ::rlimit64,
     ) -> ::c_int;
 
+    pub fn ioctl(fd: ::c_int, request: ::c_int, ...) -> ::c_int;
     pub fn gettimeofday(tp: *mut ::timeval, tz: *mut ::c_void) -> ::c_int;
     pub fn ptrace(request: ::c_int, ...) -> ::c_long;
     pub fn getpriority(which: ::c_int, who: ::id_t) -> ::c_int;
@@ -758,6 +748,12 @@ extern "C" {
 
     pub fn adjtimex(buf: *mut ::timex) -> ::c_int;
     pub fn clock_adjtime(clk_id: ::clockid_t, buf: *mut ::timex) -> ::c_int;
+
+    pub fn ctermid(s: *mut ::c_char) -> *mut ::c_char;
+
+    pub fn memfd_create(name: *const ::c_char, flags: ::c_uint) -> ::c_int;
+    pub fn mlock2(addr: *const ::c_void, len: ::size_t, flags: ::c_uint) -> ::c_int;
+    pub fn malloc_usable_size(ptr: *mut ::c_void) -> ::size_t;
 }
 
 cfg_if! {
@@ -765,13 +761,15 @@ cfg_if! {
                  target_arch = "aarch64",
                  target_arch = "mips64",
                  target_arch = "powerpc64",
-                 target_arch = "s390x"))] {
+                 target_arch = "s390x",
+                 target_arch = "riscv64"))] {
         mod b64;
         pub use self::b64::*;
     } else if #[cfg(any(target_arch = "x86",
                         target_arch = "mips",
                         target_arch = "powerpc",
                         target_arch = "hexagon",
+                        target_arch = "riscv32",
                         target_arch = "arm"))] {
         mod b32;
         pub use self::b32::*;

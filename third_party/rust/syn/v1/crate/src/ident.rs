@@ -6,7 +6,6 @@ use crate::lookahead;
 use crate::parse::{Parse, ParseStream, Result};
 #[cfg(feature = "parsing")]
 use crate::token::Token;
-use unicode_xid::UnicodeXID;
 
 pub use proc_macro2::Ident;
 
@@ -90,11 +89,11 @@ impl From<Token![_]> for Ident {
 pub fn xid_ok(symbol: &str) -> bool {
     let mut chars = symbol.chars();
     let first = chars.next().unwrap();
-    if !(UnicodeXID::is_xid_start(first) || first == '_') {
+    if !(first == '_' || unicode_ident::is_xid_start(first)) {
         return false;
     }
     for ch in chars {
-        if !UnicodeXID::is_xid_continue(ch) {
+        if !unicode_ident::is_xid_continue(ch) {
             return false;
         }
     }

@@ -498,6 +498,7 @@ impl Hash for Expr {
                 state.write_u8(39u8);
                 v0.hash(state);
             }
+            #[cfg(any(syn_no_non_exhaustive, not(feature = "full")))]
             _ => unreachable!(),
         }
     }
@@ -641,8 +642,8 @@ impl Hash for ExprClosure {
         H: Hasher,
     {
         self.attrs.hash(state);
-        self.asyncness.hash(state);
         self.movability.hash(state);
+        self.asyncness.hash(state);
         self.capture.hash(state);
         self.inputs.hash(state);
         self.output.hash(state);
@@ -1112,6 +1113,7 @@ impl Hash for ForeignItem {
                 state.write_u8(4u8);
                 TokenStreamHelper(v0).hash(state);
             }
+            #[cfg(syn_no_non_exhaustive)]
             _ => unreachable!(),
         }
     }
@@ -1280,6 +1282,7 @@ impl Hash for ImplItem {
                 state.write_u8(4u8);
                 TokenStreamHelper(v0).hash(state);
             }
+            #[cfg(syn_no_non_exhaustive)]
             _ => unreachable!(),
         }
     }
@@ -1416,6 +1419,7 @@ impl Hash for Item {
                 state.write_u8(16u8);
                 TokenStreamHelper(v0).hash(state);
             }
+            #[cfg(syn_no_non_exhaustive)]
             _ => unreachable!(),
         }
     }
@@ -1920,6 +1924,7 @@ impl Hash for Pat {
                 state.write_u8(15u8);
                 v0.hash(state);
             }
+            #[cfg(syn_no_non_exhaustive)]
             _ => unreachable!(),
         }
     }
@@ -2339,6 +2344,7 @@ impl Hash for TraitItem {
                 state.write_u8(4u8);
                 TokenStreamHelper(v0).hash(state);
             }
+            #[cfg(syn_no_non_exhaustive)]
             _ => unreachable!(),
         }
     }
@@ -2464,6 +2470,7 @@ impl Hash for Type {
                 state.write_u8(14u8);
                 TokenStreamHelper(v0).hash(state);
             }
+            #[cfg(syn_no_non_exhaustive)]
             _ => unreachable!(),
         }
     }
@@ -2520,8 +2527,7 @@ impl Hash for TypeInfer {
     fn hash<H>(&self, _state: &mut H)
     where
         H: Hasher,
-    {
-    }
+    {}
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(doc_cfg, doc(cfg(feature = "extra-traits")))]
@@ -2539,8 +2545,7 @@ impl Hash for TypeNever {
     fn hash<H>(&self, _state: &mut H)
     where
         H: Hasher,
-    {
-    }
+    {}
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(doc_cfg, doc(cfg(feature = "extra-traits")))]
@@ -2678,8 +2683,7 @@ impl Hash for UseGlob {
     fn hash<H>(&self, _state: &mut H)
     where
         H: Hasher,
-    {
-    }
+    {}
 }
 #[cfg(feature = "full")]
 #[cfg_attr(doc_cfg, doc(cfg(feature = "extra-traits")))]
@@ -2783,8 +2787,7 @@ impl Hash for VisCrate {
     fn hash<H>(&self, _state: &mut H)
     where
         H: Hasher,
-    {
-    }
+    {}
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(doc_cfg, doc(cfg(feature = "extra-traits")))]
@@ -2792,8 +2795,7 @@ impl Hash for VisPublic {
     fn hash<H>(&self, _state: &mut H)
     where
         H: Hasher,
-    {
-    }
+    {}
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(doc_cfg, doc(cfg(feature = "extra-traits")))]

@@ -95,13 +95,13 @@ impl FileLocationStrategy {
                     include!( #fname );
                 }
             }
-            FileLocationStrategy::FromAutocxxRsJsonArchive(fname) => {
-                let archive = File::open(fname).unwrap_or_else(|_| panic!("Unable to open {}. This may mean you didn't run the codegen tool (autocxx_gen) before building the Rust code.", fname.to_string_lossy()));
+            FileLocationStrategy::FromAutocxxRsJsonArchive(fnames) => {
+                let archive = std::env::split_paths(fnames).flat_map(File::open).next().unwrap_or_else(|| panic!("Unable to open any of the paths listed in {}. This may mean you didn't run the codegen tool (autocxx_gen) before building the Rust code.", fnames.to_string_lossy()));
                 let multi_bindings: MultiBindings = serde_json::from_reader(archive)
                     .unwrap_or_else(|_| {
-                        panic!("Unable to interpret {} as JSON", fname.to_string_lossy())
+                        panic!("Unable to interpret {} as JSON", fnames.to_string_lossy())
                     });
-                multi_bindings.get(config).unwrap_or_else(|err| panic!("Unable to find a suitable set of bindings within the JSON archive {} ({}). This likely means that the codegen tool hasn't been rerun since some changes in your include_cpp! macro.", fname.to_string_lossy(), err))
+                multi_bindings.get(config).unwrap_or_else(|err| panic!("Unable to find a suitable set of bindings within the JSON archive {} ({}). This likely means that the codegen tool hasn't been rerun since some changes in your include_cpp! macro.", fnames.to_string_lossy(), err))
             }
         }
     }

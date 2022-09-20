@@ -38,12 +38,6 @@ s! {
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 32;
 pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 24;
 
-pub const TIOCINQ: ::c_int = ::FIONREAD;
-
-extern "C" {
-    pub fn ioctl(fd: ::c_int, request: ::c_int, ...) -> ::c_int;
-}
-
 cfg_if! {
     if #[cfg(any(target_arch = "x86"))] {
         mod x86;
@@ -60,6 +54,9 @@ cfg_if! {
     } else if #[cfg(any(target_arch = "hexagon"))] {
         mod hexagon;
         pub use self::hexagon::*;
+    } else if #[cfg(any(target_arch = "riscv32"))] {
+        mod riscv32;
+        pub use self::riscv32::*;
     } else {
         // Unknown target_arch
     }

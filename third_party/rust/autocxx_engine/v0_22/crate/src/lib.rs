@@ -28,6 +28,7 @@ mod types;
 #[cfg(any(test, feature = "build"))]
 mod builder;
 
+use autocxx_bindgen::BindgenError;
 use autocxx_parser::{IncludeCppConfig, UnsafePolicy};
 use conversion::BridgeConverter;
 use miette::{SourceOffset, SourceSpan};
@@ -113,7 +114,7 @@ impl LocatedSynError {
 #[derive(Debug, Error, Diagnostic)]
 pub enum Error {
     #[error("Bindgen was unable to generate the initial .rs bindings for this file. This may indicate a parsing problem with the C++ headers.")]
-    Bindgen(()),
+    Bindgen(BindgenError),
     #[error(transparent)]
     #[diagnostic(transparent)]
     MacroParsing(LocatedSynError),
@@ -433,7 +434,7 @@ impl IncludeCppEngine {
         new_bindings.content.as_mut().unwrap().1.append(&mut items);
         info!(
             "New bindings:\n{}",
-            rust_pretty_printer::pretty_print(&new_bindings.to_token_stream())
+            rust_pretty_printer::pretty_print(&new_bindings)
         );
         self.state = State::Generated(Box::new(GenerationResults {
             item_mod: new_bindings,

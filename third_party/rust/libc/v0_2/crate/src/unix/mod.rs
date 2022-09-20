@@ -23,12 +23,20 @@ pub type uintptr_t = usize;
 pub type ssize_t = isize;
 
 pub type pid_t = i32;
-pub type uid_t = u32;
-pub type gid_t = u32;
 pub type in_addr_t = u32;
 pub type in_port_t = u16;
 pub type sighandler_t = ::size_t;
 pub type cc_t = ::c_uchar;
+
+cfg_if! {
+    if #[cfg(any(target_os = "espidf", target_os = "horizon"))] {
+        pub type uid_t = ::c_ushort;
+        pub type gid_t = ::c_ushort;
+    } else {
+        pub type uid_t = u32;
+        pub type gid_t = u32;
+    }
+}
 
 #[cfg_attr(feature = "extra_traits", derive(Debug))]
 pub enum DIR {}
@@ -305,21 +313,21 @@ cfg_if! {
     } else if #[cfg(all(target_os = "linux",
                         any(target_env = "gnu", target_env = "uclibc"),
                         feature = "rustc-dep-of-std"))] {
-        #[link(name = "util", kind = "static-nobundle",
+        #[link(name = "util", kind = "static", modifiers = "-bundle",
             cfg(target_feature = "crt-static"))]
-        #[link(name = "rt", kind = "static-nobundle",
+        #[link(name = "rt", kind = "static", modifiers = "-bundle",
             cfg(target_feature = "crt-static"))]
-        #[link(name = "pthread", kind = "static-nobundle",
+        #[link(name = "pthread", kind = "static", modifiers = "-bundle",
             cfg(target_feature = "crt-static"))]
-        #[link(name = "m", kind = "static-nobundle",
+        #[link(name = "m", kind = "static", modifiers = "-bundle",
             cfg(target_feature = "crt-static"))]
-        #[link(name = "dl", kind = "static-nobundle",
+        #[link(name = "dl", kind = "static", modifiers = "-bundle",
             cfg(target_feature = "crt-static"))]
-        #[link(name = "c", kind = "static-nobundle",
+        #[link(name = "c", kind = "static", modifiers = "-bundle",
             cfg(target_feature = "crt-static"))]
-        #[link(name = "gcc_eh", kind = "static-nobundle",
+        #[link(name = "gcc_eh", kind = "static", modifiers = "-bundle",
             cfg(target_feature = "crt-static"))]
-        #[link(name = "gcc", kind = "static-nobundle",
+        #[link(name = "gcc", kind = "static", modifiers = "-bundle",
             cfg(target_feature = "crt-static"))]
         #[link(name = "util", cfg(not(target_feature = "crt-static")))]
         #[link(name = "rt", cfg(not(target_feature = "crt-static")))]
@@ -330,7 +338,7 @@ cfg_if! {
         extern {}
     } else if #[cfg(target_env = "musl")] {
         #[cfg_attr(feature = "rustc-dep-of-std",
-                   link(name = "c", kind = "static",
+                   link(name = "c", kind = "static", modifiers = "-bundle",
                         cfg(target_feature = "crt-static")))]
         #[cfg_attr(feature = "rustc-dep-of-std",
                    link(name = "c", cfg(not(target_feature = "crt-static"))))]
@@ -338,16 +346,17 @@ cfg_if! {
     } else if #[cfg(target_os = "emscripten")] {
         #[link(name = "c")]
         extern {}
-    } else if #[cfg(all(target_os = "netbsd",
-                        feature = "rustc-dep-of-std",
-                        target_vendor = "rumprun"))] {
-        // Since we don't use -nodefaultlibs on Rumprun, libc is always pulled
-        // in automatically by the linker. We avoid passing it explicitly, as it
-        // causes some versions of binutils to crash with an assertion failure.
-        #[link(name = "m")]
+    } else if #[cfg(all(target_os = "android", feature = "rustc-dep-of-std"))] {
+        #[link(name = "c", kind = "static", modifiers = "-bundle",
+            cfg(target_feature = "crt-static"))]
+        #[link(name = "m", kind = "static", modifiers = "-bundle",
+            cfg(target_feature = "crt-static"))]
+        #[link(name = "m", cfg(not(target_feature = "crt-static")))]
+        #[link(name = "c", cfg(not(target_feature = "crt-static")))]
         extern {}
     } else if #[cfg(any(target_os = "macos",
                         target_os = "ios",
+                        target_os = "watchos",
                         target_os = "android",
                         target_os = "openbsd"))] {
         #[link(name = "c")]
@@ -372,7 +381,7 @@ cfg_if! {
         extern {}
     } else if #[cfg(target_os = "redox")] {
         #[cfg_attr(feature = "rustc-dep-of-std",
-                   link(name = "c", kind = "static-nobundle",
+                   link(name = "c", kind = "static", modifiers = "-bundle",
                         cfg(target_feature = "crt-static")))]
         #[cfg_attr(feature = "rustc-dep-of-std",
                    link(name = "c", cfg(not(target_feature = "crt-static"))))]
@@ -506,6 +515,7 @@ extern "C" {
 
     pub fn strcpy(dst: *mut c_char, src: *const c_char) -> *mut c_char;
     pub fn strncpy(dst: *mut c_char, src: *const c_char, n: size_t) -> *mut c_char;
+    pub fn stpcpy(dst: *mut c_char, src: *const c_char) -> *mut c_char;
     pub fn strcat(s: *mut c_char, ct: *const c_char) -> *mut c_char;
     pub fn strncat(s: *mut c_char, ct: *const c_char, n: size_t) -> *mut c_char;
     pub fn strcmp(cs: *const c_char, ct: *const c_char) -> c_int;
@@ -529,6 +539,7 @@ extern "C" {
     )]
     pub fn strerror(n: c_int) -> *mut c_char;
     pub fn strtok(s: *mut c_char, t: *const c_char) -> *mut c_char;
+    pub fn strtok_r(s: *mut c_char, t: *const c_char, p: *mut *mut c_char) -> *mut c_char;
     pub fn strxfrm(s: *mut c_char, ct: *const c_char, n: size_t) -> size_t;
     pub fn strsignal(sig: c_int) -> *mut c_char;
     pub fn wcslen(buf: *const wchar_t) -> size_t;
@@ -890,6 +901,8 @@ extern "C" {
     pub fn setpgid(pid: pid_t, pgid: pid_t) -> ::c_int;
     pub fn setsid() -> pid_t;
     pub fn setuid(uid: uid_t) -> ::c_int;
+    pub fn setreuid(ruid: uid_t, euid: uid_t) -> ::c_int;
+    pub fn setregid(rgid: gid_t, egid: gid_t) -> ::c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "sleep$UNIX2003"
@@ -1017,7 +1030,7 @@ extern "C" {
     pub fn getrusage(resource: ::c_int, usage: *mut rusage) -> ::c_int;
 
     #[cfg_attr(
-        any(target_os = "macos", target_os = "ios"),
+        any(target_os = "macos", target_os = "ios", target_os = "watchos"),
         link_name = "realpath$DARWIN_EXTSN"
     )]
     pub fn realpath(pathname: *const ::c_char, resolved: *mut ::c_char) -> *mut ::c_char;
@@ -1183,7 +1196,10 @@ extern "C" {
         ),
         link_name = "__res_init"
     )]
-    #[cfg_attr(any(target_os = "macos", target_os = "ios"), link_name = "res_9_init")]
+    #[cfg_attr(
+        any(target_os = "macos", target_os = "ios", target_os = "watchos"),
+        link_name = "res_9_init"
+    )]
     pub fn res_init() -> ::c_int;
 
     #[cfg_attr(target_os = "netbsd", link_name = "__gmtime_r50")]
@@ -1377,6 +1393,17 @@ extern "C" {
     pub fn getline(lineptr: *mut *mut c_char, n: *mut size_t, stream: *mut FILE) -> ssize_t;
 
     pub fn lockf(fd: ::c_int, cmd: ::c_int, len: ::off_t) -> ::c_int;
+
+}
+cfg_if! {
+    if #[cfg(not(any(target_os = "emscripten",
+                     target_os = "android",
+                     target_os = "haiku")))] {
+        extern "C" {
+            pub fn adjtime(delta: *const timeval, olddelta: *mut timeval) -> ::c_int;
+            pub fn stpncpy(dst: *mut c_char, src: *const c_char, n: size_t) -> *mut c_char;
+        }
+    }
 }
 
 cfg_if! {
@@ -1456,6 +1483,7 @@ cfg_if! {
         pub use self::linux_like::*;
     } else if #[cfg(any(target_os = "macos",
                         target_os = "ios",
+                        target_os = "watchos",
                         target_os = "freebsd",
                         target_os = "dragonfly",
                         target_os = "openbsd",

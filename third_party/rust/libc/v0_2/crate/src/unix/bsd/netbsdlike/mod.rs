@@ -31,6 +31,10 @@ impl ::Clone for sem {
 }
 
 s! {
+    pub struct sched_param {
+        pub sched_priority: ::c_int,
+    }
+
     pub struct sigaction {
         pub sa_sigaction: ::sighandler_t,
         pub sa_mask: ::sigset_t,
@@ -635,17 +639,6 @@ pub const TIOCM_DSR: ::c_int = 0o0400;
 pub const TIOCM_CD: ::c_int = TIOCM_CAR;
 pub const TIOCM_RI: ::c_int = TIOCM_RNG;
 
-// Flags for chflags(2)
-pub const UF_SETTABLE: ::c_ulong = 0x0000ffff;
-pub const UF_NODUMP: ::c_ulong = 0x00000001;
-pub const UF_IMMUTABLE: ::c_ulong = 0x00000002;
-pub const UF_APPEND: ::c_ulong = 0x00000004;
-pub const UF_OPAQUE: ::c_ulong = 0x00000008;
-pub const SF_SETTABLE: ::c_ulong = 0xffff0000;
-pub const SF_ARCHIVED: ::c_ulong = 0x00010000;
-pub const SF_IMMUTABLE: ::c_ulong = 0x00020000;
-pub const SF_APPEND: ::c_ulong = 0x00040000;
-
 pub const TIMER_ABSTIME: ::c_int = 1;
 
 #[link(name = "util")]
@@ -684,19 +677,6 @@ extern "C" {
         flag: ::c_int,
     ) -> ::c_int;
     pub fn fdatasync(fd: ::c_int) -> ::c_int;
-    pub fn openpty(
-        amaster: *mut ::c_int,
-        aslave: *mut ::c_int,
-        name: *mut ::c_char,
-        termp: *mut termios,
-        winp: *mut ::winsize,
-    ) -> ::c_int;
-    pub fn forkpty(
-        amaster: *mut ::c_int,
-        name: *mut ::c_char,
-        termp: *mut termios,
-        winp: *mut ::winsize,
-    ) -> ::pid_t;
     pub fn login_tty(fd: ::c_int) -> ::c_int;
     pub fn getpriority(which: ::c_int, who: ::id_t) -> ::c_int;
     pub fn setpriority(which: ::c_int, who: ::id_t, prio: ::c_int) -> ::c_int;
@@ -724,6 +704,16 @@ extern "C" {
     pub fn pthread_spin_lock(lock: *mut pthread_spinlock_t) -> ::c_int;
     pub fn pthread_spin_trylock(lock: *mut pthread_spinlock_t) -> ::c_int;
     pub fn pthread_spin_unlock(lock: *mut pthread_spinlock_t) -> ::c_int;
+    pub fn pthread_setschedparam(
+        native: ::pthread_t,
+        policy: ::c_int,
+        param: *const sched_param,
+    ) -> ::c_int;
+    pub fn pthread_getschedparam(
+        native: ::pthread_t,
+        policy: *mut ::c_int,
+        param: *mut sched_param,
+    ) -> ::c_int;
     pub fn pipe2(fds: *mut ::c_int, flags: ::c_int) -> ::c_int;
 
     pub fn getgrouplist(
@@ -747,6 +737,7 @@ extern "C" {
     pub fn reallocarray(ptr: *mut ::c_void, nmemb: ::size_t, size: ::size_t) -> *mut ::c_void;
     pub fn gethostid() -> ::c_long;
     pub fn sethostid(hostid: ::c_long) -> ::c_int;
+    pub fn ftok(path: *const ::c_char, id: ::c_int) -> ::key_t;
 }
 
 cfg_if! {

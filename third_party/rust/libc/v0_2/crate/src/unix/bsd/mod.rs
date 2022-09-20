@@ -37,6 +37,7 @@ s! {
 
         #[cfg(not(any(target_os = "macos",
                       target_os = "ios",
+                      target_os = "watchos",
                       target_os = "netbsd",
                       target_os = "openbsd")))]
         pub pw_fields: ::c_int,
@@ -448,6 +449,12 @@ pub const TCP_MAXSEG: ::c_int = 2;
 
 pub const PIPE_BUF: usize = 512;
 
+// si_code values for SIGBUS signal
+pub const BUS_ADRALN: ::c_int = 1;
+pub const BUS_ADRERR: ::c_int = 2;
+pub const BUS_OBJERR: ::c_int = 3;
+
+// si_code values for SIGCHLD signal
 pub const CLD_EXITED: ::c_int = 1;
 pub const CLD_KILLED: ::c_int = 2;
 pub const CLD_DUMPED: ::c_int = 3;
@@ -867,10 +874,20 @@ extern "C" {
     pub fn arc4random() -> u32;
     pub fn arc4random_buf(buf: *mut ::c_void, size: ::size_t);
     pub fn arc4random_uniform(l: u32) -> u32;
+
+    pub fn drand48() -> ::c_double;
+    pub fn erand48(xseed: *mut ::c_ushort) -> ::c_double;
+    pub fn lrand48() -> ::c_long;
+    pub fn nrand48(xseed: *mut ::c_ushort) -> ::c_long;
+    pub fn mrand48() -> ::c_long;
+    pub fn jrand48(xseed: *mut ::c_ushort) -> ::c_long;
+    pub fn srand48(seed: ::c_long);
+    pub fn seed48(xseed: *mut ::c_ushort) -> *mut ::c_ushort;
+    pub fn lcong48(p: *mut ::c_ushort);
 }
 
 cfg_if! {
-    if #[cfg(any(target_os = "macos", target_os = "ios"))] {
+    if #[cfg(any(target_os = "macos", target_os = "ios", target_os = "watchos"))] {
         mod apple;
         pub use self::apple::*;
     } else if #[cfg(any(target_os = "openbsd", target_os = "netbsd"))] {
