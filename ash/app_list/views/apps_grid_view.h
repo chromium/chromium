@@ -61,7 +61,7 @@ class AppsGridRowChangeAnimator;
 class GhostImageView;
 class AppsGridViewTest;
 class ScrollableAppsGridViewTest;
-class PagedAppsGridViewTestBase;
+class PagedAppsGridViewTest;
 
 // AppsGridView displays a grid of app icons. It is used for:
 // - The main grid of apps in the launcher
@@ -597,7 +597,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   friend class PagedAppsGridView;
   friend class PagedViewStructure;
   friend class AppsGridRowChangeAnimator;
-  friend class PagedAppsGridViewTestBase;
+  friend class PagedAppsGridViewTest;
 
   enum DropTargetRegion {
     NO_TARGET,

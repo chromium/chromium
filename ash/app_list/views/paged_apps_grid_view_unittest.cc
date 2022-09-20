@@ -64,11 +64,11 @@ class PageFlipWaiter : public PaginationModelObserver {
 
 }  // namespace
 
-class PagedAppsGridViewTestBase : public AshTestBase {
+class PagedAppsGridViewTest : public AshTestBase {
  public:
-  PagedAppsGridViewTestBase()
+  PagedAppsGridViewTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~PagedAppsGridViewTestBase() override = default;
+  ~PagedAppsGridViewTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -151,21 +151,6 @@ class PagedAppsGridViewTestBase : public AshTestBase {
     EXPECT_FALSE(GetPagedAppsGridView()->cardified_state_for_testing());
   }
 
-  std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
-  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
-  std::unique_ptr<SearchModel> search_model_;
-};
-
-// Tests with ProductivityLauncher enabled.
-class PagedAppsGridViewTest : public PagedAppsGridViewTestBase {
- public:
-  PagedAppsGridViewTest() {
-    scoped_features_.InitWithFeatures(
-        {features::kProductivityLauncher,
-         features::kLauncherDismissButtonsOnSortNudgeAndToast},
-        {});
-  }
-
   // Sorts app list with the specified order. If `wait` is true, wait for the
   // reorder animation to complete.
   void SortAppList(const absl::optional<AppListSortOrder>& order, bool wait) {
@@ -186,7 +171,9 @@ class PagedAppsGridViewTest : public PagedAppsGridViewTestBase {
     run_loop.Run();
   }
 
-  base::test::ScopedFeatureList scoped_features_;
+  std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
+  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
+  std::unique_ptr<SearchModel> search_model_;
 };
 
 // Tests with ProductivityLauncher and app list nudge enabled.
@@ -203,17 +190,7 @@ class PagedAppsGridViewWithNudgeTest : public PagedAppsGridViewTest {
   }
 };
 
-// Tests with ProductivityLauncher disabled, which disables the bubble launcher.
-class PagedAppsGridViewNonBubbleTest : public PagedAppsGridViewTestBase {
- public:
-  PagedAppsGridViewNonBubbleTest() {
-    scoped_features_.InitAndDisableFeature(features::kProductivityLauncher);
-  }
-
-  base::test::ScopedFeatureList scoped_features_;
-};
-
-TEST_F(PagedAppsGridViewNonBubbleTest, CreatePage) {
+TEST_F(PagedAppsGridViewTest, CreatePage) {
   PagedAppsGridView* apps_grid_view =
       GetAppListTestHelper()->GetRootPagedAppsGridView();
 
