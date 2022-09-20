@@ -88,8 +88,9 @@ AuthToken* QuickUnlockStorage::GetAuthToken() {
 
 const UserContext* QuickUnlockStorage::GetUserContext(
     const std::string& auth_token) {
-  if (GetAuthToken() && GetAuthToken()->Identifier() != auth_token)
+  if (!auth_token_ || auth_token_->Identifier() != auth_token)
     return nullptr;
+
   return auth_token_->user_context();
 }
 
