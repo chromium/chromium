@@ -59760,11 +59760,6 @@
       }
     ]
   },
-  "ios-simulator-cronet (reclient shadow)": {
-    "additional_compile_targets": [
-      "cronet_test"
-    ]
-  },
   "ios-simulator-multi-window": {
     "isolated_scripts": [
       {

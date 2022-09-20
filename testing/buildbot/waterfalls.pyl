@@ -3494,19 +3494,6 @@
           'isolated_scripts': 'ios_simulator_cronet_tests',
         }
       },
-      'ios-simulator-cronet (reclient shadow)': {
-        'additional_compile_targets': [
-          'cronet_test',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_12_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_14_main',
-          'xctest',
-        ]
-      },
       'ios-simulator-multi-window': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -5313,11 +5300,6 @@
         ],
       },
       'ios-device': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ios-device (reclient shadow)': {
         'additional_compile_targets': [
           'all',
         ],

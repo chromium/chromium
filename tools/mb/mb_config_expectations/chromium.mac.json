@@ -52,21 +52,6 @@
       "use_remoteexec": true
     }
   },
-  "ios-device (reclient shadow)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ios_code_signing_identity_description": "Apple Development",
-      "ios_enable_code_signing": false,
-      "ios_set_attributes_for_xcode_project_generation": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_cpu": "arm64",
-      "target_environment": "device",
-      "target_os": "ios",
-      "use_remoteexec": true
-    }
-  },
   "ios-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
