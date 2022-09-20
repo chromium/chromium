@@ -1308,7 +1308,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.LoadAverageX100PerProcessor15MinutesAfterArcStart.{ArcBootType}"
-    units="0.01 jobs/processor" expires_after="2022-11-01">
+    units="0.01 jobs/processor" expires_after="2023-11-01">
   <owner>hashimoto@google.com</owner>
   <owner>yusukes@google.com</owner>
   <owner>arc-performance@google.com</owner>
@@ -1321,7 +1321,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.LoadAverageX100PerProcessor1MinuteAfterArcStart.{ArcBootType}"
-    units="0.01 jobs/processor" expires_after="2022-11-01">
+    units="0.01 jobs/processor" expires_after="2023-11-01">
   <owner>hashimoto@google.com</owner>
   <owner>yusukes@google.com</owner>
   <owner>arc-performance@google.com</owner>
@@ -1334,7 +1334,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.LoadAverageX100PerProcessor5MinutesAfterArcStart.{ArcBootType}"
-    units="0.01 jobs/processor" expires_after="2022-11-01">
+    units="0.01 jobs/processor" expires_after="2023-11-01">
   <owner>hashimoto@google.com</owner>
   <owner>yusukes@google.com</owner>
   <owner>arc-performance@google.com</owner>
