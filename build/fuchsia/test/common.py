@@ -34,6 +34,17 @@ def get_host_arch() -> str:
 SDK_TOOLS_DIR = os.path.join(SDK_ROOT, 'tools', get_host_arch())
 _FFX_TOOL = os.path.join(SDK_TOOLS_DIR, 'ffx')
 
+# This global variable is used to set the environment variable
+# |FFX_ISOLATE_DIR| when running ffx commands in E2E testing scripts.
+_FFX_ISOLATE_DIR = None
+
+
+def set_ffx_isolate_dir(isolate_dir: str) -> None:
+    """Overwrites |_FFX_ISOLATE_DIR|."""
+
+    global _FFX_ISOLATE_DIR  # pylint: disable=global-statement
+    _FFX_ISOLATE_DIR = isolate_dir
+
 
 def _run_repair_command(output):
     """Scans |output| for a self-repair command to run and, if found, runs it.
@@ -86,8 +97,15 @@ def run_ffx_command(cmd: Iterable[str],
     if target_id:
         ffx_cmd.extend(('--target', target_id))
     ffx_cmd.extend(cmd)
+    env = os.environ
+    if _FFX_ISOLATE_DIR:
+        env['FFX_ISOLATE_DIR'] = _FFX_ISOLATE_DIR
     try:
-        return subprocess.run(ffx_cmd, check=check, encoding='utf-8', **kwargs)
+        return subprocess.run(ffx_cmd,
+                              check=check,
+                              encoding='utf-8',
+                              env=env,
+                              **kwargs)
     except subprocess.CalledProcessError as cpe:
         if suppress_repair or not _run_repair_command(cpe.output):
             raise
