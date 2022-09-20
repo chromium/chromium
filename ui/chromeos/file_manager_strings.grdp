@@ -806,6 +806,13 @@
     New folder
   </message>
 
+  <message name="IDS_FILE_BROWSER_EMPTY_TRASH_FOLDER_TITLE" desc="Text used for the title when navigating to the Trash folder and it has no contents">
+    Nothing in trash
+  </message>
+  <message name="IDS_FILE_BROWSER_EMPTY_TRASH_FOLDER_DESC" desc="Text used for the description when navigating to the Trash folder and it has no contents">
+    Move items you don't need to trash
+  </message>
+
  <message name="IDS_FILE_BROWSER_CONFIRM_DELETE_ONE" desc="Asks the user if they are sure they want to delete a single file.">
    Are you sure you want to delete "<ph name="FILE_NAME">$1<ex>file.txt</ex></ph>"?
  </message>

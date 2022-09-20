@@ -1379,6 +1379,10 @@ body.check-select #read-only-indicator {
   text-align: center;
 }
 
+#empty-folder > .label > span#empty-folder-title {
+  font-weight: bold;
+}
+
 #detail-table {
   display: flex;
   flex: auto;

@@ -52,6 +52,8 @@ export function setUp() {
     RECENT_EMPTY_IMAGES_FOLDER: 'no images',
     RECENT_EMPTY_VIDEOS_FOLDER: 'no videos',
     RECENT_EMPTY_FOLDER: 'no files',
+    EMPTY_TRASH_FOLDER_TITLE: 'nothing in trash',
+    EMPTY_TRASH_FOLDER_DESC: '',
   });
 
   /**
@@ -79,6 +81,12 @@ export function setUp() {
   // Create EmptyFolderController instance with dependencies.
   element = /** @type {!HTMLElement} */ (document.createElement('div'));
   util.createChild(element, 'label', 'span');
+
+  // Setup the image, nested svg and nested use elements.
+  const image = util.createChild(element, 'image');
+  const svg = util.createChild(image, undefined, 'svg');
+  util.createChild(svg, undefined, 'use');
+
   directoryModel = createFakeDirectoryModel();
   fileListModel = new FileListModel(new MockMetadataModel({}));
   directoryModel.getFileList = () => fileListModel;
@@ -167,4 +175,15 @@ export function testHiddenForFiles() {
   emptyFolderController.updateUI_();
   assertTrue(element.hidden);
   assertEquals('', emptyFolderController.label_.innerText);
+}
+
+/**
+ * Tests that the empty state image shows up when root type is Trash.
+ * @suppress {accessControls} access private method in test.
+ */
+export function testShownForTrash() {
+  directoryModel.getCurrentRootType = () => VolumeManagerCommon.RootType.TRASH;
+  emptyFolderController.updateUI_();
+  assertFalse(element.hidden);
+  assertEquals('nothing in trash', emptyFolderController.label_.innerText);
 }
