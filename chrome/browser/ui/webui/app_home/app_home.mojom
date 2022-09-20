@@ -33,4 +33,6 @@ interface Page {
   // Inform frontend that an app is successfully installed
   // and instruct frontend to update data.
   AddApp(AppInfo app_info);
+  // Inform frontend that an app is uninstalled.
+  RemoveApp(AppInfo app_info);
 };

@@ -46,11 +46,15 @@ class AppHomePageHandler : public app_home::mojom::PageHandler,
 
   // web_app::WebAppInstallManagerObserver:
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   // extensions::ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override;
+  void OnExtensionUninstalled(content::BrowserContext* browser_context,
+                              const extensions::Extension* extension,
+                              extensions::UninstallReason reason) override;
 
   // app_home::mojom::PageHandler:
   void GetApps(GetAppsCallback callback) override;

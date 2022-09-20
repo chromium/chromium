@@ -122,6 +122,13 @@ void AppHomePageHandler::GetApps(GetAppsCallback callback) {
   std::move(callback).Run(std::move(result));
 }
 
+void AppHomePageHandler::OnWebAppWillBeUninstalled(
+    const web_app::AppId& app_id) {
+  auto app_info = app_home::mojom::AppInfo::New();
+  app_info->id = app_id;
+  page_->RemoveApp(std::move(app_info));
+}
+
 void AppHomePageHandler::OnWebAppInstalled(const web_app::AppId& app_id) {
   page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
 }
@@ -134,6 +141,15 @@ void AppHomePageHandler::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
   page_->AddApp(CreateAppInfoPtrFromExtension(extension));
+}
+
+void AppHomePageHandler::OnExtensionUninstalled(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    extensions::UninstallReason reason) {
+  auto app_info = app_home::mojom::AppInfo::New();
+  app_info->id = extension->id();
+  page_->RemoveApp(std::move(app_info));
 }
 
 }  // namespace webapps

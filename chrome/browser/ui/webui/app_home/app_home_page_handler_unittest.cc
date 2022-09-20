@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/mock_app_home_page.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "content/public/browser/web_contents.h"
@@ -60,10 +61,23 @@ class TestAppHomePageHandler : public AppHomePageHandler {
     AppHomePageHandler::OnWebAppInstalled(app_id);
   }
 
+  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override {
+    run_loop_->Quit();
+    AppHomePageHandler::OnWebAppWillBeUninstalled(app_id);
+  }
+
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override {
     run_loop_->Quit();
     AppHomePageHandler::OnExtensionLoaded(browser_context, extension);
+  }
+
+  void OnExtensionUninstalled(content::BrowserContext* browser_context,
+                              const extensions::Extension* extension,
+                              extensions::UninstallReason reason) override {
+    run_loop_->Quit();
+    AppHomePageHandler::OnExtensionUninstalled(browser_context, extension,
+                                               reason);
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -106,6 +120,10 @@ class AppHomePageHandlerTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
+    web_app::FakeWebAppProvider* provider =
+        web_app::FakeWebAppProvider::Get(profile());
+    provider->SetDefaultFakeSubsystems();
+
     extension_service_ = CreateTestExtensionService();
 
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
@@ -125,11 +143,40 @@ class AppHomePageHandlerTest : public WebAppTest {
     return installed_app_id;
   }
 
+  void UninstallTestWebApp(const web_app::AppId& app_id) {
+    web_app::test::UninstallWebApp(profile(), app_id);
+  }
+
   scoped_refptr<const extensions::Extension> InstallTestExtensionApp() {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(kTestAppName).Build();
     extension_service_->AddExtension(extension.get());
     return extension;
+  }
+
+  void UninstallTestExtensionApp(const extensions::Extension* extension) {
+    std::u16string error;
+    base::RunLoop run_loop;
+
+    // `UninstallExtension` method synchronously removes the extension from the
+    // set of installed extensions stored in the ExtensionRegistry and later
+    // notifies interested observer of extension uninstall event. But it will
+    // asynchronously remove site-related data and the files stored on disk.
+    // It's common case that `WebappTest::TearDonw` invokes before
+    // `ExtensionService` completes delete related file, as a result, the
+    // `AppHome` test would finally fail delete testing-related file for file
+    // locking semantics on WinOS platfom. To workaround this case, make sure
+    // the task of uninstalling extension complete before the `AppHome` test
+    // tear down.
+    extension_service_->UninstallExtension(
+        extension->id(),
+        extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING, &error,
+        base::BindOnce(
+            [](base::OnceClosure quit_closure) {
+              std::move(quit_closure).Run();
+            },
+            run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   std::unique_ptr<content::TestWebUI> CreateTestWebUI() {
@@ -159,11 +206,17 @@ MATCHER_P(MatchAppName, expected_app_name, "") {
   return false;
 }
 
+MATCHER_P(MatchAppId, expected_app_id, "") {
+  if (expected_app_id == arg->id) {
+    return true;
+  }
+  return false;
+}
+
 TEST_F(AppHomePageHandlerTest, GetApps) {
   AppId installed_app_id = InstallTestWebApp();
 
   std::unique_ptr<content::TestWebUI> test_web_ui = CreateTestWebUI();
-
   std::unique_ptr<TestAppHomePageHandler> page_handler =
       GetAppHomePageHandler(test_web_ui.get());
 
@@ -197,6 +250,41 @@ TEST_F(AppHomePageHandlerTest, OnExtensionLoaded) {
   scoped_refptr<const extensions::Extension> extension =
       InstallTestExtensionApp();
   ASSERT_NE(extension, nullptr);
+  page_handler->Wait();
+}
+
+TEST_F(AppHomePageHandlerTest, OnWebAppUninstall) {
+  std::unique_ptr<content::TestWebUI> test_web_ui = CreateTestWebUI();
+  std::unique_ptr<TestAppHomePageHandler> page_handler =
+      GetAppHomePageHandler(test_web_ui.get());
+
+  // First, install a web app for test.
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  AppId installed_app_id = InstallTestWebApp();
+  page_handler->Wait();
+
+  // Check uninstall previous web app will call `RemoveApp` API.
+  EXPECT_CALL(page_, RemoveApp(MatchAppId(installed_app_id)))
+      .Times(testing::AtLeast(1));
+  UninstallTestWebApp(installed_app_id);
+  page_handler->Wait();
+}
+
+TEST_F(AppHomePageHandlerTest, OnExtensionUninstall) {
+  std::unique_ptr<content::TestWebUI> test_web_ui = CreateTestWebUI();
+  std::unique_ptr<TestAppHomePageHandler> page_handler =
+      GetAppHomePageHandler(test_web_ui.get());
+
+  // First, install a test extension app for test.
+  EXPECT_CALL(page_, AddApp(MatchAppName(kTestAppName)));
+  scoped_refptr<const extensions::Extension> extension =
+      InstallTestExtensionApp();
+  page_handler->Wait();
+
+  // Check uninstall previous extension will call `RemoveApp` API.
+  EXPECT_CALL(page_, RemoveApp(MatchAppId(extension->id())))
+      .Times(testing::AtLeast(1));
+  UninstallTestExtensionApp(extension.get());
   page_handler->Wait();
 }
 
