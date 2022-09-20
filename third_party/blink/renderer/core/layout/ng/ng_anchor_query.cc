@@ -174,8 +174,6 @@ struct NGStitchedAnchorQueries {
   void AddBoxChild(const NGPhysicalBoxFragment& fragment,
                    const PhysicalOffset& offset_from_fragmentainer,
                    const FragmentainerContext& fragmentainer) {
-    // TODO(kojii): nested multicol is not supported yet.
-
     if (fragment.IsOutOfFlowPositioned()) {
       AddOutOfFlowChild(fragment, offset_from_fragmentainer, fragmentainer);
       return;
@@ -198,6 +196,12 @@ struct NGStitchedAnchorQueries {
       }
     }
 
+    if (fragment.IsFragmentationContextRoot()) {
+      AddFragmentationContextRootChild(fragment, offset_from_fragmentainer,
+                                       fragmentainer);
+      return;
+    }
+
     // Add inline children if any.
     if (const NGFragmentItems* items = fragment.Items()) {
       for (NGInlineCursor cursor(fragment, *items); cursor;
@@ -214,10 +218,29 @@ struct NGStitchedAnchorQueries {
 
     // Add block children if any.
     for (const NGLink& child : fragment.Children()) {
+      DCHECK(!child->IsFragmentainerBox());
       const auto child_offset_from_fragmentainer =
           offset_from_fragmentainer + child.offset;
       AddChild(*child, child_offset_from_fragmentainer, fragmentainer);
     }
+  }
+
+  void AddFragmentationContextRootChild(
+      const NGPhysicalBoxFragment& fragment,
+      const PhysicalOffset& offset_from_fragmentainer,
+      const FragmentainerContext& fragmentainer) {
+    DCHECK(fragment.IsFragmentationContextRoot());
+    DCHECK(!fragment.Items());
+    HeapVector<NGLogicalLink> children;
+    for (const NGLink& child : fragment.Children()) {
+      const LogicalOffset child_offset =
+          fragmentainer.converter.ToLogical(
+              offset_from_fragmentainer + child.offset, child->Size()) +
+          fragmentainer.offset;
+      children.push_back(NGLogicalLink{child.fragment, child_offset});
+    }
+    AddFragmentainerChildren(children,
+                             fragmentainer.converter.GetWritingDirection());
   }
 
   void AddOutOfFlowChild(const NGPhysicalBoxFragment& fragment,

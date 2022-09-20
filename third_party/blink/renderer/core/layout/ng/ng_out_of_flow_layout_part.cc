@@ -1028,6 +1028,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
   NGOutOfFlowLayoutPart inner_part(multicol, limited_multicol_constraint_space,
                                    &limited_multicol_container_builder);
   inner_part.allow_first_tier_oof_cache_ = false;
+  inner_part.outer_container_builder_ =
+      outer_container_builder_ ? outer_container_builder_ : container_builder_;
   inner_part.LayoutFragmentainerDescendants(
       &oof_nodes_to_layout, fragmentainer_progression,
       multicol_info->fixedpos_containing_block.Fragment(), &multicol_children);
@@ -1133,9 +1135,24 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
           .block_size;
 
   NGLogicalAnchorQueryForFragmentation stitched_anchor_queries;
-  stitched_anchor_queries.Update(container_builder_->Children(), *descendants,
-                                 *container_builder_->Node().GetLayoutBox(),
-                                 container_builder_->GetWritingDirection());
+  NGBoxFragmentBuilder* builder_for_anchor_query = container_builder_;
+  if (outer_container_builder_) {
+    // If this is an inner layout of the nested block fragmentation, and if this
+    // block fragmentation context is block fragmented, |multicol_children|
+    // doesn't have correct block offsets of fragmentainers anchor query needs.
+    // Calculate the anchor query from the outer block fragmentation context
+    // instead in order to get the correct offsets.
+    for (const MulticolChildInfo& multicol_child : *multicol_children) {
+      if (multicol_child.parent_break_token) {
+        builder_for_anchor_query = outer_container_builder_;
+        break;
+      }
+    }
+  }
+  stitched_anchor_queries.Update(
+      builder_for_anchor_query->Children(), *descendants,
+      *builder_for_anchor_query->Node().GetLayoutBox(),
+      builder_for_anchor_query->GetWritingDirection());
 
   // |descendants| are sorted by fragmentainers, and then by the layout order,
   // which is pre-order of the box tree. When fragments are pushed to later
@@ -1296,10 +1313,10 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       // containing block.
       if (!has_new_descendants_span)
         break;
-      stitched_anchor_queries.Update(container_builder_->Children(),
-                                     descendants_span,
-                                     *container_builder_->Node().GetLayoutBox(),
-                                     container_builder_->GetWritingDirection());
+      stitched_anchor_queries.Update(
+          builder_for_anchor_query->Children(), descendants_span,
+          *builder_for_anchor_query->Node().GetLayoutBox(),
+          builder_for_anchor_query->GetWritingDirection());
     }
 
     // Sweep any descendants that might have been bubbled up from the fragment

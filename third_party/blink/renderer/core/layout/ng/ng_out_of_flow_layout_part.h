@@ -413,6 +413,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   }
 
   NGBoxFragmentBuilder* container_builder_;
+  // The builder for the outer block fragmentation context when this is an inner
+  // layout of nested block fragmentation.
+  NGBoxFragmentBuilder* outer_container_builder_ = nullptr;
   ContainingBlockInfo default_containing_block_info_for_absolute_;
   ContainingBlockInfo default_containing_block_info_for_fixed_;
   HeapHashMap<Member<const LayoutObject>, ContainingBlockInfo>
