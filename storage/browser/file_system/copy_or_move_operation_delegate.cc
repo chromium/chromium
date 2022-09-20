@@ -356,8 +356,6 @@ class SnapshotCopyOrMoveImpl
 
   void RunAfterTouchFile(CopyOrMoveOperationDelegate::StatusCallback callback,
                          base::File::Error error) {
-    // Even if TouchFile is failed, just ignore it.
-
     if (cancel_requested_) {
       DidEndCopy(std::move(callback), base::File::FILE_ERROR_ABORT);
       return;
@@ -366,7 +364,8 @@ class SnapshotCopyOrMoveImpl
     // |validator_| is nullptr when the destination filesystem does not do
     // validation.
     if (!validator_) {
-      // No validation is needed.
+      // No validation is needed. If TouchFile failed to restore the "last
+      // modified" time, just ignore the error.
       RunAfterPostWriteValidation(std::move(callback), base::File::FILE_OK);
       return;
     }
@@ -690,14 +689,14 @@ class StreamCopyOrMoveImpl
 
   void RunAfterTouchFile(CopyOrMoveOperationDelegate::StatusCallback callback,
                          base::File::Error error) {
-    // Even if TouchFile is failed, just ignore it.
     if (cancel_requested_) {
       DidEndCopy(std::move(callback), base::File::FILE_ERROR_ABORT);
       return;
     }
 
-    if (error != base::File::FILE_OK ||
-        operation_type_ == CopyOrMoveOperationDelegate::OPERATION_COPY) {
+    // If TouchFile failed to restore the "last modified" time, just ignore the
+    // error.
+    if (operation_type_ == CopyOrMoveOperationDelegate::OPERATION_COPY) {
       DidEndCopy(std::move(callback), base::File::FILE_OK);
       return;
     }
