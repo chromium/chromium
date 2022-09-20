@@ -11,9 +11,6 @@
 #include "chrome/browser/ash/system_extensions/api/window_management/cros_window_management_context_factory.h"
 #include "chrome/browser/ash/system_extensions/api/window_management/window_management_impl.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
-#include "content/public/browser/service_worker_context.h"
-#include "content/public/browser/storage_partition.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace ash {
 

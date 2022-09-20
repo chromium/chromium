@@ -28,4 +28,8 @@ void CrosWindowEvent::Trace(Visitor* visitor) const {
   Event::Trace(visitor);
 }
 
+const AtomicString& CrosWindowEvent::InterfaceName() const {
+  return event_interface_names::kCrosWindowEvent;
+}
+
 }  // namespace blink

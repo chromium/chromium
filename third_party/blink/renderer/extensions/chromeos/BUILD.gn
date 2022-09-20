@@ -46,7 +46,7 @@ component("chromeos") {
   ]
 
   deps = [
-    ":chromeos_events",
+    ":chromeos_generated",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/extensions/chromeos/system_extensions/hid",
     "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management",
@@ -69,7 +69,10 @@ blink_chromeos_extensions_output_dir = "$blink_extensions_output_dir/chromeos"
 
 # generate_event_interfaces ----------------------------------------------------
 generate_event_interfaces("chromeos_event_interfaces") {
-  sources = [ "system_extensions/window_management/cros_accelerator_event.idl" ]
+  sources = [
+    "system_extensions/window_management/cros_accelerator_event.idl",
+    "system_extensions/window_management/cros_window_event.idl",
+  ]
 
   output_file = "extensions/chromeos/event_interface_chromeos_names.json5"
   suffix = "ChromeOS"
@@ -91,14 +94,6 @@ make_names("make_chromeos_generated_event_names") {
 make_names("make_chromeos_generated_event_type_names") {
   in_files = [ "event_type_chromeos_names.json5" ]
   output_dir = blink_chromeos_extensions_output_dir
-}
-
-blink_extensions_chromeos_sources("chromeos_events") {
-  sources = [
-    "event_chromeos.h",
-    "event_target_chromeos.h",
-  ]
-  public_deps = [ ":chromeos_generated" ]
 }
 
 blink_extensions_chromeos_sources("chromeos_generated") {

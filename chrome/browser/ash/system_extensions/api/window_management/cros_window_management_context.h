@@ -22,9 +22,7 @@
 #include "ui/aura/env.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
-#include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-#include "ui/events/types/event_type.h"
 
 class Profile;
 

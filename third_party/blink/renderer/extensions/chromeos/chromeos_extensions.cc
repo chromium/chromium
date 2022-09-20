@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/extensions/chromeos/chromeos_extensions.h"
 
-#include "third_party/blink/public/platform/interface_registry.h"
-#include "third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_chrome_os.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/extensions/chromeos/chromeos.h"
 #include "third_party/blink/renderer/extensions/chromeos/event_interface_chromeos_names.h"
