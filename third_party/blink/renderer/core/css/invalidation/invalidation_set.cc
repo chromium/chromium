@@ -112,7 +112,10 @@ void InvalidationSet::CacheTracingFlag() {
 InvalidationSet::InvalidationSet(InvalidationType type)
     : type_(static_cast<unsigned>(type)),
       invalidates_self_(false),
-      is_alive_(true) {}
+      is_alive_(true) {
+  // Pointer IDs are used in recording assertions.
+  recordreplay::RegisterPointer(this);
+}
 
 bool InvalidationSet::InvalidatesElement(Element& element) const {
   if (invalidation_flags_.WholeSubtreeInvalid())

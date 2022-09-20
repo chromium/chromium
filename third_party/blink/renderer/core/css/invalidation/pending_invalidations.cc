@@ -32,7 +32,8 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
   if (node.GetStyleChangeType() < kSubtreeStyleChange) {
     for (auto& invalidation_set : invalidation_lists.descendants) {
       // https://linear.app/replay/issue/RUN-556
-      recordreplay::Assert("PendingInvalidations::ScheduleInvalidationSetsForNode #4");
+      recordreplay::Assert("PendingInvalidations::ScheduleInvalidationSetsForNode #4 %d",
+                           recordreplay::PointerId(invalidation_set.get()));
 
       if (invalidation_set->WholeSubtreeInvalid()) {
         auto* shadow_root = DynamicTo<ShadowRoot>(node);
