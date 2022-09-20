@@ -119,7 +119,9 @@ bool FastCheckoutClientImpl::Start(
        kCaller},
       {autofill_assistant::public_script_parameters::kSourceParameterName,
        kSource},
-      {kIsNoRoundTrip, run_consentless ? kTrue : kFalse}};
+      {kIsNoRoundTrip, run_consentless ? kTrue : kFalse},
+      // TODO(b/247072871): Remove once RPC signing works.
+      {"DISABLE_RPC_SIGNING", kTrue}};
 
   fast_checkout_external_action_delegate_ =
       CreateFastCheckoutExternalActionDelegate();
