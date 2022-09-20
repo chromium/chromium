@@ -24,18 +24,20 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
+import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
-import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -98,7 +100,6 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
     private final CloseButtonNavigator mCloseButtonNavigator;
     private final ChromeBrowserInitializer mChromeBrowserInitializer;
     private final Activity mActivity;
-    private final Lazy<FullscreenManager> mFullscreenManager;
     private final DefaultBrowserProvider mDefaultBrowserProvider;
 
     @Nullable
@@ -129,7 +130,6 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
             Lazy<CustomTabObserver> customTabObserver, CloseButtonNavigator closeButtonNavigator,
             ChromeBrowserInitializer chromeBrowserInitializer, Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            Lazy<FullscreenManager> fullscreenManager,
             DefaultBrowserProvider customTabsDefaultBrowserProvider) {
         mTabController = tabController;
         mTabProvider = tabProvider;
@@ -139,7 +139,6 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         mCloseButtonNavigator = closeButtonNavigator;
         mChromeBrowserInitializer = chromeBrowserInitializer;
         mActivity = activity;
-        mFullscreenManager = fullscreenManager;
         mDefaultBrowserProvider = customTabsDefaultBrowserProvider;
 
         lifecycleDispatcher.register(this);
@@ -216,26 +215,30 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         if (!BackPressManager.isEnabled()) {
             // If enabled, BackPressManager, rather than this class, will trigger their custom
             // logic of handling back press.
-            if (mFullscreenManager.get().getPersistentFullscreenMode()) {
-                mFullscreenManager.get().exitPersistentFullscreenMode();
-                return true;
-            }
-
             final WebContents webContents = mTabProvider.getTab().getWebContents();
             if (webContents != null) {
                 RenderFrameHost focusedFrame = webContents.getFocusedFrame();
-                if (focusedFrame != null && focusedFrame.signalCloseWatcherIfActive()) return true;
+                if (focusedFrame != null && focusedFrame.signalCloseWatcherIfActive()) {
+                    BackPressManager.record(BackPressHandler.Type.CLOSE_WATCHER);
+                    return true;
+                }
             }
 
-            if (mToolbarManager != null && mToolbarManager.back()) return true;
+            if (mToolbarManager != null && mToolbarManager.back()) {
+                BackPressManager.record(BackPressHandler.Type.TOOLBAR_TAB_CONTROLLER);
+                return true;
+            }
         }
 
+        BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
         if (mTabController.onlyOneTabRemaining()) {
             // If we're closing the last tab, just finish the Activity manually. If we had called
             // mTabController.closeTab() and waited for the Activity to close as a result we would
             // have a visual glitch: https://crbug.com/1087108.
+            MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
             finish(USER_NAVIGATION);
         } else {
+            MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.CLOSE_TAB);
             mTabController.closeTab();
         }
 

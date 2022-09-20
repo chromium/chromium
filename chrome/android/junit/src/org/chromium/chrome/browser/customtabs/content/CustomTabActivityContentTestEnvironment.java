@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
 import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.password_manager.PasswordChangeSuccessTrackerBridge;
@@ -102,7 +101,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CloseButtonNavigator closeButtonNavigator;
     @Mock public ToolbarManager toolbarManager;
     @Mock public ChromeBrowserInitializer browserInitializer;
-    @Mock public FullscreenManager fullscreenManager;
     @Mock public CustomTabIncognitoManager customTabIncognitoManager;
     @Mock public TabModelInitializer tabModelInitializer;
     // clang-format on
@@ -189,7 +187,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                         ()
                                 -> customTabObserver,
                         closeButtonNavigator, browserInitializer, activity, lifecycleDispatcher,
-                        () -> fullscreenManager, new DefaultBrowserProviderImpl());
+                        new DefaultBrowserProviderImpl());
         controller.onToolbarInitialized(toolbarManager);
         return controller;
     }
