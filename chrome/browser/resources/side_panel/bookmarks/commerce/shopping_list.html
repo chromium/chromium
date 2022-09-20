@@ -119,7 +119,6 @@
   }
 
   .item-image {
-    background: var(--google-grey-100);
     display: flex;
     height: 100%;
     margin-inline-start: 16px;
@@ -128,12 +127,35 @@
   }
 
   .product-image {
+    height: 100%;
+    margin: auto;
     object-fit: contain;
   }
 
   .favicon-image {
+    background: var(--google-grey-100);
     background-position: center center;
     background-repeat: no-repeat
+  }
+
+  .product-image-container {
+    position: relative;
+  }
+
+  /**
+   * Adds a color overlay over the product images in price tracking list,
+   * so that if the product image background color is white, users would
+   * still be able to find the border of the image.
+   */
+  .product-image-container::before {
+    background: rgba(0,0,0,0.03);
+    content: '';
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 1;
   }
 
   .product-info {
@@ -222,8 +244,10 @@
           on-auxclick="onProductAuxClick_"
           on-contextmenu="onProductContextMenu_">
         <template is="dom-if" if="[[item.info.imageUrl.url.length]]" restamp>
-          <img class="product-image item-image" is="cr-auto-img"
-              auto-src="[[item.info.imageUrl.url]]"></img>
+          <div class="product-image-container item-image">
+              <img class="product-image" is="cr-auto-img"
+                  auto-src="[[item.info.imageUrl.url]]"></img>
+          </div>
         </template>
         <template is="dom-if" if="[[!item.info.imageUrl.url.length]]" restamp>
           <div class="favicon-image item-image"

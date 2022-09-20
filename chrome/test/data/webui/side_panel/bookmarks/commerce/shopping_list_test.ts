@@ -63,7 +63,8 @@ suite('SidePanelShoppingListTest', () => {
         product.info.domain,
         element.querySelector('.product-domain')!.textContent);
 
-    const imageElement = element.querySelector<HTMLElement>('.product-image');
+    const imageElement =
+        element.querySelector<HTMLElement>('.product-image-container');
     const faviconElement = element.querySelector<HTMLElement>('.favicon-image');
     if (!product.info.imageUrl.url) {
       assertFalse(isVisible(imageElement));
@@ -71,8 +72,10 @@ suite('SidePanelShoppingListTest', () => {
     } else {
       assertFalse(isVisible(faviconElement));
       assertTrue(isVisible(imageElement));
-      assertEquals(
-          imageElement!.getAttribute('auto-src'), product.info.imageUrl.url);
+      const productImage =
+          imageElement!.querySelector<HTMLElement>(
+                           '.product-image')!.getAttribute('auto-src');
+      assertEquals(productImage, product.info.imageUrl.url);
     }
     const priceElements = Array.from(element.querySelectorAll('.price'));
     if (!product.info.previousPrice) {
