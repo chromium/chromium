@@ -190,9 +190,6 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // function starts prerendering for the id. Returns starting prerender host id
   // when it succeeds, and returns `RenderFrameHost::kNoFrameTreeNodeId` if it's
   // cancelled.
-  //
-  // TODO(crbug.com/1355151): Add tests to make sure that requests from embedder
-  // triggers are prioritized over requests from speculation rules.
   int StartPrerendering(int frame_tree_node_id);
 
   // Returns whether a certain type of PrerenderTriggerType is allowed to be
@@ -211,6 +208,9 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
   // Holds the frame_tree_node_id of running PrerenderHost. Reset to
   // RenderFrameHost::kNoFrameTreeNodeId when there's no running PrerenderHost.
+  // Tracks only the host id of speculation rules triggers and ignores requests
+  // from embedder because embedder requests are more urgent and we'd like to
+  // handle embedder prerender independently from speculation rules requests.
   // This is valid only when kPrerender2SequentialPrerendering is enabled.
   int running_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
 
