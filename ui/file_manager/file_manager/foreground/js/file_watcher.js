@@ -131,7 +131,8 @@ export class FileWatcher extends EventTarget {
             if (chrome.runtime.lastError) {
               // Most probably setting the watcher is not supported on the
               // file system type.
-              console.info('File watchers not supported for: ' + entry.toURL());
+              console.info(`Cannot add watcher for '${entry.toURL()}': ${
+                  chrome.runtime.lastError.message}`);
               this.watchedDirectoryEntry_ = null;
               fulfill();
             } else {
