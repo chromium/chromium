@@ -9665,11 +9665,6 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
     // Resetting the Remote signals the renderer to shutdown accessibility
     // in the renderer.
     render_accessibility_.reset();
-
-    if (browser_accessibility_manager_) {
-      browser_accessibility_manager_->DetachFromParentManager();
-      browser_accessibility_manager_.reset();
-    }
     return;
   }
 
