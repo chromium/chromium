@@ -195,12 +195,15 @@ std::u16string UnifiedSideSearchController::GetSideSearchName() const {
              : std::u16string();
 }
 
+// To make SidePanelOpenTrigger::kContextMenuSearchOption records correctly,
+// this function can only be called via tapping on menu search option.
 void UnifiedSideSearchController::OpenSidePanel() {
   UpdateSidePanel();
   auto* browser_view = GetBrowserView();
   if (browser_view) {
     browser_view->side_panel_coordinator()->Show(
-        SidePanelEntry::Id::kSideSearch);
+        SidePanelEntry::Id::kSideSearch,
+        SidePanelUtil::SidePanelOpenTrigger::kContextMenuSearchOption);
   }
 }
 

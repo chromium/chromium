@@ -49,9 +49,13 @@ void RecordSideSearchOpenAction(SideSearchOpenActionType action);
 void RecordSideSearchCloseAction(SideSearchCloseActionType action);
 void RecordSideSearchNavigation(SideSearchNavigationType type);
 void RecordNavigationCommittedWithinSideSearchCountPerJourney(
+    bool is_side_contents_helper_created_from_menu_option,
     int count,
     bool was_auto_triggered);
-void RecordRedirectionToTabCountPerJourney(int count, bool was_auto_triggered);
+void RecordRedirectionToTabCountPerJourney(
+    bool is_side_contents_helper_created_from_menu_option,
+    int count,
+    bool was_auto_triggered);
 void RecordSideSearchSidePanelTimeShown(bool shown_via_entrypoint,
                                         base::TimeDelta sample);
 void RecordSideSearchNumTimesReturnedBackToSRP(int count);
