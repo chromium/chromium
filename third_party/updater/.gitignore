@@ -1,5 +1,6 @@
 /chrome_mac_universal/GoogleUpdater_test.app/
 /chrome_mac_universal_prod/UpdaterSetup
+/chrome_mac_universal_prod/GoogleUpdater.app/
 /chrome_win_x86/UpdaterSetup_test.exe
 /chrome_win_x86_64/UpdaterSetup_test.exe
 /chromium_mac_amd64/ChromiumUpdater_test.app/

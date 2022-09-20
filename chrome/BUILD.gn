@@ -890,17 +890,17 @@ if (is_win) {
     }
 
     if (enable_chromium_updater) {
-      # A stable updater from CIPD is bundled with official builds only. For
-      # local builds, a locally built updater will be bundled into the app.
-      # TODO(crbug.com/1134642): Add ChromiumUpdater app to CIPD for use in
-      # official builds.
-      sources += [ "$root_out_dir/${updater_product_full_name}.app" ]
+      if (is_chrome_branded) {
+        sources += [ "//third_party/updater/chrome_mac_universal_prod/${updater_product_full_name}.app" ]
+      } else {
+        sources += [ "$root_out_dir/${updater_product_full_name}.app" ]
 
-      public_deps += [
-        "//chrome/updater/mac:browser_install_script",
-        "//chrome/updater/mac:updater_bundle",
-        "//chrome/updater/mac:updater_install_script",
-      ]
+        public_deps += [
+          "//chrome/updater/mac:browser_install_script",
+          "//chrome/updater/mac:updater_bundle",
+          "//chrome/updater/mac:updater_install_script",
+        ]
+      }
     }
   }
 

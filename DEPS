@@ -660,6 +660,17 @@ deps = {
           'version': '29MbwZukN0c7nlUhmVKLU6ecK99dCu-ZwYa3ICqbwB0C',
         },
       ],
+  }
+  ,
+  'src/third_party/updater/chrome_mac_universal_prod': {
+      'dep_type': 'cipd',
+      'condition': 'checkout_mac',
+      'packages': [
+        {
+          'package': 'chromium/third_party/updater/chrome_mac_universal_prod',
+          'version': 'E3rEUfkgLutRcZKGPJN_yWoC1G-4rTIhzpXGcsUNqCsC',
+        },
+      ],
   },
 
   'src/third_party/updater/chrome_win_x86': {
