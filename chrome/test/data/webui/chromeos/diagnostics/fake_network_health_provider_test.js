@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NetworkListObserverRemote, NetworkStateObserverRemote} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
+import {NetworkListObserverRemote, NetworkStateObserverRemote} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {assertDeepEquals, assertEquals, assertTrue} from '../../chai_assert.js';

@@ -4,11 +4,11 @@
 
 import 'chrome://diagnostics/overview_card.js';
 
-import {SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeSystemInfo, fakeSystemInfoWithoutBoardName, fakeSystemInfoWithTBD} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {OverviewCardElement} from 'chrome://diagnostics/overview_card.js';
+import {SystemInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';

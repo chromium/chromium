@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatusObserverRemote, BatteryHealthObserverRemote, CpuUsageObserverRemote, DeviceCapabilities, MemoryUsageObserverRemote, SystemInfo, VersionInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeBatteryInfo2, fakeCpuUsage, fakeMemoryUsage} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
+import {BatteryChargeStatusObserverRemote, BatteryHealthObserverRemote, CpuUsageObserverRemote, DeviceCapabilities, MemoryUsageObserverRemote, SystemInfo, VersionInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';

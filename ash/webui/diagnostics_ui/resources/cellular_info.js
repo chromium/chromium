@@ -9,8 +9,8 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_element
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LockType, Network, RoamingState} from './diagnostics_types.js';
 import {getLockType, getSignalStrength} from './diagnostics_utils.js';
+import {LockType, Network, RoamingState} from './network_health_provider.mojom-webui.js';
 
 /**
  * @fileoverview

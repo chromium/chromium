@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SystemDataProviderInterface} from 'chrome://diagnostics/diagnostics_types.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';

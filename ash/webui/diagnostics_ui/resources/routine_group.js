@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RoutineProperties, RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
+import {RoutineProperties} from './diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
 import {getSimpleResult} from './routine_result_entry.js';
+import {RoutineResult, RoutineType, StandardRoutineResult} from './system_routine_controller.mojom-webui.js';
 
 /**
  * @param {!RoutineProperties} routineProp

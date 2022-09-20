@@ -4,10 +4,10 @@
 
 import 'chrome://diagnostics/routine_result_list.js';
 
-import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
 import {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
 import {RoutineResultListElement} from 'chrome://diagnostics/routine_result_list.js';
+import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';

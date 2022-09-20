@@ -4,9 +4,9 @@
 
 import 'chrome://diagnostics/wifi_info.js';
 
-import {Network, SecurityType, WiFiStateProperties} from 'chrome://diagnostics/diagnostics_types.js';
 import {getSignalStrength} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeDisconnectedWifiNetwork, fakeWifiNetwork, fakeWiFiStateProperties} from 'chrome://diagnostics/fake_data.js';
+import {Network, SecurityType, WiFiStateProperties} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {WifiInfoElement} from 'chrome://diagnostics/wifi_info.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';

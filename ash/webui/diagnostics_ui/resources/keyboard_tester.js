@@ -12,7 +12,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_element
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {InputDataProviderInterface, KeyboardInfo, KeyboardObserverInterface, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './diagnostics_types.js';
+import {InputDataProviderInterface, KeyboardInfo, KeyboardObserverInterface, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './input_data_provider.mojom-webui.js';
 
 /**
  * @fileoverview

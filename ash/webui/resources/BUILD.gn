@@ -145,7 +145,7 @@ grit("diagnostics_app_resources") {
   source = "//ash/webui/diagnostics_ui/resources/diagnostics_app_resources.grd"
 
   deps = [
-    "//ash/webui/diagnostics_ui/mojom:mojom_js",
+    "//ash/webui/diagnostics_ui/resources:copy_webui_mojo",
     "//ash/webui/diagnostics_ui/resources:web_components",
   ]
 

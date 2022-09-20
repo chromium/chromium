@@ -19,8 +19,8 @@ import {NetworkStateProperties, SecurityType as MojomSecurityType} from 'chrome:
 import {ConnectionStateType as MojomConnectionStateType, NetworkType as MojomNetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Network, NetworkState, NetworkType, SecurityType} from './diagnostics_types.js';
 import {getNetworkType} from './diagnostics_utils.js';
+import {Network, NetworkState, NetworkType, SecurityType} from './network_health_provider.mojom-webui.js';
 
 /**
  * Type alias for network_config NetworkStateProperties struct.

@@ -15,6 +15,8 @@ mojom("mojom") {
     "system_routine_controller.mojom",
   ]
 
+  webui_module_path = "/ash/webui/diagnostics_ui"
+
   public_deps = [ "//mojo/public/mojom/base" ]
 
   cpp_typemaps = [

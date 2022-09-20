@@ -5,13 +5,13 @@
 import 'chrome://diagnostics/memory_card.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {MemoryUsage} from 'chrome://diagnostics/diagnostics_types.js';
 import {convertKibToGibDecimalString} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeMemoryUsage, fakeMemoryUsageLowAvailableMemory} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {MemoryCardElement} from 'chrome://diagnostics/memory_card.js';
 import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
+import {MemoryUsage} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';

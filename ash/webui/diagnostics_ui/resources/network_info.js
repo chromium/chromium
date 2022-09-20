@@ -9,7 +9,7 @@ import './wifi_info.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Network, NetworkType} from './diagnostics_types.js';
+import {Network, NetworkType} from './network_health_provider.mojom-webui.js';
 
 /**
  * @fileoverview

@@ -10,9 +10,9 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Network, SecurityType} from './diagnostics_types.js';
 import {getSignalStrength, getSubnetMaskFromRoutingPrefix} from './diagnostics_utils.js';
 import {convertFrequencyToChannel} from './frequency_channel_utils.js';
+import {Network, SecurityType} from './network_health_provider.mojom-webui.js';
 
 /**
  * @fileoverview

@@ -4,8 +4,8 @@
 
 import 'chrome://diagnostics/network_info.js';
 
-import {Network} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {NetworkInfoElement} from 'chrome://diagnostics/network_info.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';

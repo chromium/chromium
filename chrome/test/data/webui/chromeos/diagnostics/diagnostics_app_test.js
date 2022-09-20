@@ -7,13 +7,14 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {DiagnosticsAppElement} from 'chrome://diagnostics/diagnostics_app.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, KeyboardInfo, MemoryUsage, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeKeyboards, fakeMemoryUsage, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeTouchDevices, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
+import {KeyboardInfo} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 import {setInputDataProviderForTesting, setNetworkHealthProviderForTesting, setSystemDataProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';

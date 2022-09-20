@@ -16,10 +16,11 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_element
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MemoryUsage, MemoryUsageObserverInterface, MemoryUsageObserverReceiver, RoutineType, SystemDataProviderInterface} from './diagnostics_types.js';
 import {convertKibToGibDecimalString, convertKibToMib} from './diagnostics_utils.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
+import {MemoryUsage, MemoryUsageObserverInterface, MemoryUsageObserverReceiver, SystemDataProviderInterface} from './system_data_provider.mojom-webui.js';
+import {RoutineType} from './system_routine_controller.mojom-webui.js';
 
 /**
  * @fileoverview

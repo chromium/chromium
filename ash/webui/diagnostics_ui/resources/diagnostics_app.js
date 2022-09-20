@@ -17,8 +17,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
-import {ConnectedDevicesObserverInterface, ConnectedDevicesObserverReceiver, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo} from './diagnostics_types.js';
 import {getDiagnosticsIcon, getNavigationIcon} from './diagnostics_utils.js';
+import {ConnectedDevicesObserverInterface, ConnectedDevicesObserverReceiver, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
 import {getInputDataProvider} from './mojo_interface_provider.js';
 
 /**

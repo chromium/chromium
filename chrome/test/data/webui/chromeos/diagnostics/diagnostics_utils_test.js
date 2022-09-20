@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NetworkType, RoutineType} from 'chrome://diagnostics/diagnostics_types.js';
 import {convertKibToGibDecimalString, getNetworkCardTitle, getRoutineGroups, getSignalStrength, getSubnetMaskFromRoutingPrefix, setDisplayStateInTitleForTesting} from 'chrome://diagnostics/diagnostics_utils.js';
+import {NetworkType} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
+import {RoutineType} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';

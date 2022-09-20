@@ -12,8 +12,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
-import {NetworkHealthProviderInterface, NetworkListObserverInterface, NetworkListObserverReceiver} from './diagnostics_types.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
+import {NetworkHealthProviderInterface, NetworkListObserverInterface, NetworkListObserverReceiver} from './network_health_provider.mojom-webui.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
 
 /**

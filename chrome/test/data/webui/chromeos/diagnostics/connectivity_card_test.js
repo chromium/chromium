@@ -5,14 +5,15 @@
 import 'chrome://diagnostics/connectivity_card.js';
 
 import {ConnectivityCardElement} from 'chrome://diagnostics/connectivity_card.js';
-import {Network, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {IpConfigInfoDrawerElement} from 'chrome://diagnostics/ip_config_info_drawer.js';
 import {setNetworkHealthProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
+import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';

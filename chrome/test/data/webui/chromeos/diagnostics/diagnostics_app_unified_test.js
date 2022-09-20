@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jimmyxgong): Use es6 module for mojo binding (crbug/1004256).
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-
 import {batteryStatusCardTestSuite} from './battery_status_card_test.js';
 import {cellularInfoTestSuite} from './cellular_info_test.js';
 import {connectivityCardTestSuite} from './connectivity_card_test.js';

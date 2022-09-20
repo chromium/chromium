@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/diagnostics_types.js';
 import {InputCardElement, InputCardType} from 'chrome://diagnostics/input_card.js';
+import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';

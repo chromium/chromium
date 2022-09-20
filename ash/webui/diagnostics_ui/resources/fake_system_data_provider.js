@@ -5,7 +5,7 @@
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 
-import {BatteryChargeStatus, BatteryChargeStatusObserverRemote, BatteryHealth, BatteryHealthObserverRemote, BatteryInfo, CpuUsage, CpuUsageObserverRemote, ExternalPowerSource, MemoryUsage, MemoryUsageObserverRemote, SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js';
+import {BatteryChargeStatus, BatteryChargeStatusObserverRemote, BatteryHealth, BatteryHealthObserverRemote, BatteryInfo, CpuUsage, CpuUsageObserverRemote, ExternalPowerSource, MemoryUsage, MemoryUsageObserverRemote, SystemDataProviderInterface, SystemInfo} from './system_data_provider.mojom-webui.js';
 
 /**
  * @fileoverview

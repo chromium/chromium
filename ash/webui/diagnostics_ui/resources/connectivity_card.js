@@ -13,9 +13,9 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_element
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, RoutineType} from './diagnostics_types.js';
 import {filterNameServers, formatMacAddress, getNetworkCardTitle, getNetworkState, getNetworkType, getRoutineGroups} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
+import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver} from './network_health_provider.mojom-webui.js';
 import {RoutineGroup} from './routine_group.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
 import {RoutineSectionElement} from './routine_section.js';

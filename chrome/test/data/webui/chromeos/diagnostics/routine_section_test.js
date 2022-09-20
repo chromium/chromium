@@ -5,7 +5,6 @@
 import 'chrome://diagnostics/routine_section.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
 import {createRoutine} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakePowerRoutineResults, fakeRoutineResults} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
@@ -15,6 +14,7 @@ import {ExecutionProgress, TestSuiteStatus} from 'chrome://diagnostics/routine_l
 import {getRoutineType, RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
 import {RoutineResultListElement} from 'chrome://diagnostics/routine_result_list.js';
 import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
+import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {BadgeType, TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 

@@ -12,8 +12,13 @@ assert(is_chromeos_ash)
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args
-
+  closure_flags =
+      default_closure_args + mojom_js_args + [
+        "js_module_root=" + rebase_path(".", root_build_dir),
+        "js_module_root=" + rebase_path(
+                "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/",
+                root_build_dir),
+      ]
   deps = [
     ":battery_status_card",
     ":cellular_info",
@@ -147,7 +152,7 @@ js_library("diagnostics_card_frame") {
 }
 
 js_library("diagnostics_types") {
-  deps = [ "//ash/webui/diagnostics_ui/mojom:mojom_js_library_for_compile" ]
+  deps = [ "//ash/webui/diagnostics_ui/mojom:mojom_webui_js" ]
 }
 
 js_library("diagnostics_network_icon") {
@@ -465,4 +470,15 @@ html_to_js("web_components") {
     "text_badge.js",
     "wifi_info.js",
   ]
+}
+
+copy("copy_webui_mojo") {
+  deps = [ "../mojom:mojom_webui_js" ]
+  sources = [
+    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/network_health_provider.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/system_data_provider.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom-webui.js",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

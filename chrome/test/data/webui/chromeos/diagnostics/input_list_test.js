@@ -5,10 +5,11 @@
 import 'chrome://diagnostics/input_list.js';
 
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
-import {ConnectionType, KeyboardInfo, MechanicalLayout, NavigationView, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey, TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/diagnostics_types.js';
+import {NavigationView} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeKeyboards, fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
 import {InputCardElement} from 'chrome://diagnostics/input_card.js';
+import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey, TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 import {InputListElement} from 'chrome://diagnostics/input_list.js';
 import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 

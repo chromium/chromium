@@ -5,8 +5,10 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {LockType, NavigationView, Network, NetworkState, NetworkType, RoutineProperties, RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
+import {NavigationView, RoutineProperties} from './diagnostics_types.js';
+import {LockType, Network, NetworkState, NetworkType} from './network_health_provider.mojom-webui.js';
 import {RoutineGroup} from './routine_group.js';
+import {RoutineType} from './system_routine_controller.mojom-webui.js';
 
 /**
  * Converts a KiB storage value to GiB and returns a fixed-point string

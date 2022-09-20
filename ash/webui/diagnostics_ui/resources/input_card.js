@@ -11,7 +11,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_element
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ConnectionType, KeyboardInfo, TouchDeviceInfo} from './diagnostics_types.js';
+import {ConnectionType, KeyboardInfo, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
 
 /**
  * @fileoverview

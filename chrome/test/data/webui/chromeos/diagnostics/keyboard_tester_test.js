@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ConnectionType, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey} from 'chrome://diagnostics/diagnostics_types.js';
+import {ConnectionType, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 import {TopRightKey as DiagramTopRightKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
 

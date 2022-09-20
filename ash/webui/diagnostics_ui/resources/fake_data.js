@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AuthenticationType, BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, ConnectionType, CpuUsage, ExternalPowerSource, KeyboardInfo, LockType, MechanicalLayout, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, NumberPadPresence, PhysicalLayout, PowerRoutineResult, RoamingState, RoutineType, SecurityType, StandardRoutineResult, SystemInfo, TopRightKey, TopRowKey, TouchDeviceInfo, TouchDeviceType, WiFiStateProperties} from './diagnostics_types.js';
+import {NetworkGuidInfo} from './diagnostics_types.js';
+import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey, TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
 import {stringToMojoString16} from './mojo_utils.js';
+import {AuthenticationType, LockType, Network, NetworkState, NetworkType, RoamingState, SecurityType, WiFiStateProperties} from './network_health_provider.mojom-webui.js';
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, CpuUsage, ExternalPowerSource, MemoryUsage, SystemInfo} from './system_data_provider.mojom-webui.js';
+import {PowerRoutineResult, RoutineType, StandardRoutineResult} from './system_routine_controller.mojom-webui.js';
 
 /** @type {!Array<!BatteryChargeStatus>} */
 export const fakeBatteryChargeStatus = [

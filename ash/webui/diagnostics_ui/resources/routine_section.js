@@ -18,12 +18,12 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PowerRoutineResult, RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './diagnostics_types.js';
 import {getSystemRoutineController} from './mojo_interface_provider.js';
 import {RoutineGroup} from './routine_group.js';
 import {ExecutionProgress, ResultStatusItem, RoutineListExecutor, TestSuiteStatus} from './routine_list_executor.js';
 import {getRoutineType, getSimpleResult} from './routine_result_entry.js';
 import {RoutineResultListElement} from './routine_result_list.js';
+import {PowerRoutineResult, RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './system_routine_controller.mojom-webui.js';
 import {BadgeType} from './text_badge.js';
 /**
  * @fileoverview

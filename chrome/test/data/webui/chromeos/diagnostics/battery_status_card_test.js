@@ -6,13 +6,14 @@ import 'chrome://diagnostics/battery_status_card.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {BatteryStatusCardElement} from 'chrome://diagnostics/battery_status_card.js';
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, ExternalPowerSource, RoutineType} from 'chrome://diagnostics/diagnostics_types.js';
 import {getDiagnosticsIcon} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeBatteryChargeStatus, fakeBatteryChargeStatus2, fakeBatteryChargeStatus3, fakeBatteryHealth, fakeBatteryHealth2, fakeBatteryHealth3, fakeBatteryInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {mojoString16ToString} from 'chrome://diagnostics/mojo_utils.js';
 import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, ExternalPowerSource} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
+import {RoutineType} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 

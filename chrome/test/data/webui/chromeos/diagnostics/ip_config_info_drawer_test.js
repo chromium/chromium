@@ -5,9 +5,9 @@
 import 'chrome://diagnostics/ip_config_info_drawer.js';
 
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
-import {Network} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeEthernetNetwork, fakeWifiNetwork, fakeWifiNetworkEmptyNameServers, fakeWifiNetworkMultipleNameServers, fakeWifiNetworkNoNameServers} from 'chrome://diagnostics/fake_data.js';
 import {IpConfigInfoDrawerElement} from 'chrome://diagnostics/ip_config_info_drawer.js';
+import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';

@@ -17,11 +17,12 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BatteryChargeStatus, BatteryChargeStatusObserverInterface, BatteryChargeStatusObserverReceiver, BatteryHealth, BatteryHealthObserverInterface, BatteryHealthObserverReceiver, BatteryInfo, BatteryState, ExternalPowerSource, RoutineType, SystemDataProviderInterface} from './diagnostics_types.js';
 import {getDiagnosticsIcon} from './diagnostics_utils.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
+import {BatteryChargeStatus, BatteryChargeStatusObserverInterface, BatteryChargeStatusObserverReceiver, BatteryHealth, BatteryHealthObserverInterface, BatteryHealthObserverReceiver, BatteryInfo, BatteryState, ExternalPowerSource, SystemDataProviderInterface} from './system_data_provider.mojom-webui.js';
+import {RoutineType} from './system_routine_controller.mojom-webui.js';
 
 const BATTERY_ICON_PREFIX = 'battery-';
 

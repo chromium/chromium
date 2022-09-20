@@ -4,7 +4,8 @@
 
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 
-import {Network, NetworkGuidInfo, NetworkHealthProviderInterface} from './diagnostics_types.js';
+import {NetworkGuidInfo} from './diagnostics_types.js';
+import {Network, NetworkHealthProviderInterface} from './network_health_provider.mojom-webui.js';
 
 // Method names.
 export const ON_NETWORK_LIST_CHANGED_METHOD_NAME =

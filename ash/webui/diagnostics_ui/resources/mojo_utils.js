@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+
 
 /**
  * Converts a JS string to mojo_base::mojom::String16 object.
  * @param {string} str
- * @return {!mojoBase.mojom.String16}
+ * @return {String16}
  */
 export function stringToMojoString16(str) {
   const arr = [];
@@ -21,7 +22,7 @@ export function stringToMojoString16(str) {
 
 /**
  * Converts mojo_base::mojom::String16 to a JS string.
- * @param {!mojoBase.mojom.String16} str16
+ * @param {String16} str16
  * @return {string}
  */
 export function mojoString16ToString(str16) {
