@@ -41,42 +41,40 @@ base::Value::Dict HostScanCacheEntryToDictionary(
 }
 
 std::unique_ptr<HostScanCacheEntry> DictionaryToHostScanCacheEntry(
-    const base::DictionaryValue& dictionary) {
+    const base::Value::Dict& dictionary) {
   HostScanCacheEntry::Builder builder;
 
   const std::string* tether_network_guid =
-      dictionary.FindStringKey(kTetherNetworkGuidKey);
+      dictionary.FindString(kTetherNetworkGuidKey);
   if (!tether_network_guid || tether_network_guid->empty())
     return nullptr;
   builder.SetTetherNetworkGuid(*tether_network_guid);
 
-  const std::string* device_name = dictionary.FindStringKey(kDeviceNameKey);
+  const std::string* device_name = dictionary.FindString(kDeviceNameKey);
   if (!device_name)
     return nullptr;
   builder.SetDeviceName(*device_name);
 
-  const std::string* carrier = dictionary.FindStringKey(kCarrierKey);
+  const std::string* carrier = dictionary.FindString(kCarrierKey);
   if (!carrier)
     return nullptr;
   builder.SetCarrier(*carrier);
 
   absl::optional<int> battery_percentage =
-      dictionary.FindIntKey(kBatteryPercentageKey);
+      dictionary.FindInt(kBatteryPercentageKey);
   if (!battery_percentage || *battery_percentage < 0 ||
       *battery_percentage > 100) {
     return nullptr;
   }
   builder.SetBatteryPercentage(*battery_percentage);
 
-  absl::optional<int> signal_strength =
-      dictionary.FindIntKey(kSignalStrengthKey);
+  absl::optional<int> signal_strength = dictionary.FindInt(kSignalStrengthKey);
   if (!signal_strength || *signal_strength < 0 || *signal_strength > 100) {
     return nullptr;
   }
   builder.SetSignalStrength(*signal_strength);
 
-  absl::optional<bool> setup_required =
-      dictionary.FindBoolPath(kSetupRequiredKey);
+  absl::optional<bool> setup_required = dictionary.FindBool(kSetupRequiredKey);
   if (!setup_required)
     return nullptr;
 
@@ -106,15 +104,13 @@ PersistentHostScanCacheImpl::GetStoredCacheEntries() {
   std::unordered_map<std::string, HostScanCacheEntry> entries;
   std::unordered_set<std::string> ids_processed_so_far;
   for (auto& cache_entry_value : cache_entry_list) {
-    const base::DictionaryValue* cache_entry_dict;
-
-    if (!cache_entry_value.GetAsDictionary(&cache_entry_dict)) {
+    if (!cache_entry_value.is_dict()) {
       // All prefs stored in the ListValue should be valid DictionaryValues.
       NOTREACHED();
     }
 
     std::unique_ptr<HostScanCacheEntry> entry =
-        DictionaryToHostScanCacheEntry(*cache_entry_dict);
+        DictionaryToHostScanCacheEntry(cache_entry_value.GetDict());
     DCHECK(entry);
 
     std::string tether_network_guid = entry->tether_network_guid;
