@@ -12,7 +12,10 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/ash_focus_rules.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
@@ -20,6 +23,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "chromeos/ui/wm/features.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -119,20 +123,29 @@ MruWindowTracker::WindowList BuildWindowListInternal(
     CanIncludeWindowPredicate can_include_window_predicate) {
   MruWindowTracker::WindowList windows;
 
-  const int active_desk_id = desks_util::GetActiveDeskContainerId();
+  const Desk* active_desk = DesksController::Get()->active_desk();
+  const int active_desk_id = active_desk->container_id();
   const bool active_desk_only = desks_mru_type == kActiveDesk;
   // Put the windows in the mru_windows list at the head, if it's available.
   if (mru_windows) {
     // The |mru_windows| are sorted such that the most recent window comes last,
     // hence iterate in reverse order.
     for (auto* window : base::Reversed(*mru_windows)) {
-      // Exclude windows in non-switchable containers and those which should not
-      // be included.
+      // Exclude windows in non-switchable containers and those which should
+      // not be included.
       if (window->parent()) {
         if (!IsSwitchableContainer(window->parent()))
           continue;
-
         if (active_desk_only) {
+          // Floated windows are children of the Float container, rather than
+          // desks containers, so they need to be handled separately.
+          // TODO(crbug.com/1358580): Change to use `active_floated_window_`
+          // when it's added.
+          if (WindowState::Get(window)->IsFloated() &&
+              Shell::Get()->float_controller()->FindDeskOfFloatedWindow(
+                  window) != active_desk) {
+            continue;
+          }
           // If only the active desk's MRU windows are requested, then exclude
           // children of the non-active desks' containers.
           const int parent_id = window->parent()->GetId();

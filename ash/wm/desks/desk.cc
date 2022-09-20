@@ -14,6 +14,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_positioner.h"
@@ -31,6 +32,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/wm/features.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tracker.h"
@@ -506,6 +508,22 @@ void Desk::MoveWindowsToDesk(Desk* target_desk) {
     auto this_desk_throttled = GetScopedNotifyContentChangedDisabler();
     auto target_desk_throttled =
         target_desk->GetScopedNotifyContentChangedDisabler();
+
+    // There are 2 cases in moving floated window during desk removal.
+    // Case 1: If there's no floated window on the "moved-to" desk, then the
+    // floated window on the current desk should remain floated. Case 2: If
+    // there's a floating window on the "moved-to" desk too, unfloat the one on
+    // the closed desk and retain the one on the "moved-to" desk.
+    // Special Note:
+    // Because of Case 2, below operation needs to be done before calling
+    // `MoveWindowToDeskInternal` on `windows_to_move`. We want to re-parent
+    // floated window back to desk container before the removal, so all windows
+    // under the to-be-removed desk's container can be collected in
+    // `windows_to_move` to move to target desk.
+    if (chromeos::wm::features::IsFloatWindowEnabled()) {
+      Shell::Get()->float_controller()->OnMovingAllWindowsOutToDesk(
+          this, target_desk);
+    }
 
     // Moving windows will change the hierarchy and hence |windows_|, and has to
     // be done without changing the relative z-order. So we make a copy of all

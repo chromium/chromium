@@ -11,6 +11,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -30,6 +31,7 @@ class WorkspaceEventHandler;
 class ASH_EXPORT FloatController : public TabletModeObserver,
                                    public display::DisplayObserver,
                                    public ShellObserver,
+                                   public DesksController::Observer,
                                    public chromeos::FloatControllerBase {
  public:
   // The possible corners that a floated window can be placed in tablet mode.
@@ -78,10 +80,35 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
                                bool left,
                                bool up);
 
+  // Returns the desk where floated window belongs to if window is floated and
+  // registered under `floated_window_info_map_`, otherwise returns nullptr.
+  const Desk* FindDeskOfFloatedWindow(const aura::Window* window) const;
+  // Returns the floated window that belongs to `desk`. If `desk` doesn't have a
+  // floated window, returns nullptr.
+  aura::Window* FindFloatedWindowOfDesk(const Desk* desk) const;
+
+  // Called when moving all `original_desk`'s windows out to `target_desk` due
+  // to the removal of `original_desk`. This function takes care of floated
+  // window (if any) since it doesn't belong to the desk container. Note: during
+  // desk removal/combination, `floated_window` will be unfloated if
+  // `target_desk` has a floated window.
+  void OnMovingAllWindowsOutToDesk(Desk* original_desk, Desk* target_desk);
+
   // TabletModeObserver:
   void OnTabletModeStarting() override;
   void OnTabletModeEnding() override;
   void OnTabletControllerDestroyed() override;
+
+  // DesksController::Observer:
+  void OnDeskAdded(const Desk* desk) override {}
+  void OnDeskRemoved(const Desk* desk) override {}
+  void OnDeskReordered(int old_index, int new_index) override {}
+  void OnDeskActivationChanged(const Desk* activated,
+                               const Desk* deactivated) override;
+  void OnDeskSwitchAnimationLaunching() override {}
+  void OnDeskSwitchAnimationFinished() override {}
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override {}
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -109,6 +136,7 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   // Floats/Unfloats `window`. Only one floating window is allowed per desk,
   // floating a new window on the same desk or moving a floated window to that
   // desk will unfloat the other floated window (if any).
+  // Note: currently window can only be floated from an active desk.
   void FloatImpl(aura::Window* window);
   void UnfloatImpl(aura::Window* window);
 
@@ -138,6 +166,10 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
 
   base::ScopedObservation<TabletModeController, TabletModeObserver>
       tablet_mode_observation_{this};
+
+  base::ScopedObservation<DesksController, DesksController::Observer>
+      desks_controller_observation_{this};
+
   absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
   base::ScopedObservation<Shell,
                           ShellObserver,
