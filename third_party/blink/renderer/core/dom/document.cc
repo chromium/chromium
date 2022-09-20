@@ -1932,7 +1932,10 @@ bool Document::NeedsFullLayoutTreeUpdate() const {
   // chain to decide if we can let getComputedStyle() use the current
   // ComputedStyle without doing the lifecycle update (implemented in
   // Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked()).
+
+  // https://linear.app/replay/issue/RUN-594
   recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate Start");
+
   if (!IsActive() || !View()) {
     recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #1");
     return false;
