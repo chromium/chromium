@@ -27101,7 +27101,7 @@
         'cloud_only': True,
       },
       'id': 991,
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:108-'],
       'caption': '''Configuration policy for the OnFileTransfer Chrome Enterprise Connector''',
       'tags': [],
       'desc': '''List of Chrome Enterprise Connectors services settings to be applied to the <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR">OnFileTransfer</ph> Enterprise Connector, which triggers when a file is transferred within <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
