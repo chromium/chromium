@@ -146,6 +146,9 @@ suite('ProfilePickerAppTest', function() {
   });
 
   test('ThemeColorConsistentInProfileCreationViews', async function() {
+    loadTimeData.overrideValues({
+      isLocalProfileCreationDialogEnabled: false,
+    });
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCreationLoad();
     const choice = testElement.shadowRoot!.querySelector('profile-type-choice');

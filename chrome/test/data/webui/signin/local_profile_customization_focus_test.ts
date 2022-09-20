@@ -26,6 +26,9 @@ suite('LocalProfileCustomizationFocusTest', function() {
   }
 
   setup(function() {
+    loadTimeData.overrideValues({
+      isLocalProfileCreationDialogEnabled: false,
+    });
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
     return resetTestElement(Routes.MAIN);
@@ -69,7 +72,7 @@ suite('LocalProfileCustomizationFocusTest', function() {
 
   test('ProfileCreationFlowWithSigninPromo', async function() {
     assertTrue(loadTimeData.getValue('isBrowserSigninAllowed'));
-    navigateTo(Routes.NEW_PROFILE);
+    await resetTestElement(Routes.NEW_PROFILE);
     await setupProfileCreation();
     const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
     assertTrue(!!choice);

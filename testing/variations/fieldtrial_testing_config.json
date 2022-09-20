@@ -9776,6 +9776,25 @@
             ]
         }
     ],
+    "SyncPromoAfterSigninInterceptStudy": [
+        {
+            "platforms": [
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithSyncPromo",
+                    "enable_features": [
+                        "SigninInterceptBubbleV2",
+                        "SyncPromoAfterSigninIntercept"
+                    ]
+                }
+            ]
+        }
+    ],
     "SyncTrustedVaultPassphraseOptInUI": [
         {
             "platforms": [

@@ -172,11 +172,15 @@ class DiceWebSigninInterceptionBubblePixelTest
       public testing::WithParamInterface<TestParam> {
  public:
   DiceWebSigninInterceptionBubblePixelTest() {
+    std::vector<base::Feature> enabled_features = {};
+    // `kSigninInterceptBubbleV2` feature is tested in
+    // `DiceWebSigninInterceptionBubbleV2PixelTest`
+    std::vector<base::Feature> disabled_features = {kSigninInterceptBubbleV2};
     if (GetParam().use_dark_theme) {
-      base_scoped_feature_list_.InitAndEnableFeature(features::kWebUIDarkMode);
-    } else {
-      base_scoped_feature_list_.Init();
+      enabled_features.push_back(features::kWebUIDarkMode);
     }
+    base_scoped_feature_list_.InitWithFeatures(enabled_features,
+                                               disabled_features);
   }
 
   // DialogBrowserTest:
