@@ -22,7 +22,7 @@
   var gSecondConnection = null;
 
   var onOfferCreated = test.step_func(function(offer) {
-    gFirstConnection.setLocalDescription(offer, ignoreSuccess,
+    gFirstConnection.setLocalDescription(offer).then(ignoreSuccess,
                                          failed('setLocalDescription first'));
 
     // This would normally go across the application's signaling solution.
@@ -43,8 +43,9 @@
   };
 
   var onAnswerCreated = test.step_func(function(answer) {
-    gSecondConnection.setLocalDescription(answer, test.step_func(() => {
-        assert_equals(gSecondConnection.getSenders()[0], 1);
+    gSecondConnection.setLocalDescription(answer).then(test.step_func(() => {
+        assert_equals(gSecondConnection.getSenders().length, 1);
+        assert_not_equals(gSecondConnection.getSenders()[0], null);
         assert_not_equals(gSecondConnection.getSenders()[0].transport, null);
     }), failed('setLocalDescription second'));
 
