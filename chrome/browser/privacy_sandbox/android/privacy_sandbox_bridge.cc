@@ -21,8 +21,11 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 using base::android::ConvertUTF16ToJavaString;
+using base::android::ConvertUTF8ToJavaString;
+using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
@@ -193,4 +196,23 @@ static void JNI_PrivacySandboxBridge_SetFirstPartySetsDataAccessEnabled(
     JNIEnv* env,
     jboolean enabled) {
   GetPrivacySandboxService()->SetFirstPartySetsDataAccessEnabled(enabled);
+}
+
+static void JNI_PrivacySandboxBridge_FetchMemberToOwnerFPSMap(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& java_callback) {
+  auto firstPartySets = GetPrivacySandboxService()->GetFirstPartySets();
+  ScopedJavaLocalRef<jobject> map =
+      Java_PrivacySandboxBridge_createMemberToOwnerFPSMap(env);
+
+  for (const auto& fps : firstPartySets) {
+    ScopedJavaLocalRef<jstring> site =
+        ConvertUTF8ToJavaString(env, fps.first.GetURL().host());
+    ScopedJavaLocalRef<jstring> owner =
+        ConvertUTF8ToJavaString(env, fps.second.GetURL().host());
+    Java_PrivacySandboxBridge_insertMemberAndOwnerIntoFPSMap(env, map, site,
+                                                             owner);
+  }
+
+  base::android::RunObjectCallbackAndroid(java_callback, map);
 }

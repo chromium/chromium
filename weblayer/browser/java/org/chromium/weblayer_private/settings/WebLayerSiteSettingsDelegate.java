@@ -21,6 +21,8 @@ import org.chromium.url.GURL;
 import org.chromium.weblayer_private.WebLayerImpl;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -155,6 +157,11 @@ public class WebLayerSiteSettingsDelegate
 
     @Override
     public void setFirstPartySetsDataAccessEnabled(boolean enabled) {}
+
+    @Override
+    public void fetchMemberToOwnerFPSMap(Callback<Map<String, String>> callback) {
+        callback.onResult(new HashMap<>());
+    }
 
     @Override
     public boolean canLaunchClearBrowsingDataDialog() {

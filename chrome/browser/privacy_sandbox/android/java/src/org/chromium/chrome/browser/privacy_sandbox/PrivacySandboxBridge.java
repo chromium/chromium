@@ -10,7 +10,9 @@ import org.chromium.base.annotations.NativeMethods;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Bridge, providing access to the native-side Privacy Sandbox configuration. */
 public class PrivacySandboxBridge {
@@ -108,6 +110,26 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().setFirstPartySetsDataAccessEnabled(enabled);
     }
 
+    /**
+     * Fetches the First Party Sets member to owner map.
+     * Called with a mapping from FPS member to the respective FPS owner. Both members and owners
+     * are hostnames.
+     */
+    public static void fetchMemberToOwnerFPSMap(Callback<Map<String, String>> callback) {
+        PrivacySandboxBridgeJni.get().fetchMemberToOwnerFPSMap(callback);
+    }
+
+    @CalledByNative
+    private static Object createMemberToOwnerFPSMap() {
+        return new HashMap<String, String>();
+    }
+
+    @CalledByNative
+    private static void insertMemberAndOwnerIntoFPSMap(
+            Map<String, String> map, String memberHostname, String ownerHostname) {
+        map.put(memberHostname, ownerHostname);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isPrivacySandboxEnabled();
@@ -117,6 +139,7 @@ public class PrivacySandboxBridge {
         boolean isFirstPartySetsDataAccessManaged();
         void setPrivacySandboxEnabled(boolean enabled);
         void setFirstPartySetsDataAccessEnabled(boolean enabled);
+        void fetchMemberToOwnerFPSMap(Callback<Map<String, String>> callback);
         String getFlocStatusString();
         String getFlocGroupString();
         String getFlocUpdateString();

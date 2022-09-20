@@ -8,6 +8,7 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -20,8 +21,10 @@ import org.chromium.content_public.common.ContentSwitches;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Utility class that asynchronously fetches any Websites and the permissions
@@ -144,12 +147,18 @@ public class WebsitePermissionsFetcher {
      */
     public void fetchAllPreferences(WebsitePermissionsCallback callback) {
         TaskQueue queue = new TaskQueue();
+
+        addAllFetchers(queue);
+
+        queue.add(new PermissionsAvailableCallbackRunner(callback));
+        queue.next();
+    }
+
+    private void addAllFetchers(TaskQueue queue) {
         addFetcherForStorage(queue);
         for (@ContentSettingsType int type = 0; type < ContentSettingsType.NUM_TYPES; type++) {
             addFetcherForContentSettingsType(queue, type);
         }
-        queue.add(new PermissionsAvailableCallbackRunner(callback));
-        queue.next();
     }
 
     /**
@@ -163,18 +172,44 @@ public class WebsitePermissionsFetcher {
      */
     public void fetchPreferencesForCategory(
             SiteSettingsCategory category, WebsitePermissionsCallback callback) {
-        if (category.getType() == SiteSettingsCategory.Type.ALL_SITES) {
-            fetchAllPreferences(callback);
-            return;
-        }
+        TaskQueue queue = createFetchersForCategory(category);
 
+        queue.add(new PermissionsAvailableCallbackRunner(callback));
+        queue.next();
+    }
+
+    @NonNull
+    private TaskQueue createFetchersForCategory(SiteSettingsCategory category) {
         TaskQueue queue = new TaskQueue();
-        if (category.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
+
+        if (category.getType() == SiteSettingsCategory.Type.ALL_SITES) {
+            addAllFetchers(queue);
+        } else if (category.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
             addFetcherForStorage(queue);
         } else {
             assert getPermissionsType(category.getContentSettingsType()) != null;
             addFetcherForContentSettingsType(queue, category.getContentSettingsType());
         }
+        return queue;
+    }
+
+    /**
+     * Fetches all preferences within a specific category and populates them with First Party Sets
+     * info.
+     *
+     * @param siteSettingsDelegate Delegate needed for fetching First Party Sets info.
+     * @param category A category to fetch.
+     * @param callback The callback to run when the fetch is complete.
+     *
+     * NB: you should call either this method or {@link #fetchAllPreferences} or {@link
+     * #fetchPreferencesForCategory} only once per instance.
+     */
+    public void fetchPreferencesForCategoryAndPopulateFpsInfo(
+            SiteSettingsDelegate siteSettingsDelegate, SiteSettingsCategory category,
+            WebsitePermissionsCallback callback) {
+        TaskQueue queue = createFetchersForCategory(category);
+        queue.add(new FirstPartySetsInfoFetcher(siteSettingsDelegate));
+
         queue.add(new PermissionsAvailableCallbackRunner(callback));
         queue.next();
     }
@@ -401,6 +436,32 @@ public class WebsitePermissionsFetcher {
         }
     }
 
+    private class FirstPartySetsInfoFetcher extends Task {
+        final SiteSettingsDelegate mSiteSettingsDelegate;
+
+        public FirstPartySetsInfoFetcher(SiteSettingsDelegate siteSettingsDelegate) {
+            mSiteSettingsDelegate = siteSettingsDelegate;
+        }
+
+        private boolean canDealWithFirstPartySetsInfo() {
+            return mSiteSettingsDelegate != null
+                    && mSiteSettingsDelegate.isPrivacySandboxFirstPartySetsUIFeatureEnabled()
+                    && mSiteSettingsDelegate.isFirstPartySetsDataAccessEnabled();
+        }
+
+        @Override
+        public void runAsync(final TaskQueue queue) {
+            if (canDealWithFirstPartySetsInfo()) {
+                mSiteSettingsDelegate.fetchMemberToOwnerFPSMap((memberToOwnerFPSMap) -> {
+                    setFirstPartySetsInfo(memberToOwnerFPSMap);
+                    queue.next();
+                });
+            } else {
+                queue.next();
+            }
+        }
+    }
+
     private class PermissionsAvailableCallbackRunner extends Task {
         private final WebsitePermissionsCallback mCallback;
 
@@ -412,6 +473,43 @@ public class WebsitePermissionsFetcher {
         public void run() {
             mCallback.onWebsitePermissionsAvailable(mSites.values());
         }
+    }
+
+    /**
+     * Builds a {@link Map<String, Set<String>>} of FPS Owner - Set of FPS Members from the fetched
+     * websites and for each {@link Website} sets its FPS info: the FPS Owner and the number
+     * of members of that FPS.
+     * @param memberToOwnerFPSMap map of ETLD+1s mapping a member to its owner.
+     */
+    private void setFirstPartySetsInfo(Map<String, String> memberToOwnerFPSMap) {
+        Map<String, Set<String>> fpsOwnerToMembers =
+                buildOwnerToMembersMapFromFetchedSites(memberToOwnerFPSMap);
+
+        for (Website site : mSites.values()) {
+            String fpsMember = site.getAddress().getDomainAndRegistry();
+            String fpsOwner = memberToOwnerFPSMap.get(fpsMember);
+            if (fpsOwner == null) continue;
+            int fpsMembersCount = fpsOwnerToMembers.get(fpsOwner).size();
+            site.setFPSCookieInfo(new FPSCookieInfo(fpsOwner, fpsMembersCount));
+        }
+    }
+
+    @NonNull
+    private Map<String, Set<String>> buildOwnerToMembersMapFromFetchedSites(
+            Map<String, String> memberToOwnerFPSMap) {
+        Map<String, Set<String>> fpsOwnerToMember = new HashMap<>();
+        for (Website site : mSites.values()) {
+            String fpsMember = site.getAddress().getDomainAndRegistry();
+            String fpsOwner = memberToOwnerFPSMap.get(fpsMember);
+            if (fpsOwner == null) continue;
+            Set<String> members = fpsOwnerToMember.get(fpsOwner);
+            if (members == null) {
+                members = new HashSet<>();
+            }
+            members.add(fpsMember);
+            fpsOwnerToMember.put(fpsOwner, members);
+        }
+        return fpsOwnerToMember;
     }
 
     @VisibleForTesting

@@ -9,6 +9,7 @@ import org.chromium.base.Callback;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -98,6 +99,11 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
 
     @Override
     public void setFirstPartySetsDataAccessEnabled(boolean enabled) {}
+
+    @Override
+    public void fetchMemberToOwnerFPSMap(Callback<Map<String, String>> callback) {
+        callback.onResult(new HashMap<>());
+    }
 
     public void setPrivacySandboxRestricted(boolean restricted) {
         mIsPrivacySandboxRestricted = restricted;

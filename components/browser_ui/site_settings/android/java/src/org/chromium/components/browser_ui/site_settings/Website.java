@@ -41,6 +41,7 @@ public final class Website implements WebsiteEntry {
     private Map<Integer, PermissionInfo> mPermissionInfos = new HashMap<>();
 
     private LocalStorageInfo mLocalStorageInfo;
+    private FPSCookieInfo mFPSCookieInfo;
     private final List<StorageInfo> mStorageInfo = new ArrayList<>();
 
     // The collection of chooser-based permissions (e.g. USB device access) granted to this site.
@@ -268,6 +269,14 @@ public final class Website implements WebsiteEntry {
 
     public LocalStorageInfo getLocalStorageInfo() {
         return mLocalStorageInfo;
+    }
+
+    public FPSCookieInfo getFPSCookieInfo() {
+        return mFPSCookieInfo;
+    }
+
+    public void setFPSCookieInfo(FPSCookieInfo fpsCookieInfo) {
+        mFPSCookieInfo = fpsCookieInfo;
     }
 
     public void addStorageInfo(StorageInfo info) {
