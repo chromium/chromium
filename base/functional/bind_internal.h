@@ -106,7 +106,7 @@ class UnretainedWrapper {
   T* get() const { return ptr_; }
 
  private:
-#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   // When `MTECheckedPtr` is enabled as the backing implementation of
   // `raw_ptr`, there are too many different types that immediately
   // cause Chrome to crash. Some of these are inutterable as forward
@@ -121,7 +121,7 @@ class UnretainedWrapper {
   using ImplType = std::conditional_t<raw_ptr_traits::IsSupportedType<T>::value,
                                       raw_ptr<T, DanglingUntriaged>,
                                       T*>;
-#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   ImplType ptr_;
 };
 
@@ -146,7 +146,7 @@ class UnretainedRefWrapper {
   T& ref_;
 };
 
-#if !defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+#if !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 // Implementation of UnretainedRefWrapper for `T` where raw_ref<T> is supported.
 template <typename T>
 class UnretainedRefWrapper<T, true> {
