@@ -39,9 +39,9 @@
 #include "third_party/apple_apsl/CFBase.h"
 
 #if BUILDFLAG(IS_IOS)
-#include "base/ios/ios_util.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/ios/ios_util.h"
 #else
-#include "base/mac/mac_util.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/mac/mac_util.h"
 #endif
 
 namespace allocator_shim {
@@ -236,9 +236,9 @@ void* oom_killer_memalign_purgeable(struct _malloc_zone_t* zone,
 
 bool CanGetContextForCFAllocator() {
 #if BUILDFLAG(IS_IOS)
-  return !base::ios::IsRunningOnOrLater(17, 0, 0);
+  return !partition_alloc::internal::base::ios::IsRunningOnOrLater(17, 0, 0);
 #else
-  return !base::mac::IsOSLaterThan13_DontCallThis();
+  return !partition_alloc::internal::base::mac::IsOSLaterThan13_DontCallThis();
 #endif
 }
 

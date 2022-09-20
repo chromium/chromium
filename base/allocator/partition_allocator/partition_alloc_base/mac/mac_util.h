@@ -7,9 +7,8 @@
 
 #include <AvailabilityMacros.h>
 #import <CoreGraphics/CoreGraphics.h>
-#include <stdint.h>
 
-#include <string>
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 
 namespace partition_alloc::internal::base::mac {
 
@@ -19,7 +18,7 @@ namespace internal {
 // integer value. For example, for macOS Sierra this returns 1012, and for macOS
 // Big Sur it returns 1100. Note that the accuracy returned by this function is
 // as granular as the major version number of Darwin.
-int MacOSVersion();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) int MacOSVersion();
 
 }  // namespace internal
 
@@ -96,6 +95,12 @@ PA_DEFINE_IS_OS_FUNCS(12, PA_TEST_DEPLOYMENT_TARGET)
 PA_DEFINE_IS_OS_FUNCS(12, PA_IGNORE_DEPLOYMENT_TARGET)
 #endif
 
+#ifdef MAC_OS_VERSION_13_0
+PA_DEFINE_IS_OS_FUNCS(13, PA_TEST_DEPLOYMENT_TARGET)
+#else
+PA_DEFINE_IS_OS_FUNCS(13, PA_IGNORE_DEPLOYMENT_TARGET)
+#endif
+
 #undef PA_DEFINE_OLD_IS_OS_FUNCS_CR_MIN_REQUIRED
 #undef PA_DEFINE_OLD_IS_OS_FUNCS
 #undef PA_DEFINE_IS_OS_FUNCS_CR_MIN_REQUIRED
@@ -103,6 +108,13 @@ PA_DEFINE_IS_OS_FUNCS(12, PA_IGNORE_DEPLOYMENT_TARGET)
 #undef PA_OLD_TEST_DEPLOYMENT_TARGET
 #undef PA_TEST_DEPLOYMENT_TARGET
 #undef PA_IGNORE_DEPLOYMENT_TARGET
+
+// This should be infrequently used. It only makes sense to use this to avoid
+// codepaths that are very likely to break on future (unreleased, untested,
+// unborn) OS releases, or to log when the OS is newer than any known version.
+inline bool IsOSLaterThan13_DontCallThis() {
+  return !IsAtMostOS13();
+}
 
 }  // namespace partition_alloc::internal::base::mac
 

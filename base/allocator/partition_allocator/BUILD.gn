@@ -115,6 +115,7 @@ component("partition_alloc") {
     "partition_alloc_base/scoped_clear_last_error.h",
     "partition_alloc_base/strings/stringprintf.cc",
     "partition_alloc_base/strings/stringprintf.h",
+    "partition_alloc_base/system/sys_info.h",
     "partition_alloc_base/thread_annotations.h",
     "partition_alloc_base/threading/platform_thread.cc",
     "partition_alloc_base/threading/platform_thread.h",
@@ -258,11 +259,23 @@ component("partition_alloc") {
     sources += [
       "partition_alloc_base/mac/foundation_util.h",
       "partition_alloc_base/mac/foundation_util.mm",
-      "partition_alloc_base/mac/mac_util.h",
-      "partition_alloc_base/mac/mac_util.mm",
       "partition_alloc_base/mac/scoped_cftyperef.h",
       "partition_alloc_base/mac/scoped_typeref.h",
     ]
+    if (is_ios) {
+      sources += [
+        "partition_alloc_base/ios/ios_util.h",
+        "partition_alloc_base/ios/ios_util.mm",
+        "partition_alloc_base/system/sys_info_ios.mm",
+      ]
+    }
+    if (is_mac) {
+      sources += [
+        "partition_alloc_base/mac/mac_util.h",
+        "partition_alloc_base/mac/mac_util.mm",
+        "partition_alloc_base/system/sys_info_mac.mm",
+      ]
+    }
   }
   if (build_with_chromium) {
     if (current_cpu == "x64") {
@@ -318,8 +331,11 @@ component("partition_alloc") {
     frameworks += [ "Security.framework" ]
   }
 
-  if (is_component_build && is_apple) {
-    frameworks += [ "CoreFoundation.framework" ]
+  if (is_apple) {
+    frameworks += [
+      "CoreFoundation.framework",
+      "Foundation.framework",
+    ]
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
