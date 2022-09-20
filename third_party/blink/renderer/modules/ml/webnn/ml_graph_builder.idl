@@ -81,6 +81,9 @@ dictionary MLClampOptions {
   // Pooling operations
   [RaisesException] MLOperand averagePool2d(MLOperand input, optional MLPool2dOptions options = {});
 
+  [RaisesException] MLOperand relu(MLOperand input);
+  [RaisesException] MLOperator relu();
+
   [RaisesException] MLOperand reshape(MLOperand input, sequence<long> newShape);
 
   [RaisesException] MLOperand softmax(MLOperand input);

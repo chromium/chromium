@@ -712,6 +712,25 @@ MLOperand* MLGraphBuilder::averagePool2d(const MLOperand* input,
   return nullptr;
 }
 
+MLOperand* MLGraphBuilder::relu(const MLOperand* input,
+                                ExceptionState& exception_state) {
+  auto* relu =
+      MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kRelu);
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-relu, the output tensor of
+  // relu has the same type and dimensions as its input.
+  auto* output =
+      MLOperand::CreateOutput(this, input->Type(), input->Dimensions(), relu);
+  relu->Connect({input}, {output});
+  return output;
+}
+
+MLOperator* MLGraphBuilder::relu(ExceptionState& exception_state) {
+  // Create the relu operator that would be used as an activation function.
+  return MakeGarbageCollected<MLOperator>(this,
+                                          MLOperator::OperatorKind::kRelu);
+}
+
 MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
                                    const Vector<int32_t>& new_shape,
                                    ExceptionState& exception_state) {

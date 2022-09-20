@@ -92,6 +92,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                            const MLPool2dOptions* options,
                            ExceptionState& exception_state);
 
+  MLOperand* relu(const MLOperand* input, ExceptionState& exception_state);
+  MLOperator* relu(ExceptionState& exception_state);
+
   MLOperand* reshape(const MLOperand* input,
                      const Vector<int32_t>& new_shape,
                      ExceptionState& exception_state);

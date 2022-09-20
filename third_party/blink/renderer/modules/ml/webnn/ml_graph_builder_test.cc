@@ -87,14 +87,6 @@ MLOperand* CreateConstant(
                                  v8_scope.GetExceptionState());
 }
 
-void CheckDimensions(const Vector<uint32_t>& actual,
-                     const Vector<uint32_t>& expected) {
-  EXPECT_EQ(actual.size(), expected.size());
-  for (wtf_size_t i = 0; i < actual.size(); ++i) {
-    EXPECT_EQ(actual[i], expected[i]);
-  }
-}
-
 class Conv2dTester {
  public:
   Conv2dTester& SetOperandType(V8MLOperandType::Enum type) {
@@ -177,7 +169,7 @@ class Conv2dTester {
     EXPECT_NE(output, nullptr);
     EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
     EXPECT_EQ(output->Type(), type_);
-    CheckDimensions(output->Dimensions(), expected_output_shape);
+    EXPECT_EQ(output->Dimensions(), expected_output_shape);
     const MLOperator* conv2d = output->Operator();
     EXPECT_NE(conv2d, nullptr);
     EXPECT_EQ(conv2d->Kind(), MLOperator::OperatorKind::kConv2d);
@@ -455,6 +447,59 @@ TEST_F(MLGraphBuilderTest, Conv2dOutputShapeTest) {
         .SetOptionsInputLayout(V8MLInputOperandLayout::Enum::kNhwc)
         .SetOptionsFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kIhwo)
         .ExpectOutputShape({1, 3, 3, 1});
+  }
+}
+
+TEST_F(MLGraphBuilderTest, ReluTest) {
+  V8TestingScope v8_scope;
+  MLGraphBuilder* graph_builder = CreateMLGraphBuilder(v8_scope);
+  ASSERT_NE(nullptr, graph_builder);
+  {
+    // Test building relu with float32 input.
+    Vector<uint32_t> input_shape({3, 4, 5});
+    MLOperand* input =
+        CreateInput(v8_scope, graph_builder, "input", input_shape,
+                    V8MLOperandType::Enum::kFloat32);
+    ASSERT_NE(input, nullptr);
+
+    const MLOperand* output =
+        graph_builder->relu(input, v8_scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), input_shape);
+    const MLOperator* relu = output->Operator();
+    EXPECT_NE(relu, nullptr);
+    EXPECT_EQ(relu->Kind(), MLOperator::OperatorKind::kRelu);
+    EXPECT_EQ(relu->IsConnected(), true);
+    EXPECT_EQ(relu->Options(), nullptr);
+  }
+  {
+    // Test building relu with int32 input.
+    Vector<uint32_t> input_shape({3, 4, 5});
+    MLOperand* input = CreateInput(v8_scope, graph_builder, "input",
+                                   input_shape, V8MLOperandType::Enum::kInt32);
+    ASSERT_NE(input, nullptr);
+
+    const MLOperand* output =
+        graph_builder->relu(input, v8_scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kInt32);
+    EXPECT_EQ(output->Dimensions(), input_shape);
+    const MLOperator* relu = output->Operator();
+    EXPECT_NE(relu, nullptr);
+    EXPECT_EQ(relu->Kind(), MLOperator::OperatorKind::kRelu);
+    EXPECT_EQ(relu->IsConnected(), true);
+    EXPECT_EQ(relu->Options(), nullptr);
+  }
+  {
+    // Test building relu operator.
+    const MLOperator* relu = graph_builder->relu(v8_scope.GetExceptionState());
+    EXPECT_NE(relu, nullptr);
+    EXPECT_EQ(relu->Kind(), MLOperator::OperatorKind::kRelu);
+    EXPECT_EQ(relu->IsConnected(), false);
+    EXPECT_EQ(relu->Options(), nullptr);
   }
 }
 
