@@ -15,6 +15,7 @@
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "mojo/core/embedder/embedder.h"
 #include "services/network/public/cpp/features.h"
@@ -106,7 +107,6 @@ class ComponentsTestSuite : public base::TestSuite {
   }
 };
 
-#if BUILDFLAG(IS_IOS)
 class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
  public:
   ComponentsUnitTestEventListener() = default;
@@ -116,18 +116,24 @@ class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
       const ComponentsUnitTestEventListener&) = delete;
   ~ComponentsUnitTestEventListener() override = default;
 
+#if BUILDFLAG(IS_IOS)
   void OnTestStart(const testing::TestInfo& test_info) override {
     ios_initializer_.reset(new IosComponentsTestInitializer());
   }
+#endif
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
+    breadcrumbs::BreadcrumbManager::GetInstance().ResetForTesting();
+#if BUILDFLAG(IS_IOS)
     ios_initializer_.reset();
+#endif
   }
 
+#if BUILDFLAG(IS_IOS)
  private:
   std::unique_ptr<IosComponentsTestInitializer> ios_initializer_;
-};
 #endif
+};
 
 }  // namespace
 
@@ -139,11 +145,11 @@ base::RunTestSuiteCallback GetLaunchCallback(int argc, char** argv) {
           content::UnitTestTestSuite::CreateTestContentClients));
 #else
   auto test_suite = std::make_unique<ComponentsTestSuite>(argc, argv);
+#endif
 
   testing::TestEventListeners& listeners =
       testing::UnitTest::GetInstance()->listeners();
   listeners.Append(new ComponentsUnitTestEventListener());
-#endif
 
 #if !BUILDFLAG(IS_IOS)
   return base::BindOnce(&content::UnitTestTestSuite::Run,

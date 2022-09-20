@@ -782,23 +782,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [_spotlightManager shutdown];
   _spotlightManager = nil;
 
-  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
-    if (self.appState.mainBrowserState->HasOffTheRecordChromeBrowserState()) {
-      breadcrumbs::BreadcrumbManagerKeyedService* service =
-          BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-              self.appState.mainBrowserState
-                  ->GetOffTheRecordChromeBrowserState());
-      service->StopPersisting();
-      breakpad::StopMonitoringBreadcrumbManagerService(service);
-    }
-
-    breadcrumbs::BreadcrumbManagerKeyedService* service =
-        BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-            self.appState.mainBrowserState);
-    service->StopPersisting();
-    breakpad::StopMonitoringBreadcrumbManagerService(service);
-  }
-
   _extensionSearchEngineDataUpdater = nullptr;
 
   // _localStatePrefChangeRegistrar is observing the PrefService, which is owned
@@ -1130,18 +1113,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)startLoggingBreadcrumbs {
-  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumbService =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-          self.appState.mainBrowserState);
-  breakpad::MonitorBreadcrumbManagerService(breadcrumbService);
+  BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+      self.appState.mainBrowserState);
 
+  // Get stored persistent breadcrumbs from last run to set on crash reports.
   breadcrumbs::BreadcrumbPersistentStorageManager* persistentStorageManager =
       GetApplicationContext()->GetBreadcrumbPersistentStorageManager();
   DCHECK(persistentStorageManager);
-
-  breadcrumbService->StartPersisting(persistentStorageManager);
-
-  // Get stored persistent breadcrumbs from last run to set on crash reports.
   persistentStorageManager->GetStoredEvents(
       base::BindOnce(^(std::vector<std::string> events) {
         breakpad::SetPreviousSessionEvents(events);

@@ -123,9 +123,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "components/background_sync/background_sync_controller_impl.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
-#include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -835,19 +833,8 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   AnnouncementNotificationServiceFactory::GetForProfile(this)
       ->MaybeShowNotification();
 
-  if (breadcrumbs::IsEnabled()) {
-    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
-        BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
-            this, /*create=*/true);
-    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-        .ObserveBreadcrumbManagerService(breadcrumb_service);
-
-    breadcrumbs::BreadcrumbPersistentStorageManager*
-        persistent_storage_manager =
-            g_browser_process->GetBreadcrumbPersistentStorageManager();
-    DCHECK(persistent_storage_manager);
-    breadcrumb_service->StartPersisting(persistent_storage_manager);
-  }
+  if (breadcrumbs::IsEnabled())
+    BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(this);
 }
 
 base::FilePath ProfileImpl::last_selected_directory() {
@@ -864,15 +851,6 @@ ProfileImpl::~ProfileImpl() {
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   StopCreateSessionServiceTimer();
 #endif
-
-  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
-          this, /*create=*/false);
-  if (breadcrumb_service) {
-    breadcrumb_service->StopPersisting();
-    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-        .StopObservingBreadcrumbManagerService(breadcrumb_service);
-  }
 
   // Remove pref observers
   pref_change_registrar_.RemoveAll();

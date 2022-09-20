@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BREADCRUMBS_CORE_APPLICATION_BREADCRUMBS_LOGGER_H_
 #define COMPONENTS_BREADCRUMBS_CORE_APPLICATION_BREADCRUMBS_LOGGER_H_
 
+#include <list>
 #include <memory>
 #include <string>
 
@@ -13,8 +14,6 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
-#include "components/breadcrumbs/core/breadcrumb_manager.h"
-#include "components/breadcrumbs/core/breadcrumb_util.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 
 namespace base {
@@ -25,8 +24,8 @@ namespace breadcrumbs {
 
 class BreadcrumbPersistentStorageManager;
 
-// Listens for and logs application wide breadcrumb events to the
-// BreadcrumbManager passed in the constructor.
+// Listens for and logs application-wide breadcrumb events to the
+// BreadcrumbManager.
 class ApplicationBreadcrumbsLogger {
  public:
   // Breadcrumbs will be stored in a file in |storage_dir|.
@@ -45,25 +44,21 @@ class ApplicationBreadcrumbsLogger {
   std::list<std::string> GetEventsForTesting();
 
  protected:
-  // Adds an event to |breadcrumb_manager_|.
+  // Adds an event to the BreadcrumbManager.
   void AddEvent(const std::string& event);
 
  private:
-  // Callback which processes and logs the user action |action| to
-  // |breadcrumb_manager_|.
+  // Callback which processes and logs the user action |action| to the
+  // BreadcrumbManager.
   void OnUserAction(const std::string& action, base::TimeTicks action_time);
 
-  // Callback which processes and logs memory pressure warnings to
-  // |breadcrumb_manager_|.
+  // Callback which processes and logs memory pressure warnings to the
+  // BreadcrumbManager.
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
   // Returns true if |action| (UMA User Action) is user triggered.
   static bool IsUserTriggeredAction(const std::string& action);
-
-  // Stores application-wide breadcrumb events.
-  breadcrumbs::BreadcrumbManager breadcrumb_manager_{
-      breadcrumbs::GetStartTime()};
 
   // The callback invoked whenever a user action is registered.
   base::ActionCallback user_action_callback_;
@@ -71,7 +66,7 @@ class ApplicationBreadcrumbsLogger {
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   // A strong pointer to the persistent breadcrumb manager listening for events
-  // from |breadcrumb_manager_| to store to disk.
+  // from the BreadcrumbManager to store to disk.
   std::unique_ptr<breadcrumbs::BreadcrumbPersistentStorageManager>
       persistent_storage_manager_;
 };

@@ -10,7 +10,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
-#include "components/breadcrumbs/core/breadcrumb_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -49,16 +48,11 @@ class FakeBreadcrumbManagerObserver : public BreadcrumbManagerObserver {
 
 class BreadcrumbManagerObserverTest : public PlatformTest {
  protected:
-  BreadcrumbManagerObserverTest() { manager_.AddObserver(&observer_); }
-
-  ~BreadcrumbManagerObserverTest() override {
-    manager_.RemoveObserver(&observer_);
-  }
+  BreadcrumbManagerObserverTest() = default;
+  ~BreadcrumbManagerObserverTest() override = default;
 
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  BreadcrumbManager manager_{GetStartTime()};
   FakeBreadcrumbManagerObserver observer_;
 };
 
@@ -69,9 +63,10 @@ TEST_F(BreadcrumbManagerObserverTest, EventAdded) {
   ASSERT_TRUE(observer_.event_added_last_received_event_.empty());
 
   const std::string event = "event";
-  manager_.AddEvent(event);
+  BreadcrumbManager::GetInstance().AddEvent(event);
 
-  EXPECT_EQ(&manager_, observer_.event_added_last_received_manager_);
+  EXPECT_EQ(&BreadcrumbManager::GetInstance(),
+            observer_.event_added_last_received_manager_);
   // A timestamp will be prepended to the event passed to |AddEvent|.
   EXPECT_NE(std::string::npos,
             observer_.event_added_last_received_event_.find(event));
@@ -83,13 +78,14 @@ TEST_F(BreadcrumbManagerObserverTest, OldEventsRemoved) {
   ASSERT_FALSE(observer_.old_events_removed_last_received_manager_);
 
   const std::string event = "event";
-  manager_.AddEvent(event);
+  BreadcrumbManager::GetInstance().AddEvent(event);
   task_env_.FastForwardBy(base::Hours(1));
-  manager_.AddEvent(event);
+  BreadcrumbManager::GetInstance().AddEvent(event);
   task_env_.FastForwardBy(base::Hours(1));
-  manager_.AddEvent(event);
+  BreadcrumbManager::GetInstance().AddEvent(event);
 
-  EXPECT_EQ(&manager_, observer_.old_events_removed_last_received_manager_);
+  EXPECT_EQ(&BreadcrumbManager::GetInstance(),
+            observer_.old_events_removed_last_received_manager_);
 }
 
 }  // namespace breadcrumbs

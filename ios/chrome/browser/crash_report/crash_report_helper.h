@@ -61,10 +61,6 @@ void ClearStateForWebStateList(WebStateList* web_state_list);
 void MonitorBreadcrumbManagerService(
     breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service);
 
-// Stops listening for breadcrumbs logged to `breadcrumb_manager_service`.
-void StopMonitoringBreadcrumbManagerService(
-    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service);
-
 // Sets breadcrumb events associated with the previous application session.
 void SetPreviousSessionEvents(const std::vector<std::string>& events);
 

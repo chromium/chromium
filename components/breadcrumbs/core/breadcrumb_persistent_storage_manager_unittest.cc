@@ -72,12 +72,9 @@ class BreadcrumbPersistentStorageManagerTest : public PlatformTest {
         /*is_metrics_enabled_callback=*/base::BindRepeating(
             &BreadcrumbPersistentStorageManagerTest::is_metrics_enabled,
             base::Unretained(this)));
-    breadcrumb_manager_service_.StartPersisting(persistent_storage_.get());
   }
 
-  ~BreadcrumbPersistentStorageManagerTest() override {
-    breadcrumb_manager_service_.StopPersisting();
-  }
+  ~BreadcrumbPersistentStorageManagerTest() override = default;
 
   // Calls `GetStoredEvents()` and wait for its posted tasks to complete.
   std::vector<std::string> GetPersistedEvents() {

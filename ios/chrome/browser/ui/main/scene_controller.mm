@@ -3239,17 +3239,6 @@ bool IsSigninForcedByPolicy() {
     [sceneController willDestroyIncognitoBrowserState];
   }
 
-  breadcrumbs::BreadcrumbPersistentStorageManager* persistentStorageManager =
-      nullptr;
-  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
-    breadcrumbs::BreadcrumbManagerKeyedService* service =
-        BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-            mainBrowserState->GetOffTheRecordChromeBrowserState());
-    persistentStorageManager = service->GetPersistentStorageManager();
-    breakpad::StopMonitoringBreadcrumbManagerService(service);
-    service->StopPersisting();
-  }
-
   // Record off-the-record metrics before detroying the BrowserState.
   if (mainBrowserState->HasOffTheRecordChromeBrowserState()) {
     ChromeBrowserState* otrBrowserState =
@@ -3268,14 +3257,8 @@ bool IsSigninForcedByPolicy() {
   }
 
   if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
-    breadcrumbs::BreadcrumbManagerKeyedService* service =
-        BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-            mainBrowserState->GetOffTheRecordChromeBrowserState());
-
-    if (persistentStorageManager) {
-      service->StartPersisting(persistentStorageManager);
-    }
-    breakpad::MonitorBreadcrumbManagerService(service);
+    BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+        mainBrowserState->GetOffTheRecordChromeBrowserState());
   }
 
   // This seems the best place to deem the destroying and rebuilding the

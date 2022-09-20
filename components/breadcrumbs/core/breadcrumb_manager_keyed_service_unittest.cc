@@ -4,6 +4,7 @@
 
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -21,6 +22,8 @@ TEST_F(BreadcrumbManagerKeyedServiceTest, EventsLabeledWithBrowserState) {
   breadcrumb_manager_service->AddEvent("event");
 
   const std::string event = breadcrumb_manager_service->GetEvents().front();
+
+  BreadcrumbManager::GetInstance().ResetForTesting();
 
   std::unique_ptr<BreadcrumbManagerKeyedService>
       otr_breadcrumb_manager_service =

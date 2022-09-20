@@ -8,10 +8,10 @@
 #include <string>
 
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 
 namespace breadcrumbs {
-
-class BreadcrumbManager;
 
 class BreadcrumbManagerObserver : public base::CheckedObserver {
  public:
@@ -30,7 +30,13 @@ class BreadcrumbManagerObserver : public base::CheckedObserver {
   virtual void OldEventsRemoved(BreadcrumbManager* manager) {}
 
  protected:
-  BreadcrumbManagerObserver() = default;
+  BreadcrumbManagerObserver();
+  ~BreadcrumbManagerObserver() override;
+
+ private:
+  // Tracks observed BreadcrumbManager and stops observing on destruction.
+  base::ScopedObservation<BreadcrumbManager, BreadcrumbManagerObserver>
+      breadcrumb_manager_observation_{this};
 };
 
 }  // namespace breadcrumbs

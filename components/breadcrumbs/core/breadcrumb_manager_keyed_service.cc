@@ -6,62 +6,34 @@
 
 #include "base/strings/stringprintf.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
-#include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
-#include "components/breadcrumbs/core/breadcrumb_util.h"
 
 namespace breadcrumbs {
 
 void BreadcrumbManagerKeyedService::AddEvent(const std::string& event) {
   std::string event_log =
       base::StringPrintf("%s%s", browsing_mode_.c_str(), event.c_str());
-  breadcrumb_manager_->AddEvent(event_log);
+  BreadcrumbManager::GetInstance().AddEvent(event_log);
 }
 
 void BreadcrumbManagerKeyedService::AddObserver(
     BreadcrumbManagerObserver* observer) {
-  breadcrumb_manager_->AddObserver(observer);
+  BreadcrumbManager::GetInstance().AddObserver(observer);
 }
 
 void BreadcrumbManagerKeyedService::RemoveObserver(
     BreadcrumbManagerObserver* observer) {
-  breadcrumb_manager_->RemoveObserver(observer);
+  BreadcrumbManager::GetInstance().RemoveObserver(observer);
 }
 
 const std::list<std::string> BreadcrumbManagerKeyedService::GetEvents() const {
-  return breadcrumb_manager_->GetEvents();
-}
-
-void BreadcrumbManagerKeyedService::StartPersisting(
-    BreadcrumbPersistentStorageManager* persistent_storage_manager) {
-  DCHECK(persistent_storage_manager);
-
-  if (persistent_storage_manager_)
-    StopPersisting();
-
-  persistent_storage_manager_ = persistent_storage_manager;
-  persistent_storage_manager_->MonitorBreadcrumbManagerService(this);
-}
-
-void BreadcrumbManagerKeyedService::StopPersisting() {
-  if (!persistent_storage_manager_)
-    return;
-
-  persistent_storage_manager_->StopMonitoringBreadcrumbManagerService(this);
-  persistent_storage_manager_ = nullptr;
-}
-
-BreadcrumbPersistentStorageManager*
-BreadcrumbManagerKeyedService::GetPersistentStorageManager() {
-  return persistent_storage_manager_;
+  return BreadcrumbManager::GetInstance().GetEvents();
 }
 
 BreadcrumbManagerKeyedService::BreadcrumbManagerKeyedService(
     bool is_off_the_record)
     // Set "I" for Incognito (Chrome branded OffTheRecord implementation) and
     // empty string for Normal browsing mode.
-    : browsing_mode_(is_off_the_record ? "I " : ""),
-      breadcrumb_manager_(std::make_unique<BreadcrumbManager>(GetStartTime())) {
-}
+    : browsing_mode_(is_off_the_record ? "I " : "") {}
 
 BreadcrumbManagerKeyedService::~BreadcrumbManagerKeyedService() = default;
 

@@ -508,6 +508,7 @@ static_library("test_support") {
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc:test_support",
+    "//components/breadcrumbs/core",
     "//components/browsing_topics/common:common",
     "//components/network_session_configurator/common:common",
     "//components/services/storage",

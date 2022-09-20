@@ -32,10 +32,11 @@ const int kEventExpirationMinutes = 20;
 
 }  // namespace
 
-BreadcrumbManager::BreadcrumbManager(base::TimeTicks start_time)
-    : start_time_(start_time) {}
-
-BreadcrumbManager::~BreadcrumbManager() = default;
+// static
+BreadcrumbManager& BreadcrumbManager::GetInstance() {
+  static base::NoDestructor<BreadcrumbManager> breadcrumb_manager;
+  return *breadcrumb_manager;
+}
 
 const std::list<std::string> BreadcrumbManager::GetEvents() {
   DropOldEvents();
@@ -81,6 +82,9 @@ void BreadcrumbManager::AddEvent(const std::string& event) {
   DropOldEvents();
 }
 
+BreadcrumbManager::BreadcrumbManager() = default;
+BreadcrumbManager::~BreadcrumbManager() = default;
+
 void BreadcrumbManager::DropOldEvents() {
   bool old_buckets_dropped = false;
   // Drop buckets that are more than kEventExpirationMinutes old.
@@ -125,6 +129,11 @@ void BreadcrumbManager::AddObserver(BreadcrumbManagerObserver* observer) {
 
 void BreadcrumbManager::RemoveObserver(BreadcrumbManagerObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void BreadcrumbManager::ResetForTesting() {
+  start_time_ = base::TimeTicks::Now();
+  event_buckets_.clear();
 }
 
 BreadcrumbManager::EventBucket::EventBucket(int minutes_elapsed)

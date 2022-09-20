@@ -234,18 +234,6 @@ void ClearStateForWebStateList(WebStateList* web_state_list) {
       web_state_list);
 }
 
-void MonitorBreadcrumbManagerService(
-    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
-  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-      .ObserveBreadcrumbManagerService(breadcrumb_manager_service);
-}
-
-void StopMonitoringBreadcrumbManagerService(
-    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
-  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-      .StopObservingBreadcrumbManagerService(breadcrumb_manager_service);
-}
-
 void SetPreviousSessionEvents(const std::vector<std::string>& events) {
   breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
       .SetPreviousSessionEvents(events);

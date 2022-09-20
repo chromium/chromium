@@ -16,6 +16,7 @@ include_rules = [
   # available to code in content/public.
   "+content/common/content_export.h",
 
+  "+components/breadcrumbs/core",
   "+components/discardable_memory/service",
   "+components/download/public/common",
   "+components/enterprise/common/download_item_reroute_info.h",

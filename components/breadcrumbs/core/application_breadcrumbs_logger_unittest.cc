@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
-#include "components/breadcrumbs/core/breadcrumb_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 

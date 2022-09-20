@@ -9,6 +9,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/no_destructor.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 #include "components/crash/core/common/crash_key.h"
 
@@ -32,34 +33,6 @@ CrashReporterBreadcrumbObserver&
 CrashReporterBreadcrumbObserver::GetInstance() {
   static base::NoDestructor<CrashReporterBreadcrumbObserver> instance;
   return *instance;
-}
-
-void CrashReporterBreadcrumbObserver::ObserveBreadcrumbManager(
-    BreadcrumbManager* breadcrumb_manager) {
-  breadcrumb_manager_observations_.AddObservation(breadcrumb_manager);
-}
-
-void CrashReporterBreadcrumbObserver::StopObservingBreadcrumbManager(
-    BreadcrumbManager* breadcrumb_manager) {
-  breadcrumb_manager_observations_.RemoveObservation(breadcrumb_manager);
-}
-
-void CrashReporterBreadcrumbObserver::ObserveBreadcrumbManagerService(
-    BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
-  breadcrumb_manager_service_observations_.AddObservation(
-      breadcrumb_manager_service);
-}
-
-void CrashReporterBreadcrumbObserver::StopObservingBreadcrumbManagerService(
-    BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
-  // |breadcrumb_manager_service| may not be observed, because the incognito
-  // BrowserState deletes itself before initializing on iOS (see
-  // scene_controller::destroyAndRebuildIncognitoBrowserState).
-  if (breadcrumb_manager_service_observations_.IsObservingSource(
-          breadcrumb_manager_service)) {
-    breadcrumb_manager_service_observations_.RemoveObservation(
-        breadcrumb_manager_service);
-  }
 }
 
 void CrashReporterBreadcrumbObserver::SetPreviousSessionEvents(

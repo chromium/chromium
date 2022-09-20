@@ -18,8 +18,7 @@ class FilePath;
 extern const char kBreadcrumbOrientation[];
 
 // Listens for and logs application-wide breadcrumb events to the
-// BreadcrumbManager passed in the constructor. Includes iOS-specific events
-// such as device orientation.
+// BreadcrumbManager. Includes iOS-specific events such as device orientation.
 class ApplicationBreadcrumbsLogger
     : public breadcrumbs::ApplicationBreadcrumbsLogger {
  public:

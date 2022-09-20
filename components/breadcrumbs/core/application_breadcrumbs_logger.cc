@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "components/breadcrumbs/core/application_breadcrumbs_not_user_action.inc"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 
@@ -30,13 +31,9 @@ ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
               std::move(is_metrics_enabled_callback))) {
   base::AddActionCallback(user_action_callback_);
 
-  // Start crash reporter listening for breadcrumbs logged to
-  // |breadcrumb_manager_|. Collected breadcrumbs will be attached to crash
-  // reports.
-  CrashReporterBreadcrumbObserver::GetInstance().ObserveBreadcrumbManager(
-      &breadcrumb_manager_);
-
-  persistent_storage_manager_->MonitorBreadcrumbManager(&breadcrumb_manager_);
+  // Start crash reporter listening for breadcrumb events. Collected breadcrumbs
+  // will be attached to crash reports.
+  CrashReporterBreadcrumbObserver::GetInstance();
 
   AddEvent("Startup");
 }
@@ -44,10 +41,6 @@ ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
 ApplicationBreadcrumbsLogger::~ApplicationBreadcrumbsLogger() {
   AddEvent("Shutdown");
   base::RemoveActionCallback(user_action_callback_);
-  CrashReporterBreadcrumbObserver::GetInstance().StopObservingBreadcrumbManager(
-      &breadcrumb_manager_);
-  persistent_storage_manager_->StopMonitoringBreadcrumbManager(
-      &breadcrumb_manager_);
 }
 
 BreadcrumbPersistentStorageManager*
@@ -56,11 +49,11 @@ ApplicationBreadcrumbsLogger::GetPersistentStorageManager() const {
 }
 
 std::list<std::string> ApplicationBreadcrumbsLogger::GetEventsForTesting() {
-  return breadcrumb_manager_.GetEvents();
+  return breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
 }
 
 void ApplicationBreadcrumbsLogger::AddEvent(const std::string& event) {
-  breadcrumb_manager_.AddEvent(event);
+  breadcrumbs::BreadcrumbManager::GetInstance().AddEvent(event);
 }
 
 void ApplicationBreadcrumbsLogger::OnUserAction(const std::string& action,

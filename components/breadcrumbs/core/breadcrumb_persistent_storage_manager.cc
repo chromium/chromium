@@ -20,7 +20,6 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
-#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
 
 namespace breadcrumbs {
@@ -173,26 +172,6 @@ void BreadcrumbPersistentStorageManager::GetStoredEvents(
       std::move(callback));
 }
 
-void BreadcrumbPersistentStorageManager::MonitorBreadcrumbManager(
-    BreadcrumbManager* manager) {
-  manager->AddObserver(this);
-}
-
-void BreadcrumbPersistentStorageManager::MonitorBreadcrumbManagerService(
-    BreadcrumbManagerKeyedService* service) {
-  service->AddObserver(this);
-}
-
-void BreadcrumbPersistentStorageManager::StopMonitoringBreadcrumbManager(
-    BreadcrumbManager* manager) {
-  manager->RemoveObserver(this);
-}
-
-void BreadcrumbPersistentStorageManager::StopMonitoringBreadcrumbManagerService(
-    BreadcrumbManagerKeyedService* service) {
-  service->RemoveObserver(this);
-}
-
 void BreadcrumbPersistentStorageManager::CombineEventsAndRewriteAllBreadcrumbs(
     const std::vector<std::string> pending_breadcrumbs,
     std::vector<std::string> existing_events) {
@@ -244,9 +223,8 @@ void BreadcrumbPersistentStorageManager::RewriteAllExistingBreadcrumbs() {
   last_written_time_ = base::TimeTicks::Now();
   file_position_ = 0;
 
-  // Load persisted events directly from file because the correct order can not
-  // be reconstructed from the multiple BreadcrumbManagers with the partial
-  // timestamps embedded in each event.
+  // Load persisted events directly from file.
+  // TODO(crbug.com/1360583): get events from BreadcrumbManager instead.
   GetStoredEvents(base::BindOnce(&BreadcrumbPersistentStorageManager::
                                      CombineEventsAndRewriteAllBreadcrumbs,
                                  weak_ptr_factory_.GetWeakPtr(),

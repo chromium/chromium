@@ -12,7 +12,6 @@
 #import "base/files/scoped_temp_dir.h"
 #import "base/test/task_environment.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
-#import "components/breadcrumbs/core/breadcrumb_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 

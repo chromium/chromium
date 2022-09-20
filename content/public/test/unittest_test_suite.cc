@@ -13,6 +13,7 @@
 #include "base/rand_util.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "content/app/mojo/mojo_init.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/notification_service_impl.h"
@@ -94,6 +95,8 @@ class UnitTestTestSuite::UnitTestEventListener
     // InterfacePtr pointing to it to avoid it getting the connection error
     // later and have other tests use the InterfacePtr that is invalid.
     ResetNetworkServiceForTesting();
+
+    breadcrumbs::BreadcrumbManager::GetInstance().ResetForTesting();
   }
 
  private:
