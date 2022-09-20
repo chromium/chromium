@@ -447,7 +447,7 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_goma": true,
+      "use_remoteexec": true,
       "v8_enable_verify_heap": true
     }
   },

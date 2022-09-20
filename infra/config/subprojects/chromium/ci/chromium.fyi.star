@@ -2285,6 +2285,9 @@ fyi_mac_builder(
     ),
     cores = None,
     os = None,
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 fyi_mac_builder(
