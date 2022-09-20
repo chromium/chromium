@@ -1070,7 +1070,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
             // Only transition theme colors if in static tab mode that is not the NTP. In practice
             // this only runs when you focus the omnibox on a web page.
-            if (!isLocationBarShownInNTP() && mTabSwitcherState == STATIC_TAB) {
+            // But for the mShouldShowModernizeVisualUpdate, toolbar and locationbar will have
+            // different color when they are focused than in NTP, so the color need to be updated in
+            // this case.
+            if ((mShouldShowModernizeVisualUpdate || !isLocationBarShownInNTP())
+                    && mTabSwitcherState == STATIC_TAB) {
                 int defaultColor = getToolbarDefaultColor();
                 int defaultLocationBarColor =
                         getLocationBarDefaultColorForToolbarColor(defaultColor);
