@@ -18,63 +18,63 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
-extern const base::Feature kClosedTabCache;
+BASE_DECLARE_FEATURE(kClosedTabCache);
 
-extern const base::Feature kColorProviderRedirectionForThemeProvider;
+BASE_DECLARE_FEATURE(kColorProviderRedirectionForThemeProvider);
 
-extern const base::Feature kDestroyProfileOnBrowserClose;
-extern const base::Feature kDestroySystemProfiles;
+BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
+BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
-extern const base::Feature kDevToolsTabTarget;
+BASE_DECLARE_FEATURE(kDevToolsTabTarget);
 
-extern const base::Feature kNukeProfileBeforeCreateMultiAsync;
+BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
 
-extern const base::Feature kPromoBrowserCommands;
+BASE_DECLARE_FEATURE(kPromoBrowserCommands);
 extern const char kBrowserCommandIdParam[];
 
-extern const base::Feature kUseManagementService;
+BASE_DECLARE_FEATURE(kUseManagementService);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const base::Feature kQuickSettingsPWANotifications;
+BASE_DECLARE_FEATURE(kQuickSettingsPWANotifications);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-extern const base::Feature kDoubleTapToZoomInTabletMode;
+BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 #endif
 
 #if BUILDFLAG(IS_MAC)
-extern const base::Feature kEnableUniveralLinks;
+BASE_DECLARE_FEATURE(kEnableUniveralLinks);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-extern const base::Feature kCopyLinkToText;
-extern const base::Feature kMuteNotificationSnoozeAction;
+BASE_DECLARE_FEATURE(kCopyLinkToText);
+BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);
 #endif
 
-extern const base::Feature kSandboxExternalProtocolBlocked;
-extern const base::Feature kSandboxExternalProtocolBlockedWarning;
-extern const base::Feature kTriggerNetworkDataMigration;
+BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlocked);
+BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlockedWarning);
+BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
 
-extern const base::Feature kWebUsbDeviceDetection;
+BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 
 #if BUILDFLAG(IS_ANDROID)
-extern const base::Feature kCertificateTransparencyAndroid;
+BASE_DECLARE_FEATURE(kCertificateTransparencyAndroid);
 #endif
 
-extern const base::Feature kLargeFaviconFromGoogle;
+BASE_DECLARE_FEATURE(kLargeFaviconFromGoogle);
 extern const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip;
 
-extern const base::Feature kObserverBasedPostProfileInit;
+BASE_DECLARE_FEATURE(kObserverBasedPostProfileInit);
 
-extern const base::Feature kRestartNetworkServiceUnsandboxedForFailedLaunch;
+BASE_DECLARE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch);
 
-extern const base::Feature kKeyPinningComponentUpdater;
+BASE_DECLARE_FEATURE(kKeyPinningComponentUpdater);
 
 #if BUILDFLAG(IS_WIN)
-extern const base::Feature kAppBoundEncryptionMetrics;
+BASE_DECLARE_FEATURE(kAppBoundEncryptionMetrics);
 #endif
 
-extern const base::Feature kFlexOrgManagementDisclosure;
+BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 
 }  // namespace features
 
