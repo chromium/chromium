@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
@@ -94,6 +95,7 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug/1365613")
     public void testPasswordSheetDisplaysOptions() throws TimeoutException {
         mHelper.loadTestPage(false);
 
@@ -131,6 +133,7 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug/1365613")
     public void testDisplaysEmptyStateMessageWithoutSavedPasswords() throws TimeoutException {
         mHelper.loadTestPage(false);
         // Mark the origin as denylisted to have a reason to show the accessory in the first place.
