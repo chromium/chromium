@@ -1615,6 +1615,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram base="true"
+    name="Blink.IntersectionObservationInternalCount.UpdateTime" units="count"
+    expires_after="2022-12-11">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>szager@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Number of IntersectionObserver computations for blink-internal consumers
+    that were performed during the course of a single main frame.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="Blink.IntersectionObservationJavascriptCount.UpdateTime"
+    units="count" expires_after="2022-12-11">
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
+
+<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeAggregatedSuffixes" -->
+
+  <owner>szager@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Number of IntersectionObserver computations for javascript consumers that
+    were performed during the course of a single main frame.
+  </summary>
+</histogram>
+
 <histogram name="Blink.JavaJsBridge.MethodInvocationError"
     enum="JavaJsBridgeMethodInvocationError" expires_after="2022-12-31">
   <owner>torne@chromium.org</owner>
