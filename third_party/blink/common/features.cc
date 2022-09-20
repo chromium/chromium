@@ -1568,7 +1568,7 @@ BASE_FEATURE(kThrottleIntersectionObserverUMA,
 
 BASE_FEATURE(kWebRtcMetronome,
              "WebRtcMetronome",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncAccessHandleAllSyncSurface,
              "SyncAccessHandleAllSyncSurface",
