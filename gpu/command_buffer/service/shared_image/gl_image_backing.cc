@@ -781,9 +781,10 @@ bool GLImageBacking::BindOrCopyImageIfNeeded() {
     }
     new_state = gles2::Texture::COPIED;
   }
+  DCHECK(new_state == gles2::Texture::BOUND ||
+         new_state == gles2::Texture::COPIED);
   if (IsPassthrough()) {
-    passthrough_texture_->set_is_bind_pending(new_state ==
-                                              gles2::Texture::UNBOUND);
+    passthrough_texture_->set_is_bind_pending(false);
   } else {
     texture_->SetLevelImage(target, 0, image_.get(), new_state);
   }
