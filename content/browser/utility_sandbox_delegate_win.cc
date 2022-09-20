@@ -141,8 +141,6 @@ bool XrCompositingPreSpawnTarget(sandbox::TargetConfig* config,
                                  base::CommandLine& cmd_line,
                                  sandbox::mojom::Sandbox sandbox_type) {
   DCHECK(!config->IsConfigured());
-  if (!base::FeatureList::IsEnabled(sandbox::policy::features::kXRSandbox))
-    return true;
   // TODO(https://crbug.com/881919): Try to harden the XR Compositor
   // sandbox to use mitigations and restrict the token.
 
@@ -177,14 +175,9 @@ bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
     case sandbox::mojom::Sandbox::kMediaFoundationCdm:
     case sandbox::mojom::Sandbox::kNetwork:
     case sandbox::mojom::Sandbox::kWindowsSystemProxyResolver:
+    case sandbox::mojom::Sandbox::kXrCompositing:
       *appcontainer_id = UtilityAppContainerId(cmd_line_);
       return true;
-    case sandbox::mojom::Sandbox::kXrCompositing:
-      if (base::FeatureList::IsEnabled(sandbox::policy::features::kXRSandbox)) {
-        *appcontainer_id = UtilityAppContainerId(cmd_line_);
-        return true;
-      }
-      return false;
     default:
       return false;
   }
@@ -197,8 +190,7 @@ bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
       // to read device properties (https://crbug.com/883326).
       return true;
     case sandbox::mojom::Sandbox::kXrCompositing:
-      return base::FeatureList::IsEnabled(
-          sandbox::policy::features::kXRSandbox);
+      return true;
     case sandbox::mojom::Sandbox::kMediaFoundationCdm:
       // Default policy is disabled for MF Cdm process to allow the application
       // of specific LPAC sandbox policies.

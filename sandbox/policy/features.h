@@ -28,10 +28,6 @@ SANDBOX_POLICY_EXPORT extern const base::Feature kRendererAppContainer;
 SANDBOX_POLICY_EXPORT extern const base::Feature kSharedSandboxPolicies;
 #endif  // BUILDFLAG(IS_WIN)
 
-#if !BUILDFLAG(IS_ANDROID)
-SANDBOX_POLICY_EXPORT extern const base::Feature kXRSandbox;
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 SANDBOX_POLICY_EXPORT extern const base::Feature kSpectreVariant2Mitigation;
 SANDBOX_POLICY_EXPORT extern const base::Feature

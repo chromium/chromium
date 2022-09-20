@@ -30,7 +30,6 @@ bool IsUnsandboxedSandboxType(Sandbox sandbox_type) {
     case Sandbox::kNoSandboxAndElevatedPrivileges:
       return true;
     case Sandbox::kXrCompositing:
-      return !base::FeatureList::IsEnabled(features::kXRSandbox);
     case Sandbox::kPdfConversion:
     case Sandbox::kIconReader:
     case Sandbox::kMediaFoundationCdm:

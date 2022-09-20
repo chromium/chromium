@@ -44,11 +44,6 @@ const base::Feature kSharedSandboxPolicies{"SharedSandboxPolicies",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_WIN)
 
-#if !BUILDFLAG(IS_ANDROID)
-// Controls whether the isolated XR service is sandboxed.
-const base::Feature kXRSandbox{"XRSandbox", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Controls whether the Spectre variant 2 mitigation is enabled. We use a USE
 // flag on some Chrome OS boards to disable the mitigation by disabling this
