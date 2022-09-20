@@ -4332,15 +4332,6 @@ const char kNtpRealboxPedalsName[] = "NTP Realbox Pedals";
 const char kNtpRealboxPedalsDescription[] =
     "Shows pedals in the NTP Realbox when enabled.";
 
-const char kNtpRealboxSuggestionAnswersName[] =
-    "NTP Realbox Suggestion Answers";
-const char kNtpRealboxSuggestionAnswersDescription[] =
-    "Shows suggestion answers in the NTP Realbox when enabled.";
-
-const char kNtpRealboxTailSuggestName[] = "NTP Realbox Tail Suggest";
-const char kNtpRealboxTailSuggestDescription[] =
-    "Properly formats the tail suggestions to match the Omnibox";
-
 const char kNtpRealboxUseGoogleGIconName[] = "NTP Realbox Google G Icon";
 const char kNtpRealboxUseGoogleGIconDescription[] =
     "Shows Google G icon "

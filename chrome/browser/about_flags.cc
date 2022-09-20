@@ -5971,15 +5971,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpRealboxPedalsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kNtpRealboxPedals)},
 
-    {"ntp-realbox-suggestion-answers",
-     flag_descriptions::kNtpRealboxSuggestionAnswersName,
-     flag_descriptions::kNtpRealboxSuggestionAnswersDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kNtpRealboxSuggestionAnswers)},
-
-    {"ntp-realbox-tail-suggest", flag_descriptions::kNtpRealboxTailSuggestName,
-     flag_descriptions::kNtpRealboxTailSuggestDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kNtpRealboxTailSuggest)},
-
     {"ntp-realbox-use-google-g-icon",
      flag_descriptions::kNtpRealboxUseGoogleGIconName,
      flag_descriptions::kNtpRealboxUseGoogleGIconDescription, kOsDesktop,

@@ -2475,12 +2475,6 @@ extern const char kNtpRealboxMatchSearchboxThemeDescription[];
 extern const char kNtpRealboxPedalsName[];
 extern const char kNtpRealboxPedalsDescription[];
 
-extern const char kNtpRealboxSuggestionAnswersName[];
-extern const char kNtpRealboxSuggestionAnswersDescription[];
-
-extern const char kNtpRealboxTailSuggestName[];
-extern const char kNtpRealboxTailSuggestDescription[];
-
 extern const char kNtpRealboxUseGoogleGIconName[];
 extern const char kNtpRealboxUseGoogleGIconDescription[];
 

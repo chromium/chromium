@@ -312,14 +312,6 @@ const base::Feature kRichAutocompletion{"OmniboxRichAutocompletion",
 const base::Feature kNtpRealboxPedals{"NtpRealboxPedals",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Feature used to enable Suggestion Answers in the NTP Realbox.
-const base::Feature kNtpRealboxSuggestionAnswers{
-    "NtpRealboxSuggestionAnswers", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Feature used to enable Tail Suggest Formatting in the NTP Realbox.
-const base::Feature kNtpRealboxTailSuggest{"NtpRealboxTailSuggest",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Feature used to enable URL suggestions for inputs that may contain typos.
 const base::Feature kOmniboxFuzzyUrlSuggestions{
     "OmniboxFuzzyUrlSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};

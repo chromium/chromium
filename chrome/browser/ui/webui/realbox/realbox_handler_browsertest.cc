@@ -42,12 +42,6 @@ class BrowserTestWithParam : public InProcessBrowserTest,
   BrowserTestWithParam& operator=(const BrowserTestWithParam&) = delete;
   ~BrowserTestWithParam() override = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        omnibox::kNtpRealboxSuggestionAnswers);
-    InProcessBrowserTest::SetUp();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -89,8 +83,6 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, AnswerVectorIcons) {
   for (int answer_type = SuggestionAnswer::ANSWER_TYPE_DICTIONARY;
        answer_type != SuggestionAnswer::ANSWER_TYPE_TOTAL_COUNT;
        answer_type++) {
-    EXPECT_TRUE(
-        base::FeatureList::IsEnabled(omnibox::kNtpRealboxSuggestionAnswers));
     AutocompleteMatch match;
     SuggestionAnswer answer;
     answer.set_type(answer_type);

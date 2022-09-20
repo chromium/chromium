@@ -229,8 +229,7 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         match.swap_contents_and_description;
     mojom_match->type = AutocompleteMatchType::ToString(match.type);
     mojom_match->supports_deletion = match.SupportsDeletion();
-    if (match.answer.has_value() &&
-        base::FeatureList::IsEnabled(omnibox::kNtpRealboxSuggestionAnswers)) {
+    if (match.answer.has_value()) {
       const auto& additional_text =
           GetAdditionalText(match.answer->first_line());
       mojom_match->answer = realbox::mojom::SuggestionAnswer::New(
@@ -243,8 +242,7 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     mojom_match->is_rich_suggestion =
         !mojom_match->image_url.empty() ||
         match.type == AutocompleteMatchType::CALCULATOR ||
-        (match.answer.has_value() &&
-         base::FeatureList::IsEnabled(omnibox::kNtpRealboxSuggestionAnswers));
+        (match.answer.has_value());
     const bool has_action = match.action && base::FeatureList::IsEnabled(
                                                 omnibox::kNtpRealboxPedals);
     if (has_action) {
@@ -334,10 +332,7 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
       omnibox::kAnswerSunriseIcon.name,    omnibox::kAnswerTranslationIcon.name,
       omnibox::kAnswerWhenIsIcon.name,     omnibox::kAnswerWhenIsIcon.name};
 
-  if (!base::FeatureList::IsEnabled(omnibox::kNtpRealboxSuggestionAnswers) &&
-      base::Contains(answerNames, icon.name)) {
-    return kSearchIconResourceName;
-  } else if (icon.name == omnibox::kAnswerCurrencyIcon.name) {
+  if (icon.name == omnibox::kAnswerCurrencyIcon.name) {
     return kAnswerCurrencyIconResourceName;
   } else if (icon.name == omnibox::kAnswerDefaultIcon.name) {
     return kAnswerDefaultIconResourceName;
@@ -741,9 +736,7 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
   DCHECK(controller == autocomplete_controller_.get());
 
   // Prepend missing tail suggestion prefixes in results, if present.
-  if (base::FeatureList::IsEnabled(omnibox::kNtpRealboxTailSuggest)) {
-    autocomplete_controller_->SetTailSuggestCommonPrefixes();
-  }
+  autocomplete_controller_->SetTailSuggestCommonPrefixes();
 
   page_->AutocompleteResultChanged(CreateAutocompleteResult(
       autocomplete_controller_->input().text(),

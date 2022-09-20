@@ -4746,16 +4746,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "ntp-realbox-suggestion-answers",
-    "owners": [ "mahmadi", "mfacey" ],
-    "expiry_milestone": 110
-  },
-  {
-    "name": "ntp-realbox-tail-suggest",
-    "owners": [ "mahmadi", "mfacey" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "ntp-realbox-use-google-g-icon",
     "owners": [ "mahmadi", "mfacey" ],
     "expiry_milestone": 110
