@@ -199,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressIgnoreButton) {
       static_cast<int>(AccuracyTipInteraction::kClosed));
 }
 
-IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressEsc) {
+// TODO(crbug.com/1363619): Disabled for flakiness.
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, DISABLED_PressEsc) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
   EXPECT_TRUE(IsUIShowing());
 
