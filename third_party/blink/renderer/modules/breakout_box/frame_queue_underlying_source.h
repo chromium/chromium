@@ -86,7 +86,13 @@ class FrameQueueUnderlyingSource
   // QueueFrame(). |transferred_source| will pull frames from the same circular
   // queue. Must be called on |realm_task_runner_|.
   void TransferSource(
-      FrameQueueUnderlyingSource<NativeFrameType>* transferred_source);
+      CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
+          transferred_source);
+
+  // Due to a potential race condition between |transferred_source_|'s heap
+  // being destroyed and the Close() method being called, we need to explicitly
+  // clear |transferred_source_| when its context is being destroyed.
+  void ClearTransferredSource();
 
  protected:
   bool MustUseMonitor() const;

@@ -19,10 +19,13 @@ FrameQueueTransferringOptimizer<NativeFrameType>::
         FrameQueueHost* host,
         scoped_refptr<base::SequencedTaskRunner> host_runner,
         wtf_size_t max_queue_size,
-        ConnectHostCallback connect_host_callback)
+        ConnectHostCallback connect_host_callback,
+        CrossThreadOnceClosure transferred_source_destroyed_callback)
     : host_(host),
       host_runner_(std::move(host_runner)),
       connect_host_callback_(std::move(connect_host_callback)),
+      transferred_source_destroyed_callback_(
+          std::move(transferred_source_destroyed_callback)),
       max_queue_size_(max_queue_size) {}
 
 template <typename NativeFrameType>
@@ -40,7 +43,8 @@ FrameQueueTransferringOptimizer<NativeFrameType>::PerformInProcessOptimization(
 
   auto* source = MakeGarbageCollected<
       TransferredFrameQueueUnderlyingSource<NativeFrameType>>(
-      script_state, host, host_runner_);
+      script_state, host, host_runner_,
+      std::move(transferred_source_destroyed_callback_));
 
   PostCrossThreadTask(
       *host_runner_, FROM_HERE,

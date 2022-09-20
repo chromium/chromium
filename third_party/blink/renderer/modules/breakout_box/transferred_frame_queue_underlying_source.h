@@ -19,8 +19,9 @@ class TransferredFrameQueueUnderlyingSource
 
   TransferredFrameQueueUnderlyingSource(
       ScriptState*,
-      FrameQueueHost*,
-      scoped_refptr<base::SequencedTaskRunner> host_runner);
+      CrossThreadPersistent<FrameQueueHost>,
+      scoped_refptr<base::SequencedTaskRunner> host_runner,
+      CrossThreadOnceClosure transferred_source_destroyed_callback);
   ~TransferredFrameQueueUnderlyingSource() override = default;
 
   TransferredFrameQueueUnderlyingSource(
@@ -32,11 +33,15 @@ class TransferredFrameQueueUnderlyingSource
   bool StartFrameDelivery() override;
   void StopFrameDelivery() override;
 
+  // ExecutionLifecycleObserver
+  void ContextDestroyed() override;
+
   void Trace(Visitor*) const override;
 
  private:
   scoped_refptr<base::SequencedTaskRunner> host_runner_;
   CrossThreadPersistent<FrameQueueHost> host_;
+  CrossThreadOnceClosure transferred_source_destroyed_callback_;
 };
 
 extern template class MODULES_EXTERN_TEMPLATE_EXPORT

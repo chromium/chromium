@@ -266,13 +266,20 @@ double FrameQueueUnderlyingSource<NativeFrameType>::DesiredSizeForTesting()
 
 template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::TransferSource(
-    FrameQueueUnderlyingSource<NativeFrameType>* transferred_source) {
+    CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
+        transferred_source) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   base::AutoLock locker(lock_);
   DCHECK(!transferred_source_);
-  transferred_source_ = transferred_source;
+  transferred_source_ = std::move(transferred_source);
   CloseController();
   frame_queue_handle_.Invalidate();
+}
+
+template <typename NativeFrameType>
+void FrameQueueUnderlyingSource<NativeFrameType>::ClearTransferredSource() {
+  base::AutoLock locker(lock_);
+  transferred_source_.Clear();
 }
 
 template <typename NativeFrameType>

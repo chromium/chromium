@@ -66,6 +66,9 @@ MediaStreamVideoTrackUnderlyingSource::GetStreamTransferOptimizer() {
       this, GetRealmRunner(), MaxQueueSize(),
       CrossThreadBindOnce(
           &MediaStreamVideoTrackUnderlyingSource::OnSourceTransferStarted,
+          WrapCrossThreadWeakPersistent(this)),
+      CrossThreadBindOnce(
+          &MediaStreamVideoTrackUnderlyingSource::ClearTransferredSource,
           WrapCrossThreadWeakPersistent(this)));
 }
 
@@ -76,9 +79,9 @@ MediaStreamVideoTrackUnderlyingSource::GetIOTaskRunner() {
 
 void MediaStreamVideoTrackUnderlyingSource::OnSourceTransferStarted(
     scoped_refptr<base::SequencedTaskRunner> transferred_runner,
-    TransferredVideoFrameQueueUnderlyingSource* source) {
+    CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource> source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TransferSource(source);
+  TransferSource(std::move(source));
   RecordBreakoutBoxUsage(BreakoutBoxUsage::kReadableVideoWorker);
 }
 
