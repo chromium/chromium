@@ -156,6 +156,24 @@ chromium-metrics-reviews@google.com.
       summary="Step during the setup service that updates play services"/>
 </variants>
 
+<variants name="WaylandEventType">
+  <variant name=".BinderReleaseClipboardData"
+      summary="Clipboard data released"/>
+  <variant name=".Other" summary="Unspecified event"/>
+  <variant name=".WlBufferRelease" summary="Fenced buffer released"/>
+  <variant name=".WlKeyboardLeave" summary="Input keyboard leave"/>
+  <variant name=".WlPointerLeave" summary="Input pointer leave"/>
+  <variant name=".WlPointerMotion" summary="Input pointer motion"/>
+  <variant name=".ZauraShellActivated" summary="Aura shell activated"/>
+  <variant name=".ZauraSurfaceOcclusionChanged"
+      summary="Surface occlusion changed"/>
+  <variant name=".ZcrRemoteSurfaceBoundsChangedInOutput"
+      summary="Window bounds changed"/>
+  <variant name=".ZcrRemoteSurfaceWindowGeometryChanged"
+      summary="Window geometry changed"/>
+  <variant name=".ZcrVsyncTimingUpdate" summary="Vsync update"/>
+</variants>
+
 <histogram name="Arc.AbiMigration.BootTime" units="ms"
     expires_after="2022-08-03">
   <owner>vraheja@chromium.org</owner>
@@ -2119,15 +2137,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.Wayland.LateTiming.Duration" units="ms"
+<histogram name="Arc.Wayland.LateTiming.Duration{WaylandEventType}" units="ms"
     expires_after="2023-03-12">
   <owner>alanding@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     The duration of the Wayland client event processing time in ARC. This metric
     is recorded when the processing end time is late or the duration exceeded
-    the expected timing threshold.
+    the expected timing threshold for a {WaylandEventType}.
   </summary>
+  <token key="WaylandEventType" variants="WaylandEventType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Arc.Wayland.LateTiming.Event" enum="WaylandTimingEvent"

@@ -782,8 +782,8 @@ void ArcMetricsService::ReportWaylandLateTimingEvent(
     base::TimeDelta duration) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const std::string suffix = WaylandTimingEventToString(event);
-  base::UmaHistogramLongTimes(
-      base::StrCat({"Arc.Wayland.LateTiming.Duration", suffix}), duration);
+  base::UmaHistogramLongTimes("Arc.Wayland.LateTiming.Duration" + suffix,
+                              duration);
   base::UmaHistogramEnumeration("Arc.Wayland.LateTiming.Event", event);
 }
 
