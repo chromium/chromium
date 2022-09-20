@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 source_set("seven_zip_reader") {
   assert(
       !is_android,
@@ -29,7 +31,19 @@ source_set("unit_tests") {
     "//base",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/lzma_sdk",
   ]
 
   data = [ "//third_party/lzma_sdk/google/test_data" ]
+}
+
+fuzzer_test("seven_zip_reader_fuzzer") {
+  sources = [ "seven_zip_reader_fuzzer.cc" ]
+  deps = [
+    ":seven_zip_reader",
+    "//base",
+    "//third_party/lzma_sdk",
+  ]
+
+  seed_corpus = "fuzzer_corpus"
 }

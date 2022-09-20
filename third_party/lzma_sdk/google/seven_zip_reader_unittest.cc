@@ -26,6 +26,9 @@
 //     bad_crc.7z | sed 's/:.*$//' | while read -r match; do \
 //     printf 'This is not an exe' | dd conv=notrunc of=bad_crc.7z \
 //     bs=1 seek=$match done
+//
+//   fake_crc_table.7z was created with a hex editor, replacing the three CRC
+//   values with 0.
 
 #include "third_party/lzma_sdk/google/seven_zip_reader.h"
 
@@ -39,6 +42,10 @@
 #include "base/path_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+extern "C" {
+#include "third_party/lzma_sdk/C/7zCrc.h"
+}
 
 namespace seven_zip {
 
@@ -281,6 +288,65 @@ TEST(SevenZipReaderTest, EmptyFile) {
   EXPECT_CALL(delegate, EntryDone(Result::kSuccess, _)).WillOnce(Return(false));
 
   Extract(std::move(file), std::move(temp_file), delegate);
+}
+
+class SevenZipReaderFakeCrcTableTest : public testing::Test {
+ public:
+  SevenZipReaderFakeCrcTableTest() = default;
+
+  void SetUp() override {
+    seven_zip::EnsureLzmaSdkInitialized();
+    for (size_t i = 0; i < 2048; i++) {
+      crc_table_[i] = g_CrcTable[i];
+    }
+
+    // Create a fake CRC table that always returns 0 for the target value. This
+    // significantly increases the fuzzer's ability to safely mutate the
+    // headers. The values here were chosen to keep the CRC internal state as
+    // 0xffffffff in CrcUpdateT8. Other processors may choose a different CRC
+    // update function, and would need different values here. See the
+    // CrcGenerateTable function in //third_party/lzma_sdk/C/7zCrc.c.
+    for (size_t i = 0; i < 256; i++) {
+      g_CrcTable[i] = 0xff000000;
+      g_CrcTable[i + 0x100] = 0xff000000;
+      g_CrcTable[i + 0x200] = 0;
+      g_CrcTable[i + 0x300] = 0;
+    }
+
+    for (size_t i = 0x0; i < 256; i++) {
+      g_CrcTable[i + 0x400] = 0xffffffff;
+      g_CrcTable[i + 0x500] = 0;
+      g_CrcTable[i + 0x600] = 0;
+      g_CrcTable[i + 0x700] = 0;
+    }
+  }
+
+  void TearDown() override {
+    for (size_t i = 0; i < 2048; i++) {
+      g_CrcTable[i] = crc_table_[i];
+    }
+  }
+
+ private:
+  std::array<uint8_t, 2048> crc_table_;
+};
+
+// This is useful functionality for the fuzzer, so we test it here.
+TEST_F(SevenZipReaderFakeCrcTableTest, EmptyCrcWithFakeTable) {
+  base::File file = OpenTestFile(FILE_PATH_LITERAL("fake_crc_table.7z"));
+  ASSERT_TRUE(file.IsValid());
+  base::File temp_file = OpenTemporaryFile();
+  ASSERT_TRUE(temp_file.IsValid());
+
+  StrictMock<MockSevenZipDelegate> delegate;
+  std::array<uint8_t, 19> buffer;
+  EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::file_size, 19), _))
+      .WillOnce(DoAll(SetArgReferee<1>(base::make_span(buffer)), Return(true)));
+  EXPECT_CALL(delegate, EntryDone(Result::kSuccess, _)).WillOnce(Return(false));
+
+  Extract(std::move(file), std::move(temp_file), delegate);
+
+  EXPECT_EQ(std::string(buffer.begin(), buffer.end()), "This is not an exe\n");
 }
 
 }  // namespace seven_zip
