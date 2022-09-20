@@ -464,6 +464,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientDownload.TailoredWarning.HasVaidEmailForAccountInfo"
+    enum="BooleanValid" expires_after="2023-03-16">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether Chrome can find a valid email to be added in the tailored
+    warning string. Logged each time Safe Browsing asks Chrome to show the
+    account info in the warining. Ideally invalid email should be rare, because
+    Safe Browsing should take the user's signed-in status into account when
+    generating tailored verdicts.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.UserGestureFileType.Attributes"
     enum="SBClientDownloadUserGestureFileTypeAttributes"
     expires_after="2023-02-12">

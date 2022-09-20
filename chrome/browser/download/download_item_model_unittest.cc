@@ -25,6 +25,7 @@
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -32,6 +33,7 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/download_item_reroute_info.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
@@ -240,6 +242,8 @@ class DownloadItemModelTest : public testing::Test {
   DownloadItemModel& model() {
     return model_;
   }
+
+  Profile* profile() { return profile_; }
 
   void SetStatusTextBuilder(bool for_bubble) {
     model_.set_status_text_builder_for_testing(for_bubble);
@@ -1429,10 +1433,14 @@ class DownloadItemModelTailoredWarningTest : public DownloadItemModelTest {
  protected:
   void SetupTailoredWarningForItem(
       download::DownloadDangerType danger_type,
-      TailoredVerdict::TailoredVerdictType tailored_verdict_type) {
+      TailoredVerdict::TailoredVerdictType tailored_verdict_type,
+      std::vector<TailoredVerdict::ExperimentalWarningAdjustment> adjustments) {
     ON_CALL(item(), GetDangerType()).WillByDefault(Return(danger_type));
     TailoredVerdict tailored_verdict;
     tailored_verdict.set_tailored_verdict_type(tailored_verdict_type);
+    for (const auto& adjustment : adjustments) {
+      tailored_verdict.add_adjustments(adjustment);
+    }
     safe_browsing::DownloadProtectionService::SetDownloadProtectionData(
         &item(), "token",
         safe_browsing::ClientDownloadResponse::SAFE,  // placeholder
@@ -1462,7 +1470,8 @@ TEST_F(DownloadItemModelTailoredWarningTest, ShouldShowTailoredWarning) {
   };
   for (const auto& test_case : kShouldShowTailoredWarningTestCases) {
     SetupTailoredWarningForItem(test_case.danger_type,
-                                test_case.tailored_verdict_type);
+                                test_case.tailored_verdict_type,
+                                /*adjustments=*/{});
     EXPECT_EQ(test_case.expected_should_show,
               model().ShouldShowTailoredWarning());
   }
@@ -1473,7 +1482,7 @@ TEST_F(DownloadItemModelTailoredWarningTest,
   SetupDownloadItemDefaults();
   SetupTailoredWarningForItem(
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-      TailoredVerdict::COOKIE_THEFT);
+      TailoredVerdict::COOKIE_THEFT, /*adjustments=*/{});
 
   DownloadUIModel::BubbleUIInfo bubble_ui_info =
       model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
@@ -1493,7 +1502,8 @@ TEST_F(DownloadItemModelTailoredWarningTest,
        GetBubbleUIInfoForTailoredWarning_SuspiciousArchive) {
   SetupDownloadItemDefaults();
   SetupTailoredWarningForItem(download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
-                              TailoredVerdict::SUSPICIOUS_ARCHIVE);
+                              TailoredVerdict::SUSPICIOUS_ARCHIVE,
+                              /*adjustments=*/{});
 
   DownloadUIModel::BubbleUIInfo bubble_ui_info =
       model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
@@ -1513,6 +1523,52 @@ TEST_F(DownloadItemModelTailoredWarningTest,
   EXPECT_EQ(u"Chromium blocked this archive file because it may hide malware",
             bubble_ui_info.warning_summary);
 #endif
+}
+
+TEST_F(DownloadItemModelTailoredWarningTest,
+       GetBubbleUIInfoForTailoredWarning_AccountInfoStringWithAccount) {
+  SetupDownloadItemDefaults();
+  SetupTailoredWarningForItem(
+      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+      TailoredVerdict::COOKIE_THEFT, {TailoredVerdict::ACCOUNT_INFO_STRING});
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  signin::SetPrimaryAccount(identity_manager, "test@example.com",
+                            signin::ConsentLevel::kSignin);
+
+  DownloadUIModel::BubbleUIInfo bubble_ui_info =
+      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
+  EXPECT_EQ(DownloadCommands::Command::DISCARD,
+            bubble_ui_info.primary_button_command);
+  EXPECT_EQ(1u, bubble_ui_info.subpage_buttons.size());
+  EXPECT_EQ(DownloadCommands::Command::DISCARD,
+            bubble_ui_info.subpage_buttons[0].command);
+  EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
+  EXPECT_EQ(
+      u"This file contains malware that can compromise your personal or social "
+      u"network accounts, including test@example.com",
+      bubble_ui_info.warning_summary);
+}
+
+TEST_F(DownloadItemModelTailoredWarningTest,
+       GetBubbleUIInfoForTailoredWarning_AccountInfoStringWithoutAccount) {
+  SetupDownloadItemDefaults();
+  SetupTailoredWarningForItem(
+      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+      TailoredVerdict::COOKIE_THEFT, {TailoredVerdict::ACCOUNT_INFO_STRING});
+
+  DownloadUIModel::BubbleUIInfo bubble_ui_info =
+      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
+  EXPECT_EQ(DownloadCommands::Command::DISCARD,
+            bubble_ui_info.primary_button_command);
+  EXPECT_EQ(1u, bubble_ui_info.subpage_buttons.size());
+  EXPECT_EQ(DownloadCommands::Command::DISCARD,
+            bubble_ui_info.subpage_buttons[0].command);
+  EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
+  EXPECT_EQ(
+      u"This file contains malware that can compromise your personal or social "
+      u"network accounts",
+      bubble_ui_info.warning_summary);
 }
 
 class DownloadItemModelTailoredWarningDisabledTest
@@ -1536,7 +1592,7 @@ TEST_F(DownloadItemModelTailoredWarningDisabledTest,
   SetupDownloadItemDefaults();
   SetupTailoredWarningForItem(
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-      TailoredVerdict::COOKIE_THEFT);
+      TailoredVerdict::COOKIE_THEFT, /*adjustments=*/{});
   EXPECT_FALSE(model().ShouldShowTailoredWarning());
 }
 

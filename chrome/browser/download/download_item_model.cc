@@ -11,6 +11,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -48,6 +50,9 @@
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -945,8 +950,32 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
           download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE &&
       tailored_verdict.tailored_verdict_type() ==
           TailoredVerdict::COOKIE_THEFT) {
-    // TODO(crbug.com/1351925): Check the adjustments field and add the account
-    // information in the subpage summary.
+    if (base::Contains(tailored_verdict.adjustments(),
+                       TailoredVerdict::ACCOUNT_INFO_STRING)) {
+      auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
+      std::string email =
+          identity_manager
+              ? identity_manager
+                    ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                    .email
+              : "";
+      base::UmaHistogramBoolean(
+          "SBClientDownload.TailoredWarning.HasVaidEmailForAccountInfo",
+          !email.empty());
+      if (!email.empty()) {
+        return DownloadUIModel::BubbleUIInfo(
+                   l10n_util::GetStringFUTF16(
+                       IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT_AND_ACCOUNT,
+                       base::ASCIIToUTF16(email)))
+            .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+                             ui::kColorAlertHighSeverity)
+            .AddPrimaryButton(DownloadCommands::Command::DISCARD)
+            .AddSubpageButton(
+                l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
+                DownloadCommands::Command::DISCARD,
+                /*is_prominent=*/true);
+      }
+    }
     return DownloadUIModel::BubbleUIInfo(
                l10n_util::GetStringUTF16(
                    IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT))

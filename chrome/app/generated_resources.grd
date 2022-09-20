@@ -2800,6 +2800,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="Subpage summary for cookie theft warning.">
         This file contains malware that can compromise your personal or social network accounts
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT_AND_ACCOUNT"
+               desc="Subpage summary for cookie theft warning with account info.">
+        This file contains malware that can compromise your personal or social network accounts, including <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
+      </message>
 
       <!-- Desktop omnibox PWA install icon -->
       <if expr="not is_android">
