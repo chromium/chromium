@@ -81,17 +81,31 @@ GURL AddAndVerifyFencedFrameURL(
 
 }  // namespace
 
-class FencedFrameMPArchBrowserTest : public ContentBrowserTest {
- protected:
-  FencedFrameMPArchBrowserTest() = default;
+class FencedFrameBrowserTestBase : public ContentBrowserTest {
+ public:
+  using FencedFrameType = test::FencedFrameTestHelper::FencedFrameType;
+  using ServerType = net::EmbeddedTestServer::Type;
+  FencedFrameBrowserTestBase() = delete;
+  explicit FencedFrameBrowserTestBase(
+      absl::optional<FencedFrameType> fenced_frame_type)
+      : https_server_(ServerType::TYPE_HTTPS) {
+    if (fenced_frame_type.has_value()) {
+      fenced_frame_test_helper_ = std::make_unique<test::FencedFrameTestHelper>(
+          fenced_frame_type.value());
+    }
+  }
 
-  void SetUpOnMainThread() override {
+  // Defines the skeleton of set up method.
+  void SetUpOnMainThread() final {
     host_resolver()->AddRule("*", "127.0.0.1");
-    ContentBrowserTest::SetUpOnMainThread();
 
-    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     SetupCrossSiteRedirector(https_server());
+    net::test_server::RegisterDefaultHandlers(https_server());
+
+    AdditionalSetup();
+    AssertServerStart();
   }
 
   WebContentsImpl* web_contents() {
@@ -103,15 +117,36 @@ class FencedFrameMPArchBrowserTest : public ContentBrowserTest {
   }
 
   test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return fenced_frame_test_helper_;
+    return *fenced_frame_test_helper_.get();
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  // Some test cases require server starting after performing other setups, mark
+  // this virtual so that concrete test classes can override it with an empty
+  // implementation.
+  virtual void AssertServerStart() { ASSERT_TRUE(https_server()->Start()); }
+
+  // Concrete test classes can override this to implement custom setups.
+  virtual void AdditionalSetup() {}
+
+  // This is a unique ptr because in some test cases we don't want to use it,
+  // and it automatically enables MPArch fenced frames when created.
+  std::unique_ptr<test::FencedFrameTestHelper> fenced_frame_test_helper_;
+  net::EmbeddedTestServer https_server_;
+};
+
+class FencedFrameMPArchBrowserTest : public FencedFrameBrowserTestBase {
+ protected:
+  FencedFrameMPArchBrowserTest()
+      : FencedFrameBrowserTestBase(FencedFrameType::kMPArch) {}
+
   base::HistogramTester histogram_tester_;
 
  private:
-  test::FencedFrameTestHelper fenced_frame_test_helper_;
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  // Server must start after ControllableHttpResponse object being constructed.
+  void AssertServerStart() override {}
 };
 
 // Tests that the renderer can create a <fencedframe> that results in a
@@ -1669,33 +1704,15 @@ bool IsFencedFrameType(FrameTypeWithOrigin type) {
 }  // namespace
 
 class FencedFrameNestedFrameBrowserTest
-    : public ContentBrowserTest,
+    : public FencedFrameBrowserTestBase,
       public testing::WithParamInterface<
           std::tuple<std::vector<FrameTypeWithOrigin>,
                      bool /* shadow_dom_fenced_frame */>> {
  protected:
-  FencedFrameNestedFrameBrowserTest() {
-    if (std::get<1>(GetParam())) {
-      fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>(
-          test::FencedFrameTestHelper::FencedFrameType::kShadowDOM);
-    } else {
-      fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
-    }
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ContentBrowserTest::SetUpOnMainThread();
-
-    https_server()->AddDefaultHandlers(GetTestDataFilePath());
-    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    SetupCrossSiteRedirector(https_server());
-    ASSERT_TRUE(https_server()->Start());
-  }
-
-  WebContentsImpl* web_contents() {
-    return static_cast<WebContentsImpl*>(shell()->web_contents());
-  }
+  FencedFrameNestedFrameBrowserTest()
+      : FencedFrameBrowserTestBase(std::get<1>(GetParam())
+                                       ? FencedFrameType::kShadowDOM
+                                       : FencedFrameType::kMPArch) {}
 
   RenderFrameHostImpl* LoadNestedFrame() {
     const GURL main_url =
@@ -1719,8 +1736,6 @@ class FencedFrameNestedFrameBrowserTest
     return false;
   }
 
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
-
  private:
   RenderFrameHostImpl* CreateFrame(RenderFrameHostImpl* parent,
                                    FrameTypeWithOrigin type,
@@ -1731,16 +1746,14 @@ class FencedFrameNestedFrameBrowserTest
 
     if (IsFencedFrameType(type)) {
       return static_cast<RenderFrameHostImpl*>(
-          fenced_frame_helper_->CreateFencedFrame(parent, url));
+          fenced_frame_test_helper().CreateFencedFrame(parent, url));
     }
     EXPECT_TRUE(ExecJs(parent, JsReplace(kAddIframeScript, url)));
 
     return static_cast<RenderFrameHostImpl*>(ChildFrameAt(parent, 0));
   }
 
-  std::unique_ptr<test::FencedFrameTestHelper> fenced_frame_helper_;
   base::test::ScopedFeatureList feature_list_;
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_P(FencedFrameNestedFrameBrowserTest,
@@ -1797,52 +1810,28 @@ static std::string ModeTestParamToString(
 }  // namespace
 
 class FencedFrameNestedModesTest
-    : public ContentBrowserTest,
+    : public FencedFrameBrowserTestBase,
       public testing::WithParamInterface<
           std::tuple<blink::mojom::FencedFrameMode,
                      blink::mojom::FencedFrameMode,
                      bool /*shadow_dom_fenced_frame*/>> {
  protected:
-  FencedFrameNestedModesTest() {
+  FencedFrameNestedModesTest()
+      : FencedFrameBrowserTestBase(
+            std::get<2>(GetParam())
+                ? absl::nullopt
+                : absl::make_optional(FencedFrameType::kMPArch)) {
     if (std::get<2>(GetParam())) {
       feature_list_.InitWithFeaturesAndParameters(
           {{blink::features::kFencedFrames,
             {{"implementation_type", "shadow_dom"}}},
            {features::kPrivacySandboxAdsAPIsOverride, {}}},
           {/* disabled_features */});
-    } else {
-      fenced_frame_test_helper_ =
-          std::make_unique<test::FencedFrameTestHelper>();
     }
   }
 
   std::string GetParentMode() { return ModeToString(std::get<0>(GetParam())); }
   std::string GetChildMode() { return ModeToString(std::get<1>(GetParam())); }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ContentBrowserTest::SetUpOnMainThread();
-
-    https_server()->AddDefaultHandlers(GetTestDataFilePath());
-    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    SetupCrossSiteRedirector(https_server());
-
-    ASSERT_TRUE(https_server()->Start());
-  }
-
-  WebContentsImpl* web_contents() {
-    return static_cast<WebContentsImpl*>(shell()->web_contents());
-  }
-
-  RenderFrameHostImpl* primary_main_frame_host() {
-    return web_contents()->GetPrimaryMainFrame();
-  }
-
-  test::FencedFrameTestHelper& fenced_frame_test_helper() {
-    return *fenced_frame_test_helper_.get();
-  }
-
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
 
   base::HistogramTester histogram_tester_;
 
@@ -1859,11 +1848,7 @@ class FencedFrameNestedModesTest
     return "";
   }
 
-  // This is a unique ptr because in some test cases we don't want to use it,
-  // and it automatically enables MPArch fenced frames when created.
-  std::unique_ptr<test::FencedFrameTestHelper> fenced_frame_test_helper_;
   base::test::ScopedFeatureList feature_list_;
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 // This test runs the following steps:
@@ -1950,7 +1935,7 @@ INSTANTIATE_TEST_SUITE_P(
     ModeTestParamToString);
 
 class FencedFrameParameterizedBrowserTest
-    : public ContentBrowserTest,
+    : public FencedFrameBrowserTestBase,
       public ::testing::WithParamInterface<
           blink::features::FencedFramesImplementationType> {
  public:
@@ -1966,7 +1951,7 @@ class FencedFrameParameterizedBrowserTest
   }
 
   FencedFrameParameterizedBrowserTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+      : FencedFrameBrowserTestBase(absl::nullopt) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFencedFrames,
           {{"implementation_type",
@@ -2077,22 +2062,6 @@ class FencedFrameParameterizedBrowserTest
         nested_fenced_frame, url, navigate_script);
   }
 
-  void SetUpOnMainThread() override {
-    // Set up the host resolver to allow serving separate sites, so we can
-    // perform cross-process navigation.
-    host_resolver()->AddRule("*", "127.0.0.1");
-
-    // Fenced frames require potentially trustworthy URLs so creating an https
-    // server.
-    https_server_.RegisterRequestMonitor(base::BindRepeating(
-        &FencedFrameParameterizedBrowserTest::ObserveRequestHeaders,
-        base::Unretained(this)));
-    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
-    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    net::test_server::RegisterDefaultHandlers(&https_server_);
-    ASSERT_TRUE(https_server_.Start());
-  }
-
   // Invoked on "EmbeddedTestServer IO Thread".
   void ObserveRequestHeaders(const net::test_server::HttpRequest& request) {
     base::AutoLock auto_lock(requests_lock_);
@@ -2143,22 +2112,12 @@ class FencedFrameParameterizedBrowserTest
     return !header.empty();
   }
 
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
-
   ~FencedFrameParameterizedBrowserTest() override {
     // Shutdown the server explicitly so that there is no race with the
     // destruction of cookie_headers_map_ and invocation of RequestMonitor.
-    if (https_server_.Started()) {
-      EXPECT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
+    if (https_server()->Started()) {
+      EXPECT_TRUE(https_server()->ShutdownAndWaitUntilComplete());
     }
-  }
-
-  WebContentsImpl* web_contents() {
-    return static_cast<WebContentsImpl*>(shell()->web_contents());
-  }
-
-  RenderFrameHostImpl* primary_main_frame_host() {
-    return web_contents()->GetPrimaryMainFrame();
   }
 
   // Checking the count of NavigationEntries for fenced frame.
@@ -2185,13 +2144,18 @@ class FencedFrameParameterizedBrowserTest
   }
 
  private:
+  void AdditionalSetup() override {
+    https_server()->RegisterRequestMonitor(base::BindRepeating(
+        &FencedFrameParameterizedBrowserTest::ObserveRequestHeaders,
+        base::Unretained(this)));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   base::Lock requests_lock_;
   std::map<std::string, std::string> cookie_headers_map_
       GUARDED_BY(requests_lock_);
   std::map<std::string, std::string> sec_fetch_dest_headers_map_
       GUARDED_BY(requests_lock_);
-  net::EmbeddedTestServer https_server_;
 };
 
 // Tests that the fenced frame gets navigated to an actual url given a urn:uuid.
@@ -3306,24 +3270,9 @@ class ScopedInsecureContentTestContentBrowserClient
 class FencedFrameIgnoreCertErrors : public FencedFrameParameterizedBrowserTest {
  public:
   FencedFrameIgnoreCertErrors()
-      : https_server_mismatched_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+      : https_server_mismatched_(ServerType::TYPE_HTTPS) {}
 
  protected:
-  void SetUpOnMainThread() override {
-    https_server_mismatched_.ServeFilesFromSourceDirectory(
-        GetTestDataFilePath());
-    https_server_mismatched_.SetSSLConfig(
-        net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
-    ASSERT_TRUE(https_server_mismatched_.Start());
-
-    // We need to have a dedicated browser context for the tests.
-    // Or, SSLManager::UpdateEntry() doesn't update the entry if
-    // |ssl_host_state_delegate_| is nullptr.
-    browser_context_ = std::make_unique<TestBrowserContext>();
-
-    FencedFrameParameterizedBrowserTest::SetUpOnMainThread();
-  }
-
   // Tests should call CreateWebContents() to use web_contents() in the test.
   void CreateWebContents() {
     ASSERT_FALSE(web_contents_.get());
@@ -3359,6 +3308,23 @@ class FencedFrameIgnoreCertErrors : public FencedFrameParameterizedBrowserTest {
   }
 
  private:
+  void AdditionalSetup() override {
+    https_server_mismatched_.ServeFilesFromSourceDirectory(
+        GetTestDataFilePath());
+    https_server_mismatched_.SetSSLConfig(
+        net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+    ASSERT_TRUE(https_server_mismatched_.Start());
+
+    // We need to have a dedicated browser context for the tests.
+    // Or, SSLManager::UpdateEntry() doesn't update the entry if
+    // |ssl_host_state_delegate_| is nullptr.
+    browser_context_ = std::make_unique<TestBrowserContext>();
+
+    https_server()->RegisterRequestMonitor(base::BindRepeating(
+        &FencedFrameParameterizedBrowserTest::ObserveRequestHeaders,
+        base::Unretained(this)));
+  }
+
   net::EmbeddedTestServer https_server_mismatched_;
   std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<WebContents> web_contents_;
@@ -4557,19 +4523,6 @@ class FencedFrameReportEventBrowserTest
         {{blink::features::kAllowURNsInIframes, {}}},
         {/* disabled_features */});
   }
-  void SetUpOnMainThread() override {
-    // Set up the host resolver to allow serving separate sites, so we can
-    // perform cross-process navigation.
-    host_resolver()->AddRule("*", "127.0.0.1");
-
-    // Fenced frames require potentially trustworthy URLs so creating an https
-    // server.
-    https_server()->RegisterRequestMonitor(base::BindRepeating(
-        &FencedFrameParameterizedBrowserTest::ObserveRequestHeaders,
-        base::Unretained(this)));
-    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
-    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  }
 
   // An object representing a single step of a reportEvent test.
   // First, we navigate the fenced frame to a new URL.
@@ -4781,6 +4734,9 @@ class FencedFrameReportEventBrowserTest
   }
 
  private:
+  // Server must start after ControllableHttpResponse object being constructed.
+  void AssertServerStart() override {}
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -5077,11 +5033,10 @@ INSTANTIATE_TEST_SUITE_P(
     &FencedFrameParameterizedBrowserTest::DescribeParams);
 
 // Parameterized on whether the feature is enabled or not.
-class UUIDFrameTreeBrowserTest : public ContentBrowserTest,
+class UUIDFrameTreeBrowserTest : public FencedFrameBrowserTestBase,
                                  public ::testing::WithParamInterface<bool> {
  public:
-  UUIDFrameTreeBrowserTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+  UUIDFrameTreeBrowserTest() : FencedFrameBrowserTestBase(absl::nullopt) {
     if (GetParam()) {
       scoped_feature_list_.InitAndEnableFeature(
           blink::features::kAllowURNsInIframes);
@@ -5089,20 +5044,6 @@ class UUIDFrameTreeBrowserTest : public ContentBrowserTest,
       scoped_feature_list_.InitAndDisableFeature(
           blink::features::kAllowURNsInIframes);
     }
-  }
-
-  void SetUpOnMainThread() override {
-    // Set up the host resolver to allow serving separate sites, so we can
-    // perform cross-process navigation.
-    host_resolver()->AddRule("*", "127.0.0.1");
-    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
-    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    ASSERT_TRUE(https_server_.Start());
-  }
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
-
-  WebContentsImpl* web_contents() const {
-    return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
 
   bool NavigateIframeAndCheckURL(WebContents* web_contents,
@@ -5124,7 +5065,6 @@ class UUIDFrameTreeBrowserTest : public ContentBrowserTest,
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  net::EmbeddedTestServer https_server_;
 };
 
 IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
