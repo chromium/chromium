@@ -4,12 +4,13 @@
 
 #include "third_party/blink/renderer/modules/buckets/storage_bucket.h"
 
+#include "base/time/time.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_estimate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_usage_details.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage.h"
@@ -101,7 +102,7 @@ ScriptPromise StorageBucket::durability(ScriptState* script_state) {
 }
 
 ScriptPromise StorageBucket::setExpires(ScriptState* script_state,
-                                        const DOMTimeStamp& expires) {
+                                        const DOMHighResTimeStamp& expires) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
@@ -114,7 +115,7 @@ ScriptPromise StorageBucket::setExpires(ScriptState* script_state,
   }
 
   remote_->SetExpires(
-      base::Time::FromJavaTime(expires),
+      base::Time::FromJsTime(expires),
       WTF::BindOnce(&StorageBucket::DidSetExpires, WrapPersistent(this),
                     WrapPersistent(resolver)));
   return promise;
@@ -296,8 +297,8 @@ void StorageBucket::DidGetExpires(ScriptPromiseResolver* resolver,
         DOMExceptionCode::kUnknownError,
         "Unknown error occured while getting expires."));
   } else if (expires.has_value()) {
-    resolver->Resolve(
-        ConvertSecondsToDOMTimeStamp(expires.value().ToDoubleT()));
+    resolver->Resolve(base::Time::kMillisecondsPerSecond *
+                      expires.value().ToDoubleT());
   } else {
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
   }
