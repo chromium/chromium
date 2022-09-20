@@ -2430,6 +2430,60 @@ TEST_F(ShelfViewTest, ItemHasCorrectNotificationBadgeIndicator) {
   EXPECT_FALSE(shelf_app_button->state() & ShelfAppButton::STATE_NOTIFICATION);
 }
 
+TEST_F(ShelfViewTest, TapOnItemDuringFadeOut) {
+  const ShelfID test_item_id = AddApp();
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  views::View* const test_item_button = GetButtonByID(test_item_id);
+  ASSERT_TRUE(test_item_button);
+  const gfx::Point test_item_location =
+      test_item_button->GetBoundsInScreen().CenterPoint();
+
+  // Enable animations, as the test verifies behavior while a fade out animation
+  // is in progress.
+  ui::ScopedAnimationDurationScaleMode regular_animations(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Simulate test app getting uninstalled.
+  model_->RemoveItemAt(model_->ItemIndexByID(test_item_id));
+
+  // Tap on the removed item bounds (which will remain in place during fadeout
+  // animation).
+  GetEventGenerator()->GestureTapAt(test_item_location);
+
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  VerifyShelfItemBoundsAreValid();
+}
+
+TEST_F(ShelfViewTest, SwipeOnItemDuringFadeOut) {
+  const ShelfID test_item_id = AddApp();
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  views::View* const test_item_button = GetButtonByID(test_item_id);
+  ASSERT_TRUE(test_item_button);
+  const gfx::Point test_item_location =
+      test_item_button->GetBoundsInScreen().CenterPoint();
+
+  // Enable animations, as the test verifies behavior while a fade out animation
+  // is in progress.
+  ui::ScopedAnimationDurationScaleMode regular_animations(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Simulate test app getting uninstalled.
+  model_->RemoveItemAt(model_->ItemIndexByID(test_item_id));
+
+  // Swipe from the removed item bounds (which will remain in place during
+  // fadeout animation).
+  GetEventGenerator()->GestureScrollSequence(
+      test_item_location, test_item_location + gfx::Vector2d(0, -50),
+      base::Milliseconds(100), 3);
+
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  VerifyShelfItemBoundsAreValid();
+}
+
 class GhostImageShelfViewTest : public ShelfViewTest {
  public:
   GhostImageShelfViewTest() = default;

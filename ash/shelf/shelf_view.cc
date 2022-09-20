@@ -2128,6 +2128,9 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
   if (view.get() == shelf_->tooltip()->GetCurrentAnchorView())
     shelf_->tooltip()->Close();
 
+  // Disable the view while it's fading out to prevent it from getting events.
+  view->SetEnabled(false);
+
   if (view->GetVisible() && view->layer()->opacity() > 0.0f) {
     UpdateShelfItemViewsVisibility();
 
