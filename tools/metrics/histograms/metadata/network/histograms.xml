@@ -1224,6 +1224,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.NetworkPortalSigninMode"
+    enum="NetworkPortalSigninMode" expires_after="2023-03-01">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-health@google.com</owner>
+  <summary>
+    Captive portal signin UI display mode. The signin UI may be displayed when
+    clicking on a notification or from the settings UI (M108+).
+  </summary>
+</histogram>
+
 <histogram name="Network.Patchpanel.ArcService"
     enum="NetworkPatchpanelArcEvent" expires_after="2023-03-12">
   <owner>hugobenichi@google.com</owner>

@@ -13,6 +13,16 @@ namespace ash {
 
 class NetworkPortalSigninController : public NetworkPortalWebDialog::Delegate {
  public:
+  // Keep this in sync with the NetworkPortalSigninMode enum in
+  // tools/metrics/histograms/enums.xml.
+  enum class SigninMode {
+    kSigninDialog = 1,
+    kSingletonTab = 2,
+    kMaxValue = 2,
+  };
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const SigninMode& signin_mode);
+
   NetworkPortalSigninController();
   NetworkPortalSigninController(const NetworkPortalSigninController&) = delete;
   NetworkPortalSigninController& operator=(
@@ -37,7 +47,9 @@ class NetworkPortalSigninController : public NetworkPortalWebDialog::Delegate {
  protected:
   // May be overridden in tests.
   virtual void ShowDialog(Profile* profile, const GURL& url);
-  virtual void ShowTab(Profile* profile, const GURL& url);
+  virtual void ShowSingletonTab(Profile* profile, const GURL& url);
+
+  SigninMode GetSigninMode();
 
  private:
   NetworkPortalWebDialog* dialog_ = nullptr;

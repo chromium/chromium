@@ -70864,6 +70864,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="Redirect Found"/>
 </enum>
 
+<enum name="NetworkPortalSigninMode">
+  <summary>
+    Corresponds to NetworkPortalSigninController::SigninMode used to determine
+    how to display captive portal signin UI.
+  </summary>
+  <int value="1" label="Dialog using the signin Profile"/>
+  <int value="2" label="Singleton tab using the active user Profile"/>
+</enum>
+
 <enum name="NetworkPortalStatus">
   <summary>
     The portal status types from NetworkPortalDetector::CaptivePortalStatus

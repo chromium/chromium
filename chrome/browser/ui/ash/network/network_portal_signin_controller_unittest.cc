@@ -39,16 +39,16 @@ class TestSigninController : public NetworkPortalSigninController {
   void ShowDialog(Profile* profile, const GURL& url) override {
     dialog_url_ = url.spec();
   }
-  void ShowTab(Profile* profile, const GURL& url) override {
-    tab_url_ = url.spec();
+  void ShowSingletonTab(Profile* profile, const GURL& url) override {
+    singleton_tab_url_ = url.spec();
   }
 
   const std::string& dialog_url() const { return dialog_url_; }
-  const std::string& tab_url() const { return tab_url_; }
+  const std::string& singleton_tab_url() const { return singleton_tab_url_; }
 
  private:
   std::string dialog_url_;
-  std::string tab_url_;
+  std::string singleton_tab_url_;
 };
 
 }  // namespace
@@ -121,7 +121,7 @@ TEST_F(NetworkPortalSigninControllerTest, AuthenticationIgnoresProxyFalse) {
       ->GetPrefs()
       ->SetBoolean(prefs::kCaptivePortalAuthenticationIgnoresProxy, false);
   controller_->ShowSignin();
-  EXPECT_FALSE(controller_->tab_url().empty());
+  EXPECT_FALSE(controller_->singleton_tab_url().empty());
 }
 
 TEST_F(NetworkPortalSigninControllerTest, ProbeUrl) {
