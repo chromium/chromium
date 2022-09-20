@@ -626,13 +626,13 @@ void AppActivityRegistry::OnTimeLimitAllowlistChanged(
 
 void AppActivityRegistry::SaveAppActivity() {
   {
-    ListPrefUpdate update(pref_service_, prefs::kPerAppTimeLimitsAppActivities);
-    base::Value* list_value = update.Get();
+    ScopedListPrefUpdate update(pref_service_,
+                                prefs::kPerAppTimeLimitsAppActivities);
+    base::Value::List& list = update.Get();
 
     const base::Time now = base::Time::Now();
 
-    base::Value::ListView list_view = list_value->GetListDeprecated();
-    for (base::Value& entry : list_view) {
+    for (base::Value& entry : list) {
       absl::optional<AppId> app_id = policy::AppIdFromAppInfoDict(entry);
       DCHECK(app_id.has_value());
 
@@ -652,7 +652,7 @@ void AppActivityRegistry::SaveAppActivity() {
       const PersistedAppInfo info = GetPersistedAppInfoForApp(app_id, now);
       base::Value value(base::Value::Type::DICTIONARY);
       info.UpdateAppActivityPreference(&value, /* replace */ false);
-      list_value->Append(std::move(value));
+      list.Append(std::move(value));
     }
     newly_installed_apps_.clear();
   }
@@ -697,11 +697,10 @@ void AppActivityRegistry::OnResetTimeReached(base::Time timestamp) {
 }
 
 void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
-  ListPrefUpdate update(pref_service_, prefs::kPerAppTimeLimitsAppActivities);
+  ScopedListPrefUpdate update(pref_service_,
+                              prefs::kPerAppTimeLimitsAppActivities);
 
-  base::Value* list_value = update.Get();
-
-  base::Value::List& list = list_value->GetList();
+  base::Value::List& list = update.Get();
 
   for (size_t index = 0; index < list.size();) {
     base::Value& entry = list[index];

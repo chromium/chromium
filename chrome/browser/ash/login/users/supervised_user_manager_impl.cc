@@ -252,8 +252,8 @@ void SupervisedUserManagerImpl::SetUserBooleanValue(const std::string& user_id,
 void SupervisedUserManagerImpl::RemoveNonCryptohomeData(
     const std::string& user_id) {
   PrefService* prefs = g_browser_process->local_state();
-  ListPrefUpdate prefs_new_users_update(prefs, kSupervisedUsersFirstRun);
-  prefs_new_users_update->GetList().EraseValue(base::Value(user_id));
+  ScopedListPrefUpdate prefs_new_users_update(prefs, kSupervisedUsersFirstRun);
+  prefs_new_users_update->EraseValue(base::Value(user_id));
 
   CleanPref(user_id, kSupervisedUserSyncId);
   CleanPref(user_id, kSupervisedUserManagers);
@@ -274,9 +274,9 @@ void SupervisedUserManagerImpl::CleanPref(const std::string& user_id,
 }
 
 bool SupervisedUserManagerImpl::CheckForFirstRun(const std::string& user_id) {
-  ListPrefUpdate prefs_new_users_update(g_browser_process->local_state(),
-                                        kSupervisedUsersFirstRun);
-  return prefs_new_users_update->GetList().EraseValue(base::Value(user_id));
+  ScopedListPrefUpdate prefs_new_users_update(g_browser_process->local_state(),
+                                              kSupervisedUsersFirstRun);
+  return prefs_new_users_update->EraseValue(base::Value(user_id));
 }
 
 }  // namespace ash

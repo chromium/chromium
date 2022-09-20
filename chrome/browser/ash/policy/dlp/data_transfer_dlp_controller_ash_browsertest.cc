@@ -245,8 +245,8 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
   SetupCrostini();
   {
-    ListPrefUpdate update(g_browser_process->local_state(),
-                          policy_prefs::kDlpRulesList);
+    ScopedListPrefUpdate update(g_browser_process->local_state(),
+                                policy_prefs::kDlpRulesList);
 
     base::Value src_urls(base::Value::Type::LIST);
     src_urls.Append(kMailUrl);
@@ -307,8 +307,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_WarnComponent) {
   SetupCrostini();
 
   {
-    ListPrefUpdate update(g_browser_process->local_state(),
-                          policy_prefs::kDlpRulesList);
+    ScopedListPrefUpdate update(g_browser_process->local_state(),
+                                policy_prefs::kDlpRulesList);
     base::Value rule(base::Value::Type::DICTIONARY);
     base::Value src_urls(base::Value::Type::DICTIONARY);
     base::Value src_urls_list(base::Value::Type::LIST);

@@ -97,10 +97,10 @@ SmbPersistedShareRegistry::SmbPersistedShareRegistry(Profile* profile)
     : profile_(profile) {}
 
 void SmbPersistedShareRegistry::Save(const SmbShareInfo& share) {
-  ListPrefUpdate pref(profile_->GetPrefs(),
-                      prefs::kNetworkFileSharesSavedShares);
+  ScopedListPrefUpdate pref(profile_->GetPrefs(),
+                            prefs::kNetworkFileSharesSavedShares);
 
-  base::Value::ListView share_list = pref->GetListDeprecated();
+  base::Value::List& share_list = pref.Get();
   for (auto it = share_list.begin(); it != share_list.end(); ++it) {
     if (GetStringValue(*it, kShareUrlKey) == share.share_url().ToString()) {
       *it = ShareToDict(share);
@@ -113,10 +113,10 @@ void SmbPersistedShareRegistry::Save(const SmbShareInfo& share) {
 }
 
 void SmbPersistedShareRegistry::Delete(const SmbUrl& share_url) {
-  ListPrefUpdate pref(profile_->GetPrefs(),
-                      prefs::kNetworkFileSharesSavedShares);
+  ScopedListPrefUpdate pref(profile_->GetPrefs(),
+                            prefs::kNetworkFileSharesSavedShares);
 
-  base::Value::List& list_update = pref->GetList();
+  base::Value::List& list_update = pref.Get();
   for (auto it = list_update.begin(); it != list_update.end(); ++it) {
     if (GetStringValue(*it, kShareUrlKey) == share_url.ToString()) {
       list_update.erase(it);

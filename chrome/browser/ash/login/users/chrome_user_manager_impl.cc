@@ -764,9 +764,9 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   // If ephemeral users are enabled and we are on the login screen, take this
   // opportunity to clean up by removing all regular users except the owner.
   if (GetEphemeralUsersEnabled() && !IsUserLoggedIn()) {
-    ListPrefUpdate prefs_users_update(GetLocalState(),
-                                      user_manager::kRegularUsersPref);
-    prefs_users_update->ClearList();
+    ScopedListPrefUpdate prefs_users_update(GetLocalState(),
+                                            user_manager::kRegularUsersPref);
+    prefs_users_update->clear();
     for (user_manager::UserList::iterator it = users_.begin();
          it != users_.end();) {
       const AccountId account_id = (*it)->GetAccountId();
@@ -1018,9 +1018,9 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
   // will be loaded in LoadDeviceLocalAccounts() on the next reboot regardless
   // of whether they still exist in kAccountsPrefDeviceLocalAccounts, allowing
   // us to clean up associated data if they disappear from policy.
-  ListPrefUpdate prefs_device_local_accounts_update(
+  ScopedListPrefUpdate prefs_device_local_accounts_update(
       GetLocalState(), kDeviceLocalAccountsWithSavedData);
-  prefs_device_local_accounts_update->ClearList();
+  prefs_device_local_accounts_update->clear();
   for (const auto& account : device_local_accounts)
     prefs_device_local_accounts_update->Append(account.user_id);
 
@@ -1283,15 +1283,15 @@ bool ChromeUserManagerImpl::IsFullManagementDisclosureNeeded(
 }
 
 void ChromeUserManagerImpl::AddReportingUser(const AccountId& account_id) {
-  ListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
+  ScopedListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
   base::Value email_value(account_id.GetUserEmail());
-  if (!base::Contains(users_update->GetListDeprecated(), email_value))
+  if (!base::Contains(users_update.Get(), email_value))
     users_update->Append(std::move(email_value));
 }
 
 void ChromeUserManagerImpl::RemoveReportingUser(const AccountId& account_id) {
-  ListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
-  base::Value::List& update_list = users_update->GetList();
+  ScopedListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
+  base::Value::List& update_list = users_update.Get();
   auto it =
       std::find(update_list.begin(), update_list.end(),
                 base::Value(FullyCanonicalize(account_id.GetUserEmail())));
