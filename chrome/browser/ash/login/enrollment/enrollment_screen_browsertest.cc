@@ -36,6 +36,20 @@
 
 namespace ash {
 namespace {
+constexpr char kEnterpriseEnrollment[] = "enterprise-enrollment";
+
+const test::UIPath kEnterpriseEnrollmentDialogue = {kEnterpriseEnrollment,
+                                                    "step-signin"};
+
+const test::UIPath kEnterpriseEnrollmentSkipDialogue = {
+    kEnterpriseEnrollment, "skipConfirmationDialog"};
+
+const test::UIPath kEnterpriseEnrollmentSkipDialogueGoback = {
+    kEnterpriseEnrollment, "goBackButton"};
+
+const test::UIPath kEnterpriseEnrollmentSkipDialogueSkip = {
+    kEnterpriseEnrollment, "skipButton"};
+
 const test::UIPath kEnrollmentTPMCheckCancelButton = {
     "enterprise-enrollment", "step-tpm-checking", "cancelButton"};
 }  // namespace
@@ -303,12 +317,98 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
+IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, SkipEnrollmentDialogueGoBack) {
+  enrollment_ui_.SetExitHandler();
+  policy::EnrollmentConfig enrollment_config;
+  enrollment_config.mode = policy::EnrollmentConfig::MODE_MANUAL;
+  enrollment_config.auth_mechanism =
+      policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+
+  enrollment_config.is_license_packaged_with_device = true;
+
+  enrollment_screen()->SetEnrollmentConfig(enrollment_config);
+  enrollment_helper_.ResetMock();
+
+  WizardContext context;
+  enrollment_screen()->Show(&context);
+
+  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
+
+  test::OobeJS().ExpectVisiblePath(kEnterpriseEnrollmentDialogue);
+  LoginDisplayHost::default_host()->HandleAccelerator(
+      LoginAcceleratorAction::kCancelScreenAction);
+
+  test::OobeJS().ExpectDialogOpen(kEnterpriseEnrollmentSkipDialogue);
+  test::OobeJS().ClickOnPath(kEnterpriseEnrollmentSkipDialogueGoback);
+  test::OobeJS().ExpectDialogClosed(kEnterpriseEnrollmentSkipDialogue);
+  test::OobeJS().ExpectVisiblePath(kEnterpriseEnrollmentDialogue);
+}
+
+IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
+                       SkipEnrollmentDialogueSkipConfirmation) {
+  enrollment_ui_.SetExitHandler();
+  policy::EnrollmentConfig enrollment_config;
+  enrollment_config.mode = policy::EnrollmentConfig::MODE_MANUAL;
+  enrollment_config.auth_mechanism =
+      policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+
+  enrollment_config.is_license_packaged_with_device = true;
+
+  enrollment_screen()->SetEnrollmentConfig(enrollment_config);
+  enrollment_helper_.ResetMock();
+
+  WizardContext context;
+  enrollment_screen()->Show(&context);
+
+  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
+
+  test::OobeJS().ExpectVisiblePath(kEnterpriseEnrollmentDialogue);
+
+  LoginDisplayHost::default_host()->HandleAccelerator(
+      LoginAcceleratorAction::kCancelScreenAction);
+
+  test::OobeJS().ExpectDialogOpen(kEnterpriseEnrollmentSkipDialogue);
+
+  test::OobeJS().ClickOnPath(kEnterpriseEnrollmentSkipDialogueSkip);
+  test::OobeJS().ExpectDialogClosed(kEnterpriseEnrollmentSkipDialogue);
+
+  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
+  EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
+}
+
+IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, SkipEnrollmentDialogueNoLPDevice) {
+  enrollment_ui_.SetExitHandler();
+  policy::EnrollmentConfig enrollment_config;
+  enrollment_config.mode = policy::EnrollmentConfig::MODE_MANUAL;
+  enrollment_config.auth_mechanism =
+      policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
+
+  enrollment_config.is_license_packaged_with_device = false;
+
+  enrollment_screen()->SetEnrollmentConfig(enrollment_config);
+  enrollment_helper_.ResetMock();
+
+  WizardContext context;
+  enrollment_screen()->Show(&context);
+
+  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
+
+  test::OobeJS().ExpectVisiblePath(kEnterpriseEnrollmentDialogue);
+
+  LoginDisplayHost::default_host()->HandleAccelerator(
+      LoginAcceleratorAction::kCancelScreenAction);
+
+  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
+  EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
+}
+
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, ManualEnrollmentSuccess) {
   enrollment_ui_.SetExitHandler();
   policy::EnrollmentConfig enrollment_config;
   enrollment_config.mode = policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
 
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT);

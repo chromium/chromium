@@ -84,6 +84,7 @@ class EnrollmentScreenHandler
   void Bind(ash::EnrollmentScreen* screen) override;
   void Unbind() override;
   void ShowSigninScreen() override;
+  void ShowSkipConfirmationDialog() override;
   void ShowUserError(UserErrorType error_type,
                      const std::string& email) override;
   void ShowEnrollmentDuringTrialNotAllowedError() override;

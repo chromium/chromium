@@ -33,12 +33,17 @@ found in the LICENSE file.
 <link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
 <link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
 <link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_modal_dialog.html">
 
 <dom-module id="enterprise-enrollment-element">
   <template>
     <style include="oobe-dialog-host-styles">
       host {
         padding: 0;
+      }
+
+      #step-signin {
+        flex: auto;
       }
 
       #learnMoreLink {
@@ -272,6 +277,22 @@ found in the LICENSE file.
             on-click="submitAttributes_"></oobe-next-button>
       </div>
     </oobe-adaptive-dialog>
+
+    <!-- Skip Enrollment confirmation dialog for LP device -->
+    <oobe-modal-dialog id="skipConfirmationDialog">
+      <div slot="title">[[i18nDynamic(locale,
+                    'skipConfirmationDialogTitle')]]</div>
+      <div slot="content">[[i18nDynamic(locale,
+                    'skipConfirmationDialogText')]]</div>
+      <div slot="buttons">
+        <oobe-text-button id="skipButton" border on-click="onDialogSkip_"
+            text-key="skipConfirmationSkipButton"></oobe-text-button>
+        <oobe-text-button inverse on-click="onDialogClosed_"
+            id="goBackButton"
+            text-key="skipConfirmationgoBackButton"></oobe-text-button>
+      </div>
+    </oobe-modal-dialog>
+
   </template>
   <script src="enterprise_enrollment.js"></script>
 </dom-module>

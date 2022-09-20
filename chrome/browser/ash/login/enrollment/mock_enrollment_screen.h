@@ -55,6 +55,7 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
   MOCK_METHOD(void,
               ShowLicenseTypeSelectionScreen,
               (const base::DictionaryValue&));
+  MOCK_METHOD(void, ShowSkipConfirmationDialog, ());
   MOCK_METHOD(void,
               ShowActiveDirectoryScreen,
               (const std::string& domain_join_config,

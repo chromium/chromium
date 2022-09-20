@@ -178,6 +178,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       'showAttributePromptStep',
       'showError',
       'showStep',
+      'showSkipConfirmationDialog',
     ];
   }
 
@@ -670,6 +671,27 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    */
   onTPMCheckCanceled_() {
     this.userActed('cancel-tpm-check');
+  }
+
+  // Skip enrollment dialogue section.
+
+  /*
+   * Called when we click go back button.
+   */
+  onDialogClosed_() {
+    this.$.skipConfirmationDialog.hideDialog();
+  }
+
+  /*
+   * Called when we click skip button.
+   */
+  onDialogSkip_() {
+    this.$.skipConfirmationDialog.hideDialog();
+    this.userActed('skip-confirmation');
+  }
+
+  showSkipConfirmationDialog() {
+    this.$.skipConfirmationDialog.showDialog();
   }
 }
 

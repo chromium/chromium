@@ -71,6 +71,8 @@ class EnrollmentScreenView {
   // Sets which flow should GAIA show.
   virtual void SetFlowType(FlowType flow_type) = 0;
 
+  virtual void ShowSkipConfirmationDialog() = 0;
+
   // Sets which buttons should GAIA screen show.
   virtual void SetGaiaButtonsType(GaiaButtonsType buttons_type) = 0;
 

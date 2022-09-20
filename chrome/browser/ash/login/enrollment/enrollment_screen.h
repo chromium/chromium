@@ -93,6 +93,9 @@ class EnrollmentScreen
                                  const std::string& location) override;
   void OnIdentifierEntered(const std::string& email) override;
 
+  // Shows skip enrollment dialogue confiromation for license packaged devices.
+  void ShowSkipEnrollmentDialogue();
+
   // EnterpriseEnrollmentHelper::EnrollmentStatusConsumer implementation:
   void OnAuthError(const GoogleServiceAuthError& error) override;
   void OnEnrollmentError(policy::EnrollmentStatus status) override;

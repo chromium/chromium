@@ -714,6 +714,14 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   builder->Add("TPMCheckSubtitle", IDS_TPM_CHECK_SUBTITLE);
   builder->Add("cancelButton", IDS_CANCEL);
 
+  // Skip Confirmation Dialogue strings
+  builder->Add("skipConfirmationDialogTitle", IDS_SKIP_ENROLLMENT_DIALOG_TITLE);
+  builder->Add("skipConfirmationDialogText", IDS_SKIP_ENROLLMENT_DIALOG_TEXT);
+  builder->Add("skipConfirmationgoBackButton",
+               IDS_SKIP_ENROLLMENT_DIALOG_GO_BACK_BUTTON);
+  builder->Add("skipConfirmationSkipButton",
+               IDS_SKIP_ENROLLMENT_DIALOG_SKIP_BUTTON);
+
   /* Active Directory strings */
   builder->Add("oauthEnrollAdMachineNameInput", IDS_AD_DEVICE_NAME_INPUT_LABEL);
   builder->Add("oauthEnrollAdDomainJoinWelcomeMessage",
@@ -787,6 +795,10 @@ void EnrollmentScreenHandler::OnAdConfigurationUnlocked(
 
 void EnrollmentScreenHandler::UpdateState(NetworkError::ErrorReason reason) {
   UpdateStateInternal(reason, false);
+}
+
+void EnrollmentScreenHandler::ShowSkipConfirmationDialog() {
+  CallJS("login.OAuthEnrollmentScreen.showSkipConfirmationDialog");
 }
 
 // TODO(rsorokin): This function is mostly copied from SigninScreenHandler and

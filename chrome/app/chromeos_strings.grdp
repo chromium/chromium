@@ -3030,6 +3030,21 @@
   <message name="IDS_TPM_CHECK_SUBTITLE" desc="The subtitle of loading dialog shown during TPM status check.">
     Checking TPM status...
   </message>
+
+    <!-- Skip Enrollment confirmation dialog -->
+  <message name="IDS_SKIP_ENROLLMENT_DIALOG_TITLE" desc="The title for the modal dialog shown when skipping enrollment. Only displayed if the device is License Packaged device.">
+    Skip enterprise enrollment?
+  </message>
+  <message name="IDS_SKIP_ENROLLMENT_DIALOG_TEXT" desc="The message for the modal dialog shown when skipping enrollment. Only displayed if the device is License Packaged device.">
+    You will have to factory reset this device to use enterprise features.
+  </message>
+   <message name="IDS_SKIP_ENROLLMENT_DIALOG_GO_BACK_BUTTON" desc="Cancel button for skipping enrollment">
+    Go back
+  </message>
+   <message name="IDS_SKIP_ENROLLMENT_DIALOG_SKIP_BUTTON" desc="Confirmation button for skipping enrollment">
+    Skip
+  </message>
+
   <!-- Administrator facing strings for Active Directory screens. -->
   <message name="IDS_AD_DEVICE_NAME_INPUT_LABEL" desc="Admin-facing. Label for device name input field on the Active Directory domain join screen. User should tell us the name of their device.">
     Chromebook device name

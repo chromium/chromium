@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check_is_test.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -96,6 +97,7 @@ std::string GetEnterpriseDomainManager() {
 }
 
 constexpr char kUserActionCancelTPMCheck[] = "cancel-tpm-check";
+constexpr char kUserActionSkipDialogConfirmation[] = "skip-confirmation";
 
 // Max number of retries to check install attributes state.
 constexpr int kMaxInstallAttributesStateCheckRetries = 60;
@@ -245,6 +247,13 @@ void EnrollmentScreen::ClearAuth(base::OnceClosure callback) {
 void EnrollmentScreen::OnAuthCleared(base::OnceClosure callback) {
   enrollment_helper_ = nullptr;
   std::move(callback).Run();
+}
+
+void EnrollmentScreen::ShowSkipEnrollmentDialogue() {
+  DCHECK(config_.is_license_packaged_with_device);
+  if (view_) {
+    view_->ShowSkipConfirmationDialog();
+  }
 }
 
 bool EnrollmentScreen::MaybeSkip(WizardContext& context) {
@@ -475,8 +484,13 @@ void EnrollmentScreen::ProcessRetry() {
 
 bool EnrollmentScreen::HandleAccelerator(LoginAcceleratorAction action) {
   if (action == LoginAcceleratorAction::kCancelScreenAction) {
-    OnCancel();
-    return true;
+    if (config_.is_license_packaged_with_device) {
+      ShowSkipEnrollmentDialogue();
+      return true;
+    } else {
+      OnCancel();
+      return true;
+    }
   }
   return false;
 }
@@ -798,9 +812,13 @@ void EnrollmentScreen::OnActiveDirectoryJoined(
 void EnrollmentScreen::OnUserActionDeprecated(const std::string& action_id) {
   if (action_id == kUserActionCancelTPMCheck) {
     OnCancel();
-  } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    return;
   }
+  if (action_id == kUserActionSkipDialogConfirmation) {
+    OnCancel();
+    return;
+  }
+  BaseScreen::OnUserActionDeprecated(action_id);
 }
 
 void EnrollmentScreen::UpdateChromadMigrationOobeFlow(bool exists) {
