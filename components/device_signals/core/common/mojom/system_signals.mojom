@@ -4,6 +4,7 @@
 
 module device_signals.mojom;
 
+import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
@@ -75,7 +76,8 @@ struct HotfixSignal {
 // of these signals is platform-specific and, in some cases (i.e. Windows), may
 // need to be run a separate process.
 // This service can be accessed from the browser process.
-[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox,
+ RequireContext=sandbox.mojom.Context.kBrowser]
 interface SystemSignalsService {
   // Collects signals about a set of file system items specified by `requests`.
   // Returns the collected information in `items`.
