@@ -17,6 +17,7 @@ window.pageHandler = pageHandler;
 window.callbackRouter = callbackRouter;
 
 (async () => {
-  const content = document.querySelector<HTMLElement>('#app-top-bar')!;
-  content.textContent = 'Welcome to the Face ML app!';
+  const topbar = document.querySelector<HTMLElement>('#app-top-bar')!;
+  topbar.style.display = 'none';
+  //(TODO:b/243653034): Populate topbar via page handler.
 })();
