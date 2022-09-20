@@ -14,15 +14,6 @@
 
 namespace {
 
-// Return a 3 elements array containing the major, minor and bug fix version of
-// the OS.
-const int32_t* OSVersionAsArray() {
-  int32_t* digits = new int32_t[3];
-  base::SysInfo::OperatingSystemVersionNumbers(
-      &digits[0], &digits[1], &digits[2]);
-  return digits;
-}
-
 std::string* g_icudtl_path_override = nullptr;
 
 }  // namespace
@@ -51,13 +42,27 @@ bool IsRunningOnIOS15OrLater() {
 }
 
 bool IsRunningOnOrLater(int32_t major, int32_t minor, int32_t bug_fix) {
-  static const int32_t* current_version = OSVersionAsArray();
-  int32_t version[] = {major, minor, bug_fix};
-  for (size_t i = 0; i < std::size(version); i++) {
-    if (current_version[i] != version[i])
-      return current_version[i] > version[i];
-  }
-  return true;
+  static const class OSVersion {
+   public:
+    OSVersion() {
+      SysInfo::OperatingSystemVersionNumbers(
+          &current_version_[0], &current_version_[1], &current_version_[2]);
+    }
+
+    bool IsRunningOnOrLater(int32_t version[3]) const {
+      for (size_t i = 0; i < std::size(current_version_); ++i) {
+        if (current_version_[i] != version[i])
+          return current_version_[i] > version[i];
+      }
+      return true;
+    }
+
+   private:
+    int32_t current_version_[3];
+  } kOSVersion;
+
+  int32_t version[3] = {major, minor, bug_fix};
+  return kOSVersion.IsRunningOnOrLater(version);
 }
 
 bool IsInForcedRTL() {
