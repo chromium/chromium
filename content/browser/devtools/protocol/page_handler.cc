@@ -1428,9 +1428,6 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     case PrerenderHost::FinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
       return Page::PrerenderFinalStatusEnum::
           EmbedderTriggeredAndCrossOriginRedirected;
-    case PrerenderHost::FinalStatus::kEmbedderTriggeredAndSameOriginRedirected:
-      return Page::PrerenderFinalStatusEnum::
-          EmbedderTriggeredAndSameOriginRedirected;
     case PrerenderHost::FinalStatus::kFailToGetMemoryUsage:
       return Page::PrerenderFinalStatusEnum::FailToGetMemoryUsage;
     case PrerenderHost::FinalStatus::kInProgressNavigation:

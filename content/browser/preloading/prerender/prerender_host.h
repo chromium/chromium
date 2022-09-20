@@ -93,7 +93,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     // Break down into kEmbedderTriggeredAndSameOriginRedirected and
     // kEmbedderTriggeredAndCrossOriginRedirected for investigation.
     // kEmbedderTriggeredAndRedirected = 32,
-    kEmbedderTriggeredAndSameOriginRedirected = 33,
+    // Deprecate since same origin redirection is allowed considering that the
+    // initial prerender origin is a safe site.
+    // kEmbedderTriggeredAndSameOriginRedirected = 33,
     kEmbedderTriggeredAndCrossOriginRedirected = 34,
     // Deprecated. This has the same meaning as kTriggerDestroyed because the
     // metric's name includes trigger type.

@@ -8458,7 +8458,6 @@ domain Page
       AudioOutputDeviceRequested
       MixedContent
       TriggerBackgrounded
-      EmbedderTriggeredAndSameOriginRedirected
       EmbedderTriggeredAndCrossOriginRedirected
       MemoryLimitExceeded
       # Prerenders can be cancelled when Chrome uses excessive memory. This is

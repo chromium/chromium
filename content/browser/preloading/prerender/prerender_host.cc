@@ -744,7 +744,6 @@ void PrerenderHost::SetFailureReason(FinalStatus status) {
     case FinalStatus::kAudioOutputDeviceRequested:
     case FinalStatus::kMixedContent:
     case FinalStatus::kTriggerBackgrounded:
-    case FinalStatus::kEmbedderTriggeredAndSameOriginRedirected:
     case FinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
     case FinalStatus::kMemoryLimitExceeded:
     case FinalStatus::kFailToGetMemoryUsage:
