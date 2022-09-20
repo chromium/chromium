@@ -60,6 +60,12 @@ BASE_DECLARE_FEATURE(kNtpShortcuts);
 
 BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
 
+// Parameter for the CSS selector for the button elements on the OGB.
+extern const base::FeatureParam<std::string> kNtpOgbButtonSelectorParam;
+// Parameter for the CSS selector for the unprotected text on the OGB.
+extern const base::FeatureParam<std::string>
+    kNtpOgbUnprotectedTextSelectorParam;
+
 // Parameter determining the module load timeout.
 extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
 // Parameter determining the module order.

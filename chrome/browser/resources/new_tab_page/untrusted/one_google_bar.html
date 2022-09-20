@@ -18,15 +18,15 @@
 
       /* TODO(crbug.com/1349999): Update this once OGB is updated with static
       identifiers for the text and waffle menu control. */
-      body[apply-background-protection_] .gb_d {
+      body[apply-background-protection_] $i18n{ogbUnprotectedTextSelector} {
         text-shadow: var(--ntp-protected-text-shadow) !important;
       }
 
-      body[apply-background-protection_] .gb_A {
+      body[apply-background-protection_] $i18n{ogbButtonSelector} {
         background-color: var(--ntp-protected-icon-background-color) !important;
       }
 
-      body[apply-background-protection_] .gb_A:hover {
+      body[apply-background-protection_] $i18n{ogbButtonSelector}:hover {
         background-color: var(--ntp-protected-icon-background-color-hovered)
             !important;
       }
