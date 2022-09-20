@@ -55,6 +55,10 @@ chromium-metrics-reviews@google.com.
     as &quot;working as intended&quot; by InvalidateActiveExpectations() (Prior
     to 2021-07-09 with IgnoreHangsInScope). Recording is skipped if the hang
     watcher detects an irregular heartbeat (e.g. when the machine sleeps).
+
+    Warning: Starting with 104.0.5112.79 hang counts have gone way up on macOS
+    which is due to additional coverage added and not necessarily to
+    regressions. See: crrev.com/c/3035824
   </summary>
   <token key="ProcessAndThreadType" variants="ProcessAndThreadType"/>
 </histogram>
