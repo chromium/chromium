@@ -8,7 +8,9 @@
 
 #include "base/command_line.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/display/display_switches.h"
+#include "ui/platform_window/platform_window.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -191,6 +193,33 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, MouseNCEvents) {
   EXPECT_TRUE(recorder.mouse_events()[0].flags() & ui::EF_IS_NON_CLIENT);
 
   widget->GetNativeWindow()->RemovePreTargetHandler(&recorder);
+}
+
+// Checks that a call to `SetZOrderLevel` on a `PlatformWindow` sets the z order
+// on the associated `Widget`.
+TEST_F(DesktopWindowTreeHostPlatformImplTest,
+       SetZOrderCorrectlySetsZOrderOnPlatformWindows) {
+  // We want the widget to be initialized with a non-default z order to check
+  // that it gets initialized with the correct z order.
+  Widget widget;
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.z_order = ui::ZOrderLevel::kFloatingWindow;
+  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  widget.Init(std::move(params));
+  widget.Show();
+
+  auto* host_platform = static_cast<DesktopWindowTreeHostPlatform*>(
+      widget.GetNativeWindow()->GetHost());
+  ASSERT_TRUE(host_platform);
+
+  auto* platform_window = host_platform->platform_window();
+  ASSERT_EQ(ui::ZOrderLevel::kFloatingWindow,
+            platform_window->GetZOrderLevel());
+  ASSERT_EQ(ui::ZOrderLevel::kFloatingWindow, widget.GetZOrderLevel());
+
+  platform_window->SetZOrderLevel(ui::ZOrderLevel::kNormal);
+  EXPECT_EQ(ui::ZOrderLevel::kNormal, platform_window->GetZOrderLevel());
+  EXPECT_EQ(ui::ZOrderLevel::kNormal, widget.GetZOrderLevel());
 }
 
 class DesktopWindowTreeHostPlatformImplHighDPITest

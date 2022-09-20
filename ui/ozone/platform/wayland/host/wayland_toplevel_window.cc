@@ -267,6 +267,17 @@ void WaylandToplevelWindow::SizeConstraintsChanged() {
   SetSizeConstraints();
 }
 
+void WaylandToplevelWindow::SetZOrderLevel(ZOrderLevel order) {
+  if (shell_toplevel_)
+    shell_toplevel_->SetZOrder(z_order_);
+
+  z_order_ = order;
+}
+
+ZOrderLevel WaylandToplevelWindow::GetZOrderLevel() const {
+  return z_order_;
+}
+
 std::string WaylandToplevelWindow::GetWindowUniqueId() const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return window_unique_id_;
@@ -517,7 +528,10 @@ bool WaylandToplevelWindow::OnInitialize(
   SetWorkspaceExtensionDelegate(properties.workspace_extension_delegate);
   SetDeskExtension(this, static_cast<DeskExtension*>(this));
 
-  z_order_ = properties.z_order;
+  // When we are initializing and we do not already have a `shell_toplevel_`,
+  // this will simply set `z_order_` and then set it as the window's initial z
+  // order in `SetUpShellIntegration()`.
+  SetZOrderLevel(properties.z_order);
 
   if (!properties.workspace.empty()) {
     int workspace;
@@ -914,7 +928,10 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
     }
     zaura_surface_set_occlusion_tracking(aura_surface_.get());
     SetImmersiveFullscreenStatus(false);
-    SetInitialZOrder();
+
+    // We pass the value of `z_order_` to the `shell_toplevel_` here in order to
+    // set the initial z order of the window.
+    SetZOrderLevel(z_order_);
     SetInitialWorkspace();
     if (restore_window_id_) {
       DCHECK(!restore_window_id_source_);
@@ -978,10 +995,6 @@ void WaylandToplevelWindow::SetInitialWorkspace() {
     zaura_surface_set_initial_workspace(
         aura_surface_.get(), base::NumberToString(workspace_.value()).c_str());
   }
-}
-
-void WaylandToplevelWindow::SetInitialZOrder() {
-  shell_toplevel_->SetZOrder(z_order_);
 }
 
 void WaylandToplevelWindow::UpdateWindowMask() {
