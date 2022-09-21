@@ -56,12 +56,14 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "ui/base/device_form_factor.h"
 
 using base::ASCIIToUTF16;
+using testing::_;
 
 namespace {
 
@@ -347,7 +349,8 @@ class SearchProviderTest : public BaseSearchProviderTest {
   void SetUp() override {
     CustomizableSetUp(
         /* search_url */ "http://defaultturl/{searchTerms}",
-        /* suggestions_url */ "http://defaultturl2/{searchTerms}");
+        /* suggestions_url */
+        "https://defaultturl2/{searchTerms}");
   }
 };
 
@@ -527,7 +530,7 @@ void BaseSearchProviderTest::QueryForInputAndWaitForFetcherResponses(
 
   if (!default_fetcher_response.empty()) {
     test_url_loader_factory_.AddResponse(
-        base::StrCat({"http://defaultturl2/", base::EscapePath(text8)}),
+        base::StrCat({"https://defaultturl2/", base::EscapePath(text8)}),
         default_fetcher_response);
   }
   if (!keyword_fetcher_response.empty()) {
@@ -597,7 +600,7 @@ void BaseSearchProviderTest::FinishDefaultSuggestQuery(
   ASSERT_TRUE(
       base::UTF16ToUTF8(query_text.data(), query_text.length(), &text8));
   std::string url =
-      base::StrCat({"http://defaultturl2/", base::EscapePath(text8)});
+      base::StrCat({"https://defaultturl2/", base::EscapePath(text8)});
 
   ASSERT_TRUE(test_url_loader_factory_.IsPending(url));
 
@@ -698,7 +701,7 @@ TEST_P(SearchProviderTest, HasQueryWhatYouTypedIfDefaultKeywordChanges) {
   QueryForInput(query, false, false);
 
   // Make sure the default provider's suggest service was queried.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending("http://defaultturl2/query"));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending("https://defaultturl2/query"));
 
   // Look up the TemplateURL for the keyword and modify its keyword.
   TemplateURLService* template_url_service =
@@ -711,7 +714,8 @@ TEST_P(SearchProviderTest, HasQueryWhatYouTypedIfDefaultKeywordChanges) {
       template_url->url());
 
   // In resetting the default provider, the fetcher should've been canceled.
-  EXPECT_FALSE(test_url_loader_factory_.IsPending("http://defaultturl2/query"));
+  EXPECT_FALSE(
+      test_url_loader_factory_.IsPending("https://defaultturl2/query"));
   RunTillProviderDone();
 
   // Makes sure the query-what-you-typed match is there.
@@ -744,10 +748,10 @@ TEST_P(SearchProviderTest, QueryKeywordProvider) {
 
   // Make sure the default providers suggest service was queried.
   EXPECT_TRUE(
-      test_url_loader_factory_.IsPending("http://defaultturl2/k%20keywor"));
+      test_url_loader_factory_.IsPending("https://defaultturl2/k%20keywor"));
 
   // Tell the SearchProvider the default suggest query is done.
-  test_url_loader_factory_.AddResponse("http://defaultturl2/k%20keywor", "");
+  test_url_loader_factory_.AddResponse("https://defaultturl2/k%20keywor", "");
 
   // Make sure the keyword providers suggest service was queried, with
   // the URL we expected.
@@ -824,9 +828,10 @@ TEST_P(SearchProviderTest, SendDataToSuggestAtAppropriateTimes) {
     QueryForInput(ASCIIToUTF16(cases[i].input), false, false);
     // Make sure the default provider's suggest service was or was not queried
     // as appropriate.
-    EXPECT_EQ(cases[i].expect_to_send_to_default_provider,
-              test_url_loader_factory_.IsPending(base::StrCat(
-                  {"http://defaultturl2/", base::EscapePath(cases[i].input)})));
+    EXPECT_EQ(
+        cases[i].expect_to_send_to_default_provider,
+        test_url_loader_factory_.IsPending(base::StrCat(
+            {"https://defaultturl2/", base::EscapePath(cases[i].input)})));
 
     // Send the same input with an explicitly invoked keyword.  In all cases,
     // it's okay to send the request to the keyword suggest server.
@@ -1979,8 +1984,8 @@ TEST_P(SearchProviderTest, KeywordFetcherSuggestRelevance) {
 
       // Set up a default fetcher with no results.
       ASSERT_TRUE(
-          test_url_loader_factory_.IsPending("http://defaultturl2/k%20a"));
-      test_url_loader_factory_.AddResponse("http://defaultturl2/k%20a", "");
+          test_url_loader_factory_.IsPending("https://defaultturl2/k%20a"));
+      test_url_loader_factory_.AddResponse("https://defaultturl2/k%20a", "");
 
       // Set up a keyword fetcher with provided results.
       ASSERT_TRUE(
@@ -2238,8 +2243,8 @@ TEST_P(SearchProviderTest, DontInlineAutocompleteAsynchronously) {
     // matches after the second asynchronous response are as expected.
     description = "second asynchronous response after input with first_json=" +
         cases[i].first_json + " and second_json=" + cases[i].second_json;
-    ASSERT_TRUE(test_url_loader_factory_.IsPending("http://defaultturl2/ab"));
-    test_url_loader_factory_.AddResponse("http://defaultturl2/ab",
+    ASSERT_TRUE(test_url_loader_factory_.IsPending("https://defaultturl2/ab"));
+    test_url_loader_factory_.AddResponse("https://defaultturl2/ab",
                                          cases[i].second_json);
     RunTillProviderDone();
     CheckMatches(description, std::size(cases[i].second_async_matches),
@@ -3436,136 +3441,284 @@ TEST_P(SearchProviderTest, ParseDeletionUrl) {
   }
 }
 
+// Tests that all conditions must be met to send the current page URL in the
+// suggest requests.
 TEST_P(SearchProviderTest, CanSendRequestWithURL) {
-  TemplateURLData template_url_data;
-  template_url_data.SetShortName(u"t");
-  template_url_data.SetURL("http://www.google.com/{searchTerms}");
-  template_url_data.suggestions_url = "http://www.google.com/{searchTerms}";
-  template_url_data.id = SEARCH_ENGINE_GOOGLE;
-  TemplateURL google_template_url(template_url_data);
+  // Benchmark test for HTTPS page URL on different origin as Suggest endpoint.
+  auto test_different_origin = [](TemplateURL* template_url,
+                                  AutocompleteProviderClient* client,
+                                  SearchProvider* provider) {
+    // Requires personalized URL data collection to be active.
+    return client->IsPersonalizedUrlDataCollectionActive() &&
+           provider->CanSendCurrentPageURLInRequest(
+               GURL("https://www.example.com?q=foo"), template_url,
+               metrics::OmniboxEventProto::OTHER, SearchTermsData(), client);
+  };
 
-  // All conditions should be met.
-  EXPECT_TRUE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("http://www.google.com/search"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
-      true));
+  // Benchmark test for HTTPS page URL on same origin as Suggest endpoint.
+  // Uses the same URL as the Suggest endpoint for the current page URL.
+  auto test_same_origin = [](TemplateURL* template_url,
+                             AutocompleteProviderClient* client,
+                             SearchProvider* provider) {
+    // Requires personalized URL data collection to be active.
+    return client->IsPersonalizedUrlDataCollectionActive() &&
+           provider->CanSendCurrentPageURLInRequest(
+               template_url->GenerateSuggestionURL(SearchTermsData()),
+               template_url, metrics::OmniboxEventProto::OTHER,
+               SearchTermsData(), client);
+  };
 
-  // Invalid page URL.
-  EXPECT_FALSE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("badpageurl"), GURL("https://www.google.com/complete/search"),
-      &google_template_url, metrics::OmniboxEventProto::OTHER,
-      SearchTermsData(), client_.get(), true));
+  // Benchmark test for Search Results Page URL.
+  auto test_srp = [](TemplateURL* template_url,
+                     AutocompleteProviderClient* client,
+                     SearchProvider* provider) {
+    return provider->CanSendCurrentPageURLInRequest(
+        template_url->GenerateSearchURL(SearchTermsData()), template_url,
+        metrics::OmniboxEventProto::SRP_ZPS_PREFETCH, SearchTermsData(),
+        client);
+  };
 
-  // Invalid page classification.
-  EXPECT_FALSE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("http://www.google.com/search"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS,
-      SearchTermsData(), client_.get(), true));
+  // Set up an HTTPS Google default search provider.
+  TemplateURLData google_template_url_data;
+  google_template_url_data.SetShortName(u"t");
+  google_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  google_template_url_data.suggestions_url =
+      "https://www.google.com/suggest?q={searchTerms}";
+  google_template_url_data.id = SEARCH_ENGINE_GOOGLE;
+  TemplateURL google_template_url(google_template_url_data);
 
-  // Invalid page classification.
-  EXPECT_FALSE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("http://www.google.com/search"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
-      SearchTermsData(), client_.get(), true));
-
-  // Invalid page classification.
-  EXPECT_FALSE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("http://www.google.com/search"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::NTP, SearchTermsData(), client_.get(), true));
-
-  // Invalid page classification.
-  EXPECT_FALSE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("http://www.google.com/search"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OBSOLETE_INSTANT_NTP, SearchTermsData(),
-      client_.get(), true));
-
-  // HTTPS page URL on same domain as provider.
-  EXPECT_TRUE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("https://www.google.com/search"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
-      true));
-
-  // Non-HTTP[S] page URL on same domain as provider.
-  EXPECT_FALSE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("ftp://www.google.com/search"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
-      true));
-
-  // Non-HTTP page URL on different domain.
-  EXPECT_TRUE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("https://www.notgoogle.com/search"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
-      true));
-
-  // Non-HTTPS provider.
-  EXPECT_FALSE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("http://www.google.com/search"),
-      GURL("http://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
-      true));
-
-  // Suggest disabled.
-  profile_->GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, false);
-  EXPECT_FALSE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("http://www.google.com/search"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
-      true));
-  profile_->GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, true);
-
-  // Incognito.
-  ChromeAutocompleteProviderClient client_incognito(
-      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
-  EXPECT_FALSE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("http://www.google.com/search"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), &client_incognito,
-      true));
-
-  // Personalized URL data collection not active. Test that we cannot send the
-  // URL unless same-origin as suggest server, and search terms are
-  // empty.
-  client_->set_is_personalized_url_data_collection_active(false);
-  // Different origin, with search terms.
-  EXPECT_FALSE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("https://www.different-origin.com"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
-      true));
-  // Same origin, with search terms.
-  EXPECT_FALSE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("https://www.google.com/search"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
-      true));
-  // Different origin, empty search terms.
-  EXPECT_FALSE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("https://www.different-origin.com"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
-      false));
-  // Same origin, empty search terms.
-  EXPECT_TRUE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("https://www.google.com/search"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
-      false));
+  // Enable personalized URL data collection.
   client_->set_is_personalized_url_data_collection_active(true);
 
-  // Check that there were no side effects from previous tests.
-  EXPECT_TRUE(SearchProvider::CanSendCurrentPageURLInRequest(
-      GURL("http://www.google.com/search"),
-      GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
-      true));
+  // Personalized URL data collection is active. Test that we can send the page
+  // URL if all of the following hold:
+  // 1) Google is the default search provider.
+  // 2) The page URL is a valid HTTP(S) URL.
+  // 3) The page classification is not NTP.
+  // 4) The suggest endpoint URL is a valid HTTPS URL.
+  // 5) Suggest is not disabled.
+  // 6) The user is not in incognito mode.
+  EXPECT_TRUE(test_different_origin(&google_template_url, client_.get(),
+                                    provider_.get()));
+  EXPECT_TRUE(
+      test_same_origin(&google_template_url, client_.get(), provider_.get()));
+  EXPECT_TRUE(test_srp(&google_template_url, client_.get(), provider_.get()));
+
+  // Invalid page URL - invalid URL.
+  EXPECT_FALSE(provider_->CanSendCurrentPageURLInRequest(
+      GURL("badpageurl"), &google_template_url,
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get()));
+
+  // Invalid page URL - non-HTTP(S) URL.
+  EXPECT_FALSE(provider_->CanSendCurrentPageURLInRequest(
+      GURL("ftp://www.google.com/search?q=foo"), &google_template_url,
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get()));
+
+  // Invalid page classification - New Tab Page.
+  EXPECT_FALSE(provider_->CanSendCurrentPageURLInRequest(
+      GURL("https://www.google.com/search?q=foo"), &google_template_url,
+      metrics::OmniboxEventProto::NTP_REALBOX, SearchTermsData(),
+      client_.get()));
+
+  // Invalid page classification - New Tab Page.
+  EXPECT_FALSE(provider_->CanSendCurrentPageURLInRequest(
+      GURL("https://www.google.com/search?q=foo"), &google_template_url,
+      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+      SearchTermsData(), client_.get()));
+
+  // Set up a non-HTTPS Google default search provider.
+  TemplateURLData http_google_template_url_data;
+  http_google_template_url_data.SetShortName(u"non-https-google");
+  http_google_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  http_google_template_url_data.suggestions_url =
+      "http://www.google.com/suggest?q={searchTerms}";
+  TemplateURLService* turl_model =
+      TemplateURLServiceFactory::GetForProfile(profile_.get());
+  TemplateURL* http_google_template_url = turl_model->Add(
+      std::make_unique<TemplateURL>(http_google_template_url_data));
+
+  // These cases should otherwise succeed.
+  EXPECT_FALSE(test_different_origin(http_google_template_url, client_.get(),
+                                     provider_.get()));
+  EXPECT_FALSE(test_same_origin(http_google_template_url, client_.get(),
+                                provider_.get()));
+  EXPECT_FALSE(
+      test_srp(http_google_template_url, client_.get(), provider_.get()));
+
+  // Disable Suggest.
+  profile_->GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, false);
+
+  // These tests should otherwise succeed.
+  EXPECT_FALSE(test_different_origin(&google_template_url, client_.get(),
+                                     provider_.get()));
+  EXPECT_FALSE(
+      test_same_origin(&google_template_url, client_.get(), provider_.get()));
+  EXPECT_FALSE(test_srp(&google_template_url, client_.get(), provider_.get()));
+
+  // Re-enable Suggest.
+  profile_->GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, true);
+
+  // Ensure the state is properly reset.
+  EXPECT_TRUE(test_different_origin(&google_template_url, client_.get(),
+                                    provider_.get()));
+  EXPECT_TRUE(
+      test_same_origin(&google_template_url, client_.get(), provider_.get()));
+  EXPECT_TRUE(test_srp(&google_template_url, client_.get(), provider_.get()));
+
+  // Disable personalized URL data collection.
+  client_->set_is_personalized_url_data_collection_active(false);
+
+  // Personalized URL data collection is not active. Test that we cannot send
+  // the page URL unless it is the Search Results Page.
+  EXPECT_FALSE(test_different_origin(&google_template_url, client_.get(),
+                                     provider_.get()));
+  EXPECT_FALSE(
+      test_same_origin(&google_template_url, client_.get(), provider_.get()));
+  EXPECT_TRUE(test_srp(&google_template_url, client_.get(), provider_.get()));
+
+  // Re-enable personalized URL data collection.
+  client_->set_is_personalized_url_data_collection_active(true);
+
+  // Ensure the state is properly reset.
+  EXPECT_TRUE(test_different_origin(&google_template_url, client_.get(),
+                                    provider_.get()));
+  EXPECT_TRUE(
+      test_same_origin(&google_template_url, client_.get(), provider_.get()));
+  EXPECT_TRUE(test_srp(&google_template_url, client_.get(), provider_.get()));
+
+  // Incognito profile.
+  ChromeAutocompleteProviderClient incognito_client(
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+
+  // These tests should otherwise succeed.
+  EXPECT_FALSE(test_different_origin(&google_template_url, &incognito_client,
+                                     provider_.get()));
+  EXPECT_FALSE(test_same_origin(&google_template_url, &incognito_client,
+                                provider_.get()));
+  EXPECT_FALSE(
+      test_srp(&google_template_url, &incognito_client, provider_.get()));
+
+  // Set up a non-Google default search provider.
+  TemplateURLData non_google_template_url_data;
+  non_google_template_url_data.SetShortName(u"non-google");
+  non_google_template_url_data.SetURL(
+      "https://www.non-google.com/search?q={searchTerms}");
+  non_google_template_url_data.suggestions_url =
+      "https://www.non-google.com/suggest?q={searchTerms}";
+  TemplateURL* non_google_template_url = turl_model->Add(
+      std::make_unique<TemplateURL>(non_google_template_url_data));
+
+  // These tests should otherwise succeed.
+  EXPECT_FALSE(test_different_origin(non_google_template_url, client_.get(),
+                                     provider_.get()));
+  EXPECT_FALSE(test_same_origin(non_google_template_url, client_.get(),
+                                provider_.get()));
+  EXPECT_FALSE(
+      test_srp(non_google_template_url, client_.get(), provider_.get()));
+
+  // Disable personalized URL data collection.
+  client_->set_is_personalized_url_data_collection_active(false);
+
+  // These tests should still fail.
+  EXPECT_FALSE(test_different_origin(non_google_template_url, client_.get(),
+                                     provider_.get()));
+  EXPECT_FALSE(test_same_origin(non_google_template_url, client_.get(),
+                                provider_.get()));
+  EXPECT_FALSE(
+      test_srp(non_google_template_url, client_.get(), provider_.get()));
+}
+
+// SearchProviderRequestTest ---------------------------------------------------
+
+class MockSearchProviderForTest
+    : public testing::NiceMock<SearchProviderForTest> {
+ public:
+  MockSearchProviderForTest(AutocompleteProviderClient* client,
+                            AutocompleteProviderListener* listener,
+                            Profile* profile);
+  MockSearchProviderForTest(const MockSearchProviderForTest&) = delete;
+  MockSearchProviderForTest& operator=(const MockSearchProviderForTest&) =
+      delete;
+
+  // SearchProvider:
+  MOCK_METHOD(
+      bool,
+      CanSendCurrentPageURLInRequest,
+      (const GURL& current_page_url,
+       const TemplateURL* template_url,
+       metrics::OmniboxEventProto::PageClassification page_classification,
+       const SearchTermsData& search_terms_data,
+       const AutocompleteProviderClient* client),
+      (override));
+
+ protected:
+  ~MockSearchProviderForTest() override = default;
+};
+
+MockSearchProviderForTest::MockSearchProviderForTest(
+    AutocompleteProviderClient* client,
+    AutocompleteProviderListener* listener,
+    Profile* profile)
+    : testing::NiceMock<SearchProviderForTest>(client, listener, profile) {}
+
+// Test environment to verify whether the current page URL is sent in the
+// suggest requests when all the conditions are met or not.
+class SearchProviderRequestTest : public SearchProviderTest {
+ public:
+  explicit SearchProviderRequestTest(const bool command_line_overrides = false)
+      : SearchProviderTest(command_line_overrides) {}
+
+  void SetUp() override {
+    CustomizableSetUp(
+        /* search_url */ "http://defaultturl/{searchTerms}",
+        /* suggestions_url */
+        "https://defaultturl2/{searchTerms}&{google:currentPageUrl}");
+
+    provider_ =
+        new MockSearchProviderForTest(client_.get(), this, profile_.get());
+  }
+
+ protected:
+  scoped_refptr<MockSearchProviderForTest> provider_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, SearchProviderRequestTest, testing::Bool());
+
+TEST_P(SearchProviderRequestTest, SendRequestWithoutURL) {
+  EXPECT_CALL(*provider_, CanSendCurrentPageURLInRequest(_, _, _, _, _))
+      .WillRepeatedly(testing::Return(false));
+
+  // Start a query.
+  AutocompleteInput input(u"foo", metrics::OmniboxEventProto::OTHER,
+                          ChromeAutocompleteSchemeClassifier(profile_.get()));
+  input.set_current_url(GURL("https://www.example.com"));
+  provider_->Start(input, false);
+
+  // Make sure the default provider's suggest endpoint was queried without the
+  // current page URL.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(provider_->done());
+  EXPECT_TRUE(test_url_loader_factory_.IsPending("https://defaultturl2/foo&"));
+}
+
+TEST_P(SearchProviderRequestTest, SendRequestWithURL) {
+  EXPECT_CALL(*provider_, CanSendCurrentPageURLInRequest(_, _, _, _, _))
+      .WillRepeatedly(testing::Return(true));
+
+  // Start a query.
+  AutocompleteInput input(u"foo", metrics::OmniboxEventProto::OTHER,
+                          ChromeAutocompleteSchemeClassifier(profile_.get()));
+  input.set_current_url(GURL("https://www.example.com"));
+  provider_->Start(input, false);
+
+  // Make sure the default provider's suggest endpoint was queried with the
+  // current page URL.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(provider_->done());
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(
+      "https://defaultturl2/foo&url=https%3A%2F%2Fwww.example.com%2F&"));
 }
 
 TEST_P(SearchProviderTest, TestDeleteMatch) {
@@ -3792,10 +3945,10 @@ TEST_P(SearchProviderTest, SendsWarmUpRequestOnFocus) {
   EXPECT_TRUE(provider_->matches().empty());
   // Make sure the default provider's suggest service was queried with an
   // empty query.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending("http://defaultturl2/"));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending("https://defaultturl2/"));
   // Even if the fetcher returns results, we should still have no suggestions
   // (though the provider should now be done).
-  test_url_loader_factory_.AddResponse("http://defaultturl2/",
+  test_url_loader_factory_.AddResponse("https://defaultturl2/",
                                        R"(["",["a", "b"],[],[],{}])");
   RunTillProviderDone();
   EXPECT_TRUE(provider_->done());

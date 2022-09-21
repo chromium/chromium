@@ -859,6 +859,10 @@ class TemplateURL {
   // Returns an empty GURL if this template URL has no url().
   GURL GenerateSearchURL(const SearchTermsData& search_terms_data) const;
 
+  // Returns the suggest endpoint URL for this template URL.
+  // Returns an empty GURL if this template URL has no suggestions_url().
+  GURL GenerateSuggestionURL(const SearchTermsData& search_terms_data) const;
+
   // Returns true if this search engine supports the side search feature.
   bool IsSideSearchSupported() const;
 

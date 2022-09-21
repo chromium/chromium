@@ -77,7 +77,7 @@ bool AllowLocalHistoryZeroSuggestSuggestions(AutocompleteProviderClient* client,
   if (base::FeatureList::IsEnabled(
           omnibox::kLocalHistoryZeroSuggestBeyondNTP)) {
     // Allow local history zero-suggest where remote zero-suggest is eligible.
-    return ZeroSuggestProvider::ResultTypeToRun(client, input) !=
+    return ZeroSuggestProvider::ResultTypeToRun(input) !=
            ZeroSuggestProvider::ResultType::kNone;
   }
 

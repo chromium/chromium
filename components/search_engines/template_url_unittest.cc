@@ -2056,13 +2056,33 @@ TEST_F(TemplateURLTest, GenerateSearchURL) {
       "http://foo/blah.blah.blah.blah.blah" }
   };
 
-  for (size_t i = 0; i < std::size(generate_url_cases); ++i) {
+  for (const auto& generate_url_case : generate_url_cases) {
     TemplateURLData data;
-    data.SetURL(generate_url_cases[i].url);
+    data.SetURL(generate_url_case.url);
     TemplateURL t_url(data);
     EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_).spec(),
-              generate_url_cases[i].expected)
-        << generate_url_cases[i].test_name << " failed.";
+              generate_url_case.expected)
+        << generate_url_case.test_name << " failed.";
+  }
+}
+
+TEST_F(TemplateURLTest, GenerateSuggestionURL) {
+  struct GenerateSuggestionURLCase {
+    const char* test_name;
+    const char* url;
+    const char* expected;
+  } generate_url_cases[] = {
+      {"invalid URL", "foo{searchTerms}", ""},
+      {"URL with no replacements", "http://foo/", "http://foo/"},
+      {"basic functionality", "http://foo/{searchTerms}", "http://foo/"}};
+
+  for (const auto& generate_url_case : generate_url_cases) {
+    TemplateURLData data;
+    data.suggestions_url = generate_url_case.url;
+    TemplateURL t_url(data);
+    EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
+              generate_url_case.expected)
+        << generate_url_case.test_name << " failed.";
   }
 }
 

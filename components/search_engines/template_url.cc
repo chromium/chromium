@@ -1703,6 +1703,18 @@ GURL TemplateURL::GenerateSearchURL(
       search_terms_data, nullptr));
 }
 
+GURL TemplateURL::GenerateSuggestionURL(
+    const SearchTermsData& search_terms_data) const {
+  if (!suggestions_url_ref().IsValid(search_terms_data))
+    return GURL();
+
+  if (!suggestions_url_ref().SupportsReplacement(search_terms_data))
+    return GURL(suggestions_url());
+
+  return GURL(suggestions_url_ref().ReplaceSearchTerms(
+      TemplateURLRef::SearchTermsArgs(), search_terms_data, nullptr));
+}
+
 bool TemplateURL::IsSideSearchSupported() const {
   return !side_search_param().empty();
 }

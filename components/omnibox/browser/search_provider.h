@@ -83,15 +83,13 @@ class SearchProvider : public BaseSearchProvider,
   static const int kNonURLVerbatimRelevance = 1300;
 
   // Returns whether the current page URL can be sent in the suggest requests.
-  // This method is static to avoid depending on the provider state.
-  static bool CanSendCurrentPageURLInRequest(
+  // This method is virtual to mock for testing.
+  virtual bool CanSendCurrentPageURLInRequest(
       const GURL& current_page_url,
-      const GURL& suggest_url,
       const TemplateURL* template_url,
       metrics::OmniboxEventProto::PageClassification page_classification,
       const SearchTermsData& search_terms_data,
-      const AutocompleteProviderClient* client,
-      bool sending_search_terms);
+      const AutocompleteProviderClient* client);
 
  protected:
   ~SearchProvider() override;
@@ -120,6 +118,8 @@ class SearchProvider : public BaseSearchProvider,
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest,
                            DontTrimHttpsSchemeIfInputHasScheme);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, DoTrimHttpsScheme);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest, SendRequestWithURL);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest, SendRequestWithoutURL);
 
   // Manages the providers (TemplateURLs) used by SearchProvider. Two providers
   // may be used:

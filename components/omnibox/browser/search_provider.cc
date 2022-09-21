@@ -213,15 +213,12 @@ void SearchProvider::ResetSession() {
   set_field_trial_triggered_in_session(false);
 }
 
-// static
 bool SearchProvider::CanSendCurrentPageURLInRequest(
     const GURL& current_page_url,
-    const GURL& suggest_url,
     const TemplateURL* template_url,
     metrics::OmniboxEventProto::PageClassification page_classification,
     const SearchTermsData& search_terms_data,
-    const AutocompleteProviderClient* client,
-    bool sending_search_terms) {
+    const AutocompleteProviderClient* client) {
   // Send the current page URL if the request eligiblility and the user settings
   // requirements are met and the URL is valid with an HTTP(S) scheme.
   // Don't bother sending the URL of an NTP page; it's not useful. The server
@@ -229,9 +226,8 @@ bool SearchProvider::CanSendCurrentPageURLInRequest(
   // classification.
   return !IsNTPPage(page_classification) &&
          CanSendPageURLInRequest(current_page_url) &&
-         BaseSearchProvider::CanSendRequestWithURL(
-             current_page_url, suggest_url, template_url, search_terms_data,
-             client, sending_search_terms);
+         CanSendSuggestRequestWithURL(current_page_url, template_url,
+                                      search_terms_data, client);
 }
 
 SearchProvider::~SearchProvider() = default;
@@ -997,10 +993,9 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   if (!suggest_url.is_valid())
     return nullptr;
 
-  if (CanSendCurrentPageURLInRequest(input.current_url(), suggest_url,
-                                     template_url,
+  if (CanSendCurrentPageURLInRequest(input.current_url(), template_url,
                                      input.current_page_classification(),
-                                     search_terms_data, client(), true)) {
+                                     search_terms_data, client())) {
     search_term_args.current_page_url = input.current_url().spec();
     // Create the suggest URL again with the current page URL.
     suggest_url = GURL(template_url->suggestions_url_ref().ReplaceSearchTerms(

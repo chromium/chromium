@@ -37,6 +37,8 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
+using testing::_;
+
 namespace {
 
 constexpr int kCacheSize = 10;
@@ -78,7 +80,15 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     return zero_suggest_cache_service_.get();
   }
 
-  bool IsPersonalizedUrlDataCollectionActive() const override { return true; }
+  bool IsPersonalizedUrlDataCollectionActive() const override {
+    return is_personalized_url_data_collection_active_;
+  }
+
+  void set_is_personalized_url_data_collection_active(
+      bool is_personalized_url_data_collection_active) {
+    is_personalized_url_data_collection_active_ =
+        is_personalized_url_data_collection_active;
+  }
 
   void Classify(
       const std::u16string& text,
@@ -97,6 +107,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   }
 
  private:
+  bool is_personalized_url_data_collection_active_;
   std::unique_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<ZeroSuggestCacheService> zero_suggest_cache_service_;
@@ -105,7 +116,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
 }  // namespace
 
-class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
+class ZeroSuggestProviderTest : public testing::Test,
                                 public AutocompleteProviderListener {
  public:
   ZeroSuggestProviderTest() = default;
@@ -156,8 +167,8 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
     return input;
   }
 
-  AutocompleteInput OnFocusInputForWeb() {
-    std::string input_url = "https://example.com/";
+  AutocompleteInput OnFocusInputForWeb(
+      const std::string& input_url = "https://example.com/") {
     AutocompleteInput input(base::ASCIIToUTF16(input_url),
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
@@ -166,32 +177,35 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
     return input;
   }
 
-  AutocompleteInput OnClobberInputForWeb() {
+  AutocompleteInput OnClobberInputForWeb(
+      const std::string& input_url = "https://example.com/") {
     AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
-    input.set_current_url(GURL("https://example.com/"));
+    input.set_current_url(GURL(input_url));
     input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
     return input;
   }
 
-  AutocompleteInput PrefetchingInputForWeb() {
+  AutocompleteInput PrefetchingInputForWeb(
+      const std::string& input_url = "https://example.com/") {
     AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER_ZPS_PREFETCH,
                             TestSchemeClassifier());
-    input.set_current_url(GURL("https://example.com/"));
+    input.set_current_url(GURL(input_url));
     input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
     return input;
   }
 
-  AutocompleteInput PrefixInputForWeb() {
+  AutocompleteInput PrefixInputForWeb(
+      const std::string& input_url = "https://example.com/") {
     AutocompleteInput input(u"foobar", metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
-    input.set_current_url(GURL("https://example.com/"));
+    input.set_current_url(GURL(input_url));
     input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
     return input;
   }
 
-  AutocompleteInput OnFocusInputForSRP() {
-    std::string input_url = "https://google.com/search?q=omnibox";
+  AutocompleteInput OnFocusInputForSRP(
+      const std::string& input_url = "https://www.google.com/search?q=foo") {
     AutocompleteInput input(base::ASCIIToUTF16(input_url),
                             metrics::OmniboxEventProto::
                                 SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
@@ -201,30 +215,33 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
     return input;
   }
 
-  AutocompleteInput OnClobberInputForSRP() {
+  AutocompleteInput OnClobberInputForSRP(
+      const std::string& input_url = "https://www.google.com/search?q=foo") {
     AutocompleteInput input(u"",
                             metrics::OmniboxEventProto::
                                 SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
                             TestSchemeClassifier());
-    input.set_current_url(GURL("https://google.com/search?q=omnibox"));
+    input.set_current_url(GURL(input_url));
     input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
     return input;
   }
 
-  AutocompleteInput PrefetchingInputForSRP() {
+  AutocompleteInput PrefetchingInputForSRP(
+      const std::string& input_url = "https://www.google.com/search?q=foo") {
     AutocompleteInput input(u"", metrics::OmniboxEventProto::SRP_ZPS_PREFETCH,
                             TestSchemeClassifier());
-    input.set_current_url(GURL("https://google.com/search?q=omnibox"));
+    input.set_current_url(GURL(input_url));
     input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
     return input;
   }
 
-  AutocompleteInput PrefixInputForSRP() {
+  AutocompleteInput PrefixInputForSRP(
+      const std::string& input_url = "https://www.google.com/search?q=foo") {
     AutocompleteInput input(u"foobar",
                             metrics::OmniboxEventProto::
                                 SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
                             TestSchemeClassifier());
-    input.set_current_url(GURL("https://google.com/search?q=omnibox"));
+    input.set_current_url(GURL(input_url));
     input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
     return input;
   }
@@ -240,6 +257,9 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
 
 void ZeroSuggestProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();
+
+  // Activate personalized URL data collection.
+  client_->set_is_personalized_url_data_collection_active(true);
 
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
   template_url_service->Load();
@@ -276,8 +296,11 @@ void ZeroSuggestProviderTest::OnProviderUpdate(
   provider_did_notify_ = true;
 }
 
+// Tests whether zero-suggest is allowed on NTP when the external request
+// conditions are met.
 TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsNTP) {
-  AutocompleteInput onfocus_ntp_input = OnFocusInputForNTP();
+  AutocompleteInput zero_prefix_ntp_input = OnFocusInputForNTP();
+  AutocompleteInput prefix_ntp_input = PrefixInputForNTP();
 
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(false));
@@ -287,28 +310,30 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsNTP) {
     base::test::ScopedFeatureList features;
     features.InitAndEnableFeature(omnibox::kZeroSuggestOnNTPForSignedOutUsers);
 
-    EXPECT_TRUE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), onfocus_ntp_input));
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kRemoteNoURL,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), onfocus_ntp_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
+              ZeroSuggestProvider::ResultTypeToRun(zero_prefix_ntp_input));
+    EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                      zero_prefix_ntp_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(prefix_ntp_input));
+    EXPECT_FALSE(
+        provider_->AllowZeroPrefixSuggestions(client_.get(), prefix_ntp_input));
   }
   // Disable on-focus zero-suggest for signed-out users.
   {
     base::test::ScopedFeatureList features;
     features.InitAndDisableFeature(omnibox::kZeroSuggestOnNTPForSignedOutUsers);
 
-    EXPECT_CALL(*client_, IsAuthenticated())
-        .WillRepeatedly(testing::Return(false));
-
-    EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), onfocus_ntp_input));
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kRemoteNoURL,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), onfocus_ntp_input));
+    EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                       zero_prefix_ntp_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
+              ZeroSuggestProvider::ResultTypeToRun(zero_prefix_ntp_input));
   }
 }
 
+// Tests whether zero-suggest is allowed on Web/SRP when the external request
+// conditions are met.
 TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
   AutocompleteInput prefix_web_input = PrefixInputForWeb();
   AutocompleteInput prefix_srp_input = PrefixInputForSRP();
@@ -330,20 +355,35 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
             omnibox::kClobberTriggersSRPZeroSuggest,
         });
 
-    EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), prefix_web_input));
-    EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), prefix_srp_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(prefix_web_input));
+    EXPECT_FALSE(
+        provider_->AllowZeroPrefixSuggestions(client_.get(), prefix_web_input));
 
-    EXPECT_TRUE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), on_focus_web_input));
-    EXPECT_TRUE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), on_focus_srp_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(prefix_srp_input));
+    EXPECT_FALSE(
+        provider_->AllowZeroPrefixSuggestions(client_.get(), prefix_srp_input));
 
-    EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), on_clobber_web_input));
-    EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), on_clobber_srp_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_web_input));
+    EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                      on_focus_web_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_srp_input));
+    EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                      on_focus_srp_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_web_input));
+    EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                       on_clobber_web_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_srp_input));
+    EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                       on_clobber_srp_input));
   }
   // Enable on-clobber and on-focus for OTHER.
   // Disable on-clobber and on-focus for SRP.
@@ -355,20 +395,35 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
         /*disabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest,
                                omnibox::kFocusTriggersSRPZeroSuggest});
 
-    EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), prefix_web_input));
-    EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), prefix_srp_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(prefix_web_input));
+    EXPECT_FALSE(
+        provider_->AllowZeroPrefixSuggestions(client_.get(), prefix_web_input));
 
-    EXPECT_TRUE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), on_focus_web_input));
-    EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), on_focus_srp_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(prefix_srp_input));
+    EXPECT_FALSE(
+        provider_->AllowZeroPrefixSuggestions(client_.get(), prefix_srp_input));
 
-    EXPECT_TRUE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), on_clobber_web_input));
-    EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), on_clobber_srp_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_web_input));
+    EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                      on_focus_web_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_srp_input));
+    EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                       on_focus_srp_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_web_input));
+    EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                      on_clobber_web_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_srp_input));
+    EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                       on_clobber_srp_input));
   }
   // Enable on-clobber and on-focus for SRP.
   // Disable on-clobber and on-focus for OTHER.
@@ -381,83 +436,439 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
             omnibox::kClobberTriggersContextualWebZeroSuggest,
             omnibox::kFocusTriggersContextualWebZeroSuggest});
 
-    EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), prefix_web_input));
-    EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), prefix_srp_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(prefix_web_input));
+    EXPECT_FALSE(
+        provider_->AllowZeroPrefixSuggestions(client_.get(), prefix_web_input));
 
-    EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), on_focus_web_input));
-    EXPECT_TRUE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), on_focus_srp_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(prefix_srp_input));
+    EXPECT_FALSE(
+        provider_->AllowZeroPrefixSuggestions(client_.get(), prefix_srp_input));
 
-    EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), on_clobber_web_input));
-    EXPECT_TRUE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-        client_.get(), on_clobber_srp_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_web_input));
+    EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                       on_focus_web_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_srp_input));
+    EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                      on_focus_srp_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_web_input));
+    EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                       on_clobber_web_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_srp_input));
+    EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                      on_clobber_srp_input));
   }
 }
 
+// Tests whether zero-suggest is allowed on NTP/Web/SRP with various external
+// request conditions and that the appropriate eligibility metrics are logged.
 TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
-  base::HistogramTester histogram_tester;
-
-  // Enable on-focus for SRP.
+  // Enable on-focus for OTHER and SRP.
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(omnibox::kFocusTriggersSRPZeroSuggest);
+  features.InitWithFeatures(
+      /*enabled_features=*/{omnibox::kZeroSuggestOnNTPForSignedOutUsers,
+                            omnibox::kFocusTriggersContextualWebZeroSuggest,
+                            omnibox::kFocusTriggersSRPZeroSuggest},
+      /*disabled_features=*/{});
 
-  EXPECT_TRUE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-      client_.get(), OnFocusInputForSRP()));
-  histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestProvider.Eligibility",
-                                     0 /*kEligible*/, 1);
-
-  // Invalid URLs cannot be sent in the zero-suggest request.
-  AutocompleteInput on_focus_srp_input_ineligible_url = OnFocusInputForSRP();
-  on_focus_srp_input_ineligible_url.set_current_url(GURL("chrome://history"));
-  EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-      client_.get(), on_focus_srp_input_ineligible_url));
-  histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestProvider.Eligibility",
-                                     3 /*kGenerallyIneligible*/, 1);
-
-  // Change the default search provider.
+  // Keep a reference to the Google default search provider.
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
-  TemplateURLData data;
-  data.SetURL("https://www.example.com/?q={searchTerms}");
-  data.suggestions_url = "https://www.example.com/suggest/?q={searchTerms}";
-  auto* other_search_provider =
-      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  const TemplateURL* google_provider =
+      template_url_service->GetDefaultSearchProvider();
+
+  // Benchmark test for NTP.
+  auto test_ntp = [this]() {
+    const auto& input = OnFocusInputForNTP();
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
+              ZeroSuggestProvider::ResultTypeToRun(input));
+    return provider_->AllowZeroPrefixSuggestions(client_.get(), input);
+  };
+
+  // Benchmark test for HTTPS page URL on different origin as Suggest endpoint.
+  auto test_different_origin = [this]() {
+    const auto& input = OnFocusInputForWeb();
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(input));
+    // Requires personalized URL data collection to be active.
+    return provider_->AllowZeroPrefixSuggestions(client_.get(), input) &&
+           client_->IsPersonalizedUrlDataCollectionActive();
+  };
+
+  // Benchmark test for HTTPS page URL on same origin as Suggest endpoint.
+  // Uses the same URL as the Suggest endpoint for the current page URL.
+  auto test_same_origin = [this](const TemplateURL* template_url) {
+    const auto& input = OnFocusInputForWeb(
+        template_url->GenerateSuggestionURL(SearchTermsData()).spec());
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(input));
+    // Requires personalized URL data collection to be active.
+    return provider_->AllowZeroPrefixSuggestions(client_.get(), input) &&
+           client_->IsPersonalizedUrlDataCollectionActive();
+  };
+
+  // Benchmark test for Search Results Page URL.
+  auto test_srp = [this](const TemplateURL* template_url) {
+    const auto& input = OnFocusInputForSRP(
+        template_url->GenerateSearchURL(SearchTermsData()).spec());
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(input));
+    return provider_->AllowZeroPrefixSuggestions(client_.get(), input);
+  };
+
+  // Enable personalized URL data collection.
+  client_->set_is_personalized_url_data_collection_active(true);
+
+  {
+    // Zero-suggest is generally not allowed for invalid or non-HTTP(S) URLs.
+    base::HistogramTester histogram_tester;
+    AutocompleteInput on_focus_ineligible_url_input =
+        OnFocusInputForWeb("chrome://history");
+    EXPECT_EQ(
+        ZeroSuggestProvider::ResultType::kNone,
+        ZeroSuggestProvider::ResultTypeToRun(on_focus_ineligible_url_input));
+    EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(
+        client_.get(), on_focus_ineligible_url_input));
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility", 3 /*kGenerallyIneligible*/,
+        1);
+  }
+  {
+    // Zero-suggest is generally not allowed for non-empty inputs.
+    base::HistogramTester histogram_tester;
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(PrefixInputForNTP()));
+    EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                       PrefixInputForNTP()));
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility", 3 /*kGenerallyIneligible*/,
+        1);
+  }
+  {
+    // Zero-suggest is generally not allowed for non-empty inputs.
+    base::HistogramTester histogram_tester;
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(PrefixInputForSRP()));
+    EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                       PrefixInputForSRP()));
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility", 3 /*kGenerallyIneligible*/,
+        1);
+  }
+
+  {
+    // Zero-suggest request can be made on NTP.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(test_ntp());
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility", 0 /*kEligible*/, 1);
+  }
+  {
+    // Valid SRP URLs can be sent in the zero-suggest request.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(test_srp(google_provider));
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility", 0 /*kEligible*/, 1);
+  }
+  {
+    // Valid same-origin page URLs can be sent in the zero-suggest request.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(test_same_origin(google_provider));
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility", 0 /*kEligible*/, 1);
+  }
+  {
+    // Valid different-origin page URLs can be sent in the zero-suggest request.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(test_different_origin());
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility", 0 /*kEligible*/, 1);
+  }
+
+  // Deactivate personalized URL data collection. This ensures that the page URL
+  // cannot be sent and zero-suggest is disallowed unless the URL is the SRP.
+  client_->set_is_personalized_url_data_collection_active(false);
+
+  {
+    // Zero-suggest request can be made on NTP.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(test_ntp());
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility", 0 /*kEligible*/, 1);
+  }
+  {
+    // Valid SRP URLs can be sent in the zero-suggest request.
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(test_srp(google_provider));
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility", 0 /*kEligible*/, 1);
+  }
+  {
+    // Valid same-origin page URLs cannot be sent in the zero-suggest request.
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(test_same_origin(google_provider));
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility",
+        2 /*kRequestSendURLIneligible*/, 1);
+  }
+  {
+    // Valid different-origin page URLs cannot be sent in the zero-suggest
+    // request.
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(test_different_origin());
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility",
+        2 /*kRequestSendURLIneligible*/, 1);
+  }
+
+  // Reactivate personalized URL data collection.
+  client_->set_is_personalized_url_data_collection_active(true);
+
+  // Change the default search provider to a non-Google one.
+  TemplateURLData non_google_provider_data;
+  non_google_provider_data.SetURL("https://www.nongoogle.com/?q={searchTerms}");
+  non_google_provider_data.suggestions_url =
+      "https://www.nongoogle.com/suggest/?q={searchTerms}";
+  auto* non_google_provider = template_url_service->Add(
+      std::make_unique<TemplateURL>(non_google_provider_data));
   template_url_service->SetUserSelectedDefaultSearchProvider(
-      other_search_provider);
+      non_google_provider);
 
-  // Zero-suggest is not allowed for non-Google default search providers.
-  EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-      client_.get(), OnFocusInputForSRP()));
-  histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestProvider.Eligibility",
-                                     2 /*kRemoteSendURLIneligible*/, 1);
+  {
+    // Zero-suggest request cannot be made on NTP.
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(test_ntp());
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility",
+        1 /*kRequestNoURLIneligible*/, 1);
+  }
+  {
+    // Valid SRP URLs cannot be sent in the zero-suggest request.
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(test_srp(non_google_provider));
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility",
+        2 /*kRequestSendURLIneligible*/, 1);
+  }
+  {
+    // Valid same origin page URLs cannot be sent in the zero-suggest request.
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(test_same_origin(non_google_provider));
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility",
+        2 /*kRequestSendURLIneligible*/, 1);
+  }
+  {
+    // Valid different origin page URLs cannot be sent in the zero-suggest
+    // request.
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(test_different_origin());
+    histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
+                                      1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.ZeroSuggestProvider.Eligibility",
+        2 /*kRequestSendURLIneligible*/, 1);
+  }
 
-  // Zero-suggest is not allowed for non-Google default search providers.
-  EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-      client_.get(), OnFocusInputForNTP()));
-  histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestProvider.Eligibility",
-                                     1 /*kRequestNoUrlIneligible*/, 1);
-
-  // Zero-suggest is not allowed for non-empty inputs.
-  EXPECT_FALSE(ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-      client_.get(), PrefixInputForSRP()));
-  histogram_tester.ExpectBucketCount("Omnibox.ZeroSuggestProvider.Eligibility",
-                                     3 /*kGenerallyIneligible*/, 2);
-
-  histogram_tester.ExpectTotalCount("Omnibox.ZeroSuggestProvider.Eligibility",
-                                    5);
+  // Change the default search provider back to Google.
+  template_url_service->SetUserSelectedDefaultSearchProvider(
+      const_cast<TemplateURL*>(google_provider));
 }
 
-TEST_F(ZeroSuggestProviderTest, ResultTypeToRunNTP) {
-  AutocompleteInput onfocus_ntp_input = OnFocusInputForNTP();
-  EXPECT_EQ(
-      ZeroSuggestProvider::ResultType::kRemoteNoURL,
-      ZeroSuggestProvider::ResultTypeToRun(client_.get(), onfocus_ntp_input));
+// ZeroSuggestProviderRequestTest ----------------------------------------------
+
+class MockZeroSuggestProvider : public testing::NiceMock<ZeroSuggestProvider> {
+ public:
+  MockZeroSuggestProvider(AutocompleteProviderClient* client,
+                          AutocompleteProviderListener* listener);
+  MockZeroSuggestProvider(const MockZeroSuggestProvider&) = delete;
+  MockZeroSuggestProvider& operator=(const MockZeroSuggestProvider&) = delete;
+
+  // ZeroSuggestProvider:
+  MOCK_METHOD(bool,
+              AllowZeroPrefixSuggestions,
+              (const AutocompleteProviderClient* client,
+               const AutocompleteInput& input),
+              (override));
+
+ protected:
+  ~MockZeroSuggestProvider() override = default;
+};
+
+MockZeroSuggestProvider::MockZeroSuggestProvider(
+    AutocompleteProviderClient* client,
+    AutocompleteProviderListener* listener)
+    : testing::NiceMock<ZeroSuggestProvider>(client, listener) {}
+
+// Test environment to verify whether zero-suggest request is made and whether
+// the page URL is sent in the request when all the conditions are met or not.
+class ZeroSuggestProviderRequestTest : public ZeroSuggestProviderTest {
+ public:
+  ZeroSuggestProviderRequestTest() = default;
+
+  void SetUp() override {
+    ZeroSuggestProviderTest::SetUp();
+
+    auto* template_url_service = client_->GetTemplateURLService();
+    TemplateURLData template_url_data;
+    template_url_data.SetURL("https://defaultturl/?q={searchTerms}");
+    template_url_data.suggestions_url =
+        "https://defaultturl2/?q={searchTerms}&{google:currentPageUrl}";
+    auto* template_url = template_url_service->Add(
+        std::make_unique<TemplateURL>(template_url_data));
+    template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
+    provider_ = new MockZeroSuggestProvider(client_.get(), this);
+  }
+
+ protected:
+  scoped_refptr<MockZeroSuggestProvider> provider_;
+};
+
+TEST_F(ZeroSuggestProviderRequestTest, RequestAllowed) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      omnibox::kFocusTriggersContextualWebZeroSuggest);
+
+  EXPECT_CALL(*provider_, AllowZeroPrefixSuggestions(_, _))
+      .WillRepeatedly(testing::Return(true));
+
+  // Start a query for the ResultType::kRemoteNoURL variant.
+  provider_->Start(OnFocusInputForNTP(), false);
+  // Make sure the default provider's suggest endpoint was queried without the
+  // current page URL.
+  EXPECT_FALSE(provider_->done());
+  EXPECT_TRUE(test_loader_factory()->IsPending("https://defaultturl2/?q=&"));
+
+  test_loader_factory()->AddResponse(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
+      R"(["",[],[],[],{}])");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(provider_->done());
+
+  // Start a query for the ResultType::kRemoteSendURL variant.
+  provider_->Start(OnFocusInputForWeb("https://www.example.com"), false);
+  // Make sure the default provider's suggest endpoint was queried with the
+  // current page URL.
+  EXPECT_FALSE(provider_->done());
+  EXPECT_TRUE(test_loader_factory()->IsPending(
+      "https://defaultturl2/?q=&url=https%3A%2F%2Fwww.example.com%2F&"));
+
+  test_loader_factory()->AddResponse(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
+      R"(["",[],[],[],{}])");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(provider_->done());
 }
 
-TEST_F(ZeroSuggestProviderTest, ResultTypeToRunContextualWeb) {
+TEST_F(ZeroSuggestProviderRequestTest, RequestAllowed_RemoteSendURLDisallowed) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      omnibox::kFocusTriggersContextualWebZeroSuggest);
+
+  EXPECT_CALL(*provider_, AllowZeroPrefixSuggestions(_, _))
+      .WillRepeatedly(testing::Return(true));
+
+  // Start a query for the ResultType::kRemoteNoURL variant.
+  provider_->Start(OnFocusInputForNTP(), false);
+  // Make sure the default provider's suggest endpoint was queried without the
+  // current page URL.
+  EXPECT_FALSE(provider_->done());
+  EXPECT_TRUE(test_loader_factory()->IsPending("https://defaultturl2/?q=&"));
+
+  test_loader_factory()->AddResponse(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
+      R"(["",[],[],[],{}])");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(provider_->done());
+
+  // Start a query for the ResultType::kRemoteSendURL variant.
+  provider_->Start(OnFocusInputForWeb("https://www.example.com"), false);
+  // Make sure the default provider's suggest endpoint was not queried.
+  EXPECT_TRUE(provider_->done());
+  EXPECT_EQ(0, test_loader_factory()->NumPending());
+}
+
+TEST_F(ZeroSuggestProviderRequestTest, RequestDisallowed) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      omnibox::kFocusTriggersContextualWebZeroSuggest);
+
+  EXPECT_CALL(*provider_, AllowZeroPrefixSuggestions(_, _))
+      .WillRepeatedly(testing::Return(false));
+
+  // Start a query for the ResultType::kRemoteNoURL variant.
+  provider_->Start(OnFocusInputForNTP(), false);
+  // Make sure the default provider's suggest endpoint was not queried.
+  EXPECT_TRUE(provider_->done());
+  EXPECT_EQ(0, test_loader_factory()->NumPending());
+
+  // Start a query for the ResultType::kRemoteSendURL variant.
+  provider_->Start(OnFocusInputForWeb("https://www.example.com"), false);
+  // Make sure the default provider's suggest endpoint was not queried.
+  EXPECT_TRUE(provider_->done());
+  EXPECT_EQ(0, test_loader_factory()->NumPending());
+}
+
+TEST_F(ZeroSuggestProviderRequestTest, RequestAndRemoteSendURLDisallowed) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      omnibox::kFocusTriggersContextualWebZeroSuggest);
+
+  EXPECT_CALL(*provider_, AllowZeroPrefixSuggestions(_, _))
+      .WillRepeatedly(testing::Return(false));
+
+  // Start a query for the ResultType::kRemoteNoURL variant.
+  provider_->Start(OnFocusInputForNTP(), false);
+  // Make sure the default provider's suggest endpoint was not queried.
+  EXPECT_TRUE(provider_->done());
+  EXPECT_EQ(0, test_loader_factory()->NumPending());
+
+  // Start a query for the ResultType::kRemoteSendURL variant.
+  provider_->Start(OnFocusInputForWeb("https://www.example.com"), false);
+  // Make sure the default provider's suggest endpoint was not queried.
+  EXPECT_TRUE(provider_->done());
+  EXPECT_EQ(0, test_loader_factory()->NumPending());
+}
+
+// -----------------------------------------------------------------------------
+
+TEST_F(ZeroSuggestProviderTest, ResultTypeToRunOnFocusOnClobberContextualWeb) {
   AutocompleteInput on_focus_input = OnFocusInputForWeb();
   AutocompleteInput on_clobber_input = OnClobberInputForWeb();
 
@@ -470,13 +881,11 @@ TEST_F(ZeroSuggestProviderTest, ResultTypeToRunContextualWeb) {
             omnibox::kFocusTriggersContextualWebZeroSuggest,
             omnibox::kClobberTriggersContextualWebZeroSuggest});
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kNone,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_focus_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_input));
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kNone,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_clobber_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_input));
   }
   // Enable on-focus only.
   {
@@ -486,13 +895,11 @@ TEST_F(ZeroSuggestProviderTest, ResultTypeToRunContextualWeb) {
         /*disabled_features=*/{
             omnibox::kClobberTriggersContextualWebZeroSuggest});
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kRemoteSendURL,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_focus_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_input));
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kNone,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_clobber_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_input));
   }
   // Enable on-clobber only.
   {
@@ -503,13 +910,11 @@ TEST_F(ZeroSuggestProviderTest, ResultTypeToRunContextualWeb) {
         /*disabled_features=*/
         {omnibox::kFocusTriggersContextualWebZeroSuggest});
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kNone,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_focus_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_input));
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kRemoteSendURL,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_clobber_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_input));
   }
   // Enable on-focus and on-clobber.
   {
@@ -520,17 +925,15 @@ TEST_F(ZeroSuggestProviderTest, ResultTypeToRunContextualWeb) {
          omnibox::kClobberTriggersContextualWebZeroSuggest},
         /*disabled_features=*/{});
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kRemoteSendURL,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_focus_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_input));
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kRemoteSendURL,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_clobber_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_input));
   }
 }
 
-TEST_F(ZeroSuggestProviderTest, ResultTypeToRunSRP) {
+TEST_F(ZeroSuggestProviderTest, ResultTypeToRunOnFocusOnClobberSRP) {
   AutocompleteInput on_focus_input = OnFocusInputForSRP();
   AutocompleteInput on_clobber_input = OnClobberInputForSRP();
 
@@ -542,13 +945,11 @@ TEST_F(ZeroSuggestProviderTest, ResultTypeToRunSRP) {
         /*disabled_features=*/{omnibox::kFocusTriggersSRPZeroSuggest,
                                omnibox::kClobberTriggersSRPZeroSuggest});
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kNone,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_focus_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_input));
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kNone,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_clobber_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_input));
   }
   // Enable on-focus only.
   {
@@ -557,13 +958,11 @@ TEST_F(ZeroSuggestProviderTest, ResultTypeToRunSRP) {
         /*enabled_features=*/{omnibox::kFocusTriggersSRPZeroSuggest},
         /*disabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest});
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kRemoteSendURL,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_focus_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_input));
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kNone,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_clobber_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_input));
   }
   // Enable on-clobber only.
   {
@@ -573,13 +972,11 @@ TEST_F(ZeroSuggestProviderTest, ResultTypeToRunSRP) {
         /*disabled_features=*/
         {omnibox::kFocusTriggersSRPZeroSuggest});
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kNone,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_focus_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_input));
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kRemoteSendURL,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_clobber_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_input));
   }
   // Enable on-focus and on-clobber.
   {
@@ -590,13 +987,11 @@ TEST_F(ZeroSuggestProviderTest, ResultTypeToRunSRP) {
          omnibox::kClobberTriggersSRPZeroSuggest},
         /*disabled_features=*/{});
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kRemoteSendURL,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_focus_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_input));
 
-    EXPECT_EQ(
-        ZeroSuggestProvider::ResultType::kRemoteSendURL,
-        ZeroSuggestProvider::ResultTypeToRun(client_.get(), on_clobber_input));
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_clobber_input));
   }
 }
 

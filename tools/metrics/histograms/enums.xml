@@ -106606,12 +106606,13 @@ Called by update_scheduler_enums.py.-->
   </int>
   <int value="1" label="Remote request without page URL ineligible">
     Suggest request without sending the current page URL cannot be made. E.g.,
-    the user is in icognito mode or Google is not set as the DSE.
+    the user is in icognito mode or Google is not set as the default search
+    provider.
   </int>
   <int value="2" label="Remote request with sending page URL ineligible">
     Suggest request with sending the current page URL cannot be made. E.g., the
-    user has not consented and the suggest endpoint and page URL are not
-    same-origin.
+    user has not consented and the page is not the SRP associated with the
+    default search provider.
   </int>
   <int value="3" label="Generally ineligible in current context">
     Zero-prefix suggestions are not eligible in the given context. E.g., due to

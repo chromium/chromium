@@ -58,12 +58,13 @@ using ResultType = ZeroSuggestProvider::ResultType;
 enum class Eligibility {
   kEligible = 0,
   // Suggest request without sending the current page URL cannot be made. E.g.,
-  // the user is in incognito mode or Google is not set as the DSE.
+  // the user is in incognito mode or Google is not set as the default search
+  // provider.
   kRequestNoURLIneligible = 1,
   // Suggest request with sending the current page URL cannot be made. E.g.,
-  // the user has not consented and the suggest endpoint and page URL are not
-  // same-origin.
-  kRemoteSendURLIneligible = 2,
+  // the user has not consented and the page is not the SRP associated with the
+  // default search provider.
+  kRequestSendURLIneligible = 2,
   // Zero-prefix suggestions are not eligible in the given context. E.g., due to
   // the page classification, focus type, input type, or an invalid page URL.
   kGenerallyIneligible = 3,
@@ -96,6 +97,7 @@ enum class Event {
 
 void LogEvent(Event event, ResultType result_type, bool is_prefetch) {
   DCHECK_NE(ResultType::kNone, result_type);
+
   const std::string result_type_string =
       result_type == ResultType::kRemoteNoURL ? ".NoURL" : ".URLBased";
   const std::string request_type_string =
@@ -108,7 +110,7 @@ void LogEvent(Event event, ResultType result_type, bool is_prefetch) {
 // Relevance value to use if it was not set explicitly by the server.
 const int kDefaultZeroSuggestRelevance = 100;
 
-// Returns whether the current URL can be sent in the suggest request.
+// Return whether a suggest request can be made with sending the current URL.
 // This function only applies to kRemoteSendURL variant.
 bool AllowRemoteSendURL(const AutocompleteProviderClient* client,
                         const AutocompleteInput& input) {
@@ -122,14 +124,15 @@ bool AllowRemoteSendURL(const AutocompleteProviderClient* client,
   if (!default_provider) {
     return false;
   }
-  TemplateURLRef::SearchTermsArgs search_terms_args;
-  GURL suggest_url = RemoteSuggestionsService::EndpointUrl(
-      search_terms_args, template_url_service);
 
-  return BaseSearchProvider::CanSendRequestWithURL(
-      input.current_url(), suggest_url, default_provider,
-      template_url_service->search_terms_data(), client,
-      /*sending_search_terms=*/false);
+  // Explicitly test the conditions for sending a suggest request without
+  // sending the current URL are also met in case these two tests diverge.
+  return BaseSearchProvider::CanSendZeroSuggestRequest(
+             default_provider, template_url_service->search_terms_data(),
+             client) &&
+         BaseSearchProvider::CanSendSuggestRequestWithURL(
+             input.current_url(), default_provider,
+             template_url_service->search_terms_data(), client);
 }
 
 // Return whether a suggest request can be made without sending the current URL.
@@ -145,13 +148,10 @@ bool AllowRemoteNoURL(const AutocompleteProviderClient* client) {
   if (!default_provider) {
     return false;
   }
-  TemplateURLRef::SearchTermsArgs search_terms_args;
-  GURL suggest_url = RemoteSuggestionsService::EndpointUrl(
-      search_terms_args, template_url_service);
 
-  const bool allow_remote_no_url = BaseSearchProvider::CanSendRequest(
-      suggest_url, default_provider, template_url_service->search_terms_data(),
-      client);
+  const bool allow_remote_no_url =
+      BaseSearchProvider::CanSendZeroSuggestRequest(
+          default_provider, template_url_service->search_terms_data(), client);
 
   // Zero-suggest on the NTP is allowed only if the user is signed-in. This
   // check is done not for privacy reasons but to prevent signed-out users from
@@ -314,7 +314,6 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
 
 // static
 ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
-    const AutocompleteProviderClient* client,
     const AutocompleteInput& input) {
   const auto page_class = input.current_page_classification();
   const auto focus_type_input_type =
@@ -377,36 +376,6 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
 }
 
 // static
-bool ZeroSuggestProvider::AllowZeroPrefixSuggestions(
-    const AutocompleteProviderClient* client,
-    const AutocompleteInput& input) {
-  auto eligibility = Eligibility::kEligible;
-
-  switch (ResultTypeToRun(client, input)) {
-    case ResultType::kRemoteNoURL: {
-      if (!AllowRemoteNoURL(client)) {
-        eligibility = Eligibility::kRequestNoURLIneligible;
-      }
-      break;
-    }
-    case ResultType::kRemoteSendURL: {
-      if (!AllowRemoteSendURL(client, input)) {
-        eligibility = Eligibility::kRemoteSendURLIneligible;
-      }
-      break;
-    }
-    default: {
-      eligibility = Eligibility::kGenerallyIneligible;
-      break;
-    }
-  }
-
-  base::UmaHistogramEnumeration("Omnibox.ZeroSuggestProvider.Eligibility",
-                                eligibility);
-  return eligibility == Eligibility::kEligible;
-}
-
-// static
 ZeroSuggestProvider* ZeroSuggestProvider::Create(
     AutocompleteProviderClient* client,
     AutocompleteProviderListener* listener) {
@@ -421,6 +390,35 @@ void ZeroSuggestProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                    base::Value::Dict());
 }
 
+bool ZeroSuggestProvider::AllowZeroPrefixSuggestions(
+    const AutocompleteProviderClient* client,
+    const AutocompleteInput& input) {
+  auto eligibility = Eligibility::kEligible;
+
+  switch (ResultTypeToRun(input)) {
+    case ResultType::kRemoteNoURL: {
+      if (!AllowRemoteNoURL(client)) {
+        eligibility = Eligibility::kRequestNoURLIneligible;
+      }
+      break;
+    }
+    case ResultType::kRemoteSendURL: {
+      if (!AllowRemoteSendURL(client, input)) {
+        eligibility = Eligibility::kRequestSendURLIneligible;
+      }
+      break;
+    }
+    default: {
+      eligibility = Eligibility::kGenerallyIneligible;
+      break;
+    }
+  }
+
+  base::UmaHistogramEnumeration("Omnibox.ZeroSuggestProvider.Eligibility",
+                                eligibility);
+  return eligibility == Eligibility::kEligible;
+}
+
 void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
   AutocompleteProvider::StartPrefetch(input);
 
@@ -430,7 +428,10 @@ void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
     return;
   }
 
-  ResultType result_type = ResultTypeToRun(client(), input);
+  const ResultType result_type = ResultTypeToRun(input);
+  if (result_type == ResultType::kNone) {
+    return;
+  }
 
   if (prefetch_loader_) {
     LogEvent(Event::kRequestInvalidated, result_type, /*is_prefetch=*/true);
@@ -461,12 +462,15 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::Start");
   Stop(true, false);
 
-  result_type_running_ = ResultType::kNone;
   if (!AllowZeroPrefixSuggestions(client(), input)) {
     return;
   }
 
-  result_type_running_ = ResultTypeToRun(client(), input);
+  result_type_running_ = ResultTypeToRun(input);
+  if (result_type_running_ == ResultType::kNone) {
+    return;
+  }
+
   set_field_trial_triggered(false);
   set_field_trial_triggered_in_session(false);
 
@@ -515,6 +519,7 @@ void ZeroSuggestProvider::Stop(bool clear_cached_results,
              /*is_prefetch=*/false);
     loader_.reset();
   }
+  result_type_running_ = ResultType::kNone;
 
   if (clear_cached_results) {
     experiment_stats_v2s_.clear();

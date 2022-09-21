@@ -259,30 +259,33 @@ bool BaseSearchProvider::CanSendPageURLInRequest(const GURL& page_url) {
 }
 
 // static
-bool BaseSearchProvider::CanSendRequest(
-    const GURL& suggest_url,
+bool BaseSearchProvider::CanSendZeroSuggestRequest(
     const TemplateURL* template_url,
     const SearchTermsData& search_terms_data,
     const AutocompleteProviderClient* client) {
   // Make sure we are sending the suggest request through a cryptographically
   // secure channel to prevent exposing the current page URL or personalized
   // results without encryption.
+  const GURL& suggest_url =
+      template_url->GenerateSuggestionURL(search_terms_data);
   if (!suggest_url.is_valid() || !suggest_url.SchemeIsCryptographic()) {
     return false;
   }
 
-  // Don't run if in incognito mode.
+  // Don't make a suggest request if in incognito mode.
   if (client->IsOffTheRecord()) {
     return false;
   }
 
-  // Don't run if we can't get preferences or search suggest is not enabled.
+  // Don't make a suggest request if suggest is not enabled.
   if (!client->SearchSuggestEnabled()) {
     return false;
   }
 
-  // Only make the request if we know that the provider supports zero-suggest
-  // requests. (Currently only the prepopulated Google provider supports it.)
+  // Don't make a suggest request if Google is not the default search engine.
+  // Note that currently only the pre-populated Google search provider supports
+  // zero-prefix suggestions. If other pre-populated search engines decide to
+  // support it, revise this test accordingly.
   if (template_url == nullptr ||
       !template_url->SupportsReplacement(search_terms_data) ||
       template_url->GetEngineType(search_terms_data) != SEARCH_ENGINE_GOOGLE) {
@@ -293,36 +296,20 @@ bool BaseSearchProvider::CanSendRequest(
 }
 
 // static
-bool BaseSearchProvider::CanSendRequestWithURL(
+bool BaseSearchProvider::CanSendSuggestRequestWithURL(
     const GURL& current_page_url,
-    const GURL& suggest_url,
     const TemplateURL* template_url,
     const SearchTermsData& search_terms_data,
-    const AutocompleteProviderClient* client,
-    bool sending_search_terms) {
-  if (!CanSendRequest(suggest_url, template_url, search_terms_data, client)) {
+    const AutocompleteProviderClient* client) {
+  if (!CanSendZeroSuggestRequest(template_url, search_terms_data, client)) {
     return false;
   }
 
-  // If URL data collection is off, forbid sending the current page URL to the
-  // suggest endpoint - unless both of these hold:
-  //  * The suggest endpoint and current page must be same-origin. In that
-  //    case, the suggest endpoint could have already logged the current URL
-  //    when the user accessed it from the server.
-  //  * The search terms must be empty. When the user is typing new search
-  //    terms, Chrome should not leak to the endpoint which tab the user is
-  //    looking at. On-focus suggest requests don't contain a query.
-  if (!client->IsPersonalizedUrlDataCollectionActive()) {
-    bool safe_to_send_url_without_data_collection_active =
-        url::IsSameOriginWith(current_page_url, suggest_url) &&
-        !sending_search_terms;
-
-    if (!safe_to_send_url_without_data_collection_active) {
-      return false;
-    }
-  }
-
-  return true;
+  // Forbid sending the current page URL to the suggest endpoint if personalized
+  // URL data collection is off; unless the current page is the provider's
+  // Search Results Page.
+  return template_url->IsSearchURL(current_page_url, search_terms_data) ||
+         client->IsPersonalizedUrlDataCollectionActive();
 }
 
 void BaseSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
