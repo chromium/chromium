@@ -5156,6 +5156,12 @@ crbug.com/1097005 http/tests/devtools/console/console-object-preview.js [ Crash 
 crbug.com/1097005 http/tests/devtools/console/console-preserve-scroll.js [ Crash Failure Pass Timeout ]
 crbug.com/1097005 http/tests/devtools/console/console-search.js [ Crash Failure Pass Timeout ]
 
+# These tests print the internal [[Scopes]] property. We disable the the tests for a release to run an
+# experiment whether we can remove the property. We'll re-enable and re-baseline once a final decision is made.
+crbug.com/1365858 http/tests/devtools/console/console-format-es6.js [ Failure Pass ]
+crbug.com/1365858 http/tests/devtools/console/console-functions.js [ Failure Pass ]
+crbug.com/1365858 http/tests/devtools/sources/debugger/properties-special.js [ Failure Pass ]
+
 crbug.com/1093445 http/tests/loading/pdf-commit-load-callbacks.html [ Failure Pass ]
 crbug.com/1093497 http/tests/history/client-redirect-after-push-state.html [ Failure Pass ]
 

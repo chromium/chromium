@@ -3,9 +3,7 @@ Test that watch expressions expansion state is restored after update.
 Watch expressions added.
 expanded foo [object Object]
 expanded bar [object Object]
-expanded [[Scopes]] [object Object]
-expanded 0 [object Object]
-expanded a [object Object]
+expanded [[FunctionLocation]] [object Object]
 expanded [200 .. 299] 
 expanded 299 [object Object]
 Watch expressions expanded.
@@ -129,12 +127,6 @@ func: function() {return a + b;}
     prototype: Object
     [[FunctionLocation]]: Object
     [[Prototype]]: function () { [native code] }
-    [[Scopes]]: Scopes[2]
-      0: Closure
-        a: 10
-        b: 100
-        [[Prototype]]: Object
-      1: Global
 Page reloaded.
 Watch expressions after page reload:
 globalObject: Object
@@ -257,10 +249,4 @@ func: function() {return a + b;}
     prototype: Object
     [[FunctionLocation]]: Object
     [[Prototype]]: function () { [native code] }
-    [[Scopes]]: Scopes[2]
-      0: Closure
-        a: 10
-        b: 100
-        [[Prototype]]: Object
-      1: Global
 

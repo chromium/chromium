@@ -61,57 +61,6 @@
       TestRunner.addResult('isGenerator: ' + properties.get('[[IsGenerator]]').value.value);
   }
 
-  function dumpFunctionNoScopes() {
-    TestRunner.addResult('scopeChain: n/a');
-  }
-
-  function dumpFunctionScope(pos, type, propertyDescriptors) {
-    var variables;
-    if (type == 'Global') {
-      variables = '<global object properties omitted>';
-    } else {
-      var varArray = [];
-      for (var i = 0; i < propertyDescriptors.length; i++) {
-        var d = propertyDescriptors[i];
-        var valueStr;
-        if (d.value) {
-          if (d.value.value)
-            valueStr = JSON.stringify(d.value.value);
-          else
-            valueStr = '<no string representation>';
-        } else {
-          valueStr = '<no value>';
-        }
-        varArray.push(d.name + ': ' + valueStr);
-      }
-      varArray.sort();
-      variables = varArray.join();
-    }
-    TestRunner.addResult('scopeChain #' + pos + ': ' + type + '; ' + variables);
-  }
-
-  async function loadAndDumpScopeObjects(scopeChain, end) {
-    if (!scopeChain) {
-      dumpFunctionNoScopes();
-      end();
-      return;
-    }
-
-    var properties = await TestRunner.RuntimeAgent.getProperties(scopeChain.value.objectId, true);
-    var scopes = [];
-    for (var prop of properties) {
-      if (String(prop.name >>> 0) === prop.name)
-        scopes.push(prop.value);
-    }
-
-    for (var pos = 0; pos < scopes.length; ++pos) {
-      var propertyDescriptors = await TestRunner.RuntimeAgent.getProperties(scopes[pos].objectId, true);
-      dumpFunctionScope(pos, scopes[pos].description, propertyDescriptors);
-    }
-
-    end();
-  }
-
   async function performStandardTestCase(pageExpression, next) {
     var remote = await TestRunner.evaluateInPageRemoteObject(pageExpression);
 
@@ -131,7 +80,7 @@
       }
     }
     dumpFunctionDetails(propertiesMap);
-    loadAndDumpScopeObjects(propertiesMap.get('[[Scopes]]'), next);
+    next();
   }
 
   SourcesTestRunner.runDebuggerTestSuite([
