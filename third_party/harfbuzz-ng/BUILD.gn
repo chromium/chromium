@@ -63,6 +63,14 @@ if (use_system_harfbuzz) {
     ]
 
     sources = [
+      "src/src/graph/classdef-graph.hh",
+      "src/src/graph/coverage-graph.hh",
+      "src/src/graph/gsubgpos-context.cc",
+      "src/src/graph/gsubgpos-context.hh",
+      "src/src/graph/gsubgpos-graph.hh",
+      "src/src/graph/markbasepos-graph.hh",
+      "src/src/graph/pairpos-graph.hh",
+      "src/src/graph/split-helpers.hh",
       "src/src/hb-aat-layout-ankr-table.hh",
       "src/src/hb-aat-layout-bsln-table.hh",
       "src/src/hb-aat-layout-common.hh",
@@ -320,9 +328,6 @@ if (use_system_harfbuzz) {
 
       # TODO(https://crbug.com/949962): Remove once this is fixed upstream.
       "U_DISABLE_VERSION_SUFFIX=0",
-
-      # No experimental font format extensions yet.
-      "HB_NO_BORING_EXPANSION",
 
       # Buffer verification not used in production build.
       "HB_NO_BUFFER_VERIFY",
