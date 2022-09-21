@@ -102,7 +102,7 @@ bool ExtractFormsData(NSString* forms_json,
 
   // Iterate through all the extracted forms and copy the data from JSON into
   // BrowserAutofillManager structures.
-  for (const auto& form_dict : forms_value->GetListDeprecated()) {
+  for (const auto& form_dict : forms_value->GetList()) {
     autofill::FormData form;
     if (ExtractFormData(form_dict, filtered, form_name, main_frame_url,
                         frame_origin, &form))
@@ -336,7 +336,7 @@ bool ExtractIDs(NSString* json_string, std::vector<FieldRendererId>* ids) {
   if (!ids_value->is_list())
     return false;
 
-  for (const auto& unique_id : ids_value->GetListDeprecated()) {
+  for (const auto& unique_id : ids_value->GetList()) {
     if (!unique_id.is_string())
       return false;
     uint32_t id_num = 0;
