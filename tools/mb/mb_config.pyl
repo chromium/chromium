@@ -1329,7 +1329,7 @@
       'ios-clang-tidy-rel': 'ios_device_release_compile_only',
       'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot',
       'linux-clang-tidy-dbg': 'debug_bot',
-      'linux-clang-tidy-rel': 'release_trybot',
+      'linux-clang-tidy-rel': 'release_trybot_reclient',
       'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot',
       'mac-clang-tidy-rel': 'release_trybot',
       'win10-clang-tidy-rel': 'release_trybot',
