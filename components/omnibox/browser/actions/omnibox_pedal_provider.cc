@@ -298,11 +298,10 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     tokenize_characters_ = u" -";
   }
 
-  const auto& dictionary =
-      concept_data->FindKey("dictionary")->GetListDeprecated();
-  dictionary_.reserve(dictionary.size());
+  const auto& list = concept_data->FindKey("dictionary")->GetList();
+  dictionary_.reserve(list.size());
   int token_id = 0;
-  for (const auto& token_value : dictionary) {
+  for (const auto& token_value : list) {
     std::u16string token;
     if (token_value.is_string())
       token = base::UTF8ToUTF16(token_value.GetString());
@@ -323,8 +322,7 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   }
   ignore_group_.SortSynonyms();
 
-  for (const auto& pedal_value :
-       concept_data->FindKey("pedals")->GetListDeprecated()) {
+  for (const auto& pedal_value : concept_data->FindKey("pedals")->GetList()) {
     DCHECK(pedal_value.is_dict());
     const int id = pedal_value.FindIntKey("id").value();
     const auto pedal_iter = pedals_.find(static_cast<OmniboxPedalId>(id));
@@ -351,8 +349,7 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     // the appropriate string names won't be defined. In such cases, we fall
     // back to loading from JSON to robustly handle partial presence of data.
     if (specs.empty()) {
-      for (const auto& group_value :
-           pedal_value.FindKey("groups")->GetListDeprecated()) {
+      for (const auto& group_value : pedal_value.FindKey("groups")->GetList()) {
         // Note, group JSON values are preprocessed by the data generation tool.
         pedal->AddSynonymGroup(LoadSynonymGroupValue(group_value));
       }
@@ -387,11 +384,11 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupValue(
   DCHECK(group_value.is_dict());
   const bool required = group_value.FindKey("required")->GetBool();
   const bool single = group_value.FindKey("single")->GetBool();
-  const auto& synonyms = group_value.FindKey("synonyms")->GetListDeprecated();
+  const auto& synonyms = group_value.FindKey("synonyms")->GetList();
   OmniboxPedal::SynonymGroup synonym_group(required, single, synonyms.size());
   for (const auto& synonyms_value : synonyms) {
     DCHECK(synonyms_value.is_list());
-    const auto& synonyms_value_list = synonyms_value.GetListDeprecated();
+    const auto& synonyms_value_list = synonyms_value.GetList();
     OmniboxPedal::TokenSequence synonym_all_tokens(synonyms_value_list.size());
     for (const auto& token_index_value : synonyms_value_list) {
       synonym_all_tokens.Add(token_index_value.GetInt());

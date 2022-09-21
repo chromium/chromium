@@ -38,7 +38,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     {
       // Set-up the input so downstream won't reject it.
       if (value->is_list()) {
-        base::Value::ConstListView root_list = value->GetListDeprecated();
+        const base::Value::List& root_list = value->GetList();
         if (!root_list.empty() && root_list[0].is_string()) {
           std::string query = root_list[0].GetString();
           input = AutocompleteInput(base::UTF8ToUTF16(query),

@@ -74,7 +74,7 @@ std::vector<std::vector<int>> ParseMatchSubtypes(
 
   if (subtypes_value == nullptr || !subtypes_value->is_list())
     return result;
-  auto subtypes_list = subtypes_value->GetListDeprecated();
+  const auto& subtypes_list = subtypes_value->GetList();
 
   if (!subtypes_list.empty() && subtypes_list.size() != expected_size) {
     LOG(WARNING) << "The length of reported subtypes (" << subtypes_list.size()
@@ -89,7 +89,7 @@ std::vector<std::vector<int>> ParseMatchSubtypes(
     if (!subtypes_item.is_list())
       continue;
 
-    auto subtype_list = subtypes_item.GetListDeprecated();
+    const auto& subtype_list = subtypes_item.GetList();
     auto& result_subtypes = result[index];
     result_subtypes.reserve(subtype_list.size());
 
@@ -528,7 +528,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     Results* results) {
   if (!root_val.is_list())
     return false;
-  auto root_list = root_val.GetListDeprecated();
+  const auto& root_list = root_val.GetList();
 
   // 1st element: query.
   if (root_list.empty() || !root_list[0].is_string())
@@ -540,7 +540,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
   // 2nd element: suggestions list.
   if (root_list.size() < 2u || !root_list[1].is_list())
     return false;
-  auto results_list = root_list[1].GetListDeprecated();
+  const auto& results_list = root_list[1].GetList();
 
   // 3rd element: Ignore the optional description list for now.
   // 4th element: Disregard the query URL list.
@@ -567,8 +567,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
     relevances = extras.FindListKey("google:suggestrelevance");
     // Discard this list if its size does not match that of the suggestions.
-    if (relevances &&
-        relevances->GetListDeprecated().size() != results_list.size()) {
+    if (relevances && relevances->GetList().size() != results_list.size()) {
       relevances = nullptr;
     }
 
@@ -626,7 +625,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
       const base::Value* hidden_group_ids = header_texts->FindListKey("h");
       if (hidden_group_ids) {
-        for (const auto& value : hidden_group_ids->GetListDeprecated()) {
+        for (const auto& value : hidden_group_ids->GetList()) {
           if (value.is_int()) {
             (*groups_info.mutable_group_configs_map())[value.GetInt()]
                 .set_visibility(omnibox::GroupConfig_Visibility_HIDDEN);
@@ -644,7 +643,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     suggestion_details = extras.FindListKey("google:suggestdetail");
     // Discard this list if its size does not match that of the suggestions.
     if (suggestion_details &&
-        suggestion_details->GetListDeprecated().size() != results_list.size()) {
+        suggestion_details->GetList().size() != results_list.size()) {
       suggestion_details = nullptr;
     }
 
@@ -652,8 +651,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     subtype_identifiers = extras.FindListKey("google:subtypeid");
     // Discard this list if its size does not match that of the suggestions.
     if (subtype_identifiers &&
-        subtype_identifiers->GetListDeprecated().size() !=
-            results_list.size()) {
+        subtype_identifiers->GetList().size() != results_list.size()) {
       subtype_identifiers = nullptr;
     }
 
@@ -691,10 +689,10 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
     // Apply valid suggested relevance scores; discard invalid lists.
     if (relevances) {
-      if (!relevances->GetListDeprecated()[index].is_int()) {
+      if (!relevances->GetList()[index].is_int()) {
         relevances = nullptr;
       } else {
-        relevance = relevances->GetListDeprecated()[index].GetInt();
+        relevance = relevances->GetList()[index].GetInt();
       }
     }
 
@@ -703,25 +701,23 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
     // Legacy code: if the server sends us a single subtype ID, place it beside
     // other subtypes.
-    if (subtype_identifiers &&
-        index < subtype_identifiers->GetListDeprecated().size() &&
-        subtype_identifiers->GetListDeprecated()[index].is_int()) {
+    if (subtype_identifiers && index < subtype_identifiers->GetList().size() &&
+        subtype_identifiers->GetList()[index].is_int()) {
       subtypes[index].emplace_back(
-          subtype_identifiers->GetListDeprecated()[index].GetInt());
+          subtype_identifiers->GetList()[index].GetInt());
     }
 
-    if (suggest_types && index < suggest_types->GetListDeprecated().size() &&
-        suggest_types->GetListDeprecated()[index].is_string()) {
-      match_type = GetAutocompleteMatchType(
-          suggest_types->GetListDeprecated()[index].GetString());
+    if (suggest_types && index < suggest_types->GetList().size() &&
+        suggest_types->GetList()[index].is_string()) {
+      match_type =
+          GetAutocompleteMatchType(suggest_types->GetList()[index].GetString());
     }
 
     std::string deletion_url;
-    if (suggestion_details &&
-        index < suggestion_details->GetListDeprecated().size() &&
-        suggestion_details->GetListDeprecated()[index].is_dict()) {
+    if (suggestion_details && index < suggestion_details->GetList().size() &&
+        suggestion_details->GetList()[index].is_dict()) {
       const base::Value& suggestion_detail =
-          suggestion_details->GetListDeprecated()[index];
+          suggestion_details->GetList()[index];
       deletion_url = FindStringKeyOrEmpty(suggestion_detail, "du");
     }
 
@@ -734,7 +730,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         std::u16string title;
         // 3rd element: optional descriptions list
         if (root_list.size() > 2u && root_list[2].is_list()) {
-          auto descriptions = root_list[2].GetListDeprecated();
+          const auto& descriptions = root_list[2].GetList();
           if (index < descriptions.size() && descriptions[index].is_string()) {
             title = base::UTF8ToUTF16(descriptions[index].GetString());
           }
@@ -772,10 +768,10 @@ bool SearchSuggestionParser::ParseSuggestResults(
       absl::optional<int> suggestion_group_id;
 
       if (suggestion_details &&
-          suggestion_details->GetListDeprecated()[index].is_dict() &&
-          !suggestion_details->GetListDeprecated()[index].DictEmpty()) {
+          suggestion_details->GetList()[index].is_dict() &&
+          !suggestion_details->GetList()[index].DictEmpty()) {
         const base::Value& suggestion_detail =
-            suggestion_details->GetListDeprecated()[index];
+            suggestion_details->GetList()[index];
         match_contents =
             base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "t"));
         if (match_contents.empty()) {
