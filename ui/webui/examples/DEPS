@@ -5,6 +5,13 @@ include_rules = [
   # Sandbox is part of the main initialization.
   "+sandbox",
 
+  # The WebUI examples uses Chromium's UI libraries.
+  "+ui/aura",
+  "+ui/display",
+  "+ui/platform_window",
+  "+ui/wm",
+
   # The WebUI examples is an embedder so it must work with resource bundles.
+  "+ui/base/l10n",
   "+ui/base/resource",
 ]

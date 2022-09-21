@@ -997,6 +997,9 @@
   "ui/views/resources/views_resources.grd": {
     "structures": [4840],
   },
+  "ui/webui/examples/resources/webui_examples_resources.grd": {
+    "messages": [4850],
+  },
   "ui/webui/resources/webui_resources.grd": {
     "includes": [4860],
     "structures": [4880],

@@ -21,6 +21,12 @@ static_library("webui_examples_lib") {
     "browser/browser_main_parts.h",
     "browser/content_browser_client.cc",
     "browser/content_browser_client.h",
+    "browser/ui/aura/aura_context.cc",
+    "browser/ui/aura/aura_context.h",
+    "browser/ui/aura/content_window.cc",
+    "browser/ui/aura/content_window.h",
+    "browser/ui/aura/fill_layout.cc",
+    "browser/ui/aura/fill_layout.h",
     "common/content_client.cc",
     "common/content_client.h",
   ]
@@ -29,12 +35,31 @@ static_library("webui_examples_lib") {
 
   deps = [
     ":pak",
+    ":resources_grit",
     "//base",
     "//content/public/app",
     "//content/public/browser",
+    "//ui/aura",
+    "//ui/aura:test_support",
     "//ui/base",
     "//ui/display",
+    "//ui/platform_window",
+    "//ui/wm",
+    "//ui/wm/public",
     "//url",
+  ]
+}
+
+grit("resources") {
+  testonly = true
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+  ]
+  source = "resources/webui_examples_resources.grd"
+  outputs = [
+    "grit/webui_examples_resources.h",
+    "webui_examples_resources.pak",
   ]
 }
 
@@ -43,12 +68,16 @@ repack("pak") {
   sources = [
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+    "$root_gen_dir/ui/resources/webui_generated_resources.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+    "$target_gen_dir/webui_examples_resources.pak",
   ]
   deps = [
+    ":resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
+    "//ui/resources",
     "//ui/strings",
   ]
   output = "$root_out_dir/webui_examples.pak"
