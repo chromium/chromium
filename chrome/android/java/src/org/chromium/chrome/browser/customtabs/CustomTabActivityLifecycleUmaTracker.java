@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.webapps.WebappCustomTabTimeSpentLogger;
@@ -42,8 +43,8 @@ import javax.inject.Named;
  * Handles recording User Metrics for Custom Tab Activity.
  */
 @ActivityScope
-public class CustomTabActivityLifecycleUmaTracker implements PauseResumeWithNativeObserver,
-        NativeInitObserver {
+public class CustomTabActivityLifecycleUmaTracker
+        implements PauseResumeWithNativeObserver, StartStopWithNativeObserver, NativeInitObserver {
     /**
      * Identifier used for last CCT client App. Used as suffix for histogram
      * "CustomTabs.RetainableSessions.TimeBetweenLaunch".
@@ -61,6 +62,7 @@ public class CustomTabActivityLifecycleUmaTracker implements PauseResumeWithNati
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final Activity mActivity;
+    private final CustomTabsConnection mConnection;
 
     private WebappCustomTabTimeSpentLogger mWebappTimeSpentLogger;
     private boolean mIsInitialResume = true;
@@ -116,10 +118,12 @@ public class CustomTabActivityLifecycleUmaTracker implements PauseResumeWithNati
     @Inject
     public CustomTabActivityLifecycleUmaTracker(ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intentDataProvider, Activity activity,
-            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
+            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
+            CustomTabsConnection connection) {
         mIntentDataProvider = intentDataProvider;
         mActivity = activity;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
+        mConnection = connection;
 
         lifecycleDispatcher.register(this);
     }
@@ -170,6 +174,16 @@ public class CustomTabActivityLifecycleUmaTracker implements PauseResumeWithNati
         if (mWebappTimeSpentLogger != null) {
             mWebappTimeSpentLogger.onPause();
         }
+    }
+
+    @Override
+    public void onStartWithNative() {
+        mConnection.setCustomTabIsInForeground(mIntentDataProvider.getSession(), true);
+    }
+
+    @Override
+    public void onStopWithNative() {
+        mConnection.setCustomTabIsInForeground(mIntentDataProvider.getSession(), false);
     }
 
     @Override

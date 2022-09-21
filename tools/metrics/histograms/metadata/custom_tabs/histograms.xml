@@ -411,6 +411,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="CustomTabs.SessionDisconnectStatus"
+    enum="CustomTabsSessionDisconnectStatus" expires_after="2022-12-15">
+  <owner>kgrosu@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Recorded only for Android. Record information about the state of the client
+    app, custom tab and system in the moment the connection between the client
+    and the custom tab is terminated. With this, we are trying to understand how
+    often a connection is terminated (the client app dies/is killed/is closed)
+    while a custom tab is in foreground. Also, if the EXTRA_KEEP_ALIVE is set,
+    we want to understand if it reduces the number of connections being
+    terminated. The aim is that CT_FOREGROUND and CT_FOREGROUND_KEEPALIVE are
+    logged as little as possible, while the rest of the states are expected ways
+    in which a connection may be terminated.
+
+    *CT_FOREGROUND*/*CT_BACKGROUND* - an enum value that contains this text
+    reflects if the custom tab was in the foreground/background when the
+    connection was terminated.
+
+    *KEEP_ALIVE* - an enum value that contains this text reflects that the
+    EXTRA_KEEP_ALIVE intent extra was specified and that the custom tab binds to
+    the service provided by it in order to increase the priority of the client
+    app to foreground.
+
+    *LOW_MEMORY* - an enum value that contains this text reflects that the
+    system was low on memory when the connection was terminated. This does not
+    mean that this was indeed the reason for the connection being terminated,
+    but it might be a good indicator of it.
+
+    UNKNOWN - if this is logged then there is probably a bug in the code as we
+    have a state we can be in that we don't currently account for.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.ShareOptionLocation" enum="ShareOptionLocation"
     expires_after="M109">
   <owner>sophey@chromium.org</owner>

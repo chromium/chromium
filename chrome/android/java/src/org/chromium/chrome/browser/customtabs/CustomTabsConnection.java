@@ -1678,6 +1678,11 @@ public class CustomTabsConnection {
                 sessionToken, uri, purpose, extras);
     }
 
+    public void setCustomTabIsInForeground(
+            @Nullable CustomTabsSessionToken session, boolean isInForeground) {
+        mClientManager.setCustomTabIsInForeground(session, isInForeground);
+    }
+
     @VisibleForTesting
     public static void setInstanceForTesting(CustomTabsConnection connection) {
         sInstance = connection;
