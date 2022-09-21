@@ -65,22 +65,19 @@ bool IdentityCredential::IsRejectingPromiseDueToCSP(
     return false;
   }
 
-  // kFollowedRedirect means that the path will not be checked, which is
-  // what we want -- at least one high-profile site has specific paths
-  // in its existing connect-src policy which do not work with FedCM, breaking
-  // the "no RP changes required" promise of FedCM.
-  // (note that we disable redirects for FedCM requests on the browser side)
-  // TODO(cbiesinger): Once the two known websites are fixed, make this
-  // codepath metrics-only and move kSuppressReporting here. crbug.com/1320724
+  // kFollowedRedirect ignores paths.
   if (policy->AllowConnectToSource(provider_url, provider_url,
                                    RedirectStatus::kFollowedRedirect)) {
+    // Log how frequently FedCM is attempted from RPs:
+    // (1) With specific paths in their connect-src policy
+    // AND
+    // (2) Whose connect-src policy does not whitelist FedCM endpoints
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.Csp",
                               FedCmCspStatus::kFailedPathButPassedOrigin);
-    return false;
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.Csp",
+                              FedCmCspStatus::kFailedOrigin);
   }
-
-  UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.Csp",
-                            FedCmCspStatus::kFailedOrigin);
 
   WTF::String error =
       "Refused to connect to '" + provider_url.ElidedString() +
