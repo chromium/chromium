@@ -69,6 +69,7 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/constants",
       "//base/test:test_support",
       "//chromeos:test_utils",
     ]
@@ -76,6 +77,7 @@ source_set("unit_tests") {
       "factory_ping_embargo_check_unittest.cc",
       "kiosk_oem_manifest_parser_unittest.cc",
       "name_value_pairs_parser_unittest.cc",
+      "statistics_provider_impl_unittest.cc",
     ]
   }
 }
