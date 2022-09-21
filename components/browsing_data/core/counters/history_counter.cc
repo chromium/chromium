@@ -154,7 +154,7 @@ void HistoryCounter::OnGetWebHistoryCount(
   if (!result)
     has_synced_visits_ = true;
   else if (const base::Value* events = result->FindListKey("event"))
-    has_synced_visits_ = !events->GetListDeprecated().empty();
+    has_synced_visits_ = !events->GetList().empty();
   else
     has_synced_visits_ = false;
   web_counting_finished_ = true;
