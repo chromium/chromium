@@ -11,3 +11,5 @@ per-file *challenge_response*=emaxx@chromium.org
 per-file *challenge_response*=fabiansommer@chromium.org
 per-file *security_token*=emaxx@chromium.org
 per-file *security_token*=fabiansommer@chromium.org
+per-file *cryptohome_mixin*=mbid@google.com
+per-file *cryptohome_mixin*=emaamari@google.com
