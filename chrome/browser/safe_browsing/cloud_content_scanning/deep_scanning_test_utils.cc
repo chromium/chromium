@@ -585,10 +585,9 @@ void SetAnalysisConnector(PrefService* prefs,
                           enterprise_connectors::AnalysisConnector connector,
                           const std::string& pref_value,
                           bool machine_scope) {
-  ListPrefUpdate settings_list(prefs, ConnectorPref(connector));
-  DCHECK(settings_list.Get());
-  if (!settings_list->GetListDeprecated().empty())
-    settings_list->ClearList();
+  ScopedListPrefUpdate settings_list(prefs, ConnectorPref(connector));
+  if (!settings_list->empty())
+    settings_list->clear();
 
   settings_list->Append(*base::JSONReader::Read(pref_value));
   prefs->SetInteger(
@@ -624,16 +623,15 @@ void SetOnSecurityEventReporting(
     const std::map<std::string, std::vector<std::string>>&
         enabled_opt_in_events,
     bool machine_scope) {
-  ListPrefUpdate settings_list(prefs,
-                               enterprise_connectors::kOnSecurityEventPref);
-  DCHECK(settings_list.Get());
+  ScopedListPrefUpdate settings_list(
+      prefs, enterprise_connectors::kOnSecurityEventPref);
   if (!enabled) {
-    settings_list->ClearList();
+    settings_list->clear();
     prefs->ClearPref(enterprise_connectors::kOnSecurityEventScopePref);
     return;
   }
 
-  if (settings_list->GetListDeprecated().empty()) {
+  if (settings_list->empty()) {
     base::Value settings(base::Value::Type::DICTIONARY);
 
     settings.SetKey(enterprise_connectors::kKeyServiceProvider,
@@ -662,9 +660,8 @@ void SetOnSecurityEventReporting(
 void ClearAnalysisConnector(
     PrefService* prefs,
     enterprise_connectors::AnalysisConnector connector) {
-  ListPrefUpdate settings_list(prefs, ConnectorPref(connector));
-  DCHECK(settings_list.Get());
-  settings_list->ClearList();
+  ScopedListPrefUpdate settings_list(prefs, ConnectorPref(connector));
+  settings_list->clear();
   prefs->ClearPref(ConnectorScopePref(connector));
 }
 

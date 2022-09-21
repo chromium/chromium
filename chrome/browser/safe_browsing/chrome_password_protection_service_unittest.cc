@@ -401,9 +401,10 @@ class ChromePasswordProtectionServiceTest
   }
 
   int GetSizeofUnhandledSyncPasswordReuses() {
-    DictionaryPrefUpdate unhandled_sync_password_reuses(
-        profile()->GetPrefs(), prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
-    return unhandled_sync_password_reuses->DictSize();
+    return profile()
+        ->GetPrefs()
+        ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+        .size();
   }
 
   size_t GetNumberOfDeferredNavigations() {
@@ -1100,14 +1101,14 @@ TEST_F(ChromePasswordProtectionServiceTest,
   GURL url_b("https://www.phishingb.com");
   GURL url_c("https://www.phishingc.com");
 
-  DictionaryPrefUpdate update(profile()->GetPrefs(),
+  ScopedDictPrefUpdate update(profile()->GetPrefs(),
                               prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
-  update->SetKey(Origin::Create(url_a).Serialize(),
-                 base::Value("navigation_id_a"));
-  update->SetKey(Origin::Create(url_b).Serialize(),
-                 base::Value("navigation_id_b"));
-  update->SetKey(Origin::Create(url_c).Serialize(),
-                 base::Value("navigation_id_c"));
+  update->Set(Origin::Create(url_a).Serialize(),
+              base::Value("navigation_id_a"));
+  update->Set(Origin::Create(url_b).Serialize(),
+              base::Value("navigation_id_b"));
+  update->Set(Origin::Create(url_c).Serialize(),
+              base::Value("navigation_id_c"));
 
   // Delete a https://www.phishinga.com URL.
   history::URLRows deleted_urls;

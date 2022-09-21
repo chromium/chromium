@@ -155,17 +155,18 @@ void SafeBrowsingMetricsCollector::LogDailyEventMetrics() {
 }
 
 void SafeBrowsingMetricsCollector::RemoveOldEventsFromPref() {
-  DictionaryPrefUpdate update(pref_service_,
+  ScopedDictPrefUpdate update(pref_service_,
                               prefs::kSafeBrowsingEventTimestamps);
-  base::Value::Dict* mutable_state_dict = update->GetIfDict();
-  bool is_pref_valid = !!mutable_state_dict;
-  base::UmaHistogramBoolean("SafeBrowsing.MetricsCollector.IsPrefValid",
-                            is_pref_valid);
-  if (!is_pref_valid) {
-    return;
-  }
+  base::Value::Dict& mutable_state_dict = update.Get();
 
-  for (auto state_map : *mutable_state_dict) {
+  // Histogram to check whether prefs::kSafeBrowsingEventTimestamp is a dict.
+  // Prefs DCHECKs if it's the wrong type, or not registered, so this is not
+  // actually needed.
+  //
+  // TODO(mmenke): Remove this histogram.
+  base::UmaHistogramBoolean("SafeBrowsing.MetricsCollector.IsPrefValid", true);
+
+  for (auto state_map : mutable_state_dict) {
     for (auto event_map : state_map.second.GetDict()) {
       event_map.second.GetList().EraseIf([&](const auto& timestamp) {
         return base::Time::Now() - PrefValueToTime(timestamp) >
@@ -240,9 +241,9 @@ SafeBrowsingMetricsCollector::GetLatestSecuritySensitiveEventTimestamp() {
 void SafeBrowsingMetricsCollector::AddSafeBrowsingEventAndUserStateToPref(
     UserState user_state,
     EventType event_type) {
-  DictionaryPrefUpdate update(pref_service_,
+  ScopedDictPrefUpdate update(pref_service_,
                               prefs::kSafeBrowsingEventTimestamps);
-  base::Value::Dict& mutable_state_dict = update->GetDict();
+  base::Value::Dict& mutable_state_dict = update.Get();
   base::Value::Dict* event_dict =
       mutable_state_dict.EnsureDict(UserStateToPrefKey(user_state));
   base::Value::List* timestamps =
