@@ -32,7 +32,7 @@ TEST_F(FileSuggestKeyedServiceTest, GetSuggestData) {
   file_suggest_service_->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(
-          [](absl::optional<std::vector<FileSuggestData>> suggest_data) {
+          [](const absl::optional<std::vector<FileSuggestData>>& suggest_data) {
             EXPECT_FALSE(suggest_data.has_value());
           }));
   tester.ExpectBucketCount(

@@ -99,6 +99,11 @@ FileSuggestKeyedService::FileSuggestKeyedService(Profile* profile)
 
 FileSuggestKeyedService::~FileSuggestKeyedService() = default;
 
+void FileSuggestKeyedService::MaybeUpdateItemSuggestCache(
+    base::PassKey<ZeroStateDriveProvider>) {
+  item_suggest_cache_->MaybeUpdateCache();
+}
+
 void FileSuggestKeyedService::GetSuggestFileData(
     FileSuggestionType type,
     GetSuggestDataCallback callback) {
@@ -118,9 +123,8 @@ void FileSuggestKeyedService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void FileSuggestKeyedService::MaybeUpdateItemSuggestCache(
-    base::PassKey<ZeroStateDriveProvider>) {
-  item_suggest_cache_->MaybeUpdateCache();
+bool FileSuggestKeyedService::HasPendingSuggestionFetchForTest() const {
+  return !on_drive_results_ready_callback_list_.empty();
 }
 
 void FileSuggestKeyedService::OnItemSuggestCacheUpdated() {
@@ -207,6 +211,7 @@ void FileSuggestKeyedService::OnDriveFilePathsLocated(
       continue;
 
     suggest_results.emplace_back(
+        /*type=*/FileSuggestionType::kDriveFile,
         ReparentToDriveMount(path_or_error->get_path(), drive_service_),
         raw_suggest_results[index].prediction_reason);
   }

@@ -187,7 +187,7 @@ void ZeroStateDriveProvider::StartZeroState() {
 }
 
 void ZeroStateDriveProvider::OnSuggestFileDataFetched(
-    absl::optional<SuggestResults> suggest_results) {
+    const absl::optional<SuggestResults>& suggest_results) {
   // Fail to fetch the suggest data, so return early.
   if (!suggest_results)
     return;
@@ -195,7 +195,8 @@ void ZeroStateDriveProvider::OnSuggestFileDataFetched(
   SetSearchResults(*suggest_results);
 }
 
-void ZeroStateDriveProvider::SetSearchResults(SuggestResults suggest_results) {
+void ZeroStateDriveProvider::SetSearchResults(
+    const SuggestResults& suggest_results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Assign scores to results by simply using their position in the results

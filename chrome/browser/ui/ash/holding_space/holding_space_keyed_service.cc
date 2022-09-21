@@ -6,20 +6,24 @@
 
 #include <set>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_file_system_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_metrics_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_suggestions_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/account_id/account_id.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -173,7 +177,7 @@ void HoldingSpaceKeyedService::AddPinnedFiles(
   holding_space_metrics::RecordItemAction(
       items_to_record, holding_space_metrics::ItemAction::kPin);
 
-  AddItems(std::move(items));
+  AddItems(std::move(items), /*allow_duplicates=*/false);
 }
 
 void HoldingSpaceKeyedService::RemovePinnedFiles(
@@ -265,44 +269,72 @@ void HoldingSpaceKeyedService::AddScreenshot(
   AddItemOfType(HoldingSpaceItem::Type::kScreenshot, screenshot_file);
 }
 
-void HoldingSpaceKeyedService::AddSuggestion(
-    HoldingSpaceItem::Type type,
-    const base::FilePath& suggestion_path) {
-  DCHECK(HoldingSpaceItem::IsSuggestion(type));
-  AddItemOfType(type, suggestion_path);
+void HoldingSpaceKeyedService::SetSuggestions(
+    const std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>&
+        suggestions) {
+  std::set<std::string> item_ids_to_remove;
+  for (const auto& item : holding_space_model_.items()) {
+    if (HoldingSpaceItem::IsSuggestion(item->type()))
+      item_ids_to_remove.insert(item->id());
+  }
+
+  std::vector<std::unique_ptr<HoldingSpaceItem>> items_to_add;
+
+  // Construct `items` from `suggestions` in the reverse order so that
+  // suggestion views follow the order of `suggestions`.
+  for (const auto& [type, file_path] : base::Reversed(suggestions)) {
+    std::unique_ptr<HoldingSpaceItem> item = CreateItemOfType(
+        type, file_path,
+        /*progress=*/HoldingSpaceProgress(),
+        /*placeholder_image_skia_resolver=*/base::NullCallback());
+    if (item)
+      items_to_add.push_back(std::move(item));
+  }
+
+  // Allow the duplicate suggestions to be added because the order among
+  // `suggestions` should be respected.
+  AddItems(std::move(items_to_add), /*allow_duplicates=*/true);
+
+  // Remove old suggestions after adding new suggestions. Otherwise,
+  // `holding_space_model_` could be empty after removing old suggestions and
+  // before adding new suggestions, which could close the holding space view.
+  holding_space_model_.RemoveItems(item_ids_to_remove);
 }
 
 const std::string& HoldingSpaceKeyedService::AddItem(
     std::unique_ptr<HoldingSpaceItem> item) {
   std::vector<std::unique_ptr<HoldingSpaceItem>> items;
   items.push_back(std::move(item));
-  return AddItems(std::move(items)).at(0);
+  return AddItems(std::move(items), /*allow_duplicates=*/false).at(0);
 }
 
 std::vector<std::reference_wrapper<const std::string>>
 HoldingSpaceKeyedService::AddItems(
-    std::vector<std::unique_ptr<HoldingSpaceItem>> items) {
+    std::vector<std::unique_ptr<HoldingSpaceItem>> items,
+    bool allow_duplicates) {
   std::vector<std::reference_wrapper<const std::string>> result;
-  std::vector<std::unique_ptr<HoldingSpaceItem>> unique_items;
+  std::vector<std::unique_ptr<HoldingSpaceItem>> items_to_add;
 
   for (auto& item : items) {
-    // Ignore any `items` that already exist in the `holding_space_model_`.
-    if (holding_space_model_.ContainsItem(item->type(), item->file_path())) {
+    if (!allow_duplicates &&
+        holding_space_model_.ContainsItem(item->type(), item->file_path())) {
+      // Ignore any `items` that already exist in the `holding_space_model_`
+      // if `allow_duplicates` is false.
       result.push_back(std::cref(base::EmptyString()));
       continue;
     }
     result.push_back(std::cref(item->id()));
-    unique_items.push_back(std::move(item));
+    items_to_add.push_back(std::move(item));
   }
 
-  if (!unique_items.empty()) {
+  if (!items_to_add.empty()) {
     // Mark the time when the user's first item was added to holding space. Note
     // that true is returned iff this is in fact the user's first add and, if
     // so, the time it took for the user to add their first item should be
     // recorded.
     if (holding_space_prefs::MarkTimeOfFirstAdd(profile_->GetPrefs()))
       RecordTimeFromFirstAvailabilityToFirstAdd(profile_);
-    holding_space_model_.AddItems(std::move(unique_items));
+    holding_space_model_.AddItems(std::move(items_to_add));
   }
 
   return result;
@@ -314,16 +346,12 @@ const std::string& HoldingSpaceKeyedService::AddItemOfType(
     const HoldingSpaceProgress& progress,
     HoldingSpaceImage::PlaceholderImageSkiaResolver
         placeholder_image_skia_resolver) {
-  const GURL file_system_url =
-      holding_space_util::ResolveFileSystemUrl(profile_, file_path);
-  if (file_system_url.is_empty())
+  std::unique_ptr<HoldingSpaceItem> item = CreateItemOfType(
+      type, file_path, progress, placeholder_image_skia_resolver);
+  if (!item)
     return base::EmptyString();
 
-  return AddItem(HoldingSpaceItem::CreateFileBackedItem(
-      type, file_path, file_system_url, progress,
-      base::BindOnce(
-          &holding_space_util::ResolveImageWithPlaceholderImageSkiaResolver,
-          &thumbnail_loader_, placeholder_image_skia_resolver)));
+  return AddItem(std::move(item));
 }
 
 std::unique_ptr<HoldingSpaceModel::ScopedItemUpdate>
@@ -419,6 +447,15 @@ void HoldingSpaceKeyedService::InitializeDelegates() {
       base::BindOnce(&HoldingSpaceKeyedService::OnPersistenceRestored,
                      weak_factory_.GetWeakPtr())));
 
+  // The `HoldingSpaceSuggestionsDelegate` manages file suggestions (i.e. the
+  // files predicted to be used).
+  // TODO(https://crbug.com/1364240): ensure that if the feature is disabled,
+  // the suggestions restored from the persistence do not appear in the model.
+  if (features::IsHoldingSpaceSuggestionsEnabled()) {
+    delegates_.push_back(std::make_unique<HoldingSpaceSuggestionsDelegate>(
+        this, &holding_space_model_));
+  }
+
   // Initialize all delegates only after they have been added to our collection.
   // Delegates should not fire their respective callbacks during construction
   // but once they have been initialized they are free to do so.
@@ -453,6 +490,24 @@ void HoldingSpaceKeyedService::MakeDriveItemAvailableOffline(
     drive_service->GetDriveFsInterface()->SetPinned(path, true,
                                                     base::DoNothing());
   }
+}
+
+std::unique_ptr<HoldingSpaceItem> HoldingSpaceKeyedService::CreateItemOfType(
+    HoldingSpaceItem::Type type,
+    const base::FilePath& file_path,
+    const HoldingSpaceProgress& progress,
+    HoldingSpaceImage::PlaceholderImageSkiaResolver
+        placeholder_image_skia_resolver) {
+  const GURL file_system_url =
+      holding_space_util::ResolveFileSystemUrl(profile_, file_path);
+  if (file_system_url.is_empty())
+    return nullptr;
+
+  return HoldingSpaceItem::CreateFileBackedItem(
+      type, file_path, file_system_url, progress,
+      base::BindOnce(
+          &holding_space_util::ResolveImageWithPlaceholderImageSkiaResolver,
+          &thumbnail_loader_, placeholder_image_skia_resolver));
 }
 
 }  // namespace ash

@@ -3614,8 +3614,6 @@ if (!is_android) {
         "../browser/ash/dbus/proxy_resolution_service_provider_browsertest.cc",
         "../browser/ash/display/display_prefs_browsertest.cc",
         "../browser/ash/display/quirks_browsertest.cc",
-        "../browser/ash/drive/drive_integration_service_browser_test_base.cc",
-        "../browser/ash/drive/drive_integration_service_browser_test_base.h",
         "../browser/ash/drive/drive_integration_service_browsertest.cc",
         "../browser/ash/file_manager/external_filesystem_apitest.cc",
         "../browser/ash/file_manager/file_manager_browsertest.cc",

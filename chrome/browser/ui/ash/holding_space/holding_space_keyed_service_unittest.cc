@@ -2282,7 +2282,8 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
         break;
       case HoldingSpaceItem::Type::kDriveSuggestion:
       case HoldingSpaceItem::Type::kLocalSuggestion:
-        holding_space_service->AddSuggestion(type, file_path);
+        holding_space_service->SetSuggestions(
+            /*suggestions=*/{{type, file_path}});
         break;
       case HoldingSpaceItem::Type::kNearbyShare:
         holding_space_service->AddNearbyShare(file_path);
@@ -2355,7 +2356,7 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
       /*relative_path=*/base::FilePath("foo"), /*content=*/"foo");
 
   // Add a holding space item of the type under test.
-  const auto& id = AddItem(profile, GetType(), file_path);
+  const std::string id = AddItem(profile, GetType(), file_path);
 
   // Verify a holding space item has been added to the model.
   ASSERT_EQ(model->items().size(), 1u);
@@ -2389,14 +2390,24 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   }
 
   // Attempt to add a holding space item of the same type and `file_path`.
-  AddItem(profile, GetType(), file_path);
+  const std::string& id2 = AddItem(profile, GetType(), file_path);
 
-  // Attempts to add already represented items should be ignored.
   ASSERT_EQ(model->items().size(), 1u);
-  EXPECT_EQ(model->items()[0].get(), item);
+
+  const bool is_suggestion = HoldingSpaceItem::IsSuggestion(GetType());
+  if (is_suggestion) {
+    // For suggestion items, the new suggestions should always replace old ones.
+    EXPECT_NE(model->items()[0].get(), item);
+    EXPECT_NE(id, id2);
+  } else {
+    // For non-suggestion items, attempts to add already represented items
+    // should be ignored.
+    EXPECT_EQ(model->items()[0].get(), item);
+    EXPECT_EQ(id, id2);
+  }
 
   // Remove the holding space item.
-  GetService(profile)->RemoveItem(id);
+  GetService(profile)->RemoveItem(is_suggestion ? id2 : id);
   EXPECT_TRUE(model->items().empty());
 
   // Verify expected histograms after "waiting" for metrics debounce.

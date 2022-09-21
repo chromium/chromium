@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -121,21 +122,27 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Adds a screenshot item backed by the provided absolute file path.
   void AddScreenshot(const base::FilePath& screenshot_path);
 
-  // Adds a suggested item of the specified `type` backed by the provided
-  // absolute file path. NOTE: `type` must refer to a suggestion type.
-  void AddSuggestion(HoldingSpaceItem::Type type,
-                     const base::FilePath& suggestion_path);
+  // Replaces the existing suggestions with `suggestions`. The order among
+  // `suggestions` is respected, which means that if a suggestion A is in front
+  // of a suggestion B in the given array, after calling this function, the
+  // suggestion view of A is in front of the view of B. `suggestions` can be
+  // empty. In this case, all the existing suggestions are cleared.
+  void SetSuggestions(
+      const std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>&
+          suggestions);
 
   // Adds the specified `item` to the holding space model. Returns the id of the
   // added holding space item or an empty string if the item was not added due
   // to de-duplication checks.
   const std::string& AddItem(std::unique_ptr<HoldingSpaceItem> item);
 
-  // Adds multiple `items` to the holding space model. Returns the ids of the
-  // added holding space items or empty strings where items were not added due
-  // to de-duplication checks.
+  // Adds multiple `items` to the holding space model. `allow_duplicates`
+  // indicates whether an item should be added to the model if it is duplicate
+  // to an existing item. Returns the ids of the added holding space items or
+  // empty strings where items were not added due to de-duplication checks.
   std::vector<std::reference_wrapper<const std::string>> AddItems(
-      std::vector<std::unique_ptr<HoldingSpaceItem>> items);
+      std::vector<std::unique_ptr<HoldingSpaceItem>> items,
+      bool allow_duplicates);
 
   // Adds an item of the specified `type` backed by the provided absolute
   // `file_path` to the holding space model. Returns the id of the added
@@ -205,6 +212,16 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Pin a drive file for offline access.
   void MakeDriveItemAvailableOffline(
       const storage::FileSystemURL& file_system_url);
+
+  // Creates an item of the specified `type` backed by the provided absolute
+  // `file_path`. Returns an empty unique pointer if the file url cannot be
+  // resolved.
+  std::unique_ptr<HoldingSpaceItem> CreateItemOfType(
+      HoldingSpaceItem::Type type,
+      const base::FilePath& file_path,
+      const HoldingSpaceProgress& progress,
+      HoldingSpaceImage::PlaceholderImageSkiaResolver
+          placeholder_image_skia_resolver);
 
   Profile* const profile_;
   const AccountId account_id_;

@@ -2315,6 +2315,8 @@ static_library("ui") {
       "ash/holding_space/holding_space_metrics_delegate.h",
       "ash/holding_space/holding_space_persistence_delegate.cc",
       "ash/holding_space/holding_space_persistence_delegate.h",
+      "ash/holding_space/holding_space_suggestions_delegate.cc",
+      "ash/holding_space/holding_space_suggestions_delegate.h",
       "ash/holding_space/holding_space_util.cc",
       "ash/holding_space/holding_space_util.h",
       "ash/image_downloader_impl.cc",
@@ -5951,6 +5953,8 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
+      "app_list/search/files/file_suggest_test_util.cc",
+      "app_list/search/files/file_suggest_test_util.h",
       "ash/ash_test_util.cc",
       "ash/ash_test_util.h",
       "ash/shelf/chrome_shelf_controller_test_util.cc",

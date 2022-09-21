@@ -8,12 +8,13 @@ namespace app_list {
 
 // FileSuggestData -------------------------------------------------------
 
-FileSuggestData::FileSuggestData() = default;
-
 FileSuggestData::FileSuggestData(
+    FileSuggestionType new_type,
     const base::FilePath& new_file_path,
     const absl::optional<std::string>& new_prediction_reason)
-    : file_path(new_file_path), prediction_reason(new_prediction_reason) {}
+    : type(new_type),
+      file_path(new_file_path),
+      prediction_reason(new_prediction_reason) {}
 
 FileSuggestData::FileSuggestData(FileSuggestData&&) = default;
 

@@ -29,8 +29,8 @@ class ZeroStateDriveProvider;
 // than leaving it under the app list directory.
 class FileSuggestKeyedService : public KeyedService {
  public:
-  using GetSuggestDataCallback =
-      base::OnceCallback<void(absl::optional<std::vector<FileSuggestData>>)>;
+  using GetSuggestDataCallback = base::OnceCallback<void(
+      const absl::optional<std::vector<FileSuggestData>>&)>;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -42,6 +42,16 @@ class FileSuggestKeyedService : public KeyedService {
   FileSuggestKeyedService(const FileSuggestKeyedService&) = delete;
   FileSuggestKeyedService& operator=(const FileSuggestKeyedService&) = delete;
   ~FileSuggestKeyedService() override;
+
+  // Requests to update the data in `item_suggest_cache_`. Only used by the zero
+  // state drive provider. Overridden for tests.
+  // TODO(https://crbug.com/1356347): Now the app list relies on this service to
+  // fetch the drive suggestion data. Meanwhile, this service relies on the app
+  // list to trigger the item cache update. This cyclic dependency could be
+  // confusing. The service should update the data cache by its own without
+  // depending on the app list code.
+  virtual void MaybeUpdateItemSuggestCache(
+      base::PassKey<ZeroStateDriveProvider>);
 
   // Queries for the suggested files of the specified type and returns the
   // suggested file data, including file paths and suggestion reasons, through
@@ -55,15 +65,8 @@ class FileSuggestKeyedService : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Requests to update the data in `item_suggest_cache_`. Only used by the zero
-  // state drive provider. Overridden for tests.
-  // TODO(https://crbug.com/1356347): Now the app list relies on this service to
-  // fetch the drive suggestion data. Meanwhile, this service relies on the app
-  // list to trigger the item cache update. This cyclic dependency could be
-  // confusing. The service should update the data cache by its own without
-  // depending on the app list code.
-  virtual void MaybeUpdateItemSuggestCache(
-      base::PassKey<ZeroStateDriveProvider>);
+  // Returns true if there is pending fetch on file suggestions.
+  bool HasPendingSuggestionFetchForTest() const;
 
   ItemSuggestCache* item_suggest_cache_for_test() {
     return item_suggest_cache_.get();

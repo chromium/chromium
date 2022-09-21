@@ -66,10 +66,10 @@ class ZeroStateDriveProvider : public SearchProvider,
  private:
   // Called when file suggestion data are fetched from the service.
   void OnSuggestFileDataFetched(
-      absl::optional<std::vector<FileSuggestData>> suggest_results);
+      const absl::optional<std::vector<FileSuggestData>>& suggest_results);
 
   // Builds the search results from file suggestions then publishes the results.
-  void SetSearchResults(std::vector<FileSuggestData> suggest_results);
+  void SetSearchResults(const std::vector<FileSuggestData>& suggest_results);
 
   std::unique_ptr<FileResult> MakeListResult(
       const base::FilePath& filepath,

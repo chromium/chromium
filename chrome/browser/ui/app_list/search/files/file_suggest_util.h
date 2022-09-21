@@ -31,13 +31,16 @@ enum class FileSuggestionType {
 
 // The data of an individual file suggested by `FileSuggestKeyedService`.
 struct FileSuggestData {
-  FileSuggestData();
-  FileSuggestData(const base::FilePath& new_file_path,
+  FileSuggestData(FileSuggestionType new_type,
+                  const base::FilePath& new_file_path,
                   const absl::optional<std::string>& new_prediction_reason);
   FileSuggestData(FileSuggestData&&);
   FileSuggestData(const FileSuggestData&);
   FileSuggestData& operator=(const FileSuggestData&);
   ~FileSuggestData();
+
+  // The type of the suggested file (e.g. a drive file).
+  FileSuggestionType type;
 
   // The path to the suggested file.
   base::FilePath file_path;
