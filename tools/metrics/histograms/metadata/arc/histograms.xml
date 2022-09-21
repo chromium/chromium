@@ -516,7 +516,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.AccountCheck.Status{ArcUserTypes}"
-    enum="ArcAuthAccountCheckStatus" expires_after="2022-12-04">
+    enum="ArcAuthAccountCheckStatus" expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -526,7 +528,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.AccountCheck.TimeDelta{ArcUserTypes}" units="ms"
-    expires_after="2022-12-04">
+    expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -551,7 +555,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.Checkin.Attempts{ArcUserTypes}" units="attempts"
-    expires_after="2022-12-04">
+    expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -563,7 +569,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.Checkin.TimeDelta{ArcUserTypes}" units="ms"
-    expires_after="2023-09-01">
+    expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -618,7 +626,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.NetworkWait.TimeDelta{ArcUserTypes}" units="ms"
-    expires_after="2022-11-01">
+    expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -649,7 +659,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.Reauth.Reason{ArcUserTypes}"
-    enum="ArcAuthReauthReason" expires_after="2022-12-04">
+    enum="ArcAuthReauthReason" expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -685,7 +697,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.SignIn.TimeDelta{ArcUserTypes}" units="ms"
-    expires_after="2022-11-01">
+    expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1731,7 +1745,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Provisioning.CheckInError{ArcUserTypes}"
-    enum="ArcProvisioningCheckInError" expires_after="2022-11-01">
+    enum="ArcProvisioningCheckInError" expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1742,7 +1758,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Provisioning.CloudFlowError{ArcUserTypes}"
-    enum="ArcProvisioningCloudFlowError" expires_after="2022-11-01">
+    enum="ArcProvisioningCloudFlowError" expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1753,7 +1771,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Provisioning.PreSignIn.TimeDelta{ArcUserTypes}" units="ms"
-    expires_after="2023-09-01">
+    expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
   <owner>yaohuali@google.com</owner>
   <owner>mhasank@google.com</owner>
   <owner>arc-commercial@google.com</owner>
@@ -1767,7 +1787,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Provisioning.SignInError{ArcUserTypes}"
-    enum="ArcProvisioningSignInError" expires_after="2022-11-01">
+    enum="ArcProvisioningSignInError" expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1778,7 +1800,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Provisioning.Status{ArcUserTypes}"
-    enum="ArcProvisioningStatus" expires_after="2022-11-01">
+    enum="ArcProvisioningStatus" expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
