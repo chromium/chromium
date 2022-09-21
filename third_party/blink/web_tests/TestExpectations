@@ -7105,3 +7105,8 @@ crbug.com/1360691 [ Debug Linux ] fast/canvas/disconnected-canvas-lost-gpu-conte
 
 # Sheriff 2022-09-09
 crbug.com/1361956 [ Linux ] fast/dom/Element/scrollTop-scrollLeft-body.html [ Pass Timeout ]
+
+# Disable PendingBeaconAPI related internal tests tentatively until it is
+# fully launched.
+# The ones defined in VirtualTestSuites are run instead.
+crbug.com/1293679 wpt_internal/pending_beacon/* [ Skip ]
