@@ -34388,6 +34388,8 @@ should be able to be added at any place in this file.
       label="For Global Media Controls Cast start and stop feature."/>
   <suffix name="HighEfficiencyInfoMode"
       label="For HighEfficiencyInfoMode feature."/>
+  <suffix name="HighEfficiencyModeFeature"
+      label="For suggesting High Efficiency Mode feature"/>
   <suffix name="HomePageButton" label="For HomePageButton feature."/>
   <suffix name="HomepageTile" label="For HomepageTile feature."/>
   <suffix name="IdentityDisc" label="For IdentityDisc feature."/>

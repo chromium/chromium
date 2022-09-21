@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_chip_view.h"
+#include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "chrome/browser/ui/performance_controls/tab_discard_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -10,6 +11,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -33,7 +35,9 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
   void SetUp() override {
     feature_list_.InitAndEnableFeature(
         performance_manager::features::kHighEfficiencyModeAvailable);
-
+    performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
+        local_state_.registry());
+    environment_.SetUp(&local_state_);
     TestWithBrowserView::SetUp();
 
     AddTab(browser(), GURL("http://foo"));
@@ -42,7 +46,10 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
     TabDiscardTabHelper::CreateForWebContents(contents);
   }
 
-  void TearDown() override { TestWithBrowserView::TearDown(); }
+  void TearDown() override {
+    TestWithBrowserView::TearDown();
+    environment_.TearDown();
+  }
 
   void SetTabDiscardState(bool is_discarded) {
     TabDiscardTabHelper* tab_helper = TabDiscardTabHelper::FromWebContents(
@@ -68,6 +75,8 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
  private:
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple local_state_;
+  performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
+      environment_;
 };
 
 // When the previous page has a tab discard state of true, when the icon is

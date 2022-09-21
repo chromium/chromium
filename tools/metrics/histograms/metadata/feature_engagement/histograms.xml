@@ -146,6 +146,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_GMCCastStartStop"
       summary="Cast start stop in the Zenith dialog"/>
   <variant name="IPH_HighEfficiencyInfoMode" summary="High efficiency info"/>
+  <variant name="IPH_HighEfficiencyMode"
+      summary="encourages users to turn on high efficiency mode"/>
   <variant name="IPH_IdentityDisc" summary="Identity Disc"/>
   <variant name="IPH_IncognitoWindow" summary="incognito window"/>
   <variant name="IPH_InstanceSwitcher" summary="instance switcher"/>

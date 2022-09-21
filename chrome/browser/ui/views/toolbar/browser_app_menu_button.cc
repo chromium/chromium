@@ -95,6 +95,9 @@ void BrowserAppMenuButton::ShowMenu(int run_types) {
       std::make_unique<AppMenuModel>(toolbar_view_, browser,
                                      toolbar_view_->app_menu_icon_controller()),
       browser, run_types, reopen_tab_promo_handle_.is_valid());
+
+  browser->window()->CloseFeaturePromo(
+      feature_engagement::kIPHHighEfficiencyModeFeature);
 }
 
 void BrowserAppMenuButton::OnThemeChanged() {

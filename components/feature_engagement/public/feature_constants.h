@@ -40,6 +40,7 @@ BASE_DECLARE_FEATURE(kIPHExtensionsMenuFeature);
 BASE_DECLARE_FEATURE(kIPHFocusHelpBubbleScreenReaderPromoFeature);
 BASE_DECLARE_FEATURE(kIPHGMCCastStartStopFeature);
 BASE_DECLARE_FEATURE(kIPHHighEfficiencyInfoModeFeature);
+BASE_DECLARE_FEATURE(kIPHHighEfficiencyModeFeature);
 BASE_DECLARE_FEATURE(kIPHLiveCaptionFeature);
 BASE_DECLARE_FEATURE(kIPHTabAudioMutingFeature);
 BASE_DECLARE_FEATURE(kIPHPasswordsAccountStorageFeature);

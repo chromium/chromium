@@ -1589,6 +1589,11 @@ Permissions you've already given to websites and apps may apply to this account.
           To make your browsing faster, Chromium reclaims memory from tabs you aren't using.
         </message>
       </if>
+
+      <!-- High Efficiency App Menu IPH strings-->
+      <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_TITLE" desc="The title for the high efficiency mode in-product promo bubble">
+        Make Chromium faster
+      </message>
     </messages>
   </release>
 </grit>

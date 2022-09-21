@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/performance_controls/high_efficiency_iph_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
@@ -182,6 +183,7 @@
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/performance_manager/public/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
@@ -966,6 +968,14 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
                        weak_ptr_factory_.GetWeakPtr()));
   }
 #endif
+
+  // High Efficiency mode is default off but is available to turn on
+  if (!performance_manager::features::kHighEfficiencyModeDefaultState.Get() &&
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kHighEfficiencyModeAvailable)) {
+    high_efficiency_iph_controller_ =
+        std::make_unique<HighEfficiencyIPHController>(browser_.get());
+  }
 }
 
 BrowserView::~BrowserView() {

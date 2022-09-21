@@ -7552,6 +7552,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_ACTION_TEXT" desc="The custom action button text for the high efficiency info mode in-product promo bubble.">
         Settings
       </message>
+      <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_TEXT" desc="The text shown for the high efficiency mode in-product promo bubble">
+        Memory Saver can reclaim memory from inactive tabs. This frees up your computer's resources for other tasks.
+      </message>
+      <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_ACTION_TEXT" desc="The custom action button text for the high efficiency mode in-product promo bubble">
+        Turn on
+      </message>
 
       <!-- User Education Tutorial Strings -->
       <if expr="use_titlecase">
