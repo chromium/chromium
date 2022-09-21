@@ -113,16 +113,21 @@ function generateSetBeaconURL(uuid, options) {
   return url;
 }
 
-async function poll(f, expected) {
-  const interval = 100;  // milliseconds.
-  for (let i = 0; i < 30; i++) {
-    const result = await f();
-    if (expected(result)) {
-      return result;
+async function poll(asyncFunc, expected) {
+  const maxRetries = 30;
+  const waitInterval = 100;  // milliseconds.
+  const delay = ms => new Promise(res => setTimeout(res, ms));
+
+  let result = {data: []};
+  for (let i = 0; i < maxRetries; i++) {
+    result = await asyncFunc();
+    if (!expected(result)) {
+      await delay(waitInterval);
+      continue;
     }
-    await new Promise(resolve => setTimeout(resolve, interval));
+    return result;
   }
-  return {data: []};
+  return result;
 }
 
 // Waits until the `options.count` number of beacon data available from the
@@ -144,10 +149,16 @@ async function expectBeacon(uuid, options) {
         return res.data.length == expectedCount;
       });
   if (!options || !options.data) {
+    assert_equals(
+        res.data.length, expectedCount,
+        'Number of sent beacons does not match expected count:');
     return;
   }
 
   if (expectedCount == 0) {
+    assert_equals(
+        res.data.length, 0,
+        'Number of sent beacons does not match expected count:');
     return;
   }
 

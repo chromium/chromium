@@ -1,15 +1,32 @@
 // META: script=/resources/testharness.js
 // META: script=/resources/testharnessreport.js
 // META: script=/common/utils.js
-// META: script=./resources/pending_beacon-helper.js
+// META: script=/pending_beacon/resources/pending_beacon-helper.js
 
 'use strict';
+
+/**
+ * This file cannot be upstreamed to external/wpt/ until:
+ * `internals.setPermission()` usage is replaced with a WebDriver API.
+ */
+
+// BackgroundSync needs to be explicitly enabled in Web Tests, as the test
+// runner uses a different permission manager. See
+// https://source.chromium.org/chromium/chromium/src/+/main:content/web_test/browser/web_test_permission_manager.h;l=138-140;drc=f616c54d73c8eea9db5f7e567611711897651b66
+async function setBackgroundSyncEnabled(enabled) {
+  const status = enabled ? 'granted' : 'denied';
+  const origin = location.origin;
+  await internals.setPermission(
+      {name: 'background-sync'}, status, origin, origin);
+}
 
 parallelPromiseTest(async t => {
   const uuid = token();
   const url = `/pending_beacon/resources/set_beacon.py?uuid=${uuid}`;
   const numPerMethod = 20;
   const total = numPerMethod * 2;
+  // "Sending beacon on page discard" requires BackgroundSync permission.
+  await setBackgroundSyncEnabled(true);
 
   // Loads an iframe that creates `numPerMethod` GET & POST beacons.
   const iframe = await loadScriptAsIframe(`
@@ -30,6 +47,8 @@ parallelPromiseTest(async t => {
 parallelPromiseTest(async t => {
   const uuid = token();
   const url = `/pending_beacon/resources/set_beacon.py?uuid=${uuid}`;
+  // "Sending beacon on page discard" requires BackgroundSync permission.
+  await setBackgroundSyncEnabled(true);
 
   // Loads an iframe that creates a GET beacon,
   // then sends it out with `sendNow()`.
@@ -51,6 +70,8 @@ parallelPromiseTest(async t => {
   const url = `/pending_beacon/resources/set_beacon.py?uuid=${uuid}`;
   const numPerMethod = 20;
   const total = numPerMethod * 2;
+  // "Sending beacon on page discard" requires BackgroundSync permission.
+  await setBackgroundSyncEnabled(true);
 
   // Loads an iframe that creates `numPerMethod` GET & POST beacons with
   // different timeouts.
@@ -76,6 +97,8 @@ parallelPromiseTest(async t => {
   const url = `/pending_beacon/resources/set_beacon.py?uuid=${uuid}`;
   const numPerMethod = 20;
   const total = numPerMethod * 2;
+  // "Sending beacon on page discard" requires BackgroundSync permission.
+  await setBackgroundSyncEnabled(true);
 
   // Loads an iframe that creates `numPerMethod` GET & POST beacons with
   // different backgroundTimeouts.
