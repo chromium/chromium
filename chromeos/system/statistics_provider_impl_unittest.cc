@@ -318,4 +318,103 @@ TEST_F(StatisticsProviderImplTest,
   }
 }
 
+// Test that the provider loads statistics from machine info file if they have
+// correct format.
+TEST_F(StatisticsProviderImplTest, LoadsStatisticsFromMachineInfoFile) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const std::string kMachineInfoStatistics =
+      base::StringPrintf(kMachineInfoFormat, "machine_info_key_1",
+                         "machine_info_value_1") +
+      base::StringPrintf(kMachineInfoFormat, "machine_info_key_2",
+                         "machine_info_value_2") +
+      "machine_info_malformed_key_3 = machine_info_malformed_value_3\n" +
+      "machine_info_malformed_key_4 : \"machine_info_malformed_value_4\"\n" +
+      base::StringPrintf(kMachineInfoFormat, "machine_info_key_5",
+                         "machine_info_value_5");
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_machine_info(
+              CreateFileInTempDir(kMachineInfoStatistics, temp_dir()))
+          .Build();
+
+  // Load statistics.
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  // Check statistics.
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic("machine_info_key_1", &result));
+    EXPECT_EQ(result, "machine_info_value_1");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic("machine_info_key_2", &result));
+    EXPECT_EQ(result, "machine_info_value_2");
+  }
+
+  {
+    std::string result;
+    EXPECT_FALSE(
+        provider->GetMachineStatistic("machine_info_malformed_key_3", &result));
+    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
+  }
+
+  {
+    std::string result;
+    EXPECT_FALSE(
+        provider->GetMachineStatistic("machine_info_malformed_key_4", &result));
+    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic("machine_info_key_5", &result));
+    EXPECT_EQ(result, "machine_info_value_5");
+  }
+}
+
+// Tests that StatisticsProvider generates stub statistics file for machine info
+// in in non-ChromeOS test environment.
+TEST_F(StatisticsProviderImplTest,
+       GeneratesStubMachineInfoFileIfNotRunningChromeOS) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(
+      kInvalidLsbReleaseContent, base::Time());
+  ASSERT_FALSE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const base::FilePath kMachineInfoFilepath =
+      temp_dir().GetPath().Append("machine_info");
+  ASSERT_FALSE(base::PathExists(kMachineInfoFilepath));
+
+  const StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir()).set_machine_info(kMachineInfoFilepath).Build();
+
+  // Load statistics.
+  auto provider =
+      StatisticsProviderImpl::CreateProviderForTesting(testing_sources);
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  // Check statistics.
+  const auto initial_machine_id = provider->GetEnterpriseMachineID();
+  EXPECT_FALSE(initial_machine_id.empty());
+
+  // Check stub file exists.
+  EXPECT_TRUE(base::PathExists(kMachineInfoFilepath));
+
+  // Check fresh provider.
+  provider = StatisticsProviderImpl::CreateProviderForTesting(testing_sources);
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  // Expect the same statistic as initial.
+  EXPECT_EQ(provider->GetEnterpriseMachineID(), initial_machine_id);
+}
+
 }  // namespace chromeos::system
