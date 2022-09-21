@@ -32,7 +32,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
-#include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -349,7 +348,10 @@ bool SearchPrefetchService::MaybePrefetchURL(
   return true;
 }
 
-void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
+void SearchPrefetchService::OnURLOpenedFromOmnibox(
+    OmniboxLog* log,
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
   if (!log)
     return;
   const GURL& opened_url = log->final_destination_url;
@@ -878,11 +880,6 @@ void SearchPrefetchService::ObserveTemplateURLService(
 
     template_url_service_data_ =
         template_url_service->GetDefaultSearchProvider()->data();
-
-    omnibox_subscription_ =
-        OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
-            base::BindRepeating(&SearchPrefetchService::OnURLOpenedFromOmnibox,
-                                base::Unretained(this)));
   }
 }
 

@@ -645,6 +645,10 @@ void RealboxHandler::OpenAutocompleteMatch(
 
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
 
+  if (auto* search_prefetch_service =
+          SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+    search_prefetch_service->OnURLOpenedFromOmnibox(&log, web_contents_);
+  }
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
       ->OnOmniboxOpenedUrl(log);
 

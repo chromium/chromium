@@ -185,6 +185,12 @@ class SearchPrefetchService : public KeyedService,
                                 const AutocompleteMatch& match,
                                 content::WebContents* web_contents);
 
+  // If the navigation URL matches with a prefetch that can be served, this
+  // function marks that prefetch as clicked to prevent deletion when omnibox
+  // closes.
+  void OnURLOpenedFromOmnibox(OmniboxLog* log,
+                              content::WebContents* web_contents);
+
   // Fires all timers.
   void FireAllExpiryTimerForTesting();
 
@@ -208,11 +214,6 @@ class SearchPrefetchService : public KeyedService,
   // Records metrics around the error rate of prefetches. When |error| is true,
   // records the current time to prevent prefetches for a set duration.
   void ReportFetchResult(bool error);
-
-  // If the navigation URL matches with a prefetch that can be served, this
-  // function marks that prefetch as clicked to prevent deletion when omnibox
-  // closes.
-  void OnURLOpenedFromOmnibox(OmniboxLog* log);
 
   // These methods serialize and deserialize |prefetch_cache_| to
   // |profile_| pref service in a dictionary value.

@@ -31,6 +31,8 @@
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
@@ -325,10 +327,15 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
 
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
 
-  // Record the value if prerender for search suggestion was not started. Other
-  // values (kHitFinished, kUnused, kCancelled) are recorded in
-  // PrerenderManager.
   if (web_contents) {
+    if (auto* search_prefetch_service =
+            SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+      search_prefetch_service->OnURLOpenedFromOmnibox(&log, web_contents);
+    }
+
+    // Record the value if prerender for search suggestion was not started.
+    // Other values (kHitFinished, kUnused, kCancelled) are recorded in
+    // PrerenderManager.
     auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
     if (!prerender_manager ||
         !prerender_manager->HasSearchResultPagePrerendered()) {
@@ -337,7 +344,6 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
           PrerenderPredictionStatus::kNotStarted);
     }
   }
-
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
       ->OnOmniboxOpenedUrl(log);
 }
