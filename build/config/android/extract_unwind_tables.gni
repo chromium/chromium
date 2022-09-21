@@ -4,41 +4,44 @@
 
 import("//build/config/android/rules.gni")
 
-template("unwind_table_asset") {
-  # Note: This file name is used in multiple monochrome build scripts.
-  _asset_path = "${target_gen_dir}/${target_name}/unwind_cfi_32"
-  _unwind_action = "${target_name}__extract"
+unwind_table_asset_v1_filename = "unwind_cfi_32"
 
-  action(_unwind_action) {
+_dump_syms_target = "//third_party/breakpad:dump_syms($host_toolchain)"
+_dump_syms = get_label_info(_dump_syms_target, "root_out_dir") + "/dump_syms"
+
+template("unwind_table_v1") {
+  action(target_name) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    _output_path =
+        "$target_out_dir/$target_name/$unwind_table_asset_v1_filename"
 
-    _root_dir = "$root_out_dir"
-    if (defined(android_secondary_abi_cpu)) {
-      _root_dir = get_label_info(":foo($android_secondary_abi_toolchain)",
-                                 "root_out_dir")
-    }
+    # Strip the "lib" prefix, if present. Add and then remove a space because
+    # our ownly tool is "replace all".
+    _library_name = get_label_info(invoker.library_target, "name")
+    _library_name =
+        string_replace(string_replace(" $_library_name", " $shlib_prefix", ""),
+                       " ",
+                       "")
+    _library_path = "$root_out_dir/lib.unstripped/$shlib_prefix$_library_name$shlib_extension"
 
     script = "//build/android/gyp/extract_unwind_tables.py"
-    outputs = [ _asset_path ]
-    inputs = [ "${_root_dir}/lib.unstripped/$shlib_prefix${invoker.library_target}$shlib_extension" ]
+    outputs = [ _output_path ]
+    inputs = [
+      _dump_syms,
+      _library_path,
+    ]
+    deps = [
+      _dump_syms_target,
+      invoker.library_target,
+    ]
 
     args = [
       "--input_path",
-      rebase_path(
-          "${_root_dir}/lib.unstripped/$shlib_prefix${invoker.library_target}$shlib_extension",
-          root_build_dir),
+      rebase_path(_library_path, root_build_dir),
       "--output_path",
-      rebase_path(_asset_path, root_build_dir),
+      rebase_path(_output_path, root_build_dir),
       "--dump_syms_path",
-      rebase_path("$root_out_dir/dump_syms", root_build_dir),
+      rebase_path(_dump_syms, root_build_dir),
     ]
-    deps = invoker.deps
-    deps += [ "//third_party/breakpad:dump_syms" ]
-  }
-  android_assets(target_name) {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    sources = [ _asset_path ]
-    disable_compression = true
-    deps = [ ":$_unwind_action" ]
   }
 }
