@@ -2912,12 +2912,10 @@ void RenderFrameHostImpl::AccessibilityFatalError() {
 
 gfx::AcceleratedWidget
 RenderFrameHostImpl::AccessibilityGetAcceleratedWidget() {
+  DCHECK(AccessibilityIsMainFrame());
   // Only the active RenderFrameHost is connected to the native widget tree for
   // accessibility, so return null if this is queried on any other frame.
-  // TODO(crbug.com/1316388): With MPArch there may be embedded main frames
-  // and so is_main_frame should not be used to identify all embedded frames.
-  // Follow up to confirm correctness.
-  if (!AccessibilityIsMainFrame() || !IsActive())
+  if (!IsActive())
     return gfx::kNullAcceleratedWidget;
 
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
@@ -10254,9 +10252,6 @@ ui::AXTreeID RenderFrameHostImpl::GetParentAXTreeID() {
 
 ui::AXTreeID RenderFrameHostImpl::GetFocusedAXTreeID() {
   // If this is not the root frame tree node, we're done.
-  // TODO(crbug.com/1316388): With MPArch there may be embedded main frames
-  // and so is_main_frame should not be used to identify all embedded frames.
-  // Follow up to confirm correctness.
   if (!AccessibilityIsMainFrame())
     return ui::AXTreeIDUnknown();
 
