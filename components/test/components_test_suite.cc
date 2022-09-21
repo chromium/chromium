@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "mojo/core/embedder/embedder.h"
 #include "services/network/public/cpp/features.h"
@@ -124,6 +125,8 @@ class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
     breadcrumbs::BreadcrumbManager::GetInstance().ResetForTesting();
+    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+        .ResetForTesting();
 #if BUILDFLAG(IS_IOS)
     ios_initializer_.reset();
 #endif

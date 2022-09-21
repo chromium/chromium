@@ -13,8 +13,6 @@
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 
-class CrashReporterBreadcrumbObserverTest;
-
 namespace breadcrumbs {
 
 // Key for breadcrumbs attached to crash reports.
@@ -33,9 +31,11 @@ class CrashReporterBreadcrumbObserver : public BreadcrumbManagerObserver {
   // adds them to the start of the breadcrumbs log.
   void SetPreviousSessionEvents(const std::vector<std::string>& events);
 
+  // Removes all events.
+  void ResetForTesting();
+
  private:
   friend base::NoDestructor<CrashReporterBreadcrumbObserver>;
-  friend class ::CrashReporterBreadcrumbObserverTest;
 
   CrashReporterBreadcrumbObserver();
   ~CrashReporterBreadcrumbObserver() override;

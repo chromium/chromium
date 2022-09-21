@@ -34,6 +34,10 @@ class BreakpadHelperTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    // Ensure the CrashReporterBreadcrumbObserver singleton is created
+    // and registered.
+    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance();
+
     mock_breakpad_controller_ =
         [OCMockObject mockForClass:[BreakpadController class]];
 
@@ -51,6 +55,11 @@ class BreakpadHelperTest : public PlatformTest {
   void TearDown() override {
     [[mock_breakpad_controller_ stub] stop];
     crash_helper::SetEnabled(false);
+
+    // Clear the CrashReporterBreadcrumbObserver singleton state to
+    // avoid polluting other tests.
+    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+        .ResetForTesting();
 
     PlatformTest::TearDown();
   }

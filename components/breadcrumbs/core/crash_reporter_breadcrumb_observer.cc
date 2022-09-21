@@ -41,6 +41,10 @@ void CrashReporterBreadcrumbObserver::SetPreviousSessionEvents(
   UpdateBreadcrumbEventsCrashKey();
 }
 
+void CrashReporterBreadcrumbObserver::ResetForTesting() {
+  breadcrumbs_.clear();
+}
+
 void CrashReporterBreadcrumbObserver::EventAdded(BreadcrumbManager* manager,
                                                  const std::string& event) {
   breadcrumbs_.push_back(event);

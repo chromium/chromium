@@ -58,6 +58,10 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    // Ensure the CrashReporterBreadcrumbObserver singleton is created
+    // and registered.
+    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance();
+
     TestChromeBrowserState::Builder test_cbs_builder;
     chrome_browser_state_ = test_cbs_builder.Build();
     TestChromeBrowserState::Builder test_cbs_builder_2;
@@ -78,6 +82,12 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
 
   void TearDown() override {
     [[mock_breakpad_controller_ stub] stop];
+
+    // Clear the CrashReporterBreadcrumbObserver singleton state to
+    // avoid polluting other tests.
+    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+        .ResetForTesting();
+
     crash_helper::SetEnabled(false);
     PlatformTest::TearDown();
   }
@@ -90,11 +100,6 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_2_;
-
-  // Must be destroyed before browser states to ensure that it stops observing
-  // the browser states' BreadcrumbManagers before they are destroyed.
-  breadcrumbs::CrashReporterBreadcrumbObserver
-      crash_reporter_breadcrumb_observer_;
 };
 
 // Tests that breadcrumb events logged to a single BreadcrumbManagerKeyedService

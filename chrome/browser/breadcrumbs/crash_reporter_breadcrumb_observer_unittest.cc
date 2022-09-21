@@ -46,10 +46,20 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
+
+    // Ensure the CrashReporterBreadcrumbObserver singleton is created
+    // and registered.
+    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance();
+
     crash_reporter::InitializeCrashKeysForTesting();
   }
 
   void TearDown() override {
+    // Clear the CrashReporterBreadcrumbObserver singleton state to
+    // avoid polluting other tests.
+    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+        .ResetForTesting();
+
     // TODO(crbug.com/1269414) This should call
     // crash_reporter::ResetCrashKeysForTesting() once
     // ChromeUserManagerImpl::UpdateNumberOfUsers allows the static
@@ -61,11 +71,6 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile browser_context_;
   TestingProfile browser_context_2_;
-
-  // Must be destroyed before browser contexts to ensure that it stops observing
-  // the browser contexts' BreadcrumbManagers before they are destroyed.
-  breadcrumbs::CrashReporterBreadcrumbObserver
-      crash_reporter_breadcrumb_observer_;
 };
 
 // Tests that breadcrumb events logged to a single BreadcrumbManagerKeyedService
