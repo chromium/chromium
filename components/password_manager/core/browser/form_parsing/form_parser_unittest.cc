@@ -944,6 +944,13 @@ TEST(FormParserTest, TestAutocomplete) {
                    .form_control_type = "password"},
               },
       },
+      {
+          .description_for_logging = "Autocomplete single username",
+          .fields = {{.role = ElementRole::USERNAME,
+                      .is_focusable = false,
+                      .autocomplete_attribute = "username",
+                      .form_control_type = "text"}},
+      },
   });
 }
 
@@ -1554,6 +1561,7 @@ TEST(FormParserTest, AllPossiblePasswords) {
                   {.value = u"", .form_control_type = "password"},
                   {.role_filling = ElementRole::USERNAME,
                    .autocomplete_attribute = "username",
+                   .value = u"",
                    .form_control_type = "text"},
                   {.role_filling = ElementRole::CURRENT_PASSWORD,
                    .autocomplete_attribute = "current-password",
