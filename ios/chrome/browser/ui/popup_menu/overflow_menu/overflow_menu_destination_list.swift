@@ -63,61 +63,84 @@ struct OverflowMenuDestinationList: View {
 
   @ObservedObject var uiConfiguration: OverflowMenuUIConfiguration
 
-  /// Tracks the list's current offset, to see when it scrolls.
-  @State var listOffset: CGFloat = 0
+  /// Tracks the list's current offset, to see when it scrolls. When the offset
+  /// is `nil`, scroll tracking is not set up yet. This is necessary because
+  /// in RTL languages, the scroll view has to manually scroll to the right edge
+  /// of the list first.
+  @State var listOffset: CGFloat? = nil
 
   var body: some View {
-    GeometryReader { geometry in
-      ScrollViewReader { proxy in
-        ScrollView(.horizontal, showsIndicators: false) {
-          let spacing = destinationSpacing(forScreenWidth: geometry.size.width)
-          let layoutParameters: OverflowMenuDestinationView.LayoutParameters =
-            sizeCategory >= .accessibilityMedium
-            ? .horizontal(itemWidth: geometry.size.width - Constants.largeTextSizeSpace)
-            : .vertical(
-              iconSpacing: spacing.iconSpacing,
-              iconPadding: spacing.iconPadding)
-          let alignment: VerticalAlignment = sizeCategory >= .accessibilityMedium ? .center : .top
+    VStack {
+      Spacer(minLength: Constants.topMargin)
+      GeometryReader { geometry in
+        scrollView(in: geometry)
+          .coordinateSpace(name: Constants.coordinateSpaceName)
+          .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
+      }
+    }
+    .animation(nil)
+    .background(uiConfiguration.highlightDestinationsRow ? Color.blueHalo : Color.clear)
+    .animation(.linear(duration: kMaterialDuration3))
+    .onPreferenceChange(ScrollViewLeadingOffset.self) { newOffset in
+      // Only alert the handler if scroll tracking has started.
+      if let listOffset = listOffset,
+        newOffset != listOffset
+      {
+        metricsHandler?.popupMenuScrolledHorizontally()
+      }
+      // Only update the offset if scroll tracking has started or the newOffset
+      // is approximately 0 (this starts scroll tracking). In RTL mode, the
+      // offset is not exactly 0, so a strict comparison won't work.
+      if listOffset != nil || (listOffset == nil && abs(newOffset) < 1e-9) {
+        listOffset = newOffset
+      }
+    }
+  }
 
-          ZStack {
-            VStack {
-              Spacer(minLength: Constants.topMargin)
-              LazyHStack(alignment: alignment, spacing: 0) {
-                // Make sure the space to the first icon is constant, so add extra
-                // spacing before the first item.
-                Spacer().frame(width: Constants.iconInitialSpace - spacing.iconSpacing)
-                ForEach(destinations) { destination in
-                  OverflowMenuDestinationView(
-                    destination: destination, layoutParameters: layoutParameters,
-                    metricsHandler: metricsHandler
-                  ).id(destination.destinationName)
-                }
-              }
-            }
-            GeometryReader { innerGeometry in
-              let offset = innerGeometry.frame(in: .named(Constants.coordinateSpaceName)).minX
-              Color.clear
-                .preference(key: ScrollViewLeadingOffset.self, value: offset)
+  @ViewBuilder
+  private func scrollView(in geometry: GeometryProxy) -> some View {
+    ScrollViewReader { proxy in
+      ScrollView(.horizontal, showsIndicators: false) {
+        let spacing = destinationSpacing(forScreenWidth: geometry.size.width)
+        let layoutParameters: OverflowMenuDestinationView.LayoutParameters =
+          sizeCategory >= .accessibilityMedium
+          ? .horizontal(itemWidth: geometry.size.width - Constants.largeTextSizeSpace)
+          : .vertical(
+            iconSpacing: spacing.iconSpacing,
+            iconPadding: spacing.iconPadding)
+        let alignment: VerticalAlignment = sizeCategory >= .accessibilityMedium ? .center : .top
+
+        ZStack {
+          HStack(alignment: alignment, spacing: 0) {
+            // Make sure the space to the first icon is constant, so add extra
+            // spacing before the first item.
+            Spacer().frame(width: Constants.iconInitialSpace - spacing.iconSpacing)
+            ForEach(destinations) { destination in
+              OverflowMenuDestinationView(
+                destination: destination, layoutParameters: layoutParameters,
+                metricsHandler: metricsHandler
+              ).id(destination.destinationName)
             }
           }
-        }
-        .animation(nil)
-        .background(uiConfiguration.highlightDestinationsRow ? Color.blueHalo : Color.clear)
-        .animation(.linear(duration: kMaterialDuration3))
-        .coordinateSpace(name: Constants.coordinateSpaceName)
-        .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
-        .onAppear {
-          if layoutDirection == .rightToLeft {
-            proxy.scrollTo(destinations.last?.destinationName)
+
+          GeometryReader { innerGeometry in
+            let frame = innerGeometry.frame(in: .named(Constants.coordinateSpaceName))
+            let parentWidth = geometry.size.width
+
+            // When the view is RTL, the offset should be calculated from the
+            // right edge.
+            let offset = layoutDirection == .leftToRight ? frame.minX : parentWidth - frame.maxX
+
+            Color.clear
+              .preference(key: ScrollViewLeadingOffset.self, value: offset)
           }
-          uiConfiguration.destinationListScreenFrame = geometry.frame(in: .global)
         }
       }
-      .onPreferenceChange(ScrollViewLeadingOffset.self) { value in
-        if value != listOffset {
-          metricsHandler?.popupMenuScrolledHorizontally()
+      .onAppear {
+        if layoutDirection == .rightToLeft {
+          proxy.scrollTo(destinations.first?.destinationName)
         }
-        listOffset = value
+        uiConfiguration.destinationListScreenFrame = geometry.frame(in: .global)
       }
     }
   }
