@@ -296,6 +296,10 @@ class LocalDeviceInstrumentationTestRun(
           install_apex_helper(apex)
           for apex in self._test_instance.additional_apexs)
 
+      steps.extend(
+          install_helper(apk, instant_app=self._test_instance.IsApkInstant(apk))
+          for apk in self._test_instance.additional_apks)
+
       permissions = self._test_instance.test_apk.GetPermissions()
       if self._test_instance.test_apk_incremental_install_json:
         if self._test_instance.test_apk_as_instant:
@@ -312,10 +316,6 @@ class LocalDeviceInstrumentationTestRun(
             install_helper(self._test_instance.test_apk,
                            permissions=permissions,
                            instant_app=self._test_instance.test_apk_as_instant))
-
-      steps.extend(
-          install_helper(apk, instant_app=self._test_instance.IsApkInstant(apk))
-          for apk in self._test_instance.additional_apks)
 
       # We'll potentially need the package names later for setting app
       # compatibility workarounds.
