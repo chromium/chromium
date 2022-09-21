@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/webdata/autofill_wallet_metadata_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_offer_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/autofill_wallet_usage_data_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_client.h"
@@ -108,6 +109,15 @@ base::WeakPtr<syncer::ModelTypeControllerDelegate>
 AutofillWalletOfferDelegateFromDataService(
     autofill::AutofillWebDataService* service) {
   return autofill::AutofillWalletOfferSyncBridge::FromWebDataService(service)
+      ->change_processor()
+      ->GetControllerDelegate();
+}
+
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+AutofillWalletUsageDataDelegateFromDataService(
+    autofill::AutofillWebDataService* service) {
+  return autofill::AutofillWalletUsageDataSyncBridge::FromWebDataService(
+             service)
       ->change_processor()
       ->GetControllerDelegate();
 }
@@ -221,13 +231,24 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
           sync_service));
     }
 
-    // Wallet offer data is enabled by default. Register unless explicitly
-    // disabled.
+    // Wallet offer sync depends on Wallet data sync. Register if neither
+    // Wallet data nor Wallet offer sync is explicitly disabled.
     if (!disabled_types.Has(syncer::AUTOFILL_WALLET_DATA) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_OFFER)) {
       controllers.push_back(CreateWalletModelTypeController(
           syncer::AUTOFILL_WALLET_OFFER,
           base::BindRepeating(&AutofillWalletOfferDelegateFromDataService),
+          sync_service));
+    }
+
+    // Wallet usage data sync depends on Wallet data sync. Register if neither
+    // Wallet data nor Wallet usage data sync is explicitly disabled.
+    if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletUsageData) &&
+        !disabled_types.Has(syncer::AUTOFILL_WALLET_DATA) &&
+        !disabled_types.Has(syncer::AUTOFILL_WALLET_USAGE)) {
+      controllers.push_back(CreateWalletModelTypeController(
+          syncer::AUTOFILL_WALLET_USAGE,
+          base::BindRepeating(&AutofillWalletUsageDataDelegateFromDataService),
           sync_service));
     }
   }

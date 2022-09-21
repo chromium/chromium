@@ -427,6 +427,8 @@ static_library("browser") {
     "webdata/autofill_wallet_offer_sync_bridge.h",
     "webdata/autofill_wallet_sync_bridge.cc",
     "webdata/autofill_wallet_sync_bridge.h",
+    "webdata/autofill_wallet_usage_data_sync_bridge.cc",
+    "webdata/autofill_wallet_usage_data_sync_bridge.h",
     "webdata/autofill_webdata_backend.h",
     "webdata/autofill_webdata_backend_impl.cc",
     "webdata/autofill_webdata_backend_impl.h",
