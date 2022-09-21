@@ -17,7 +17,6 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -358,9 +357,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         GradientDrawable drawable = (GradientDrawable) context.getDrawable(
                 R.drawable.modern_toolbar_text_box_background_with_primary_color);
         drawable.mutate();
-        final int tint = ChromeColors.getSurfaceColor(context, R.dimen.toolbar_text_box_elevation);
-        // TODO(https://crbug.com/1239289): Change back to #setTint once our min API level is 23.
-        drawable.setColorFilter(tint, PorterDuff.Mode.SRC_IN);
+        drawable.setTint(ChromeColors.getSurfaceColor(context, R.dimen.toolbar_text_box_elevation));
 
         return drawable;
     }
@@ -371,8 +368,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private void updateModernLocationBarColor(int color) {
         if (mCurrentLocationBarColor == color) return;
         mCurrentLocationBarColor = color;
-        // TODO(https://crbug.com/1239289): Change back to #setTint once our min API level is 23.
-        mLocationBarBackground.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        mLocationBarBackground.setTint(color);
         if (mOptionalButton != null) {
             mOptionalButton.setBackgroundColorFilter(color);
         }
