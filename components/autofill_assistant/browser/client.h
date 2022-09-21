@@ -79,8 +79,11 @@ class Client {
   // Returns the locale.
   virtual std::string GetLocale() const = 0;
 
-  // Returns the country code.
-  virtual std::string GetCountryCode() const = 0;
+  // Returns the latest country code.
+  virtual std::string GetLatestCountryCode() const = 0;
+
+  // Returns the permanent country code stored for this client.
+  virtual std::string GetStoredPermanentCountryCode() const = 0;
 
   // Returns details about the device.
   virtual DeviceContext GetDeviceContext() const = 0;

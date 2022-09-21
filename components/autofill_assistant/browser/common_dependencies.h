@@ -52,7 +52,9 @@ class CommonDependencies {
 
   virtual std::string GetLocale() const = 0;
 
-  virtual std::string GetCountryCode() const = 0;
+  virtual std::string GetLatestCountryCode() const = 0;
+
+  virtual std::string GetStoredPermanentCountryCode() const = 0;
 
   virtual autofill::PersonalDataManager* GetPersonalDataManager() const = 0;
 

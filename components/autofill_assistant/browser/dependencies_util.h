@@ -11,7 +11,10 @@
 
 namespace autofill_assistant::dependencies_util {
 
-std::string GetCountryCode(variations::VariationsService* variations_service);
+std::string GetLatestCountryCode(
+    variations::VariationsService* variations_service);
+std::string GetStoredPermanentCountryCode(
+    variations::VariationsService* variations_service);
 
 }  // namespace autofill_assistant::dependencies_util
 

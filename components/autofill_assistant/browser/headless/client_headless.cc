@@ -150,8 +150,12 @@ std::string ClientHeadless::GetLocale() const {
   return common_dependencies_->GetLocale();
 }
 
-std::string ClientHeadless::GetCountryCode() const {
-  return common_dependencies_->GetCountryCode();
+std::string ClientHeadless::GetLatestCountryCode() const {
+  return common_dependencies_->GetLatestCountryCode();
+}
+
+std::string ClientHeadless::GetStoredPermanentCountryCode() const {
+  return common_dependencies_->GetStoredPermanentCountryCode();
 }
 
 DeviceContext ClientHeadless::GetDeviceContext() const {

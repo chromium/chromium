@@ -38,7 +38,7 @@ TEST_F(ClientContextTest, Initialize) {
   device_context_.model.assign("model");
 
   EXPECT_CALL(mock_client_, GetLocale()).WillOnce(Return("de-DE"));
-  EXPECT_CALL(mock_client_, GetCountryCode()).WillOnce(Return("ZZ"));
+  EXPECT_CALL(mock_client_, GetLatestCountryCode()).WillOnce(Return("ZZ"));
   EXPECT_CALL(mock_client_, GetDeviceContext())
       .WillOnce(Return(device_context_));
   EXPECT_CALL(mock_client_, GetWindowSize())

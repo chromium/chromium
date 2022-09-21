@@ -29,7 +29,8 @@ class MockCommonDependencies : public CommonDependencies {
               (),
               (const override));
   MOCK_METHOD(std::string, GetLocale, (), (const override));
-  MOCK_METHOD(std::string, GetCountryCode, (), (const override));
+  MOCK_METHOD(std::string, GetLatestCountryCode, (), (const override));
+  MOCK_METHOD(std::string, GetStoredPermanentCountryCode, (), (const override));
   MOCK_METHOD(autofill::PersonalDataManager*,
               GetPersonalDataManager,
               (),

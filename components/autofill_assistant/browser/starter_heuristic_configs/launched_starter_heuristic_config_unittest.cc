@@ -103,7 +103,8 @@ TEST_F(LaunchedStarterHeuristicConfigTest, RegularConfigWorksIfFeatureEnabled) {
       features::kAutofillAssistantInCCTTriggering, kRegularConfig, {"us"}};
 
   SetupForRegularConfig(&fake_platform_delegate_);
-  fake_platform_delegate_.fake_common_dependencies_->country_code_ = "us";
+  fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
+      "us";
 
   EXPECT_THAT(config.GetDenylistedDomains(),
               UnorderedElementsAre("example1.com", "example2.com"));
@@ -129,7 +130,8 @@ TEST_F(LaunchedStarterHeuristicConfigTest,
       features::kAutofillAssistantInCCTTriggering, kRegularConfig, {"us"}};
 
   SetupForRegularConfig(&fake_platform_delegate_);
-  fake_platform_delegate_.fake_common_dependencies_->country_code_ = "us";
+  fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
+      "us";
 
   EXPECT_THAT(config.GetDenylistedDomains(), IsEmpty());
   EXPECT_THAT(config.GetIntent(), IsEmpty());
@@ -149,12 +151,14 @@ TEST_F(LaunchedStarterHeuristicConfigTest,
       {"us", "gb"}};
 
   SetupForRegularConfig(&fake_platform_delegate_);
-  fake_platform_delegate_.fake_common_dependencies_->country_code_ = "ch";
+  fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
+      "ch";
   EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
                                                     &context_),
               IsEmpty());
 
-  fake_platform_delegate_.fake_common_dependencies_->country_code_ = "gb";
+  fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
+      "gb";
   EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
                                                     &context_),
               SizeIs(1));

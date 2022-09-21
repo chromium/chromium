@@ -93,7 +93,7 @@ void TriggerScriptCoordinator::Start(
   client_context.set_locale(
       starter_delegate_->GetCommonDependencies()->GetLocale());
   client_context.set_country(
-      starter_delegate_->GetCommonDependencies()->GetCountryCode());
+      starter_delegate_->GetCommonDependencies()->GetLatestCountryCode());
 
   if (ShouldGetTriggerScriptsByHashPrefix()) {
     uint64_t hash_prefix = AutofillAssistant::GetHashPrefix(

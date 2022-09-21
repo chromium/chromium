@@ -27,7 +27,8 @@ class FakeCommonDependencies : public CommonDependencies {
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil()
       const override;
   std::string GetLocale() const override;
-  std::string GetCountryCode() const override;
+  std::string GetLatestCountryCode() const override;
+  std::string GetStoredPermanentCountryCode() const override;
   autofill::PersonalDataManager* GetPersonalDataManager() const override;
   password_manager::PasswordManagerClient* GetPasswordManagerClient(
       content::WebContents* web_contents) const override;
@@ -45,7 +46,8 @@ class FakeCommonDependencies : public CommonDependencies {
 
   // Intentionally public to allow tests direct access.
   std::string locale_;
-  std::string country_code_;
+  std::string latest_country_code_;
+  std::string permanent_country_code_;
   std::string signed_in_email_;
   bool is_supervised_user_ = false;
   bool is_allowed_for_machine_learning_ = true;

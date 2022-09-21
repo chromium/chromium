@@ -16,7 +16,7 @@ ClientContextImpl::ClientContextImpl(const Client* client) : client_(client) {
   proto_.mutable_chrome()->set_chrome_version(
       version_info::GetProductNameAndVersionForUserAgent());
   proto_.set_locale(client->GetLocale());
-  proto_.set_country(client->GetCountryCode());
+  proto_.set_country(client->GetLatestCountryCode());
 // TODO(crbug.com/1321034): Once PlatformDependencies exist and are exposed to
 // |Client|, move this check to calls of type |client->IsDesktop()|.
 #if BUILDFLAG(IS_ANDROID)

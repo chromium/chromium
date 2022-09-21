@@ -113,8 +113,13 @@ std::string WebLayerDependencies::GetLocale() const {
   return base::android::GetDefaultLocaleString();
 }
 
-std::string WebLayerDependencies::GetCountryCode() const {
-  return autofill_assistant::dependencies_util::GetCountryCode(
+std::string WebLayerDependencies::GetLatestCountryCode() const {
+  return autofill_assistant::dependencies_util::GetLatestCountryCode(
+      FeatureListCreator::GetInstance()->variations_service());
+}
+
+std::string WebLayerDependencies::GetStoredPermanentCountryCode() const {
+  return autofill_assistant::dependencies_util::GetStoredPermanentCountryCode(
       FeatureListCreator::GetInstance()->variations_service());
 }
 

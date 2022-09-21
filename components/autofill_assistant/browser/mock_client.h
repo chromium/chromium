@@ -35,7 +35,8 @@ class MockClient : public Client {
       ExtractValuesFromSingleTagXml,
       const std::vector<std::string>(const std::string& xml_string,
                                      const std::vector<std::string>& keys));
-  MOCK_CONST_METHOD0(GetCountryCode, std::string());
+  MOCK_CONST_METHOD0(GetLatestCountryCode, std::string());
+  MOCK_CONST_METHOD0(GetStoredPermanentCountryCode, std::string());
   MOCK_CONST_METHOD0(GetDeviceContext, DeviceContext());
   MOCK_CONST_METHOD0(GetWindowSize, absl::optional<std::pair<int, int>>());
   MOCK_CONST_METHOD0(GetScreenOrientation,

@@ -214,7 +214,8 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
       });
 
   fake_platform_delegate_.fake_common_dependencies_->locale_.assign("fr-CH");
-  fake_platform_delegate_.fake_common_dependencies_->country_code_.assign("CH");
+  fake_platform_delegate_.fake_common_dependencies_->latest_country_code_
+      .assign("CH");
   coordinator_->Start(GURL(kFakeDeepLink),
                       std::make_unique<TriggerContext>(
                           /* params = */ std::make_unique<ScriptParameters>(

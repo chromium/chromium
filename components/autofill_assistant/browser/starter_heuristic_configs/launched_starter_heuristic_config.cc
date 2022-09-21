@@ -27,8 +27,8 @@ LaunchedStarterHeuristicConfig::GetConditionSetsForClientState(
     content::BrowserContext* browser_context) const {
   static const base::NoDestructor<base::Value> empty_list(
       base::Value::Type::LIST);
-  if (!countries_.contains(
-          platform_delegate->GetCommonDependencies()->GetCountryCode())) {
+  if (!countries_.contains(platform_delegate->GetCommonDependencies()
+                               ->GetStoredPermanentCountryCode())) {
     return empty_list->GetList();
   }
 

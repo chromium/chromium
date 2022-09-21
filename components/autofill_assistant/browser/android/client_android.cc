@@ -563,8 +563,13 @@ std::string ClientAndroid::GetLocale() const {
   return base::android::GetDefaultLocaleString();
 }
 
-std::string ClientAndroid::GetCountryCode() const {
-  return dependencies_->GetCommonDependencies()->GetCountryCode();
+std::string ClientAndroid::GetLatestCountryCode() const {
+  return dependencies_->GetCommonDependencies()->GetLatestCountryCode();
+}
+
+std::string ClientAndroid::GetStoredPermanentCountryCode() const {
+  return dependencies_->GetCommonDependencies()
+      ->GetStoredPermanentCountryCode();
 }
 
 DeviceContext ClientAndroid::GetDeviceContext() const {

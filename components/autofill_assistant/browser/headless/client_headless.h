@@ -70,7 +70,8 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   password_manager::PasswordChangeSuccessTracker*
   GetPasswordChangeSuccessTracker() const override;
   std::string GetLocale() const override;
-  std::string GetCountryCode() const override;
+  std::string GetLatestCountryCode() const override;
+  std::string GetStoredPermanentCountryCode() const override;
   DeviceContext GetDeviceContext() const override;
   bool IsAccessibilityEnabled() const override;
   bool IsSpokenFeedbackAccessibilityServiceEnabled() const override;

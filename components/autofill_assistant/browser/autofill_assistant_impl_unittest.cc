@@ -28,16 +28,17 @@ using testing::UnorderedElementsAreArray;
 
 const char kScriptServerUrl[] = "https://www.fake.backend.com/script_server";
 
-class AutofillAssistantImpTest : public testing::Test {
+class AutofillAssistantImplTest : public testing::Test {
  public:
-  AutofillAssistantImpTest() {
+  AutofillAssistantImplTest() {
     auto mock_request_sender =
         std::make_unique<NiceMock<MockServiceRequestSender>>();
     mock_request_sender_ = mock_request_sender.get();
 
     auto mock_common_dependencies = std::make_unique<MockCommonDependencies>();
     mock_dependencies_ = mock_common_dependencies.get();
-    ON_CALL(*mock_dependencies_, GetCountryCode).WillByDefault(Return("US"));
+    ON_CALL(*mock_dependencies_, GetLatestCountryCode)
+        .WillByDefault(Return("US"));
     ON_CALL(*mock_dependencies_, GetLocale).WillByDefault(Return("en-US"));
     ON_CALL(*mock_dependencies_, IsSupervisedUser).WillByDefault(Return(false));
 
@@ -48,7 +49,7 @@ class AutofillAssistantImpTest : public testing::Test {
         /* browser_context= */ nullptr, std::move(mock_request_sender),
         std::move(mock_common_dependencies), GURL(kScriptServerUrl));
   }
-  ~AutofillAssistantImpTest() override = default;
+  ~AutofillAssistantImplTest() override = default;
 
  protected:
   base::MockCallback<AutofillAssistant::GetCapabilitiesResponseCallback>
@@ -75,7 +76,7 @@ bool operator==(const AutofillAssistant::CapabilitiesInfo& lhs,
                   rhs.bundle_capabilities_information);
 }
 
-TEST_F(AutofillAssistantImpTest, GetCapabilitiesByHashPrefixEmptyRespose) {
+TEST_F(AutofillAssistantImplTest, GetCapabilitiesByHashPrefixEmptyRespose) {
   EXPECT_CALL(*mock_request_sender_,
               OnSendRequest(GURL(kScriptServerUrl), _, _,
                             RpcType::GET_CAPABILITIES_BY_HASH_PREFIX))
@@ -90,7 +91,7 @@ TEST_F(AutofillAssistantImpTest, GetCapabilitiesByHashPrefixEmptyRespose) {
                                         mock_response_callback_.Get());
 }
 
-TEST_F(AutofillAssistantImpTest, BackendRequestFailed) {
+TEST_F(AutofillAssistantImplTest, BackendRequestFailed) {
   EXPECT_CALL(*mock_request_sender_,
               OnSendRequest(GURL(kScriptServerUrl), _, _,
                             RpcType::GET_CAPABILITIES_BY_HASH_PREFIX))
@@ -105,7 +106,7 @@ TEST_F(AutofillAssistantImpTest, BackendRequestFailed) {
                                         mock_response_callback_.Get());
 }
 
-TEST_F(AutofillAssistantImpTest, ParsingError) {
+TEST_F(AutofillAssistantImplTest, ParsingError) {
   EXPECT_CALL(*mock_request_sender_,
               OnSendRequest(GURL(kScriptServerUrl), _, _,
                             RpcType::GET_CAPABILITIES_BY_HASH_PREFIX))
@@ -120,7 +121,7 @@ TEST_F(AutofillAssistantImpTest, ParsingError) {
                                         mock_response_callback_.Get());
 }
 
-TEST_F(AutofillAssistantImpTest, GetCapabilitiesByHashPrefix) {
+TEST_F(AutofillAssistantImplTest, GetCapabilitiesByHashPrefix) {
   GetCapabilitiesByHashPrefixResponseProto proto;
   GetCapabilitiesByHashPrefixResponseProto::MatchInfoProto* match_info =
       proto.add_match_info();
@@ -174,7 +175,7 @@ TEST_F(AutofillAssistantImpTest, GetCapabilitiesByHashPrefix) {
                                         mock_response_callback_.Get());
 }
 
-TEST_F(AutofillAssistantImpTest,
+TEST_F(AutofillAssistantImplTest,
        GetCapabilitiesByHashPrefixDoesNotExecuteForSupervisedUsers) {
   EXPECT_CALL(*mock_dependencies_, IsSupervisedUser).WillOnce(Return(true));
 

@@ -152,7 +152,7 @@ void AutofillAssistantImpl::GetCapabilitiesByHashPrefix(
           {kIntentScriptParameterKey, intent}}};
 
   ClientContextProto client_context;
-  client_context.set_country(dependencies_->GetCountryCode());
+  client_context.set_country(dependencies_->GetLatestCountryCode());
   client_context.set_locale(dependencies_->GetLocale());
   client_context.mutable_chrome()->set_chrome_version(
       version_info::GetProductNameAndVersionForUserAgent());

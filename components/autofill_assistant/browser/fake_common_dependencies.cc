@@ -20,8 +20,12 @@ std::string FakeCommonDependencies::GetLocale() const {
   return locale_;
 }
 
-std::string FakeCommonDependencies::GetCountryCode() const {
-  return country_code_;
+std::string FakeCommonDependencies::GetLatestCountryCode() const {
+  return latest_country_code_;
+}
+
+std::string FakeCommonDependencies::GetStoredPermanentCountryCode() const {
+  return permanent_country_code_;
 }
 
 autofill::PersonalDataManager* FakeCommonDependencies::GetPersonalDataManager()

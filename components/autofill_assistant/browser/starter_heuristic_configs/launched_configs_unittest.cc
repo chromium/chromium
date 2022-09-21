@@ -55,7 +55,8 @@ TEST_F(LaunchedConfigsTest, ShoppingAndCouponsLaunchedForCct) {
               Eq("SHOPPING_ASSISTED_CHECKOUT"));
   EXPECT_THAT(GetOrCreateCouponsConfig()->GetIntent(), Eq("FIND_COUPONS"));
 
-  fake_platform_delegate_.fake_common_dependencies_->country_code_ = "us";
+  fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
+      "us";
   EXPECT_THAT(GetOrCreateShoppingConfig()->GetConditionSetsForClientState(
                   &fake_platform_delegate_, &context_),
               SizeIs(2));
@@ -63,7 +64,8 @@ TEST_F(LaunchedConfigsTest, ShoppingAndCouponsLaunchedForCct) {
                   &fake_platform_delegate_, &context_),
               SizeIs(2));
 
-  fake_platform_delegate_.fake_common_dependencies_->country_code_ = "gb";
+  fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
+      "gb";
   EXPECT_THAT(GetOrCreateShoppingConfig()->GetConditionSetsForClientState(
                   &fake_platform_delegate_, &context_),
               SizeIs(2));
@@ -71,7 +73,8 @@ TEST_F(LaunchedConfigsTest, ShoppingAndCouponsLaunchedForCct) {
                   &fake_platform_delegate_, &context_),
               IsEmpty());
 
-  fake_platform_delegate_.fake_common_dependencies_->country_code_ = "ch";
+  fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
+      "ch";
   EXPECT_THAT(GetOrCreateShoppingConfig()->GetConditionSetsForClientState(
                   &fake_platform_delegate_, &context_),
               IsEmpty());
@@ -117,7 +120,8 @@ TEST_P(LaunchedConfigsParametrizedTest,
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
 
-  fake_platform_delegate_.fake_common_dependencies_->country_code_ = "us";
+  fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
+      "us";
 
   // - Must not be a supervised user
   // - Proactive help must be turned on
@@ -141,7 +145,8 @@ TEST_P(LaunchedConfigsParametrizedTest,
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
 
-  fake_platform_delegate_.fake_common_dependencies_->country_code_ = "gb";
+  fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
+      "gb";
 
   // - Must not be a supervised user
   // - Proactive help must be turned on
@@ -166,7 +171,8 @@ TEST_P(LaunchedConfigsParametrizedTest,
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
 
-  fake_platform_delegate_.fake_common_dependencies_->country_code_ = "ch";
+  fake_platform_delegate_.fake_common_dependencies_->permanent_country_code_ =
+      "ch";
   EXPECT_THAT(GetOrCreateShoppingConfig()->GetConditionSetsForClientState(
                   &fake_platform_delegate_, &context_),
               IsEmpty());

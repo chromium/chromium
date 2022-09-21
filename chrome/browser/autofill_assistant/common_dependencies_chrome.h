@@ -51,7 +51,8 @@ class CommonDependenciesChrome : public CommonDependencies {
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil()
       const override;
   std::string GetLocale() const override;
-  std::string GetCountryCode() const override;
+  std::string GetLatestCountryCode() const override;
+  std::string GetStoredPermanentCountryCode() const override;
   autofill::PersonalDataManager* GetPersonalDataManager() const override;
   password_manager::PasswordManagerClient* GetPasswordManagerClient(
       content::WebContents* web_contents) const override;

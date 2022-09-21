@@ -53,8 +53,13 @@ std::string CommonDependenciesChrome::GetLocale() const {
   return g_browser_process->GetApplicationLocale();
 }
 
-std::string CommonDependenciesChrome::GetCountryCode() const {
-  return dependencies_util::GetCountryCode(
+std::string CommonDependenciesChrome::GetLatestCountryCode() const {
+  return dependencies_util::GetLatestCountryCode(
+      g_browser_process->variations_service());
+}
+
+std::string CommonDependenciesChrome::GetStoredPermanentCountryCode() const {
+  return dependencies_util::GetStoredPermanentCountryCode(
       g_browser_process->variations_service());
 }
 
