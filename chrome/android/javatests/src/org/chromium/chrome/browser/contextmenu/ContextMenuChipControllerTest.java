@@ -17,22 +17,22 @@ import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     // This is the combination of the expected vertical margins and the chip height.
     private static final int EXPECTED_VERTICAL_DP = 80;
@@ -59,11 +59,6 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     private float mMeasuredDeviceDensity;
     private View mAnchorView;
 
-    @BeforeClass
-    public static void setUpBeforeActivityLaunched() {
-        BlankUiTestActivity.setTestLayout(R.layout.context_menu_fullscreen_container);
-    }
-
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
@@ -71,6 +66,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
         mMeasuredDeviceDensity = getActivity().getResources().getDisplayMetrics().density;
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getActivity().setContentView(R.layout.context_menu_fullscreen_container);
             mAnchorView = getActivity().findViewById(R.id.context_menu_chip_anchor_point);
         });
     }

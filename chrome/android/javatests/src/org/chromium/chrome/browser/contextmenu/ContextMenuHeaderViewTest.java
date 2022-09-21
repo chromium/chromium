@@ -19,23 +19,23 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
     private static final String TITLE_STRING = "Some Very Cool Title";
     private static final String URL_STRING = "www.website.com";
@@ -51,16 +51,12 @@ public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
 
-    @BeforeClass
-    public static void setUpBeforeActivityLaunched() {
-        BlankUiTestActivity.setTestLayout(R.layout.context_menu_header);
-    }
-
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getActivity().setContentView(R.layout.context_menu_header);
             mHeaderView = getActivity().findViewById(android.R.id.content);
             mTitle = mHeaderView.findViewById(R.id.menu_header_title);
             mUrl = mHeaderView.findViewById(R.id.menu_header_url);
