@@ -222,8 +222,9 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
                 base::WrapUnique(new performance_manager::user_tuning::
                                      UserPerformanceTuningManager::
                                          UserPerformanceTuningReceiverImpl),
-                tab_count_threshold,
-                system_memory_kb * 100 / memory_percent_threshold)));
+                /*resident_set_threshold_kb=*/system_memory_kb * 100 /
+                    memory_percent_threshold,
+                /*tab_count_threshold=*/tab_count_threshold)));
   }
 #endif
 
