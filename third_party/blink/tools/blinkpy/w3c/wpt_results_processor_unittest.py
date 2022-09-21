@@ -917,7 +917,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
 
     def test_process_wpt_report(self):
         report_src = self.fs.join('out', 'Default', 'wpt_report.json')
-        self.fs.write_text_file(report_src, json.dumps(self.wpt_report))
+        self.fs.write_text_file(report_src,
+                                (json.dumps(self.wpt_report) + '\n') * 2)
         self.processor.process_wpt_report(report_src)
         artifacts = self.processor.sink.invocation_level_artifacts
         report_dest = self.fs.join('out', 'Default', 'layout-test-results',
@@ -926,7 +927,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
             'filePath': report_dest,
         })
         report = json.loads(self.fs.read_text_file(report_dest))
-        self.assertEqual(report, self.wpt_report)
+        self.assertEqual(report['run_info'], self.wpt_report['run_info'])
+        self.assertEqual(report['results'], self.wpt_report['results'] * 2)
 
     def test_process_wpt_report_compact(self):
         report_src = self.fs.join('out', 'Default', 'wpt_report.json')

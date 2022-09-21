@@ -31,22 +31,12 @@ class WptReportUploaderTest(LoggingTestCase):
                            "builder": {"builder": "test_builder"},
                            "status": "SUCCESS",
                            "number": "98"}]}
-        self.host.results_fetcher.web.responses.append({
-            'status_code':
-            200,
-            'body':
-            json.dumps(res).encode(),
-        })
+        self.host.results_fetcher.web.append_prpc_response(res)
         build = uploader.fetch_latest_complete_build(*builder)
         self.assertEqual(build, expected)
 
         res = {"builds": []}
-        self.host.results_fetcher.web.responses.append({
-            'status_code':
-            200,
-            'body':
-            json.dumps(res).encode(),
-        })
+        self.host.results_fetcher.web.append_prpc_response(res)
         build = uploader.fetch_latest_complete_build(*builder)
         self.assertIsNone(build)
 

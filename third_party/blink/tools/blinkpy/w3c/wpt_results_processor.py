@@ -569,7 +569,9 @@ class WPTResultsProcessor(object):
     def process_wpt_report(self, report_path):
         """Process and upload a wpt report to result sink."""
         with self.fs.open_text_file_for_reading(report_path) as report_file:
-            report = json.load(report_file)
+            report = json.loads(next(report_file))
+            for retry_report in map(json.loads, report_file):
+                report['results'].extend(retry_report['results'])
         report_filename = self.fs.basename(report_path)
         artifact_path = self.fs.join(self.artifacts_dir, report_filename)
         if not report['run_info'].get('used_upstream'):

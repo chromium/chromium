@@ -55,13 +55,14 @@ class WptReportUploader(object):
                     build["id"])
                 for url in urls:
                     _log.info("Fetching wpt report from %s" % url)
-                    res = self._host.web.request("GET", url)
-                    if res.getcode() == 200:
-                        body = res.read()
-                        reports.append(json.loads(body))
-                    else:
+                    body = self._host.web.get_binary(url,
+                                                     return_none_on_404=True)
+                    if not body:
                         _log.error("Failed to fetch wpt report.")
-
+                        continue
+                    # Ignore retry results on subsequent lines.
+                    initial_report, _, _ = body.partition(b'\n')
+                    reports.append(json.loads(initial_report))
             merged_report = self.merge_reports(reports)
 
             with tempfile.TemporaryDirectory() as tmpdir:
