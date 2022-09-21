@@ -846,7 +846,6 @@ public class WebsitePermissionsFetcherTest {
                         new Pair<>(mainSite, mainSite), new Pair<>(SITE_WILDCARD, mainSite)));
 
         for (Pair<String, String> pair : exceptions) {
-            fetcher.resetContentSettingExceptions();
             websitePreferenceBridge.resetContentSettingExceptions();
             {
                 ContentSettingException fakeContentSettingException =
