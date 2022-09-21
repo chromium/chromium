@@ -242,19 +242,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultMediaStreamMicSetting"
-    enum="ContentSetting" expires_after="2022-06-19">
+    enum="ContentSetting" expires_after="2023-02-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default microphone setting at profile open.</summary>
+  <summary>
+    The default microphone setting at profile open. Warning: this histogram was
+    expired from 2022-06-19 to 2022-09-21; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultMIDISysExSetting" enum="ContentSetting"
-    expires_after="2022-08-21">
+    expires_after="2023-02-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     The default MIDI permission setting on sysex (system exclusive) messages at
-    profile open.
+    profile open. The default microphone setting at profile open. Warning: this
+    histogram was expired from 2022-08-21 to 2022-09-21; data may be missing.
   </summary>
 </histogram>
 
@@ -266,10 +270,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultPopupsSetting" enum="ContentSetting"
-    expires_after="2022-08-21">
+    expires_after="2023-02-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default popups setting at profile open.</summary>
+  <summary>
+    The default popups setting at profile open. Warning: this histogram was
+    expired from 2022-08-21 to 2022-09-21; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultRequestDesktopSiteSetting"
@@ -283,17 +290,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultSoundSetting" enum="ContentSetting"
-    expires_after="2022-10-23">
+    expires_after="2023-02-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default sound setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultSubresourceFilterSetting"
-    enum="ContentSetting" expires_after="2022-06-19">
+    enum="ContentSetting" expires_after="2023-02-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>The default subresource filter setting at profile open</summary>
+  <summary>
+    The default subresource filter setting at profile open. Warning: this
+    histogram was expired from 2022-06-19 to 2022-09-21; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultUsbGuardSetting" enum="ContentSetting"
@@ -304,11 +314,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.DefaultWebBluetoothGuardSetting"
-    enum="ContentSetting" expires_after="2022-08-21">
+    enum="ContentSetting" expires_after="2023-02-15">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
-    The default permission setting for Web Bluetooth at profile open.
+    The default permission setting for Web Bluetooth at profile open. Warning:
+    this histogram was expired from 2022-08-21 to 2022-09-21; data may be
+    missing.
   </summary>
 </histogram>
 
