@@ -1137,6 +1137,8 @@ void AppShimManager::OnBrowserSetLastActive(Browser* browser) {
   // Update the application dock menu for the current profile.
   const std::string app_id =
       web_app::GetAppIdFromApplicationName(browser->app_name());
+  if (!delegate_->AppUsesRemoteCocoa(browser->profile(), app_id))
+    return;
   auto* profile_state = GetOrCreateProfileState(browser->profile(), app_id);
   if (profile_state)
     UpdateApplicationDockMenu(browser->profile(), profile_state);
