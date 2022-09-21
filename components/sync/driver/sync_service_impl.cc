@@ -511,13 +511,16 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
   }
 
   base::UmaHistogramEnumeration("Sync.ResetEngineReason", reset_reason);
+  SyncInvalidationsService* sync_invalidations_service =
+      sync_client_->GetSyncInvalidationsService();
   switch (shutdown_reason) {
     case ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
+      if (sync_invalidations_service) {
+        sync_invalidations_service->StopListening();
+      }
       RemoveClientFromServer();
       break;
     case ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA: {
-      SyncInvalidationsService* sync_invalidations_service =
-          sync_client_->GetSyncInvalidationsService();
       if (sync_invalidations_service) {
         sync_invalidations_service->StopListeningPermanently();
       }
@@ -525,6 +528,9 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
       break;
     }
     case ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
+      if (sync_invalidations_service) {
+        sync_invalidations_service->StopListening();
+      }
       break;
   }
 

@@ -55,6 +55,10 @@ void SyncInvalidationsServiceImpl::StartListening() {
   fcm_handler_->StartListening();
 }
 
+void SyncInvalidationsServiceImpl::StopListening() {
+  fcm_handler_->StopListening();
+}
+
 void SyncInvalidationsServiceImpl::StopListeningPermanently() {
   if (!fcm_handler_->IsListening()) {
     return;

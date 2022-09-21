@@ -33,6 +33,9 @@ class SyncInvalidationsService : public KeyedService {
   // doesn't have one.
   virtual void StartListening() = 0;
 
+  // Stop listening to invalidations and doesn't remove FCM registration token.
+  virtual void StopListening() = 0;
+
   // Stop listening to invalidations and removes FCM registration token.
   virtual void StopListeningPermanently() = 0;
 
