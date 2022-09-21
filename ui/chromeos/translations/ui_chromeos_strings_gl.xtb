@@ -478,7 +478,6 @@
    Retirar o dispositivo mentres se está usando pode provocar a perda de datos. Agarda a que finalice a operación e, a continuación, expulsa o dispositivo mediante a aplicación Ficheiros.</translation>
 <translation id="5163869187418756376">Non se puido compartir. Comproba a túa conexión e téntao de novo máis tarde.</translation>
 <translation id="516592729076796170">Dvorak de programador para EUA</translation>
-<translation id="5172749059808361023">Detalles das restricións</translation>
 <translation id="5177526793333269655">Vista de miniaturas</translation>
 <translation id="5181896909298187506">Non hai ficheiros recentes</translation>
 <translation id="5194713942430106590">Fai clic para organizar a columna en orde ascendente.</translation>
@@ -496,7 +495,6 @@
 <translation id="5275973617553375938">Ficheiros recuperados de Google Drive</translation>
 <translation id="5286194356314741248">Buscando</translation>
 <translation id="5288441970121584418">Hamburguesa</translation>
-<translation id="5299998344490869684">Seguro que queres baleirar a papeleira?</translation>
 <translation id="5305688511332277257">Ningún instalado</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5318819489018851358">Compartir con Linux</translation>
@@ -796,6 +794,7 @@
 <translation id="78946041517601018">Unidades compartidas</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Cando se formata unha partición, bórranse todos os datos que contén. Esta acción non se pode desfacer.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">Erro de comprobación de AAA</translation>
 <translation id="7925686952655276919">Non utilizar datos móbiles para a sincronización</translation>
 <translation id="7928710562641958568">Expulsar dispositivo</translation>

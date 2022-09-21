@@ -478,7 +478,6 @@
 Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. Aks holda ba’zi ma’lumotlar o‘chib ketishi mumkin.</translation>
 <translation id="5163869187418756376">Ulashish amalga oshmadi. Ulanishni tekshirib ko‘rib, qayta urining.</translation>
 <translation id="516592729076796170">Dasturchilar uchun Dvorak klaviaturasi</translation>
-<translation id="5172749059808361023">Cheklov tafsilotlari</translation>
 <translation id="5177526793333269655">Kichiklashtirilgan rasmlar</translation>
 <translation id="5181896909298187506">Oxirgi fayllar yoʻq</translation>
 <translation id="5194713942430106590">Ustundagi fayllar roʻyxatini oʻsish boʻyicha tartiblash.</translation>
@@ -496,7 +495,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5275973617553375938">Google Disk‘dan tiklangan fayllar</translation>
 <translation id="5286194356314741248">Qidiruv</translation>
 <translation id="5288441970121584418">Burger</translation>
-<translation id="5299998344490869684">Chiqitdonni boʻshatishni istaysizmi?</translation>
 <translation id="5305688511332277257">O‘rnatilmagan</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318819489018851358">Linux bilan ulashish</translation>
@@ -720,6 +718,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7248671827512403053">Ilova</translation>
 <translation id="7256405249507348194">Noma’lum xatolik: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Mavjud xizmatlar</translation>
+<translation id="7292816689782057017">Administrator siyosati tomonidan ayrim joylashuvlarga ruxsat taqiqlangan.</translation>
 <translation id="7294063083760278948">Telugu (transliteratsiya)</translation>
 <translation id="7295662345261934369">Boshqalar bilan ulashish</translation>
 <translation id="7297443947353982503">Foydalanuvchi nomi/parol noto‘g‘ri yoki EAP protokoli bo‘yicha haqiqiylikni tekshirish amalga oshmadi</translation>
@@ -796,6 +795,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="78946041517601018">Umumiy disklar</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Disk boʻlimi formatlansa, undagi barcha axborotlar tozlanaladi. Bu amal bekor qilinmaydi.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">AAA tekshirilmadi</translation>
 <translation id="7925686952655276919">Sinxronlash uchun mobil internetdan foydalanmang</translation>
 <translation id="7928710562641958568">Qurilmani chiqarib olish</translation>
@@ -905,6 +905,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8810671769985673465">Arxivlanmadi, bunday element allaqachon arxivlangan: “<ph name="FILE_NAME" />”</translation>
 <translation id="8813284582615685103">Ispan (Ispaniya)</translation>
 <translation id="8834164572807951958">“<ph name="DESTINATION_NAME" />” foydalanuvchilari bu obyektlar nusxalaridan foydalanish huquqini oladilar</translation>
+<translation id="8849389110234859568">Administrator siyosati tomonidan ayrim fayllarga ruxsat taqiqlangan.</translation>
 <translation id="8857149712089373752">Nepal va fonetik klaviatura</translation>
 <translation id="8860454412039442620">Excel elektron jadvali</translation>
 <translation id="8866284467018526531">Arab (transliteratsiya)</translation>

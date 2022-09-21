@@ -478,7 +478,6 @@
        Si retiras el dispositivo mientras está en uso, puedes perder datos. Espera hasta que la operación finalice y, luego, expulsa el dispositivo con la aplicación Archivos.</translation>
 <translation id="5163869187418756376">Se produjo un error al compartir el contenido. Comprueba tu conexión y vuelve a intentarlo.</translation>
 <translation id="516592729076796170">Programmer Dvorak, EE. UU.</translation>
-<translation id="5172749059808361023">Detalles de la restricción</translation>
 <translation id="5177526793333269655">Vista de miniatura</translation>
 <translation id="5181896909298187506">No hay archivos recientes.</translation>
 <translation id="5194713942430106590">Haz clic para ordenar la columna de forma ascendente.</translation>
@@ -497,7 +496,6 @@
 <translation id="5286194356314741248">Examinando</translation>
 <translation id="5288441970121584418">Hamburguesa</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">¿Confirmas que quieres vaciar la papelera?</translation>
 <translation id="5305688511332277257">No hay certificados instalados</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318819489018851358">Compartir con Linux</translation>
@@ -797,6 +795,7 @@
 <translation id="78946041517601018">Unidades compartidas</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Si formateas una partición, se borrarán todos los datos almacenados en ella. No se puede deshacer esta acción.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">Falló la verificación de AAA</translation>
 <translation id="7925686952655276919">No utilizar datos móviles para la sincronización</translation>
 <translation id="7928710562641958568">Expulsar dispositivo</translation>

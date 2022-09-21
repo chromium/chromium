@@ -476,7 +476,6 @@
    使用中のデバイスを取り外すと、データが失われる恐れがあります。操作が完了してから、ファイル アプリを使ってデバイスを取り外してください。</translation>
 <translation id="5163869187418756376">共有できませんでした。接続を確認し、しばらくしてからもう一度お試しください。</translation>
 <translation id="516592729076796170">US Programmer Dvorak 配列</translation>
-<translation id="5172749059808361023">制限の詳細</translation>
 <translation id="5177526793333269655">サムネイル ビュー</translation>
 <translation id="5181896909298187506">最近使用したファイルはありません</translation>
 <translation id="5194713942430106590">クリックすると、列が昇順で並べ替えられます。</translation>
@@ -495,7 +494,6 @@
 <translation id="5286194356314741248">スキャン中</translation>
 <translation id="5288441970121584418">ハンバーガー</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">ゴミ箱を空にしてもよろしいですか？</translation>
 <translation id="5305688511332277257">インストールされていません</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318819489018851358">Linux と共有</translation>
@@ -666,6 +664,7 @@
 <translation id="6874758081814639712">太極拳をしている人</translation>
 <translation id="6876155724392614295">自転車</translation>
 <translation id="6878261347041253038">デバナーガリ語キーボード（表音）</translation>
+<translation id="6881853403185175088">オフィス</translation>
 <translation id="6885780034956018177">カタツムリ</translation>
 <translation id="6896758677409633944">コピー</translation>
 <translation id="6898028766943174120">その他のサブフォルダ...</translation>
@@ -793,6 +792,7 @@
 <translation id="78946041517601018">共有ドライブ</translation>
 <translation id="7903984238293908205">カタカナ</translation>
 <translation id="7908793776359722643">パーティションをフォーマットすると、そのパーティションに保存されているすべてのデータが消去されます。この操作は元に戻せません。</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">AAA を確認できませんでした</translation>
 <translation id="7925686952655276919">モバイル データを使用して同期しない</translation>
 <translation id="7928710562641958568">デバイスの取り出し</translation>

@@ -478,7 +478,6 @@
    Hvis du fjerner din enhed, mens den er i brug, kan det medføre datatab. Vent, indtil handlingen er fuldført, og fjern derefter enheden ved hjælp af appen Filer.</translation>
 <translation id="5163869187418756376">Deling mislykkedes. Kontrollér din forbindelse, og prøv igen senere.</translation>
 <translation id="516592729076796170">Amerikansk (Programmer Dvorak) tastatur</translation>
-<translation id="5172749059808361023">Oplysninger om begrænsning</translation>
 <translation id="5177526793333269655">Miniaturevisning</translation>
 <translation id="5181896909298187506">Du har ikke åbnet nogen filer for nylig</translation>
 <translation id="5194713942430106590">Klik for at sortere kolonnen i stigende rækkefølge.</translation>
@@ -497,7 +496,6 @@
 <translation id="5286194356314741248">Søger</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">Er du sikker på, at du vil tømme papirkurven?</translation>
 <translation id="5305688511332277257">Ingen installeret</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5318819489018851358">Del med Linux</translation>
@@ -797,6 +795,7 @@
 <translation id="78946041517601018">Fællesdrev</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatering af en partition sletter alle de data, der er gemt på den. Denne handling kan ikke fortrydes.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">AAA-kontrol mislykkedes</translation>
 <translation id="7925686952655276919">Brug ikke mobildata til synkronisering</translation>
 <translation id="7928710562641958568">Skub enheden ud</translation>

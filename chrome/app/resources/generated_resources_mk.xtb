@@ -2312,6 +2312,7 @@
 <translation id="3090819949319990166">Не може да ја копира надворешната crx датотека на <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />“ се спари</translation>
 <translation id="3093714882666365141">Не им дозволувај на сајтовите да инсталираат ракувачи со плаќања</translation>
+<translation id="3093958632721393232">Вклучи само кога батеријата е речиси празна</translation>
 <translation id="3094141017404513551">Ова ќе го оддели вашето прелистување од <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Обележувачите, лозинките и другите податоци од прелистувачот се синхронизираат со примарната сметка.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 потенцијално штетна екстензија е исклучена. Може и да ја отстраните.}one{{NUM_EXTENSIONS} потенцијално штетна екстензија е исклучена. Може и да ги отстраните.}other{{NUM_EXTENSIONS} потенцијално штетни екстензии се исклучени. Може и да ги отстраните.}}</translation>
@@ -5034,6 +5035,7 @@
 <translation id="5747552184818312860">Истекува на</translation>
 <translation id="5747785204778348146">Програмер - нестабилен</translation>
 <translation id="5747809636523347288">&amp;Залепи и оди на <ph name="URL" /></translation>
+<translation id="5748137879145720682">Вклучи кога компјутерот не е приклучен</translation>
 <translation id="5751345516399502412">Проверете ја подготвеноста за интернет преку мобилен</translation>
 <translation id="5755022574660047665">спомени од „Фотографии на Google“</translation>
 <translation id="5756163054456765343">Центар за п&amp;омош</translation>
@@ -7669,6 +7671,7 @@
 <translation id="8248381369318572865">Пристап до микрофонот и анализа на вашиот говор</translation>
 <translation id="8248887045858762645">Совет за Chrome</translation>
 <translation id="8249048954461686687">Папка на OEM</translation>
+<translation id="8249239468199142122">Штедач на батерија</translation>
 <translation id="8249615410597138718">Испратете до вашите уреди</translation>
 <translation id="8250210000648910632">Нема простор за складирање</translation>
 <translation id="8251441930213048644">Освежи сега</translation>

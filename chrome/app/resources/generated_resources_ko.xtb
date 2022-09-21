@@ -2190,6 +2190,7 @@
 <translation id="2977480621796371840">그룹에서 삭제</translation>
 <translation id="2979639724566107830">새 창에서 열기</translation>
 <translation id="2981113813906970160">큰 마우스 커서 표시</translation>
+<translation id="2981293774053328982">파일에 개인 계정 또는 소셜 네트워크 계정을 손상시킬 수 있는 멀웨어가 포함되어 있습니다.</translation>
 <translation id="2983373101216420412">케이스 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">관리자에게 '<ph name="EXTENSION_NAME" />' 설치 요청을 전송하시겠습니까?</translation>
 <translation id="2987620471460279764">다른 기기에서 공유된 텍스트</translation>
@@ -3773,6 +3774,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4514610446763173167">동영상 재생 또는 일시중지 전환</translation>
 <translation id="451515744433878153">제거</translation>
 <translation id="4515872537870654449">Dell에 문의하여 서비스를 받으세요. 팬이 작동하지 않으면 도크가 종료됩니다.</translation>
+<translation id="4518840066030486079">Shift 키 모드 스타일</translation>
 <translation id="4519331665958994620">사이트에서 카메라 사용을 요청할 수 있음</translation>
 <translation id="4519935350946509010">연결 오류입니다.</translation>
 <translation id="4520385623207007473">사용 중인 쿠키</translation>
@@ -3868,6 +3870,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4598345735110653698">패스키 관리</translation>
 <translation id="4598556348158889687">저장용량 관리</translation>
 <translation id="4598776695426288251">여러 기기를 통해 Wi-Fi 사용 가능</translation>
+<translation id="4600071396330666617">추천 수</translation>
 <translation id="4601426376352205922">읽지 않은 상태로 표시</translation>
 <translation id="4602466770786743961"><ph name="HOST" />에서 카메라와 마이크에 액세스하도록 항상 허용</translation>
 <translation id="4606551464649945562">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하도록 허용하지 않음</translation>
@@ -4314,6 +4317,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5043913660911154449">또는 프린터 PPD 지정 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="504561833207953641">기존 브라우저 세션에서 여는 중입니다.</translation>
+<translation id="5049614114599109018">입력 기록 사용</translation>
 <translation id="5051836348807686060">선택한 언어의 맞춤법 검사가 지원되지 않습니다.</translation>
 <translation id="5052499409147950210">사이트 수정</translation>
 <translation id="505347685865235222">이름이 지정되지 않은 그룹 - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -6738,6 +6742,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7404065585741198296">USB 케이블로 연결된 휴대전화</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{안전 확인이 1시간 전에 실행됨}other{안전 확인이 {NUM_HOURS}시간 전에 실행됨}}</translation>
 <translation id="740624631517654988">팝업 차단됨</translation>
+<translation id="7406912950279255498">색상 반전 모드</translation>
 <translation id="7407430846095439694">가져오기 및 연결</translation>
 <translation id="7407504355934009739">대부분의 사용자가 이 사이트의 알림을 차단합니다.</translation>
 <translation id="740810853557944681">인쇄 서버 추가</translation>
@@ -7689,6 +7694,7 @@ https://support.google.com/chromebook/?p=sm</translation>
     <ph name="BEGIN_PARAGRAPH3" />소유자는 설정 &gt; 고급 &gt; 진단 및 사용 데이터를 Google에 자동 전송에서 이 기능을 제어할 수 있습니다.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />자녀에게 추가 웹 및 앱 활동 설정이 사용 설정된 경우 이 데이터가 자녀의 Google 계정에 저장됩니다. families.google.com에서 이러한 설정 및 설정 조정 방법을 자세히 알아볼 수 있습니다.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">잘못된 클라이언트 인증서</translation>
+<translation id="8270162672241199380">Steam 설치 프로그램</translation>
 <translation id="827097179112817503">홈 버튼 표시</translation>
 <translation id="8271268254812352141">텍스트를 마우스 오른쪽 버튼으로 클릭하거나 길게 터치하여 정의 또는 번역을 확인하거나 단위를 변환합니다. <ph name="LINK_BEGIN" />웹사이트 언어<ph name="LINK_END" />에서 번역 언어를 맞춤 설정하세요.</translation>
 <translation id="8271379370373330993">다음 몇 단계는 부모님이 진행하셔야 합니다. 계정 설정이 완료된 후 <ph name="DEVICE_TYPE" /> 기기를 자녀에게 돌려주세요.</translation>

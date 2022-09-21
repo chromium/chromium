@@ -1155,6 +1155,7 @@ Nyligen installerad</translation>
 <translation id="7633755430369750696">Visa inställningar för Närdelning</translation>
 <translation id="7634648064048557203">Kameran har fästs i det nedre högra hörnet</translation>
 <translation id="7641938616688887143">Spela in</translation>
+<translation id="7642106959537987271">läge för inverterade färger</translation>
 <translation id="7642647758716480637">Öppnar inställningarna för <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ägare)</translation>
 <translation id="7647488630410863958">Lås upp enheten om du vill visa aviseringarna</translation>
@@ -1260,6 +1261,7 @@ Nyligen installerad</translation>
 <translation id="8209010265547628927">Återställ</translation>
 <translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Chromebook måste vara på och ansluten till en strömkälla under den tiden. Se till att kabeln på laddaren eller adaptern är ordentligt ansluten till Chromebook och eluttaget. Stäng inte av Chromebook.</translation>
+<translation id="8230305195727960608">Läge för inverterade färger</translation>
 <translation id="8236042855478648955">Dags för en paus</translation>
 <translation id="8246282815785366524">Välkommen tillbaka, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, telefonens batterinivå <ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1388,7 @@ Nyligen installerad</translation>
 <translation id="8982906748181120328">Synl. i närheten</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Använder <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Läget för inverterade färger har aktiverats. Tryck på Ctrl + Sök + H igen för att inaktivera det.</translation>
 <translation id="899350903320462459">Lås upp enheten som <ph name="LOGIN_ID" /> så att aviseringen kan göras</translation>
 <translation id="9000771174482730261">HANTERA LAGRING</translation>
 <translation id="9017320285115481645">Ange föräldraåtkomstkoden för Family Link.</translation>
@@ -1434,6 +1437,7 @@ Nyligen installerad</translation>
 <translation id="921989828232331238">Din förälder har låst enheten för dagen</translation>
 <translation id="9220525904950070496">Ta bort konto</translation>
 <translation id="923686485342484400">Tryck på Control + skift + Q två gånger om du vill logga ut.</translation>
+<translation id="92580429198593979">Du tryckte på kortkommandot för inverterade färger. Vill du aktivera det?</translation>
 <translation id="925832987464884575">Dölj förhandsgranskningar</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> kräver att du uppdaterar din <ph name="DEVICE_TYPE" /> omedelbart</translation>
 <translation id="938963181863597773">Vad står det i min kalender?</translation>

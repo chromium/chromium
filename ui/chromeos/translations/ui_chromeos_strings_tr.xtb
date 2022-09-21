@@ -478,7 +478,6 @@
    Cihazınızı kullanımdayken kaldırırsanız veri kaybına uğrayabilirsiniz. Lütfen işlem bitinceye kadar bekleyin, daha sonra Dosyalar uygulamasını kullanarak cihazı çıkarın.</translation>
 <translation id="5163869187418756376">Paylaşılamadı. Bağlantınızı kontrol edin ve daha sonra tekrar deneyin.</translation>
 <translation id="516592729076796170">ABD Programcı Dvorak</translation>
-<translation id="5172749059808361023">Kısıtlama ayrıntıları</translation>
 <translation id="5177526793333269655">Küçük resim görünümü</translation>
 <translation id="5181896909298187506">Yakın tarihli dosya yok</translation>
 <translation id="5194713942430106590">Sütunu artan düzende sıralamak için tıklayın.</translation>
@@ -497,7 +496,6 @@
 <translation id="5286194356314741248">Taranıyor</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">Çöp Kutusu'nu boşaltmak istediğinizden emin misiniz?</translation>
 <translation id="5305688511332277257">Hiç sertifika yüklenmedi</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5318819489018851358">Linux ile paylaş</translation>
@@ -797,6 +795,7 @@
 <translation id="78946041517601018">Ortak drive'lar</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Bir bölümün biçimlendirilmesi o bölümde depolanan tüm verileri siler. Bu işlem geri alınamaz.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">AAA kontrolü başarısız oldu</translation>
 <translation id="7925686952655276919">Senkronizasyon için mobil veri kullanma</translation>
 <translation id="7928710562641958568">Cihazı çıkar</translation>

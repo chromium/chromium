@@ -237,6 +237,7 @@
 <translation id="2619344480613750862">画面上のセクション間を移動することもできます。たとえば、ランチャー、シェルフ、Chrome のタブの間を移動できます。次のセクションに移動するには、4 本の指で左から右にスワイプします。実際にやってみて、次へ進みましょう。</translation>
 <translation id="2624431853467395961">学習モードを開く</translation>
 <translation id="2626530649491650971">クリック可能</translation>
+<translation id="263637551280112393">検索+Shift+Space キーを押す</translation>
 <translation id="2637227747952042642">数式</translation>
 <translation id="2638785836053527382"><ph name="FILE_NAME" /> のダウンロードを再開しました</translation>
 <translation id="2639750663247012216">ChromeVox 修飾キー</translation>
@@ -649,6 +650,7 @@
 <translation id="5355014376930441909">次のセクションはありません</translation>
 <translation id="5368000168321181111">イアコン オフ</translation>
 <translation id="5368505757342402527"><ph name="FILE_NAME" /> のダウンロードが <ph name="PROGRESS" />% 終了しました。完了まであと約 <ph name="TIME" /> <ph name="UNITS" />です。</translation>
+<translation id="5381388086899614489">押し続ける</translation>
 <translation id="5400836586163650660">グレー</translation>
 <translation id="5402367795255837559">点字</translation>
 <translation id="5402791055281059602">モーダル アラート</translation>

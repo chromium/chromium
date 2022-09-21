@@ -478,7 +478,6 @@
        Fjerning av enheten mens den er i bruk kan resultere i tap av data. Vent til handlingen er utført før du mater ut enheten ved bruk av Filer-appen.</translation>
 <translation id="5163869187418756376">Delingen mislyktes. Sjekk tilkoblingen din og prøv på nytt senere.</translation>
 <translation id="516592729076796170">Amerikansk programmeringstastatur (Dvorak)</translation>
-<translation id="5172749059808361023">Begrensningsdetaljer</translation>
 <translation id="5177526793333269655">Miniatyrbildevisning</translation>
 <translation id="5181896909298187506">Ingen nylige filer</translation>
 <translation id="5194713942430106590">Klikk for å sortere kolonnen i stigende rekkefølge.</translation>
@@ -497,7 +496,6 @@
 <translation id="5286194356314741248">Skanning</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">Er du sikker på at du vil tømme papirkurven?</translation>
 <translation id="5305688511332277257">Ingen installert</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5318819489018851358">Del med Linux</translation>
@@ -797,6 +795,7 @@
 <translation id="78946041517601018">Delte disker</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatering av partisjonen sletter alle data som er lagret på den. Denne handlingen kan ikke angres.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">AAA-kontroll mislyktes</translation>
 <translation id="7925686952655276919">Ikke bruk mobildata ved synkronisering</translation>
 <translation id="7928710562641958568">Løs ut enhet</translation>

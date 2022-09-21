@@ -478,7 +478,6 @@
    उपयोग के दौरान अपना डिवाइस निकाल लेने से डेटा की हानि हो सकती है. कृपया कार्रवाई पूरी हो जाने तक इंतज़ार करें, फिर Files ऐप्लिकेशन का उपयोग करके डिवाइस को निकाल लें.</translation>
 <translation id="5163869187418756376">शेयर नहीं किया जा सका. अपना कनेक्शन जाँचें और बाद में फिर से कोशिश करें.</translation>
 <translation id="516592729076796170">यूएस प्रोग्रामर ड्वोरक</translation>
-<translation id="5172749059808361023">पाबंदी की जानकारी</translation>
 <translation id="5177526793333269655">थंबनेल व्यू</translation>
 <translation id="5181896909298187506">हाल ही की कोई फ़ाइल नहीं मिली</translation>
 <translation id="5194713942430106590">स्तंभ को बढ़ते क्रम में लगाने के लिए क्लिक करें.</translation>
@@ -497,7 +496,6 @@
 <translation id="5286194356314741248">स्‍कैन हो रहा है</translation>
 <translation id="5288441970121584418">बर्गर</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">क्या आप वाकई में ट्रैश को खाली करना चाहते हैं?</translation>
 <translation id="5305688511332277257">कुछ भी इंस्टॉल नहीं है</translation>
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5318819489018851358">Linux के साथ शेयर करें</translation>
@@ -797,6 +795,7 @@
 <translation id="78946041517601018">शेयर की गईं डिस्क</translation>
 <translation id="7903984238293908205">काताकाना</translation>
 <translation id="7908793776359722643">किसी पार्टीशन को फ़ॉर्मैट करने से उस पर सेव किया गया पूरा डेटा मिट जाएगा. मिटने के बाद यह सब वापस नहीं पाया जा सकता.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">AAA जाँच पूरा नहीं हो सका</translation>
 <translation id="7925686952655276919">समन्‍वयन के लिए मोबाइल डेटा का उपयोग न करें</translation>
 <translation id="7928710562641958568">डिवाइस निकालें</translation>

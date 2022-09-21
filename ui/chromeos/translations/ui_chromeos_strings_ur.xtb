@@ -478,7 +478,6 @@
    زیر استعمال ہونے پر آپ کا آلہ ہٹانے سے ڈیٹا کو نقصان پہنچ سکتا ہے۔  براہ کرم کارروائی مکمل ہونے تک انتظار کریں، پھر فائلز ایپ استعمال کر کے آلہ کو خارج کریں۔</translation>
 <translation id="5163869187418756376">اشتراک ناکام ہو گیا۔ اپنا کنکشن چیک کریں او بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="516592729076796170">‏US پروگرامر ڈووراک</translation>
-<translation id="5172749059808361023">پابندی کی تفصیلات</translation>
 <translation id="5177526793333269655">تھمب نیل کا منظر</translation>
 <translation id="5181896909298187506">حالیہ کوئی فائل نہیں ہے</translation>
 <translation id="5194713942430106590">صعودی ترتیب میں کالم کو ترتیب دینے کے لیے کلک کریں۔</translation>
@@ -496,7 +495,6 @@
 <translation id="5275973617553375938">‏Google Drive سے بازیافت کردہ فائلیں</translation>
 <translation id="5286194356314741248">اسکین کی جا رہی ہیں</translation>
 <translation id="5288441970121584418">برگر</translation>
-<translation id="5299998344490869684">کیا آپ واقعی کوڑے دان کو خالی کرنا چاہتے ہیں؟</translation>
 <translation id="5305688511332277257">کوئی بھی انسٹال نہیں ہے</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5318819489018851358">‏Linux کے ساتھ اشتراک کریں</translation>
@@ -720,6 +718,7 @@
 <translation id="7248671827512403053">اطلاق</translation>
 <translation id="7256405249507348194">غیر شناخت شدہ خرابی: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">دستیاب سروسز</translation>
+<translation id="7292816689782057017">منتظم کی پالیسی کچھ مقامات پر بچت کو محدود کرتی ہے۔</translation>
 <translation id="7294063083760278948">تیلگو نقل حرفی</translation>
 <translation id="7295662345261934369">دوسروں کے ساتھ اشتراک کریں</translation>
 <translation id="7297443947353982503">‏صارف نام/پاس ورڈ غلط ہے یا EAP توثیق ناکام ہو گئی</translation>
@@ -796,6 +795,7 @@
 <translation id="78946041517601018">مشترکہ ڈرائیوز</translation>
 <translation id="7903984238293908205">کٹاکانا</translation>
 <translation id="7908793776359722643">پارٹیشن کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا مٹا دیا جائے گا۔ اس عمل کو کالعدم نہیں کیا جا سکتا۔</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">‏AAA چیک ناکام ہوگیا</translation>
 <translation id="7925686952655276919">مطابقت پذیری کیلئے موبائل ڈیٹا کا استعمال نہ کریں</translation>
 <translation id="7928710562641958568">آلے کو خارج کریں</translation>
@@ -905,6 +905,7 @@
 <translation id="8810671769985673465">زپ بنانے کا عمل ناکام ہو گیا، آئٹم موجود ہے: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">ہسپانوی (اسپین)</translation>
 <translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />' کے اراکین کو ان آئٹمز کی کاپی تک رسائي حاصل ہوگي۔</translation>
+<translation id="8849389110234859568">منتظم کی پالیسی کچھ فائلز تک رسائی کو محدود کرتی ہے۔</translation>
 <translation id="8857149712089373752">فونیٹک کی بورڈ کے ساتھ نیپالی</translation>
 <translation id="8860454412039442620">‏Excel اسپریڈشیٹ</translation>
 <translation id="8866284467018526531">عربی نقل حرفی</translation>

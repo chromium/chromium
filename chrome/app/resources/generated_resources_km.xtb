@@ -2189,6 +2189,7 @@
 <translation id="2977480621796371840">លុបចេញ​ពីក្រុម</translation>
 <translation id="2979639724566107830">បើក​នៅក្នុង​វិនដូថ្មី</translation>
 <translation id="2981113813906970160">បង្ហាញព្រួញកណ្តុរធំ</translation>
+<translation id="2981293774053328982">ឯកសារ​នេះ​មាន​កម្មវិធីគ្រោះថ្នាក់​ដែល​អាចលុកលុយគណនី​ផ្ទាល់ខ្លួន ឬ​គណនីបណ្ដាញ​សង្គម​របស់អ្នក</translation>
 <translation id="2983373101216420412">កម្រិតថ្ម​ប្រអប់កាស <ph name="PERCENTAGE" />%។</translation>
 <translation id="2985348301114641460">ផ្ញើ​សំណើទៅអ្នកគ្រប់គ្រងរបស់អ្នក​ ដើម្បីដំឡើង "<ph name="EXTENSION_NAME" />" ឬ?</translation>
 <translation id="2987620471460279764">អត្ថបទដែលបាន​ចែករំលែកពីឧបករណ៍​ផ្សេងទៀត</translation>
@@ -3774,6 +3775,7 @@
 <translation id="4514610446763173167">បិទ/បើក​វីដេអូ​ដើម្បីលេង ឬផ្អាក</translation>
 <translation id="451515744433878153">លុប​ចេញ</translation>
 <translation id="4515872537870654449">សូមទាក់ទង Dell ដើម្បីទទួលបានសេវា​កម្ម។ ឧបករណ៍ភ្ជាប់នឹងបិទ ប្រសិនបើ​កង្ហារមិនដំណើរការ។</translation>
+<translation id="4518840066030486079">រចនាប័ទ្ម​មុខងារ​គ្រាប់ចុច Shift</translation>
 <translation id="4519331665958994620">គេហទំព័រ​អាច​ស្នើសុំប្រើកាមេរ៉ារបស់អ្នក</translation>
 <translation id="4519935350946509010">បញ្ហា​ក្នុង​ការ​ភ្ជាប់។</translation>
 <translation id="4520385623207007473">ខូគីកំពុងត្រូវបានប្រើ</translation>
@@ -3869,6 +3871,7 @@
 <translation id="4598345735110653698">គ្រប់គ្រងកូដសម្ងាត់</translation>
 <translation id="4598556348158889687">ការគ្រប់គ្រងទំហំផ្ទុក</translation>
 <translation id="4598776695426288251">មាន Wi-Fi តាមរយៈ​ឧបករណ៍​ជាច្រើន</translation>
+<translation id="4600071396330666617">ចំនួន​នៃការណែនាំ</translation>
 <translation id="4601426376352205922">សម្គាល់ថា​មិនទាន់អាន</translation>
 <translation id="4602466770786743961">អនុញ្ញាត <ph name="HOST" /> ឲ្យចូលប្រើកាមេរ៉ា និងម៉ៃក្រូហ្វូនរបស់អ្នកជានិច្ច</translation>
 <translation id="4606551464649945562">កុំអនុញ្ញាតឱ្យគេហទំព័របង្កើតផែនទី 3D នៃមជ្ឈដ្ឋានជុំវិញរបស់អ្នក ឬតាមដានទីតាំងកាមេរ៉ា</translation>
@@ -4315,6 +4318,7 @@
 <translation id="5043913660911154449">ឬបញ្ជាក់ PPD ម៉ាស៊ីន​បោះពុម្ព​របស់អ្នក <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">ពាក្យសម្ងាត់មិនត្រឹមត្រូវ</translation>
 <translation id="504561833207953641">កំពុង​បើក​នៅក្នុង​រយៈពេលចូលប្រើកម្មវិធីរុករកដែលមានស្រាប់។</translation>
+<translation id="5049614114599109018">ប្រើ​ប្រវត្តិ​បញ្ចូល</translation>
 <translation id="5051836348807686060">មិនស្គាល់​ការពិនិត្យ​អក្ខរាវិរុទ្ធសម្រាប់​ភាសា​ដែលអ្នក​បានជ្រើសរើស​ទេ</translation>
 <translation id="5052499409147950210">កែ​សម្រួល​ទំព័រ</translation>
 <translation id="505347685865235222">ក្រុមដែលគ្មានឈ្មោះ - <ph name="GROUP_CONTENT_STRING" /></translation>

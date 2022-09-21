@@ -6819,11 +6819,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="8091982561085048989">Yazıcıyı kurmak için IPP Everywhere'in kullanılıp kullanılmayacağını belirten boole flag'i. Bu işaret, <ph name="PRODUCT_OS_NAME" /> sürüm 76 ve sonrasındaki sürümlerde desteklenir.</translation>
 <translation id="8099880303030573137">Pil gücüyle çalışırken boşta kalma gecikmesi</translation>
 <translation id="8101381354936029836">Politika atom grubu:</translation>
-<translation id="8102504778644322990">Standart olmayan window.webkitStorageInfo API'si, M106 sürümünden itibaren kaldırılacaktır.
-      Bu politika, API'yi M107'ye kadar yeniden etkinleştirir.
-      Bu politika, Etkin değerine ayarlanırsa window.webkitStorageInfo API'si kullanılabilir.
-      Bu politika, Devre Dışı değerine ayarlanırsa veya ayarlanmadan bırakılırsa window.webkitStorageInfo API'si kullanılamaz.
-      </translation>
 <translation id="8102913158860568230">Varsayılan medya akışı ayarı</translation>
 <translation id="8104962233214241919">Bu siteler için istemci sertifikalarını otomatik olarak seç</translation>
 <translation id="8109762054721090517"><ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /> şablonu</translation>
@@ -7749,12 +7744,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 
       Politika değeri milisaniye olarak belirtilmelidir. Değerler 30 saniye ile 24 saat arasında olabilir.</translation>
 <translation id="9040042535845939426">Giriş ekranında gizlilik ekranının durumunu belirle</translation>
-<translation id="9046609670147277653">Bu ayar etkinleştirildiğinde <ph name="PRODUCT_NAME" />, sunucu sertifikalarının doğrulamasını herkese açık güven kaynağı Chrome Root Store olacak şekilde yerleşik sertifika doğrulayıcıyı kullanarak gerçekleştirir.
-      Bu ayar devre dışı bırakıldığında <ph name="PRODUCT_NAME" />, Chrome Root Store'u kullanmaz. <ph name="BUILT_IN_CERTIFICATE_VERIFIER_ENABLED_POLICY_NAME" /> politikası kullanılabilir durumdaysa ve devre dışı bırakılmamışsa doğrulama sırasında sistem sertifika doğrulayıcı veya yerleşik doğrulayıcı kullanılabilir.
-      Bu ayar belirtilmezse Chrome Root Store veya sistem tarafından sağlanan kökler kullanılabilir.
-
-      Platform tarafından sağlanan sertifika doğrulayıcıyı ve kökleri kullanma desteğinin kaldırılması planlandığından bu politikanın da <ph name="MS_WIN_NAME" /> ve <ph name="MAC_OS_NAME" /> sürüm 111 için <ph name="PRODUCT_NAME" /> ürününden kaldırılması planlanmıştır.
-      </translation>
 <translation id="9050853837490399534">Bu politika, cihazın bir Hızlı Düzeltme Derlemesi'ne güncellenmesinin gerekip gerekmediğini kontrol eder.
 
       Politika değeri bir Hızlı Düzeltme Derlemesi'ne eşlenen bir belirtece ayarlanırsa ve güncelleme başka bir politika tarafından engellenmemişse cihaz, ilgili Hızlı Düzeltme Derlemesi'ne güncellenir.

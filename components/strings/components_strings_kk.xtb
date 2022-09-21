@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">Хатқалта тәрізді бүктеу</translation>
 <translation id="138218114945450791">Ашық көк</translation>
 <translation id="1382194467192730611">Әкімші рұқсат еткен USB құрылғысы</translation>
+<translation id="1382378825779654399">Қандай да бір сайтта баға төмендесе, электрондық пошта хабарландыруларын аласыз. Бұл бет мына жерге сақталады: <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1382912999714108023">Ақпарат дұрыс емес пе? Түзету үшін банкіңізге хабарласыңыз.</translation>
 <translation id="1384725838384960382">Қауіпсіз төлем деректерін аутентификациялау парағы</translation>
 <translation id="1386623374109090026">Аннотациялар</translation>
@@ -1519,6 +1520,7 @@
 <translation id="5018422839182700155">Бұл бет ашылмайды</translation>
 <translation id="5019198164206649151">Қоймадағы деректер бүлінген</translation>
 <translation id="5020776957610079374">Әлемдік музыка</translation>
+<translation id="5021557570875267742">Chrome браузерімен бағаларды қадағалау</translation>
 <translation id="5023310440958281426">Әкімші саясаттарын тексеріңіз</translation>
 <translation id="5029568752722684782">Көшірмені өшіру</translation>
 <translation id="5030338702439866405">Берген</translation>
@@ -2239,6 +2241,7 @@
 <translation id="6993898126790112050">6x9 (Envelope)</translation>
 <translation id="6996312675313362352">Әрдайым <ph name="ORIGINAL_LANGUAGE" /> тілінен аударып отыру</translation>
 <translation id="6999969238895751684">Ойын-сауық саласы</translation>
+<translation id="7003335073762455340">Осы тауарды қадағалаудасыз. Бұл бет мына жерге сақталды: <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Карталарды жылдам растау үшін Windows Hello функциясын пайдалану</translation>
 <translation id="7006930604109697472">Бәрібір жіберу</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3033,6 +3036,7 @@
 <translation id="9174623988242579721">Арнаулы және өнімділігі жоғары көліктер</translation>
 <translation id="9174917557437862841">Қойынды ауыстыру түймесі: осы қойындыға ауысу үшін Enter пернесін басыңыз.</translation>
 <translation id="9179703756951298733">Төлемдер мен несиелік карта туралы ақпаратты Chrome параметрлерінен басқарыңыз.</translation>
+<translation id="9179907736442194268">Қандай да бір сайтта баға төмендесе, электрондық пошта хабарландыруларын аласыз.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> қолданылмайтын протоколды пайдаланады.</translation>
 <translation id="9187461866967718678">Экстремалдық спорт</translation>

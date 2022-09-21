@@ -1155,6 +1155,7 @@
 <translation id="7633755430369750696">Показати налаштування функції "Передавання поблизу".</translation>
 <translation id="7634648064048557203">Зображення з камери закріплено в нижньому правому куті</translation>
 <translation id="7641938616688887143">Записати</translation>
+<translation id="7642106959537987271">режим інверсії кольорів</translation>
 <translation id="7642647758716480637">Відкрити налаштування мережі "<ph name="NETWORK_NAME" />", <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (власник)</translation>
 <translation id="7647488630410863958">Розблокуйте пристрій, щоб переглянути сповіщення</translation>
@@ -1260,6 +1261,7 @@
 <translation id="8209010265547628927">Скинути</translation>
 <translation id="8214996719228530800">Версія Canary</translation>
 <translation id="8219451629189078428">Не вимикайте та не відключайте Chromebook від живлення впродовж цього часу. Переконайтеся, що кабелі зарядного пристрою або адаптера надійно під'єднано до вашого пристрою та розетки. Не вимикайте Chromebook.</translation>
+<translation id="8230305195727960608">Режим інверсії кольорів</translation>
 <translation id="8236042855478648955">Час зробити перерву</translation>
 <translation id="8246282815785366524">З поверненням, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1388,7 @@
 <translation id="8982906748181120328">Видимість поблизу</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Використовується: <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Увімкнено режим інверсії кольорів. Щоб вимкнути його, ще раз натисніть Ctrl + клавіша пошуку + H.</translation>
 <translation id="899350903320462459">Щоб виконати дію зі сповіщенням, розблокуйте пристрій як <ph name="LOGIN_ID" /></translation>
 <translation id="9000771174482730261">КЕРУВАТИ СХОВИЩЕМ</translation>
 <translation id="9017320285115481645">Введіть батьківський код доступу Family Link.</translation>
@@ -1434,6 +1437,7 @@
 <translation id="921989828232331238">Батьки заблокували твій пристрій на весь день</translation>
 <translation id="9220525904950070496">Видалення облікового запису</translation>
 <translation id="923686485342484400">Щоб вийти, двічі натисніть Control Shift Q.</translation>
+<translation id="92580429198593979">Ви натиснули комбінацію клавіш для інверсії кольорів. Увімкнути цей режим?</translation>
 <translation id="925832987464884575">Вимкнути попередній перегляд</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> вимагає, щоб ви оновили пристрій <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Які події заплановано?</translation>

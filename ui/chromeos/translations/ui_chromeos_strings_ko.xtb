@@ -478,7 +478,6 @@
    사용 중인 기기를 분리하면 데이터가 삭제될 수 있습니다. 작업이 끝날 때까지 기다린 다음 파일 앱을 사용하여 기기를 꺼내세요.</translation>
 <translation id="5163869187418756376">공유하지 못했습니다. 인터넷 연결을 확인하고 나중에 다시 시도해 주세요.</translation>
 <translation id="516592729076796170">미국 프로그래머 드보락</translation>
-<translation id="5172749059808361023">제한사항 세부정보</translation>
 <translation id="5177526793333269655">미리보기 이미지 보기</translation>
 <translation id="5181896909298187506">최근 파일 없음</translation>
 <translation id="5194713942430106590">열을 오름차순으로 정렬하려면 클릭하세요.</translation>
@@ -497,7 +496,6 @@
 <translation id="5286194356314741248">검색 중</translation>
 <translation id="5288441970121584418">햄버거</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">휴지통을 비우시겠습니까?</translation>
 <translation id="5305688511332277257">설치된 인증서 없음</translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5318819489018851358">Linux로 공유</translation>
@@ -797,6 +795,7 @@
 <translation id="78946041517601018">공유 드라이브</translation>
 <translation id="7903984238293908205">가타카나</translation>
 <translation id="7908793776359722643">파티션을 포맷하면 파티션에 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">AAA 확인 실패</translation>
 <translation id="7925686952655276919">모바일 데이터를 동기화에 사용하지 않습니다.</translation>
 <translation id="7928710562641958568">기기 꺼내기</translation>

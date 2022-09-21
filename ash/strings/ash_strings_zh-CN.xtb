@@ -235,6 +235,7 @@
 <translation id="2298170939937364391">已启用全屏放大镜。再按一次 Ctrl+搜索键+M 组合键即可将其停用。</translation>
 <translation id="2302092602801625023">该帐号由 Family Link 管理</translation>
 <translation id="2303600792989757991">“切换窗口”概述</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />：近期的屏幕截图、下载内容和已固定的文件</translation>
 <translation id="2318576281648121272">今天 <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060">“<ph name="CATEGORY" />”，搜索结果类别</translation>
 <translation id="2322173485024759474">后退一个字母</translation>
@@ -1152,6 +1153,7 @@
 <translation id="7633755430369750696">显示“附近分享”设置。</translation>
 <translation id="7634648064048557203">相机已对准右下角</translation>
 <translation id="7641938616688887143">录制</translation>
+<translation id="7642106959537987271">颜色反转模式</translation>
 <translation id="7642647758716480637">打开<ph name="NETWORK_NAME" />（<ph name="CONNECTION_STATUS" />）的设置</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7647488630410863958">解锁设备即可查看您的通知</translation>
@@ -1257,6 +1259,7 @@
 <translation id="8209010265547628927">重置</translation>
 <translation id="8214996719228530800">Canary 渠道</translation>
 <translation id="8219451629189078428">在此期间，您的 Chromebook 需要保持开机和通电状态。请确保充电器和适配器线缆都已完全插好 - 既已连接到您的 Chromebook，也已连接到电源插座。切勿关闭您的 Chromebook。</translation>
+<translation id="8230305195727960608">颜色反转模式</translation>
 <translation id="8236042855478648955">该休息了</translation>
 <translation id="8246282815785366524">欢迎回来，<ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，剩余电量为 <ph name="BATTERY_STATUS" /></translation>
@@ -1383,6 +1386,7 @@
 <translation id="8982906748181120328">“附近分享”的高可见度模式</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">目前使用的是“<ph name="IME_NAME" />”</translation>
+<translation id="8991617137207906966">已启用颜色反转模式。再按一次 Ctrl+搜索键+H 可将其停用。</translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 身份解锁设备即可执行通知操作</translation>
 <translation id="9000771174482730261">管理存储空间</translation>
 <translation id="9017320285115481645">输入 Family Link 家长访问码。</translation>
@@ -1431,6 +1435,7 @@
 <translation id="921989828232331238">您的家长已全天锁定您的设备</translation>
 <translation id="9220525904950070496">移除帐号</translation>
 <translation id="923686485342484400">连按两次Ctrl+Shift+Q即可退出。</translation>
+<translation id="92580429198593979">您按下了颜色反转的键盘快捷键。要开启这项功能吗？</translation>
 <translation id="925832987464884575">隐藏预览</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> 要求您立即更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">我的日历中有哪些活动？</translation>

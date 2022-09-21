@@ -478,7 +478,6 @@
    အသုံးပြုနေစဉ် ဖြုတ်ပစ်လျှင် ဒေတာများပေျာက်သွားမည်။ ဆောင်ရွက်မှုပြီးသည်ထိ စောင့်ပြီးနောက်၊ Files အက်ပ် ကို သုံးကာဖြုတ်ပါ။</translation>
 <translation id="5163869187418756376">မျှဝေခြင်း မအောင်မြင်ပါ။ သင့်ချိတ်ဆက်မှုအား စစ်ဆေးကာ နောက်မှ ထပ်မံကြိုးစားပါ။</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5172749059808361023">ကန့်သတ်ချက် အသေးစိတ်</translation>
 <translation id="5177526793333269655">လက်သည်းပုံ ကြည့်ရန်</translation>
 <translation id="5181896909298187506">လတ်တလောဖိုင်များ မရှိပါ</translation>
 <translation id="5194713942430106590">ကော်လံကို ငယ်စဉ်ကြီးလိုက်စီရန် နှိပ်ပါ။</translation>
@@ -496,7 +495,6 @@
 <translation id="5275973617553375938">Google Drive မှရှာဖွေထားသည့် ဖိုင်များ</translation>
 <translation id="5286194356314741248">ရှာဖွေနေသည်</translation>
 <translation id="5288441970121584418">အသားညှပ်ပေါင်မုန့်လုံး</translation>
-<translation id="5299998344490869684">‘အမှိုက်ပုံး’ ကို ရှင်းလိုသည်မှာ သေချာသလား။</translation>
 <translation id="5305688511332277257">ဘာမှ မသွင်းထား</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5318819489018851358">Linux ဖြင့် မျှဝေရန်</translation>
@@ -720,6 +718,7 @@
 <translation id="7248671827512403053">အပလီကေးရှင်း</translation>
 <translation id="7256405249507348194">သိမှတ်မရသည့် အမှား: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ရရှိနိုင်သော ဝန်ဆောင်မှုများ</translation>
+<translation id="7292816689782057017">စီမံခန့်ခွဲသူမူဝါဒသည် အချို့နေရာများတွင် သိမ်းခြင်းကို ကန့်သတ်ထားသည်။</translation>
 <translation id="7294063083760278948">တယ်လူဂူ အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="7295662345261934369">အခြားသူများနှင့် မျှဝေရန်</translation>
 <translation id="7297443947353982503">အသုံးပြုသူအမည်/ လျှို့ဝှက်စာလုံး မမှန်ကန်ပါ သို့မဟုတ် EAP-auth မအောင်မြင်ပါ</translation>
@@ -796,6 +795,7 @@
 <translation id="78946041517601018">မျှဝေထားသော ဒရိုက်ဗ်များ</translation>
 <translation id="7903984238293908205">ကသကန</translation>
 <translation id="7908793776359722643">အကန့်ခွဲတစ်ခုကို ဖော်မက်ချခြင်းက ၎င်းပေါ်တွင်သိမ်းထားသော ဒေတာအားလုံးကို ဖျက်လိုက်ပါမည်။ ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍ မရပါ။</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">AAA စစ်ဆေးခြင်း မအောင်မြင်ပါ</translation>
 <translation id="7925686952655276919">စင့်ခ်လုပ်ရန် အတွက် မိုဘိုင်းဒေတာကို မသုံးပါနှင့်</translation>
 <translation id="7928710562641958568">ကိရိယာကို ထုတ်ပစ်ရန်</translation>
@@ -905,6 +905,7 @@
 <translation id="8810671769985673465">ဇစ်လုပ်၍ မရပါ၊ ဖိုင်ရှိနေပါသည်- "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">စပိန် (စပိန်)</translation>
 <translation id="8834164572807951958">ဤအရာများ၏ မိတ္တူများကို '<ph name="DESTINATION_NAME" />' ၏ အဖွဲ့ဝင်များသည် အသုံးပြုခွင့်ရရှိမည်ဖြစ်သည်။</translation>
+<translation id="8849389110234859568">စီမံခန့်ခွဲသူမူဝါဒသည် အချို့ဖိုင်များသုံးခွင့်ကို ကန့်သတ်ထားသည်။</translation>
 <translation id="8857149712089373752">အသံထွက်ကီးဘုတ်ဖြင့် နီပေါ</translation>
 <translation id="8860454412039442620">အိတ်ဇ်ဇဲလ် ဇယားစာမျက်နှာပြင်</translation>
 <translation id="8866284467018526531">အာရဗီ အက္ခရာဖလှယ်ခြင်း</translation>

@@ -6813,11 +6813,6 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 <translation id="8091982561085048989">Indicateur booléen spécifiant si IPP Everywhere doit être utilisé ou non pour configurer l'imprimante. Cet indicateur est compatible avec <ph name="PRODUCT_OS_NAME" /> version 76 (ou plus).</translation>
 <translation id="8099880303030573137">Délai d'inactivité (batterie)</translation>
 <translation id="8101381354936029836">Groupe atomique de la règle :</translation>
-<translation id="8102504778644322990">À partir de M106, l'API non standard window.webkitStorageInfo sera supprimée.
-      Cette règle réactive l'API jusqu'à M107.
-      Si cette règle est activée, l'API window.webkitStorageInfo sera disponible.
-      Si cette règle est désactivée ou n'est pas configurée, l'API window.webkitStorageInfo ne sera pas disponible.
-      </translation>
 <translation id="8102913158860568230">Paramètre MediaStream par défaut</translation>
 <translation id="8104962233214241919">Sélectionner automatiquement des certificats client pour ces sites</translation>
 <translation id="8109762054721090517">Modèle pour l'attribut <ph name="IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
@@ -7749,12 +7744,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       La valeur de la règle doit être indiquée en millisecondes. Cette valeur doit être comprise entre 30 secondes et 24 heures.</translation>
 <translation id="9040042535845939426">Définir l'état de l'écran de confidentialité sur l'écran de connexion</translation>
-<translation id="9046609670147277653">Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré et utilise le Chrome Root Store comme source de confiance publique.
-      Lorsqu'il est désactivé, <ph name="PRODUCT_NAME" /> n'utilise pas le Chrome Root Store. La vérification peut utiliser l'outil de vérification des certificats du système, ou l'outil de vérification intégré si la règle "<ph name="BUILT_IN_CERTIFICATE_VERIFIER_ENABLED_POLICY_NAME" />" est disponible et qu'elle n'est pas désactivée.
-      Lorsque ce paramètre n'est pas défini, le Chrome Root Store ou les racines fournies par le système peuvent être utilisés.
-
-      Il est prévu que cette règle soit supprimée dans la version 111 de <ph name="PRODUCT_NAME" /> pour <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />, car l'outil de vérification des certificats et les racines fournies par la plate-forme ne seront plus pris en charge.
-      </translation>
 <translation id="9050853837490399534">Cette règle détermine si un build Quick Fix doit être installé sur l'appareil.
 
       Si la règle est définie sur un jeton qui correspond à un build Quick Fix, l'appareil sera mis à jour avec le build Quick Fix correspondant à condition que la mise à jour ne soit pas bloquée par une autre règle.

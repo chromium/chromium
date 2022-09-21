@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">მიღება და გაგრძელება</translation>
 <translation id="110724200315609752">გახსნილ ფანჯარაზე გადართვა</translation>
 <translation id="1112015203684611006">ბეჭდვა ვერ განხორციელდა.</translation>
+<translation id="1118569444314402022">კვლავ მოგესალმებით, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">ახალი ჩანართის შექმნა.</translation>
 <translation id="1126809382673880764">არ დაგიცავთ სახიფათო ვებსაიტებისგან, ჩამოტვირთვებისა თუ გაფართოებებისგან. Safe Browsing-ის დაცვით (ხელმისაწვდომობის მიხედვით) მაინც ისარგებლებთ სხვა Google სერვისებში, როგორიცაა Gmail თუ Search.</translation>
 <translation id="1135212215217513471">ჩამოტვირთეთ Chrome iOS-ისთვის</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">სინქრონიზაციის პროცესი შეწყდა.</translation>
 <translation id="1377321085342047638">ბარათის ნომერი</translation>
 <translation id="1383876407941801731">ძიება</translation>
+<translation id="138618066238211776">გაგრძელება, როგორც <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">ბოლო 4 კვირა</translation>
 <translation id="1404330357948037222">თქვენ გამოსული ხართ</translation>
 <translation id="1407135791313364759">ყველას გახსნა</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">რედაქტირების გაგრძელება</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" />-დან „<ph name="USERNAME" />“-ის პაროლი უკვე შეინახეთ</translation>
 <translation id="2435457462613246316">პაროლის ჩვენება</translation>
+<translation id="2461070143328828326">პაროლების პარამეტრები</translation>
 <translation id="2469960372084740698">გსურთ, გამორთოთ Safe Browsing?</translation>
 <translation id="2473876017985765807">თქვენ უკვე შეინახეთ პაროლი ვებსაიტისთვის: <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">არ არის არჩეული</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">წაუკითხავად მონიშვნა</translation>
 <translation id="371230970611282515">პროგნოზირებს სახიფათო მოვლენებს და გაგაფრთხილებთ მათ შესახებ.</translation>
 <translation id="37207012422556617">პოპულარული ძიებები</translation>
+<translation id="3726360487031500941">ხელახლა შედით თქვენს ანგარიშში <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">მითითებულ URL-ებს Google Chrome-ის ინკოგნიტო რეჟიმში გახსნის.</translation>
 <translation id="3762232513783804601">შექმნილია თქვენი iPad-ისთვის</translation>
 <translation id="3771033907050503522">ინკოგნიტო ჩანართები</translation>

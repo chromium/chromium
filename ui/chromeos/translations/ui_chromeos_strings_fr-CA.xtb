@@ -480,7 +480,6 @@
    en utilisant l'application Fichiers.</translation>
 <translation id="5163869187418756376">Échec du partage. Veuillez vérifier votre connexion et réessayer plus tard.</translation>
 <translation id="516592729076796170">Dvorak programmeur américain</translation>
-<translation id="5172749059808361023">Détails des restrictions</translation>
 <translation id="5177526793333269655">Affichage de miniatures</translation>
 <translation id="5181896909298187506">Aucun fichier récent</translation>
 <translation id="5194713942430106590">Cliquez ici pour trier la colonne par ordre croissant.</translation>
@@ -498,7 +497,6 @@
 <translation id="5275973617553375938">Fichiers récupérés de Google Disque</translation>
 <translation id="5286194356314741248">Recherche en cours…</translation>
 <translation id="5288441970121584418">Hamburger</translation>
-<translation id="5299998344490869684">Voulez-vous vraiment vider la corbeille?</translation>
 <translation id="5305688511332277257">Aucun certificat installé</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318819489018851358">Partager avec Linux</translation>
@@ -798,6 +796,7 @@
 <translation id="78946041517601018">Disques partagés</translation>
 <translation id="7903984238293908205">katakana</translation>
 <translation id="7908793776359722643">Le formatage d'une partition entraîne la suppression de toutes les données qui y sont stockées. Cette action est irréversible.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">Échec de la vérification AAA</translation>
 <translation id="7925686952655276919">Ne pas utiliser les données mobiles pour la synchronisation</translation>
 <translation id="7928710562641958568">Éjecter l'appareil</translation>

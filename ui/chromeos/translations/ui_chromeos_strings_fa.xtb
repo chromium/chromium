@@ -478,7 +478,6 @@
  جداکردن دستگاه هنگامی که در حال استفاده است ممکن است باعث از دست رفتن داده‌ها شود.  لطفاً تا به پایان رسیدن عملیات صبر کنید، سپس دستگاه را با استفاده از برنامه Files خارج نمایید.</translation>
 <translation id="5163869187418756376">اشتراک‌گذاری انجام نشد. اتصال خود را بررسی کرده، بعداً دوباره امتحان کنید.</translation>
 <translation id="516592729076796170">دووراک آمریکایی برنامه‌نویس‌ها</translation>
-<translation id="5172749059808361023">جزئیات محدودیت</translation>
 <translation id="5177526793333269655">نمای تصویر کوچک</translation>
 <translation id="5181896909298187506">هیچ فایلی در موارد اخیر وجود ندارد</translation>
 <translation id="5194713942430106590">کلیک کنید تا ستون به‌صورت صعودی مرتب شود.</translation>
@@ -497,7 +496,6 @@
 <translation id="5286194356314741248">اسکن کردن</translation>
 <translation id="5288441970121584418">همبرگر</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">مطمئنید می‌خواهید «حذف‌شده‌ها» را خالی کنید؟</translation>
 <translation id="5305688511332277257">چیزی نصب نشده است</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5318819489018851358">‏هم‌رسانی با Linux</translation>
@@ -797,6 +795,7 @@
 <translation id="78946041517601018">درایوهای هم‌رسانی‌شده</translation>
 <translation id="7903984238293908205">کاتاکانا</translation>
 <translation id="7908793776359722643">با قالب‌بندی پارتیشن، همه داده‌های ذخیره‌شده در آن حذف خواهد شد. این کنش واگردشدنی نیست.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">‏بررسی AAA انجام نشد</translation>
 <translation id="7925686952655276919">از داده‌های تلفن همراه برای همگام‌سازی استفاده نشود</translation>
 <translation id="7928710562641958568">خارج کردن دستگاه</translation>

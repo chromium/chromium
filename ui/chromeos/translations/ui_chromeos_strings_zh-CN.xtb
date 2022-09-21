@@ -478,7 +478,6 @@
    取出使用中的设备可能会导致数据丢失。请等待操作完成，然后使用“文件”菜单弹出设备。</translation>
 <translation id="5163869187418756376">共享失败。请检查连接是否正常，然后重试。</translation>
 <translation id="516592729076796170">美式 Programmer Dvorak 键盘</translation>
-<translation id="5172749059808361023">限制详情</translation>
 <translation id="5177526793333269655">缩略图视图</translation>
 <translation id="5181896909298187506">没有任何近期文件</translation>
 <translation id="5194713942430106590">点击即可按升序对此列排序。</translation>
@@ -492,7 +491,6 @@
 <translation id="5286194356314741248">正在扫描</translation>
 <translation id="5288441970121584418">汉堡包</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">确定要清空回收站吗？</translation>
 <translation id="5305688511332277257">未安装任何证书</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318819489018851358">与 Linux 共享</translation>
@@ -792,6 +790,7 @@
 <translation id="78946041517601018">共享云端硬盘</translation>
 <translation id="7903984238293908205">片假名</translation>
 <translation id="7908793776359722643">将分区格式化会清空其中存储的所有数据。此操作无法撤消。</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">AAA 检查失败</translation>
 <translation id="7925686952655276919">不使用移动数据进行同步</translation>
 <translation id="7928710562641958568">卸载设备</translation>

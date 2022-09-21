@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">ସ୍ୱୀକାର କରନ୍ତୁ ଏବଂ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="110724200315609752">ଖୋଲା ଥିବା ୱିଣ୍ଡୋକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="1112015203684611006">ପ୍ରିଣ୍ଟ ହେଲାନାହିଁ।</translation>
+<translation id="1118569444314402022">ଆପଣଙ୍କୁ ପୁଣି ସ୍ୱାଗତ, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">ନୂତନ ଟାବ୍ ତିଆରି କରନ୍ତୁ।</translation>
 <translation id="1126809382673880764">ବିପଦଜନକ ୱେବସାଇଟ୍, ଡାଉନଲୋଡ୍ ଏବଂ ଏକ୍ସଟେନ୍ସନଗୁଡ଼ିକ ଠାରୁ ଆପଣଙ୍କୁ ରକ୍ଷା କରେ ନାହିଁ। Gmail ଏବଂ Search ପରି ଅନ୍ୟ Google ସେବାଗୁଡ଼ିକରେ ସେଫ୍ ବ୍ରାଉଜିଂ ସୁବିଧା ଉପଲବ୍ଧ ଥିଲେ, ଆପଣ ଏବେ ବି ଏହି ସୁରକ୍ଷା ପାଇବେ।</translation>
 <translation id="1135212215217513471">iOS ପାଇଁ Chrome ପାଆନ୍ତୁ</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">ସିଙ୍କ୍ କାର୍ଯ୍ୟ କରିବା ବନ୍ଦ କରିଦେଇଛି।</translation>
 <translation id="1377321085342047638">କାର୍ଡ ନମ୍ଵର୍‌</translation>
 <translation id="1383876407941801731">Search</translation>
+<translation id="138618066238211776"><ph name="USER_NAME" /> ଭାବରେ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="1400642268715879018">ବିଗତ 4 ସପ୍ତାହ</translation>
 <translation id="1404330357948037222">ଆପଣ ସାଇନ ଆଉଟ କରିଛନ୍ତି</translation>
 <translation id="1407135791313364759">ସବୁ ଖୋଲନ୍ତୁ</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">ସମ୍ପାଦନା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2434405374328098816">ଆପଣ <ph name="WEBSITE" />ରେ "<ph name="USERNAME" />" ପାଇଁ ପୂର୍ବରୁ ଏକ ପାସୱାର୍ଡ ସେଭ କରିଛନ୍ତି</translation>
 <translation id="2435457462613246316">ପାସୱାର୍ଡ ଦେଖାନ୍ତୁ</translation>
+<translation id="2461070143328828326">ପାସୱାର୍ଡ ସେଟିଂସ</translation>
 <translation id="2469960372084740698">ସେଫ ବ୍ରାଉଜିଂକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="2473876017985765807">ଆପଣ <ph name="WEBSITE" /> ପାଇଁ ପୂର୍ବରୁ ଏକ ପାସୱାର୍ଡ ସେଭ କରିଛନ୍ତି</translation>
 <translation id="2476359652512522418">ଚୟନ କରାଯାଇନାହିଁ</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">ଅପଠିତ ଭାବେ ଚିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="371230970611282515">ବିପଦଜନକ ଘଟଣାଗୁଡ଼ିକ ଘଟିବା ପୂର୍ବରୁ ସେଗୁଡ଼ିକର ପୂର୍ବାନୁମାନ କରି ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ।</translation>
 <translation id="37207012422556617">ଟ୍ରେଣ୍ଡିଂ ସନ୍ଧାନଗୁଡ଼ିକ</translation>
+<translation id="3726360487031500941">ଆପଣଙ୍କ <ph name="USER_NAME" /> ଆକାଉଣ୍ଟରେ ପୁଣି ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="3740397331642243698">ଇନପୁଟ୍ କରାଯାଇଥିବା URLଗୁଡ଼ିକୁ Google Chromeରେ ଇନକଗ୍ନିଟୋ ମୋଡରେ ଖୋଲା ଯାଇଥାଏ।</translation>
 <translation id="3762232513783804601">ଆପଣଙ୍କ iPad ପାଇଁ ତିଆରି କରାଯାଇଛି</translation>
 <translation id="3771033907050503522">ଇନ୍‍କଗ୍ନିଟୋ ଟାବ୍‍</translation>

@@ -478,7 +478,6 @@
        Kasutuses oleva seadme eemaldamisel võivad andmed kaduma minna. Oodake, kuni toiming on lõpetatud, seejärel väljutage seade rakendusega Failid.</translation>
 <translation id="5163869187418756376">Jagamine ebaõnnestus. Kontrollige ühendust ja proovige uuesti.</translation>
 <translation id="516592729076796170">USA programmeerija Dvorak</translation>
-<translation id="5172749059808361023">Piirangu üksikasjad</translation>
 <translation id="5177526793333269655">Pisipildi kuva</translation>
 <translation id="5181896909298187506">Hiljutisi faile pole</translation>
 <translation id="5194713942430106590">Klõpsake, et veerg kasvavas järjestuses sortida.</translation>
@@ -497,7 +496,6 @@
 <translation id="5286194356314741248">Skaneering</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">Kas olete kindel, et soovite prügikasti tühjendada?</translation>
 <translation id="5305688511332277257">Pole ühtegi installitud</translation>
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5318819489018851358">Jaga Linuxiga</translation>
@@ -797,6 +795,7 @@
 <translation id="78946041517601018">Jagatud kettad</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Partitsiooni vormindamisel kustutatakse kõik sellesse salvestatud andmed. Seda toimingut ei saa tagasi võtta.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">AAA kontrollimine nurjus</translation>
 <translation id="7925686952655276919">Ära kasuta sünkroonimiseks mobiilset andmesidet</translation>
 <translation id="7928710562641958568">Seadme väljutamine</translation>

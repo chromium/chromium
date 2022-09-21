@@ -3184,6 +3184,7 @@
       このポリシーを未設定のままにした場合、<ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
 
       有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。ただし、M85 以降では、ホストに「*」と「[*.]」のワイルドカードを使用したパターンは、このポリシーでサポートされなくなります。</translation>
+<translation id="4369307906396795087">ワーカー（Web Worker、Service Worker など）のスクリプトで厳密でない MIME タイプ チェックを使用する。従来の MIME タイプ（<ph name="MIMETYPE_TEXT_ASCII" /> など）のワーカー スクリプトは許可する。</translation>
 <translation id="4370937370030117032">ネイティブ プリンタへのユーザー名とファイル名の送信を無効にする</translation>
 <translation id="4372704773119750918">マルチプロフィール（プライマリまたはセカンダリ）への参加を企業ユーザーに許可しない</translation>
 <translation id="4377599627073874279">すべてのサイトに対してすべての画像表示を許可する</translation>
@@ -6045,6 +6046,11 @@
 
       このポリシーを有効にした場合、または設定しない場合、クイック アンサーの単位変換が有効になります。
       このポリシーを無効にした場合、クイック アンサーの単位変換が無効になります。</translation>
+<translation id="7582095958259051083">このポリシーを有効に設定した場合、URL キーによる匿名化データの収集が常に有効になり、検索とブラウジングを改善するため、ユーザーがアクセスしたページの URL が Google に送信されます。
+
+      このポリシーを無効に設定した場合、URL キーによる匿名化データの収集は行われません。
+
+      このポリシーを未設定のままにした場合、ユーザーはこの設定を手動で変更できます。</translation>
 <translation id="7587345076013230465">ログイン画面で自動選択ポリシーが複数の証明書と一致した場合に、クライアント証明書を選択するよう求めるメッセージを常にユーザーに表示する</translation>
 <translation id="7587921466180902617">ファミリー リンクのユーザーに対してスクリーンキャスト dogfood を有効にする</translation>
 <translation id="759957074386651883">セーフ ブラウジングの設定</translation>
@@ -6441,11 +6447,6 @@
 <translation id="8091982561085048989">プリンタの設定に IPP Everywhere を使用するかどうかを示すブール値のフラグです。このフラグは <ph name="PRODUCT_OS_NAME" /> バージョン 76 以降でサポートされています。</translation>
 <translation id="8099880303030573137">アイドル状態になるまでの時間（バッテリー電源での実行時）</translation>
 <translation id="8101381354936029836">ポリシーの最小単位グループ:</translation>
-<translation id="8102504778644322990">M106 以降、非標準の window.webkitStorageInfo API は削除されます。
-      このポリシーでは、この API を M107 まで再度使用できるようにします。
-      このポリシーを [有効] に設定した場合、window.webkitStorageInfo API が使用可能になります。
-      このポリシーを [無効] に設定するか未設定のままにした場合、window.webkitStorageInfo API は使用できなくなります。
-      </translation>
 <translation id="8102913158860568230">デフォルトのメディアストリームの設定</translation>
 <translation id="8104962233214241919">これらのサイトのクライアント証明書を自動的に選択する</translation>
 <translation id="8109762054721090517"><ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" />のテンプレート</translation>
@@ -6707,6 +6708,7 @@
 <translation id="8337114537412769126"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> では、POST を使ったキーワード候補の検索に使用するパラメータを指定できます。名前と値のペアをカンマで区切って指定します。テンプレート パラメータ（<ph name="SEARCH_TERM_MARKER" /> など）の値は、実際の検索キーワードのデータに置き換えられます。
 
       <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> を未設定のままにした場合、キーワードの候補による検索リクエストは GET メソッドを使用して送信されます。</translation>
+<translation id="8337961007759352651">ワーカー（Web Worker、Service Worker など）のスクリプトで JavaScript MIME タイプ（<ph name="MIMETYPE_TEXT_JAVASCRIPT" /> など）を必須にする。従来の MIME タイプ（<ph name="MIMETYPE_TEXT_ASCII" /> など）のワーカー スクリプトは拒否する。</translation>
 <translation id="8339089771335211509">WebRTC は公開インターネットに接続されているインターフェースのみを使用し、接続にプライベート IP アドレスを使用できない。</translation>
 <translation id="8339420913453596618">2 段階認証プロセスを無効にする</translation>
 <translation id="8344454543174932833">初回実行時にデフォルトのブラウザからブックマークをインポートする</translation>
@@ -6986,12 +6988,23 @@
       このポリシーを未設定のままにした場合、<ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> が設定されていればその設定が使用され、設定されていなければユーザーの個人設定が適用されます。
 
       このポリシーで指定する URL は、<ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> で指定する URL と競合しないようにする必要があります。競合する場合、このポリシーは <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> より優先されます。</translation>
+<translation id="8667754887193084187">このポリシーでは、ワーカー スクリプトの厳密な MIME タイプ チェックを有効にします。
+
+      このポリシーを有効に設定するか未設定のままにした場合、ワーカー スクリプトは新しいデフォルトの動作として JavaScript の厳密な MIME タイプ チェックを使用します。従来の MIME タイプのワーカー スクリプトは拒否されます。
+
+      無効に設定した場合、ワーカー スクリプトは厳密でない MIME タイプ チェックを使用し、従来の MIME タイプ（<ph name="MIMETYPE_TEXT_ASCII" /> など）のワーカー スクリプトは引き続き読み込まれて実行されます。
+
+      ブラウザではこれまで厳密でない MIME タイプ チェックを使用しており、従来の MIME タイプを含むリソースがサポートされていました。たとえば、JavaScript リソースの <ph name="MIMETYPE_TEXT_ASCII" /> は従来サポートされていた MIME タイプです。ただし、本来の用途とは異なるスクリプトとしてリソースを読み込めるため、セキュリティ上の問題が発生することがあります。Chrome は今後早い時期に、厳密な MIME タイプ チェックに移行する予定です。このポリシーを有効にした場合、デフォルトの動作がトラッキングされます。このポリシーを無効にした場合、必要に応じて従来の動作を保持できます。
+
+      JavaScript と ECMAScript のメディアタイプについて詳しくは、https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage をご覧ください。
+      </translation>
 <translation id="8669313549017524373"><ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> が RestoreOnStartupIsURLs に設定されている場合は、URL のリストに <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> を設定すると、開く URL を指定できます。
 
       このポリシーが未設定の場合、起動時には新しいタブページが開きます。
 
       <ph name="MS_WIN_NAME" /> では、<ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみこの機能を使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="8671119576957984818">デスクトップ共有ハブを有効にする</translation>
+<translation id="8671193325113134911">ワーカー スクリプトの厳密な MIME タイプ チェックを有効にする</translation>
 <translation id="8671314659400112135">このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> で追加の拡張ポイント セキュリティ リスク軽減の適用が許可され、ブラウザ プロセスの従来の拡張ポイントはブロックされます。
 
       このポリシーを無効に設定した場合、悪質な疑いのある不明なコードに対して <ph name="PRODUCT_NAME" /> のブラウザ プロセス内での読み込みが許可されるため、<ph name="PRODUCT_NAME" /> のセキュリティと安定性が低下します。このポリシーは、<ph name="PRODUCT_NAME" /> のブラウザ プロセス内で実行する必要のあるサードパーティ ソフトウェアとの間で互換性の問題が発生する場合にのみ無効にしてください。
@@ -7326,12 +7339,6 @@
       このポリシーを設定した場合、ユーザーが変更したりオーバライドしたりすることはできません。
       ポリシーの値はミリ秒単位で指定します。値の範囲は 30 秒～24 時間です。</translation>
 <translation id="9040042535845939426">ログイン画面でのプライバシー スクリーンの状態を設定する</translation>
-<translation id="9046609670147277653">有効な場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。その際、Chrome Root Store がパブリック トラストのソースとして使用されます。
-      無効な場合、<ph name="PRODUCT_NAME" /> では Chrome Root Store は使用されません。確認では、システムの証明書確認機能、または <ph name="BUILT_IN_CERTIFICATE_VERIFIER_ENABLED_POLICY_NAME" /> ポリシーが利用可能で無効になっていない場合は組み込みの確認機能が使用されます。
-      未設定の場合、Chrome Root Store またはシステムが提供するルートが使用される可能性があります。
-
-      このポリシーは <ph name="MS_WIN_NAME" /> および <ph name="MAC_OS_NAME" /> 向け <ph name="PRODUCT_NAME" /> バージョン 111 で削除される予定です（プラットフォームから提供される証明書確認機能とルートを使用するためのサポートが削除されるため）。
-      </translation>
 <translation id="9050853837490399534">このポリシーでは、デバイスを Quick Fix ビルドに更新するかどうかを管理します。
 
       Quick Fix ビルドにマッピングされているトークンをポリシーの値に設定した場合、別のポリシーで更新がブロックされていない限り、デバイスを対応する Quick Fix ビルドに更新します。

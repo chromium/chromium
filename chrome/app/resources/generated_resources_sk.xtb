@@ -2298,6 +2298,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3090819949319990166">Externý súbor crx nie je možné skopírovať do súboru <ph name="TEMP_CRX_FILE" /></translation>
 <translation id="3090871774332213558">Zariadenie „<ph name="DEVICE_NAME" />“ bolo spárované</translation>
 <translation id="3093714882666365141">Nepovoliť webom inštalovať obslužné nástroje platieb</translation>
+<translation id="3093958632721393232">Zapnúť iba vtedy, keď je batéria takmer vybitá</translation>
 <translation id="3094141017404513551">Týmto oddelíte svoje prehliadanie od používateľa <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Záložky, heslá a ďalšie dáta prehliadania sú synchronizované s primárnym účtom.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potenciálne škodlivé rozšírenie je vypnuté. Môžete ho tiež odstrániť.}few{{NUM_EXTENSIONS} potenciálne škodlivé rozšírenia sú vypnuté. Môžete ich tiež odstrániť.}many{{NUM_EXTENSIONS} potentially harmful extensions are off. You can also remove them.}other{{NUM_EXTENSIONS} potenciálne škodlivých rozšírení je vypnutých. Môžete ich tiež odstrániť.}}</translation>
@@ -5019,6 +5020,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5747552184818312860">Koniec platnosti</translation>
 <translation id="5747785204778348146">Vývojár – nestabilné</translation>
 <translation id="5747809636523347288">Prilepiť a prejsť na <ph name="URL" /></translation>
+<translation id="5748137879145720682">Zapnúť, keď je počítač odpojený</translation>
 <translation id="5751345516399502412">Kontrola pripravenosti na zdieľanie dátového pripojenia</translation>
 <translation id="5755022574660047665">spomienky z Fotiek Google</translation>
 <translation id="5756163054456765343">Centrum pomoci</translation>
@@ -7656,6 +7658,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8248381369318572865">Prístup k mikrofónu a analyzovanie reči</translation>
 <translation id="8248887045858762645">Tip pre Chrome</translation>
 <translation id="8249048954461686687">Priečinok OEM</translation>
+<translation id="8249239468199142122">Šetrič batérie</translation>
 <translation id="8249615410597138718">Odoslať do zariadení</translation>
 <translation id="8250210000648910632">Nie je k dispozícii žiadny ukladací priestor</translation>
 <translation id="8251441930213048644">Ihneď obnoviť</translation>

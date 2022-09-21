@@ -478,7 +478,6 @@
    ການເອົາອຸປະກອນຂອງທ່ານອອກໃນຂະນະທີ່ມັນໃຊ້ງານຢູ່ ອາດຈະເຮັດໃຫ້ຂໍ້ມູນເສຍໄດ້.  ກະລຸນາລໍຖ້າຈົນກ່ວາຈົບການດໍາເນີນງານ, ຈາກນັ້ນດີດອຸປະກອນອອກດ້ວຍການໃຊ້ແອັບໄຟລ໌.</translation>
 <translation id="5163869187418756376">ການແຊຣ໌ລົ້ມເຫຼວ.ກວດເບິ່ງການເຊື່ອມຕໍ່ຂອງທ່ານ ແລະລອງໃໝ່ອີກພາຍຫຼັງ.</translation>
 <translation id="516592729076796170">Dvorak ຜູ້​ຂຽນ​ໂປ​ຣ​ແກ​ຣມ​ສະ​ຫະ​ລັດ</translation>
-<translation id="5172749059808361023">ລາຍລະອຽດການຈຳກັດ</translation>
 <translation id="5177526793333269655">ມຸມມອງຮູບນ້ອຍ</translation>
 <translation id="5181896909298187506">ບໍ່ມີໄຟລ໌ຫຼ້າສຸດ</translation>
 <translation id="5194713942430106590">ຄລິກເພື່ອຮຽງລຳດັບຖັນແຕ່ນ້ອຍຫາໃຫຍ່.</translation>
@@ -496,7 +495,6 @@
 <translation id="5275973617553375938">ໄຟລ໌ທີ່ກູ້ຄືນຈາກ Google Drive</translation>
 <translation id="5286194356314741248">ກຳລັງສະແກນ</translation>
 <translation id="5288441970121584418">ເບີເກີ</translation>
-<translation id="5299998344490869684">ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບຂໍ້ມູນທັງໝົດໃນຖັງຂີ້ເຫຍື້ອອອກ?</translation>
 <translation id="5305688511332277257">ບໍ່ອັນໃດຖືກ​ຕິດ​ຕັ້ງ</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5318819489018851358">ແບ່ງປັນກັບ Linux</translation>
@@ -796,6 +794,7 @@
 <translation id="78946041517601018">drive ທີ່ແບ່ງປັນ</translation>
 <translation id="7903984238293908205">ຄາຕາຄານະ</translation>
 <translation id="7908793776359722643">ການຟໍແມັດຫ້ອງຂໍ້ມູນຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ. ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">ກວດເບິ່ງ AAA ບໍ່ສໍາເລັດ</translation>
 <translation id="7925686952655276919">ຢ່າໃຊ້ຂໍ້ມູນມືຖືສໍາລັບການຊິງຄ໌</translation>
 <translation id="7928710562641958568">ບີບອຸ​ປະ​ກອນອອກ</translation>

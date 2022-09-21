@@ -478,7 +478,6 @@
        Jos irrotat laitteen sen ollessa käytössä, voit menettää tietoja. Odota, kunnes toiminto on suoritettu, ja poista laite sitten käytöstä Tiedostot-sovelluksen kautta.</translation>
 <translation id="5163869187418756376">Jakaminen epäonnistui. Tarkista internetyhteytesi ja yritä myöhemmin uudelleen.</translation>
 <translation id="516592729076796170">US, Dvorak ohjelmoijille</translation>
-<translation id="5172749059808361023">Rajoitustiedot</translation>
 <translation id="5177526793333269655">Pikkukuvanäkymä</translation>
 <translation id="5181896909298187506">Ei viimeaikaisia tiedostoja</translation>
 <translation id="5194713942430106590">Klikkaa, jos haluat lajitella nousevaan järjestykseen.</translation>
@@ -497,7 +496,6 @@
 <translation id="5286194356314741248">Etsitään</translation>
 <translation id="5288441970121584418">Hampurilainen</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">Haluatko varmasti tyhjentää roskakorin?</translation>
 <translation id="5305688511332277257">Yhtään ei ole asennettu</translation>
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5318819489018851358">Jaa Linuxilla</translation>
@@ -797,6 +795,7 @@
 <translation id="78946041517601018">Jaetut Drivet</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Osion alustaminen poistaa kaiken sille tallennetun datan. Tätä toimintoa ei voi kumota.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">AAA-testi epäonnistui</translation>
 <translation id="7925686952655276919">Älä käytä mobiiliyhteyttä synkronointiin</translation>
 <translation id="7928710562641958568">Poista laite</translation>

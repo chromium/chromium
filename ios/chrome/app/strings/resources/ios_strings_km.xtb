@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">ព្រមទទួល និងបន្ត</translation>
 <translation id="110724200315609752">ប្ដូរទៅ "វិនដូផ្សេង​ដែល​កំពុងបើក"</translation>
 <translation id="1112015203684611006">បានបរាជ័យក្នុងការបោះពុម្ព</translation>
+<translation id="1118569444314402022">សូមស្វាគមន៍​សម្រាប់ការវិលត្រឡប់មកវិញ <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">បង្កើតផ្ទាំងថ្មី</translation>
 <translation id="1126809382673880764">មិនការពារអ្នក​ពីគេហទំព័រ ការទាញយក ឬកម្មវិធី​បន្ថែម​ដែលមានគ្រោះថ្នាក់ទេ។ អ្នក​នឹង​នៅតែ​ទទួលបាន​ការការពារ​ការរុករក​ដោយសុវត្ថិភាព (ប្រសិនបើមាន) នៅក្នុង​សេវាកម្ម Google ផ្សេងទៀត​ដូចជា Gmail និង​កម្មវិធីស្វែងរកជាដើម។</translation>
 <translation id="1135212215217513471">ទាញយក Chrome សម្រាប់ iOS</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">សមកាលកម្មបានឈប់ដំណើរការ</translation>
 <translation id="1377321085342047638">លេខកាត</translation>
 <translation id="1383876407941801731">ស្វែងរក</translation>
+<translation id="138618066238211776">បន្តជា <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 សប្តាហ៍ចុងក្រោយ</translation>
 <translation id="1404330357948037222">អ្នកបានចេញពីគណនី</translation>
 <translation id="1407135791313364759">បើកទាំងអស់</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">បន្ត​កែ</translation>
 <translation id="2434405374328098816">អ្នកបាន​រក្សាទុក​ពាក្យសម្ងាត់​សម្រាប់ "<ph name="USERNAME" />" នៅ <ph name="WEBSITE" /> រួចហើយ</translation>
 <translation id="2435457462613246316">បង្ហាញពាក្យសម្ងាត់</translation>
+<translation id="2461070143328828326">ការ​កំណត់​ពាក្យ​សម្ងាត់</translation>
 <translation id="2469960372084740698">បិទ​ការរុករក​ដោយសុវត្ថិភាពឬ?</translation>
 <translation id="2473876017985765807">អ្នកបាន​រក្សាទុក​ពាក្យសម្ងាត់​សម្រាប់ <ph name="WEBSITE" /> រួចហើយ</translation>
 <translation id="2476359652512522418">មិនបាន​ជ្រើសរើសទេ</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">សម្គាល់​ថា​មិន​ទាន់​​​អាន</translation>
 <translation id="371230970611282515">ព្យាករ និងព្រមានអ្នកអំពី​ព្រឹត្តិការណ៍គ្រោះថ្នាក់ មុនពេលព្រឹត្តិការណ៍ទាំងនោះកើតឡើង។</translation>
 <translation id="37207012422556617">ការស្វែងរកដែលកំពុងពេញនិយម</translation>
+<translation id="3726360487031500941">ចូល​គណនី <ph name="USER_NAME" /> របស់អ្នកម្ដងទៀត</translation>
 <translation id="3740397331642243698">បើក URL ដែលបានបញ្ចូល​នៅក្នុង Google Chrome ក្នុងមុខងារឯកជន។</translation>
 <translation id="3762232513783804601">បង្កើតឡើង​សម្រាប់ iPad របស់អ្នក</translation>
 <translation id="3771033907050503522">ផ្ទាំងអនាមិក</translation>

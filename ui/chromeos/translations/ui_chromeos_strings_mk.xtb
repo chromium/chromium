@@ -478,7 +478,6 @@
    Со отстранување на уредот додека се користи може да се предизвика загуба на податоци. Почекајте додека да заврши операцијата, па исфрлете го уредот со помош на апликацијата Датотеки.</translation>
 <translation id="5163869187418756376">Споделувањето не успеа. Проверете ја врската и обидете се повторно подоцна.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5172749059808361023">Детали за ограничувањата</translation>
 <translation id="5177526793333269655">Приказ на сликичка</translation>
 <translation id="5181896909298187506">Нема неодамнешни датотеки</translation>
 <translation id="5194713942430106590">Кликнете за подредување на колоната по растечки редослед.</translation>
@@ -496,7 +495,6 @@
 <translation id="5275973617553375938">Повратени датотеки од Google Диск</translation>
 <translation id="5286194356314741248">Скенирање</translation>
 <translation id="5288441970121584418">Хамбургер</translation>
-<translation id="5299998344490869684">Дали сигурно сакате да ја испразните корпата?</translation>
 <translation id="5305688511332277257">Нема инсталирано</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5318819489018851358">Споделете со Linux</translation>
@@ -720,6 +718,7 @@
 <translation id="7248671827512403053">Апликација</translation>
 <translation id="7256405249507348194">Непрепознаена грешка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Достапни услуги</translation>
+<translation id="7292816689782057017">Правило на администраторот го ограничува зачувувањето на одредени локации.</translation>
 <translation id="7294063083760278948">транслитерација на телугу</translation>
 <translation id="7295662345261934369">Сподели со другите</translation>
 <translation id="7297443947353982503">Корисничкото име/лозинката не се точни или автентикацијата со EAP не успеа</translation>
@@ -796,6 +795,7 @@
 <translation id="78946041517601018">Споделени простори</translation>
 <translation id="7903984238293908205">Катакана</translation>
 <translation id="7908793776359722643">Форматирањето на партицијата ќе ги избрише сите податоци што се зачувани на неа. Дејството не може да се врати.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">AAA-проверката не успеа</translation>
 <translation id="7925686952655276919">Не користи мобилен интернет за синхронизација</translation>
 <translation id="7928710562641958568">Извади уред</translation>
@@ -905,6 +905,7 @@
 <translation id="8810671769985673465">Пакувањето не успеа, ставката постои: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">шпански (Шпанија)</translation>
 <translation id="8834164572807951958">Членовите на „<ph name="DESTINATION_NAME" />“ ќе добијат пристап до копијата на ставкиве.</translation>
+<translation id="8849389110234859568">Правилото за администратор го ограничува пристапот до одредени датотеки.</translation>
 <translation id="8857149712089373752">непалски со фонетска тастатура</translation>
 <translation id="8860454412039442620">Табела во Excel</translation>
 <translation id="8866284467018526531">транслитерација на арапски</translation>

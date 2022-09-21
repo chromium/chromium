@@ -478,7 +478,6 @@
    Ef tækið er fjarlægt á meðan það er í notkun kunna gögn að tapast. Bíddu þangað til aðgerðinni er lokið og aftengdu síðan tækið úr skráaforritinu.</translation>
 <translation id="5163869187418756376">Mistókst að deila. Athugaðu nettenginguna og reyndu aftur síðar.</translation>
 <translation id="516592729076796170">Bandarískt Dvorak-lyklaborð fyrir forritara</translation>
-<translation id="5172749059808361023">Upplýsingar um takmörkun</translation>
 <translation id="5177526793333269655">Smámyndayfirlit</translation>
 <translation id="5181896909298187506">Engar nýlegar skrár</translation>
 <translation id="5194713942430106590">Smelltu til að raða dálkinum í hækkandi röð.</translation>
@@ -496,7 +495,6 @@
 <translation id="5275973617553375938">Endurheimtar skrár af Google Drive</translation>
 <translation id="5286194356314741248">Leit</translation>
 <translation id="5288441970121584418">Hamborgari</translation>
-<translation id="5299998344490869684">Viltu örugglega tæma ruslið?</translation>
 <translation id="5305688511332277257">Engin uppsett</translation>
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5318819489018851358">Deila með Linux</translation>
@@ -796,6 +794,7 @@
 <translation id="78946041517601018">Samnýtt drif</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Þegar sneið er forsniðin eyðast öll gögn af henni. Ekki er hægt að afturkalla þessa aðgerð.</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">AAA-prófun mistókst</translation>
 <translation id="7925686952655276919">Ekki nota farsímagögn fyrir samstillingu</translation>
 <translation id="7928710562641958568">Losa tæki</translation>

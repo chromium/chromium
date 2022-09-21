@@ -896,6 +896,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="6064463340679478396">Bu fayldan foydalanmayman</translation>
 <translation id="6073451960410192870">Yozuvni toʻxtatish</translation>
 <translation id="6074087755403037157">Beta kanal</translation>
+<translation id="6095008505822982596">Nutq tezligi</translation>
 <translation id="6099678161144790572">Oxirgi oyda tahrirlangan</translation>
 <translation id="6103838137565245112">tizim</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> nutq fayllari yuklab olindi</translation>
@@ -1156,6 +1157,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7633755430369750696">Nearby Share sozlamalarini ochish.</translation>
 <translation id="7634648064048557203">Kamera pastki oʻng burchakka joylandi</translation>
 <translation id="7641938616688887143">Yozib olish</translation>
+<translation id="7642106959537987271">ranglarni akslantirish usuli</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> sozlamalarini ochish</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (egasi)</translation>
 <translation id="7647488630410863958">Bildirishnomalarni ko‘rish uchun qurilmangizni qulfdan chiqaring</translation>
@@ -1261,6 +1263,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8209010265547628927">Asliga qaytarish</translation>
 <translation id="8214996719228530800">Canary kanali</translation>
 <translation id="8219451629189078428">Bu vaqt orasida Chromebook yoniq va quvvat manbasiga ulangan boʻlishi kerak. Quvvatlagich va kabel adapterlari Chromebook va rozetkaga ulanganini tekshiring. Chromebook qurilmasini oʻchirmang.</translation>
+<translation id="8230305195727960608">Ranglarni akslantirish usuli</translation>
 <translation id="8236042855478648955">Tanaffus qilish vaqti keldi</translation>
 <translation id="8246282815785366524">Qaytganingizdan mamnunmiz, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781">Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Telefon quvvati: <ph name="BATTERY_STATUS" /></translation>
@@ -1387,6 +1390,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8982906748181120328">Atrofga ochish</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ishlatilmoqda</translation>
+<translation id="8991617137207906966">Ranglarni akslantirish usuli yoqildi. Uni oʻchirish uchun yana Ctrl+Search+H tugmalarini bosing.</translation>
 <translation id="899350903320462459">Bildirishnomani amalga oshirish uchun <ph name="LOGIN_ID" /> sifatida qurilmani qulfdan chiqaring</translation>
 <translation id="9000771174482730261">XOTIRANI BOSHQARISH</translation>
 <translation id="9017320285115481645">Family Link ota-ona kodini kiriting.</translation>
@@ -1435,6 +1439,7 @@ yangi oʻrnatilgan</translation>
 <translation id="921989828232331238">Ota-onangiz qurilmangizni butun kun uchun qulfladi</translation>
 <translation id="9220525904950070496">Hisobni olib tashlash</translation>
 <translation id="923686485342484400">Chiqish uchun “Control+Shift+Q” tugmalarini ikki marta bosing.</translation>
+<translation id="92580429198593979">Ranglarni akslantirish uchun tezkor tugmani bosdingiz. Yoqishni xohlaysizmi?</translation>
 <translation id="925832987464884575">Razm solishni faolsizlantirish</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> tizimini yangilashni talab qilmoqda.</translation>
 <translation id="938963181863597773">Taqvimda nima bor?</translation>

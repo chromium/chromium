@@ -478,7 +478,6 @@
    การนำอุปกรณ์ออกขณะใช้งานอยู่อาจทำให้ข้อมูลสูญหาย โปรดรอจนกว่าการทำงานจะเสร็จสิ้น จากนั้นนำอุปกรณ์ออกโดยใช้แอป "Files"</translation>
 <translation id="5163869187418756376">การแชร์ล้มเหลว ตรวจสอบการเชื่อมต่อของคุณและพยายามอีกครั้งในภายหลัง</translation>
 <translation id="516592729076796170">ดีโวรักโปรแกรมเมอร์สหรัฐอเมริกา</translation>
-<translation id="5172749059808361023">รายละเอียดข้อจำกัด</translation>
 <translation id="5177526793333269655">มุมมองรูปภาพขนาดย่อ</translation>
 <translation id="5181896909298187506">ไม่มีไฟล์ล่าสุด</translation>
 <translation id="5194713942430106590">คลิกเพื่อจัดเรียงคอลัมน์จากน้อยไปหามาก</translation>
@@ -497,7 +496,6 @@
 <translation id="5286194356314741248">กำลังสแกน</translation>
 <translation id="5288441970121584418">เบอร์เกอร์</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">คุณแน่ใจไหมว่าต้องการล้างถังขยะ</translation>
 <translation id="5305688511332277257">ไม่มีการติดตั้ง</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5318819489018851358">แชร์กับ Linux</translation>
@@ -721,6 +719,7 @@
 <translation id="7248671827512403053">แอปพลิเคชัน</translation>
 <translation id="7256405249507348194">ข้อผิดพลาดที่ไม่รู้จัก: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">บริการที่มี</translation>
+<translation id="7292816689782057017">นโยบายของผู้ดูแลระบบจำกัดการบันทึกไปยังบางตำแหน่ง</translation>
 <translation id="7294063083760278948">เตลูกู (การทับศัพท์)</translation>
 <translation id="7295662345261934369">แชร์กับคนอื่นๆ</translation>
 <translation id="7297443947353982503">ชื่อผู้ใช้/รหัสผ่านไม่ถูกต้องหรือการตรวจสอบสิทธิ์ EAP ล้มเหลว</translation>
@@ -797,6 +796,7 @@
 <translation id="78946041517601018">ไดรฟ์ที่แชร์</translation>
 <translation id="7903984238293908205">คะตะคะนะ</translation>
 <translation id="7908793776359722643">การฟอร์แมตพาร์ติชันจะลบข้อมูลทั้งหมดที่จัดเก็บในพาร์ติชันนั้น การดำเนินการนี้เลิกทำไม่ได้</translation>
+<translation id="7911118814695487383">Linux</translation>
 <translation id="7925247922861151263">การตรวจสอบ AAA ล้มเหลว</translation>
 <translation id="7925686952655276919">อย่าใช้ข้อมูลมือถือสำหรับการซิงค์</translation>
 <translation id="7928710562641958568">ยกเลิกการต่อเชื่อมอุปกรณ์</translation>
@@ -906,6 +906,7 @@
 <translation id="8810671769985673465">การซิปล้มเหลว มีรายการต่อไปนี้อยู่แล้ว "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">สเปน (สเปน)</translation>
 <translation id="8834164572807951958">สมาชิกของ "<ph name="DESTINATION_NAME" />" จะได้รับสิทธิ์เข้าถึงสำเนารายการเหล่านี้</translation>
+<translation id="8849389110234859568">นโยบายของผู้ดูแลระบบจำกัดการเข้าถึงบางไฟล์</translation>
 <translation id="8857149712089373752">เนปาลด้วยแป้นพิมพ์ตามการออกเสียง</translation>
 <translation id="8860454412039442620">สเปรดชีต Excel</translation>
 <translation id="8866284467018526531">อาหรับ (การทับศัพท์)</translation>
