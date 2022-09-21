@@ -118,14 +118,6 @@ var OSSettingsPeoplePageOsSyncV3Test = class extends OSSettingsV3BrowserTest {
   get browsePreload() {
     return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_sync_controls_test.js&host=test';
   }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat(
-          ['chromeos::features::kSyncSettingsCategorization']),
-    };
-  }
 };
 
 TEST_F('OSSettingsPeoplePageOsSyncV3Test', 'AllJsTests', () => {
@@ -206,22 +198,6 @@ var OSSettingsOsBluetoothSavedDevicesListV3Test =
 };
 
 TEST_F('OSSettingsOsBluetoothSavedDevicesListV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
-var OSSettingsSearchEngineV3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/search_engine_test.js&host=test';
-  }
-
-  /** @override */
-  get featureList() {
-    return {disabled: ['chromeos::features::kSyncSettingsCategorization']};
-  }
-};
-
-TEST_F('OSSettingsSearchEngineV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 

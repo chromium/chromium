@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
-#include "chrome/browser/sync/test/integration/sync_settings_categorization_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/common/pref_names.h"
@@ -28,29 +26,10 @@ using preferences_helper::ChangeStringPref;
 using preferences_helper::GetPrefs;
 using testing::Eq;
 
-class SingleClientOsPreferencesSyncTest
-    : public SyncSettingsCategorizationSyncTest {
+class SingleClientOsPreferencesSyncTest : public SyncTest {
  public:
-  SingleClientOsPreferencesSyncTest()
-      : SyncSettingsCategorizationSyncTest(SINGLE_CLIENT) {}
+  SingleClientOsPreferencesSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientOsPreferencesSyncTest() override = default;
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest, Sanity) {
-  ASSERT_TRUE(chromeos::features::IsSyncSettingsCategorizationEnabled());
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-
-  // Shelf alignment is a Chrome OS only preference.
-  ChangeStringPref(/*index=*/0, ash::prefs::kShelfAlignment,
-                   ash::kShelfAlignmentRight);
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  EXPECT_THAT(GetPrefs(/*index=*/0)->GetString(ash::prefs::kShelfAlignment),
-              Eq(ash::kShelfAlignmentRight));
-}
-
-class SyncCategorizationBaseTest : public SyncTest {
- public:
-  SyncCategorizationBaseTest() : SyncTest(SyncTest::SINGLE_CLIENT) {}
 
  protected:
   static std::string ConvertToSyncedPrefValue(const base::Value& value) {
@@ -98,26 +77,22 @@ class SyncCategorizationBaseTest : public SyncTest {
       base::Value(ash::kShelfAutoHideBehaviorAlways);
   const char* const kOsPriorityPreferenceKey = ::prefs::kTapToClickEnabled;
   const base::Value kOsPriorityPreferenceNewValue = base::Value(false);
-  base::test::ScopedFeatureList features_;
 };
 
-class SyncCategorizationEnabledTest : public SyncCategorizationBaseTest {
- public:
-  SyncCategorizationEnabledTest() {
-    features_.InitAndEnableFeature(ash::features::kSyncSettingsCategorization);
-  }
-};
+IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest, Sanity) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-class SyncCategorizationDisabledTest : public SyncCategorizationBaseTest {
- public:
-  SyncCategorizationDisabledTest() {
-    features_.InitAndDisableFeature(ash::features::kSyncSettingsCategorization);
-  }
-};
+  // Shelf alignment is a Chrome OS only preference.
+  ChangeStringPref(/*index=*/0, ash::prefs::kShelfAlignment,
+                   ash::kShelfAlignmentRight);
+  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_THAT(GetPrefs(/*index=*/0)->GetString(ash::prefs::kShelfAlignment),
+              Eq(ash::kShelfAlignmentRight));
+}
 
 // OS preferences should sync from the new clients as both preferences and OS
 // preferences.
-IN_PROC_BROWSER_TEST_F(SyncCategorizationEnabledTest,
+IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest,
                        OSPreferencesSyncAsBothTypes) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   ASSERT_NE(GetPrefs(0)->GetValue(kOsPreferenceKey), kOsPreferenceNewValue);
@@ -154,64 +129,9 @@ IN_PROC_BROWSER_TEST_F(SyncCategorizationEnabledTest,
                   .Wait());
 }
 
-// Old clients should get synced prefs.
-IN_PROC_BROWSER_TEST_F(SyncCategorizationDisabledTest, ReceiveSyncedOSPrefs) {
-  InjectPreferenceToFakeServer(syncer::PREFERENCES, kOsPreferenceKey,
-                               kOsPreferenceNewValue);
-  InjectPreferenceToFakeServer(syncer::OS_PREFERENCES, kOsPreferenceKey,
-                               kOsPreferenceNewValue);
-  InjectPreferenceToFakeServer(syncer::PRIORITY_PREFERENCES,
-                               kOsPriorityPreferenceKey,
-                               kOsPriorityPreferenceNewValue);
-  InjectPreferenceToFakeServer(syncer::OS_PRIORITY_PREFERENCES,
-                               kOsPriorityPreferenceKey,
-                               kOsPriorityPreferenceNewValue);
-
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-
-  EXPECT_EQ(GetPrefs(/*index=*/0)->GetValue(kOsPreferenceKey),
-            kOsPreferenceNewValue);
-  EXPECT_EQ(GetPrefs(/*index=*/0)->GetValue(kOsPriorityPreferenceKey),
-            kOsPriorityPreferenceNewValue);
-}
-
-// OS preferences are syncing only as browser prefs on the old clients.
-IN_PROC_BROWSER_TEST_F(SyncCategorizationDisabledTest,
-                       OSPreferencesSyncOnlyAsBrowserPrefs) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  ASSERT_NE(GetPrefs(0)->GetValue(kOsPreferenceKey), kOsPreferenceNewValue);
-  ASSERT_NE(GetPrefs(0)->GetValue(kOsPriorityPreferenceKey),
-            kOsPriorityPreferenceNewValue);
-
-  ASSERT_TRUE(SetupSync());
-
-  GetPrefs(/*index=*/0)->Set(kOsPreferenceKey, kOsPreferenceNewValue);
-  GetPrefs(/*index=*/0)
-      ->Set(kOsPriorityPreferenceKey, kOsPriorityPreferenceNewValue);
-
-  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES, kOsPreferenceKey,
-                  ConvertToSyncedPrefValue(kOsPreferenceNewValue))
-                  .Wait());
-  EXPECT_FALSE(
-      preferences_helper::GetPreferenceInFakeServer(
-          syncer::ModelType::OS_PREFERENCES, kOsPreferenceKey, GetFakeServer())
-          .has_value());
-
-  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PRIORITY_PREFERENCES,
-                  kOsPriorityPreferenceKey,
-                  ConvertToSyncedPrefValue(kOsPriorityPreferenceNewValue))
-                  .Wait());
-  EXPECT_FALSE(preferences_helper::GetPreferenceInFakeServer(
-                   syncer::ModelType::OS_PRIORITY_PREFERENCES, kOsPreferenceKey,
-                   GetFakeServer())
-                   .has_value());
-}
-
 // OS preferences are not getting synced from the browser prefs on the new
 // clients.
-IN_PROC_BROWSER_TEST_F(SyncCategorizationEnabledTest,
+IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest,
                        DontReceiveSyncedOSPrefsFromOldClients) {
   InjectPreferenceToFakeServer(syncer::PREFERENCES, kOsPreferenceKey,
                                kOsPreferenceNewValue);

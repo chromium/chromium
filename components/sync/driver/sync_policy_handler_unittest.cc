@@ -16,11 +16,6 @@
 #include "components/sync/base/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace syncer {
 namespace {
 
@@ -100,17 +95,8 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class SyncPolicyHandlerOsTest : public testing::Test {
- public:
-  SyncPolicyHandlerOsTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kSyncSettingsCategorization);
-  }
 
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(SyncPolicyHandlerOsTest, SyncTypesListDisabled_OsTypes) {
+TEST(SyncPolicyHandlerOsTest, SyncTypesListDisabled_OsTypes) {
   // Start with prefs enabled so we can sense that they have changed.
   PrefValueMap prefs;
   prefs.SetBoolean(prefs::kSyncOsApps, true);
@@ -140,7 +126,7 @@ TEST_F(SyncPolicyHandlerOsTest, SyncTypesListDisabled_OsTypes) {
   EXPECT_FALSE(enabled);
 }
 
-TEST_F(SyncPolicyHandlerOsTest, SyncTypesListDisabled_MigratedTypes) {
+TEST(SyncPolicyHandlerOsTest, SyncTypesListDisabled_MigratedTypes) {
   // Start with prefs enabled so we can sense that they have changed.
   PrefValueMap prefs;
   prefs.SetBoolean(prefs::kSyncOsApps, true);

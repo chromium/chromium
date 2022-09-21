@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -28,6 +27,7 @@
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/test/fake_sync_change_processor.h"
@@ -248,34 +248,10 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PolicyDisabled) {
   TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
 }
 
-enum class SyncSettingsCategorization { kEnabled, kDisabled };
-
-class ExternalProviderImplChromeOSSyncCategorizationTest
-    : public ExternalProviderImplChromeOSTest,
-      public ::testing::WithParamInterface<SyncSettingsCategorization> {
- public:
-  ExternalProviderImplChromeOSSyncCategorizationTest() {
-    switch (GetParam()) {
-      case SyncSettingsCategorization::kEnabled:
-        feature_list_.InitAndEnableFeature(
-            chromeos::features::kSyncSettingsCategorization);
-        break;
-      case SyncSettingsCategorization::kDisabled:
-        feature_list_.InitAndDisableFeature(
-            chromeos::features::kSyncSettingsCategorization);
-        break;
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // User signed in, sync service started, install app when priority sync is
 // completed.
 // TODO(crbug.com/1177118) Re-enable test
-TEST_P(ExternalProviderImplChromeOSSyncCategorizationTest,
-       DISABLED_PriorityCompleted) {
+TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PriorityCompleted) {
   InitServiceWithExternalProviders(true);
 
   // User is logged in.
@@ -291,18 +267,11 @@ TEST_P(ExternalProviderImplChromeOSSyncCategorizationTest,
   // App sync will wait for priority sync to complete.
   service_->CheckForExternalUpdates();
 
-  // SyncSettingsCategorization makes ExternalPrefLoader wait for OS priority
-  // prefs.
-  syncer::ModelType priority_pref_type =
-      GetParam() == SyncSettingsCategorization::kEnabled
-          ? syncer::OS_PRIORITY_PREFERENCES
-          : syncer::PRIORITY_PREFERENCES;
-
   // Priority sync completed.
   PrefServiceSyncableFromProfile(profile())
-      ->GetSyncableService(priority_pref_type)
+      ->GetSyncableService(syncer::OS_PRIORITY_PREFERENCES)
       ->MergeDataAndStartSyncing(
-          priority_pref_type, syncer::SyncDataList(),
+          syncer::OS_PRIORITY_PREFERENCES, syncer::SyncDataList(),
           std::make_unique<syncer::FakeSyncChangeProcessor>(),
           std::make_unique<syncer::SyncErrorFactoryMock>());
 
@@ -312,11 +281,6 @@ TEST_P(ExternalProviderImplChromeOSSyncCategorizationTest,
 
   EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneAppId));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExternalProviderImplChromeOSSyncCategorizationTest,
-                         testing::Values(SyncSettingsCategorization::kDisabled,
-                                         SyncSettingsCategorization::kEnabled));
 
 // Validate the external providers enabled in the Chrome App Kiosk session. The
 // expected number should be 3.

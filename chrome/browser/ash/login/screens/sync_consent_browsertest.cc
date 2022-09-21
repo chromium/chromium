@@ -359,23 +359,13 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, AbortedSetup) {
   EXPECT_TRUE(settings->IsSyncEverythingEnabled());
 }
 
-class SyncConsentRecorderTest : public SyncConsentTest {
- public:
-  SyncConsentRecorderTest() {
-    features_.InitAndEnableFeature(features::kSyncSettingsCategorization);
-  }
-  ~SyncConsentRecorderTest() override = default;
-
-  base::test::ScopedFeatureList features_;
-};
-
 // TODO(crbug.com/1312384): Test failed on linux-chromeos-dbg.
 #if !defined(NDEBUG)
 #define MAYBE_SyncConsentRecorder DISABLED_SyncConsentRecorder
 #else
 #define MAYBE_SyncConsentRecorder SyncConsentRecorder
 #endif
-IN_PROC_BROWSER_TEST_F(SyncConsentRecorderTest, MAYBE_SyncConsentRecorder) {
+IN_PROC_BROWSER_TEST_F(SyncConsentTest, MAYBE_SyncConsentRecorder) {
   EXPECT_EQ(g_browser_process->GetApplicationLocale(), "en-US");
   LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
@@ -540,7 +530,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
 class SyncConsentTestWithParams
-    : public SyncConsentRecorderTest,
+    : public SyncConsentTest,
       public ::testing::WithParamInterface<std::string> {
  public:
   SyncConsentTestWithParams() = default;
@@ -618,14 +608,9 @@ INSTANTIATE_TEST_SUITE_P(All, SyncConsentPolicyDisabledTest, testing::Bool());
 // not use sync.
 class SyncConsentActiveDirectoryTest : public OobeBaseTest {
  public:
-  SyncConsentActiveDirectoryTest() {
-    sync_feature_list_.InitWithFeatures({features::kSyncSettingsCategorization},
-                                        {});
-  }
   ~SyncConsentActiveDirectoryTest() override = default;
 
  protected:
-  base::test::ScopedFeatureList sync_feature_list_;
   DeviceStateMixin device_state_{
       &mixin_host_,
       DeviceStateMixin::State::OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED};

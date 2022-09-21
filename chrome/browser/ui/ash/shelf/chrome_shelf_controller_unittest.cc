@@ -671,27 +671,19 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     app_list_syncable_service_->StopSyncing(syncer::APP_LIST);
   }
 
-  // static
-  syncer::ModelType GetPreferencesModelType() {
-    // SyncSettingsCategorization makes shelf prefs into OS prefs.
-    return chromeos::features::IsSyncSettingsCategorizationEnabled()
-               ? syncer::OS_PREFERENCES
-               : syncer::PREFERENCES;
-  }
-
   sync_preferences::PrefModelAssociator* GetPrefSyncService() {
     sync_preferences::PrefServiceSyncable* pref_sync =
         profile()->GetTestingPrefService();
     sync_preferences::PrefModelAssociator* pref_sync_service =
         static_cast<sync_preferences::PrefModelAssociator*>(
-            pref_sync->GetSyncableService(GetPreferencesModelType()));
+            pref_sync->GetSyncableService(syncer::OS_PREFERENCES));
     return pref_sync_service;
   }
 
   void StartPrefSyncService(const syncer::SyncDataList& init_sync_list) {
     absl::optional<syncer::ModelError> error =
         GetPrefSyncService()->MergeDataAndStartSyncing(
-            GetPreferencesModelType(), init_sync_list,
+            syncer::OS_PREFERENCES, init_sync_list,
             std::make_unique<syncer::FakeSyncChangeProcessor>(),
             std::make_unique<syncer::SyncErrorFactoryMock>());
     EXPECT_FALSE(error.has_value());
@@ -1236,28 +1228,14 @@ class ChromeShelfControllerWithArcTest : public ChromeShelfControllerTestBase {
   }
 };
 
-// Parameterized test for ChromeShelfController. Parameterized to tests
-// the feature with SyncSettingsCategorization enabled/disabled.
-class ChromeShelfControllerTest : public ChromeShelfControllerTestBase,
-                                  public ::testing::WithParamInterface<bool> {
+class ChromeShelfControllerTest : public ChromeShelfControllerTestBase {
  public:
   ChromeShelfControllerTest() {
     // `media_router::kMediaRouter` is disabled because it has unmet
     // dependencies and is unrelated to this unit test.
-    if (ShouldEnableSyncSettingsCategorization()) {
-      feature_list_.InitWithFeatures(
-          /*enabled=*/{chromeos::features::kSyncSettingsCategorization},
-          /*disabled=*/{media_router::kMediaRouter});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled=*/{},
-          /*disabled=*/{chromeos::features::kSyncSettingsCategorization,
-                        media_router::kMediaRouter});
-    }
+    feature_list_.InitAndDisableFeature(media_router::kMediaRouter);
   }
   ~ChromeShelfControllerTest() override = default;
-
-  bool ShouldEnableSyncSettingsCategorization() const { return GetParam(); }
 
  private:
   // CrostiniTestHelper overrides feature list after GPU thread has started.
@@ -1576,7 +1554,7 @@ class ChromeShelfControllerMultiProfileWithArcTest
   ~ChromeShelfControllerMultiProfileWithArcTest() override = default;
 };
 
-TEST_P(ChromeShelfControllerTest, PreinstalledApps) {
+TEST_F(ChromeShelfControllerTest, PreinstalledApps) {
   InitShelfController();
 
   // The model should only contain the browser shortcut item.
@@ -1883,7 +1861,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
 }
 
 // Ensure correct merging of policy pinned apps and user pinned apps.
-TEST_P(ChromeShelfControllerTest, MergePolicyAndUserPrefPinnedApps) {
+TEST_F(ChromeShelfControllerTest, MergePolicyAndUserPrefPinnedApps) {
   InitShelfController();
 
   AddWebApp(web_app::kGoogleDocsAppId);
@@ -1930,7 +1908,7 @@ TEST_P(ChromeShelfControllerTest, MergePolicyAndUserPrefPinnedApps) {
 // Check that the restoration of shelf items is happening in the same order
 // as the user has pinned them (on another system) when they are synced reverse
 // order.
-TEST_P(ChromeShelfControllerTest, RestorePreinstalledAppsReverseOrder) {
+TEST_F(ChromeShelfControllerTest, RestorePreinstalledAppsReverseOrder) {
   InitShelfController();
 
   syncer::SyncChangeList sync_list;
@@ -1968,7 +1946,7 @@ TEST_P(ChromeShelfControllerTest, RestorePreinstalledAppsReverseOrder) {
 // Check that the restoration of shelf items is happening in the same order
 // as the user has pinned them (on another system) when they are synced random
 // order.
-TEST_P(ChromeShelfControllerTest, RestorePreinstalledAppsRandomOrder) {
+TEST_F(ChromeShelfControllerTest, RestorePreinstalledAppsRandomOrder) {
   InitShelfController();
 
   syncer::SyncChangeList sync_list;
@@ -2005,7 +1983,7 @@ TEST_P(ChromeShelfControllerTest, RestorePreinstalledAppsRandomOrder) {
 // Check that the restoration of shelf items is happening in the same order
 // as the user has pinned / moved them (on another system) when they are synced
 // random order - including the chrome icon.
-TEST_P(ChromeShelfControllerTest,
+TEST_F(ChromeShelfControllerTest,
        RestorePreinstalledAppsRandomOrderChromeMoved) {
   InitShelfController();
 
@@ -2043,7 +2021,7 @@ TEST_P(ChromeShelfControllerTest,
 }
 
 // Check that syncing to a different state does the correct thing.
-TEST_P(ChromeShelfControllerTest, RestorePreinstalledAppsResyncOrder) {
+TEST_F(ChromeShelfControllerTest, RestorePreinstalledAppsResyncOrder) {
   InitShelfController();
 
   syncer::SyncChangeList sync_list0;
@@ -2096,7 +2074,7 @@ TEST_P(ChromeShelfControllerTest, RestorePreinstalledAppsResyncOrder) {
 }
 
 // Test the V1 app interaction flow: run it, activate it, close it.
-TEST_P(ChromeShelfControllerTest, V1AppRunActivateClose) {
+TEST_F(ChromeShelfControllerTest, V1AppRunActivateClose) {
   InitShelfController();
   // The model should only contain the browser shortcut item.
   EXPECT_EQ(1, model_->item_count());
@@ -2131,7 +2109,7 @@ TEST_P(ChromeShelfControllerTest, V1AppRunActivateClose) {
 }
 
 // Test the V1 app interaction flow: pin it, run it, close it, unpin it.
-TEST_P(ChromeShelfControllerTest, V1AppPinRunCloseUnpin) {
+TEST_F(ChromeShelfControllerTest, V1AppPinRunCloseUnpin) {
   InitShelfController();
   // The model should only contain the browser shortcut.
   EXPECT_EQ(1, model_->item_count());
@@ -2175,7 +2153,7 @@ TEST_P(ChromeShelfControllerTest, V1AppPinRunCloseUnpin) {
 }
 
 // Test the V1 app interaction flow: run it, pin it, close it, unpin it.
-TEST_P(ChromeShelfControllerTest, V1AppRunPinCloseUnpin) {
+TEST_F(ChromeShelfControllerTest, V1AppRunPinCloseUnpin) {
   InitShelfController();
 
   // The model should only contain the browser shortcut.
@@ -2220,7 +2198,7 @@ TEST_P(ChromeShelfControllerTest, V1AppRunPinCloseUnpin) {
 }
 
 // Test the V1 app interaction flow: pin it, run it, unpin it, close it.
-TEST_P(ChromeShelfControllerTest, V1AppPinRunUnpinClose) {
+TEST_F(ChromeShelfControllerTest, V1AppPinRunUnpinClose) {
   InitShelfController();
 
   // The model should only contain the browser shortcut item.
@@ -2265,7 +2243,7 @@ TEST_P(ChromeShelfControllerTest, V1AppPinRunUnpinClose) {
 }
 
 // Ensure unpinned V1 app ordering is properly restored after user changes.
-TEST_P(ChromeShelfControllerTest, CheckRunningV1AppOrder) {
+TEST_F(ChromeShelfControllerTest, CheckRunningV1AppOrder) {
   InitShelfController();
 
   // The model should only contain the browser shortcut item.
@@ -3202,7 +3180,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
 // Check that a running windowed V1 application will be properly pinned and
 // unpinned when the order gets changed through a profile / policy change.
-TEST_P(ChromeShelfControllerTest, RestoreDefaultAndRunningV1AppsResyncOrder) {
+TEST_F(ChromeShelfControllerTest, RestoreDefaultAndRunningV1AppsResyncOrder) {
   InitShelfController();
 
   StartPrefSyncService(syncer::SyncDataList());
@@ -3251,7 +3229,7 @@ TEST_P(ChromeShelfControllerTest, RestoreDefaultAndRunningV1AppsResyncOrder) {
 
 // Check that a running unpinned V2 application will be properly pinned and
 // unpinned when the order gets changed through a profile / policy change.
-TEST_P(ChromeShelfControllerTest, RestoreDefaultAndRunningV2AppsResyncOrder) {
+TEST_F(ChromeShelfControllerTest, RestoreDefaultAndRunningV2AppsResyncOrder) {
   InitShelfController();
   syncer::SyncChangeList sync_list0;
   InsertAddPinChange(&sync_list0, 0, extension1_->id());
@@ -3295,7 +3273,7 @@ TEST_P(ChromeShelfControllerTest, RestoreDefaultAndRunningV2AppsResyncOrder) {
 
 // Each user has a different set of applications pinned. Check that when
 // switching between the two users, the state gets properly set.
-TEST_P(ChromeShelfControllerTest, UserSwitchIconRestore) {
+TEST_F(ChromeShelfControllerTest, UserSwitchIconRestore) {
   syncer::SyncChangeList user_a;
   syncer::SyncChangeList user_b;
 
@@ -3323,7 +3301,7 @@ TEST_P(ChromeShelfControllerTest, UserSwitchIconRestore) {
 // Each user has a different set of applications pinned, and one user has an
 // application running. Check that when switching between the two users, the
 // state gets properly set.
-TEST_P(ChromeShelfControllerTest, UserSwitchIconRestoreWithRunningV2App) {
+TEST_F(ChromeShelfControllerTest, UserSwitchIconRestoreWithRunningV2App) {
   syncer::SyncChangeList user_a;
   syncer::SyncChangeList user_b;
 
@@ -3355,7 +3333,7 @@ TEST_P(ChromeShelfControllerTest, UserSwitchIconRestoreWithRunningV2App) {
 // application running. The chrome icon is not the last item in the list.
 // Check that when switching between the two users, the state gets properly set.
 // There was once a bug associated with this.
-TEST_P(ChromeShelfControllerTest,
+TEST_F(ChromeShelfControllerTest,
        UserSwitchIconRestoreWithRunningV2AppChromeInMiddle) {
   syncer::SyncChangeList user_a;
   syncer::SyncChangeList user_b;
@@ -3382,7 +3360,7 @@ TEST_P(ChromeShelfControllerTest,
             GetPinnedAppStatus());
 }
 
-TEST_P(ChromeShelfControllerTest, Policy) {
+TEST_F(ChromeShelfControllerTest, Policy) {
   extension_service_->AddExtension(extension2_.get());
   AddWebApp(web_app::kGmailAppId);
 
@@ -3413,7 +3391,7 @@ TEST_P(ChromeShelfControllerTest, Policy) {
   EXPECT_EQ("Chrome, App1, App2", GetPinnedAppStatus());
 }
 
-TEST_P(ChromeShelfControllerTest, UnpinWithUninstall) {
+TEST_F(ChromeShelfControllerTest, UnpinWithUninstall) {
   AddWebApp(web_app::kGmailAppId);
   AddWebApp(web_app::kYoutubeAppId);
 
@@ -3429,7 +3407,7 @@ TEST_P(ChromeShelfControllerTest, UnpinWithUninstall) {
   EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kYoutubeAppId));
 }
 
-TEST_P(ChromeShelfControllerTest, SyncUpdates) {
+TEST_F(ChromeShelfControllerTest, SyncUpdates) {
   extension_service_->AddExtension(extension2_.get());
   AddWebApp(web_app::kGmailAppId);
   AddWebApp(web_app::kGoogleDocsAppId);
@@ -3497,7 +3475,7 @@ TEST_P(ChromeShelfControllerTest, SyncUpdates) {
   EXPECT_EQ(expected_pinned_apps, actual_pinned_apps);
 }
 
-TEST_P(ChromeShelfControllerTest, PendingInsertionOrder) {
+TEST_F(ChromeShelfControllerTest, PendingInsertionOrder) {
   extension_service_->AddExtension(extension1_.get());
   AddWebApp(web_app::kGmailAppId);
 
@@ -3537,7 +3515,7 @@ void CheckAppMenu(ChromeShelfController* controller,
 }
 
 // Check that browsers get reflected correctly in the shelf menu.
-TEST_P(ChromeShelfControllerTest, BrowserMenuGeneration) {
+TEST_F(ChromeShelfControllerTest, BrowserMenuGeneration) {
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   chrome::NewTab(browser());
 
@@ -3624,7 +3602,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 // refocus logic.
 // Note that the extension matching logic is tested by the extension system
 // and does not need a separate test here.
-TEST_P(ChromeShelfControllerTest, V1AppMenuGeneration) {
+TEST_F(ChromeShelfControllerTest, V1AppMenuGeneration) {
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(0, browser()->tab_strip_model()->count());
 
@@ -3808,7 +3786,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   EXPECT_EQ(1, model_->item_count());
 }
 
-TEST_P(ChromeShelfControllerTest, Active) {
+TEST_F(ChromeShelfControllerTest, Active) {
   InitShelfController();
 
   // Creates a new app window.
@@ -4115,7 +4093,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 }
 
 // Checks that the generated menu list properly activates items.
-TEST_P(ChromeShelfControllerTest, V1AppMenuExecution) {
+TEST_F(ChromeShelfControllerTest, V1AppMenuExecution) {
   InitShelfControllerWithBrowser();
   StartPrefSyncService(syncer::SyncDataList());
 
@@ -4164,7 +4142,7 @@ TEST_P(ChromeShelfControllerTest, V1AppMenuExecution) {
 }
 
 // Checks that the generated menu list properly deletes items.
-TEST_P(ChromeShelfControllerTest, V1AppMenuDeletionExecution) {
+TEST_F(ChromeShelfControllerTest, V1AppMenuDeletionExecution) {
   InitShelfControllerWithBrowser();
   StartPrefSyncService(syncer::SyncDataList());
 
@@ -4207,7 +4185,7 @@ TEST_P(ChromeShelfControllerTest, V1AppMenuDeletionExecution) {
 }
 
 // Verify that the shelf item positions are persisted and restored.
-TEST_P(ChromeShelfControllerTest, PersistShelfItemPositions) {
+TEST_F(ChromeShelfControllerTest, PersistShelfItemPositions) {
   InitShelfController();
 
   TestShelfControllerHelper* helper = new TestShelfControllerHelper;
@@ -4252,7 +4230,7 @@ TEST_P(ChromeShelfControllerTest, PersistShelfItemPositions) {
 }
 
 // Verifies pinned apps are persisted and restored.
-TEST_P(ChromeShelfControllerTest, PersistPinned) {
+TEST_F(ChromeShelfControllerTest, PersistPinned) {
   InitShelfControllerWithBrowser();
   size_t initial_size = model_->items().size();
 
@@ -4302,7 +4280,7 @@ TEST_P(ChromeShelfControllerTest, PersistPinned) {
 
 // Verifies that ShelfID property is updated for browsers that are present when
 // ChromeShelfController is created.
-TEST_P(ChromeShelfControllerTest, ExistingBrowserWindowShelfIDSet) {
+TEST_F(ChromeShelfControllerTest, ExistingBrowserWindowShelfIDSet) {
   InitShelfControllerWithBrowser();
   PinAppWithIDToShelf("1");
 
@@ -4326,7 +4304,7 @@ TEST_P(ChromeShelfControllerTest, ExistingBrowserWindowShelfIDSet) {
                     ash::kShelfIDKey)));
 }
 
-TEST_P(ChromeShelfControllerTest, MultipleAppIconLoaders) {
+TEST_F(ChromeShelfControllerTest, MultipleAppIconLoaders) {
   InitShelfControllerWithBrowser();
 
   const ash::ShelfID shelf_id1(extension1_->id());
@@ -4764,7 +4742,7 @@ TEST_P(ChromeShelfControllerPlayStoreAvailabilityTest, Visible) {
 
 // Checks the case when several app items have the same ordinal position (which
 // is valid case).
-TEST_P(ChromeShelfControllerTest, CheckPositionConflict) {
+TEST_F(ChromeShelfControllerTest, CheckPositionConflict) {
   InitShelfController();
 
   extension_service_->AddExtension(extension1_.get());
@@ -4814,7 +4792,7 @@ TEST_P(ChromeShelfControllerTest, CheckPositionConflict) {
 
 // Test the case when sync app is turned off and we need to use local copy to
 // support user's pins.
-TEST_P(ChromeShelfControllerTest, SyncOffLocalUpdate) {
+TEST_F(ChromeShelfControllerTest, SyncOffLocalUpdate) {
   InitShelfController();
 
   extension_service_->AddExtension(extension1_.get());
@@ -4846,7 +4824,7 @@ TEST_P(ChromeShelfControllerTest, SyncOffLocalUpdate) {
 }
 
 // Test the Settings can be pinned and unpinned.
-TEST_P(ChromeShelfControllerTest, InternalAppPinUnpin) {
+TEST_F(ChromeShelfControllerTest, InternalAppPinUnpin) {
   InitShelfController();
   // The model should only contain the browser shortcut item.
   EXPECT_EQ(1, model_->item_count());
@@ -4868,7 +4846,7 @@ TEST_P(ChromeShelfControllerTest, InternalAppPinUnpin) {
 }
 
 // Test that internal app can be added and removed on shelf.
-TEST_P(ChromeShelfControllerTest, InternalAppWindowRecreation) {
+TEST_F(ChromeShelfControllerTest, InternalAppWindowRecreation) {
   InitShelfController();
 
   // Only test the first internal app. The others should be the same.
@@ -4899,7 +4877,7 @@ TEST_P(ChromeShelfControllerTest, InternalAppWindowRecreation) {
 
 // Test that internal app can be added and removed by SetProperty of
 // ash::kShelfIDKey.
-TEST_P(ChromeShelfControllerTest, InternalAppWindowPropertyChanged) {
+TEST_F(ChromeShelfControllerTest, InternalAppWindowPropertyChanged) {
   InitShelfController();
 
   // Only test the first internal app. The others should be the same.
@@ -5136,7 +5114,7 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
 }
 
 // Tests behavior for ensuring some component apps can be marked unpinnable.
-TEST_P(ChromeShelfControllerTest, UnpinnableComponentApps) {
+TEST_F(ChromeShelfControllerTest, UnpinnableComponentApps) {
   InitShelfController();
 
   const char* kPinnableApp = file_manager::kFileManagerAppId;
@@ -5150,7 +5128,7 @@ TEST_P(ChromeShelfControllerTest, UnpinnableComponentApps) {
   }
 }
 
-TEST_P(ChromeShelfControllerTest, DoNotShowInShelf) {
+TEST_F(ChromeShelfControllerTest, DoNotShowInShelf) {
   syncer::SyncChangeList sync_list;
   InsertAddPinChange(&sync_list, 0, extension1_->id());
   InsertAddPinChange(&sync_list, 0, extension2_->id());
@@ -5318,7 +5296,7 @@ TEST_F(ChromeShelfControllerWebAppTest, WebAppPinRunUnpinClose) {
 }
 
 // Test the app status when the paused app is blocked, un-blocked, and un-paused
-TEST_P(ChromeShelfControllerTest, VerifyAppStatusForPausedApp) {
+TEST_F(ChromeShelfControllerTest, VerifyAppStatusForPausedApp) {
   AddExtension(extension1_.get());
 
   // Set the app as paused
@@ -5349,7 +5327,7 @@ TEST_P(ChromeShelfControllerTest, VerifyAppStatusForPausedApp) {
 
 // Test the app status when the blocked app is paused, un-paused, hidden,
 // visible and un-blocked
-TEST_P(ChromeShelfControllerTest, VerifyAppStatusForBlockedApp) {
+TEST_F(ChromeShelfControllerTest, VerifyAppStatusForBlockedApp) {
   AddExtension(extension1_.get());
 
   // Set the app as blocked
@@ -5394,7 +5372,7 @@ TEST_P(ChromeShelfControllerTest, VerifyAppStatusForBlockedApp) {
   EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
 }
 
-TEST_P(ChromeShelfControllerTest, PinnedAppsRespectShownInShelfState) {
+TEST_F(ChromeShelfControllerTest, PinnedAppsRespectShownInShelfState) {
   InitShelfController();
   // Pin a test app.
   AddExtension(extension1_.get());
@@ -5420,7 +5398,7 @@ TEST_P(ChromeShelfControllerTest, PinnedAppsRespectShownInShelfState) {
   EXPECT_EQ(1, model_->ItemIndexByAppID(extension1_->id()));
 }
 
-TEST_P(ChromeShelfControllerTest, AppIndexAfterUnhidingFirstPinnedApp) {
+TEST_F(ChromeShelfControllerTest, AppIndexAfterUnhidingFirstPinnedApp) {
   InitShelfController();
   // Pin a test app.
   AddExtension(extension1_.get());
@@ -5448,7 +5426,7 @@ TEST_P(ChromeShelfControllerTest, AppIndexAfterUnhidingFirstPinnedApp) {
   EXPECT_EQ(0, model_->ItemIndexByAppID(extension1_->id()));
 }
 
-TEST_P(ChromeShelfControllerTest,
+TEST_F(ChromeShelfControllerTest,
        AppIndexAfterUnhidingtPinnedAppWithOtherHiddenApps) {
   InitShelfController();
   // Pin test apps.
@@ -5488,7 +5466,7 @@ TEST_P(ChromeShelfControllerTest,
   EXPECT_EQ(2, model_->ItemIndexByAppID(extension6_->id()));
 }
 
-TEST_P(ChromeShelfControllerTest, AppsHiddenFromShelfDontGetPinnedByPolicy) {
+TEST_F(ChromeShelfControllerTest, AppsHiddenFromShelfDontGetPinnedByPolicy) {
   AddExtension(extension1_.get());
 
   // Pin a test app by policy.
@@ -5518,7 +5496,7 @@ TEST_P(ChromeShelfControllerTest, AppsHiddenFromShelfDontGetPinnedByPolicy) {
   EXPECT_EQ(1, model_->ItemIndexByAppID(extension1_->id()));
 }
 
-TEST_P(ChromeShelfControllerTest, AppHiddenFromShelfNotPinnedOnInstall) {
+TEST_F(ChromeShelfControllerTest, AppHiddenFromShelfNotPinnedOnInstall) {
   AddExtension(extension1_.get());
   InitShelfController();
   PinAppWithIDToShelf(extension1_->id());
@@ -5547,11 +5525,6 @@ TEST_P(ChromeShelfControllerTest, AppHiddenFromShelfNotPinnedOnInstall) {
   EXPECT_TRUE(model_->AllowedToSetAppPinState(extension1_->id(), false));
   EXPECT_EQ(1, model_->ItemIndexByAppID(extension1_->id()));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no label */,
-    ChromeShelfControllerTest,
-    /*sync_settings_categorization_enabled=*/::testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ChromeShelfControllerPlayStoreAvailabilityTest,

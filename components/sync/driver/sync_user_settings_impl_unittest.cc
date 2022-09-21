@@ -22,23 +22,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
-
 namespace syncer {
 
 namespace {
 
 ModelTypeSet GetUserTypes() {
   ModelTypeSet user_types = UserTypes();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // These types only exist when SyncSettingsCategorization is enabled.
-  if (!chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    user_types.RemoveAll(
-        {OS_PREFERENCES, OS_PRIORITY_PREFERENCES, WIFI_CONFIGURATIONS});
-  }
-#else
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Ignore all Chrome OS types on non-Chrome OS platforms.
   user_types.RemoveAll(
       {APP_LIST, ARC_PACKAGE, OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS,
@@ -112,10 +102,6 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kSyncSettingsCategorization);
-
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
 
@@ -139,13 +125,11 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
       /*sync_everything=*/false,
       /*types=*/UserSelectableTypeSet());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    // GetPreferredUserTypes() returns ModelTypes, which includes both browser
-    // and OS types. However, this test exercises browser UserSelectableTypes,
-    // so disable OS selectable types.
-    sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
-                                           UserSelectableOsTypeSet());
-  }
+  // GetPreferredUserTypes() returns ModelTypes, which includes both browser
+  // and OS types. However, this test exercises browser UserSelectableTypes,
+  // so disable OS selectable types.
+  sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
+                                         UserSelectableOsTypeSet());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   // No user selectable types are enabled, so only the "always preferred" types
   // are preferred.
@@ -167,10 +151,6 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncUserSettingsImplTest, PreferredTypesNotAllOsTypesSynced) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kSyncSettingsCategorization);
-
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
 
@@ -249,10 +229,6 @@ TEST_F(SyncUserSettingsImplTest, UserConsents) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncUserSettingsImplTest, AlwaysPreferredTypes_ChromeOS) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kSyncSettingsCategorization);
-
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
 
@@ -273,10 +249,6 @@ TEST_F(SyncUserSettingsImplTest, AlwaysPreferredTypes_ChromeOS) {
 }
 
 TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kSyncSettingsCategorization);
-
   std::unique_ptr<SyncUserSettingsImpl> settings =
       MakeSyncUserSettings(GetUserTypes());
 
@@ -367,13 +339,11 @@ TEST_F(SyncUserSettingsImplTest,
       MakeSyncUserSettings(GetUserTypes());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    // GetPreferredUserTypes() returns ModelTypes, which includes both browser
-    // and OS types. However, this test exercises browser UserSelectableTypes,
-    // so disable OS selectable types.
-    sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
-                                           UserSelectableOsTypeSet());
-  }
+  // GetPreferredUserTypes() returns ModelTypes, which includes both browser
+  // and OS types. However, this test exercises browser UserSelectableTypes,
+  // so disable OS selectable types.
+  sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
+                                         UserSelectableOsTypeSet());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // History and OpenTabs enabled: All the history-related ModelTypes should be
@@ -421,13 +391,11 @@ TEST_F(SyncUserSettingsImplTest,
       MakeSyncUserSettings(GetUserTypes());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    // GetPreferredUserTypes() returns ModelTypes, which includes both browser
-    // and OS types. However, this test exercises browser UserSelectableTypes,
-    // so disable OS selectable types.
-    sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
-                                           UserSelectableOsTypeSet());
-  }
+  // GetPreferredUserTypes() returns ModelTypes, which includes both browser
+  // and OS types. However, this test exercises browser UserSelectableTypes,
+  // so disable OS selectable types.
+  sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
+                                         UserSelectableOsTypeSet());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // History and OpenTabs enabled: All the history-related ModelTypes should be

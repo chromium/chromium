@@ -8,7 +8,7 @@
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
-#include "chrome/browser/sync/test/integration/sync_settings_categorization_sync_test.h"
+#include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "content/public/test/browser_test.h"
@@ -20,11 +20,9 @@ using preferences_helper::GetPrefs;
 
 namespace {
 
-class TwoClientOsPreferencesSyncTest
-    : public SyncSettingsCategorizationSyncTest {
+class TwoClientOsPreferencesSyncTest : public SyncTest {
  public:
-  TwoClientOsPreferencesSyncTest()
-      : SyncSettingsCategorizationSyncTest(TWO_CLIENT) {}
+  TwoClientOsPreferencesSyncTest() : SyncTest(TWO_CLIENT) {}
   ~TwoClientOsPreferencesSyncTest() override = default;
 
   // Needed for AwaitQuiescence().
