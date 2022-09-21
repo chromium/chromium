@@ -58,6 +58,7 @@ class HistoryClustersItemProperties {
             new WritableObjectPropertyKey<>();
     static final WritableBooleanPropertyKey SHOW_VERTICALLY_CENTERED =
             new WritableBooleanPropertyKey();
+    static final WritableIntPropertyKey START_ICON_BACKGROUND_RES = new WritableIntPropertyKey();
     static final WritableIntPropertyKey START_ICON_VISIBILITY = new WritableIntPropertyKey();
     static final WritableObjectPropertyKey<CharSequence> TITLE = new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<CharSequence> URL = new WritableObjectPropertyKey<>();
@@ -66,6 +67,6 @@ class HistoryClustersItemProperties {
     static final PropertyKey[] ALL_KEYS = {ACCESSIBILITY_STATE, CHIP_CLICK_HANDLER, CLICK_HANDLER,
             CLUSTER_VISIT, DIVIDER_IS_THICK, DIVIDER_VISIBLE, END_BUTTON_CLICK_HANDLER,
             END_BUTTON_DRAWABLE, END_BUTTON_VISIBLE, ICON_DRAWABLE, LABEL, PROGRESS_BUTTON_STATE,
-            RELATED_SEARCHES, SHOW_VERTICALLY_CENTERED, START_ICON_VISIBILITY, TITLE, URL,
-            VISIBILITY};
+            RELATED_SEARCHES, SHOW_VERTICALLY_CENTERED, START_ICON_BACKGROUND_RES,
+            START_ICON_VISIBILITY, TITLE, URL, VISIBILITY};
 }
