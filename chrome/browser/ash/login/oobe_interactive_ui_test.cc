@@ -479,11 +479,11 @@ class FakeRecommendAppsFetcher : public RecommendAppsFetcher {
       delegate_->OnLoadSuccess(base::Value(std::move(response_dict)));
       return;
     }
-    base::Value app(base::Value::Type::DICTIONARY);
-    app.SetKey("package_name", base::Value("test.package"));
-    base::Value app_list(base::Value::Type::LIST);
+    base::Value::Dict app;
+    app.Set("package_name", "test.package");
+    base::Value::List app_list;
     app_list.Append(std::move(app));
-    delegate_->OnLoadSuccess(std::move(app_list));
+    delegate_->OnLoadSuccess(base::Value(std::move(app_list)));
   }
 
   void Retry() override { NOTREACHED(); }
