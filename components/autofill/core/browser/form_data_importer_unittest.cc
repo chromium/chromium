@@ -1843,7 +1843,7 @@ TEST_P(FormDataImporterTest,
   // Start with a verified profile.
   AutofillProfile profile(base::GenerateGUID(), kSettingsOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
+                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "",
                        "Hollywood", "CA", "91601", "US", "12345678910");
   EXPECT_TRUE(profile.IsVerified());
 

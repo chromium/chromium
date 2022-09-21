@@ -1225,6 +1225,67 @@ TEST(AutofillProfileTest, Compare) {
   EXPECT_LT(0, b.Compare(a));
 }
 
+// For each structured profile tokens, test the comparison operator for both the
+// value and the status.
+TEST(AutofillProfileTest, Compare_StructuredTypes) {
+  // Those types do store a verification status.
+  ServerFieldTypeSet structured_types{
+      NAME_FULL,
+      NAME_FIRST,
+      NAME_MIDDLE,
+      NAME_LAST,
+      NAME_LAST_FIRST,
+      NAME_LAST_SECOND,
+      NAME_LAST_CONJUNCTION,
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_SORTING_CODE,
+      ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_HOUSE_NUMBER,
+      ADDRESS_HOME_STREET_NAME,
+      ADDRESS_HOME_DEPENDENT_STREET_NAME,
+      ADDRESS_HOME_PREMISE_NAME,
+      ADDRESS_HOME_SUBPREMISE,
+  };
+
+  // Those values are legal for all tokens.
+  const std::u16string value1 = u"DE";
+  const std::u16string value2 = u"US";
+
+  const VerificationStatus status1 = VerificationStatus::kObserved;
+  const VerificationStatus status2 = VerificationStatus::kParsed;
+
+  ASSERT_NE(value1, value2);
+  ASSERT_NE(status1, status2);
+
+  for (auto type : structured_types) {
+    // Create two empty profiles to test the tokens individually.
+    AutofillProfile profile1;
+    AutofillProfile profile2;
+
+    SCOPED_TRACE(testing::Message()
+                 << "Testing the Compare method for the type: "
+                 << AutofillType(type).ToString());
+
+    SCOPED_TRACE(testing::Message()
+                 << "Verify the corrext result for identical values");
+    profile1.SetRawInfoWithVerificationStatus(type, value1, status1);
+    profile2.SetRawInfoWithVerificationStatus(type, value1, status1);
+    EXPECT_EQ(profile1.Compare(profile2), 0);
+
+    SCOPED_TRACE(testing::Message() << "Verify the sensitivity to the value");
+    profile2.SetRawInfoWithVerificationStatus(type, value2, status1);
+    EXPECT_NE(profile1.Compare(profile2), 0);
+
+    SCOPED_TRACE(testing::Message() << "Verify the sensitivity to the status");
+    profile2.SetRawInfoWithVerificationStatus(type, value1, status2);
+    EXPECT_NE(profile1.Compare(profile2), 0);
+  }
+}
+
 TEST(AutofillProfileTest, IsPresentButInvalid) {
   AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
   EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_STATE));

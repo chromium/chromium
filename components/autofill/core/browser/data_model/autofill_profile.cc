@@ -455,7 +455,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
       }
     }
 
-    for (ServerFieldType type : types) {
+    for (ServerFieldType type : new_types) {
       // If the value is empty, the verification status can be ambiguous because
       // the value could be either build from its empty child nodes or parsed
       // from its parent. Therefore, it should not be considered when evaluating
