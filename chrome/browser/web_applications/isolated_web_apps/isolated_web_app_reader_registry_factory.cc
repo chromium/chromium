@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
@@ -40,7 +41,9 @@ IsolatedWebAppReaderRegistryFactory::~IsolatedWebAppReaderRegistryFactory() =
 KeyedService* IsolatedWebAppReaderRegistryFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new IsolatedWebAppReaderRegistry(
-      std::make_unique<IsolatedWebAppValidator>());
+      std::make_unique<IsolatedWebAppValidator>(), base::BindRepeating([]() {
+        return std::make_unique<SignedWebBundleSignatureVerifier>();
+      }));
 }
 
 content::BrowserContext*

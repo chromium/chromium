@@ -15,6 +15,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -53,6 +54,23 @@ class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
 
  private:
   absl::optional<std::string> integrity_block_error_;
+};
+
+class FakeSignatureVerifier : public SignedWebBundleSignatureVerifier {
+ public:
+  explicit FakeSignatureVerifier(
+      absl::optional<SignedWebBundleSignatureVerifier::Error> error)
+      : error_(error) {}
+
+  void VerifySignatures(scoped_refptr<web_package::SharedFile> file,
+                        SignedWebBundleIntegrityBlock integrity_block,
+                        SignatureVerificationCallback callback) override {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), error_));
+  }
+
+ private:
+  absl::optional<SignedWebBundleSignatureVerifier::Error> error_;
 };
 
 }  // namespace
@@ -100,7 +118,11 @@ class IsolatedWebAppReaderRegistryTest : public WebAppTest {
     integrity_block_->signature_stack = std::move(signature_stack);
 
     registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-        std::make_unique<IsolatedWebAppValidator>());
+        std::make_unique<IsolatedWebAppValidator>(),
+        base::BindRepeating(
+            []() -> std::unique_ptr<SignedWebBundleSignatureVerifier> {
+              return std::make_unique<FakeSignatureVerifier>(absl::nullopt);
+            }));
 
     std::string test_file_data = kResponseBody;
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -287,7 +309,11 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestUntrustedPublicKeys) {
   resource_request.url = kPrimaryUrl;
 
   registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-      std::make_unique<FakeIsolatedWebAppValidator>("test error"));
+      std::make_unique<FakeIsolatedWebAppValidator>("test error"),
+      base::BindRepeating(
+          []() -> std::unique_ptr<SignedWebBundleSignatureVerifier> {
+            return std::make_unique<FakeSignatureVerifier>(absl::nullopt);
+          }));
 
   base::test::TestFuture<Result> read_response_future;
   registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
@@ -303,8 +329,58 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestUntrustedPublicKeys) {
             "Public keys of the Isolated Web App are untrusted: test error");
 }
 
-// TODO(crbug.com/1315947): Add a test that checks the behavior when the
-// signatures are invalid once signature verification is implemented.
+class IsolatedWebAppReaderRegistrySignatureVerificationErrorTest
+    : public IsolatedWebAppReaderRegistryTest,
+      public ::testing::WithParamInterface<
+          SignedWebBundleSignatureVerifier::Error> {};
+
+TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
+       SignatureVerificationError) {
+  network::ResourceRequest resource_request;
+  resource_request.url = kPrimaryUrl;
+
+  registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
+      std::make_unique<FakeIsolatedWebAppValidator>(absl::nullopt),
+      base::BindRepeating(
+          []() -> std::unique_ptr<SignedWebBundleSignatureVerifier> {
+            return std::make_unique<FakeSignatureVerifier>(GetParam());
+          }));
+
+  base::test::TestFuture<Result> read_response_future;
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
+
+  FulfillIntegrityBlock();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, signatures are only verified at installation-time, thus the
+  // `FakeSignatureVerifier` set up above will never be called.
+  // TODO(cmfcmf): Make sure signatures are actually verified during
+  // installation once installation is implemented.
+  FulfillMetadata();
+  FulfillResponse(resource_request);
+
+  Result result = read_response_future.Take();
+  ASSERT_TRUE(result.has_value()) << result.error().message;
+#else
+  Result result = read_response_future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().type,
+            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().message,
+            base::StringPrintf("Failed to verify signatures: %s",
+                               GetParam().message.c_str()));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
+    ::testing::Values(
+        SignedWebBundleSignatureVerifier::Error::ForInternalError(
+            "internal error"),
+        SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
+            "invalid signature")));
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadata) {
   network::ResourceRequest resource_request;

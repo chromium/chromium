@@ -4,11 +4,15 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 
+#include <memory>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
@@ -30,6 +34,23 @@ constexpr uint8_t kEd25519Signature[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0};
+
+class FakeSignatureVerifier : public SignedWebBundleSignatureVerifier {
+ public:
+  explicit FakeSignatureVerifier(
+      absl::optional<SignedWebBundleSignatureVerifier::Error> error)
+      : error_(error) {}
+
+  void VerifySignatures(scoped_refptr<web_package::SharedFile> file,
+                        SignedWebBundleIntegrityBlock integrity_block,
+                        SignatureVerificationCallback callback) override {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), error_));
+  }
+
+ private:
+  absl::optional<SignedWebBundleSignatureVerifier::Error> error_;
+};
 
 }  // namespace
 
@@ -67,8 +88,6 @@ class SignedWebBundleReaderTest : public testing::Test {
     signature_stack.push_back(std::move(signature_stack_entry));
 
     integrity_block_ = web_package::mojom::BundleIntegrityBlock::New();
-    // TODO(crbug.com/1315947): Provide proper integrity block data here once
-    // integrity verification is implemented.
     integrity_block_->size = 123;
     integrity_block_->signature_stack = std::move(signature_stack);
   }
@@ -85,6 +104,8 @@ class SignedWebBundleReaderTest : public testing::Test {
       SignedWebBundleReader::ReadErrorCallback callback,
       VerificationAction verification_action =
           VerificationAction::ContinueAndVerifySignatures(),
+      absl::optional<SignedWebBundleSignatureVerifier::Error>
+          signature_verifier_error = absl::nullopt,
       const std::string test_file_data = kResponseBody) {
     // Provide a buffer that contains the contents of just a single
     // response. We do not need to provide an integrity block or metadata
@@ -115,7 +136,8 @@ class SignedWebBundleReaderTest : public testing::Test {
 
               std::move(callback).Run(verification_action);
             }),
-        std::move(callback));
+        std::move(callback),
+        std::make_unique<FakeSignatureVerifier>(signature_verifier_error));
   }
 
   base::expected<web_package::mojom::BundleResponsePtr,
@@ -246,9 +268,67 @@ TEST_F(SignedWebBundleReaderTest, ReadIntegrityBlockAndAbort) {
   EXPECT_EQ(error->message, "test error");
 }
 
-// TODO(crbug.com/1315947): Test integrity block signature verification.
-// TODO(crbug.com/1315947): Test skipping of  signature verification on
-// ChromeOS.
+class SignedWebBundleReaderSignatureVerificationErrorTest
+    : public SignedWebBundleReaderTest,
+      public ::testing::WithParamInterface<
+          SignedWebBundleSignatureVerifier::Error> {};
+
+TEST_P(SignedWebBundleReaderSignatureVerificationErrorTest,
+       SignatureVerificationError) {
+  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+      parse_error_future;
+  auto reader = CreateReaderAndInitialize(
+      parse_error_future.GetCallback(),
+      VerificationAction::ContinueAndVerifySignatures(), GetParam());
+
+  parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
+
+  auto parse_error = parse_error_future.Take();
+  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kError);
+  ASSERT_TRUE(parse_error.has_value());
+
+  auto* error =
+      absl::get_if<SignedWebBundleSignatureVerifier::Error>(&*parse_error);
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error->message, GetParam().message);
+  EXPECT_EQ(error->type, GetParam().type);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SignedWebBundleReaderSignatureVerificationErrorTest,
+    ::testing::Values(
+        SignedWebBundleSignatureVerifier::Error::ForInternalError(
+            "internal error"),
+        SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
+            "invalid signature")));
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+// Test that signatures are not verified when the
+// `integrity_block_callback` asks to skip signature verification and
+// thus the provided `SignedWebBundleSignatureVerifier::Error` is never
+// triggered.
+TEST_F(SignedWebBundleReaderTest,
+       ReadIntegrityBlockAndSkipSignatureVerification) {
+  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+      parse_error_future;
+  auto reader = CreateReaderAndInitialize(
+      parse_error_future.GetCallback(),
+      VerificationAction::ContinueAndSkipSignatureVerification(),
+      SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
+          "invalid signature"));
+
+  parser_factory_->RunIntegrityBlockCallback(integrity_block_.Clone());
+  parser_factory_->RunMetadataCallback(integrity_block_->size,
+                                       metadata_->Clone());
+
+  auto parse_error = parse_error_future.Take();
+  EXPECT_FALSE(parse_error.has_value());
+  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SignedWebBundleReaderTest, ReadMetadataError) {
   base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>

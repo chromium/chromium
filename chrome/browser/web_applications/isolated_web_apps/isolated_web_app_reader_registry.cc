@@ -4,11 +4,14 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
+#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -27,8 +30,11 @@ inline constexpr bool always_false_v __attribute__((unused)) = false;
 }  // namespace
 
 IsolatedWebAppReaderRegistry::IsolatedWebAppReaderRegistry(
-    std::unique_ptr<IsolatedWebAppValidator> validator)
-    : validator_(std::move(validator)) {}
+    std::unique_ptr<IsolatedWebAppValidator> validator,
+    base::RepeatingCallback<std::unique_ptr<SignedWebBundleSignatureVerifier>()>
+        signature_verifier_factory)
+    : validator_(std::move(validator)),
+      signature_verifier_factory_(std::move(signature_verifier_factory)) {}
 
 IsolatedWebAppReaderRegistry::~IsolatedWebAppReaderRegistry() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -60,6 +66,8 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
     }
   }
 
+  std::unique_ptr<SignedWebBundleSignatureVerifier> signature_verifier =
+      signature_verifier_factory_.Run();
   std::unique_ptr<SignedWebBundleReader> reader =
       SignedWebBundleReader::CreateAndStartReading(
           web_bundle_path,
@@ -70,7 +78,8 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
           base::BindOnce(
               &IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead,
               // `base::Unretained` can be used here since `this` owns `reader`.
-              base::Unretained(this), web_bundle_path, web_bundle_id));
+              base::Unretained(this), web_bundle_path, web_bundle_id),
+          std::move(signature_verifier));
 
   auto [cache_entry_it, was_insertion] =
       reader_cache_.emplace(web_bundle_path, CacheEntry(std::move(reader)));
@@ -96,6 +105,8 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockRead(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, we only verify integrity at install-time. On other OSes,
+  // we verify integrity once per session.
   std::move(integrity_callback)
       .Run(SignedWebBundleReader::SignatureVerificationAction::
                ContinueAndSkipSignatureVerification());
@@ -137,6 +148,11 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
                 "Public keys of the Isolated Web App are untrusted: %s",
                 error.message.c_str());
           } else if constexpr (std::is_same_v<
+                                   T,
+                                   SignedWebBundleSignatureVerifier::Error>) {
+            return base::StringPrintf("Failed to verify signatures: %s",
+                                      error.message.c_str());
+          } else if constexpr (std::is_same_v<
                                    T, web_package::mojom::
                                           BundleMetadataParseErrorPtr>) {
             return base::StringPrintf("Failed to parse metadata: %s",
@@ -144,8 +160,6 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
           } else {
             static_assert(always_false_v<T>, "The visitor is non-exhaustive.");
           }
-          // TODO(crbug.com/1315947): Check if an error occurred during
-          // signature verification once it is implemented.
         },
         *read_error);
     for (auto& [resource_request, callback] : pending_requests) {

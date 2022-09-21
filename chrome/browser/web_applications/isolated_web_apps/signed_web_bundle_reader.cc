@@ -28,8 +28,10 @@
 namespace web_app {
 
 SignedWebBundleReader::SignedWebBundleReader(
-    const base::FilePath& web_bundle_path)
-    : web_bundle_path_(web_bundle_path) {}
+    const base::FilePath& web_bundle_path,
+    std::unique_ptr<SignedWebBundleSignatureVerifier> signature_verifier)
+    : web_bundle_path_(web_bundle_path),
+      signature_verifier_(std::move(signature_verifier)) {}
 
 SignedWebBundleReader::~SignedWebBundleReader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -40,9 +42,11 @@ std::unique_ptr<SignedWebBundleReader>
 SignedWebBundleReader::CreateAndStartReading(
     const base::FilePath& web_bundle_path,
     IntegrityBlockReadResultCallback integrity_block_result_callback,
-    ReadErrorCallback read_error_callback) {
+    ReadErrorCallback read_error_callback,
+    std::unique_ptr<SignedWebBundleSignatureVerifier> signature_verifier) {
   // Using `new` to access a non-public constructor.
-  auto reader = base::WrapUnique(new SignedWebBundleReader(web_bundle_path));
+  auto reader = base::WrapUnique(new SignedWebBundleReader(
+      web_bundle_path, std::move(signature_verifier)));
   reader->Initialize(std::move(integrity_block_result_callback),
                      std::move(read_error_callback));
 
@@ -143,17 +147,21 @@ void SignedWebBundleReader::OnIntegrityBlockParsed(
                                integrity_block.error().c_str())));
     return;
   }
-  integrity_block_ = std::move(*integrity_block);
+
+  integrity_block_size_in_bytes_ = integrity_block->size_in_bytes();
+  auto public_key_stack = integrity_block->GetPublicKeyStack();
 
   std::move(integrity_block_result_callback)
-      .Run(integrity_block_->GetPublicKeyStack(),
+      .Run(public_key_stack,
            base::BindOnce(&SignedWebBundleReader::
                               OnShouldContinueParsingAfterIntegrityBlock,
                           weak_ptr_factory_.GetWeakPtr(),
+                          std::move(*integrity_block),
                           std::move(read_error_callback)));
 }
 
 void SignedWebBundleReader::OnShouldContinueParsingAfterIntegrityBlock(
+    SignedWebBundleIntegrityBlock integrity_block,
     ReadErrorCallback callback,
     SignatureVerificationAction action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -165,7 +173,7 @@ void SignedWebBundleReader::OnShouldContinueParsingAfterIntegrityBlock(
                        AbortedByCaller({.message = action.abort_message()}));
       return;
     case SignatureVerificationAction::Type::kContinueAndVerifySignatures:
-      VerifySignatures(std::move(callback));
+      VerifySignatures(std::move(integrity_block), std::move(callback));
       return;
 #if BUILDFLAG(IS_CHROMEOS)
     case SignatureVerificationAction::Type::
@@ -176,21 +184,31 @@ void SignedWebBundleReader::OnShouldContinueParsingAfterIntegrityBlock(
   }
 }
 
-void SignedWebBundleReader::VerifySignatures(ReadErrorCallback callback) {
+void SignedWebBundleReader::VerifySignatures(
+    SignedWebBundleIntegrityBlock integrity_block,
+    ReadErrorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
-  // TODO(crbug.com/1315947): Actually verify integrity here.
-  OnSignaturesVerified(std::move(callback));
+  signature_verifier_->VerifySignatures(
+      file_, std::move(integrity_block),
+      base::BindOnce(&SignedWebBundleReader::OnSignaturesVerified,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void SignedWebBundleReader::OnSignaturesVerified(ReadErrorCallback callback) {
+void SignedWebBundleReader::OnSignaturesVerified(
+    ReadErrorCallback callback,
+    absl::optional<SignedWebBundleSignatureVerifier::Error>
+        verification_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
-  // TODO(crbug.com/1315947): Check whether the integrity has been verified
-  // successfully here, once it is implemented.
+  if (verification_error.has_value()) {
+    FulfillWithError(std::move(callback), *verification_error);
+    return;
+  }
 
+  // Signatures are valid; continue with parsing of metadata.
   ReadMetadata(std::move(callback));
 }
 
@@ -199,7 +217,7 @@ void SignedWebBundleReader::ReadMetadata(ReadErrorCallback callback) {
   CHECK_EQ(state_, State::kInitializing);
 
   parser_->ParseMetadata(
-      /*offset=*/base::checked_cast<int64_t>(integrity_block_->size_in_bytes()),
+      /*offset=*/base::checked_cast<int64_t>(*integrity_block_size_in_bytes_),
       base::BindOnce(&SignedWebBundleReader::OnMetadataParsed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

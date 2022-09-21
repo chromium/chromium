@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
+#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_signature_verifier.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -36,7 +37,10 @@ namespace web_app {
 class IsolatedWebAppReaderRegistry : public KeyedService {
  public:
   explicit IsolatedWebAppReaderRegistry(
-      std::unique_ptr<IsolatedWebAppValidator> validator);
+      std::unique_ptr<IsolatedWebAppValidator> validator,
+      base::RepeatingCallback<
+          std::unique_ptr<SignedWebBundleSignatureVerifier>()>
+          signature_verifier_factory);
   ~IsolatedWebAppReaderRegistry() override;
 
   IsolatedWebAppReaderRegistry(const IsolatedWebAppReaderRegistry&) = delete;
@@ -154,6 +158,8 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   base::flat_map<base::FilePath, CacheEntry> reader_cache_;
 
   std::unique_ptr<IsolatedWebAppValidator> validator_;
+  base::RepeatingCallback<std::unique_ptr<SignedWebBundleSignatureVerifier>()>
+      signature_verifier_factory_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
