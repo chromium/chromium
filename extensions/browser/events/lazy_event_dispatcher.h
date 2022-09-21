@@ -70,8 +70,6 @@ class LazyEventDispatcher {
 
   void RecordAlreadyDispatched(const LazyContextId& dispatch_context);
 
-  content::BrowserContext* GetIncognitoContext(const Extension* extension);
-
   const raw_ptr<content::BrowserContext> browser_context_;
   DispatchFunction dispatch_function_;
 

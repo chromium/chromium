@@ -110,8 +110,14 @@ void NotifyEventDispatched(content::BrowserContext* browser_context,
                                          event_name, args);
 }
 
-LazyContextId LazyContextIdForBrowserContext(BrowserContext* browser_context,
-                                             const EventListener* listener) {
+// Browser context is required for lazy context id. Before adding browser
+// context member to EventListener, callers must pass in the browser context as
+// a parameter.
+// TODO(richardzh): Once browser context is added as a member to EventListener,
+//                  update this method to get browser_context from listener
+//                  instead of parameter.
+LazyContextId LazyContextIdForListener(const EventListener* listener,
+                                       BrowserContext* browser_context) {
   auto* registry = ExtensionRegistry::Get(browser_context);
   DCHECK(registry);
 
@@ -133,11 +139,6 @@ LazyContextId LazyContextIdForBrowserContext(BrowserContext* browser_context,
   }
 
   return LazyContextId(browser_context, listener->extension_id());
-}
-
-LazyContextId LazyContextIdForListener(const EventListener* listener) {
-  return LazyContextIdForBrowserContext(
-      listener->process()->GetBrowserContext(), listener);
 }
 
 // A global identifier used to distinguish extension events.
@@ -266,6 +267,28 @@ EventRouter::EventRouter(BrowserContext* browser_context,
 EventRouter::~EventRouter() {
   for (auto* process : observed_process_set_)
     process->RemoveObserver(this);
+}
+
+BrowserContext* EventRouter::GetIncognitoContextIfAccessible(
+    const std::string& extension_id) {
+  DCHECK(!extension_id.empty());
+  const Extension* extension = ExtensionRegistry::Get(browser_context_)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
+  if (!extension)
+    return nullptr;
+  if (!IncognitoInfo::IsSplitMode(extension))
+    return nullptr;
+
+  return GetIncognitoContext();
+}
+
+BrowserContext* EventRouter::GetIncognitoContext() {
+  ExtensionsBrowserClient* browser_client = ExtensionsBrowserClient::Get();
+  if (!browser_client->HasOffTheRecordContext(browser_context_))
+    return nullptr;
+
+  return browser_client->GetOffTheRecordContext(browser_context_);
 }
 
 void EventRouter::AddListenerForMainThread(mojom::EventListenerParamPtr param,
@@ -896,9 +919,27 @@ void EventRouter::DispatchEventImpl(const std::string& restrict_to_extension_id,
     if (!listener->IsLazy())
       continue;
 
+    // TODO(richardzh): Move cross browser context check (by calling
+    // EventRouter::CanDispatchEventToBrowserContext) from
+    // LazyEventDispatcher to here. So the check happens before instead of
+    // during the dispatch.
+
+    // Lazy listeners don't have a process, take the stored browser context
+    // for lazy context.
     lazy_event_dispatcher.Dispatch(
-        *event, LazyContextIdForBrowserContext(browser_context_, listener),
+        *event, LazyContextIdForListener(listener, browser_context_),
         listener->filter());
+
+    // Dispatch to lazy listener in the incognito context.
+    // We need to use the incognito context in the case of split-mode
+    // extensions.
+    BrowserContext* incognito_context =
+        GetIncognitoContextIfAccessible(listener->extension_id());
+    if (incognito_context) {
+      lazy_event_dispatcher.Dispatch(
+          *event, LazyContextIdForListener(listener, incognito_context),
+          listener->filter());
+    }
   }
 
   for (const EventListener* listener : listeners) {
@@ -912,8 +953,10 @@ void EventRouter::DispatchEventImpl(const std::string& restrict_to_extension_id,
     }
     if (listener->IsLazy())
       continue;
-    if (lazy_event_dispatcher.HasAlreadyDispatched(
-            LazyContextIdForListener(listener))) {
+    // Non-lazy listeners take the process browser context for
+    // lazy context
+    if (lazy_event_dispatcher.HasAlreadyDispatched(LazyContextIdForListener(
+            listener, listener->process()->GetBrowserContext()))) {
       continue;
     }
 

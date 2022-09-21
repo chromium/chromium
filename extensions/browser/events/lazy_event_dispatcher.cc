@@ -11,7 +11,6 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/common/features/feature.h"
-#include "extensions/common/manifest_handlers/incognito_info.h"
 
 using content::BrowserContext;
 
@@ -34,23 +33,11 @@ void LazyEventDispatcher::Dispatch(
   if (!extension)
     return;
 
-  // Check both the original and the incognito browser context to see if we
-  // should load a non-peristent context (a lazy background page or an
-  // extension service worker) to handle the event. We need to use the incognito
-  // context in the case of split-mode extensions.
+  // Check both the browser context to see if we should load a
+  // non-peristent context (a lazy background page or an extension
+  // service worker) to handle the event.
   if (QueueEventDispatch(event, dispatch_context, extension, listener_filter))
     RecordAlreadyDispatched(dispatch_context);
-
-  BrowserContext* additional_context = GetIncognitoContext(extension);
-  if (!additional_context)
-    return;
-
-  LazyContextId additional_context_id(dispatch_context);
-  additional_context_id.set_browser_context(additional_context);
-  if (QueueEventDispatch(event, additional_context_id, extension,
-                         listener_filter)) {
-    RecordAlreadyDispatched(additional_context_id);
-  }
 }
 
 bool LazyEventDispatcher::HasAlreadyDispatched(
@@ -117,16 +104,6 @@ bool LazyEventDispatcher::QueueEventDispatch(
 void LazyEventDispatcher::RecordAlreadyDispatched(
     const LazyContextId& dispatch_context) {
   dispatched_ids_.insert(dispatch_context);
-}
-
-BrowserContext* LazyEventDispatcher::GetIncognitoContext(
-    const Extension* extension) {
-  if (!IncognitoInfo::IsSplitMode(extension))
-    return nullptr;
-  ExtensionsBrowserClient* browser_client = ExtensionsBrowserClient::Get();
-  if (!browser_client->HasOffTheRecordContext(browser_context_))
-    return nullptr;
-  return browser_client->GetOffTheRecordContext(browser_context_);
 }
 
 }  // namespace extensions
