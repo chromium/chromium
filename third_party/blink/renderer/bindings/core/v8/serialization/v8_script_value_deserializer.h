@@ -113,6 +113,7 @@ class CORE_EXPORT V8ScriptValueDeserializer
   v8::MaybeLocal<v8::SharedArrayBuffer> GetSharedArrayBufferFromId(
       v8::Isolate*,
       uint32_t) override;
+  const v8::SharedValueConveyor* GetSharedValueConveyor(v8::Isolate*) override;
 
   ScriptState* script_state_;
   UnpackedSerializedScriptValue* unpacked_value_;

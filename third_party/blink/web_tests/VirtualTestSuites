@@ -1287,5 +1287,11 @@
     "bases": [
       "external/wpt/fetch/corb"
     ]
+  },
+  {
+    "prefix": "js-shared-memory",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/js/shared_memory"],
+    "args": ["--enable-features=JavaScriptExperimentalSharedMemory"]
   }
 ]

@@ -999,4 +999,23 @@ void V8ScriptValueSerializer::FreeBufferMemory(void* buffer) {
   return WTF::Partitions::BufferFree(buffer);
 }
 
+bool V8ScriptValueSerializer::AdoptSharedValueConveyor(
+    v8::Isolate* isolate,
+    v8::SharedValueConveyor&& conveyor) {
+  auto* execution_context = ExecutionContext::From(script_state_);
+  if (for_storage_ || !execution_context->SharedArrayBufferTransferAllowed()) {
+    DCHECK(exception_state_);
+    ExceptionState exception_state(script_state_->GetIsolate(),
+                                   exception_state_->GetContext());
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataCloneError,
+        for_storage_
+            ? "A shared JS value cannot be serialized for storage."
+            : "Shared JS value conveyance requires self.crossOriginIsolated.");
+    return false;
+  }
+  serialized_script_value_->shared_value_conveyor_.emplace(std::move(conveyor));
+  return true;
+}
+
 }  // namespace blink

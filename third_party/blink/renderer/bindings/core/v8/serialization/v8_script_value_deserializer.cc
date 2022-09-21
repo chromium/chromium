@@ -805,4 +805,17 @@ V8ScriptValueDeserializer::GetSharedArrayBufferFromId(v8::Isolate* isolate,
   return v8::MaybeLocal<v8::SharedArrayBuffer>();
 }
 
+const v8::SharedValueConveyor*
+V8ScriptValueDeserializer::GetSharedValueConveyor(v8::Isolate* isolate) {
+  if (auto* conveyor =
+          serialized_script_value_->MaybeGetSharedValueConveyor()) {
+    return conveyor;
+  }
+  ExceptionState exception_state(isolate, ExceptionState::kUnknownContext,
+                                 nullptr, nullptr);
+  exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
+                                    "Unable to deserialize shared JS value.");
+  return nullptr;
+}
+
 }  // namespace blink

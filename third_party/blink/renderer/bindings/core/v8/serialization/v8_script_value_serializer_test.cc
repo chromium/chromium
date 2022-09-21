@@ -2171,4 +2171,13 @@ TEST(V8ScriptValueSerializerTest, DecodeDOMExceptionWithInvalidNameString) {
   EXPECT_TRUE(result->IsNull());
 }
 
+TEST(V8ScriptValueSerializerTest, NoSharedValueConveyor) {
+  V8TestingScope scope;
+  scoped_refptr<SerializedScriptValue> input =
+      SerializedValue({0xff, 0x14, 0xff, 0x0f, 'p', 0x00});
+  v8::Local<v8::Value> result =
+      V8ScriptValueDeserializer(scope.GetScriptState(), input).Deserialize();
+  EXPECT_TRUE(result->IsNull());
+}
+
 }  // namespace blink

@@ -1970,3 +1970,7 @@ crbug.com/1260483 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenc
 # Feature is not yet launched, so skip the base.
 crbug.com/1293679 external/wpt/pending_beacon/* [ Skip ]
 crbug.com/1293679 virtual/pending-beacon/external/wpt/pending_beacon/* [ Pass ]
+
+# Experimental JS shared memory features
+crbug.com/1351118 wpt_internal/js/shared_memory/* [ Skip ]
+crbug.com/1351118 virtual/js-shared-memory/wpt_internal/js/shared_memory/* [ Pass ]

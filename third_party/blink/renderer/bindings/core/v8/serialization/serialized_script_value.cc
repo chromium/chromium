@@ -660,6 +660,19 @@ void SerializedScriptValue::RegisterMemoryAllocatedWithCurrentScriptContext() {
   v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(diff);
 }
 
+bool SerializedScriptValue::IsLockedToAgentCluster() const {
+  return !wasm_modules_.empty() || !shared_array_buffers_contents_.empty() ||
+         base::ranges::any_of(attachments_,
+                              [](const auto& entry) {
+                                return entry.value->IsLockedToAgentCluster();
+                              }) ||
+         shared_value_conveyor_.has_value();
+}
+
+bool SerializedScriptValue::IsOriginCheckRequired() const {
+  return file_system_access_tokens_.size() > 0 || wasm_modules_.size() > 0;
+}
+
 // This ensures that the version number published in
 // WebSerializedScriptValueVersion.h matches the serializer's understanding.
 // TODO(jbroman): Fix this to also account for the V8-side version. See
@@ -667,9 +680,5 @@ void SerializedScriptValue::RegisterMemoryAllocatedWithCurrentScriptContext() {
 static_assert(kSerializedScriptValueVersion ==
                   SerializedScriptValue::kWireFormatVersion,
               "Update WebSerializedScriptValueVersion.h.");
-
-bool SerializedScriptValue::IsOriginCheckRequired() const {
-  return file_system_access_tokens_.size() > 0 || wasm_modules_.size() > 0;
-}
 
 }  // namespace blink

@@ -36,6 +36,7 @@
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/ranges/algorithm.h"
+#include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
@@ -288,12 +289,11 @@ class CORE_EXPORT SerializedScriptValue
 
   StreamArray& GetStreams() { return streams_; }
 
-  bool IsLockedToAgentCluster() const {
-    return !wasm_modules_.empty() || !shared_array_buffers_contents_.empty() ||
-           base::ranges::any_of(attachments_, [](const auto& entry) {
-             return entry.value->IsLockedToAgentCluster();
-           });
+  const v8::SharedValueConveyor* MaybeGetSharedValueConveyor() const {
+    return base::OptionalToPtr(shared_value_conveyor_);
   }
+
+  bool IsLockedToAgentCluster() const;
 
   // Returns true after serializing script values that remote origins cannot
   // access.
@@ -393,6 +393,7 @@ class CORE_EXPORT SerializedScriptValue
   FileSystemAccessTokensArray file_system_access_tokens_;
   HashMap<const void* const*, std::unique_ptr<Attachment>> attachments_;
 
+  absl::optional<v8::SharedValueConveyor> shared_value_conveyor_;
   bool has_registered_external_allocation_;
 #if DCHECK_IS_ON()
   bool was_unpacked_ = false;
