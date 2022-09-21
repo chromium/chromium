@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -309,8 +308,7 @@ void ShowNotificationForDevice(const std::string& guid,
         chromeos::settings::mojom::kPluginVmUsbPreferencesSubpagePath;
   }
 
-  if (IsPlayStoreEnabledWithArcVmForProfile(profile()) &&
-      base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm)) {
+  if (IsPlayStoreEnabledWithArcVmForProfile(profile())) {
     vm_name = l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_ARCVM);
     vm_name_button_text =
         l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_ARCVM_BUTTON);
@@ -547,8 +545,7 @@ void CrosUsbDetector::ConnectToDeviceManager() {
 bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
   if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile()) &&
       !plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile()) &&
-      !(IsPlayStoreEnabledWithArcVmForProfile(profile()) &&
-        base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm))) {
+      !IsPlayStoreEnabledWithArcVmForProfile(profile())) {
     return false;
   }
   if (!device.shareable) {
