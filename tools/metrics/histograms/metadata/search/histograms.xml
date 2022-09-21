@@ -1384,7 +1384,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.QueryTiles.FetcherNetErrorCode" enum="NetErrorCodes"
-    expires_after="2022-10-09">
+    expires_after="2023-08-31">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>Records the net error code get from TileFetcher.</summary>
@@ -1442,7 +1442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.QueryTiles.ShowQueryTilesSegmentationResult"
-    enum="ShowQueryTilesSegmentationResult" expires_after="2022-08-09">
+    enum="ShowQueryTilesSegmentationResult" expires_after="2023-08-31">
   <owner>haileywang@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -1469,7 +1469,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Search.QueryTiles.Tile.Clicked" units="index"
-    expires_after="2022-10-31">
+    expires_after="2023-08-31">
 <!-- Name completed by histogram_suffixes name="TileUiSurface" -->
 
   <owner>shaktisahu@chromium.org</owner>
@@ -1490,7 +1490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Search.QueryTiles.TileCount" units="tiles"
-    expires_after="2022-10-31">
+    expires_after="2023-08-31">
 <!-- Name completed by histogram_suffixes name="TileUiSurface" -->
 
   <owner>shaktisahu@chromium.org</owner>
@@ -1520,7 +1520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.QueryTiles.TrendingTileEvent" enum="TrendingTileEvent"
-    expires_after="2023-03-05">
+    expires_after="2023-08-31">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
