@@ -97,6 +97,12 @@ extern const char kUnenrolledFromGoogleMobileServicesDueToErrors[];
 // caused the last unenrollment from the UPM experience. Only set if
 // |kUnenrolledFromGoogleMobileServicesDueToErrors| is true.
 extern const char kUnenrolledFromGoogleMobileServicesAfterApiErrorCode[];
+
+// Timestamp at which the last UPM error message was shown to the user in
+// milliseconds since UNIX epoch (used in Java).
+// This is needed to ensure that the UI is prompted only once per given
+// time interval (currently 24h).
+extern const char kUPMErrorUIShownTimestamp[];
 #endif
 
 #if BUILDFLAG(IS_WIN)
