@@ -62,7 +62,6 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -269,11 +268,7 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   void SetUp() override {
     if (is_rtl_)
       base::i18n::SetICUDefaultLocale("he");
-    if (is_app_sort_enabled_) {
-      feature_list_.InitAndEnableFeature(features::kLauncherAppSort);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kLauncherAppSort);
-    }
+
     AshTestBase::SetUp();
 
     // Make the display big enough to hold the app list.
@@ -685,8 +680,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
 
   // True if the test screen is configured to work with RTL locale.
   bool is_rtl_ = false;
-  // True if feature LauncherAppSort should be enabled.
-  bool is_app_sort_enabled_ = false;
   // True if we set the test on tablet mode.
   bool create_as_tablet_mode_ = false;
 
@@ -695,8 +688,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
  private:
   // Restores the locale to default when destructor is called.
   base::test::ScopedRestoreICUDefaultLocale restore_locale_;
-
-  base::test::ScopedFeatureList feature_list_;
 
   absl::optional<gfx::Point> current_drag_location_;
 
@@ -740,6 +731,14 @@ class AppsGridViewDragTest : public AppsGridViewTest,
 
 INSTANTIATE_TEST_SUITE_P(All, AppsGridViewDragTest, testing::Bool());
 
+// Test suite for clamshell mode, parameterized by RTL.
+class AppsGridViewClamshellTest : public AppsGridViewTest,
+                                  public testing::WithParamInterface<bool> {
+ public:
+  AppsGridViewClamshellTest() { is_rtl_ = GetParam(); }
+};
+INSTANTIATE_TEST_SUITE_P(All, AppsGridViewClamshellTest, testing::Bool());
+
 // Test suite for verifying tablet mode apps grid behaviour, parameterized by
 // RTL locale. Tablet mode uses "cardified" pages, where the apps grid shrinks
 // to be smaller during dragging.
@@ -752,22 +751,6 @@ class AppsGridViewTabletTest : public AppsGridViewTest,
   }
 };
 INSTANTIATE_TEST_SUITE_P(All, AppsGridViewTabletTest, testing::Bool());
-
-// Test suite that tests apps sort works on all apps grid, parameterized by
-// RTL locale and clamshell/tablet mode.
-class AppsGridViewAppSortTest
-    : public AppsGridViewTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
- public:
-  AppsGridViewAppSortTest() {
-    is_rtl_ = std::get<0>(GetParam());
-    is_app_sort_enabled_ = true;
-    create_as_tablet_mode_ = std::get<1>(GetParam());
-  }
-};
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppsGridViewAppSortTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
 
 // This does not test the font name or weight because ash_unittests returns
 // different font lists than chrome (e.g. "DejaVu Sans" instead of "Roboto").
@@ -4776,17 +4759,13 @@ TEST_P(AppsGridViewTabletTest, DragItemIntoFolderStaysInCardifiedState) {
   test_api_->LayoutToIdealBounds();
 }
 
-TEST_P(AppsGridViewAppSortTest,
+TEST_P(AppsGridViewClamshellTest,
        ContextMenuInTopLevelAppListSortAllAppsInClamshellMode) {
   // In this test, the sort algorithm is not tested. Instead, the context menu
   // that contains the options to sort is verified to be shown in apps grid
   // view. The menu option selecting is also simulated to ensure the sorting is
   // called. The actual sort algorithm is tested in
   // chrome/browser/ui/app_list/app_list_sort_browsertest.cc.
-
-  // The AppsGridContextMenu is only used in clamshell mode.
-  if (create_as_tablet_mode_)
-    return;
 
   model_->PopulateApps(1);
 
@@ -4831,12 +4810,8 @@ TEST_P(AppsGridViewAppSortTest,
   EXPECT_FALSE(context_menu->IsMenuShowing());
 }
 
-TEST_P(AppsGridViewAppSortTest,
+TEST_P(AppsGridViewTabletTest,
        ContextMenuInTopLevelAppListSortAllAppsInTabletMode) {
-  // This test checks the context menu on root window in tablet mode.
-  if (!create_as_tablet_mode_)
-    return;
-
   model_->PopulateApps(1);
   EXPECT_EQ(AppListSortOrder::kCustom, model_->requested_sort_order());
 
@@ -4900,12 +4875,7 @@ TEST_P(AppsGridViewAppSortTest,
       nullptr);
 }
 
-TEST_P(AppsGridViewAppSortTest,
-       NoSortOptionsWhenSearchPageIsShownInTabletMode) {
-  // This test checks the context menu on root window in tablet mode.
-  if (!create_as_tablet_mode_)
-    return;
-
+TEST_P(AppsGridViewTabletTest, NoSortOptionsWhenSearchPageIsShownInTabletMode) {
   model_->PopulateApps(1);
   EXPECT_EQ(AppListSortOrder::kCustom, model_->requested_sort_order());
 
@@ -4961,7 +4931,7 @@ TEST_P(AppsGridViewAppSortTest,
   EXPECT_LT(context_menu_size, 3);
 }
 
-TEST_P(AppsGridViewAppSortTest, ContextMenuOnFolderItemSortAllApps) {
+TEST_P(AppsGridViewClamshellAndTabletTest, ContextMenuOnFolderItemSortAllApps) {
   // In this test, the sort algorithm is not tested. Instead, the context menu
   // that contains the options to sort is verified to be shown on folder app
   // list item view. The menu option selecting is also simulated to ensure the
