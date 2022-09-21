@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/form_processing/label_processing_util.h"
 #include "components/autofill/core/browser/form_processing/name_processing_util.h"
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
+#include "components/autofill/core/browser/form_structure_sectioning_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
@@ -1601,6 +1602,12 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
 
   if (base::FeatureList::IsEnabled(features::kAutofillUseNewSectioningMethod)) {
     IdentifySectionsWithNewMethod();
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUseParameterizedSectioning)) {
+    AssignSections(fields_);
     return;
   }
 

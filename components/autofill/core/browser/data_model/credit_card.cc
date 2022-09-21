@@ -422,7 +422,6 @@ bool CreditCard::IsDeletable() const {
 }
 
 std::u16string CreditCard::GetRawInfo(ServerFieldType type) const {
-  DCHECK_EQ(FieldTypeGroup::kCreditCard, AutofillType(type).group());
   switch (type) {
     case CREDIT_CARD_NAME_FULL:
       return name_on_card_;

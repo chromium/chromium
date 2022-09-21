@@ -211,6 +211,8 @@ static_library("browser") {
     "form_structure.h",
     "form_structure_rationalizer.cc",
     "form_structure_rationalizer.h",
+    "form_structure_sectioning_util.cc",
+    "form_structure_sectioning_util.h",
     "form_types.cc",
     "form_types.h",
     "geo/address_i18n.cc",

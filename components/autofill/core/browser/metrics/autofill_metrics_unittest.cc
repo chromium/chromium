@@ -1463,7 +1463,12 @@ TEST_F(AutofillMetricsTest,
 // Test that we log the skip decisions for hidden/representational fields
 // correctly.
 TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
-  // Create a profile.
+  // The old sectioning algorithm emits several different UKM metrics. Since we
+  // will have various variants of the sectioning algorithm, we don't want to
+  // adjust the expectations for each variant for now.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillUseParameterizedSectioning);
   RecreateProfile(/*is_server=*/false);
 
   FormData form = CreateForm({

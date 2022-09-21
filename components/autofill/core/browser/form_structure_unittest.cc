@@ -1088,6 +1088,14 @@ TEST_F(FormStructureTestImpl, PasswordFormShouldBeQueried) {
 // Verify that we can correctly process sections listed in the |autocomplete|
 // attribute.
 TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttributeWithSections) {
+  // This test tests whether credit card fields are implicitly in one, separate
+  // credit card section, independent of whether they have a valid autocomplete
+  // attribute section. With the new sectioning, credit card fields with a valid
+  // autocomplete attribute section S are in section S.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillUseParameterizedSectioning);
+
   FormData form;
   form.url = GURL("http://www.foo.com/");
 
@@ -1241,6 +1249,16 @@ TEST_F(FormStructureTestImpl,
 // local heuristics.
 TEST_F(FormStructureTestImpl,
        HeuristicsDontOverrideAutocompleteAttributeSections) {
+  // With the new sectioning, fields with a valid autocomplete attribute section
+  // S are in section S. All other <input> fields that are focusable are
+  // partitioned into intervals, each of which is a section.
+  // This is different compared to the old behavior which assigns fields without
+  // an autocomplete attribute section to the empty, "-default" section if there
+  // is a field with a valid autocomplete attribute section in the form.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillUseParameterizedSectioning);
+
   FormData form;
   form.url = GURL("http://www.foo.com/");
 

@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -162,10 +161,6 @@ std::vector<AutofillProfile*> PersonalDataManagerMock::GetProfiles() const {
   return result;
 }
 
-FormStructureTestApi test_api(FormStructure* form_structure) {
-  return FormStructureTestApi(form_structure);
-}
-
 }  // namespace
 
 // A data-driven test for verifying merging of Autofill profiles. Each input is
@@ -290,7 +285,6 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
             StringToFieldType(base::UTF16ToUTF8(field->name));
         field->set_heuristic_type(GetActivePatternSource(), type);
       }
-      test_api(&form_structure).IdentifySections(false);
 
       // Import the profile.
       FormDataImporter::ImportFormDataResult imported_data;
