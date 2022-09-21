@@ -715,16 +715,33 @@ void UpdateServiceProxy::UpdateOnSTA(
     return;
   }
 
+  std::wstring app_id_w;
+  std::wstring install_data_index_w;
+  if (![&]() {
+        if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &app_id_w)) {
+          return false;
+        }
+        if (!base::UTF8ToWide(install_data_index.c_str(),
+                              install_data_index.size(),
+                              &install_data_index_w)) {
+          return false;
+        }
+        return true;
+      }()) {
+    std::move(callback).Run(Result::kServiceFailed);
+    return;
+  }
+
   CHECK(updater_);
 
   auto observer = Microsoft::WRL::Make<UpdaterObserver>(updater_, state_update,
                                                         std::move(callback));
-  HRESULT hr = updater_->Update(
-      base::UTF8ToWide(app_id).c_str(),
-      base::UTF8ToWide(install_data_index).c_str(), static_cast<int>(priority),
-      policy_same_version_update ==
-          UpdateService::PolicySameVersionUpdate::kAllowed,
-      observer.Get());
+  HRESULT hr =
+      updater_->Update(app_id_w.c_str(), install_data_index_w.c_str(),
+                       static_cast<int>(priority),
+                       policy_same_version_update ==
+                           UpdateService::PolicySameVersionUpdate::kAllowed,
+                       observer.Get());
   if (FAILED(hr)) {
     VLOG(2) << "Failed to call IUpdater::UpdateAll: " << std::hex << hr;
     observer->Disconnect().Run(Result::kServiceFailed);
@@ -746,31 +763,43 @@ void UpdateServiceProxy::InstallOnSTA(const RegistrationRequest& request,
     return;
   }
 
-  std::wstring app_id;
-  std::wstring brand_code;
-  std::wstring brand_path;
-  std::wstring ap;
-  std::wstring version;
-  std::wstring existence_checker_path;
+  std::wstring app_id_w;
+  std::wstring brand_code_w;
+  std::wstring brand_path_w;
+  std::wstring ap_w;
+  std::wstring version_w;
+  std::wstring existence_checker_path_w;
+  std::wstring client_install_data_w;
+  std::wstring install_data_index_w;
   if (![&]() {
         if (!base::UTF8ToWide(request.app_id.c_str(), request.app_id.size(),
-                              &app_id)) {
+                              &app_id_w)) {
           return false;
         }
         if (!base::UTF8ToWide(request.brand_code.c_str(),
-                              request.brand_code.size(), &brand_code)) {
+                              request.brand_code.size(), &brand_code_w)) {
           return false;
         }
-        brand_path = request.brand_path.value();
-        if (!base::UTF8ToWide(request.ap.c_str(), request.ap.size(), &ap)) {
+        brand_path_w = request.brand_path.value();
+        if (!base::UTF8ToWide(request.ap.c_str(), request.ap.size(), &ap_w)) {
           return false;
         }
         std::string version_str = request.version.GetString();
         if (!base::UTF8ToWide(version_str.c_str(), version_str.size(),
-                              &version)) {
+                              &version_w)) {
           return false;
         }
-        existence_checker_path = request.existence_checker_path.value();
+        existence_checker_path_w = request.existence_checker_path.value();
+        if (!base::UTF8ToWide(client_install_data.c_str(),
+                              client_install_data.size(),
+                              &client_install_data_w)) {
+          return false;
+        }
+        if (!base::UTF8ToWide(install_data_index.c_str(),
+                              install_data_index.size(),
+                              &install_data_index_w)) {
+          return false;
+        }
         return true;
       }()) {
     std::move(callback).Run(Result::kServiceFailed);
@@ -783,11 +812,10 @@ void UpdateServiceProxy::InstallOnSTA(const RegistrationRequest& request,
                                                         std::move(callback));
 
   HRESULT hr = updater_->Install(
-      app_id.c_str(), brand_code.c_str(), brand_path.c_str(), ap.c_str(),
-      version.c_str(), existence_checker_path.c_str(),
-      base::UTF8ToWide(client_install_data).c_str(),
-      base::UTF8ToWide(install_data_index).c_str(), static_cast<int>(priority),
-      observer.Get());
+      app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
+      ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
+      client_install_data_w.c_str(), install_data_index_w.c_str(),
+      static_cast<int>(priority), observer.Get());
   if (FAILED(hr)) {
     VLOG(2) << "Failed to call IUpdater::Install: " << std::hex << hr;
     observer->Disconnect().Run(Result::kServiceFailed);
@@ -827,6 +855,32 @@ void UpdateServiceProxy::RunInstallerOnSTA(const std::string& app_id,
     return;
   }
 
+  std::wstring app_id_w;
+  std::wstring install_args_w;
+  std::wstring install_data_w;
+  std::wstring install_settings_w;
+  if (![&]() {
+        if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &app_id_w)) {
+          return false;
+        }
+        if (!base::UTF8ToWide(install_args.c_str(), install_args.size(),
+                              &install_args_w)) {
+          return false;
+        }
+        if (!base::UTF8ToWide(install_data.c_str(), install_data.size(),
+                              &install_data_w)) {
+          return false;
+        }
+        if (!base::UTF8ToWide(install_settings.c_str(), install_settings.size(),
+                              &install_settings_w)) {
+          return false;
+        }
+        return true;
+      }()) {
+    std::move(callback).Run(Result::kServiceFailed);
+    return;
+  }
+
   CHECK(updater_);
 
   // The COM RPC takes ownership of the `observer` and owns a reference to
@@ -839,10 +893,8 @@ void UpdateServiceProxy::RunInstallerOnSTA(const std::string& app_id,
   auto observer = Microsoft::WRL::Make<UpdaterObserver>(updater_, state_update,
                                                         std::move(callback));
   HRESULT hr = updater_->RunInstaller(
-      base::UTF8ToWide(app_id).c_str(), installer_path.value().c_str(),
-      base::UTF8ToWide(install_args).c_str(),
-      base::UTF8ToWide(install_data).c_str(),
-      base::UTF8ToWide(install_settings).c_str(), observer.Get());
+      app_id_w.c_str(), installer_path.value().c_str(), install_args_w.c_str(),
+      install_data_w.c_str(), install_settings_w.c_str(), observer.Get());
   if (SUCCEEDED(hr)) {
     VLOG(2) << "IUpdater::OfflineInstall completed successfully.";
   } else {
