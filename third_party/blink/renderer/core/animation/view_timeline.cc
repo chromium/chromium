@@ -100,10 +100,10 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
   double viewport_size = 0;
   if (physical_orientation == kHorizontalScroll) {
     target_size = layout_box->Size().Width().ToDouble();
-    viewport_size = scrollable_area->VisibleScrollSnapportRect().Width();
+    viewport_size = scrollable_area->LayoutContentRect().Width();
   } else {
     target_size = layout_box->Size().Height().ToDouble();
-    viewport_size = scrollable_area->VisibleScrollSnapportRect().Height();
+    viewport_size = scrollable_area->LayoutContentRect().Height();
   }
 
   // Note that the end_side_inset is used to adjust the start offset,

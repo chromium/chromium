@@ -327,6 +327,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void EnqueueScrollEventIfNeeded();
   gfx::Vector2d MinimumScrollOffsetInt() const override;
   gfx::Vector2d MaximumScrollOffsetInt() const override;
+  PhysicalRect LayoutContentRect(
+      IncludeScrollbarsInRect = kExcludeScrollbars) const;
   gfx::Rect VisibleContentRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override;
   PhysicalRect VisibleScrollSnapportRect(
@@ -679,7 +681,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void UpdateScrollCornerStyle();
   LayoutSize MinimumSizeForResizing(float zoom_factor);
-  PhysicalRect LayoutContentRect(IncludeScrollbarsInRect) const;
 
   void UpdateResizerStyle(const ComputedStyle* old_style);
 
