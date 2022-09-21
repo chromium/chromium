@@ -37,6 +37,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -66,7 +67,7 @@ class TabTest : public ChromeViewsTestBase {
 
   static void EndTitleAnimation(Tab* tab) { tab->title_animation_.End(); }
 
-  static void LayoutTab(Tab* tab) { tab->Layout(); }
+  static void LayoutTab(Tab* tab) { views::test::RunScheduledLayout(tab); }
 
   static int VisibleIconCount(const Tab& tab) {
     return tab.showing_icon_ + tab.showing_alert_indicator_ +

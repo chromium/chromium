@@ -42,6 +42,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
@@ -159,6 +160,9 @@ class TabStripTestBase : public ChromeViewsTestBase {
   void SetMaxTabStripWidth(int max_width) {
     tab_strip_parent_->SetBounds(0, 0, max_width,
                                  GetLayoutConstant(TAB_HEIGHT));
+    // Layout is handled from the Widget, so make sure it is also the correct
+    // size.
+    widget_->SetSize(tab_strip_parent_->bounds().size());
   }
 
   bool IsShowingAttentionIndicator(Tab* tab) {
@@ -169,7 +173,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
     // Complete animations and lay out *within the current tabstrip width*.
     tab_strip_->StopAnimating(true);
     // Resize the tabstrip based on the current tab states.
-    tab_strip_parent_->Layout();
+    views::test::RunScheduledLayout(tab_strip_parent_.get());
   }
 
   int GetActiveTabWidth() { return tab_strip_->GetActiveTabWidth(); }
