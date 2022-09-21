@@ -824,11 +824,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // layer.
   unsigned trilinear_filtering_request_;
 
-  // TODO(crbug.com/1172694): Remove once the root cause is identified.
-#if defined(ADDRESS_SANITIZER)
-  bool destroyed_ = false;
-#endif
-
   // TODO(https://crbug.com/1242749): temporary while tracking down crash.
   bool in_send_damaged_rects_ = false;
   bool sending_damaged_rects_for_descendants_ = false;

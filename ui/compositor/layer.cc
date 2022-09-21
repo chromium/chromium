@@ -226,9 +226,6 @@ Layer::~Layer() {
 
   // Destroying the animator may cause observers to use the layer. Destroy the
   // animator first so that the layer is still around.
-#if defined(ADDRESS_SANITIZER)
-  destroyed_ = true;
-#endif
   SetAnimator(nullptr);
   if (compositor_)
     compositor_->SetRootLayer(nullptr);
@@ -458,9 +455,6 @@ bool Layer::Contains(const Layer* other) const {
 }
 
 void Layer::SetAnimator(LayerAnimator* animator) {
-#if defined(ADDRESS_SANITIZER)
-  CHECK(!destroyed_ || !animator);
-#endif
   Compositor* compositor = GetCompositor();
 
   if (animator_) {
