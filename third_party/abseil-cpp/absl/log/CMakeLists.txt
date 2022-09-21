@@ -506,9 +506,10 @@ absl_cc_library(
     absl::config
     absl::log
     absl::log_severity
-    absl::memory
+    absl::optional
     absl::strings
     absl::strings_internal
+    absl::utility
   PUBLIC
 )
 

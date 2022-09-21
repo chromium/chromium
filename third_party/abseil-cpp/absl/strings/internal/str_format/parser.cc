@@ -202,6 +202,10 @@ const char *ConsumeConversion(const char *pos, const char *const end,
 
   auto tag = GetTagForChar(c);
 
+  if (*(pos - 1) == 'v' && *(pos - 2) != '%') {
+    return nullptr;
+  }
+
   if (ABSL_PREDICT_FALSE(!tag.is_conv())) {
     if (ABSL_PREDICT_FALSE(!tag.is_length())) return nullptr;
 
@@ -312,11 +316,11 @@ bool ParsedFormatBase::MatchesConversions(
     std::initializer_list<FormatConversionCharSet> convs) const {
   std::unordered_set<int> used;
   auto add_if_valid_conv = [&](int pos, char c) {
-      if (static_cast<size_t>(pos) > convs.size() ||
-          !Contains(convs.begin()[pos - 1], c))
-        return false;
-      used.insert(pos);
-      return true;
+    if (static_cast<size_t>(pos) > convs.size() ||
+        !Contains(convs.begin()[pos - 1], c))
+      return false;
+    used.insert(pos);
+    return true;
   };
   for (const ConversionItem &item : items_) {
     if (!item.is_conversion) continue;

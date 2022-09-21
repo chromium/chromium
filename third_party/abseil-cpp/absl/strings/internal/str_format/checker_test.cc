@@ -45,10 +45,10 @@ TEST(StrFormatChecker, ArgumentToConv) {
   EXPECT_EQ(ConvToString(conv), "sp");
 
   conv = ArgumentToConv<double>();
-  EXPECT_EQ(ConvToString(conv), "fFeEgGaA");
+  EXPECT_EQ(ConvToString(conv), "fFeEgGaAv");
 
   conv = ArgumentToConv<int>();
-  EXPECT_EQ(ConvToString(conv), "cdiouxXfFeEgGaA*");
+  EXPECT_EQ(ConvToString(conv), "cdiouxXfFeEgGaAv*");
 
   conv = ArgumentToConv<std::string*>();
   EXPECT_EQ(ConvToString(conv), "p");

@@ -958,6 +958,7 @@ class btree_node {
 
   static void deallocate(const size_type size, btree_node *node,
                          allocator_type *alloc) {
+    absl::container_internal::SanitizerUnpoisonMemoryRegion(node, size);
     absl::container_internal::Deallocate<Alignment()>(alloc, node, size);
   }
 

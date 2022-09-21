@@ -15,6 +15,7 @@
 
 #include "absl/log/log_streamer.h"
 
+#include <ios>
 #include <iostream>
 #include <utility>
 
@@ -300,48 +301,51 @@ TEST(LogStreamerTest, MoveConstruction) {
 
   EXPECT_CALL(
       test_sink,
-      Send(AllOf(
-          SourceFilename(Eq("path/file.cc")), SourceLine(Eq(1234)),
-          LogSeverity(Eq(absl::LogSeverity::kInfo)),
-          TextMessage(Eq("hello world")),
-          ENCODED_MESSAGE(EqualsProto(R"pb(value { str: "hello world" })pb")),
-          Stacktrace(IsEmpty()))));
-
-  test_sink.StartCapturingLogs();
-  auto streamer1 = absl::LogInfoStreamer("path/file.cc", 1234);
-  streamer1.stream() << "hello";
-  absl::LogStreamer streamer2(std::move(streamer1));
-  streamer2.stream() << " world";
-}
-
-TEST(LogStreamerTest, MoveAssignment) {
-  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
-
-  EXPECT_CALL(
-      test_sink,
       Send(AllOf(SourceFilename(Eq("path/file.cc")), SourceLine(Eq(1234)),
                  LogSeverity(Eq(absl::LogSeverity::kInfo)),
-                 TextMessage(Eq("hello")),
-                 ENCODED_MESSAGE(EqualsProto(R"pb(value { str: "hello" })pb")),
-                 Stacktrace(IsEmpty()))));
-
-  EXPECT_CALL(
-      test_sink,
-      Send(AllOf(SourceFilename(Eq("elsewhere/name.cc")), SourceLine(Eq(5678)),
-                 LogSeverity(Eq(absl::LogSeverity::kWarning)),
-                 TextMessage(Eq("world; goodbye")),
+                 TextMessage(Eq("hello 0x10 world 0x10")),
                  ENCODED_MESSAGE(EqualsProto(R"pb(value {
-                                                    str: "world; goodbye"
+                                                    str: "hello 0x10 world 0x10"
                                                   })pb")),
                  Stacktrace(IsEmpty()))));
 
   test_sink.StartCapturingLogs();
   auto streamer1 = absl::LogInfoStreamer("path/file.cc", 1234);
-  streamer1.stream() << "hello";
-  auto streamer2 = absl::LogWarningStreamer("elsewhere/name.cc", 5678);
-  streamer2.stream() << "world";
-  streamer1 = std::move(streamer2);
-  streamer1.stream() << "; goodbye";
+  streamer1.stream() << "hello " << std::hex << 16;
+  absl::LogStreamer streamer2(std::move(streamer1));
+  streamer2.stream() << " world " << 16;
+}
+
+TEST(LogStreamerTest, MoveAssignment) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  testing::InSequence seq;
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(SourceFilename(Eq("path/file2.cc")), SourceLine(Eq(5678)),
+                 LogSeverity(Eq(absl::LogSeverity::kWarning)),
+                 TextMessage(Eq("something else")),
+                 ENCODED_MESSAGE(EqualsProto(R"pb(value {
+                                                    str: "something else"
+                                                  })pb")),
+                 Stacktrace(IsEmpty()))));
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(SourceFilename(Eq("path/file.cc")), SourceLine(Eq(1234)),
+                 LogSeverity(Eq(absl::LogSeverity::kInfo)),
+                 TextMessage(Eq("hello 0x10 world 0x10")),
+                 ENCODED_MESSAGE(EqualsProto(R"pb(value {
+                                                    str: "hello 0x10 world 0x10"
+                                                  })pb")),
+                 Stacktrace(IsEmpty()))));
+
+  test_sink.StartCapturingLogs();
+  auto streamer1 = absl::LogInfoStreamer("path/file.cc", 1234);
+  streamer1.stream() << "hello " << std::hex << 16;
+  auto streamer2 = absl::LogWarningStreamer("path/file2.cc", 5678);
+  streamer2.stream() << "something else";
+  streamer2 = std::move(streamer1);
+  streamer2.stream() << " world " << 16;
 }
 
 TEST(LogStreamerTest, CorrectDefaultFlags) {

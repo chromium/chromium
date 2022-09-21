@@ -31,9 +31,10 @@
 #include "absl/base/config.h"
 #include "absl/base/log_severity.h"
 #include "absl/log/log.h"
-#include "absl/memory/memory.h"
 #include "absl/strings/internal/ostringstream.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/optional.h"
+#include "absl/utility/utility.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -81,8 +82,7 @@ class LogStreamer final {
       : severity_(severity),
         line_(line),
         file_(file),
-        stream_(
-            absl::make_unique<absl::strings_internal::OStringStream>(&buf_)) {
+        stream_(absl::in_place, &buf_) {
     // To match `LOG`'s defaults:
     stream_->setf(std::ios_base::showbase | std::ios_base::boolalpha);
   }
@@ -94,10 +94,8 @@ class LogStreamer final {
         line_(that.line_),
         file_(std::move(that.file_)),
         buf_(std::move(that.buf_)),
-        stream_(that.stream_
-                    ? absl::make_unique<absl::strings_internal::OStringStream>(
-                          &buf_)
-                    : nullptr) {
+        stream_(std::move(that.stream_)) {
+    if (stream_.has_value()) stream_->str(&buf_);
     that.stream_.reset();
   }
   LogStreamer& operator=(LogStreamer&& that) {
@@ -106,10 +104,8 @@ class LogStreamer final {
     file_ = std::move(that.file_);
     line_ = that.line_;
     buf_ = std::move(that.buf_);
-    stream_ =
-        that.stream_
-            ? absl::make_unique<absl::strings_internal::OStringStream>(&buf_)
-            : nullptr;
+    stream_ = std::move(that.stream_);
+    if (stream_.has_value()) stream_->str(&buf_);
     that.stream_.reset();
     return *this;
   }
@@ -118,7 +114,8 @@ class LogStreamer final {
   //
   // Logs this LogStreamer's buffered content as if by LOG.
   ~LogStreamer() {
-    LOG_IF(LEVEL(severity_), stream_).AtLocation(file_, line_) << buf_;
+    LOG_IF(LEVEL(severity_), stream_.has_value()).AtLocation(file_, line_)
+        << buf_;
   }
 
   // LogStreamer::stream()
@@ -132,11 +129,9 @@ class LogStreamer final {
   int line_;
   std::string file_;
   std::string buf_;
-  // TODO(durandal): de-pointerize this once we are off of our old mostly-C++11
-  // libstdc++ (which lacks move constructors for std streams).
-  // `stream_` is null in a moved-from `LogStreamer`; this is in fact how we
-  // recognize one to avoid logging when it is destroyed or reassigned.
-  std::unique_ptr<absl::strings_internal::OStringStream> stream_;
+  // A disengaged `stream_` indicates a moved-from `LogStreamer` that should not
+  // `LOG` upon destruction.
+  absl::optional<absl::strings_internal::OStringStream> stream_;
 };
 
 // LogInfoStreamer()

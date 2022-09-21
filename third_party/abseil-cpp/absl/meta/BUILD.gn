@@ -17,6 +17,7 @@ absl_source_set("type_traits_test") {
   }
   deps = [
     ":type_traits",
+    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/googletest:gtest",
   ]
 }

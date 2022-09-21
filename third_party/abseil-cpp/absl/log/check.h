@@ -163,7 +163,7 @@
 
 // `CHECK_OK` and friends validate that the provided `absl::Status` or
 // `absl::StatusOr<T>` is OK.  If it isn't, they print a failure message that
-// includes the actual status.
+// includes the actual status and terminate the program.
 //
 // As with all `DCHECK` variants, `DCHECK_OK` has no effect (not even
 // evaluating its argument) if `NDEBUG` is enabled.

@@ -813,6 +813,34 @@ using swap_internal::Swap;
 using swap_internal::StdSwapIsUnconstrained;
 
 }  // namespace type_traits_internal
+
+// absl::is_trivially_relocatable<T>
+// Detects whether a type is "trivially relocatable" -- meaning it can be
+// relocated without invoking the constructor/destructor, using a form of move
+// elision.
+//
+// Example:
+//
+// if constexpr (absl::is_trivially_relocatable<T>::value) {
+//   memcpy(new_location, old_location, sizeof(T));
+// } else {
+//   new(new_location) T(std::move(*old_location));
+//   old_location->~T();
+// }
+//
+// Upstream documentation:
+//
+// https://clang.llvm.org/docs/LanguageExtensions.html#:~:text=__is_trivially_relocatable
+//
+#if ABSL_HAVE_BUILTIN(__is_trivially_relocatable)
+template <class T>
+struct is_trivially_relocatable
+    : std::integral_constant<bool, __is_trivially_relocatable(T)> {};
+#else
+template <class T>
+struct is_trivially_relocatable : std::integral_constant<bool, false> {};
+#endif
+
 ABSL_NAMESPACE_END
 }  // namespace absl
 

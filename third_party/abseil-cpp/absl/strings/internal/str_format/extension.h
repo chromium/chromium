@@ -292,6 +292,8 @@ class FormatConversionSpecImpl {
     return conv_;
   }
 
+  void set_conversion_char(FormatConversionChar c) { conv_ = c; }
+
   // Returns the specified width. If width is unspecfied, it returns a negative
   // value.
   int width() const { return width_; }

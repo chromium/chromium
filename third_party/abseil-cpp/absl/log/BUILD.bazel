@@ -169,9 +169,10 @@ cc_library(
         ":log",
         "//absl/base:config",
         "//absl/base:log_severity",
-        "//absl/memory",
         "//absl/strings",
         "//absl/strings:internal",
+        "//absl/types:optional",
+        "//absl/utility",
     ],
 )
 
