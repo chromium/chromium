@@ -26,7 +26,7 @@ extern const char kFREDefaultBrowserPromoShortDelayParam[];
 // Indicates which variant of the new MICE FRE to use.
 extern const char kNewMobileIdentityConsistencyFREParam[];
 extern const char kNewMobileIdentityConsistencyFREParamUMADialog[];
-extern const char kNewMobileIdentityConsistencyFREParamThreeSteps[];
+extern const char kNewMobileIdentityConsistencyFREParamTangibleSync[];
 extern const char kNewMobileIdentityConsistencyFREParamTwoSteps[];
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIELD_TRIAL_CONSTANTS_H_

@@ -152,7 +152,7 @@ const CGFloat kDefaultHeight = 70;
     case ItemTypeLinksTerms:
       switch (fre_field_trial::GetNewMobileIdentityConsistencyFRE()) {
         case NewMobileIdentityConsistencyFRE::kTwoSteps:
-        case NewMobileIdentityConsistencyFRE::kThreeSteps:
+        case NewMobileIdentityConsistencyFRE::kTangibleSync:
         case NewMobileIdentityConsistencyFRE::kUMADialog:
           [self openURL:GetUnifiedTermsOfServiceURL(false)];
           break;
