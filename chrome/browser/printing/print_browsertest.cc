@@ -3608,8 +3608,10 @@ class MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest
     print_view_manager->WaitOnScanning();
     ASSERT_EQ(print_view_manager->scripted_print_called(),
               content_analysis_allows_print());
-    // TODO(crbug.com/1352193): Update this to expect 0 calls.
-    ASSERT_EQ(new_document_called_count(), 1);
+
+    // Validate that `NewDocument` was never call as that can needlessly
+    // prompt the user.
+    ASSERT_EQ(new_document_called_count(), 0);
   }
 };
 
@@ -3641,8 +3643,10 @@ IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest, PrintNow) {
   ASSERT_TRUE(print_view_manager->print_now_called());
   ASSERT_EQ(print_view_manager->scripted_print_called(),
             content_analysis_allows_print());
-  // TODO(crbug.com/1352193): Update this to expect 0 calls.
-  ASSERT_EQ(new_document_called_count(), 1);
+
+  // Validate that `NewDocument` was never call as that can needlessly
+  // prompt the user.
+  ASSERT_EQ(new_document_called_count(), 0);
 }
 
 IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest,
@@ -3667,8 +3671,10 @@ IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest,
   print_view_manager->WaitOnScanning();
   ASSERT_EQ(print_view_manager->preview_allowed(),
             content_analysis_allows_print());
-  // TODO(crbug.com/1352193): Update this to expect 0 calls.
-  ASSERT_EQ(new_document_called_count(), 1);
+
+  // Validate that `NewDocument` was never call as that can needlessly
+  // prompt the user.
+  ASSERT_EQ(new_document_called_count(), 0);
 }
 
 IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest,

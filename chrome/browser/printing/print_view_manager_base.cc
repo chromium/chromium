@@ -651,6 +651,7 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
     auto scanning_done_callback = base::BindOnce(
         &PrintViewManagerBase::CompleteScriptedPrintAfterContentAnalysis,
         weak_ptr_factory_.GetWeakPtr(), std::move(params), std::move(callback));
+    set_snapshotting_for_content_analysis();
     GetPrintRenderFrame(render_frame_host)
         ->SnapshotForContentAnalysis(base::BindOnce(
             &PrintViewManagerBase::OnGotSnapshotCallback,
@@ -972,6 +973,12 @@ bool PrintViewManagerBase::OpportunisticallyCreatePrintJob(int cookie) {
     return false;
   }
 
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  // Don't start printing if the print job was created only for snapshotting.
+  if (snapshotting_for_content_analysis_)
+    return true;
+#endif
+
   // Settings are already loaded. Go ahead. This will set
   // print_job_->is_job_pending() to true.
   print_job_->StartPrinting();
@@ -1117,6 +1124,7 @@ void PrintViewManagerBase::OnGotSnapshotCallback(
     enterprise_connectors::ContentAnalysisDelegate::Data data,
     content::GlobalRenderFrameHostId rfh_id,
     mojom::DidPrintDocumentParamsPtr params) {
+  snapshotting_for_content_analysis_ = false;
   auto* rfh = content::RenderFrameHost::FromID(rfh_id);
   if (!params || !rfh || !PrintJobHasDocument(params->document_cookie) ||
       !params->content->metafile_data_region.IsValid()) {
@@ -1170,6 +1178,11 @@ void PrintViewManagerBase::OnCompositedForContentAnalysis(
           std::move(callback)),
       safe_browsing::DeepScanAccessPoint::PRINT);
 }
+
+void PrintViewManagerBase::set_snapshotting_for_content_analysis() {
+  snapshotting_for_content_analysis_ = true;
+}
+
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 }  // namespace printing
