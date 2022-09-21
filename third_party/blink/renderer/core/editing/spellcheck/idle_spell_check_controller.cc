@@ -112,6 +112,9 @@ void IdleSpellCheckController::RespondToChangedSelection() {
     return;
   }
 
+  if (IsInInvocation())
+    return;
+
   needs_invocation_for_changed_selection_ = true;
   SetNeedsInvocation();
 }
@@ -122,6 +125,9 @@ void IdleSpellCheckController::RespondToChangedContents() {
     return;
   }
 
+  if (IsInInvocation())
+    return;
+
   needs_invocation_for_changed_contents_ = true;
   SetNeedsInvocation();
 }
@@ -131,6 +137,9 @@ void IdleSpellCheckController::RespondToChangedEnablement() {
     Deactivate();
     return;
   }
+
+  if (IsInInvocation())
+    return;
 
   needs_invocation_for_changed_enablement_ = true;
   SetNeedsInvocation();

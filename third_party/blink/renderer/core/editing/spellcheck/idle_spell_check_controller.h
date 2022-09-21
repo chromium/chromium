@@ -77,6 +77,11 @@ class CORE_EXPORT IdleSpellCheckController final
   // is non-null.
   Document& GetDocument() const;
 
+  bool IsInInvocation() const {
+    return state_ == State::kInHotModeInvocation ||
+           state_ == State::kInColdModeInvocation;
+  }
+
   // Returns whether spell checking is globally enabled.
   bool IsSpellCheckingEnabled() const;
 
