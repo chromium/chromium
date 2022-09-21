@@ -87,6 +87,9 @@ class ManagePasswordsState {
   void OnPasswordMovable(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_move);
 
+  // Move to BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE.
+  void OnBiometricAuthenticationForFilling();
+
   // Moves the object to |state| without resetting the internal data. Allowed:
   // * -> MANAGE_STATE
   // * -> PASSWORD_UPDATED_*

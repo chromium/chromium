@@ -67,7 +67,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               PasswordWasAutofilled,
               (const std::vector<const PasswordForm*>&,
                const url::Origin&,
-               const std::vector<const PasswordForm*>*),
+               const std::vector<const PasswordForm*>*,
+               bool was_autofilled_on_pageload),
               (override));
   MOCK_METHOD(bool,
               IsSavingAndFillingEnabled,
@@ -833,5 +834,49 @@ TEST(PasswordFormFillDataTest, TestAffiliationWithAppName) {
   // the user can see and understand where the result came from.
   EXPECT_EQ(affiliated_match.app_display_name, result.preferred_realm);
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Test if triggering of the BiometricAuthenticationForFilling promo bubble is
+// happening when password autofilled on pageload.
+TEST_F(PasswordFormFillingTest,
+       ShouldTryPromptingUserWithBiometricAuthForFillingPromo) {
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
+  observed_form_.accepts_webauthn_credentials = true;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+  client_.GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+
+  EXPECT_CALL(client_, PasswordWasAutofilled(_, _, _, true));
+  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+      &client_, &driver_, observed_form_, {&saved_match_}, federated_matches_,
+      &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false);
+  EXPECT_EQ(LikelyFormFilling::kFillOnPageLoad, likely_form_filling);
+}
+
+// Test if triggering of the BiometricAuthenticationForFilling promo bubble is
+// not happening when password wasn't autofilled on pageload.
+TEST_F(PasswordFormFillingTest,
+       ShouldNotPromptUserWithBiometricAuthForFillingPromo) {
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
+  observed_form_.accepts_webauthn_credentials = true;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+  client_.GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+  client_.GetPrefs()->SetBoolean(
+      password_manager::prefs::kHadBiometricsAvailable, true);
+
+  EXPECT_CALL(client_, PasswordWasAutofilled(_, _, _, false));
+  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+      &client_, &driver_, observed_form_, {&saved_match_}, federated_matches_,
+      &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false);
+  EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
+}
+#endif
 
 }  // namespace password_manager

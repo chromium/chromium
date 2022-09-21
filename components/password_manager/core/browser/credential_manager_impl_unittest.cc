@@ -63,22 +63,36 @@ class MockLeakDetectionCheck : public LeakDetectionCheck {
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
-  MOCK_CONST_METHOD1(IsSavingAndFillingEnabled, bool(const GURL&));
-  MOCK_CONST_METHOD1(IsFillingEnabled, bool(const GURL&));
-  MOCK_CONST_METHOD0(IsIncognito, bool());
-  MOCK_METHOD0(NotifyUserAutoSigninPtr, bool());
-  MOCK_METHOD1(NotifyUserCouldBeAutoSignedInPtr, bool(PasswordForm* form));
-  MOCK_METHOD0(NotifyStorePasswordCalled, void());
-  MOCK_METHOD1(PromptUserToSavePasswordPtr, void(PasswordFormManagerForUI*));
-  MOCK_METHOD3(PromptUserToChooseCredentialsPtr,
-               bool(const std::vector<PasswordForm*>& local_forms,
-                    const url::Origin& origin,
-                    CredentialsCallback callback));
-  MOCK_METHOD3(PasswordWasAutofilled,
-               void(const std::vector<const PasswordForm*>&,
-                    const url::Origin&,
-                    const std::vector<const PasswordForm*>*));
-  MOCK_CONST_METHOD0(IsAutofillAssistantUIVisible, bool());
+  MOCK_METHOD(bool,
+              IsSavingAndFillingEnabled,
+              (const GURL&),
+              (const, override));
+  MOCK_METHOD(bool, IsFillingEnabled, (const GURL&), (const, override));
+  MOCK_METHOD(bool, IsIncognito, (), (const, override));
+  MOCK_METHOD(bool, NotifyUserAutoSigninPtr, (), ());
+  MOCK_METHOD(bool,
+              NotifyUserCouldBeAutoSignedInPtr,
+              (PasswordForm * form),
+              ());
+  MOCK_METHOD(void, NotifyStorePasswordCalled, (), (override));
+  MOCK_METHOD(void,
+              PromptUserToSavePasswordPtr,
+              (PasswordFormManagerForUI*),
+              ());
+  MOCK_METHOD(bool,
+              PromptUserToChooseCredentialsPtr,
+              (const std::vector<PasswordForm*>& local_forms,
+               const url::Origin& origin,
+               CredentialsCallback callback),
+              ());
+  MOCK_METHOD(void,
+              PasswordWasAutofilled,
+              (const std::vector<const PasswordForm*>&,
+               const url::Origin&,
+               const std::vector<const PasswordForm*>*,
+               bool was_autofilled_on_pageload),
+              (override));
+  MOCK_METHOD(bool, IsAutofillAssistantUIVisible, (), (const override));
 
   explicit MockPasswordManagerClient(PasswordStoreInterface* profile_store,
                                      PasswordStoreInterface* account_store)
@@ -1741,7 +1755,7 @@ TEST_P(CredentialManagerImplTest,
       *client_,
       PasswordWasAutofilled(
           ElementsAre(Pointee(MatchesFormExceptStore(form_))), _,
-          Pointee(ElementsAre(Pointee(MatchesFormExceptStore(federated))))));
+          Pointee(ElementsAre(Pointee(MatchesFormExceptStore(federated)))), _));
 
   bool called = false;
   CredentialManagerError error;

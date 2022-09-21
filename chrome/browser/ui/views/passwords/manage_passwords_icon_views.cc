@@ -95,6 +95,8 @@ std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_SAVE);
     case password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE:
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MOVE);
+    case password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE:
+      return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_PROTECT);
   }
   NOTREACHED();
   return std::u16string();

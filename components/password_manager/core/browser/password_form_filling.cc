@@ -102,7 +102,7 @@ void Autofill(PasswordManagerClient* client,
   if (!best_matches.empty() || !federated_matches.empty()) {
     client->PasswordWasAutofilled(best_matches,
                                   url::Origin::Create(form_for_autofill.url),
-                                  &federated_matches);
+                                  &federated_matches, !wait_for_username);
   }
 }
 
@@ -264,6 +264,7 @@ LikelyFormFilling SendFillInformationToRenderer(
   Autofill(client, driver, observed_form, best_matches, federated_matches,
            preferred_match ? *preferred_match : PasswordForm(),
            wait_for_username);
+
   return wait_for_username ? LikelyFormFilling::kFillOnAccountSelect
                            : LikelyFormFilling::kFillOnPageLoad;
 }

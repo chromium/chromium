@@ -58,6 +58,7 @@
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -313,6 +314,30 @@ void ManagePasswordsUIController::OnShowMoveToAccountBubble(
   // TODO(crbug.com/1100814): Add smartness like OnPasswordSubmitted?
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
+}
+
+void ManagePasswordsUIController::OnBiometricAuthenticationForFilling(
+    PrefService* prefs) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  const std::string promo_shown_counter =
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter;
+  if (prefs->GetBoolean(
+          password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo) ||
+      prefs->GetInteger(promo_shown_counter) >=
+          kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown ||
+      prefs->GetBoolean(
+          password_manager::prefs::kBiometricAuthenticationBeforeFilling)) {
+    return;
+  }
+  prefs->SetInteger(promo_shown_counter,
+                    prefs->GetInteger(promo_shown_counter) + 1);
+
+  passwords_data_.OnBiometricAuthenticationForFilling();
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  UpdateBubbleAndIconVisibility();
+#else
+  NOTIMPLEMENTED();
+#endif
 }
 
 void ManagePasswordsUIController::NotifyUnsyncedCredentialsWillBeDeleted(
@@ -691,11 +716,15 @@ void ManagePasswordsUIController::AuthenticateUserWithMessage(
   std::move(callback).Run(true);
   return;
 #else
-  passwords_data_.client()
-      ->GetBiometricAuthenticator()
-      ->AuthenticateWithMessage(
-          device_reauth::BiometricAuthRequester::kTouchToFill, message,
-          std::move(callback));
+  base::OnceClosure on_reauth_completed =
+      base::BindOnce(&ManagePasswordsUIController::OnReauthCompleted,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  biometric_authenticator_ =
+      passwords_data_.client()->GetBiometricAuthenticator();
+  biometric_authenticator_->AuthenticateWithMessage(
+      device_reauth::BiometricAuthRequester::kTouchToFill, message,
+      std::move(callback).Then(std::move(on_reauth_completed)));
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 }
 
@@ -981,6 +1010,10 @@ void ManagePasswordsUIController::
         std::list<std::unique_ptr<MovePasswordToAccountStoreHelper>>::iterator
             done_helper_it) {
   move_to_account_store_helpers_.erase(done_helper_it);
+}
+
+void ManagePasswordsUIController::OnReauthCompleted() {
+  biometric_authenticator_.reset();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ManagePasswordsUIController);

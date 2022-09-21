@@ -269,11 +269,13 @@ class PasswordManagerClient {
   // form into which a password was filled. |federated_matches| are the stored
   // federated matches relevant to the filled form, this argument may be null.
   // They are never filled, but might be needed in the UI, for example. Default
-  // implementation is a noop.
+  // implementation is a noop. |was_autofilled_on_pageload| contains information
+  // if password form was autofilled on pageload.
   virtual void PasswordWasAutofilled(
       const std::vector<const PasswordForm*>& best_matches,
       const url::Origin& origin,
-      const std::vector<const PasswordForm*>* federated_matches);
+      const std::vector<const PasswordForm*>* federated_matches,
+      bool was_autofilled_on_pageload);
 
   // Sends username/password from |preferred_match| for filling in the http auth
   // prompt.

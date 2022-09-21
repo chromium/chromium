@@ -1753,3 +1753,99 @@ TEST_F(ManagePasswordsUIControllerTest, IsBiometricAuthenticatorObtained) {
   controller()->AuthenticateUserWithMessage(
       /*message=*/u"Do you want to enable this feature", result_callback.Get());
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_F(ManagePasswordsUIControllerTest,
+       ShouldShowBiometricAuthenticationForFillingPromo) {
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, false);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter, 0);
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+  EXPECT_EQ(1, profile()->GetPrefs()->GetInteger(
+                   password_manager::prefs::
+                       kBiometricAuthBeforeFillingPromoShownCounter));
+  ExpectIconAndControllerStateIs(
+      password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE);
+}
+
+// Test if BiometricAuthForFilling promo is not shown if user interacted with
+// the promo earlier.
+TEST_F(ManagePasswordsUIControllerTest,
+       ShouldNotShowBiometricAuthenticationForFillingPromoUserInteracted) {
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, true);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter, 1);
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+  EXPECT_EQ(1, profile()->GetPrefs()->GetInteger(
+                   password_manager::prefs::
+                       kBiometricAuthBeforeFillingPromoShownCounter));
+}
+
+// Test if BiometricAuthForFilling promo is not shown if User turned on the
+// feature manually in settings.
+TEST_F(ManagePasswordsUIControllerTest,
+       ShouldNotShowBiometricAuthenticationForFillingPromoUserTurnedOnManualy) {
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, false);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter, 0);
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+  EXPECT_EQ(0, profile()->GetPrefs()->GetInteger(
+                   password_manager::prefs::
+                       kBiometricAuthBeforeFillingPromoShownCounter));
+}
+
+// Test if BiometricAuthForFilling promo is not shown if User turned on the
+// feature through promo.
+TEST_F(
+    ManagePasswordsUIControllerTest,
+    ShouldNotShowBiometricAuthenticationForFillingPromoUserTurnedOnViaPromo) {
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, true);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter, 1);
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+  EXPECT_EQ(1, profile()->GetPrefs()->GetInteger(
+                   password_manager::prefs::
+                       kBiometricAuthBeforeFillingPromoShownCounter));
+}
+
+// Test if BiometricAuthForFilling promo is not shown if User have seen promo
+// more than
+// `kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown` times.
+TEST_F(ManagePasswordsUIControllerTest,
+       ShouldNotShowBiometricAuthenticationForFillingPromoCounterLimit) {
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, false);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter,
+      kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown + 1);
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+  EXPECT_EQ(kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown + 1,
+            profile()->GetPrefs()->GetInteger(
+                password_manager::prefs::
+                    kBiometricAuthBeforeFillingPromoShownCounter));
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/post_save_compromised_helper.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -37,6 +38,10 @@ class PasswordFeatureManager;
 class PasswordFormManagerForUI;
 class PostSaveCompromisedHelper;
 }  // namespace password_manager
+
+namespace {
+constexpr int kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown = 3;
+}
 
 class AccountChooserPrompt;
 struct AccountInfo;
@@ -103,6 +108,7 @@ class ManagePasswordsUIController
   void OnShowMoveToAccountBubble(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_move)
       override;
+  void OnBiometricAuthenticationForFilling(PrefService* prefs) override;
 
   virtual void NotifyUnsyncedCredentialsWillBeDeleted(
       std::vector<password_manager::PasswordForm> unsynced_credentials);
@@ -232,6 +238,8 @@ class ManagePasswordsUIController
  private:
   friend class content::WebContentsUserData<ManagePasswordsUIController>;
 
+  void OnReauthCompleted();
+
   // PasswordsLeakDialogDelegate:
   void NavigateToPasswordCheckup(
       password_manager::PasswordCheckReferrer referrer) override;
@@ -349,6 +357,8 @@ class ManagePasswordsUIController
   // always contain either 0 or 1 items.
   std::list<std::unique_ptr<password_manager::MovePasswordToAccountStoreHelper>>
       move_to_account_store_helpers_;
+
+  scoped_refptr<device_reauth::BiometricAuthenticator> biometric_authenticator_;
 
   // The bubbles of different types can pop up unpredictably superseding each
   // other. However, closing the bubble may affect the state of

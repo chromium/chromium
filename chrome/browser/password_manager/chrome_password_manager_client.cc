@@ -44,6 +44,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller_impl.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
+#include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/channel_info.h"
@@ -629,12 +630,23 @@ void ChromePasswordManagerClient::AutomaticPasswordSave(
 void ChromePasswordManagerClient::PasswordWasAutofilled(
     const std::vector<const PasswordForm*>& best_matches,
     const url::Origin& origin,
-    const std::vector<const PasswordForm*>* federated_matches) {
+    const std::vector<const PasswordForm*>* federated_matches,
+    bool was_autofilled_on_pageload) {
 #if !BUILDFLAG(IS_ANDROID)
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
   manage_passwords_ui_controller->OnPasswordAutofilled(best_matches, origin,
                                                        federated_matches);
+#endif
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1365813): Add missing checks and move them to
+  // password manager utils.
+  if (was_autofilled_on_pageload &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kBiometricAuthenticationForFilling)) {
+    PasswordsClientUIDelegateFromWebContents(web_contents())
+        ->OnBiometricAuthenticationForFilling(GetPrefs());
+  }
 #endif
 }
 
@@ -644,7 +656,8 @@ void ChromePasswordManagerClient::AutofillHttpAuth(
   httpauth_manager_.Autofill(preferred_match, form_manager);
   DCHECK(!form_manager->GetBestMatches().empty());
   PasswordWasAutofilled(form_manager->GetBestMatches(),
-                        url::Origin::Create(form_manager->GetURL()), nullptr);
+                        url::Origin::Create(form_manager->GetURL()), nullptr,
+                        /*was_autofilled_on_pageload=*/false);
 }
 
 void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(

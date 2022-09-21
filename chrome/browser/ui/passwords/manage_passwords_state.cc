@@ -176,6 +176,10 @@ void ManagePasswordsState::OnPasswordMovable(
   SetState(password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
 }
 
+void ManagePasswordsState::OnBiometricAuthenticationForFilling() {
+  SetState(password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE);
+}
+
 void ManagePasswordsState::TransitionToState(
     password_manager::ui::State state) {
   DCHECK_NE(password_manager::ui::INACTIVE_STATE, state_);

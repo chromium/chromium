@@ -280,8 +280,9 @@ void CredentialManagerPendingRequestTask::ProcessForms(
           non_federated_matches.emplace_back(result.get());
         }
       }
-      delegate_->client()->PasswordWasAutofilled(non_federated_matches, origin_,
-                                                 &federated_matches);
+      delegate_->client()->PasswordWasAutofilled(
+          non_federated_matches, origin_, &federated_matches,
+          /*was_autofilled_on_pageload=*/false);
     }
     if (can_use_autosignin) {
       // The user had credentials, but either chose not to share them with the

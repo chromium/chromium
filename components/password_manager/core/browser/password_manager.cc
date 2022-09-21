@@ -296,6 +296,8 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kPasswordChangeSuccessTrackerFlows);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  registry->RegisterIntegerPref(
+      prefs::kBiometricAuthBeforeFillingPromoShownCounter, 0);
   registry->RegisterBooleanPref(prefs::kHasUserInteractedWithBiometricAuthPromo,
                                 false);
   registry->RegisterBooleanPref(prefs::kBiometricAuthenticationBeforeFilling,

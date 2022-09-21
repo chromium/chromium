@@ -49,6 +49,10 @@ enum State {
 
   // A compromised password was updated and the user has more to fix.
   PASSWORD_UPDATED_MORE_TO_FIX,
+
+  // A password was successfully autofilled and user should see a biometric
+  // authentication before filling promo.
+  BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE,
 };
 
 }  // namespace ui

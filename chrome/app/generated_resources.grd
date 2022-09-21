@@ -7803,6 +7803,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_TOOLTIP_MOVE" desc="Text for the 'Manage Passwords' icon's 'move password to account' state">
           Move your password
         </message>
+        <message name="IDS_PASSWORD_MANAGER_TOOLTIP_PROTECT" desc="Text for the 'Manage Passwords' icon's 'protect passwords' state">
+          Protect your passwords
+        </message>
         <message name="IDS_PASSWORD_MANAGER_IMPORT_DIALOG_TITLE" desc="The title of the file selection dialog for importing passwords">
           Import Passwords To Chrome
         </message>
