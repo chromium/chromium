@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -158,6 +159,12 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
             .WithOrder(kLowPriorityFlexOrder));
     views::SetHitTestComponent(extensions_container_,
                                static_cast<int>(HTCLIENT));
+  }
+
+  if (download::IsDownloadBubbleEnabled(browser_view_->browser()->profile())) {
+    download_button_ = AddChildView(
+        std::make_unique<DownloadToolbarButtonView>(browser_view_));
+    views::SetHitTestComponent(download_button_, static_cast<int>(HTCLIENT));
   }
 
   if (app_controller->HasTitlebarMenuButton()) {

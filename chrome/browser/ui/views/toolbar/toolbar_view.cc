@@ -878,6 +878,10 @@ IntentChipButton* ToolbarView::GetIntentChipButton() {
   return location_bar()->intent_chip();
 }
 
+DownloadToolbarButtonView* ToolbarView::GetDownloadButton() {
+  return download_button();
+}
+
 BrowserRootView::DropIndex ToolbarView::GetDropIndex(
     const ui::DropTargetEvent& event) {
   return {browser_->tab_strip_model()->active_index(), false};

@@ -260,6 +260,10 @@ IntentChipButton* WebAppFrameToolbarView::GetIntentChipButton() {
   return nullptr;
 }
 
+DownloadToolbarButtonView* WebAppFrameToolbarView::GetDownloadButton() {
+  return right_container_ ? right_container_->download_button() : nullptr;
+}
+
 bool WebAppFrameToolbarView::DoesIntersectRect(const View* target,
                                                const gfx::Rect& rect) const {
   DCHECK_EQ(target, this);

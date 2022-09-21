@@ -80,6 +80,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   ToolbarButton* GetBackButton() override;
   ReloadButton* GetReloadButton() override;
   IntentChipButton* GetIntentChipButton() override;
+  DownloadToolbarButtonView* GetDownloadButton() override;
 
   // views::ViewTargeterDelegate
   bool DoesIntersectRect(const View* target,

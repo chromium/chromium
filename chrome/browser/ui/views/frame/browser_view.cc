@@ -160,6 +160,7 @@
 #include "chrome/browser/ui/views/update_recommended_message_box.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/common/channel_info.h"
@@ -2711,9 +2712,10 @@ DownloadShelf* BrowserView::GetDownloadShelf() {
 }
 
 DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {
-  return (toolbar() && toolbar()->download_button())
-             ? toolbar()->download_button()->bubble_controller()
-             : nullptr;
+  DCHECK(toolbar_button_provider_);
+  if (auto* download_button = toolbar_button_provider_->GetDownloadButton())
+    return download_button->bubble_controller();
+  return nullptr;
 }
 
 void BrowserView::ConfirmBrowserCloseWithPendingDownloads(
