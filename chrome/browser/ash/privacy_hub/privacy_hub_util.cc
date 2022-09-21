@@ -9,6 +9,7 @@
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 
 namespace ash::privacy_hub_util {
 
