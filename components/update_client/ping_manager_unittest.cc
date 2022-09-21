@@ -179,7 +179,7 @@ TEST_P(PingManagerTest, SendPing) {
               request->FindPath({"os", "platform"})->GetString());
     EXPECT_TRUE(request->FindPath({"os", "version"})->is_string());
 
-    const auto& app = request->FindKey("app")->GetListDeprecated()[0];
+    const auto& app = request->FindKey("app")->GetList()[0];
     EXPECT_EQ("abc", app.FindKey("appid")->GetString());
     EXPECT_EQ("ap1", app.FindKey("ap")->GetString());
     EXPECT_EQ("BRND", app.FindKey("brand")->GetString());
@@ -189,7 +189,7 @@ TEST_P(PingManagerTest, SendPing) {
     EXPECT_EQ("c1", app.FindKey("cohort")->GetString());
     EXPECT_EQ("cn1", app.FindKey("cohortname")->GetString());
     EXPECT_EQ("ch1", app.FindKey("cohorthint")->GetString());
-    const auto& event = app.FindKey("event")->GetListDeprecated()[0];
+    const auto& event = app.FindKey("event")->GetList()[0];
     EXPECT_EQ(1, event.FindKey("eventresult")->GetInt());
     EXPECT_EQ(3, event.FindKey("eventtype")->GetInt());
     EXPECT_EQ("2.0", event.FindKey("nextversion")->GetString());
@@ -223,10 +223,10 @@ TEST_P(PingManagerTest, SendPing) {
       const auto root = base::JSONReader::Read(msg);
       ASSERT_TRUE(root);
       const auto* request = root->FindKey("request");
-      const auto& app = request->FindKey("app")->GetListDeprecated()[0];
+      const auto& app = request->FindKey("app")->GetList()[0];
       EXPECT_EQ("abc", app.FindKey("appid")->GetString());
       EXPECT_EQ("1.0", app.FindKey("version")->GetString());
-      const auto& event = app.FindKey("event")->GetListDeprecated()[0];
+      const auto& event = app.FindKey("event")->GetList()[0];
       EXPECT_EQ(0, event.FindKey("eventresult")->GetInt());
       EXPECT_EQ(3, event.FindKey("eventtype")->GetInt());
       EXPECT_EQ("2.0", event.FindKey("nextversion")->GetString());
@@ -263,10 +263,10 @@ TEST_P(PingManagerTest, SendPing) {
       const auto root = base::JSONReader::Read(msg);
       ASSERT_TRUE(root);
       const auto* request = root->FindKey("request");
-      const auto& app = request->FindKey("app")->GetListDeprecated()[0];
+      const auto& app = request->FindKey("app")->GetList()[0];
       EXPECT_EQ("abc", app.FindKey("appid")->GetString());
       EXPECT_EQ("1.0", app.FindKey("version")->GetString());
-      const auto& event = app.FindKey("event")->GetListDeprecated()[0];
+      const auto& event = app.FindKey("event")->GetList()[0];
       EXPECT_EQ(0, event.FindKey("eventresult")->GetInt());
       EXPECT_EQ(3, event.FindKey("eventtype")->GetInt());
       EXPECT_EQ("2.0", event.FindKey("nextversion")->GetString());
@@ -303,10 +303,10 @@ TEST_P(PingManagerTest, SendPing) {
       const auto root = base::JSONReader::Read(msg);
       ASSERT_TRUE(root);
       const auto* request = root->FindKey("request");
-      const auto& app = request->FindKey("app")->GetListDeprecated()[0];
+      const auto& app = request->FindKey("app")->GetList()[0];
       EXPECT_EQ("abc", app.FindKey("appid")->GetString());
       EXPECT_EQ("1.0", app.FindKey("version")->GetString());
-      const auto& event = app.FindKey("event")->GetListDeprecated()[0];
+      const auto& event = app.FindKey("event")->GetList()[0];
       EXPECT_EQ(0, event.FindKey("eventresult")->GetInt());
       EXPECT_EQ(3, event.FindKey("eventtype")->GetInt());
       EXPECT_EQ("1.0", event.FindKey("previousversion")->GetString());
@@ -331,10 +331,10 @@ TEST_P(PingManagerTest, SendPing) {
       const auto root = base::JSONReader::Read(msg);
       ASSERT_TRUE(root);
       const auto* request = root->FindKey("request");
-      const auto& app = request->FindKey("app")->GetListDeprecated()[0];
+      const auto& app = request->FindKey("app")->GetList()[0];
       EXPECT_EQ("abc", app.FindKey("appid")->GetString());
       EXPECT_EQ("1.2.3.4", app.FindKey("version")->GetString());
-      const auto& event = app.FindKey("event")->GetListDeprecated()[0];
+      const auto& event = app.FindKey("event")->GetList()[0];
       EXPECT_EQ(1, event.FindKey("eventresult")->GetInt());
       EXPECT_EQ(4, event.FindKey("eventtype")->GetInt());
       EXPECT_EQ("1.2.3.4", event.FindKey("previousversion")->GetString());
@@ -360,10 +360,10 @@ TEST_P(PingManagerTest, SendPing) {
     const auto root = base::JSONReader::Read(msg);
     ASSERT_TRUE(root);
     const auto* request = root->FindKey("request");
-    const auto& app = request->FindKey("app")->GetListDeprecated()[0];
+    const auto& app = request->FindKey("app")->GetList()[0];
     EXPECT_EQ("abc", app.FindKey("appid")->GetString());
     EXPECT_EQ("1.2.3.4", app.FindKey("version")->GetString());
-    const auto& event = app.FindKey("event")->GetListDeprecated()[0];
+    const auto& event = app.FindKey("event")->GetList()[0];
     EXPECT_EQ(1, event.FindKey("eventresult")->GetInt());
     EXPECT_EQ(2, event.FindKey("eventtype")->GetInt());
     EXPECT_EQ("1.2.3.4", event.FindKey("nextversion")->GetString());
@@ -416,19 +416,19 @@ TEST_P(PingManagerTest, SendPing) {
       const auto root = base::JSONReader::Read(msg);
       ASSERT_TRUE(root);
       const auto* request = root->FindKey("request");
-      const auto& app = request->FindKey("app")->GetListDeprecated()[0];
+      const auto& app = request->FindKey("app")->GetList()[0];
       EXPECT_EQ("abc", app.FindKey("appid")->GetString());
       EXPECT_EQ("1.0", app.FindKey("version")->GetString());
-      EXPECT_EQ(4u, app.FindKey("event")->GetListDeprecated().size());
+      EXPECT_EQ(4u, app.FindKey("event")->GetList().size());
       {
-        const auto& event = app.FindKey("event")->GetListDeprecated()[0];
+        const auto& event = app.FindKey("event")->GetList()[0];
         EXPECT_EQ(1, event.FindKey("eventresult")->GetInt());
         EXPECT_EQ(3, event.FindKey("eventtype")->GetInt());
         EXPECT_EQ("2.0", event.FindKey("nextversion")->GetString());
         EXPECT_EQ("1.0", event.FindKey("previousversion")->GetString());
       }
       {
-        const auto& event = app.FindKey("event")->GetListDeprecated()[1];
+        const auto& event = app.FindKey("event")->GetList()[1];
         EXPECT_EQ(0, event.FindKey("eventresult")->GetInt());
         EXPECT_EQ(14, event.FindKey("eventtype")->GetInt());
         EXPECT_EQ(987, event.FindKey("download_time_ms")->GetDouble());
@@ -441,7 +441,7 @@ TEST_P(PingManagerTest, SendPing) {
         EXPECT_EQ("http://host1/path1", event.FindKey("url")->GetString());
       }
       {
-        const auto& event = app.FindKey("event")->GetListDeprecated()[2];
+        const auto& event = app.FindKey("event")->GetList()[2];
         EXPECT_EQ(1, event.FindKey("eventresult")->GetInt());
         EXPECT_EQ(14, event.FindKey("eventtype")->GetInt());
         EXPECT_EQ(9870, event.FindKey("download_time_ms")->GetDouble());
@@ -453,7 +453,7 @@ TEST_P(PingManagerTest, SendPing) {
         EXPECT_EQ("http://host2/path2", event.FindKey("url")->GetString());
       }
       {
-        const auto& event = app.FindKey("event")->GetListDeprecated()[3];
+        const auto& event = app.FindKey("event")->GetList()[3];
         EXPECT_EQ(1, event.FindKey("eventresult")->GetInt());
         EXPECT_EQ(14, event.FindKey("eventtype")->GetInt());
         EXPECT_EQ(9007199254740990,
