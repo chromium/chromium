@@ -62,7 +62,17 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
   ~OwnerContentsObserver() override = default;
 
   // WebContentsObserver implementation.
-  void WebContentsDestroyed() override { DestroyGuestIfUnattached(&*guest_); }
+  void WebContentsDestroyed() override {
+    // Once attached, the guest can't outlive its owner WebContents.
+    DCHECK_EQ(guest_->element_instance_id(), kInstanceIDNone);
+
+    // Defensively clear the guest's `owner_web_contents_`, since a unique_ptr
+    // to the guest may be passed through asynchronous calls early in its
+    // initialization, and it's possible that its pointer to
+    // `owner_web_contents_` could become stale during this process.
+    guest_->owner_web_contents_ = nullptr;
+    DestroyGuestIfUnattached(&*guest_);
+  }
 
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override {
@@ -130,8 +140,8 @@ GuestViewBase::~GuestViewBase() {
   DCHECK(!is_being_destroyed_);
   is_being_destroyed_ = true;
 
-  // It is important to clear owner_web_contents_ after the call to
-  // StopTrackingEmbedderZoomLevel(), but before the rest of
+  // If `this` was ever attached, it is important to clear `owner_web_contents_`
+  // after the call to StopTrackingEmbedderZoomLevel(), but before the rest of
   // the statements in this function.
   StopTrackingEmbedderZoomLevel();
   owner_web_contents_ = nullptr;
@@ -409,8 +419,7 @@ void GuestViewBase::WillAttach(
     GuestViewMessageHandler::AttachToEmbedderFrameCallback
         attachment_callback) {
   // Stop tracking the old embedder's zoom level.
-  if (owner_web_contents())
-    StopTrackingEmbedderZoomLevel();
+  StopTrackingEmbedderZoomLevel();
 
   if (owner_web_contents_ != embedder_web_contents) {
     DCHECK_EQ(owner_contents_observer_->web_contents(), owner_web_contents_);
@@ -823,6 +832,8 @@ void GuestViewBase::StopTrackingEmbedderZoomLevel() {
   // TODO(wjmaclean): Remove the observer any time the GuestWebView transitions
   // from propagating to not-propagating the zoom from the embedder.
 
+  if (!owner_web_contents())
+    return;
   auto* embedder_zoom_controller =
       zoom::ZoomController::FromWebContents(owner_web_contents());
   // Chrome Apps do not have a ZoomController.
