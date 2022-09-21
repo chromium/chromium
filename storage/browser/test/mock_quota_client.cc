@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/singleton.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -47,8 +48,8 @@ void MockQuotaClient::ModifyStorageKeyAndNotify(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType storage_type,
     int64_t delta) {
-  auto it = std::find_if(
-      bucket_data_.begin(), bucket_data_.end(),
+  auto it = base::ranges::find_if(
+      bucket_data_,
       [storage_key, storage_type](std::pair<BucketLocator, int64_t> entry) {
         return entry.first.is_default &&
                entry.first.storage_key == storage_key &&
@@ -65,10 +66,9 @@ void MockQuotaClient::ModifyStorageKeyAndNotify(
 }
 
 void MockQuotaClient::ModifyBucketAndNotify(BucketId bucket_id, int64_t delta) {
-  auto it = std::find_if(bucket_data_.begin(), bucket_data_.end(),
-                         [bucket_id](std::pair<BucketLocator, int64_t> entry) {
-                           return entry.first.id == bucket_id;
-                         });
+  auto it = base::ranges::find(
+      bucket_data_, bucket_id,
+      [](std::pair<BucketLocator, int64_t> entry) { return entry.first.id; });
   DCHECK(it != bucket_data_.end());
   it->second += delta;
   DCHECK_GE(it->second, 0);
