@@ -758,7 +758,9 @@ typedef bool (*ScrollToPointFunc)(AtkComponent* component,
                                   gint y);
 typedef bool (*ScrollToFunc)(AtkComponent* component, AtkScrollType type);
 
-IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestScrollToPoint) {
+// TODO(https://crbug.com/1366113): Enable this test.
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       DISABLED_TestScrollToPoint) {
   // There's a chance we may be compiled with a newer version of ATK and then
   // run with an older one, so we need to do a runtime check for this method
   // that is available in ATK 2.30 instead of linking directly.
@@ -819,7 +821,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestScrollToPoint) {
   g_object_unref(atk_text);
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestScrollTo) {
+// TODO(https://crbug.com/1366113): Enable this test.
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       DISABLED_TestScrollTo) {
   // There's a chance we may be compiled with a newer version of ATK and then
   // run with an older one, so we need to do a runtime check for this method
   // that is available in ATK 2.30 instead of linking directly.
@@ -958,8 +962,9 @@ gboolean ScrollSubstringTo(AtkText* text,
   return g_scroll_substring_to(text, start_offset, end_offset, type);
 }
 
+// TODO(https://crbug.com/1366113): Enable this test.
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
-                       TestScrollSubstringTo) {
+                       DISABLED_TestScrollSubstringTo) {
   // There's a chance we may be compiled with a newer version of ATK and then
   // run with an older one, so we need to do a runtime check for this method
   // that is available in ATK 2.32 instead of linking directly.
@@ -1073,8 +1078,9 @@ gboolean ScrollSubstringToPoint(AtkText* text,
                                      x, y);
 }
 
+// TODO(https://crbug.com/1366113): Enable this test.
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
-                       TestScrollSubstringToPoint) {
+                       DISABLED_TestScrollSubstringToPoint) {
   // There's a chance we may be compiled with a newer version of ATK and then
   // run with an older one, so we need to do a runtime check for this method
   // that is available in ATK 2.30 instead of linking directly.
