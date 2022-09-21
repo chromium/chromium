@@ -143,6 +143,22 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Must be called after the list has been initialized.
   net::PublicSets GetSetsSync() const;
 
+  // An adaptor to kick off the state clearing process from a
+  // asynchronously-invoked callback.
+  void ClearSiteDataOnChangedSetsForContextAsyncInternal(
+      base::RepeatingCallback<BrowserContext*()> browser_context_getter,
+      const std::string& browser_context_id,
+      const absl::optional<net::FirstPartySetsContextConfig>& context_config,
+      base::OnceClosure callback);
+
+  // Performs the actual state clearing for the given context. Must not be
+  // called until initialization is complete.
+  void ClearSiteDataOnChangedSetsForContextInternal(
+      base::RepeatingCallback<BrowserContext*()> browser_context_getter,
+      const std::string& browser_context_id,
+      const net::FirstPartySetsContextConfig* context_config,
+      base::OnceClosure callback);
+
   // Parses the policy and computes the config that represents the changes
   // needed to apply `policy` to `sets_`.
   net::FirstPartySetsContextConfig GetCustomizationForPolicyInternal(

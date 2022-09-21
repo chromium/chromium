@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
@@ -187,8 +188,6 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
     FirstPartySetsHandlerImpl::GetInstance()->ResetForTesting();
   }
 
-  base::test::TaskEnvironment& env() { return env_; }
-
  protected:
   base::ScopedTempDir scoped_dir_;
   base::test::TaskEnvironment env_;
@@ -247,12 +246,12 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           Pair(associated,
                net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0))));
 
+  base::RunLoop run_loop;
   FirstPartySetsHandlerImpl::GetInstance()
       ->ClearSiteDataOnChangedSetsForContext(
           base::BindRepeating(&FakeBrowserContextGetter), browser_context_id,
-          /*context_config=*/nullptr, base::DoNothing());
-
-  env().RunUntilIdle();
+          /*context_config=*/nullptr, run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_THAT(GetPersistedPublicSetsAndWait(browser_context_id),
               Optional(UnorderedElementsAre(
@@ -288,12 +287,12 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           Pair(associated,
                net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0))));
 
+  base::RunLoop run_loop;
   FirstPartySetsHandlerImpl::GetInstance()
       ->ClearSiteDataOnChangedSetsForContext(
           base::BindRepeating(&FakeBrowserContextGetter), browser_context_id,
-          /*context_config=*/nullptr, base::DoNothing());
-
-  env().RunUntilIdle();
+          /*context_config=*/nullptr, run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_THAT(GetPersistedPublicSetsAndWait(browser_context_id), absl::nullopt);
 }
@@ -312,12 +311,13 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  LocalSetDeclaration());
-  env().RunUntilIdle();
 
+  base::RunLoop run_loop;
   FirstPartySetsHandlerImpl::GetInstance()
       ->ClearSiteDataOnChangedSetsForContext(
           base::BindRepeating(&FakeBrowserContextGetter), browser_context_id,
-          /*context_config=*/nullptr, base::DoNothing());
+          /*context_config=*/nullptr, run_loop.QuitClosure());
+  run_loop.Run();
 
   // Public sets with invalid version was not persisted.
   EXPECT_THAT(GetPersistedPublicSetsAndWait(browser_context_id),
@@ -341,15 +341,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  LocalSetDeclaration());
-  EXPECT_THAT(
-      GetSetsAndWait().FindEntries({example, associated}, /*config=*/nullptr),
-      UnorderedElementsAre(
-          Pair(example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, absl::nullopt)),
-          Pair(associated, net::FirstPartySetEntry(
-                               example, net::SiteType::kAssociated, 0))));
 
-  env().RunUntilIdle();
+  // Wait until initialization is complete.
+  GetSetsAndWait();
 
   EXPECT_THAT(
       FirstPartySetsHandlerImpl::GetInstance()

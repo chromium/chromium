@@ -13,6 +13,7 @@
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
@@ -242,11 +243,49 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(
     const net::FirstPartySetsContextConfig* context_config,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (public_sets_.has_value()) {
+    ClearSiteDataOnChangedSetsForContextInternal(
+        browser_context_getter, browser_context_id, context_config,
+        std::move(callback));
+    return;
+  }
+
+  // base::Unretained(this) is safe because this is a static singleton.
+  on_sets_ready_callbacks_.push_back(base::BindOnce(
+      &FirstPartySetsHandlerImpl::
+          ClearSiteDataOnChangedSetsForContextAsyncInternal,
+      base::Unretained(this), browser_context_getter, browser_context_id,
+      context_config == nullptr ? absl::nullopt
+                                : absl::make_optional(context_config->Clone()),
+      std::move(callback)));
+}
+
+void FirstPartySetsHandlerImpl::
+    ClearSiteDataOnChangedSetsForContextAsyncInternal(
+        base::RepeatingCallback<BrowserContext*()> browser_context_getter,
+        const std::string& browser_context_id,
+        const absl::optional<net::FirstPartySetsContextConfig>& context_config,
+        base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ClearSiteDataOnChangedSetsForContextInternal(
+      browser_context_getter, browser_context_id,
+      base::OptionalToPtr(context_config), std::move(callback));
+}
+
+void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
+    base::RepeatingCallback<BrowserContext*()> browser_context_getter,
+    const std::string& browser_context_id,
+    const net::FirstPartySetsContextConfig* context_config,
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(public_sets_.has_value());
   DCHECK(!browser_context_id.empty());
 
   if (!db_helper_.is_null() && version_.has_value() && version_->IsValid()) {
     // TODO(crbug.com/1219656): Call site state clearing.
+    // TODO(https://crbug.com/1219656): don't invoke `callback` until site state
+    // clearing is complete.
     db_helper_
         .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistPublicSets)
         .WithArgs(browser_context_id, version_.value(),
