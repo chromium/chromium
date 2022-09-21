@@ -366,6 +366,7 @@ void PageActionIconController::ReadyToCommitNavigation(
     // first time they are displayed on the new page.
     icon_item.second->set_should_record_metrics_if_shown(true);
   }
+  max_actions_recorded_on_current_page_ = 0;
 }
 
 void PageActionIconController::PrimaryPageChanged(content::Page& page) {
@@ -379,6 +380,8 @@ void PageActionIconController::PrimaryPageChanged(content::Page& page) {
     }
     RecordIndividualMetrics(icon_item.first, icon_item.second);
   }
+  base::UmaHistogramEnumeration("PageActionController.PagesWithActionsShown",
+                                PageActionPageEvent::kPageShown);
 }
 
 int PageActionIconController::VisibleEphemeralActionCount() const {
@@ -389,9 +392,28 @@ int PageActionIconController::VisibleEphemeralActionCount() const {
       });
 }
 
-void PageActionIconController::RecordOverallMetrics() const {
+void PageActionIconController::RecordOverallMetrics() {
+  int num_actions_shown = VisibleEphemeralActionCount();
   base::UmaHistogramExactLinear("PageActionController.NumberActionsShown",
-                                VisibleEphemeralActionCount(), 20);
+                                num_actions_shown, 20);
+  // Record kActionShown if this is the first time an ephemeral action has been
+  // shown on the current page.
+  if (num_actions_shown > 0 && max_actions_recorded_on_current_page_ < 1) {
+    base::UmaHistogramEnumeration("PageActionController.PagesWithActionsShown",
+                                  PageActionPageEvent::kActionShown);
+  }
+  // Record kMultipleActionsShown if this is the first time multiple ephemeral
+  // actions have been shown on the current page. It is possible for this to
+  // happen concurrently with the above if case, in the instance that a page is
+  // loaded with multiple ephemeral actions immediately showing. kActionShown
+  // and kMultipleActionsShown are not intended to be mutually exclusive, so in
+  // this case we should log both.
+  if (num_actions_shown > 1 && max_actions_recorded_on_current_page_ < 2) {
+    base::UmaHistogramEnumeration("PageActionController.PagesWithActionsShown",
+                                  PageActionPageEvent::kMultipleActionsShown);
+  }
+  max_actions_recorded_on_current_page_ =
+      std::max(num_actions_shown, max_actions_recorded_on_current_page_);
 }
 
 void PageActionIconController::RecordIndividualMetrics(
