@@ -473,7 +473,7 @@ EXPORTS
     ??$__allocate_at_least@V?$allocator@UTransitionType@cctz@time_internal@absl@@@Cr@std@@@Cr@std@@YA?AU?$__allocation_result@PEAUTransitionType@cctz@time_internal@absl@@@01@AEAV?$allocator@UTransitionType@cctz@time_internal@absl@@@01@_K@Z
     ??$__allocate_at_least@V?$allocator@UViableSubstitution@strings_internal@absl@@@Cr@std@@@Cr@std@@YA?AU?$__allocation_result@PEAUViableSubstitution@strings_internal@absl@@@01@AEAV?$allocator@UViableSubstitution@strings_internal@absl@@@01@_K@Z
     ??$__allocate_at_least@V?$allocator@VFormatArgImpl@str_format_internal@absl@@@Cr@std@@@Cr@std@@YA?AU?$__allocation_result@PEAVFormatArgImpl@str_format_internal@absl@@@01@AEAV?$allocator@VFormatArgImpl@str_format_internal@absl@@@01@_K@Z
-    ??$__construct_at_end@PEBVFormatArgImpl@str_format_internal@absl@@@?$vector@VFormatArgImpl@str_format_internal@absl@@V?$allocator@VFormatArgImpl@str_format_internal@absl@@@Cr@std@@@Cr@std@@AEAAXPEBVFormatArgImpl@str_format_internal@absl@@0_K@Z
+    ??$__construct_at_end@PEBVFormatArgImpl@str_format_internal@absl@@$0A@@?$vector@VFormatArgImpl@str_format_internal@absl@@V?$allocator@VFormatArgImpl@str_format_internal@absl@@@Cr@std@@@Cr@std@@AEAAXPEBVFormatArgImpl@str_format_internal@absl@@0_K@Z
     ??$__construct_at_end@V?$move_iterator@PEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@@Cr@std@@@?$__split_buffer@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@AEAV?$allocator@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@@Cr@std@@@Cr@std@@QEAAXV?$move_iterator@PEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@@12@0@Z
     ??$__construct_at_end@V?$move_iterator@PEAUTransition@cctz@time_internal@absl@@@Cr@std@@@?$__split_buffer@UTransition@cctz@time_internal@absl@@AEAV?$allocator@UTransition@cctz@time_internal@absl@@@Cr@std@@@Cr@std@@QEAAXV?$move_iterator@PEAUTransition@cctz@time_internal@absl@@@12@0@Z
     ??$__construct_at_end@V?$move_iterator@PEAUTransitionType@cctz@time_internal@absl@@@Cr@std@@@?$__split_buffer@UTransitionType@cctz@time_internal@absl@@AEAV?$allocator@UTransitionType@cctz@time_internal@absl@@@Cr@std@@@Cr@std@@QEAAXV?$move_iterator@PEAUTransitionType@cctz@time_internal@absl@@@12@0@Z
@@ -623,7 +623,7 @@ EXPORTS
     ??$advance@PEBUTransition@cctz@time_internal@absl@@_J@?$_IterOps@U_ClassicAlgPolicy@Cr@std@@@Cr@std@@SAXAEAPEBUTransition@cctz@time_internal@absl@@_J@Z
     ??$advance@PEBUTransition@cctz@time_internal@absl@@_J_JX@Cr@std@@YAXAEAPEBUTransition@cctz@time_internal@absl@@_J@Z
     ??$advance@PEBVFormatArgImpl@str_format_internal@absl@@_K_KX@Cr@std@@YAXAEAPEBVFormatArgImpl@str_format_internal@absl@@_K@Z
-    ??$assign@PEBVFormatArgImpl@str_format_internal@absl@@@?$vector@VFormatArgImpl@str_format_internal@absl@@V?$allocator@VFormatArgImpl@str_format_internal@absl@@@Cr@std@@@Cr@std@@QEAAXPEBVFormatArgImpl@str_format_internal@absl@@0@Z
+    ??$assign@PEBVFormatArgImpl@str_format_internal@absl@@$0A@@?$vector@VFormatArgImpl@str_format_internal@absl@@V?$allocator@VFormatArgImpl@str_format_internal@absl@@@Cr@std@@@Cr@std@@QEAAXPEBVFormatArgImpl@str_format_internal@absl@@0@Z
     ??$assign@V?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@?$optional_data_base@V?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@optional_internal@absl@@IEAAX$$QEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
     ??$bit_cast@MI$0A@@absl@@YAMAEBI@Z
     ??$bit_cast@N_K$0A@@absl@@YANAEB_K@Z
