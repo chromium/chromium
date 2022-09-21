@@ -1154,6 +1154,7 @@ Instal·lació nova</translation>
 <translation id="7633755430369750696">Mostra la configuració de Compartició Nearby.</translation>
 <translation id="7634648064048557203">La càmera s'ha ajustat a l'extrem inferior dret</translation>
 <translation id="7641938616688887143">Grava</translation>
+<translation id="7642106959537987271">mode d'inversió de colors</translation>
 <translation id="7642647758716480637">Obre la configuració de la xarxa <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietari)</translation>
 <translation id="7647488630410863958">Desbloqueja el dispositiu per veure les notificacions</translation>
@@ -1259,6 +1260,7 @@ Instal·lació nova</translation>
 <translation id="8209010265547628927">Restableix</translation>
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">El Chromebook ha d'estar encès i endollat durant aquest període de temps. Assegura't que els cables del carregador o de l'adaptador estiguin completament connectats, tant al Chromebook com a l'endoll. No apaguis el Chromebook.</translation>
+<translation id="8230305195727960608">Mode d'inversió de colors</translation>
 <translation id="8236042855478648955">Ara toca fer una pausa</translation>
 <translation id="8246282815785366524">Et donem la benvinguda de nou, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, <ph name="BATTERY_STATUS" /> de bateria al telèfon</translation>
@@ -1385,6 +1387,7 @@ Instal·lació nova</translation>
 <translation id="8982906748181120328">Visibilitat Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">S'està utilitzant <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Mode d'inversió de colors activat. Torna a prémer Ctrl+Cerca+H per desactivar-lo.</translation>
 <translation id="899350903320462459">Desbloqueja el dispositiu com a <ph name="LOGIN_ID" /> per dur a terme l'acció que indica la notificació</translation>
 <translation id="9000771174482730261">GESTIONA L'EMMAGATZEMATGE</translation>
 <translation id="9017320285115481645">Introdueix el codi d'accés parental de Family Link.</translation>
@@ -1433,6 +1436,7 @@ Instal·lació nova</translation>
 <translation id="921989828232331238">El teu pare o mare han bloquejat el dispositiu per a tot el dia</translation>
 <translation id="9220525904950070496">Suprimir el compte</translation>
 <translation id="923686485342484400">Premeu Control+Maj+Q dues vegades per tancar la sessió.</translation>
+<translation id="92580429198593979">Has premut la tecla de drecera de la inversió de colors. Vols activar-la?</translation>
 <translation id="925832987464884575">Amaga les previsualitzacions</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> requereix que actualitzis el dispositiu <ph name="DEVICE_TYPE" /> immediatament</translation>
 <translation id="938963181863597773">Què tinc programat al calendari?</translation>

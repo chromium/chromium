@@ -2428,6 +2428,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
           Die Warnung wird nur eingeblendet, wenn infolge der Inaktivität der Nutzer abgemeldet oder das Gerät heruntergefahren wird.</translation>
 <translation id="3360490004791301756">Erlauben, dass Nutzer Angebote über die <ph name="PRODUCT_OS_NAME" />-Registrierung einlösen</translation>
 <translation id="3363360928811201045">Einschränkungen für verwaltete Konten hinzufügen</translation>
+<translation id="3364400740222114778">Kontowiederherstellung</translation>
 <translation id="3373381043600809954">"<ph name="PRODUCT_NAME" />" aktivieren</translation>
 <translation id="3374587000313305002">Hiermit wird das Verzeichnis konfiguriert, in dem <ph name="PRODUCT_NAME" /> die Nutzerdaten speichert.
 
@@ -3349,6 +3350,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="4389073105055031853">Nutzern erlauben, alle Zertifikate zu verwalten</translation>
 <translation id="4389091865841123886">Konfiguriert die Remote-Bestätigung mit TPM-Mechanismus</translation>
+<translation id="4397045637922200204">Kontowiederherstellung deaktivieren</translation>
 <translation id="4397464099112037398">Standardeinstellung für die Berechtigung für die Fensterpositionierung</translation>
 <translation id="4401496838830169080">Mit dieser Richtlinie kannst du festlegen, ob die Safe Browsing-Funktion von <ph name="PRODUCT_NAME" /> aktiviert ist und in welchem Modus sie ausgeführt wird.
 
@@ -6250,6 +6252,15 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
 <translation id="7482768039644066614">Abruf von Metadaten zum Seitenaufbau und Modellen zum maschinellen Lernen zum Verbessern der Browsernutzung aktivieren</translation>
 <translation id="7485481791539008776">Regeln zur Auswahl des Standarddruckers</translation>
 <translation id="7486205887492534734">Aufforderung auf dem Anmeldebildschirm, wenn mehrere Zertifikate passen</translation>
+<translation id="7489661071474025727">Gibt an, ob der Dienst zur Kontowiederherstellung für deine Nutzer auf <ph name="PRODUCT_OS_NAME" />-Geräten aktiviert ist.
+
+      Wenn die Richtlinie aktiviert ist, ist die Wiederherstellung der Nutzerdaten aktiviert. Falls die Richtlinie deaktiviert oder nicht konfiguriert ist, ist die Wiederherstellung der Nutzerdaten nicht aktiviert.
+      Wenn die Richtlinienebene auf „Empfohlen“ festgelegt ist, können Nutzer die Aktivierung der Kontowiederherstellung auf der Seite „Einstellungen“ ändern. Ist die Richtlinienebene auf „Obligatorisch“ festgelegt, können Nutzer die Aktivierung der Kontowiederherstellung nicht ändern.
+
+      Bei Änderung des Richtlinienwerts wird das Update bei der nächsten Anmeldung auf dem <ph name="PRODUCT_OS_NAME" />-Gerät abgeschlossen, nachdem der neue Richtlinienwert abgerufen wurde.
+
+      Hinweis: Diese Einstellung gilt nur für neue Konten, die auf <ph name="PRODUCT_OS_NAME" />-Geräten hinzugefügt werden.
+      </translation>
 <translation id="7491720878670299691">Häufigkeit, mit der Netzwerkdaten gepollt und auf Ereignisse geprüft werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 1 Minute.</translation>
@@ -7270,6 +7281,7 @@ Die Richtlinie wird in M75 entfernt.</translation>
 <translation id="8543108307976719751">Verbindungen per Remotezugriff verhindern</translation>
 <translation id="8544375438507658205">Standardanwendung für HTML-Darstellung in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Zulassen, dass SMS zwischen Smartphone mit Chromebook synchronisiert werden.</translation>
+<translation id="8549906780629620346">Kontowiederherstellung aktivieren</translation>
 <translation id="8553955290407912156">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht bitten dürfen, ihnen Zugriff auf ein HID-Gerät zu gewähren.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.

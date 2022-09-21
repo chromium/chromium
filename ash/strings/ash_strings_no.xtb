@@ -1157,6 +1157,7 @@ Nylig installert</translation>
 <translation id="7633755430369750696">Vis innstillinger for nærdeling.</translation>
 <translation id="7634648064048557203">Kameraet er festet til nedre høyre hjørne</translation>
 <translation id="7641938616688887143">Ta opp</translation>
+<translation id="7642106959537987271">modus for fargeinvertering</translation>
 <translation id="7642647758716480637">Åpne innstillinger for <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />)</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eier)</translation>
 <translation id="7647488630410863958">Lås opp enheten for å se varslene dine</translation>
@@ -1262,6 +1263,7 @@ Nylig installert</translation>
 <translation id="8209010265547628927">Tilbakestill</translation>
 <translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Chromebooken må være påslått og koblet til strøm i denne perioden. Sørg for at lader- eller adapterkabelen er plugget helt inn i både Chromebooken og stikkontakten. Ikke slå av Chromebook.</translation>
+<translation id="8230305195727960608">Modus for fargeinvertering</translation>
 <translation id="8236042855478648955">På tide med en pause</translation>
 <translation id="8246282815785366524">Velkommen tilbake, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – telefonbatterinivå <ph name="BATTERY_STATUS" /></translation>
@@ -1388,6 +1390,7 @@ Nylig installert</translation>
 <translation id="8982906748181120328">Nærdeling synlig</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Bruker <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Modus for fargeinvertering er slått på. Trykk på Ctrl + søketasten + H igjen for å slå den av.</translation>
 <translation id="899350903320462459">Lås opp enheten som <ph name="LOGIN_ID" /> for å utføre varselhandlingen</translation>
 <translation id="9000771174482730261">ADMINISTRER LAGRING</translation>
 <translation id="9017320285115481645">Skriv inn koden for foreldretilgang til Family Link.</translation>
@@ -1436,6 +1439,7 @@ Nylig installert</translation>
 <translation id="921989828232331238">Forelderen din har låst enheten din for dagen</translation>
 <translation id="9220525904950070496">Fjern konto</translation>
 <translation id="923686485342484400">Trykk på Control+Shift+Q to ganger for å logge av.</translation>
+<translation id="92580429198593979">Du har trykket på hurtigtasten for modus for fargeinvertering. Vil du slå den på?</translation>
 <translation id="925832987464884575">Skjul forhåndsvisninger</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> krever at du oppdaterer <ph name="DEVICE_TYPE" /> umiddelbart</translation>
 <translation id="938963181863597773">Hva er i kalenderen min?</translation>

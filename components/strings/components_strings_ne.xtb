@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">लेटर फोल्ड</translation>
 <translation id="138218114945450791">हल्का निलो</translation>
 <translation id="1382194467192730611">तपाईंका प्रशासकले अनुमति दिएको USB यन्त्र</translation>
+<translation id="1382378825779654399">कुनै साइटमा मूल्य घटेका खण्डमा तपाईंलाई इमेलमार्फत अलर्ट पठाइने छ। यो पेज <ph name="LAST_BOOKMARKS_FOLDER" /> मा सेभ गरिने छ।</translation>
 <translation id="1382912999714108023">तपाईंको हालको जानकारी देखाइएको छैन? तपाईं यो जानकारी संशोधन गर्न चाहनुहुन्छ भने कृपया आफ्नो बैंकमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="1384725838384960382">सुरक्षित तरिकाले भुक्तानी गर्नका निम्ति क्रिडेन्सियल पुष्टि गर्ने पाना</translation>
 <translation id="1386623374109090026">एनोटेसनहरू</translation>
@@ -1517,6 +1518,7 @@
 <translation id="5018422839182700155">यो पृष्ठ खोल्न सकिँदैन</translation>
 <translation id="5019198164206649151">खराब स्थितिमा भण्डार ब्याकिङ गर्दै</translation>
 <translation id="5020776957610079374">विश्व सङ्गीत</translation>
+<translation id="5021557570875267742">Chrome मार्फत मूल्य ट्र्याक गर्नुहोस्</translation>
 <translation id="5023310440958281426">तपाईंको व्यवस्थापकको नीतिहरु जाँच्नुहोस्</translation>
 <translation id="5029568752722684782">प्रतिलिपि हटाउनुहोस्</translation>
 <translation id="5030338702439866405">द्वारा जारी गरिएको</translation>
@@ -2238,6 +2240,7 @@
 <translation id="6993898126790112050">6x9 (Envelope)</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> भाषाका सामग्री सधैँ अनुवाद गर्नुहोस्</translation>
 <translation id="6999969238895751684">मनोरञ्जन उद्योग</translation>
+<translation id="7003335073762455340">तपाईं यो उत्पादन ट्र्याक गर्दै हुनुहुन्छ। यो पेज <ph name="LAST_BOOKMARKS_FOLDER" /> मा सेभ गरिएको छ।</translation>
 <translation id="7004583254764674281">कार्डहरू अझ छिटो पुष्टि गर्न Windows Hello प्रयोग गर्नुहोस्</translation>
 <translation id="7006930604109697472">जे भए पनि पठाउनुहोस्</translation>
 <translation id="7012363358306927923">चीन UnionPay</translation>
@@ -3032,6 +3035,7 @@
 <translation id="9174623988242579721">कस्टम तथा उच्चस्तरीय सवारी साधनहरू</translation>
 <translation id="9174917557437862841">ट्याब बदल्ने बटन, यो ट्याबमा जान Enter थिच्नुहोस्</translation>
 <translation id="9179703756951298733">Chrome ब्राउजरका सेटिङमा गई आफ्ना भुक्तानी र क्रेडिट कार्डसम्बन्धी जानकारी व्यवस्थापन गर्नुहोस्</translation>
+<translation id="9179907736442194268">कुनै साइटमा मूल्य घटेका खण्डमा इमेलमार्फत अलर्ट प्राप्त गर्नुहोस्</translation>
 <translation id="9183302530794969518">Google कागजात</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ले असमर्थित प्रोटोकल प्रयोग गर्दछ।</translation>
 <translation id="9187461866967718678">खतरनाक खेलहरू</translation>

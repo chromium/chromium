@@ -2166,6 +2166,7 @@
 <translation id="2977480621796371840">从组中移除</translation>
 <translation id="2979639724566107830">在新窗口中打开</translation>
 <translation id="2981113813906970160">显示大号鼠标光标</translation>
+<translation id="2981293774053328982">此文件包含可能会使您的个人帐号或社交网络帐号遭到入侵的恶意软件</translation>
 <translation id="2983373101216420412">保护套的电池电量为 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2985348301114641460">向您的管理员发送“<ph name="EXTENSION_NAME" />”安装请求？</translation>
 <translation id="2987620471460279764">从其他设备分享的文字</translation>
@@ -6708,6 +6709,7 @@
 <translation id="7404065585741198296">使用 USB 线连接手机</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{1 小时前运行过安全检查}other{{NUM_HOURS} 小时前运行过安全检查}}</translation>
 <translation id="740624631517654988">已拦截弹出式窗口</translation>
+<translation id="7406912950279255498">颜色反转模式</translation>
 <translation id="7407430846095439694">导入并绑定</translation>
 <translation id="7407504355934009739">多数人会屏蔽来自此网站的通知</translation>
 <translation id="740810853557944681">添加打印服务器</translation>
@@ -7656,6 +7658,7 @@
     <ph name="BEGIN_PARAGRAPH3" />所有者可以通过“设置”&gt;“高级”&gt;“自动向 Google 发送诊断数据和使用情况数据”来控制这项功能。<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />如果您已为孩子开启了“其他网络与应用活动记录”设置，这些数据可能会保存在您孩子的 Google 帐号中。您可以前往 families.google.com 详细了解这些设置以及对应的调整方式。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">客户端证书无效</translation>
+<translation id="8270162672241199380">Steam 安装程序</translation>
 <translation id="827097179112817503">显示“主页”按钮</translation>
 <translation id="8271268254812352141">在您右键点击或轻触并按住文字时获取定义、翻译或单位换算结果。您可在<ph name="LINK_BEGIN" />网站语言<ph name="LINK_END" />部分中自定义翻译语言。</translation>
 <translation id="8271379370373330993">接下来的几个步骤需由家长完成。家长可在设置好帐号后将 <ph name="DEVICE_TYPE" /> 交还给孩子。</translation>

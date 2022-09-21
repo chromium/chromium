@@ -2190,6 +2190,7 @@
 <translation id="2977480621796371840">그룹에서 삭제</translation>
 <translation id="2979639724566107830">새 창에서 열기</translation>
 <translation id="2981113813906970160">큰 마우스 커서 표시</translation>
+<translation id="2981293774053328982">파일에 개인 계정 또는 소셜 네트워크 계정을 손상시킬 수 있는 멀웨어가 포함되어 있습니다.</translation>
 <translation id="2983373101216420412">케이스 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">관리자에게 '<ph name="EXTENSION_NAME" />' 설치 요청을 전송하시겠습니까?</translation>
 <translation id="2987620471460279764">다른 기기에서 공유된 텍스트</translation>
@@ -6737,6 +6738,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7404065585741198296">USB 케이블로 연결된 휴대전화</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{안전 확인이 1시간 전에 실행됨}other{안전 확인이 {NUM_HOURS}시간 전에 실행됨}}</translation>
 <translation id="740624631517654988">팝업 차단됨</translation>
+<translation id="7406912950279255498">색상 반전 모드</translation>
 <translation id="7407430846095439694">가져오기 및 연결</translation>
 <translation id="7407504355934009739">대부분의 사용자가 이 사이트의 알림을 차단합니다.</translation>
 <translation id="740810853557944681">인쇄 서버 추가</translation>
@@ -7687,6 +7689,7 @@ https://support.google.com/chromebook/?p=sm</translation>
     <ph name="BEGIN_PARAGRAPH3" />소유자는 설정 &gt; 고급 &gt; 진단 및 사용 데이터를 Google에 자동 전송에서 이 기능을 제어할 수 있습니다.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />자녀에게 추가 웹 및 앱 활동 설정이 사용 설정된 경우 이 데이터가 자녀의 Google 계정에 저장됩니다. families.google.com에서 이러한 설정 및 설정 조정 방법을 자세히 알아볼 수 있습니다.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">잘못된 클라이언트 인증서</translation>
+<translation id="8270162672241199380">Steam 설치 프로그램</translation>
 <translation id="827097179112817503">홈 버튼 표시</translation>
 <translation id="8271268254812352141">텍스트를 마우스 오른쪽 버튼으로 클릭하거나 길게 터치하여 정의 또는 번역을 확인하거나 단위를 변환합니다. <ph name="LINK_BEGIN" />웹사이트 언어<ph name="LINK_END" />에서 번역 언어를 맞춤 설정하세요.</translation>
 <translation id="8271379370373330993">다음 몇 단계는 부모님이 진행하셔야 합니다. 계정 설정이 완료된 후 <ph name="DEVICE_TYPE" /> 기기를 자녀에게 돌려주세요.</translation>
