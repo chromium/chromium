@@ -185,12 +185,12 @@ TEST_F(TriggerThrottlerTest, TriggerQuotaPersistence) {
 
   const std::string kAdSampleKey = "2";
   const base::Value* ad_sample_events = event_dict.Find(kAdSampleKey);
-  EXPECT_EQ(3u, ad_sample_events->GetListDeprecated().size());
+  EXPECT_EQ(3u, ad_sample_events->GetList().size());
 
   const std::string kSuspiciousSiteKey = "4";
   const base::Value* suspicious_site_events =
       event_dict.Find(kSuspiciousSiteKey);
-  EXPECT_EQ(2u, suspicious_site_events->GetListDeprecated().size());
+  EXPECT_EQ(2u, suspicious_site_events->GetList().size());
 
   // To simulate a new startup of the browser, we can create another throttler
   // using the same quota configuration and pref store. It should read the
