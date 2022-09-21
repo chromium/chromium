@@ -16,8 +16,6 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
   // go/segmentation-field-trials-map.
   if (segmentation_key == kAdaptiveToolbarSegmentationKey) {
     return kAdaptiveToolbarUmaName;
-  } else if (segmentation_key == kDummySegmentationKey) {
-    return kDummyFeatureUmaName;
   } else if (segmentation_key == kChromeStartAndroidSegmentationKey) {
     return kChromeStartAndroidUmaName;
   } else if (segmentation_key == kChromeStartAndroidV2SegmentationKey) {

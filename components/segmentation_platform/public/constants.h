@@ -15,11 +15,6 @@ namespace segmentation_platform {
 const char kAdaptiveToolbarSegmentationKey[] = "adaptive_toolbar";
 const char kAdaptiveToolbarUmaName[] = "AdaptiveToolbar";
 
-// The key to be used for any feature that needs to collect and store data on
-// client side while being built.
-const char kDummySegmentationKey[] = "dummy_feature";
-const char kDummyFeatureUmaName[] = "DummyFeature";
-
 // The key is used to decide whether to show Chrome Start or not.
 const char kChromeStartAndroidSegmentationKey[] = "chrome_start_android";
 const char kChromeStartAndroidUmaName[] = "ChromeStartAndroid";

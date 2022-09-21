@@ -54,8 +54,6 @@ constexpr char kDefaultModelEnabledParam[] = "enable_default_model";
 
 // Default TTL for segment selection and unknown selection:
 
-constexpr int kDummyFeatureSelectionTTLDays = 1;
-
 constexpr int kChromeLowUserEngagementSelectionTTLDays = 7;
 
 constexpr int kFeedUserSegmentSelectionTTLDays = 14;
@@ -115,16 +113,6 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
   return config;
 }
 #endif
-
-std::unique_ptr<Config> GetConfigForDummyFeature() {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kDummySegmentationKey;
-  config->segmentation_uma_name = kDummyFeatureUmaName;
-  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY);
-  config->segment_selection_ttl = base::Days(kDummyFeatureSelectionTTLDays);
-  config->unknown_selection_ttl = base::Days(kDummyFeatureSelectionTTLDays);
-  return config;
-}
 
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<ModelProvider> GetChromeStartAndroidModel() {
@@ -419,10 +407,6 @@ std::unique_ptr<Config> GetConfigForCrossDeviceSegments() {
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
     content::BrowserContext* context) {
   std::vector<std::unique_ptr<Config>> configs;
-  if (base::FeatureList::IsEnabled(
-          segmentation_platform::features::kSegmentationPlatformDummyFeature)) {
-    configs.emplace_back(GetConfigForDummyFeature());
-  }
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2)) {
