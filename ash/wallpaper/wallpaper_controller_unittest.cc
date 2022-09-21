@@ -4058,9 +4058,8 @@ TEST_F(WallpaperControllerTest,
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDaily);
 
-  // Fast forward by one hour and attempt a system's color mode change.
-  task_environment()->FastForwardBy(base::Hours(1));
-  Shell::Get()->dark_light_mode_controller()->ToggleColorMode();
+  // Attempt a system's color mode change.
+  controller_->OnColorModeChanged(true);
   RunAllTasksUntilIdle();
   EXPECT_EQ(2, GetWallpaperCount());
   // Expect the refresh timer doesn't reset.
