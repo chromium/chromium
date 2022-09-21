@@ -103,6 +103,16 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
   DCHECK(context_);
   DCHECK(outside_fetch_client_settings_object_);
   internal_.registration = registration;
+
+  ServiceWorkerVersion* version = registration->GetNewestVersion();
+  if (version) {
+    scoped_refptr<PolicyContainerHost> policy_container_host =
+        version->policy_container_host();
+    if (policy_container_host) {
+      creator_policy_container_policies_ =
+          mojo::Clone(policy_container_host->policies());
+    }
+  }
 }
 
 ServiceWorkerRegisterJob::~ServiceWorkerRegisterJob() {
@@ -554,7 +564,14 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
   SetPhase(UPDATE);
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
-      context_->wrapper()->GetLoaderFactoryForUpdateCheck(scope_);
+      context_->wrapper()->GetLoaderFactoryForUpdateCheck(
+          scope_,
+          network::mojom::ClientSecurityState::New(
+              creator_policy_container_policies_.cross_origin_embedder_policy,
+              creator_policy_container_policies_.is_web_secure_context,
+              creator_policy_container_policies_.ip_address_space,
+              DerivePrivateNetworkRequestPolicy(
+                  creator_policy_container_policies_)));
   if (!loader_factory) {
     // We can't continue with update checking appropriately without
     // |loader_factory|. Null |loader_factory| means that the storage partition
