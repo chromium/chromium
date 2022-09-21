@@ -200,7 +200,16 @@ enum class PreloadingFailureReason {
   // destroyed" for prerender, but "the user already had cookies for a
   // cross-origin prefetch"
   // for prefetch).
+  //
+  // Values between kPreloadingFailureReasonCommonEnd (included) and
+  // kPreloadingFailureReasonContentEnd (excluded) are reserved for enums
+  // defined in //content.
   kPreloadingFailureReasonCommonEnd = 100,
+
+  // Values beyond this value are for failure reasons defined by the embedder.
+  // The semantics of those values can vary by preloading type (1000 can mean
+  // "limit exceeded" for preconnect but "cancelled" for prerender).
+  kPreloadingFailureReasonContentEnd = 1000,
 };
 
 }  // namespace content

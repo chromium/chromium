@@ -136,7 +136,7 @@ class PrerenderManager::SearchPrerenderTask {
     return static_cast<content::PreloadingFailureReason>(
         static_cast<int>(status) +
         static_cast<int>(content::PreloadingFailureReason::
-                             kPreloadingFailureReasonCommonEnd));
+                             kPreloadingFailureReasonContentEnd));
   }
 
   void SetFailureReason(PrerenderPredictionStatus status) {

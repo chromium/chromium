@@ -64,8 +64,8 @@ content::PreloadingFailureReason ToPreloadingFailureReason(
     PrerenderPredictionStatus status) {
   return static_cast<content::PreloadingFailureReason>(
       static_cast<int>(status) +
-      static_cast<int>(
-          content::PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
+      static_cast<int>(content::PreloadingFailureReason::
+                           kPreloadingFailureReasonContentEnd));
 }
 
 // Sets up testing context for the search preloading features: search prefetch

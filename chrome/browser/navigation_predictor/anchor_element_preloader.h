@@ -23,13 +23,13 @@ enum class AnchorElementPreloaderType {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class AnchorPreloadingFailureReason {
-  // Numbering starts from `kPreloadingFailureReasonCommonEnd` defined in
+  // Numbering starts from `kPreloadingFailureReasonContentEnd` defined in
   // //content/public/preloading.h . Advance numbering by +1 when adding a new
   // element.
 
   // The number of allowed anchor element preloading attempts has been exceeded.
   kLimitExceeded = static_cast<int>(
-      content::PreloadingFailureReason::kPreloadingFailureReasonCommonEnd),
+      content::PreloadingFailureReason::kPreloadingFailureReasonContentEnd),
 };
 
 // Helper function to convert AnchorPreloadingFailureReason to

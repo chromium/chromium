@@ -145,8 +145,8 @@ content::PreloadingFailureReason ToPreloadingFailureReason(
     SearchPrefetchServingReason reason) {
   return static_cast<content::PreloadingFailureReason>(
       static_cast<int>(reason) +
-      static_cast<int>(
-          content::PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
+      static_cast<int>(content::PreloadingFailureReason::
+                           kPreloadingFailureReasonContentEnd));
 }
 
 }  // namespace
