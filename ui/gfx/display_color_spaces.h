@@ -138,7 +138,7 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
 
   gfx::ColorSpace color_spaces_[kConfigCount];
   gfx::BufferFormat buffer_formats_[kConfigCount];
-  SkColorSpacePrimaries primaries_ = skia::kSkColorSpacePrimariesSRGB;
+  SkColorSpacePrimaries primaries_ = SkNamedPrimariesExt::kSRGB;
   float sdr_max_luminance_nits_ = ColorSpace::kDefaultSDRWhiteLevel;
   float hdr_max_luminance_relative_ = 1.f;
 };

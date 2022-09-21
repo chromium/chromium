@@ -13,7 +13,7 @@ constexpr float kEpsilon = 0.0001;
 
 TEST(SkiaUtils, PrimariesD65) {
   // DCI P3 (D65)
-  const auto p3 = kSkColorSpacePrimariesP3;
+  const auto p3 = SkNamedPrimariesExt::kP3;
 
   skcms_Matrix3x3 matrix;
   EXPECT_TRUE(p3.toXYZD50(&matrix));
@@ -32,8 +32,8 @@ TEST(SkiaUtils, PrimariesD65) {
 }
 
 TEST(SkiaUtils, PrimariesD50) {
-  // ProPhoto (D50)
-  const auto pro_photo = kSkColorSpacePrimariesProPhotoD50;
+  // ProPhoto (which has a D50 white point)
+  const auto pro_photo = SkNamedPrimariesExt::kProPhotoRGB;
 
   // Convert primaries to a matrix.
   skcms_Matrix3x3 pro_photo_matrix;

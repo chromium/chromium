@@ -22,17 +22,17 @@ namespace skia {
 
 std::string SkColorSpacePrimariesToString(
     const SkColorSpacePrimaries& primaries) {
-  if (primaries == kSkColorSpacePrimariesZero)
+  if (primaries == SkNamedPrimariesExt::kInvalid)
     return "invalid";
 
   std::stringstream ss;
   ss << std::fixed << std::setprecision(4);
   ss << "{";
-  if (primaries == kSkColorSpacePrimariesSRGB)
+  if (primaries == SkNamedPrimariesExt::kSRGB)
     ss << "name:'srgb', ";
-  else if (primaries == kSkColorSpacePrimariesP3)
+  else if (primaries == SkNamedPrimariesExt::kP3)
     ss << "name:'p3', ";
-  else if (primaries == kSkColorSpacePrimariesRec2020)
+  else if (primaries == SkNamedPrimariesExt::kRec2020)
     ss << "name:'rec2020', ";
   ss << "r:[" << primaries.fRX << ", " << primaries.fRY << "], ";
   ss << "g:[" << primaries.fGX << ", " << primaries.fGY << "], ";
@@ -67,27 +67,5 @@ SkColorSpacePrimaries GetD65PrimariesFromToXYZD50Matrix(
   primaries.fWY = kD65_Y;
   return primaries;
 }
-
-SkColorSpacePrimaries kSkColorSpacePrimariesZero = {0};
-
-SkColorSpacePrimaries kSkColorSpacePrimariesSRGB = {
-    0.640f, 0.330f, 0.300f, 0.600f, 0.150f, 0.060f, 0.3127f, 0.3290f,
-};
-
-SkColorSpacePrimaries kSkColorSpacePrimariesP3 = {
-    0.680f, 0.320f, 0.265f, 0.690f, 0.150f, 0.060f, 0.3127f, 0.3290f,
-};
-
-SkColorSpacePrimaries kSkColorSpacePrimariesRec2020 = {
-    0.708f, 0.292f, 0.170f, 0.797f, 0.131f, 0.046f, 0.3127f, 0.3290f,
-};
-
-SkColorSpacePrimaries kSkColorSpacePrimariesProPhotoD50 = {
-    0.7347f, 0.2653f, 0.1596f, 0.8404f, 0.0366f, 0.0001f, 0.34567f, 0.35850f,
-};
-
-SkColorSpacePrimaries kSkColorSpacePrimariesWideGamutColorSpin = {
-    0.01f, 0.98f, 0.01f, 0.01f, 0.98f, 0.01f, 0.3127f, 0.3290f,
-};
 
 }  // namespace skia

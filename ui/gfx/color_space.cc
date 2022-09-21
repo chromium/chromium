@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "skia/ext/skcolorspace_primaries.h"
+#include "skia/ext/skcolorspace_trfn.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkICC.h"
@@ -644,7 +645,7 @@ sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace(
       return SkColorSpace::MakeSRGBLinear();
   }
 
-  skcms_TransferFunction transfer_fn = SkNamedTransferFn::kSRGB;
+  skcms_TransferFunction transfer_fn = SkNamedTransferFnExt::kSRGB;
   switch (transfer_) {
     case TransferID::SRGB:
       break;
@@ -754,7 +755,7 @@ bool ColorSpace::Contains(const ColorSpace& other) const {
 SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
     PrimaryID primary_id,
     const skcms_Matrix3x3* custom_primary_matrix = nullptr) {
-  SkColorSpacePrimaries primaries = skia::kSkColorSpacePrimariesZero;
+  SkColorSpacePrimaries primaries = SkNamedPrimariesExt::kInvalid;
 
   if (custom_primary_matrix && primary_id == PrimaryID::CUSTOM)
     return skia::GetD65PrimariesFromToXYZD50Matrix(*custom_primary_matrix);
@@ -769,116 +770,46 @@ SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
       // in case we somehow get an id which is not listed in the switch.
       // (We don't want to use "default", because we want the compiler
       //  to tell us if we forgot some enum values.)
-      return skia::kSkColorSpacePrimariesSRGB;
+      return SkNamedPrimariesExt::kRec709;
 
     case ColorSpace::PrimaryID::BT470M:
-      primaries.fRX = 0.67f;
-      primaries.fRY = 0.33f;
-      primaries.fGX = 0.21f;
-      primaries.fGY = 0.71f;
-      primaries.fBX = 0.14f;
-      primaries.fBY = 0.08f;
-      primaries.fWX = 0.31f;
-      primaries.fWY = 0.316f;
-      break;
+      return SkNamedPrimariesExt::kRec470SystemM;
 
     case ColorSpace::PrimaryID::BT470BG:
-      primaries.fRX = 0.64f;
-      primaries.fRY = 0.33f;
-      primaries.fGX = 0.29f;
-      primaries.fGY = 0.60f;
-      primaries.fBX = 0.15f;
-      primaries.fBY = 0.06f;
-      primaries.fWX = 0.3127f;
-      primaries.fWY = 0.3290f;
-      break;
+      return SkNamedPrimariesExt::kRec470SystemBG;
 
     case ColorSpace::PrimaryID::SMPTE170M:
+      return SkNamedPrimariesExt::kRec601;
+
     case ColorSpace::PrimaryID::SMPTE240M:
-      primaries.fRX = 0.630f;
-      primaries.fRY = 0.340f;
-      primaries.fGX = 0.310f;
-      primaries.fGY = 0.595f;
-      primaries.fBX = 0.155f;
-      primaries.fBY = 0.070f;
-      primaries.fWX = 0.3127f;
-      primaries.fWY = 0.3290f;
-      break;
+      return SkNamedPrimariesExt::kSMPTE_ST_240;
 
     case ColorSpace::PrimaryID::APPLE_GENERIC_RGB:
-      primaries.fRX = 0.63002f;
-      primaries.fRY = 0.34000f;
-      primaries.fGX = 0.29505f;
-      primaries.fGY = 0.60498f;
-      primaries.fBX = 0.15501f;
-      primaries.fBY = 0.07701f;
-      primaries.fWX = 0.3127f;
-      primaries.fWY = 0.3290f;
-      break;
+      return SkNamedPrimariesExt::kAppleGenericRGB;
 
     case ColorSpace::PrimaryID::WIDE_GAMUT_COLOR_SPIN:
-      return skia::kSkColorSpacePrimariesWideGamutColorSpin;
+      return SkNamedPrimariesExt::kWideGamutColorSpin;
 
     case ColorSpace::PrimaryID::FILM:
-      primaries.fRX = 0.681f;
-      primaries.fRY = 0.319f;
-      primaries.fGX = 0.243f;
-      primaries.fGY = 0.692f;
-      primaries.fBX = 0.145f;
-      primaries.fBY = 0.049f;
-      primaries.fWX = 0.310f;
-      primaries.fWY = 0.136f;
-      break;
+      return SkNamedPrimariesExt::kGenericFilm;
 
     case ColorSpace::PrimaryID::BT2020:
-      return skia::kSkColorSpacePrimariesRec2020;
+      return SkNamedPrimariesExt::kRec2020;
 
     case ColorSpace::PrimaryID::SMPTEST428_1:
-      primaries.fRX = 1.0f;
-      primaries.fRY = 0.0f;
-      primaries.fGX = 0.0f;
-      primaries.fGY = 1.0f;
-      primaries.fBX = 0.0f;
-      primaries.fBY = 0.0f;
-      primaries.fWX = 1.0f / 3.0f;
-      primaries.fWY = 1.0f / 3.0f;
-      break;
+      return SkNamedPrimariesExt::kSMPTE_ST_428_1;
 
     case ColorSpace::PrimaryID::SMPTEST431_2:
-      primaries.fRX = 0.680f;
-      primaries.fRY = 0.320f;
-      primaries.fGX = 0.265f;
-      primaries.fGY = 0.690f;
-      primaries.fBX = 0.150f;
-      primaries.fBY = 0.060f;
-      primaries.fWX = 0.314f;
-      primaries.fWY = 0.351f;
-      break;
+      return SkNamedPrimariesExt::kSMPTE_RP_431_2;
 
     case ColorSpace::PrimaryID::P3:
-      return skia::kSkColorSpacePrimariesP3;
+      return SkNamedPrimariesExt::kP3;
 
     case ColorSpace::PrimaryID::XYZ_D50:
-      primaries.fRX = 1.0f;
-      primaries.fRY = 0.0f;
-      primaries.fGX = 0.0f;
-      primaries.fGY = 1.0f;
-      primaries.fBX = 0.0f;
-      primaries.fBY = 0.0f;
-      primaries.fWX = 0.34567f;
-      primaries.fWY = 0.35850f;
-      break;
+      return SkNamedPrimariesExt::kXYZD50;
 
     case ColorSpace::PrimaryID::ADOBE_RGB:
-      primaries.fRX = 0.6400f;
-      primaries.fRY = 0.3300f;
-      primaries.fGX = 0.2100f;
-      primaries.fGY = 0.7100f;
-      primaries.fBX = 0.1500f;
-      primaries.fBY = 0.0600f;
-      primaries.fWX = 0.3127f;
-      primaries.fWY = 0.3290f;
-      break;
+      return SkNamedPrimariesExt::kA98RGB;
   }
   return primaries;
 }
@@ -935,20 +866,16 @@ bool ColorSpace::GetTransferFunction(TransferID transfer,
       fn->g = 1.801f;
       return true;
     case ColorSpace::TransferID::GAMMA22:
-      fn->g = 2.2f;
+      *fn = SkNamedTransferFnExt::kRec470SystemM;
       return true;
     case ColorSpace::TransferID::GAMMA24:
       fn->g = 2.4f;
       return true;
     case ColorSpace::TransferID::GAMMA28:
-      fn->g = 2.8f;
+      *fn = SkNamedTransferFnExt::kRec470SystemBG;
       return true;
     case ColorSpace::TransferID::SMPTE240M:
-      fn->a = 0.899626676224f;
-      fn->b = 0.100373323776f;
-      fn->c = 0.250000000000f;
-      fn->d = 0.091286342118f;
-      fn->g = 2.222222222222f;
+      *fn = SkNamedTransferFnExt::kSMPTE_ST_240;
       return true;
     case ColorSpace::TransferID::BT709:
     case ColorSpace::TransferID::SMPTE170M:
@@ -965,18 +892,13 @@ bool ColorSpace::GetTransferFunction(TransferID transfer,
     // media players.
     case ColorSpace::TransferID::SRGB:
     case ColorSpace::TransferID::SRGB_HDR:
-      fn->a = 0.947867345704f;
-      fn->b = 0.052132654296f;
-      fn->c = 0.077399380805f;
-      fn->d = 0.040449937172f;
-      fn->g = 2.400000000000f;
+      *fn = SkNamedTransferFnExt::kSRGB;
       return true;
     case ColorSpace::TransferID::BT709_APPLE:
-      fn->g = 1.961000000000f;
+      *fn = SkNamedTransferFnExt::kRec709Apple;
       return true;
     case ColorSpace::TransferID::SMPTEST428_1:
-      fn->a = 1.034080527699f;  // (52.37 / 48.0) ^ (1.0 / 2.6) per ITU-T H.273.
-      fn->g = 2.600000000000f;
+      *fn = SkNamedTransferFnExt::kSMPTE_ST_428_1;
       return true;
     case ColorSpace::TransferID::IEC61966_2_4:
       // This could potentially be represented the same as SRGB, but it handles
