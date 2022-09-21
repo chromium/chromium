@@ -568,8 +568,9 @@ class PrivacyBudgetBrowserTestActiveSampling : public PlatformBrowserTest {
 
 }  // namespace
 
+// TODO[b/247955960]: Fix flakiness and reenable test.
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestActiveSampling,
-                       ActiveSamplingIsPerformed) {
+                       DISABLED_ActiveSamplingIsPerformed) {
   content::NavigateToURLBlockUntilNavigationsComplete(
       chrome_test_utils::GetActiveWebContents(this), GURL("about:blank"), 1);
   content::RunAllTasksUntilIdle();
