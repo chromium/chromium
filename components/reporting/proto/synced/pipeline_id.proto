@@ -1,0 +1,15 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+// Used to (de)serialize pipeline id + signature for storage
+message PipelineIdStorageInfo {
+  optional string pipeline_id = 1;
+  optional string pipeline_id_signature = 2;
+}
