@@ -806,11 +806,17 @@ bool FlexLayoutAlgorithm::ShouldApplyMinSizeAutoForChild(
   if (child.ShouldApplySizeContainment())
     return false;
 
-  bool is_replaced_element_respecting_overflow = false;
-  if (auto* element = DynamicTo<Element>(child.GetNode())) {
-    is_replaced_element_respecting_overflow =
-        element->IsReplacedElementRespectingCSSOverflow();
-  }
+  // All replaced elements (except SVG) use a default value of 'visible' for
+  // overflow. This feature switches this to 'clip' via UA stylesheet. In order
+  // to ensure backwards compatibility with the existing behaviour, 'clip' is
+  // treated similar to 'visible' for deciding whether 'auto' applies to compute
+  // the minimum bounds for these elements.
+  //
+  // The above is also consistent with the spec:
+  // https://drafts.csswg.org/css-flexbox/#min-size-auto
+  bool is_replaced_element_respecting_overflow =
+      RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled() &&
+      child.IsLayoutReplaced();
 
   return MainAxisOverflowForChild(child) == EOverflow::kVisible ||
          (is_replaced_element_respecting_overflow &&
