@@ -186,8 +186,11 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(CommitRequest commit_request,
   if (!is_testing)
     UpdateCrtcAndPlaneStatesAfterModeset(commit_request);
 
-  for (HardwareDisplayPlaneList* list : enable_planes_lists)
+  for (HardwareDisplayPlaneList* list : enable_planes_lists) {
+    if (!is_testing)
+      list->plane_list.swap(list->old_plane_list);
     list->plane_list.clear();
+  }
 
   return true;
 }
@@ -253,8 +256,6 @@ void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
     for (auto* plane : plane_list->old_plane_list) {
       plane->set_in_use(true);
     }
-  } else {
-    plane_list->plane_list.swap(plane_list->old_plane_list);
   }
 }
 
@@ -306,6 +307,9 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
 
   if (release_fence)
     *release_fence = CreateMergedGpuFenceFromFDs(std::move(out_fence_fds));
+
+  if (!test_only)
+    plane_list->plane_list.swap(plane_list->old_plane_list);
 
   plane_list->plane_list.clear();
   plane_list->atomic_property_set.reset(drmModeAtomicAlloc());

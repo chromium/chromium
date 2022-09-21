@@ -11,8 +11,10 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/gfx/gpu_fence.h"
@@ -29,6 +31,7 @@
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_atomic.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_legacy.h"
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
+#include "ui/ozone/platform/drm/gpu/page_flip_request.h"
 
 namespace {
 
@@ -790,6 +793,51 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, PageflipTestRestoresInUse) {
   // The primary plane should still be in use since the commit was
   // a pageflip test and did not change any KMS state.
   EXPECT_TRUE(fake_drm_->plane_manager()->planes().front()->in_use());
+}
+
+TEST_P(HardwareDisplayPlaneManagerAtomicTest,
+       PageFlipOnlySwapsPlaneListsOnSuccess) {
+  InitializeDrmState(/*crtc_count=*/1, /*planes_per_crtc=*/2);
+  fake_drm_->InitializeState(crtc_properties_, connector_properties_,
+                             plane_properties_, property_names_, use_atomic_);
+
+  ui::DrmOverlayPlaneList single_assign;
+  single_assign.emplace_back(CreateBuffer(kDefaultBufferSize), nullptr);
+
+  ui::DrmOverlayPlaneList overlay_assigns;
+  overlay_assigns.emplace_back(CreateBuffer(kDefaultBufferSize), nullptr);
+  overlay_assigns.emplace_back(CreateBuffer(kDefaultBufferSize), nullptr);
+
+  ui::HardwareDisplayPlaneList hdpl;
+
+  auto flip_with_assigns = [&](bool commit_status,
+                               const auto& assigns) -> bool {
+    auto page_flip_request =
+        base::MakeRefCounted<ui::PageFlipRequest>(base::TimeDelta());
+    fake_drm_->plane_manager()->BeginFrame(&hdpl);
+    EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
+        &hdpl, assigns, crtc_properties_[0].id));
+    fake_drm_->set_commit_expectation(commit_status);
+    return fake_drm_->plane_manager()->Commit(&hdpl, page_flip_request,
+                                              nullptr);
+  };
+
+  // Flipping with an overlay should mark both as old planes:
+  EXPECT_TRUE(flip_with_assigns(/*commit_status=*/true, overlay_assigns));
+  EXPECT_EQ(2u, hdpl.old_plane_list.size());
+  EXPECT_EQ(0u, hdpl.plane_list.size());
+
+  // We shouldn't see a change to the old plane list on a force-failed commit,
+  // even though we only are trying to flip a single plane.
+  EXPECT_FALSE(flip_with_assigns(/*commit_status=*/false, single_assign));
+  EXPECT_EQ(2u, hdpl.old_plane_list.size());
+  EXPECT_EQ(0u, hdpl.plane_list.size());
+
+  // Once we do successfully flip a single plane, the old plane list should
+  // reflect it.
+  EXPECT_TRUE(flip_with_assigns(/*commit_status=*/true, single_assign));
+  EXPECT_EQ(1u, hdpl.old_plane_list.size());
+  EXPECT_EQ(0u, hdpl.plane_list.size());
 }
 
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, MultipleFrames) {
