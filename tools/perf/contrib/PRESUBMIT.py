@@ -23,11 +23,10 @@ def _CheckOwnershipForContribSubDir(sub_dir, input_api, output_api):
 
 
 def _CheckContribDir(input_api, output_api):
-  """ Check to make sure that:
-    1) tools/perf/contrib/ contains only directories, except __init__.py,
-    README.md, and PRESUBMIT.py file
-    2) Every subdirectory in tools/perf/contrib/ must have an OWNERS file with
-    at least two OWNERS.
+  """Check that:
+  - tools/perf/contrib/ contains only directories (except for
+    __init__.py, README.md, and PRESUBMIT.py)
+  - Each directory under tools/perf/contrib has an OWNERS file.
   """
   results = []
   contrib_dir = input_api.PresubmitLocalPath()
@@ -51,10 +50,11 @@ def _CheckContribDir(input_api, output_api):
           _CheckOwnershipForContribSubDir(path, input_api, output_api))
 
   if invalid_contrib_files:
-    results.append(output_api.PresubmitError(
-        'You cannot add files to top level of contrib directory. '
-        'Please moves these files to a sub directory:\n %s' %
-        '\n'.join(invalid_contrib_files)))
+    results.append(
+        output_api.PresubmitError(
+            'You cannot add files to the top level of a contrib directory. '
+            'Please move these files to a sub directory:\n %s' %
+            '\n'.join(invalid_contrib_files)))
   return results
 
 
