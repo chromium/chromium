@@ -4152,7 +4152,7 @@ TEST_P(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
   const std::vector<AutofillProfile*>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(1, profile.Compare(*results[0]));
+  EXPECT_NE(0, profile.Compare(*results[0]));
   EXPECT_EQ(results[0]->GetRawInfo(NAME_FULL), u"Marion Mitchell Morrison");
   EXPECT_EQ(results[0]->GetRawInfo(NAME_FIRST), u"Marion");
   EXPECT_EQ(results[0]->GetRawInfo(NAME_MIDDLE), u"");
@@ -4213,7 +4213,7 @@ TEST_P(
   const std::vector<AutofillProfile*>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(1, profile.Compare(*results[0]));
+  EXPECT_NE(0, profile.Compare(*results[0]));
   EXPECT_EQ(results[0]->GetRawInfo(NAME_FULL), u"Marion Mitchell Morrison");
   EXPECT_EQ(results[0]->GetRawInfo(NAME_FIRST), u"Marion");
   EXPECT_EQ(results[0]->GetRawInfo(NAME_MIDDLE), u"");

@@ -189,15 +189,11 @@ AutofillType AutofillField::ComputedType() const {
     believe_server = believe_server && heuristic_type() != NAME_LAST_SECOND &&
                      heuristic_type() != NAME_LAST_FIRST;
 
-    // For new address tokens the heuristic predictions get precedence over
-    // the server predictions.
-    // TODO(crbug.com/1098943): Remove feature check once launched.
-    believe_server =
-        believe_server &&
-        !(base::FeatureList::IsEnabled(
-              features::kAutofillEnableSupportForMoreStructureInAddresses) &&
-          (heuristic_type() == ADDRESS_HOME_STREET_NAME ||
-           heuristic_type() == ADDRESS_HOME_HOUSE_NUMBER));
+    // For structured address tokens the heuristic predictions get precedence
+    // over the server predictions.
+    believe_server = believe_server &&
+                     heuristic_type() != ADDRESS_HOME_STREET_NAME &&
+                     heuristic_type() != ADDRESS_HOME_HOUSE_NUMBER;
 
     // For merchant promo code fields the heuristic predictions get precedence
     // over the server predictions.

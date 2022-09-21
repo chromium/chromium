@@ -62,11 +62,6 @@ bool SortedTokenComparisonResult::TokensMatch() const {
   return status == MATCH;
 }
 
-bool StructuredAddressesEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForMoreStructureInAddresses);
-}
-
 bool HonorificPrefixEnabled() {
   return base::FeatureList::IsEnabled(
       features::kAutofillEnableSupportForHonorificPrefixes);

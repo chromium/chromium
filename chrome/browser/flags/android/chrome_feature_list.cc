@@ -94,7 +94,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillManualFallbackAndroid,
     &autofill::features::kAutofillRefreshStyleAndroid,
     &autofill::features::kAutofillEnableSupportForHonorificPrefixes,
-    &autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
     &autofill::features::kAutofillEnableUpdateVirtualCardEnrollment,
     &autofill::features::kAutofillEnableVirtualCardMetadata,
     &blink::features::kForceWebContentsDarkMode,

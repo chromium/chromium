@@ -7,22 +7,17 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
-#include "base/i18n/unicodestring.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/address_rewriter.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 
@@ -34,10 +29,6 @@ namespace autofill {
 namespace {
 
 constexpr char16_t kSpace[] = u" ";
-
-bool ContainsNewline(base::StringPiece16 text) {
-  return text.find('\n') != base::StringPiece16::npos;
-}
 
 std::ostream& operator<<(std::ostream& os,
                          const ::i18n::phonenumbers::PhoneNumber& n) {
@@ -185,14 +176,6 @@ int32_t NormalizingIterator::GetNextChar() {
   }
 
   return iter_.get();
-}
-
-// Copies the address line information and structured tokens from |source| to
-// |target|.
-void CopyAddressLineInformationFromProfile(const AutofillProfile& source,
-                                           Address& target) {
-  target.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS,
-                    source.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
 // Sorts |profiles| by ranking score.
@@ -742,240 +725,10 @@ bool AutofillProfileComparator::MergeAddresses(const AutofillProfile& p1,
                                                Address& address) const {
   DCHECK(HaveMergeableAddresses(p1, p2));
 
-  // TODO(crbug.com/1130194): Clean legacy implementation once structured
-  // addresses are fully launched.
-  if (structured_address::StructuredAddressesEnabled()) {
-    // Note that p1 is the newer address. Using p2 as the base.
-    address = p2.GetAddress();
-    return address.MergeStructuredAddress(p1.GetAddress(),
-                                          p2.use_date() < p1.use_date());
-  }
-
-  // One of the countries is empty or they are the same modulo case, so we just
-  // have to find the non-empty one, if any.
-  const AutofillType kCountryCode(HtmlFieldType::kCountryCode,
-                                  HtmlFieldMode::kNone);
-  const std::u16string& country_code =
-      base::i18n::ToUpper(GetNonEmptyOf(p1, p2, kCountryCode));
-  address.SetInfo(kCountryCode, country_code, app_locale_);
-
-  // One of the zip codes is empty, they are the same, or one is a substring
-  // of the other. We prefer the most recently used zip code.
-  const AutofillType kZipCode(ADDRESS_HOME_ZIP);
-  const std::u16string& zip1 = p1.GetInfo(kZipCode, app_locale_);
-  const std::u16string& zip2 = p2.GetInfo(kZipCode, app_locale_);
-  if (zip1.empty()) {
-    address.SetInfo(kZipCode, zip2, app_locale_);
-  } else if (zip2.empty()) {
-    address.SetInfo(kZipCode, zip1, app_locale_);
-  } else {
-    address.SetInfo(kZipCode, (p2.use_date() > p1.use_date() ? zip2 : zip1),
-                    app_locale_);
-  }
-
-  // One of the states is empty or one of the states has a subset of tokens from
-  // the other. Pick the non-empty state that is shorter. This is usually the
-  // abbreviated one.
-  const AutofillType kState(ADDRESS_HOME_STATE);
-  const std::u16string& state1 = p1.GetInfo(kState, app_locale_);
-  const std::u16string& state2 = p2.GetInfo(kState, app_locale_);
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap)) {
-    // Holds information about the state string that is going to be used as the
-    // state value in the merged profile.
-    std::u16string candidate_state = state1;
-
-    // Cases where the |state2| is used as the state value in the merged
-    // profile:
-    //  1. |state1| is empty.
-    //  2. |state2| has the canonical state name present in
-    //       AlternativeStateNameMap and |state1| does not.
-    //  3. |state2.size()| < |state1.size()| and either both or none of them
-    //       have canonical state name present in the AlternativeStateNameMap.
-    if (state1.empty()) {
-      candidate_state = state2;
-    } else if (!state2.empty()) {
-      bool state1_has_canonical_name_present =
-          p1.GetAddress().GetCanonicalizedStateName().has_value();
-      bool state2_has_canonical_name_present =
-          p2.GetAddress().GetCanonicalizedStateName().has_value();
-
-      if ((state2_has_canonical_name_present &&
-           !state1_has_canonical_name_present) ||
-          (state2_has_canonical_name_present ==
-               state1_has_canonical_name_present &&
-           state2.size() < state1.size())) {
-        candidate_state = state2;
-      }
-    }
-
-    address.SetInfo(kState, candidate_state, app_locale_);
-  } else {
-    if (state1.empty()) {
-      address.SetInfo(kState, state2, app_locale_);
-    } else if (state2.empty()) {
-      address.SetInfo(kState, state1, app_locale_);
-    } else {
-      address.SetInfo(kState, (state2.size() < state1.size() ? state2 : state1),
-                      app_locale_);
-    }
-  }
-
-  AddressRewriter rewriter = AddressRewriter::ForCountryCode(country_code);
-
-  // One of the cities is empty or one of the cities has a subset of tokens from
-  // the other. Pick the city name with more tokens; this is usually the most
-  // explicit one.
-  const AutofillType kCity(ADDRESS_HOME_CITY);
-  const std::u16string& city1 = p1.GetInfo(kCity, app_locale_);
-  const std::u16string& city2 = p2.GetInfo(kCity, app_locale_);
-  if (city1.empty()) {
-    address.SetInfo(kCity, city2, app_locale_);
-  } else if (city2.empty()) {
-    address.SetInfo(kCity, city1, app_locale_);
-  } else {
-    // Prefer the one with more tokens, making sure to apply address
-    // normalization and rewriting before doing the comparison.
-    CompareTokensResult result =
-        CompareTokens(rewriter.Rewrite(NormalizeForComparison(city1)),
-                      rewriter.Rewrite(NormalizeForComparison(city2)));
-    switch (result) {
-      case SAME_TOKENS:
-        // They have the same set of unique tokens. Let's pick the more recently
-        // used one.
-        address.SetInfo(kCity, (p2.use_date() > p1.use_date() ? city2 : city1),
-                        app_locale_);
-        break;
-      case S1_CONTAINS_S2:
-        // city1 has more unique tokens than city2.
-        address.SetInfo(kCity, city1, app_locale_);
-        break;
-      case S2_CONTAINS_S1:
-        // city2 has more unique tokens than city1.
-        address.SetInfo(kCity, city2, app_locale_);
-        break;
-      case DIFFERENT_TOKENS:
-      default:
-        // The cities aren't mergeable and we shouldn't be doing any of
-        // this.
-        NOTREACHED() << "Unexpected mismatch: '" << city1 << "' vs '" << city2
-                     << "'";
-        return false;
-    }
-  }
-
-  // One of the dependend localities is empty or one of the localities has a
-  // subset of tokens from the other. Pick the locality name with more tokens;
-  // this is usually the most explicit one.
-  const AutofillType kDependentLocality(ADDRESS_HOME_DEPENDENT_LOCALITY);
-  const std::u16string& locality1 = p1.GetInfo(kDependentLocality, app_locale_);
-  const std::u16string& locality2 = p2.GetInfo(kDependentLocality, app_locale_);
-  if (locality1.empty()) {
-    address.SetInfo(kDependentLocality, locality2, app_locale_);
-  } else if (locality2.empty()) {
-    address.SetInfo(kDependentLocality, locality1, app_locale_);
-  } else {
-    // Prefer the one with more tokens, making sure to apply address
-    // normalization and rewriting before doing the comparison.
-    CompareTokensResult result =
-        CompareTokens(rewriter.Rewrite(NormalizeForComparison(locality1)),
-                      rewriter.Rewrite(NormalizeForComparison(locality2)));
-    switch (result) {
-      case SAME_TOKENS:
-        // They have the same set of unique tokens. Let's pick the more recently
-        // used one.
-        address.SetInfo(kDependentLocality,
-                        (p2.use_date() > p1.use_date() ? locality2 : locality1),
-                        app_locale_);
-        break;
-      case S1_CONTAINS_S2:
-        // locality1 has more unique tokens than locality2.
-        address.SetInfo(kDependentLocality, locality1, app_locale_);
-        break;
-      case S2_CONTAINS_S1:
-        // locality2 has more unique tokens than locality1.
-        address.SetInfo(kDependentLocality, locality2, app_locale_);
-        break;
-      case DIFFERENT_TOKENS:
-      default:
-        // The localities aren't mergeable and we shouldn't be doing any of
-        // this.
-        NOTREACHED() << "Unexpected mismatch: '" << locality1 << "' vs '"
-                     << locality2 << "'";
-        return false;
-    }
-  }
-
-  // One of the sorting codes is empty, they are the same, or one is a substring
-  // of the other. We prefer the most recently used sorting code.
-  const AutofillType kSortingCode(ADDRESS_HOME_SORTING_CODE);
-  const std::u16string& sorting1 = p1.GetInfo(kSortingCode, app_locale_);
-  const std::u16string& sorting2 = p2.GetInfo(kSortingCode, app_locale_);
-  if (sorting1.empty()) {
-    address.SetInfo(kSortingCode, sorting2, app_locale_);
-  } else if (sorting2.empty()) {
-    address.SetInfo(kSortingCode, sorting1, app_locale_);
-  } else {
-    address.SetInfo(kSortingCode,
-                    (p2.use_date() > p1.use_date() ? sorting2 : sorting1),
-                    app_locale_);
-  }
-
-  // One of the addresses is empty or one of the addresses has a subset of
-  // tokens from the other. Prefer the more verbosely expressed one.
-  const AutofillType kStreetAddress(ADDRESS_HOME_STREET_ADDRESS);
-  const std::u16string& address1 = p1.GetInfo(kStreetAddress, app_locale_);
-  const std::u16string& address2 = p2.GetInfo(kStreetAddress, app_locale_);
-  // If one of the addresses is empty then use the other.
-  if (address1.empty()) {
-    CopyAddressLineInformationFromProfile(p2, address);
-  } else if (address2.empty()) {
-    CopyAddressLineInformationFromProfile(p1, address);
-  } else {
-    // Prefer the multi-line address if one is multi-line and the other isn't.
-    bool address1_multiline = ContainsNewline(address1);
-    bool address2_multiline = ContainsNewline(address2);
-    if (address1_multiline && !address2_multiline) {
-      CopyAddressLineInformationFromProfile(p1, address);
-    } else if (address2_multiline && !address1_multiline) {
-      CopyAddressLineInformationFromProfile(p2, address);
-    } else {
-      // Prefer the one with more tokens if they're both single-line or both
-      // multi-line addresses, making sure to apply address normalization and
-      // rewriting before doing the comparison.
-      CompareTokensResult result =
-          CompareTokens(rewriter.Rewrite(NormalizeForComparison(address1)),
-                        rewriter.Rewrite(NormalizeForComparison(address2)));
-      switch (result) {
-        case SAME_TOKENS:
-          // They have the same set of unique tokens. Let's pick the one that's
-          // newer.
-          if (p2.use_date() > p1.use_date()) {
-            CopyAddressLineInformationFromProfile(p2, address);
-          } else {
-            CopyAddressLineInformationFromProfile(p1, address);
-          }
-          break;
-        case S1_CONTAINS_S2:
-          // address1 has more unique tokens than address2.
-          CopyAddressLineInformationFromProfile(p1, address);
-          break;
-        case S2_CONTAINS_S1:
-          // address2 has more unique tokens than address1.
-          CopyAddressLineInformationFromProfile(p2, address);
-          break;
-        case DIFFERENT_TOKENS:
-        default:
-          // The addresses aren't mergeable and we shouldn't be doing any of
-          // this.
-          NOTREACHED() << "Unexpected mismatch: '" << address1 << "' vs '"
-                       << address2 << "'";
-          return false;
-      }
-    }
-  }
-  return true;
+  // Note that p1 is the newer address. Using p2 as the base.
+  address = p2.GetAddress();
+  return address.MergeStructuredAddress(p1.GetAddress(),
+                                        p2.use_date() < p1.use_date());
 }
 
 bool AutofillProfileComparator::MergeBirthdates(const AutofillProfile& p1,
@@ -1296,146 +1049,8 @@ bool AutofillProfileComparator::HaveMergeablePhoneNumbers(
 bool AutofillProfileComparator::HaveMergeableAddresses(
     const AutofillProfile& p1,
     const AutofillProfile& p2) const {
-  // TODO(crbug.com/1130194): Clean legacy implementation once structured
-  // addresses are fully launched.
-  if (structured_address::StructuredAddressesEnabled()) {
-    // Note that p1 is the newer address. Using p2 as the base.
-    return p2.GetAddress().IsStructuredAddressMergeable(p1.GetAddress());
-  }
-
-  // If the address are not in the same country, then they're not the same. If
-  // one of the address countries is unknown/invalid the comparison continues.
-  const AutofillType kCountryCode(HtmlFieldType::kCountryCode,
-                                  HtmlFieldMode::kNone);
-  const std::u16string& country1 = p1.GetInfo(kCountryCode, app_locale_);
-  const std::u16string& country2 = p2.GetInfo(kCountryCode, app_locale_);
-  if (!country1.empty() && !country2.empty() &&
-      !case_insensitive_compare_.StringsEqual(country1, country2)) {
-    return false;
-  }
-
-  // Zip
-  // ----
-  // If the addresses are definitely not in the same zip/area code then we're
-  // done. Otherwise,the comparison continues.
-  const AutofillType kZipCode(ADDRESS_HOME_ZIP);
-  const std::u16string& zip1 = NormalizeForComparison(
-      p1.GetInfo(kZipCode, app_locale_), DISCARD_WHITESPACE);
-  const std::u16string& zip2 = NormalizeForComparison(
-      p2.GetInfo(kZipCode, app_locale_), DISCARD_WHITESPACE);
-  if (!zip1.empty() && !zip2.empty() &&
-      zip1.find(zip2) == std::u16string::npos &&
-      zip2.find(zip1) == std::u16string::npos) {
-    return false;
-  }
-
-  // Use the token rewrite rules for the (common) country of the address to
-  // transform equivalent substrings to a representative token for comparison.
-  AddressRewriter rewriter =
-      AddressRewriter::ForCountryCode(country1.empty() ? country2 : country1);
-
-  // State
-  // ------
-  // When |kAutofillUseAlternativeStateNameMap| is disabled: States are
-  // mergeable if one is a (possibly empty) bag of words subset of the other.
-  //
-  // When |kAutofillUseAlternativeStateNameMap| is enabled: The profiles
-  // w.r.t the state are mergeable if their canonical state names in
-  // AlternativeStateNameMap matches.
-  // In case one of the profile does not have a canonical state name present in
-  // the AlternativeStateNameMap, states are mergeable if one is a bag of words
-  // subset of the other.
-  //
-  // TODO(rogerm): If the match is between non-empty zip codes then we can infer
-  // that the two state strings are intended to have the same meaning. This
-  // handles the cases where we have invalid or poorly formed data in one of the
-  // state values (like "Select one", or "CA - California").
-  const AutofillType kState(ADDRESS_HOME_STATE);
-  bool canonical_state_names_match = false;
-  bool use_alternative_state_name_map_enabled = base::FeatureList::IsEnabled(
-      features::kAutofillUseAlternativeStateNameMap);
-  if (use_alternative_state_name_map_enabled) {
-    absl::optional<AlternativeStateNameMap::CanonicalStateName>
-        canonical_name_state1 = p1.GetAddress().GetCanonicalizedStateName();
-    absl::optional<AlternativeStateNameMap::CanonicalStateName>
-        canonical_name_state2 = p2.GetAddress().GetCanonicalizedStateName();
-    if (canonical_name_state1 && canonical_name_state2) {
-      if (canonical_name_state1.value() == canonical_name_state2.value())
-        canonical_state_names_match = true;
-      else
-        return false;
-    }
-  }
-
-  if (!use_alternative_state_name_map_enabled || !canonical_state_names_match) {
-    std::u16string state1 = rewriter.Rewrite(
-        NormalizeForComparison(p1.GetInfo(kState, app_locale_)));
-    std::u16string state2 = rewriter.Rewrite(
-        NormalizeForComparison(p2.GetInfo(kState, app_locale_)));
-    if (CompareTokens(state1, state2) == DIFFERENT_TOKENS) {
-      return false;
-    }
-  }
-
-  // City
-  // ------
-  // Heuristic: Cities are mergeable if one is a (possibly empty) bag of words
-  // subset of the other.
-  //
-  // TODO(rogerm): If the match is between non-empty zip codes then we can infer
-  // that the two city strings are intended to have the same meaning. This
-  // handles the cases where we have a city vs one of its suburbs.
-  const AutofillType kCity(ADDRESS_HOME_CITY);
-  const std::u16string& city1 =
-      rewriter.Rewrite(NormalizeForComparison(p1.GetInfo(kCity, app_locale_)));
-  const std::u16string& city2 =
-      rewriter.Rewrite(NormalizeForComparison(p2.GetInfo(kCity, app_locale_)));
-  if (CompareTokens(city1, city2) == DIFFERENT_TOKENS) {
-    return false;
-  }
-
-  // Dependent Locality
-  // -------------------
-  // Heuristic: Dependent Localities are mergeable if one is a (possibly empty)
-  // bag of words subset of the other.
-  const AutofillType kDependentLocality(ADDRESS_HOME_DEPENDENT_LOCALITY);
-  const std::u16string& locality1 = rewriter.Rewrite(
-      NormalizeForComparison(p1.GetInfo(kDependentLocality, app_locale_)));
-  const std::u16string& locality2 = rewriter.Rewrite(
-      NormalizeForComparison(p2.GetInfo(kDependentLocality, app_locale_)));
-  if (CompareTokens(locality1, locality2) == DIFFERENT_TOKENS) {
-    return false;
-  }
-
-  // Sorting Code
-  // -------------
-  // Heuristic: Sorting codes are mergeable if one is empty or one is a
-  // substring of the other, post normalization and whitespace removed. This
-  // is similar to postal/zip codes.
-  const AutofillType kSortingCode(ADDRESS_HOME_SORTING_CODE);
-  const std::u16string& sorting1 = NormalizeForComparison(
-      p1.GetInfo(kSortingCode, app_locale_), DISCARD_WHITESPACE);
-  const std::u16string& sorting2 = NormalizeForComparison(
-      p2.GetInfo(kSortingCode, app_locale_), DISCARD_WHITESPACE);
-  if (!sorting1.empty() && !sorting2.empty() &&
-      sorting1.find(sorting2) == std::u16string::npos &&
-      sorting2.find(sorting1) == std::u16string::npos) {
-    return false;
-  }
-
-  // Address
-  // --------
-  // Heuristic: Street addresses are mergeable if one is a (possibly empty) bag
-  // of words subset of the other.
-  const std::u16string& address1 = rewriter.Rewrite(NormalizeForComparison(
-      p1.GetInfo(ADDRESS_HOME_STREET_ADDRESS, app_locale_)));
-  const std::u16string& address2 = rewriter.Rewrite(NormalizeForComparison(
-      p2.GetInfo(ADDRESS_HOME_STREET_ADDRESS, app_locale_)));
-  if (CompareTokens(address1, address2) == DIFFERENT_TOKENS) {
-    return false;
-  }
-
-  return true;
+  // Note that p1 is the newer address. Using p2 as the base.
+  return p2.GetAddress().IsStructuredAddressMergeable(p1.GetAddress());
 }
 
 bool AutofillProfileComparator::HaveMergeableBirthdates(

@@ -94,12 +94,6 @@ struct CaptureOptions {
   MatchQuantifier quantifier = MATCH_REQUIRED;
 };
 
-// Returns true if the structured names feature is enabled.
-bool StructuredNamesEnabled();
-
-// Returns true if the structured address feature is enabled.
-bool StructuredAddressesEnabled();
-
 // Returns true if honorific prefixes are enabled.
 bool HonorificPrefixEnabled();
 

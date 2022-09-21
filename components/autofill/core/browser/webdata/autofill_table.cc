@@ -672,58 +672,51 @@ bool AddAutofillProfileNames(const AutofillProfile& profile,
 
 bool AddAutofillProfileAddresses(const AutofillProfile& profile,
                                  sql::Database* db) {
-  // The structured table is only populated if either the full support for
-  // structured addresses is enabled or the creation of address enhancement
-  // votes.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInAddresses)) {
-    sql::Statement s;
-    InsertBuilder(db, s, kAutofillProfileAddressesTable,
-                  {kGuid,
-                   kStreetAddress,
-                   kStreetAddressStatus,
-                   kStreetName,
-                   kStreetNameStatus,
-                   kDependentStreetName,
-                   kDependentStreetNameStatus,
-                   kHouseNumber,
-                   kHouseNumberStatus,
-                   kSubpremise,
-                   kSubpremiseStatus,
-                   kPremiseName,
-                   kPremiseNameStatus,
-                   kDependentLocality,
-                   kDependentLocalityStatus,
-                   kCity,
-                   kCityStatus,
-                   kState,
-                   kStateStatus,
-                   kZipCode,
-                   kZipCodeStatus,
-                   kSortingCode,
-                   kSortingCodeStatus,
-                   kCountryCode,
-                   kCountryCodeStatus,
-                   kApartmentNumber,
-                   kApartmentNumberStatus,
-                   kFloor,
-                   kFloorStatus});
+  sql::Statement s;
+  InsertBuilder(db, s, kAutofillProfileAddressesTable,
+                {kGuid,
+                 kStreetAddress,
+                 kStreetAddressStatus,
+                 kStreetName,
+                 kStreetNameStatus,
+                 kDependentStreetName,
+                 kDependentStreetNameStatus,
+                 kHouseNumber,
+                 kHouseNumberStatus,
+                 kSubpremise,
+                 kSubpremiseStatus,
+                 kPremiseName,
+                 kPremiseNameStatus,
+                 kDependentLocality,
+                 kDependentLocalityStatus,
+                 kCity,
+                 kCityStatus,
+                 kState,
+                 kStateStatus,
+                 kZipCode,
+                 kZipCodeStatus,
+                 kSortingCode,
+                 kSortingCodeStatus,
+                 kCountryCode,
+                 kCountryCodeStatus,
+                 kApartmentNumber,
+                 kApartmentNumberStatus,
+                 kFloor,
+                 kFloorStatus});
 
-    s.BindString(0, profile.guid());
-    int index = 1;
-    for (ServerFieldType type :
-         {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STREET_NAME,
-          ADDRESS_HOME_DEPENDENT_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER,
-          ADDRESS_HOME_SUBPREMISE, ADDRESS_HOME_PREMISE_NAME,
-          ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY,
-          ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE,
-          ADDRESS_HOME_COUNTRY, ADDRESS_HOME_APT_NUM, ADDRESS_HOME_FLOOR}) {
-      s.BindString16(index++, profile.GetRawInfo(type));
-      s.BindInt(index++, profile.GetVerificationStatusInt(type));
-    }
-    return s.Run();
+  s.BindString(0, profile.guid());
+  int index = 1;
+  for (ServerFieldType type :
+       {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STREET_NAME,
+        ADDRESS_HOME_DEPENDENT_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER,
+        ADDRESS_HOME_SUBPREMISE, ADDRESS_HOME_PREMISE_NAME,
+        ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
+        ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE, ADDRESS_HOME_COUNTRY,
+        ADDRESS_HOME_APT_NUM, ADDRESS_HOME_FLOOR}) {
+    s.BindString16(index++, profile.GetRawInfo(type));
+    s.BindInt(index++, profile.GetVerificationStatusInt(type));
   }
-  return true;
+  return s.Run();
 }
 
 bool AddAutofillProfileNamesToProfile(sql::Database* db,
@@ -755,10 +748,6 @@ bool AddAutofillProfileNamesToProfile(sql::Database* db,
 
 bool AddAutofillProfileAddressesToProfile(sql::Database* db,
                                           AutofillProfile* profile) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInAddresses)) {
-    return true;
-  }
   sql::Statement s;
   if (SelectByGuid(db, s, kAutofillProfileAddressesTable,
                    {kGuid,

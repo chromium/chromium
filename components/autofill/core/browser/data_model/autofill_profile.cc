@@ -409,6 +409,11 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
       ADDRESS_HOME_ZIP,
       ADDRESS_HOME_SORTING_CODE,
       ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_HOUSE_NUMBER,
+      ADDRESS_HOME_STREET_NAME,
+      ADDRESS_HOME_DEPENDENT_STREET_NAME,
+      ADDRESS_HOME_PREMISE_NAME,
+      ADDRESS_HOME_SUBPREMISE,
       EMAIL_ADDRESS,
       PHONE_HOME_WHOLE_NUMBER,
   };
@@ -418,9 +423,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
     if (comparison != 0) {
       return comparison;
     }
-  }
 
-  for (ServerFieldType type : types) {
     // If the value is empty, the verification status can be ambiguous because
     // the value could be either build from its empty child nodes or parsed
     // from its parent. Therefore, it should not be considered when evaluating
@@ -435,44 +438,6 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
     if (structured_address::IsLessSignificantVerificationStatus(
             profile.GetVerificationStatus(type), GetVerificationStatus(type))) {
       return 1;
-    }
-  }
-
-  // TODO(crbug.com/1130194): Remove feature check once structured addresses are
-  // fully launched.
-  if (structured_address::StructuredAddressesEnabled()) {
-    const ServerFieldType new_types[] = {
-        ADDRESS_HOME_HOUSE_NUMBER,
-        ADDRESS_HOME_STREET_NAME,
-        ADDRESS_HOME_DEPENDENT_STREET_NAME,
-        ADDRESS_HOME_PREMISE_NAME,
-        ADDRESS_HOME_SUBPREMISE,
-    };
-    for (ServerFieldType type : new_types) {
-      int comparison = GetRawInfo(type).compare(profile.GetRawInfo(type));
-      if (comparison != 0) {
-        return comparison;
-      }
-    }
-
-    for (ServerFieldType type : new_types) {
-      // If the value is empty, the verification status can be ambiguous because
-      // the value could be either build from its empty child nodes or parsed
-      // from its parent. Therefore, it should not be considered when evaluating
-      // the similarity of two profiles.
-      if (profile.GetRawInfo(type).empty())
-        continue;
-
-      if (structured_address::IsLessSignificantVerificationStatus(
-              GetVerificationStatus(type),
-              profile.GetVerificationStatus(type))) {
-        return -1;
-      }
-      if (structured_address::IsLessSignificantVerificationStatus(
-              profile.GetVerificationStatus(type),
-              GetVerificationStatus(type))) {
-        return 1;
-      }
     }
   }
 

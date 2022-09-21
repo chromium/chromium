@@ -248,13 +248,6 @@ bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner,
   // Search for a sequence of a street name field followed by a house number
   // field. Only if both are found in an abitrary order, the parsing is
   // considered successful.
-
-  // TODO(crbug.com/1125978): Remove once launched.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInAddresses)) {
-    return false;
-  }
-
   const size_t cursor_position = scanner->CursorPosition();
 
   base::span<const MatchPatternRef> street_name_patterns =

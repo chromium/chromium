@@ -36,8 +36,6 @@ class Address : public FormGroup {
                         const std::string& locale,
                         ServerFieldTypeSet* matching_types) const override;
 
-  void ResetStructuredTokes();
-
   // Derives all missing tokens in the structured representation of the address
   // either parsing missing tokens from their assigned parent or by formatting
   // them from their assigned children.
@@ -78,34 +76,6 @@ class Address : public FormGroup {
   // Return the verification status of a structured name value.
   structured_address::VerificationStatus GetVerificationStatusImpl(
       ServerFieldType type) const override;
-
-  // Trims any trailing newlines from |street_address_|.
-  void TrimStreetAddress();
-
-  // TODO(crbug.com/1130194): Clean legacy implementation once structured
-  // addresses are fully launched.
-  // The lines of the street address.
-  std::vector<std::u16string> street_address_;
-  // A subdivision of city, e.g. inner-city district or suburb.
-  std::u16string dependent_locality_;
-  std::u16string city_;
-  std::u16string state_;
-  std::u16string zip_code_;
-  // Similar to a ZIP code, but used by entities that might not be
-  // geographically contiguous.  The canonical example is CEDEX in France.
-  std::u16string sorting_code_;
-
-  // The following entries are only popluated by Sync and
-  // used to create type votes, but are not used for filling fields.
-  std::u16string street_name_;
-  std::u16string dependent_street_name_;
-  std::u16string house_number_;
-  std::u16string premise_name_;
-  std::u16string subpremise_;
-
-  // The ISO 3166 2-letter country code, or an empty string if there is no
-  // country data specified for this address.
-  std::string country_code_;
 
   // This data structure holds the address information if the structured address
   // feature is enabled.
