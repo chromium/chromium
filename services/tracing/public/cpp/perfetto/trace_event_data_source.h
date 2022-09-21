@@ -232,6 +232,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
   static base::trace_event::TracePacketHandle OnAddTracePacket();
   static void OnAddEmptyPacket();
 
+  void EmitRecurringUpdates();
   void EmitTrackDescriptor();
 
   uint32_t IncrementSessionIdOrClearStartupFlagWhileLocked();

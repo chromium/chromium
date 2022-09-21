@@ -773,7 +773,7 @@ void TraceEventDataSource::SetupStartupTracing(
     DCHECK(!trace_writer_);
     trace_writer_ = CreateTraceWriterLocked();
   }
-  EmitTrackDescriptor();
+  EmitRecurringUpdates();
 
   base::trace_event::TraceConfig config_for_trace_log(trace_config);
   // Perfetto backend configures buffer sizes when tracing is started in the
@@ -969,7 +969,7 @@ void TraceEventDataSource::StartTracingInternal(
 
   // We emit the track/process descriptor another time even if we were
   // previously startup tracing, because the process name may have changed.
-  EmitTrackDescriptor();
+  EmitRecurringUpdates();
 
   TraceLog::GetInstance()->SetEnabled(trace_config, TraceLog::RECORDING_MODE);
 
@@ -1078,7 +1078,7 @@ void TraceEventDataSource::ClearIncrementalState() {
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   TrackEventThreadLocalEventSink::ClearIncrementalState();
-  EmitTrackDescriptor();
+  EmitRecurringUpdates();
   base::trace_event::TraceLog::GetInstance()->OnIncrementalStateCleared();
 }
 
@@ -1238,6 +1238,11 @@ void TraceEventDataSource::ReturnTraceWriter(
       [trace_writer_raw]() { delete trace_writer_raw; });
 }
 
+void TraceEventDataSource::EmitRecurringUpdates() {
+  CustomEventRecorder::EmitRecurringUpdates();
+  EmitTrackDescriptor();
+}
+
 void TraceEventDataSource::EmitTrackDescriptor() {
   // Prevent reentrancy into tracing code (flushing the trace writer sends a
   // mojo message which can result in additional trace events).
@@ -1352,8 +1357,6 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   // case the process crashes.
   trace_packet = TracePacketHandle();
   writer->NewTracePacket();
-
-  CustomEventRecorder::EmitRecurringUpdates();
 
   // Flush the current chunk right after writing the packet when in discard
   // buffering mode. Otherwise there's a risk that the chunk will miss the
