@@ -115,7 +115,6 @@ if (include_js_tests) {
       "settings/privacy_sandbox_browsertest.js",
       "settings/settings_idle_load_browsertest.js",
       "text_defaults_browsertest.js",
-      "webui_resource_async_browsertest.js",
       "whats_new/whats_new_browsertest.js",
     ]
 
@@ -293,7 +292,6 @@ if (include_js_tests) {
     extra_js_files = [
       "../../../renderer/resources/extensions/notifications_custom_bindings.js",
       "../../../renderer/resources/extensions/notifications_test_util.js",
-      "//ui/webui/resources/js/cr.js",
     ]
   }
 }

@@ -2826,6 +2826,7 @@ if (!is_android) {
         "//ppapi/tests/extensions",
       ]
       if (is_chromeos_ash) {
+        data += [ "//ash/webui/common/resources/cr.js" ]
         sources += [
           "../browser/ui/views/extensions/request_file_system_dialog_browsertest.cc",
           "//third_party/liblouis/wasm/liblouis_wrapper_browsertest.cc",

@@ -87,7 +87,6 @@ preprocess_if_expr("preprocess_src") {
   # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
   if (is_chromeos_ash) {
     in_files += [
-      "cr.js",
       "list_property_update_behavior.js",
       "promise_resolver.js",
     ]
@@ -124,7 +123,6 @@ js_type_check("js_resources") {
   uses_legacy_modules = true
   deps = [
     ":assert",
-    ":cr",
     ":load_time_data",
     ":promise_resolver",
     ":util_deprecated",
@@ -146,14 +144,6 @@ if (is_chromeos_ash) {
 }
 
 js_library("assert") {
-}
-
-js_library("cr") {
-  deps = [
-    ":assert",
-    ":promise_resolver",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 js_library("load_time_data") {

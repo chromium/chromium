@@ -49,7 +49,7 @@ class WebUIResourceBrowserTest : public InProcessBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrTest) {
-  LoadTestUrl("cr_test.html");
+  LoadTestUrl("chromeos/ash_common/cr_test.html");
 }
 #endif
 

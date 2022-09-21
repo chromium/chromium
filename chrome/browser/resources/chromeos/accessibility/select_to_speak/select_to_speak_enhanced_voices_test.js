@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../../../../../../ui/webui/resources/js/cr.js']);
 GEN_INCLUDE(['fake_chrome_event.js']);
 GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
 GEN_INCLUDE(['../common/testing/mock_tts.js']);
@@ -24,7 +23,7 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
 
     this.enhancedNetworkVoicesPolicyKey_ =
         'settings.a11y.enhanced_network_voices_in_select_to_speak_allowed';
-    this.mockSettingsPrivate_ = new settings.FakeSettingsPrivate([
+    this.mockSettingsPrivate_ = new FakeSettingsPrivate([
       {type: 'number', key: 'settings.tts.speech_rate', value: 1.0},
       {type: 'number', key: 'settings.tts.speech_pitch', value: 1.0},
       {type: 'boolean', key: this.enhancedNetworkVoicesPolicyKey_, value: true},

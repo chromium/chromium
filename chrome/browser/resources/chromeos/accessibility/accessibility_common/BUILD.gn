@@ -123,7 +123,6 @@ source_set("browser_tests") {
     # The test uses data from the original location, not the copied one.
     "//chrome/browser/resources/chromeos/accessibility/accessibility_common/",
     "//chrome/browser/resources/chromeos/accessibility/common/",
-    "//ui/webui/resources/js/cr.js",
   ]
   data += js2gtest_js_libraries
 }
