@@ -38,7 +38,6 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
   static AshColorProvider* Get();
 
   // ColorProvider:
-  SkColor GetShieldLayerColor(ShieldLayerType type) const override;
   SkColor GetBaseLayerColor(BaseLayerType type) const override;
   SkColor GetControlsLayerColor(ControlsLayerType type) const override;
   SkColor GetContentLayerColor(ContentLayerType type) const override;

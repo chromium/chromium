@@ -52,27 +52,6 @@ AshColorProvider* AshColorProvider::Get() {
   return g_instance;
 }
 
-SkColor AshColorProvider::GetShieldLayerColor(ShieldLayerType type) const {
-  // TODO(crbug.com/1348365): Delete this function after all clients migrate.
-  auto* color_provider = GetColorProvider();
-  DCHECK(color_provider);
-
-  switch (type) {
-    case ShieldLayerType::kShield20:
-      return color_provider->GetColor(kColorAshShieldAndBase20);
-    case ShieldLayerType::kShield40:
-      return color_provider->GetColor(kColorAshShieldAndBase40);
-    case ShieldLayerType::kShield60:
-      return color_provider->GetColor(kColorAshShieldAndBase60);
-    case ShieldLayerType::kShield80:
-      return color_provider->GetColor(kColorAshShieldAndBase80);
-    case ShieldLayerType::kShield90:
-      return color_provider->GetColor(kColorAshShieldAndBase90);
-    case ShieldLayerType::kShield95:
-      return color_provider->GetColor(kColorAshShieldAndBase95);
-  }
-}
-
 SkColor AshColorProvider::GetBaseLayerColor(BaseLayerType type) const {
   // TODO(crbug.com/1350510): Delete this function after all clients migrate.
   auto* color_provider = GetColorProvider();

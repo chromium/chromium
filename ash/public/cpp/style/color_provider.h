@@ -155,7 +155,6 @@ class ASH_PUBLIC_EXPORT ColorProvider {
 
   // Gets the color of |type| of the corresponding layer based on the current
   // color mode.
-  virtual SkColor GetShieldLayerColor(ShieldLayerType type) const = 0;
   virtual SkColor GetBaseLayerColor(BaseLayerType type) const = 0;
   virtual SkColor GetControlsLayerColor(ControlsLayerType type) const = 0;
   virtual SkColor GetContentLayerColor(ContentLayerType type) const = 0;

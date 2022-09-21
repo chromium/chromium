@@ -7,7 +7,6 @@
 #include <math.h>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/root_window_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -248,10 +247,8 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
           .SetInsideBorderInsets(gfx::Insets::VH(kMaximizeCueVerticalInsets,
                                                  kMaximizeCueHorizontalInsets))
-          .SetBackground(views::CreateRoundedRectBackground(
-              AshColorProvider::Get()->GetShieldLayerColor(
-                  AshColorProvider::ShieldLayerType::kShield20),
-              kPhantomWindowCornerRadius))
+          .SetBackground(views::CreateThemedRoundedRectBackground(
+              kColorAshShieldAndBase20, kPhantomWindowCornerRadius))
           .SetBorder(std::make_unique<views::HighlightBorder>(
               kPhantomWindowCornerRadius,
               views::HighlightBorder::Type::kHighlightBorder1,
