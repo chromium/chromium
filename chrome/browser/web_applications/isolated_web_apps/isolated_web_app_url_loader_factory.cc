@@ -56,7 +56,10 @@ void CompleteWith404(
   // "ERR_INVALID_RESPONSE".
   generated_response->response_headers["Content-Type"] =
       "text/html;charset=utf-8";
-  auto response_head = web_package::CreateResourceResponse(generated_response);
+  std::string header_string =
+      web_package::CreateHeaderString(generated_response);
+  auto response_head =
+      web_package::CreateResourceResponseFromHeaderString(header_string);
 
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   mojo::ScopedDataPipeProducerHandle producer_handle;
@@ -73,9 +76,10 @@ void CompleteWith404(
                                    std::move(consumer_handle), absl::nullopt);
 
   network::URLLoaderCompletionStatus status(net::OK);
-  status.encoded_data_length = 0;
-  status.encoded_body_length = 0;
-  status.decoded_body_length = 0;
+  int64_t body_length = 0;
+  status.encoded_data_length = body_length + header_string.size();
+  status.encoded_body_length = body_length;
+  status.decoded_body_length = body_length;
   loader_client->OnComplete(status);
 }
 
@@ -193,7 +197,10 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
       return;
     }
 
-    auto response_head = web_package::CreateResourceResponse(response->head());
+    std::string header_string =
+        web_package::CreateHeaderString(response->head());
+    auto response_head =
+        web_package::CreateResourceResponseFromHeaderString(header_string);
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     MojoCreateDataPipeOptions options;
@@ -212,6 +219,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
           network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
       return;
     }
+    header_length_ = header_string.size();
     body_length_ = response->head()->payload_length;
     loader_client_->OnReceiveResponse(
         std::move(response_head), std::move(consumer_handle), absl::nullopt);
@@ -229,7 +237,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
     network::URLLoaderCompletionStatus status(net_error);
     // For these values we use the same `body_length_` as we don't currently
     // provide encoding in Web Bundles.
-    status.encoded_data_length = body_length_;
+    status.encoded_data_length = body_length_ + header_length_;
     status.encoded_body_length = body_length_;
     status.decoded_body_length = body_length_;
     loader_client_->OnComplete(status);
@@ -249,6 +257,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
   void ResumeReadingBodyFromNet() override {}
 
   mojo::Remote<network::mojom::URLLoaderClient> loader_client_;
+  int64_t header_length_;
   int64_t body_length_;
   const network::ResourceRequest resource_request_;
   const int frame_tree_node_id_;

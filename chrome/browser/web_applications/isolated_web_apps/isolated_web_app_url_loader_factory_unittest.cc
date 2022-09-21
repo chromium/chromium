@@ -106,6 +106,7 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
   int CreateLoaderAndRun(std::unique_ptr<network::ResourceRequest> request) {
     auto loader = network::SimpleURLLoader::Create(
         std::move(request), TRAFFIC_ANNOTATION_FOR_TESTS);
+    loader->SetAllowHttpErrorResults(true);
 
     content::SimpleURLLoaderTestHelper helper;
     loader->DownloadToString(
@@ -115,8 +116,19 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
     helper.WaitForCallback();
     if (loader->ResponseInfo()) {
       response_info_ = loader->ResponseInfo()->Clone();
-      response_body_ =
-          helper.response_body() != nullptr ? *helper.response_body() : "";
+      response_body_ = *helper.response_body();
+
+      absl::optional<network::URLLoaderCompletionStatus> completion_status =
+          loader->CompletionStatus();
+      EXPECT_THAT(completion_status.has_value(), IsTrue());
+
+      int64_t body_length = response_body_.size();
+      int64_t header_length =
+          static_cast<int64_t>(response_info_->headers->raw_headers().size());
+      EXPECT_THAT(completion_status->encoded_data_length,
+                  Eq(body_length + header_length));
+      EXPECT_THAT(completion_status->encoded_body_length, body_length);
+      EXPECT_THAT(completion_status->decoded_body_length, body_length);
     }
     return loader->NetError();
   }
@@ -198,8 +210,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, InstalledIwaReturnsNotFound) {
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = kPrimaryUrl;
-  EXPECT_THAT(CreateLoaderAndRun(std::move(request)),
-              Eq(net::ERR_HTTP_RESPONSE_CODE_FAILURE));
+  EXPECT_THAT(CreateLoaderAndRun(std::move(request)), Eq(net::OK));
   EXPECT_THAT(ResponseInfo()->headers->response_code(),
               Eq(net::HTTP_NOT_FOUND));
 }
@@ -292,8 +303,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryInstalledBundleTest,
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = GURL(kPrimaryUrl.spec() + "/non-existing");
-  EXPECT_EQ(CreateLoaderAndRun(std::move(request)),
-            net::ERR_HTTP_RESPONSE_CODE_FAILURE);
+  EXPECT_EQ(CreateLoaderAndRun(std::move(request)), net::OK);
   ASSERT_THAT(ResponseInfo(), NotNull());
   EXPECT_THAT(ResponseInfo()->headers->response_code(), Eq(404));
   EXPECT_THAT(ResponseBody(), Eq(""));
