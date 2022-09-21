@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      let metaTagContent = 'width=device-width';
+      if (params.has('resize-layout'))
+        metaTagContent += ',virtual-keyboard=resize-layout';
+
+      let meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = metaTagContent;
+      document.head.appendChild(meta);
+    </script>
+  </head>
+  <body>
+    <input id="inputElement" type="text"></input>
+    <p id="output"></p>
+  </body>
+</html>

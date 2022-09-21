@@ -26,6 +26,9 @@ class PageDelegate {
 
   // Called when the main document color scheme was inferred.
   virtual void DidInferColorScheme(PageImpl& page) {}
+
+  // Called when the main document's virtual keyboard mode changes.
+  virtual void OnVirtualKeyboardModeChanged(PageImpl& page) {}
 };
 
 }  // namespace content

@@ -103,14 +103,4 @@ public interface ImeAdapter {
      */
     @VisibleForTesting
     void onShowKeyboardReceiveResult(int resultCode);
-
-    /**
-     * Returns true if the overlaycontent flag is set in the JS, else false.
-     * This determines whether to fire geometrychange event to JS and also not
-     * resize the visual/layout viewports in response to keyboard visibility
-     * changes.
-     *
-     * @return Whether overlaycontent flag is set or not.
-     */
-    boolean shouldVirtualKeyboardOverlayContent();
 }

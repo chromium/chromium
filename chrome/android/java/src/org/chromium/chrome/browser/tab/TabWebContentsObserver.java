@@ -37,6 +37,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.net.NetError;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
 /**
@@ -337,6 +338,14 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         @Override
         public void viewportFitChanged(@WebContentsObserver.ViewportFitType int value) {
             DisplayCutoutTabHelper.from(mTab).setViewportFit(value);
+        }
+
+        @Override
+        public void virtualKeyboardModeChanged(@VirtualKeyboardMode.EnumType int mode) {
+            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+            while (observers.hasNext()) {
+                observers.next().onVirtualKeyboardModeChanged(mTab, mode);
+            }
         }
 
         @Override

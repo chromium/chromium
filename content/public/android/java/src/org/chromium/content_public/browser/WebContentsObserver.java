@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -241,6 +242,12 @@ public abstract class WebContentsObserver {
      * @param value the new viewport fit value.
      */
     public void viewportFitChanged(@ViewportFitType int value) {}
+
+    /**
+     * Called when the virtual keyboard mode of the Web Contents changes.
+     * @param mode the new virtual keyboard mode.
+     */
+    public void virtualKeyboardModeChanged(@VirtualKeyboardMode.EnumType int mode) {}
 
     /**
      * This method is invoked when a RenderWidgetHost for a WebContents gains focus.

@@ -151,9 +151,6 @@ public class ImeAdapterImpl
     // True if ImeAdapter is connected to render process.
     private boolean mIsConnected;
 
-    // Returns true if the overlaycontent flag is set in the JS, else false.
-    private boolean mKeyboardOverlayContent;
-
     // Whether to force show keyboard during stylus handwriting. We do not show it when writing
     // system is active and stylus is used to edit input text. This is used to show the soft
     // keyboard from Direct writing toolbar.
@@ -279,19 +276,6 @@ public class ImeAdapterImpl
     @Override
     public void addEventObserver(ImeEventObserver eventObserver) {
         mEventObservers.add(eventObserver);
-    }
-
-    /**
-     * Returns true if the overlaycontent flag is set in the JS, else false.
-     * This determines whether to fire geometrychange event to JS and also not
-     * resize the visual/layout viewports in response to keyboard visibility
-     * changes.
-     *
-     * @return Whether overlaycontent flag is set or not.
-     */
-    @Override
-    public boolean shouldVirtualKeyboardOverlayContent() {
-        return mKeyboardOverlayContent;
     }
 
     private void createInputConnectionFactory() {
@@ -471,8 +455,7 @@ public class ImeAdapterImpl
     private void updateState(int textInputType, int textInputFlags, int textInputMode,
             int textInputAction, boolean showIfNeeded, boolean alwaysHide, String text,
             int selectionStart, int selectionEnd, int compositionStart, int compositionEnd,
-            boolean replyToRequest, int lastVkVisibilityRequest, int vkPolicy,
-            boolean keyboardOverlayContent) {
+            boolean replyToRequest, int lastVkVisibilityRequest, int vkPolicy) {
         TraceEvent.begin("ImeAdapter.updateState");
         try {
             if (DEBUG_LOGS) {
@@ -488,7 +471,6 @@ public class ImeAdapterImpl
                 mRestartInputOnNextStateUpdate = false;
             }
 
-            mKeyboardOverlayContent = keyboardOverlayContent;
             mTextInputFlags = textInputFlags;
             if (mTextInputMode != textInputMode) {
                 mTextInputMode = textInputMode;

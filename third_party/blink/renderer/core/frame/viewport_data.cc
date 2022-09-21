@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
+#include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
 
 namespace blink {
 
@@ -67,6 +68,13 @@ ViewportDescription ViewportData::GetViewportDescription() const {
   if (ShouldOverrideLegacyDescription(viewport_description_.type))
     applied_viewport_description = viewport_description_;
 
+  // Setting `navigator.virtualKeyboard.overlaysContent` should override the
+  // virtual-keyboard mode set from the viewport meta tag.
+  if (virtual_keyboard_overlays_content_) {
+    applied_viewport_description.virtual_keyboard_mode =
+        ui::mojom::blink::VirtualKeyboardMode::kOverlaysContent;
+  }
+
   return applied_viewport_description;
 }
 
@@ -116,6 +124,14 @@ void ViewportData::SetExpandIntoDisplayCutout(bool expand) {
     return;
 
   force_expand_display_cutout_ = expand;
+  UpdateViewportDescription();
+}
+
+void ViewportData::SetVirtualKeyboardOverlaysContent(bool overlays_content) {
+  if (virtual_keyboard_overlays_content_ == overlays_content)
+    return;
+
+  virtual_keyboard_overlays_content_ = overlays_content;
   UpdateViewportDescription();
 }
 

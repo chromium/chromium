@@ -1038,8 +1038,10 @@ RenderWidgetHostViewBase::GetVisibleTimeRequestTrigger() {
              : &visible_time_request_trigger_;
 }
 
-bool RenderWidgetHostViewBase::ShouldVirtualKeyboardOverlayContent() {
-  return false;
+ui::mojom::VirtualKeyboardMode
+RenderWidgetHostViewBase::GetVirtualKeyboardMode() {
+  // Only platforms supporting these APIs will implement this.
+  return ui::mojom::VirtualKeyboardMode::kUnset;
 }
 
 bool RenderWidgetHostViewBase::IsHTMLFormPopup() const {

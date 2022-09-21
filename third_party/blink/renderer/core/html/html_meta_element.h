@@ -24,10 +24,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_META_ELEMENT_H_
 
 #include "services/network/public/cpp/client_hints.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
+#include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
 
 namespace blink {
 
@@ -75,10 +77,11 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
                                           const String& value,
                                           bool viewport_meta_zero_values_quirk,
                                           ViewportDescription&);
-  static void ParseContentAttribute(const String& content,
-                                    ViewportDescription&,
-                                    Document*,
-                                    bool viewport_meta_zero_values_quirk);
+  static void ParseViewportContentAttribute(
+      const String& content,
+      ViewportDescription&,
+      Document*,
+      bool viewport_meta_zero_values_quirk);
 
   void ParseAttribute(const AttributeModificationParams&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
@@ -115,6 +118,9 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
 
   static mojom::ViewportFit ParseViewportFitValueAsEnum(bool& unknown_value,
                                                         const String& value);
+
+  static absl::optional<ui::mojom::blink::VirtualKeyboardMode>
+  ParseVirtualKeyboardValueAsEnum(const String& value);
 
   static void ReportViewportWarning(Document*,
                                     ViewportErrorCode,

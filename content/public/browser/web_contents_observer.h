@@ -45,6 +45,10 @@ namespace gfx {
 class Size;
 }  // namespace gfx
 
+namespace ui::mojom {
+enum class VirtualKeyboardMode;
+}  // namespace ui::mojom
+
 namespace content {
 
 class NavigationEntry;
@@ -580,6 +584,13 @@ class CONTENT_EXPORT WebContentsObserver {
 
   // This method is called when the viewport fit of a WebContents changes.
   virtual void ViewportFitChanged(blink::mojom::ViewportFit value) {}
+
+  // This method is called when the virtual keyboard mode of a WebContents
+  // changes. This can happen as a result of the
+  // `navigator.virtualKeyboard.overlaysContent` API or the virtual-keyboard key
+  // in the viewport meta tag.
+  virtual void VirtualKeyboardModeChanged(ui::mojom::VirtualKeyboardMode mode) {
+  }
 
   // Notification that a plugin has crashed.
   // |plugin_pid| is the process ID identifying the plugin process. Note that

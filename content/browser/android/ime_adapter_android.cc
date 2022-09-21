@@ -193,7 +193,7 @@ void ImeAdapterAndroid::UpdateState(const ui::mojom::TextInputState& state) {
       state.composition ? state.composition.value().end() : -1,
       state.reply_to_request,
       static_cast<int>(state.last_vk_visibility_request),
-      static_cast<int>(state.vk_policy), ShouldVirtualKeyboardOverlayContent());
+      static_cast<int>(state.vk_policy));
 }
 
 void ImeAdapterAndroid::UpdateOnTouchDown() {
@@ -534,12 +534,6 @@ ImeAdapterAndroid::GetFocusedFrameWidgetInputHandler() {
   if (!rwhi)
     return nullptr;
   return rwhi->GetFrameWidgetInputHandler();
-}
-
-bool ImeAdapterAndroid::ShouldVirtualKeyboardOverlayContent() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  return rwhva_ && rwhva_->ShouldVirtualKeyboardOverlayContent();
 }
 
 std::vector<ui::ImeTextSpan> ImeAdapterAndroid::GetImeTextSpansFromJava(

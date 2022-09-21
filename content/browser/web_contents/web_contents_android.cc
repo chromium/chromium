@@ -337,6 +337,10 @@ ScopedJavaLocalRef<jobject> WebContentsAndroid::GetVisibleURL(
   return url::GURLAndroid::FromNativeGURL(env, web_contents_->GetVisibleURL());
 }
 
+jint WebContentsAndroid::GetVirtualKeyboardMode(JNIEnv* env) const {
+  return static_cast<jint>(web_contents_->GetVirtualKeyboardMode());
+}
+
 bool WebContentsAndroid::IsLoading(JNIEnv* env) const {
   return web_contents_->IsLoading();
 }
@@ -483,7 +487,8 @@ void WebContentsAndroid::ScrollFocusedEditableNodeIntoView(JNIEnv* env) {
   if (!input_handler)
     return;
   bool should_overlay_content =
-      web_contents_->GetPrimaryPage().virtual_keyboard_overlays_content();
+      web_contents_->GetPrimaryPage().virtual_keyboard_mode() ==
+      ui::mojom::VirtualKeyboardMode::kOverlaysContent;
   // TODO(bokan): Autofill is notified of focus changes at the end of the
   // scrollIntoView call using DidCompleteFocusChangeInFrame, see
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/web_local_frame_impl.cc;l=3047;drc=aeadb03c8553c39e88d5d11d10f706d42f06a1d7.

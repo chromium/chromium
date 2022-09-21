@@ -65,7 +65,7 @@ static bool IsSeparator(UChar c) {
          c == ',' || c == '\0';
 }
 
-void HTMLMetaElement::ParseContentAttribute(
+void HTMLMetaElement::ParseViewportContentAttribute(
     const String& content,
     ViewportDescription& viewport_description,
     Document* document,
@@ -330,6 +330,15 @@ blink::mojom::ViewportFit HTMLMetaElement::ParseViewportFitValueAsEnum(
   return mojom::ViewportFit::kAuto;
 }
 
+// static
+absl::optional<ui::mojom::blink::VirtualKeyboardMode>
+HTMLMetaElement::ParseVirtualKeyboardValueAsEnum(const String& value) {
+  if (EqualIgnoringASCIICase(value, "resize-layout"))
+    return ui::mojom::blink::VirtualKeyboardMode::kResizeLayout;
+
+  return absl::nullopt;
+}
+
 void HTMLMetaElement::ProcessViewportKeyValuePair(
     Document* document,
     bool report_warnings,
@@ -389,6 +398,19 @@ void HTMLMetaElement::ProcessViewportKeyValuePair(
     }
   } else if (key_string == "shrink-to-fit") {
     // Ignore vendor-specific argument.
+  } else if (features::OSKResizesVisualViewport() &&
+             key_string == "virtual-keyboard") {
+    absl::optional<ui::mojom::blink::VirtualKeyboardMode> resize_type =
+        ParseVirtualKeyboardValueAsEnum(value_string);
+
+    if (resize_type) {
+      description.virtual_keyboard_mode = resize_type.value();
+    } else {
+      description.virtual_keyboard_mode =
+          ui::mojom::blink::VirtualKeyboardMode::kUnset;
+      ReportViewportWarning(document, kUnrecognizedViewportArgumentValueError,
+                            value_string, key_string);
+    }
   } else if (report_warnings) {
     ReportViewportWarning(document, kUnrecognizedViewportArgumentKeyError,
                           key_string, String());
@@ -452,8 +474,8 @@ void HTMLMetaElement::GetViewportDescriptionFromContentAttribute(
     ViewportDescription& description,
     Document* document,
     bool viewport_meta_zero_values_quirk) {
-  ParseContentAttribute(content, description, document,
-                        viewport_meta_zero_values_quirk);
+  ParseViewportContentAttribute(content, description, document,
+                                viewport_meta_zero_values_quirk);
 
   if (description.min_zoom == ViewportDescription::kValueAuto)
     description.min_zoom = 0.25;

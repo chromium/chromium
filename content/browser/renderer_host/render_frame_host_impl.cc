@@ -6028,8 +6028,8 @@ void RenderFrameHostImpl::SetNeedsOcclusionTracking(bool needs_tracking) {
   }
 }
 
-void RenderFrameHostImpl::SetVirtualKeyboardOverlayPolicy(
-    bool vk_overlays_content) {
+void RenderFrameHostImpl::SetVirtualKeyboardMode(
+    ui::mojom::VirtualKeyboardMode mode) {
   // TODO(crbug.com/1225366): Consider moving this to PageImpl.
   if (GetOutermostMainFrame() != this) {
     bad_message::ReceivedBadMessage(
@@ -6037,7 +6037,7 @@ void RenderFrameHostImpl::SetVirtualKeyboardOverlayPolicy(
         bad_message::RFHI_SET_OVERLAYS_CONTENT_NOT_OUTERMOST_FRAME);
     return;
   }
-  GetPage().set_virtual_keyboard_overlays_content(vk_overlays_content);
+  GetPage().SetVirtualKeyboardMode(mode);
 }
 
 #if BUILDFLAG(IS_ANDROID)

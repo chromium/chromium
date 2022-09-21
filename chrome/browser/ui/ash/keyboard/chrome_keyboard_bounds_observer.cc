@@ -15,6 +15,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
@@ -178,7 +179,8 @@ void ChromeKeyboardBoundsObserver::OnWidgetDestroying(views::Widget* widget) {
 void ChromeKeyboardBoundsObserver::UpdateInsets(
     aura::Window* window,
     content::RenderWidgetHostView* view) {
-  if (view->ShouldVirtualKeyboardOverlayContent()) {
+  if (view->GetVirtualKeyboardMode() ==
+      ui::mojom::VirtualKeyboardMode::kOverlaysContent) {
     view->SetInsets(gfx::Insets());
     return;
   }

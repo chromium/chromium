@@ -5993,6 +5993,14 @@ void WebContentsImpl::DidInferColorScheme(PageImpl& page) {
   }
 }
 
+void WebContentsImpl::OnVirtualKeyboardModeChanged(PageImpl& page) {
+  if (!page.IsPrimary())
+    return;
+
+  observers_.NotifyObservers(&WebContentsObserver::VirtualKeyboardModeChanged,
+                             page.virtual_keyboard_mode());
+}
+
 void WebContentsImpl::DidLoadResourceFromMemoryCache(
     RenderFrameHostImpl* source,
     const GURL& url,
@@ -9537,6 +9545,13 @@ bool WebContentsImpl::CancelPrerendering(
   }
   return GetPrerenderHostRegistry()->CancelHost(
       frame_tree_node->frame_tree_node_id(), final_status);
+}
+
+ui::mojom::VirtualKeyboardMode WebContentsImpl::GetVirtualKeyboardMode() const {
+  return primary_frame_tree_.root()
+      ->current_frame_host()
+      ->GetPage()
+      .virtual_keyboard_mode();
 }
 
 // static

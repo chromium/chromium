@@ -270,9 +270,19 @@ void PageImpl::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
   // TODO(https://crbug.com/1317002): send notification to outer frames if
   // needed.
-  DCHECK(virtual_keyboard_overlays_content());
+  DCHECK_EQ(virtual_keyboard_mode(),
+            ui::mojom::VirtualKeyboardMode::kOverlaysContent);
   GetMainDocument().GetAssociatedLocalFrame()->NotifyVirtualKeyboardOverlayRect(
       keyboard_rect);
+}
+
+void PageImpl::SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode) {
+  if (virtual_keyboard_mode_ == mode)
+    return;
+
+  virtual_keyboard_mode_ = mode;
+
+  delegate_.OnVirtualKeyboardModeChanged(*this);
 }
 
 base::flat_map<std::string, std::string> PageImpl::GetKeyboardLayoutMap() {

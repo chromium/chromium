@@ -40,12 +40,20 @@ class ViewportData final : public GarbageCollected<ViewportData> {
     return viewport_fit_;
   }
 
+  CORE_EXPORT void SetVirtualKeyboardOverlaysContent(bool overlays_content);
+  CORE_EXPORT bool GetVirtualKeyboardOverlaysContent() const {
+    return virtual_keyboard_overlays_content_;
+  }
+
  private:
   Member<Document> document_;
 
   ViewportDescription viewport_description_;
   ViewportDescription legacy_viewport_description_;
   Length viewport_default_min_width_;
+
+  // Whether overlays content was set via the virtualKeyboard API.
+  bool virtual_keyboard_overlays_content_ = false;
 
   // Stores the current value viewport-fit value.
   mojom::ViewportFit viewport_fit_ = blink::mojom::ViewportFit::kAuto;

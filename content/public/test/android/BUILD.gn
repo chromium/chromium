@@ -34,6 +34,7 @@ android_library("content_java_test_support") {
     "//third_party/junit:junit",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+    "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
     "//url:origin_java",
   ]

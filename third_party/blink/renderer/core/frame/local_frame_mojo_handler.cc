@@ -607,9 +607,9 @@ void LocalFrameMojoHandler::NotifyVirtualKeyboardOverlayRect(
   // The rect passed to us from content is in DIP, relative to the main frame.
   // This doesn't take the page's zoom factor into account so we must scale by
   // the inverse of the page zoom in order to get correct client coordinates.
-  // Note that when use-zoom-for-dsf is enabled, WindowToViewportScalar will
-  // be the true device scale factor, and PageZoomFactor will be the combination
-  // of the device scale factor and the zoom percent of the page.
+  // WindowToViewportScalar is the device scale factor while PageZoomFactor is
+  // the combination of the device scale factor and the zoom factor of the
+  // page.
   blink::LocalFrame& local_frame_root = frame_->LocalFrameRoot();
   const float window_to_viewport_factor =
       page->GetChromeClient().WindowToViewportScalar(&local_frame_root, 1.0f);

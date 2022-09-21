@@ -2346,13 +2346,14 @@ void RenderWidgetHostViewAura::Shutdown() {
   }
 }
 
-bool RenderWidgetHostViewAura::ShouldVirtualKeyboardOverlayContent() {
+ui::mojom::VirtualKeyboardMode
+RenderWidgetHostViewAura::GetVirtualKeyboardMode() {
   // overlaycontent flag can only be set from main frame.
   RenderFrameHostImpl* frame = host()->frame_tree()->GetMainFrame();
   if (!frame)
-    return false;
+    return ui::mojom::VirtualKeyboardMode::kUnset;
 
-  return frame->GetPage().virtual_keyboard_overlays_content();
+  return frame->GetPage().virtual_keyboard_mode();
 }
 
 void RenderWidgetHostViewAura::NotifyVirtualKeyboardOverlayRect(
@@ -2360,8 +2361,13 @@ void RenderWidgetHostViewAura::NotifyVirtualKeyboardOverlayRect(
   // geometrychange event can only be fired on main frame and not focused frame
   // which could be an iframe.
   RenderFrameHostImpl* frame = host()->frame_tree()->GetMainFrame();
-  if (!frame || !frame->GetPage().virtual_keyboard_overlays_content())
+  if (!frame)
     return;
+
+  if (GetVirtualKeyboardMode() !=
+      ui::mojom::VirtualKeyboardMode::kOverlaysContent) {
+    return;
+  }
   gfx::Rect keyboard_root_relative_rect = keyboard_rect;
   if (!keyboard_root_relative_rect.IsEmpty()) {
     // If the rect is non-empty, we need to transform it to be widget-relative

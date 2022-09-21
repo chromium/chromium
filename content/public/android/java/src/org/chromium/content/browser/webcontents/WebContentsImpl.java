@@ -61,6 +61,7 @@ import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -475,6 +476,13 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     public GURL getVisibleUrl() {
         checkNotDestroyed();
         return WebContentsImplJni.get().getVisibleURL(mNativeWebContentsAndroid);
+    }
+
+    @Override
+    @VirtualKeyboardMode.EnumType
+    public int getVirtualKeyboardMode() {
+        checkNotDestroyed();
+        return WebContentsImplJni.get().getVirtualKeyboardMode(mNativeWebContentsAndroid);
     }
 
     @Override
@@ -1093,6 +1101,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         int getVisibility(long nativeWebContentsAndroid);
         String getTitle(long nativeWebContentsAndroid);
         GURL getVisibleURL(long nativeWebContentsAndroid);
+        int getVirtualKeyboardMode(long nativeWebContentsAndroid);
         String getEncoding(long nativeWebContentsAndroid);
         boolean isLoading(long nativeWebContentsAndroid);
         boolean shouldShowLoadingUI(long nativeWebContentsAndroid);

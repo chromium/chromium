@@ -67,6 +67,7 @@ class CONTENT_EXPORT WebContentsAndroid {
       JNIEnv* env) const;
   base::android::ScopedJavaLocalRef<jstring> GetTitle(JNIEnv* env) const;
   base::android::ScopedJavaLocalRef<jobject> GetVisibleURL(JNIEnv* env) const;
+  jint GetVirtualKeyboardMode(JNIEnv* env) const;
 
   bool IsLoading(JNIEnv* env) const;
   bool ShouldShowLoadingUI(JNIEnv* env) const;

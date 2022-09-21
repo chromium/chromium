@@ -48,6 +48,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 /**
  * Unit tests for {@link CompositorViewHolder}.
@@ -288,8 +289,7 @@ public class CompositorViewHolderUnitTest {
     @Test
     public void testWebContentResizeTriggeredDueToKeyboardShow() {
         // Set the overlaycontent flag.
-        when(mCompositorViewHolder.shouldVirtualKeyboardOverlayContent(mWebContents))
-                .thenReturn(true);
+        mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.OVERLAYS_CONTENT);
         // show the keyboard and set height of the webcontent.
         // totalAdjustedHeight = keyboardHeight (741) + height passed to #setSize (200)
         int totalAdjustedHeight = 941;
@@ -314,8 +314,7 @@ public class CompositorViewHolderUnitTest {
     @Test
     public void testOverlayGeometryNotTriggeredDueToNoKeyboard() {
         // Set the overlaycontent flag.
-        when(mCompositorViewHolder.shouldVirtualKeyboardOverlayContent(mWebContents))
-                .thenReturn(true);
+        mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.OVERLAYS_CONTENT);
         // show the keyboard and set height of the webcontent.
         // totalAdjustedHeight = height passed to #setSize (700)
         int totalAdjustedHeight = 700;
@@ -331,9 +330,8 @@ public class CompositorViewHolderUnitTest {
 
     @Test
     public void testWebContentResizeWhenNotOverlayGeometry() {
-        // Set the overlaycontent flag.
-        when(mCompositorViewHolder.shouldVirtualKeyboardOverlayContent(mWebContents))
-                .thenReturn(false);
+        // Ensure overlaycontent isn't set.
+        mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.UNSET);
         // show the keyboard and set height of the webcontent.
         // totalAdjustedHeight = height passed to #setSize (200).
         // The reduced height is because of the keyboard taking up the bottom space.
@@ -353,8 +351,7 @@ public class CompositorViewHolderUnitTest {
     @Test
     public void testOverlayGeometryWhenViewNotAttachedToWindow() {
         // Set the overlaycontent flag.
-        when(mCompositorViewHolder.shouldVirtualKeyboardOverlayContent(mWebContents))
-                .thenReturn(true);
+        mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.OVERLAYS_CONTENT);
         when(mContainerView.getWindowToken()).thenReturn(null);
         // show the keyboard and set height of the webcontent.
         // totalAdjustedHeight = height passed to #setSize (200)

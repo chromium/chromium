@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ime/mojom/virtual_keyboard_types.mojom-forward.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/native_widget_types.h"
@@ -293,14 +294,11 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // have anything to show.
   virtual void TakeFallbackContentFrom(RenderWidgetHostView* view) = 0;
 
-  // Returns true if the overlaycontent flag is set in the JS, else false.
-  // This determines whether to fire geometrychange event to JS and also not
-  // resize the visual/layout viewports in response to keyboard visibility
-  // changes.
-  virtual bool ShouldVirtualKeyboardOverlayContent() = 0;
+  // Returns the virtual keyboard mode requested via author APIs.
+  virtual ui::mojom::VirtualKeyboardMode GetVirtualKeyboardMode() = 0;
 
-  // Create a geometrychange event and forward it to the JS with the
-  // keyboard coordinates.
+  // Create a geometrychange event and forward it to the JS with the keyboard
+  // coordinates. No-op unless VirtualKeyboardMode is kOverlaysContent.
   virtual void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) = 0;
 

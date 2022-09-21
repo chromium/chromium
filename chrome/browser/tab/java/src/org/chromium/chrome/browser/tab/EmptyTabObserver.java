@@ -11,6 +11,7 @@ import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.net.NetError;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
 /**
@@ -116,6 +117,9 @@ public class EmptyTabObserver implements TabObserver {
 
     @Override
     public void onBackgroundColorChanged(Tab tab, int color) {}
+
+    @Override
+    public void onVirtualKeyboardModeChanged(Tab tab, @VirtualKeyboardMode.EnumType int mode) {}
 
     @Override
     public void onInteractabilityChanged(Tab tab, boolean isInteractable) {}

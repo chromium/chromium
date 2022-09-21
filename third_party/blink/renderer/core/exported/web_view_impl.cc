@@ -2789,6 +2789,16 @@ void WebViewImpl::UpdatePageDefinedViewportConstraints(
   if (!GetPage()->MainFrame()->IsLocalFrame())
     return;
 
+  if (virtual_keyboard_mode_ != description.virtual_keyboard_mode) {
+    // TODO(bokan): This should handle portals.
+    DCHECK(MainFrameImpl()->IsOutermostMainFrame());
+    virtual_keyboard_mode_ = description.virtual_keyboard_mode;
+    mojom::blink::LocalFrameHost& frame_host =
+        MainFrameImpl()->GetFrame()->GetLocalFrameHostRemote();
+
+    frame_host.SetVirtualKeyboardMode(virtual_keyboard_mode_);
+  }
+
   if (!GetSettings()->ViewportEnabled()) {
     GetPageScaleConstraintsSet().ClearPageDefinedConstraints();
     UpdateMainFrameLayoutSize();

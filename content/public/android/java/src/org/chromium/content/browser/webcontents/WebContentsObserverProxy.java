@@ -16,6 +16,7 @@ import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
 /**
@@ -431,6 +432,16 @@ class WebContentsObserverProxy extends WebContentsObserver {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().viewportFitChanged(value);
+        }
+        finishObserverCall();
+    }
+
+    @Override
+    @CalledByNative
+    public void virtualKeyboardModeChanged(@VirtualKeyboardMode.EnumType int mode) {
+        handleObserverCall();
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+            mObserversIterator.next().virtualKeyboardModeChanged(mode);
         }
         finishObserverCall();
     }

@@ -28,7 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -52,6 +54,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -3143,6 +3146,197 @@ TEST_F(ViewportHistogramsTest, TypeXhtml) {
       "<!DOCTYPE html PUBLIC '-//WAPFORUM//DTD XHTML Mobile 1.1//EN' "
       "'http://www.openmobilealliance.org/tech/DTD/xhtml-mobile11.dtd'");
   ExpectType(ViewportDescription::ViewportUMAType::kXhtmlMobileProfile);
+}
+
+class ViewportMetaSimTest : public SimTest {
+ public:
+  ViewportMetaSimTest() = default;
+
+  void SetUp() override {
+    SimTest::SetUp();
+    WebView().GetSettings()->SetViewportEnabled(true);
+    WebView().GetSettings()->SetViewportMetaEnabled(true);
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  }
+
+  void LoadPageWithHTML(const String& html) {
+    SimRequest request("https://example.com/test.html", "text/html");
+    LoadURL("https://example.com/test.html");
+    request.Complete(html);
+    blink::test::RunPendingTasks();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that, when the OSKResizesVisualViewport flag is enabled, the mode isn't
+// set when a virtual-keyboard key isn't provided
+TEST_F(ViewportMetaSimTest, VirtualKeyboardUnsetWithFlag) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kOSKResizesVisualViewport);
+
+  // Without a viewport meta tag.
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+  )HTML");
+  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kUnset);
+
+  // With a viewport meta tag.
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <meta name="viewport" content="width=device-width">
+  )HTML");
+  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kUnset);
+}
+
+// Test that, when the OSKResizesVisualViewport flag isn't enabled, the mode
+// isn't set when a virtual-keyboard key isn't provided
+TEST_F(ViewportMetaSimTest, VirtualKeyboardUnsetWithoutFlag) {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kOSKResizesVisualViewport);
+
+  // Without a viewport meta tag.
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+  )HTML");
+  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kUnset);
+
+  // With a viewport meta tag.
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <meta name="viewport" content="width=device-width">
+  )HTML");
+  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kUnset);
+}
+
+// Test that without the OSKResizesVisualViewport flag the virtual-keyboard key
+// is not parsed and is treated as an unknown key.
+TEST_F(ViewportMetaSimTest, VirtualKeyboardNotParsedWithoutFlag) {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kOSKResizesVisualViewport);
+
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <meta name="viewport" content="virtual-keyboard=invalid-value">
+  )HTML");
+
+  // Parsing should fail at the key.
+  EXPECT_EQ(ConsoleMessages().front(),
+            "The key \"virtual-keyboard\" is not recognized and ignored.");
+}
+
+// Test that the OSKResizesVisualViewport flag causes the virtual-keyboard key
+// to be parsed.
+TEST_F(ViewportMetaSimTest, VirtualKeyboardParsingEnabledByFlag) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kOSKResizesVisualViewport);
+
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <meta name="viewport" content="virtual-keyboard=invalid-value">
+  )HTML");
+
+  // Parsing will still fail but now because the value isn't a valid one.
+  EXPECT_EQ(ConsoleMessages().front(),
+            "The value \"invalid-value\" for key \"virtual-keyboard\" is "
+            "invalid, and has been ignored.");
+}
+
+// Test that the resize-layout value is correctly parsed and set on the
+// virtual-keyboard key.
+TEST_F(ViewportMetaSimTest, VirtualKeyboardResizeLayout) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kOSKResizesVisualViewport);
+
+  // Blank page to set the default.
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+  )HTML");
+  ASSERT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kUnset);
+
+  // Basic test case
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <meta name="viewport" content="virtual-keyboard=resize-layout">
+  )HTML");
+
+  EXPECT_TRUE(ConsoleMessages().IsEmpty()) << ConsoleMessages().front();
+  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kResizeLayout);
+
+  // Ensure a blank page resets the value.
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+  )HTML");
+  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kUnset);
+
+  // Mixed with other keys.
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <meta name="viewport" content="width=device-width,virtual-keyboard=resize-layout,minimum-scale=1">
+  )HTML");
+
+  EXPECT_TRUE(ConsoleMessages().IsEmpty()) << ConsoleMessages().front();
+  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kResizeLayout);
+}
+
+// Test that the virtualKeyboard.overlaysContent API overrides any values set
+// from the meta tag and that unsetting it goes back to using the meta tag
+// keyboard mode.
+TEST_F(ViewportMetaSimTest, VirtualKeyboardAPIOverlaysContent) {
+  v8::HandleScope handle_scope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kOSKResizesVisualViewport);
+
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <meta name="viewport" content="virtual-keyboard=resize-layout">
+  )HTML");
+
+  ASSERT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kResizeLayout);
+
+  MainFrame().ExecuteScript(
+      WebScriptSource("navigator.virtualKeyboard.overlaysContent = true;"));
+
+  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kOverlaysContent);
+
+  MainFrame().ExecuteScript(
+      WebScriptSource("navigator.virtualKeyboard.overlaysContent = false;"));
+
+  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kResizeLayout);
+}
+
+// Ensure that updating the content to a bad value causes the mode to become
+// unset.
+TEST_F(ViewportMetaSimTest, VirtualKeyboardUpdateContent) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kOSKResizesVisualViewport);
+
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <meta name="viewport" content="virtual-keyboard=resize-layout">
+  )HTML");
+
+  ASSERT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kResizeLayout);
+
+  Element* meta = GetDocument().QuerySelector("[name=viewport]");
+  meta->setAttribute(html_names::kContentAttr, "virtual-keyboard=bad-value");
+
+  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
+            ui::mojom::blink::VirtualKeyboardMode::kUnset);
 }
 
 }  // namespace blink

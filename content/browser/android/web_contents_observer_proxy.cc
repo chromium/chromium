@@ -350,6 +350,13 @@ void WebContentsObserverProxy::ViewportFitChanged(
       env, java_observer_, as_jint(static_cast<int>(value)));
 }
 
+void WebContentsObserverProxy::VirtualKeyboardModeChanged(
+    ui::mojom::VirtualKeyboardMode mode) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WebContentsObserverProxy_virtualKeyboardModeChanged(
+      env, java_observer_, as_jint(static_cast<int>(mode)));
+}
+
 void WebContentsObserverProxy::OnWebContentsFocused(RenderWidgetHost*) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_onWebContentsFocused(env, java_observer_);

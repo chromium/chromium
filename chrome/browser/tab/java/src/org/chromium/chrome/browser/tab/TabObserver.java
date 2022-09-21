@@ -14,6 +14,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
 /**
@@ -258,6 +259,13 @@ public interface TabObserver {
      * @param color The current background color.
      */
     void onBackgroundColorChanged(Tab tab, int color);
+
+    /**
+     * Called when the virtual keyboard mode in the tab's current page has been changed.
+     * @param tab The notifying {@link Tab}.
+     * @param mode The current virtual keyboard mode.
+     */
+    void onVirtualKeyboardModeChanged(Tab tab, @VirtualKeyboardMode.EnumType int mode);
 
     /**
      * Called when the Tab is attached or detached from an {@code Activity}. By default, this will

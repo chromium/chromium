@@ -97,8 +97,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
     &autofill::features::kAutofillEnableUpdateVirtualCardEnrollment,
     &autofill::features::kAutofillEnableVirtualCardMetadata,
-    &blink::features::kPrerender2,
     &blink::features::kForceWebContentsDarkMode,
+    &blink::features::kOSKResizesVisualViewport,
+    &blink::features::kPrerender2,
     &commerce::kCommerceMerchantViewer,
     &commerce::kCommercePriceTracking,
     &commerce::kShoppingList,
@@ -265,7 +266,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOmniboxModernizeVisualUpdate,
     &kOptimizeGeolocationHeaderGeneration,
     &kOptimizeLayoutsForPullRefresh,
-    &kOSKResizesVisualViewport,
     &kPostTaskFocusTab,
     &kProbabilisticCryptidRenderer,
     &kReachedCodeProfiler,
@@ -863,10 +863,6 @@ BASE_FEATURE(kOmniboxModernizeVisualUpdate,
 
 BASE_FEATURE(kOptimizeGeolocationHeaderGeneration,
              "OptimizeGeolocationHeaderGeneration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOSKResizesVisualViewport,
-             "OSKResizesVisualViewport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOptimizeLayoutsForPullRefresh,

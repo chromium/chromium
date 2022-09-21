@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -465,6 +466,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   }
   bool FakePageScaleAnimationUseAnchorForTesting() const {
     return fake_page_scale_animation_use_anchor_;
+  }
+  ui::mojom::blink::VirtualKeyboardMode VirtualKeyboardModeForTesting() {
+    return virtual_keyboard_mode_;
   }
 
   void EnterFullscreen(LocalFrame&,
@@ -932,6 +936,12 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // is passed to us upon creation.  WebKit asks for this ID upon first use and
   // uses it whenever asking the browser process to allocate new storage areas.
   SessionStorageNamespaceId session_storage_namespace_id_;
+
+  // The mode that the virtual keyboard is in, with respect to how it will
+  // affect the Blink viewport and layout. This can be set by the page using
+  // the viewport meta tag.
+  ui::mojom::blink::VirtualKeyboardMode virtual_keyboard_mode_ =
+      ui::mojom::blink::VirtualKeyboardMode::kUnset;
 
   // All the registered observers.
   base::ObserverList<WebViewObserver> observers_;

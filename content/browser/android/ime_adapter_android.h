@@ -137,7 +137,6 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
                           jint);
 
  private:
-  bool ShouldVirtualKeyboardOverlayContent();
   RenderWidgetHostImpl* GetFocusedWidget();
   RenderFrameHost* GetFocusedFrame();
   blink::mojom::FrameWidgetInputHandler* GetFocusedFrameWidgetInputHandler();

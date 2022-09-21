@@ -107,6 +107,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_full_java",
+    "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
     "//url:origin_java",
   ]

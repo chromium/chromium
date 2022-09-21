@@ -29,6 +29,7 @@ import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
@@ -126,6 +127,12 @@ public class MockWebContents implements WebContents {
     @Override
     public GURL getVisibleUrl() {
         return GURL.emptyGURL();
+    }
+
+    @Override
+    @VirtualKeyboardMode.EnumType
+    public int getVirtualKeyboardMode() {
+        return VirtualKeyboardMode.UNSET;
     }
 
     @Override

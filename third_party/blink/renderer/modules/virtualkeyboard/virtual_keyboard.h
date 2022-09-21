@@ -56,7 +56,6 @@ class VirtualKeyboard final : public EventTargetWithInlineData,
   void Trace(Visitor*) const override;
 
  private:
-  bool overlays_content_ = false;
   Member<DOMRect> bounding_rect_;
 };
 

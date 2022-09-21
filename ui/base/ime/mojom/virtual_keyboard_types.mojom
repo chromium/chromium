@@ -18,3 +18,22 @@ enum VirtualKeyboardVisibilityRequest {
   SHOW,
   HIDE,
 };
+
+// Modes available to author APIs to specify how the virtual keyboard interacts
+// with Blink's viewports and layout.
+enum VirtualKeyboardMode {
+  // Use the platform default. Current defaults:
+  // Android - resize-layout: entire page container is resized, inducing layout.
+  // ChromeOS - resize-visual: only the visual viewport is resized.
+  // Other - no virtual keyboard interaction.
+  kUnset,
+  // The virtual keyboard resizes the layout (and visual) viewport. Can be set
+  // by the page via the viewport meta tag using
+  // `virtual-keyboard=resize-layout`. Currently works only on Android Chrome
+  // and only when the OSKResizesVisualViewport flag is enabled.
+  kResizeLayout,
+  // The virtual keyboard doesn't resize any viewports and is observable only
+  // via the virtualKeyboard API `geometrychange` event. Can be set using the
+  // `navigator.virtualKeyboard.overlayContent` API.
+  kOverlaysContent
+};
