@@ -24,7 +24,6 @@ class MODULES_EXPORT ImageDecoderCore {
   ImageDecoderCore(String mime_type,
                    scoped_refptr<SegmentReader> data,
                    bool data_complete,
-                   ImageDecoder::AlphaOption alpha_option,
                    const ColorBehavior& color_behavior,
                    const SkISize& desired_size,
                    ImageDecoder::AnimationOption animation_option);
@@ -106,7 +105,6 @@ class MODULES_EXPORT ImageDecoderCore {
   void MaybeDecodeToYuv();
 
   const String mime_type_;
-  const ImageDecoder::AlphaOption alpha_option_;
   const ColorBehavior color_behavior_;
   const SkISize desired_size_;
 

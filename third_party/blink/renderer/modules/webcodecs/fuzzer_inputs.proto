@@ -304,7 +304,7 @@ message ImageBitmapOptions {
   }
 
   optional ImageOrientation image_orientation = 1;
-  optional PremultiplyAlpha premultiply_alpha = 2;
+  optional PremultiplyAlpha premultiply_alpha = 2 [deprecated = true];
   optional ColorSpaceConversion color_space_conversion = 3;
   optional uint32 resize_width = 4;
   optional uint32 resize_height = 5;

@@ -35,17 +35,6 @@ namespace blink {
 
 namespace {
 
-String ToPremultiplyAlpha(wc_fuzzer::ImageBitmapOptions_PremultiplyAlpha type) {
-  switch (type) {
-    case wc_fuzzer::ImageBitmapOptions_PremultiplyAlpha_PREMULTIPLY_NONE:
-      return "none";
-    case wc_fuzzer::ImageBitmapOptions_PremultiplyAlpha_PREMULTIPLY:
-      return "premultiply";
-    case wc_fuzzer::ImageBitmapOptions_PremultiplyAlpha_PREMULTIPLY_DEFAULT:
-      return "default";
-  }
-}
-
 String ToColorSpaceConversion(
     wc_fuzzer::ImageBitmapOptions_ColorSpaceConversion type) {
   switch (type) {
@@ -131,8 +120,6 @@ DEFINE_BINARY_PROTO_FUZZER(
         proto.config().data().data(), proto.config().data().size());
     image_decoder_init->setData(
         MakeGarbageCollected<V8ImageBufferSource>(data_copy));
-    image_decoder_init->setPremultiplyAlpha(
-        ToPremultiplyAlpha(proto.config().options().premultiply_alpha()));
     image_decoder_init->setColorSpaceConversion(ToColorSpaceConversion(
         proto.config().options().color_space_conversion()));
 

@@ -86,12 +86,10 @@ ImageDecoderCore::ImageDecoderCore(
     String mime_type,
     scoped_refptr<SegmentReader> data,
     bool data_complete,
-    ImageDecoder::AlphaOption alpha_option,
     const ColorBehavior& color_behavior,
     const SkISize& desired_size,
     ImageDecoder::AnimationOption animation_option)
     : mime_type_(mime_type),
-      alpha_option_(alpha_option),
       color_behavior_(color_behavior),
       desired_size_(desired_size),
       animation_option_(animation_option),
@@ -312,7 +310,8 @@ void ImageDecoderCore::Reinitialize(
   Clear();
   animation_option_ = animation_option;
   decoder_ = ImageDecoder::CreateByMimeType(
-      mime_type_, segment_reader_, data_complete_, alpha_option_,
+      mime_type_, segment_reader_, data_complete_,
+      ImageDecoder::kAlphaNotPremultiplied,
       ImageDecoder::HighBitDepthDecodingOption::kDefaultBitDepth,
       color_behavior_, desired_size_, animation_option_);
   DCHECK(decoder_);

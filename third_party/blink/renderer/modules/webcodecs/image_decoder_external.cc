@@ -143,18 +143,6 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   if (init->colorSpaceConversion() == kNoneOption)
     color_behavior = ColorBehavior::Ignore();
 
-  auto alpha_option = ImageDecoder::kAlphaPremultiplied;
-  if (init->premultiplyAlpha() == kNoneOption)
-    alpha_option = ImageDecoder::kAlphaNotPremultiplied;
-
-  // TODO(crbug.com/1340190): We want to deprecate premultiplied alpha, so
-  // record whenever a client has explicitly required that.
-  if (init->premultiplyAlpha() == "premultiply") {
-    UseCounter::Count(
-        GetExecutionContext(),
-        WebFeature::kWebCodecsImageDecoderPremultiplyAlphaDeprecation);
-  }
-
   auto desired_size = SkISize::MakeEmpty();
   if (init->hasDesiredWidth() && init->hasDesiredHeight())
     desired_size = SkISize::Make(init->desiredWidth(), init->desiredHeight());
@@ -185,7 +173,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
 
     decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
         decode_task_runner_, mime_type_, /*data=*/nullptr,
-        /*data_complete=*/false, alpha_option, color_behavior, desired_size,
+        /*data_complete=*/false, color_behavior, desired_size,
         animation_option_);
 
     consumer_ = MakeGarbageCollected<ReadableStreamBytesConsumer>(
@@ -250,8 +238,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   completed_property_->ResolveWithUndefined();
   decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
       decode_task_runner_, mime_type_, std::move(segment_reader),
-      data_complete_, alpha_option, color_behavior, desired_size,
-      animation_option_);
+      data_complete_, color_behavior, desired_size, animation_option_);
 
   DecodeMetadata();
 }

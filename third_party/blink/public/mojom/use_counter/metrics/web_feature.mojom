@@ -3617,7 +3617,7 @@ enum WebFeature {
   kParentOfDisabledFormControlRespondsToMouseEvents = 4296,
   kUnhandledExceptionCountInMainThread = 4297,
   kUnhandledExceptionCountInWorker = 4298,
-  kWebCodecsImageDecoderPremultiplyAlphaDeprecation = 4299,
+  kOBSOLETE_WebCodecsImageDecoderPremultiplyAlphaDeprecation = 4299,
   kCookieDomainNonASCII = 4300,
   kClientHintsMetaEquivDelegateCH = 4301,
   kExpectCTHeader = 4302,
