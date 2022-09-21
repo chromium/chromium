@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
 #include "chrome/browser/lacros/app_mode/chrome_kiosk_launch_controller_lacros.h"
 #include "chrome/browser/lacros/app_mode/device_local_account_extension_installer_lacros.h"
@@ -210,6 +211,12 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
       std::make_unique<quick_answers::QuickAnswersClient>(
           g_browser_process->shared_url_loader_factory(),
           QuickAnswersController::Get()->GetQuickAnswersDelegate()));
+
+  // Initialize the metric reporting manager so we can start recording relevant
+  // telemetry metrics and events on managed devices. The reporting manager
+  // checks for profile affiliation, so we do not need any additional checks
+  // here.
+  ::reporting::metrics::MetricReportingManagerLacros::GetForProfile(profile);
 
   if (chromeos::BrowserParamsProxy::Get()->SessionType() ==
       crosapi::mojom::SessionType::kAppKioskSession) {
