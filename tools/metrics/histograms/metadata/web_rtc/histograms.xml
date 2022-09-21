@@ -680,7 +680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.MaxSkewShiftCount"
-    units="events/minute" expires_after="2022-09-13">
+    units="events/minute" expires_after="2023-09-13">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <summary>
