@@ -38,6 +38,7 @@ namespace {
 // This list must be sorted in alphabetical order and contain no duplicates.
 const char* const kDefaultSupportedLanguages[] = {
     "af",     // Afrikaans
+    "ak",     // Twi
     "am",     // Amharic
     "ar",     // Arabic
     "az",     // Azerbaijani
@@ -47,11 +48,13 @@ const char* const kDefaultSupportedLanguages[] = {
     "bs",     // Bosnian
     "ca",     // Catalan
     "ceb",    // Cebuano
+    "ckb",    // Kurdish (Sorani)
     "co",     // Corsican
     "cs",     // Czech
     "cy",     // Welsh
     "da",     // Danish
     "de",     // German
+    "ee",     // Ewe
     "el",     // Greek
     "en",     // English
     "eo",     // Esperanto
@@ -65,6 +68,7 @@ const char* const kDefaultSupportedLanguages[] = {
     "ga",     // Irish
     "gd",     // Scots Gaelic
     "gl",     // Galician
+    "gom",    // Konkani
     "gu",     // Gujarati
     "ha",     // Hausa
     "haw",    // Hawaiian
@@ -86,10 +90,13 @@ const char* const kDefaultSupportedLanguages[] = {
     "km",     // Khmer
     "kn",     // Kannada
     "ko",     // Korean
+    "kri",    // Krio
     "ku",     // Kurdish
     "ky",     // Kyrgyz
     "la",     // Latin
     "lb",     // Luxembourgish
+    "lg",     // Luganda
+    "ln",     // Lingala
     "lo",     // Lao
     "lt",     // Lithuanian
     "lv",     // Latvian
@@ -105,12 +112,15 @@ const char* const kDefaultSupportedLanguages[] = {
     "ne",     // Nepali
     "nl",     // Dutch
     "no",     // Norwegian - Chrome uses "nb"
+    "nso",    // Sepedi
     "ny",     // Nyanja
+    "om",     // Oromo
     "or",     // Odia (Oriya)
     "pa",     // Punjabi
     "pl",     // Polish
     "ps",     // Pashto
     "pt",     // Portuguese
+    "qu",     // Quechua
     "ro",     // Romanian
     "ru",     // Russian
     "rw",     // Kinyarwanda
@@ -131,6 +141,7 @@ const char* const kDefaultSupportedLanguages[] = {
     "te",     // Telugu
     "tg",     // Tajik
     "th",     // Thai
+    "ti",     // Tigrinya
     "tk",     // Turkmen
     "tl",     // Tagalog - Chrome uses "fil"
     "tr",     // Turkish

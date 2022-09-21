@@ -19,6 +19,7 @@ namespace {
 // switched between different regions within the same language.
 const char* const kShowNotificationLanguages[] = {
     "af",   // Afrikaans
+    "ak",   // Twi
     "am",   // Amharic
     "an",   // Aragonese
     "ar",   // Arabic
@@ -39,6 +40,7 @@ const char* const kShowNotificationLanguages[] = {
     "cs",   // Czech
     "cy",   // Welsh
     "da",   // Danish
+    "ee",   // Ewe
     "el",   // Greek
     "eo",   // Esperanto
     "es",   // Spanish
@@ -75,10 +77,12 @@ const char* const kShowNotificationLanguages[] = {
     "kn",   // Kannada
     "ko",   // Korean
     "kok",  // Konkani
+    "kri",  // Krio
     "ku",   // Kurdish
     "ky",   // Kyrgyz
     "la",   // Latin
     "lb",   // Luxembourgish
+    "lg",   // Luganda
     "ln",   // Lingala
     "lo",   // Laothian
     "lt",   // Lithuanian
@@ -98,6 +102,7 @@ const char* const kShowNotificationLanguages[] = {
     "nl",   // Dutch
     "nn",   // Norwegian (Nynorsk)
     "no",   // Norwegian
+    "nso",  // Sepedi
     "ny",   // Nyanja
     "oc",   // Occitan
     "om",   // Oromo

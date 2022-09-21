@@ -238,7 +238,7 @@ TEST_F(TranslatePrefsTest, GetTranslatableContentLanguagesCorrectLocale) {
   EXPECT_THAT(result_codes, expected_translatable_codes);
 
   // Test with only untranslatable languages.
-  content_languages = {"wa", "ln"};
+  content_languages = {"wa", "vo"};
   expected_translatable_codes = {};
   accept_languages_tester_->SetLanguagePrefs(content_languages);
 

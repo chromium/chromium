@@ -58,6 +58,7 @@ namespace {
 
 static const char* const kAcceptLanguageList[] = {
     "af",  // Afrikaans
+    "ak",  // Twi
     "am",  // Amharic
     "an",  // Aragonese
     "ar",  // Arabic
@@ -85,6 +86,7 @@ static const char* const kAcceptLanguageList[] = {
     "de-CH",           // German (Switzerland)
     "de-DE",           // German (Germany)
     "de-LI",           // German (Liechtenstein)
+    "ee",              // Ewe
     "el",              // Greek
     "en",              // English
     "en-AU",           // English (Australia)
@@ -152,10 +154,12 @@ static const char* const kAcceptLanguageList[] = {
     "kn",      // Kannada
     "ko",      // Korean
     "kok",     // Konkani
+    "kri",     // Krio
     "ku",      // Kurdish
     "ky",      // Kyrgyz
     "la",      // Latin
     "lb",      // Luxembourgish
+    "lg",      // Luganda
     "ln",      // Lingala
     "lo",      // Laothian
     "lt",      // Lithuanian
@@ -175,6 +179,7 @@ static const char* const kAcceptLanguageList[] = {
     "nl",      // Dutch
     "nn",      // Norwegian (Nynorsk)
     "no",      // Norwegian
+    "nso",     // Sepedi
     "ny",      // Nyanja
     "oc",      // Occitan
     "om",      // Oromo
