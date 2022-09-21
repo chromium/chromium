@@ -2907,7 +2907,7 @@ be describing additional metrics about the same event.
     RenderFrameHost::IsInactiveAndDisallowActivation. The source IDs match with
     the source IDs of HistoryNavigation events.
   </summary>
-  <metric name="Reason" enum="BackForwardCacheDisallowActivationReason">
+  <metric name="Reason" enum="InactiveFrameDisallowActivationReason">
     <summary>
       For history navigations, records the reason passed to
       RenderFrameHost::IsInactiveAndDisallowActivation.
