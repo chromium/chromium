@@ -5151,6 +5151,7 @@ interface MLGraphBuilder
     method gemm
     method input
     method max
+    method maxPool2d
     method min
     method mul
     method relu

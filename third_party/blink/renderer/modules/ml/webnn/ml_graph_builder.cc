@@ -193,28 +193,34 @@ MLOperand* BuildElementWiseBinary(MLGraphBuilder* builder,
   return output;
 }
 
-bool CalculatePaddingForAutoPad(V8MLAutoPad::Enum autoPad,
-                                const uint32_t input_size,
-                                const uint32_t filter_size,
-                                const int32_t stride,
-                                const int32_t dilation,
-                                uint32_t& padding_begin,
-                                uint32_t& padding_end) {
-  base::CheckedNumeric<uint32_t> checked_input_size(input_size);
-  auto checked_output_size = (checked_input_size + stride - 1) / stride;
-  base::CheckedNumeric<uint32_t> checked_filter_size(filter_size);
-  auto checked_dilated_filter_size = (checked_filter_size - 1) * dilation + 1;
+struct PaddingSizes {
+  uint32_t begin;
+  uint32_t end;
+};
+
+// Calculate the padding given auto pad, input size, filter size, stride and
+// dilation. Return the calculated padding sizes if no error.
+absl::optional<PaddingSizes> CalculatePaddingForAutoPad(
+    V8MLAutoPad::Enum auto_pad,
+    const uint32_t input_size,
+    const uint32_t filter_size,
+    const uint32_t stride,
+    const uint32_t dilation) {
+  auto checked_output_size =
+      (base::MakeCheckedNum<uint32_t>(input_size) + stride - 1) / stride;
+  auto checked_dilated_filter_size =
+      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
   auto checked_needed_input_size =
       (checked_output_size - 1) * stride + checked_dilated_filter_size;
-  if (!checked_needed_input_size.IsValid() || !checked_input_size.IsValid()) {
-    return false;
+  if (!checked_needed_input_size.IsValid()) {
+    return absl::nullopt;
   }
   auto checked_total_padding =
-      checked_needed_input_size.ValueOrDie() > checked_input_size.ValueOrDie()
-          ? checked_needed_input_size - checked_input_size
+      checked_needed_input_size.ValueOrDie() > input_size
+          ? checked_needed_input_size - input_size
           : base::MakeCheckedNum<uint32_t>(0);
   base::CheckedNumeric<uint32_t> checked_padding_begin, checked_padding_end;
-  switch (autoPad) {
+  switch (auto_pad) {
     case V8MLAutoPad::Enum::kSameUpper:
       checked_padding_begin = checked_total_padding / 2;
       checked_padding_end = (checked_total_padding + 1) / 2;
@@ -226,11 +232,357 @@ bool CalculatePaddingForAutoPad(V8MLAutoPad::Enum autoPad,
     default:
       NOTREACHED();
   }
+  uint32_t padding_begin, padding_end;
   if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
       !checked_padding_end.AssignIfValid(&padding_end)) {
-    return false;
+    return absl::nullopt;
   }
-  return true;
+  return PaddingSizes({.begin = padding_begin, .end = padding_end});
+}
+
+// Calculate the output size for conv2d based on WebNN spec:
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d
+// Return the calculated output size if no error.
+absl::optional<double> CalculateConv2dOutputSize(
+    const uint32_t input_size,
+    const uint32_t filter_size,
+    const uint32_t beginning_padding,
+    const uint32_t ending_padding,
+    const uint32_t stride,
+    const uint32_t dilation) {
+  // Calculate the dilated filter sizes.
+  auto checked_dilated_filter_size =
+      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
+  if (!checked_dilated_filter_size.IsValid()) {
+    return absl::nullopt;
+  }
+
+  // Calculate the output size in double precision floating point number that
+  // ensures all dimension values of type uint32_t can be exactly represented.
+  // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
+  auto checked_output_size =
+      (base::MakeCheckedNum<double>(input_size) - checked_dilated_filter_size +
+       beginning_padding + ending_padding) /
+          stride +
+      1;
+
+  // Check if the value is valid for rounding to uint32_t type.
+  double float_output_size;
+  if (!checked_output_size.IsValid<uint32_t>() ||
+      !checked_output_size.AssignIfValid(&float_output_size)) {
+    return absl::nullopt;
+  }
+  return float_output_size;
+}
+
+struct FloatSize2D {
+  double height;
+  double width;
+};
+
+// Validate and calculate the output spatial dimensions of conv2d given
+// input sizes, filter sizes, padding, strides and dilations.
+// Return the calculated output sizes in double precision floating point number
+// if no errors.
+absl::optional<FloatSize2D> ValidateAndCalculateConv2dOutputSizes(
+    const uint32_t input_height,
+    const uint32_t input_width,
+    const uint32_t filter_height,
+    const uint32_t filter_width,
+    const Vector<int32_t>& padding,
+    const Vector<int32_t>& strides,
+    const Vector<int32_t>& dilations,
+    const V8MLAutoPad auto_pad,
+    ExceptionState& exception_state) {
+  // Validate padding and get its values.
+  if (padding.size() != 4) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The length of padding should be 4.");
+    return absl::nullopt;
+  }
+  if (std::any_of(padding.begin(), padding.end(),
+                  [](int32_t x) { return x < 0; })) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "All paddings should be greater than or equal to 0.");
+    return absl::nullopt;
+  }
+  // The current WebNN spec defines the paddings as signed integer:
+  // https://www.w3.org/TR/webnn/#dom-mlconv2doptions-padding
+  // However, there is a proposal of using unsigned integer:
+  // https://github.com/webmachinelearning/webnn/pull/294.
+  // Before the change merged, the signed integers are checked_cast to
+  // unsigned integers for output shape calculation.
+  uint32_t padding_beginning_height = base::checked_cast<uint32_t>(padding[0]);
+  uint32_t padding_ending_height = base::checked_cast<uint32_t>(padding[1]);
+  uint32_t padding_beginning_width = base::checked_cast<uint32_t>(padding[2]);
+  uint32_t padding_ending_width = base::checked_cast<uint32_t>(padding[3]);
+
+  // Validate strides and get its values.
+  if (strides.size() != 2) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The length of strides should be 2.");
+    return absl::nullopt;
+  }
+  if (std::any_of(strides.begin(), strides.end(),
+                  [](int32_t x) { return x < 1; })) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "All strides should be greater than or equal to 1.");
+    return absl::nullopt;
+  }
+  // The current WebNN spec defines the strides as signed integer:
+  // https://www.w3.org/TR/webnn/#dom-mlconv2doptions-strides
+  // However, there is a proposal of using unsigned integer:
+  // https://github.com/webmachinelearning/webnn/pull/294
+  // Before the change merged, the signed integers are checked_cast to
+  // unsigned integers for output shape calculation.
+  const uint32_t stride_height = base::checked_cast<uint32_t>(strides[0]);
+  const uint32_t stride_width = base::checked_cast<uint32_t>(strides[1]);
+
+  // Validate dilations and get its values.
+  if (dilations.size() != 2) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The length of dilations should be 2.");
+    return absl::nullopt;
+  }
+  if (std::any_of(dilations.begin(), dilations.end(),
+                  [](int32_t x) { return x < 1; })) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "All dilations should be greater than or equal to 1.");
+    return absl::nullopt;
+  }
+  // The current WebNN spec defines the dilations as signed integer:
+  // https://www.w3.org/TR/webnn/#dom-mlconv2doptions-dilations
+  // However, there is a proposal of using unsigned integer:
+  // https://github.com/webmachinelearning/webnn/pull/294
+  // Before the change merged, the signed integers are checked_cast to
+  // unsigned integers for output shape calculation.
+  const uint32_t dilation_height = base::checked_cast<uint32_t>(dilations[0]);
+  const uint32_t dilation_width = base::checked_cast<uint32_t>(dilations[1]);
+
+  // When the autoPad is other than "explicit", the values in the
+  // options.padding array are ignored and the explicit padding values need to
+  // be calculated.
+  if (auto_pad != V8MLAutoPad::Enum::kExplicit) {
+    auto padding_sizes_height = CalculatePaddingForAutoPad(
+        auto_pad.AsEnum(), input_height, filter_height, stride_height,
+        dilation_height);
+    if (!padding_sizes_height) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "Overflow occurred when calculating "
+          "the padding along the height dimension.");
+      return absl::nullopt;
+    }
+    padding_beginning_height = padding_sizes_height.value().begin;
+    padding_ending_height = padding_sizes_height.value().end;
+    auto padding_sizes_width =
+        CalculatePaddingForAutoPad(auto_pad.AsEnum(), input_width, filter_width,
+                                   stride_width, dilation_width);
+    if (!padding_sizes_width) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "Overflow occurred when calculating "
+          "the padding along the width dimension.");
+      return absl::nullopt;
+    }
+    padding_beginning_width = padding_sizes_width.value().begin;
+    padding_ending_width = padding_sizes_width.value().end;
+  }
+
+  auto float_output_height = CalculateConv2dOutputSize(
+      input_height, filter_height, padding_beginning_height,
+      padding_ending_height, stride_height, dilation_height);
+  if (!float_output_height) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Overflow occurred when calculating the output height.");
+    return absl::nullopt;
+  }
+
+  auto float_output_width = CalculateConv2dOutputSize(
+      input_width, filter_width, padding_beginning_width, padding_ending_width,
+      stride_width, dilation_width);
+  if (!float_output_width) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Overflow occurred when calculating the output width.");
+    return absl::nullopt;
+  }
+
+  return FloatSize2D({.height = float_output_height.value(),
+                      .width = float_output_width.value()});
+}
+
+MLOperand* BuildPool2d(MLGraphBuilder* builder,
+                       MLOperator::OperatorKind kind,
+                       const MLOperand* input,
+                       const MLPool2dOptions* options,
+                       ExceptionState& exception_state) {
+  // Validate input operand and set its sizes.
+  const auto input_shape = input->Dimensions();
+  if (input_shape.size() != 4) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The input should be a 4-D tensor.");
+    return nullptr;
+  }
+  // The layout option specifies the layout format of the input tensor.
+  uint32_t input_batches, input_channels, input_height, input_width;
+  switch (options->layout().AsEnum()) {
+    case V8MLInputOperandLayout::Enum::kNchw:
+      // "nchw": [batches, channels, height, width]
+      input_batches = input_shape[0];
+      input_channels = input_shape[1];
+      input_height = input_shape[2];
+      input_width = input_shape[3];
+      break;
+    case V8MLInputOperandLayout::Enum::kNhwc:
+      // "nhwc": [batches, height, width, channels]
+      input_batches = input_shape[0];
+      input_height = input_shape[1];
+      input_width = input_shape[2];
+      input_channels = input_shape[3];
+      break;
+  }
+
+  // Validate windowDimensions and get its values. If not present, the window
+  // dimensions are assumed to be the height and width dimensions of the input
+  // shape. The current WebNN spec defines the windowDimensions as signed
+  // integer: https://www.w3.org/TR/webnn/#dom-mlpool2doptions-windowdimensions
+  // However, there is a proposal of using unsigned integer:
+  // https://github.com/webmachinelearning/webnn/pull/294
+  // Before the change merged, the signed integers are checked_cast to
+  // unsigned integers for output shape calculation.
+  uint32_t window_height = input_height;
+  uint32_t window_width = input_width;
+  if (options->hasWindowDimensions()) {
+    if (options->windowDimensions().size() != 2) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "The length of window dimensions should be 2.");
+      return nullptr;
+    }
+    if (std::any_of(options->windowDimensions().begin(),
+                    options->windowDimensions().end(),
+                    [](int32_t x) { return x < 1; })) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "All window dimensions should be greater than or equal to 1.");
+      return nullptr;
+    }
+    window_height =
+        base::checked_cast<uint32_t>(options->windowDimensions()[0]);
+    window_width = base::checked_cast<uint32_t>(options->windowDimensions()[1]);
+  }
+
+  // Reuse ValidateAndCalculateConv2dOutputSizes to calculate pool2d output
+  // sizes.
+  const auto output_sizes = ValidateAndCalculateConv2dOutputSizes(
+      input_height, input_width, window_height, window_width,
+      // If padding is not present, the values are assumed to be [0,0,0,0].
+      options->getPaddingOr({0, 0, 0, 0}),
+      // If strides is not present, the values are assumed to be [1,1].
+      options->getStridesOr({1, 1}),
+      // If dilations is not present, the values are assumed to be [1, 1].
+      options->getDilationsOr({1, 1}), options->autoPad(), exception_state);
+  if (!output_sizes) {
+    return nullptr;
+  }
+  const uint32_t floor_output_height =
+      base::ClampFloor<uint32_t>(output_sizes.value().height);
+  const uint32_t ceil_output_height =
+      base::ClampCeil<uint32_t>(output_sizes.value().height);
+  const uint32_t floor_output_width =
+      base::ClampFloor<uint32_t>(output_sizes.value().width);
+  const uint32_t ceil_output_width =
+      base::ClampCeil<uint32_t>(output_sizes.value().width);
+
+  uint32_t output_height, output_width;
+  if (options->hasOutputSizes()) {
+    // TODO(ningxin.hu@intel.com): report a DevTools warning message if rounding
+    // type is provided but ignored.
+    if (options->outputSizes().size() != 2) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "The length of output sizes should be 2.");
+      return nullptr;
+    }
+    if (std::any_of(options->outputSizes().begin(),
+                    options->outputSizes().end(),
+                    [](int32_t x) { return x < 1; })) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "All output sizes should be greater than 0.");
+      return nullptr;
+    }
+    // The current WebNN spec defines the output sizes as signed integer:
+    // https://www.w3.org/TR/webnn/#dom-mlpool2doptions-outputsizes
+    // However, there is a proposal of using unsigned integer:
+    // https://github.com/webmachinelearning/webnn/pull/294
+    // Before the change merged, the signed integers are checked_cast to
+    // unsigned integers for output shape calculation.
+    uint32_t user_output_height =
+        base::checked_cast<uint32_t>(options->outputSizes()[0]);
+    uint32_t user_output_width =
+        base::checked_cast<uint32_t>(options->outputSizes()[1]);
+
+    // Check whether the user supplied output sizes is either floor or ceil
+    // rounding of the calculated output sizes. The backend implementation
+    // should check whether the indicated rounding type is supported.
+    if ((user_output_height == floor_output_height &&
+         user_output_width == floor_output_width) ||
+        (user_output_height == ceil_output_height &&
+         user_output_width == ceil_output_width)) {
+      output_height = user_output_height;
+      output_width = user_output_width;
+    } else {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          (floor_output_height == ceil_output_height &&
+           floor_output_width == ceil_output_width)
+              ? String::Format("The output sizes should be [%u, %u].",
+                               floor_output_height, floor_output_width)
+              : String::Format(
+                    "The output sizes should be either [%u, %u] or [%u, %u].",
+                    floor_output_height, floor_output_width, ceil_output_height,
+                    ceil_output_width));
+      return nullptr;
+    }
+  } else {
+    switch (options->roundingType().AsEnum()) {
+      case V8MLRoundingType::Enum::kFloor:
+        output_height = floor_output_height;
+        output_width = floor_output_width;
+        break;
+      case V8MLRoundingType::Enum::kCeil:
+        output_height = ceil_output_height;
+        output_width = ceil_output_width;
+        break;
+    }
+  }
+  // The layout option specifies the layout format of the output tensor.
+  Vector<uint32_t> output_shape;
+  switch (options->layout().AsEnum()) {
+    case V8MLInputOperandLayout::Enum::kNchw:
+      // "nchw": [batches, channels, height, width]
+      output_shape = {input_batches, input_channels, output_height,
+                      output_width};
+      break;
+    case V8MLInputOperandLayout::Enum::kNhwc:
+      // "nhwc": [batches, height, width, channels]
+      output_shape = {input_batches, output_height, output_width,
+                      input_channels};
+      break;
+  }
+  // Create pool2d operator and its output operand. Connect the pool2d operator
+  // to its input and output operands.
+  auto* pool2d = MakeGarbageCollected<MLOperator>(builder, kind, options);
+  auto* output = MLOperand::CreateOutput(builder, input->Type(),
+                                         std::move(output_shape), pool2d);
+  pool2d->Connect({input}, {output});
+  return output;
 }
 
 }  // namespace
@@ -343,14 +695,25 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
                                       "The input should be a 4-D tensor.");
     return nullptr;
   }
-  // The input layout specifies the input layout format as follows:
-  // "nchw": [batches, input_channels, height, width]
-  // "nhwc": [batches, height, width, input_channels]
-  bool nchw = options->inputLayout() == V8MLInputOperandLayout::Enum::kNchw;
-  const uint32_t input_batches = input_shape[0];
-  const uint32_t input_channels = nchw ? input_shape[1] : input_shape[3];
-  const uint32_t input_height = nchw ? input_shape[2] : input_shape[1];
-  const uint32_t input_width = nchw ? input_shape[3] : input_shape[2];
+  // The input layout option specifies the layout format of the input tensor.
+  uint32_t input_batches, input_channels, input_height, input_width;
+  switch (options->inputLayout().AsEnum()) {
+    case V8MLInputOperandLayout::Enum::kNchw:
+      // "nchw": [batches, input_channels, height, width]
+      input_batches = input_shape[0];
+      input_channels = input_shape[1];
+      input_height = input_shape[2];
+      input_width = input_shape[3];
+      break;
+    case V8MLInputOperandLayout::Enum::kNhwc:
+      // "nhwc": [batches, height, width, input_channels]
+      input_batches = input_shape[0];
+      input_height = input_shape[1];
+      input_width = input_shape[2];
+      input_channels = input_shape[3];
+      break;
+  }
+
   // Validate filter operand and set its sizes.
   if (filter->Type() != input->Type()) {
     exception_state.ThrowDOMException(
@@ -431,163 +794,35 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
                                       "channels to filter input channels.");
     return nullptr;
   }
-  // Validate options.padding. If not present, the values are assumed to be
-  // [0,0,0,0].
-  // The current WebNN spec defines the paddings as signed integer:
-  // https://www.w3.org/TR/webnn/#dom-mlconv2doptions-padding
-  // However, there is a proposal of using unsigned integer:
-  // https://github.com/webmachinelearning/webnn/pull/294.
-  // Before the change merged, the signed integers are checked_cast to
-  // unsigned integers for output shape calculation.
-  uint32_t padding_beginning_height = 0, padding_ending_height = 0,
-           padding_beginning_width = 0, padding_ending_width = 0;
-  if (options->hasPadding()) {
-    if (options->padding().size() != 4) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        "The length of padding should be 4.");
-      return nullptr;
-    }
-    if (std::any_of(options->padding().begin(), options->padding().end(),
-                    [](int32_t x) { return x < 0; })) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "All paddings should be greater than or equal to 0.");
-      return nullptr;
-    }
-    padding_beginning_height =
-        base::checked_cast<uint32_t>(options->padding()[0]);
-    padding_ending_height = base::checked_cast<uint32_t>(options->padding()[1]);
-    padding_beginning_width =
-        base::checked_cast<uint32_t>(options->padding()[2]);
-    padding_ending_width = base::checked_cast<uint32_t>(options->padding()[3]);
-  }
-  // Validate options.strides. If not present, the values are assumed to be
-  // [1,1].
-  // The current WebNN spec defines the strides as signed integer:
-  // https://www.w3.org/TR/webnn/#dom-mlconv2doptions-strides
-  // However, there is a proposal of using unsigned integer:
-  // https://github.com/webmachinelearning/webnn/pull/294
-  // Before the change merged, the signed integers are checked_cast to
-  // unsigned integers for output shape calculation.
-  uint32_t stride_height = 1, stride_width = 1;
-  if (options->hasStrides()) {
-    if (options->strides().size() != 2) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        "The length of strides should be 2.");
-      return nullptr;
-    }
-    if (std::any_of(options->strides().begin(), options->strides().end(),
-                    [](int32_t x) { return x < 1; })) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "All strides should be greater than or equal to 1.");
-      return nullptr;
-    }
-    stride_height = base::checked_cast<uint32_t>(options->strides()[0]);
-    stride_width = base::checked_cast<uint32_t>(options->strides()[1]);
-  }
-  // Validate options.dilations. If not present, the values are assumed to be
-  // [1,1].
-  // The current WebNN spec defines the dilations as signed integer:
-  // https://www.w3.org/TR/webnn/#dom-mlconv2doptions-dilations
-  // However, there is a proposal of using unsigned integer:
-  // https://github.com/webmachinelearning/webnn/pull/294
-  // Before the change merged, the signed integers are checked_cast to
-  // unsigned integers for output shape calculation.
-  uint32_t dilation_height = 1, dilation_width = 1;
-  if (options->hasDilations()) {
-    if (options->dilations().size() != 2) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        "The length of dilations should be 2.");
-      return nullptr;
-    }
-    if (std::any_of(options->dilations().begin(), options->dilations().end(),
-                    [](int32_t x) { return x < 1; })) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "All dilations should be greater than or equal to 1.");
-      return nullptr;
-    }
-    dilation_height = base::checked_cast<uint32_t>(options->dilations()[0]);
-    dilation_width = base::checked_cast<uint32_t>(options->dilations()[1]);
-  }
-  // When the options.autoPad is other than "explicit", the values in the
-  // options.padding array are ignored and the explicit padding values need to
-  // be calculated.
-  if (options->autoPad().AsEnum() != V8MLAutoPad::Enum::kExplicit) {
-    if (!CalculatePaddingForAutoPad(options->autoPad().AsEnum(), input_height,
-                                    filter_height, stride_height,
-                                    dilation_height, padding_beginning_height,
-                                    padding_ending_height)) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "Overflow occurred when calculating "
-          "the padding along the height dimension.");
-      return nullptr;
-    }
-    if (!CalculatePaddingForAutoPad(options->autoPad().AsEnum(), input_width,
-                                    filter_width, stride_width, dilation_width,
-                                    padding_beginning_width,
-                                    padding_ending_width)) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "Overflow occurred when calculating "
-          "the padding along the width dimension.");
-      return nullptr;
-    }
-  }
-  // Calculate the output shape.
-  base::CheckedNumeric<uint32_t> checked_filter_height(filter_height),
-      checked_filter_width(filter_width);
-  auto dilated_filter_height =
-      (checked_filter_height - 1) * dilation_height + 1;
-  auto dilated_filter_width = (checked_filter_width - 1) * dilation_width + 1;
-  if (!dilated_filter_height.IsValid()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "Overflow occurred when calculating the dilated filter height.");
+
+  const auto output_sizes = ValidateAndCalculateConv2dOutputSizes(
+      input_height, input_width, filter_height, filter_width,
+      // If padding is not present, the values are assumed to be [0,0,0,0].
+      options->getPaddingOr({0, 0, 0, 0}),
+      // If strides is not present, the values are assumed to be [1,1].
+      options->getStridesOr({1, 1}),
+      // If dilations is not present, the values are assumed to be [1, 1].
+      options->getDilationsOr({1, 1}), options->autoPad(), exception_state);
+  if (!output_sizes) {
     return nullptr;
   }
-  if (!dilated_filter_width.IsValid()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "Overflow occurred when calculating the dilated filter width.");
-    return nullptr;
-  }
-  base::CheckedNumeric<uint32_t> checked_input_height(input_height),
-      checked_input_width(input_width);
-  auto checked_output_height =
-      (checked_input_height - dilated_filter_height + padding_beginning_height +
-       padding_ending_height) /
-          stride_height +
-      1;
-  auto checked_output_width = (checked_input_width - dilated_filter_width +
-                               padding_beginning_width + padding_ending_width) /
-                                  stride_width +
-                              1;
-  uint32_t output_height, output_width;
-  if (!checked_output_height.AssignIfValid(&output_height)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "Overflow occurred when calculating the output height.");
-    return nullptr;
-  }
-  if (!checked_output_width.AssignIfValid(&output_width)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "Overflow occurred when calculating the output width.");
-    return nullptr;
-  }
-  // The input layout specifies the output layout format as follows:
-  // "nchw": [batches, output_channels, height, width]
-  // "nhwc": [batches, height, width, output_channels]
+  const uint32_t output_height =
+      base::ClampFloor<uint32_t>(output_sizes.value().height);
+  const uint32_t output_width =
+      base::ClampFloor<uint32_t>(output_sizes.value().width);
+  // The input layout option specifies the layout format of the output tensor.
   Vector<uint32_t> output_shape;
-  if (nchw) {
-    output_shape = {input_batches, output_channels, output_height,
-                    output_width};
-  } else {
-    output_shape = {input_batches, output_height, output_width,
-                    output_channels};
+  switch (options->inputLayout().AsEnum()) {
+    case V8MLInputOperandLayout::Enum::kNchw:
+      // "nchw": [batches, output_channels, height, width]
+      output_shape = {input_batches, output_channels, output_height,
+                      output_width};
+      break;
+    case V8MLInputOperandLayout::Enum::kNhwc:
+      // "nhwc": [batches, height, width, output_channels]
+      output_shape = {input_batches, output_height, output_width,
+                      output_channels};
+      break;
   }
   // Create conv2d operator and its output operand. Connect the conv2d operator
   // to its input and output operands.
@@ -705,11 +940,15 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
 MLOperand* MLGraphBuilder::averagePool2d(const MLOperand* input,
                                          const MLPool2dOptions* options,
                                          ExceptionState& exception_state) {
-  // TODO(crbug.com/1273291): Implement this on operating systems to access
-  // hardware acceleration.
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
-  return nullptr;
+  return BuildPool2d(this, MLOperator::OperatorKind::kAveragePool2d, input,
+                     options, exception_state);
+}
+
+MLOperand* MLGraphBuilder::maxPool2d(const MLOperand* input,
+                                     const MLPool2dOptions* options,
+                                     ExceptionState& exception_state) {
+  return BuildPool2d(this, MLOperator::OperatorKind::kMaxPool2d, input, options,
+                     exception_state);
 }
 
 MLOperand* MLGraphBuilder::relu(const MLOperand* input,
