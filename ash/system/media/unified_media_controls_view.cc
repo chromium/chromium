@@ -132,7 +132,7 @@ void UnifiedMediaControlsView::MediaActionButton::SetAction(
   action_ = action;
   set_tag(static_cast<int>(action));
   SetTooltipText(accessible_name);
-  UpdateVectorIcon();
+  SetVectorIcon(GetVectorIconForMediaAction(action));
 }
 
 UnifiedMediaControlsView::UnifiedMediaControlsView(
