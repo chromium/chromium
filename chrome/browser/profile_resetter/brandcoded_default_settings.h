@@ -30,7 +30,7 @@ class BrandcodedDefaultSettings {
   // provided for given setting.
   // After the call return_value contains a list of default engines.
   // |return_value[0]| is default one.
-  std::unique_ptr<base::ListValue> GetSearchProviderOverrides() const;
+  absl::optional<base::Value::List> GetSearchProviderOverrides() const;
 
   bool GetHomepage(std::string* homepage) const;
   absl::optional<bool> GetHomepageIsNewTab() const;
@@ -40,12 +40,12 @@ class BrandcodedDefaultSettings {
   bool GetExtensions(std::vector<std::string>* extension_ids) const;
 
   bool GetRestoreOnStartup(int* restore_on_startup) const;
-  std::unique_ptr<base::ListValue> GetUrlsToRestoreOnStartup() const;
+  absl::optional<base::Value::List> GetUrlsToRestoreOnStartup() const;
 
  private:
-  std::unique_ptr<base::ListValue> ExtractList(const char* pref_name) const;
+  absl::optional<base::Value::List> ExtractList(const char* pref_name) const;
 
-  std::unique_ptr<base::DictionaryValue> master_dictionary_;
+  base::Value::Dict master_dictionary_;
 };
 
 #endif  // CHROME_BROWSER_PROFILE_RESETTER_BRANDCODED_DEFAULT_SETTINGS_H_

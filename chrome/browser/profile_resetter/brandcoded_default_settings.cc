@@ -10,6 +10,7 @@
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 BrandcodedDefaultSettings::BrandcodedDefaultSettings() {
 }
@@ -28,24 +29,20 @@ BrandcodedDefaultSettings::BrandcodedDefaultSettings(const std::string& prefs) {
               << "Root item must be a dictionary.";
       return;
     }
-    master_dictionary_.reset(
-        static_cast<base::DictionaryValue*>(root.release()));
+    master_dictionary_ = std::move(*root).TakeDict();
   }
 }
 
 BrandcodedDefaultSettings::~BrandcodedDefaultSettings() {
 }
 
-std::unique_ptr<base::ListValue>
+absl::optional<base::Value::List>
 BrandcodedDefaultSettings::GetSearchProviderOverrides() const {
   return ExtractList(prefs::kSearchProviderOverrides);
 }
 
 bool BrandcodedDefaultSettings::GetHomepage(std::string* homepage) const {
-  if (!master_dictionary_)
-    return false;
-  const std::string* val =
-      master_dictionary_->GetDict().FindString(prefs::kHomePage);
+  const std::string* val = master_dictionary_.FindString(prefs::kHomePage);
   if (!val)
     return false;
   *homepage = *val;
@@ -53,25 +50,20 @@ bool BrandcodedDefaultSettings::GetHomepage(std::string* homepage) const {
 }
 
 absl::optional<bool> BrandcodedDefaultSettings::GetHomepageIsNewTab() const {
-  return master_dictionary_
-             ? master_dictionary_->FindBoolPath(prefs::kHomePageIsNewTabPage)
-             : absl::nullopt;
+  return master_dictionary_.FindBoolByDottedPath(prefs::kHomePageIsNewTabPage);
 }
 
 absl::optional<bool> BrandcodedDefaultSettings::GetShowHomeButton() const {
-  return master_dictionary_
-             ? master_dictionary_->FindBoolPath(prefs::kShowHomeButton)
-             : absl::nullopt;
+  return master_dictionary_.FindBoolByDottedPath(prefs::kShowHomeButton);
 }
 
 bool BrandcodedDefaultSettings::GetExtensions(
     std::vector<std::string>* extension_ids) const {
   DCHECK(extension_ids);
-  base::DictionaryValue* extensions = nullptr;
-  if (master_dictionary_ &&
-      master_dictionary_->GetDictionary(
-          installer::initial_preferences::kExtensionsBlock, &extensions)) {
-    for (const auto extension_id : extensions->GetDict()) {
+  const base::Value::Dict* extensions = master_dictionary_.FindDictByDottedPath(
+      installer::initial_preferences::kExtensionsBlock);
+  if (extensions) {
+    for (const auto extension_id : *extensions) {
       if (crx_file::id_util::IdIsValid(extension_id.first))
         extension_ids->push_back(extension_id.first);
     }
@@ -82,11 +74,8 @@ bool BrandcodedDefaultSettings::GetExtensions(
 
 bool BrandcodedDefaultSettings::GetRestoreOnStartup(
     int* restore_on_startup) const {
-  if (!master_dictionary_)
-    return false;
-
   absl::optional<int> maybe_restore_on_startup =
-      master_dictionary_->FindIntPath(prefs::kRestoreOnStartup);
+      master_dictionary_.FindIntByDottedPath(prefs::kRestoreOnStartup);
   if (!maybe_restore_on_startup)
     return false;
 
@@ -96,17 +85,17 @@ bool BrandcodedDefaultSettings::GetRestoreOnStartup(
   return true;
 }
 
-std::unique_ptr<base::ListValue>
+absl::optional<base::Value::List>
 BrandcodedDefaultSettings::GetUrlsToRestoreOnStartup() const {
   return ExtractList(prefs::kURLsToRestoreOnStartup);
 }
 
-std::unique_ptr<base::ListValue> BrandcodedDefaultSettings::ExtractList(
+absl::optional<base::Value::List> BrandcodedDefaultSettings::ExtractList(
     const char* pref_name) const {
-  const base::ListValue* value = nullptr;
-  if (master_dictionary_ && master_dictionary_->GetList(pref_name, &value) &&
-      !value->GetListDeprecated().empty()) {
-    return base::ListValue::From(base::Value::ToUniquePtrValue(value->Clone()));
+  const base::Value::List* value =
+      master_dictionary_.FindListByDottedPath(pref_name);
+  if (value && !value->empty()) {
+    return value->Clone();
   }
-  return nullptr;
+  return absl::nullopt;
 }

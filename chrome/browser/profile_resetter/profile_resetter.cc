@@ -48,6 +48,7 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths.h"
@@ -176,13 +177,13 @@ void ProfileResetter::ResetDefaultSearchEngine() {
     DCHECK(prefs);
     TemplateURLPrepopulateData::ClearPrepopulatedEnginesInPrefs(
         profile_->GetPrefs());
-    std::unique_ptr<base::ListValue> search_engines(
+    absl::optional<base::Value::List> search_engines(
         master_settings_->GetSearchProviderOverrides());
-    if (search_engines) {
+    if (search_engines.has_value()) {
       // This Chrome distribution channel provides a custom search engine. We
       // must reset to it.
-      ListPrefUpdate update(prefs, prefs::kSearchProviderOverrides);
-      *update = std::move(*search_engines);
+      prefs->SetList(prefs::kSearchProviderOverrides,
+                     std::move(search_engines).value());
     }
 
     template_url_service_->RepairPrepopulatedSearchEngines();
@@ -298,11 +299,10 @@ void ProfileResetter::ResetStartupPages() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
-  std::unique_ptr<base::ListValue> url_list(
+  absl::optional<base::Value::List> url_list(
       master_settings_->GetUrlsToRestoreOnStartup());
-  if (url_list) {
-    *ListPrefUpdate(prefs, prefs::kURLsToRestoreOnStartup) =
-        std::move(*url_list);
+  if (url_list.has_value()) {
+    prefs->SetList(prefs::kURLsToRestoreOnStartup, std::move(url_list).value());
   }
 
   int restore_on_startup;
