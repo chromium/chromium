@@ -56,7 +56,7 @@ class WebGPUTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  void Initialize(const Options& options);
+  bool Initialize(const Options& options);
 
   webgpu::WebGPUImplementation* webgpu() const;
   webgpu::WebGPUCmdHelper* webgpu_cmds() const;

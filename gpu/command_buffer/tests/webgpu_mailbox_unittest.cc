@@ -141,8 +141,10 @@ class WebGPUMailboxTest
 #endif
 
     WebGPUTest::SetUp();
-    Initialize(GetParam());
-
+    if (!Initialize(GetParam())) {
+      GTEST_SKIP() << "Test failed to initialize.";
+    }
+    initialized_ = true;
     device_ = GetNewDevice();
 
     mock_buffer_map_callback =
@@ -240,6 +242,7 @@ class WebGPUMailboxTest
     queue.Submit(1, &commands);
   }
 
+  bool initialized_ = false;
 #if BUILDFLAG(IS_MAC)
   bool mac_m1_ = false;
 #endif
@@ -247,8 +250,7 @@ class WebGPUMailboxTest
 };
 
 TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
@@ -368,8 +370,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
 }
 
 TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
@@ -437,8 +438,7 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
 // destroyed. The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest,
        DISABLED_AssociateDissociateMailboxAfterDeviceDestroy) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
@@ -503,8 +503,7 @@ TEST_P(WebGPUMailboxTest, DISABLED_ReserveTextureAfterDeviceDestroy) {
 // Test that DissociateMailbox may be used after the device is destroyed.
 // The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest, DISABLED_DissociateMailboxAfterDeviceDestroy) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
@@ -538,8 +537,7 @@ TEST_P(WebGPUMailboxTest, DISABLED_DissociateMailboxAfterDeviceDestroy) {
 // validation errors.
 TEST_P(WebGPUMailboxTest,
        DISABLED_DissociateMailboxForPresentAfterDeviceDestroy) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
@@ -573,8 +571,7 @@ TEST_P(WebGPUMailboxTest,
 // Test that DissociateMailbox may be used after the texture is destroyed.
 // The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest, DISABLED_DissociateMailboxAfterTextureDestroy) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
@@ -607,8 +604,7 @@ TEST_P(WebGPUMailboxTest, DISABLED_DissociateMailboxAfterTextureDestroy) {
 // destroyed. The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest,
        DISABLED_DissociateMailboxForPresentAfterTextureDestroy) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
@@ -642,8 +638,7 @@ TEST_P(WebGPUMailboxTest,
 // itself: we render to it using the Dawn device, then re-associate it to a
 // Dawn texture and read back the values that were written.
 TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
@@ -731,8 +726,7 @@ TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
 // Test that an uninitialized shared image is lazily cleared by Dawn when it is
 // read.
 TEST_P(WebGPUMailboxTest, ReadUninitializedSharedImage) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
@@ -812,8 +806,7 @@ TEST_P(WebGPUMailboxTest, ReadUninitializedSharedImage) {
 // Test that an uninitialized shared image is lazily cleared by Dawn when it is
 // read.
 TEST_P(WebGPUMailboxTest, ReadWritableUninitializedSharedImage) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
@@ -907,8 +900,7 @@ TEST_P(WebGPUMailboxTest, ReadWritableUninitializedSharedImage) {
 
 // Tests that using a shared image aftr it is dissociated produces an error.
 TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
@@ -998,8 +990,7 @@ TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
 // move-assignment would first move `representation` then `access`. Causing
 // incorrect member destruction order for the move-to object.
 TEST_P(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
@@ -1046,8 +1037,7 @@ TEST_P(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
 // devices tried to create shared images with the same (id, generation) (which
 // is possible because they can be on different Dawn wires) they would conflict.
 TEST_P(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
@@ -1103,8 +1093,7 @@ TEST_P(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
 // Test that passing a descriptor to ReserveTexture produces a client-side
 // WGPUTexture that correctly reflects said descriptor.
 TEST_P(WebGPUMailboxTest, ReflectionOfDescriptor) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
 
@@ -1181,8 +1170,7 @@ TEST_P(WebGPUMailboxTest, ReflectionOfDescriptor) {
 // shared image backings rely on GL and need to be responsible for making the
 // context current.
 TEST_P(WebGPUMailboxTest, AssociateDissociateMailboxWhenNotCurrent) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+  if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
