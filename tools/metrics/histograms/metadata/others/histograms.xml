@@ -11898,6 +11898,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SBMultipartUploader.FailedUploadDuration" units="s"
     expires_after="2022-09-29">
+  <obsolete>
+    Removed 09-2022 due to lack of use and historical stability.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -11912,6 +11915,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SBMultipartUploader.NetworkRequestResponseCodeOrError"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-09-29">
+  <obsolete>
+    Removed 09-2022 due to lack of use and historical stability.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -11927,6 +11933,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SBMultipartUploader.RetriesNeeded" units="retries"
     expires_after="2022-09-29">
+  <obsolete>
+    Removed 09-2022 due to lack of use and historical stability.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -11940,6 +11949,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SBMultipartUploader.SuccessfulUploadDuration" units="s"
     expires_after="2022-09-29">
+  <obsolete>
+    Removed 09-2022 due to lack of use and historical stability.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -11953,6 +11965,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SBMultipartUploader.UploadSize" units="bytes"
     expires_after="2022-09-29">
+  <obsolete>
+    Removed 09-2022 due to lack of use and historical stability.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -11967,6 +11982,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SBMultipartUploader.UploadSuccess" enum="BooleanSuccess"
     expires_after="2022-09-29">
+  <obsolete>
+    Removed 09-2022 due to lack of use and historical stability.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
