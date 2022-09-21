@@ -375,6 +375,7 @@ extern const char kEduCoexistenceArcMigrationCompleted[];
 extern const char kSharedStorage[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS)
+extern const char kDeskAPIThirdPartyAccessEnabled[];
 extern const char kForceMaximizeOnFirstRun[];
 extern const char kInsightsExtensionEnabled[];
 extern const char kOOMKillsDailyCount[];

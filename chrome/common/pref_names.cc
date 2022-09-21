@@ -478,6 +478,12 @@ const char kHideWebStoreIcon[] = "hide_web_store_icon";
 // attestation.
 const char kAttestationExtensionAllowlist[] = "attestation.extension_allowlist";
 
+// A boolean specifying whether the Desk API is enabled for third party web
+// applications. If set to true, the Desk API bridge component extension will be
+// installed.
+const char kDeskAPIThirdPartyAccessEnabled[] =
+    "desk_api_third_party_access_enabled";
+
 // The list of extensions allowed to skip print job confirmation dialog when
 // they use the chrome.printing.submitJob() function. Note that this used to be
 // `kPrintingAPIExtensionsWhitelist`, hence the difference between the variable

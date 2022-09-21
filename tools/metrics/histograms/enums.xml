@@ -32462,6 +32462,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1016" label="DeviceReportXDREvents"/>
   <int value="1017" label="TrashEnabled"/>
   <int value="1018" label="ShoppingListEnabled"/>
+  <int value="1019" label="DeskAPIThirdPartyAccessEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

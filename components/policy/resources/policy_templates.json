@@ -33464,6 +33464,33 @@ This policy has no effect if the option to keep existing browsing data is not av
       If this policy is set to Enabled or not set, the shopping list feature will be available to users.
       If this policy is set to Disabled, the shopping list feature will be unavailable.
       ''',
+    },
+    {
+      'name': 'DeskAPIThirdPartyAccessEnabled',
+      'owners': ['aprilzhou@google.com', 'yzd@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Desk API for third-party ChromeOS control',
+        },
+        {
+          'value': False,
+          'caption': 'Do not enable Desk API for third-party ChromeOS control',
+        },
+      ],
+      'default': False,
+      'example_value': True,
+      'id': 1019,
+      'caption': '''Enable Desk API for third-party ChromeOS control''',
+      'tags': [],
+      'desc': '''Setting the policy to Enabled allows third-party web applications to use Desk API to control ChromeOS desks. If the policy is not set or disabled, the Desk API will be unavailable.'''
     }
   ],
   'messages': {
@@ -34476,6 +34503,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1018,
+  'highest_id_currently_used': 1019,
   'highest_atomic_group_id_currently_used': 43
 }

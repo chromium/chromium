@@ -1581,6 +1581,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
+  { key::kDeskAPIThirdPartyAccessEnabled,
+    prefs::kDeskAPIThirdPartyAccessEnabled,
+    base::Value::Type::BOOLEAN },
   { key::kDeviceAttributesAllowedForOrigins,
     prefs::kDeviceAttributesAllowedForOrigins,
     base::Value::Type::LIST },
