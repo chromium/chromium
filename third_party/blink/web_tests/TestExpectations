@@ -1668,9 +1668,6 @@ crbug.com/1356256 fast/table/percent-widths-float.html [ Failure Pass ]
 
 crbug.com/1294155 external/wpt/css/css-break/flexbox/flex-container-fragmentation-008.html [ Failure ]
 crbug.com/1294155 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-029.html [ Failure ]
-crbug.com/1294155 external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vrl-001.xht [ Failure ]
-crbug.com/1294155 external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vrl-004.xht [ Failure ]
-crbug.com/1294155 paint/invalidation/outline/outline-change-vertical-rl.html [ Failure ]
 crbug.com/1294155 scrollbars/scrollbars-on-positioned-content.html [ Failure ]
 
 # ====== LayoutNG-only failures until here ======

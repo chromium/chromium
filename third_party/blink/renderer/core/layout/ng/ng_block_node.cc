@@ -533,6 +533,16 @@ const NGLayoutResult* NGBlockNode::Layout(
   if (!layout_result)
     layout_result = LayoutWithAlgorithm(params);
 
+  // PaintLayerScrollableArea::UpdateAfterLayout() may remove the vertical
+  // scrollbar. In vertical-rl or RTL, the vertical scrollbar is on the
+  // block-start edge or the inline-start edge, it produces a negative
+  // MaximumScrollOffset(), and can cause a wrong clamping. So we delay
+  // clamping the offset.
+  absl::optional<PaintLayerScrollableArea::DelayScrollOffsetClampScope>
+      delay_clamp_scope;
+  if (RuntimeEnabledFeatures::LayoutNGDelayScrollOffsetClampingEnabled())
+    delay_clamp_scope.emplace();
+
   FinishLayout(block_flow, constraint_space, break_token, layout_result);
 
   // We may be intrinsicly sized (shrink-to-fit), if our intrinsic logical

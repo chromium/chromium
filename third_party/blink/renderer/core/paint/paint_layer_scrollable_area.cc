@@ -1083,7 +1083,7 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
     UpdateScrollbarProportions();
   }
 
-  ClampScrollOffsetAfterOverflowChange();
+  DelayableClampScrollOffsetAfterOverflowChange();
 
   if (!is_horizontal_scrollbar_frozen || !is_vertical_scrollbar_frozen)
     UpdateScrollableAreaSet();
@@ -1091,7 +1091,25 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
   PositionOverflowControls();
 }
 
+void PaintLayerScrollableArea::DelayableClampScrollOffsetAfterOverflowChange() {
+  if (HasBeenDisposed())
+    return;
+  if (DelayScrollOffsetClampScope::ClampingIsDelayed()) {
+    DelayScrollOffsetClampScope::SetNeedsClamp(this);
+    return;
+  }
+  ClampScrollOffsetAfterOverflowChangeInternal();
+}
+
 void PaintLayerScrollableArea::ClampScrollOffsetAfterOverflowChange() {
+  if (!RuntimeEnabledFeatures::LayoutNGDelayScrollOffsetClampingEnabled()) {
+    DelayableClampScrollOffsetAfterOverflowChange();
+    return;
+  }
+  ClampScrollOffsetAfterOverflowChangeInternal();
+}
+
+void PaintLayerScrollableArea::ClampScrollOffsetAfterOverflowChangeInternal() {
   if (HasBeenDisposed())
     return;
 
@@ -1099,11 +1117,6 @@ void PaintLayerScrollableArea::ClampScrollOffsetAfterOverflowChange() {
   // changed, so the scroll offsets needs to be clamped.  If the scroll offset
   // did not change, but the scroll origin *did* change, we still need to notify
   // the scrollbars to update their dimensions.
-
-  if (DelayScrollOffsetClampScope::ClampingIsDelayed()) {
-    DelayScrollOffsetClampScope::SetNeedsClamp(this);
-    return;
-  }
 
   const Document& document = GetLayoutBox()->GetDocument();
   if (document.IsPrintingOrPaintingPreview()) {
