@@ -121,11 +121,10 @@ class HoldingSpaceScrollView : public views::ScrollView,
 
 HoldingSpaceItemViewsSection::HoldingSpaceItemViewsSection(
     HoldingSpaceViewDelegate* delegate,
-    std::set<HoldingSpaceItem::Type> supported_types,
-    const absl::optional<size_t>& max_count)
-    : delegate_(delegate),
-      supported_types_(std::move(supported_types)),
-      max_count_(max_count) {}
+    HoldingSpaceSectionId section_id)
+    : delegate_(delegate), section_(GetHoldingSpaceSection(section_id)) {
+  DCHECK(section_);
+}
 
 HoldingSpaceItemViewsSection::~HoldingSpaceItemViewsSection() = default;
 
@@ -147,11 +146,11 @@ void HoldingSpaceItemViewsSection::Init() {
   header_->SetVisible(false);
 
   // Container.
-  // NOTE: If `max_count_` is not present `container_` does not limit the number
-  // of holding space item views visible to the user at one time. In this case
-  // `container_` needs to be wrapped in a `views::ScrollView` to allow the user
-  // access to all contained item views.
-  if (max_count_.has_value()) {
+  // NOTE: If `max_visible_item_count` is not present `container_` does not
+  // limit the number of holding space item views visible to the user at one
+  // time. In this case `container_` needs to be wrapped in a
+  // `views::ScrollView` to allow the user access to all contained item views.
+  if (section_->max_visible_item_count.has_value()) {
     container_ = AddChildView(CreateContainer());
   } else {
     auto* scroll = AddChildView(std::make_unique<HoldingSpaceScrollView>());
@@ -282,7 +281,7 @@ void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsAdded(
   const bool needs_update =
       base::ranges::any_of(items, [this](const HoldingSpaceItem* item) {
         return item->IsInitialized() &&
-               base::Contains(supported_types_, item->type());
+               base::Contains(section_->supported_types, item->type());
       });
   if (needs_update)
     MaybeAnimateOut();
@@ -300,7 +299,7 @@ void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsRemoved(
 
 void HoldingSpaceItemViewsSection::OnHoldingSpaceItemInitialized(
     const HoldingSpaceItem* item) {
-  if (base::Contains(supported_types_, item->type()))
+  if (base::Contains(section_->supported_types, item->type()))
     MaybeAnimateOut();
 }
 
@@ -425,7 +424,8 @@ void HoldingSpaceItemViewsSection::AnimateOut(
     HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
     if (model) {
       animate_out_header = base::ranges::none_of(
-          supported_types_, [&model](HoldingSpaceItem::Type supported_type) {
+          section_->supported_types,
+          [&model](HoldingSpaceItem::Type supported_type) {
             return model->ContainsInitializedItemOfType(supported_type);
           });
     }
@@ -503,13 +503,16 @@ void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
   if (!model)
     return;
 
+  const absl::optional<size_t>& max_visible_item_count =
+      section_->max_visible_item_count;
+
   for (const auto& item : model->items()) {
     if (item->IsInitialized() &&
-        base::Contains(supported_types_, item->type())) {
+        base::Contains(section_->supported_types, item->type())) {
       DCHECK(!base::Contains(views_by_item_id_, item->id()));
 
       // Remove the last holding space item view if already at max capacity.
-      if (max_count_ && container_->children().size() == max_count_.value()) {
+      if (max_visible_item_count == container_->children().size()) {
         auto view = container_->RemoveChildViewT(container_->children().back());
         views_by_item_id_.erase(
             HoldingSpaceItemView::Cast(view.get())->item()->id());

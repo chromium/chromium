@@ -12,6 +12,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_section.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
@@ -33,8 +34,7 @@ class HoldingSpaceViewDelegate;
 class ASH_EXPORT HoldingSpaceItemViewsSection : public views::View {
  public:
   HoldingSpaceItemViewsSection(HoldingSpaceViewDelegate* delegate,
-                               std::set<HoldingSpaceItem::Type> supported_types,
-                               const absl::optional<size_t>& max_count);
+                               HoldingSpaceSectionId section_id);
   HoldingSpaceItemViewsSection(const HoldingSpaceItemViewsSection& other) =
       delete;
   HoldingSpaceItemViewsSection& operator=(
@@ -79,7 +79,7 @@ class ASH_EXPORT HoldingSpaceItemViewsSection : public views::View {
 
   // Returns the types of holding space items supported by this section.
   const std::set<HoldingSpaceItem::Type>& supported_types() const {
-    return supported_types_;
+    return section_->supported_types;
   }
 
  protected:
@@ -142,8 +142,7 @@ class ASH_EXPORT HoldingSpaceItemViewsSection : public views::View {
   void OnAnimateOutCompleted(const ui::CallbackLayerAnimationObserver&);
 
   HoldingSpaceViewDelegate* const delegate_;
-  const std::set<HoldingSpaceItem::Type> supported_types_;
-  const absl::optional<size_t> max_count_;
+  const HoldingSpaceSection* const section_;
 
   // Owned by view hierarchy.
   views::View* header_ = nullptr;

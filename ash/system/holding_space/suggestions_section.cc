@@ -107,14 +107,12 @@ class Header : public views::Button {
 
   void OnPressed() {
     auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
-    bool expanded_after_toggle =
-        !holding_space_prefs::IsSuggestionsExpanded(prefs);
-    holding_space_prefs::SetSuggestionsExpanded(prefs, expanded_after_toggle);
+    bool expanded = holding_space_prefs::IsSuggestionsExpanded(prefs);
+    holding_space_prefs::SetSuggestionsExpanded(prefs, !expanded);
 
     holding_space_metrics::RecordSuggestionsAction(
-        expanded_after_toggle
-            ? holding_space_metrics::SuggestionsAction::kExpand
-            : holding_space_metrics::SuggestionsAction::kCollapse);
+        expanded ? holding_space_metrics::SuggestionsAction::kCollapse
+                 : holding_space_metrics::SuggestionsAction::kExpand);
   }
 
   // Sets the header's `chevron_` icon to the correct color (based on theme) and
@@ -145,10 +143,7 @@ class Header : public views::Button {
 
 SuggestionsSection::SuggestionsSection(HoldingSpaceViewDelegate* delegate)
     : HoldingSpaceItemViewsSection(delegate,
-                                   /*supported_types=*/
-                                   {HoldingSpaceItem::Type::kDriveSuggestion,
-                                    HoldingSpaceItem::Type::kLocalSuggestion},
-                                   /*max_count=*/kMaxSuggestions) {
+                                   HoldingSpaceSectionId::kSuggestions) {
   SetID(kHoldingSpaceSuggestionsSectionId);
 
   auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
