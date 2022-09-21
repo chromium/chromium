@@ -130,6 +130,7 @@ SavedDeskDialogController::~SavedDeskDialogController() {
 void SavedDeskDialogController::ShowUnsupportedAppsDialog(
     aura::Window* root_window,
     const std::vector<aura::Window*>& unsupported_apps,
+    size_t incognito_window_count,
     DesksController::GetDeskTemplateCallback callback,
     std::unique_ptr<DeskTemplate> desk_template) {
   // We can only bind `callback` once but the user has three possible paths
@@ -138,30 +139,11 @@ void SavedDeskDialogController::ShowUnsupportedAppsDialog(
   unsupported_apps_callback_ = std::move(callback);
   unsupported_apps_template_ = std::move(desk_template);
 
-  size_t incognito_window_count = 0;
-  bool contains_lacros_window = false;
-  auto* delegate = Shell::Get()->desks_templates_delegate();
-  // TODO(shidi): The caller of  ShowUnsupportedAppsDialog should provide us
-  // with the incognito window count to avoid double looping.
-  for (auto* window : unsupported_apps) {
-    if (static_cast<AppType>(window->GetProperty(aura::client::kAppType)) ==
-        AppType::LACROS) {
-      contains_lacros_window = true;
-      break;
-    }
-
-    if (delegate->IsIncognitoWindow(window))
-      ++incognito_window_count;
-  }
-
   // Note that this assumed unsupported apps which are not incognito browsers
   // are linux apps.
   std::u16string app_description;
   int app_description_id;
-  if (contains_lacros_window) {
-    app_description_id =
-        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LACROS_DIALOG_DESCRIPTION;
-  } else if (incognito_window_count == 0) {
+  if (incognito_window_count == 0) {
     app_description_id =
         IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_DIALOG_DESCRIPTION;
   } else if (incognito_window_count != unsupported_apps.size()) {
