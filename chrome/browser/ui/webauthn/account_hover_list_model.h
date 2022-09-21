@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBAUTHN_ACCOUNT_HOVER_LIST_MODEL_H_
 
 #include <stddef.h>
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"

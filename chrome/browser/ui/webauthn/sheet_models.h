@@ -31,9 +31,9 @@ class AuthenticatorSheetModelBase
     : public AuthenticatorRequestSheetModel,
       public AuthenticatorRequestDialogModel::Observer {
  public:
-  // Determines whether the button in the lower-left corner of the dialog to
-  // display other available mechanisms is shown on a sheet.
-  enum OtherMechanismButtonVisibility {
+  // Determines whether the button in the lower-left corner of the dialog, to
+  // display other available mechanisms, is shown on a sheet.
+  enum class OtherMechanismButtonVisibility {
     // The button is not shown (default).
     kHidden,
     // The button is shown if there is more than one mechanism to choose from.
