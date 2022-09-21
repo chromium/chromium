@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/consent_auditor_factory.h"
+#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
@@ -40,15 +41,12 @@
 #endif
 
 namespace {
-std::unique_ptr<KeyedService> CreateMockSyncService(
-    web::BrowserState* context) {
-  return std::make_unique<syncer::MockSyncService>();
-}
 
 std::unique_ptr<KeyedService> CreateFakeConsentAuditor(
     web::BrowserState* context) {
   return std::make_unique<consent_auditor::FakeConsentAuditor>();
 }
+
 }  // namespace
 
 class UserSigninMediatorTest : public PlatformTest {

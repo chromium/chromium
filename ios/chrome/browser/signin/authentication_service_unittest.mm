@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
@@ -61,10 +62,6 @@ using testing::Invoke;
 using testing::Return;
 
 namespace {
-
-std::unique_ptr<KeyedService> BuildMockSyncService(web::BrowserState* context) {
-  return std::make_unique<syncer::MockSyncService>();
-}
 
 CoreAccountId GetAccountId(ChromeIdentity* identity) {
   return CoreAccountId(base::SysNSStringToUTF8([identity gaiaID]));
@@ -103,7 +100,7 @@ class AuthenticationServiceTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.SetPrefService(CreatePrefService());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&BuildMockSyncService));
+                              base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));

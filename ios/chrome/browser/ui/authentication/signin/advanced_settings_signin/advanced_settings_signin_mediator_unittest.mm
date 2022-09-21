@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
@@ -36,10 +37,6 @@ namespace {
 const char kTestGaiaID[] = "fooID";
 const char kTestEmail[] = "foo@gmail.com";
 
-std::unique_ptr<KeyedService> CreateMockSyncService(
-    web::BrowserState* context) {
-  return std::make_unique<MockSyncService>();
-}
 }  // namespace
 
 class AdvancedSettingsSigninMediatorTest : public PlatformTest {

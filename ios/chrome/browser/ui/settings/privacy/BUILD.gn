@@ -140,6 +140,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/settings/privacy:privacy_ui",

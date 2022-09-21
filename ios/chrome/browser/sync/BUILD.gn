@@ -130,6 +130,8 @@ source_set("sync_error_browser_agent") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "mock_sync_service_utils.cc",
+    "mock_sync_service_utils.h",
     "sync_setup_service_mock.cc",
     "sync_setup_service_mock.h",
   ]
@@ -139,6 +141,7 @@ source_set("test_support") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/sync",
+    "//components/sync:test_support",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/common",

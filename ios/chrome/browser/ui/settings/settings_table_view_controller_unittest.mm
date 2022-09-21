@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
+#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -51,13 +52,6 @@
 using ::testing::NiceMock;
 using ::testing::Return;
 using web::WebTaskEnvironment;
-
-namespace {
-std::unique_ptr<KeyedService> CreateMockSyncService(
-    web::BrowserState* context) {
-  return std::make_unique<NiceMock<syncer::MockSyncService>>();
-}
-}  // namespace
 
 class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
  public:
