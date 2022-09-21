@@ -236,16 +236,16 @@ void MarketingBackendConnector::OnSimpleLoaderCompleteInternal(
 }
 
 std::string MarketingBackendConnector::GetRequestContent() {
-  base::Value request_dict(base::Value::Type::DICTIONARY);
-  request_dict.SetKey("country_code", base::Value(country_code_));
-  request_dict.SetKey("language", base::Value("en"));
+  base::Value::Dict request_dict;
+  request_dict.Set("country_code", country_code_);
+  request_dict.Set("language", "en");
 
   std::string request_content;
   base::JSONWriter::Write(request_dict, &request_content);
   return request_content;
 }
 
-MarketingBackendConnector::~MarketingBackendConnector() {}
+MarketingBackendConnector::~MarketingBackendConnector() = default;
 
 ScopedRequestCallbackSetter::ScopedRequestCallbackSetter(
     std::unique_ptr<base::RepeatingCallback<void(std::string)>> callback)
