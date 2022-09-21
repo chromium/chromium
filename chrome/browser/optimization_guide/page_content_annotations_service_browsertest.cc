@@ -35,6 +35,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -622,17 +623,29 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        DISABLED_OgImagePresent) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/og_image.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Value taken from SalientImageAvailability enum.
+  static const int kAvailableFromOgImage = 3;
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
       "OptimizationGuide.PageContentAnnotations.SalientImageAvailability", 1);
 
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability", 3,
-      1);
+      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability",
+      kAvailableFromOgImage, 1);
+
+  std::vector<const ukm::mojom::UkmEntry*> entries =
+      ukm_recorder.GetEntriesByName(
+          ukm::builders::SalientImageAvailability::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+
+  ASSERT_EQ(1u, entries[0]->metrics.size());
+  EXPECT_EQ(kAvailableFromOgImage, entries[0]->metrics.begin()->second);
 }
 
 // Flaky timeout in debug builds (crbug.com/1338408).

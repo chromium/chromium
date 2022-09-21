@@ -18365,6 +18365,22 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SalientImageAvailability" singular="True">
+  <owner>chrome-intelligence-core@google.com</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Metrics on the salient image of the page, one record per page load commit
+    and has an annotation calculated on it.
+  </summary>
+  <metric name="ImageAvailability"
+      enum="OptimizationGuideSalientImageAvailability">
+    <summary>
+      Records whether salient image was available or not for this page, the
+      source of the salient image and why it was unavailable.
+    </summary>
+  </metric>
+</event>
+
 <event name="SameSiteDifferentSchemeRequest">
   <owner>bingler@chromium.org</owner>
   <metric name="SameSiteContextWithSchemes" enum="SameSiteCookieContext">

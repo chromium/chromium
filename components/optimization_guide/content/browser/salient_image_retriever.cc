@@ -17,12 +17,42 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
+
+namespace {
+
+// Keep in sync with OptimizationGuideSalientImageAvailability histogram enum.
+enum class SalientImageAvailability {
+  kUnknown = 0,
+  kNotAvailable = 1,
+  kAvailableButUnparsableFromOgImage = 2,
+  kAvailableFromOgImage = 3,
+  kMaxValue = kAvailableFromOgImage
+};
+
+void RecordMetrics(ukm::SourceId ukm_source_id,
+                   SalientImageAvailability image_availability_result) {
+  const char og_image_availability_histogram_name[] =
+      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability";
+
+  ukm::builders::SalientImageAvailability(ukm_source_id)
+      .SetImageAvailability(static_cast<int64_t>(image_availability_result))
+      .Record(ukm::UkmRecorder::Get());
+
+  base::UmaHistogramEnumeration(og_image_availability_histogram_name,
+                                image_availability_result);
+}
+
+}  // namespace
 
 SalientImageRetriever::SalientImageRetriever(
     OptimizationGuideLogger* optimization_guide_logger)
@@ -35,40 +65,27 @@ void SalientImageRetriever::GetOgImage(content::WebContents* web_contents) {
 
   main_frame.GetOpenGraphMetadata(base::BindOnce(
       &SalientImageRetriever::OnGetOpenGraphMetadata,
-      weak_factory_.GetWeakPtr(), main_frame.GetLastCommittedURL()));
+      weak_factory_.GetWeakPtr(), main_frame.GetLastCommittedURL(),
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 }
 
 void SalientImageRetriever::OnGetOpenGraphMetadata(
     const GURL& page_url,
+    ukm::SourceId ukm_source_id,
     blink::mojom::OpenGraphMetadataPtr metadata) {
-  const char og_image_availability_histogram_name[] =
-      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability";
-  // Keep in sync with OptimizationGuideSalientImageAvailability histogram enum.
-  enum class SalientImageAvailability {
-    kUnknown = 0,
-    kNotAvailable = 1,
-    kAvailableButUnparsableFromOgImage = 2,
-    kAvailableFromOgImage = 3,
-    kMaxValue = kAvailableFromOgImage
-  };
-
   if (!metadata || !metadata->image) {
-    base::UmaHistogramEnumeration(og_image_availability_histogram_name,
-                                  SalientImageAvailability::kNotAvailable);
+    RecordMetrics(ukm_source_id, SalientImageAvailability::kNotAvailable);
     return;
   }
 
   GURL url(metadata->image.value());
   if (url.is_empty() || !url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
-    base::UmaHistogramEnumeration(
-        og_image_availability_histogram_name,
-        SalientImageAvailability::kAvailableButUnparsableFromOgImage);
+    RecordMetrics(ukm_source_id,
+                  SalientImageAvailability::kAvailableButUnparsableFromOgImage);
     return;
   }
 
-  base::UmaHistogramEnumeration(
-      og_image_availability_histogram_name,
-      SalientImageAvailability::kAvailableFromOgImage);
+  RecordMetrics(ukm_source_id, SalientImageAvailability::kAvailableFromOgImage);
 
   OPTIMIZATION_GUIDE_LOGGER(
       optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,

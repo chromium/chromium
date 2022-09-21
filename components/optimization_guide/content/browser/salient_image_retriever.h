@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom-forward.h"
 
 class OptimizationGuideLogger;
@@ -33,6 +34,7 @@ class SalientImageRetriever {
 
  private:
   void OnGetOpenGraphMetadata(const GURL& page_url,
+                              ukm::SourceId ukm_source_id,
                               blink::mojom::OpenGraphMetadataPtr metadata);
 
   // The logger that plumbs the debug logs to the optimization guide
