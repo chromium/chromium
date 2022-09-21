@@ -61,6 +61,20 @@ class MockAutofillClient : public TestAutofillClient {
               (override));
   MOCK_METHOD(void, HideFastCheckout, (), (override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason reason), (override));
+
+  void ExpectDelegateWeakPtrFromShowInvalidatedOnHide() {
+    EXPECT_CALL(*this, ShowFastCheckout)
+        .WillOnce([this](base::WeakPtr<FastCheckoutDelegate> delegate) {
+          captured_delegate_ = delegate;
+          return true;
+        });
+    EXPECT_CALL(*this, HideFastCheckout).WillOnce([this]() {
+      EXPECT_FALSE(captured_delegate_);
+    });
+  }
+
+ private:
+  base::WeakPtr<FastCheckoutDelegate> captured_delegate_;
 };
 
 }  // namespace
@@ -73,8 +87,12 @@ class FastCheckoutDelegateImplTest : public testing::Test {
     browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
         autofill_driver_.get(), &autofill_client_);
 
-    fast_checkout_delegate_ = std::make_unique<FastCheckoutDelegateImpl>(
+    auto fast_checkout_delegate = std::make_unique<FastCheckoutDelegateImpl>(
         browser_autofill_manager_.get());
+    fast_checkout_delegate_ = fast_checkout_delegate.get();
+
+    browser_autofill_manager_->SetFastCheckoutDelegateForTest(
+        std::move(fast_checkout_delegate));
 
     field_.is_focusable = true;
     ON_CALL(autofill_client_, IsFastCheckoutSupported)
@@ -108,7 +126,7 @@ class FastCheckoutDelegateImplTest : public testing::Test {
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
-  std::unique_ptr<FastCheckoutDelegateImpl> fast_checkout_delegate_;
+  raw_ptr<FastCheckoutDelegateImpl> fast_checkout_delegate_;
 };
 
 TEST_F(FastCheckoutDelegateImplTest, TryToShowFastCheckoutSucceeds) {
@@ -252,6 +270,12 @@ TEST_F(FastCheckoutDelegateImplTest, ResetAllowsShowingFastCheckoutAgain) {
 
   fast_checkout_delegate_->Reset();
   TryToShowFastCheckout(/*expected_success=*/true);
+}
+
+TEST_F(FastCheckoutDelegateImplTest, SafelyHideFastCheckoutInDtor) {
+  autofill_client_.ExpectDelegateWeakPtrFromShowInvalidatedOnHide();
+  TryToShowFastCheckout(/*expected_success=*/true);
+  browser_autofill_manager_.reset();
 }
 
 }  // namespace autofill

@@ -17,7 +17,11 @@ FastCheckoutDelegateImpl::FastCheckoutDelegateImpl(
   DCHECK(manager);
 }
 
-FastCheckoutDelegateImpl::~FastCheckoutDelegateImpl() = default;
+FastCheckoutDelegateImpl::~FastCheckoutDelegateImpl() {
+  // Invalidate pointers to avoid post hide callbacks.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  HideFastCheckoutUI();
+}
 
 bool FastCheckoutDelegateImpl::TryToShowFastCheckout(
     const FormData& form,
