@@ -52,6 +52,8 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/result_codes.h"
+#include "content/public/common/url_constants.h"
+#include "content/public/common/url_utils.h"
 #include "net/base/filename_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -194,10 +196,12 @@ PageHandler::PageHandler(
     EmulationHandler* emulation_handler,
     BrowserHandler* browser_handler,
     bool allow_unsafe_operations,
+    bool is_trusted,
     absl::optional<url::Origin> navigation_initiator_origin,
     bool may_read_local_files)
     : DevToolsDomainHandler(Page::Metainfo::domainName),
       allow_unsafe_operations_(allow_unsafe_operations),
+      is_trusted_(is_trusted),
       navigation_initiator_origin_(navigation_initiator_origin),
       may_read_local_files_(may_read_local_files),
       enabled_(false),
@@ -476,6 +480,14 @@ void PageHandler::Navigate(const std::string& url,
 
   if (!host_) {
     callback->sendFailure(Response::InternalError());
+    return;
+  }
+
+  // chrome-untrusted:// WebUIs might perform high-priviledged actions on
+  // navigation, disallow navigation to them unless the client is trusted.
+  if (gurl.SchemeIs(kChromeUIUntrustedScheme) && !is_trusted_) {
+    callback->sendFailure(Response::ServerError(
+        "Navigating to a URL with a privileged scheme is not allowed"));
     return;
   }
 

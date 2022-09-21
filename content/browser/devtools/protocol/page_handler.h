@@ -65,6 +65,7 @@ class PageHandler : public DevToolsDomainHandler,
   PageHandler(EmulationHandler* emulation_handler,
               BrowserHandler* browser_handler,
               bool allow_unsafe_operations,
+              bool is_trusted,
               absl::optional<url::Origin> navigation_initiator_origin,
               bool may_read_local_files);
 
@@ -215,6 +216,7 @@ class PageHandler : public DevToolsDomainHandler,
   void OnDownloadDestroyed(download::DownloadItem* item) override;
 
   const bool allow_unsafe_operations_;
+  const bool is_trusted_;
   const absl::optional<url::Origin> navigation_initiator_origin_;
   const bool may_read_local_files_;
 
