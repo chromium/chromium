@@ -10,6 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/accessibility_browsertest.h"
 #include "content/browser/accessibility/browser_accessibility.h"
@@ -514,54 +515,61 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   int x = -1, y = -1;
   int width = -1, height = -1;
 
+  // When given invalid arguments, atk_text_get_character_extents returns 0
+  // before 2.35.1 and -1 after:
+  // https://gitlab.gnome.org/GNOME/atk/-/merge_requests/44#9f621eb5fd3bcb2fa5c7bd228c9b1ad42edc46c8_32_33
+  // https://gnome.pages.gitlab.gnome.org/at-spi2-core/atk/AtkText.html#atk-text-get-character-extents
+  base::Version atk_version(atk_get_version());
+  int expect = atk_version.CompareTo(base::Version("2.35.1")) >= 0 ? -1 : 0;
+
   atk_text_get_character_extents(atk_text, invalid_offset, &x, &y, &width,
                                  &height, ATK_XY_SCREEN);
-  EXPECT_EQ(0, x);
-  EXPECT_EQ(0, y);
-  EXPECT_EQ(0, width);
-  EXPECT_EQ(0, height);
+  EXPECT_EQ(expect, x);
+  EXPECT_EQ(expect, y);
+  EXPECT_EQ(expect, width);
+  EXPECT_EQ(expect, height);
 
 #ifdef ATK_230
   atk_text_get_character_extents(atk_text, invalid_offset, &x, &y, &width,
                                  &height, ATK_XY_PARENT);
-  EXPECT_EQ(0, x);
-  EXPECT_EQ(0, y);
-  EXPECT_EQ(0, width);
-  EXPECT_EQ(0, height);
+  EXPECT_EQ(expect, x);
+  EXPECT_EQ(expect, y);
+  EXPECT_EQ(expect, width);
+  EXPECT_EQ(expect, height);
 #endif  // ATK_230
 
   atk_text_get_character_extents(atk_text, invalid_offset, &x, &y, &width,
                                  &height, ATK_XY_WINDOW);
-  EXPECT_EQ(0, x);
-  EXPECT_EQ(0, y);
-  EXPECT_EQ(0, width);
-  EXPECT_EQ(0, height);
+  EXPECT_EQ(expect, x);
+  EXPECT_EQ(expect, y);
+  EXPECT_EQ(expect, width);
+  EXPECT_EQ(expect, height);
 
   int n_characters = atk_text_get_character_count(atk_text);
   ASSERT_LT(0, n_characters);
 
   atk_text_get_character_extents(atk_text, invalid_offset, &x, &y, &width,
                                  &height, ATK_XY_SCREEN);
-  EXPECT_EQ(0, x);
-  EXPECT_EQ(0, y);
-  EXPECT_EQ(0, width);
-  EXPECT_EQ(0, height);
+  EXPECT_EQ(expect, x);
+  EXPECT_EQ(expect, y);
+  EXPECT_EQ(expect, width);
+  EXPECT_EQ(expect, height);
 
 #ifdef ATK_230
   atk_text_get_character_extents(atk_text, invalid_offset, &x, &y, &width,
                                  &height, ATK_XY_PARENT);
-  EXPECT_EQ(0, x);
-  EXPECT_EQ(0, y);
-  EXPECT_EQ(0, width);
-  EXPECT_EQ(0, height);
+  EXPECT_EQ(expect, x);
+  EXPECT_EQ(expect, y);
+  EXPECT_EQ(expect, width);
+  EXPECT_EQ(expect, height);
 #endif  // ATK_230
 
   atk_text_get_character_extents(atk_text, invalid_offset, &x, &y, &width,
                                  &height, ATK_XY_WINDOW);
-  EXPECT_EQ(0, x);
-  EXPECT_EQ(0, y);
-  EXPECT_EQ(0, width);
-  EXPECT_EQ(0, height);
+  EXPECT_EQ(expect, x);
+  EXPECT_EQ(expect, y);
+  EXPECT_EQ(expect, width);
+  EXPECT_EQ(expect, height);
 
   g_object_unref(atk_text);
 }
