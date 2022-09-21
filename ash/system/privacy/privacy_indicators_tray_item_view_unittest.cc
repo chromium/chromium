@@ -13,8 +13,34 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
+
+namespace {
+
+const int kPrivacyIndicatorsViewExpandedShorterSideSize = 24;
+const int kPrivacyIndicatorsViewExpandedLongerSideSize = 50;
+const int kPrivacyIndicatorsViewSize = 8;
+
+// Get the expected size in expand animation, given the animation value.
+int GetExpectedSizeInExpandAnimation(double progress) {
+  return kPrivacyIndicatorsViewExpandedLongerSideSize *
+         gfx::Tween::CalculateValue(gfx::Tween::ACCEL_20_DECEL_100, progress);
+}
+
+// Get the expected size in shrink animation, given the animation value.
+int GetExpectedSizeInShrinkAnimation(bool for_longer_side, double progress) {
+  double animation_value =
+      gfx::Tween::CalculateValue(gfx::Tween::ACCEL_20_DECEL_100, progress);
+  int begin_size = for_longer_side
+                       ? kPrivacyIndicatorsViewExpandedLongerSideSize
+                       : kPrivacyIndicatorsViewExpandedShorterSideSize;
+  return begin_size -
+         (begin_size - kPrivacyIndicatorsViewSize) * animation_value;
+}
+
+}  // namespace
 
 namespace ash {
 
@@ -45,6 +71,18 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
     return privacy_indicators_view->layout_manager_;
   }
 
+  void AnimateToValue(gfx::LinearAnimation* animation, double animation_value) {
+    EXPECT_TRUE(animation->is_animating());
+    animation->SetCurrentValue(animation_value);
+    privacy_indicators_view_->AnimationProgressed(animation);
+  }
+
+  // Set `privacy_indicators_view_` to be visible and perform animation.
+  void SetViewVisibleWithAnimation() {
+    privacy_indicators_view()->SetVisible(true);
+    privacy_indicators_view_->PerformVisibilityAnimation(/*visible=*/true);
+  }
+
  protected:
   PrivacyIndicatorsTrayItemView* privacy_indicators_view() {
     return privacy_indicators_view_.get();
@@ -55,6 +93,22 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
   }
   views::ImageView* microphone_icon() {
     return privacy_indicators_view_->microphone_icon_;
+  }
+
+  gfx::LinearAnimation* expand_animation() {
+    return privacy_indicators_view_->expand_animation_.get();
+  }
+
+  PrivacyIndicatorsTrayItemView::AnimationState animation_state() {
+    return privacy_indicators_view_->animation_state_;
+  }
+
+  gfx::LinearAnimation* longer_side_shrink_animation() {
+    return privacy_indicators_view_->longer_side_shrink_animation_.get();
+  }
+
+  gfx::LinearAnimation* shorter_side_shrink_animation() {
+    return privacy_indicators_view_->shorter_side_shrink_animation_.get();
   }
 
  private:
@@ -132,6 +186,140 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, ShelfAlignmentChanged) {
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottomLocked);
   EXPECT_EQ(views::BoxLayout::Orientation::kHorizontal,
             GetLayoutManager(privacy_indicators_view)->GetOrientation());
+}
+
+TEST_F(PrivacyIndicatorsTrayItemViewTest, VisibilityAnimation) {
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
+
+  EXPECT_FALSE(privacy_indicators_view()->GetVisible());
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kIdle,
+            animation_state());
+
+  SetViewVisibleWithAnimation();
+  double progress = 0.5;
+
+  // Firstly, expand animation will be performed.
+  AnimateToValue(expand_animation(), progress);
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kExpand,
+            animation_state());
+  EXPECT_EQ(kPrivacyIndicatorsViewExpandedShorterSideSize,
+            privacy_indicators_view()->GetPreferredSize().height());
+  EXPECT_EQ(GetExpectedSizeInExpandAnimation(progress),
+            privacy_indicators_view()->GetPreferredSize().width());
+
+  expand_animation()->End();
+
+  // When expand animation ends, the view will be in `kDwellInExpand` state.
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kDwellInExpand,
+            animation_state());
+  EXPECT_EQ(kPrivacyIndicatorsViewExpandedShorterSideSize,
+            privacy_indicators_view()->GetPreferredSize().height());
+  EXPECT_EQ(kPrivacyIndicatorsViewExpandedLongerSideSize,
+            privacy_indicators_view()->GetPreferredSize().width());
+
+  // After that shrink animations will be started.
+  longer_side_shrink_animation()->Start();
+  AnimateToValue(longer_side_shrink_animation(), progress);
+
+  EXPECT_EQ(
+      PrivacyIndicatorsTrayItemView::AnimationState::kOnlyLongerSideShrink,
+      animation_state());
+  EXPECT_EQ(kPrivacyIndicatorsViewExpandedShorterSideSize,
+            privacy_indicators_view()->GetPreferredSize().height());
+  EXPECT_EQ(
+      GetExpectedSizeInShrinkAnimation(/*for_longer_side=*/true, progress),
+      privacy_indicators_view()->GetPreferredSize().width());
+
+  shorter_side_shrink_animation()->Start();
+  AnimateToValue(shorter_side_shrink_animation(), progress);
+
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kBothSideShrink,
+            animation_state());
+  EXPECT_EQ(
+      GetExpectedSizeInShrinkAnimation(/*for_longer_side=*/false, progress),
+      privacy_indicators_view()->GetPreferredSize().height());
+  EXPECT_EQ(
+      GetExpectedSizeInShrinkAnimation(/*for_longer_side=*/true, progress),
+      privacy_indicators_view()->GetPreferredSize().width());
+
+  longer_side_shrink_animation()->End();
+  shorter_side_shrink_animation()->End();
+
+  // When finish, the view should have the size of a dot.
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kIdle,
+            animation_state());
+  EXPECT_EQ(kPrivacyIndicatorsViewSize,
+            privacy_indicators_view()->GetPreferredSize().height());
+  EXPECT_EQ(kPrivacyIndicatorsViewSize,
+            privacy_indicators_view()->GetPreferredSize().width());
+}
+
+// Same test as above, but with the side shelf (the longer and shorter side will
+// be flipped).
+TEST_F(PrivacyIndicatorsTrayItemViewTest, SideShelfVisibilityAnimation) {
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
+
+  EXPECT_FALSE(privacy_indicators_view()->GetVisible());
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kIdle,
+            animation_state());
+
+  SetViewVisibleWithAnimation();
+  double progress = 0.5;
+
+  // Firstly, expand animation will be performed.
+  AnimateToValue(expand_animation(), progress);
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kExpand,
+            animation_state());
+  EXPECT_EQ(kPrivacyIndicatorsViewExpandedShorterSideSize,
+            privacy_indicators_view()->GetPreferredSize().width());
+  EXPECT_EQ(GetExpectedSizeInExpandAnimation(progress),
+            privacy_indicators_view()->GetPreferredSize().height());
+
+  expand_animation()->End();
+
+  // When expand animation ends, the view will be in `kDwellInExpand` state.
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kDwellInExpand,
+            animation_state());
+  EXPECT_EQ(kPrivacyIndicatorsViewExpandedShorterSideSize,
+            privacy_indicators_view()->GetPreferredSize().width());
+  EXPECT_EQ(kPrivacyIndicatorsViewExpandedLongerSideSize,
+            privacy_indicators_view()->GetPreferredSize().height());
+
+  // After that shrink animations will be started.
+  longer_side_shrink_animation()->Start();
+  AnimateToValue(longer_side_shrink_animation(), progress);
+
+  EXPECT_EQ(
+      PrivacyIndicatorsTrayItemView::AnimationState::kOnlyLongerSideShrink,
+      animation_state());
+  EXPECT_EQ(kPrivacyIndicatorsViewExpandedShorterSideSize,
+            privacy_indicators_view()->GetPreferredSize().width());
+  EXPECT_EQ(
+      GetExpectedSizeInShrinkAnimation(/*for_longer_side=*/true, progress),
+      privacy_indicators_view()->GetPreferredSize().height());
+
+  shorter_side_shrink_animation()->Start();
+  AnimateToValue(shorter_side_shrink_animation(), progress);
+
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kBothSideShrink,
+            animation_state());
+  EXPECT_EQ(
+      GetExpectedSizeInShrinkAnimation(/*for_longer_side=*/false, progress),
+      privacy_indicators_view()->GetPreferredSize().width());
+  EXPECT_EQ(
+      GetExpectedSizeInShrinkAnimation(/*for_longer_side=*/true, progress),
+      privacy_indicators_view()->GetPreferredSize().height());
+
+  longer_side_shrink_animation()->End();
+  shorter_side_shrink_animation()->End();
+
+  // When finish, the view should have the size of a dot.
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kIdle,
+            animation_state());
+  EXPECT_EQ(kPrivacyIndicatorsViewSize,
+            privacy_indicators_view()->GetPreferredSize().width());
+  EXPECT_EQ(kPrivacyIndicatorsViewSize,
+            privacy_indicators_view()->GetPreferredSize().height());
 }
 
 }  // namespace ash

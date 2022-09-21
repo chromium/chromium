@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,23 @@
 #include <string>
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/tray/tray_item_view.h"
+#include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/gfx/animation/linear_animation.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -30,13 +39,57 @@ namespace {
 constexpr auto kPrivacyIndicatorsViewPadding = gfx::Insets::VH(4, 8);
 const int kPrivacyIndicatorsViewSpacing = 2;
 const int kPrivacyIndicatorsIconSize = 16;
-const int kPrivacyIndicatorsViewHeight = 24;
-const int kPrivacyIndicatorsViewWidth = 50;
+const int kPrivacyIndicatorsViewExpandedShorterSideSize = 24;
+const int kPrivacyIndicatorsViewExpandedLongerSideSize = 50;
+const int kPrivacyIndicatorsViewSize = 8;
+
+constexpr auto kDwellInExpandDuration = base::Milliseconds(1000);
+constexpr auto kShorterSizeShrinkAnimationDelay =
+    kDwellInExpandDuration + base::Milliseconds(133);
+constexpr auto kSizeChangeAnimationDuration = base::Milliseconds(333);
+constexpr auto kExpandAnimationDuration = base::Milliseconds(400);
+
+void StartAnimation(gfx::LinearAnimation* animation) {
+  if (!animation)
+    return;
+
+  // Stop any ongoing animation.
+  animation->End();
+
+  animation->Start();
+}
+
+void StartRecordAnimationSmoothness(
+    views::Widget* widget,
+    absl::optional<ui::ThroughputTracker>& tracker) {
+  // `widget` may not exist in tests.
+  if (!widget)
+    return;
+
+  tracker.emplace(widget->GetCompositor()->RequestNewThroughputTracker());
+  tracker->Start(
+      ash::metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        base::UmaHistogramPercentage(
+            "Ash.PrivacyIndicators.AnimationSmoothness", smoothness);
+      })));
+}
 
 }  // namespace
 
 PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
-    : TrayItemView(shelf) {
+    : TrayItemView(shelf),
+      expand_animation_(std::make_unique<gfx::LinearAnimation>(
+          kExpandAnimationDuration,
+          gfx::LinearAnimation::kDefaultFrameRate,
+          this)),
+      longer_side_shrink_animation_(std::make_unique<gfx::LinearAnimation>(
+          kSizeChangeAnimationDuration,
+          gfx::LinearAnimation::kDefaultFrameRate,
+          this)),
+      shorter_side_shrink_animation_(std::make_unique<gfx::LinearAnimation>(
+          kSizeChangeAnimationDuration,
+          gfx::LinearAnimation::kDefaultFrameRate,
+          this)) {
   SetVisible(false);
 
   auto container_view = std::make_unique<views::View>();
@@ -53,7 +106,7 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF{kPrivacyIndicatorsViewHeight / 2});
+      gfx::RoundedCornersF{kPrivacyIndicatorsViewExpandedShorterSideSize / 2});
 
   auto camera_icon = std::make_unique<views::ImageView>();
   camera_icon->SetPaintToLayer();
@@ -98,18 +151,62 @@ void PrivacyIndicatorsTrayItemView::UpdateAlignmentForShelf(Shelf* shelf) {
   UpdateBoundsInset();
 }
 
+void PrivacyIndicatorsTrayItemView::PerformVisibilityAnimation(bool visible) {
+  EndAllAnimations();
+
+  if (!visible)
+    return;
+
+  // Start a multi-part animation:
+  // 1. kExpand: Expands to the fully expanded state, showing all icons.
+  // 2. kDwellInExpand: Then dwells at this size for `kDwellInExpandDuration`.
+  // 3. kOnlyLongerSideShrink: After that, collapses the long side first.
+  // 4. kBothSideShrink: Before the long side shrinks completely, collapses the
+  // short side to the final size (a green dot).
+  expand_animation_->Start();
+  StartRecordAnimationSmoothness(GetWidget(), throughput_tracker_);
+}
+
 void PrivacyIndicatorsTrayItemView::HandleLocaleChange() {
   TooltipTextChanged();
 }
 
 gfx::Size PrivacyIndicatorsTrayItemView::CalculatePreferredSize() const {
-  // If the view is laid out vertically in vertical shelf, the view is rotated
-  // 90 degree.
-  if (layout_manager_->GetOrientation() ==
-      views::BoxLayout::Orientation::kVertical) {
-    return gfx::Size(kPrivacyIndicatorsViewHeight, kPrivacyIndicatorsViewWidth);
+  int shorter_side;
+  int longer_side;
+
+  switch (animation_state_) {
+    case AnimationState::kIdle:
+      return gfx::Size(kPrivacyIndicatorsViewSize, kPrivacyIndicatorsViewSize);
+    case AnimationState::kExpand:
+      shorter_side = kPrivacyIndicatorsViewExpandedShorterSideSize;
+      longer_side =
+          kPrivacyIndicatorsViewExpandedLongerSideSize *
+          gfx::Tween::CalculateValue(gfx::Tween::ACCEL_20_DECEL_100,
+                                     expand_animation_->GetCurrentValue());
+      break;
+    case AnimationState::kDwellInExpand:
+      shorter_side = kPrivacyIndicatorsViewExpandedShorterSideSize;
+      longer_side = kPrivacyIndicatorsViewExpandedLongerSideSize;
+      break;
+    case AnimationState::kOnlyLongerSideShrink:
+      shorter_side = kPrivacyIndicatorsViewExpandedShorterSideSize;
+      longer_side =
+          CalculateSizeDuringShrinkAnimation(/*for_longer_side=*/true);
+      break;
+    case AnimationState::kBothSideShrink:
+      shorter_side =
+          CalculateSizeDuringShrinkAnimation(/*for_longer_side=*/false);
+      longer_side =
+          CalculateSizeDuringShrinkAnimation(/*for_longer_side=*/true);
+      break;
   }
-  return gfx::Size(kPrivacyIndicatorsViewWidth, kPrivacyIndicatorsViewHeight);
+  // `GetWidget()` might be null in unit tests.
+  auto* shelf = GetWidget() ? Shelf::ForWindow(GetWidget()->GetNativeWindow())
+                            : Shell::GetPrimaryRootWindowController()->shelf();
+  // The view is rotated 90 degree in side shelf.
+  return shelf->PrimaryAxisValue(gfx::Size(longer_side, shorter_side),
+                                 gfx::Size(shorter_side, longer_side));
 }
 
 void PrivacyIndicatorsTrayItemView::OnThemeChanged() {
@@ -150,6 +247,59 @@ const char* PrivacyIndicatorsTrayItemView::GetClassName() const {
   return "PrivacyIndicatorsTrayItemView";
 }
 
+void PrivacyIndicatorsTrayItemView::AnimationProgressed(
+    const gfx::Animation* animation) {
+  if (animation == expand_animation_.get()) {
+    animation_state_ = AnimationState::kExpand;
+  } else if (animation == longer_side_shrink_animation_.get() &&
+             !shorter_side_shrink_animation_->is_animating()) {
+    animation_state_ = AnimationState::kOnlyLongerSideShrink;
+  } else {
+    animation_state_ = AnimationState::kBothSideShrink;
+  }
+
+  PreferredSizeChanged();
+}
+
+void PrivacyIndicatorsTrayItemView::AnimationEnded(
+    const gfx::Animation* animation) {
+  if (animation_state_ == AnimationState::kExpand) {
+    // Start kDwellInExpand when `expand_animation_` just finished.
+    animation_state_ = kDwellInExpand;
+    PreferredSizeChanged();
+
+    longer_side_shrink_delay_timer_.Start(
+        FROM_HERE, kDwellInExpandDuration,
+        base::BindOnce(&StartAnimation, longer_side_shrink_animation_.get()));
+
+    shorter_side_shrink_delay_timer_.Start(
+        FROM_HERE, kShorterSizeShrinkAnimationDelay,
+        base::BindOnce(&StartAnimation, shorter_side_shrink_animation_.get()));
+  }
+
+  // `shorter_side_shrink_animation_` should be the last one that is running, so
+  // switch the state back to kIdle when it ends.
+  if (animation == shorter_side_shrink_animation_.get()) {
+    animation_state_ = AnimationState::kIdle;
+
+    if (throughput_tracker_) {
+      // Reset `throughput_tracker_` to reset animation metrics recording.
+      throughput_tracker_->Stop();
+      throughput_tracker_.reset();
+    }
+  }
+
+  UpdateBoundsInset();
+}
+
+void PrivacyIndicatorsTrayItemView::AnimationCanceled(
+    const gfx::Animation* animation) {
+  // Finish all animations if one is canceled.
+  EndAllAnimations();
+
+  UpdateBoundsInset();
+}
+
 void PrivacyIndicatorsTrayItemView::UpdateIcons() {
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary);
@@ -163,7 +313,10 @@ void PrivacyIndicatorsTrayItemView::UpdateIcons() {
 
 void PrivacyIndicatorsTrayItemView::UpdateBoundsInset() {
   gfx::Rect bounds = GetLocalBounds();
-  auto* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+
+  // `GetWidget()` might be null in unit tests.
+  auto* shelf = GetWidget() ? Shelf::ForWindow(GetWidget()->GetNativeWindow())
+                            : Shell::GetPrimaryRootWindowController()->shelf();
 
   // We set the bounds inset based on the shorter side of the view (the shorter
   // size changes based on shelf alignment).
@@ -174,6 +327,36 @@ void PrivacyIndicatorsTrayItemView::UpdateBoundsInset() {
       shelf->PrimaryAxisValue(gfx::Insets::VH(shorter_side_inset / 2, 0),
                               gfx::Insets::VH(0, shorter_side_inset / 2)));
   layer()->SetClipRect(bounds);
+}
+
+int PrivacyIndicatorsTrayItemView::CalculateSizeDuringShrinkAnimation(
+    bool for_longer_side) const {
+  auto* animation = for_longer_side ? longer_side_shrink_animation_.get()
+                                    : shorter_side_shrink_animation_.get();
+
+  double animation_value = gfx::Tween::CalculateValue(
+      gfx::Tween::ACCEL_20_DECEL_100, animation->GetCurrentValue());
+  int begin_size = for_longer_side
+                       ? kPrivacyIndicatorsViewExpandedLongerSideSize
+                       : kPrivacyIndicatorsViewExpandedShorterSideSize;
+
+  // The size shrink from `begin_size` to kPrivacyIndicatorsViewSize when
+  // `animation_value` goes from 0 to 1, and here is the calculation for it.
+  return begin_size -
+         (begin_size - kPrivacyIndicatorsViewSize) * animation_value;
+}
+
+void PrivacyIndicatorsTrayItemView::EndAllAnimations() {
+  shorter_side_shrink_animation_->End();
+  longer_side_shrink_animation_->End();
+  expand_animation_->End();
+  animation_state_ = AnimationState::kIdle;
+
+  if (throughput_tracker_) {
+    // Reset `throughput_tracker_` to reset animation metrics recording.
+    throughput_tracker_->Stop();
+    throughput_tracker_.reset();
+  }
 }
 
 }  // namespace ash
