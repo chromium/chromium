@@ -386,7 +386,7 @@ bool IsSigninForcedByPolicy() {
   return self.signinCoordinator != nil;
 }
 
-- (BOOL)tabGridVisible {
+- (BOOL)isTabGridVisible {
   return self.mainCoordinator.isTabGridActive;
 }
 
