@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RequestHandler} from './post_message_api_request_handler.js';
+import {RequestHandler} from './post_message_api_request_handler.m.js';
 
 /**
  *  Initialization retry wait in milliseconds (subject to exponential backoff).

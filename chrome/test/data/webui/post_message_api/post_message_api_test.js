@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PostMessageAPIClient} from 'chrome://resources/ash/common/post_message_api/post_message_api_client.js';
-import {PostMessageAPIServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
+import {PostMessageAPIClient} from 'chrome://resources/js/post_message_api_client.m.js';
+import {PostMessageAPIServer} from 'chrome://resources/js/post_message_api_server.m.js';
 
-const TARGET_URL =
-    'chrome://test/chromeos/ash_common/post_message_api/iframe.html';
+const TARGET_URL = 'chrome://test/post_message_api/iframe.html';
 const TARGET_ORIGIN = 'chrome://test/';
 
 class TestPostMessageAPIServer extends PostMessageAPIServer {
