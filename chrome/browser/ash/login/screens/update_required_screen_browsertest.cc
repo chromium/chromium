@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestSubtitle) {
 
 class UpdateRequiredScreenFlexOrgTest : public UpdateRequiredScreenTest {
  public:
-  UpdateRequiredScreenFlexOrgTest() {}
+  UpdateRequiredScreenFlexOrgTest() = default;
   ~UpdateRequiredScreenFlexOrgTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenFlexOrgTest, TestSubtitle) {
 
 class UpdateRequiredScreenPolicyPresentTest : public OobeBaseTest {
  public:
-  UpdateRequiredScreenPolicyPresentTest() {}
+  UpdateRequiredScreenPolicyPresentTest() = default;
   ~UpdateRequiredScreenPolicyPresentTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -550,17 +550,13 @@ class UpdateRequiredScreenPolicyPresentTest : public OobeBaseTest {
         base::DefaultClock::GetInstance()->Now() - base::Days(1));
   }
 
-  void SetMinimumChromeVersionPolicy(const base::Value& value) {
+  void SetAndRefreshMinimumChromeVersionPolicy(base::Value::Dict value) {
     policy::DevicePolicyBuilder* const device_policy(
         policy_helper_.device_policy());
     em::ChromeDeviceSettingsProto& proto(device_policy->payload());
     std::string policy_value;
     EXPECT_TRUE(base::JSONWriter::Write(value, &policy_value));
     proto.mutable_device_minimum_version()->set_value(policy_value);
-  }
-
-  void SetAndRefreshMinimumChromeVersionPolicy(const base::Value::Dict& value) {
-    SetMinimumChromeVersionPolicy(base::Value(value.Clone()));
     policy_helper_.RefreshDevicePolicy();
   }
 
