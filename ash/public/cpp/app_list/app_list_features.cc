@@ -10,33 +10,46 @@
 
 namespace app_list_features {
 
-const base::Feature kEnableAppRanker{"EnableAppRanker",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kEnableZeroStateAppsRanker{
-    "EnableZeroStateAppsRanker", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kEnableZeroStateMixedTypesRanker{
-    "EnableZeroStateMixedTypesRanker", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kEnableAppReinstallZeroState{
-    "EnableAppReinstallZeroState", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEnableAppListLaunchRecording{
-    "EnableAppListLaunchRecording", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEnableExactMatchForNonLatinLocale{
-    "EnableExactMatchForNonLatinLocale", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kCategoricalSearch{"CategoricalSearch",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableAppRanker,
+             "EnableAppRanker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableZeroStateAppsRanker,
+             "EnableZeroStateAppsRanker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableZeroStateMixedTypesRanker,
+             "EnableZeroStateMixedTypesRanker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableAppReinstallZeroState,
+             "EnableAppReinstallZeroState",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableAppListLaunchRecording,
+             "EnableAppListLaunchRecording",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableExactMatchForNonLatinLocale,
+             "EnableExactMatchForNonLatinLocale",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCategoricalSearch,
+             "CategoricalSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // DO NOT REMOVE: Tast integration tests use this feature. (See crbug/1340267)
-const base::Feature kForceShowContinueSection{
-    "ForceShowContinueSection", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kSearchResultInlineIcon{"SearchResultInlineIcon",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kQuickActionShowBubbleLauncher{
-    "QuickActionShowBubbleLauncher", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kDynamicSearchUpdateAnimation{
-    "DynamicSearchUpdateAnimation", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kCompactBubbleLauncher{"CompactBubbleLauncher",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kLauncherPlayStoreSearch{"LauncherPlayStoreSearch",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kForceShowContinueSection,
+             "ForceShowContinueSection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSearchResultInlineIcon,
+             "SearchResultInlineIcon",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kQuickActionShowBubbleLauncher,
+             "QuickActionShowBubbleLauncher",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDynamicSearchUpdateAnimation,
+             "DynamicSearchUpdateAnimation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCompactBubbleLauncher,
+             "CompactBubbleLauncher",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLauncherPlayStoreSearch,
+             "LauncherPlayStoreSearch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAppRankerEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppRanker);

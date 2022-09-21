@@ -37,8 +37,9 @@ namespace ash {
 
 namespace {
 
-const base::Feature kCCALocalOverride{"CCALocalOverride",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCCALocalOverride,
+             "CCALocalOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FilePath::CharType kCCALocalOverrideDirectoryPath[] =
     FILE_PATH_LITERAL("/etc/camera/cca");
 
