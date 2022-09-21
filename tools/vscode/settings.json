@@ -57,6 +57,9 @@
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "modifications",
 
+  // Used by tasks.json for integration with Chrome tests and builds.
+  "chrome.outputDir": "${workspaceFolder}/out/current_link",
+
   // Optional: Highlight current line at the left of the editor.
   // "editor.renderLineHighlight": "gutter",
   // Optional: Don't automatically add closing brackets. It gets in the way.

@@ -322,18 +322,8 @@ terminal:
 $ cp tools/vscode/tasks.json .vscode
 ```
 
-Before running most of the tasks, you'll need to set `chrome.outputDir`. You can
-do this by typing `Ctrl+Shift+P` &gt; "Preferences: Open Folder Settings (JSON)"
-and adding something like:
-
-```json
-{
-  "chrome.outputDir": "C:\\src\\chrome\\src\\out\\release"
-
-  // more settings here...
-}
-
-```
+Before running most of the tasks, you'll need to set the `chromeOutputDir` value
+in your `.vscode/tasks.json` file.
 
 Now you can run tasks by using `Ctrl+P` and typing "task " and then a number
 of your choice. If you select one of the build tasks, the build output will

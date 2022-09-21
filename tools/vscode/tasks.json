@@ -1,10 +1,8 @@
 {
   // Note!
-  // Set the value used for ${config:chrome.outputDir} in your settings.json
-  // file with a line like:
-  //   "chrome.outputDir": "/path/to/chromium/src/out/current_link",
-  // Then run "0-set_chrome_output_directory" to set the `current_link`
-  // symbolic link (see below).
+  // Set the "chromeOutputDir" input string below, then run
+  // "0-set_chrome_output_directory" to set the `current_link` symbolic link
+  // (see below).
   "version": "2.0.0",
   "runner": "terminal",
   // The default problem matcher matches build output, which is useful for most tasks.
@@ -86,7 +84,8 @@
       "type": "pickString",
       "id": "chromeOutputDir",
       "description": "Chrome output directory:",
-      // Configure this to point to all the output directories you use.
+      // Configure this to point to all the output directories you use (as a
+      // relative path from ${workspaceFolder}).
       "options": [
         "out/Debug",
         "out/Release"
