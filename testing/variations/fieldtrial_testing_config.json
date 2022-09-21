@@ -7275,30 +7275,6 @@
             ]
         }
     ],
-    "OptimizationHintsShorterHostKeyedCacheDuration": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220729",
-                    "params": {
-                        "hints_fetch_refresh_duration_in_hours": "1",
-                        "max_store_duration_for_featured_hints_in_days": "1"
-                    },
-                    "enable_features": [
-                        "OptimizationHintsFetching"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptimizeAccessibilityUiThreadWork": [
         {
             "platforms": [
