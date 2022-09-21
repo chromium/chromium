@@ -154,40 +154,6 @@ int WebAXObject::AxID() const {
   return private_->AXObjectID();
 }
 
-// This method must be called before serializing any accessibility nodes, in
-// order to ensure that layout calls are not made at an unsafe time in the
-// document lifecycle.
-bool WebAXObject::MaybeUpdateLayoutAndCheckValidity() {
-  DCHECK(!IsDetached());
-
-  if (!MaybeUpdateLayoutAndCheckValidity(GetDocument()))
-    return false;
-
-  // Doing a layout can cause this object to be invalid, so check again.
-  return CheckValidity();
-}
-
-// Returns true if the object is valid and can be accessed.
-bool WebAXObject::CheckValidity() {
-  if (IsDetached())
-    return false;
-
-#if DCHECK_IS_ON()
-  Node* node = private_->GetNode();
-  if (!node)
-    return true;
-
-  // Has up-to-date layout info or is display-locked (content-visibility), which
-  // is handled as a special case inside of accessibility code.
-  Document* document = private_->GetDocument();
-  DCHECK(!document->NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*node) ||
-         DisplayLockUtilities::LockedAncestorPreventingPaint(*node))
-      << "Node needs layout update and is not display locked";
-#endif  // DCHECK_IS_ON()
-
-  return true;
-}
-
 ax::mojom::DefaultActionVerb WebAXObject::Action() const {
   if (IsDetached())
     return ax::mojom::DefaultActionVerb::kNone;

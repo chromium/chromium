@@ -288,8 +288,7 @@ void RenderAccessibilityImpl::HitTest(
 
   const WebDocument& document = GetMainDocument();
   if (!document.IsNull()) {
-    auto root_obj = WebAXObject::FromWebDocument(document);
-    if (root_obj.MaybeUpdateLayoutAndCheckValidity()) {
+    if (WebAXObject::MaybeUpdateLayoutAndCheckValidity(document)) {
       // 1. Now that layout has been updated for the entire document, try to run
       // the hit test operation on the popup root element, if there's a popup
       // opened. This is needed to allow hit testing within web content popups.
@@ -305,8 +304,10 @@ void RenderAccessibilityImpl::HitTest(
       // 2. If running the hit test operation on the popup didn't returned any
       // result (or if there was no popup), run the hit test operation from the
       // main element.
-      if (ax_object.IsNull())
+      if (ax_object.IsNull()) {
+        auto root_obj = WebAXObject::FromWebDocument(document);
         ax_object = root_obj.HitTest(point);
+      }
     }
   }
 
@@ -376,8 +377,7 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
   if (document.IsNull())
     return;
 
-  auto root = WebAXObject::FromWebDocument(document);
-  if (!root.MaybeUpdateLayoutAndCheckValidity())
+  if (!WebAXObject::MaybeUpdateLayoutAndCheckValidity(document))
     return;
 
   // If an action was requested, we no longer want to defer events.
@@ -396,14 +396,14 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
   if (target->PerformAction(data))
     return;
 
-  if (!root.MaybeUpdateLayoutAndCheckValidity())
+  if (!WebAXObject::MaybeUpdateLayoutAndCheckValidity(document))
     return;
 
   switch (data.action) {
     case ax::mojom::Action::kBlur: {
       ui::AXActionData action_data;
       action_data.action = ax::mojom::Action::kFocus;
-      root.PerformAction(action_data);
+      ComputeRoot().PerformAction(action_data);
       break;
     }
     case ax::mojom::Action::kGetImageData:
@@ -467,10 +467,12 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
       }
       break;
     case ax::mojom::Action::kSignalEndOfTest:
-      // Wait for 100ms to allow pending events to come in
+      // Wait for 100ms to allow pending events to come in.
+      // TODO(accessibility) Remove sleep() hack; it should no longer be needed.
       base::PlatformThread::Sleep(base::Milliseconds(100));
 
-      HandleAXEvent(ui::AXEvent(root.AxID(), ax::mojom::Event::kEndOfTest));
+      HandleAXEvent(
+          ui::AXEvent(ComputeRoot().AxID(), ax::mojom::Event::kEndOfTest));
       break;
     case ax::mojom::Action::kShowTooltip:
     case ax::mojom::Action::kHideTooltip:
@@ -1080,19 +1082,23 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
     dirty_objects_.pop_front();
     auto obj = current_dirty_object->obj;
 
-    // Dirty objects can be added using MarkWebAXObjectDirty(obj) from other
-    // parts of the code as well, so we need to ensure the object still exists.
-    // TODO(accessibility) Change this to CheckValidity() if there aren't crash
-    // reports of illegal lifecycle changes from WebDisallowTransitionScope.
-    if (obj.IsDetached() || !obj.MaybeUpdateLayoutAndCheckValidity())
+    // TODO(accessibility) Remove this forced layout. Doing so
+    // currently causes issues with color picker popup tests, but this is
+    // strange, because we already called UpdateLayout(GetPopupDoument()), so
+    // that means something is dirtying the document even though we use
+    // WebDisallowTransitionScope on both the main and popup document.
+    if (!WebAXObject::MaybeUpdateLayoutAndCheckValidity(obj.GetDocument()))
       continue;
 
-    // Cannot serialize unincluded object.
-    // Only included objects are marked dirty, but this can happen if the object
-    // becomes unincluded after it was originally marked dirty, in which case a
-    // children changed will also be fired on the included ancestor. The
-    // children changed event on the ancestor means that attempting to serialize
-    // this unincluded object is not necessary.
+    // Cannot serialize detached or unincluded object.
+    // Dirty objects can be added using MarkWebAXObjectDirty(obj) from other
+    // parts of the code as well, so we need to ensure the object still exists
+    // and is still included in the tree. Only included objects are marked
+    // dirty, but this can happen if the object becomes unincluded after it was
+    // originally marked dirty, in which case a children changed will also be
+    // fired on the included ancestor. The children changed event on the
+    // ancestor means that attempting to serialize this unincluded object is not
+    // necessary.
     if (!obj.AccessibilityIsIncludedInTree())
       continue;
 
@@ -1273,17 +1279,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   // We ensured layout validity for the main document in the loop above; if a
   // popup is open, do the same for it.
   WebDocument popup_document = GetPopupDocument();
-  if (!popup_document.IsNull()) {
-    WebAXObject popup_root_obj = WebAXObject::FromWebDocument(popup_document);
-    if (!popup_root_obj.IsNull() &&
-        !popup_root_obj.MaybeUpdateLayoutAndCheckValidity()) {
-      // If a popup is open but we can't ensure its validity, return without
-      // sending an update bundle, the same as we would for a node in the main
-      // document.
-      // Do not perform this check unless the popup has an a11y tree.
-      return;
-    }
-  }
+  WebAXObject::UpdateLayout(popup_document);
 
 #if DCHECK_IS_ON()
   // Protect against lifecycle changes in the popup document, if any.
@@ -1366,13 +1362,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
 void RenderAccessibilityImpl::SendLocationChanges() {
   TRACE_EVENT0("accessibility", "RenderAccessibilityImpl::SendLocationChanges");
-  // Update layout on the root of the tree.
-
-  // TODO(accessibility) Change this to CheckValidity() if there aren't crash
-  // reports of illegal lifecycle changes from WebDisallowTransitionScope.
-  if (!ComputeRoot().MaybeUpdateLayoutAndCheckValidity())
-    return;
-
   ax_context_->SerializeLocationChanges();
 }
 
@@ -1602,14 +1591,9 @@ blink::WebAXObject RenderAccessibilityImpl::GetPluginRoot() {
 }
 
 WebAXObject RenderAccessibilityImpl::ComputeRoot() {
-  if (!render_frame_ || !render_frame_->GetWebFrame())
-    return WebAXObject();
-
-  WebDocument document = render_frame_->GetWebFrame()->GetDocument();
-  if (!document.IsNull())
-    return WebAXObject::FromWebDocument(document);
-
-  return WebAXObject();
+  DCHECK(render_frame_);
+  DCHECK(render_frame_->GetWebFrame());
+  return WebAXObject::FromWebDocument(GetMainDocument());
 }
 
 void RenderAccessibilityImpl::CancelScheduledEvents() {

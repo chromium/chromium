@@ -99,16 +99,6 @@ class BLINK_EXPORT WebAXObject {
 
   int AxID() const;
 
-  // Update layout if necessary on the underlying tree and return true if the
-  // object is valid. Note that calling this and other methods can cause other
-  // WebAXObjects to become invalid, so always check validity of an object
-  // before using it.
-  bool MaybeUpdateLayoutAndCheckValidity();
-
-  // Return true if this object is still valid (not detached) and has updated
-  // layout.
-  bool CheckValidity();
-
   unsigned ChildCount() const;
 
   WebAXObject ChildAt(unsigned) const;

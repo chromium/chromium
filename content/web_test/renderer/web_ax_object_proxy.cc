@@ -1235,9 +1235,6 @@ std::string WebAXObjectProxy::BoundsForRange(int start, int end) {
   if (accessibility_object_.Role() != ax::mojom::Role::kStaticText)
     return std::string();
 
-  if (!accessibility_object_.MaybeUpdateLayoutAndCheckValidity())
-    return std::string();
-
   int len = end - start;
 
   // Get the bounds for each character and union them into one large rectangle.

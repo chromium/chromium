@@ -647,6 +647,7 @@ TEST_F(RenderAccessibilityImplTest, HideAccessibilityObject) {
   EXPECT_EQ(6, CountAccessibilityNodesSentToBrowser());
 
   WebDocument document = GetMainFrame()->GetDocument();
+  // Getting the root object will also force layout.
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
   WebAXObject html = root_obj.ChildAt(0);
   WebAXObject body = html.ChildAt(0);
@@ -657,8 +658,7 @@ TEST_F(RenderAccessibilityImplTest, HideAccessibilityObject) {
   // Hide node "B" ("C" stays visible).
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'hidden';");
-  // Force layout now.
-  root_obj.MaybeUpdateLayoutAndCheckValidity();
+  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
 
   // Send a childrenChanged on "A".
   ClearHandledUpdates();
@@ -697,6 +697,7 @@ TEST_F(RenderAccessibilityImplTest, ShowAccessibilityObject) {
   EXPECT_EQ(6, CountAccessibilityNodesSentToBrowser());
 
   WebDocument document = GetMainFrame()->GetDocument();
+  // Getting the root object also forces a layout.
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
   WebAXObject html = root_obj.ChildAt(0);
   WebAXObject body = html.ChildAt(0);
@@ -707,8 +708,8 @@ TEST_F(RenderAccessibilityImplTest, ShowAccessibilityObject) {
   // Show node "B", then send a childrenChanged on "A".
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'visible';");
+  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
 
-  root_obj.MaybeUpdateLayoutAndCheckValidity();
   ClearHandledUpdates();
 
   GetRenderAccessibilityImpl()->HandleAXEvent(
@@ -877,6 +878,7 @@ TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
   LoadHTMLAndRefreshAccessibilityTree(html);
 
   WebDocument document = GetMainFrame()->GetDocument();
+  // Getting the root object also forces a layout.
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
   WebAXObject html_elem = root_obj.ChildAt(0);
   WebAXObject body = html_elem.ChildAt(0);
@@ -889,10 +891,6 @@ TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
   action.target_node_id = link.AxID();
   action.action = ax::mojom::Action::kFocus;
   GetRenderAccessibilityImpl()->PerformAction(action);
-
-  // Update layout so that the AXEvents themselves are queued up to
-  // RenderAccessibilityImpl.
-  ASSERT_TRUE(root_obj.MaybeUpdateLayoutAndCheckValidity());
 
   // Now perform the default action on the link, which will bounce focus to
   // the button element.
@@ -1170,8 +1168,8 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(IsSelected(option));
   EXPECT_TRUE(option_action_target->SetSelected(true));
-  // Seleting option requires layout to be clean.
-  ASSERT_TRUE(root_obj.MaybeUpdateLayoutAndCheckValidity());
+  // Selecting option requires layout to be clean.
+  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
   EXPECT_TRUE(IsSelected(option));
 #endif
 
@@ -1185,7 +1183,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   EXPECT_EQ(value_to_set, input_text.GetValueForControl().Utf8());
 
   // Setting selection requires layout to be clean.
-  ASSERT_TRUE(root_obj.MaybeUpdateLayoutAndCheckValidity());
+  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
 
   EXPECT_TRUE(text_one_action_target->SetSelection(
       text_one_action_target.get(), 3, text_two_action_target.get(), 4));
@@ -1295,8 +1293,8 @@ TEST_F(AXImageAnnotatorTest, OnImageAdded) {
   // Show node "B".
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'visible';");
+  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
   ClearHandledUpdates();
-  root_obj.MaybeUpdateLayoutAndCheckValidity();
 
   // This should update the annotations of all images on the page, including the
   // already visible one.
@@ -1352,6 +1350,7 @@ TEST_F(AXImageAnnotatorTest, OnImageUpdated) {
 
   // Update node "A".
   ExecuteJavaScriptForTests("document.querySelector('img').src = 'test2.jpg';");
+  ASSERT_TRUE(WebAXObject::MaybeUpdateLayoutAndCheckValidity(document));
 
   ClearHandledUpdates();
   // This should update the annotations of all images on the page, including the
