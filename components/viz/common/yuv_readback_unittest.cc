@@ -104,7 +104,7 @@ class YUVReadbackTest : public testing::Test {
         << json_data;
 
     CHECK(parsed_json->is_list());
-    for (const base::Value& dict : parsed_json->GetListDeprecated()) {
+    for (const base::Value& dict : parsed_json->GetList()) {
       CHECK(dict.is_dict());
       const std::string* name = dict.FindStringPath("name");
       CHECK(name);

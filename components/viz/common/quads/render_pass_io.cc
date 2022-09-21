@@ -255,14 +255,14 @@ bool FloatArrayFromList(const base::Value& list,
   DCHECK_LT(0u, expected_count);
   if (!list.is_list())
     return false;
-  size_t count = list.GetListDeprecated().size();
+  size_t count = list.GetList().size();
   if (count != expected_count)
     return false;
   std::vector<double> double_data(count);
   for (size_t ii = 0; ii < count; ++ii) {
-    if (!list.GetListDeprecated()[ii].is_double())
+    if (!list.GetList()[ii].is_double())
       return false;
-    double_data[ii] = list.GetListDeprecated()[ii].GetDouble();
+    double_data[ii] = list.GetList()[ii].GetDouble();
   }
   for (size_t ii = 0; ii < count; ++ii)
     data[ii] = static_cast<float>(double_data[ii]);
@@ -475,13 +475,13 @@ bool TransformFromList(const base::Value& list, gfx::Transform* transform) {
   DCHECK(transform);
   if (!list.is_list())
     return false;
-  if (list.GetListDeprecated().size() != 16)
+  if (list.GetList().size() != 16)
     return false;
   float data[16];
   for (size_t ii = 0; ii < 16; ++ii) {
-    if (!list.GetListDeprecated()[ii].is_double())
+    if (!list.GetList()[ii].is_double())
       return false;
-    data[ii] = list.GetListDeprecated()[ii].GetDouble();
+    data[ii] = list.GetList()[ii].GetDouble();
   }
   *transform = gfx::Transform::ColMajorF(data);
   return true;
@@ -500,11 +500,11 @@ bool ShapeRectsFromList(const base::Value& list,
   DCHECK(shape);
   if (!list.is_list())
     return false;
-  size_t size = list.GetListDeprecated().size();
+  size_t size = list.GetList().size();
   cc::FilterOperation::ShapeRects data;
   data.resize(size);
   for (size_t ii = 0; ii < size; ++ii) {
-    if (!RectFromDict(list.GetListDeprecated()[ii], &data[ii]))
+    if (!RectFromDict(list.GetList()[ii], &data[ii]))
       return false;
   }
   *shape = data;
@@ -698,9 +698,9 @@ bool FilterOperationsFromList(const base::Value& list,
   if (!list.is_list())
     return false;
   cc::FilterOperations data;
-  for (size_t ii = 0; ii < list.GetListDeprecated().size(); ++ii) {
+  for (const auto& entry : list.GetList()) {
     cc::FilterOperation filter;
-    if (!FilterOperationFromDict(list.GetListDeprecated()[ii], &filter))
+    if (!FilterOperationFromDict(entry, &filter))
       return false;
     data.Append(filter);
   }
@@ -998,7 +998,7 @@ bool DrawQuadResourcesFromList(const base::Value& list,
   DCHECK(resources);
   if (!list.is_list())
     return false;
-  size_t size = list.GetListDeprecated().size();
+  size_t size = list.GetList().size();
   if (size == 0u) {
     resources->count = 0u;
     return true;
@@ -1006,13 +1006,13 @@ bool DrawQuadResourcesFromList(const base::Value& list,
   if (size > DrawQuad::Resources::kMaxResourceIdCount)
     return false;
   for (size_t ii = 0; ii < size; ++ii) {
-    if (!list.GetListDeprecated()[ii].is_int())
+    if (!list.GetList()[ii].is_int())
       return false;
   }
 
   resources->count = static_cast<uint32_t>(size);
   for (size_t ii = 0; ii < size; ++ii) {
-    resources->ids[ii] = ResourceId(list.GetListDeprecated()[ii].GetInt());
+    resources->ids[ii] = ResourceId(list.GetList()[ii].GetInt());
   }
   return true;
 }
@@ -1717,11 +1717,11 @@ bool VideoHoleDrawQuadFromDict(const base::Value& dict,
   case DrawQuad::Material::NAME:            \
     NOTREACHED() << "Unexpected " << #NAME; \
     break;
-#define GET_QUAD_FROM_DICT(NAME, TYPE)                                       \
-  case DrawQuad::Material::NAME: {                                           \
-    TYPE* quad = quads.AllocateAndConstruct<TYPE>();                         \
-    if (!TYPE##FromDict(list.GetListDeprecated()[ii], common.value(), quad)) \
-      return false;                                                          \
+#define GET_QUAD_FROM_DICT(NAME, TYPE)                             \
+  case DrawQuad::Material::NAME: {                                 \
+    TYPE* quad = quads.AllocateAndConstruct<TYPE>();               \
+    if (!TYPE##FromDict(list.GetList()[ii], common.value(), quad)) \
+      return false;                                                \
   } break;
 bool QuadListFromList(const base::Value& list,
                       QuadList* quad_list,
@@ -1729,17 +1729,17 @@ bool QuadListFromList(const base::Value& list,
   DCHECK(quad_list);
   if (!list.is_list())
     return false;
-  size_t size = list.GetListDeprecated().size();
+  size_t size = list.GetList().size();
   if (size == 0) {
     quad_list->clear();
     return true;
   }
   QuadList quads(size);
   for (size_t ii = 0; ii < size; ++ii) {
-    if (!list.GetListDeprecated()[ii].is_dict())
+    if (!list.GetList()[ii].is_dict())
       return false;
-    absl::optional<DrawQuadCommon> common = GetDrawQuadCommonFromDict(
-        list.GetListDeprecated()[ii], shared_quad_state_list);
+    absl::optional<DrawQuadCommon> common =
+        GetDrawQuadCommonFromDict(list.GetList()[ii], shared_quad_state_list);
     if (!common)
       return false;
     switch (common->material) {
@@ -1901,14 +1901,14 @@ bool SharedQuadStateListFromList(const base::Value& list,
   DCHECK(shared_quad_state_list);
   if (!list.is_list())
     return false;
-  size_t size = list.GetListDeprecated().size();
+  size_t size = list.GetList().size();
   SharedQuadStateList states(alignof(SharedQuadState), sizeof(SharedQuadState),
                              size);
   for (size_t ii = 0; ii < size; ++ii) {
-    if (!list.GetListDeprecated()[ii].is_dict())
+    if (!list.GetList()[ii].is_dict())
       return false;
     SharedQuadState* sqs = states.AllocateAndConstruct<SharedQuadState>();
-    if (!SharedQuadStateFromDict(list.GetListDeprecated()[ii], sqs))
+    if (!SharedQuadStateFromDict(list.GetList()[ii], sqs))
       return false;
   }
   shared_quad_state_list->swap(states);
@@ -2241,9 +2241,9 @@ bool CompositorRenderPassListFromDict(
   const base::Value* list = dict.FindListKey("render_pass_list");
   if (!list || !list->is_list())
     return false;
-  for (size_t ii = 0; ii < list->GetListDeprecated().size(); ++ii) {
+  for (size_t ii = 0; ii < list->GetList().size(); ++ii) {
     render_pass_list->push_back(
-        CompositorRenderPassFromDict(list->GetListDeprecated()[ii]));
+        CompositorRenderPassFromDict(list->GetList()[ii]));
     if (!(*render_pass_list)[ii].get()) {
       render_pass_list->clear();
       return false;
@@ -2295,8 +2295,7 @@ bool CompositorFrameFromDict(const base::Value& dict,
   if (!referenced_surfaces || !referenced_surfaces->is_list()) {
     return false;
   }
-  for (auto& referenced_surface_dict :
-       referenced_surfaces->GetListDeprecated()) {
+  for (auto& referenced_surface_dict : referenced_surfaces->GetList()) {
     auto referenced_surface = SurfaceRangeFromDict(referenced_surface_dict);
     if (!referenced_surface) {
       return false;
@@ -2336,7 +2335,7 @@ bool FrameDataFromList(const base::Value& list,
   if (!list.is_list()) {
     return false;
   }
-  for (const auto& frame_data_dict : list.GetListDeprecated()) {
+  for (const auto& frame_data_dict : list.GetList()) {
     FrameData frame_data;
     auto* surface_id_dict = frame_data_dict.FindDictKey("surface_id");
     if (!surface_id_dict) {

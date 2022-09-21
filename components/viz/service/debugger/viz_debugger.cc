@@ -442,7 +442,7 @@ void VizDebugger::FilterDebugStream(base::Value json) {
 
   new_filters_.clear();
 
-  for (const auto& filter : filterlist->GetListDeprecated()) {
+  for (const auto& filter : filterlist->GetList()) {
     const base::Value* file = filter.FindPath("selector.file");
     const base::Value* func = filter.FindPath("selector.func");
     const base::Value* anno = filter.FindPath("selector.anno");

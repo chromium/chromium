@@ -362,17 +362,14 @@ TEST(RenderPassIOTest, CompositorRenderPassList) {
   // 'intersects_damage_under' in its CompositorRenderPassDrawQuad, I'm
   // removing the field on dict1 for the exact comparison to work.
   base::Value* list = dict1.FindListKey("render_pass_list");
-  for (size_t i = 0; i < list->GetListDeprecated().size(); ++i) {
-    base::Value* quad_list =
-        list->GetListDeprecated()[i].FindListKey("quad_list");
+  for (auto& entry : list->GetList()) {
+    base::Value* quad_list = entry.FindListKey("quad_list");
 
-    for (size_t ii = 0; ii < quad_list->GetListDeprecated().size(); ++ii) {
+    for (auto& quad_entry : quad_list->GetList()) {
       if (const base::Value* extra_value =
-              quad_list->GetListDeprecated()[ii].FindKey(
-                  "intersects_damage_under")) {
+              quad_entry.FindKey("intersects_damage_under")) {
         EXPECT_FALSE(extra_value->GetBool());
-        ASSERT_TRUE(quad_list->GetListDeprecated()[ii].RemoveKey(
-            "intersects_damage_under"));
+        ASSERT_TRUE(quad_entry.RemoveKey("intersects_damage_under"));
       }
     }
   }
