@@ -607,13 +607,15 @@ std::string GetRequiredString(const base::Value* dict, const char* key) {
   return v->GetString();
 }
 
-bool GetBoolean(const base::Value* dict, const char* key) {
+bool GetBoolean(const base::Value* dict,
+                const char* key,
+                bool value_if_key_missing_from_dict = false) {
   const base::Value* v = dict->FindKey(key);
   if (v && !v->is_bool()) {
     NET_LOG(ERROR) << "Expected bool, found: " << *v;
     return false;
   }
-  return v ? v->GetBool() : false;
+  return v ? v->GetBool() : value_if_key_missing_from_dict;
 }
 
 int32_t GetInt32(const base::Value* dict, const char* key) {
@@ -2939,20 +2941,33 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
     return;
   }
 
+  // Sets mojom global policy results directly from the |global_policy_dict|.
+  // If there is no key (in the case of non-managed devices), the default
+  // mojom::GlobalPolicy() boolean value(s) specified explicitly in
+  // cros_network_config.mojom is used instead.
   result->allow_cellular_sim_lock = GetBoolean(
-      global_policy_dict, ::onc::global_network_config::kAllowCellularSimLock);
-  result->allow_only_policy_cellular_networks = GetBoolean(
-      global_policy_dict,
-      ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks);
+      global_policy_dict, ::onc::global_network_config::kAllowCellularSimLock,
+      /*value_if_key_missing_from_dict=*/result->allow_cellular_sim_lock);
+  result->allow_only_policy_cellular_networks =
+      GetBoolean(global_policy_dict,
+                 ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
+                 /*value_if_key_missing_from_dict=*/
+                 result->allow_only_policy_cellular_networks);
   result->allow_only_policy_networks_to_autoconnect = GetBoolean(
       global_policy_dict,
-      ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect);
+      ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
+      /*value_if_key_missing_from_dict=*/
+      result->allow_only_policy_networks_to_autoconnect);
   result->allow_only_policy_wifi_networks_to_connect =
       GetBoolean(global_policy_dict,
-                 ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect);
+                 ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
+                 /*value_if_key_missing_from_dict=*/
+                 result->allow_only_policy_wifi_networks_to_connect);
   result->allow_only_policy_wifi_networks_to_connect_if_available = GetBoolean(
       global_policy_dict,
-      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable);
+      ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
+      /*value_if_key_missing_from_dict=*/
+      result->allow_only_policy_wifi_networks_to_connect_if_available);
   absl::optional<std::vector<std::string>> blocked_hex_ssids = GetStringList(
       global_policy_dict, ::onc::global_network_config::kBlockedHexSSIDs);
   if (blocked_hex_ssids)

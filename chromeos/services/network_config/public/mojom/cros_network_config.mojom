@@ -938,6 +938,7 @@ struct CellularSimState {
 
 // Properties provided by GetGlobalPolicy. These properties affect network
 // configuration as a whole instead of individual network configurations.
+// Default values should be explicitly provided for boolean values.
 struct GlobalPolicy {
   // If true, allow PIN locking of SIMs attached to the device.
   // If false, PIN locking is prohibited.

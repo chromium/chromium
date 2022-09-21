@@ -796,7 +796,7 @@ TEST_F(CrosNetworkConfigTest, GetNetworkState) {
   EXPECT_EQ(mojom::SecurityType::kNone,
             network->type_state->get_wifi()->security);
   EXPECT_EQ(50, network->type_state->get_wifi()->signal_strength);
-  EXPECT_EQ(false, network->type_state->get_wifi()->hidden_ssid);
+  EXPECT_FALSE(network->type_state->get_wifi()->hidden_ssid);
   EXPECT_EQ(mojom::OncSource::kNone, network->source);
 
   network = GetNetworkState("wifi2_guid");
@@ -810,7 +810,7 @@ TEST_F(CrosNetworkConfigTest, GetNetworkState) {
   EXPECT_EQ(mojom::SecurityType::kWpaPsk,
             network->type_state->get_wifi()->security);
   EXPECT_EQ(100, network->type_state->get_wifi()->signal_strength);
-  EXPECT_EQ(true, network->type_state->get_wifi()->hidden_ssid);
+  EXPECT_TRUE(network->type_state->get_wifi()->hidden_ssid);
   EXPECT_EQ(mojom::OncSource::kUserPolicy, network->source);
 
   network = GetNetworkState("wifi3_guid");
@@ -1147,7 +1147,7 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   EXPECT_EQ(mojom::NetworkType::kEthernet, properties->type);
   EXPECT_EQ(mojom::ConnectionStateType::kOnline, properties->connection_state);
   ASSERT_TRUE(properties->traffic_counter_properties);
-  EXPECT_EQ(false, properties->traffic_counter_properties->auto_reset);
+  EXPECT_FALSE(properties->traffic_counter_properties->auto_reset);
   EXPECT_EQ(static_cast<uint32_t>(1),
             properties->traffic_counter_properties->user_specified_reset_day);
   EXPECT_FALSE(properties->traffic_counter_properties->last_reset_time);
@@ -1168,14 +1168,14 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   ASSERT_TRUE(properties->type_properties->is_wifi());
   EXPECT_EQ(50, properties->type_properties->get_wifi()->signal_strength);
   EXPECT_EQ(mojom::OncSource::kNone, properties->source);
-  EXPECT_EQ(false, properties->type_properties->get_wifi()->is_syncable);
+  EXPECT_FALSE(properties->type_properties->get_wifi()->is_syncable);
   ASSERT_TRUE(properties->traffic_counter_properties &&
               properties->traffic_counter_properties->last_reset_time);
   EXPECT_EQ(123456789987654,
             properties->traffic_counter_properties->last_reset_time
                 ->ToDeltaSinceWindowsEpoch()
                 .InMilliseconds());
-  EXPECT_EQ(true, properties->traffic_counter_properties->auto_reset);
+  EXPECT_TRUE(properties->traffic_counter_properties->auto_reset);
   EXPECT_EQ(static_cast<uint32_t>(2),
             properties->traffic_counter_properties->user_specified_reset_day);
 
@@ -1197,8 +1197,8 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   EXPECT_EQ(mojom::SecurityType::kWpaPsk, wifi->security);
   EXPECT_EQ(100, wifi->signal_strength);
   EXPECT_EQ(mojom::OncSource::kUserPolicy, properties->source);
-  EXPECT_EQ(false, properties->type_properties->get_wifi()->is_syncable);
-  EXPECT_EQ(false, properties->traffic_counter_properties->auto_reset);
+  EXPECT_FALSE(properties->type_properties->get_wifi()->is_syncable);
+  EXPECT_FALSE(properties->traffic_counter_properties->auto_reset);
   EXPECT_EQ(static_cast<uint32_t>(1),
             properties->traffic_counter_properties->user_specified_reset_day);
 
@@ -1214,8 +1214,8 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   EXPECT_EQ(mojom::ConnectionStateType::kNotConnected,
             properties->connection_state);
   EXPECT_EQ(mojom::OncSource::kDevice, properties->source);
-  EXPECT_EQ(false, properties->type_properties->get_wifi()->is_syncable);
-  EXPECT_EQ(false, properties->traffic_counter_properties->auto_reset);
+  EXPECT_FALSE(properties->type_properties->get_wifi()->is_syncable);
+  EXPECT_FALSE(properties->traffic_counter_properties->auto_reset);
   EXPECT_EQ(static_cast<uint32_t>(1),
             properties->traffic_counter_properties->user_specified_reset_day);
 
@@ -1232,8 +1232,8 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   EXPECT_EQ(mojom::ConnectionStateType::kNotConnected,
             properties->connection_state);
   EXPECT_EQ(mojom::OncSource::kUser, properties->source);
-  EXPECT_EQ(true, properties->type_properties->get_wifi()->is_syncable);
-  EXPECT_EQ(false, properties->traffic_counter_properties->auto_reset);
+  EXPECT_TRUE(properties->type_properties->get_wifi()->is_syncable);
+  EXPECT_FALSE(properties->traffic_counter_properties->auto_reset);
   EXPECT_EQ(static_cast<uint32_t>(1),
             properties->traffic_counter_properties->user_specified_reset_day);
 
@@ -1916,10 +1916,10 @@ TEST_F(CrosNetworkConfigTest, GetGlobalPolicy) {
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
-  EXPECT_EQ(false, policy->allow_cellular_sim_lock);
-  EXPECT_EQ(false, policy->allow_only_policy_cellular_networks);
-  EXPECT_EQ(true, policy->allow_only_policy_networks_to_autoconnect);
-  EXPECT_EQ(false, policy->allow_only_policy_wifi_networks_to_connect);
+  EXPECT_TRUE(policy->allow_cellular_sim_lock);
+  EXPECT_FALSE(policy->allow_only_policy_cellular_networks);
+  EXPECT_TRUE(policy->allow_only_policy_networks_to_autoconnect);
+  EXPECT_FALSE(policy->allow_only_policy_wifi_networks_to_connect);
   EXPECT_EQ(false,
             policy->allow_only_policy_wifi_networks_to_connect_if_available);
   ASSERT_EQ(2u, policy->blocked_hex_ssids.size());
@@ -1933,7 +1933,7 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
 
   base::DictionaryValue global_config;
   global_config.SetBoolKey(::onc::global_network_config::kAllowCellularSimLock,
-                           true);
+                           false);
   global_config.SetBoolKey(
       ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks, true);
   global_config.SetBoolKey(
@@ -1944,12 +1944,11 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
-  EXPECT_EQ(true, policy->allow_cellular_sim_lock);
-  EXPECT_EQ(true, policy->allow_only_policy_cellular_networks);
-  EXPECT_EQ(false, policy->allow_only_policy_networks_to_autoconnect);
-  EXPECT_EQ(false, policy->allow_only_policy_wifi_networks_to_connect);
-  EXPECT_EQ(false,
-            policy->allow_only_policy_wifi_networks_to_connect_if_available);
+  EXPECT_FALSE(policy->allow_cellular_sim_lock);
+  EXPECT_TRUE(policy->allow_only_policy_cellular_networks);
+  EXPECT_FALSE(policy->allow_only_policy_networks_to_autoconnect);
+  EXPECT_FALSE(policy->allow_only_policy_wifi_networks_to_connect);
+  EXPECT_FALSE(policy->allow_only_policy_wifi_networks_to_connect_if_available);
   EXPECT_EQ(1, observer()->GetPolicyAppliedCount(/*userhash=*/std::string()));
 }
 
