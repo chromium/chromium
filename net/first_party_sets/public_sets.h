@@ -89,6 +89,10 @@ class NET_EXPORT PublicSets {
       base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
           f) const;
 
+  // Whether the content of public sets is empty (including the manual set
+  // entries).
+  bool empty() const { return entries_.empty() && manual_config_.empty(); }
+
  private:
   // mojo (de)serialization needs access to private details.
   friend struct mojo::StructTraits<network::mojom::PublicFirstPartySetsDataView,

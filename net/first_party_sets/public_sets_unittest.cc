@@ -174,6 +174,37 @@ TEST_F(PublicSetsTest, FindEntry_AliasesIgnoredForConfig) {
               public_entry);
 }
 
+TEST_F(PublicSetsTest, Empty_Empty) {
+  EXPECT_TRUE(PublicSets().empty());
+}
+
+TEST_F(PublicSetsTest, Empty_NonemptyEntries) {
+  EXPECT_FALSE(
+      PublicSets(
+          {
+              {kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+              {kAssociated4,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+          },
+          {})
+          .empty());
+}
+
+TEST_F(PublicSetsTest, Empty_NonemptyManualSet) {
+  PublicSets public_sets;
+  public_sets.ApplyManuallySpecifiedSet(
+      kPrimary,
+      {
+          {kPrimary,
+           FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+          {kAssociated4,
+           FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+      },
+      {});
+  EXPECT_FALSE(public_sets.empty());
+}
+
 class PopulatedPublicSetsTest : public PublicSetsTest {
  public:
   PopulatedPublicSetsTest()

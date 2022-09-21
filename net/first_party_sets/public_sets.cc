@@ -78,7 +78,11 @@ PublicSets::PublicSets(
     FirstPartySetsContextConfig manual_config)
     : entries_(std::move(entries)),
       aliases_(std::move(aliases)),
-      manual_config_(std::move(manual_config)) {}
+      manual_config_(std::move(manual_config)) {
+  // `aliases_` can only be nonempty if `entries_` is also nonempty.
+  if (!aliases_.empty())
+    DCHECK(!entries_.empty());
+}
 
 PublicSets::PublicSets(PublicSets&&) = default;
 PublicSets& PublicSets::operator=(PublicSets&&) = default;
