@@ -57,6 +57,27 @@ class OsTelemetryGetBatteryInfoFunction : public TelemetryApiFunctionBase {
   void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 };
 
+class OsTelemetryGetNonRemovableBlockDevicesInfoFunction
+    : public TelemetryApiFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getNonRemovableBlockDevicesInfo",
+                             OS_TELEMETRY_GETNONREMOVABLEBLOCKDEVICESINFO)
+
+  OsTelemetryGetNonRemovableBlockDevicesInfoFunction();
+  OsTelemetryGetNonRemovableBlockDevicesInfoFunction(
+      const OsTelemetryGetNonRemovableBlockDevicesInfoFunction&) = delete;
+  OsTelemetryGetNonRemovableBlockDevicesInfoFunction& operator=(
+      const OsTelemetryGetNonRemovableBlockDevicesInfoFunction&) = delete;
+
+ private:
+  ~OsTelemetryGetNonRemovableBlockDevicesInfoFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
+};
+
 class OsTelemetryGetCpuInfoFunction : public TelemetryApiFunctionBase {
  public:
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getCpuInfo", OS_TELEMETRY_GETCPUINFO)

@@ -5,6 +5,7 @@
 #include <inttypes.h>
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -12,6 +13,7 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
+#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -231,6 +233,51 @@ TEST(TelemetryApiConverters, BatteryInfo) {
 
   ASSERT_TRUE(result.temperature);
   EXPECT_EQ(kTemperature, static_cast<uint64_t>(*result.temperature));
+}
+
+TEST(TelemetryApiConverters, NonRemovableBlockDevice) {
+  constexpr uint64_t kSize1 = 100000000000;
+  constexpr char kName1[] = "TestName1";
+  constexpr char kType1[] = "TestType1";
+
+  constexpr uint64_t kSize2 = 200000000000;
+  constexpr char kName2[] = "TestName2";
+  constexpr char kType2[] = "TestType2";
+
+  auto first_element =
+      telemetry_service::ProbeNonRemovableBlockDeviceInfo::New();
+  first_element->size = telemetry_service::UInt64Value::New(kSize1);
+  first_element->name = kName1;
+  first_element->type = kType1;
+
+  auto second_element =
+      telemetry_service::ProbeNonRemovableBlockDeviceInfo::New();
+  second_element->size = telemetry_service::UInt64Value::New(kSize2);
+  second_element->name = kName2;
+  second_element->type = kType2;
+
+  std::vector<telemetry_service::ProbeNonRemovableBlockDeviceInfoPtr> input;
+  input.push_back(std::move(first_element));
+  input.push_back(std::move(second_element));
+
+  auto result = ConvertPtrVector<telemetry_api::NonRemovableBlockDeviceInfo>(
+      std::move(input));
+
+  ASSERT_EQ(result.size(), 2ul);
+
+  ASSERT_TRUE(result[0].size);
+  EXPECT_EQ(*result[0].size, kSize1);
+  ASSERT_TRUE(result[0].name);
+  EXPECT_EQ(*result[0].name, kName1);
+  ASSERT_TRUE(result[0].type);
+  EXPECT_EQ(*result[0].type, kType1);
+
+  ASSERT_TRUE(result[1].size);
+  EXPECT_EQ(*result[1].size, kSize2);
+  ASSERT_TRUE(result[1].name);
+  EXPECT_EQ(*result[1].name, kName2);
+  ASSERT_TRUE(result[1].type);
+  EXPECT_EQ(*result[1].type, kType2);
 }
 
 TEST(TelemetryApiConverters, OsVersion) {

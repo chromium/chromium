@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/values.h"
@@ -79,6 +80,42 @@ void OsTelemetryGetBatteryInfoFunction::OnResult(
 
   Respond(
       ArgumentList(api::os_telemetry::GetBatteryInfo::Results::Create(result)));
+}
+
+// OsTelemetryGetNonRemovableBlockDevicesInfoFunction --------------------------
+
+OsTelemetryGetNonRemovableBlockDevicesInfoFunction::
+    OsTelemetryGetNonRemovableBlockDevicesInfoFunction() = default;
+OsTelemetryGetNonRemovableBlockDevicesInfoFunction::
+    ~OsTelemetryGetNonRemovableBlockDevicesInfoFunction() = default;
+
+void OsTelemetryGetNonRemovableBlockDevicesInfoFunction::RunIfAllowed() {
+  auto cb = base::BindOnce(
+      &OsTelemetryGetNonRemovableBlockDevicesInfoFunction::OnResult, this);
+
+  GetRemoteService()->ProbeTelemetryInfo(
+      {crosapi::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices},
+      std::move(cb));
+}
+
+void OsTelemetryGetNonRemovableBlockDevicesInfoFunction::OnResult(
+    crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
+  if (!ptr || !ptr->block_device_result ||
+      !ptr->block_device_result->is_block_device_info()) {
+    Respond(Error("API internal error"));
+    return;
+  }
+  auto& block_device_info = ptr->block_device_result->get_block_device_info();
+
+  auto infos = converters::ConvertPtrVector<
+      api::os_telemetry::NonRemovableBlockDeviceInfo>(
+      std::move(block_device_info));
+  api::os_telemetry::NonRemovableBlockDeviceInfoResponse result;
+  result.device_infos = std::move(infos);
+
+  Respond(ArgumentList(
+      api::os_telemetry::GetNonRemovableBlockDevicesInfo::Results::Create(
+          result)));
 }
 
 // OsTelemetryGetCpuInfoFunction -----------------------------------------------

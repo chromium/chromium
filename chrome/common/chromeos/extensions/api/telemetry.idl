@@ -24,6 +24,18 @@ namespace os.telemetry {
 
   callback BatteryInfoCallback = void (BatteryInfo batteryInfo);
 
+  dictionary NonRemovableBlockDeviceInfo {
+    DOMString? name;
+    DOMString? type;
+    double? size;
+  };
+
+  dictionary NonRemovableBlockDeviceInfoResponse {
+    NonRemovableBlockDeviceInfo[] deviceInfos;
+  };
+
+  callback NonRemovableBlockDevicesInfoCallback = void (NonRemovableBlockDeviceInfoResponse deviceInfoResponse);
+
   enum CpuArchitectureEnum {
     unknown,
     x86_64,
@@ -114,6 +126,8 @@ namespace os.telemetry {
 
   interface Functions {
     [supportsPromises] static void getBatteryInfo(BatteryInfoCallback callback);
+
+    [supportsPromises] static void getNonRemovableBlockDevicesInfo(NonRemovableBlockDevicesInfoCallback callback);
 
     [supportsPromises] static void getCpuInfo(CpuInfoCallback callback);
 

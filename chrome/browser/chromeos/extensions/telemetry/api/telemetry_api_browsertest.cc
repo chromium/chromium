@@ -9,6 +9,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/fake_probe_service.h"
+#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -112,6 +114,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
             chrome.os.telemetry.getMemoryInfo(),
             'Error: API chrome.os.telemetry.getMemoryInfo failed. ' +
             'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
+      async function getNonRemovableBlockDevicesInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getNonRemovableBlockDevicesInfo(),
+            'Error: API chrome.os.telemetry.getNonRemovableBlockDevicesInfo ' +
+            'failed. Not supported by ash browser'
         );
         chrome.test.succeed();
       },
@@ -280,6 +290,105 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
             voltageMinDesign: 1000000000.1001,
             voltageNow: 1234567890.123456,
           }, result);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetNonRemovableBlockDeviceInfo_Error) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getNonRemovableBlockDevicesInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getNonRemovableBlockDevicesInfo(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetNonRemovableBlockDeviceInfo_Success) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeProbeService.
+  {
+    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+
+    {
+      auto first_element =
+          crosapi::mojom::ProbeNonRemovableBlockDeviceInfo::New();
+      first_element->size = crosapi::mojom::UInt64Value::New(100000000);
+      first_element->name = "TestName1";
+      first_element->type = "TestType1";
+
+      auto second_element =
+          crosapi::mojom::ProbeNonRemovableBlockDeviceInfo::New();
+      second_element->size = crosapi::mojom::UInt64Value::New(200000000);
+      second_element->name = "TestName2";
+      second_element->type = "TestType2";
+
+      std::vector<crosapi::mojom::ProbeNonRemovableBlockDeviceInfoPtr>
+          block_devices_info;
+      block_devices_info.push_back(std::move(first_element));
+      block_devices_info.push_back(std::move(second_element));
+
+      telemetry_info->block_device_result =
+          crosapi::mojom::ProbeNonRemovableBlockDeviceResult::
+              NewBlockDeviceInfo(std::move(block_devices_info));
+    }
+
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getNonRemovableBlockDevicesInfo() {
+        const result = await chrome.os.telemetry
+                          .getNonRemovableBlockDevicesInfo();
+        chrome.test.assertEq(2, result.deviceInfos.length);
+
+        const deviceResult = result.deviceInfos;
+        chrome.test.assertEq(100000000, deviceResult[0].size);
+        chrome.test.assertEq("TestName1", deviceResult[0].name);
+        chrome.test.assertEq("TestType1", deviceResult[0].type);
+
+        chrome.test.assertEq(200000000, deviceResult[1].size);
+        chrome.test.assertEq("TestName2", deviceResult[1].name);
+        chrome.test.assertEq("TestType2", deviceResult[1].type);
+
         chrome.test.succeed();
       }
     ]);

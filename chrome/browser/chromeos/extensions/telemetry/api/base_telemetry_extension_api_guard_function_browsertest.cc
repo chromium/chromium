@@ -68,6 +68,14 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function getNonRemovableBlockDevicesInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getNonRemovableBlockDevicesInfo(),
+            'Error: Unauthorized access to chrome.os.telemetry.' +
+            'getNonRemovableBlockDevicesInfo. %s'
+        );
+        chrome.test.succeed();
+      },
       async function getOemData() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getOemData(),

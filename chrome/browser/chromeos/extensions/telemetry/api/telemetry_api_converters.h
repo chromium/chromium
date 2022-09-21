@@ -39,6 +39,9 @@ chromeos::api::os_telemetry::PhysicalCpuInfo UncheckedConvertPtr(
 chromeos::api::os_telemetry::BatteryInfo UncheckedConvertPtr(
     crosapi::mojom::ProbeBatteryInfoPtr input);
 
+chromeos::api::os_telemetry::NonRemovableBlockDeviceInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeNonRemovableBlockDeviceInfoPtr);
+
 chromeos::api::os_telemetry::OsVersionInfo UncheckedConvertPtr(
     crosapi::mojom::ProbeOsVersionPtr input);
 

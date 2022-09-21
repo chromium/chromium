@@ -104,6 +104,20 @@ telemetry_api::BatteryInfo UncheckedConvertPtr(
   return result;
 }
 
+telemetry_api::NonRemovableBlockDeviceInfo UncheckedConvertPtr(
+    telemetry_service::ProbeNonRemovableBlockDeviceInfoPtr input) {
+  telemetry_api::NonRemovableBlockDeviceInfo result;
+
+  if (input->size) {
+    result.size = input->size->value;
+  }
+
+  result.name = input->name.value();
+  result.type = input->type.value();
+
+  return result;
+}
+
 telemetry_api::OsVersionInfo UncheckedConvertPtr(
     telemetry_service::ProbeOsVersionPtr input) {
   telemetry_api::OsVersionInfo result;
