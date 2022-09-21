@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta name=timeout content=long>
+<meta name="timeout" content="long">
 <!-- user agents are not required to support open features other than `noopener`
      and on some platforms position and size features don't make sense -->
 <meta name="flags" content="may">
@@ -57,24 +57,14 @@ promise_test(async setUpTest => {
     let testName =
       `Fullscreen on '${fullscreenScreen.label}' and open popup on '${popupScreen.label}'`;
     promise_test(async popupTest => {
-      const button = document.createElement('button');
-      button.innerHTML = testName;
-      const entry = document.createElement('li');
-      entry.appendChild(button);
-      popupButtons.appendChild(entry);
-      const popupWatcher = new EventWatcher(popupTest, button, ['click']);
-      const popupClick = popupWatcher.wait_for('click');
-      try {  // Support manual testing where test_driver is not running.
-        await test_driver.click(button);
-      } catch {
-      }
-      await popupClick;
-      button.disabled = true;
+      await addTestTriggerButtonAndAwaitClick(popupButtons,
+        testName,
+        popupTest);
       await document.documentElement.requestFullscreen(
         { screen: fullscreenScreen }
       );
       await testPopupOnScreen(popupTest, popupScreen,
-                             /*expectPopup=*/fullscreenScreen !== popupScreen);
+                             /*expectPopup=*/screenDetails.screens.length > 1);
     }, testName);
   }
 }, 'Use multi-screen details to request fullscreen and open a pop-up in the same user activation.');

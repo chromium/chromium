@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta name=timeout content=long>
+<meta name="timeout" content="long">
 <!-- user agents are not required to support open features other than `noopener`
      and on some platforms position and size features don't make sense -->
 <meta name="flags" content="may">
@@ -89,19 +89,9 @@ promise_test(async setUpTest => {
   assert_greater_than(screenDetails.screens.length, 0, 'Connect a screen');
   for (const s of screenDetails.screens) {
     promise_test(async popupTest => {
-      const button = document.createElement('button');
-      button.innerHTML = `Open a popup on '${s.label}'`;
-      const entry = document.createElement('li');
-      entry.appendChild(button);
-      popupButtons.appendChild(entry);
-      const popupWatcher = new EventWatcher(popupTest, button, ['click']);
-      const popupClick = popupWatcher.wait_for('click');
-      try {  // Support manual testing where test_driver is not running.
-        await test_driver.click(button);
-      } catch {
-      }
-      await popupClick;
-      button.disabled = true;
+      await addTestTriggerButtonAndAwaitClick(popupButtons,
+        `Open a popup on '${s.label}'`,
+        popupTest);
       await testPopupOnScreen(popupTest, s);
     }, `Open a popup on '${s.label}'`);
   }
