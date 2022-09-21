@@ -8,6 +8,6 @@
 #import <Foundation/Foundation.h>
 
 // A string defining the authentication type, e.g. "Face ID" or "Touch ID".
-NSString* biometricAuthenticationTypeString();
+NSString* BiometricAuthenticationTypeString();
 
 #endif  // IOS_CHROME_BROWSER_UI_INCOGNITO_REAUTH_INCOGNITO_REAUTH_UTIL_H_

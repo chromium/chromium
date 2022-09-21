@@ -97,7 +97,7 @@
 
   NSString* authReason = l10n_util::GetNSStringF(
       IDS_IOS_INCOGNITO_REAUTH_SYSTEM_DIALOG_REASON,
-      base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
+      base::SysNSStringToUTF16(BiometricAuthenticationTypeString()));
 
   __weak IncognitoReauthSceneAgent* weakSelf = self;
   void (^completionHandler)(ReauthenticationResult) =

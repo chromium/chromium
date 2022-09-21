@@ -12,7 +12,7 @@
 #error "This file requires ARC support."
 #endif
 
-NSString* biometricAuthenticationTypeString() {
+NSString* BiometricAuthenticationTypeString() {
   LAContext* ctx = [[LAContext alloc] init];
   // Call canEvaluatePolicy:error: once to populate biometrics type
   NSError* error;

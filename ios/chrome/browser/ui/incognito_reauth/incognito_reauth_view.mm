@@ -136,7 +136,7 @@ const CGFloat kVerticalContentPadding = 70.0f;
   titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
   titleLabel.text = l10n_util::GetNSStringF(
       IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON,
-      base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
+      base::SysNSStringToUTF16(BiometricAuthenticationTypeString()));
   [titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
@@ -152,7 +152,7 @@ const CGFloat kVerticalContentPadding = 70.0f;
 
   button.accessibilityLabel = l10n_util::GetNSStringF(
       IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON_VOICEOVER_LABEL,
-      base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
+      base::SysNSStringToUTF16(BiometricAuthenticationTypeString()));
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
   button.pointerInteractionEnabled = YES;
