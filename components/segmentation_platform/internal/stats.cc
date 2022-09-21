@@ -283,19 +283,19 @@ void RecordModelUpdateTimeDifference(SegmentId segment_id,
 }
 
 void RecordSegmentSelectionComputed(
-    const std::string& segmentation_key,
+    const Config& config,
     SegmentId new_selection,
     absl::optional<SegmentId> previous_selection) {
   // Special case adaptive toolbar since it already has histograms being
   // recorded and updating names will affect current work.
-  if (segmentation_key == kAdaptiveToolbarSegmentationKey) {
+  if (config.segmentation_key == kAdaptiveToolbarSegmentationKey) {
     base::UmaHistogramEnumeration(
         "SegmentationPlatform.AdaptiveToolbar.SegmentSelection.Computed",
         OptimizationTargetToAdaptiveToolbarButtonVariant(new_selection));
   }
-  std::string computed_hist = base::StrCat(
-      {"SegmentationPlatform.", SegmentationKeyToUmaName(segmentation_key),
-       ".SegmentSelection.Computed2"});
+  std::string computed_hist =
+      base::StrCat({"SegmentationPlatform.", config.segmentation_uma_name,
+                    ".SegmentSelection.Computed2"});
   base::UmaHistogramEnumeration(
       computed_hist, OptimizationTargetToSegmentationModel(new_selection));
 
@@ -306,14 +306,14 @@ void RecordSegmentSelectionComputed(
   if (prev_segment == new_selection)
     return;
 
-  std::string switched_hist = base::StrCat(
-      {"SegmentationPlatform.", SegmentationKeyToUmaName(segmentation_key),
-       ".SegmentSwitched"});
-  if (segmentation_key == kAdaptiveToolbarSegmentationKey) {
+  std::string switched_hist =
+      base::StrCat({"SegmentationPlatform.", config.segmentation_uma_name,
+                    ".SegmentSwitched"});
+  if (config.segmentation_key == kAdaptiveToolbarSegmentationKey) {
     base::UmaHistogramEnumeration(
         switched_hist,
         GetAdaptiveToolbarSegmentSwitch(new_selection, prev_segment));
-  } else if (IsBooleanSegment(segmentation_key)) {
+  } else if (IsBooleanSegment(config.segmentation_key)) {
     base::UmaHistogramEnumeration(
         switched_hist, GetBooleanSegmentSwitch(new_selection, prev_segment));
   }
@@ -518,11 +518,11 @@ void RecordSignalsListeningCount(
       histogram_value_count);
 }
 
-void RecordSegmentSelectionFailure(const std::string& segmentation_key,
+void RecordSegmentSelectionFailure(const Config& config,
                                    SegmentationSelectionFailureReason reason) {
   base::UmaHistogramEnumeration(
       base::StrCat({"SegmentationPlatform.SelectionFailedReason.",
-                    SegmentationKeyToUmaName(segmentation_key)}),
+                    config.segmentation_uma_name}),
       reason);
 }
 

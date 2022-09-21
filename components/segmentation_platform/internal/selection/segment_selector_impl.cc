@@ -110,14 +110,14 @@ SegmentSelectorImpl::SegmentSelectorImpl(
     selected_segment_last_session_.is_ready = true;
     selected_segment_last_session_.rank = selected_segment->rank;
     stats::RecordSegmentSelectionFailure(
-        config_->segmentation_key,
+        *config_,
         stats::SegmentationSelectionFailureReason::kSelectionAvailableInPrefs);
 
     group_name = config_->GetSegmentUmaName(selected_segment->segment_id);
   } else {
     stats::RecordSegmentSelectionFailure(
-        config_->segmentation_key, stats::SegmentationSelectionFailureReason::
-                                       kInvalidSelectionResultInPrefs);
+        *config_, stats::SegmentationSelectionFailureReason::
+                      kInvalidSelectionResultInPrefs);
     group_name = "Unselected";
   }
 
@@ -197,7 +197,7 @@ bool SegmentSelectorImpl::IsPreviousSelectionInvalid() {
     if (!platform_options_.force_refresh_results &&
         previous_selection->selection_time + ttl_to_use > clock_->Now()) {
       stats::RecordSegmentSelectionFailure(
-          config_->segmentation_key,
+          *config_,
           stats::SegmentationSelectionFailureReason::kSelectionTtlNotExpired);
       VLOG(1) << __func__ << ": previous selection of segment="
               << SegmentId_Name(previous_selection->segment_id)
@@ -263,7 +263,7 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
     SegmentId current_segment_id,
     std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
   if (!result->rank) {
-    stats::RecordSegmentSelectionFailure(config_->segmentation_key,
+    stats::RecordSegmentSelectionFailure(*config_,
                                          GetFailureReason(result->state));
     if (config_->on_demand_execution && !callback.is_null()) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -322,7 +322,7 @@ void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection,
   }
 
   stats::RecordSegmentSelectionComputed(
-      config_->segmentation_key, new_selection,
+      *config_, new_selection,
       previous_selection.has_value()
           ? absl::make_optional(previous_selection->segment_id)
           : absl::nullopt);

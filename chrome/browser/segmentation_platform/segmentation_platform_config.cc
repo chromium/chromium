@@ -472,6 +472,8 @@ void AppendConfigsFromExperiments(
 
   for (const std::string& param : param_values) {
     auto config = ParseConfigFromString(param);
+    VLOG(1) << "Segmentation config param from experiment, "
+            << (config ? "added successfully: " : "failed to parse: ") << param;
     if (config) {
       out_configs.push_back(std::move(config));
     }

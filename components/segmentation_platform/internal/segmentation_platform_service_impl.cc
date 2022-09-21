@@ -188,8 +188,7 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
   if (!success) {
     for (const auto& config : configs_) {
       stats::RecordSegmentSelectionFailure(
-          config->segmentation_key,
-          stats::SegmentationSelectionFailureReason::kDBInitFailure);
+          *config, stats::SegmentationSelectionFailureReason::kDBInitFailure);
     }
     return;
   }

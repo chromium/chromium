@@ -5,7 +5,7 @@
 #include "components/segmentation_platform/internal/stats.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -67,22 +67,23 @@ TEST(StatsTest, ModelExecutionZeroValuePercent) {
 TEST(StatsTest, AdaptiveToolbarSegmentSwitch) {
   std::string histogram("SegmentationPlatform.AdaptiveToolbar.SegmentSwitched");
   base::HistogramTester tester;
+  Config config;
+  config.segmentation_key = kAdaptiveToolbarSegmentationKey;
+  config.segmentation_uma_name =
+      SegmentationKeyToUmaName(config.segmentation_key);
 
   // Share -> New tab.
   RecordSegmentSelectionComputed(
-      kAdaptiveToolbarSegmentationKey,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      config, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
 
   // None -> Share.
   RecordSegmentSelectionComputed(
-      kAdaptiveToolbarSegmentationKey,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, absl::nullopt);
+      config, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, absl::nullopt);
 
   // Share -> Share.
   RecordSegmentSelectionComputed(
-      kAdaptiveToolbarSegmentationKey,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+      config, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
   tester.ExpectTotalCount(histogram, 2);
 
@@ -102,11 +103,14 @@ TEST(StatsTest, BooleanSegmentSwitch) {
   std::string histogram(
       "SegmentationPlatform.ChromeStartAndroid.SegmentSwitched");
   base::HistogramTester tester;
+  Config config;
+  config.segmentation_key = kChromeStartAndroidSegmentationKey;
+  config.segmentation_uma_name =
+      SegmentationKeyToUmaName(config.segmentation_key);
 
   // Start to none.
   RecordSegmentSelectionComputed(
-      kChromeStartAndroidSegmentationKey,
-      SegmentId::OPTIMIZATION_TARGET_UNKNOWN,
+      config, SegmentId::OPTIMIZATION_TARGET_UNKNOWN,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID);
 
   tester.ExpectTotalCount(histogram, 1);
@@ -115,8 +119,7 @@ TEST(StatsTest, BooleanSegmentSwitch) {
                   static_cast<int>(BooleanSegmentSwitch::kEnabledToNone), 1)));
   // None to start.
   RecordSegmentSelectionComputed(
-      kChromeStartAndroidSegmentationKey,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
+      config, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
       absl::nullopt);
 
   tester.ExpectTotalCount(histogram, 2);

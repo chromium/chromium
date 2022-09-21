@@ -7,6 +7,7 @@
 
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
@@ -56,7 +57,7 @@ void RecordModelUpdateTimeDifference(SegmentId segment_id,
 // Records the result of segment selection whenever segment selection is
 // computed.
 void RecordSegmentSelectionComputed(
-    const std::string& segmentation_key,
+    const Config& config,
     SegmentId new_selection,
     absl::optional<SegmentId> previous_selection);
 
@@ -157,7 +158,7 @@ void RecordSignalsListeningCount(
 // "SegmentationSelectionFailureReason" in
 // //tools/metrics/histograms/enums.xml.
 enum class SegmentationSelectionFailureReason {
-  kPlatformDisabled = 0,
+  kDeprecatedPlatformDisabled = 0,
   kSelectionAvailableInPrefs = 1,
   kAtLeastOneSegmentNotReady = 2,
   kAtLeastOneSegmentSignalsNotCollected = 3,
@@ -177,7 +178,7 @@ enum class SegmentationSelectionFailureReason {
 };
 
 // Records the reason for failure or success to compute a segment selection.
-void RecordSegmentSelectionFailure(const std::string& segmentation_key,
+void RecordSegmentSelectionFailure(const Config& config,
                                    SegmentationSelectionFailureReason reason);
 
 // Keep in sync with SegmentationPlatformFeatureProcessingError in
