@@ -6,15 +6,13 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_SEPARATOR FOCUSABLE IA2_STATE_HORIZONTAL IA2_STATE_MULTI_LINE
 ++ROLE_SYSTEM_GRAPHIC name='To get missing image descriptions, open the context menu.' READONLY FOCUSABLE IA2_STATE_MULTI_LINE
 ++ROLE_SYSTEM_STATICTEXT name=' '
-++ROLE_SYSTEM_GROUPING name='Unable to play media.' value='<newline><newline>0:00<newline><newline><newline><newline><newline>' UNAVAILABLE FOCUSABLE IA2_STATE_MULTI_LINE
+++ROLE_SYSTEM_GROUPING name='Unable to play media.' value='<newline><newline><newline><newline><newline><newline>' UNAVAILABLE FOCUSABLE IA2_STATE_MULTI_LINE
 ++++IA2_ROLE_SECTION
 ++++++IA2_ROLE_SECTION
 ++++++IA2_ROLE_SECTION
 ++++++++IA2_ROLE_SECTION
 ++++++++++ROLE_SYSTEM_PUSHBUTTON name='play' UNAVAILABLE
 ++++++++++++IA2_ROLE_SECTION
-++++++++++IA2_ROLE_SECTION name='elapsed time: 0:00'
-++++++++++++ROLE_SYSTEM_STATICTEXT name='0:00'
 ++++++++++IA2_ROLE_SECTION
 ++++++++++++IA2_ROLE_SECTION
 ++++++++++++ROLE_SYSTEM_PUSHBUTTON name='mute' UNAVAILABLE
@@ -22,5 +20,5 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++++IA2_ROLE_SECTION
 ++++++++++ROLE_SYSTEM_BUTTONMENU name='show more media controls' UNAVAILABLE HASPOPUP description-from:tooltip description='more options'
 ++++++++++++IA2_ROLE_SECTION
-++++++++ROLE_SYSTEM_SLIDER name='video time scrubber 0:00 / 0:00' value='elapsed time: 0:00' UNAVAILABLE IA2_STATE_HORIZONTAL
+++++++++ROLE_SYSTEM_SLIDER name='video time scrubber' value='elapsed time: 0:00' UNAVAILABLE IA2_STATE_HORIZONTAL description:total time\: 0\:00 description-from:aria-description description='total time: 0:00'
 ++ROLE_SYSTEM_PROGRESSBAR value='0' MIXED READONLY FOCUSABLE IA2_STATE_MULTI_LINE

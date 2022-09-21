@@ -71,18 +71,31 @@ bool MediaControlTimelineElement::WillRespondToMouseClickEvents() {
 }
 
 void MediaControlTimelineElement::UpdateAria() {
-  String aria_label =
-      GetLocale().QueryString(IsA<HTMLVideoElement>(MediaElement())
-                                  ? IDS_AX_MEDIA_VIDEO_SLIDER_HELP
-                                  : IDS_AX_MEDIA_AUDIO_SLIDER_HELP) +
-      " " + GetMediaControls().CurrentTimeDisplay().textContent(true) + " " +
-      GetMediaControls().RemainingTimeDisplay().textContent(true);
+  String aria_label = GetLocale().QueryString(
+      IsA<HTMLVideoElement>(MediaElement()) ? IDS_AX_MEDIA_VIDEO_SLIDER_HELP
+                                            : IDS_AX_MEDIA_AUDIO_SLIDER_HELP);
   setAttribute(html_names::kAriaLabelAttr, AtomicString(aria_label));
 
+  // The aria-valuetext is a human-friendly description of the current value
+  // of the slider, as opposed to the natural slider value which will be read
+  // out as a percentage.
   setAttribute(html_names::kAriaValuetextAttr,
                AtomicString(GetLocale().QueryString(
                    IDS_AX_MEDIA_CURRENT_TIME_DISPLAY,
-                   GetMediaControls().CurrentTimeDisplay().textContent(true))));
+                   GetMediaControls().CurrentTimeDisplay().FormatTime())));
+
+  // The total time is exposed as aria-description, which will be read after the
+  // aria-label and aria-valuetext. Unfortunately, aria-valuenow will not work,
+  // because it must be numeric. ARIA and platform APIs do not provide a means
+  // of setting a friendly max value, similar to aria-valuetext. Note:
+  // IDS_AX_MEDIA_TIME_REMAINING_DISPLAY is a misnomer and refers to the total
+  // time.
+  setAttribute(html_names::kAriaDescriptionAttr,
+               AtomicString(GetLocale().QueryString(
+                   IDS_AX_MEDIA_TIME_REMAINING_DISPLAY,
+                   GetMediaControls()
+                       .RemainingTimeDisplay()
+                       .MediaControlTimeDisplayElement::FormatTime())));
 }
 
 void MediaControlTimelineElement::SetPosition(double current_time,

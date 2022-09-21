@@ -19,8 +19,7 @@ namespace blink {
 
 MediaControlRemainingTimeDisplayElement::
     MediaControlRemainingTimeDisplayElement(MediaControlsImpl& media_controls)
-    : MediaControlTimeDisplayElement(media_controls,
-                                     IDS_AX_MEDIA_TIME_REMAINING_DISPLAY) {
+    : MediaControlTimeDisplayElement(media_controls) {
   SetShadowPseudoId(
       AtomicString("-webkit-media-controls-time-remaining-display"));
 }

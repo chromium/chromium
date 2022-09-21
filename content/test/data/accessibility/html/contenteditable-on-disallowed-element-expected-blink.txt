@@ -29,11 +29,10 @@ rootWebArea focusable
 ++++++++++++++genericContainer
 ++++++++++++++++button inputType='button' restriction=disabled
 ++++++++++++++++++genericContainer
-++++++++++++++++genericContainer
-++++++++++++++++++staticText
-++++++++++++++++++++inlineTextBox
 ++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored
+++++++++++++++++++staticText ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
 ++++++++++++++++genericContainer ignored
 ++++++++++++++++genericContainer
 ++++++++++++++++++genericContainer
@@ -43,7 +42,7 @@ rootWebArea focusable
 ++++++++++++++++++genericContainer
 ++++++++++++++++popUpButton description='more options' inputType='button' descriptionFrom=title restriction=disabled
 ++++++++++++++++++genericContainer
-++++++++++++++slider horizontal inputType='range' restriction=disabled valueForRange=0.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++++slider horizontal description='total time: 0:00' inputType='range' descriptionFrom=ariaDescription restriction=disabled valueForRange=0.00 minValueForRange=0.00 maxValueForRange=100.00
 ++++++++++menu ignored invisible
 ++++++++++menu ignored invisible
 ++++++++++menu ignored invisible

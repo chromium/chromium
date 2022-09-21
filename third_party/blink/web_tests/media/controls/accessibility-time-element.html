@@ -14,29 +14,21 @@ async_test(t => {
 
   var current_time = currentTimeElement(video);
   var remaining_time = timeRemainingElement(video);
+
   assert_not_equals(current_time, null);
   assert_not_equals(remaining_time, null);
 
-  assert_equals(current_time.getAttribute('aria-label'),
-                'elapsed time: 0:00');
+  assert_equals(current_time.ariaHidden, 'true');
+  assert_equals(remaining_time.ariaHidden, 'true');
 
-  assert_equals(remaining_time.getAttribute('aria-label'),
-                'total time: / 0:00');
-
-  video.oncanplaythrough = t.step_func_done(_ => {
-    assert_equals(current_time.getAttribute('aria-label'),
-                  'elapsed time: 0:00');
-
-    assert_equals(remaining_time.getAttribute('aria-label'),
-                  'total time: / 0:06');
+video.oncanplaythrough = t.step_func_done(_ => {
+  assert_equals(current_time.ariaHidden, 'true');
+  assert_equals(remaining_time.ariaHidden, 'true');
 
     video.currentTime = 1;
     video.onseeked = t.step_func(_ => {
-      assert_equals(current_time.getAttribute('aria-label'),
-                    'elapsed time: 0:01');
-
-      assert_equals(remaining_time.getAttribute('aria-label'),
-                    'total time: / 0:06');
+      assert_equals(current_time.ariaHidden, 'true');
+      assert_equals(remaining_time.ariaHidden, 'true');
     });
   });
 });

@@ -12,11 +12,10 @@ rootWebArea
 ++++++++++++++genericContainer
 ++++++++++++++++button name='play' restriction=disabled
 ++++++++++++++++++genericContainer
-++++++++++++++++genericContainer name='elapsed time: 0:00'
-++++++++++++++++++staticText name='0:00'
-++++++++++++++++++++inlineTextBox name='0:00'
 ++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored name='/ 0:00'
+++++++++++++++++++staticText ignored invisible name='0:00'
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible name='/ 0:00'
 ++++++++++++++++genericContainer ignored
 ++++++++++++++++genericContainer
 ++++++++++++++++++genericContainer
@@ -26,7 +25,7 @@ rootWebArea
 ++++++++++++++++++genericContainer
 ++++++++++++++++popUpButton description='more options' name='show more media controls' descriptionFrom=title restriction=disabled haspopup=menu
 ++++++++++++++++++genericContainer
-++++++++++++++slider horizontal name='video time scrubber 0:00 / 0:00' value='elapsed time: 0:00' restriction=disabled valueForRange=0.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++++slider horizontal description='total time: 0:00' name='video time scrubber' value='elapsed time: 0:00' descriptionFrom=ariaDescription restriction=disabled valueForRange=0.00 minValueForRange=0.00 maxValueForRange=100.00
 ++++++++++menu ignored invisible
 ++++++++++menu ignored invisible
 ++++++++++menu ignored invisible
