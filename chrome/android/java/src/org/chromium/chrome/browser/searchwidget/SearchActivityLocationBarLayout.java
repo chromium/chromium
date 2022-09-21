@@ -45,13 +45,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
     public SearchActivityLocationBarLayout(Context context, AttributeSet attrs) {
         super(context, attrs, R.layout.location_bar_base);
-        Drawable backgroundDrawable = ToolbarPhone.createModernLocationBarBackground(context);
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            backgroundDrawable.setTint(OmniboxFeatures.shouldShowActiveColorOnOmnibox()
-                            ? mLocationBarDataProvider.getSuggestionStandardBackgroundColor()
-                            : mLocationBarDataProvider.getDropdownStandardBackgroundColor());
-        }
-        setBackground(backgroundDrawable);
     }
 
     @Override
@@ -64,6 +57,14 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mAutocompleteCoordinator.setShouldPreventOmniboxAutocomplete(mPendingSearchPromoDecision);
         findViewById(R.id.url_action_container).setVisibility(View.VISIBLE);
+
+        Drawable backgroundDrawable = ToolbarPhone.createModernLocationBarBackground(getContext());
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
+            backgroundDrawable.setTint(OmniboxFeatures.shouldShowActiveColorOnOmnibox()
+                            ? mLocationBarDataProvider.getSuggestionStandardBackgroundColor()
+                            : mLocationBarDataProvider.getDropdownStandardBackgroundColor());
+        }
+        setBackground(backgroundDrawable);
     }
 
     @Override
