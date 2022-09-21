@@ -222,7 +222,8 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   // has been refactored to only create the necessary tab helpers, this
   // condition can be removed.
   if (!for_prerender) {
-    SadTabTabHelper::CreateForWebState(web_state);
+    SadTabTabHelper::CreateForWebState(
+        web_state, SadTabTabHelper::kDefaultRepeatFailureInterval);
     SnapshotTabHelper::CreateForWebState(web_state);
     PagePlaceholderTabHelper::CreateForWebState(web_state);
     PrintTabHelper::CreateForWebState(web_state);

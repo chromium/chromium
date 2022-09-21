@@ -79,7 +79,8 @@ class SadTabTabHelperTest : public PlatformTest {
     NamedGuide* guide = [[NamedGuide alloc] initWithName:kContentAreaGuide];
     [web_state_view_ addLayoutGuide:guide];
 
-    SadTabTabHelper::CreateForWebState(&web_state_);
+    SadTabTabHelper::CreateForWebState(
+        &web_state_, SadTabTabHelper::kDefaultRepeatFailureInterval);
     tab_helper()->SetDelegate(sad_tab_delegate_);
     PagePlaceholderTabHelper::CreateForWebState(&web_state_);
     OCMStub([application_ sharedApplication]).andReturn(application_);
@@ -355,7 +356,7 @@ TEST_F(SadTabTabHelperTest, FailureInterval) {
   web::FakeWebState web_state;
   web_state.SetBrowserState(browser_state.get());
   web_state.SetNavigationManager(std::move(navigation_manager));
-  SadTabTabHelper::CreateForWebState(&web_state, 0.0f);
+  SadTabTabHelper::CreateForWebState(&web_state, base::TimeDelta());
   SadTabTabHelper::FromWebState(&web_state)->SetDelegate(sad_tab_delegate_);
   PagePlaceholderTabHelper::CreateForWebState(&web_state);
   web_state.WasShown();
