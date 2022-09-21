@@ -1418,6 +1418,7 @@ android_library("chrome_unit_test_java") {
     "javatests/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeUnitTest.java",
     "javatests/src/org/chromium/chrome/browser/ntp/IncognitoDescriptionViewRenderTest.java",
     "javatests/src/org/chromium/chrome/browser/ntp/TitleUtilTest.java",
+    "javatests/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorViewBinderTest.java",
     "javatests/src/org/chromium/chrome/browser/tab/WebContentsStateBridgeTest.java",
     "javatests/src/org/chromium/chrome/browser/tab/state/FilePersistedTabDataStorageTest.java",
     "javatests/src/org/chromium/chrome/browser/tab/state/PersistedTabDataTest.java",

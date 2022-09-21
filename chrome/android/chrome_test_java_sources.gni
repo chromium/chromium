@@ -461,7 +461,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/sms/WebOTPServiceInfoBarTest.java",
   "javatests/src/org/chromium/chrome/browser/ssl/CaptivePortalTest.java",
   "javatests/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorTest.java",
-  "javatests/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorViewBinderTest.java",
   "javatests/src/org/chromium/chrome/browser/storage/BlobUrlStoreTest.java",
   "javatests/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesMetadataUtilsTest.java",
   "javatests/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesLayoutTest.java",

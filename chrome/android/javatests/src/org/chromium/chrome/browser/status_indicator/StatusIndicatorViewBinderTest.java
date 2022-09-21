@@ -21,12 +21,12 @@ import android.view.View;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.test.filters.SmallTest;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -35,13 +35,13 @@ import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawab
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests for {@link StatusIndicatorViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
     private static final String STATUS_TEXT = "Offline";
 
@@ -52,16 +52,12 @@ public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
 
-    @BeforeClass
-    public static void setUpBeforeActivityLaunched() {
-        BlankUiTestActivity.setTestLayout(R.layout.status_indicator_container);
-    }
-
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getActivity().setContentView(R.layout.status_indicator_container);
             mContainer = getActivity().findViewById(R.id.status_indicator);
             mStatusTextView = mContainer.findViewById(R.id.status_text);
 
