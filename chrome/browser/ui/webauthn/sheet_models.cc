@@ -157,6 +157,11 @@ bool AuthenticatorMechanismSelectorSheetModel::IsBackButtonVisible() const {
 const gfx::VectorIcon&
 AuthenticatorMechanismSelectorSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyHeaderDarkIcon
+                                                   : kPasskeyHeaderIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnWelcomeDarkIcon
                                                  : kWebauthnWelcomeIcon;
 }
@@ -235,6 +240,11 @@ bool AuthenticatorInsertAndActivateUsbSheetModel::IsActivityIndicatorVisible()
 const gfx::VectorIcon&
 AuthenticatorInsertAndActivateUsbSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyUsbDarkIcon
+                                                   : kPasskeyUsbIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnUsbDarkIcon
                                                  : kWebauthnUsbIcon;
 }
@@ -272,6 +282,11 @@ std::u16string AuthenticatorTimeoutErrorModel::GetCancelButtonLabel() const {
 
 const gfx::VectorIcon& AuthenticatorTimeoutErrorModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyErrorDarkIcon
+                                                   : kPasskeyErrorIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnErrorDarkIcon
                                                  : kWebauthnErrorIcon;
 }
@@ -298,6 +313,11 @@ AuthenticatorNoAvailableTransportsErrorModel::GetCancelButtonLabel() const {
 const gfx::VectorIcon&
 AuthenticatorNoAvailableTransportsErrorModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyErrorDarkIcon
+                                                   : kPasskeyErrorIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnErrorDarkIcon
                                                  : kWebauthnErrorIcon;
 }
@@ -340,6 +360,11 @@ std::u16string AuthenticatorNotRegisteredErrorModel::GetAcceptButtonLabel()
 const gfx::VectorIcon&
 AuthenticatorNotRegisteredErrorModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyErrorDarkIcon
+                                                   : kPasskeyErrorIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnErrorDarkIcon
                                                  : kWebauthnErrorIcon;
 }
@@ -428,6 +453,11 @@ AuthenticatorInternalUnrecognizedErrorSheetModel::GetAcceptButtonLabel() const {
 const gfx::VectorIcon&
 AuthenticatorInternalUnrecognizedErrorSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyErrorDarkIcon
+                                                   : kPasskeyErrorIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnErrorDarkIcon
                                                  : kWebauthnErrorIcon;
 }
@@ -459,6 +489,12 @@ AuthenticatorBlePowerOnManualSheetModel::
 const gfx::VectorIcon&
 AuthenticatorBlePowerOnManualSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark
+               ? kPasskeyErrorBluetoothDarkIcon
+               : kPasskeyErrorBluetoothIcon;
+  }
   return color_scheme == ImageColorScheme::kDark
              ? kWebauthnErrorBluetoothDarkIcon
              : kWebauthnErrorBluetoothIcon;
@@ -513,6 +549,12 @@ bool AuthenticatorBlePowerOnAutomaticSheetModel::IsActivityIndicatorVisible()
 const gfx::VectorIcon&
 AuthenticatorBlePowerOnAutomaticSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark
+               ? kPasskeyErrorBluetoothDarkIcon
+               : kPasskeyErrorBluetoothIcon;
+  }
   return color_scheme == ImageColorScheme::kDark
              ? kWebauthnErrorBluetoothDarkIcon
              : kWebauthnErrorBluetoothIcon;
@@ -566,6 +608,12 @@ bool AuthenticatorBlePermissionMacSheetModel::ShouldFocusBackArrow() const {
 const gfx::VectorIcon&
 AuthenticatorBlePermissionMacSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark
+               ? kPasskeyErrorBluetoothDarkIcon
+               : kPasskeyErrorBluetoothIcon;
+  }
   return color_scheme == ImageColorScheme::kDark
              ? kWebauthnErrorBluetoothDarkIcon
              : kWebauthnErrorBluetoothIcon;
@@ -620,6 +668,13 @@ AuthenticatorOffTheRecordInterstitialSheetModel::
 const gfx::VectorIcon&
 AuthenticatorOffTheRecordInterstitialSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    // TODO(1358719): Add more specific illustration once available. The "error"
+    // graphic is a large question mark, so it looks visually very similar.
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyErrorDarkIcon
+                                                   : kPasskeyErrorIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnPermissionDarkIcon
                                                  : kWebauthnPermissionIcon;
 }
@@ -730,6 +785,11 @@ bool AuthenticatorPaaskSheetModel::IsActivityIndicatorVisible() const {
 
 const gfx::VectorIcon& AuthenticatorPaaskSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyPhoneDarkIcon
+                                                   : kPasskeyPhoneIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnPhoneDarkIcon
                                                  : kWebauthnPhoneIcon;
 }
@@ -827,6 +887,11 @@ bool AuthenticatorAndroidAccessorySheetModel::IsActivityIndicatorVisible()
 const gfx::VectorIcon&
 AuthenticatorAndroidAccessorySheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyAoaDarkIcon
+                                                   : kPasskeyAoaIcon;
+  }
   return kWebauthnAoaIcon;
 }
 
@@ -901,6 +966,11 @@ void AuthenticatorClientPinEntrySheetModel::SetPinConfirmation(
 const gfx::VectorIcon&
 AuthenticatorClientPinEntrySheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyUsbDarkIcon
+                                                   : kPasskeyUsbIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnUsbDarkIcon
                                                  : kWebauthnUsbIcon;
 }
@@ -969,6 +1039,11 @@ bool AuthenticatorClientPinTapAgainSheetModel::IsActivityIndicatorVisible()
 const gfx::VectorIcon&
 AuthenticatorClientPinTapAgainSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyUsbDarkIcon
+                                                   : kPasskeyUsbIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnUsbDarkIcon
                                                  : kWebauthnUsbIcon;
 }
@@ -1004,6 +1079,12 @@ bool AuthenticatorBioEnrollmentSheetModel::IsActivityIndicatorVisible() const {
 const gfx::VectorIcon&
 AuthenticatorBioEnrollmentSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    // No illustration since the content already has a large animated
+    // fingerprint icon.
+    return gfx::kNoneIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnFingerprintDarkIcon
                                                  : kWebauthnFingerprintIcon;
 }
@@ -1068,6 +1149,11 @@ bool AuthenticatorRetryUvSheetModel::IsActivityIndicatorVisible() const {
 
 const gfx::VectorIcon& AuthenticatorRetryUvSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyFingerprintDarkIcon
+                                                   : kPasskeyFingerprintIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnFingerprintDarkIcon
                                                  : kWebauthnFingerprintIcon;
 }
@@ -1174,6 +1260,11 @@ std::u16string AuthenticatorGenericErrorSheetModel::GetAcceptButtonLabel()
 
 const gfx::VectorIcon& AuthenticatorGenericErrorSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyErrorDarkIcon
+                                                   : kPasskeyErrorIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnErrorDarkIcon
                                                  : kWebauthnErrorIcon;
 }
@@ -1203,6 +1294,13 @@ AuthenticatorResidentCredentialConfirmationSheetView::
 const gfx::VectorIcon&
 AuthenticatorResidentCredentialConfirmationSheetView::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    // TODO(1358719): Add more specific illustration once available. The "error"
+    // graphic is a large question mark, so it looks visually very similar.
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyErrorDarkIcon
+                                                   : kPasskeyErrorIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnPermissionDarkIcon
                                                  : kWebauthnPermissionIcon;
 }
@@ -1295,6 +1393,11 @@ void AuthenticatorSelectAccountSheetModel::OnAccept() {
 const gfx::VectorIcon&
 AuthenticatorSelectAccountSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyHeaderDarkIcon
+                                                   : kPasskeyHeaderIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnWelcomeDarkIcon
                                                  : kWebauthnWelcomeIcon;
 }
@@ -1373,6 +1476,12 @@ void AttestationPermissionRequestSheetModel::OnCancel() {
 const gfx::VectorIcon&
 AttestationPermissionRequestSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    // TODO(1358719): Add more specific illustration once available.
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyUsbDarkIcon
+                                                   : kPasskeyUsbIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnPermissionDarkIcon
                                                  : kWebauthnPermissionIcon;
 }
@@ -1448,6 +1557,7 @@ const gfx::VectorIcon& AuthenticatorQRSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
   if (base::FeatureList::IsEnabled(
           device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    // No illustration since there already is the QR code.
     return gfx::kNoneIcon;
   }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnPhoneDarkIcon
@@ -1500,6 +1610,11 @@ AuthenticatorCreatePasskeySheetModel::~AuthenticatorCreatePasskeySheetModel() =
 const gfx::VectorIcon&
 AuthenticatorCreatePasskeySheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyHeaderDarkIcon
+                                                   : kPasskeyHeaderIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnWelcomeDarkIcon
                                                  : kWebauthnWelcomeIcon;
 }

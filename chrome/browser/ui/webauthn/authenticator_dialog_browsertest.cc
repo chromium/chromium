@@ -140,6 +140,9 @@ class AuthenticatorDialogTest : public DialogBrowserTest,
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableV2QRCode);
+    } else if (name == "phone_aoa") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kAndroidAccessory);
     } else if (name == "set_pin") {
       model_->CollectPIN(device::pin::PINEntryReason::kSet,
                          device::pin::PINEntryError::kNoError, 6, 0,
@@ -315,14 +318,14 @@ class AuthenticatorDialogTest : public DialogBrowserTest,
           AuthenticatorRequestDialogModel::Step::kCreatePasskey);
     }
 #if BUILDFLAG(IS_MAC)
-    else if (name == "ble_permission_mac") {
+    else if (name == "ble_permission_mac") {  // NOLINT
       model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kBlePermissionMac);
     }
 #endif
 
 #define EXP_SHEET(x)                                                    \
-  else if (name == "server_link_sheet_" #x) {                           \
+  else if (name == "server_link_sheet_" #x) { /* NOLINT */              \
     model_->set_cable_transport_info(                                   \
         /*extension_is_v2=*/true, /*paired_phones=*/{},                 \
         /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode"); \
@@ -425,6 +428,10 @@ IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_cable_v2_activate) {
 }
 
 IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_cable_v2_pair) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(AuthenticatorDialogTest, InvokeUi_phone_aoa) {
   ShowAndVerifyUi();
 }
 
