@@ -101,17 +101,14 @@ void FramePermissionController::SetDefaultPermissionState(
 PermissionStatus FramePermissionController::GetPermissionState(
     PermissionType permission,
     const url::Origin& requesting_origin) {
-  auto origin_permissions =
-      GetPermissionSetForOrigin(permission, requesting_origin);
-  // If the per-`origin` state is ASK, or there are no specific permissions set
-  // for `origin`, then the DENIED state takes effect.
-  if (origin_permissions.has_value()) {
-    auto status =
-        origin_permissions->permission_states[GetPermissionIndex(permission)];
-    if (status != kDefaultPerOriginStatus)
-      return status;
-  }
-  return PermissionStatus::DENIED;
+  url::Origin embedding_origin = url::Origin::Create(
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+          web_contents_->GetPrimaryMainFrame()));
+  const url::Origin& canonical_origin =
+      GetCanonicalOrigin(permission, requesting_origin, embedding_origin);
+
+  PermissionSet effective = GetEffectivePermissionsForOrigin(canonical_origin);
+  return effective.permission_states[GetPermissionIndex(permission)];
 }
 
 void FramePermissionController::RequestPermissions(
@@ -119,7 +116,6 @@ void FramePermissionController::RequestPermissions(
     const url::Origin& requesting_origin,
     bool user_gesture,
     base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
-  LogUnsetPermissions(permissions, requesting_origin);
   std::vector<PermissionStatus> result;
   result.reserve(permissions.size());
 
@@ -130,45 +126,18 @@ void FramePermissionController::RequestPermissions(
   std::move(callback).Run(result);
 }
 
-// Returns the unchanged PermissionSet for `origin`.
-absl::optional<FramePermissionController::PermissionSet>
-FramePermissionController::GetPermissionSetForOrigin(
-    const PermissionType requested_permission,
-    const url::Origin& requesting_origin) {
-  absl::optional<FramePermissionController::PermissionSet> permission_set;
-  url::Origin embedding_origin = url::Origin::Create(
-      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-          web_contents_->GetPrimaryMainFrame()));
-  auto& canonical_origin = GetCanonicalOrigin(
-      requested_permission, requesting_origin, embedding_origin);
-  auto it = per_origin_permissions_.find(canonical_origin);
+FramePermissionController::PermissionSet
+FramePermissionController::GetEffectivePermissionsForOrigin(
+    const url::Origin& origin) {
+  PermissionSet result = default_permissions_;
+  auto it = per_origin_permissions_.find(origin);
   if (it != per_origin_permissions_.end()) {
-    permission_set.emplace(it->second);
-  }
-
-  return permission_set;
-}
-
-// Log requested permissions that were not previously set.
-// TODO(crbug.com/1063094): Clean up this warning once the permission API is
-// implemented.
-void FramePermissionController::LogUnsetPermissions(
-    const std::vector<PermissionType>& requested_permissions,
-    const url::Origin& requesting_origin) {
-  for (auto requested_permission : requested_permissions) {
-    auto permission_index = GetPermissionIndex(requested_permission);
-    auto origin_permissions =
-        GetPermissionSetForOrigin(requested_permission, requesting_origin);
-
-    if (!origin_permissions ||
-        origin_permissions->permission_states[permission_index] ==
-            kDefaultPerOriginStatus) {
-      auto permission_string = permissions::PermissionUtil::GetPermissionString(
-          permissions::PermissionUtil::PermissionTypeToContentSettingType(
-              requested_permission));
-      LOG(WARNING) << "Permission \"" << permission_string
-                   << "\" was not previously set by SetPermissionState in "
-                   << requesting_origin;
+    // Apply per-origin GRANTED and DENIED states. Permissions with the ASK
+    // state defer to the defaults.
+    for (size_t i = 0; i < it->second.permission_states.size(); ++i) {
+      if (it->second.permission_states[i] != kDefaultPerOriginStatus)
+        result.permission_states[i] = it->second.permission_states[i];
     }
   }
+  return result;
 }

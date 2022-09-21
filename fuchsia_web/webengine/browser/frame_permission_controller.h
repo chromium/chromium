@@ -78,13 +78,12 @@ class FramePermissionController {
         permission_states;
   };
 
-  absl::optional<PermissionSet> GetPermissionSetForOrigin(
-      const blink::PermissionType requested_permission,
-      const url::Origin& origin);
-
-  void LogUnsetPermissions(
-      const std::vector<blink::PermissionType>& permissions,
-      const url::Origin& requesting_origin);
+  // Returns the effective PermissionStatus for |origin|. If the per-|origin|
+  // state is ASK, or there are no specific permissions set for |origin|, then
+  // the default permission status takes effect. This means that it is not
+  // currently possible to set a default of GRANTED/DENIED, and to override that
+  // to ASK for specific origins.
+  PermissionSet GetEffectivePermissionsForOrigin(const url::Origin& origin);
 
   content::WebContents* const web_contents_;
 
