@@ -2778,14 +2778,6 @@
       implied_by: ["WebAppLaunchHandler", "FileHandling"],
     },
     {
-      // This flag enables the Manifest parser to handle id field.
-      // Also enabled when blink::features::kWebAppEnableManifestId is
-      // overridden on the command line (or via chrome://flags).
-      name: "WebAppManifestId",
-      status: "stable",
-      base_feature: "WebAppEnableManifestId",
-    },
-    {
       name:"WebAppsLockScreen",
       status:"experimental",
     },

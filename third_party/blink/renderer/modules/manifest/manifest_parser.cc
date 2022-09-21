@@ -433,12 +433,6 @@ String ManifestParser::ParseDescription(const JSONObject* object) {
 
 String ManifestParser::ParseId(const JSONObject* object,
                                const KURL& start_url) {
-  if (!base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId)) {
-    ManifestUmaUtil::ParseIdResult(
-        ManifestUmaUtil::ParseIdResultType::kFeatureDisabled);
-    return String();
-  }
-
   if (!start_url.IsValid()) {
     ManifestUmaUtil::ParseIdResult(
         ManifestUmaUtil::ParseIdResultType::kInvalidStartUrl);

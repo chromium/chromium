@@ -292,8 +292,6 @@ TEST_F(ManifestParserTest, ShortNameParseRules) {
 }
 
 TEST_F(ManifestParserTest, IdParseRules) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(blink::features::kWebAppEnableManifestId);
   // Empty manifest.
   {
     auto& manifest = ParseManifest("{ }");
