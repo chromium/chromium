@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.ui.widget.ButtonCompat;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -56,7 +58,7 @@ public class MoreProgressButton extends FrameLayout implements View.OnClickListe
     }
 
     protected View mProgressSpinner;
-    protected View mButton;
+    protected ButtonCompat mButton;
     protected Runnable mOnClickRunnable;
 
     protected @State int mState = State.INVALID;
@@ -106,6 +108,10 @@ public class MoreProgressButton extends FrameLayout implements View.OnClickListe
         mState = state;
         this.mButton.setVisibility(State.BUTTON == state ? View.VISIBLE : View.GONE);
         this.mProgressSpinner.setVisibility(State.LOADING == state ? View.VISIBLE : View.GONE);
+    }
+
+    public void setButtonText(String text) {
+        mButton.setText(text);
     }
 
     @VisibleForTesting

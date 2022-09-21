@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
@@ -232,13 +233,16 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
     }
 
     private View buildMoreProgressView(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.more_progress_button, parent, false);
-        View progressSpinner = view.findViewById(R.id.progress_spinner);
+        MoreProgressButton moreProgressButton =
+                (MoreProgressButton) LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.more_progress_button, parent, false);
+        moreProgressButton.setButtonText(moreProgressButton.getResources().getString(
+                R.string.history_clusters_show_more_button_label));
+        View progressSpinner = moreProgressButton.findViewById(R.id.progress_spinner);
         if (progressSpinner != null) {
             ((LayoutParams) progressSpinner.getLayoutParams()).gravity = Gravity.CENTER;
         }
-        return view;
+        return moreProgressButton;
     }
 
     private View buildClusterView(ViewGroup parent) {
