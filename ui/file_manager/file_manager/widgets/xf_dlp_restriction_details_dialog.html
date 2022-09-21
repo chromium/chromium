@@ -32,13 +32,13 @@
 <cr-dialog id="dialog"
   consume-keydown-event show-close-button>
   <div slot="title">
-    Restriction details
+    $i18n{DLP_RESTRICTION_DETAILS_TITLE}
   </div>
   <div slot="body">
-    <div id="message" cr-dialog-text></div>
+    <div id="message" cr-dialog-text>$i18n{DLP_RESTRICTION_DETAILS_MESSAGE}</div>
     <div id="details-container">
       <span id="block-details" hidden=true>
-        <label>Administrator policy prevents:</label>
+        <label>$i18n{DLP_RESTRICTION_DETAILS_BLOCK}</label>
         <ul id="block-list">
           <li id="block-li-urls" hidden=true>
             <label id="block-urls"></label>
@@ -49,7 +49,7 @@
         </ul>
       </span>
       <span id="warn-details" hidden=true>
-        <label>Administrator policy doesn't recommend:</label>
+        <label>$i18n{DLP_RESTRICTION_DETAILS_WARN}</label>
         <ul id="warn-list">
           <li id="warn-li-urls" hidden=true>
             <label id="warn-urls"></label>
@@ -60,7 +60,7 @@
         </ul>
       </span>
       <span id="report-details" hidden=true>
-        <label>Administrator monitors:</label>
+        <label>$i18n{DLP_RESTRICTION_DETAILS_REPORT}</label>
           <ul id="report-list">
             <li id="report-li-urls" hidden=true>
               <label id="report-urls"></label>

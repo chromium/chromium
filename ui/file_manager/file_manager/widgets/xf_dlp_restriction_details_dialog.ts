@@ -4,16 +4,15 @@
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
+import {str, strf} from '../common/js/util.js';
+
 import {getTemplate} from './xf_dlp_restriction_details_dialog.html.js';
 
 /**
  * Dialog to show Data Leak Prevention (DLP) restriction details about a file.
  */
 export class XfDlpRestrictionDetailsDialog extends HTMLElement {
-  // TODO(crbug.com/1351739): Add translation strings instead of hardcoded
-  // values.
   private dialog: CrDialogElement;
-  private messageContainer: HTMLDivElement;
   private details: chrome.fileManagerPrivate.DlpRestrictionDetails[] = [];
 
   constructor() {
@@ -26,8 +25,6 @@ export class XfDlpRestrictionDetailsDialog extends HTMLElement {
     this.attachShadow({mode: 'open'}).appendChild(fragment);
 
     this.dialog = this.shadowRoot!.querySelector('#dialog')! as CrDialogElement;
-    this.messageContainer =
-        this.shadowRoot?.querySelector('#message')! as HTMLDivElement;
   }
 
   /**
@@ -43,11 +40,6 @@ export class XfDlpRestrictionDetailsDialog extends HTMLElement {
       return;
     }
     this.details = details;
-    // Add the general text.
-    const message = 'This file is confidential and subject to restrictions ' +
-        'by administrator policy. The following file access and ' +
-        'transfer actions are enforced.';
-    this.messageContainer.innerHTML = message;
     // Add a section for each restriction level.
     this.showDetailsForLevel(chrome.fileManagerPrivate.DlpLevel.BLOCK);
     this.showDetailsForLevel(chrome.fileManagerPrivate.DlpLevel.WARN);
@@ -122,13 +114,15 @@ export class XfDlpRestrictionDetailsDialog extends HTMLElement {
         }
       }
       if (excludedUrls.length === 0) {
-        urlsLabel.textContent = 'File access by all urls';
+        urlsLabel.textContent = str('DLP_RESTRICTION_DETAILS_FILE_ACCESS_ALL');
       } else {
-        urlsLabel.textContent =
-            'File access by all urls except ' + excludedUrls.join(', ');
+        urlsLabel.textContent = strf(
+            'DLP_RESTRICTION_DETAILS_FILE_ACCESS_ALL_EXCEPT',
+            excludedUrls.join(', '));
       }
     } else {
-      urlsLabel.textContent = 'File access by ' + urls.join(', ');
+      urlsLabel.textContent =
+          strf('DLP_RESTRICTION_DETAILS_FILE_ACCESS', urls.join(', '));
     }
   }
 
@@ -186,7 +180,28 @@ export class XfDlpRestrictionDetailsDialog extends HTMLElement {
     const componentsLabel: HTMLLabelElement =
         this.shadowRoot?.querySelector(`#${level}-components`)! as
         HTMLLabelElement;
-    componentsLabel.textContent = 'File transfer to ' + components.join(', ');
+    componentsLabel.textContent = strf(
+        'DLP_RESTRICTION_DETAILS_FILE_TRANSFER',
+        components.map((component) => this.componentToI18n(component))
+            .join(', '));
+  }
+
+  private componentToI18n(component: chrome.fileManagerPrivate.VolumeType) {
+    switch (component) {
+      case chrome.fileManagerPrivate.VolumeType.DRIVE:
+        return str('DRIVE_DIRECTORY_LABEL');
+      case chrome.fileManagerPrivate.VolumeType.REMOVABLE:
+        return str('DLP_COMPONENT_REMOVABLE');
+      case chrome.fileManagerPrivate.VolumeType.CROSTINI:
+        return str('DLP_COMPONENT_LINUX');
+      case chrome.fileManagerPrivate.VolumeType.ANDROID_FILES:
+        return str('DLP_COMPONENT_PLAY');
+      case chrome.fileManagerPrivate.VolumeType.GUEST_OS:
+        return str('DLP_COMPONENT_VM');
+      default:
+        console.warn(`Got unexpected VolumeType value ${component}.`);
+        return '';
+    }
   }
 }
 
