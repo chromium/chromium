@@ -2678,6 +2678,9 @@ extern const char kAlwaysEnableHdcpType1[];
 extern const char kAmbientModeAnimationName[];
 extern const char kAmbientModeAnimationDescription[];
 
+extern const char kApnRevampName[];
+extern const char kApnRevampDescription[];
+
 extern const char kAppDiscoveryForOobeName[];
 extern const char kAppDiscoveryForOobeDescription[];
 
@@ -2815,9 +2818,6 @@ extern const char kCategoricalSearchDescription[];
 
 extern const char kCellularBypassESimInstallationConnectivityCheckName[];
 extern const char kCellularBypassESimInstallationConnectivityCheckDescription[];
-
-extern const char kApnRevampName[];
-extern const char kApnRevampDescription[];
 
 extern const char kCellularUseSecondEuiccName[];
 extern const char kCellularUseSecondEuiccDescription[];
