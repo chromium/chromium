@@ -122,7 +122,11 @@ static MimeUtil::PlatformInfo VaryAllFields() {
 // This is to validate MimeUtil::IsCodecSupportedOnPlatform(), which is used
 // only on Android platform.
 static bool HasDolbyVisionSupport() {
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+  return true;
+#else
   return false;
+#endif
 }
 
 static bool HasEac3Support() {
@@ -148,8 +152,8 @@ TEST(MimeUtilTest, CommonMediaMimeType) {
 
   EXPECT_EQ(kHlsSupported, IsSupportedMediaMimeType("application/x-mpegurl"));
   EXPECT_EQ(kHlsSupported, IsSupportedMediaMimeType("Application/X-MPEGURL"));
-  EXPECT_EQ(kHlsSupported, IsSupportedMediaMimeType(
-      "application/vnd.apple.mpegurl"));
+  EXPECT_EQ(kHlsSupported,
+            IsSupportedMediaMimeType("application/vnd.apple.mpegurl"));
   EXPECT_EQ(kHlsSupported, IsSupportedMediaMimeType("audio/mpegurl"));
   EXPECT_EQ(kHlsSupported, IsSupportedMediaMimeType("audio/x-mpegurl"));
   EXPECT_TRUE(IsSupportedMediaMimeType("audio/mp4"));

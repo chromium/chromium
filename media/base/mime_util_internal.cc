@@ -147,10 +147,6 @@ static MimeUtil::ParsedCodecResult MakeDefaultParsedCodecResult() {
 
 MimeUtil::MimeUtil() {
 #if BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-  platform_info_.has_platform_dv_decoder =
-      MediaCodecUtil::IsDolbyVisionDecoderAvailable();
-#endif
   platform_info_.has_platform_vp8_decoder =
       MediaCodecUtil::IsVp8DecoderAvailable();
   platform_info_.has_platform_vp9_decoder =
@@ -652,7 +648,7 @@ bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
 
     case DOLBY_VISION:
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-      return platform_info.has_platform_dv_decoder;
+      return true;
 #else
       return false;
 #endif

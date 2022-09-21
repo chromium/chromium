@@ -192,13 +192,6 @@ std::set<int> MediaCodecUtil::GetEncoderColorFormats(
   return color_formats;
 }
 
-#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-// static
-bool MediaCodecUtil::IsDolbyVisionDecoderAvailable() {
-  return IsDecoderSupportedByDevice(kDolbyVisionMimeType);
-}
-#endif
-
 // static
 bool MediaCodecUtil::IsVp8DecoderAvailable() {
   return IsDecoderSupportedByDevice(kVp8MimeType);

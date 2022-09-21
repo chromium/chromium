@@ -34,11 +34,6 @@ class MEDIA_EXPORT MediaCodecUtil {
   // Returns true if MediaCodec supports CBCS Encryption.
   static bool PlatformSupportsCbcsEncryption(int sdk);
 
-#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-  // Indicates if Dolby Vision decoder is available on this device.
-  static bool IsDolbyVisionDecoderAvailable();
-#endif
-
   // Indicates if the vp8 decoder or encoder is available on this device.
   static bool IsVp8DecoderAvailable();
   static bool IsVp8EncoderAvailable();
