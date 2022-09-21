@@ -56,7 +56,7 @@ absl::optional<base::Value> ConvertRegistryValue(const base::Value& value,
       return result;
     } else if (value.is_list()) {
       base::Value result(base::Value::Type::LIST);
-      for (const auto& entry : value.GetListDeprecated()) {
+      for (const auto& entry : value.GetList()) {
         absl::optional<base::Value> converted =
             ConvertRegistryValue(entry, schema.GetItems());
         if (converted.has_value())

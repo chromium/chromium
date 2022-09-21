@@ -45,7 +45,7 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
       errors->AddError(key::kDisabledSchemes, IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::LIST));
     } else {
-      disabled_schemes_entries = disabled_schemes->GetListDeprecated().size();
+      disabled_schemes_entries = disabled_schemes->GetList().size();
     }
   }
 #endif
@@ -64,7 +64,7 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
   // Filters more than |url_util::kMaxFiltersPerPolicy| are ignored, add a
   // warning message.
-  if (url_blocklist->GetListDeprecated().size() + disabled_schemes_entries >
+  if (url_blocklist->GetList().size() + disabled_schemes_entries >
       kMaxUrlFiltersPerPolicy) {
     errors->AddError(policy_name(),
                      IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING,
@@ -74,7 +74,7 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   bool type_error = false;
   std::string policy;
   std::vector<std::string> invalid_policies;
-  for (const auto& policy_iter : url_blocklist->GetListDeprecated()) {
+  for (const auto& policy_iter : url_blocklist->GetList()) {
     if (!policy_iter.is_string()) {
       type_error = true;
       continue;

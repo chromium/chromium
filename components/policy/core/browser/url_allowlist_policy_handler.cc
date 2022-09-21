@@ -42,7 +42,7 @@ bool URLAllowlistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
   // Filters more than |policy::kMaxUrlFiltersPerPolicy| are ignored, add a
   // warning message.
-  if (url_allowlist->GetListDeprecated().size() > kMaxUrlFiltersPerPolicy) {
+  if (url_allowlist->GetList().size() > kMaxUrlFiltersPerPolicy) {
     errors->AddError(policy_name(),
                      IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING,
                      base::NumberToString(kMaxUrlFiltersPerPolicy));
@@ -51,7 +51,7 @@ bool URLAllowlistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   bool type_error = false;
   std::string policy;
   std::vector<std::string> invalid_policies;
-  for (const auto& policy_iter : url_allowlist->GetListDeprecated()) {
+  for (const auto& policy_iter : url_allowlist->GetList()) {
     if (!policy_iter.is_string()) {
       type_error = true;
       continue;

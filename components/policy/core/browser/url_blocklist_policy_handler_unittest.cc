@@ -126,7 +126,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
-  EXPECT_EQ(0U, out->GetListDeprecated().size());
+  EXPECT_EQ(0U, out->GetList().size());
 }
 
 TEST_F(URLBlocklistPolicyHandlerTest,
@@ -141,7 +141,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
-  EXPECT_EQ(0U, out->GetListDeprecated().size());
+  EXPECT_EQ(0U, out->GetList().size());
 }
 
 TEST_F(URLBlocklistPolicyHandlerTest,
@@ -154,9 +154,9 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
-  EXPECT_EQ(1U, out->GetListDeprecated().size());
+  EXPECT_EQ(1U, out->GetList().size());
 
-  const std::string* out_string = out->GetListDeprecated()[0].GetIfString();
+  const std::string* out_string = out->GetList()[0].GetIfString();
   ASSERT_TRUE(out_string);
   EXPECT_EQ(kTestDisabledScheme + std::string("://*"), *out_string);
 }
@@ -174,13 +174,13 @@ TEST_F(URLBlocklistPolicyHandlerTest, ApplyPolicySettings_MergeSuccessful) {
   base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
-  ASSERT_EQ(2U, out->GetListDeprecated().size());
+  ASSERT_EQ(2U, out->GetList().size());
 
-  const std::string* out_string1 = out->GetListDeprecated()[0].GetIfString();
+  const std::string* out_string1 = out->GetList()[0].GetIfString();
   ASSERT_TRUE(out_string1);
   EXPECT_EQ(kTestDisabledScheme + std::string("://*"), *out_string1);
 
-  const std::string* out_string2 = out->GetListDeprecated()[1].GetIfString();
+  const std::string* out_string2 = out->GetList()[1].GetIfString();
   ASSERT_TRUE(out_string2);
   EXPECT_EQ(kTestBlocklistValue, *out_string2);
 }
@@ -213,7 +213,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
-  EXPECT_EQ(max_filters_per_policy + 1, out->GetListDeprecated().size());
+  EXPECT_EQ(max_filters_per_policy + 1, out->GetList().size());
 }
 #endif
 
@@ -231,7 +231,7 @@ TEST_F(URLBlocklistPolicyHandlerTest, ApplyPolicySettings_URLBlocklistEmpty) {
   base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
-  EXPECT_EQ(0U, out->GetListDeprecated().size());
+  EXPECT_EQ(0U, out->GetList().size());
 }
 
 TEST_F(URLBlocklistPolicyHandlerTest,
@@ -246,7 +246,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
-  EXPECT_EQ(0U, out->GetListDeprecated().size());
+  EXPECT_EQ(0U, out->GetList().size());
 }
 
 TEST_F(URLBlocklistPolicyHandlerTest,
@@ -259,9 +259,9 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
-  EXPECT_EQ(1U, out->GetListDeprecated().size());
+  EXPECT_EQ(1U, out->GetList().size());
 
-  const std::string* out_string = out->GetListDeprecated()[0].GetIfString();
+  const std::string* out_string = out->GetList()[0].GetIfString();
   ASSERT_TRUE(out_string);
   EXPECT_EQ(kTestBlocklistValue, *out_string);
 }
@@ -280,7 +280,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
-  EXPECT_EQ(max_filters_per_policy, out->GetListDeprecated().size());
+  EXPECT_EQ(max_filters_per_policy, out->GetList().size());
 }
 
 // Test that the warning message, mapped to
@@ -306,7 +306,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   base::Value* out = nullptr;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlocklist, &out));
   ASSERT_TRUE(out->is_list());
-  EXPECT_EQ(max_filters_per_policy + 1, out->GetListDeprecated().size());
+  EXPECT_EQ(max_filters_per_policy + 1, out->GetList().size());
 }
 
 TEST_F(URLBlocklistPolicyHandlerTest, ValidatePolicy) {

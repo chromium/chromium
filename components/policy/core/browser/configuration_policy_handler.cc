@@ -267,7 +267,7 @@ bool StringMappingListPolicyHandler::Convert(const base::Value* input,
 
   DCHECK(input->is_list());
   int index = -1;
-  for (const auto& entry : input->GetListDeprecated()) {
+  for (const auto& entry : input->GetList()) {
     ++index;
     if (!entry.is_string()) {
       if (errors) {

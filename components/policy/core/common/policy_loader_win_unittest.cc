@@ -323,7 +323,7 @@ void RegistryTestHarness::InstallStringListPolicy(
       KEY_ALL_ACCESS);
   ASSERT_TRUE(key.Valid());
   int index = 1;
-  for (const auto& element : policy_value->GetListDeprecated()) {
+  for (const auto& element : policy_value->GetList()) {
     if (!element.is_string())
       continue;
 

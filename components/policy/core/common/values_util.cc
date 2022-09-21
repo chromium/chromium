@@ -12,7 +12,7 @@ base::flat_set<std::string> ValueToStringSet(const base::Value* value) {
   if (!value || !value->is_list())
     return base::flat_set<std::string>();
 
-  const auto& items = value->GetListDeprecated();
+  const auto& items = value->GetList();
 
   std::vector<std::string> item_vector;
   item_vector.reserve(items.size());

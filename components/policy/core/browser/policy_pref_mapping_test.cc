@@ -296,7 +296,7 @@ class PolicyTestCase {
 
     const base::Value* os_list = test_case.FindListKey("os");
     if (os_list) {
-      for (const auto& os : os_list->GetListDeprecated()) {
+      for (const auto& os : os_list->GetList()) {
         if (os.is_string())
           supported_os_.push_back(os.GetString());
       }
@@ -305,8 +305,7 @@ class PolicyTestCase {
     const base::Value* policy_pref_mapping_tests =
         test_case.FindListKey("policy_pref_mapping_tests");
     if (policy_pref_mapping_tests) {
-      for (const auto& mapping :
-           policy_pref_mapping_tests->GetListDeprecated()) {
+      for (const auto& mapping : policy_pref_mapping_tests->GetList()) {
         if (mapping.is_dict()) {
           policy_pref_mapping_tests_.push_back(
               std::make_unique<PolicyPrefMappingTest>(mapping));
