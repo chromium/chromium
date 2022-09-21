@@ -136,7 +136,7 @@ void QRCodeGeneratorBubble::UpdateQRContent() {
   mojom::GenerateQRCodeRequestPtr request = mojom::GenerateQRCodeRequest::New();
   request->data = base::UTF16ToASCII(textfield_url_->GetText());
   request->should_render = true;
-  request->render_dino = true;
+  request->center_image = mojom::CenterImage::CHROME_DINO;
   request->render_module_style = mojom::ModuleStyle::CIRCLES;
   request->render_locator_style = mojom::LocatorStyle::ROUNDED;
 

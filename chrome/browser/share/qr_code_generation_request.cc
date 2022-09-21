@@ -33,7 +33,7 @@ QRCodeGenerationRequest::QRCodeGenerationRequest(
       qrcode_generator::mojom::GenerateQRCodeRequest::New();
   request->data = url_string;
   request->should_render = true;
-  request->render_dino = true;
+  request->center_image = qrcode_generator::mojom::CenterImage::CHROME_DINO;
   request->render_module_style = qrcode_generator::mojom::ModuleStyle::CIRCLES;
   request->render_locator_style =
       qrcode_generator::mojom::LocatorStyle::ROUNDED;

@@ -52,13 +52,20 @@ class AuthenticatorQRViewCentered : public views::View {
         qrcode_generator::mojom::GenerateQRCodeRequest::New();
     request->data = qr_string;
     request->should_render = true;
-    request->render_dino =
-        !base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI);
+    request->center_image =
+        base::FeatureList::IsEnabled(
+            device::kWebAuthnNewDiscoverableCredentialsUi) ||
+                base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI)
+            ? qrcode_generator::mojom::CenterImage::PASSKEY_ICON
+            : qrcode_generator::mojom::CenterImage::CHROME_DINO;
 
     request->render_module_style =
         qrcode_generator::mojom::ModuleStyle::CIRCLES;
     request->render_locator_style =
-        qrcode_generator::mojom::LocatorStyle::DEFAULT_SQUARE;
+        base::FeatureList::IsEnabled(
+            device::kWebAuthnNewDiscoverableCredentialsUi)
+            ? qrcode_generator::mojom::LocatorStyle::ROUNDED
+            : qrcode_generator::mojom::LocatorStyle::DEFAULT_SQUARE;
 
     // Deleting the view will close the channel so base::Unretained is safe
     // here.
@@ -81,9 +88,12 @@ class AuthenticatorQRViewCentered : public views::View {
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
             views::Emphasis::kHigh);
     const auto* color_provider = GetColorProvider();
-    qr_code_image_->SetBorder(views::CreateRoundedRectBorder(
-        /*thickness=*/2, border_radius,
-        color_provider->GetColor(kColorQrCodeBorder)));
+    if (!base::FeatureList::IsEnabled(
+            device::kWebAuthnNewDiscoverableCredentialsUi)) {
+      qr_code_image_->SetBorder(views::CreateRoundedRectBorder(
+          /*thickness=*/2, border_radius,
+          color_provider->GetColor(kColorQrCodeBorder)));
+    }
     qr_code_image_->SetBackground(views::CreateRoundedRectBackground(
         color_provider->GetColor(kColorQrCodeBackground), border_radius, 2));
   }
