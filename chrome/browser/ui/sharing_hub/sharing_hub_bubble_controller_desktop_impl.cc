@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
@@ -33,6 +34,8 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace sharing_hub {
 
@@ -237,9 +240,25 @@ void SharingHubBubbleControllerDesktopImpl::FetchImageForPreview() {
 }
 
 void SharingHubBubbleControllerDesktopImpl::FetchFaviconForPreview() {
-  gfx::Image favicon = favicon::TabFaviconFromWebContents(&GetWebContents());
-  if (!favicon.IsEmpty())
-    preview_image_changed_callbacks_.Notify(ui::ImageModel::FromImage(favicon));
+  content::WebContents* web_contents = &GetWebContents();
+  gfx::Image favicon = favicon::TabFaviconFromWebContents(web_contents);
+  if (favicon.IsEmpty())
+    return;
+
+  content::NavigationController& controller = web_contents->GetController();
+  content::NavigationEntry* entry = controller.GetLastCommittedEntry();
+  // Select chrome URLs show themified icons in dark mode.
+  if (favicon::ShouldThemifyFaviconForEntry(entry) &&
+      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+    const ui::ColorProvider& color_provider = web_contents->GetColorProvider();
+    favicon = gfx::Image(favicon::ThemeFavicon(
+        *favicon.ToImageSkia(),
+        color_provider.GetColor(kColorToolbarButtonIcon),
+        color_provider.GetColor(kColorTabBackgroundActiveFrameActive),
+        color_provider.GetColor(kColorTabBackgroundInactiveFrameActive)));
+  }
+
+  preview_image_changed_callbacks_.Notify(ui::ImageModel::FromImage(favicon));
 }
 
 void SharingHubBubbleControllerDesktopImpl::FetchHQImageForPreview() {
