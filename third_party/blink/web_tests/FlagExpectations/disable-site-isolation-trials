@@ -115,3 +115,8 @@ crbug.com/1339051 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-a
 
 crbug.com/1311518 virtual/document-transition-wide-gamut/wpt_internal/document-transition/iframe-transition.sub.html [ Crash Failure Timeout ]
 crbug.com/1311518 virtual/document-transition/wpt_internal/document-transition/iframe-transition.sub.html [ Crash Failure Timeout ]
+
+# reenable print ref tests
+crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-print.sub.html [ Pass ]
+crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-scaled-print.sub.html [ Pass ]
+

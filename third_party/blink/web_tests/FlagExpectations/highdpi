@@ -715,7 +715,7 @@ external/wpt/html/rendering/non-replaced-elements/form-controls/input-line-heigh
 external/wpt/html/rendering/non-replaced-elements/lists/ol-start-reversed-display-contents.html [ Pass ]
 external/wpt/html/rendering/non-replaced-elements/margin-collapsing-quirks/multicol-quirks-mode.html [ Pass ]
 external/wpt/html/rendering/non-replaced-elements/phrasing-content-0/font-element-text-decoration-color/font-face.html [ Pass ]
-external/wpt/html/rendering/non-replaced-elements/tables/table-row-pagination-001-print.html [ Pass ]
+external/wpt/html/rendering/non-replaced-elements/tables/table-row-pagination-001-print.html [ Failure ]
 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-margin-inline.html [ Pass ]
 external/wpt/html/rendering/non-replaced-elements/the-frameset-and-frame-elements/large-rows-abssize.html [ Pass ]
 external/wpt/html/rendering/non-replaced-elements/the-hr-element-0/setting-overflow-visible.html [ Pass ]
