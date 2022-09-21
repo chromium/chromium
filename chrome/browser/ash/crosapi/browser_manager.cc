@@ -125,6 +125,10 @@ using LaunchParamsFromBackground = BrowserManager::LaunchParamsFromBackground;
 // Pointer to the global instance of BrowserManager.
 BrowserManager* g_instance = nullptr;
 
+// Global flag to disable most of BrowserManager for testing.
+// Read by the BrowserManager constructor.
+bool g_disabled_for_testing = false;
+
 constexpr char kLacrosCannotLaunchNotificationID[] =
     "lacros_cannot_launch_notification_id";
 constexpr char kLacrosLauncherNotifierID[] = "lacros_launcher";
@@ -366,7 +370,8 @@ BrowserManager::BrowserManager(
     component_updater::ComponentUpdateService* update_service)
     : browser_loader_(std::move(browser_loader)),
       component_update_service_(update_service),
-      environment_provider_(std::make_unique<EnvironmentProvider>()) {
+      environment_provider_(std::make_unique<EnvironmentProvider>()),
+      disabled_for_testing_(g_disabled_for_testing) {
   DCHECK(!g_instance);
   g_instance = this;
 
@@ -1012,6 +1017,14 @@ void BrowserManager::OnLacrosChromeTerminated() {
 }
 
 void BrowserManager::OnSessionStateChanged() {
+  if (disabled_for_testing_) {
+    CHECK_IS_TEST();
+    LOG(WARNING)
+        << "BrowserManager disabled for testing, entering UNAVAILABLE state";
+    SetState(State::UNAVAILABLE);
+    return;
+  }
+
   // Wait for session to become active.
   auto* session_manager = session_manager::SessionManager::Get();
   if (session_manager->session_state() !=
@@ -1381,6 +1394,12 @@ void BrowserManager::OnDailyLaunchModeTimer() {
   UMA_HISTOGRAM_ENUMERATION(kLacrosLaunchModeDaily, *lacros_mode_);
   UMA_HISTOGRAM_ENUMERATION(kLacrosLaunchModeAndSourceDaily,
                             *lacros_mode_and_source_);
+}
+
+// static
+void BrowserManager::DisableForTesting() {
+  CHECK_IS_TEST();
+  g_disabled_for_testing = true;
 }
 
 }  // namespace crosapi

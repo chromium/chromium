@@ -293,6 +293,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     std::vector<std::string> lacros_additional_args;
   };
 
+  // Disable most of BrowserManager's functionality such that it never tries to
+  // launch Lacros. This is used by test_ash_chrome.
+  static void DisableForTesting();
+
  protected:
   // The actual Lacros launch mode.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -649,7 +653,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   base::ObserverList<BrowserManagerObserver> observers_;
 
-  bool disable_autolaunch_for_testing_ = false;
+  const bool disabled_for_testing_;
 
   // Used to launch files.app when user clicked "Go to files" on the migration
   // error screen.

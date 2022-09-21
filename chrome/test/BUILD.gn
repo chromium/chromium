@@ -11002,6 +11002,7 @@ if (is_chromeos_ash) {
     ]
     deps = [
       "//ash:test_support",
+      "//base/test:test_support",
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//components/exo/wayland:weston_test",
       "//ui/base:test_support",
