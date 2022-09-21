@@ -144,12 +144,12 @@ GURL ConvertArcUrlToExternalFileUrlIfNeeded(const GURL& url) {
   return url;
 }
 
-// Converts an externalfile:// ARC URL to a file:// URL managed by the FuseBox
-// Moniker system. This Moniker file is readable on the Linux filesystem like
-// any other file. Returns the input URL if a Moniker could not be created.
-GURL ConvertToMonikerFileUrl(Profile* profile, GURL external_file_url) {
-  const base::FilePath virtual_path =
-      chromeos::ExternalFileURLToVirtualPath(external_file_url);
+// Converts a content:// ARC URL to a file:// URL managed by the FuseBox Moniker
+// system. This Moniker file is readable on the Linux filesystem like any other
+// file. Returns an empty URL if a Moniker could not be created.
+GURL ConvertToMonikerFileUrl(Profile* profile, GURL content_url) {
+  const base::FilePath virtual_path = chromeos::ExternalFileURLToVirtualPath(
+      arc::ArcUrlToExternalFileUrl(content_url));
 
   const storage::FileSystemURL fs_url =
       file_manager::util::GetFileManagerFileSystemContext(profile)
@@ -157,12 +157,12 @@ GURL ConvertToMonikerFileUrl(Profile* profile, GURL external_file_url) {
               blink::StorageKey(file_manager::util::GetFilesAppOrigin()),
               storage::kFileSystemTypeExternal, virtual_path);
   if (!fs_url.is_valid()) {
-    return external_file_url;
+    return GURL();
   }
 
   fusebox::Server* fusebox_server = fusebox::Server::GetInstance();
   if (!fusebox_server) {
-    return external_file_url;
+    return GURL();
   }
 
   constexpr bool kReadOnly = true;
@@ -203,11 +203,16 @@ apps::IntentPtr ConvertLaunchIntent(
   if (launch_intent->files.has_value() && launch_intent->files->size() > 0) {
     std::vector<std::string> mime_types;
     for (const auto& file_info : *launch_intent->files) {
-      GURL url = arc::ArcUrlToExternalFileUrl(file_info->content_uri);
-      if (ash::features::IsArcFuseBoxFileSharingEnabled()) {
-        url = ConvertToMonikerFileUrl(profile, url);
+      GURL moniker_url =
+          ConvertToMonikerFileUrl(profile, file_info->content_uri);
+      if (moniker_url.is_empty()) {
+        // Continue launching the web app, but without any invalid attached
+        // files.
+        continue;
       }
-      apps::IntentFilePtr file = std::make_unique<apps::IntentFile>(url);
+
+      apps::IntentFilePtr file =
+          std::make_unique<apps::IntentFile>(moniker_url);
 
       file->mime_type = file_info->type;
       file->file_name = file_info->name;
