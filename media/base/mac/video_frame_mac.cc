@@ -11,6 +11,7 @@
 
 #include "base/logging.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/mac/io_surface.h"
 
@@ -34,32 +35,43 @@ void CvPixelBufferReleaseCallback(void* frame_ref,
 }  // namespace
 
 MEDIA_EXPORT base::ScopedCFTypeRef<CVPixelBufferRef>
-WrapVideoFrameInCVPixelBuffer(const VideoFrame& frame) {
+WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
   base::ScopedCFTypeRef<CVPixelBufferRef> pixel_buffer;
-
-  // If the frame is backed by a pixel buffer, just return that buffer.
-  if (frame.CvPixelBuffer()) {
-    pixel_buffer.reset(frame.CvPixelBuffer(), base::scoped_policy::RETAIN);
+  if (!frame)
     return pixel_buffer;
-  }
+  const gfx::Rect& visible_rect = frame->visible_rect();
+  bool crop_needed = visible_rect != gfx::Rect(frame->coded_size());
 
-  // If the frame has a GMB, yank out its IOSurface if possible.
-  if (frame.GetGpuMemoryBuffer()) {
-    gfx::GpuMemoryBufferHandle handle =
-        frame.GetGpuMemoryBuffer()->CloneHandle();
-    if (handle.type == gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER) {
-      gfx::ScopedIOSurface io_surface = handle.io_surface;
-      if (io_surface) {
-        const CVReturn cv_return = CVPixelBufferCreateWithIOSurface(
-            nullptr, io_surface, nullptr, pixel_buffer.InitializeInto());
-        if (cv_return == kCVReturnSuccess) {
-          VLOG(3) << "Returning IOSurface-based CVPixelBuffer.";
+  if (!crop_needed) {
+    // If the frame is backed by a pixel buffer, just return that buffer.
+    if (frame->CvPixelBuffer()) {
+      pixel_buffer.reset(frame->CvPixelBuffer(), base::scoped_policy::RETAIN);
+      return pixel_buffer;
+    }
+
+    // If the frame has a GMB, yank out its IOSurface if possible.
+    if (frame->HasGpuMemoryBuffer()) {
+      auto handle = frame->GetGpuMemoryBuffer()->CloneHandle();
+      if (handle.type == gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER) {
+        gfx::ScopedIOSurface io_surface = handle.io_surface;
+        if (io_surface) {
+          CVReturn cv_return = CVPixelBufferCreateWithIOSurface(
+              nullptr, io_surface, nullptr, pixel_buffer.InitializeInto());
+          if (cv_return != kCVReturnSuccess) {
+            DLOG(ERROR) << "CVPixelBufferCreateWithIOSurface failed: "
+                        << cv_return;
+            pixel_buffer.reset();
+          }
           return pixel_buffer;
         }
-        pixel_buffer.reset();
       }
     }
   }
+
+  // If the frame is backed by a GPU buffer, but needs cropping, map it and
+  // and handle like a software frame. There is no memcpy here.
+  if (frame->HasGpuMemoryBuffer())
+    frame = ConvertToMemoryMappedFrame(std::move(frame));
 
   VLOG(3) << "Returning RAM based CVPixelBuffer.";
 
@@ -68,7 +80,7 @@ WrapVideoFrameInCVPixelBuffer(const VideoFrame& frame) {
   // represent I420 and NV12 frames. In addition, VideoFrame does not carry
   // colorimetric information, so this function assumes standard video range
   // and ITU Rec 709 primaries.
-  const VideoPixelFormat video_frame_format = frame.format();
+  const VideoPixelFormat video_frame_format = frame->format();
   OSType cv_format;
   if (video_frame_format == PIXEL_FORMAT_I420) {
     cv_format = kCVPixelFormatType_420YpCbCr8Planar;
@@ -81,7 +93,6 @@ WrapVideoFrameInCVPixelBuffer(const VideoFrame& frame) {
 
   int num_planes = VideoFrame::NumPlanes(video_frame_format);
   DCHECK_LE(num_planes, kMaxPlanes);
-  const gfx::Rect& visible_rect = frame.visible_rect();
 
   // Build arrays for each plane's data pointer, dimensions and byte alignment.
   void* plane_ptrs[kMaxPlanes];
@@ -89,12 +100,12 @@ WrapVideoFrameInCVPixelBuffer(const VideoFrame& frame) {
   size_t plane_heights[kMaxPlanes];
   size_t plane_bytes_per_row[kMaxPlanes];
   for (int plane_i = 0; plane_i < num_planes; ++plane_i) {
-    plane_ptrs[plane_i] = const_cast<uint8_t*>(frame.visible_data(plane_i));
+    plane_ptrs[plane_i] = const_cast<uint8_t*>(frame->visible_data(plane_i));
     gfx::Size plane_size =
         VideoFrame::PlaneSize(video_frame_format, plane_i, visible_rect.size());
     plane_widths[plane_i] = plane_size.width();
     plane_heights[plane_i] = plane_size.height();
-    plane_bytes_per_row[plane_i] = frame.stride(plane_i);
+    plane_bytes_per_row[plane_i] = frame->stride(plane_i);
   }
 
   // CVPixelBufferCreateWithPlanarBytes needs a dummy plane descriptor or the
@@ -110,7 +121,7 @@ WrapVideoFrameInCVPixelBuffer(const VideoFrame& frame) {
       kCFAllocatorDefault, visible_rect.width(), visible_rect.height(),
       cv_format, descriptor, 0, num_planes, plane_ptrs, plane_widths,
       plane_heights, plane_bytes_per_row, &CvPixelBufferReleaseCallback,
-      const_cast<VideoFrame*>(&frame), nullptr, pixel_buffer.InitializeInto());
+      frame.get(), nullptr, pixel_buffer.InitializeInto());
   if (result != kCVReturnSuccess) {
     DLOG(ERROR) << " CVPixelBufferCreateWithPlanarBytes failed: " << result;
     return base::ScopedCFTypeRef<CVPixelBufferRef>(nullptr);
@@ -119,7 +130,7 @@ WrapVideoFrameInCVPixelBuffer(const VideoFrame& frame) {
   // The CVPixelBuffer now references the data of the frame, so increment its
   // reference count manually. The release callback set on the pixel buffer will
   // release the frame.
-  frame.AddRef();
+  frame->AddRef();
 
   // Apply required colorimetric attachments.
   CVBufferSetAttachment(pixel_buffer, kCVImageBufferColorPrimariesKey,

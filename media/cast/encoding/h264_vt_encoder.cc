@@ -377,7 +377,7 @@ bool H264VideoToolboxEncoder::EncodeVideoFrame(
   // compression session's pixel buffer pool. This will eliminate a copy of the
   // frame into memory visible by the hardware encoder. The VideoFrame's
   // lifetime is extended for the lifetime of the returned CVPixelBuffer.
-  auto pixel_buffer = media::WrapVideoFrameInCVPixelBuffer(*video_frame);
+  auto pixel_buffer = media::WrapVideoFrameInCVPixelBuffer(video_frame);
   if (!pixel_buffer) {
     DLOG(ERROR) << "WrapVideoFrameInCVPixelBuffer failed.";
     return false;

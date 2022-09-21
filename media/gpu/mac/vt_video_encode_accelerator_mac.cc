@@ -307,10 +307,12 @@ void VTVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
   DCHECK(compression_session_);
   DCHECK(frame);
 
-  // TODO(emircan): See if we can eliminate a copy here by using
-  // CVPixelBufferPool for the allocation of incoming VideoFrames.
-  base::ScopedCFTypeRef<CVPixelBufferRef> pixel_buffer =
-      WrapVideoFrameInCVPixelBuffer(*frame);
+  auto pixel_buffer = WrapVideoFrameInCVPixelBuffer(frame);
+  if (!pixel_buffer) {
+    DLOG(ERROR) << "WrapVideoFrameInCVPixelBuffer failed.";
+    NotifyError(kPlatformFailureError);
+    return;
+  }
   base::ScopedCFTypeRef<CFDictionaryRef> frame_props =
       video_toolbox::DictionaryWithKeyValue(
           kVTEncodeFrameOptionKey_ForceKeyFrame,
