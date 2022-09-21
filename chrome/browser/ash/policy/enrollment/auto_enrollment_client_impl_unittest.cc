@@ -303,16 +303,17 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
   void VerifyServerBackedStateForAll(
       const std::string& expected_management_domain,
       const std::string& expected_restore_mode,
-      const base::DictionaryValue** local_state_dict) {
+      base::Value::Dict& local_state_dict) {
     const base::Value* state =
         local_state_->GetUserPref(prefs::kServerBackedDeviceState);
     ASSERT_TRUE(state);
-    const base::DictionaryValue* state_dict = nullptr;
-    ASSERT_TRUE(state->GetAsDictionary(&state_dict));
-    *local_state_dict = state_dict;
+    ASSERT_TRUE(state->is_dict());
+
+    const base::Value::Dict& state_dict = state->GetDict();
+    local_state_dict = state_dict.Clone();
 
     const std::string* actual_management_domain =
-        state_dict->FindStringKey(kDeviceStateManagementDomain);
+        state_dict.FindString(kDeviceStateManagementDomain);
     if (expected_management_domain.empty()) {
       EXPECT_FALSE(actual_management_domain);
     } else {
@@ -321,22 +322,22 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
     }
 
     if (!expected_restore_mode.empty())
-      EXPECT_TRUE(state_dict->FindStringKey(kDeviceStateMode));
+      EXPECT_TRUE(state_dict.FindString(kDeviceStateMode));
     else
-      EXPECT_EQ(state_dict->FindKey(kDeviceStateMode), nullptr);
+      EXPECT_EQ(state_dict.Find(kDeviceStateMode), nullptr);
   }
 
   void VerifyServerBackedStateForFRE(
       const std::string& expected_management_domain,
       const std::string& expected_restore_mode,
       const std::string& expected_disabled_message) {
-    const base::DictionaryValue* state_dict;
+    base::Value::Dict state_dict;
     VerifyServerBackedStateForAll(expected_management_domain,
-                                  expected_restore_mode, &state_dict);
+                                  expected_restore_mode, state_dict);
 
     if (!expected_restore_mode.empty()) {
       const std::string* actual_restore_mode =
-          state_dict->FindStringKey(kDeviceStateMode);
+          state_dict.FindString(kDeviceStateMode);
       EXPECT_TRUE(actual_restore_mode);
       EXPECT_EQ(protocol_ == AutoEnrollmentProtocol::kFRE
                     ? expected_restore_mode
@@ -346,11 +347,11 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
     }
 
     const std::string* actual_disabled_message =
-        state_dict->FindStringKey(kDeviceStateDisabledMessage);
+        state_dict.FindString(kDeviceStateDisabledMessage);
     EXPECT_TRUE(actual_disabled_message);
     EXPECT_EQ(expected_disabled_message, *actual_disabled_message);
-    EXPECT_FALSE(state_dict->FindBoolPath(kDeviceStatePackagedLicense));
-    EXPECT_FALSE(state_dict->FindStringKey(kDeviceStateLicenseType));
+    EXPECT_FALSE(state_dict.FindBool(kDeviceStatePackagedLicense));
+    EXPECT_FALSE(state_dict.FindString(kDeviceStateLicenseType));
   }
 
   void VerifyServerBackedStateForInitialEnrollment(
@@ -358,15 +359,15 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
       const std::string& expected_restore_mode,
       bool expected_is_license_packaged_with_device,
       const std::string& expected_license_type) {
-    const base::DictionaryValue* state_dict;
+    base::Value::Dict state_dict;
     VerifyServerBackedStateForAll(expected_management_domain,
-                                  expected_restore_mode, &state_dict);
+                                  expected_restore_mode, state_dict);
 
-    EXPECT_FALSE(state_dict->FindStringKey(kDeviceStateDisabledMessage));
+    EXPECT_FALSE(state_dict.FindString(kDeviceStateDisabledMessage));
 
     absl::optional<bool> actual_is_license_packaged_with_device;
     actual_is_license_packaged_with_device =
-        state_dict->FindBoolPath(kDeviceStatePackagedLicense);
+        state_dict.FindBool(kDeviceStatePackagedLicense);
     if (actual_is_license_packaged_with_device.has_value()) {
       EXPECT_EQ(expected_is_license_packaged_with_device,
                 actual_is_license_packaged_with_device.value());
@@ -375,7 +376,7 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
     }
 
     const std::string* actual_license_type =
-        state_dict->FindStringKey(kDeviceStateLicenseType);
+        state_dict.FindString(kDeviceStateLicenseType);
     EXPECT_TRUE(actual_license_type);
     EXPECT_EQ(*actual_license_type, expected_license_type);
   }
