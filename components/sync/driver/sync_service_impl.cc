@@ -71,7 +71,8 @@ enum SyncInitialState {
 };
 
 void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
-                            bool first_setup_complete) {
+                            bool first_setup_complete,
+                            bool is_regular_profile_for_uma) {
   SyncInitialState sync_state = CAN_START;
   if (disable_reasons.Has(SyncService::DISABLE_REASON_NOT_SIGNED_IN)) {
     sync_state = NOT_SIGNED_IN;
@@ -88,6 +89,9 @@ void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
     sync_state = NEEDS_CONFIRMATION;
   }
   base::UmaHistogramEnumeration("Sync.InitialState", sync_state);
+  if (is_regular_profile_for_uma) {
+    base::UmaHistogramEnumeration("Sync.InitialState2", sync_state);
+  }
 }
 
 EngineComponentsFactory::Switches EngineSwitchesFromCommandLine() {
@@ -155,6 +159,7 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
       create_http_post_provider_factory_cb_(
           base::BindRepeating(&CreateHttpBridgeFactory)),
       start_behavior_(init_params.start_behavior),
+      is_regular_profile_for_uma_(init_params.is_regular_profile_for_uma),
       is_setting_sync_requested_(false),
       should_record_trusted_vault_error_shown_on_startup_(true),
 #if BUILDFLAG(IS_ANDROID)
@@ -243,7 +248,8 @@ void SyncServiceImpl::Initialize() {
   // RegisterForAuthNotifications(), because before that the authenticated
   // account isn't initialized.
   RecordSyncInitialState(GetDisableReasons(),
-                         user_settings_->IsFirstSetupComplete());
+                         user_settings_->IsFirstSetupComplete(),
+                         is_regular_profile_for_uma_);
 
   if (!HasSyncConsent()) {
     // Remove after 11/2021. Migration logic to set SyncRequested to false if

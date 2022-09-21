@@ -523,12 +523,31 @@ chromium-metrics-reviews@google.com.
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
-    An approximate state of sync at startup. Logs a few reasons sync definitely
-    wouldn't be able to start, or that it probably can start. The user having
-    turned off sync on mobile will be logged as &quot;turned off by user&quot;.
-    A dashboard stop and clear will fall under &quot;turned off and setup not
-    completed&quot;. See the SyncInitialState enum in sync_service_impl.cc for
-    more information.
+    NOTE: This histogram is also recorded (with value &quot;No signed in
+    user&quot;) for profiles in which Sync will never be able to start, such as
+    the system profile (used for the profile picker). You probably want to look
+    at Sync.InitialState2 instead.
+
+    An approximate state of sync at profile startup. Logs a few reasons sync
+    definitely wouldn't be able to start, or that it probably can start. A
+    dashboard stop and clear will fall under &quot;turned off and setup not
+    completed&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Sync.InitialState2" enum="SyncInitialState"
+    expires_after="2023-03-05">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    An approximate state of sync at profile startup. Logs a few reasons sync
+    definitely wouldn't be able to start, or that it probably can start. A
+    dashboard stop and clear will fall under &quot;turned off and setup not
+    completed&quot;. Only recorded for &quot;regular&quot; profiles, i.e. those
+    in which Sync might actually start. This excludes incognito profiles, guest
+    profiles, system profiles (used for the profile picker), lockscreen
+    profiles, etc.
   </summary>
 </histogram>
 
@@ -571,7 +590,23 @@ chromium-metrics-reviews@google.com.
   <owner>pastarmovj@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
+    NOTE: This histogram is also recorded for profiles in which Sync will never
+    be able to start, such as the system profile (used for the profile picker).
+    You probably want to look at Sync.Local.Enabled2 instead.
+
     Tracks the number of times the local sync backend was enabled by the user.
+    Recorded when the SyncService is created, i.e. during profile startup.
+  </summary>
+</histogram>
+
+<histogram name="Sync.Local.Enabled2" enum="BooleanEnabled"
+    expires_after="2023-02-19">
+  <owner>igorruvinov@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Tracks the number of times the local sync backend was enabled by the user.
+    Recorded when the SyncService is created, i.e. during profile startup.
   </summary>
 </histogram>
 
@@ -603,7 +638,23 @@ chromium-metrics-reviews@google.com.
   <owner>pastarmovj@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
-    Tracks the number of times the Roaming profile cannot be retrieved.
+    NOTE: This histogram is also recorded for profiles in which Sync will never
+    be able to start, such as the system profile (used for the profile picker).
+    You probably want to look at Sync.Local.RoamingProfileUnavailable2 instead.
+
+    Tracks the number of times the Roaming profile cannot be retrieved. Recorded
+    when the SyncService is created, i.e. during profile startup.
+  </summary>
+</histogram>
+
+<histogram name="Sync.Local.RoamingProfileUnavailable2" enum="BooleanError"
+    expires_after="2023-08-01">
+  <owner>igorruvinov@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Tracks the number of times the Roaming profile cannot be retrieved. Recorded
+    when the SyncService is created, i.e. during profile startup.
   </summary>
 </histogram>
 

@@ -16,8 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_service.h"
@@ -96,6 +94,7 @@ class SyncServiceImpl : public SyncService,
     version_info::Channel channel = version_info::Channel::UNKNOWN;
     std::string debug_identifier;
     raw_ptr<policy::PolicyService> policy_service = nullptr;
+    bool is_regular_profile_for_uma = false;
   };
 
   explicit SyncServiceImpl(InitParams init_params);
@@ -450,6 +449,12 @@ class SyncServiceImpl : public SyncService,
   std::unique_ptr<StartupController> startup_controller_;
 
   std::unique_ptr<SyncStoppedReporter> sync_stopped_reporter_;
+
+  // Whether the Profile that this SyncService is attached to is a "regular"
+  // profile, i.e. one for which sync actually makes sense. This excludes
+  // profiles types such as system and guest profiles, as well as sign-in and
+  // lockscreen profiles on Ash.
+  const bool is_regular_profile_for_uma_;
 
   // Used in OnSyncRequestedPrefChange() to know whether the notification was
   // caused by the service itself setting the pref.

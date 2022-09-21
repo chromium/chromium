@@ -123,6 +123,8 @@ std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
 
+  DCHECK(!browser_state->IsOffTheRecord());
+
   // Always create the GCMProfileService instance such that we can listen to
   // the profile notifications and purge the GCM store when the profile is
   // being signed out.
@@ -133,6 +135,9 @@ std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
   ios::AboutSigninInternalsFactory::GetForBrowserState(browser_state);
 
   syncer::SyncServiceImpl::InitParams init_params;
+  // On non-iOS platforms, there are some "uninteresting" types of profiles such
+  // as guest or system profiles. There's no such thing on iOS.
+  init_params.is_regular_profile_for_uma = true;
   init_params.identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
   init_params.start_behavior = syncer::SyncServiceImpl::MANUAL_START;
