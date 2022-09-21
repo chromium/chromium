@@ -291,8 +291,7 @@ void PolicyProvider::GetContentSettingsFromPreferences(
       return;
     }
 
-    base::Value::ConstListView pattern_str_list =
-        pref->GetValue()->GetListDeprecated();
+    const base::Value::List& pattern_str_list = pref->GetValue()->GetList();
     for (size_t i = 0; i < pattern_str_list.size(); ++i) {
       if (!pattern_str_list[i].is_string()) {
         NOTREACHED() << "Could not read content settings pattern #" << i
@@ -374,7 +373,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
   //   }
   // }
   std::unordered_map<std::string, base::DictionaryValue> filters_map;
-  for (const auto& pattern_filter_str : pref->GetValue()->GetListDeprecated()) {
+  for (const auto& pattern_filter_str : pref->GetValue()->GetList()) {
     if (!pattern_filter_str.is_string()) {
       NOTREACHED();
       continue;
