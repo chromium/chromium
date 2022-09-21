@@ -257,8 +257,8 @@ void UpdatePrimaryUserDeskNamesPrefs() {
     return;
   }
 
-  ListPrefUpdate name_update(primary_user_prefs, prefs::kDesksNamesList);
-  base::Value::List& name_pref_data = name_update->GetList();
+  ScopedListPrefUpdate name_update(primary_user_prefs, prefs::kDesksNamesList);
+  base::Value::List& name_pref_data = name_update.Get();
   name_pref_data.clear();
 
   const auto& desks = DesksController::Get()->desks();
@@ -290,8 +290,9 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
   }
 
   // Save per-desk metrics.
-  ListPrefUpdate metrics_update(primary_user_prefs, prefs::kDesksMetricsList);
-  base::Value::List& metrics_pref_data = metrics_update->GetList();
+  ScopedListPrefUpdate metrics_update(primary_user_prefs,
+                                      prefs::kDesksMetricsList);
+  base::Value::List& metrics_pref_data = metrics_update.Get();
   metrics_pref_data.clear();
 
   auto* desks_controller = DesksController::Get();
@@ -311,14 +312,14 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
   DCHECK_EQ(metrics_pref_data.size(), desks.size());
 
   // Save weekly active report time.
-  DictionaryPrefUpdate weekly_active_desks_update(
+  ScopedDictPrefUpdate weekly_active_desks_update(
       primary_user_prefs, prefs::kDesksWeeklyActiveDesksMetrics);
-  weekly_active_desks_update->SetIntPath(
+  weekly_active_desks_update->SetByDottedPath(
       kReportTimeKey, desks_controller->GetWeeklyActiveReportTime()
                           .ToDeltaSinceWindowsEpoch()
                           .InMinutes());
-  weekly_active_desks_update->SetIntPath(kWeeklyActiveDesksKey,
-                                         Desk::GetWeeklyActiveDesks());
+  weekly_active_desks_update->SetByDottedPath(kWeeklyActiveDesksKey,
+                                              Desk::GetWeeklyActiveDesks());
 }
 
 void UpdatePrimaryUserActiveDeskPrefs(int active_desk_index) {
