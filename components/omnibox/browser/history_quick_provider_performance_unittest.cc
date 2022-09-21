@@ -117,16 +117,17 @@ void HQPPerfTestOnePopularURL::SetUp() {
   client_->set_history_service(
       history::CreateHistoryService(history_dir_.GetPath(), true));
   client_->set_bookmark_model(bookmarks::TestBookmarkClient::CreateModel());
+
+  ASSERT_NE(client_->GetHistoryService(), nullptr);
+  ASSERT_NO_FATAL_FAILURE(PrepareData());
+
   client_->set_in_memory_url_index(std::make_unique<InMemoryURLIndex>(
       client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
       history_dir_.GetPath(), SchemeSet()));
   client_->GetInMemoryURLIndex()->Init();
-  // First make sure the automatic initialization completes to avoid a race
-  // between that and our manual indexing below.
   BlockUntilInMemoryURLIndexIsRefreshed(client_->GetInMemoryURLIndex());
 
-  ASSERT_TRUE(client_->GetHistoryService());
-  ASSERT_NO_FATAL_FAILURE(PrepareData());
+  provider_ = new HistoryQuickProvider(client_.get());
 }
 
 void HQPPerfTestOnePopularURL::TearDown() {
@@ -141,9 +142,7 @@ void HQPPerfTestOnePopularURL::TearDown() {
 }
 
 void HQPPerfTestOnePopularURL::PrepareData() {
-// Adding fake urls to db must be done before RebuildFromHistory(). This will
-// ensure that the index is properly populated with data from the database.
-// Note: on debug builds these tests can be slow. Use a smaller data set in
+// Note: On debug builds these tests can be slow. Use a smaller data set in
 // that case. See crbug.com/822624.
 #if defined NDEBUG
   constexpr size_t kSimilarUrlCount = 10000;
@@ -154,17 +153,6 @@ void HQPPerfTestOnePopularURL::PrepareData() {
 #endif
   for (size_t i = 0; i < kSimilarUrlCount; ++i)
     AddFakeURLToHistoryDB(history_backend()->db(), GeneratePopularURLRow());
-
-  InMemoryURLIndex* url_index = client_->GetInMemoryURLIndex();
-  url_index->RebuildFromHistory(
-      client_->GetHistoryService()->history_backend_->db());
-
-  // History index refresh creates rebuilt tasks to run on history thread.
-  // Block here to make sure that all of them are complete.
-  history::BlockUntilHistoryProcessesPendingRequests(
-      client_->GetHistoryService());
-
-  provider_ = new HistoryQuickProvider(client_.get());
 }
 
 void HQPPerfTestOnePopularURL::PrintMeasurements(

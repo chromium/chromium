@@ -202,32 +202,22 @@ class HistoryQuickProviderTest : public testing::Test {
 void HistoryQuickProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();
   CHECK(history_dir_.CreateUniqueTempDir());
+
+  // Initialize the history service with our test data.
   client_->set_history_service(
       history::CreateHistoryService(history_dir_.GetPath(), true));
+  ASSERT_NE(client_->GetHistoryService(), nullptr);
+  ASSERT_NO_FATAL_FAILURE(FillData());
+
   client_->set_bookmark_model(bookmarks::TestBookmarkClient::CreateModel());
+  client_->set_template_url_service(
+      std::make_unique<TemplateURLService>(nullptr, 0));
+
   client_->set_in_memory_url_index(std::make_unique<InMemoryURLIndex>(
       client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
       history_dir_.GetPath(), SchemeSet()));
-  client_->set_template_url_service(
-      std::make_unique<TemplateURLService>(nullptr, 0));
   client_->GetInMemoryURLIndex()->Init();
-  ASSERT_TRUE(client_->GetHistoryService());
-
-  // First make sure the automatic initialization completes to avoid a race
-  // between that and our manual indexing below.
-  InMemoryURLIndex* url_index = client_->GetInMemoryURLIndex();
-  BlockUntilInMemoryURLIndexIsRefreshed(url_index);
-
-  // FillData() must be called before RebuildFromHistory(). This will
-  // ensure that the index is properly populated with data from the database.
-  ASSERT_NO_FATAL_FAILURE(FillData());
-  url_index->RebuildFromHistory(
-      client_->GetHistoryService()->history_backend_->db());
-
-  // History index refresh creates rebuilt tasks to run on history thread.
-  // Block here to make sure that all of them are complete.
-  history::BlockUntilHistoryProcessesPendingRequests(
-      client_->GetHistoryService());
+  BlockUntilInMemoryURLIndexIsRefreshed(client_->GetInMemoryURLIndex());
 
   provider_ = new HistoryQuickProvider(client_.get());
 }

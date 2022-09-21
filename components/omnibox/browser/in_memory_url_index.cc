@@ -244,10 +244,3 @@ void InMemoryURLIndex::DoneRebuildingPrivateDataFromHistoryDB(
   if (restore_cache_observer_)
     restore_cache_observer_->OnCacheRestoreFinished(succeeded);
 }
-
-void InMemoryURLIndex::RebuildFromHistory(
-    history::HistoryDatabase* history_db) {
-  private_data_tracker_.TryCancelAll();
-  private_data_ =
-      URLIndexPrivateData::RebuildFromHistory(history_db, scheme_allowlist_);
-}

@@ -176,10 +176,6 @@ class InMemoryURLIndex : public KeyedService,
       bool succeeded,
       scoped_refptr<URLIndexPrivateData> private_data);
 
-  // Rebuilds the history index from the history database in |history_db|.
-  // Used for unit testing only.
-  void RebuildFromHistory(history::HistoryDatabase* history_db);
-
   // KeyedService:
   // Signals that any outstanding initialization should be canceled.
   void Shutdown() override;

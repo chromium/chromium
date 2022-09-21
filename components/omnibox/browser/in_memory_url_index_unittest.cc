@@ -268,7 +268,7 @@ void InMemoryURLIndexTest::InitializeInMemoryURLIndex() {
       nullptr, history_service_.get(), template_url_service_.get(),
       base::FilePath(), client_schemes_to_allowlist);
   url_index_->Init();
-  url_index_->RebuildFromHistory(history_database_);
+  BlockUntilInMemoryURLIndexIsRefreshed(url_index_.get());
 }
 
 void InMemoryURLIndexTest::CheckTerm(
