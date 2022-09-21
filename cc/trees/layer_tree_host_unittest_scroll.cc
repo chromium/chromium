@@ -3058,6 +3058,11 @@ class CommitWithoutSynchronizingScrollOffsets : public LayerTreeHostScrollTest {
 
   void BeginTest() override {}
 
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    LayerTreeHostScrollTest::InitializeSettings(settings);
+    settings->skip_commits_if_not_synchronizing_compositor_state = false;
+  }
+
   void WillBeginMainFrame() override {
     Layer* scroll_layer =
         layer_tree_host()->OuterViewportScrollLayerForTesting();
