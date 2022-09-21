@@ -286,6 +286,8 @@ void Node::Clear() {
 bool Node::FindCorrections(const std::u16string& text,
                            ToleranceSchedule tolerance_schedule,
                            std::vector<Correction>& corrections) const {
+  const bool enable_transpose =
+      OmniboxFieldTrial::kFuzzyUrlSuggestionsTranspose.Get();
   DVLOG(1) << "FindCorrections(" << text << ", " << tolerance_schedule.limit
            << ")";
   DCHECK(corrections.empty());
@@ -341,6 +343,7 @@ bool Node::FindCorrections(const std::u16string& text,
 
   Step best{nullptr, INT_MAX, SIZE_MAX, INT_MAX, Correction()};
   int i = 0;
+
   // Find and return all equally-distant results as soon as distance increases
   // beyond that of first found results. Length is also considered to
   // avoid producing shorter substring texts.
@@ -426,7 +429,7 @@ bool Node::FindCorrections(const std::u16string& text,
 
         // Transpose. Look ahead cost can be balanced by faster
         // advancement through input text resulting in shorter search.
-        if (text.size() > step.index + 1 &&
+        if (enable_transpose && text.size() > step.index + 1 &&
             text[step.index + 1] == entry.first) {
           const auto it = entry.second->next.find(step_text_char);
           if (it != entry.second->next.end()) {
@@ -439,6 +442,7 @@ bool Node::FindCorrections(const std::u16string& text,
       }
     }
   }
+
   if (!pq.empty()) {
     DVLOG(1) << "quit early on step with distance " << pq.top().distance;
   }
