@@ -1696,39 +1696,12 @@
             ],
             "experiments": [
                 {
-                    "name": "DisabledPolicy_20220621",
-                    "disable_features": [
-                        "BFCachePerformanceManagerPolicy",
-                        "BackForwardCacheSize"
-                    ]
-                },
-                {
-                    "name": "EnabledPolicy_CacheSize2_20220621",
+                    "name": "EnabledPolicy_CacheSize6_ModerateCacheSize4-2_20220921",
                     "params": {
-                        "cache_size": "2",
-                        "foreground_cache_size": "-1"
-                    },
-                    "enable_features": [
-                        "BFCachePerformanceManagerPolicy",
-                        "BackForwardCacheSize"
-                    ]
-                },
-                {
-                    "name": "EnabledPolicy_CacheSize4_20220621",
-                    "params": {
-                        "cache_size": "4",
-                        "foreground_cache_size": "-1"
-                    },
-                    "enable_features": [
-                        "BFCachePerformanceManagerPolicy",
-                        "BackForwardCacheSize"
-                    ]
-                },
-                {
-                    "name": "EnabledPolicy_CacheSize6_20220621",
-                    "params": {
+                        "background_cache_size_on_moderate_pressure": "2",
                         "cache_size": "6",
-                        "foreground_cache_size": "-1"
+                        "foreground_cache_size": "-1",
+                        "foreground_cache_size_on_moderate_pressure": "4"
                     },
                     "enable_features": [
                         "BFCachePerformanceManagerPolicy",
