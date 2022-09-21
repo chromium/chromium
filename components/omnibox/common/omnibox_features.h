@@ -13,110 +13,109 @@ namespace omnibox {
 // Please do not add more features to this "big blob" list.
 // Instead, use the categorized and alphabetized lists below this "big blob".
 // You can create a new category if none of the existing ones fit.
-extern const base::Feature kExperimentalKeywordMode;
-extern const base::Feature kImageSearchSuggestionThumbnail;
-extern const base::Feature kOmniboxRemoveSuggestionsFromClipboard;
-extern const base::Feature kAndroidAuxiliarySearch;
+BASE_DECLARE_FEATURE(kExperimentalKeywordMode);
+BASE_DECLARE_FEATURE(kImageSearchSuggestionThumbnail);
+BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard);
+BASE_DECLARE_FEATURE(kAndroidAuxiliarySearch);
 
 // Flags that affect the "twiddle" step of AutocompleteResult, e.g.,
 // `SortAndCull()`.
-extern const base::Feature kAutocompleteStability;
-extern const base::Feature kDocumentProviderDedupingOptimization;
-extern const base::Feature kOmniboxDemoteByType;
-extern const base::Feature kPreserveDefault;
-extern const base::Feature kStrippedGurlOptimization;
-extern const base::Feature kUpdateResultDebounce;
+BASE_DECLARE_FEATURE(kAutocompleteStability);
+BASE_DECLARE_FEATURE(kDocumentProviderDedupingOptimization);
+BASE_DECLARE_FEATURE(kOmniboxDemoteByType);
+BASE_DECLARE_FEATURE(kPreserveDefault);
+BASE_DECLARE_FEATURE(kStrippedGurlOptimization);
+BASE_DECLARE_FEATURE(kUpdateResultDebounce);
 
 // Features below this line should be sorted alphabetically by their comments.
 
 // Num suggestions - these affect how many suggestions are shown based on e.g.
 // focus, page context, provider, or URL v non-URL.
-extern const base::Feature kMaxZeroSuggestMatches;
-extern const base::Feature kUIExperimentMaxAutocompleteMatches;
+BASE_DECLARE_FEATURE(kMaxZeroSuggestMatches);
+BASE_DECLARE_FEATURE(kUIExperimentMaxAutocompleteMatches);
 // The default value is established here as a bool so it can be referred to in
 // OmniboxFieldTrial.
 extern const bool kOmniboxMaxURLMatchesEnabledByDefault;
-extern const base::Feature kOmniboxMaxURLMatches;
-extern const base::Feature kDynamicMaxAutocomplete;
-extern const base::Feature kRetainSuggestionsWithHeaders;
+BASE_DECLARE_FEATURE(kOmniboxMaxURLMatches);
+BASE_DECLARE_FEATURE(kDynamicMaxAutocomplete);
+BASE_DECLARE_FEATURE(kRetainSuggestionsWithHeaders);
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
-extern const base::Feature kAdjustLocalHistoryZeroSuggestRelevanceScore;
-extern const base::Feature kClobberTriggersContextualWebZeroSuggest;
-extern const base::Feature kClobberTriggersSRPZeroSuggest;
-extern const base::Feature kFocusTriggersContextualWebZeroSuggest;
-extern const base::Feature kFocusTriggersSRPZeroSuggest;
-extern const base::Feature kLocalHistorySuggestRevamp;
-extern const base::Feature kLocalHistoryZeroSuggestBeyondNTP;
-extern const base::Feature kOmniboxLocalZeroSuggestAgeThreshold;
-extern const base::Feature kZeroSuggestOnNTPForSignedOutUsers;
-extern const base::Feature kZeroSuggestPrefetching;
-extern const base::Feature kZeroSuggestPrefetchingOnSRP;
-extern const base::Feature kZeroSuggestPrefetchingOnWeb;
-extern const base::Feature kZeroSuggestInMemoryCaching;
+BASE_DECLARE_FEATURE(kAdjustLocalHistoryZeroSuggestRelevanceScore);
+BASE_DECLARE_FEATURE(kClobberTriggersContextualWebZeroSuggest);
+BASE_DECLARE_FEATURE(kClobberTriggersSRPZeroSuggest);
+BASE_DECLARE_FEATURE(kFocusTriggersContextualWebZeroSuggest);
+BASE_DECLARE_FEATURE(kFocusTriggersSRPZeroSuggest);
+BASE_DECLARE_FEATURE(kLocalHistorySuggestRevamp);
+BASE_DECLARE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP);
+BASE_DECLARE_FEATURE(kOmniboxLocalZeroSuggestAgeThreshold);
+BASE_DECLARE_FEATURE(kZeroSuggestOnNTPForSignedOutUsers);
+BASE_DECLARE_FEATURE(kZeroSuggestPrefetching);
+BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnSRP);
+BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnWeb);
+BASE_DECLARE_FEATURE(kZeroSuggestInMemoryCaching);
 // Related, kMaxZeroSuggestMatches.
 
 // On Device Head Suggest.
-extern const base::Feature kOnDeviceHeadProviderIncognito;
-extern const base::Feature kOnDeviceHeadProviderNonIncognito;
+BASE_DECLARE_FEATURE(kOnDeviceHeadProviderIncognito);
+BASE_DECLARE_FEATURE(kOnDeviceHeadProviderNonIncognito);
 
 // Provider-specific - These features change the behavior of specific providers.
-extern const base::Feature kOmniboxExperimentalSuggestScoring;
-extern const base::Feature kDisableCGIParamMatching;
-extern const base::Feature kShortBookmarkSuggestions;
-extern const base::Feature kShortBookmarkSuggestionsByTotalInputLength;
-extern const base::Feature kBookmarkPaths;
-extern const base::Feature kAggregateShortcuts;
-extern const base::Feature kShortcutExpanding;
+BASE_DECLARE_FEATURE(kOmniboxExperimentalSuggestScoring);
+BASE_DECLARE_FEATURE(kDisableCGIParamMatching);
+BASE_DECLARE_FEATURE(kShortBookmarkSuggestions);
+BASE_DECLARE_FEATURE(kShortBookmarkSuggestionsByTotalInputLength);
+BASE_DECLARE_FEATURE(kBookmarkPaths);
+BASE_DECLARE_FEATURE(kAggregateShortcuts);
+BASE_DECLARE_FEATURE(kShortcutExpanding);
 // TODO(crbug.com/1202964): Clean up feature flag used in staged roll-out of
 // various CLs related to the contents/description clean-up work.
-extern const base::Feature kStoreTitleInContentsAndUrlInDescription;
-extern const base::Feature
-    kHistoryQuickProviderSpecificityScoreCountUniqueHosts;
+BASE_DECLARE_FEATURE(kStoreTitleInContentsAndUrlInDescription);
+BASE_DECLARE_FEATURE(kHistoryQuickProviderSpecificityScoreCountUniqueHosts);
 
 // Document provider
-extern const base::Feature kDocumentProvider;
-extern const base::Feature kDocumentProviderAso;
+BASE_DECLARE_FEATURE(kDocumentProvider);
+BASE_DECLARE_FEATURE(kDocumentProviderAso);
 
 // Suggestions UI - these affect the UI or function of the suggestions popup.
-extern const base::Feature kAdaptiveSuggestionsCount;
-extern const base::Feature kClipboardSuggestionContentHidden;
-extern const base::Feature kSuggestionAnswersColorReverse;
-extern const base::Feature kMostVisitedTiles;
-extern const base::Feature kMostVisitedTilesDynamicSpacing;
-extern const base::Feature kMostVisitedTilesTitleWrapAround;
-extern const base::Feature kRichAutocompletion;
-extern const base::Feature kNtpRealboxPedals;
-extern const base::Feature kOmniboxFuzzyUrlSuggestions;
-extern const base::Feature kOmniboxHeaderPaddingUpdate;
-extern const base::Feature kOmniboxRemoveSuggestionHeaderCapitalization;
-extern const base::Feature kOmniboxRemoveSuggestionHeaderChevron;
-extern const base::Feature kOmniboxMostVisitedTilesFadingOnTablet;
-extern const base::Feature kOmniboxMostVisitedTilesOnSrp;
+BASE_DECLARE_FEATURE(kAdaptiveSuggestionsCount);
+BASE_DECLARE_FEATURE(kClipboardSuggestionContentHidden);
+BASE_DECLARE_FEATURE(kSuggestionAnswersColorReverse);
+BASE_DECLARE_FEATURE(kMostVisitedTiles);
+BASE_DECLARE_FEATURE(kMostVisitedTilesDynamicSpacing);
+BASE_DECLARE_FEATURE(kMostVisitedTilesTitleWrapAround);
+BASE_DECLARE_FEATURE(kRichAutocompletion);
+BASE_DECLARE_FEATURE(kNtpRealboxPedals);
+BASE_DECLARE_FEATURE(kOmniboxFuzzyUrlSuggestions);
+BASE_DECLARE_FEATURE(kOmniboxHeaderPaddingUpdate);
+BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionHeaderCapitalization);
+BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionHeaderChevron);
+BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesFadingOnTablet);
+BASE_DECLARE_FEATURE(kOmniboxMostVisitedTilesOnSrp);
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).
-extern const base::Feature kOmniboxAssistantVoiceSearch;
+BASE_DECLARE_FEATURE(kOmniboxAssistantVoiceSearch);
 
 // Omnibox & Suggestions UI - these affect both the omnibox and the suggestions
 // popup.
-extern const base::Feature kClosePopupWithEscape;
-extern const base::Feature kBlurWithEscape;
+BASE_DECLARE_FEATURE(kClosePopupWithEscape);
+BASE_DECLARE_FEATURE(kBlurWithEscape);
 
 // Settings Page - these affect the appearance of the Search Engines settings
 // page
-extern const base::Feature kSiteSearchStarterPack;
+BASE_DECLARE_FEATURE(kSiteSearchStarterPack);
 
 // Experiment to introduce new security indicators for HTTPS.
-extern const base::Feature kUpdatedConnectionSecurityIndicators;
+BASE_DECLARE_FEATURE(kUpdatedConnectionSecurityIndicators);
 
 // Navigation experiments.
-extern const base::Feature kDefaultTypedNavigationsToHttps;
+BASE_DECLARE_FEATURE(kDefaultTypedNavigationsToHttps);
 extern const char kDefaultTypedNavigationsToHttpsTimeoutParam[];
 
 // Omnibox Logging.
-extern const base::Feature kReportAssistedQueryStats;
-extern const base::Feature kReportSearchboxStats;
+BASE_DECLARE_FEATURE(kReportAssistedQueryStats);
+BASE_DECLARE_FEATURE(kReportSearchboxStats);
 
 }  // namespace omnibox
 
