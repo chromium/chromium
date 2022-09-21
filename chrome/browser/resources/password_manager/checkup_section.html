@@ -1,0 +1,65 @@
+<style include="shared-style cr-shared-style">
+  #checkupContent {
+    margin-top: 16px;
+  }
+
+  #checkupStatus {
+    align-items: center;
+    display: flex;
+    height: 72px;
+  }
+
+  #illustartion {
+    /* TODO(crbug.com/1350947): Add a color for dark theme */
+    background-color: var(--google-grey-50);
+    height: 120px;
+  }
+
+  #labelWrapper {
+    margin-inline-end: var(--control-label-spacing);
+    margin-inline-start: 20px;
+    flex: 1;
+  }
+
+  #refreshButton {
+    margin-inline-end: 10px;
+  }
+
+  cr-link-row {
+    --cr-link-row-start-icon-color: var(--google-green-700);
+    --cr-link-row-icon-width: 16px;
+  }
+
+  cr-link-row[has-issues] {
+    --cr-link-row-start-icon-color: var(--google-yellow-700);
+  }
+
+  cr-link-row[compromised] {
+    --cr-link-row-start-icon-color: var(--google-red-600);
+  }
+</style>
+<h2 class="page-title">$i18n{checkupTitle}</h2>
+<div id="checkupContent" class="card">
+  <div id="illustartion" role="presentation"></div>
+  <div class="hr" id="checkupStatus">
+    <div id="labelWrapper">
+      <div class="label">[[checkedPasswordsText_]]</div>
+      <div id="subLabel" class="cr-secondary-text label">
+        <span id="sub-label-text">$i18n{justNow}</span>
+      </div>
+    </div>
+    <cr-icon-button id="refreshButton" class="icon-refresh"></cr-icon-button>
+  </div>
+  <cr-link-row id="compromisedRow" start-icon="cr:error"
+      label="[[compromisedPasswordsText_]]" class="hr"
+      sub-label="$i18n{compromisedPasswordsTitle}" compromised>
+  </cr-link-row>
+  <cr-link-row id="weakRow" start-icon="cr:check-circle"
+      label="[[reusedPasswordsText_]]" class="hr"
+      sub-label="$i18n{reusedPasswordsEmpty}">
+  </cr-link-row>
+  <cr-link-row id="reusedRow" start-icon="cr:error"
+      label="[[weakPasswordsText_]]" class="hr"
+      sub-label="$i18n{weakPasswordsTitle}" has-issues>
+  </cr-link-row>
+</div>

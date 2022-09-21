@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -32,21 +33,37 @@ content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile) {
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"addPassword", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_BUTTON},
-      {"autosigninLabel", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_LABEL},
       {"autosigninDescription", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_DESC},
+      {"autosigninLabel", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_LABEL},
       {"checkup", IDS_PASSWORD_MANAGER_UI_CHECKUP},
+      {"checkupTitle", IDS_PASSWORD_MANAGER_UI_CHECKUP_TITLE},
       {"clearSearch", IDS_CLEAR_SEARCH},
+      {"clearSearch", IDS_CLEAR_SEARCH},
+      {"compromisedPasswordsEmpty",
+       IDS_PASSWORD_MANAGER_UI_NO_COMPROMISED_PASSWORDS},
+      {"compromisedPasswordsTitle",
+       IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS},
       {"exportPasswords", IDS_PASSWORD_MANAGER_UI_EXPORT_BANNER_TITLE},
-      {"exportPasswordsDescription", IDS_PASSWORD_MANAGER_UI_EXPORT_BANNER_DESCRIPTION},
+      {"exportPasswordsDescription",
+       IDS_PASSWORD_MANAGER_UI_EXPORT_BANNER_DESCRIPTION},
       {"importPasswords", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_TITLE},
-      {"importPasswordsDescription", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_DESCRIPTION},
+      {"importPasswordsDescription",
+       IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_DESCRIPTION},
+      {"justNow", IDS_PASSWORD_MANAGER_UI_JUST_NOW},
       {"passwords", IDS_PASSWORD_MANAGER_UI_PASSWORDS},
-      {"savePasswordsLabel", IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
+      {"reusedPasswordsEmpty", IDS_PASSWORD_MANAGER_UI_NO_REUSED_PASSWORDS},
+      {"reusedPasswordsTitle", IDS_PASSWORD_MANAGER_UI_HAS_REUSED_PASSWORDS},
+      {"savePasswordsLabel",
+       IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
       {"searchPrompt", IDS_PASSWORD_MANAGER_UI_SEARCH_PROMPT},
       {"settings", IDS_PASSWORD_MANAGER_UI_SETTINGS},
       {"title", IDS_PASSWORD_MANAGER_UI_TITLE},
-      {"trustedVaultBannerLabelOfferOptIn", IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPT_IN_TITLE},
-      {"trustedVaultBannerSubLabelOfferOptIn", IDS_PASSWORD_MANAGER_UI_RUSTED_VAULT_OPT_IN_DESCRIPTION},
+      {"trustedVaultBannerLabelOfferOptIn",
+       IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPT_IN_TITLE},
+      {"trustedVaultBannerSubLabelOfferOptIn",
+       IDS_PASSWORD_MANAGER_UI_RUSTED_VAULT_OPT_IN_DESCRIPTION},
+      {"weakPasswordsEmpty", IDS_PASSWORD_MANAGER_UI_NO_WEAK_PASSWORDS},
+      {"weakPasswordsTitle", IDS_PASSWORD_MANAGER_UI_HAS_WEAK_PASSWORDS},
   };
   source->AddLocalizedStrings(kStrings);
 
@@ -59,6 +76,21 @@ content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile) {
   return source;
 }
 
+void AddPluralStrings(content::WebUI* web_ui) {
+  // Add a handler to provide pluralized strings.
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString(
+      "checkedPasswords", IDS_PASSWORD_MANAGER_UI_CHECKUP_RESULT);
+  plural_string_handler->AddLocalizedString(
+      "compromisedPasswords",
+      IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT);
+  plural_string_handler->AddLocalizedString(
+      "reusedPasswords", IDS_PASSWORD_MANAGER_UI_REUSED_PASSWORDS_COUNT);
+  plural_string_handler->AddLocalizedString(
+      "weakPasswords", IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_COUNT);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
+}
+
 }  // namespace
 
 PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
@@ -66,6 +98,7 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
   // Set up the chrome://password-manager/ source.
   Profile* profile = Profile::FromWebUI(web_ui);
   auto* source = CreatePasswordsUIHTMLSource(profile);
+  AddPluralStrings(web_ui);
   ManagedUIHandler::Initialize(web_ui, source);
   content::WebUIDataSource::Add(profile, source);
 }

@@ -11,12 +11,13 @@ build_webui("build") {
     "manifest.webmanifest",
   ]
   web_component_files = [
+    "checkup_section.ts",
     "password_manager_app.ts",
-    "side_bar.ts",
-    "toolbar.ts",
-    "settings_section.ts",
     "passwords_section.ts",
     "prefs/pref_toggle_button.ts",
+    "settings_section.ts",
+    "side_bar.ts",
+    "toolbar.ts",
   ]
   non_web_component_files = [
     "password_manager_proxy.ts",

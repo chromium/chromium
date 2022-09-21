@@ -5,11 +5,12 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+import './checkup_section.js';
+import './passwords_section.js';
+import './settings_section.js';
 import './shared_style.css.js';
 import './side_bar.js';
 import './toolbar.js';
-import './settings_section.js';
-import './passwords_section.js';
 
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
