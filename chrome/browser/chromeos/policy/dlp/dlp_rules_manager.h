@@ -112,8 +112,12 @@ class DlpRulesManager : public KeyedService {
   // Returns the highest possible restriction enforcement level for
   // 'restriction' given that data comes from 'source' and the destination might
   // be any. ALLOW level rules are ignored.
-  virtual Level IsRestrictedByAnyRule(const GURL& source,
-                                      Restriction restriction) const = 0;
+  // If there's a rule matching, `out_source_pattern` will be changed to any
+  // random matching rule URL pattern.
+  virtual Level IsRestrictedByAnyRule(
+      const GURL& source,
+      Restriction restriction,
+      std::string* out_source_pattern) const = 0;
 
   // Returns the enforcement level for `restriction` given that data comes
   // from `source` and requested to be shared to `destination`. ALLOW is

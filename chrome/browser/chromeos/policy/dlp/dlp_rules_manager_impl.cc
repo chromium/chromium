@@ -237,15 +237,23 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestricted(
 
 DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedByAnyRule(
     const GURL& source,
-    Restriction restriction) const {
+    Restriction restriction,
+    std::string* out_source_pattern) const {
   DCHECK(src_url_matcher_);
 
   const RulesConditionsMap src_rules_map = MatchUrlAndGetRulesMapping(
       source, src_url_matcher_.get(), src_url_rules_mapping_);
 
-  return GetMaxJoinRestrictionLevel(restriction, src_rules_map,
-                                    restrictions_map_, /*ignore_allow=*/true)
-      .first;
+  std::pair<Level, absl::optional<UrlConditionId>> level_url_pair =
+      GetMaxJoinRestrictionLevel(restriction, src_rules_map, restrictions_map_,
+                                 /*ignore_allow=*/true);
+
+  if (level_url_pair.second.has_value() && out_source_pattern) {
+    UrlConditionId src_condition_id = level_url_pair.second.value();
+    *out_source_pattern = src_pattterns_mapping_.at(src_condition_id);
+  }
+
+  return level_url_pair.first;
 }
 
 DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedDestination(

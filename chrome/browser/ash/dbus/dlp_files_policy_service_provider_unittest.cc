@@ -139,11 +139,9 @@ TEST_P(DlpFilesPolicyServiceProviderTest, IsDlpPolicyMatched) {
   request.mutable_file_metadata()->set_source_url(kExampleUrl);
 
   policy::DlpRulesManager::Level level = GetParam();
-  EXPECT_CALL(
-      *mock_rules_manager_,
-      IsRestrictedByAnyRule(GURL(kExampleUrl),
-                            policy::DlpRulesManager::Restriction::kFiles))
-      .WillOnce(testing::Return(level));
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule)
+      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(kExampleUrl),
+                               testing::Return(level)));
 
   EXPECT_CALL(*mock_rules_manager_, GetDlpFilesController())
       .Times(::testing::AnyNumber())

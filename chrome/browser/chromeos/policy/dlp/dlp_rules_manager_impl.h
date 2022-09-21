@@ -39,7 +39,8 @@ class DlpRulesManagerImpl : public DlpRulesManager {
   Level IsRestricted(const GURL& source,
                      Restriction restriction) const override;
   Level IsRestrictedByAnyRule(const GURL& source,
-                              Restriction restriction) const override;
+                              Restriction restriction,
+                              std::string* out_source_pattern) const override;
   Level IsRestrictedDestination(
       const GURL& source,
       const GURL& destination,

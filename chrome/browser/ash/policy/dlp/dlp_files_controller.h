@@ -196,6 +196,7 @@ class DlpFilesController {
   void OnDlpWarnDialogReply(
       std::vector<FileDaemonInfo> restricted_files_sources,
       std::vector<FileDaemonInfo> warned_files_sources,
+      std::vector<std::string> warned_src_patterns,
       const DlpFileDestination& destination,
       FileAction files_action,
       IsFilesTransferRestrictedCallback callback,
