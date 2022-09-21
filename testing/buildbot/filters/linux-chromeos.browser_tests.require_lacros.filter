@@ -4,6 +4,7 @@
 *Magn*.*
 AccessibilityExtension*
 Autoclick*
+AshTtsApiTest*
 BrowserAppShelfControllerBrowserTest*
 ChromeVox*
 DemoAshRequiresLacrosTest*

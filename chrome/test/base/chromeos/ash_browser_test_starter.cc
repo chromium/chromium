@@ -46,6 +46,8 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
       {});
   command_line->AppendSwitch("enable-wayland-server");
   command_line->AppendSwitch("no-startup-window");
+  command_line->AppendSwitchASCII("lacros-chrome-additional-args",
+                                  "--no-first-run");
   return true;
 }
 
