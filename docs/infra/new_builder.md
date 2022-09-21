@@ -101,7 +101,7 @@ describe the amount needed, along with any specialized hardware that's required
 (e.g. mac hardware, attached mobile devices, a specific GPU, etc.). Note that
 even if there's hardware currently available for the new builder, a resource
 request will still be needed if the footprint of the new builder equates to
-at least 10 VMs or 100 CPU cores.
+at least 5 VMs or 50 CPU cores.
 
 See [infradata docs][4] (internal) for information on how to register
 the hardware to be used by your builder.
