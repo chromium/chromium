@@ -17,7 +17,7 @@ import "chrome/services/file_util/public/mojom/xz_file_extractor.mojom";
 
 // The main interface to the file utility service. Binds any of various
 // specific utility receivers.
-[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface FileUtilService {
   // Binds an instance of the ZipFileCreator interface.
   [EnableIf=is_chromeos_ash]
