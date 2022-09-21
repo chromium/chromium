@@ -84,7 +84,7 @@ group("deps") {
         "test_rust_exe",
         "test_rust_multiple_dep_versions_exe",
         "test_simple_rust_exe",
-        "//third_party/rust/bindgen/v0_59:bindgen",
+        "//third_party/rust/bindgen/v0_60:bindgen",
 
         # TODO(https://crbug.com/1329611): Enable the additional target below
         # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the

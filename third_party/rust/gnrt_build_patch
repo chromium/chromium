@@ -24,10 +24,10 @@ index 3fca887f2acb7..63129d6dec0e5 100644
      "static",
      "which",
      "which-rustfmt",
-diff --git a/third_party/rust/bindgen/v0_59/BUILD.gn b/third_party/rust/bindgen/v0_59/BUILD.gn
-index 92399f19804e6..b22eee5268d53 100644
---- a/third_party/rust/bindgen/v0_59/BUILD.gn
-+++ b/third_party/rust/bindgen/v0_59/BUILD.gn
+diff --git a/third_party/rust/bindgen/v0_60/BUILD.gn b/third_party/rust/bindgen/v0_60/BUILD.gn
+index 277bfc5d8cda8..b826004e73899 100644
+--- a/third_party/rust/bindgen/v0_60/BUILD.gn
++++ b/third_party/rust/bindgen/v0_60/BUILD.gn
 @@ -40,7 +40,9 @@ cargo_crate("bindgen") {
      "env_logger",
      "log",

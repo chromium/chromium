@@ -57,7 +57,7 @@ template("rust_bindgen") {
       configs += invoker.configs
     }
 
-    bindgen_target = "//third_party/rust/bindgen/v0_59:bindgen($host_toolchain)"
+    bindgen_target = "//third_party/rust/bindgen/v0_60:bindgen($host_toolchain)"
 
     bindgen_obj_dir = get_label_info(bindgen_target, "root_out_dir")
     bindgen_executable = "${bindgen_obj_dir}/bindgen"

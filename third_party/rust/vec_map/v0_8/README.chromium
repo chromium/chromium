@@ -1,6 +1,0 @@
-Name: vec_map
-URL: https://crates.io/crates/vec_map
-Description: A simple map based on a vector for small integer keys
-Version: 0.8.2
-Security Critical: no
-License: Apache 2.0

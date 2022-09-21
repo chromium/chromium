@@ -21,13 +21,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ansi_term"
-version = "0.11.0"
-dependencies = [
- "winapi",
-]
-
-[[package]]
 name = "aquamarine"
 version = "0.1.11"
 dependencies = [
@@ -68,7 +61,7 @@ dependencies = [
  "bitflags",
  "cexpr",
  "clang-sys",
- "clap 3.1.12",
+ "clap",
  "env_logger",
  "itertools 0.10.3",
  "lazy_static",
@@ -114,7 +107,7 @@ name = "autocxx-gen"
 version = "0.22.4"
 dependencies = [
  "autocxx-engine",
- "clap 3.1.12",
+ "clap",
  "env_logger",
  "indexmap",
  "miette",
@@ -163,12 +156,12 @@ dependencies = [
 
 [[package]]
 name = "bindgen"
-version = "0.59.2"
+version = "0.60.1"
 dependencies = [
  "bitflags",
  "cexpr",
  "clang-sys",
- "clap 2.33.3",
+ "clap",
  "env_logger",
  "lazy_static",
  "lazycell",
@@ -232,7 +225,7 @@ dependencies = [
  "bindgen",
  "cargo-platform",
  "cargo_metadata",
- "clap 3.1.12",
+ "clap",
  "cxx",
  "cxxbridge-cmd",
  "memoffset",
@@ -261,19 +254,6 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "2.33.3"
-dependencies = [
- "ansi_term",
- "atty",
- "bitflags",
- "strsim 0.8.0",
- "textwrap 0.11.0",
- "unicode-width",
- "vec_map",
-]
-
-[[package]]
-name = "clap"
 version = "3.1.12"
 dependencies = [
  "atty",
@@ -281,9 +261,9 @@ dependencies = [
  "clap_lex",
  "indexmap",
  "lazy_static",
- "strsim 0.10.0",
+ "strsim",
  "termcolor",
- "textwrap 0.15.0",
+ "textwrap",
 ]
 
 [[package]]
@@ -323,7 +303,7 @@ dependencies = [
 name = "cxxbridge-cmd"
 version = "1.0.68"
 dependencies = [
- "clap 3.1.12",
+ "clap",
  "codespan-reporting",
  "proc-macro2",
  "quote",
@@ -496,7 +476,7 @@ dependencies = [
  "supports-hyperlinks",
  "supports-unicode",
  "terminal_size",
- "textwrap 0.15.0",
+ "textwrap",
  "thiserror",
  "unicode-width",
 ]
@@ -729,10 +709,6 @@ version = "1.1.0"
 
 [[package]]
 name = "strsim"
-version = "0.8.0"
-
-[[package]]
-name = "strsim"
 version = "0.10.0"
 
 [[package]]
@@ -806,13 +782,6 @@ dependencies = [
 
 [[package]]
 name = "textwrap"
-version = "0.11.0"
-dependencies = [
- "unicode-width",
-]
-
-[[package]]
-name = "textwrap"
 version = "0.15.0"
 dependencies = [
  "smawk",
@@ -862,10 +831,6 @@ version = "0.1.9"
 [[package]]
 name = "unindent"
 version = "0.1.7"
-
-[[package]]
-name = "vec_map"
-version = "0.8.2"
 
 [[package]]
 name = "version_check"

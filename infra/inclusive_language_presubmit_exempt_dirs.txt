@@ -588,7 +588,7 @@ third_party/rust/atty/v0_2/crate 3 2
 third_party/rust/autocfg/v1/crate 1 1
 third_party/rust/autocxx_bindgen/v0_60/crate/src 10 2
 third_party/rust/backtrace/v0_3/crate/.github/workflows 2 1
-third_party/rust/bindgen/v0_59/crate/src 10 2
+third_party/rust/bindgen/v0_60/crate/src 10 2
 third_party/rust/camino/v1/crate 2 1
 third_party/rust/cargo_metadata/v0_14/crate 1 1
 third_party/rust/cexpr/v0_6/crate/.github/workflows 2 1

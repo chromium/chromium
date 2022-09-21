@@ -25,7 +25,7 @@ version = "0.22"
 features = ["static"]
 
 [dependencies.bindgen]
-version = "0.59"
+version = "0.60"
 features = ["static"]
 build-script-outputs = ["host-target.txt"]
 
@@ -74,10 +74,6 @@ package = "adler"
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/aho_corasick/v0_7/crate"
 package = "aho-corasick"
 
-[patch.crates-io.ansi_term_v0_11]
-path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/ansi_term/v0_11/crate"
-package = "ansi_term"
-
 [patch.crates-io.aquamarine_v0_1]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/aquamarine/v0_1/crate"
 package = "aquamarine"
@@ -118,8 +114,8 @@ package = "autocxx"
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/backtrace/v0_3/crate"
 package = "backtrace"
 
-[patch.crates-io.bindgen_v0_59]
-path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/bindgen/v0_59/crate"
+[patch.crates-io.bindgen_v0_60]
+path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/bindgen/v0_60/crate"
 package = "bindgen"
 
 [patch.crates-io.bitflags_v1]
@@ -153,10 +149,6 @@ package = "clang-sys"
 [patch.crates-io.clap_lex_v0_1]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/clap_lex/v0_1/crate"
 package = "clap_lex"
-
-[patch.crates-io.clap_v2]
-path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/clap/v2/crate"
-package = "clap"
 
 [patch.crates-io.clap_v3]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/clap/v3/crate"
@@ -418,10 +410,6 @@ package = "static_assertions"
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/strsim/v0_10/crate"
 package = "strsim"
 
-[patch.crates-io.strsim_v0_8]
-path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/strsim/v0_8/crate"
-package = "strsim"
-
 [patch.crates-io.strum_macros_v0_24]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/strum_macros/v0_24/crate"
 package = "strum_macros"
@@ -454,10 +442,6 @@ package = "termcolor"
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/terminal_size/v0_1/crate"
 package = "terminal_size"
 
-[patch.crates-io.textwrap_v0_11]
-path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/textwrap/v0_11/crate"
-package = "textwrap"
-
 [patch.crates-io.textwrap_v0_15]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/textwrap/v0_15/crate"
 package = "textwrap"
@@ -489,10 +473,6 @@ package = "unicode-width"
 [patch.crates-io.unindent_v0_1]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/unindent/v0_1/crate"
 package = "unindent"
-
-[patch.crates-io.vec_map_v0_8]
-path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/vec_map/v0_8/crate"
-package = "vec_map"
 
 [patch.crates-io.version_check_v0_9]
 path = "/usr/local/google/home/collinbaker/chromium/src/third_party/rust/version_check/v0_9/crate"
