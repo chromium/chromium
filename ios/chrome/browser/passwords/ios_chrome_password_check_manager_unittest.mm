@@ -225,13 +225,15 @@ TEST_F(IOSChromePasswordCheckManagerTest,
 // Checks that a transition into the idle state after starting a check results
 // in resetting the kLastTimePasswordCheckCompleted pref to the current time.
 TEST_F(IOSChromePasswordCheckManagerTest, LastTimePasswordCheckCompletedReset) {
+  FastForwardBy(base::Days(1));
+
   manager().StartPasswordCheck();
   RunUntilIdle();
 
   static_cast<BulkLeakCheckServiceInterface::Observer*>(&manager())
       ->OnStateChanged(BulkLeakCheckServiceInterface::State::kIdle);
 
-  EXPECT_THAT(base::Time::Now(), manager().GetLastPasswordCheckTime());
+  EXPECT_NE(base::Time(), manager().GetLastPasswordCheckTime());
 }
 
 // Tests whether adding and removing an observer works as expected.
