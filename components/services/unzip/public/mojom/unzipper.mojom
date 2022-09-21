@@ -44,7 +44,7 @@ interface UnzipListener {
 
 // Interface to the out-of-process unzipper. The unzipper unzips a ZIP
 // archive, often for the purpose of unpacking software updates.
-[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface Unzipper {
   // Unzip |zip_file| into |output_dir|.
   // Returns true on success, false otherwise.
