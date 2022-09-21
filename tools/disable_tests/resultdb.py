@@ -12,51 +12,27 @@ from typing import Optional, Tuple
 import errors
 
 
-def get_test_metadata(test_id: str) -> Tuple[str, str]:
+def get_test_metadata(invocation, test_regex: str) -> Tuple[str, str]:
   """Fetch test metadata from ResultDB.
 
   Args:
-    test_id: The full ID of the test to fetch. For Chromium tests this will
-    begin with "ninja://"
+    invocation: the invocation to fetch the test
+    test_regex: The regex to match the test id
   Returns:
     A tuple of (test name, filename). The test name will for example have the
     form  SuitName.TestName for GTest tests. The filename is the location in the
     source tree where this test is defined.
   """
-
-  history = get_test_result_history(test_id, 1)
-
-  if 'entries' not in history:
+  test_results = query_test_result(invocation=invocation, test_regex=test_regex)
+  if 'testResults' not in test_results:
     raise errors.UserError(
-        f"ResultDB query couldn't find test with ID: {test_id}")
+        f"ResultDB couldn't query for invocation: {invocation}")
 
-  # TODO: Are there other statuses we need to exclude?
-  if history['entries'][0]['result'].get('status', '') == 'SKIP':
-    # Test metadata isn't populated for skipped tests. Ideally this wouldn't be
-    # the case, but for now we just work around it.
-    # On the off-chance this test is conditionally disabled, we request a bit
-    # more history in the hopes of finding a test run where it isn't skipped.
-    history = get_test_result_history(test_id, 10)
+  if len(test_results["testResults"]) == 0:
+    raise errors.UserError(
+        f"ResultDB couldn't find test result for test regex {test_regex}")
 
-    for entry in history['entries'][1:]:
-      if entry['result'].get('status', '') != 'SKIP':
-        break
-    else:
-      raise errors.UserError(
-          f"Unable to fetch metadata for test {test_id}, as the last 10 runs " +
-          "in ResultDB have status 'SKIP'. Is the test already disabled?")
-  else:
-    entry = history['entries'][0]
-
-  try:
-    inv_name = entry['result']['name']
-  except KeyError as e:
-    raise errors.InternalError(
-        f"Malformed GetTestResultHistory response: no key {e}") from e
-  # Ideally GetTestResultHistory would return metadata so we could avoid making
-  # this second RPC.
-  result = get_test_result(inv_name)
-
+  result = test_results["testResults"][0]
   try:
     name = result['testMetadata']['name']
     loc = result['testMetadata']['location']
@@ -113,6 +89,29 @@ def get_test_result(test_name: str) -> dict:
   return rdb_rpc('GetTestResult', {
       'name': test_name,
   })
+
+
+def query_test_result(invocation: str, test_regex: str):
+  """Make a QueryTestResults RPC call to ResultDB.
+
+  Args:
+    invocation_name: the name of the invocation to query for test results
+    test_regex: The test regex to filter
+
+  Returns:
+    The QueryTestResults response message, in dict form.
+  """
+  request = {
+      'invocations': [invocation],
+      'readMask': {
+          'paths': ['test_id', 'test_metadata'],
+      },
+      'pageSize': 1000,
+      'predicate': {
+          'testIdRegexp': test_regex,
+      },
+  }
+  return rdb_rpc('QueryTestResults', request)
 
 
 # Used for caching RPC responses, for development purposes.

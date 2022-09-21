@@ -31,12 +31,17 @@ def main(argv: List[str]) -> int:
       description='Disables tests.',
       epilog=f"Valid conditions are:\n{valid_conds}")
 
-  parser.add_argument('test_id',
+  parser.add_argument(
+      'build',
+      type=str,
+      help='the Buildbucket build ID to search for tests to disable ')
+  parser.add_argument('test_regex',
                       type=str,
-                      help='the test to disable. For example: ' +
-                      'ninja://chrome/test:browser_tests/Suite.Name. You can ' +
-                      'also just pass Suite.Name, and the tool will search ' +
-                      'for a test with a matching ID')
+                      help='the regex for the test to disable. For example: ' +
+                      '".*CompressionUtilsTest.GzipCompression.*". Currently' +
+                      'we assume that there is at most one test matching' +
+                      'the regex. Disabling multiple tests at the same time' +
+                      'is not currently supported (crbug.com/1364416)')
   parser.add_argument('conditions',
                       type=str,
                       nargs='*',
@@ -81,7 +86,7 @@ def main(argv: List[str]) -> int:
       return 1
 
   try:
-    disable_test(args.test_id, args.conditions, message)
+    disable_test(args.build, args.test_regex, args.conditions, message)
     return 0
   except errors.UserError as e:
     print(e, file=sys.stderr)
@@ -153,16 +158,11 @@ def parse_bug(bug: str) -> Tuple[int, str]:
 #   * Printing out all valid configs.
 #   * Overwrite the existing state rather than adding to it. Probably leave this
 #     until it's requested.
-def disable_test(test_id: str, cond_strs: List[str], message: Optional[str]):
+def disable_test(build: str, test_regex: str, cond_strs: List[str],
+                 message: Optional[str]):
   conds = conditions.parse(cond_strs)
-
-  #  If the given ID starts with "ninja:", then it's a full test ID. If not,
-  #  assume it's a test name, and transform it into a query that will match the
-  #  full ID.
-  if not test_id.startswith('ninja:'):
-    test_id = f'ninja://.*/{extract_name_and_suite(test_id)}(/.*)?'
-
-  test_name, filename = resultdb.get_test_metadata(test_id)
+  invocation = "invocations/build-" + build
+  test_name, filename = resultdb.get_test_metadata(invocation, test_regex)
   test_name = extract_name_and_suite(test_name)
 
   # Paths returned from ResultDB look like //foo/bar, where // refers to the
