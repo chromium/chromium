@@ -69,6 +69,8 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/web_data_service_factory.h"
+#include "chrome/browser/webid/federated_identity_active_session_permission_context.h"
+#include "chrome/browser/webid/federated_identity_sharing_permission_context.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -2745,6 +2747,69 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             host_settings[0].primary_pattern)
       << host_settings[0].primary_pattern.ToString();
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFederatedContentSettings) {
+  const GURL rp_url("https://rp.com");
+  const url::Origin rp_origin = url::Origin::Create(rp_url);
+  const GURL rp_embedder_url("https://rp-embedder.com");
+  const url::Origin rp_embedder_origin = url::Origin::Create(rp_embedder_url);
+  const url::Origin idp_origin = url::Origin::Create(GURL("https://idp.com"));
+  const std::string account_id("account_id");
+
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(GetProfile());
+
+  content::BrowsingDataRemover::DataType test_cases[] = {
+      content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+      constants::DATA_TYPE_HISTORY, constants::DATA_TYPE_PASSWORDS};
+  for (content::BrowsingDataRemover::DataType test_data_type : test_cases) {
+    {
+      FederatedIdentityActiveSessionPermissionContext active_session_context(
+          GetProfile());
+      active_session_context.GrantActiveSession(rp_origin, idp_origin,
+                                                account_id);
+      ASSERT_TRUE(active_session_context.HasActiveSession(rp_origin, idp_origin,
+                                                          account_id));
+
+      FederatedIdentitySharingPermissionContext sharing_context(GetProfile());
+      sharing_context.GrantSharingPermission(rp_origin, rp_embedder_origin,
+                                             idp_origin, account_id);
+      ASSERT_TRUE(sharing_context.HasSharingPermission(
+          rp_origin, rp_embedder_origin, idp_origin, account_id));
+
+      host_content_settings_map->SetContentSettingDefaultScope(
+          rp_url, rp_embedder_url, ContentSettingsType::FEDERATED_IDENTITY_API,
+          CONTENT_SETTING_BLOCK);
+      ASSERT_EQ(CONTENT_SETTING_BLOCK,
+                host_content_settings_map->GetContentSetting(
+                    rp_url, rp_embedder_url,
+                    ContentSettingsType::FEDERATED_IDENTITY_API));
+    }
+
+    BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
+                                  test_data_type,
+                                  /*include_protected_origins=*/true);
+
+    {
+      // Re-initialize contexts in order to update in-memory
+      // ObjectPermissionContextBase cache.
+      FederatedIdentityActiveSessionPermissionContext active_session_context(
+          GetProfile());
+      FederatedIdentitySharingPermissionContext sharing_context(GetProfile());
+
+      EXPECT_FALSE(active_session_context.HasActiveSession(
+          rp_origin, idp_origin, account_id));
+      EXPECT_FALSE(sharing_context.HasSharingPermission(
+          rp_origin, rp_embedder_origin, idp_origin, account_id));
+
+      // Content setting is on by default.
+      EXPECT_EQ(CONTENT_SETTING_ALLOW,
+                host_content_settings_map->GetContentSetting(
+                    rp_url, rp_embedder_url,
+                    ContentSettingsType::FEDERATED_IDENTITY_API));
+    }
+  }
 }
 
 // Test that removing passwords clears HTTP auth data.
