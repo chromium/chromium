@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_constants.h"
+#import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_ui_swift.h"
@@ -624,6 +625,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)settingsPriceNotificationsTableView {
   return grey_accessibilityID(kPriceNotificationsTableViewId);
+}
+
++ (id<GREYMatcher>)settingsTrackingPriceTableView {
+  return grey_accessibilityID(kTrackingPriceTableViewId);
 }
 
 + (id<GREYMatcher>)contentSettingsButton {

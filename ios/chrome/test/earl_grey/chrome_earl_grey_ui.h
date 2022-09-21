@@ -95,6 +95,12 @@
 // there will be a GREYAssert.
 - (void)tapPriceNotificationsMenuButton:(id<GREYMatcher>)buttonMatcher;
 
+// Scrolls to find the button in the Tracking Price menu with the
+// corresponding `buttonMatcher`, and then taps it. If `buttonMatcher` is not
+// found, or the Tracking Price menu is not open when this is called
+// there will be a GREYAssert.
+- (void)tapTrackingPriceMenuButton:(id<GREYMatcher>)buttonMatcher;
+
 // Scrolls to find the button in the Clear Browsing Data menu with the
 // corresponding `buttonMatcher`, and then taps it. If `buttonMatcher` is
 // not found, or the Clear Browsing Data menu is not open when this is called
