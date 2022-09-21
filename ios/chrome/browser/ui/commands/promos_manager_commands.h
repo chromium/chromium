@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_COMMANDS_PROMOS_MANAGER_COMMANDS_H_
 #define IOS_CHROME_BROWSER_UI_COMMANDS_PROMOS_MANAGER_COMMANDS_H_
 
+#import <StoreKit/StoreKit.h>
+
 #import "ios/chrome/browser/promos_manager/constants.h"
 
 // Commands to show app-wide promos.

@@ -170,6 +170,8 @@ source_set("scene") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/app_store_rating",
+    "//ios/chrome/browser/ui/app_store_rating:features",
     "//ios/chrome/browser/ui/appearance",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",

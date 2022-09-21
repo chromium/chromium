@@ -20,7 +20,6 @@ source_set("app_store_rating") {
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/main:browser_interface_provider",
     "//ios/chrome/browser/ui/main:observing_scene_agent",
-    "//ios/chrome/browser/ui/main:scene",
     "//ios/chrome/browser/ui/promos_manager:promos",
   ]
 }
