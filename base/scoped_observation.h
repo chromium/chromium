@@ -13,35 +13,50 @@
 
 namespace base {
 
-// ScopedObservation is used to keep track of singular observation, e.g.
-// where an observer observes a single source only.
-//
-// Use base::ScopedMultiSourceObservation for objects that observe multiple
+// `ScopedObservation` is used to keep track of a singular observation, i.e.,
+// where an observer observes a single source only. Use
+// `base::ScopedMultiSourceObservation` for objects that observe multiple
 // sources.
 //
-// When ScopedObservation is destroyed, it removes the registered observation,
-// if any. Basic example (as a member variable):
+// When a `ScopedObservation` is destroyed, it unregisters the observer from the
+// observable if it was currently observing something. Otherwise it does
+// nothing.
 //
-//   class MyFooObserver : public FooObserver {
-//     ...
+// Using a `ScopedObservation` instead of manually observing and unobserving has
+// the following benefits:
+// - The observer cannot accidentally forget to stop observing when it is
+//   destroyed.
+// - By calling `Reset`, an ongoing observation can be stopped before the
+//   `ScopedObservation` is destroyed. If nothing was currently observed, then
+//   calling `Reset` does nothing. This can be useful for when the observable is
+//   destroyed before the observer is destroyed, because it prevents the
+//   observer from accidentally unregistering itself from the destroyed
+//   observable a second time when it itself is destroyed. Without
+//   `ScopedObservation`, one might need to keep track of whether one has
+//   already stopped observing in a separate boolean.
+//
+// Basic example (as a member variable):
+//
+//   class MyObserver : public Observable::Observer {
+//    public:
+//     MyObserver(Observable* observable) {
+//       observation_.Observe(observable);
+//     }
+//     // Note how there is no need to stop observing in the destructor.
 //    private:
-//     ScopedObservation<Foo, FooObserver> foo_observation_{this};
+//     ScopedObservation<Observable, Observable::Observer> observation_{this};
 //   };
-//
-//   MyFooObserver::MyFooObserver(Foo* foo) {
-//     foo_observation_.Observe(foo);
-//   }
 //
 // For cases with methods not named AddObserver/RemoveObserver:
 //
-//   class MyFooStateObserver : public FooStateObserver {
+//   class MyStateObserver : public Observable::StateObserver {
 //     ...
 //    private:
-//     ScopedObservation<Foo,
-//                       FooStateObserver,
-//                       &Foo::AddStateObserver,
-//                       &Foo::RemoveStateObserver>
-//       foo_observation_{this};
+//     ScopedObservation<Observable,
+//                       Observable::StateObserver,
+//                       &Observable::AddStateObserver,
+//                       &Observable::RemoveStateObserver>
+//       observation_{this};
 //   };
 template <class Source,
           class Observer,
