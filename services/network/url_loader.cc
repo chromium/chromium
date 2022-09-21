@@ -2453,7 +2453,13 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
     MojoResult result = mojo::CreateDataPipe(kBlockedBodyAllocationSize,
                                              producer_handle, consumer_handle);
     if (result != MOJO_RESULT_OK) {
-      NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
+      // Defer calling NotifyCompleted to make sure the caller can still access
+      // |this|.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    net::ERR_INSUFFICIENT_RESOURCES));
+
       return kWillCancelRequest;
     }
     producer_handle.reset();
