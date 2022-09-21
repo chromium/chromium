@@ -16,11 +16,19 @@ template("android_wpt_finch_smoke_tests") {
       rebase_path(root_build_dir, root_build_dir) + "/apks/" +
           invoker.browser_apk,
     ]
+
     if (defined(invoker.webview_provider_apk)) {
       args += [
         "--webview-provider-apk",
         rebase_path(root_build_dir, root_build_dir) + "/apks/" +
             invoker.webview_provider_apk,
+      ]
+    }
+
+    if (defined(invoker.webview_installer_tool)) {
+      args += [
+        "--webview-installer-tool",
+        rebase_path(invoker.webview_installer_tool, root_build_dir),
       ]
     }
 
@@ -43,6 +51,7 @@ template("android_wpt_finch_smoke_tests") {
     if (defined(invoker.data)) {
       data += invoker.data
     }
+
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
     }

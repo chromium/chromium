@@ -11,6 +11,7 @@ import os
 import posixpath
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -276,6 +277,9 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     parser.add_argument('--browser-activity-name',
                         action='store',
                         help='Browser activity name')
+    parser.add_argument('--use-webview-installer-tool',
+                        action='store_true',
+                        help='Use the WebView installer tool.')
     parser.add_argument('--fake-variations-channel',
                         action='store',
                         default='stable',
@@ -292,7 +296,12 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
 
   def add_extra_arguments(self, parser):
     super(FinchTestCase, self).add_extra_arguments(parser)
+    self.add_product_specific_argument_groups(parser)
     self.add_common_arguments(parser)
+
+  @classmethod
+  def add_product_specific_argument_groups(cls, _):
+    pass
 
   def _compare_screenshots_with_baselines(self, all_pixel_tests_results_dict):
     """Compare pixel tests screenshots with baselines stored in skia gold
@@ -654,6 +663,21 @@ class WebViewFinchTestCase(FinchTestCase):
                         'variations_smoke_test_data',
                         'webview_test_seed')
 
+  @classmethod
+  def add_product_specific_argument_groups(cls, parser):
+    installer_tool_group = parser.add_argument_group(
+      'WebView Installer tool arguments')
+    installer_tool_group.add_argument(
+      '--webview-installer-tool', type=os.path.realpath,
+      help='Path to the WebView installer tool')
+    installer_tool_group.add_argument(
+      '--chrome-version', '-V', type=str,
+      help='Chrome version to install with the WebView installer tool')
+    installer_tool_group.add_argument(
+      '--channel', '-c', help='Channel build of WebView to install')
+    installer_tool_group.add_argument(
+      '--milestone', '-M', help='Milestone build of WebView to install')
+
   def new_seed_downloaded(self):
     """Checks if a new seed was downloaded
 
@@ -689,10 +713,49 @@ class WebViewFinchTestCase(FinchTestCase):
   @contextlib.contextmanager
   def install_apks(self):
     """Install apks for testing"""
-    with super(WebViewFinchTestCase, self).install_apks(), \
-      webview_app.UseWebViewProvider(self._device,
-                                     self.options.webview_provider_apk):
+    with super(WebViewFinchTestCase, self).install_apks():
+      if self.options.use_webview_installer_tool:
+        install_webview = self._install_webview_with_tool()
+      else:
+        install_webview = webview_app.UseWebViewProvider(
+          self._device, self.options.webview_provider_apk)
+
+      with install_webview:
+        yield
+
+  @contextlib.contextmanager
+  def _install_webview_with_tool(self):
+    """Install WebView with the WebView installer tool"""
+    original_webview_provider = (
+        self._device.GetWebViewUpdateServiceDump()['CurrentWebViewPackage'])
+    current_webview_provider = None
+
+    try:
+      cmd = [self.options.webview_installer_tool, '-vvv',
+             '--product', self.product_name()]
+      assert self.options.chrome_version or self.options.milestone, (
+        'The --chrome-version or --milestone arguments must be used when '
+        'installing WebView with the WebView installer tool')
+
+      if self.options.chrome_version:
+        cmd.extend(['--chrome-version', self.options.chrome_version])
+      else:
+        cmd.extend(['--milestone', self.options.milestone])
+
+      if self.options.channel:
+        cmd.extend(['-c', self.options.channel])
+      exit_code = subprocess.call(cmd)
+      assert exit_code == 0, (
+          'The WebView installer tool failed to install WebView')
+
+      current_webview_provider = (
+        self._device.GetWebViewUpdateServiceDump()['CurrentWebViewPackage'])
       yield
+    finally:
+      self._device.SetWebViewImplementation(original_webview_provider)
+      # Restore the original webview provider
+      if current_webview_provider:
+        self._device.Uninstall(current_webview_provider)
 
   def install_seed(self):
     """Install finch seed for testing
@@ -783,6 +846,10 @@ def main(args):
   script_common.AddDeviceArguments(parser)
   script_common.AddEnvironmentArguments(parser)
   logging_common.AddLoggingArguments(parser)
+
+  for test_class in TEST_CASES.values():
+    test_class.add_product_specific_argument_groups(parser)
+
   options, _ = parser.parse_known_args(args)
 
   with get_device(options) as device, \
