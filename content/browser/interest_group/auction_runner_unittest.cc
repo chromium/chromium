@@ -169,7 +169,8 @@ std::string MakeBidScript(const url::Origin& seller,
                           const std::string& signal_val = "",
                           bool report_post_auction_signals = false,
                           const std::string& debug_loss_report_url = "",
-                          const std::string& debug_win_report_url = "") {
+                          const std::string& debug_win_report_url = "",
+                          bool report_reject_reason = false) {
   // TODO(morlovich): Use JsReplace.
   constexpr char kBidScript[] = R"(
     const seller = "%s";
@@ -180,6 +181,7 @@ std::string MakeBidScript(const url::Origin& seller,
     const interestGroupName = "%s";
     const hasSignals = %s;
     const reportPostAuctionSignals = %s;
+    const reportRejectReason = %s;
     const postAuctionSignalsPlaceholder = "%s";
     let debugLossReportUrl = "%s";
     let debugWinReportUrl = "%s";
@@ -284,6 +286,10 @@ std::string MakeBidScript(const url::Origin& seller,
       if (debugLossReportUrl) {
         if (reportPostAuctionSignals)
           debugLossReportUrl += postAuctionSignalsPlaceholder;
+        if (reportRejectReason) {
+          debugLossReportUrl += reportPostAuctionSignals ? '&' : '?';
+          debugLossReportUrl += 'rejectReason=${rejectReason}';
+        }
         forDebuggingOnly.reportAdAuctionLoss(debugLossReportUrl);
       }
       if (debugWinReportUrl) {
@@ -387,8 +393,9 @@ std::string MakeBidScript(const url::Origin& seller,
       num_ad_components, interest_group_owner.Serialize().c_str(),
       interest_group_name.c_str(), has_signals ? "true" : "false",
       report_post_auction_signals ? "true" : "false",
-      kPostAuctionSignalsPlaceholder, debug_loss_report_url.c_str(),
-      debug_win_report_url.c_str(), signal_key.c_str(), signal_val.c_str());
+      report_reject_reason ? "true" : "false", kPostAuctionSignalsPlaceholder,
+      debug_loss_report_url.c_str(), debug_win_report_url.c_str(),
+      signal_key.c_str(), signal_val.c_str());
 }
 
 // This can be appended to the standard script to override the function.
@@ -537,8 +544,7 @@ std::string MakeDecisionScript(
       if (reportPostAuctionSignals)
         debugReportUrl += postAuctionSignalsPlaceholder;
       if (reportTopLevelPostAuctionSignals) {
-        if (reportPostAuctionSignals)
-          debugReportUrl += "&";
+        debugReportUrl += reportPostAuctionSignals ? '&' : '?';
         debugReportUrl += topLevelPostAuctionSignalsPlaceholder;
       }
       // Only add key "bid=" to the report URL when report post auction signals
@@ -655,22 +661,12 @@ std::string MakeAuctionScriptNoReportUrl(
     bool report_post_auction_signals = false,
     const std::string& debug_loss_report_url = "",
     const std::string& debug_win_report_url = "") {
-  return MakeDecisionScript(
-      decision_logic_url,
-      /*send_report_url=*/absl::nullopt,
-      /*bid_from_component_auction_wins=*/false,
-      /*report_post_auction_signals=*/report_post_auction_signals,
-      debug_loss_report_url, debug_win_report_url);
+  return MakeDecisionScript(decision_logic_url,
+                            /*send_report_url=*/absl::nullopt,
+                            /*bid_from_component_auction_wins=*/false,
+                            report_post_auction_signals, debug_loss_report_url,
+                            debug_win_report_url);
 }
-
-const char kAuctionScriptRejects2[] = R"(
-  function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-    privateAggregation.sendHistogramReport({bucket: 5, value: 6});
-    if (bid === 2)
-      return -1;
-    return bid + 1;
-  }
-)";
 
 const char kBasicReportResult[] = R"(
   function reportResult(auctionConfig, browserSignals) {
@@ -683,8 +679,18 @@ const char kBasicReportResult[] = R"(
   }
 )";
 
-std::string MakeAuctionScriptReject2() {
-  return std::string(kAuctionScriptRejects2) + kBasicReportResult;
+std::string MakeAuctionScriptReject2(
+    const std::string& reject_reason = "not-available") {
+  constexpr char kAuctionScriptRejects2[] = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      privateAggregation.sendHistogramReport({bucket: 5, value: 6});
+      if (bid === 2)
+        return {desirability: -1, rejectReason: '%s'};
+      return bid + 1;
+    }
+  )";
+  return base::StringPrintf(kAuctionScriptRejects2, reject_reason.c_str()) +
+         kBasicReportResult;
 }
 
 std::string MakeAuctionScriptReject1And2WithDebugReporting(
@@ -695,15 +701,26 @@ std::string MakeAuctionScriptReject1And2WithDebugReporting(
     const debugWinReportUrl = "%s";
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
       let result = bid + 1;
-      if (bid === 1 || bid === 2)
+      let rejectReason = "not-available";
+      if (bid === 1) {
         result = -1;
+        rejectReason = 'invalid-bid';
+      } else if (bid === 2) {
+        result = -1;
+        rejectReason = 'bid-below-auction-floor';
+      }
+
       if (debugLossReportUrl) {
         forDebuggingOnly.reportAdAuctionLoss(
             debugLossReportUrl + '&bid=' + bid);
       }
       if (debugWinReportUrl)
         forDebuggingOnly.reportAdAuctionWin(debugWinReportUrl + "&bid=" + bid);
-      return result;
+      return {
+        desirability: result,
+        allowComponentAuction: true,
+        rejectReason: rejectReason
+      };
     }
   )";
   return base::StringPrintf(kReject1And2WithDebugReporting,
@@ -819,9 +836,11 @@ const GURL ReportWinUrl(
 
 // Returns a report URL with given parameters for forDebuggingOnly win/loss
 // report APIs, with post auction signals included in the URL.
-const GURL DebugReportUrl(const std::string& url,
-                          const PostAuctionSignals& signals,
-                          absl::optional<double> bid = absl::nullopt) {
+const GURL DebugReportUrl(
+    const std::string& url,
+    const PostAuctionSignals& signals,
+    absl::optional<double> bid = absl::nullopt,
+    absl::optional<std::string> reject_reason = absl::nullopt) {
   // Post auction signals needs to be consistent with
   // `kPostAuctionSignalsPlaceholder`. Only keeps integer part of bid values for
   // simplicity for now.
@@ -834,6 +853,11 @@ const GURL DebugReportUrl(const std::string& url,
       signals.made_winning_bid ? "true" : "false",
       signals.highest_scoring_other_bid,
       signals.made_highest_scoring_other_bid ? "true" : "false");
+  if (reject_reason.has_value()) {
+    report_url_string.append(
+        base::StringPrintf("&rejectReason=%s", reject_reason.value().c_str()));
+  }
+
   if (bid.has_value()) {
     return GURL(base::StringPrintf("%s&bid=%.0f", report_url_string.c_str(),
                                    bid.value()));
@@ -5938,6 +5962,8 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
         std::move(score_ad_params.score_ad_client))
         ->OnScoreAdComplete(
             /*score=*/11,
+            /*reject_reason=*/
+            auction_worklet::mojom::RejectReason::kNotAvailable,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
             /*scoring_signals_data_version=*/0,
             /*has_scoring_signals_data_version=*/false,
@@ -6036,6 +6062,8 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
       std::move(score_ad_params.score_ad_client))
       ->OnScoreAdComplete(
           /*score=*/11,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
           /*scoring_signals_data_version=*/0,
           /*has_scoring_signals_data_version=*/false,
@@ -6055,6 +6083,8 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
       std::move(score_ad_params.score_ad_client))
       ->OnScoreAdComplete(
           /*score=*/10,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
           /*scoring_signals_data_version=*/0,
           /*has_scoring_signals_data_version=*/false,
@@ -6131,8 +6161,7 @@ TEST_F(AuctionRunnerTest, ForDebuggingOnlyReporting) {
                     kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kSellerUrl,
-      MakeAuctionScript(/*report_post_auction_signals=*/false,
-                        GURL("https://adstuff.publisher1.com/auction.js"),
+      MakeAuctionScript(/*report_post_auction_signals=*/false, kSellerUrl,
                         kSellerDebugLossReportBaseUrl,
                         kSellerDebugWinReportBaseUrl));
 
@@ -6202,6 +6231,8 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
           std::move(score_ad_params.score_ad_client))
           ->OnScoreAdComplete(
               /*score=*/10,
+              /*reject_reason=*/
+              auction_worklet::mojom::RejectReason::kNotAvailable,
               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
               /*scoring_signals_data_version=*/0,
               /*has_scoring_signals_data_version=*/false,
@@ -6216,6 +6247,8 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
           std::move(score_ad_params2.score_ad_client))
           ->OnScoreAdComplete(
               /*score=*/11,
+              /*reject_reason=*/
+              auction_worklet::mojom::RejectReason::kNotAvailable,
               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
               /*scoring_signals_data_version=*/0,
               /*has_scoring_signals_data_version=*/false,
@@ -6330,6 +6363,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
       std::move(score_ad_params.score_ad_client))
       ->OnScoreAdComplete(
           /*score=*/3,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
               /*ad=*/"null",
               /*bid=*/0,
@@ -6351,6 +6386,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
       std::move(score_ad_params.score_ad_client))
       ->OnScoreAdComplete(
           /*score=*/4,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
           /*scoring_signals_data_version=*/0,
           /*has_scoring_signals_data_version=*/false,
@@ -6449,6 +6486,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
         std::move(score_ad_params.score_ad_client))
         ->OnScoreAdComplete(
             /*score=*/3,
+            /*reject_reason=*/
+            auction_worklet::mojom::RejectReason::kNotAvailable,
             auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
                 /*ad=*/"null",
                 /*bid=*/0,
@@ -6470,6 +6509,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
         std::move(score_ad_params.score_ad_client))
         ->OnScoreAdComplete(
             /*score=*/4,
+            /*reject_reason=*/
+            auction_worklet::mojom::RejectReason::kNotAvailable,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
             /*scoring_signals_data_version=*/0,
             /*has_scoring_signals_data_version=*/false,
@@ -6676,7 +6717,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
     EXPECT_EQ(2, score_ad_params.bid);
     mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
         std::move(score_ad_params.score_ad_client))
-        ->OnScoreAdComplete(/*score=*/3, test_case.params.Clone(),
+        ->OnScoreAdComplete(/*score=*/3,
+                            /*reject_reason=*/
+                            auction_worklet::mojom::RejectReason::kNotAvailable,
+                            test_case.params.Clone(),
                             /*scoring_signals_data_version=*/0,
                             /*has_scoring_signals_data_version=*/false,
                             /*debug_loss_report_url=*/absl::nullopt,
@@ -6735,6 +6779,8 @@ TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
       std::move(score_ad_params.score_ad_client))
       ->OnScoreAdComplete(
           /*score=*/3,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
               /*ad=*/"null",
               /*bid=*/0,
@@ -6805,6 +6851,8 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
           std::move(score_ad_params.score_ad_client))
           ->OnScoreAdComplete(
               /*score=*/11,
+              /*reject_reason=*/
+              auction_worklet::mojom::RejectReason::kNotAvailable,
               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
               /*scoring_signals_data_version=*/0,
               /*has_scoring_signals_data_version=*/false,
@@ -6902,6 +6950,8 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
           std::move(score_ad_params.score_ad_client))
           ->OnScoreAdComplete(
               /*score=*/11,
+              /*reject_reason=*/
+              auction_worklet::mojom::RejectReason::kNotAvailable,
               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
               /*scoring_signals_data_version=*/0,
               /*has_scoring_signals_data_version=*/false,
@@ -7139,6 +7189,8 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
       std::move(score_ad_params.score_ad_client))
       ->OnScoreAdComplete(
           /*score=*/10,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
           /*scoring_signals_data_version=*/0,
           /*has_scoring_signals_data_version=*/false,
@@ -7198,6 +7250,8 @@ TEST_F(AuctionRunnerTest, BadSellerBeaconUrl) {
       std::move(score_ad_params.score_ad_client))
       ->OnScoreAdComplete(
           /*score=*/10,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
           /*scoring_signals_data_version=*/0,
           /*has_scoring_signals_data_version=*/false,
@@ -7267,6 +7321,8 @@ TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
       std::move(score_ad_params.score_ad_client))
       ->OnScoreAdComplete(
           /*score=*/10,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
               /*ad=*/"null",
               /*bid=*/0,
@@ -7285,6 +7341,8 @@ TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
       std::move(score_ad_params.score_ad_client))
       ->OnScoreAdComplete(
           /*score=*/10,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
           /*scoring_signals_data_version=*/0,
           /*has_scoring_signals_data_version=*/false,
@@ -7354,6 +7412,8 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
       std::move(score_ad_params.score_ad_client))
       ->OnScoreAdComplete(
           /*score=*/10,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
           /*scoring_signals_data_version=*/0,
           /*has_scoring_signals_data_version=*/false,
@@ -7417,6 +7477,8 @@ TEST_F(AuctionRunnerTest, BadBidderBeaconUrl) {
       std::move(score_ad_params.score_ad_client))
       ->OnScoreAdComplete(
           /*score=*/10,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
           /*scoring_signals_data_version=*/0,
           /*has_scoring_signals_data_version=*/false,
@@ -7485,6 +7547,8 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
       std::move(score_ad_params.score_ad_client))
       ->OnScoreAdComplete(
           /*score=*/11,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
           /*scoring_signals_data_version=*/0,
           /*has_scoring_signals_data_version=*/false,
@@ -7550,6 +7614,8 @@ TEST_F(AuctionRunnerTest, Tie) {
         std::move(score_ad_params.score_ad_client))
         ->OnScoreAdComplete(
             /*score=*/10,
+            /*reject_reason=*/
+            auction_worklet::mojom::RejectReason::kNotAvailable,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
             /*scoring_signals_data_version=*/0,
             /*has_scoring_signals_data_version=*/false,
@@ -7567,6 +7633,8 @@ TEST_F(AuctionRunnerTest, Tie) {
         std::move(score_ad_params.score_ad_client))
         ->OnScoreAdComplete(
             /*score=*/10,
+            /*reject_reason=*/
+            auction_worklet::mojom::RejectReason::kNotAvailable,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
             /*scoring_signals_data_version=*/0,
             /*has_scoring_signals_data_version=*/false,
@@ -7701,6 +7769,8 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
                 std::move(score_ad_params1.score_ad_client))
                 ->OnScoreAdComplete(
                     /*score=*/bidder1_wins ? 11 : 9,
+                    /*reject_reason=*/
+                    auction_worklet::mojom::RejectReason::kNotAvailable,
                     auction_worklet::mojom::
                         ComponentAuctionModifiedBidParamsPtr(),
                     /*scoring_signals_data_version=*/0,
@@ -7714,15 +7784,18 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
           case Event::kBid2Scored:
             mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
                 std::move(score_ad_params2.score_ad_client))
-                ->OnScoreAdComplete(/*score=*/10,
-                                    auction_worklet::mojom::
-                                        ComponentAuctionModifiedBidParamsPtr(),
-                                    /*scoring_signals_data_version=*/0,
-                                    /*has_scoring_signals_data_version=*/false,
-                                    /*debug_loss_report_url=*/absl::nullopt,
-                                    /*debug_win_report_url=*/absl::nullopt,
-                                    /*pa_requests=*/{},
-                                    /*errors=*/{});
+                ->OnScoreAdComplete(
+                    /*score=*/10,
+                    /*reject_reason=*/
+                    auction_worklet::mojom::RejectReason::kNotAvailable,
+                    auction_worklet::mojom::
+                        ComponentAuctionModifiedBidParamsPtr(),
+                    /*scoring_signals_data_version=*/0,
+                    /*has_scoring_signals_data_version=*/false,
+                    /*debug_loss_report_url=*/absl::nullopt,
+                    /*debug_win_report_url=*/absl::nullopt,
+                    /*pa_requests=*/{},
+                    /*errors=*/{});
             // Wait for the AuctionRunner to receive the score.
             task_environment_.RunUntilIdle();
             break;
@@ -9546,14 +9619,16 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                     kBidder1, kBidder1Name,
                     /*has_signals=*/false, "k1", "a",
                     /*report_post_auction_signals=*/true,
-                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl));
+                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl,
+                    /*report_reject_reason=*/true));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
       MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
                     kBidder2, kBidder2Name,
                     /*has_signals=*/false, "l2", "b",
                     /*report_post_auction_signals=*/true,
-                    kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl));
+                    kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl,
+                    /*report_reject_reason=*/true));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kSellerUrl,
       MakeAuctionScriptReject1And2WithDebugReporting(
@@ -9571,8 +9646,10 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   EXPECT_THAT(
       res.debug_loss_report_urls,
       testing::UnorderedElementsAre(
-          DebugReportUrl(kBidder1DebugLossReportUrl, PostAuctionSignals()),
-          DebugReportUrl(kBidder2DebugLossReportUrl, PostAuctionSignals()),
+          DebugReportUrl(kBidder1DebugLossReportUrl, PostAuctionSignals(),
+                         /*bid=*/absl::nullopt, "invalid-bid"),
+          DebugReportUrl(kBidder2DebugLossReportUrl, PostAuctionSignals(),
+                         /*bid=*/absl::nullopt, "bid-below-auction-floor"),
           DebugReportUrl(kSellerDebugLossReportBaseUrl, PostAuctionSignals(),
                          /*bid=*/1),
           DebugReportUrl(kSellerDebugLossReportBaseUrl, PostAuctionSignals(),
@@ -9706,7 +9783,10 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                          /*bid=*/2)));
 }
 
-// Like above test, but top-level seller rejects all bidders.
+// Test debug loss reporting in an auction with no winner. Component bidder 1 is
+// rejected by component seller, and component bidder 2 is rejected by top-level
+// seller. Component bidders get component auction's reject reason but not the
+// top-level auction's.
 TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportingComponentAuctionNoWinner) {
   interest_group_buyers_.emplace();
@@ -9715,21 +9795,17 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
       CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kComponentSeller1Url,
-      MakeDecisionScript(
-          kComponentSeller1Url,
-          /*send_report_url=*/GURL("https://component1-report.test/"),
-          /*bid_from_component_auction_wins=*/false,
-          /*report_post_auction_signals=*/true,
-          /*debug_loss_report_url=*/"https://component1-loss-reporting.test/",
-          /*debug_win_report_url=*/"https://component1-win-reporting.test/",
-          /*report_top_level_post_auction_signals*/ true));
+      MakeAuctionScriptReject1And2WithDebugReporting(
+          "https://component1-loss-reporting.test/?",
+          "https://component1-win-reporting.test/?"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       MakeBidScript(kComponentSeller1, "1", "https://ad1.com/",
                     /*num_ad_components=*/2, kBidder1, kBidder1Name,
                     /*has_signals=*/true, "k1", "a",
                     /*report_post_auction_signals=*/true,
-                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl));
+                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl,
+                    /*report_reject_reason=*/true));
   auction_worklet::AddBidderJsonResponse(
       &url_loader_factory_,
       GURL(kBidder1TrustedSignalsUrl.spec() +
@@ -9755,7 +9831,8 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                     /*num_ad_components=*/2, kBidder2, kBidder2Name,
                     /*has_signals=*/true, "l2", "b",
                     /*report_post_auction_signals=*/true,
-                    kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl));
+                    kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl,
+                    /*report_reject_reason=*/true));
   auction_worklet::AddBidderJsonResponse(
       &url_loader_factory_,
       GURL(kBidder2TrustedSignalsUrl.spec() +
@@ -9775,7 +9852,11 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
   // While not setting `allowComponentAuction` will also reject the ad, it
   // also prevents loss reports and adds an error message, so need to set
   // it to true.
-  return {desirability: 0, allowComponentAuction: true};
+  return {
+    desirability: 0,
+    allowComponentAuction: true,
+    rejectReason: "bid-below-auction-floor"
+  };
 }
   )",
                          kPostAuctionSignalsPlaceholder,
@@ -9787,34 +9868,27 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
   // No interest group won the auction.
   EXPECT_FALSE(result_.ad_url);
 
+  // Component bidder 1 rejected by component auction gets its reject reason
+  // "invalid-bid". Component bidders don't get the top-level auction's reject
+  // reason.
   EXPECT_THAT(
       result_.debug_loss_report_urls,
       testing::UnorderedElementsAre(
           DebugReportUrl(kBidder1DebugLossReportUrl,
                          PostAuctionSignals(
-                             /*winning_bid=*/1,
-                             /*made_winning_bid=*/true,
+                             /*winning_bid=*/0,
+                             /*made_winning_bid=*/false,
                              /*highest_scoring_other_bid=*/0,
-                             /*made_highest_scoring_other_bid=*/false)),
-          ComponentSellerDebugReportUrl(
-              "https://component1-loss-reporting.test/",
-              /*signals=*/
-              PostAuctionSignals(/*winning_bid=*/1,
-                                 /*made_winning_bid=*/true,
-                                 /*highest_scoring_other_bid=*/0,
-                                 /*made_highest_scoring_other_bid=*/false),
-              /*top_level_signals=*/
-              PostAuctionSignals(),
-              /*bid=*/1),
-          DebugReportUrl("https://top-seller-loss-reporting.test/",
-                         PostAuctionSignals(),
-                         /*bid=*/1),
+                             /*made_highest_scoring_other_bid=*/false),
+                         /*bid=*/absl::nullopt, "invalid-bid"),
+          GURL("https://component1-loss-reporting.test/?&bid=1"),
           DebugReportUrl(kBidder2DebugLossReportUrl,
                          PostAuctionSignals(
                              /*winning_bid=*/2,
                              /*made_winning_bid=*/true,
                              /*highest_scoring_other_bid=*/0,
-                             /*made_highest_scoring_other_bid=*/false)),
+                             /*made_highest_scoring_other_bid=*/false),
+                         /*bid=*/absl::nullopt, "not-available"),
           ComponentSellerDebugReportUrl(
               "https://component2-loss-reporting.test/",
               /*signals=*/
@@ -10097,6 +10171,8 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
         std::move(score_ad_params.score_ad_client))
         ->OnScoreAdComplete(
             /*score=*/10,
+            /*reject_reason=*/
+            auction_worklet::mojom::RejectReason::kNotAvailable,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
             /*scoring_signals_data_version=*/0,
             /*has_scoring_signals_data_version=*/false,
@@ -10160,6 +10236,8 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
       std::move(score_ad_params.score_ad_client))
       ->OnScoreAdComplete(
           /*score=*/10,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
           /*scoring_signals_data_version=*/0,
           /*has_scoring_signals_data_version=*/false,
@@ -10343,8 +10421,231 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                                     GURL("https://seller0.test/win/11")));
 }
 
-// Enable and test forDebuggingOnly.reportAdAuctionLoss() and
-// forDebuggingOnly.reportAdAuctionWin() APIs.
+// Reject reason returned by scoreAd() for a rejected bid can be reported to the
+// bidder through its debug loss report URL.
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       RejectedBidGetsRejectReason) {
+  for (const std::string& reject_reason :
+       {"not-available", "invalid-bid", "bid-below-auction-floor",
+        "pending-approval-by-exchange", "disapproved-by-exchange",
+        "blocked-by-publisher", "language-exclusions", "category-exclusions"}) {
+    auction_worklet::AddJavascriptResponse(
+        &url_loader_factory_, kBidder1Url,
+        MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                      kBidder1, kBidder1Name,
+                      /*has_signals=*/false, "k1", "a",
+                      /*report_post_auction_signals=*/false,
+                      kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl,
+                      /*report_reject_reason=*/true));
+    // Bidder 2 will get a negative score from scoreAd().
+    auction_worklet::AddJavascriptResponse(
+        &url_loader_factory_, kBidder2Url,
+        MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                      kBidder2, kBidder2Name,
+                      /*has_signals=*/false, "l2", "b",
+                      /*report_post_auction_signals=*/false,
+                      kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl,
+                      /*report_reject_reason=*/true));
+    auction_worklet::AddJavascriptResponse(
+        &url_loader_factory_, kSellerUrl,
+        MakeAuctionScriptReject2(reject_reason));
+
+    const Result& res = RunStandardAuction();
+    // Bidder 1 won the auction.
+    EXPECT_EQ(InterestGroupKey(kBidder1, kBidder1Name),
+              result_.winning_group_id);
+    EXPECT_EQ(GURL("https://ad1.com/"), res.ad_url);
+
+    EXPECT_EQ(1u, res.debug_loss_report_urls.size());
+    // Seller rejected bidder 2 and returned the reject reason which were then
+    // reported to bidder 2 through its loss report URL.
+    EXPECT_THAT(res.debug_loss_report_urls,
+                testing::UnorderedElementsAre(base::StringPrintf(
+                    "https://bidder2-debug-loss-reporting.com/"
+                    "?rejectReason=%s",
+                    reject_reason.c_str())));
+
+    EXPECT_EQ(1u, res.debug_win_report_urls.size());
+    EXPECT_THAT(res.debug_win_report_urls,
+                testing::UnorderedElementsAre(kBidder1DebugWinReportUrl));
+  }
+}
+
+// Reject reason returned by scoreAd() for a bid whose score is positive is
+// ignored and will not be reported to the bidder.
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       rejectReasonIgnoredForPositiveBid) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/false, "k1", "a",
+                    /*report_post_auction_signals=*/false,
+                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl,
+                    /*report_reject_reason=*/true));
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "3", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/false, "l2", "b",
+                    /*report_post_auction_signals=*/false,
+                    kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl,
+                    /*report_reject_reason=*/true));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScriptReject2());
+
+  const Result& res = RunStandardAuction();
+  // Bidder 2 won the auction.
+  EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+
+  EXPECT_EQ(1u, res.debug_loss_report_urls.size());
+  // Reject reason returned by scoreAd() for bidder 1 should be ignored and
+  // reported as "not-available" in debug loss report URL, because the bid gets
+  // a positive score thus not rejected by seller.
+  EXPECT_THAT(
+      res.debug_loss_report_urls,
+      testing::UnorderedElementsAre("https://bidder1-debug-loss-reporting.com/"
+                                    "?rejectReason=not-available"));
+
+  EXPECT_EQ(1u, res.debug_win_report_urls.size());
+  EXPECT_THAT(res.debug_win_report_urls,
+              testing::UnorderedElementsAre(kBidder2DebugWinReportUrl));
+}
+
+// Only bidders' debug loss report URLs support macro ${rejectReason}.
+// Bidders' debug win report URLs and sellers' debug loss/win report URLs does
+// not.
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       rejectReasonInBidderDebugLossReportOnly) {
+  const char kBidder1Script[] = R"(
+    function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                         trustedBiddingSignals, browserSignals) {
+      forDebuggingOnly.reportAdAuctionLoss(
+          'https://bidder1-debug-loss-reporting.com/?reason=${rejectReason}');
+      forDebuggingOnly.reportAdAuctionWin(
+          'https://bidder1-debug-win-reporting.com/?reason=${rejectReason}');
+      return {
+        bid: 1,
+        render: interestGroup.ads[0].renderUrl
+      };
+    }
+
+    // Prevent an error about this method not existing.
+    function reportWin() {}
+  )";
+
+  const char kBidder2Script[] = R"(
+    function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                         trustedBiddingSignals, browserSignals) {
+      forDebuggingOnly.reportAdAuctionLoss(
+          'https://bidder2-debug-loss-reporting.com/?reason=${rejectReason}');
+      forDebuggingOnly.reportAdAuctionWin(
+          'https://bidder2-debug-win-reporting.com/?reason=${rejectReason}');
+      return {
+        bid: 2,
+        render: interestGroup.ads[0].renderUrl
+      };
+    }
+
+    // Prevent an error about this method not existing.
+    function reportWin() {}
+  )";
+
+  // Desirability is -1 if bid is 1, otherwise is bid.
+  const char kSellerScript[] = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                     browserSignals) {
+      forDebuggingOnly.reportAdAuctionLoss(
+          'https://seller-debug-loss-reporting.com/?reason=${rejectReason}');
+      forDebuggingOnly.reportAdAuctionWin(
+          'https://seller-debug-win-reporting.com/?reason=${rejectReason}');
+      if (bid == 1) {
+        return {desirability: -1, rejectReason: 'invalid-bid'}
+      } else {
+        return bid;
+      }
+    }
+
+    // Prevent an error about this method not existing.
+    function reportResult() {}
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidder1Script);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder2Url,
+                                         kBidder2Script);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  const Result& res = RunStandardAuction();
+  // Bidder 2 won the auction.
+  EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+
+  // Only bidder's debug loss report supports macro ${rejectReason}.
+  EXPECT_EQ(2u, res.debug_loss_report_urls.size());
+  EXPECT_THAT(
+      res.debug_loss_report_urls,
+      testing::UnorderedElementsAre(
+          "https://bidder1-debug-loss-reporting.com/?reason=invalid-bid",
+          "https://seller-debug-loss-reporting.com/"
+          "?reason=${rejectReason}"));
+  EXPECT_EQ(2u, res.debug_win_report_urls.size());
+  EXPECT_THAT(
+      res.debug_win_report_urls,
+      testing::UnorderedElementsAre("https://bidder2-debug-win-reporting.com/"
+                                    "?reason=${rejectReason}",
+                                    "https://seller-debug-win-reporting.com/"
+                                    "?reason=${rejectReason}"));
+}
+
+// When scoreAd() does not return a reject reason, report it as "not-available"
+// in bidder's loss report URL as default.
+TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+       SellerNotReturningRejectReason) {
+  const char kBidderScript[] = R"(
+    function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                         trustedBiddingSignals, browserSignals) {
+      forDebuggingOnly.reportAdAuctionLoss(
+          'https://bidder-debug-loss-reporting.com/?reason=${rejectReason}');
+      return {
+        bid: 1,
+        render: interestGroup.ads[0].renderUrl
+      };
+    }
+
+    // Prevent an error about this method not existing.
+    function reportWin() {}
+  )";
+
+  const char kSellerScript[] = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                     browserSignals) {
+      return {desirability: -1};
+    }
+
+    // Prevent an error about this method not existing.
+    function reportResult() {}
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidderScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  const Result& res = RunStandardAuction();
+
+  EXPECT_EQ(1u, res.debug_loss_report_urls.size());
+  EXPECT_THAT(
+      res.debug_loss_report_urls,
+      testing::UnorderedElementsAre("https://bidder-debug-loss-reporting.com/"
+                                    "?reason=not-available"));
+  EXPECT_EQ(0u, res.debug_win_report_urls.size());
+}
+
+// Disable private aggregation API.
 class AuctionRunnerPrivateAggregationAPIDisabledTest
     : public AuctionRunnerTest {
  public:

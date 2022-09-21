@@ -54,6 +54,18 @@ struct ComponentAuctionReportResultParams {
   bool has_modified_bid;
 };
 
+// The reason a bid was rejected by an auction.
+enum RejectReason {
+  kNotAvailable = 0,
+  kInvalidBid = 1,
+  kBidBelowAuctionFloor = 2,
+  kPendingApprovalByExchange = 3,
+  kDisapprovedByExchange = 4,
+  kBlockedByPublisher = 5,
+  kLanguageExclusions = 6,
+  kCategoryExclusions = 7,
+};
+
 // Interface for returning ScoreAd results. The advantage of having an interface
 // is that it makes ScoreAd() calls cancellable, and allows callbacks passed
 // over the Mojo pipe to be deleted when the Mojo pipe is, to avoid setting off
@@ -65,6 +77,10 @@ interface ScoreAdClient {
   // `score` Non-negative score the SellerWorklet assigns to the bid. A value
   //  of 0 indicates either an error running the script, or that the script
   //  indicated the bid should not be used.
+  //
+  // `reject_reason` The reason this bid was rejected by the auction (i.e., the
+  //  reason why `score` was non-positive). Default to kNotAvailable if not set.
+  //  Will be ignored if `score` is positive.
   //
   // `component_auction_modified_bid_params` If this is a component seller
   //  worklet, contains parameters to pass to the top-level seller worklet
@@ -96,6 +112,7 @@ interface ScoreAdClient {
   //  empty if `score` is positive, nor should it be assumed to be non-empty if
   //  `score` is 0.
   OnScoreAdComplete(double score,
+                    RejectReason reject_reason,
                     ComponentAuctionModifiedBidParams?
                         component_auction_modified_bid_params,
                     uint32 scoring_signals_data_version,
@@ -160,7 +177,7 @@ interface SellerWorklet {
   //  to use with tracing calls.
   //
   // `score_ad_client` When the ScoreAd completes, successfully or not, its
-  // OnScoreAdComplete() method will invoked be invoked with the results.
+  // OnScoreAdComplete() method will be invoked with the results.
   ScoreAd(string ad_metadata_json,
           double bid,
           blink.mojom.AuctionAdConfigNonSharedParams

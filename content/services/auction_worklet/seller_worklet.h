@@ -195,6 +195,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     // V8State, and avoids having to make a copy of the errors vector.
     using ScoreAdCallbackInternal = base::OnceCallback<void(
         double score,
+        mojom::RejectReason reject_reason,
         mojom::ComponentAuctionModifiedBidParamsPtr
             component_auction_modified_bid_params,
         absl::optional<uint32_t> scoring_signals_data_version,
@@ -270,6 +271,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     void PostScoreAdCallbackToUserThread(
         ScoreAdCallbackInternal callback,
         double score,
+        mojom::RejectReason reject_reason,
         mojom::ComponentAuctionModifiedBidParamsPtr
             component_auction_modified_bid_params,
         absl::optional<uint32_t> scoring_signals_data_version,
@@ -333,6 +335,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   void DeliverScoreAdCallbackOnUserThread(
       ScoreAdTaskList::iterator task,
       double score,
+      mojom::RejectReason reject_reason,
       mojom::ComponentAuctionModifiedBidParamsPtr
           component_auction_modified_bid_params,
       absl::optional<uint32_t> scoring_signals_data_version,

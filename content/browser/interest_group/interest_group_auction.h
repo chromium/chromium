@@ -243,6 +243,11 @@ class CONTENT_EXPORT InterestGroupAuction
     // auction, won it, and was then scored by the top-level seller.
     absl::optional<GURL> top_level_seller_debug_win_report_url;
     absl::optional<GURL> top_level_seller_debug_loss_report_url;
+
+    // The reason this bid was rejected by the auction (i.e., reason why score
+    // was non-positive).
+    auction_worklet::mojom::RejectReason reject_reason =
+        auction_worklet::mojom::RejectReason::kNotAvailable;
   };
 
   // Result of generated a bid. Contains information that needs to score a bid
@@ -541,6 +546,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // auction_worklet::mojom::ScoreAdClient implementation:
   void OnScoreAdComplete(
       double score,
+      auction_worklet::mojom::RejectReason reject_reason,
       auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
           component_auction_modified_bid_params,
       uint32_t scoring_signals_data_version,
@@ -638,10 +644,13 @@ class CONTENT_EXPORT InterestGroupAuction
   // Replaces `${}` placeholders in a debug report URL's query string for post
   // auction signals if exist. Only replaces unescaped placeholder ${}, but
   // not escaped placeholder (i.e., %24%7B%7D).
-  static GURL FillPostAuctionSignals(const GURL& url,
-                                     const PostAuctionSignals& signals,
-                                     const absl::optional<PostAuctionSignals>&
-                                         top_level_signals = absl::nullopt);
+  static GURL FillPostAuctionSignals(
+      const GURL& url,
+      const PostAuctionSignals& signals,
+      const absl::optional<PostAuctionSignals>& top_level_signals =
+          absl::nullopt,
+      const absl::optional<auction_worklet::mojom::RejectReason> reject_reason =
+          absl::nullopt);
 
   // Tracing ID associated with the Auction. A nestable
   // async "Auction" trace

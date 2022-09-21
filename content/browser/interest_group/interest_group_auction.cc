@@ -410,13 +410,15 @@ class InterestGroupAuction::BuyerHelper
         continue;
       }
       if (bid_state->bidder_debug_loss_report_url.has_value()) {
-        // Losing bidders should not get highest_scoring_other_bid and
-        // made_highest_scoring_other_bid signals.
+        // Losing and rejected bidders should not get highest_scoring_other_bid
+        // and made_highest_scoring_other_bid signals.
         debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
             std::move(bid_state->bidder_debug_loss_report_url).value(),
             PostAuctionSignals(signals.winning_bid, signals.made_winning_bid,
-                               0.0, false)));
+                               0.0, false),
+            /*top_level_signals=*/absl::nullopt, bid_state->reject_reason));
       }
+      // TODO(qingxinwu): Add reject reason to seller debug loss report as well.
       if (bid_state->seller_debug_loss_report_url.has_value()) {
         debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
             std::move(bid_state->seller_debug_loss_report_url).value(), signals,
@@ -762,10 +764,10 @@ class InterestGroupAuction::BuyerHelper
                            maybe_bidding_signals_data_version,
                            debug_loss_report_url, debug_win_report_url);
       if (bid)
-        state->bidder_debug_loss_report_url = std::move(debug_loss_report_url);
+        state->bidder_debug_loss_report_url = debug_loss_report_url;
     } else {
       // Bidders who do not bid are allowed to get loss report.
-      state->bidder_debug_loss_report_url = std::move(debug_loss_report_url);
+      state->bidder_debug_loss_report_url = debug_loss_report_url;
     }
 
     // Release the worklet. If it wins the auction, it will be requested again
@@ -775,7 +777,7 @@ class InterestGroupAuction::BuyerHelper
     if (!bid) {
       state->EndTracing();
     } else {
-      state->bidder_debug_win_report_url = std::move(debug_win_report_url);
+      state->bidder_debug_win_report_url = debug_win_report_url;
       state->made_bid = true;
       auction_->ScoreBidIfReady(std::move(bid));
     }
@@ -1180,10 +1182,43 @@ void InterestGroupAuction::GetInterestGroupsThatBid(
   }
 }
 
+base::StringPiece GetRejectReasonString(
+    const auction_worklet::mojom::RejectReason reject_reason) {
+  base::StringPiece reject_reason_str;
+  switch (reject_reason) {
+    case auction_worklet::mojom::RejectReason::kNotAvailable:
+      reject_reason_str = "not-available";
+      break;
+    case auction_worklet::mojom::RejectReason::kInvalidBid:
+      reject_reason_str = "invalid-bid";
+      break;
+    case auction_worklet::mojom::RejectReason::kBidBelowAuctionFloor:
+      reject_reason_str = "bid-below-auction-floor";
+      break;
+    case auction_worklet::mojom::RejectReason::kPendingApprovalByExchange:
+      reject_reason_str = "pending-approval-by-exchange";
+      break;
+    case auction_worklet::mojom::RejectReason::kDisapprovedByExchange:
+      reject_reason_str = "disapproved-by-exchange";
+      break;
+    case auction_worklet::mojom::RejectReason::kBlockedByPublisher:
+      reject_reason_str = "blocked-by-publisher";
+      break;
+    case auction_worklet::mojom::RejectReason::kLanguageExclusions:
+      reject_reason_str = "language-exclusions";
+      break;
+    case auction_worklet::mojom::RejectReason::kCategoryExclusions:
+      reject_reason_str = "category-exclusions";
+      break;
+  }
+  return reject_reason_str;
+}
+
 GURL InterestGroupAuction::FillPostAuctionSignals(
     const GURL& url,
     const PostAuctionSignals& signals,
-    const absl::optional<PostAuctionSignals>& top_level_signals) {
+    const absl::optional<PostAuctionSignals>& top_level_signals,
+    const absl::optional<auction_worklet::mojom::RejectReason> reject_reason) {
   // TODO(qingxinwu): Round `winning_bid` and `highest_scoring_other_bid` to two
   // most-significant digits. Maybe same to corresponding browser signals of
   // reportWin()/reportResult().
@@ -1215,6 +1250,12 @@ GURL InterestGroupAuction::FillPostAuctionSignals(
     base::ReplaceSubstringsAfterOffset(
         &query_string, 0, "${topLevelMadeWinningBid}",
         top_level_signals->made_winning_bid ? "true" : "false");
+  }
+
+  if (reject_reason.has_value()) {
+    base::ReplaceSubstringsAfterOffset(
+        &query_string, 0, "${rejectReason}",
+        GetRejectReasonString(reject_reason.value()));
   }
 
   GURL::Replacements replacements;
@@ -1671,6 +1712,7 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
 
 void InterestGroupAuction::OnScoreAdComplete(
     double score,
+    auction_worklet::mojom::RejectReason reject_reason,
     auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
         component_auction_modified_bid_params,
     uint32_t data_version,
@@ -1719,6 +1761,9 @@ void InterestGroupAuction::OnScoreAdComplete(
         std::move(debug_loss_report_url);
     bid->bid_state->seller_debug_win_report_url =
         std::move(debug_win_report_url);
+    // Ignores reject reason if score > 0.
+    if (score <= 0)
+      bid->bid_state->reject_reason = reject_reason;
   } else {
     bid->bid_state->top_level_seller_debug_loss_report_url =
         std::move(debug_loss_report_url);
