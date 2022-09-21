@@ -213,7 +213,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         }
 
         if (!ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mContext)
-                && startSurfaceSupplier != null) {
+                && startSurfaceSupplier != null
+                && ReturnToChromeUtil.isStartSurfaceEnabled(mContext)) {
             mStartSurfaceSupplier = startSurfaceSupplier;
             startSurfaceSupplier.onAvailable(mCallbackController.makeCancelable((startSurface) -> {
                 mStartSurfaceState = startSurface.getStartSurfaceState();
