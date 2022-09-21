@@ -5,6 +5,7 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <ostream>
 #include <string>
@@ -99,6 +100,11 @@ PA_NOINLINE void HandleGigaCageAllocFailure() {
 
 alignas(kPartitionCachelineSize)
     PartitionAddressSpace::GigaCageSetup PartitionAddressSpace::setup_;
+
+#if defined(PA_ENABLE_SHADOW_METADATA)
+std::ptrdiff_t PartitionAddressSpace::regular_pool_shadow_offset_ = 0;
+std::ptrdiff_t PartitionAddressSpace::brp_pool_shadow_offset_ = 0;
+#endif
 
 #if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
 #if BUILDFLAG(IS_IOS)
@@ -211,6 +217,22 @@ void PartitionAddressSpace::Init() {
       << "QuarantineCardTable is required to be allocated at the beginning of "
          "the regular pool";
 #endif  // PA_STARSCAN_USE_CARD_TABLE
+
+#if defined(PA_ENABLE_SHADOW_METADATA)
+  // Reserve memory for the shadow GigaCage
+  uintptr_t regular_pool_shadow_address = AllocPages(
+      regular_pool_size, regular_pool_size,
+      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc);
+  regular_pool_shadow_offset_ =
+      regular_pool_shadow_address - setup_.regular_pool_base_address_;
+
+  uintptr_t brp_pool_shadow_address = AllocPagesWithAlignOffset(
+      0, brp_pool_size + kForbiddenZoneSize, brp_pool_size,
+      brp_pool_size - kForbiddenZoneSize,
+      PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc);
+  brp_pool_shadow_offset_ =
+      brp_pool_shadow_address - setup_.brp_pool_base_address_;
+#endif
 }
 
 void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,

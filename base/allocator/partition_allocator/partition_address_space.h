@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <limits>
 
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
@@ -157,6 +158,21 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return address - setup_.brp_pool_base_address_;
   }
 
+#if defined(PA_ENABLE_SHADOW_METADATA)
+  static PA_ALWAYS_INLINE std::ptrdiff_t ShadowPoolOffset(pool_handle pool) {
+    if (pool == kRegularPoolHandle) {
+      return regular_pool_shadow_offset_;
+    } else if (pool == kBRPPoolHandle) {
+      return brp_pool_shadow_offset_;
+    } else {
+      // Shadow is not created for ConfigurablePool, so this part should be
+      // unreachable.
+      PA_NOTREACHED();
+      return 0;
+    }
+  }
+#endif
+
   // PartitionAddressSpace is static_only class.
   PartitionAddressSpace() = delete;
   PartitionAddressSpace(const PartitionAddressSpace&) = delete;
@@ -295,6 +311,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // don't share a cacheline with other, potentially writeable data, through
   // alignment and padding.
   alignas(kPartitionCachelineSize) static GigaCageSetup setup_;
+
+#if defined(PA_ENABLE_SHADOW_METADATA)
+  static std::ptrdiff_t regular_pool_shadow_offset_;
+  static std::ptrdiff_t brp_pool_shadow_offset_;
+#endif
 };
 
 PA_ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
