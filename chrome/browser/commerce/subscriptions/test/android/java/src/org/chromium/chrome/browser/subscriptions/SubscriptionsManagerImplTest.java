@@ -500,6 +500,7 @@ public class SubscriptionsManagerImplTest {
     @Test
     public void testOnIdentityChanged_AccountCleared() {
         // Fetch subscriptions when SubscriptionManager is created.
+        verify(mStorage, times(1)).deleteAll();
         verify(mProxy, times(1))
                 .get(eq(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK),
                         any(Callback.class));
@@ -507,7 +508,7 @@ public class SubscriptionsManagerImplTest {
         // Simulate user signs out. We should delete local storage but not fetch data from server.
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false);
         mSubscriptionsManager.onIdentityChanged();
-        verify(mStorage, times(1)).deleteAll();
+        verify(mStorage, times(2)).deleteAll();
         verify(mProxy, times(1))
                 .get(eq(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK),
                         any(Callback.class));
@@ -518,6 +519,7 @@ public class SubscriptionsManagerImplTest {
     @Test
     public void testOnIdentityChanged_AccountChanged() {
         // Fetch subscriptions when SubscriptionManager is created.
+        verify(mStorage, times(1)).deleteAll();
         verify(mProxy, times(1))
                 .get(eq(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK),
                         any(Callback.class));
@@ -526,7 +528,7 @@ public class SubscriptionsManagerImplTest {
         // from server.
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         mSubscriptionsManager.onIdentityChanged();
-        verify(mStorage, times(1)).deleteAll();
+        verify(mStorage, times(3)).deleteAll();
         verify(mProxy, times(2))
                 .get(eq(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK),
                         any(Callback.class));
