@@ -14,7 +14,7 @@ class WebContents;
 
 class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
  public:
-  using OnTrackPriceCallback = base::OnceCallback<void()>;
+  using OnTrackPriceCallback = base::OnceCallback<void(bool)>;
 
   enum Type { TYPE_FUE, TYPE_NORMAL };
 
@@ -28,6 +28,7 @@ class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
 
  private:
   Type type_;
+  OnTrackPriceCallback action_callback_;
   views::Label* body_label_;
 
   base::WeakPtrFactory<PriceTrackingBubbleDialogView> weak_factory_{this};

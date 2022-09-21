@@ -9678,7 +9678,9 @@ if (!is_android) {
       ]
       deps += [
         "//components/commerce/core:feature_list",
+        "//components/commerce/core:shopping_service_test_support",
         "//components/live_caption:utils",
+        "//components/omnibox/browser:vector_icons",
         "//components/optimization_guide/core:test_support",
         "//components/optimization_guide/proto:optimization_guide_proto",
         "//components/performance_manager:performance_manager",
