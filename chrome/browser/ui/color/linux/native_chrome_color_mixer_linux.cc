@@ -19,6 +19,7 @@
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
 
 namespace {
 
@@ -37,90 +38,28 @@ ui::ColorTransform UseIfNonzeroAlpha(ui::ColorTransform transform) {
   return base::BindRepeating(generator, std::move(transform));
 }
 
-// Candidate colors for active / inacitve toolbar top separator.
-// Toolbar top separator is the separator between the toolbar and the tab strip.
-// In GTK theme, it is computed from three sources in order of preference to
-// meet the minimum contrast raio requirement:
-//   a. kColorNativeHeaderSeparatorBorder
-//   b. kColorNativeHeaderButtonBorder
-//   c. fallback to the upstream mixer (i.e. chrome_color_mixer)
-// Active and inactive colors are in a lock step. For example, if the active
-// style chooses a. and the inactive chooses b., then both styles should choose
-// b.
-struct ToolbarTopSeparatorColorCandidates {
-  enum Choice {
-    kFirstChoice = 0,
-    kSecondChoice,
-    kFallbackChoice,
-    kChoicesCount
-  } choice;
-  // Store all candidate colors since the active/inactive counterpart's `choice`
-  // might be different than this `choice`.
-  SkColor colors[kChoicesCount];
-};
-
-bool HasGoodConstrastForToolbarTopSeparator(SkColor forground,
-                                            SkColor background) {
-  const float kMinContrastRatio = 2.f;
-  forground = color_utils::GetResultingPaintColor(forground, background);
-  return color_utils::GetContrastRatio(background, forground) >=
-         kMinContrastRatio;
-}
-
-ToolbarTopSeparatorColorCandidates GetToolbarTopSeparatorColorCandidates(
-    ui::ColorTransform first_choice_transform,
-    ui::ColorTransform second_choice_transform,
-    ui::ColorTransform background_transform,
-    SkColor input_color,
-    const ui::ColorMixer& mixer) {
-  SkColor first_choice_color = first_choice_transform.Run(input_color, mixer);
-  SkColor second_choice_color = second_choice_transform.Run(input_color, mixer);
-  SkColor background_color = background_transform.Run(input_color, mixer);
-  auto choice = ToolbarTopSeparatorColorCandidates::kFallbackChoice;
-  if (HasGoodConstrastForToolbarTopSeparator(first_choice_color,
-                                             background_color))
-    choice = ToolbarTopSeparatorColorCandidates::kFirstChoice;
-  else if (HasGoodConstrastForToolbarTopSeparator(second_choice_color,
-                                                  background_color))
-    choice = ToolbarTopSeparatorColorCandidates::kSecondChoice;
-  return {choice, {first_choice_color, second_choice_color, input_color}};
-}
-
-// kColorToolbarSeparatorFrame[Active/Inactive] selects the first color
-// that satisfies the contrast ratio requirement from candidate colors.
-// This logic is migrated from GtkUi::UpdateColors().
-// TODO(crbug.com/1304441): re-examine the correctness in redirection tests.
-ui::ColorTransform GetGtkToolbarTopSeparatorColorTransform(
-    bool return_active_color) {
-  using CandidatesGetter =
-      base::RepeatingCallback<ToolbarTopSeparatorColorCandidates(
-          SkColor input, const ui::ColorMixer& mixer)>;
-  auto active_getter = base::BindRepeating(
-      GetToolbarTopSeparatorColorCandidates,
-      ui::kColorNativeHeaderSeparatorBorderActive,
-      ui::kColorNativeHeaderButtonBorderActive, ui::kColorFrameActive);
-  auto inactive_getter = base::BindRepeating(
-      GetToolbarTopSeparatorColorCandidates,
-      ui::kColorNativeHeaderSeparatorBorderInactive,
-      ui::kColorNativeHeaderButtonBorderInactive, ui::kColorFrameInactive);
-  const auto generator = [](bool return_active_color,
-                            CandidatesGetter active_getter,
-                            CandidatesGetter inactive_getter,
-                            SkColor input_color, const ui::ColorMixer& mixer) {
-    ToolbarTopSeparatorColorCandidates active_candidates =
-        active_getter.Run(input_color, mixer);
-    ToolbarTopSeparatorColorCandidates inactive_candidates =
-        inactive_getter.Run(input_color, mixer);
-    // Active/inactive choices are in lockstep. They choose the most favored
-    // candidate that satisfies the contrast ratio requirement.
-    auto choice =
-        std::max(active_candidates.choice, inactive_candidates.choice);
-    return return_active_color ? active_candidates.colors[choice]
-                               : inactive_candidates.colors[choice];
+ui::ColorTransform GetToolbarTopSeparatorColorTransform(
+    ui::ColorTransform transform,
+    bool high_contrast) {
+  const auto generator = [](ui::ColorTransform transform, SkColor input_color,
+                            const ui::ColorMixer& mixer) {
+    const float kMinContrastRatio = 2.f;
+    const SkColor toolbar = transform.Run(input_color, mixer);
+    // Try a darker separator color first (even on dark themes).
+    const SkColor separator =
+        color_utils::BlendForMinContrast(toolbar, toolbar, gfx::kGoogleGrey900,
+                                         kMinContrastRatio)
+            .color;
+    if (color_utils::GetContrastRatio(separator, toolbar) >= kMinContrastRatio)
+      return separator;
+    // If a darker separator didn't give good enough contrast, try a lighter
+    // separator.
+    return color_utils::BlendForMinContrast(toolbar, toolbar, SK_ColorWHITE,
+                                            kMinContrastRatio)
+        .color;
   };
-
-  return base::BindRepeating(generator, return_active_color, active_getter,
-                             inactive_getter);
+  return high_contrast ? ui::GetColorWithMaxContrast(transform)
+                       : base::BindRepeating(generator, std::move(transform));
 }
 
 }  // namespace
@@ -162,10 +101,13 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarText] = {ui::kColorNativeLabelForeground};
   mixer[kColorToolbarTextDisabled] =
       ui::SetAlpha(kColorToolbarText, gfx::kDisabledControlAlpha);
+  const bool high_contrast =
+      key.contrast_mode == ui::ColorProviderManager::ContrastMode::kHigh;
   mixer[kColorToolbarTopSeparatorFrameActive] =
-      GetGtkToolbarTopSeparatorColorTransform(true);
-  mixer[kColorToolbarTopSeparatorFrameInactive] =
-      GetGtkToolbarTopSeparatorColorTransform(false);
+      GetToolbarTopSeparatorColorTransform(ui::kColorNativeToolbarBackground,
+                                           high_contrast);
+  mixer[kColorToolbarTopSeparatorFrameInactive] = {
+      kColorToolbarTopSeparatorFrameActive};
 
   // Explicitly override certain colors for the NTP to those corresponding to
   // the light theme. See crbug.com/998903. This logic will be removed once the
