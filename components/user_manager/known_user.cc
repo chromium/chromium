@@ -249,8 +249,8 @@ void KnownUser::SetPath(const AccountId& account_id,
   if (!account_id.is_valid())
     return;
 
-  ListPrefUpdate update(local_state_, kKnownUsers);
-  for (base::Value& element_value : update->GetList()) {
+  ScopedListPrefUpdate update(local_state_, kKnownUsers);
+  for (base::Value& element_value : *update) {
     if (element_value.is_dict()) {
       if (UserMatches(account_id, element_value)) {
         if (opt_value.has_value())
@@ -749,8 +749,8 @@ void KnownUser::RemovePrefs(const AccountId& account_id) {
   if (!account_id.is_valid())
     return;
 
-  ListPrefUpdate update(local_state_, kKnownUsers);
-  base::Value::List& update_list = update->GetList();
+  ScopedListPrefUpdate update(local_state_, kKnownUsers);
+  base::Value::List& update_list = update.Get();
   for (auto it = update_list.begin(); it != update_list.end(); ++it) {
     if (UserMatches(account_id, *it)) {
       update_list.erase(it);
@@ -760,8 +760,8 @@ void KnownUser::RemovePrefs(const AccountId& account_id) {
 }
 
 void KnownUser::CleanEphemeralUsers() {
-  ListPrefUpdate update(local_state_, kKnownUsers);
-  update->GetList().EraseIf([](const auto& value) {
+  ScopedListPrefUpdate update(local_state_, kKnownUsers);
+  update->EraseIf([](const auto& value) {
     if (!value.is_dict())
       return false;
 
@@ -771,8 +771,8 @@ void KnownUser::CleanEphemeralUsers() {
 }
 
 void KnownUser::CleanObsoletePrefs() {
-  ListPrefUpdate update(local_state_, kKnownUsers);
-  for (base::Value& user_entry : update.Get()->GetListDeprecated()) {
+  ScopedListPrefUpdate update(local_state_, kKnownUsers);
+  for (base::Value& user_entry : *update) {
     if (!user_entry.is_dict())
       continue;
     for (const std::string& key : kObsoleteKeys)
