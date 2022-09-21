@@ -16,11 +16,11 @@
 
 namespace feed {
 
-extern const base::Feature kInterestFeedContentSuggestions;
-extern const base::Feature kInterestFeedV2;
-extern const base::Feature kInterestFeedV2Autoplay;
-extern const base::Feature kInterestFeedV2Hearts;
-extern const base::Feature kInterestFeedV2Scrolling;
+BASE_DECLARE_FEATURE(kInterestFeedContentSuggestions);
+BASE_DECLARE_FEATURE(kInterestFeedV2);
+BASE_DECLARE_FEATURE(kInterestFeedV2Autoplay);
+BASE_DECLARE_FEATURE(kInterestFeedV2Hearts);
+BASE_DECLARE_FEATURE(kInterestFeedV2Scrolling);
 
 extern const base::FeatureParam<std::string> kDisableTriggerTypes;
 extern const base::FeatureParam<int> kSuppressRefreshDurationMinutes;
@@ -34,34 +34,34 @@ extern const base::FeatureParam<bool> kOnlySetLastRefreshAttemptOnSuccess;
 // click and view actions in the feed (e.g., the user needs to view X cards).
 // For example, this is needed when the notice card is at the second position in
 // the feed.
-extern const base::Feature kInterestFeedV1ClicksAndViewsConditionalUpload;
-extern const base::Feature kInterestFeedV2ClicksAndViewsConditionalUpload;
+BASE_DECLARE_FEATURE(kInterestFeedV1ClicksAndViewsConditionalUpload);
+BASE_DECLARE_FEATURE(kInterestFeedV2ClicksAndViewsConditionalUpload);
 
 // Feature that allows the client to automatically dismiss the notice card based
 // on the clicks and views on the notice card.
 #if BUILDFLAG(IS_IOS)
-extern const base::Feature kInterestFeedNoticeCardAutoDismiss;
+BASE_DECLARE_FEATURE(kInterestFeedNoticeCardAutoDismiss);
 #endif
 
 // Feature that allows users to keep up with and consume web content.
-extern const base::Feature kWebFeed;
+BASE_DECLARE_FEATURE(kWebFeed);
 
 // Use the new DiscoFeed endpoint.
-extern const base::Feature kDiscoFeedEndpoint;
+BASE_DECLARE_FEATURE(kDiscoFeedEndpoint);
 
 // Feature that enables xsurface to provide the metrics reporting state to an
 // xsurface feed.
-extern const base::Feature kXsurfaceMetricsReporting;
+BASE_DECLARE_FEATURE(kXsurfaceMetricsReporting);
 
 // Whether to log reliability events.
-extern const base::Feature kReliabilityLogging;
+BASE_DECLARE_FEATURE(kReliabilityLogging);
 
 // Feature that enables refreshing feeds triggered by the users.
-extern const base::Feature kFeedInteractiveRefresh;
+BASE_DECLARE_FEATURE(kFeedInteractiveRefresh);
 
 // Feature that shows placeholder cards instead of a loading spinner at first
 // load.
-extern const base::Feature kFeedLoadingPlaceholder;
+BASE_DECLARE_FEATURE(kFeedLoadingPlaceholder);
 
 // Param allowing animations to be disabled when showing the placeholder on
 // instant start.
@@ -70,62 +70,62 @@ extern const base::FeatureParam<bool>
 
 // Feature that allows tuning the size of the image memory cache. Value is a
 // percentage of the maximum size calculated for the device.
-extern const base::Feature kFeedImageMemoryCacheSizePercentage;
+BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
 
 // Feature that enables clearing the image memory cache when the feed is
 // destroyed.
-extern const base::Feature kFeedClearImageMemoryCache;
+BASE_DECLARE_FEATURE(kFeedClearImageMemoryCache);
 
 // Feature that enables showing a callout to help users return to the top of the
 // feeds quickly.
-extern const base::Feature kFeedBackToTop;
+BASE_DECLARE_FEATURE(kFeedBackToTop);
 
 // Feature that enables StAMP cards in the feed.
-extern const base::Feature kFeedStamp;
+BASE_DECLARE_FEATURE(kFeedStamp);
 
 // Feature that provides the user assistance in discovering the web feed.
-extern const base::Feature kWebFeedAwareness;
+BASE_DECLARE_FEATURE(kWebFeedAwareness);
 
 // Feature that provides the user assistance in using the web feed.
-extern const base::Feature kWebFeedOnboarding;
+BASE_DECLARE_FEATURE(kWebFeedOnboarding);
 
 // Feature that enables sorting by different heuristics in the web feed.
-extern const base::Feature kWebFeedSort;
+BASE_DECLARE_FEATURE(kWebFeedSort);
 
 // Feature that causes the "open in new tab" menu item to appear on feed items
 // on Start Surface.
-extern const base::Feature kEnableOpenInNewTabFromStartSurfaceFeed;
+BASE_DECLARE_FEATURE(kEnableOpenInNewTabFromStartSurfaceFeed);
 
 // Feature that causes the WebUI version of the Feed to be enabled.
-extern const base::Feature kWebUiFeed;
+BASE_DECLARE_FEATURE(kWebUiFeed);
 extern const base::FeatureParam<std::string> kWebUiFeedUrl;
 extern const base::FeatureParam<bool> kWebUiDisableContentSecurityPolicy;
 
 std::string GetFeedReferrerUrl();
 
 // Personalize feed for unsigned users.
-extern const base::Feature kPersonalizeFeedUnsignedUsers;
+BASE_DECLARE_FEATURE(kPersonalizeFeedUnsignedUsers);
 
 // Personalize feed for signed in users who haven't enabled sync.
-extern const base::Feature kPersonalizeFeedNonSyncUsers;
+BASE_DECLARE_FEATURE(kPersonalizeFeedNonSyncUsers);
 
 // Returns the consent level needed to request a personalized feed.
 signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed();
 
 // Feature that enables tracking the acknowledgement state for the info cards.
-extern const base::Feature kInfoCardAcknowledgementTracking;
+BASE_DECLARE_FEATURE(kInfoCardAcknowledgementTracking);
 
 // Feature that enables the Crow feature.
 // Owned by the CwF team but located here until it makes sense to create a crow
 // component, since it is being used in the feed component.
-extern const base::Feature kShareCrowButton;
+BASE_DECLARE_FEATURE(kShareCrowButton);
 
 // Feature that when enabled completely removes all Feeds from chrome.
-extern const base::Feature kIsAblated;
+BASE_DECLARE_FEATURE(kIsAblated);
 
 // When enabled, schedule a background refresh for a feed sometime after the
 // last user engagement with that feed.
-extern const base::Feature kFeedCloseRefresh;
+BASE_DECLARE_FEATURE(kFeedCloseRefresh);
 // On each qualifying user engagement, schedule a background refresh this many
 // minutes out.
 extern const base::FeatureParam<int> kFeedCloseRefreshDelayMinutes;
@@ -134,12 +134,12 @@ extern const base::FeatureParam<int> kFeedCloseRefreshDelayMinutes;
 extern const base::FeatureParam<bool> kFeedCloseRefreshRequireInteraction;
 
 // When enabled, no view cache is used.
-extern const base::Feature kFeedNoViewCache;
+BASE_DECLARE_FEATURE(kFeedNoViewCache);
 // When enabled, replace all items.
-extern const base::Feature kFeedReplaceAll;
+BASE_DECLARE_FEATURE(kFeedReplaceAll);
 
 // When enabled, play the feed video via inline playback.
-extern const base::Feature kFeedVideoInlinePlayback;
+BASE_DECLARE_FEATURE(kFeedVideoInlinePlayback);
 
 }  // namespace feed
 
