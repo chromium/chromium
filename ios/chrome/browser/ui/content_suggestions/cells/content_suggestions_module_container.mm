@@ -220,7 +220,8 @@ const float kTrendingQueriesContentHeight = 103;
     case ContentSuggestionsModuleTypeTrendingQueries:
       contentHeight += kTrendingQueriesContentHeight;
   }
-  if (!ShouldRemoveHeadersForModuleRefresh()) {
+  if (!ShouldRemoveHeadersForModuleRefresh() ||
+      self.type == ContentSuggestionsModuleTypeTrendingQueries) {
     contentHeight += ceilf(self.title.font.lineHeight);
   }
   return [self titleSpacing] + [self titleTopInset] + contentHeight;
