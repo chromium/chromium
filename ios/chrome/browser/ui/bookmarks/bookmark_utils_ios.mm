@@ -15,6 +15,7 @@
 #import "base/hash/hash.h"
 #import "base/i18n/string_compare.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -263,8 +264,8 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
     const std::set<const BookmarkNode*>& nodes,
     bookmarks::BookmarkModel* model,
     ChromeBrowserState* browser_state) {
-  size_t nodeCount = nodes.size();
-  DCHECK_GT(nodeCount, 0u);
+  size_t node_count = nodes.size();
+  DCHECK_GT(node_count, 0u);
 
   UndoManagerWrapper* wrapper =
       [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
@@ -277,13 +278,12 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
 
   NSString* text = nil;
 
-  if (nodeCount == 1) {
+  if (node_count == 1) {
     text = l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_SINGLE_BOOKMARK_DELETE);
   } else {
-    NSString* countString = [NSString stringWithFormat:@"%zu", nodeCount];
     text =
         l10n_util::GetNSStringF(IDS_IOS_BOOKMARK_NEW_MULTIPLE_BOOKMARK_DELETE,
-                                base::SysNSStringToUTF16(countString));
+                                base::NumberToString16(node_count));
   }
 
   return CreateUndoToastWithWrapper(wrapper, text);
@@ -292,7 +292,7 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
 bool MoveBookmarks(const std::set<const BookmarkNode*>& bookmarks,
                    bookmarks::BookmarkModel* model,
                    const BookmarkNode* folder) {
-  bool didPerformMove = false;
+  bool did_perform_move = false;
 
   // Calling Move() on the model will triger observer methods to fire, one of
   // them may modify the passed in `bookmarks`. To protect against this scenario
@@ -305,10 +305,10 @@ bool MoveBookmarks(const std::set<const BookmarkNode*>& bookmarks,
       continue;
     if (node->parent() != folder) {
       model->Move(node, folder, folder->children().size());
-      didPerformMove = true;
+      did_perform_move = true;
     }
   }
-  return didPerformMove;
+  return did_perform_move;
 }
 
 MDCSnackbarMessage* MoveBookmarksWithUndoToast(
@@ -316,28 +316,28 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
     bookmarks::BookmarkModel* model,
     const BookmarkNode* folder,
     ChromeBrowserState* browser_state) {
-  size_t nodeCount = nodes.size();
-  DCHECK_GT(nodeCount, 0u);
+  size_t node_count = nodes.size();
+  DCHECK_GT(node_count, 0u);
 
   UndoManagerWrapper* wrapper =
       [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
 
   // Move the selected bookmarks.
   [wrapper startGroupingActions];
-  bool didPerformMove = bookmark_utils_ios::MoveBookmarks(nodes, model, folder);
+  bool did_perform_move =
+      bookmark_utils_ios::MoveBookmarks(nodes, model, folder);
   [wrapper stopGroupingActions];
   [wrapper resetUndoManagerChanged];
 
-  if (!didPerformMove)
+  if (!did_perform_move)
     return nil;  // Don't return a snackbar when no real move as happened.
 
   NSString* text = nil;
-  if (nodeCount == 1) {
+  if (node_count == 1) {
     text = l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_SINGLE_BOOKMARK_MOVE);
   } else {
-    NSString* countString = [NSString stringWithFormat:@"%zu", nodeCount];
     text = l10n_util::GetNSStringF(IDS_IOS_BOOKMARK_NEW_MULTIPLE_BOOKMARK_MOVE,
-                                   base::SysNSStringToUTF16(countString));
+                                   base::NumberToString16(node_count));
   }
 
   return CreateUndoToastWithWrapper(wrapper, text);
@@ -359,21 +359,24 @@ const BookmarkNode* defaultMoveFolder(
 
 #pragma mark - Useful bookmark manipulation.
 
+namespace {
+
 // Adds all children of `folder` that are not obstructed to `results`. They are
 // placed immediately after `folder`, using a depth-first, then alphabetically
 // ordering. `results` must contain `folder`.
 void UpdateFoldersFromNode(const BookmarkNode* folder,
                            NodeVector* results,
                            const NodeSet& obstructions);
+
 // Returns whether `folder` has an ancestor in any of the nodes in
 // `bookmarkNodes`.
 bool FolderHasAncestorInBookmarkNodes(const BookmarkNode* folder,
                                       const NodeSet& bookmarkNodes);
+
 // Returns true if the node is not a folder, is not visible, or is an ancestor
 // of any of the nodes in `obstructions`.
 bool IsObstructed(const BookmarkNode* node, const NodeSet& obstructions);
 
-namespace {
 // Comparator used to sort bookmarks. No folders are allowed.
 class FolderNodeComparator {
  public:
@@ -391,7 +394,6 @@ class FolderNodeComparator {
  private:
   icu::Collator* collator_;
 };
-}  // namespace
 
 bool FolderHasAncestorInBookmarkNodes(const BookmarkNode* folder,
                                       const NodeSet& bookmarkNodes) {
@@ -434,6 +436,8 @@ void UpdateFoldersFromNode(const BookmarkNode* folder,
     UpdateFoldersFromNode(node, results, obstructions);
 }
 
+}  // namespace
+
 void SortFolders(NodeVector* vector) {
   UErrorCode error = U_ZERO_ERROR;
   std::unique_ptr<icu::Collator> collator(icu::Collator::createInstance(error));
@@ -445,22 +449,20 @@ void SortFolders(NodeVector* vector) {
 
 NodeVector VisibleNonDescendantNodes(const NodeSet& obstructions,
                                      bookmarks::BookmarkModel* model) {
-  NodeVector results;
-
-  NodeVector primaryNodes = PrimaryPermanentNodes(model);
-  NodeVector filteredPrimaryNodes;
-  for (auto* node : primaryNodes) {
+  NodeVector primary_nodes = PrimaryPermanentNodes(model);
+  NodeVector filtered_primary_nodes;
+  for (auto* node : primary_nodes) {
     if (IsObstructed(node, obstructions))
       continue;
 
-    filteredPrimaryNodes.push_back(node);
+    filtered_primary_nodes.push_back(node);
   }
 
   // Copy the results over.
-  results = filteredPrimaryNodes;
+  NodeVector results = filtered_primary_nodes;
 
   // Iterate over a static copy of the filtered, root folders.
-  for (auto* node : filteredPrimaryNodes)
+  for (auto* node : filtered_primary_nodes)
     UpdateFoldersFromNode(node, &results, obstructions);
 
   return results;
@@ -494,7 +496,7 @@ std::vector<NodeVector::size_type> MissingNodesIndices(
       << "Can't compute missing nodes between nodes among which the first is "
          "not a subvector of the second.";
 
-  std::vector<NodeVector::size_type> missingNodesIndices;
+  std::vector<NodeVector::size_type> missing_nodes_indices;
   // Keep an iterator on vector1.
   NodeVector::const_iterator it1 = vector1.begin();
   // Scan vector2, looking for vector1 elements.
@@ -505,30 +507,31 @@ std::vector<NodeVector::size_type> MissingNodesIndices(
     // iterator on vector1 is pointing to, add vector2 elements to the missing
     // nodes.
     if (it1 == vector1.end() || vector2[i2] != *it1) {
-      missingNodesIndices.push_back(i2);
+      missing_nodes_indices.push_back(i2);
     } else {
       // When there is a match between vector2 and vector1, advance the iterator
       // of vector1.
       it1++;
     }
   }
-  return missingNodesIndices;
+  return missing_nodes_indices;
 }
 
 #pragma mark - Cache position in table view.
 
-NSArray* CreateBookmarkPath(bookmarks::BookmarkModel* model, int64_t folderId) {
-  // Create an array with root node id, if folderId == root node.
-  if (model->root_node()->id() == folderId) {
+NSArray* CreateBookmarkPath(bookmarks::BookmarkModel* model,
+                            int64_t folder_id) {
+  // Create an array with root node id, if folder_id == root node.
+  if (model->root_node()->id() == folder_id) {
     return @[ [NSNumber numberWithLongLong:model->root_node()->id()] ];
   }
 
-  const BookmarkNode* bookmark = FindFolderById(model, folderId);
+  const BookmarkNode* bookmark = FindFolderById(model, folder_id);
   if (!bookmark)
     return nil;
 
   NSMutableArray* bookmarkPath = [NSMutableArray array];
-  [bookmarkPath addObject:[NSNumber numberWithLongLong:folderId]];
+  [bookmarkPath addObject:[NSNumber numberWithLongLong:folder_id]];
   while (model->root_node()->id() != bookmark->id()) {
     bookmark = bookmark->parent();
     DCHECK(bookmark);
