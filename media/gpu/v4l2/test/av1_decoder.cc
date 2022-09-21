@@ -476,8 +476,16 @@ void FillGlobalMotionParams(
 
     constexpr auto kNumGlobalMotionParams = std::size(decltype(gm.params){});
 
-    for (size_t j = 0; j < kNumGlobalMotionParams; ++j)
-      v4l2_gm->params[i][j] = base::checked_cast<uint32_t>(gm.params[j]);
+    for (size_t j = 0; j < kNumGlobalMotionParams; ++j) {
+      // TODO(b/247611513): Remove separate handling when gm.params[j] < 0 if
+      // V4L2 AV1 uAPI decides to make an update to make this param consistent
+      // with definition in libgav1 parser
+      if (gm.params[j] < 0) {
+        v4l2_gm->params[i][j] =
+            base::checked_cast<uint32_t>(UINT32_MAX + gm.params[j] + 1);
+      } else
+        v4l2_gm->params[i][j] = base::checked_cast<uint32_t>(gm.params[j]);
+    }
 
     v4l2_gm[i].invalid = !libgav1::SetupShear(&gm);
   }
