@@ -42,7 +42,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuGroup;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserverJni;
@@ -70,8 +69,7 @@ import java.util.List;
  * Unit tests for the context menu. Use density=mdpi so the screen density is 1.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.DisableFeatures(
-        {ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+@Features.DisableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
 public class ContextMenuCoordinatorTest {
     private static final int TOP_CONTENT_OFFSET_PX = 17;
     /**
@@ -254,7 +252,7 @@ public class ContextMenuCoordinatorTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE)
+    @Features.EnableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
     @Config(shadows = {ShadowContextMenuDialog.class}, qualifiers = "mdpi")
     public void testCreateContextMenuDialog_PopupStyle() {
         ContextMenuDialog dialog = createContextMenuDialogForTest(/*isPopup=*/true);

@@ -8802,10 +8802,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"context-menu-popup-style", flag_descriptions::kContextMenuPopupStyleName,
-     flag_descriptions::kContextMenuPopupStyleDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kContextMenuPopupStyle)},
-
     {"grid-tab-switcher-for-tablets",
      flag_descriptions::kGridTabSwitcherForTabletsName,
      flag_descriptions::kGridTabSwitcherForTabletsDescription, kOsAndroid,

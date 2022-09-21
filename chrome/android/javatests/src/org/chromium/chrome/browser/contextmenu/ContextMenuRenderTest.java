@@ -26,7 +26,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -76,7 +75,6 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
         super.setUpTest();
 
         mTestValues = new TestValues();
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, false);
         mTestValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, false);
         FeatureList.setTestValues(mTestValues);
 
@@ -134,7 +132,7 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     @LargeTest
     @Feature({"RenderTest"})
     public void testContextMenuViewWithLink_Popup() throws IOException {
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
+        mTestValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, true);
         doTestContextMenuViewWithLink("context_menu_with_link_popup");
     }
 
@@ -149,7 +147,7 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     @LargeTest
     @Feature({"RenderTest"})
     public void testContextMenuViewWithImageLink_Popup() throws IOException {
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
+        mTestValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, true);
         doTestContextMenuViewWithImageLink("context_menu_with_image_link_popup");
     }
 

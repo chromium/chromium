@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.contextmenu;
 import android.text.TextUtils;
 import android.webkit.URLUtil;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentFeatures;
@@ -54,7 +53,6 @@ public final class ContextMenuUtils {
 
     /** Whether to force using popup style for context menu. */
     static boolean forcePopupStyleEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE)
-                || ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU);
+        return ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU);
     }
 }

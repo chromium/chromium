@@ -1970,9 +1970,6 @@ extern const char kCloseTabSuggestionsDescription[];
 extern const char kCriticalPersistedTabDataName[];
 extern const char kCriticalPersistedTabDataDescription[];
 
-extern const char kContextMenuPopupStyleName[];
-extern const char kContextMenuPopupStyleDescription[];
-
 extern const char kContextualSearchDebugName[];
 extern const char kContextualSearchDebugDescription[];
 

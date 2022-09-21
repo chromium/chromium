@@ -3490,11 +3490,6 @@ const char kCriticalPersistedTabDataDescription[] =
     "A new method of persisting Tab data across restarts has been devised "
     "and implemented. This actives the new approach.";
 
-const char kContextMenuPopupStyleName[] = "Context menu popup style";
-const char kContextMenuPopupStyleDescription[] =
-    "Enable the popup style context menu, where the context menu will be"
-    "anchored around the touch point.";
-
 const char kContextualSearchDebugName[] = "Contextual Search debug";
 const char kContextualSearchDebugDescription[] =
     "Enables internal debugging of Contextual Search behavior on the client "

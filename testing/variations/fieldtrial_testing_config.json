@@ -4150,7 +4150,6 @@
                         "DragAndDropMovementThresholdDipParam": "60"
                     },
                     "enable_features": [
-                        "ContextMenuPopupStyle",
                         "TouchDragAndContextMenu"
                     ]
                 }
