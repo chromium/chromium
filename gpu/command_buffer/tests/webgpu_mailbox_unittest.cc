@@ -436,13 +436,16 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
 
 // Test that Associate and Dissociate mailbox may be used after the device is
 // destroyed. The test should not crash or produce unexpected validation errors.
-TEST_P(WebGPUMailboxTest,
-       DISABLED_AssociateDissociateMailboxAfterDeviceDestroy) {
+TEST_P(WebGPUMailboxTest, AssociateDissociateMailboxAfterDeviceDestroy) {
   if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
     LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
+    return;
+  }
+  if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
+    LOG(ERROR) << "Test skipped due to crbug.com/1359106.";
     return;
   }
 
@@ -469,13 +472,17 @@ TEST_P(WebGPUMailboxTest,
 
 // Test that ReserveTexture may be used after the device is destroyed.
 // The test should not crash or produce unexpected validation errors.
-TEST_P(WebGPUMailboxTest, DISABLED_ReserveTextureAfterDeviceDestroy) {
+TEST_P(WebGPUMailboxTest, ReserveTextureAfterDeviceDestroy) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
   }
   if (!WebGPUSharedImageSupported()) {
     LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
+    return;
+  }
+  if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
+    LOG(ERROR) << "Test skipped due to crbug.com/1359106.";
     return;
   }
 
@@ -502,12 +509,16 @@ TEST_P(WebGPUMailboxTest, DISABLED_ReserveTextureAfterDeviceDestroy) {
 
 // Test that DissociateMailbox may be used after the device is destroyed.
 // The test should not crash or produce unexpected validation errors.
-TEST_P(WebGPUMailboxTest, DISABLED_DissociateMailboxAfterDeviceDestroy) {
+TEST_P(WebGPUMailboxTest, DissociateMailboxAfterDeviceDestroy) {
   if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
     LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
+    return;
+  }
+  if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
+    LOG(ERROR) << "Test skipped due to crbug.com/1359106.";
     return;
   }
 
@@ -535,13 +546,16 @@ TEST_P(WebGPUMailboxTest, DISABLED_DissociateMailboxAfterDeviceDestroy) {
 // Test that DissociateMailboxForPresentAfterDeviceDestroy may be used after the
 // device is destroyed. The test should not crash or produce unexpected
 // validation errors.
-TEST_P(WebGPUMailboxTest,
-       DISABLED_DissociateMailboxForPresentAfterDeviceDestroy) {
+TEST_P(WebGPUMailboxTest, DissociateMailboxForPresentAfterDeviceDestroy) {
   if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
     LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
+    return;
+  }
+  if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
+    LOG(ERROR) << "Test skipped due to crbug.com/1359106.";
     return;
   }
 
@@ -570,12 +584,16 @@ TEST_P(WebGPUMailboxTest,
 
 // Test that DissociateMailbox may be used after the texture is destroyed.
 // The test should not crash or produce unexpected validation errors.
-TEST_P(WebGPUMailboxTest, DISABLED_DissociateMailboxAfterTextureDestroy) {
+TEST_P(WebGPUMailboxTest, DissociateMailboxAfterTextureDestroy) {
   if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
     LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
+    return;
+  }
+  if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
+    LOG(ERROR) << "Test skipped due to crbug.com/1359106.";
     return;
   }
 
@@ -602,13 +620,16 @@ TEST_P(WebGPUMailboxTest, DISABLED_DissociateMailboxAfterTextureDestroy) {
 
 // Test that DissociateMailboxForPresent may be used after the texture is
 // destroyed. The test should not crash or produce unexpected validation errors.
-TEST_P(WebGPUMailboxTest,
-       DISABLED_DissociateMailboxForPresentAfterTextureDestroy) {
+TEST_P(WebGPUMailboxTest, DissociateMailboxForPresentAfterTextureDestroy) {
   if (!initialized_) {
     return;
   }
   if (!WebGPUSharedImageSupported()) {
     LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
+    return;
+  }
+  if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
+    LOG(ERROR) << "Test skipped due to crbug.com/1359106.";
     return;
   }
 

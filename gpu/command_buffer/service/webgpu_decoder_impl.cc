@@ -84,6 +84,34 @@ WGPUAdapterType PowerPreferenceToDawnAdapterType(
   }
 }
 
+// Helper class to make a scoped variable that creates an error scope to ignore
+// validation errors on a device.
+class IgnoreValidationErrorsScope {
+ public:
+  explicit IgnoreValidationErrorsScope(const DawnProcTable& procs,
+                                       WGPUDevice device)
+      : procs_(procs), device_(device) {
+    procs_.devicePushErrorScope(device_, WGPUErrorFilter_Validation);
+    procs_.deviceReference(device_);
+  }
+  ~IgnoreValidationErrorsScope() {
+    procs_.devicePopErrorScope(
+        device_, [](WGPUErrorType, const char*, void*) {}, nullptr);
+    procs_.deviceRelease(device_);
+  }
+
+  IgnoreValidationErrorsScope(const IgnoreValidationErrorsScope&) = delete;
+  IgnoreValidationErrorsScope(IgnoreValidationErrorsScope&&) = delete;
+  IgnoreValidationErrorsScope& operator=(const IgnoreValidationErrorsScope&) =
+      delete;
+  IgnoreValidationErrorsScope& operator=(IgnoreValidationErrorsScope&&) =
+      delete;
+
+ private:
+  const DawnProcTable& procs_;
+  WGPUDevice device_;
+};
+
 }  // namespace
 
 class WebGPUDecoderImpl final : public WebGPUDecoder {
@@ -466,6 +494,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       }
 
       const bool is_initialized = representation->IsCleared();
+      auto ignore_validation_errors =
+          IgnoreValidationErrorsScope(procs, device);
       auto result =
           base::WrapUnique(new SharedImageRepresentationAndAccessSkiaFallback(
               std::move(shared_context_state), std::move(representation), procs,
@@ -477,6 +507,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     }
 
     ~SharedImageRepresentationAndAccessSkiaFallback() override {
+      auto ignore_validation_errors =
+          IgnoreValidationErrorsScope(procs_, device_);
       // If we have write access, flush any writes by uploading
       // into the SkSurface.
       if ((usage_ & kAllowedWritableMailboxTextureUsages) != 0) {
@@ -1705,6 +1737,7 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
     // will be needed to make the texture black in the destroyed case.
     // TODO(crbug.com/1242712): Use the C++ WebGPU API.
     const auto& procs = dawn::native::GetProcs();
+    auto ignore_validation_errors = IgnoreValidationErrorsScope(procs, device);
     WGPUTextureView view = procs.textureCreateView(texture, nullptr);
 
     WGPURenderPassColorAttachment color_attachment = {};
