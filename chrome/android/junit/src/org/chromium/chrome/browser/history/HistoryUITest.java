@@ -715,6 +715,23 @@ public class HistoryUITest {
         Assert.assertEquals(3, headerGroup.size());
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HISTORY_JOURNEYS)
+    public void testJourneysDisabledByPolicy() {
+        doReturn(false).when(mPrefService).getBoolean(HistoryManager.HISTORY_CLUSTERS_VISIBLE_PREF);
+        doReturn(true)
+                .when(mPrefService)
+                .isManagedPreference(HistoryManager.HISTORY_CLUSTERS_VISIBLE_PREF);
+
+        mHistoryManager = new HistoryManager(mActivity, true, mSnackbarManager, false,
+                /* Supplier<Tab>= */ null, false, null, mHistoryProvider);
+
+        Assert.assertNull(mHistoryManager.getView().findViewById(R.id.history_toggle_tab_layout));
+        Assert.assertNull(
+                mHistoryManager.getToolbarForTests().getMenu().findItem(R.id.optout_menu_id));
+    }
+
     private void toggleItemSelection(int position) {
         final SelectableItemView<HistoryItem> itemView = getItemView(position);
         itemView.performLongClick();

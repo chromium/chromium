@@ -76,6 +76,7 @@
 #include "components/enterprise/content/pref_names.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/history/core/common/pref_names.h"
+#include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/network_time/network_time_pref_names.h"
@@ -131,7 +132,6 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/policy/local_sync_policy_handler.h"
 #include "chrome/browser/policy/managed_account_policy_handler.h"
-#include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/media_router/common/pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -260,6 +260,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   },
   { key::kUrlKeyedAnonymizedDataCollectionEnabled,
     unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kHistoryClustersVisible,
+    history_clusters::prefs::kVisible,
     base::Value::Type::BOOLEAN },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
@@ -444,9 +447,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
   { key::kHideWebStoreIcon,
     prefs::kHideWebStoreIcon,
-    base::Value::Type::BOOLEAN },
-  { key::kHistoryClustersVisible,
-    history_clusters::prefs::kVisible,
     base::Value::Type::BOOLEAN },
   { key::kHomepageIsNewTabPage,
     prefs::kHomePageIsNewTabPage,

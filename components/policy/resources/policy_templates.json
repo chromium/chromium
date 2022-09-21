@@ -2160,7 +2160,7 @@
       'owners': ['file://components/history_clusters/OWNERS', 'mahmadi@chromium.org', 'chrome-journeys@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:97-', 'chrome_os:97-'],
+      'supported_on': ['chrome.*:97-', 'chrome_os:97-', 'android:107-'],
       'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
