@@ -25419,7 +25419,7 @@
     {
       'name': 'DeviceLoginScreenContextAwareAccessSignalsAllowlist',
       'owners': ['lmasopust@google.com', 'rodmartin@google.com', 'cbe-device-trust-eng@google.com'],
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:108-'],
       'device_only': True,
       'type': 'list',
       'schema': {
