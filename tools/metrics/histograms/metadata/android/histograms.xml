@@ -1703,7 +1703,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.FontLookup.FetchFontName" enum="FetchFontName"
-    expires_after="2022-10-30">
+    expires_after="2022-09-20">
+  <obsolete>
+    Removed 09/2022. No longer needed.
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -1714,7 +1717,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.FontLookup.FetchFontResult" enum="FetchFontResult"
-    expires_after="2023-01-01">
+    expires_after="2022-09-20">
+  <obsolete>
+    Removed 09/2022. No longer needed.
+  </obsolete>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -1726,7 +1732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.FontLookup.GmsFontRequest.Time" units="ms"
-    expires_after="2023-01-01">
+    expires_after="2023-03-19">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
