@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,6 +69,11 @@ const gfx::Size kDefaultModeSize(kDefaultMode.hdisplay, kDefaultMode.vdisplay);
 const gfx::Size kOverlaySize(kDefaultMode.hdisplay / 2,
                              kDefaultMode.vdisplay / 2);
 const gfx::SizeF kDefaultModeSizeF(1.0, 1.0);
+
+const std::string kGpuCrashLogTimeout =
+    "Failed to modeset within " +
+    base::NumberToString(ui::kWaitForModesetTimeout.InSeconds()) +
+    " s of the first page flip failure. Crashing GPU process.";
 
 }  // namespace
 
@@ -885,13 +891,9 @@ TEST_F(HardwareDisplayControllerTest, FailPageFlippingWithNoSavingModeset) {
 
   // Since no modeset event was detected, death occurs after
   // |kWaitForModesetTimeout| seconds.
-  const std::string gpu_crash_log =
-      "Failed to modeset within " +
-      base::NumberToString(ui::kWaitForModesetTimeout.InSeconds()) +
-      " s of the first page flip failure. Crashing GPU process. Goodbye.";
   EXPECT_DEATH_IF_SUPPORTED(
       task_environment_.FastForwardBy(ui::kWaitForModesetTimeout),
-      gpu_crash_log);
+      kGpuCrashLogTimeout);
 }
 
 TEST_F(HardwareDisplayControllerTest, FailPageFlippingWithSavingModeset) {
@@ -990,7 +992,173 @@ TEST_F(HardwareDisplayControllerTest, PageFlipWithUnassignablePlanes) {
   // we can't allocate any planes, we avoid sending bad commits to the
   // drivers.
   EXPECT_EQ(0, drm_->get_page_flip_call_count());
-  EXPECT_EQ(gfx::SwapResult::SWAP_FAILED, last_swap_result_);
+  EXPECT_EQ(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS, last_swap_result_);
+}
+
+TEST_F(HardwareDisplayControllerTest, SomePlaneAssignmentFailuresAreOk) {
+  ui::DrmOverlayPlaneList modeset_planes;
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
+
+  constexpr int kUnassignableFlips = 3;
+
+  for (size_t i = 0; i < kUnassignableFlips; ++i) {
+    {
+      std::vector<ui::DrmOverlayPlane> page_flip_planes;
+      page_flip_planes.emplace_back(
+          CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+          gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+      page_flip_planes.emplace_back(
+          CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+          gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+      page_flip_planes.emplace_back(
+          CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+          gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+      SchedulePageFlip(std::move(page_flip_planes));
+    }
+    drm_->RunCallbacks();
+
+    EXPECT_EQ(0, successful_page_flips_count_);
+    EXPECT_EQ(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS, last_swap_result_);
+  }
+
+  for (size_t i = 0; i < ui::kPageFlipWatcherHistorySize - kUnassignableFlips;
+       ++i) {
+    drm_->set_commit_expectation(true);
+    {
+      std::vector<ui::DrmOverlayPlane> page_flip_planes;
+      page_flip_planes.emplace_back(
+          CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+          gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+      SchedulePageFlip(std::move(page_flip_planes));
+    }
+    drm_->RunCallbacks();
+
+    // +1 because we're comparing an index with a count.
+    EXPECT_EQ(i + 1, static_cast<size_t>(successful_page_flips_count_));
+    EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
+  }
+
+  // We should still be alive since we didn't submit too many unassignable page
+  // flips.
+  task_environment_.FastForwardBy(ui::kWaitForModesetTimeout);
+}
+
+TEST_F(HardwareDisplayControllerTest, CrashOnTooManyFlakyPlaneAssignments) {
+  ui::DrmOverlayPlaneList modeset_planes;
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
+
+  auto do_successful_flip = [&]() {
+    {
+      std::vector<ui::DrmOverlayPlane> page_flip_planes;
+      page_flip_planes.emplace_back(
+          CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+          gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+      SchedulePageFlip(std::move(page_flip_planes));
+    }
+    drm_->RunCallbacks();
+
+    EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
+    EXPECT_FALSE(last_presentation_feedback_.failed());
+  };
+
+  auto do_failed_flip = [&]() {
+    {
+      std::vector<ui::DrmOverlayPlane> page_flip_planes;
+      page_flip_planes.emplace_back(
+          CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+          gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+      page_flip_planes.emplace_back(
+          CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+          gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+      page_flip_planes.emplace_back(
+          CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+          gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+      SchedulePageFlip(std::move(page_flip_planes));
+    }
+    drm_->RunCallbacks();
+
+    EXPECT_EQ(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS, last_swap_result_);
+    EXPECT_TRUE(last_presentation_feedback_.failed());
+  };
+
+  auto do_flake = [&]() {
+    do_successful_flip();
+    do_failed_flip();
+  };
+
+  auto flakes = ui::kPlaneAssignmentFlakeThreshold;
+  ASSERT_GT(ui::kPageFlipWatcherHistorySize, flakes)
+      << "Page flip history is too small to account for the maximum number of "
+         "flakes";
+  auto successes = ui::kPageFlipWatcherHistorySize - (2 * flakes);
+
+  for (size_t i = 0; i < successes; ++i)
+    do_successful_flip();
+  for (size_t i = 0; i < flakes; ++i)
+    do_flake();
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      do_flake(),
+      base::StringPrintf("Plane assignment has flaked %d times, but the "
+                         "threshold is %d. Crashing the GPU process.",
+                         flakes, ui::kPlaneAssignmentFlakeThreshold));
+}
+
+TEST_F(HardwareDisplayControllerTest, CrashOnTooManyFailedPlaneAssignments) {
+  ui::DrmOverlayPlaneList modeset_planes;
+  modeset_planes.emplace_back(CreateBuffer(), nullptr);
+  ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
+
+  auto do_successful_flip = [&]() {
+    {
+      std::vector<ui::DrmOverlayPlane> page_flip_planes;
+      page_flip_planes.emplace_back(
+          CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+          gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+      SchedulePageFlip(std::move(page_flip_planes));
+    }
+    drm_->RunCallbacks();
+
+    EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
+    EXPECT_FALSE(last_presentation_feedback_.failed());
+  };
+
+  auto do_failed_flip = [&]() {
+    {
+      std::vector<ui::DrmOverlayPlane> page_flip_planes;
+      page_flip_planes.emplace_back(
+          CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+          gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+      page_flip_planes.emplace_back(
+          CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+          gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+      page_flip_planes.emplace_back(
+          CreateBuffer(), 1, gfx::OVERLAY_TRANSFORM_NONE,
+          gfx::Rect(kDefaultModeSize), gfx::RectF(0, 0, 1, 1), true, nullptr);
+      SchedulePageFlip(std::move(page_flip_planes));
+    }
+    drm_->RunCallbacks();
+
+    EXPECT_EQ(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS, last_swap_result_);
+    EXPECT_TRUE(last_presentation_feedback_.failed());
+  };
+
+  auto failures = ui::kPlaneAssignmentMaximumFailures;
+  auto successes = ui::kPageFlipWatcherHistorySize - failures;
+
+  for (size_t i = 0; i < successes; ++i)
+    do_successful_flip();
+  for (size_t i = 0; i < (failures - 1); ++i)
+    do_failed_flip();
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      do_failed_flip(),
+      base::StringPrintf("Plane assignment has failed %d/%d times, but the "
+                         "threshold is %d. Crashing the GPU process.",
+                         failures, ui::kPageFlipWatcherHistorySize,
+                         ui::kPlaneAssignmentMaximumFailures));
 }
 
 TEST_F(HardwareDisplayControllerTest, AddCrtcMidPageFlip) {

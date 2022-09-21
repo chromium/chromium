@@ -179,7 +179,18 @@ void HardwareDisplayController::SchedulePageFlip(
       "Compositing.Display.HardwareDisplayController.SchedulePageFlipResult",
       result);
 
-  if (PageFlipResult::kSuccess != result) {
+  if (PageFlipResult::kFailedPlaneAssignment == result) {
+    watchdog_.CrashOnFailedPlaneAssignment();
+
+    // Plane assignment is usually an intermittent problem that recovers itself
+    // within a few frames. Send back a NAK and hope for the best--the
+    // watchdog will handle things if this problem is persistent.
+    std::move(submission_callback)
+        .Run(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS,
+             /*release_fence=*/gfx::GpuFenceHandle());
+    std::move(presentation_callback).Run(gfx::PresentationFeedback::Failure());
+    return;
+  } else if (PageFlipResult::kFailedCommit == result) {
     for (const auto& plane : plane_list) {
       // If the page flip failed and we see that the buffer has been allocated
       // before the latest modeset, it could mean it was an in-flight buffer
@@ -199,7 +210,7 @@ void HardwareDisplayController::SchedulePageFlip(
 
     // No outdated buffers detected which makes this a true page flip failure.
     // Alert the watchdog.
-    watchdog_.Arm();
+    watchdog_.ArmForFailedCommit();
 
     std::move(submission_callback)
         .Run(gfx::SwapResult::SWAP_FAILED,
@@ -222,6 +233,7 @@ void HardwareDisplayController::SchedulePageFlip(
   std::move(submission_callback)
       .Run(gfx::SwapResult::SWAP_ACK, std::move(release_fence));
 
+  watchdog_.OnSuccessfulPageFlip();
   // Everything was submitted successfully, wait for asynchronous completion.
   page_flip_request->TakeCallback(
       base::BindOnce(&CompletePageFlip, weak_ptr_factory_.GetWeakPtr(),

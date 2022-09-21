@@ -377,7 +377,7 @@ TEST_F(DrmWindowTest, CheckPageflipFailureOnFailedSwap) {
   const std::string gpu_crash_log =
       "Failed to modeset within " +
       base::NumberToString(ui::kWaitForModesetTimeout.InSeconds()) +
-      " s of the first page flip failure. Crashing GPU process. Goodbye.";
+      " s of the first page flip failure. Crashing GPU process.";
   EXPECT_DEATH_IF_SUPPORTED(
       task_environment_.FastForwardBy(ui::kWaitForModesetTimeout),
       gpu_crash_log);
