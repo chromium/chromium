@@ -1,6 +1,5 @@
 <style include="cr-shared-style">
   :host {
-    --ntp-theme-text-color: var(--google-grey-800);
     --ntp-theme-text-shadow: none;
     --ntp-one-google-bar-height: 56px;
     --ntp-search-box-width: 337px;
@@ -20,12 +19,6 @@
   @media (min-width: 672px) {
     :host {
       --ntp-search-box-width: 561px;
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --ntp-theme-text-color: white;
     }
   }
 
@@ -113,7 +106,7 @@
 
   cr-most-visited {
     --most-visited-focus-shadow: var(--ntp-focus-shadow);
-    --most-visited-text-color: var(--ntp-theme-text-color);
+    --most-visited-text-color: var(--color-new-tab-page-most-visited-foreground);
     --most-visited-text-shadow: var(--ntp-theme-text-shadow);
   }
 
@@ -231,7 +224,7 @@
   #backgroundImageAttribution {
     border-radius: 8px;
     bottom: 16px;
-    color: var(--ntp-theme-text-color);
+    color: var(--color-new-tab-page-attribution-foreground);
     line-height: 20px;
     max-width: 50vw;
     padding: 8px;
@@ -271,7 +264,7 @@
     -webkit-mask-image: url(icons/link.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--ntp-theme-text-color);
+    background-color: var(--color-new-tab-page-attribution-foreground);
     height: 16px;
     margin-inline-end: 8px;
     width: 16px;
@@ -303,7 +296,8 @@
   }
 </style>
 <div id="content" style="
-        --ntp-theme-text-color: [[rgbaOrInherit_(theme_.textColor)]];
+        --color-new-tab-page-attribution-foreground: [[rgbaOrInherit_(theme_.textColor)]];
+        --color-new-tab-page-most-visited-foreground: [[rgbaOrInherit_(theme_.textColor)]];
         --ntp-logo-color: [[rgbaOrInherit_(logoColor_)]];">
   <template is="dom-if" if="[[lazyRender_]]">
     <template is="dom-if" if="[[oneGoogleBarEnabled_]]">

@@ -53,6 +53,8 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageLogoUnthemedDark] = {gfx::kGoogleGrey700};
   mixer[kColorNewTabPageLogoUnthemedLight] = {SkColorSetRGB(0xEE, 0xEE, 0xEE)};
 
+  mixer[kColorNewTabPageMostVisitedForeground] = {
+      dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey800};
   if (dark_mode) {
     mixer[kColorNewTabPageMostVisitedTileBackground] = {gfx::kGoogleGrey900};
   } else {
@@ -152,6 +154,8 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
 }
 
 void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
+  mixer[kColorNewTabPageAttributionForeground] = {
+      dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey800};
   mixer[kColorNewTabPageActionButtonBorder] = {dark_mode ? gfx::kGoogleGrey700
                                                          : gfx::kGoogleGrey300};
   mixer[kColorNewTabPageActionButtonBorderHovered] = {

@@ -245,7 +245,8 @@ suite('NewTabPageAppTest', () => {
           0xffff0000 /* red */,
           (await backgroundManager.whenCalled('setBackgroundColor')).value);
       assertStyle(
-          $$(app, '#content')!, '--ntp-theme-text-color', 'rgba(0, 0, 255, 1)');
+          $$(app, '#content')!, '--color-new-tab-page-attribution-foreground',
+          'rgba(0, 0, 255, 1)');
       assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
       assertFalse(await backgroundManager.whenCalled('setShowBackgroundImage'));
       assertStyle($$(app, '#backgroundImageAttribution')!, 'display', 'none');
