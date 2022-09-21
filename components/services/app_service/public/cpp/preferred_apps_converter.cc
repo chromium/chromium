@@ -85,7 +85,7 @@ apps::ConditionPtr ParseValueToCondition(const base::Value& value) {
              << apps::kConditionValuesKey << "\" key with list value.";
     return nullptr;
   }
-  for (auto& condition_value : values->GetListDeprecated()) {
+  for (auto& condition_value : values->GetList()) {
     auto parsed_condition_value = ParseValueToConditionValue(condition_value);
     if (!parsed_condition_value) {
       DVLOG(0) << "Fail to parse condition. Cannot parse condition values";
@@ -105,7 +105,7 @@ apps::IntentFilterPtr ParseValueToIntentFilter(const base::Value* value) {
     return nullptr;
   }
   auto intent_filter = std::make_unique<apps::IntentFilter>();
-  for (auto& condition : value->GetListDeprecated()) {
+  for (auto& condition : value->GetList()) {
     auto parsed_condition = ParseValueToCondition(condition);
     if (!parsed_condition) {
       DVLOG(0) << "Fail to parse intent filter. Cannot parse conditions.";
@@ -162,7 +162,7 @@ PreferredApps ParseValueToPreferredApps(
   }
 
   PreferredApps preferred_apps;
-  for (auto& entry : preferred_apps_list->GetListDeprecated()) {
+  for (auto& entry : preferred_apps_list->GetList()) {
     auto* app_id = entry.FindStringKey(kAppIdKey);
     if (!app_id) {
       DVLOG(0) << "Fail to parse condition value. Cannot find \""
