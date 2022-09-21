@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_select_account_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/hover_list_view.h"
-#include "chrome/browser/ui/views/webauthn/passkey_pill_view.h"
+#include "chrome/browser/ui/views/webauthn/passkey_detail_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
@@ -89,7 +89,7 @@ class AuthenticatorCreatePasskeySheetView
             AuthenticatorRequestSheetView::AutoFocus>
   BuildStepSpecificContent() override {
     return std::make_pair(
-        std::make_unique<PasskeyPillView>(
+        std::make_unique<PasskeyDetailView>(
             static_cast<AuthenticatorCreatePasskeySheetModel*>(model())
                 ->dialog_model()
                 ->user_entity()),

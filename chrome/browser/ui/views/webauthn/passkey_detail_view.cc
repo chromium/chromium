@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/webauthn/passkey_pill_view.h"
+#include "chrome/browser/ui/views/webauthn/passkey_detail_view.h"
 
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -27,16 +27,15 @@ std::u16string GetUserNameForDisplay(
 }
 }  // namespace
 
-PasskeyPillView::PasskeyPillView(
+PasskeyDetailView::PasskeyDetailView(
     const device::PublicKeyCredentialUserEntity& user) {
-  constexpr size_t kVerticalMargin = 14, kHorizontalMargin = 24,
-                   kPillHeight = 63;
+  constexpr size_t kVerticalMargin = 14, kHorizontalMargin = 24, kHeight = 63;
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal);
   layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  layout->SetMinimumCrossAxisSize(kPillHeight);
+  layout->SetMinimumCrossAxisSize(kHeight);
 
   // Force 16px margin between icon and label.
   layout->SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 16));
@@ -57,10 +56,7 @@ PasskeyPillView::PasskeyPillView(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero));
   label->SetElideBehavior(gfx::ELIDE_EMAIL);
-
-  SetBorder(views::CreateThemedRoundedRectBorder(
-      /*thickness=*/1, /*corner_radius=*/16, ui::kColorSeparator));
 }
 
-BEGIN_METADATA(PasskeyPillView, views::View)
+BEGIN_METADATA(PasskeyDetailView, views::View)
 END_METADATA
