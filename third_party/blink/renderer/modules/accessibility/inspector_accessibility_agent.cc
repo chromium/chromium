@@ -44,6 +44,12 @@ namespace AXPropertyNameEnum = protocol::Accessibility::AXPropertyNameEnum;
 namespace {
 
 static const AXID kIDForInspectedNodeWithNoAXNode = 0;
+// Send node updates to the frontend not more often than once within the
+// `kNodeSyncThrottlePeriod` time frame.
+static const base::TimeDelta kNodeSyncThrottlePeriod = base::Milliseconds(250);
+// Interval at which we check if there is a need to schedule visual updates.
+static const base::TimeDelta kVisualUpdateCheckInterval =
+    kNodeSyncThrottlePeriod + base::Milliseconds(10);
 
 void AddHasPopupProperty(ax::mojom::blink::HasPopup has_popup,
                          protocol::Array<AXProperty>& properties) {
@@ -516,11 +522,7 @@ InspectorAccessibilityAgent::InspectorAccessibilityAgent(
     InspectorDOMAgent* dom_agent)
     : inspected_frames_(inspected_frames),
       dom_agent_(dom_agent),
-      enabled_(&agent_state_, /*default_value=*/false),
-      timer_(inspected_frames->Root()->GetDocument()->GetTaskRunner(
-                 TaskType::kInternalInspector),
-             this,
-             &InspectorAccessibilityAgent::RefreshFrontendNodes) {}
+      enabled_(&agent_state_, /*default_value=*/false) {}
 
 Response InspectorAccessibilityAgent::getPartialAXTree(
     Maybe<int> dom_node_id,
@@ -1136,6 +1138,11 @@ void InspectorAccessibilityAgent::CompleteQuery(AXQuery& query) {
 }
 
 void InspectorAccessibilityAgent::AXReadyCallback(Document& document) {
+  ProcessPendingQueries(document);
+  ProcessPendingDirtyNodes(document);
+}
+
+void InspectorAccessibilityAgent::ProcessPendingQueries(Document& document) {
   auto it = queries_.find(&document);
   if (it == queries_.end())
     return;
@@ -1144,28 +1151,58 @@ void InspectorAccessibilityAgent::AXReadyCallback(Document& document) {
   queries_.erase(&document);
 }
 
-void InspectorAccessibilityAgent::RefreshFrontendNodes(TimerBase*) {
-  if (dirty_nodes_.empty())
+void InspectorAccessibilityAgent::ProcessPendingDirtyNodes(Document& document) {
+  auto now = base::Time::Now();
+
+  if (!last_sync_times_.Contains(&document))
+    last_sync_times_.insert(&document, now);
+  else if (now - last_sync_times_.at(&document) < kNodeSyncThrottlePeriod)
     return;
-  auto nodes =
-      std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
+  else
+    last_sync_times_.at(&document) = now;
+
+  if (!dirty_nodes_.Contains(&document))
+    return;
   // Sometimes, computing properties for an object while serializing will
   // mark other objects dirty. This makes us re-enter this function.
   // To make this benign, we use a copy of dirty_nodes_ when iterating.
-  HeapHashSet<WeakMember<AXObject>> dirty_nodes_copy;
-  dirty_nodes_copy.swap(dirty_nodes_);
-  for (Document* document : document_to_context_map_.Keys())
-    document->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
-  for (AXObject* changed_node : dirty_nodes_copy) {
+  Member<HeapHashSet<WeakMember<AXObject>>> dirty_nodes =
+      dirty_nodes_.Take(&document);
+  auto nodes =
+      std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
+
+  for (AXObject* changed_node : *dirty_nodes) {
     if (!changed_node->IsDetached())
       nodes->push_back(BuildProtocolAXNodeForAXObject(*changed_node));
   }
   GetFrontend()->nodesUpdated(std::move(nodes));
 }
 
-void InspectorAccessibilityAgent::ScheduleAXChangeNotification() {
-  if (!timer_.IsActive())
-    timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+void InspectorAccessibilityAgent::ScheduleVisualUpdateIfNeeded(
+    TimerBase*,
+    Document* document) {
+  DCHECK(document);
+
+  if (!dirty_nodes_.Contains(document))
+    return;
+
+  if (document->HasAXObjectCache())
+    document->ExistingAXObjectCache()->ScheduleVisualUpdate(*document);
+}
+
+void InspectorAccessibilityAgent::ScheduleAXChangeNotification(
+    Document* document) {
+  DCHECK(document);
+  if (!timers_.Contains(document)) {
+    timers_.insert(
+        document,
+        MakeGarbageCollected<DisallowNewWrapper<DocumentTimer>>(
+            document, this,
+            &InspectorAccessibilityAgent::ScheduleVisualUpdateIfNeeded));
+  }
+  DisallowNewWrapper<DocumentTimer>* timer = timers_.at(document);
+  if (!timer->Value().IsActive())
+    timer->Value().StartOneShot(kVisualUpdateCheckInterval, FROM_HERE);
 }
 
 void InspectorAccessibilityAgent::AXEventFired(AXObject* ax_object,
@@ -1185,15 +1222,21 @@ void InspectorAccessibilityAgent::AXEventFired(AXObject* ax_object,
       break;
     default:
       MarkAXObjectDirty(ax_object);
-      ScheduleAXChangeNotification();
+      ScheduleAXChangeNotification(ax_object->GetDocument());
       break;
   }
 }
 
 bool InspectorAccessibilityAgent::MarkAXObjectDirty(AXObject* ax_object) {
-  if (nodes_requested_.Contains(ax_object->AXObjectID()))
-    return dirty_nodes_.insert(ax_object).is_new_entry;
-  return false;
+  if (!nodes_requested_.Contains(ax_object->AXObjectID()))
+    return false;
+  Document* document = ax_object->GetDocument();
+  auto inserted = dirty_nodes_.insert(document, nullptr);
+  if (inserted.is_new_entry) {
+    inserted.stored_value->value =
+        MakeGarbageCollected<HeapHashSet<WeakMember<AXObject>>>();
+  }
+  return inserted.stored_value->value->insert(ax_object).is_new_entry;
 }
 
 void InspectorAccessibilityAgent::AXObjectModified(AXObject* ax_object,
@@ -1217,7 +1260,7 @@ void InspectorAccessibilityAgent::AXObjectModified(AXObject* ax_object,
   } else {
     MarkAXObjectDirty(ax_object);
   }
-  ScheduleAXChangeNotification();
+  ScheduleAXChangeNotification(ax_object->GetDocument());
 }
 
 void InspectorAccessibilityAgent::EnableAndReset() {
@@ -1291,8 +1334,9 @@ void InspectorAccessibilityAgent::Trace(Visitor* visitor) const {
   visitor->Trace(dom_agent_);
   visitor->Trace(document_to_context_map_);
   visitor->Trace(dirty_nodes_);
-  visitor->Trace(timer_);
+  visitor->Trace(timers_);
   visitor->Trace(queries_);
+  visitor->Trace(last_sync_times_);
   InspectorBaseAgent::Trace(visitor);
 }
 

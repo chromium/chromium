@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 
 namespace blink {
@@ -91,7 +92,7 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   // the a11y tree and fetch object properties.
   void AXReadyCallback(Document& document);
 
-  void RefreshFrontendNodes(TimerBase*);
+  void ScheduleVisualUpdateIfNeeded(TimerBase*, Document*);
 
  private:
   // Used to store the queries received by queryAXTree. The queries are
@@ -105,6 +106,56 @@ class MODULES_EXPORT InspectorAccessibilityAgent
     protocol::Maybe<String> accessible_name;
     protocol::Maybe<String> role;
     std::unique_ptr<QueryAXTreeCallback> callback;
+  };
+
+  // Timer bound to a Document and an InspectorAccessibilityAgent instance,
+  // similar to HeapTaskRunnerTimer
+  // (third_party/blink/renderer/platform/timer.h).
+  class DocumentTimer final : public TimerBase {
+    DISALLOW_NEW();
+
+   public:
+    using TimerFiredFunction = void (InspectorAccessibilityAgent::*)(TimerBase*,
+                                                                     Document*);
+
+    explicit DocumentTimer(Document* document,
+                           InspectorAccessibilityAgent* agent,
+                           TimerFiredFunction function)
+        : TimerBase(document->GetTaskRunner(TaskType::kInternalInspector)),
+          agent_(agent),
+          function_(function),
+          document_(document) {}
+
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(document_);
+      visitor->Trace(agent_);
+    }
+
+    ~DocumentTimer() final = default;
+
+   protected:
+    void Fired() override { (agent_->*function_)(this, document_); }
+
+    base::OnceClosure BindTimerClosure() final {
+      return WTF::BindOnce(&DocumentTimer::RunInternalTrampoline,
+                           WTF::Unretained(this),
+                           WrapWeakPersistent(agent_.Get()),
+                           WrapWeakPersistent(document_.Get()));
+    }
+
+   private:
+    static void RunInternalTrampoline(DocumentTimer* timer,
+                                      InspectorAccessibilityAgent* agent,
+                                      Document* document) {
+      // If both the document and the agent have been garbage collected,
+      // the timer does not fire.
+      if (agent && document)
+        timer->RunInternal();
+    }
+
+    WeakMember<InspectorAccessibilityAgent> agent_;
+    TimerFiredFunction function_;
+    WeakMember<Document> document_;
   };
 
   void CompleteQuery(AXQuery&);
@@ -135,19 +186,28 @@ class MODULES_EXPORT InspectorAccessibilityAgent
                    std::unique_ptr<protocol::Array<AXNode>>& nodes,
                    AXObjectCacheImpl&) const;
   LocalFrame* FrameFromIdOrRoot(const protocol::Maybe<String>& frame_id);
-  void ScheduleAXChangeNotification();
+  void ScheduleAXChangeNotification(Document* document);
   void RetainAXContextForDocument(Document* document);
+  void ProcessPendingQueries(Document&);
+  void ProcessPendingDirtyNodes(Document&);
 
   Member<InspectedFrames> inspected_frames_;
   Member<InspectorDOMAgent> dom_agent_;
   InspectorAgentState::Boolean enabled_;
   HashSet<AXID> nodes_requested_;
-  HeapHashSet<WeakMember<AXObject>> dirty_nodes_;
-
+  // The collected dirty AXObjects that should be refreshed in the AX tree view
+  // in DevTools.
+  HeapHashMap<WeakMember<Document>, Member<HeapHashSet<WeakMember<AXObject>>>>
+      dirty_nodes_;
+  // Time when every document was synced.
+  HeapHashMap<WeakMember<Document>, base::Time> last_sync_times_;
   // The agent needs to keep AXContext because it enables caching of a11y nodes.
   HeapHashMap<WeakMember<Document>, std::unique_ptr<AXContext>>
       document_to_context_map_;
-  HeapTaskRunnerTimer<InspectorAccessibilityAgent> timer_;
+  // The agent keeps timers per document to make sure throttling of updates
+  // happens per document.
+  HeapHashMap<WeakMember<Document>, Member<DisallowNewWrapper<DocumentTimer>>>
+      timers_;
 
   HeapHashMap<WeakMember<Document>, Vector<AXQuery>> queries_;
 };

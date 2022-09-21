@@ -211,6 +211,9 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void MarkAllImageAXObjectsDirty(
       ax::mojom::blink::Action event_from_action) = 0;
 
+  // Ensure that a call to ProcessDeferredAccessibilityEvents() will occur soon.
+  virtual void ScheduleVisualUpdate(Document& document) = 0;
+
  protected:
   friend class ScopedBlinkAXEventIntent;
   FRIEND_TEST_ALL_PREFIXES(ScopedBlinkAXEventIntentTest, SingleIntent);

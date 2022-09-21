@@ -94,7 +94,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void RemoveInspectorAgent(InspectorAccessibilityAgent*);
 
   // Ensure that a call to ProcessDeferredAccessibilityEvents() will occur soon.
-  void ScheduleVisualUpdate(Document& document);
+  void ScheduleVisualUpdate(Document& document) override;
 
   void Dispose() override;
 
