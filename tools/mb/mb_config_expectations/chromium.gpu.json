@@ -53,7 +53,7 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "GPU Mac Builder (reclient shadow)": {

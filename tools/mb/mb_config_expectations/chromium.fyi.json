@@ -950,7 +950,7 @@
       "target_cpu": "x64",
       "target_os": "ios",
       "use_clang_coverage": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "ios-simulator-cr-recipe": {

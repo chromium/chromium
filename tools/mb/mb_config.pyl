@@ -233,7 +233,7 @@
       'Dawn Linux x64 DEPS Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
 
       'Dawn Mac x64 Builder': 'dawn_tests_release_bot_dcheck_always_on_alloc_none_reclient',
-      'Dawn Mac x64 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on_alloc_none',
+      'Dawn Mac x64 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on_alloc_none_reclient',
 
       'Dawn Win10 x64 ASAN Release': 'dawn_tests_asan_release_bot_dcheck_always_on_reclient',
       'Dawn Win10 x64 Builder': 'dawn_tests_release_bot_dcheck_always_on_reclient',
@@ -420,7 +420,7 @@
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64',
       'ios-reclient': 'ios_simulator_debug_static_bot_xctest_reclient',
-      'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest',
+      'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest_reclient',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-cronet': 'ios_cronet_xctest_reclient',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest',
@@ -564,7 +564,7 @@
       'GPU Linux Builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'GPU Linux Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'GPU Mac Builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
-      'GPU Mac Builder (dbg)': 'gpu_tests_debug_bot',
+      'GPU Mac Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'GPU Mac Builder (reclient shadow)': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'GPU Win x64 Builder': 'gpu_tests_release_bot_dcheck_always_on_resource_allowlisting_reclient',
       'GPU Win x64 Builder (dbg)': 'gpu_tests_debug_bot_reclient',
@@ -2324,8 +2324,8 @@
       'release_bot', 'clang', 'use_clang_coverage', 'no_symbols',
     ],
 
-    'clang_code_coverage_ios_xctest': [
-      'use_clang_coverage', 'debug_static_bot', 'x64', 'ios', 'xctest', 'ios_disable_xcode_project_generation',
+    'clang_code_coverage_ios_xctest_reclient': [
+      'use_clang_coverage', 'debug_static_bot_reclient', 'x64', 'ios', 'xctest', 'ios_disable_xcode_project_generation',
     ],
 
     'clang_code_coverage_reclient': [
@@ -2451,10 +2451,6 @@
 
     # https://crbug.com/dawn/1200: temporarily avoid using partition alloc
     # while we investigate a crash in the mac AMD shader compiler.
-    'dawn_tests_release_bot_dcheck_always_on_alloc_none': [
-      'dawn_tests', 'release_trybot_minimal_symbols', 'padisabled',
-    ],
-
     'dawn_tests_release_bot_dcheck_always_on_alloc_none_reclient': [
       'dawn_tests', 'release_trybot_minimal_symbols_reclient', 'padisabled',
     ],

@@ -6,7 +6,7 @@
 load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/structs.star", "structs")
@@ -157,8 +157,6 @@ ci.gpu.mac_builder(
     ),
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.gpu.windows_builder(

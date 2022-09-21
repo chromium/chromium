@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "reclient")
+load("//lib/builders.star", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -238,8 +238,6 @@ ci.gpu.mac_builder(
         short_name = "x64",
     ),
     cq_mirrors_console_view = "mirrors",
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 # Note that the Mac testers are all thin Linux VMs, triggering jobs on the
