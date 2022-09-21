@@ -36,6 +36,7 @@ namespace blink {
 
 class DataTransfer;
 class EventDispatcher;
+class LocalDOMWindow;
 class MouseEventInit;
 class WebPointerProperties;
 
@@ -71,7 +72,8 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
              const MouseEventInit*,
              base::TimeTicks platform_time_stamp = base::TimeTicks::Now(),
              SyntheticEventType = kRealOrIndistinguishable,
-             WebMenuSourceType = kMenuSourceNone);
+             WebMenuSourceType = kMenuSourceNone,
+             LocalDOMWindow* fallback_dom_window = nullptr);
   MouseEvent();
 
   static uint16_t WebInputEventModifiersToButtons(unsigned modifiers);
@@ -166,14 +168,16 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
 
   WebMenuSourceType GetMenuSourceType() const { return menu_source_type_; }
 
-  // Page point in "absolute" coordinates (i.e. post-zoomed, page-relative
+  // Page point in layout coordinates (i.e. post-zoomed, page-relative
   // coords, usable with LayoutObject::absoluteToLocal) relative to view(),
   // i.e. the local frame.
   const gfx::PointF& AbsoluteLocation() const { return absolute_location_; }
 
   DispatchEventResult DispatchEvent(EventDispatcher&) override;
 
-  void InitCoordinates(const double client_x, const double client_y);
+  void InitCoordinates(const double client_x,
+                       const double client_y,
+                       const LocalDOMWindow* fallback_dom_window = nullptr);
 
   void Trace(Visitor*) const override;
 
