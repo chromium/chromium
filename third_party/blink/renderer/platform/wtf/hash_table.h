@@ -715,7 +715,7 @@ class HashTable final
                                              Traits,
                                              KeyTraits,
                                              Allocator>,
-                                   Allocator::kIsGarbageCollected> {
+                                   !Allocator::kIsGarbageCollected> {
   DISALLOW_NEW();
 
  public:

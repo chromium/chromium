@@ -53,9 +53,11 @@ template <typename T,
           wtf_size_t inlineCapacity = 0,
           typename Allocator = PartitionAllocator>
 class Deque
-    : public ConditionalDestructor<Deque<T, INLINE_CAPACITY, Allocator>,
-                                   !VectorTraits<T>::kNeedsDestruction &&
-                                       Allocator::kIsGarbageCollected> {
+    : public ConditionalDestructor<
+          Deque<T, INLINE_CAPACITY, Allocator>,
+          VectorNeedsDestructor<T,
+                                INLINE_CAPACITY,
+                                Allocator::kIsGarbageCollected>::value> {
   USE_ALLOCATOR(Deque, Allocator);
 
   static_assert((inlineCapacity == 0) || !Allocator::kIsGarbageCollected,

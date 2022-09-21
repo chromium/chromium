@@ -36,7 +36,7 @@ template <typename T, typename Traits = WTF::VectorTraits<T>>
 class HeapVectorBacking final
     : public GarbageCollected<HeapVectorBacking<T, Traits>>,
       public WTF::ConditionalDestructor<HeapVectorBacking<T, Traits>,
-                                        !Traits::kNeedsDestruction> {
+                                        Traits::kNeedsDestruction> {
   using ClassType = HeapVectorBacking<T, Traits>;
 
  public:

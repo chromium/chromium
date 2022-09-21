@@ -1036,16 +1036,39 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
 // allocate an iterator on stack (as a local variable), and you should not
 // store iterators in another heap object.
 
+// In general, Vector requires destruction.
+template <typename T, wtf_size_t inlineCapacity, bool isGced>
+struct VectorNeedsDestructor {
+  static constexpr bool value = true;
+};
+
+// For garbage collection, Vector does not require destruction when there's no
+// inline capacity.
+template <typename T>
+struct VectorNeedsDestructor<T, 0, true> {
+  static constexpr bool value = false;
+};
+
+// For garbage collection, a Vector with inline capacity conditionally requires
+// destruction based on whether the element type itself requires destruction.
+template <typename T, wtf_size_t inlineCapacity>
+struct VectorNeedsDestructor<T, inlineCapacity, true> {
+  // T cannot be forward declared in the case with inline capacity. We still
+  // hide the trait usage behind instantiation to allow forward declarations in
+  // other cases. We cannot use VectorTraits<T>::kNeedsDestruction because
+  // there's use cases that use inner classes and only specify the trait
+  // specialization after the first use of Vector.
+  static constexpr bool value = !std::is_trivially_destructible_v<T>;
+};
+
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 class Vector
     : private VectorBuffer<T, INLINE_CAPACITY, Allocator>,
-      // ConditionalDestructor could in addition check for
-      // VectorTraits<T>::kNeedsDestruction which requires that the complete
-      // type is available though. Unfortunately, there's some use cases that
-      // use Vector with foward-declared types.
-      public ConditionalDestructor<Vector<T, INLINE_CAPACITY, Allocator>,
-                                   (INLINE_CAPACITY == 0) &&
-                                       Allocator::kIsGarbageCollected> {
+      public ConditionalDestructor<
+          Vector<T, INLINE_CAPACITY, Allocator>,
+          VectorNeedsDestructor<T,
+                                INLINE_CAPACITY,
+                                Allocator::kIsGarbageCollected>::value> {
   USE_ALLOCATOR(Vector, Allocator);
   using Base = VectorBuffer<T, INLINE_CAPACITY, Allocator>;
   using TypeOperations = VectorTypeOperations<T, Allocator>;

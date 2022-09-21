@@ -28,7 +28,7 @@ class HeapHashTableBacking final
     : public GarbageCollected<HeapHashTableBacking<Table>>,
       public WTF::ConditionalDestructor<
           HeapHashTableBacking<Table>,
-          std::is_trivially_destructible<typename Table::ValueType>::value> {
+          !std::is_trivially_destructible<typename Table::ValueType>::value> {
   using ClassType = HeapHashTableBacking<Table>;
   using ValueType = typename Table::ValueType;
 
