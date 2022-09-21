@@ -970,6 +970,15 @@ INSTANTIATE_TEST_SUITE_P(
                           std::vector<ino_t>({kInode1, kInode2}),
                           std::vector<std::string>({kExampleUrl1,
                                                     kExampleUrl2}),
+                          std::vector<std::string>({kFilePath1, kFilePath2})),
+        FilesTransferInfo(policy::DlpFilesController::FileAction::kUpload,
+                          std::vector<ino_t>({kInode1}),
+                          std::vector<std::string>({kExampleUrl1}),
+                          std::vector<std::string>({kFilePath1})),
+        FilesTransferInfo(policy::DlpFilesController::FileAction::kUpload,
+                          std::vector<ino_t>({kInode1, kInode2}),
+                          std::vector<std::string>({kExampleUrl1,
+                                                    kExampleUrl2}),
                           std::vector<std::string>({kFilePath1, kFilePath2}))));
 
 TEST_P(DlpFilesWarningDialogContentTest,

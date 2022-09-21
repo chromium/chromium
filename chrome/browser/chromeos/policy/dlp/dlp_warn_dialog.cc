@@ -112,6 +112,9 @@ const std::u16string GetDialogButtonOkLabelForFiles(
     case DlpFilesController::FileAction::kDownload:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_CONTINUE_BUTTON);
+    case DlpFilesController::FileAction::kUpload:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_UPLOAD_WARN_CONTINUE_BUTTON);
     case DlpFilesController::FileAction::kTransfer:
     case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
                                                     // Set proper text when file
@@ -130,6 +133,9 @@ const std::u16string GetTitleForFiles(
       return l10n_util::GetPluralStringFUTF16(
           // Download action is only allowed for one file.
           IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_TITLE, 1);
+    case DlpFilesController::FileAction::kUpload:
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_POLICY_DLP_FILES_UPLOAD_WARN_TITLE, files_number);
     case DlpFilesController::FileAction::kTransfer:
     case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
                                                     // Set proper text when file
@@ -143,6 +149,7 @@ const std::u16string GetTitleForFiles(
 const std::u16string GetMessageForFiles(
     const DlpWarnDialog::DlpWarnDialogOptions& options) {
   DCHECK(options.files_action.has_value());
+
   switch (options.files_action.value()) {
     case DlpFilesController::FileAction::kDownload:
       return base::ReplaceStringPlaceholders(
@@ -150,6 +157,14 @@ const std::u16string GetMessageForFiles(
               // Download action is only allowed for one file.
               IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE, 1),
           GetDestinationForFiles(options.destination_component.value()),
+          /*offset=*/nullptr);
+    case DlpFilesController::FileAction::kUpload:
+      DCHECK(!options.destination_pattern->empty());
+      return base::ReplaceStringPlaceholders(
+          l10n_util::GetPluralStringFUTF16(
+              IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE,
+              options.confidential_contents.GetContents().size()),
+          base::UTF8ToUTF16(options.destination_pattern.value()),
           /*offset=*/nullptr);
     case DlpFilesController::FileAction::kTransfer:
     case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)

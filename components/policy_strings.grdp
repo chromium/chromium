@@ -806,6 +806,11 @@ Additional details:
           =1 {Transfer confidential file?}
           other {Transfer confidential files?}}
   </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_WARN_TITLE" desc="The title for notification informing the user that action on selected files is not recommended.">
+        {0, plural,
+          =1 {Upload confidential file?}
+          other {Upload confidential files?}}
+  </message>
   <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE" desc="The message for notification informing the user that action on files is not recommended.">
         {0, plural,
                 =1 {Administrator policy doesn’t recommend downloading this file to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
@@ -816,11 +821,19 @@ Additional details:
                 =1 {Administrator policy doesn’t recommend transferring this file to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
                 other {Administrator policy doesn’t recommend transferring these files to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}}
   </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE" desc="The message for notification informing the user that action on files is not recommended.">
+        {0, plural,
+                =1 {Administrator policy doesn’t recommend uploading this file to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
+                other {Administrator policy doesn’t recommend uploading these files to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}}
+  </message>
   <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before action on files.">
     Download anyway
   </message>
   <message name="IDS_POLICY_DLP_FILES_TRANSFER_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before action on files.">
     Transfer anyway
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before action on files.">
+    Upload anyway
   </message>
   <message name="IDS_POLICY_DLP_FILES_DESTINATION_REMOVABLE_STORAGE" desc="A label for the 'Removable storage' files transfer destination.">
     Removable storage
