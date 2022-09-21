@@ -8,15 +8,11 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -129,6 +125,38 @@ TEST_P(ArcAppShortcutsSearchProviderTest, Basic) {
     EXPECT_EQ(base::StringPrintf("ShortLabel %zu", i),
               base::UTF16ToUTF8(results[i]->title()));
     EXPECT_EQ(ash::SearchResultDisplayType::kTile, results[i]->display_type());
+  }
+}
+
+TEST_P(ArcAppShortcutsSearchProviderTest, EmptyQuery) {
+  const bool launchable = GetParam();
+
+  const std::string app_id = AddArcAppAndShortcut(
+      *CreateAppInfo("FakeName", "FakeActivity", kFakeAppPackageName),
+      launchable);
+
+  const size_t kMaxResults = launchable ? 4 : 0;
+  constexpr char16_t kQuery[] = u"";
+
+  TestSearchController search_controller;
+  auto provider = std::make_unique<ArcAppShortcutsSearchProvider>(
+      kMaxResults, profile(), controller_.get());
+  ArcAppShortcutsSearchProvider* provider_ptr = provider.get();
+  search_controller.AddProvider(0, std::move(provider));
+  EXPECT_TRUE(search_controller.last_results().empty());
+  arc::IconDecodeRequest::DisableSafeDecodingForTesting();
+
+  search_controller.StartSearch(kQuery);
+  const auto& results = app_list_features::IsCategoricalSearchEnabled()
+                            ? search_controller.last_results()
+                            : provider_ptr->results();
+  EXPECT_EQ(kMaxResults, results.size());
+  // Verify search results.
+  for (size_t i = 0; i < results.size(); ++i) {
+    EXPECT_EQ(base::StringPrintf("ShortLabel %zu", i),
+              base::UTF16ToUTF8(results[i]->title()));
+    EXPECT_EQ(ash::SearchResultDisplayType::kTile, results[i]->display_type());
+    EXPECT_EQ(results[i]->relevance(), 0.5);
   }
 }
 

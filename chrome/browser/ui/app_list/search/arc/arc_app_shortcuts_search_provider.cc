@@ -10,10 +10,9 @@
 
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_app_shortcut_search_result.h"
 
 namespace app_list {
@@ -68,8 +67,6 @@ void ArcAppShortcutsSearchProvider::UpdateRecommendedResults(
 
   // All ArcAppShortcutSearchResults have display type kList, so they are shown
   // in the zero-state results list, but not in the suggestion chips.
-
-  // Maps app IDs to their score according to |ranker_|
   SearchProvider::Results search_results;
   for (auto& item : shortcut_items) {
     const std::string app_id =
