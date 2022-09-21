@@ -4532,7 +4532,6 @@ if (!is_android) {
     if (is_fuchsia) {
       use_test_server = true
 
-      use_cfv1 = false
       test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
       additional_manifest_fragments = [
         "//build/config/fuchsia/test/audio_output.shard.test-cml",
@@ -8943,8 +8942,6 @@ test("unit_tests") {
     sources += [ "../browser/fuchsia/element_manager_impl_unittest.cc" ]
 
     data += [ "//testing/buildbot/filters/fuchsia.unit_tests.filter" ]
-
-    use_cfv1 = false
 
     # TODO(https://crbug.com/1185811): Investigate removing the requirement for
     # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.

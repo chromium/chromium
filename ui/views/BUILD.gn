@@ -1353,8 +1353,6 @@ test("views_unittests") {
   }
 
   if (is_fuchsia) {
-    use_cfv1 = false
-
     # These tests use SwiftShader (crbug.com/1022542), which uses JIT.
     test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
 

@@ -477,7 +477,6 @@ test("capture_unittests") {
       "video/fuchsia/video_capture_device_factory_fuchsia_test.cc",
       "video/fuchsia/video_capture_device_fuchsia_test.cc",
     ]
-    use_cfv1 = false
     additional_manifest_fragments =
         [ "//media/fuchsia/test_support.shard.test-cml" ]
   }

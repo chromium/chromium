@@ -111,7 +111,7 @@ template("mixed_test") {
 #      The default value is true; set it to false explicitly to omit a .cm
 #      manifest from the package.
 #   use_cfv1: (Fuchsia, optional): build the test as a framework v1 component.
-#      The default value is true; set it to false explicitly to omit a .cmx
+#      The default value is false; set it to true explicitly to include a .cmx
 #      manifest from the package.
 #   test_runner_shard: (Fuchsia, optional): for CFv2 tests, use the given test
 #      runner shard rather than the default shard for the ELF runner. This is
@@ -438,9 +438,11 @@ template("test") {
   } else if (is_fuchsia) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
 
+    _use_cfv1 = defined(invoker.use_cfv1) && invoker.use_cfv1  # opt-in
+    _use_cfv2 = !defined(invoker.use_cfv2) || invoker.use_cfv2  # opt-out
+
     # It's meaningless to omit both types of manifest from the package.
-    assert(!defined(invoker.use_cfv2) || invoker.use_cfv2 ||
-           !defined(invoker.use_cfv1) || invoker.use_cfv1)
+    assert(_use_cfv1 || _use_cfv2)
 
     _output_name = invoker.target_name
     _pkg_target = "${_output_name}_pkg"
@@ -449,7 +451,7 @@ template("test") {
     _test_component_targets = []
 
     # Generate a CFv2 manifest unless the target opts-out via `use_cfv2=false`.
-    if (!defined(invoker.use_cfv2) || invoker.use_cfv2) {
+    if (_use_cfv2) {
       # Generate a CML fragment that provides the program name.
       _test_program_fragment_target = "${target_name}_program-fragment"
       _test_program_fragment =
@@ -512,8 +514,8 @@ template("test") {
       _test_component_targets += [ ":${_test_component_target}" ]
     }
 
-    # Generate a CFv1 manifest unless the target opts-out via `use_cfv1=false`.
-    if (!defined(invoker.use_cfv1) || invoker.use_cfv1) {
+    # Generate a CFv1 manifest if the target opts-in via `use_cfv1=true`.
+    if (_use_cfv1) {
       # Generate a CMX fragment that provides the program name.
       _test_program_fragment_target_v1 = "${target_name}_program-fragment_v1"
       _test_program_fragment_v1 =

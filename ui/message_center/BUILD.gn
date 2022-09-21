@@ -237,7 +237,6 @@ if (enable_message_center) {
     }
 
     if (is_fuchsia) {
-      use_cfv1 = false
       additional_manifest_fragments = [
         "//build/config/fuchsia/test/fonts.shard.test-cml",
         "//build/config/fuchsia/test/present_view.shard.test-cml",

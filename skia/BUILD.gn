@@ -941,7 +941,6 @@ test("skia_unittests") {
   }
 
   if (is_fuchsia) {
-    use_cfv1 = false
     sources += [ "ext/fontmgr_fuchsia_unittest.cc" ]
     deps += [
       ":test_fonts_cfv2",

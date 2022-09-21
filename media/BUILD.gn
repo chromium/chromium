@@ -219,8 +219,6 @@ test("media_unittests") {
       "//media/fuchsia/video:unittests",
     ]
 
-    use_cfv1 = false
-
     # PaintCanvasVideoRendererWithGLTest.* uses SwiftShader, which generates
     # machine code.
     test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
@@ -294,7 +292,6 @@ test("audio_unittests") {
   }
 
   if (is_fuchsia) {
-    use_cfv1 = false
     additional_manifest_fragments =
         [ "//build/config/fuchsia/test/audio_output.shard.test-cml" ]
   }

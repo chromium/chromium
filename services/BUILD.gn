@@ -85,8 +85,6 @@ test("services_unittests") {
   }
 
   if (is_fuchsia) {
-    use_cfv1 = false
-
     test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
 
     additional_manifest_fragments = [

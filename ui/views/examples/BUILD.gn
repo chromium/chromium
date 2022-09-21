@@ -335,7 +335,6 @@ test("views_examples_unittests") {
   }
 
   if (is_fuchsia) {
-    use_cfv1 = false
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/fonts.shard.test-cml",
       "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",

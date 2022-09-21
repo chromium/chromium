@@ -83,8 +83,6 @@ test("components_unittests") {
   }
 
   if (is_fuchsia) {
-    use_cfv1 = false
-
     # TODO(https://crbug.com/1185811): Investigate removing the requirement for
     # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
     test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
@@ -526,6 +524,7 @@ test("components_unittests") {
   if (!is_android && !is_ios) {
     deps += [
       "//components/access_code_cast/common:unit_tests",
+
       # See comment in components / guest_view / browser / BUILD.gn for why
       # guest_view is currently non - mobile.
       "//components/guest_view/browser:unit_tests",
@@ -981,7 +980,6 @@ if (!is_ios) {
     }
 
     if (is_fuchsia) {
-      use_cfv1 = false
       test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
       additional_manifest_fragments = [
         "//build/config/fuchsia/test/present_view.shard.test-cml",

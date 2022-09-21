@@ -575,7 +575,6 @@ test("web_engine_browsertests") {
     "//ui/gfx",
     "//ui/ozone",
   ]
-  use_cfv1 = false
 
   test_runner_shard =
       "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
@@ -652,7 +651,6 @@ test("web_engine_unittests") {
     "//ui/events:test_support",
     "//ui/ozone",
   ]
-  use_cfv1 = false
 
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/cfv1_launcher.shard.test-cml",
@@ -704,7 +702,7 @@ test("web_engine_integration_tests") {
         ":web_engine",
         "web_engine",
       ] ]
-  use_cfv1 = false
+
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/archivist.shard.test-cml",
     "//build/config/fuchsia/test/audio_output.shard.test-cml",
@@ -755,6 +753,7 @@ test("web_engine_integration_tests_cfv1") {
         ":web_engine",
         "web_engine",
       ] ]
+  use_cfv1 = true
   use_cfv2 = false
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/audio_capabilities.test-cmx",

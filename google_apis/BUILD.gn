@@ -292,7 +292,6 @@ test("google_apis_unittests") {
   }
 
   if (is_fuchsia) {
-    use_cfv1 = false
     additional_manifest_fragments =
         [ "//build/config/fuchsia/test/network.shard.test-cml" ]
   }

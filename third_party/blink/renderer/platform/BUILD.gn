@@ -1955,7 +1955,6 @@ test("blink_platform_unittests") {
   deps = [ ":blink_platform_unittests_sources" ]
 
   if (is_fuchsia) {
-    use_cfv1 = false
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/test_fonts.shard.test-cml",
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
@@ -2423,7 +2422,6 @@ test("blink_fuzzer_unittests") {
   }
 
   if (is_fuchsia) {
-    use_cfv1 = false
     deps += [ "//skia:test_fonts_cfv2" ]
     test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
     additional_manifest_fragments = [
