@@ -295,7 +295,7 @@ std::pair<float, float> EWMAAndMaxPower_SSE(
   return result;
 }
 
-__attribute__((target("avx2, fma"))) std::pair<float, float>
+__attribute__((target("avx2,fma"))) std::pair<float, float>
 EWMAAndMaxPower_AVX2(float initial_value,
                      const float src[],
                      int len,
