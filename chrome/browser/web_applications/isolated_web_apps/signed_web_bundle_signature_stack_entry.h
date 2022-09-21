@@ -26,10 +26,6 @@ class SignedWebBundleSignatureStackEntry {
 
   ~SignedWebBundleSignatureStackEntry();
 
-  [[nodiscard]] bool VerifySignature(base::span<const uint8_t> message) const {
-    return signature().Verify(message, public_key());
-  }
-
   const web_package::Ed25519PublicKey& public_key() const {
     return public_key_;
   }

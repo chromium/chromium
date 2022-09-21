@@ -75,6 +75,8 @@ source_set("web_applications") {
     "isolated_web_apps/signed_web_bundle_reader.h",
     "isolated_web_apps/signed_web_bundle_signature_stack_entry.cc",
     "isolated_web_apps/signed_web_bundle_signature_stack_entry.h",
+    "isolated_web_apps/signed_web_bundle_signature_verifier.cc",
+    "isolated_web_apps/signed_web_bundle_signature_verifier.h",
     "isolation_data.cc",
     "isolation_data.h",
     "isolation_prefs_utils.cc",
@@ -530,6 +532,8 @@ source_set("web_applications_test_support") {
 source_set("web_applications_unit_tests") {
   testonly = true
 
+  data = [ "test/data/" ]
+
   sources = [
     "commands/clear_browsing_data_command_unittest.cc",
     "commands/externally_managed_install_command_unittest.cc",
@@ -553,6 +557,7 @@ source_set("web_applications_unit_tests") {
     "isolated_web_apps/signed_web_bundle_integrity_block_unittest.cc",
     "isolated_web_apps/signed_web_bundle_reader_unittest.cc",
     "isolated_web_apps/signed_web_bundle_signature_stack_entry_unittest.cc",
+    "isolated_web_apps/signed_web_bundle_signature_verifier_unittest.cc",
     "isolation_prefs_utils_unittest.cc",
     "manifest_update_task_unittest.cc",
     "os_integration/os_integration_manager_unittest.cc",
@@ -639,6 +644,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/browser/web_applications/extensions:extensions",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//components/cbor",
     "//components/services/app_service/public/cpp:app_url_handling",
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/web_package",
