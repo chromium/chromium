@@ -6,10 +6,11 @@
 
 #include <type_traits>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/pref_names.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -78,11 +79,16 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
                AUTOFILL_WALLET_USAGE, CONTACT_INFO}};
     case UserSelectableType::kThemes:
       return {kThemesTypeName, THEMES, {THEMES}};
-    case UserSelectableType::kHistory:
-      return {kTypedUrlsTypeName,
-              TYPED_URLS,
-              {TYPED_URLS, HISTORY, HISTORY_DELETE_DIRECTIVES, SESSIONS,
-               USER_EVENTS}};
+    case UserSelectableType::kHistory: {
+      // TODO(crbug.com/1365291): After HISTORY has launched, remove TYPED_URLS
+      // from here.
+      ModelTypeSet types = {TYPED_URLS, HISTORY, HISTORY_DELETE_DIRECTIVES,
+                            SESSIONS, USER_EVENTS};
+      if (base::FeatureList::IsEnabled(kSyncEnableHistoryDataType)) {
+        types.Remove(SESSIONS);
+      }
+      return {kTypedUrlsTypeName, TYPED_URLS, types};
+    }
     case UserSelectableType::kExtensions:
       return {
           kExtensionsTypeName, EXTENSIONS, {EXTENSIONS, EXTENSION_SETTINGS}};
