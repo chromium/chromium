@@ -115,13 +115,13 @@ class CdmDocumentServiceImplTest : public ChromeRenderViewHostTestHarness {
     entry.SetKey(kOriginId, base::UnguessableTokenToValue(
                                 base::UnguessableToken::Create()));
 
-    DictionaryPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
-    base::Value* dict = update.Get();
+    ScopedDictPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
+    base::Value::Dict& dict = update.Get();
     const std::string serialized_origin = web_contents()
                                               ->GetPrimaryMainFrame()
                                               ->GetLastCommittedOrigin()
                                               .Serialize();
-    dict->SetKey(serialized_origin, std::move(entry));
+    dict.Set(serialized_origin, std::move(entry));
   }
 
  protected:

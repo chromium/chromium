@@ -67,9 +67,9 @@ MATCHER_P(InfoEquals, expected, "") {
 // Set the user preference for |origin| to prefer tab mirroring.
 void EnableTabMirroringForOrigin(PrefService* prefs,
                                  const std::string& origin) {
-  ListPrefUpdate update(prefs,
-                        media_router::prefs::kMediaRouterTabMirroringSources);
-  base::Value::List& list = update->GetList();
+  ScopedListPrefUpdate update(
+      prefs, media_router::prefs::kMediaRouterTabMirroringSources);
+  base::Value::List& list = update.Get();
   if (!base::Contains(list, base::Value(origin)))
     list.Append(origin);
 }
@@ -798,9 +798,9 @@ TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
 
   // Remove the user preference for |origin|.
   {
-    ListPrefUpdate update(profile()->GetPrefs(),
-                          prefs::kMediaRouterTabMirroringSources);
-    update->GetList().EraseValue(base::Value(origin));
+    ScopedListPrefUpdate update(profile()->GetPrefs(),
+                                prefs::kMediaRouterTabMirroringSources);
+    update->EraseValue(base::Value(origin));
   }
 
   // Auto-join requests should now go through.
@@ -854,10 +854,10 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
 
   // Remove the user preference for |origin| in OffTheRecord.
   {
-    ListPrefUpdate update(
+    ScopedListPrefUpdate update(
         profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs(),
         prefs::kMediaRouterTabMirroringSources);
-    update->GetList().EraseValue(base::Value(origin));
+    update->EraseValue(base::Value(origin));
   }
 
   // Auto-join requests should now go through.

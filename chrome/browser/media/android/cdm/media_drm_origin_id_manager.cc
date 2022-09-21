@@ -79,10 +79,9 @@ void SetExpirableTokenIfNeeded(PrefService* const pref_service) {
   if (media::MediaDrmBridge::IsPerApplicationProvisioningSupported())
     return;
 
-  DictionaryPrefUpdate update(pref_service, kMediaDrmOriginIds);
-  auto& origin_id_dict = update->GetDict();
-  origin_id_dict.Set(kExpirableToken,
-                     base::TimeToValue(base::Time::Now() + kExpirationDelta));
+  ScopedDictPrefUpdate update(pref_service, kMediaDrmOriginIds);
+  update->Set(kExpirableToken,
+              base::TimeToValue(base::Time::Now() + kExpirationDelta));
 }
 
 void RemoveExpirableToken(base::Value::Dict& origin_id_dict) {
@@ -140,10 +139,9 @@ int CountAvailableOriginIds(const base::Value::Dict& origin_id_dict) {
 base::UnguessableToken TakeFirstOriginId(PrefService* const pref_service) {
   DVLOG(3) << __func__;
 
-  DictionaryPrefUpdate update(pref_service, kMediaDrmOriginIds);
-  base::Value::Dict& origin_id_dict = update->GetDict();
+  ScopedDictPrefUpdate update(pref_service, kMediaDrmOriginIds);
 
-  base::Value::List* origin_ids = origin_id_dict.FindList(kOriginIds);
+  base::Value::List* origin_ids = update->FindList(kOriginIds);
   if (!origin_ids)
     return base::UnguessableToken::Null();
 
@@ -365,8 +363,8 @@ void MediaDrmOriginIdManager::PreProvisionIfNecessary() {
 
   // On devices that need to, check that the user has recently requested
   // an origin ID. If not, then skip pre-provisioning on those devices.
-  DictionaryPrefUpdate update(pref_service_, kMediaDrmOriginIds);
-  if (!CanPreProvision(update->GetDict())) {
+  ScopedDictPrefUpdate update(pref_service_, kMediaDrmOriginIds);
+  if (!CanPreProvision(*update)) {
     // Disable any network monitoring, if it exists.
     network_observer_.reset();
     return;
@@ -374,8 +372,7 @@ void MediaDrmOriginIdManager::PreProvisionIfNecessary() {
 
   // No need to pre-provision if there are already enough existing
   // pre-provisioned origin IDs.
-  if (CountAvailableOriginIds(update->GetDict()) >=
-      kMaxPreProvisionedOriginIds) {
+  if (CountAvailableOriginIds(*update) >= kMaxPreProvisionedOriginIds) {
     // Disable any network monitoring, if it exists.
     network_observer_.reset();
     return;
@@ -494,15 +491,14 @@ void MediaDrmOriginIdManager::OriginIdProvisioned(
              origin_id);
     pending_provisioned_origin_id_cbs_.pop();
   } else {
-    DictionaryPrefUpdate update(pref_service_, kMediaDrmOriginIds);
-    AddOriginId(update->GetDict(), origin_id.value());
+    ScopedDictPrefUpdate update(pref_service_, kMediaDrmOriginIds);
+    AddOriginId(*update, origin_id.value());
 
     // If we already have enough pre-provisioned origin IDs, we're done.
     // Stop watching for network change events.
-    if (CountAvailableOriginIds(update->GetDict()) >=
-        kMaxPreProvisionedOriginIds) {
+    if (CountAvailableOriginIds(*update) >= kMaxPreProvisionedOriginIds) {
       network_observer_.reset();
-      RemoveExpirableToken(update->GetDict());
+      RemoveExpirableToken(*update);
       is_provisioning_ = false;
       return;
     }
