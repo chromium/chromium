@@ -48,10 +48,10 @@ class BackToTabButton : public OverlayWindowImageButton {
 
   explicit BackToTabButton(PressedCallback callback)
       : OverlayWindowImageButton(std::move(callback)) {
-    SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(
-            kBackToTabIcon, kColorPipWindowForeground, kBackToTabImageSize));
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(vector_icons::kBackToTabIcon,
+                                                 kColorPipWindowForeground,
+                                                 kBackToTabImageSize));
 
     const std::u16string back_to_tab_button_label = l10n_util::GetStringUTF16(
         IDS_PICTURE_IN_PICTURE_BACK_TO_TAB_CONTROL_TEXT);

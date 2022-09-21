@@ -986,9 +986,9 @@ void CaptionBubble::SetTextColor() {
   media_foundation_renderer_error_checkbox_->SetCheckedIconImageColor(
       color_provider->GetColor(ui::kColorLiveCaptionBubbleCheckbox));
 #endif
-  views::SetImageFromVectorIconWithColor(back_to_tab_button_,
-                                         vector_icons::kLaunchIcon, kButtonDip,
-                                         icon_color, icon_disabled_color);
+  views::SetImageFromVectorIconWithColor(
+      back_to_tab_button_, vector_icons::kBackToTabIcon, kButtonDip, icon_color,
+      icon_disabled_color);
   views::SetImageFromVectorIconWithColor(
       close_button_, vector_icons::kCloseRoundedIcon, kButtonDip, icon_color,
       icon_disabled_color);

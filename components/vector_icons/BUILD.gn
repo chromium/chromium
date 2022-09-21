@@ -16,6 +16,7 @@ aggregate_vector_icons("components_vector_icons") {
     "ads_click.icon",
     "arrow_back.icon",
     "back_arrow.icon",
+    "back_to_tab.icon",
     "blocked_badge.icon",
     "bluetooth.icon",
     "bluetooth_connected.icon",

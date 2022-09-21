@@ -22,7 +22,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "autofill/webauthn_dialog_header.icon",
     "autofill/webauthn_dialog_header_dark.icon",
     "back_arrow_touch.icon",
-    "back_to_tab.icon",
     "backspace.icon",
     "battery_saver.icon",
     "blocked_redirect.icon",
