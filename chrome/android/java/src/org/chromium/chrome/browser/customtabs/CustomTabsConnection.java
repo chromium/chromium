@@ -131,7 +131,9 @@ public class CustomTabsConnection {
     private static final int SPECULATION_STATUS_ON_START_NOT_ALLOWED_NETWORK_PREDICTION_DISABLED =
             7;
     private static final int SPECULATION_STATUS_ON_START_NOT_ALLOWED_DATA_REDUCTION_ENABLED = 8;
-    private static final int SPECULATION_STATUS_ON_START_NOT_ALLOWED_NETWORK_METERED = 9;
+    // Obsolete due to no longer running the experiment
+    // "PredictivePrefetchingAllowedOnAllConnectionTypes".
+    // private static final int SPECULATION_STATUS_ON_START_NOT_ALLOWED_NETWORK_METERED = 9;
     private static final int SPECULATION_STATUS_ON_START_MAX = 10;
 
     // For CustomTabs.SpeculationStatusOnSwap, see tools/metrics/enums.xml. Append only.
@@ -1543,11 +1545,6 @@ public class CustomTabsConnection {
         ConnectivityManager cm =
                 (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);
-        if (cm.isActiveNetworkMetered() && !shouldSpeculateLoadOnCellularForSession(session)
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.PREDICTIVE_PREFETCHING_ALLOWED_ON_ALL_CONNECTION_TYPES)) {
-            return SPECULATION_STATUS_ON_START_NOT_ALLOWED_NETWORK_METERED;
-        }
         return SPECULATION_STATUS_ON_START_ALLOWED;
     }
 

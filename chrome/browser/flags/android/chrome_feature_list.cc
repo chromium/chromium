@@ -118,7 +118,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kHttpsOnlyMode,
     &features::kMetricsSettingsAndroid,
     &features::kNetworkServiceInProcess,
-    &features::kPredictivePrefetchingAllowedOnAllConnectionTypes,
     &shared_highlighting::kPreemptiveLinkToTextGeneration,
     &shared_highlighting::kSharedHighlightingAmp,
     &features::kElasticOverscroll,

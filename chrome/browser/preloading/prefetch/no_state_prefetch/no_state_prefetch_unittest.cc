@@ -1149,19 +1149,9 @@ TEST_F(NoStatePrefetchTest,
   histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
 }
 
-class PrerenderPrefetchingAllowedOnAllTest : public NoStatePrefetchTest {
- public:
-  PrerenderPrefetchingAllowedOnAllTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kPredictivePrefetchingAllowedOnAllConnectionTypes);
-  }
-};
-
-// Verify that the external prerender requests are allowed on cellular
-// connection when kPredictivePrefetchingAllowedOnAllConnectionTypes feature is
-// enabled.
+// Verify that the external prerender requests are allowed on cellular.
 TEST_F(
-    PrerenderPrefetchingAllowedOnAllTest,
+    NoStatePrefetchTest,
     PrerenderAllowedOnCellularWithExternalOrigin_PredictivePrefetchingAllowedOnAllConnectionTypes) {
   EnablePrerender();
   std::unique_ptr<net::NetworkChangeNotifier> mock(

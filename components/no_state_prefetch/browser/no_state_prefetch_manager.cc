@@ -955,7 +955,6 @@ void NoStatePrefetchManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
     return;
 
   if (final_status == FINAL_STATUS_LOW_END_DEVICE ||
-      final_status == FINAL_STATUS_CELLULAR_NETWORK ||
       final_status == FINAL_STATUS_DUPLICATE ||
       final_status == FINAL_STATUS_TOO_MANY_PROCESSES) {
     MaybePreconnect(origin, url);

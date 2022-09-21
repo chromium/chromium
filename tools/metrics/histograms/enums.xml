@@ -23489,7 +23489,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="6" label="Not allowed: Block 3rd party cookies"/>
   <int value="7" label="Not allowed: Network prediction disabled"/>
   <int value="8" label="Not allowed: Data reduction enabled"/>
-  <int value="9" label="Not allowed: Network metered"/>
+  <int value="9" label="(Obsolete) Not allowed: Network metered"/>
 </enum>
 
 <enum name="CustomTabsSpeculationStatusOnSwap">

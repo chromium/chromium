@@ -14,11 +14,6 @@ bool NoStatePrefetchManagerDelegate::IsNetworkPredictionPreferenceEnabled() {
   return true;
 }
 
-bool NoStatePrefetchManagerDelegate::IsPredictionDisabledDueToNetwork(
-    Origin origin) {
-  return false;
-}
-
 std::string NoStatePrefetchManagerDelegate::GetReasonForDisablingPrediction() {
   return std::string();
 }

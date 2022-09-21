@@ -863,11 +863,6 @@ const base::FeatureParam<double>
 BASE_FEATURE(kPluginVm, "PluginVm", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Allows prediction operations (e.g., prefetching) on all connection types.
-BASE_FEATURE(kPredictivePrefetchingAllowedOnAllConnectionTypes,
-             "PredictivePrefetchingAllowedOnAllConnectionTypes",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allows Chrome to do preconnect when prerender fails.
 BASE_FEATURE(kPrerenderFallbackToPreconnect,
              "PrerenderFallbackToPreconnect",
