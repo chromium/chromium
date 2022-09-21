@@ -234,6 +234,20 @@ void FillQuantizerIndexDeltaParams(struct v4l2_av1_quantization& v4l2_quant,
   v4l2_quant.delta_q_res = frm_header.delta_q.scale;
 }
 
+// Section 5.9.18. Loop filter delta parameters syntax.
+// Note that |delta_lf_res| in |v4l2_av1_loop_filter| corresponds to
+// |delta_lf.scale| in the frame header defined in libgav1.
+void FillLoopFilterDeltaParams(struct v4l2_av1_loop_filter& v4l2_lf,
+                               const libgav1::Delta& delta_lf) {
+  if (delta_lf.present)
+    v4l2_lf.flags |= V4L2_AV1_LOOP_FILTER_FLAG_DELTA_LF_PRESENT;
+
+  if (delta_lf.multi)
+    v4l2_lf.flags |= V4L2_AV1_LOOP_FILTER_FLAG_DELTA_LF_MULTI;
+
+  v4l2_lf.delta_lf_res = delta_lf.scale;
+}
+
 V4L2VideoDecoderDelegateAV1::V4L2VideoDecoderDelegateAV1(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
@@ -268,6 +282,8 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
 
   struct v4l2_av1_loop_filter v4l2_lf = {};
   FillLoopFilterParams(v4l2_lf, frame_header.loop_filter);
+
+  FillLoopFilterDeltaParams(v4l2_lf, frame_header.delta_lf);
 
   struct v4l2_av1_quantization v4l2_quant = {};
   FillQuantizationParams(v4l2_quant, frame_header.quantizer);
