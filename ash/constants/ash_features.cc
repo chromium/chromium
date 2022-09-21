@@ -1510,7 +1510,7 @@ const base::Feature kShutdownConfirmationBubble{
 
 // Enables or disables enterprise policy control for SIM PIN Lock.
 const base::Feature kSimLockPolicy{"SimLockPolicy",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Uses experimental component version for smart dim.
 const base::Feature kSmartDimExperimentalComponent{
