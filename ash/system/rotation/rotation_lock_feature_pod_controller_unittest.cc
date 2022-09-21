@@ -4,11 +4,13 @@
 
 #include "ash/system/rotation/rotation_lock_feature_pod_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/shell.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "ui/display/display_switches.h"
 
 namespace ash {
@@ -111,6 +113,96 @@ TEST_F(RotationLockFeaturePodControllerTest, OnIconPressed) {
   EXPECT_FALSE(button_view()->IsToggled());
 
   tablet_mode_controller->SetEnabledForTest(false);
+}
+
+TEST_F(RotationLockFeaturePodControllerTest, IconUMATracking) {
+  SetUpController();
+
+  // No metrics logged before clicking on any views.
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+
+  // Turn on rotation lock when pressing on the icon.
+  controller()->OnIconPressed();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/1);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+  histogram_tester->ExpectBucketCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      QsFeatureCatalogName::kRotationLock,
+      /*expected_count=*/1);
+
+  // Turn off rotation lock when pressing on the icon.
+  controller()->OnIconPressed();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/1);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/1);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+  histogram_tester->ExpectBucketCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      QsFeatureCatalogName::kRotationLock,
+      /*expected_count=*/1);
+}
+
+TEST_F(RotationLockFeaturePodControllerTest, LabelUMATracking) {
+  SetUpController();
+
+  // No metrics logged before clicking on any views.
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+
+  // Turn on rotation lock when pressing on the label.
+  controller()->OnLabelPressed();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/1);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+  histogram_tester->ExpectBucketCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      QsFeatureCatalogName::kRotationLock,
+      /*expected_count=*/1);
+
+  // Turn off rotation lock when pressing on the label.
+  controller()->OnIconPressed();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/1);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/1);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+  histogram_tester->ExpectBucketCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      QsFeatureCatalogName::kRotationLock,
+      /*expected_count=*/1);
 }
 
 }  // namespace ash

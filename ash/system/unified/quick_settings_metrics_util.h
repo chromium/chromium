@@ -19,8 +19,21 @@ namespace ash::quick_settings_metrics_util {
 // the enum bucket for now. Leaves the `event` as a arg in the method for later
 // use, so that if the event type need to be tracked later we can simply add
 // them in this method.
-void RecordQsButtonActivated(const QsButtonCatalogName button_catalog_name,
+void RecordQsButtonActivated(QsButtonCatalogName button_catalog_name,
                              const ui::Event& event);
+
+// Records toggle to enable/disable a feature in the quick settings main page.
+// The arg `enable == true` means this feature was disabled and will be enabled
+// by this toggle action. If the feature pod is an action feature, such as
+// screen caption, always use `true` as the toggled value.
+void RecordQsFeatureToggle(QsFeatureCatalogName feature_catalog_name,
+                           bool enable);
+
+// Records dive into a feature's details page from the quick settings main page.
+void RecordQsFeatureDiveIn(QsFeatureCatalogName feature_catalog_name);
+
+// Records visible feature pod number in the quick settings main page.
+void RecordQsFeaturePodCount(int feature_pod_count, bool is_tablet);
 
 }  // namespace ash::quick_settings_metrics_util
 

@@ -5,6 +5,7 @@
 #include "ash/system/night_light/night_light_feature_pod_controller.h"
 #include <string>
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -59,7 +60,15 @@ FeaturePodButton* NightLightFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName NightLightFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kNightLight;
+}
+
 void NightLightFeaturePodController::OnIconPressed() {
+  TrackToggleUMA(/*target_toggle_state=*/!Shell::Get()
+                     ->night_light_controller()
+                     ->GetEnabled());
+
   Shell::Get()->night_light_controller()->Toggle();
   LogUserNightLightEvent(Shell::Get()->night_light_controller()->GetEnabled());
   UpdateButton();
@@ -75,6 +84,7 @@ void NightLightFeaturePodController::OnIconPressed() {
 
 void NightLightFeaturePodController::OnLabelPressed() {
   if (TrayPopupUtils::CanOpenWebUISettings()) {
+    TrackDiveInUMA();
     base::RecordAction(
         base::UserMetricsAction("StatusArea_NightLight_Settings"));
     tray_controller_->CloseBubble();  // Deletes |this|.

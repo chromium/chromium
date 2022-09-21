@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -31,11 +32,14 @@ FeaturePodButton* PrivacyScreenFeaturePodController::CreateButton() {
   return button_;
 }
 
-void PrivacyScreenFeaturePodController::OnIconPressed() {
-  TogglePrivacyScreen();
+QsFeatureCatalogName PrivacyScreenFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kPrivacyScreen;
 }
 
-void PrivacyScreenFeaturePodController::OnLabelPressed() {
+void PrivacyScreenFeaturePodController::OnIconPressed() {
+  TrackToggleUMA(/*target_toggle_state=*/!Shell::Get()
+                     ->privacy_screen_controller()
+                     ->GetEnabled());
   TogglePrivacyScreen();
 }
 

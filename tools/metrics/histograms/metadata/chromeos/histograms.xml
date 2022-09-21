@@ -1854,19 +1854,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.SystemTray.FeaturePodCountOnOpen" units="count"
-    expires_after="2023-04-01">
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <summary>
-    The number of feature pods (e.g. WiFi, Bluetooth, IME, Accessibility, etc.)
-    in the system tray quick settings when it is opened, including pods that
-    overflow to other pages. See
-    ChromeOS.SystemTray.Tablet.FeaturePodCountOnOpen for the corresponding
-    histogram logged in tablet mode.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.SystemTray.FirstInteraction"
     enum="CrosSystemTrayFirstInteraction" expires_after="2023-04-01">
   <owner>amehfooz@chromium.org</owner>
@@ -1971,18 +1958,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     the shelf status area whenever a pod appears/disappears. This histogram is
     only logged when the device is not in tablet mode, otherwise
     ChromeOS.SystemTray.Tablet.ShelfPodCount is logged.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.SystemTray.Tablet.FeaturePodCountOnOpen"
-    units="count" expires_after="2023-05-10">
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <summary>
-    The number of feature pods (e.g. WiFi, Bluetooth, IME, Accessibility, etc.)
-    in the system tray quick settings when it is opened, including pods that
-    overflow to other pages. This histogram is only logged when the device is in
-    tablet mode, otherwise ChromeOS.SystemTray.FeaturePodCountOnOpen is logged.
   </summary>
 </histogram>
 

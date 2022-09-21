@@ -4,6 +4,7 @@
 
 #include "ash/system/camera/autozoom_feature_pod_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -40,15 +41,18 @@ FeaturePodButton* AutozoomFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName AutozoomFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kAutozoom;
+}
+
 SystemTrayItemUmaType AutozoomFeaturePodController::GetUmaType() const {
   return SystemTrayItemUmaType::UMA_AUTOZOOM;
 }
 
-void AutozoomFeaturePodController::OnLabelPressed() {
-  Shell::Get()->autozoom_controller()->Toggle();
-}
-
 void AutozoomFeaturePodController::OnIconPressed() {
+  TrackToggleUMA(
+      /*target_toggle_state=*/Shell::Get()->autozoom_controller()->GetState() !=
+      cros::mojom::CameraAutoFramingState::ON_SINGLE);
   Shell::Get()->autozoom_controller()->Toggle();
 }
 

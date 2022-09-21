@@ -4,6 +4,7 @@
 
 #include "ash/system/dark_mode/dark_mode_feature_pod_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -48,12 +49,18 @@ FeaturePodButton* DarkModeFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName DarkModeFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kDarkMode;
+}
+
 void DarkModeFeaturePodController::OnIconPressed() {
   // Toggling Dark theme feature pod button inside quick settings should cancel
   // auto scheduling. This ensures that on and off states of the pod button
   // match the non-scheduled states of Dark and Light buttons in
   // personalization hub respectively.
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  TrackToggleUMA(
+      /*target_toggle_state=*/!dark_light_mode_controller->IsDarkModeEnabled());
   dark_light_mode_controller->SetAutoScheduleEnabled(
       /*enabled=*/false);
   dark_light_mode_controller->ToggleColorMode();
@@ -62,6 +69,7 @@ void DarkModeFeaturePodController::OnIconPressed() {
 }
 
 void DarkModeFeaturePodController::OnLabelPressed() {
+  TrackDiveInUMA();
   if (ash::features::IsPersonalizationHubEnabled())
     Shell::Get()->system_tray_model()->client()->ShowDarkModeSettings();
 }

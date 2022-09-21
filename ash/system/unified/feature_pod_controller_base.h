@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_FEATURE_POD_CONTROLLER_BASE_H_
 
 #include "ash/ash_export.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/tray/system_tray_item_uma_type.h"
 
 namespace ash {
@@ -25,6 +26,12 @@ class ASH_EXPORT FeaturePodControllerBase {
   // this).
   virtual FeaturePodButton* CreateButton() = 0;
 
+  // Returns the feature catalog name which is used for UMA tracking. Please
+  // remember to call the corresponding tracking method (`TrackToggleUMA` and
+  // `TrackDiveInUMA`) in the `OnIconPressed` and OnLabelPressed`
+  // implementation.
+  virtual QsFeatureCatalogName GetCatalogName() = 0;
+
   // Called when the icon of the feature pod button is clicked.
   // If the feature pod is togglable, it is expected to toggle the feature.
   virtual void OnIconPressed() = 0;
@@ -37,6 +44,17 @@ class ASH_EXPORT FeaturePodControllerBase {
   // Return histogram value for Ash.SystemMenu.DefaultView.VisibleRows. If the
   // button is not recorded, UMA_NOT_RECORDED will be used.
   virtual SystemTrayItemUmaType GetUmaType() const = 0;
+
+  // Tracks the toggling behavior, usually happens `OnIconPressed`. But this
+  // method can also be called in the `OnLabelPressed` method, when pressing on
+  // the label has the same behavior as pressing on the icon. If the feature has
+  // no `target_toggle_state` state, such as the screen capture feaure, pass
+  // `true` to this method.
+  void TrackToggleUMA(bool target_toggle_state);
+
+  // Tracks the navigating to detailed page behavior, usually happens
+  // `OnLabelPressed`, sometimes also happens `OnIconPressed`.
+  void TrackDiveInUMA();
 };
 
 }  // namespace ash

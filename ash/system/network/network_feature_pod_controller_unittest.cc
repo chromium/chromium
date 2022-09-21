@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -21,6 +22,7 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -754,6 +756,48 @@ TEST_F(NetworkFeaturePodControllerTest, HasCorrectIcons) {
           /*animating=*/nullptr)),
       gfx::Image(
           feature_pod_icon_button()->GetImage(views::Button::STATE_NORMAL))));
+}
+
+TEST_F(NetworkFeaturePodControllerTest, UMATracking) {
+  // No metrics logged before clicking on any views.
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+
+  // Disable WiFi.
+  PressIcon();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/1);
+  histogram_tester->ExpectBucketCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      QsFeatureCatalogName::kNetwork,
+      /*expected_count=*/1);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+
+  // Go to the detailed page.
+  PressLabel();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/1);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/1);
+  histogram_tester->ExpectBucketCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                      QsFeatureCatalogName::kNetwork,
+                                      /*expected_count=*/1);
 }
 
 }  // namespace ash

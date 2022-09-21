@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/tray/system_tray_item_uma_type.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
@@ -36,6 +37,7 @@ class ASH_EXPORT BluetoothFeaturePodController
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
   SystemTrayItemUmaType GetUmaType() const override;

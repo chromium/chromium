@@ -4,6 +4,7 @@
 
 #include "ash/system/rotation/rotation_lock_feature_pod_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -34,7 +35,15 @@ FeaturePodButton* RotationLockFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName RotationLockFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kRotationLock;
+}
+
 void RotationLockFeaturePodController::OnIconPressed() {
+  TrackToggleUMA(/*target_toggle_state=*/!Shell::Get()
+                     ->screen_orientation_controller()
+                     ->user_rotation_locked());
+
   Shell::Get()->screen_orientation_controller()->ToggleUserRotationLock();
 }
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/detailed_view_controller.h"
@@ -22,6 +23,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_device_cache.h"
@@ -445,6 +447,76 @@ TEST_F(BluetoothFeaturePodControllerTest,
   LockScreen();
 
   EXPECT_FALSE(feature_pod_button_->GetEnabled());
+}
+
+TEST_F(BluetoothFeaturePodControllerTest, IconUMATracking) {
+  // No metrics logged before clicking on any views.
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+
+  // Disable bluetooth when pressing on the icon.
+  PressIcon();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/1);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+  histogram_tester->ExpectBucketCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      QsFeatureCatalogName::kBluetooth,
+      /*expected_count=*/1);
+
+  // Go to the bluetooth detailed page when pressing on the icon again.
+  PressIcon();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectBucketCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      QsFeatureCatalogName::kBluetooth,
+      /*expected_count=*/1);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/1);
+  histogram_tester->ExpectBucketCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                      QsFeatureCatalogName::kBluetooth,
+                                      /*expected_count=*/1);
+}
+
+TEST_F(BluetoothFeaturePodControllerTest, LabelUMATracking) {
+  // No metrics logged before clicking on any views.
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+
+  // Show bluetooth detailed view when pressing on the label.
+  PressLabel();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/1);
+  histogram_tester->ExpectBucketCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                      QsFeatureCatalogName::kBluetooth,
+                                      /*expected_count=*/1);
 }
 
 }  // namespace ash

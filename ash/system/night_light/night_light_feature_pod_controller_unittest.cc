@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/night_light/night_light_feature_pod_controller.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -13,6 +14,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -49,6 +51,10 @@ class NightLightFeaturePodControllerTest : public AshTestBase {
   const ash::FeaturePodLabelButton* feature_pod_label_button() {
     return feature_pod_button_->label_button_;
   }
+
+  void PressIcon() { feature_pod_controller_->OnIconPressed(); }
+
+  void PressLabel() { feature_pod_controller_->OnLabelPressed(); }
 
  private:
   std::unique_ptr<FeaturePodButton> feature_pod_button_;
@@ -162,6 +168,81 @@ TEST_F(NightLightFeaturePodControllerTest, Custom) {
   EXPECT_EQ(enabled, feature_pod_button()->IsToggled());
   EXPECT_EQ(enabled ? sublabel_on : sublabel_off,
             feature_pod_label_button()->GetSubLabelText());
+}
+
+TEST_F(NightLightFeaturePodControllerTest, IconUMATracking) {
+  // Disable sunset-to-sunrise scheduling.
+  NightLightControllerImpl* controller = Shell::Get()->night_light_controller();
+  controller->SetScheduleType(NightLightController::ScheduleType::kNone);
+
+  // No metrics logged before clicking on any views.
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+
+  // Toggle on the nightlight feature when pressing on the icon.
+  PressIcon();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/1);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+  histogram_tester->ExpectBucketCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      QsFeatureCatalogName::kNightLight,
+      /*expected_count=*/1);
+
+  // Toggle off the nightlight feature when pressing on the icon again.
+  PressIcon();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/1);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/1);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+  histogram_tester->ExpectBucketCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      QsFeatureCatalogName::kNightLight,
+      /*expected_count=*/1);
+}
+
+TEST_F(NightLightFeaturePodControllerTest, LabelUMATracking) {
+  // No metrics logged before clicking on any views.
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+
+  // Show nightlight detailed view (settings window) when pressing on the
+  // label.
+  PressLabel();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/1);
+  histogram_tester->ExpectBucketCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                      QsFeatureCatalogName::kNightLight,
+                                      /*expected_count=*/1);
 }
 
 }  // namespace ash

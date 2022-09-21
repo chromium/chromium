@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_NETWORK_VPN_FEATURE_POD_CONTROLLER_H_
 #define ASH_SYSTEM_NETWORK_VPN_FEATURE_POD_CONTROLLER_H_
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 
@@ -26,6 +27,7 @@ class VPNFeaturePodController : public FeaturePodControllerBase,
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   SystemTrayItemUmaType GetUmaType() const override;
 

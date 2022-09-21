@@ -5,6 +5,7 @@
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -45,18 +46,31 @@ FeaturePodButton* BluetoothFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName BluetoothFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kBluetooth;
+}
+
 void BluetoothFeaturePodController::OnIconPressed() {
   if (!button_->GetEnabled())
     return;
+
   const bool is_toggled = button_->IsToggled();
   remote_cros_bluetooth_config_->SetBluetoothEnabledState(!is_toggled);
-  if (!is_toggled)
-    tray_controller_->ShowBluetoothDetailedView();
+
+  if (is_toggled) {
+    TrackToggleUMA(/*target_toggle_state=*/false);
+    return;
+  }
+
+  TrackDiveInUMA();
+  tray_controller_->ShowBluetoothDetailedView();
 }
 
 void BluetoothFeaturePodController::OnLabelPressed() {
   if (!button_->GetEnabled())
     return;
+
+  TrackDiveInUMA();
   if (!button_->IsToggled())
     remote_cros_bluetooth_config_->SetBluetoothEnabledState(true);
   tray_controller_->ShowBluetoothDetailedView();
@@ -110,9 +124,9 @@ int BluetoothFeaturePodController::
   // them over the default battery in order to match the Quick Settings
   // Bluetooth sub-page battery details shown. Android only shows the left bud
   // if there are multiple batteries, so we match that here, and if it doesn't
-  // exist, we prioritize the right bud battery, then the case battery, if they
-  // exist over the default battery in order to match any detailed battery
-  // shown on the sub-page.
+  // exist, we prioritize the right bud battery, then the case battery, if
+  // they exist over the default battery in order to match any detailed
+  // battery shown on the sub-page.
   if (first_connected_device_.value().battery_info->left_bud_info)
     return first_connected_device_.value()
         .battery_info->left_bud_info->battery_percentage;

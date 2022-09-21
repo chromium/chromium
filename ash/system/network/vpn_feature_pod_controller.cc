@@ -4,6 +4,7 @@
 
 #include "ash/system/network/vpn_feature_pod_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -65,7 +66,12 @@ FeaturePodButton* VPNFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName VPNFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kVPN;
+}
+
 void VPNFeaturePodController::OnIconPressed() {
+  TrackDiveInUMA();
   tray_controller_->ShowVPNDetailedView();
 }
 

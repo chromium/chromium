@@ -4,6 +4,7 @@
 
 #include "ash/system/cast/cast_feature_pod_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -19,8 +20,7 @@ namespace ash {
 
 CastFeaturePodController::CastFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
-    : tray_controller_(tray_controller) {
-}
+    : tray_controller_(tray_controller) {}
 
 CastFeaturePodController::~CastFeaturePodController() {
   if (CastConfigController::Get() && button_)
@@ -46,6 +46,10 @@ FeaturePodButton* CastFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName CastFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kCast;
+}
+
 void CastFeaturePodController::OnIconPressed() {
   auto* cast_config = CastConfigController::Get();
   // If there are no devices currently available for the user, and they have
@@ -54,14 +58,19 @@ void CastFeaturePodController::OnIconPressed() {
   // casting immediately.
   if (cast_config && !cast_config->HasSinksAndRoutes() &&
       cast_config->AccessCodeCastingEnabled()) {
+    TrackToggleUMA(/*target_toggle_state=*/true);
+
     Shell::Get()->system_tray_model()->client()->ShowAccessCodeCastingDialog(
         AccessCodeCastDialogOpenLocation::kSystemTrayCastFeaturePod);
   } else {
+    TrackDiveInUMA();
     tray_controller_->ShowCastDetailedView();
   }
 }
 
 void CastFeaturePodController::OnLabelPressed() {
+  TrackDiveInUMA();
+
   // Clicking on the label should always launch the full UI.
   tray_controller_->ShowCastDetailedView();
 }

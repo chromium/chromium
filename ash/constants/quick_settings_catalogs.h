@@ -28,6 +28,32 @@ enum class QsButtonCatalogName {
   kMaxValue = kVersionButton
 };
 
+// A catalog that registers all the features on the Quick Settings page. This
+// catalog should be kept in sync with the buttons on the Quick Settings page.
+// Current values should not be renumbered or removed, because they are recorded
+// in histograms (histograms' enums.xml `QsFeatureCatalogName`). To deprecate
+// use `_DEPRECATED` post-fix on the name.
+enum class QsFeatureCatalogName {
+  kUnknown = 0,
+  kNetwork = 1,
+  kBluetooth = 2,
+  kAccessibility = 3,
+  kQuietMode = 4,
+  kRotationLock = 5,
+  kPrivacyScreen = 6,
+  kCaptureMode = 7,
+  kNearbyShare = 8,
+  kNightLight = 9,
+  kCast = 10,
+  kVPN = 11,
+  kIME = 12,
+  kLocale = 13,
+  kDarkMode = 14,
+  kShelfParty = 15,
+  kAutozoom = 16,
+  kMaxValue = kAutozoom
+};
+
 }  // namespace ash
 
 #endif  // ASH_CONSTANTS_QUICK_SETTINGS_CATALOGS_H_

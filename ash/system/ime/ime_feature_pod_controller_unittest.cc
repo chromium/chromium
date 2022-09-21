@@ -6,15 +6,17 @@
 
 #include <vector>
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 
 namespace ash {
 
@@ -32,16 +34,12 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
-    tray_model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
-    tray_controller_ =
-        std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
+    GetPrimaryUnifiedSystemTray()->ShowBubble();
   }
 
   void TearDown() override {
     button_.reset();
     controller_.reset();
-    tray_controller_.reset();
-    tray_model_.reset();
     NoSessionAshTestBase::TearDown();
   }
 
@@ -52,7 +50,9 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
   }
 
   UnifiedSystemTrayController* tray_controller() {
-    return tray_controller_.get();
+    return GetPrimaryUnifiedSystemTray()
+        ->bubble()
+        ->unified_system_tray_controller();
   }
 
   FeaturePodButton* button() { return button_.get(); }
@@ -78,9 +78,11 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
         current_ime_.id, std::move(available_imes), std::move(menu_items));
   }
 
+  void PressIcon() { controller_->OnIconPressed(); }
+
+  void PressLabel() { controller_->OnLabelPressed(); }
+
  private:
-  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
-  std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   std::unique_ptr<IMEFeaturePodController> controller_;
   std::unique_ptr<FeaturePodButton> button_;
 
@@ -125,6 +127,64 @@ TEST_F(IMEFeaturePodControllerTest, ButtonVisibilityPolicy) {
   EXPECT_TRUE(button()->GetVisible());
   SetActiveIMECount(2);
   EXPECT_TRUE(button()->GetVisible());
+}
+
+TEST_F(IMEFeaturePodControllerTest, IconUMATracking) {
+  SetUpButton();
+
+  // No metrics logged before clicking on any views.
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+
+  // Show IME detailed view when pressing on the icon.
+  PressIcon();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/1);
+  histogram_tester->ExpectBucketCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                      QsFeatureCatalogName::kIME,
+                                      /*expected_count=*/1);
+}
+
+TEST_F(IMEFeaturePodControllerTest, LabelUMATracking) {
+  SetUpButton();
+
+  // No metrics logged before clicking on any views.
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/0);
+
+  // Show IME detailed view when pressing on the label.
+  PressLabel();
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
+      /*count=*/0);
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                     /*count=*/1);
+  histogram_tester->ExpectBucketCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
+                                      QsFeatureCatalogName::kIME,
+                                      /*expected_count=*/1);
 }
 
 }  // namespace ash

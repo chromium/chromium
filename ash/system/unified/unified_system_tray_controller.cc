@@ -57,6 +57,7 @@
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ash/system/unified/feature_pods_container_view.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/quiet_mode_feature_pod_controller.h"
 #include "ash/system/unified/unified_notifier_settings_controller.h"
@@ -641,25 +642,14 @@ void UnifiedSystemTrayController::InitFeaturePods() {
 
   // If you want to add a new feature pod item, add here.
   if (features::IsQsRevampEnabled()) {
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-      UMA_HISTOGRAM_COUNTS_100(
-          "ChromeOS.SystemTray.Tablet.FeaturePodCountOnOpen",
-          quick_settings_view_->GetVisibleFeaturePodCount());
-    } else {
-      UMA_HISTOGRAM_COUNTS_100(
-          "ChromeOS.SystemTray.FeaturePodCountOnOpen",
-          quick_settings_view_->GetVisibleFeaturePodCount());
-    }
+    quick_settings_metrics_util::RecordQsFeaturePodCount(
+        quick_settings_view_->GetVisibleFeaturePodCount(),
+        Shell::Get()->tablet_mode_controller()->InTabletMode());
     return;
   }
-
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-    UMA_HISTOGRAM_COUNTS_100("ChromeOS.SystemTray.Tablet.FeaturePodCountOnOpen",
-                             unified_view_->GetVisibleFeaturePodCount());
-  } else {
-    UMA_HISTOGRAM_COUNTS_100("ChromeOS.SystemTray.FeaturePodCountOnOpen",
-                             unified_view_->GetVisibleFeaturePodCount());
-  }
+  quick_settings_metrics_util::RecordQsFeaturePodCount(
+      unified_view_->GetVisibleFeaturePodCount(),
+      Shell::Get()->tablet_mode_controller()->InTabletMode());
 }
 
 void UnifiedSystemTrayController::AddFeaturePodItem(

@@ -4,6 +4,7 @@
 
 #include "ash/system/ime/ime_feature_pod_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -74,7 +75,12 @@ FeaturePodButton* IMEFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName IMEFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kIME;
+}
+
 void IMEFeaturePodController::OnIconPressed() {
+  TrackDiveInUMA();
   tray_controller_->ShowIMEDetailedView();
 }
 

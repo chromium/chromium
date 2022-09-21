@@ -5,6 +5,7 @@
 #include "ash/system/accessibility/accessibility_feature_pod_controller.h"
 
 #include "ash/accessibility/accessibility_delegate.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -42,7 +43,12 @@ FeaturePodButton* AccessibilityFeaturePodController::CreateButton() {
   return button;
 }
 
+QsFeatureCatalogName AccessibilityFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kAccessibility;
+}
+
 void AccessibilityFeaturePodController::OnIconPressed() {
+  TrackDiveInUMA();
   tray_controller_->ShowAccessibilityDetailedView();
 }
 

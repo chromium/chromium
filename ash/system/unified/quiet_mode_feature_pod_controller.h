@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/notifier_settings_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,6 +37,7 @@ class ASH_EXPORT QuietModeFeaturePodController
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
   SystemTrayItemUmaType GetUmaType() const override;

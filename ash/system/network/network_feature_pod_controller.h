@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/network/network_feature_pod_button.h"
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/network/tray_network_state_observer.h"
@@ -37,6 +38,7 @@ class ASH_EXPORT NetworkFeaturePodController
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
   SystemTrayItemUmaType GetUmaType() const override;

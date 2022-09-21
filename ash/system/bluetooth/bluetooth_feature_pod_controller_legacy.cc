@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -43,16 +44,26 @@ FeaturePodButton* BluetoothFeaturePodControllerLegacy::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName BluetoothFeaturePodControllerLegacy::GetCatalogName() {
+  return QsFeatureCatalogName::kBluetooth;
+}
+
 void BluetoothFeaturePodControllerLegacy::OnIconPressed() {
   bool was_enabled = button_->IsToggled();
   Shell::Get()->tray_bluetooth_helper()->SetBluetoothEnabled(!was_enabled);
 
+  if (was_enabled) {
+    TrackToggleUMA(/*target_toggle_state=*/false);
+    return;
+  }
+
   // If Bluetooth was disabled, show device list as well as enabling Bluetooth.
-  if (!was_enabled)
-    tray_controller_->ShowBluetoothDetailedView();
+  TrackDiveInUMA();
+  tray_controller_->ShowBluetoothDetailedView();
 }
 
 void BluetoothFeaturePodControllerLegacy::OnLabelPressed() {
+  TrackDiveInUMA();
   Shell::Get()->tray_bluetooth_helper()->SetBluetoothEnabled(true);
   tray_controller_->ShowBluetoothDetailedView();
 }

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 
@@ -33,6 +34,7 @@ class BluetoothFeaturePodControllerLegacy
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
   SystemTrayItemUmaType GetUmaType() const override;

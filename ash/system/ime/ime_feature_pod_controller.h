@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_IME_IME_FEATURE_POD_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/ime/ime_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 
@@ -27,6 +28,7 @@ class ASH_EXPORT IMEFeaturePodController : public FeaturePodControllerBase,
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   SystemTrayItemUmaType GetUmaType() const override;
 

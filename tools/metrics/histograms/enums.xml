@@ -82603,6 +82603,26 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="VersionButton"/>
 </enum>
 
+<enum name="QsFeatureCatalogName">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Network"/>
+  <int value="2" label="Bluetooth"/>
+  <int value="3" label="Accessibility"/>
+  <int value="4" label="QuietMode"/>
+  <int value="5" label="RotationLock"/>
+  <int value="6" label="PrivacyScreen"/>
+  <int value="7" label="CaptureMode"/>
+  <int value="8" label="NearbyShare"/>
+  <int value="9" label="NightLight"/>
+  <int value="10" label="Cast"/>
+  <int value="11" label="VPN"/>
+  <int value="12" label="IME"/>
+  <int value="13" label="Locale"/>
+  <int value="14" label="DarkMode"/>
+  <int value="15" label="ShelfParty"/>
+  <int value="16" label="AutoZoom"/>
+</enum>
+
 <enum name="QueryTilesGroupPruneReason">
   <int value="0" label="Expired"/>
   <int value="1" label="InvalidLocale"/>

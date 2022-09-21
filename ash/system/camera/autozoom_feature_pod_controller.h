@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_CAMERA_AUTOZOOM_FEATURE_POD_CONTROLLER_H_
 #define ASH_SYSTEM_CAMERA_AUTOZOOM_FEATURE_POD_CONTROLLER_H_
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/camera/autozoom_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 
@@ -24,8 +25,8 @@ class AutozoomFeaturePodController : public FeaturePodControllerBase,
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
-  void OnLabelPressed() override;
   SystemTrayItemUmaType GetUmaType() const override;
 
   // AutozoomObserver:

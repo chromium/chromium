@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/quiet_mode_feature_pod_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/notifier_metadata.h"
 #include "ash/public/cpp/notifier_settings_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -61,9 +62,14 @@ FeaturePodButton* QuietModeFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName QuietModeFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kQuietMode;
+}
+
 void QuietModeFeaturePodController::OnIconPressed() {
   MessageCenter* message_center = MessageCenter::Get();
   bool is_quiet_mode = message_center->IsQuietMode();
+  TrackToggleUMA(/*target_toggle_state=*/!is_quiet_mode);
   LogUserQuietModeEvent(!is_quiet_mode);
   message_center->SetQuietMode(!is_quiet_mode);
 
@@ -76,6 +82,7 @@ void QuietModeFeaturePodController::OnIconPressed() {
 }
 
 void QuietModeFeaturePodController::OnLabelPressed() {
+  TrackDiveInUMA();
   tray_controller_->ShowNotifierSettingsView();
 }
 

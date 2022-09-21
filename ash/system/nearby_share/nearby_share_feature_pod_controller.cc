@@ -4,6 +4,7 @@
 
 #include "ash/system/nearby_share/nearby_share_feature_pod_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/nearby_share_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -80,7 +81,13 @@ FeaturePodButton* NearbyShareFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName NearbyShareFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kNearbyShare;
+}
+
 void NearbyShareFeaturePodController::OnIconPressed() {
+  TrackToggleUMA(
+      /*target_toggle_state=*/!nearby_share_delegate_->IsHighVisibilityOn());
   if (nearby_share_delegate_->IsHighVisibilityOn()) {
     nearby_share_delegate_->DisableHighVisibility();
   } else {
@@ -89,6 +96,7 @@ void NearbyShareFeaturePodController::OnIconPressed() {
 }
 
 void NearbyShareFeaturePodController::OnLabelPressed() {
+  TrackDiveInUMA();
   nearby_share_delegate_->ShowNearbyShareSettings();
 }
 
