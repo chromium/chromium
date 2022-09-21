@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 
-#include <algorithm>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -17,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -200,12 +200,11 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
           if (content_mime_type.empty()) {
             return true;
           }
-          const auto find_mime_type_iter = std::find_if(
-              mime_types.begin(), mime_types.end(),
-              [content_mime_type](const std::string& mime_type) {
-                return net::MatchesMimeType(mime_type, content_mime_type);
-              });
-          if (find_mime_type_iter == mime_types.end()) {
+          if (base::ranges::none_of(
+                  mime_types,
+                  [content_mime_type](const std::string& mime_type) {
+                    return net::MatchesMimeType(mime_type, content_mime_type);
+                  })) {
             return true;
           }
         }
@@ -557,8 +556,7 @@ void FakeDriveFs::ToggleSyncForPath(
     syncing_paths_.push_back(path);
   } else {
     // status == drivefs::mojom::MirrorPathStatus::kStop.
-    auto element =
-        std::find(syncing_paths_.begin(), syncing_paths_.end(), path);
+    auto element = base::ranges::find(syncing_paths_, path);
     syncing_paths_.erase(element);
   }
   std::move(callback).Run(drive::FileError::FILE_ERROR_OK);

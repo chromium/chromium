@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -16,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -87,14 +87,6 @@ std::vector<std::string> GetNetworkPaths(
   for (const auto* network : networks)
     result.push_back(network->path());
   return result;
-}
-
-bool NetworkListContainsPath(const NetworkStateHandler::NetworkStateList& list,
-                             const std::string& path) {
-  return std::find_if(list.begin(), list.end(),
-                      [path](const NetworkState* network) {
-                        return network->path() == path;
-                      }) != list.end();
 }
 
 // Creates a list of cellular SIM slots with a single primary slot whose eid is
@@ -2687,8 +2679,8 @@ TEST_F(NetworkStateHandlerTest, SetNetworkConnectRequested) {
   NetworkStateHandler::NetworkStateList active_networks;
   network_state_handler_->GetActiveNetworkListByType(
       NetworkTypePattern::Default(), &active_networks);
-  EXPECT_FALSE(
-      NetworkListContainsPath(active_networks, kShillManagerClientStubWifi2));
+  EXPECT_FALSE(base::Contains(active_networks, kShillManagerClientStubWifi2,
+                              &NetworkState::path));
 
   // Set |connect_requested_| for wifi2 and verify that it is connecting and
   // in the active list.
@@ -2698,8 +2690,8 @@ TEST_F(NetworkStateHandlerTest, SetNetworkConnectRequested) {
   EXPECT_TRUE(wifi2->IsConnectingState());
   network_state_handler_->GetActiveNetworkListByType(
       NetworkTypePattern::Default(), &active_networks);
-  EXPECT_TRUE(
-      NetworkListContainsPath(active_networks, kShillManagerClientStubWifi2));
+  EXPECT_TRUE(base::Contains(active_networks, kShillManagerClientStubWifi2,
+                             &NetworkState::path));
 
   // Clear |connect_requested_| for wifi2 and verify that it is not connecting
   // or in the active list.
@@ -2709,8 +2701,8 @@ TEST_F(NetworkStateHandlerTest, SetNetworkConnectRequested) {
   EXPECT_FALSE(wifi2->IsConnectingState());
   network_state_handler_->GetActiveNetworkListByType(
       NetworkTypePattern::Default(), &active_networks);
-  EXPECT_FALSE(
-      NetworkListContainsPath(active_networks, kShillManagerClientStubWifi2));
+  EXPECT_FALSE(base::Contains(active_networks, kShillManagerClientStubWifi2,
+                              &NetworkState::path));
 }
 
 TEST_F(NetworkStateHandlerTest, Hostname) {

@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/discovered_devices_provider_impl.h"
 
-#include <algorithm>
+#include "base/ranges/algorithm.h"
 
 namespace ash::bluetooth_config {
 
@@ -58,11 +58,8 @@ void DiscoveredDevicesProviderImpl::OnUnpairedDevicesListChanged() {
     unpaired_device_ids.insert(unpaired_device->id);
 
     // Check if |discovered_devices_| contains |unpaired_device_|.
-    const auto it =
-        std::find_if(discovered_devices_.begin(), discovered_devices_.end(),
-                     [&unpaired_device](const auto& discovered_device) {
-                       return discovered_device->id == unpaired_device->id;
-                     });
+    const auto it = base::ranges::find(discovered_devices_, unpaired_device->id,
+                                       &mojom::BluetoothDeviceProperties::id);
     if (it == discovered_devices_.end()) {
       // If it doesn't contain the device, the device was added. Append to end
       // of the list.

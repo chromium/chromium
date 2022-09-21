@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
-#include <algorithm>
-
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -52,20 +52,6 @@ void LogError(const std::string& name,
              << " dbus-error-name=" << dbus_error_name
              << " dbus-error-msg=" << dbus_error_message;
 }
-
-class ProfilePathEquals {
- public:
-  explicit ProfilePathEquals(const std::string& path)
-      : path_(path) {
-  }
-
-  bool operator()(const NetworkProfile& profile) {
-    return profile.path == path_;
-  }
-
- private:
-  std::string path_;
-};
 
 }  // namespace
 
@@ -119,9 +105,7 @@ void NetworkProfileHandler::OnPropertyChanged(const std::string& name,
   std::vector<std::string> removed_profile_paths;
   for (ProfileList::const_iterator it = profiles_.begin();
        it != profiles_.end(); ++it) {
-    if (std::find(new_profile_paths.begin(),
-                  new_profile_paths.end(),
-                  it->path) == new_profile_paths.end()) {
+    if (!base::Contains(new_profile_paths, it->path)) {
       removed_profile_paths.push_back(it->path);
     }
   }
@@ -174,8 +158,8 @@ void NetworkProfileHandler::AddProfile(const NetworkProfile& profile) {
 
 void NetworkProfileHandler::RemoveProfile(const std::string& profile_path) {
   VLOG(2) << "Removing profile for path " << profile_path << ".";
-  ProfileList::iterator found = std::find_if(profiles_.begin(), profiles_.end(),
-                                             ProfilePathEquals(profile_path));
+  ProfileList::iterator found =
+      base::ranges::find(profiles_, profile_path, &NetworkProfile::path);
   if (found == profiles_.end())
     return;
   NetworkProfile profile = *found;
@@ -187,8 +171,7 @@ void NetworkProfileHandler::RemoveProfile(const std::string& profile_path) {
 const NetworkProfile* NetworkProfileHandler::GetProfileForPath(
     const std::string& profile_path) const {
   ProfileList::const_iterator found =
-      std::find_if(profiles_.begin(), profiles_.end(),
-                   ProfilePathEquals(profile_path));
+      base::ranges::find(profiles_, profile_path, &NetworkProfile::path);
 
   if (found == profiles_.end())
     return NULL;

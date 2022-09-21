@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/i18n/time_formatting.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -485,11 +486,8 @@ bool IsCellularConnecting(NetworkStateHandler* network_state_handler) {
   NetworkStateHandler::NetworkStateList cellular_networks;
   network_state_handler->GetVisibleNetworkListByType(
       NetworkTypePattern::Cellular(), &cellular_networks);
-  auto iter = std::find_if(cellular_networks.begin(), cellular_networks.end(),
-                           [](const NetworkState* network_state) {
-                             return network_state->IsConnectingState();
-                           });
-  return iter != cellular_networks.end();
+  return base::ranges::any_of(cellular_networks,
+                              &NetworkState::IsConnectingState);
 }
 
 mojom::InhibitReason GetInhibitReason(

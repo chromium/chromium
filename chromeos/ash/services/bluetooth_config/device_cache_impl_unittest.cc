@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/services/bluetooth_config/device_cache_impl.h"
 
-#include <algorithm>
 #include <memory>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -231,10 +231,9 @@ class DeviceCacheImplTest : public testing::Test {
 
   std::vector<NiceMockDevice>::iterator FindDevice(
       const std::string& device_id) {
-    return std::find_if(mock_devices_.begin(), mock_devices_.end(),
-                        [&device_id](const NiceMockDevice& device) {
-                          return device_id == device->GetIdentifier();
-                        });
+    return base::ranges::find(
+        mock_devices_, device_id,
+        &testing::NiceMock<device::MockBluetoothDevice>::GetIdentifier);
   }
 
   base::test::TaskEnvironment task_environment_;

@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
@@ -29,15 +30,6 @@ base::flat_set<std::string> GetEuiccPathsFromHermes() {
     paths.insert(euicc_path.value());
   }
   return paths;
-}
-
-bool ContainsProfileWithoutIccid(
-    const std::vector<CellularESimProfile>& profiles) {
-  auto iter = std::find_if(profiles.begin(), profiles.end(),
-                           [](const CellularESimProfile& profile) {
-                             return profile.iccid().empty();
-                           });
-  return iter != profiles.end();
 }
 
 }  // namespace
@@ -257,7 +249,8 @@ void CellularESimProfileHandlerImpl::UpdateProfilesFromHermes() {
   // yet. This is required because property updates to eSIM profile objects
   // occur after the profile list has been updated. This state is temporary.
   // This method will be triggered again when ICCID properties are updated.
-  if (ContainsProfileWithoutIccid(profiles_from_hermes)) {
+  if (base::ranges::any_of(profiles_from_hermes, &std::string::empty,
+                           &CellularESimProfile::iccid)) {
     return;
   }
 

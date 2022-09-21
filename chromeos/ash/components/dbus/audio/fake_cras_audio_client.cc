@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 
 namespace ash {
 
@@ -376,9 +377,7 @@ void FakeCrasAudioClient::SetActiveInputStreamsWithPermission(
 }
 
 AudioNodeList::iterator FakeCrasAudioClient::FindNode(uint64_t node_id) {
-  return std::find_if(
-      node_list_.begin(), node_list_.end(),
-      [node_id](const AudioNode& node) { return node_id == node.id; });
+  return base::ranges::find(node_list_, node_id, &AudioNode::id);
 }
 
 }  // namespace ash

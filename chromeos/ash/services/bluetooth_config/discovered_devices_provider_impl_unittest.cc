@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/discovered_devices_provider_impl.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -140,10 +141,9 @@ class DiscoveredDevicesProviderImplTest : public testing::Test {
  private:
   std::vector<NiceMockDevice>::iterator FindDevice(
       const std::string& device_id) {
-    return std::find_if(mock_devices_.begin(), mock_devices_.end(),
-                        [&device_id](const NiceMockDevice& device) {
-                          return device_id == device->GetIdentifier();
-                        });
+    return base::ranges::find(
+        mock_devices_, device_id,
+        &testing::NiceMock<device::MockBluetoothDevice>::GetIdentifier);
   }
 
   // Copies the list of devices in |mock_devices_| to device's caches unpaired

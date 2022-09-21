@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -561,15 +562,14 @@ NetworkConnectionHandlerImpl::GetPendingRequest(
 }
 
 bool NetworkConnectionHandlerImpl::HasPendingCellularRequest() const {
-  auto iter = std::find_if(
-      pending_requests_.begin(), pending_requests_.end(),
+  return base::ranges::any_of(
+      pending_requests_,
       [&](const std::pair<const std::string, std::unique_ptr<ConnectRequest>>&
               pair) {
         const NetworkState* network =
             network_state_handler_->GetNetworkState(pair.first);
         return network && network->Matches(NetworkTypePattern::Cellular());
       });
-  return iter != pending_requests_.end();
 }
 
 void NetworkConnectionHandlerImpl::OnPrepareCellularNetworkForConnectionFailure(

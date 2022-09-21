@@ -4,12 +4,12 @@
 
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -89,11 +89,8 @@ void SimpleGeolocationProvider::OnGeolocationResponse(
   std::move(callback).Run(geoposition, server_error, elapsed);
 
   std::vector<std::unique_ptr<SimpleGeolocationRequest>>::iterator position =
-      std::find_if(
-          requests_.begin(), requests_.end(),
-          [request](const std::unique_ptr<SimpleGeolocationRequest>& req) {
-            return req.get() == request;
-          });
+      base::ranges::find(requests_, request,
+                         &std::unique_ptr<SimpleGeolocationRequest>::get);
   DCHECK(position != requests_.end());
   if (position != requests_.end()) {
     std::swap(*position, *requests_.rbegin());

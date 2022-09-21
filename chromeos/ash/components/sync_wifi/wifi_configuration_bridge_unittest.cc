@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -76,15 +77,14 @@ syncer::EntityData GenerateWifiEntityData(
 bool VectorContainsProto(
     const std::vector<sync_pb::WifiConfigurationSpecifics>& protos,
     const sync_pb::WifiConfigurationSpecifics& proto) {
-  return std::find_if(
-             protos.begin(), protos.end(),
-             [&proto](const sync_pb::WifiConfigurationSpecifics& specifics) {
-               return NetworkIdentifier::FromProto(specifics) ==
-                          NetworkIdentifier::FromProto(proto) &&
-                      specifics.last_connected_timestamp() ==
-                          proto.last_connected_timestamp() &&
-                      specifics.passphrase() == proto.passphrase();
-             }) != protos.end();
+  return base::ranges::any_of(
+      protos, [&proto](const sync_pb::WifiConfigurationSpecifics& specifics) {
+        return NetworkIdentifier::FromProto(specifics) ==
+                   NetworkIdentifier::FromProto(proto) &&
+               specifics.last_connected_timestamp() ==
+                   proto.last_connected_timestamp() &&
+               specifics.passphrase() == proto.passphrase();
+      });
 }
 
 void ExtractProtosFromDataBatch(

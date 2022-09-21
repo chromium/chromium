@@ -4,10 +4,9 @@
 
 #include "chromeos/ash/components/network/fake_stub_cellular_networks_provider.h"
 
-#include <algorithm>
-
 #include "base/containers/contains.h"
 #include "base/guid.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 
 namespace ash {
@@ -61,26 +60,21 @@ bool FakeStubCellularNetworksProvider::AddOrRemoveStubCellularNetworks(
     }
 
     std::string iccid = network->iccid();
-    const auto stub_it = std::find_if(
-        stub_iccid_and_eid_pairs_.begin(), stub_iccid_and_eid_pairs_.end(),
-        [&iccid](const IccidEidPair& pair) { return pair.first == iccid; });
 
     // Stub network which corresponds to a removed stub ICCID; remove.
-    if (stub_it == stub_iccid_and_eid_pairs_.end()) {
+    if (!base::Contains(stub_iccid_and_eid_pairs_, iccid,
+                        &IccidEidPair::first)) {
       changed = true;
       network_list_it = network_list.erase(network_list_it);
       continue;
     }
 
-    const auto shill_state_it =
-        std::find_if(network_list.begin(), network_list.end(),
-                     [&iccid](const std::unique_ptr<ManagedState>& state) {
-                       const NetworkState* network = state->AsNetworkState();
-                       return !network->IsNonShillCellularNetwork() &&
-                              network->iccid() == iccid;
-                     });
-
-    if (shill_state_it == network_list.end()) {
+    if (base::ranges::none_of(
+            network_list, [&iccid](const std::unique_ptr<ManagedState>& state) {
+              const NetworkState* network = state->AsNetworkState();
+              return !network->IsNonShillCellularNetwork() &&
+                     network->iccid() == iccid;
+            })) {
       ++network_list_it;
       continue;
     }
@@ -98,10 +92,7 @@ bool FakeStubCellularNetworksProvider::GetStubNetworkMetadata(
     const DeviceState* cellular_device,
     std::string* service_path_out,
     std::string* guid_out) {
-  const auto it = std::find_if(
-      stub_iccid_and_eid_pairs_.begin(), stub_iccid_and_eid_pairs_.end(),
-      [&iccid](const IccidEidPair& pair) { return pair.first == iccid; });
-  if (it == stub_iccid_and_eid_pairs_.end())
+  if (!base::Contains(stub_iccid_and_eid_pairs_, iccid, &IccidEidPair::first))
     return false;
 
   *service_path_out = GenerateStubCellularServicePath(iccid);
@@ -126,16 +117,14 @@ FakeStubCellularNetworksProvider::GetStubsNotBackedByShill(
   std::vector<IccidEidPair> not_backed_by_shill;
 
   for (const IccidEidPair& pair : stub_iccid_and_eid_pairs_) {
-    const auto shill_state_it =
-        std::find_if(network_list.begin(), network_list.end(),
-                     [&pair](const std::unique_ptr<ManagedState>& state) {
-                       return state->AsNetworkState()->iccid() == pair.first;
-                     });
-
     // Only need to add a stub network if the stub ICCID does not match the
     // ICCID of a Shill-backed network.
-    if (shill_state_it == network_list.end())
+    if (!base::Contains(network_list, pair.first,
+                        [](const std::unique_ptr<ManagedState>& state) {
+                          return state->AsNetworkState()->iccid();
+                        })) {
       not_backed_by_shill.push_back(pair);
+    }
   }
 
   return not_backed_by_shill;
