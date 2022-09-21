@@ -13,9 +13,9 @@ namespace views {
 namespace features {
 
 // Please keep alphabetized.
-VIEWS_EXPORT extern const base::Feature kEnablePlatformHighContrastInkDrop;
-VIEWS_EXPORT extern const base::Feature kEnableViewPaintOptimization;
-VIEWS_EXPORT extern const base::Feature kWidgetLayering;
+VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnablePlatformHighContrastInkDrop);
+VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnableViewPaintOptimization);
+VIEWS_EXPORT BASE_DECLARE_FEATURE(kWidgetLayering);
 
 }  // namespace features
 }  // namespace views

@@ -38,8 +38,9 @@ constexpr base::TimeDelta kDelayForRetryingYUVFormat = base::Minutes(10);
 
 // Some drivers fail to correctly handle BT.709 video in overlays. This flag
 // converts them to BT.601 in the video processor.
-const base::Feature kFallbackBT709VideoToBT601{
-    "FallbackBT709VideoToBT601", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kFallbackBT709VideoToBT601,
+             "FallbackBT709VideoToBT601",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsProtectedVideo(gfx::ProtectedVideoType protected_video_type) {
   return protected_video_type != gfx::ProtectedVideoType::kClear;

@@ -198,33 +198,38 @@ const int kGLSwitchesCopiedFromGpuProcessHostNumSwitches =
 namespace features {
 
 // Use BufferCount of 3 for the direct composition root swap chain.
-const base::Feature kDCompTripleBufferRootSwapChain{
-    "DCompTripleBufferRootSwapChain", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDCompTripleBufferRootSwapChain,
+             "DCompTripleBufferRootSwapChain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use BufferCount of 3 for direct composition video swap chains.
-const base::Feature kDCompTripleBufferVideoSwapChain{
-    "DCompTripleBufferVideoSwapChain", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDCompTripleBufferVideoSwapChain,
+             "DCompTripleBufferVideoSwapChain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Forces Chrome's main backbuffer to full damage if the actual damage
 // is large enough and allows DWM to consider the main backbuffer as an
 // an overlay candidate.
-const base::Feature kDirectCompositionForceFullDamage{
-    "DirectCompositionForceFullDamage", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDirectCompositionForceFullDamage,
+             "DirectCompositionForceFullDamage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use presentation feedback event queries (must be enabled) to limit latency.
-const base::Feature kDirectCompositionLowLatencyPresentation{
-    "DirectCompositionLowLatencyPresentation",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDirectCompositionLowLatencyPresentation,
+             "DirectCompositionLowLatencyPresentation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allow overlay swapchain to present on all GPUs even if they only support
 // software overlays. GPU deny lists limit it to NVIDIA only at the moment.
-const base::Feature kDirectCompositionSoftwareOverlays{
-    "DirectCompositionSoftwareOverlays", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDirectCompositionSoftwareOverlays,
+             "DirectCompositionSoftwareOverlays",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/1269749): This is used temporarily for verifying
 // the draw offset bug. The code should be removed once the bug is fixed.
-const base::Feature kDirectCompositionVerifyDrawOffset{
-    "DirectCompositionVerifyDrawOffset", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDirectCompositionVerifyDrawOffset,
+             "DirectCompositionVerifyDrawOffset",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kVerifyDrawOffsetX{
     &kDirectCompositionVerifyDrawOffset, "verify_draw_offset_x", 0};
@@ -235,34 +240,41 @@ const base::FeatureParam<int> kVerifyDrawOffsetY{
 // Allow dual GPU rendering through EGL where supported, i.e., allow a WebGL
 // or WebGPU context to be on the high performance GPU if preferred and Chrome
 // internal rendering to be on the low power GPU.
-const base::Feature kEGLDualGpuRendering{"EGLDualGpuRendering",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEGLDualGpuRendering,
+             "EGLDualGpuRendering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allow overlay swapchain to use Intel video processor for super resolution.
-const base::Feature kIntelVpSuperResolution{"IntelVpSuperResolution",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kIntelVpSuperResolution,
+             "IntelVpSuperResolution",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Default to using ANGLE's OpenGL backend
-const base::Feature kDefaultANGLEOpenGL{"DefaultANGLEOpenGL",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDefaultANGLEOpenGL,
+             "DefaultANGLEOpenGL",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Default to using ANGLE's Metal backend.
-const base::Feature kDefaultANGLEMetal{"DefaultANGLEMetal",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDefaultANGLEMetal,
+             "DefaultANGLEMetal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Default to using ANGLE's Vulkan backend.
-const base::Feature kDefaultANGLEVulkan{"DefaultANGLEVulkan",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDefaultANGLEVulkan,
+             "DefaultANGLEVulkan",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Track current program's shaders at glUseProgram() call for crash report
 // purpose. Only effective on Windows because the attached shaders may only
 // be reliably retrieved with ANGLE backend.
-const base::Feature kTrackCurrentShaders{"TrackCurrentShaders",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTrackCurrentShaders,
+             "TrackCurrentShaders",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable sharing Vulkan device queue with ANGLE's Vulkan backend.
-const base::Feature kVulkanFromANGLE{"VulkanFromANGLE",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kVulkanFromANGLE,
+             "VulkanFromANGLE",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDefaultANGLEVulkan() {
 #if BUILDFLAG(IS_ANDROID)
@@ -276,8 +288,9 @@ bool IsDefaultANGLEVulkan() {
 }
 
 // Use waitable swap chain on Windows to reduce display latency.
-const base::Feature kDXGIWaitableSwapChain{"DXGIWaitableSwapChain",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDXGIWaitableSwapChain,
+             "DXGIWaitableSwapChain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If using waitable swap chain, specify the maximum number of queued frames.
 const base::FeatureParam<int> kDXGIWaitableSwapChainMaxQueuedFrames{

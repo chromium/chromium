@@ -14,31 +14,33 @@ namespace features {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables the rounded corners for the internal display.
-const base::Feature kRoundedDisplay{"RoundedDisplay",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRoundedDisplay,
+             "RoundedDisplay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsRoundedDisplayEnabled() {
   return base::FeatureList::IsEnabled(kRoundedDisplay);
 }
 
 // Enables using HDR transfer function if the monitor says it supports it.
-const base::Feature kUseHDRTransferFunction {
-  "UseHDRTransferFunction",
-  // TODO(b/168843009): Temporarily disable on ARM while investigating.
+BASE_FEATURE(kUseHDRTransferFunction,
+             "UseHDRTransferFunction",
+// TODO(b/168843009): Temporarily disable on ARM while investigating.
 #if defined(ARCH_CPU_ARM_FAMILY)
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #else
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #endif
-};
+);
 
 #endif
 
 // This features allows listing all display modes of external displays in the
 // display settings and setting any one of them exactly as requested, which can
 // be very useful for debugging and development purposes.
-const base::Feature kListAllDisplayModes = {"ListAllDisplayModes",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kListAllDisplayModes,
+             "ListAllDisplayModes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsListAllDisplayModesEnabled() {
   return base::FeatureList::IsEnabled(kListAllDisplayModes);
@@ -47,8 +49,9 @@ bool IsListAllDisplayModesEnabled() {
 // A temporary flag to control hardware mirroring until it is decided whether to
 // permanently remove hardware mirroring support. See crbug.com/1161556 for
 // details.
-const base::Feature kEnableHardwareMirrorMode{
-    "EnableHardwareMirrorMode", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableHardwareMirrorMode,
+             "EnableHardwareMirrorMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsHardwareMirrorModeEnabled() {
   return base::FeatureList::IsEnabled(kEnableHardwareMirrorMode);
@@ -56,8 +59,9 @@ bool IsHardwareMirrorModeEnabled() {
 
 // A temporary flag to require Content Protection to use provisioned key as the
 // kernel doesn't expose that it requires this yet.(b/112172923)
-const base::Feature kRequireHdcpKeyProvisioning{
-    "RequireHdcpKeyProvisioning", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRequireHdcpKeyProvisioning,
+             "RequireHdcpKeyProvisioning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsHdcpKeyProvisioningRequired() {
   return base::FeatureList::IsEnabled(kRequireHdcpKeyProvisioning);
 }

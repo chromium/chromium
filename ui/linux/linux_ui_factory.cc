@@ -93,7 +93,7 @@ LinuxUiAndTheme* GetDefaultLinuxUiAndTheme() {
 
 }  // namespace
 
-const base::Feature kAllowQt{"AllowQt", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAllowQt, "AllowQt", base::FEATURE_DISABLED_BY_DEFAULT);
 
 LinuxUi* GetDefaultLinuxUi() {
   return GetDefaultLinuxUiAndTheme();

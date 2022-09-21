@@ -25,8 +25,9 @@ namespace gfx {
 
 namespace {
 
-const base::Feature kIOSurfaceUseNamedSRGBForREC709{
-    "IOSurfaceUseNamedSRGBForREC709", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kIOSurfaceUseNamedSRGBForREC709,
+             "IOSurfaceUseNamedSRGBForREC709",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 void AddIntegerValue(CFMutableDictionaryRef dictionary,
                      const CFStringRef key,

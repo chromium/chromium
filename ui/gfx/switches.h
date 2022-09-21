@@ -25,8 +25,8 @@ GFX_SWITCHES_EXPORT extern const char kNoXshm[];
 }  // namespace switches
 
 namespace features {
-GFX_SWITCHES_EXPORT extern const base::Feature kOddHeightMultiPlanarBuffers;
-GFX_SWITCHES_EXPORT extern const base::Feature kOddWidthMultiPlanarBuffers;
+GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kOddHeightMultiPlanarBuffers);
+GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kOddWidthMultiPlanarBuffers);
 }  // namespace features
 
 #endif  // UI_GFX_SWITCHES_H_

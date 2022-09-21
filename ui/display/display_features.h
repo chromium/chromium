@@ -13,22 +13,22 @@ namespace display {
 namespace features {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-DISPLAY_EXPORT extern const base::Feature kRoundedDisplay;
+DISPLAY_EXPORT BASE_DECLARE_FEATURE(kRoundedDisplay);
 
 DISPLAY_EXPORT bool IsRoundedDisplayEnabled();
 
-DISPLAY_EXPORT extern const base::Feature kUseHDRTransferFunction;
+DISPLAY_EXPORT BASE_DECLARE_FEATURE(kUseHDRTransferFunction);
 #endif
 
-DISPLAY_EXPORT extern const base::Feature kListAllDisplayModes;
+DISPLAY_EXPORT BASE_DECLARE_FEATURE(kListAllDisplayModes);
 
 DISPLAY_EXPORT bool IsListAllDisplayModesEnabled();
 
-DISPLAY_EXPORT extern const base::Feature kEnableHardwareMirrorMode;
+DISPLAY_EXPORT BASE_DECLARE_FEATURE(kEnableHardwareMirrorMode);
 
 DISPLAY_EXPORT bool IsHardwareMirrorModeEnabled();
 
-DISPLAY_EXPORT extern const base::Feature kRequireHdcpKeyProvisioning;
+DISPLAY_EXPORT BASE_DECLARE_FEATURE(kRequireHdcpKeyProvisioning);
 DISPLAY_EXPORT bool IsHdcpKeyProvisioningRequired();
 
 }  // namespace features

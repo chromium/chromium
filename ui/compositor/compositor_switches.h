@@ -22,7 +22,7 @@ COMPOSITOR_EXPORT extern const char kDisableVsyncForTests[];
 
 namespace features {
 
-COMPOSITOR_EXPORT extern const base::Feature kEnablePixelCanvasRecording;
+COMPOSITOR_EXPORT BASE_DECLARE_FEATURE(kEnablePixelCanvasRecording);
 
 }  // namespace features
 

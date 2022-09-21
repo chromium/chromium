@@ -37,22 +37,22 @@ const char kNoXshm[] = "no-xshm";
 }  // namespace switches
 
 namespace features {
-const base::Feature kOddHeightMultiPlanarBuffers {
-  "OddHeightMultiPlanarBuffers",
+BASE_FEATURE(kOddHeightMultiPlanarBuffers,
+             "OddHeightMultiPlanarBuffers",
 #if BUILDFLAG(IS_MAC)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
-const base::Feature kOddWidthMultiPlanarBuffers{
-  "OddWidthMultiPlanarBuffers",
+BASE_FEATURE(kOddWidthMultiPlanarBuffers,
+             "OddWidthMultiPlanarBuffers",
 #if BUILDFLAG(IS_MAC)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 }  // namespace features

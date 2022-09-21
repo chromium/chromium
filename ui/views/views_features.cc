@@ -14,18 +14,21 @@ namespace features {
 
 // Use a high-contrast style for ink drops when in platform high-contrast mode,
 // including full opacity and a high-contrast color
-const base::Feature kEnablePlatformHighContrastInkDrop{
-    "EnablePlatformHighContrastInkDrop", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnablePlatformHighContrastInkDrop,
+             "EnablePlatformHighContrastInkDrop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Only paint views that are invalidated/dirty (i.e. a paint was directly
 // scheduled on those views) as opposed to painting all views that intersect
 // an invalid rectangle on the layer.
-const base::Feature kEnableViewPaintOptimization{
-    "EnableViewPaintOptimization", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableViewPaintOptimization,
+             "EnableViewPaintOptimization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, widgets will be shown based on their z-order level
-const base::Feature kWidgetLayering{"WidgetLayering",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kWidgetLayering,
+             "WidgetLayering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace views

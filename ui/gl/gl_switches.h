@@ -92,23 +92,23 @@ GL_EXPORT extern const int kGLSwitchesCopiedFromGpuProcessHostNumSwitches;
 
 namespace features {
 
-GL_EXPORT extern const base::Feature kDCompTripleBufferRootSwapChain;
-GL_EXPORT extern const base::Feature kDCompTripleBufferVideoSwapChain;
-GL_EXPORT extern const base::Feature kDirectCompositionForceFullDamage;
-GL_EXPORT extern const base::Feature kDirectCompositionGpuVSync;
-GL_EXPORT extern const base::Feature kDirectCompositionLowLatencyPresentation;
-GL_EXPORT extern const base::Feature kDirectCompositionVerifyDrawOffset;
+GL_EXPORT BASE_DECLARE_FEATURE(kDCompTripleBufferRootSwapChain);
+GL_EXPORT BASE_DECLARE_FEATURE(kDCompTripleBufferVideoSwapChain);
+GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionForceFullDamage);
+GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionGpuVSync);
+GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionLowLatencyPresentation);
+GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionVerifyDrawOffset);
 GL_EXPORT extern const base::FeatureParam<int> kVerifyDrawOffsetX;
 GL_EXPORT extern const base::FeatureParam<int> kVerifyDrawOffsetY;
-GL_EXPORT extern const base::Feature kDirectCompositionSoftwareOverlays;
-GL_EXPORT extern const base::Feature kEGLDualGpuRendering;
-GL_EXPORT extern const base::Feature kIntelVpSuperResolution;
-GL_EXPORT extern const base::Feature kDefaultANGLEOpenGL;
-GL_EXPORT extern const base::Feature kDefaultANGLEMetal;
-GL_EXPORT extern const base::Feature kDefaultANGLEVulkan;
-GL_EXPORT extern const base::Feature kTrackCurrentShaders;
-GL_EXPORT extern const base::Feature kVulkanFromANGLE;
-GL_EXPORT extern const base::Feature kDXGIWaitableSwapChain;
+GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionSoftwareOverlays);
+GL_EXPORT BASE_DECLARE_FEATURE(kEGLDualGpuRendering);
+GL_EXPORT BASE_DECLARE_FEATURE(kIntelVpSuperResolution);
+GL_EXPORT BASE_DECLARE_FEATURE(kDefaultANGLEOpenGL);
+GL_EXPORT BASE_DECLARE_FEATURE(kDefaultANGLEMetal);
+GL_EXPORT BASE_DECLARE_FEATURE(kDefaultANGLEVulkan);
+GL_EXPORT BASE_DECLARE_FEATURE(kTrackCurrentShaders);
+GL_EXPORT BASE_DECLARE_FEATURE(kVulkanFromANGLE);
+GL_EXPORT BASE_DECLARE_FEATURE(kDXGIWaitableSwapChain);
 GL_EXPORT extern const base::FeatureParam<int>
     kDXGIWaitableSwapChainMaxQueuedFrames;
 

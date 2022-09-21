@@ -27,7 +27,7 @@
 namespace features {
 namespace {
 
-const base::Feature kGpuVsync{"GpuVsync", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kGpuVsync, "GpuVsync", base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 const base::FeatureParam<std::string>
@@ -72,8 +72,9 @@ bool IsDeviceBlocked(const char* field, const std::string& block_list) {
 }  // namespace
 
 #if BUILDFLAG(IS_ANDROID)
-const base::Feature kAndroidFrameDeadline{"AndroidFrameDeadline",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAndroidFrameDeadline,
+             "AndroidFrameDeadline",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Use the passthrough command decoder by default.  This can be overridden with
@@ -81,16 +82,16 @@ const base::Feature kAndroidFrameDeadline{"AndroidFrameDeadline",
 // Feature lives in ui/gl because it affects the GL binding initialization on
 // platforms that would otherwise not default to using EGL bindings.
 // Launched on Windows, still experimental on other platforms.
-const base::Feature kDefaultPassthroughCommandDecoder {
-  "DefaultPassthroughCommandDecoder",
+BASE_FEATURE(kDefaultPassthroughCommandDecoder,
+             "DefaultPassthroughCommandDecoder",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) ||     \
     (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
     BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 bool UseGpuVsync() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(

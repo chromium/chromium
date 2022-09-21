@@ -15,8 +15,9 @@
 namespace features {
 
 // Enable recognizing "aria-virtualcontent" as a valid aria property.
-const base::Feature kEnableAccessibilityAriaVirtualContent{
-    "AccessibilityAriaVirtualContent", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableAccessibilityAriaVirtualContent,
+             "AccessibilityAriaVirtualContent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAccessibilityAriaVirtualContentEnabled() {
   return base::FeatureList::IsEnabled(
@@ -25,8 +26,9 @@ bool IsAccessibilityAriaVirtualContentEnabled() {
 
 // Enable exposing the <html> element to the browser process AXTree
 // (as an ignored node).
-const base::Feature kEnableAccessibilityExposeHTMLElement{
-    "AccessibilityExposeHTMLElement", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableAccessibilityExposeHTMLElement,
+             "AccessibilityExposeHTMLElement",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAccessibilityExposeHTMLElementEnabled() {
   return base::FeatureList::IsEnabled(
@@ -37,8 +39,9 @@ bool IsAccessibilityExposeHTMLElementEnabled() {
 // This will allow us to simplify logic by eliminating the distiction between
 // "ignored and included in the tree" from "ignored and not included in the
 // tree".
-const base::Feature kEnableAccessibilityExposeIgnoredNodes{
-    "AccessibilityExposeIgnoredNodes", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableAccessibilityExposeIgnoredNodes,
+             "AccessibilityExposeIgnoredNodes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAccessibilityExposeIgnoredNodesEnabled() {
   return base::FeatureList::IsEnabled(
@@ -47,8 +50,9 @@ bool IsAccessibilityExposeIgnoredNodesEnabled() {
 
 // Enable language detection to determine language used in page text, exposed
 // on the browser process AXTree.
-const base::Feature kEnableAccessibilityLanguageDetection{
-    "AccessibilityLanguageDetection", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableAccessibilityLanguageDetection,
+             "AccessibilityLanguageDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAccessibilityLanguageDetectionEnabled() {
   return base::FeatureList::IsEnabled(
@@ -57,45 +61,51 @@ bool IsAccessibilityLanguageDetectionEnabled() {
 
 // Serializes accessibility information from the Views tree and deserializes it
 // into an AXTree in the browser process.
-const base::Feature kEnableAccessibilityTreeForViews{
-    "AccessibilityTreeForViews", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableAccessibilityTreeForViews,
+             "AccessibilityTreeForViews",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAccessibilityTreeForViewsEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kEnableAccessibilityTreeForViews);
 }
 
-const base::Feature kAccessibilityFocusHighlight{
-    "AccessibilityFocusHighlight", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAccessibilityFocusHighlight,
+             "AccessibilityFocusHighlight",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAccessibilityFocusHighlightEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityFocusHighlight);
 }
 
-const base::Feature kAutoDisableAccessibility{
-    "AutoDisableAccessibility", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAutoDisableAccessibility,
+             "AutoDisableAccessibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAutoDisableAccessibilityEnabled() {
   return base::FeatureList::IsEnabled(::features::kAutoDisableAccessibility);
 }
 
-const base::Feature kTextBasedAudioDescription{
-    "TextBasedAudioDescription", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTextBasedAudioDescription,
+             "TextBasedAudioDescription",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTextBasedAudioDescriptionEnabled() {
   return base::FeatureList::IsEnabled(::features::kTextBasedAudioDescription);
 }
 
 #if BUILDFLAG(IS_WIN)
-const base::Feature kIChromeAccessible{"IChromeAccessible",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kIChromeAccessible,
+             "IChromeAccessible",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsIChromeAccessibleEnabled() {
   return base::FeatureList::IsEnabled(::features::kIChromeAccessible);
 }
 
-const base::Feature kSelectiveUIAEnablement{"SelectiveUIAEnablement",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSelectiveUIAEnablement,
+             "SelectiveUIAEnablement",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Returns true if accessibility will be selectively enabled depending on the
 // UIA APIs that are called, allowing non-screenreader usage to enable less of
@@ -106,8 +116,9 @@ bool IsSelectiveUIAEnablementEnabled() {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const base::Feature kDockedMagnifierResizing{"DockedMagnifierResizing",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDockedMagnifierResizing,
+             "DockedMagnifierResizing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsDockedMagnifierResizingEnabled() {
   return base::FeatureList::IsEnabled(::features::kDockedMagnifierResizing);
@@ -118,77 +129,79 @@ bool IsDictationOfflineAvailable() {
       ash::features::kOnDeviceSpeechRecognition);
 }
 
-const base::Feature kExperimentalAccessibilityDictationWithPumpkin{
-    "ExperimentalAccessibilityDictationWithPumpkin",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kExperimentalAccessibilityDictationWithPumpkin,
+             "ExperimentalAccessibilityDictationWithPumpkin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsExperimentalAccessibilityDictationWithPumpkinEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExperimentalAccessibilityDictationWithPumpkin);
 }
 
-const base::Feature kExperimentalAccessibilityDictationMoreCommands{
-    "ExperimentalAccessibilityDictationMoreCommands",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
+BASE_FEATURE(kExperimentalAccessibilityDictationMoreCommands,
+             "ExperimentalAccessibilityDictationMoreCommands",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsExperimentalAccessibilityDictationMoreCommandsEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExperimentalAccessibilityDictationMoreCommands);
 }
 
-const base::Feature kExperimentalAccessibilityGoogleTtsLanguagePacks{
-    "ExperimentalAccessibilityGoogleTtsLanguagePacks",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kExperimentalAccessibilityGoogleTtsLanguagePacks,
+             "ExperimentalAccessibilityGoogleTtsLanguagePacks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExperimentalAccessibilityGoogleTtsLanguagePacks);
 }
 
-const base::Feature kEnhancedNetworkVoices{"EnhancedNetworkVoices",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnhancedNetworkVoices,
+             "EnhancedNetworkVoices",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsEnhancedNetworkVoicesEnabled() {
   return base::FeatureList::IsEnabled(::features::kEnhancedNetworkVoices);
 }
 
-const base::Feature kAccessibilityOSSettingsVisibility{
-    "AccessibilityOSSettingsVisibility", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAccessibilityOSSettingsVisibility,
+             "AccessibilityOSSettingsVisibility",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAccessibilityOSSettingsVisibilityEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityOSSettingsVisibility);
 }
 
-const base::Feature kAccessibilityService{"AccessibilityService",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAccessibilityService,
+             "AccessibilityService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAccessibilityServiceEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityService);
 }
 
-const base::Feature kExperimentalAccessibilityColorEnhancementSettings{
-    "ExperimentalAccessibilityColorEnhancementSettings",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kExperimentalAccessibilityColorEnhancementSettings,
+             "ExperimentalAccessibilityColorEnhancementSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExperimentalAccessibilityColorEnhancementSettings);
 }
 
-const base::Feature kAccessibilitySelectToSpeakPageMigration{
-    "AccessibilitySelectToSpeakPageMigration",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAccessibilitySelectToSpeakPageMigration,
+             "AccessibilitySelectToSpeakPageMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilitySelectToSpeakPageMigration);
 }
 
-const base::Feature kAccessibilitySelectToSpeakPrefsMigration{
-    "AccessibilitySelectToSpeakPrefsMigration",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAccessibilitySelectToSpeakPrefsMigration,
+             "AccessibilitySelectToSpeakPrefsMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAccessibilitySelectToSpeakPrefsMigrationEnabled() {
   return base::FeatureList::IsEnabled(
@@ -196,30 +209,34 @@ bool IsAccessibilitySelectToSpeakPrefsMigrationEnabled() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-const base::Feature kAugmentExistingImageLabels{
-    "AugmentExistingImageLabels", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAugmentExistingImageLabels,
+             "AugmentExistingImageLabels",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAugmentExistingImageLabelsEnabled() {
   return base::FeatureList::IsEnabled(::features::kAugmentExistingImageLabels);
 }
 
-const base::Feature kUseAXPositionForDocumentMarkers{
-    "UseAXPositionForDocumentMarkers", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseAXPositionForDocumentMarkers,
+             "UseAXPositionForDocumentMarkers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsUseAXPositionForDocumentMarkersEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kUseAXPositionForDocumentMarkers);
 }
 
-const base::Feature kEnableAriaElementReflection{
-    "EnableAriaElementReflection", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableAriaElementReflection,
+             "EnableAriaElementReflection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAriaElementReflectionEnabled() {
   return base::FeatureList::IsEnabled(::features::kEnableAriaElementReflection);
 }
 
-const base::Feature kAblateSendPendingAccessibilityEvents{
-    "AblateSendPendingAccessibilityEvents", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAblateSendPendingAccessibilityEvents,
+             "AblateSendPendingAccessibilityEvents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAblateSendPendingAccessibilityEventsEnabled() {
   return base::FeatureList::IsEnabled(
@@ -227,15 +244,17 @@ bool IsAblateSendPendingAccessibilityEventsEnabled() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-const base::Feature kComputeAXMode{"ComputeAXMode",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kComputeAXMode,
+             "ComputeAXMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsComputeAXModeEnabled() {
   return base::FeatureList::IsEnabled(::features::kComputeAXMode);
 }
 
-const base::Feature kOptimizeAccessibilityUiThreadWork{
-    "OptimizeAccessibilityUiThreadWork", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOptimizeAccessibilityUiThreadWork,
+             "OptimizeAccessibilityUiThreadWork",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsOptimizeAccessibilityUiThreadWorkEnabled() {
   return base::FeatureList::IsEnabled(
@@ -244,21 +263,21 @@ bool IsOptimizeAccessibilityUiThreadWorkEnabled() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-const base::Feature kReadAnything{"ReadAnything",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kReadAnything, "ReadAnything", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsReadAnythingEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnything);
 }
 
-const base::Feature kReadAnythingWithScreen2x{
-    "ReadAnythingWithScreen2x", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kReadAnythingWithScreen2x,
+             "ReadAnythingWithScreen2x",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsReadAnythingWithScreen2xEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingWithScreen2x);
 }
 
-const base::Feature kScreenAI{"ScreenAI", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kScreenAI, "ScreenAI", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsScreenAIVisualAnnotationsEnabled() {
   return base::FeatureList::IsEnabled(::features::kScreenAI);
@@ -271,21 +290,23 @@ bool IsScreenAIServiceNeeded() {
 
 // This feature is only for debug purposes and for security/privacy reasons,
 // should be never enabled by default .
-const base::Feature kScreenAIDebugMode{"ScreenAIDebugMode",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kScreenAIDebugMode,
+             "ScreenAIDebugMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsScreenAIDebugModeEnabled() {
   return base::FeatureList::IsEnabled(::features::kScreenAIDebugMode);
 }
 
-const base::Feature kScreenAIUseLayoutExtraction{
-    "ScreenAIUseLayoutExtraction", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kScreenAIUseLayoutExtraction,
+             "ScreenAIUseLayoutExtraction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsScreenAIUseLayoutExtractionEnabled() {
   return base::FeatureList::IsEnabled(::features::kScreenAIUseLayoutExtraction);
 }
 
-const base::Feature kPdfOcr{"PdfOcr", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPdfOcr, "PdfOcr", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsPdfOcrEnabled() {
   return base::FeatureList::IsEnabled(::features::kPdfOcr);

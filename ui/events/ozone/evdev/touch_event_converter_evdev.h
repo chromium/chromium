@@ -38,7 +38,7 @@ class DeviceEventDispatcherEvdev;
 class FalseTouchFinder;
 struct InProgressTouchEvdev;
 
-COMPONENT_EXPORT(EVDEV) extern const base::Feature kEnableSingleCancelTouch;
+COMPONENT_EXPORT(EVDEV) BASE_DECLARE_FEATURE(kEnableSingleCancelTouch);
 
 class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
     : public EventConverterEvdev {

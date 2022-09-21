@@ -31,14 +31,14 @@ namespace features {
 // If enabled, all draw commands recorded on canvas are done in pixel aligned
 // measurements. This also enables scaling of all elements in views and layers
 // to be done via corner points. See https://crbug.com/720596 for details.
-const base::Feature kEnablePixelCanvasRecording {
-  "enable-pixel-canvas-recording",
+BASE_FEATURE(kEnablePixelCanvasRecording,
+             "enable-pixel-canvas-recording",
 #if BUILDFLAG(IS_CHROMEOS)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 }  // namespace features
 

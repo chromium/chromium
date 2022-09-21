@@ -15,8 +15,7 @@ class LinuxUiTheme;
 enum class SystemTheme : int;
 
 // TODO(https://crbug.com/1317782): Remove in M110.
-COMPONENT_EXPORT(LINUX_UI_FACTORY)
-extern const base::Feature kAllowQt;
+COMPONENT_EXPORT(LINUX_UI_FACTORY) BASE_DECLARE_FEATURE(kAllowQt);
 
 // Returns a LinuxUi for the default toolkit.  May create a LinuxUi instance if
 // one does not exist.  May return nullptr if no toolkits are available.
