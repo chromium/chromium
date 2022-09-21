@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"
@@ -83,6 +84,20 @@ CustomEventRecorder* CustomEventRecorder::GetInstance() {
 
 // static
 void CustomEventRecorder::EmitRecurringUpdates() {
+  auto* instance = CustomEventRecorder::GetInstance();
+  if (instance && instance->active_processes_callback_) {
+    const auto pids = instance->active_processes_callback_.Run();
+    TRACE_EVENT_INSTANT(
+        "__metadata", "ActiveProcesses", perfetto::Track::Global(0),
+        [&pids](perfetto::EventContext ctx) {
+          auto* active_processes =
+              ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                  ->set_active_processes();
+          for (const auto& pid : pids) {
+            active_processes->add_pid(pid);
+          }
+        });
+  }
 #if BUILDFLAG(IS_ANDROID)
   static const ChromeProcessDescriptor::ProcessType process_type =
       GetProcessType(

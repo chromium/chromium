@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/tracing/perfetto/consumer_host.h"
 #include "services/tracing/perfetto/producer_host.h"
+#include "services/tracing/public/cpp/perfetto/custom_event_recorder.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/tracing_service.h"
 
@@ -79,6 +80,10 @@ PerfettoService::PerfettoService(
       &PerfettoService::OnServiceDisconnect, base::Unretained(this)));
   producer_receivers_.set_disconnect_handler(base::BindRepeating(
       &PerfettoService::OnProducerHostDisconnect, base::Unretained(this)));
+
+  CustomEventRecorder::GetInstance()->SetActiveProcessesCallback(
+      base::BindRepeating(&PerfettoService::active_service_pids,
+                          base::Unretained(this)));
 }
 
 PerfettoService::~PerfettoService() = default;
@@ -137,14 +142,20 @@ void PerfettoService::ConnectToProducerHost(
 }
 
 void PerfettoService::AddActiveServicePid(base::ProcessId pid) {
-  active_service_pids_.insert(pid);
+  {
+    base::AutoLock lock(active_service_pids_lock_);
+    active_service_pids_.insert(pid);
+  }
   for (auto* tracing_session : tracing_sessions_) {
     tracing_session->OnActiveServicePidAdded(pid);
   }
 }
 
 void PerfettoService::RemoveActiveServicePid(base::ProcessId pid) {
-  active_service_pids_.erase(pid);
+  {
+    base::AutoLock lock(active_service_pids_lock_);
+    active_service_pids_.erase(pid);
+  }
   num_active_connections_.erase(pid);
   for (auto* tracing_session : tracing_sessions_) {
     tracing_session->OnActiveServicePidRemoved(pid);

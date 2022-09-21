@@ -21,6 +21,9 @@ namespace tracing {
 class COMPONENT_EXPORT(TRACING_CPP) CustomEventRecorder
     : public perfetto::TrackEventSessionObserver {
  public:
+  using ActiveProcessesCallback =
+      base::RepeatingCallback<std::set<base::ProcessId>()>;
+
   static CustomEventRecorder* GetInstance();
   static void EmitRecurringUpdates();
 
@@ -38,6 +41,10 @@ class COMPONENT_EXPORT(TRACING_CPP) CustomEventRecorder
       bool privacy_filtering_enabled);
   void OnTracingStarted(const perfetto::DataSourceConfig& data_source_config);
   void OnTracingStopped(base::OnceClosure stop_complete_callback);
+
+  void SetActiveProcessesCallback(ActiveProcessesCallback callback) {
+    active_processes_callback_ = callback;
+  }
 
   // Registered as a callback to receive every action recorded using
   // base::RecordAction(), when tracing is enabled with a histogram category.
@@ -80,6 +87,7 @@ class COMPONENT_EXPORT(TRACING_CPP) CustomEventRecorder
       monitored_histograms_;
   base::ActionCallback user_action_callback_ =
       base::BindRepeating(&CustomEventRecorder::OnUserActionSampleCallback);
+  ActiveProcessesCallback active_processes_callback_;
 
   base::Lock lock_;
   bool privacy_filtering_enabled_ GUARDED_BY(lock_) = false;

@@ -122,6 +122,9 @@ class TraceEventDataSourceTest
   }
 
   void TearDown() override {
+    // Reset the callback - it's stored in CustomEventRecorder, and otherwise
+    // may stay for the next test(s).
+    CustomEventRecorder::GetInstance()->SetActiveProcessesCallback({});
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     if (base::trace_event::TraceLog::GetInstance()->IsEnabled()) {
       base::RunLoop wait_for_tracelog_flush;
@@ -846,6 +849,10 @@ class TraceEventDataSourceTest
     EXPECT_THAT(entries, testing::ElementsAreArray(expected_entries));
   }
 
+  std::set<base::ProcessId> ActiveProcessesCallback() const {
+    return {1, 2, 10};
+  }
+
  protected:
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::test::TaskEnvironment task_environment_;
@@ -1062,6 +1069,23 @@ TEST_F(TraceEventDataSourceTest, BasicTraceEvent) {
   // The data source emits one empty packet after the ProcessDescriptor.
   EXPECT_EQ(producer_client()->empty_finalized_packets_count(), 1);
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+}
+
+TEST_F(TraceEventDataSourceTest, ActiveProcessesMetadata) {
+  CustomEventRecorder::GetInstance()->SetActiveProcessesCallback(
+      base::BindRepeating(&TraceEventDataSourceTest::ActiveProcessesCallback,
+                          base::Unretained(this)));
+  StartTraceEventDataSource();
+
+  TRACE_EVENT_BEGIN0(kCategoryGroup, "bar");
+
+  size_t packet_index = ExpectStandardPreamble();
+
+  auto* active_processes_packet = GetFinalizedPacket(packet_index++);
+  ExpectTraceEvent(active_processes_packet, /*category_iid=*/1u,
+                   /*name=*/1u, TRACE_EVENT_PHASE_INSTANT);
+  ExpectEventCategories(active_processes_packet, {{1u, "__metadata"}});
+  ExpectInternedEventNames(active_processes_packet, {{1u, "ActiveProcesses"}});
 }
 
 // For some reason this is failing in `cast_chrome`.

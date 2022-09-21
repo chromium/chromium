@@ -71,6 +71,7 @@ class PerfettoService : public mojom::PerfettoService {
   void SetActiveServicePidsInitialized();
 
   std::set<base::ProcessId> active_service_pids() const {
+    base::AutoLock lock(active_service_pids_lock_);
     return active_service_pids_;
   }
 
@@ -94,7 +95,12 @@ class PerfettoService : public mojom::PerfettoService {
   mojo::ReceiverSet<mojom::PerfettoService, uint32_t> receivers_;
   mojo::UniqueReceiverSet<mojom::ProducerHost, uint32_t> producer_receivers_;
   std::set<ConsumerHost::TracingSession*> tracing_sessions_;  // Not owned.
-  std::set<base::ProcessId> active_service_pids_;
+  // Protects access to |active_service_pids_|. We need this lock because
+  // CustomEventRecorder calls active_service_pids() from a possibly different
+  // thread on incremental state reset.
+  mutable base::Lock active_service_pids_lock_;
+  std::set<base::ProcessId> active_service_pids_
+      GUARDED_BY(active_service_pids_lock_);
   std::map<base::ProcessId, int> num_active_connections_;
   bool active_service_pids_initialized_ = false;
 };

@@ -869,9 +869,13 @@ message AndroidToolbar {
   optional SnapshotDifference snapshot_difference = 3;
 }
 
+message ActiveProcesses {
+  repeated int32 pid = 1;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1042
+  // Next ID: 1043
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -961,5 +965,7 @@ message ChromeTrackEvent {
     optional SequenceManagerTask sequence_manager_task = 1040;
 
     optional AndroidToolbar android_toolbar = 1041;
+
+    optional ActiveProcesses active_processes = 1042;
   }
 }
