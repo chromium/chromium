@@ -9,6 +9,8 @@
 <body>
 <script>
 
+setup(() => assertSpeculationRulesIsSupported());
+
 promise_test(async t => {
   const uid = token();
   const workerUrl = 'resources/clients-matchall-service-worker.js';
