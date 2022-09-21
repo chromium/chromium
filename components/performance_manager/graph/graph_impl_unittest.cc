@@ -255,7 +255,7 @@ void AssertDictValueContainsListKey(const base::Value& descr,
   const base::Value* v = descr.FindListKey(key);
   ASSERT_NE(nullptr, v);
 
-  const auto list = v->GetListDeprecated();
+  const auto& list = v->GetList();
   ASSERT_EQ(2u, list.size());
   ASSERT_EQ(list[0], base::Value(s1));
   ASSERT_EQ(list[1], base::Value(s2));
