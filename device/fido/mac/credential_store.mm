@@ -18,6 +18,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/random.h"
+#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/mac/credential_metadata.h"
 #include "device/fido/mac/keychain.h"
 #include "device/fido/mac/touch_id_context.h"
@@ -621,6 +622,56 @@ bool TouchIdCredentialStore::DeleteCredentialById(
   OSStatus status = Keychain::GetInstance().ItemDelete(query);
   if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status) << "SecItemDelete failed";
+    return false;
+  }
+  return true;
+}
+
+bool TouchIdCredentialStore::UpdateCredential(
+    base::span<uint8_t> credential_id_span,
+    const std::string& username) {
+  std::vector<uint8_t> credential_id =
+      fido_parsing_utils::Materialize(credential_id_span);
+
+  absl::optional<std::list<Credential>> credentials = FindCredentialsImpl(
+      /*rp_id=*/absl::nullopt, {credential_id});
+  if (!credentials) {
+    FIDO_LOG(ERROR) << "no credentials found";
+    return false;
+  }
+  base::ScopedCFTypeRef<CFMutableDictionaryRef> params(
+      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
+  bool found_credential = false;
+  for (Credential& credential : *credentials) {
+    if (credential.credential_id == credential_id) {
+      credential.metadata.user_name = username;
+      std::vector<uint8_t> sealed_metadata = SealCredentialMetadata(
+          config_.metadata_secret, credential.rp_id, credential.metadata);
+      CFDictionarySetValue(params, kSecAttrApplicationTag,
+                           [NSData dataWithBytes:sealed_metadata.data()
+                                          length:sealed_metadata.size()]);
+      found_credential = true;
+      break;
+    }
+  }
+  if (!found_credential) {
+    FIDO_LOG(ERROR) << "no credential with matching credential_id";
+    return false;
+  }
+  base::ScopedCFTypeRef<CFMutableDictionaryRef> query(CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
+      &kCFTypeDictionaryValueCallBacks));
+  CFDictionarySetValue(query, kSecAttrAccessGroup,
+                       base::SysUTF8ToNSString(config_.keychain_access_group));
+  CFDictionarySetValue(query, kSecClass, kSecClassKey);
+  CFDictionarySetValue(query, kSecAttrApplicationLabel,
+                       [NSData dataWithBytes:credential_id.data()
+                                      length:credential_id.size()]);
+  OSStatus status = Keychain::GetInstance().ItemUpdate(query, params);
+  if (status != errSecSuccess) {
+    OSSTATUS_DLOG(ERROR, status) << "SecItemEdit failed";
     return false;
   }
   return true;

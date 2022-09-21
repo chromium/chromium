@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/webauthn/local_credential_management_win.h"
-#include "chrome/browser/webauthn/local_credential_management.h"
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -164,4 +164,12 @@ void LocalCredentialManagementWin::Delete(
     base::OnceCallback<void(bool)> callback) {
   device::WinWebAuthnApiAuthenticator::DeletePlatformCredential(
       api_, credential_id, std::move(callback));
+}
+
+void LocalCredentialManagementWin::Edit(
+    base::span<uint8_t> credential_id,
+    std::string new_username,
+    base::OnceCallback<void(bool)> callback) {
+  // Editing passkeys should not be an option in Windows.
+  NOTREACHED();
 }

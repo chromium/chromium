@@ -118,4 +118,65 @@ TEST_F(LocalCredentialManagementTest, DeleteCredential) {
   EXPECT_FALSE(std::get<0>(callback.TakeResult()));
 }
 
+TEST_F(LocalCredentialManagementTest, EditCredential) {
+  device::test::TestCallbackReceiver<bool> callback;
+  auto credential = store_.CreateCredential(
+      kRpId, kUser, device::fido::mac::TouchIdCredentialStore::kDiscoverable);
+  ASSERT_TRUE(credential);
+  auto credentials =
+      device::fido::mac::TouchIdCredentialStore::FindCredentialsForTesting(
+          config_, kRpId);
+  EXPECT_EQ(credentials.size(), 1u);
+  local_cred_man_.Edit(credential->first.credential_id, "new-username",
+                       callback.callback());
+  callback.WaitForCallback();
+  EXPECT_TRUE(std::get<0>(callback.TakeResult()));
+
+  credentials =
+      device::fido::mac::TouchIdCredentialStore::FindCredentialsForTesting(
+          config_, kRpId);
+  EXPECT_EQ(credentials.size(), 1u);
+  EXPECT_EQ(credentials.front().metadata.user_name, "new-username");
+}
+
+TEST_F(LocalCredentialManagementTest, EditLongCredential) {
+  device::test::TestCallbackReceiver<bool> callback;
+  auto credential = store_.CreateCredential(
+      kRpId, kUser, device::fido::mac::TouchIdCredentialStore::kDiscoverable);
+  ASSERT_TRUE(credential);
+  auto credentials =
+      device::fido::mac::TouchIdCredentialStore::FindCredentialsForTesting(
+          config_, kRpId);
+  EXPECT_EQ(credentials.size(), 1u);
+  local_cred_man_.Edit(
+      credential->first.credential_id,
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      callback.callback());
+  callback.WaitForCallback();
+  EXPECT_TRUE(std::get<0>(callback.TakeResult()));
+
+  credentials =
+      device::fido::mac::TouchIdCredentialStore::FindCredentialsForTesting(
+          config_, kRpId);
+  EXPECT_EQ(credentials.size(), 1u);
+  EXPECT_EQ(
+      credentials.front().metadata.user_name,
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA…");
+}
+
+TEST_F(LocalCredentialManagementTest, EditUnknownCredential) {
+  device::test::TestCallbackReceiver<bool> callback;
+  auto credential = store_.CreateCredential(
+      kRpId, kUser, device::fido::mac::TouchIdCredentialStore::kDiscoverable);
+  ASSERT_TRUE(credential);
+  auto credentials =
+      device::fido::mac::TouchIdCredentialStore::FindCredentialsForTesting(
+          config_, kRpId);
+  EXPECT_EQ(credentials.size(), 1u);
+  uint8_t credential_id[] = {0xa};
+  local_cred_man_.Edit(credential_id, "new-username", callback.callback());
+  callback.WaitForCallback();
+  EXPECT_FALSE(std::get<0>(callback.TakeResult()));
+}
+
 }  // namespace

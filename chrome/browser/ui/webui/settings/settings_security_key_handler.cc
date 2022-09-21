@@ -1111,6 +1111,11 @@ void SecurityKeysPhonesHandler::DoEnumerate(const base::Value& callback_id) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 PasskeysHandler::PasskeysHandler() = default;
+
+PasskeysHandler::PasskeysHandler(
+    std::unique_ptr<LocalCredentialManagement> local_cred_man)
+    : local_cred_man_(std::move(local_cred_man)) {}
+
 PasskeysHandler::~PasskeysHandler() = default;
 
 void PasskeysHandler::OnJavascriptAllowed() {}
@@ -1128,6 +1133,14 @@ void PasskeysHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "passkeysDelete", base::BindRepeating(&PasskeysHandler::HandleDelete,
                                             base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "passkeysEdit", base::BindRepeating(&PasskeysHandler::HandleEdit,
+                                          base::Unretained(this)));
+  if (!local_cred_man_) {
+    local_cred_man_ =
+        LocalCredentialManagement::Create(Profile::FromBrowserContext(
+            web_ui()->GetWebContents()->GetBrowserContext()));
+  }
 }
 
 void PasskeysHandler::HandleHasPasskeys(const base::Value::List& args) {
@@ -1135,18 +1148,13 @@ void PasskeysHandler::HandleHasPasskeys(const base::Value::List& args) {
   DCHECK_EQ(1u, args.size());
 
   AllowJavascript();
-  std::unique_ptr<LocalCredentialManagement> local_cred_man =
-      LocalCredentialManagement::Create(Profile::FromBrowserContext(
-          web_ui()->GetWebContents()->GetBrowserContext()));
-  local_cred_man->HasCredentials(base::BindOnce(
-      &PasskeysHandler::OnHasPasskeysComplete, weak_factory_.GetWeakPtr(),
-      args[0].GetString(), std::move(local_cred_man)));
+  local_cred_man_->HasCredentials(
+      base::BindOnce(&PasskeysHandler::OnHasPasskeysComplete,
+                     weak_factory_.GetWeakPtr(), args[0].GetString()));
 }
 
-void PasskeysHandler::OnHasPasskeysComplete(
-    std::string callback_id,
-    std::unique_ptr<LocalCredentialManagement> local_cred_man,
-    bool has_passkeys) {
+void PasskeysHandler::OnHasPasskeysComplete(std::string callback_id,
+                                            bool has_passkeys) {
   ResolveJavascriptCallback(base::Value(std::move(callback_id)),
                             base::Value(has_passkeys));
 }
@@ -1160,17 +1168,13 @@ void PasskeysHandler::HandleEnumerate(const base::Value::List& args) {
 }
 
 void PasskeysHandler::DoEnumerate(std::string callback_id) {
-  std::unique_ptr<LocalCredentialManagement> local_cred_man =
-      LocalCredentialManagement::Create(Profile::FromBrowserContext(
-          web_ui()->GetWebContents()->GetBrowserContext()));
-  local_cred_man->Enumerate(base::BindOnce(
-      &PasskeysHandler::OnEnumerateComplete, weak_factory_.GetWeakPtr(),
-      std::move(callback_id), std::move(local_cred_man)));
+  local_cred_man_->Enumerate(
+      base::BindOnce(&PasskeysHandler::OnEnumerateComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback_id)));
 }
 
 void PasskeysHandler::OnEnumerateComplete(
     std::string callback_id,
-    std::unique_ptr<LocalCredentialManagement> local_cred_man,
     absl::optional<std::vector<device::DiscoverableCredentialMetadata>>
         credentials) {
   base::Value result;
@@ -1207,24 +1211,17 @@ void PasskeysHandler::HandleDelete(const base::Value::List& args) {
   const bool ok = base::HexStringToBytes(args[1].GetString(), &credential_id);
   DCHECK(ok);
 
-  std::unique_ptr<LocalCredentialManagement> local_cred_man =
-      LocalCredentialManagement::Create(Profile::FromBrowserContext(
-          web_ui()->GetWebContents()->GetBrowserContext()));
-  local_cred_man->Delete(
+  local_cred_man_->Delete(
       credential_id,
       base::BindOnce(&PasskeysHandler::OnDeleteComplete,
-                     weak_factory_.GetWeakPtr(), args[0].GetString(),
-                     std::move(local_cred_man)));
+                     weak_factory_.GetWeakPtr(), args[0].GetString()));
 }
 
-void PasskeysHandler::OnDeleteComplete(
-    std::string callback_id,
-    std::unique_ptr<LocalCredentialManagement> local_cred_man,
-    bool ok) {
+void PasskeysHandler::OnDeleteComplete(std::string callback_id, bool ok) {
   if (!ok) {
-    // Windows failed to delete the passkey. This can happen if API support is
-    // missing but no passkeys will be shown at all in that case so that should
-    // be impossible. It can also happen if the user attempts to delete a
+    // Windows/Mac failed to delete the passkey. This can happen if API support
+    // is missing but no passkeys will be shown at all in that case so that
+    // should be impossible. It can also happen if the user attempts to delete a
     // system-created credential. In this case the Javascript will notice that
     // the credential didn't disappear and will show an error message.
   }
@@ -1232,6 +1229,27 @@ void PasskeysHandler::OnDeleteComplete(
   DoEnumerate(std::move(callback_id));
 }
 
+void PasskeysHandler::HandleEdit(const base::Value::List& args) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(3u, args.size());
+
+  std::vector<uint8_t> credential_id;
+  const bool ok = base::HexStringToBytes(args[1].GetString(), &credential_id);
+  DCHECK(ok);
+
+  std::string new_username = args[2].GetString();
+  local_cred_man_->Edit(
+      credential_id, std::move(new_username),
+      base::BindOnce(&PasskeysHandler::OnEditComplete,
+                     weak_factory_.GetWeakPtr(), args[0].GetString()));
+}
+
+void PasskeysHandler::OnEditComplete(std::string callback_id, bool ok) {
+  if (!ok) {
+    // Windows/Mac failed to edit the passkey.
+  }
+  DoEnumerate(std::move(callback_id));
+}
 #endif
 
 }  // namespace settings

@@ -65,3 +65,12 @@ void LocalCredentialManagementMac::Delete(
   device::fido::mac::TouchIdCredentialStore credential_store(config_);
   std::move(callback).Run(credential_store.DeleteCredentialById(credential_id));
 }
+
+void LocalCredentialManagementMac::Edit(
+    base::span<uint8_t> credential_id,
+    std::string new_username,
+    base::OnceCallback<void(bool)> callback) {
+  device::fido::mac::TouchIdCredentialStore credential_store(config_);
+  std::move(callback).Run(
+      credential_store.UpdateCredential(credential_id, new_username));
+}

@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/test/gmock_callback_support.h"
 #include "base/values.h"
+#include "chrome/browser/webauthn/local_credential_management.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/test_web_ui.h"
@@ -16,7 +18,9 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_fido_device_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -325,4 +329,111 @@ TEST_F(SecurityKeysBioEnrollmentHandlerTest, TestStorageFullError) {
 
 }  // namespace
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+class MockLocalCredentialManagement : public LocalCredentialManagement {
+ public:
+  ~MockLocalCredentialManagement() override = default;
+
+  MOCK_METHOD(void, HasCredentials, (base::OnceCallback<void(bool)> callback));
+  MOCK_METHOD(
+      void,
+      Enumerate,
+      (base::OnceCallback<void(
+           absl::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
+           callback));
+  MOCK_METHOD(void,
+              Delete,
+              (base::span<const uint8_t> credential_id,
+               base::OnceCallback<void(bool)> callback));
+  MOCK_METHOD(void,
+              Edit,
+              (base::span<uint8_t> credential_id,
+               std::string new_username,
+               base::OnceCallback<void(bool)> callback));
+};
+
+class TestPasskeysHandler : public PasskeysHandler {
+ public:
+  TestPasskeysHandler(content::TestWebUI* web_ui,
+                      std::unique_ptr<LocalCredentialManagement> lcm)
+      : PasskeysHandler(std::move(lcm)) {
+    set_web_ui(web_ui);
+    AllowJavascriptForTesting();
+  }
+
+  using PasskeysHandler::HandleEdit;
+
+  std::string SimulateEdit(std::string credential_id,
+                           std::string new_username,
+                           base::OnceCallback<void(bool)> callback) {
+    constexpr char kCallbackId[] = "passkeysEdit";
+    base::Value::List args;
+    args.Append(kCallbackId);
+    args.Append(credential_id);
+    args.Append(new_username);
+    HandleEdit(args);
+    base::RunLoop().RunUntilIdle();
+    return kCallbackId;
+  }
+};
+
+class PasskeysHandlerTest : public ChromeRenderViewHostTestHarness {
+ protected:
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    web_ui_ = std::make_unique<content::TestWebUI>();
+    web_ui_->set_web_contents(web_contents());
+    local_cred_man_ = std::make_unique<MockLocalCredentialManagement>();
+    weak_local_cred_man_ = local_cred_man_.get();
+    handler_ = std::make_unique<TestPasskeysHandler>(
+        web_ui_.get(), std::move(local_cred_man_));
+    web_ui_->ClearTrackedCalls();
+  }
+
+  std::unique_ptr<TestPasskeysHandler> handler_;
+  std::unique_ptr<content::TestWebUI> web_ui_;
+  std::unique_ptr<MockLocalCredentialManagement> local_cred_man_;
+  raw_ptr<MockLocalCredentialManagement> weak_local_cred_man_;
+};
+
+TEST_F(PasskeysHandlerTest, TestHandleEdit) {
+  device::test::TestCallbackReceiver<bool> callback;
+  std::vector<uint8_t> credential_id =
+      device::fido_parsing_utils::Materialize(kCredentialID);
+  std::string credential_id_hex = base::HexEncode(credential_id);
+  EXPECT_CALL(
+      *weak_local_cred_man_,
+      Edit(testing::ElementsAreArray(kCredentialID),
+           testing::Eq("new-username"), base::test::IsNotNullCallback()))
+      .Times(testing::AtLeast(1))
+      .WillOnce([](base::span<uint8_t> credential_id, std::string new_username,
+                   base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+        base::RunLoop().RunUntilIdle();
+      });
+  EXPECT_CALL(*weak_local_cred_man_, Enumerate)
+      .WillOnce([](base::OnceCallback<
+                    void(absl::optional<
+                         std::vector<device::DiscoverableCredentialMetadata>>)>
+                       callback) {
+        std::vector<device::DiscoverableCredentialMetadata> credential_metadata{
+            device::DiscoverableCredentialMetadata{
+                "a.com",
+                {0},
+                device::PublicKeyCredentialUserEntity(
+                    {0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa, 0xa,
+                     0xa, 0xa, 0xa, 0xa},
+                    "new-username", "new-username")}};
+        std::move(callback).Run(std::move(credential_metadata));
+        base::RunLoop().RunUntilIdle();
+      });
+  handler_->SimulateEdit(credential_id_hex, "new-username",
+                         callback.callback());
+  EXPECT_EQ(web_ui_->call_data()[0]->arg1()->GetString(), "passkeysEdit");
+  EXPECT_EQ(web_ui_->call_data()[0]->arg2()->GetBool(), true);
+  EXPECT_EQ(*web_ui_->call_data()[0]->arg3()->GetList()[0].GetDict().FindString(
+                "userName"),
+            "new-username");
+}
+#endif
 }  // namespace settings

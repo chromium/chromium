@@ -174,6 +174,43 @@ OSStatus FakeKeychain::ItemDelete(CFDictionaryRef query) {
   return errSecItemNotFound;
 }
 
+OSStatus FakeKeychain::ItemUpdate(
+    CFDictionaryRef query,
+    base::ScopedCFTypeRef<CFMutableDictionaryRef> attributes_to_update) {
+  DCHECK_EQ(base::mac::GetValueFromDictionary<CFStringRef>(query, kSecClass),
+            kSecClassKey);
+  DCHECK(CFEqual(base::mac::GetValueFromDictionary<CFStringRef>(
+                     query, kSecAttrAccessGroup),
+                 keychain_access_group_));
+  CFDataRef query_credential_id = base::mac::GetValueFromDictionary<CFDataRef>(
+      query, kSecAttrApplicationLabel);
+  DCHECK(query_credential_id);
+  for (auto it = items_.begin(); it != items_.end(); ++it) {
+    const base::ScopedCFTypeRef<CFDictionaryRef>& item = *it;
+    CFDataRef item_credential_id = base::mac::GetValueFromDictionary<CFDataRef>(
+        item, kSecAttrApplicationLabel);
+    DCHECK(item_credential_id);
+    if (!CFEqual(query_credential_id, item_credential_id)) {
+      continue;
+    }
+    base::ScopedCFTypeRef<CFMutableDictionaryRef> item_copy(
+        CFDictionaryCreateMutableCopy(kCFAllocatorDefault, /*capacity=*/0,
+                                      item));
+    size_t size = CFDictionaryGetCount(attributes_to_update.get());
+    std::vector<CFStringRef> keys(size, nullptr);
+    std::vector<CFDictionaryRef> values(size, nullptr);
+    CFDictionaryGetKeysAndValues(attributes_to_update.get(),
+                                 reinterpret_cast<const void**>(keys.data()),
+                                 reinterpret_cast<const void**>(values.data()));
+    for (size_t i = 0; i < size; ++i) {
+      CFDictionarySetValue(item_copy, keys[i], values[i]);
+    }
+    *it = base::ScopedCFTypeRef<CFDictionaryRef>(item_copy.release());
+    return errSecSuccess;
+  }
+  return errSecItemNotFound;
+}
+
 ScopedFakeKeychain::ScopedFakeKeychain(const std::string& keychain_access_group)
     : FakeKeychain(keychain_access_group) {
   SetInstanceOverride(this);

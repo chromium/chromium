@@ -274,6 +274,8 @@ class SecurityKeysPhonesHandler : public SettingsPageUIHandler {
 class PasskeysHandler : public SettingsPageUIHandler {
  public:
   PasskeysHandler();
+  explicit PasskeysHandler(
+      std::unique_ptr<LocalCredentialManagement> local_cred_man);
   ~PasskeysHandler() override;
 
  protected:
@@ -281,26 +283,24 @@ class PasskeysHandler : public SettingsPageUIHandler {
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
+  void HandleEdit(const base::Value::List& args);
+  void OnEditComplete(std::string callback_id, bool edit_ok);
+
  private:
   void HandleHasPasskeys(const base::Value::List& args);
-  void OnHasPasskeysComplete(
-      std::string callback_id,
-      std::unique_ptr<LocalCredentialManagement> local_cred_man,
-      bool has_passkeys);
+  void OnHasPasskeysComplete(std::string callback_id, bool has_passkeys);
 
   void HandleEnumerate(const base::Value::List& args);
   void DoEnumerate(std::string callback_id);
   void OnEnumerateComplete(
       std::string callback_id,
-      std::unique_ptr<LocalCredentialManagement> local_cred_man,
       absl::optional<std::vector<device::DiscoverableCredentialMetadata>>
           credentials);
 
   void HandleDelete(const base::Value::List& args);
-  void OnDeleteComplete(
-      std::string callback_id,
-      std::unique_ptr<LocalCredentialManagement> local_cred_man,
-      bool delete_ok);
+  void OnDeleteComplete(std::string callback_id, bool delete_ok);
+
+  std::unique_ptr<LocalCredentialManagement> local_cred_man_{nullptr};
 
   base::WeakPtrFactory<PasskeysHandler> weak_factory_{this};
 };

@@ -139,6 +139,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
 
   bool DeleteCredentialById(base::span<const uint8_t> credential_id) const;
 
+  bool UpdateCredential(base::span<uint8_t> credential_id,
+                        const std::string& username);
+
   size_t CountCredentialsSync(base::Time created_not_before,
                               base::Time created_not_after);
 

@@ -27,6 +27,9 @@ class LocalCredentialManagementMac : public LocalCredentialManagement {
           callback) override;
   void Delete(base::span<const uint8_t> credential_id,
               base::OnceCallback<void(bool)> callback) override;
+  void Edit(base::span<uint8_t> credential_id,
+            std::string new_username,
+            base::OnceCallback<void(bool)> callback) override;
 
  private:
   device::fido::mac::AuthenticatorConfig config_;

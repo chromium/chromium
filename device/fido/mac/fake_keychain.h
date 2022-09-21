@@ -35,6 +35,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeKeychain : public Keychain {
       CFErrorRef* error) override;
   OSStatus ItemCopyMatching(CFDictionaryRef query, CFTypeRef* result) override;
   OSStatus ItemDelete(CFDictionaryRef query) override;
+  OSStatus ItemUpdate(
+      CFDictionaryRef query,
+      base::ScopedCFTypeRef<CFMutableDictionaryRef> keychain_data) override;
 
  private:
   // items_ contains the keychain items created by `KeyCreateRandomKey`.

@@ -49,6 +49,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Keychain {
   virtual OSStatus ItemCopyMatching(CFDictionaryRef query, CFTypeRef* result);
   // ItemDelete wraps the |SecItemDelete| function.
   virtual OSStatus ItemDelete(CFDictionaryRef query);
+  // ItemDelete wraps the |SecItemUpdate| function.
+  virtual OSStatus ItemUpdate(
+      CFDictionaryRef query,
+      base::ScopedCFTypeRef<CFMutableDictionaryRef> keychain_data);
 
  protected:
   Keychain();

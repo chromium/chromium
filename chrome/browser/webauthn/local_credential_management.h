@@ -69,6 +69,12 @@ class LocalCredentialManagement {
   // the value `true` if the deletion was successful.
   virtual void Delete(base::span<const uint8_t> credential_id,
                       base::OnceCallback<void(bool)> callback) = 0;
+
+  // Edit credential metadata's username field. The callback returns false if
+  // the credential was not updated to |new_username| in the mac keychain.
+  virtual void Edit(base::span<uint8_t> credential_id,
+                    std::string new_username,
+                    base::OnceCallback<void(bool)> callback) = 0;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_LOCAL_CREDENTIAL_MANAGEMENT_H_
