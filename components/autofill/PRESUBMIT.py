@@ -60,7 +60,7 @@ def _CheckFeatureNames(input_api, output_api):
   """Checks that no features are enabled."""
 
   pattern = input_api.re.compile(
-          r'\bbase::Feature\s+k(\w*)\s*{\s*"(\w*)"',
+          r'\bBASE_FEATURE\s*\(\s*k(\w*)\s*,\s*"(\w*)"',
           input_api.re.MULTILINE)
   warnings = []
 
