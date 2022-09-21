@@ -7,7 +7,6 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
-#include "ash/public/cpp/holding_space/holding_space_section.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_item_screen_capture_view.h"
@@ -21,8 +20,10 @@
 namespace ash {
 
 ScreenCapturesSection::ScreenCapturesSection(HoldingSpaceViewDelegate* delegate)
-    : HoldingSpaceItemViewsSection(delegate,
-                                   HoldingSpaceSectionId::kScreenCaptures) {}
+    : HoldingSpaceItemViewsSection(
+          delegate,
+          holding_space_util::ScreenCaptureSupportedTypes(),
+          /*max_count=*/kMaxScreenCaptures) {}
 
 ScreenCapturesSection::~ScreenCapturesSection() = default;
 

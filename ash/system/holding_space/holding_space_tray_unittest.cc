@@ -17,7 +17,6 @@
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
-#include "ash/public/cpp/holding_space/holding_space_section.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
@@ -209,10 +208,6 @@ std::vector<HoldingSpaceCommandId> GetHoldingSpaceCommandIds() {
        i <= static_cast<int>(HoldingSpaceCommandId::kMaxValue); ++i)
     ids.push_back(static_cast<HoldingSpaceCommandId>(i));
   return ids;
-}
-
-size_t GetMaxVisibleItemCount(HoldingSpaceSectionId section_id) {
-  return GetHoldingSpaceSection(section_id)->max_visible_item_count.value();
 }
 
 // PredicateWaiter -------------------------------------------------------------
@@ -2459,12 +2454,9 @@ TEST_F(HoldingSpacePreviewsTrayTest,
   MarkTimeOfFirstPin();
   StartSession();
 
-  const size_t max_screen_captures =
-      GetMaxVisibleItemCount(HoldingSpaceSectionId::kScreenCaptures);
-
   // Add a number of initialized screen capture items.
   std::deque<HoldingSpaceItem*> items;
-  for (size_t i = 0; i < max_screen_captures; ++i) {
+  for (size_t i = 0; i < kMaxScreenCaptures; ++i) {
     items.push_back(
         AddItem(HoldingSpaceItem::Type::kScreenshot,
                 base::FilePath("/tmp/fake_" + base::NumberToString(i))));
@@ -2907,11 +2899,8 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, DownloadsSection) {
   EXPECT_EQ(items[0]->id(),
             HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
 
-  const size_t max_downloads =
-      GetMaxVisibleItemCount(HoldingSpaceSectionId::kDownloads);
-
   // Add a few more download items until the section reaches capacity.
-  for (size_t i = 2; i <= max_downloads; ++i) {
+  for (size_t i = 2; i <= kMaxDownloads; ++i) {
     items.push_back(AddItem(
         GetType(), base::FilePath("/tmp/fake_" + base::NumberToString(i))));
   }
@@ -2920,7 +2909,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, DownloadsSection) {
   EXPECT_TRUE(test_api()->GetSuggestionChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(max_downloads, download_chips.size());
+  ASSERT_EQ(kMaxDownloads, download_chips.size());
 
   // All downloads should be visible except for that which is associated with
   // the partially initialized item at index == `1`.
@@ -2958,7 +2947,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, DownloadsSection) {
   EXPECT_TRUE(test_api()->GetSuggestionChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(max_downloads, download_chips.size());
+  ASSERT_EQ(kMaxDownloads, download_chips.size());
 
   for (int download_chip_index = 0, item_index = items.size() - 1;
        item_index >= 0; ++download_chip_index, --item_index) {
@@ -2987,12 +2976,9 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   MarkTimeOfFirstPin();
   StartSession();
 
-  const size_t max_downloads =
-      GetMaxVisibleItemCount(HoldingSpaceSectionId::kDownloads);
-
   // Add a number of initialized download items.
   std::deque<HoldingSpaceItem*> items;
-  for (size_t i = 0; i < max_downloads; ++i) {
+  for (size_t i = 0; i < kMaxDownloads; ++i) {
     items.push_back(AddItem(
         GetType(), base::FilePath("/tmp/fake_" + base::NumberToString(i))));
   }
@@ -3029,11 +3015,8 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   items.push_back(
       AddPartiallyInitializedItem(GetType(), base::FilePath("/tmp/fake_1")));
 
-  const size_t max_downloads =
-      GetMaxVisibleItemCount(HoldingSpaceSectionId::kDownloads);
-
   // Add download items until the section reaches capacity.
-  for (size_t i = 1; i < max_downloads + 1; ++i) {
+  for (size_t i = 1; i < kMaxDownloads + 1; ++i) {
     items.push_back(AddItem(
         GetType(), base::FilePath("/tmp/fake_" + base::NumberToString(i))));
   }
@@ -3042,7 +3025,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   EXPECT_TRUE(test_api()->GetSuggestionChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(max_downloads, download_chips.size());
+  ASSERT_EQ(kMaxDownloads, download_chips.size());
 
   for (size_t download_chip_index = 0, item_index = items.size() - 1;
        item_index > 0; ++download_chip_index, --item_index) {
@@ -3059,7 +3042,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   EXPECT_TRUE(test_api()->GetSuggestionChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(max_downloads, download_chips.size());
+  ASSERT_EQ(kMaxDownloads, download_chips.size());
 
   for (size_t download_chip_index = 0, item_index = items.size() - 1;
        item_index > 0; ++download_chip_index, --item_index) {
@@ -3076,7 +3059,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   EXPECT_TRUE(test_api()->GetSuggestionChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(max_downloads, download_chips.size());
+  ASSERT_EQ(kMaxDownloads, download_chips.size());
 
   for (int download_chip_index = 0, item_index = items.size() - 1;
        item_index >= 0; ++download_chip_index, --item_index) {

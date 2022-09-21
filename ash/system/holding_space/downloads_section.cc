@@ -10,7 +10,6 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
-#include "ash/public/cpp/holding_space/holding_space_section.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -112,7 +111,8 @@ class Header : public views::Button {
 
 DownloadsSection::DownloadsSection(HoldingSpaceViewDelegate* delegate)
     : HoldingSpaceItemViewsSection(delegate,
-                                   HoldingSpaceSectionId::kDownloads) {}
+                                   holding_space_util::DownloadSupportedTypes(),
+                                   /*max_count=*/kMaxDownloads) {}
 
 DownloadsSection::~DownloadsSection() = default;
 
