@@ -225,9 +225,9 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowStarted(
     const std::string& username,
     StartEvent event_type,
     EntryPoint entry_point) {
-  ListPrefUpdate update(pref_service_,
-                        prefs::kPasswordChangeSuccessTrackerFlows);
-  base::Value::List& flows = update->GetList();
+  ScopedListPrefUpdate update(pref_service_,
+                              prefs::kPasswordChangeSuccessTrackerFlows);
+  base::Value::List& flows = update.Get();
   RemoveFlowsWithTimeout(flows);
 
   flows.Append(
@@ -257,9 +257,9 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowModified(
           base::ranges::find(incomplete_manual_flows_, ExtractEtldPlus1(url),
                              &IncompleteFlow::etld_plus_1);
       it != incomplete_manual_flows_.cend()) {
-    ListPrefUpdate update(pref_service_,
-                          prefs::kPasswordChangeSuccessTrackerFlows);
-    base::Value::List& flows = update->GetList();
+    ScopedListPrefUpdate update(pref_service_,
+                                prefs::kPasswordChangeSuccessTrackerFlows);
+    base::Value::List& flows = update.Get();
     RemoveFlowsWithTimeout(flows);
 
     flows.Append(
@@ -273,9 +273,9 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowModified(
     const GURL& url,
     const std::string& username,
     StartEvent new_event_type) {
-  ListPrefUpdate update(pref_service_,
-                        prefs::kPasswordChangeSuccessTrackerFlows);
-  base::Value::List& flows = update->GetList();
+  ScopedListPrefUpdate update(pref_service_,
+                              prefs::kPasswordChangeSuccessTrackerFlows);
+  base::Value::List& flows = update.Get();
   RemoveFlowsWithTimeout(flows);
 
   // Currently, this method can only get called if a request link is requested
@@ -317,9 +317,9 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowCompleted(
   if (read_flows.empty())
     return;
 
-  ListPrefUpdate update(pref_service_,
-                        prefs::kPasswordChangeSuccessTrackerFlows);
-  base::Value::List& flows = update->GetList();
+  ScopedListPrefUpdate update(pref_service_,
+                              prefs::kPasswordChangeSuccessTrackerFlows);
+  base::Value::List& flows = update.Get();
   RemoveFlowsWithTimeout(flows);
 
   // In the unlikely case that there are two flows with the same eTLD+1 and

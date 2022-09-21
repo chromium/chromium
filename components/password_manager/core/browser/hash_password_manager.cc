@@ -135,8 +135,8 @@ bool HashPasswordManager::SavePasswordHash(const std::string username,
   // If we've already saved password hash for |username|, and the |password| is
   // unchanged, no need to save password hash again. Instead we update the last
   // sign in timestamp.
-  ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  for (base::Value& password_hash_data : update.Get()->GetList()) {
+  ScopedListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
+  for (base::Value& password_hash_data : update.Get()) {
     if (AreUsernamesSame(
             GetAndDecryptField(password_hash_data, kUsernameFieldKey),
             IsGaiaPassword(password_hash_data), username, is_gaia_password)) {
@@ -183,8 +183,8 @@ void HashPasswordManager::ClearSavedPasswordHash(const std::string& username,
   if (!prefs_)
     return;
 
-  ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  update->GetList().EraseIf([&](const auto& dict) {
+  ScopedListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
+  update->EraseIf([&](const auto& dict) {
     return AreUsernamesSame(GetAndDecryptField(dict, kUsernameFieldKey),
                             IsGaiaPassword(dict), username, is_gaia_password);
   });
@@ -194,8 +194,8 @@ void HashPasswordManager::ClearAllPasswordHash(bool is_gaia_password) {
   if (!prefs_)
     return;
 
-  ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  update->GetList().EraseIf([&](const auto& dict) {
+  ScopedListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
+  update->EraseIf([&](const auto& dict) {
     return GetAndDecryptField(dict, kIsGaiaFieldKey) ==
            BooleanToString(is_gaia_password);
   });
@@ -205,8 +205,8 @@ void HashPasswordManager::ClearAllNonGmailPasswordHash() {
   if (!prefs_)
     return;
 
-  ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  update->GetList().EraseIf([](const base::Value& data) {
+  ScopedListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
+  update->EraseIf([](const base::Value& data) {
     if (GetAndDecryptField(data, kIsGaiaFieldKey) == "false") {
       return false;
     }
@@ -311,8 +311,8 @@ bool HashPasswordManager::EncryptAndSave(
   encrypted_password_hash_entry.Set(kIsGaiaFieldKey, encrypted_is_gaia_value);
   encrypted_password_hash_entry.Set(kLastSignInTimeFieldKey,
                                     base::Time::Now().ToDoubleT());
-  ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  base::Value::List& update_list = update->GetList();
+  ScopedListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
+  base::Value::List& update_list = update.Get();
   size_t num_erased = update_list.EraseIf([&](const auto& dict) {
     return AreUsernamesSame(GetAndDecryptField(dict, kUsernameFieldKey),
                             IsGaiaPassword(dict), password_hash_data.username,

@@ -138,7 +138,7 @@ class AccountStorageSettingsReader {
 };
 
 // Helper class for updating account storage settings for a given account. Like
-// with DictionaryPrefUpdate, updates are only published once the instance gets
+// with ScopedDictPrefUpdate, updates are only published once the instance gets
 // destroyed.
 class ScopedAccountStorageSettingsUpdate {
  public:
@@ -148,15 +148,7 @@ class ScopedAccountStorageSettingsUpdate {
         account_hash_(gaia_id_hash.ToBase64()) {}
 
   base::Value::Dict* GetOrCreateAccountSettings() {
-    base::Value::Dict* account_settings =
-        update_->GetDict().FindDict(account_hash_);
-    if (!account_settings) {
-      account_settings = &update_->GetDict()
-                              .Set(account_hash_, base::Value::Dict())
-                              ->GetDict();
-    }
-    DCHECK(account_settings);
-    return account_settings;
+    return update_->EnsureDict(account_hash_);
   }
 
   void SetOptedIn() {
@@ -179,10 +171,10 @@ class ScopedAccountStorageSettingsUpdate {
     account_settings->Set(kMoveToAccountStoreOfferedCountKey, ++count);
   }
 
-  void ClearAllSettings() { update_->RemoveKey(account_hash_); }
+  void ClearAllSettings() { update_->Remove(account_hash_); }
 
  private:
-  DictionaryPrefUpdate update_;
+  ScopedDictPrefUpdate update_;
   const std::string account_hash_;
 };
 }  // namespace
@@ -405,15 +397,15 @@ void KeepAccountStorageSettingsOnlyForUsers(
   // Now remove any settings for account that are *not* in the set of hashes.
   // DictionaryValue doesn't allow removing elements while iterating, so first
   // collect all the keys to remove, then actually remove them in a second pass.
-  DictionaryPrefUpdate update(pref_service,
+  ScopedDictPrefUpdate update(pref_service,
                               prefs::kAccountStoragePerAccountSettings);
   std::vector<std::string> keys_to_remove;
-  for (auto kv : update->DictItems()) {
+  for (auto kv : *update) {
     if (!hashes_to_keep.contains(kv.first))
       keys_to_remove.push_back(kv.first);
   }
   for (const std::string& key_to_remove : keys_to_remove)
-    update->RemoveKey(key_to_remove);
+    update->Remove(key_to_remove);
 }
 
 void ClearAccountStorageSettingsForAllUsers(PrefService* pref_service) {
