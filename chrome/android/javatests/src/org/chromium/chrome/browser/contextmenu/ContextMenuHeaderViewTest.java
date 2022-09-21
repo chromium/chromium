@@ -190,11 +190,6 @@ public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
                 () -> mModel.set(ContextMenuHeaderProperties.IMAGE, bitmap));
         assertThat("Incorrect thumbnail bitmap.",
                 ((BitmapDrawable) mImage.getDrawable()).getBitmap(), equalTo(bitmap));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.set(ContextMenuHeaderProperties.HIDE_HEADER_IMAGE, true));
-        assertThat("Image container should be hidden.", mImageContainer.getVisibility(),
-                equalTo(View.GONE));
     }
 
     @Test

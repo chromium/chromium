@@ -139,16 +139,6 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    public void testContextMenuViewWithLink_HideHeaderImage() throws IOException {
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE,
-                ContextMenuUtils.HIDE_HEADER_IMAGE_PARAM, "true");
-        doTestContextMenuViewWithLink("context_menu_with_link_no_header");
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"RenderTest"})
     public void testContextMenuViewWithImageLink() throws IOException {
         doTestContextMenuViewWithImageLink("context_menu_with_image_link");
     }
@@ -159,16 +149,6 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     public void testContextMenuViewWithImageLink_Popup() throws IOException {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
         doTestContextMenuViewWithImageLink("context_menu_with_image_link_popup");
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"RenderTest"})
-    public void testContextMenuViewWithImageLink_HideHeaderImage() throws IOException {
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
-        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE,
-                ContextMenuUtils.HIDE_HEADER_IMAGE_PARAM, "true");
-        doTestContextMenuViewWithImageLink("context_menu_with_image_link_no_header");
     }
 
     private void doTestContextMenuViewWithLink(String id) throws IOException {

@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.contextmenu;
 import android.text.TextUtils;
 import android.webkit.URLUtil;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -18,10 +16,6 @@ import org.chromium.content_public.common.ContentFeatures;
  * Provides utility methods for generating context menus.
  */
 public final class ContextMenuUtils {
-    /** Experiment params to hide the context menu header image. */
-    @VisibleForTesting
-    public static final String HIDE_HEADER_IMAGE_PARAM = "hide_header_image";
-
     private ContextMenuUtils() {}
 
     /**
@@ -62,21 +56,5 @@ public final class ContextMenuUtils {
     static boolean forcePopupStyleEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE)
                 || ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU);
-    }
-
-    /**
-     * Whether hide the context menu header image by field trial params. The value is read from 
-     * either {@link ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU} or
-     * {@link ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE}.
-     */
-    static boolean hideContextMenuHeaderImage() {
-        int valueHideHeaderFromDragAndDrop = ContentFeatureList.getFieldTrialParamByFeatureAsInt(
-                ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, HIDE_HEADER_IMAGE_PARAM, -1);
-        if (valueHideHeaderFromDragAndDrop != -1) {
-            return valueHideHeaderFromDragAndDrop != 0;
-        }
-
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, HIDE_HEADER_IMAGE_PARAM, false);
     }
 }

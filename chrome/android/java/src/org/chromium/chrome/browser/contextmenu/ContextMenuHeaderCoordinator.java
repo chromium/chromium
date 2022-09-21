@@ -36,7 +36,6 @@ class ContextMenuHeaderCoordinator {
     @VisibleForTesting
     static PropertyModel buildModel(Context context, String title, CharSequence url) {
         boolean usePopupContextMenu = ContextMenuUtils.forcePopupStyleEnabled();
-        boolean hideHeaderImage = ContextMenuUtils.hideContextMenuHeaderImage();
 
         int monogramSizeDimen = usePopupContextMenu
                 ? R.dimen.context_menu_popup_header_monogram_size
@@ -54,7 +53,6 @@ class ContextMenuHeaderCoordinator {
                                 PerformanceClass.PERFORMANCE_UNKNOWN)
                         .with(ContextMenuHeaderProperties.IMAGE, null)
                         .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, false)
-                        .with(ContextMenuHeaderProperties.HIDE_HEADER_IMAGE, hideHeaderImage)
                         .with(ContextMenuHeaderProperties.MONOGRAM_SIZE_PIXEL,
                                 context.getResources().getDimensionPixelSize(monogramSizeDimen))
                         .build();
