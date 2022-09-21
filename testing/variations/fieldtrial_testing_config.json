@@ -3918,6 +3918,22 @@
             ]
         }
     ],
+    "DisableUrgentPageDiscarding": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "UrgentPageDiscarding"
+                    ]
+                }
+            ]
+        }
+    ],
     "DiscardableMemoryExperiments": [
         {
             "platforms": [
