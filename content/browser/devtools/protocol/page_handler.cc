@@ -1478,6 +1478,8 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Page::PrerenderFinalStatusEnum::ActivatedBeforeStarted;
     case PrerenderHost::FinalStatus::kInactivePageRestriction:
       return Page::PrerenderFinalStatusEnum::InactivePageRestriction;
+    case PrerenderHost::FinalStatus::kStartFailed:
+      return Page::PrerenderFinalStatusEnum::StartFailed;
   }
 }
 

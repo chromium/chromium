@@ -296,9 +296,7 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
   DCHECK(prerender_host_by_frame_tree_node_id_.contains(frame_tree_node_id));
   if (!prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
            ->StartPrerendering()) {
-    // TODO(nhiroki): Pass a more suitable cancellation reason like
-    // kStartFailed.
-    CancelHost(frame_tree_node_id, PrerenderHost::FinalStatus::kDestroyed);
+    CancelHost(frame_tree_node_id, PrerenderHost::FinalStatus::kStartFailed);
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
 

@@ -106,7 +106,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kHasEffectiveUrl = 39,
     kActivatedBeforeStarted = 40,
     kInactivePageRestriction = 41,
-    kMaxValue = kInactivePageRestriction,
+    kStartFailed = 42,
+    kMaxValue = kStartFailed,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

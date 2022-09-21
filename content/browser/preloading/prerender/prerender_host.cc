@@ -751,6 +751,7 @@ void PrerenderHost::SetFailureReason(FinalStatus status) {
     case FinalStatus::kHasEffectiveUrl:
     case FinalStatus::kActivatedBeforeStarted:
     case FinalStatus::kInactivePageRestriction:
+    case FinalStatus::kStartFailed:
       attempt_->SetFailureReason(ToPreloadingFailureReason(status));
       // We reset the attempt to ensure we don't update once we have reported it
       // as failure or accidentally use it for any other prerender attempts as

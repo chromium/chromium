@@ -80165,6 +80165,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="39" label="kHasEffectiveUrl"/>
   <int value="40" label="kActivatedBeforeStarted"/>
   <int value="41" label="kInactivePageRestriction"/>
+  <int value="42" label="kStartFailed"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

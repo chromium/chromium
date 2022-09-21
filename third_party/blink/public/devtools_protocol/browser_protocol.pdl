@@ -8467,6 +8467,7 @@ domain Page
       HasEffectiveUrl
       ActivatedBeforeStarted
       InactivePageRestriction
+      StartFailed
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted

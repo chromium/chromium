@@ -86,6 +86,8 @@ const char* FinalStatusToString(PrerenderHost::FinalStatus final_status) {
       return "ActivatedBeforeStarted";
     case PrerenderHost::FinalStatus::kInactivePageRestriction:
       return "InactivePageRestriction";
+    case PrerenderHost::FinalStatus::kStartFailed:
+      return "StartFailed";
   }
   NOTREACHED();
   return "";
