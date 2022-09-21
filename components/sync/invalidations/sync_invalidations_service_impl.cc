@@ -27,19 +27,6 @@ SyncInvalidationsServiceImpl::SyncInvalidationsServiceImpl(
 
 SyncInvalidationsServiceImpl::~SyncInvalidationsServiceImpl() = default;
 
-void SyncInvalidationsServiceImpl::SetActive(bool active) {
-  if (!base::FeatureList::IsEnabled(kUseSyncInvalidations) ||
-      fcm_handler_->IsListening() == active) {
-    return;
-  }
-
-  if (active) {
-    fcm_handler_->StartListening();
-  } else {
-    fcm_handler_->StopListeningPermanently();
-  }
-}
-
 void SyncInvalidationsServiceImpl::AddListener(
     InvalidationsListener* listener) {
   fcm_handler_->AddListener(listener);
@@ -60,10 +47,27 @@ void SyncInvalidationsServiceImpl::RemoveTokenObserver(
   fcm_handler_->RemoveTokenObserver(observer);
 }
 
+void SyncInvalidationsServiceImpl::StartListening() {
+  if (!base::FeatureList::IsEnabled(kUseSyncInvalidations) ||
+      fcm_handler_->IsListening()) {
+    return;
+  }
+  fcm_handler_->StartListening();
+}
+
+void SyncInvalidationsServiceImpl::StopListeningPermanently() {
+  if (!fcm_handler_->IsListening()) {
+    return;
+  }
+  DCHECK(base::FeatureList::IsEnabled(kUseSyncInvalidations));
+  fcm_handler_->StopListeningPermanently();
+}
+
 absl::optional<std::string>
 SyncInvalidationsServiceImpl::GetFCMRegistrationToken() const {
-  if (fcm_handler_->IsWaitingForToken()) {
-    return absl::nullopt;
+  // Return empty token if standalone invalidations are off.
+  if (!base::FeatureList::IsEnabled(kUseSyncInvalidations)) {
+    return std::string();
   }
   return fcm_handler_->GetFCMRegistrationToken();
 }

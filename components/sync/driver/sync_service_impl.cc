@@ -225,7 +225,6 @@ void SyncServiceImpl::Initialize() {
     SyncInvalidationsService* sync_invalidations_service =
         sync_client_->GetSyncInvalidationsService();
     if (sync_invalidations_service) {
-      sync_invalidations_service->SetActive(IsSignedIn());
       // Trigger a refresh when additional data types get enabled for
       // invalidations. This is needed to get the latest data after subscribing
       // for the updates.
@@ -342,14 +341,6 @@ void SyncServiceImpl::AccountStateChanged() {
     } else {
       ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
     }
-  }
-
-  // Propagate the (potentially) changed account state to the invalidations
-  // system.
-  SyncInvalidationsService* sync_invalidations_service =
-      sync_client_->GetSyncInvalidationsService();
-  if (sync_invalidations_service) {
-    sync_invalidations_service->SetActive(IsSignedIn());
   }
 }
 
@@ -522,9 +513,17 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
   base::UmaHistogramEnumeration("Sync.ResetEngineReason", reset_reason);
   switch (shutdown_reason) {
     case ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
-    case ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
       RemoveClientFromServer();
       break;
+    case ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA: {
+      SyncInvalidationsService* sync_invalidations_service =
+          sync_client_->GetSyncInvalidationsService();
+      if (sync_invalidations_service) {
+        sync_invalidations_service->StopListeningPermanently();
+      }
+      RemoveClientFromServer();
+      break;
+    }
     case ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
       break;
   }
@@ -938,9 +937,14 @@ void SyncServiceImpl::OnConfigureDone(
   // Update configured data types and start handling incoming invalidations. The
   // order is important to guarantee that data types are configured to prevent
   // filtering out invalidations. If there are incoming invalidations, they will
-  // be handled immediately after StartHandlingInvalidations() call.
+  // be handled immediately after StartListening() call.
   UpdateDataTypesForInvalidations();
   engine_->StartHandlingInvalidations();
+  SyncInvalidationsService* invalidations_service =
+      sync_client_->GetSyncInvalidationsService();
+  if (invalidations_service) {
+    invalidations_service->StartListening();
+  }
 
   if (migrator_.get() && migrator_->state() != BackendMigrator::IDLE) {
     // Migration in progress.  Let the migrator know we just finished

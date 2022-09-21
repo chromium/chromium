@@ -29,8 +29,12 @@ class SyncInvalidationsService : public KeyedService {
   using InterestedDataTypesAppliedCallback =
       base::RepeatingCallback<void(const ModelTypeSet&)>;
 
-  // Start or stop listening to invalidations.
-  virtual void SetActive(bool active) = 0;
+  // Starts handling incoming invalidations and obtains an FCM token if it
+  // doesn't have one.
+  virtual void StartListening() = 0;
+
+  // Stop listening to invalidations and removes FCM registration token.
+  virtual void StopListeningPermanently() = 0;
 
   // Add a new |listener| which will be notified on each new incoming
   // invalidation. |listener| must not be nullptr. Does nothing if the

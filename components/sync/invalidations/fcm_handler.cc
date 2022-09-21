@@ -47,13 +47,12 @@ void FCMHandler::StartListening() {
   DCHECK(!IsListening());
   DCHECK(base::FeatureList::IsEnabled(kUseSyncInvalidations));
   DCHECK(last_received_messages_.empty());
-
+  DCHECK(!fcm_registration_token_.has_value());
   // Note that AddAppHandler() causes an immediate replay of all received
   // messages in background on Android. Those messages will be stored in
   // |last_received_messages_| and delivered to listeners once they have been
   // added.
   gcm_driver_->AddAppHandler(app_id_, this);
-  waiting_for_token_ = true;
   StartTokenFetch(base::BindOnce(&FCMHandler::DidRetrieveToken,
                                  weak_ptr_factory_.GetWeakPtr()));
 }
@@ -62,9 +61,9 @@ void FCMHandler::StopListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // StopListening() may be called after StartListening() right away and
   // DidRetrieveToken() won't be called.
-  waiting_for_token_ = false;
   if (IsListening()) {
     gcm_driver_->RemoveAppHandler(app_id_);
+    fcm_registration_token_ = absl::nullopt;
     token_validation_timer_.AbandonAndStop();
     last_received_messages_.clear();
   }
@@ -75,7 +74,6 @@ void FCMHandler::StopListeningPermanently() {
   if (instance_id_driver_->ExistsInstanceID(app_id_)) {
     instance_id_driver_->GetInstanceID(app_id_)->DeleteID(
         /*callback=*/base::DoNothing());
-    fcm_registration_token_.clear();
     for (FCMRegistrationTokenObserver& token_observer : token_observers_) {
       token_observer.OnFCMRegistrationTokenChanged();
     }
@@ -83,14 +81,9 @@ void FCMHandler::StopListeningPermanently() {
   StopListening();
 }
 
-const std::string& FCMHandler::GetFCMRegistrationToken() const {
+const absl::optional<std::string>& FCMHandler::GetFCMRegistrationToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return fcm_registration_token_;
-}
-
-bool FCMHandler::IsWaitingForToken() const {
-  DCHECK(!waiting_for_token_ || IsListening());
-  return waiting_for_token_;
 }
 
 void FCMHandler::ShutdownHandler() {
@@ -179,8 +172,6 @@ void FCMHandler::DidRetrieveToken(const std::string& subscription_token,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramEnumeration("Sync.FCMInstanceIdTokenRetrievalStatus",
                                 result);
-  waiting_for_token_ = false;
-
   if (!IsListening()) {
     // After we requested the token, |StopListening| has been called. Thus,
     // ignore the token.
@@ -189,7 +180,7 @@ void FCMHandler::DidRetrieveToken(const std::string& subscription_token,
 
   // Notify observers only if the token has changed.
   if (result == instance_id::InstanceID::SUCCESS &&
-      fcm_registration_token_ != subscription_token) {
+      (fcm_registration_token_ != subscription_token)) {
     fcm_registration_token_ = subscription_token;
     for (FCMRegistrationTokenObserver& token_observer : token_observers_) {
       token_observer.OnFCMRegistrationTokenChanged();

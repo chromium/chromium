@@ -1237,42 +1237,28 @@ TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
        ShouldActivateSyncInvalidationsServiceWhenSyncIsInitialized) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
-  EXPECT_CALL(*sync_invalidations_service(), SetActive(false)).Times(0);
-  EXPECT_CALL(*sync_invalidations_service(), SetActive(true));
+  EXPECT_CALL(*sync_invalidations_service(), StartListening());
   InitializeForFirstSync();
 }
 
 TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
-       ShouldActivateSyncInvalidationsServiceOnSignIn) {
-  CreateService(SyncServiceImpl::MANUAL_START);
-  EXPECT_CALL(*sync_invalidations_service(), SetActive(false))
-      .Times(AnyNumber());
-  InitializeForFirstSync();
-  EXPECT_CALL(*sync_invalidations_service(), SetActive(true));
+       ShouldNotStopListeningPermanentlyOnShutdownBrowserAndKeepData) {
   SignIn();
+  CreateService(SyncServiceImpl::MANUAL_START);
+  InitializeForFirstSync();
+  EXPECT_CALL(*sync_invalidations_service(), StopListeningPermanently())
+      .Times(0);
+  ShutdownAndDeleteService();
 }
 
-// CrOS does not support signout.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncServiceImplTestWithSyncInvalidationsServiceCreated,
-       ShouldDectivateSyncInvalidationsServiceOnSignOut) {
+       ShouldStopListeningPermanentlyOnDisableSyncAndClearData) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
-  EXPECT_CALL(*sync_invalidations_service(), SetActive(true));
   InitializeForFirstSync();
-
-  signin::PrimaryAccountMutator* account_mutator =
-      identity_manager()->GetPrimaryAccountMutator();
-  // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
-  DCHECK(account_mutator);
-
-  // Sign out.
-  EXPECT_CALL(*sync_invalidations_service(), SetActive(false));
-  account_mutator->ClearPrimaryAccount(
-      signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+  EXPECT_CALL(*sync_invalidations_service(), StopListeningPermanently());
+  service()->StopAndClear();
 }
-#endif
 
 }  // namespace
 }  // namespace syncer

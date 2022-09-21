@@ -131,16 +131,13 @@ class FCMHandlerTest : public testing::Test {
 TEST_F(FCMHandlerTest, ShouldReturnValidToken) {
   // Check that the handler gets the token through GetToken.
   EXPECT_CALL(mock_instance_id_, GetToken)
-      .WillOnce(
-          WithArg<4>(Invoke([this](InstanceID::GetTokenCallback callback) {
-            EXPECT_TRUE(fcm_handler_.IsWaitingForToken());
-            std::move(callback).Run("token", InstanceID::Result::SUCCESS);
-          })));
+      .WillOnce(WithArg<4>(Invoke([](InstanceID::GetTokenCallback callback) {
+        std::move(callback).Run("token", InstanceID::Result::SUCCESS);
+      })));
 
   fcm_handler_.StartListening();
 
   EXPECT_EQ("token", fcm_handler_.GetFCMRegistrationToken());
-  EXPECT_FALSE(fcm_handler_.IsWaitingForToken());
 }
 
 TEST_F(FCMHandlerTest, ShouldPropagatePayloadToListener) {
@@ -246,7 +243,7 @@ TEST_F(FCMHandlerTest, ShouldClearTokenOnStopListeningPermanently) {
   // Token should be cleared when StopListeningPermanently() is called.
   EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged());
   fcm_handler_.StopListeningPermanently();
-  EXPECT_EQ("", fcm_handler_.GetFCMRegistrationToken());
+  EXPECT_EQ(absl::nullopt, fcm_handler_.GetFCMRegistrationToken());
 
   fcm_handler_.RemoveTokenObserver(&mock_token_observer);
 }

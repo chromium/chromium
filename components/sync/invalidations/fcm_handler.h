@@ -41,9 +41,9 @@ class FCMHandler : public gcm::GCMAppHandler {
   FCMHandler& operator=(const FCMHandler&) = delete;
 
   // Used to start handling incoming invalidations from the server and to obtain
-  // an FCM token. This method gets called after sign-in, or during browser
-  // startup if the user is already signed in. Before StartListening() is called
-  // for the first time, the FCM registration token will be empty.
+  // an FCM token. This method gets called after data types are configured.
+  // Before StartListening() is called for the first time, the FCM registration
+  // token will be null.
   void StartListening();
 
   // Stop handling incoming invalidations. It doesn't cleanup the FCM
@@ -73,13 +73,8 @@ class FCMHandler : public gcm::GCMAppHandler {
   void AddTokenObserver(FCMRegistrationTokenObserver* observer);
   void RemoveTokenObserver(FCMRegistrationTokenObserver* observer);
 
-  // Used to get an obtained FCM token. Returns empty string if it hasn't
-  // been received yet, or if the handler has stopped listening permanently.
-  const std::string& GetFCMRegistrationToken() const;
-
-  // Returns true if an FCM registration token has never been retreived after
-  // the last StartListening() call.
-  bool IsWaitingForToken() const;
+  // Used to get an obtained FCM token. Returns null if it doesn't have a token.
+  const absl::optional<std::string>& GetFCMRegistrationToken() const;
 
   // GCMAppHandler overrides.
   void ShutdownHandler() override;
@@ -110,12 +105,11 @@ class FCMHandler : public gcm::GCMAppHandler {
   const std::string sender_id_;
   const std::string app_id_;
 
-  // Contains an FCM registration token if not empty.
-  std::string fcm_registration_token_;
+  // Contains an FCM registration token. Token is null if the experiment is off
+  // or we don't have a valid token yet and contains valid token otherwise.
+  absl::optional<std::string> fcm_registration_token_;
 
   base::OneShotTimer token_validation_timer_;
-
-  bool waiting_for_token_ = false;
 
   // A list of the latest incoming messages, used to replay incoming messages
   // whenever a new listener is added.
