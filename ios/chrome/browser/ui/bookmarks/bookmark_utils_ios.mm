@@ -101,25 +101,6 @@ NSString* TitleForBookmarkNode(const BookmarkNode* node) {
   return title;
 }
 
-NSString* subtitleForBookmarkNode(const BookmarkNode* node) {
-  if (node->is_url())
-    return base::SysUTF8ToNSString(node->url().host());
-
-  int childCount = node->GetTotalNodeCount() - 1;
-  NSString* subtitle;
-  if (childCount == 0) {
-    subtitle = l10n_util::GetNSString(IDS_IOS_BOOKMARK_NO_ITEM_COUNT);
-  } else if (childCount == 1) {
-    subtitle = l10n_util::GetNSString(IDS_IOS_BOOKMARK_ONE_ITEM_COUNT);
-  } else {
-    NSString* childCountString = [NSString stringWithFormat:@"%d", childCount];
-    subtitle =
-        l10n_util::GetNSStringF(IDS_IOS_BOOKMARK_ITEM_COUNT,
-                                base::SysNSStringToUTF16(childCountString));
-  }
-  return subtitle;
-}
-
 #pragma mark - Updating Bookmarks
 
 // Deletes all subnodes of `node`, including `node`, that are in `bookmarks`.

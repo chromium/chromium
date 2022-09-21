@@ -441,9 +441,6 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOOKMARK_GROUP_DELETE" desc="Button to delete a folder. [Length: 30em.] [iOS only]">
         Delete Folder
       </message>
-      <message name="IDS_IOS_BOOKMARK_ITEM_COUNT" desc="Displayed when there are more than one item in a bookmark folder [Length: 30em.]">
-        <ph name="COUNT">$1<ex>42</ex></ph> items
-      </message>
       <message name="IDS_IOS_BOOKMARK_NAME_FIELD_HEADER" desc="Title shown above bookmark name field on Edit Bookmark screen. [Length: 20em]" meaning="Name of an inanimate object">
         Name
       </message>
@@ -509,12 +506,6 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_BOOKMARK_NEW_ZERO_ITEM_LABEL" desc="Text that indicates that a user has selected zero bookmarks for editing. [Length: 30em.]">
         0 selected
-      </message>
-      <message name="IDS_IOS_BOOKMARK_NO_ITEM_COUNT" desc="Displayed when there are no items in a bookmark folder [Length: 30em.]">
-        No items
-      </message>
-      <message name="IDS_IOS_BOOKMARK_ONE_ITEM_COUNT" desc="Displayed when there is only one item in a bookmark folder [Length: 30em.]">
-        1 item
       </message>
       <message name="IDS_IOS_BOOKMARK_PAGE_SAVED" desc="Presented in an infobar when a bookmark is created. [Length: 30em.]">
         Bookmarked

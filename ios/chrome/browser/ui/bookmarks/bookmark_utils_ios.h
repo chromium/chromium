@@ -47,9 +47,6 @@ const bookmarks::BookmarkNode* FindFolderById(bookmarks::BookmarkModel* model,
 // to display a slighly different wording for the default folders.
 NSString* TitleForBookmarkNode(const bookmarks::BookmarkNode* node);
 
-// Returns the subtitle relevant to the bookmark navigation ui.
-NSString* subtitleForBookmarkNode(const bookmarks::BookmarkNode* node);
-
 #pragma mark - Updating Bookmarks
 
 // Creates the bookmark if `node` is NULL. Otherwise updates `node`.
