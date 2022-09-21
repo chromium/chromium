@@ -66,7 +66,7 @@ id<GREYAction> PageSheetScrollDown() {
   // But for very small devices (like the SE), this is too big.
   UIWindow* currentWindow = chrome_test_util::GetAnyKeyWindow();
   if (currentWindow.rootViewController.view.frame.size.height < 600)
-    menu_scroll_displacement = 300;
+    menu_scroll_displacement = 250;
   return grey_scrollInDirection(kGREYDirectionDown, menu_scroll_displacement);
 }
 
