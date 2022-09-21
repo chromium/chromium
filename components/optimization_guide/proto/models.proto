@@ -13,134 +13,14 @@ import "components/optimization_guide/proto/common_types.proto";
 
 // A generic handle for any type of model.
 message Model {
-  reserved 3, 4;
+  reserved 1, 2, 3, 4, 123;
 
   oneof model {
-    DecisionTree decision_tree = 1;
-    Ensemble ensemble = 2;
     // When passed from the server, this is the URL that the model can be
     // downloaded from. When used internally within Chrome, this contains the
     // absolute file path where the model file is saved on disk.
     string download_url = 5;
   }
-  // The tag number is high to allow models to be added and an uncommon number
-  // in case the proto this is generated from adds a similar functionality.
-  optional DoubleValue threshold = 123;
-}
-
-// An ensemble prediction model consisting of an ordered sequence of models.
-// This message can be used to express bagged or boosted models.
-message Ensemble {
-  reserved 2, 3, 4;
-
-  message Member { optional Model submodel = 1; }
-  // The tag number is set by the proto this is generated from and cannot be
-  // changed.
-  repeated Member members = 100;
-}
-
-// A decision tree model with its weight for use if included in an ensemble.
-message DecisionTree {
-  reserved 2;
-
-  repeated TreeNode nodes = 1;
-  optional float weight = 3;
-}
-
-// A node of a decision tree that is a binary deicison or a leaf.
-message TreeNode {
-  reserved 6, 7;
-
-  // Following fields are provided for convenience and better readability.
-  // Filling them in is not required.
-  optional Int32Value node_id = 1;
-  optional Int32Value depth = 2;
-  optional Int32Value subtree_size = 3;
-
-  oneof node_type {
-    BinaryNode binary_node = 4;
-    Leaf leaf = 5;
-  }
-}
-
-// A tree node that contains an inequality test that during evaluation
-// determines whether to continue the left or right child.
-message BinaryNode {
-  reserved 3, 5;
-
-  optional Int32Value left_child_id = 1;
-  optional Int32Value right_child_id = 2;
-  enum Direction {
-    LEFT = 0;
-    RIGHT = 1;
-  }
-  // When a datapoint satisfies the test, it should be propagated to the left
-  // child.
-  optional InequalityTest inequality_left_child_test = 4;
-}
-
-// Vector of values for use within Models.
-message Vector {
-  repeated Value value = 1;
-}
-
-// A leaf node of a decision tree.
-message Leaf {
-  reserved 2, 3;
-
-  optional Vector vector = 1;
-}
-
-// The ID for the features used during evaluation of a Model.
-message FeatureId {
-  reserved 2;
-
-  optional StringValue id = 1;
-}
-
-// The set of inequality operations supported by binary nodes for
-// decision tree models.
-message InequalityTest {
-  reserved 4;
-
-  // When the feature is missing, the test's outcome is undefined.
-  optional FeatureId feature_id = 1;
-  enum Type {
-    LESS_OR_EQUAL = 0;
-    LESS_THAN = 1;
-    GREATER_OR_EQUAL = 2;
-    GREATER_THAN = 3;
-  };
-  optional Type type = 2;
-  optional Value threshold = 3;
-}
-
-// Represents a single value of any type, e.g. 5 or "abc".
-message Value {
-  reserved 5;
-
-  oneof value {
-    float float_value = 1;
-    double double_value = 2;
-    int32 int32_value = 3;
-    int64 int64_value = 4;
-  }
-}
-
-// Wrapper message for `int32`.
-//
-// The JSON representation for `Int32Value` is JSON number.
-message Int32Value {
-  // The int32 value.
-  optional int32 value = 1;
-}
-
-// Wrapper message for `double`.
-//
-// The JSON representation for `DoubleValue` is JSON number.
-message DoubleValue {
-  // The double value.
-  optional double value = 1;
 }
 
 // Requests prediction models to be used for a set of optimization targets.
@@ -167,15 +47,11 @@ message GetModelsRequest {
 
 // Response to the GetModels request.
 message GetModelsResponse {
+  reserved 2;
+
   // The models to be used during prediction for the requested optimization
   // targets.
   repeated PredictionModel models = 1;
-  // A set of model features and their values for the hosts contained in the
-  // request to be expected to be consulted with during prediction.
-  //
-  // It is not guaranteed that this set will contain an entry for every
-  // requested host.
-  repeated HostModelFeatures host_model_features = 2;
 }
 
 // Holds the prediction model for a particular optimization target.
@@ -298,9 +174,9 @@ enum OptimizationTarget {
 //                 ^
 //                 Change when this number increments.
 enum ModelEngineVersion {
+  reserved 1;
+
   MODEL_ENGINE_VERSION_UNKNOWN = 0;
-  // A decision tree.
-  MODEL_ENGINE_VERSION_DECISION_TREE = 1;
   // A model using only operations that are supported by TensorflowLite 2.3.0.
   MODEL_ENGINE_VERSION_TFLITE_2_3_0 = 2;
   // A model using only operations that are supported by TensorflowLite 2.3.0
@@ -322,23 +198,4 @@ enum ModelEngineVersion {
   MODEL_ENGINE_VERSION_TFLITE_2_10 = 9;
   // A model using only operations that are supported by TensorflowLite 2.11.0.
   MODEL_ENGINE_VERSION_TFLITE_2_11 = 10;
-}
-
-// A set of model features and the host that it applies to.
-message HostModelFeatures {
-  // The host that the features should be applied for.
-  optional string host = 1;
-  // The set of features and their values that apply to the host.
-  repeated ModelFeature model_features = 2;
-}
-
-// Information about a feature that is potentially referenced in a model.
-message ModelFeature {
-  // The name of the feature to match if encountered in a model.
-  optional string feature_name = 1;
-  // The value of the feature to be used during prediction.
-  oneof feature_value {
-    double double_value = 2;
-    int64 int64_value = 3;
-  }
 }

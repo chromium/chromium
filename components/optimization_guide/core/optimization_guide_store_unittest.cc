@@ -66,7 +66,7 @@ std::unique_ptr<proto::PredictionModel> CreatePredictionModel() {
   model_info->set_optimization_target(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   model_info->add_supported_model_engine_versions(
-      proto::ModelEngineVersion::MODEL_ENGINE_VERSION_DECISION_TREE);
+      proto::ModelEngineVersion::MODEL_ENGINE_VERSION_TFLITE_2_11);
   return prediction_model;
 }
 

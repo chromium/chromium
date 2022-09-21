@@ -14,7 +14,7 @@ import "components/optimization_guide/proto/models.proto";
 // The types of StoreEntries.
 //
 // The values should match those of
-// components/previews/content/hint_cache_store.h
+// components/optimization_guide/core/optimization_guide_store.h
 enum StoreEntryType {
   // StoreEntryType when the entry type is unknown.
   EMPTY = 0;
@@ -35,10 +35,12 @@ enum StoreEntryType {
   // StoreEntryType when storing a host model features entry, holds the model
   // features keyed provided by host from the remote Optimization Guide
   // Service. |update_time_secs| should be provided.
-  HOST_MODEL_FEATURES = 5;
+  DEPRECATED_HOST_MODEL_FEATURES = 5 [deprecated = true];
 }
 
 message StoreEntry {
+  reserved 7;
+
   // Generic version field. For the schema metadata entry, version represents
   // the schema version; for the component metadata entry, version represents
   // the component version.
@@ -52,13 +54,10 @@ message StoreEntry {
   // The type of entry stored.
   optional StoreEntryType entry_type = 4;
   // Expiry time for this Hint entry (i.e., when hint is no longer usable). This
-  // is set on OnePlatform Hint entries, as well as PredictionModel and
-  // HostModelFeatures entries.
+  // is set on OnePlatform Hint entries, as well as PredictionModel entries.
   optional int64 expiry_time_secs = 5;
   // The actual PredictionModel data.
   optional PredictionModel prediction_model = 6;
-  // The actual HostModelFeature data.
-  optional HostModelFeatures host_model_features = 7;
   // Whether to delete a model once expiry_time_secs is past.
   optional bool keep_beyond_valid_duration = 8;
 }

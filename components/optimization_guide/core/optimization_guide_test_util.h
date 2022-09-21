@@ -25,19 +25,6 @@ enum class HintsFetcherRemoteResponseType {
 extern const char kTestAbsoluteFilePath[];
 extern const char kTestRelativeFilePath[];
 
-// Returns a decision tree model with |threshold|, |weight|, and a single
-// uninitialized node.
-std::unique_ptr<proto::PredictionModel> GetMinimalDecisionTreePredictionModel(
-    double threshold,
-    double weight);
-
-// Returns a decision tree model with |threshold|, |weight|, and a single
-// leaf node with |leaf_value|.
-std::unique_ptr<proto::PredictionModel>
-GetSingleLeafDecisionTreePredictionModel(double threshold,
-                                         double weight,
-                                         double leaf_value);
-
 // Creates the hints config with |optimization_type| to |hints_url| that returns
 // the |metadata|. This config string can be passed to the |kHintsProtoOverride|
 // commandline switch.
