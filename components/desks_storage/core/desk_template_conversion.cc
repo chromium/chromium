@@ -458,7 +458,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
     app_launch_info->urls.emplace();
     const base::Value* tabs = app.FindKeyOfType(kTabs, base::Value::Type::LIST);
     if (tabs) {
-      for (auto& tab : tabs->GetListDeprecated()) {
+      for (auto& tab : tabs->GetList()) {
         std::string url;
         if (GetString(tab, kTabUrl, &url)) {
           app_launch_info->urls.value().emplace_back(url);
@@ -631,7 +631,7 @@ std::unique_ptr<app_restore::RestoreData> ConvertJsonToRestoreData(
 
   const base::Value* apps = desk->FindListKey(kApps);
   if (apps) {
-    for (const auto& app : apps->GetListDeprecated()) {
+    for (const auto& app : apps->GetList()) {
       std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
           ConvertJsonToAppLaunchInfo(app);
       if (!app_launch_info)

@@ -83,7 +83,7 @@ void DeskModel::SetPolicyDeskTemplates(const std::string& policy_json) {
     return;
   }
 
-  for (auto& desk_template : parsed_list->GetListDeprecated()) {
+  for (auto& desk_template : parsed_list->GetList()) {
     std::unique_ptr<ash::DeskTemplate> dt =
         desk_template_conversion::ParseDeskTemplateFromSource(
             desk_template, ash::DeskTemplateSource::kPolicy);
