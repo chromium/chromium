@@ -162,6 +162,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     @Override
     public void handleBackPress() {
         boolean ret = back();
+        onBackPressedChanged();
         assert ret;
     }
 
