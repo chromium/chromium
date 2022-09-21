@@ -320,7 +320,7 @@ ObjectPermissionContextBase::GetWebsiteSettingObjects() {
     if (!objects)
       continue;
 
-    for (auto& object : objects->GetListDeprecated()) {
+    for (auto& object : objects->GetList()) {
       if (!IsValidObject(object)) {
         continue;
       }
