@@ -379,8 +379,8 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
         gfx::Rect popup_bounds =
             last_render_widget_host_->GetView()->GetViewBounds();
         if (!popup_bounds.size().IsEmpty()) {
-          if (message_loop_.get())
-            message_loop_->Quit();
+          if (run_loop_)
+            run_loop_->Quit();
           return;
         }
       }
@@ -389,9 +389,9 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
       // schedule waiting.
       ScheduleWait(wait_retry_left - 1);
 
-      if (!message_loop_.get()) {
-        message_loop_ = new content::MessageLoopRunner;
-        message_loop_->Run();
+      if (!run_loop_) {
+        run_loop_ = std::make_unique<base::RunLoop>();
+        run_loop_->Run();
       }
     }
 
@@ -426,7 +426,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
 
     size_t initial_widget_count_ = 0;
     content::RenderWidgetHost* last_render_widget_host_ = nullptr;
-    scoped_refptr<content::MessageLoopRunner> message_loop_;
+    std::unique_ptr<base::RunLoop> run_loop_;
   };
 
   void PopupTestHelper(const gfx::Point& padding) {
@@ -1191,11 +1191,10 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
       context_menu_gesture_event_type);
 
   // Wait for guest to load (without this the events never reach the guest).
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner =
-      new content::MessageLoopRunner;
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, message_loop_runner->QuitClosure(), base::Milliseconds(200));
-  message_loop_runner->Run();
+      FROM_HERE, run_loop->QuitClosure(), base::Milliseconds(200));
+  run_loop->Run();
 
   gfx::Rect guest_rect = GetGuestRenderFrameHost()->GetView()->GetViewBounds();
   gfx::Point embedder_origin =
@@ -1212,10 +1211,10 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
             filter->GetAckStateWaitIfNecessary());
 
   // Give enough time for the quick menu to fire.
-  message_loop_runner = new content::MessageLoopRunner;
+  run_loop = std::make_unique<base::RunLoop>();
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, message_loop_runner->QuitClosure(), base::Milliseconds(200));
-  message_loop_runner->Run();
+      FROM_HERE, run_loop->QuitClosure(), base::Milliseconds(200));
+  run_loop->Run();
 
 // TODO: Fix quick menu opening on Windows.
 #if !BUILDFLAG(IS_WIN)

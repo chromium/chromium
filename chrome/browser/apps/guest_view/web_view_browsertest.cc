@@ -247,20 +247,18 @@ class EmbedderWebContentsObserver : public content::WebContentsObserver {
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override {
     terminated_ = true;
-    if (message_loop_runner_.get())
-      message_loop_runner_->Quit();
+    run_loop_.Quit();
   }
 
   void WaitForEmbedderRenderProcessTerminate() {
     if (terminated_)
       return;
-    message_loop_runner_ = new content::MessageLoopRunner;
-    message_loop_runner_->Run();
+    run_loop_.Run();
   }
 
  private:
   bool terminated_ = false;
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
+  base::RunLoop run_loop_;
 };
 
 void ExecuteScriptWaitForTitle(content::WebContents* web_contents,
@@ -290,14 +288,14 @@ class SelectControlWaiter : public aura::WindowObserver,
 
   void Wait(bool wait_for_widget_shown) {
     wait_for_widget_shown_ = wait_for_widget_shown;
-    message_loop_runner_ = new content::MessageLoopRunner;
-    message_loop_runner_->Run();
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
     base::RunLoop().RunUntilIdle();
   }
 
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
     if (wait_for_widget_shown_ && visible)
-      message_loop_runner_->Quit();
+      run_loop_->Quit();
   }
 
   void OnWindowInitialized(aura::Window* window) override {
@@ -310,11 +308,11 @@ class SelectControlWaiter : public aura::WindowObserver,
   void OnWindowDestroyed(aura::Window* window) override {
     observed_windows_.erase(window);
     if (!wait_for_widget_shown_ && observed_windows_.empty())
-      message_loop_runner_->Quit();
+      run_loop_->Quit();
   }
 
  private:
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
+  std::unique_ptr<base::RunLoop> run_loop_;
   std::set<aura::Window*> observed_windows_;
   bool wait_for_widget_shown_ = false;
 };
@@ -358,9 +356,8 @@ class LeftMouseClick {
   void Wait() {
     if (click_completed_)
       return;
-    message_loop_runner_ = new content::MessageLoopRunner;
-    message_loop_runner_->Run();
-    message_loop_runner_ = nullptr;
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
   }
 
  private:
@@ -368,14 +365,14 @@ class LeftMouseClick {
     mouse_event_.SetType(blink::WebInputEvent::Type::kMouseUp);
     render_frame_host_->GetRenderWidgetHost()->ForwardMouseEvent(mouse_event_);
     click_completed_ = true;
-    if (message_loop_runner_)
-      message_loop_runner_->Quit();
+    if (run_loop_)
+      run_loop_->Quit();
   }
 
   // Unowned pointer.
   raw_ptr<content::RenderFrameHost> render_frame_host_;
 
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
+  std::unique_ptr<base::RunLoop> run_loop_;
 
   blink::WebMouseEvent mouse_event_;
 
@@ -425,38 +422,38 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override {
     requested_ = true;
-    if (request_message_loop_runner_.get())
-      request_message_loop_runner_->Quit();
+    if (request_run_loop_)
+      request_run_loop_->Quit();
   }
 
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const GURL& security_origin,
                                   blink::mojom::MediaStreamType type) override {
     checked_ = true;
-    if (check_message_loop_runner_.get())
-      check_message_loop_runner_->Quit();
+    if (check_run_loop_)
+      check_run_loop_->Quit();
     return true;
   }
 
   void WaitForRequestMediaPermission() {
     if (requested_)
       return;
-    request_message_loop_runner_ = new content::MessageLoopRunner;
-    request_message_loop_runner_->Run();
+    request_run_loop_ = std::make_unique<base::RunLoop>();
+    request_run_loop_->Run();
   }
 
   void WaitForCheckMediaPermission() {
     if (checked_)
       return;
-    check_message_loop_runner_ = new content::MessageLoopRunner;
-    check_message_loop_runner_->Run();
+    check_run_loop_ = std::make_unique<base::RunLoop>();
+    check_run_loop_->Run();
   }
 
  private:
   bool requested_ = false;
   bool checked_ = false;
-  scoped_refptr<content::MessageLoopRunner> request_message_loop_runner_;
-  scoped_refptr<content::MessageLoopRunner> check_message_loop_runner_;
+  std::unique_ptr<base::RunLoop> request_run_loop_;
+  std::unique_ptr<base::RunLoop> check_run_loop_;
 };
 
 // This class intercepts download request from the guest.
@@ -490,8 +487,8 @@ class MockDownloadWebContentsDelegate : public content::WebContentsDelegate {
     }
 
     expect_allow_ = expect_allow;
-    message_loop_runner_ = new content::MessageLoopRunner;
-    message_loop_runner_->Run();
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
   }
 
   void DownloadDecided(base::OnceCallback<void(bool)> callback, bool allow) {
@@ -500,8 +497,8 @@ class MockDownloadWebContentsDelegate : public content::WebContentsDelegate {
 
     if (waiting_for_decision_) {
       EXPECT_EQ(expect_allow_, allow);
-      if (message_loop_runner_.get())
-        message_loop_runner_->Quit();
+      if (run_loop_)
+        run_loop_->Quit();
       std::move(callback).Run(allow);
       return;
     }
@@ -520,7 +517,7 @@ class MockDownloadWebContentsDelegate : public content::WebContentsDelegate {
   bool expect_allow_ = false;
   bool decision_made_ = false;
   bool last_download_allowed_ = false;
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 class WebViewTestBase : public extensions::PlatformAppBrowserTest {
@@ -920,8 +917,7 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
 class WebContentsAudioMutedObserver : public content::WebContentsObserver {
  public:
   explicit WebContentsAudioMutedObserver(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents),
-        loop_runner_(new content::MessageLoopRunner) {}
+      : WebContentsObserver(web_contents) {}
   WebContentsAudioMutedObserver(const WebContentsAudioMutedObserver&) = delete;
   WebContentsAudioMutedObserver& operator=(
       const WebContentsAudioMutedObserver&) = delete;
@@ -929,17 +925,15 @@ class WebContentsAudioMutedObserver : public content::WebContentsObserver {
   // WebContentsObserver.
   void DidUpdateAudioMutingState(bool muted) override {
     muting_update_observed_ = true;
-    loop_runner_->Quit();
+    run_loop_.Quit();
   }
 
-  void WaitForUpdate() {
-    loop_runner_->Run();
-  }
+  void WaitForUpdate() { run_loop_.Run(); }
 
   bool muting_update_observed() { return muting_update_observed_; }
 
  private:
-  scoped_refptr<content::MessageLoopRunner> loop_runner_;
+  base::RunLoop run_loop_;
   bool muting_update_observed_ = false;
 };
 
@@ -956,9 +950,8 @@ class IsAudibleObserver : public content::WebContentsObserver {
     if (web_contents()->IsCurrentlyAudible() == audible)
       return;
 
-    message_loop_runner_ = new content::MessageLoopRunner;
-    message_loop_runner_->Run();
-    message_loop_runner_ = nullptr;
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
 
     EXPECT_EQ(audible, web_contents()->IsCurrentlyAudible());
     EXPECT_EQ(audible, audible_);
@@ -967,12 +960,11 @@ class IsAudibleObserver : public content::WebContentsObserver {
  private:
   void OnAudioStateChanged(bool audible) override {
     audible_ = audible;
-    if (message_loop_runner_.get())
-      message_loop_runner_->Quit();
+    run_loop_->Quit();
   }
 
   bool audible_ = false;
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, AudibilityStatePropagates) {
@@ -1151,32 +1143,28 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, SpatialNavigationJavascriptAPI) {
 IN_PROC_BROWSER_TEST_P(WebViewVisibilityTest, GuestVisibilityChanged) {
   LoadAppWithGuest("web_view/visibility_changed");
 
-  scoped_refptr<content::MessageLoopRunner> loop_runner(
-      new content::MessageLoopRunner);
+  base::RunLoop run_loop;
   RenderWidgetHostVisibilityObserver observer(
-      GetGuestRenderFrameHost()->GetRenderWidgetHost(),
-      loop_runner->QuitClosure());
+      GetGuestRenderFrameHost()->GetRenderWidgetHost(), run_loop.QuitClosure());
 
   // Handled in platform_apps/web_view/visibility_changed/main.js
   SendMessageToEmbedder("hide-guest");
   if (!observer.hidden_observed())
-    loop_runner->Run();
+    run_loop.Run();
 }
 
 // This test verifies that hiding the embedder also hides the guest.
 IN_PROC_BROWSER_TEST_P(WebViewVisibilityTest, EmbedderVisibilityChanged) {
   LoadAppWithGuest("web_view/visibility_changed");
 
-  scoped_refptr<content::MessageLoopRunner> loop_runner(
-      new content::MessageLoopRunner);
+  base::RunLoop run_loop;
   RenderWidgetHostVisibilityObserver observer(
-      GetGuestRenderFrameHost()->GetRenderWidgetHost(),
-      loop_runner->QuitClosure());
+      GetGuestRenderFrameHost()->GetRenderWidgetHost(), run_loop.QuitClosure());
 
   // Handled in platform_apps/web_view/visibility_changed/main.js
   SendMessageToEmbedder("hide-embedder");
   if (!observer.hidden_observed())
-    loop_runner->Run();
+    run_loop.Run();
 }
 
 // This test verifies that reloading the embedder reloads the guest (and doest
@@ -4691,8 +4679,8 @@ class WebContentsAccessibilityEventWatcher
 
   void Wait() {
     if (count_ == 0) {
-      loop_runner_ = new content::MessageLoopRunner();
-      loop_runner_->Run();
+      run_loop_ = std::make_unique<base::RunLoop>();
+      run_loop_->Run();
     }
   }
 
@@ -4715,7 +4703,7 @@ class WebContentsAccessibilityEventWatcher
         if (node.id == event_node_id) {
           count_++;
           node_data_ = node;
-          loop_runner_->Quit();
+          run_loop_->Quit();
           return;
         }
       }
@@ -4727,7 +4715,7 @@ class WebContentsAccessibilityEventWatcher
   const ui::AXNodeData& node_data() const { return node_data_; }
 
  private:
-  scoped_refptr<content::MessageLoopRunner> loop_runner_;
+  std::unique_ptr<base::RunLoop> run_loop_;
   ax::mojom::Event event_;
   ui::AXNodeData node_data_;
   size_t count_;
