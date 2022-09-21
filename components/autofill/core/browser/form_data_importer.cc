@@ -493,9 +493,6 @@ bool FormDataImporter::ImportAddressProfileForSection(
     if (field_type.group() == FieldTypeGroup::kCreditCard)
       continue;
 
-    has_address_related_fields |=
-        FieldTypeGroupToFormType(field_type.group()) == FormType::kAddressForm;
-
     // There can be multiple email fields (e.g. in the case of 'confirm email'
     // fields) but they must all contain the same value, else the profile is
     // invalid.
@@ -577,6 +574,16 @@ bool FormDataImporter::ImportAddressProfileForSection(
         }
       }
     }
+
+    if (FieldTypeGroupToFormType(field_type.group()) ==
+        FormType::kAddressForm) {
+      has_address_related_fields = true;
+      if (field->parsed_autocomplete) {
+        import_metadata.did_import_from_unrecognized_autocomplete_field |=
+            field->parsed_autocomplete->field_type ==
+            HtmlFieldType::kUnrecognized;
+      }
+    }
   }
 
   const std::string variation_country_code =
@@ -585,12 +592,15 @@ bool FormDataImporter::ImportAddressProfileForSection(
       GetPredictedCountryCode(candidate_profile, variation_country_code,
                               app_locale_, import_log_buffer);
 
+  if (!combined_phone.IsEmpty())
+    import_metadata.phone_import_status = PhoneImportStatus::kValid;
+
   if (!SetPhoneNumber(candidate_profile, combined_phone,
                       predicted_country_code)) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillRemoveInvalidPhoneNumberOnImport)) {
       candidate_profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
-      import_metadata.did_remove_invalid_phone_number = true;
+      import_metadata.phone_import_status = PhoneImportStatus::kInvalid;
       LOG_AF(import_log_buffer)
           << LogMessage::kImportAddressProfileFromFormRemoveInvalidValue
           << "Phone number." << CTag{};

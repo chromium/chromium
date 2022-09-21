@@ -7402,6 +7402,12 @@ others/histograms.xml -->
              response"/>
 </enum>
 
+<enum name="AutofillPhoneImportValidity">
+  <int value="0" label="None: No phone number in import"/>
+  <int value="1" label="Valid: Phone number was imported"/>
+  <int value="2" label="Invalid: Phone number was removed before the import"/>
+</enum>
+
 <enum name="AutofillPopupHidingReason">
   <int value="0" label="A suggestion was accepted."/>
   <int value="1" label="An interstitial page displaces the popup."/>

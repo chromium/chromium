@@ -2387,6 +2387,26 @@ void AutofillMetrics::LogDeveloperEngagementUkm(
       .Record(ukm_recorder);
 }
 
+// static
+void AutofillMetrics::LogAddressProfileImportUkm(
+    ukm::UkmRecorder* ukm_recorder,
+    ukm::SourceId source_id,
+    AutofillProfileImportType import_type,
+    AutofillClient::SaveAddressProfileOfferUserDecision user_decision,
+    const ProfileImportMetadata& profile_import_metadata,
+    size_t num_edited_fields) {
+  ukm::builders::Autofill_AddressProfileImport(source_id)
+      .SetAutocompleteUnrecognizedImport(
+          profile_import_metadata
+              .did_import_from_unrecognized_autocomplete_field)
+      .SetImportType(static_cast<int64_t>(import_type))
+      .SetNumberOfEditedFields(num_edited_fields)
+      .SetPhoneNumberStatus(
+          static_cast<int64_t>(profile_import_metadata.phone_import_status))
+      .SetUserDecision(static_cast<int64_t>(user_decision))
+      .Record(ukm_recorder);
+}
+
 AutofillMetrics::FormInteractionsUkmLogger::FormInteractionsUkmLogger(
     ukm::UkmRecorder* ukm_recorder,
     const ukm::SourceId source_id)

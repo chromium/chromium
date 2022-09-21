@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -17,12 +18,16 @@
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
 namespace {
+
+using UkmAddressProfileImportType =
+    ukm::builders::Autofill_AddressProfileImport;
 
 using UserDecision = AutofillClient::SaveAddressProfileOfferUserDecision;
 
@@ -177,7 +182,7 @@ struct ImportScenarioTestCase {
 
 class AddressProfileSaveManagerTest
     : public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
  public:
   void SetUp() override {
     // These parameters would typically be set by `FormDataImporter` when
@@ -185,10 +190,13 @@ class AddressProfileSaveManagerTest
     // precedes the saving logic tested here. They expand the
     // `ImportScenarioTestCase`, but are part of the fixture, so they can be
     // tested in a parameterized way.
-    import_metadata_ = {
-        .did_complement_country = std::get<0>(GetParam()),
-        .did_ignore_invalid_country = std::get<1>(GetParam()),
-        .did_remove_invalid_phone_number = std::get<2>(GetParam())};
+    import_metadata_ = {.did_complement_country = std::get<0>(GetParam()),
+                        .did_ignore_invalid_country = std::get<1>(GetParam()),
+                        .phone_import_status = std::get<2>(GetParam())
+                                                   ? PhoneImportStatus::kInvalid
+                                                   : PhoneImportStatus::kValid,
+                        .did_import_from_unrecognized_autocomplete_field =
+                            std::get<3>(GetParam())};
     // Enable both explicit save prompts and structured names.
     // The latter is needed to test the concept of silent updates.
     scoped_feature_list_.InitAndEnableFeature(
@@ -203,6 +211,10 @@ class AddressProfileSaveManagerTest
 
   // Tests the |test_scenario|.
   void TestImportScenario(ImportScenarioTestCase& test_scenario);
+
+  // Verifies the logged ukm data.
+  void VerifyUkmForAddressImport(const ukm::TestUkmRecorder* ukm_recorder,
+                                 ImportScenarioTestCase& test_scenario);
 
   const ProfileImportMetadata& import_metadata() const {
     return import_metadata_;
@@ -341,7 +353,7 @@ void AddressProfileSaveManagerTest::TestImportScenario(
           : kProfileImportTypeHistogram,
       test_scenario.expected_import_type, 1);
   if (test_scenario.allow_only_silent_updates &&
-      import_metadata().did_remove_invalid_phone_number) {
+      import_metadata().phone_import_status == PhoneImportStatus::kInvalid) {
     histogram_tester.ExpectUniqueSample(
         kSilentUpdatesWithRemovedPhoneNumberProfileImportTypeHistogram,
         test_scenario.expected_import_type, 1);
@@ -459,7 +471,7 @@ void AddressProfileSaveManagerTest::TestImportScenario(
     // Metrics related to removing invalid phone numbers.
     TestFeatureSpecificNewOrUpdateProfileMetrics(
         histogram_tester, test_scenario,
-        import_metadata().did_remove_invalid_phone_number,
+        import_metadata().phone_import_status == PhoneImportStatus::kInvalid,
         kNewProfileWithRemovedPhoneNumberDecisionHistogram,
         kProfileUpdateWithRemovedPhoneNumberDecisionHistogram);
 
@@ -541,6 +553,55 @@ void AddressProfileSaveManagerTest::TestImportScenario(
     // In all other cases, the number of strikes should be unaltered.
     EXPECT_EQ(1, mock_personal_data_manager_.GetProfileUpdateStrikeDatabase()
                      ->GetStrikes(test_scenario.merge_candidate->guid()));
+  }
+
+  VerifyUkmForAddressImport(autofill_client_.GetTestUkmRecorder(),
+                            test_scenario);
+}
+
+void AddressProfileSaveManagerTest::VerifyUkmForAddressImport(
+    const ukm::TestUkmRecorder* ukm_recorder,
+    ImportScenarioTestCase& test_scenario) {
+  ASSERT_TRUE(test_scenario.expected_import_type !=
+              AutofillProfileImportType::kImportTypeUnspecified);
+
+  // Verify logged UKM metrics in all scenarios except:
+  // 1. Duplicates
+  // 2. Blocked Domain or blocked profile if it is not a silent update.
+  bool is_ukm_logged =
+      test_scenario.expected_import_type !=
+          AutofillProfileImportType::kDuplicateImport &&
+      test_scenario.expected_import_type !=
+          AutofillProfileImportType::kSuppressedNewProfile &&
+      test_scenario.expected_import_type !=
+          AutofillProfileImportType::kSuppressedConfirmableMerge &&
+      test_scenario.expected_import_type !=
+          AutofillProfileImportType::kUnusableIncompleteProfile &&
+      test_scenario.expected_import_type !=
+          AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate;
+
+  auto entries =
+      ukm_recorder->GetEntriesByName(UkmAddressProfileImportType::kEntryName);
+  ASSERT_EQ(entries.size(), is_ukm_logged ? 1u : 0u);
+
+  if (is_ukm_logged) {
+    ASSERT_EQ(5u, entries[0]->metrics.size());
+    ukm_recorder->ExpectEntryMetric(
+        entries[0],
+        UkmAddressProfileImportType::kAutocompleteUnrecognizedImportName,
+        import_metadata().did_import_from_unrecognized_autocomplete_field);
+    ukm_recorder->ExpectEntryMetric(
+        entries[0], UkmAddressProfileImportType::kImportTypeName,
+        static_cast<int64_t>(test_scenario.expected_import_type));
+    ukm_recorder->ExpectEntryMetric(
+        entries[0], UkmAddressProfileImportType::kNumberOfEditedFieldsName,
+        test_scenario.expected_edited_types_for_metrics.size());
+    ukm_recorder->ExpectEntryMetric(
+        entries[0], UkmAddressProfileImportType::kPhoneNumberStatusName,
+        static_cast<int64_t>(import_metadata().phone_import_status));
+    ukm_recorder->ExpectEntryMetric(
+        entries[0], UkmAddressProfileImportType::kUserDecisionName,
+        static_cast<int64_t>(test_scenario.user_decision));
   }
 }
 
@@ -747,6 +808,7 @@ TEST_P(AddressProfileSaveManagerTest, SilentlyUpdateProfile) {
       .existing_profiles = {updateable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type = AutofillProfileImportType::kSilentUpdate,
       .is_profile_change_expected = true,
       .merge_candidate = absl::nullopt,
@@ -768,6 +830,7 @@ TEST_P(AddressProfileSaveManagerTest, SilentlyUpdateProfileOnBlockedDomain) {
       .existing_profiles = {updateable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type = AutofillProfileImportType::kSilentUpdate,
       .is_profile_change_expected = true,
       .merge_candidate = absl::nullopt,
@@ -794,6 +857,7 @@ TEST_P(AddressProfileSaveManagerTest, SilentlyUpdateVerifiedProfile) {
       .existing_profiles = {updateable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type = AutofillProfileImportType::kSilentUpdate,
       .is_profile_change_expected = true,
       .merge_candidate = absl::nullopt,
@@ -1216,6 +1280,7 @@ TEST_P(AddressProfileSaveManagerTest,
       .existing_profiles = {updateable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type =
           AutofillProfileImportType::kSilentUpdateForIncompleteProfile,
       .is_profile_change_expected = true,
@@ -1264,6 +1329,7 @@ TEST_P(AddressProfileSaveManagerTest,
       .existing_profiles = {updateable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type =
           AutofillProfileImportType::kSilentUpdateForIncompleteProfile,
       .is_profile_change_expected = true,
@@ -1319,6 +1385,7 @@ TEST_P(AddressProfileSaveManagerTest,
       .existing_profiles = {updateable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type =
           AutofillProfileImportType::kSilentUpdateForIncompleteProfile,
       .is_profile_change_expected = true,
@@ -1340,6 +1407,7 @@ TEST_P(AddressProfileSaveManagerTest, SilentlyUpdateProfile_OnBlockedDomain) {
       .existing_profiles = {updateable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type =
           AutofillProfileImportType::kSilentUpdateForIncompleteProfile,
       .is_profile_change_expected = true,
@@ -1370,6 +1438,7 @@ TEST_P(AddressProfileSaveManagerTest,
                             updateable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = false,
+      .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type =
           AutofillProfileImportType::kSilentUpdateForIncompleteProfile,
       .is_profile_change_expected = true,
@@ -1407,6 +1476,7 @@ TEST_P(AddressProfileSaveManagerTest,
 INSTANTIATE_TEST_SUITE_P(,
                          AddressProfileSaveManagerTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
 

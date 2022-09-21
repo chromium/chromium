@@ -1523,6 +1523,19 @@ class AutofillMetrics {
                                         int developer_engagement_metrics,
                                         FormSignature form_signature);
 
+  // Logs the address profile import UKM after the form submission.
+  // `user_decision` is the user's decision based on the storage prompt, if
+  // presented. `num_edited_fields` is the number of fields that were edited by
+  // the user before acceptance of the storage prompt. `profile_import_metadata`
+  // stores metadata related to the import of the address profiles.
+  static void LogAddressProfileImportUkm(
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId source_id,
+      AutofillProfileImportType import_type,
+      AutofillClient::SaveAddressProfileOfferUserDecision user_decision,
+      const ProfileImportMetadata& profile_import_metadata,
+      size_t num_edited_fields);
+
   // Log the number of hidden or presentational 'select' fields that were
   // autofilled to support synthetic fields.
   static void LogHiddenOrPresentationalSelectFieldsFilled();

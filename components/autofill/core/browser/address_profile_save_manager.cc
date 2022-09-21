@@ -162,7 +162,8 @@ void AddressProfileSaveManager::FinalizeProfileImport(
     client_->GetFormDataImporter()->ClearMultiStepImportCandidates();
   }
 
-  import_process->CollectMetrics();
+  import_process->CollectMetrics(client_->GetUkmRecorder(),
+                                 client_->GetUkmSourceId());
   ClearPendingImport(std::move(import_process));
 }
 

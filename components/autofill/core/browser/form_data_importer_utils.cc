@@ -244,8 +244,18 @@ bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
     // was removed from a partial profile, we still want that removal to appear
     // in the metrics, because it would have hindered that partial profile from
     // import and merging.
-    completed_metadata.did_remove_invalid_phone_number |=
-        candidate->import_metadata.did_remove_invalid_phone_number;
+    if (completed_metadata.phone_import_status != PhoneImportStatus::kInvalid &&
+        candidate->import_metadata.phone_import_status !=
+            PhoneImportStatus::kNone) {
+      completed_metadata.phone_import_status =
+          candidate->import_metadata.phone_import_status;
+    }
+
+    // If the partial profile contained an unrecognized autocomplete attribute,
+    // it should appear in the metrics.
+    completed_metadata.did_import_from_unrecognized_autocomplete_field |=
+        candidate->import_metadata
+            .did_import_from_unrecognized_autocomplete_field;
     candidate++;
   }
 
