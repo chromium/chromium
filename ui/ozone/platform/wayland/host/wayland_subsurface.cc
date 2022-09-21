@@ -52,7 +52,7 @@ WaylandSubsurface::WaylandSubsurface(WaylandConnection* connection,
 WaylandSubsurface::~WaylandSubsurface() = default;
 
 gfx::AcceleratedWidget WaylandSubsurface::GetWidget() const {
-  return wayland_surface_.GetWidget();
+  return wayland_surface_.get_widget();
 }
 
 void WaylandSubsurface::Show() {

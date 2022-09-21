@@ -894,7 +894,8 @@ TEST_P(WaylandDataDragControllerTest, PopupRequestCreatesPopupWindow) {
 
   Sync();
   ASSERT_TRUE(popup_window.get());
-  auto* surface = GetMockSurface(popup_window->root_surface()->GetSurfaceId());
+  auto* surface =
+      GetMockSurface(popup_window->root_surface()->get_surface_id());
   ASSERT_TRUE(surface);
   EXPECT_NE(nullptr, surface->xdg_surface()->xdg_popup());
 }
@@ -914,7 +915,7 @@ TEST_P(WaylandDataDragControllerTest, MenuRequestCreatesPopupWindow) {
     self->Sync();
 
     auto* surface =
-        self->GetMockSurface(menu_window->root_surface()->GetSurfaceId());
+        self->GetMockSurface(menu_window->root_surface()->get_surface_id());
     ASSERT_TRUE(surface);
     EXPECT_EQ(nullptr, surface->sub_surface());
   };

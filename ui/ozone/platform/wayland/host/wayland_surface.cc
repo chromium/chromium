@@ -100,13 +100,7 @@ void WaylandSurface::RequestExplicitRelease(ExplicitReleaseCallback callback) {
   next_explicit_release_request_ = std::move(callback);
 }
 
-uint32_t WaylandSurface::GetSurfaceId() const {
-  if (!surface_)
-    return 0u;
-  return surface_.id();
-}
-
-gfx::AcceleratedWidget WaylandSurface::GetWidget() const {
+gfx::AcceleratedWidget WaylandSurface::get_widget() const {
   return root_window_ ? root_window_->GetWidget() : gfx::kNullAcceleratedWidget;
 }
 
@@ -310,7 +304,7 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
   return region;
 }
 
-zwp_linux_surface_synchronization_v1* WaylandSurface::GetSurfaceSync() {
+zwp_linux_surface_synchronization_v1* WaylandSurface::GetOrCreateSurfaceSync() {
   // The server needs to support the linux_explicit_synchronization protocol.
   if (!connection_->linux_explicit_synchronization_v1()) {
     NOTIMPLEMENTED_LOG_ONCE();
@@ -323,10 +317,6 @@ zwp_linux_surface_synchronization_v1* WaylandSurface::GetSurfaceSync() {
             connection_->linux_explicit_synchronization_v1(), surface_.get()));
   }
   return surface_sync_.get();
-}
-
-augmented_surface* WaylandSurface::GetAugmentedSurface() {
-  return augmented_surface_.get();
 }
 
 wl::Object<wl_subsurface> WaylandSurface::CreateSubsurface(
@@ -347,14 +337,15 @@ void WaylandSurface::ApplyPendingState() {
     // need to be updated.
     wl_surface_attach(surface_.get(), pending_state_.buffer, 0, 0);
 
-    // Do not call GetSurfaceSync() if the buffer management doesn't happen with
-    // WaylandBufferManagerHost. That is, if Wayland EGL implementation is used,
-    // buffers are attached/swapped via eglSwapBuffers, which may internally
-    // (depends on the implementation) also create a surface sync. Creating a
-    // surface sync in this case is not necessary. Moreover, a Wayland protocol
-    // error will be raised as only one surface sync can exist.
+    // Do not call GetOrCreateSurfaceSync() if the buffer management doesn't
+    // happen with WaylandBufferManagerHost. That is, if Wayland EGL
+    // implementation is used, buffers are attached/swapped via eglSwapBuffers,
+    // which may internally (depends on the implementation) also create a
+    // surface sync. Creating a surface sync in this case is not necessary.
+    // Moreover, a Wayland protocol error will be raised as only one surface
+    // sync can exist.
     if (pending_state_.buffer) {
-      auto* surface_sync = GetSurfaceSync();
+      auto* surface_sync = GetOrCreateSurfaceSync();
       if (surface_sync) {
         if (!pending_state_.acquire_fence.is_null()) {
           zwp_linux_surface_synchronization_v1_set_acquire_fence(
@@ -440,8 +431,8 @@ void WaylandSurface::ApplyPendingState() {
   }
 
   if (pending_state_.background_color != state_.background_color) {
-    DCHECK(GetAugmentedSurface());
-    if (augmented_surface_get_version(GetAugmentedSurface()) >=
+    DCHECK(get_augmented_surface());
+    if (augmented_surface_get_version(get_augmented_surface()) >=
         static_cast<uint32_t>(
             AUGMENTED_SURFACE_SET_BACKGROUND_COLOR_SINCE_VERSION)) {
       wl_array color_data;
@@ -450,7 +441,7 @@ void WaylandSurface::ApplyPendingState() {
         wl::SkColorToWlArray(pending_state_.background_color.value(),
                              color_data);
 
-      augmented_surface_set_background_color(GetAugmentedSurface(),
+      augmented_surface_set_background_color(get_augmented_surface(),
                                              &color_data);
 
       wl_array_release(&color_data);
@@ -458,8 +449,8 @@ void WaylandSurface::ApplyPendingState() {
   }
 
   if (pending_state_.rounded_clip_bounds != state_.rounded_clip_bounds) {
-    DCHECK(GetAugmentedSurface());
-    if (augmented_surface_get_version(GetAugmentedSurface()) >=
+    DCHECK(get_augmented_surface());
+    if (augmented_surface_get_version(get_augmented_surface()) >=
         AUGMENTED_SURFACE_SET_ROUNDED_CLIP_BOUNDS_SINCE_VERSION) {
       gfx::RRectF rounded_clip_bounds = pending_state_.rounded_clip_bounds;
       gfx::Transform scale_transform;
@@ -468,7 +459,7 @@ void WaylandSurface::ApplyPendingState() {
       scale_transform.TransformRRectF(&rounded_clip_bounds);
 
       augmented_surface_set_rounded_clip_bounds(
-          GetAugmentedSurface(), rounded_clip_bounds.rect().x(),
+          get_augmented_surface(), rounded_clip_bounds.rect().x(),
           rounded_clip_bounds.rect().y(), rounded_clip_bounds.rect().width(),
           rounded_clip_bounds.rect().height(),
           wl_fixed_from_double(
@@ -584,7 +575,7 @@ void WaylandSurface::ApplyPendingState() {
   // Apply viewport scale (wp_viewport.set_destination).
   if (!std::equal(std::begin(dst_to_set), std::end(dst_to_set),
                   std::begin(dst_set_))) {
-    auto* augmented_surface = GetAugmentedSurface();
+    auto* augmented_surface = get_augmented_surface();
     if (dst_to_set[0] > 0.f && augmented_surface &&
         connection_->surface_augmenter()->SupportsSubpixelAccuratePosition()) {
       // Subpixel accurate positioning is available since the surface augmenter
@@ -592,7 +583,7 @@ void WaylandSurface::ApplyPendingState() {
       // setting destination with wl_fixed. Verify that with dchecks.
       DCHECK_EQ(AUGMENTED_SURFACE_SET_DESTINATION_SIZE_SINCE_VERSION,
                 SURFACE_AUGMENTER_GET_AUGMENTED_SUBSURFACE_SINCE_VERSION);
-      DCHECK(augmented_surface_get_version(GetAugmentedSurface()) >=
+      DCHECK(augmented_surface_get_version(get_augmented_surface()) >=
              AUGMENTED_SURFACE_SET_DESTINATION_SIZE_SINCE_VERSION);
       augmented_surface_set_destination_size(
           augmented_surface, wl_fixed_from_double(viewport_dst_dip.width()),

@@ -67,10 +67,11 @@ class WaylandSurface {
   void RequestExplicitRelease(ExplicitReleaseCallback callback);
 
   // Returns an id that identifies the |wl_surface_|.
-  uint32_t GetSurfaceId() const;
+  uint32_t get_surface_id() const { return surface_ ? surface_.id() : 0u; }
+
   // Returns a gfx::AcceleratedWidget that identifies the WaylandWindow that
   // this WaylandSurface belongs to.
-  gfx::AcceleratedWidget GetWidget() const;
+  gfx::AcceleratedWidget get_widget() const;
 
   // Initializes the WaylandSurface and returns true iff success.
   // This may return false if a wl_surface could not be created, for example.
@@ -168,7 +169,7 @@ class WaylandSurface {
 
   // Sets the rounded clip bounds for this surface.
   void set_rounded_clip_bounds(const gfx::RRectF& rounded_clip_bounds) {
-    if (GetAugmentedSurface())
+    if (get_augmented_surface())
       pending_state_.rounded_clip_bounds = rounded_clip_bounds;
   }
 
@@ -176,7 +177,7 @@ class WaylandSurface {
   // wl_buffer contents during the compositing step on the Wayland compositor
   // side.
   void set_background_color(absl::optional<SkColor4f> background_color) {
-    if (GetAugmentedSurface())
+    if (get_augmented_surface())
       pending_state_.background_color = background_color;
   }
 
@@ -317,8 +318,10 @@ class WaylandSurface {
 
   // Creates (if not created) the synchronization surface and returns a pointer
   // to it.
-  zwp_linux_surface_synchronization_v1* GetSurfaceSync();
-  augmented_surface* GetAugmentedSurface();
+  zwp_linux_surface_synchronization_v1* GetOrCreateSurfaceSync();
+  augmented_surface* get_augmented_surface() {
+    return augmented_surface_.get();
+  }
 
   const raw_ptr<WaylandConnection> connection_;
   raw_ptr<WaylandWindow> root_window_ = nullptr;

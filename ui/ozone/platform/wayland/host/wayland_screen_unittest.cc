@@ -187,7 +187,7 @@ TEST_P(WaylandScreenTest, EnteredOutputListAfterDisplayRemoval) {
   EXPECT_EQ(3u, platform_screen_->GetAllDisplays().size());
 
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   ASSERT_TRUE(surface);
 
   wl_surface_send_enter(surface->resource(), output1->resource());
@@ -384,7 +384,7 @@ TEST_P(WaylandScreenTest, OutputPropertyChangesPrimaryDisplayChanged) {
 TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
   // Now, send enter event for the surface, which was created before.
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   ASSERT_TRUE(surface);
   wl_surface_send_enter(surface->resource(), output_->resource());
 
@@ -608,7 +608,7 @@ TEST_P(WaylandScreenTest, GetDisplayForAcceleratedWidget) {
 
   // Now, send enter event for the surface, which was created before.
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   ASSERT_TRUE(surface);
   wl_surface_send_enter(surface->resource(), output_->resource());
 
@@ -657,7 +657,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
                                         gfx::kNullAcceleratedWidget, &delegate);
 
   auto* surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   ASSERT_TRUE(surface);
 
   // Announce pointer capability so that WaylandPointer is created on the client
@@ -685,7 +685,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   EXPECT_EQ(gfx::Point(10, 20), platform_screen_->GetCursorScreenPoint());
 
   auto* second_surface = server_.GetObject<wl::MockSurface>(
-      second_window->root_surface()->GetSurfaceId());
+      second_window->root_surface()->get_surface_id());
   ASSERT_TRUE(second_surface);
   // Now, leave the first surface and enter second one.
   wl_pointer_send_leave(pointer->resource(), ++serial, surface->resource());
@@ -731,7 +731,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   Sync();
 
   auto* menu_surface = server_.GetObject<wl::MockSurface>(
-      menu_window->root_surface()->GetSurfaceId());
+      menu_window->root_surface()->get_surface_id());
   ASSERT_TRUE(menu_surface);
 
   wl_pointer_send_enter(pointer->resource(), ++serial, menu_surface->resource(),
@@ -784,7 +784,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   Sync();
 
   auto* nested_menu_surface = server_.GetObject<wl::MockSurface>(
-      nested_menu_window->root_surface()->GetSurfaceId());
+      nested_menu_window->root_surface()->get_surface_id());
   ASSERT_TRUE(nested_menu_surface);
 
   wl_pointer_send_enter(pointer->resource(), ++serial,

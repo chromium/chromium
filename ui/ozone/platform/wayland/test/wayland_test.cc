@@ -83,7 +83,7 @@ void WaylandTest::SetUp() {
   // Pause the server after it has responded to all incoming events.
   server_.Pause();
 
-  auto id = window_->root_surface()->GetSurfaceId();
+  auto id = window_->root_surface()->get_surface_id();
   surface_ = server_.GetObject<wl::MockSurface>(id);
   ASSERT_TRUE(surface_);
 

@@ -89,7 +89,7 @@ class WaylandPointerGesturesTest : public WaylandTest {
 // See https://crbug.com/1283652
 TEST_P(WaylandPointerGesturesTest, PinchZoomScale) {
   auto* const mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   uint32_t serial = 0;
   auto* pointer = server_.seat()->pointer();

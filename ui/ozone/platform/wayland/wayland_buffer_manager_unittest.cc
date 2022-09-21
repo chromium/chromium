@@ -480,7 +480,7 @@ TEST_P(WaylandBufferManagerTest, CommitBufferNonExistingBufferId) {
                                                false /* fail */);
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   // Can't commit for non-existing buffer id.
   constexpr uint32_t kNumberOfCommits = 0;
@@ -503,7 +503,7 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonExistingBufferId) {
                                                false /* fail */);
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   // Can't commit for non-existing buffer id.
   constexpr uint32_t kNumberOfCommits = 0;
@@ -637,10 +637,10 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonsensicalBoundsRect) {
 
       // Clear all the possible frame and release callbacks.
       auto* mock_surface = server_.GetObject<wl::MockSurface>(
-          window_->root_surface()->GetSurfaceId());
+          window_->root_surface()->get_surface_id());
       for (auto& subsurface : window_->wayland_subsurfaces_) {
         auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
-            subsurface->wayland_surface()->GetSurfaceId());
+            subsurface->wayland_surface()->get_surface_id());
         EXPECT_TRUE(mock_surface_of_subsurface);
         mock_surface_of_subsurface->SendFrameCallback();
         mock_surface_of_subsurface->ClearBufferReleases();
@@ -673,7 +673,7 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
                                                false /* fail */);
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   constexpr uint32_t kNumberOfCommits = 3;
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
@@ -789,7 +789,7 @@ TEST_P(WaylandBufferManagerTest,
                                                false /* fail */);
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   auto* mock_wp_presentation = server_.EnsureWpPresentation();
   ASSERT_TRUE(mock_wp_presentation);
 
@@ -916,7 +916,7 @@ TEST_P(WaylandBufferManagerTest,
                                                false /* fail */);
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   constexpr uint32_t kNumberOfCommits = 3;
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
@@ -1042,7 +1042,7 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditions) {
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 
   auto* linux_dmabuf = server_.zwp_linux_dmabuf_v1();
@@ -1136,7 +1136,7 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
     Sync();
 
     auto* mock_surface = server_.GetObject<wl::MockSurface>(
-        temp_window->root_surface()->GetSurfaceId());
+        temp_window->root_surface()->get_surface_id());
     MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget);
 
     auto* linux_dmabuf = server_.zwp_linux_dmabuf_v1();
@@ -1226,7 +1226,7 @@ TEST_P(WaylandBufferManagerTest,
   Sync();
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
+      window->root_surface()->get_surface_id());
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget);
 
   auto* linux_dmabuf = server_.zwp_linux_dmabuf_v1();
@@ -1310,7 +1310,7 @@ TEST_P(WaylandBufferManagerTest, AnonymousBufferAttachedAndReleased) {
                                                false /* fail */);
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   constexpr uint32_t kNumberOfCommits = 3;
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
@@ -1471,7 +1471,7 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionMultipleBuffers) {
   auto bounds = temp_window->GetBoundsInPixels();
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      temp_window->root_surface()->GetSurfaceId());
+      temp_window->root_surface()->get_surface_id());
   ASSERT_TRUE(mock_surface);
 
   ActivateSurface(mock_surface->xdg_surface());
@@ -1547,7 +1547,7 @@ TEST_P(WaylandBufferManagerTest, DestroyBufferCommittedTwiceInARow) {
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = window_->GetBoundsInPixels();
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget);
 
@@ -1617,7 +1617,7 @@ TEST_P(WaylandBufferManagerTest, ReleaseBufferCommittedTwiceInARow) {
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = window_->GetBoundsInPixels();
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget);
 
@@ -1686,7 +1686,7 @@ TEST_P(WaylandBufferManagerTest, ReleaseOrderDifferentToCommitOrder) {
   const gfx::AcceleratedWidget widget = window_->GetWidget();
   const gfx::Rect bounds = window_->GetBoundsInPixels();
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget);
 
@@ -1791,7 +1791,7 @@ TEST_P(WaylandBufferManagerTest,
   ASSERT_TRUE(!connection_->presentation());
   EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
   EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
   EXPECT_CALL(*mock_surface,
@@ -1990,7 +1990,7 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
       linux_dmabuf->buffer_params()[1]->buffer_resource());
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   // root_surface shall not be committed as one of its subsurface is not
   // committed yet due to pending wl_buffer creation.
@@ -2049,7 +2049,7 @@ TEST_P(WaylandBufferManagerTest, FencedRelease) {
                                                false /* fail */);
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   constexpr uint32_t kNumberOfCommits = 3;
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
@@ -2129,7 +2129,7 @@ TEST_P(WaylandBufferManagerTest,
   const gfx::Rect bounds = window_->GetBoundsInPixels();
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
   EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
@@ -2252,11 +2252,11 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
   // additional overlay surface. All of them must have buffers attached.
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   EXPECT_TRUE(mock_surface->attached_buffer());
 
   auto* mock_surface_primary_subsurface = server_.GetObject<wl::MockSurface>(
-      window_->primary_subsurface()->wayland_surface()->GetSurfaceId());
+      window_->primary_subsurface()->wayland_surface()->get_surface_id());
   EXPECT_TRUE(mock_surface_primary_subsurface->attached_buffer());
 
   EXPECT_EQ(1u, window_->wayland_subsurfaces().size());
@@ -2265,7 +2265,7 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
                                              .begin()
                                              ->get()
                                              ->wayland_surface()
-                                             ->GetSurfaceId());
+                                             ->get_surface_id());
   EXPECT_TRUE(mock_surface_overlay_subsurface->attached_buffer());
 
   Sync();
@@ -2308,7 +2308,7 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
   Sync();
 
   mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   EXPECT_TRUE(mock_surface->attached_buffer());
 
   // The root surface should have the buffer detached.
@@ -2325,7 +2325,7 @@ TEST_P(WaylandBufferManagerTest,
   EXPECT_TRUE(window_->IsVisible());
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   constexpr uint32_t kNumberOfCommits = 0;
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
@@ -2342,7 +2342,7 @@ TEST_P(WaylandBufferManagerTest, HasOverlayPrioritizer) {
 
 TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   std::vector<uint32_t> kBufferIds = {1, 2, 3};
 
@@ -2393,7 +2393,7 @@ TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
 
     for (auto& subsurface : window_->wayland_subsurfaces_) {
       auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
-          subsurface->wayland_surface()->GetSurfaceId());
+          subsurface->wayland_surface()->get_surface_id());
       EXPECT_TRUE(mock_surface_of_subsurface);
       EXPECT_EQ(
           mock_surface_of_subsurface->prioritized_surface()->overlay_priority(),
@@ -2415,7 +2415,7 @@ TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
   InitializeSurfaceAugmenter();
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   std::vector<uint32_t> kBufferIds = {1, 2, 3};
 
@@ -2472,7 +2472,7 @@ TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
 
         for (auto& subsurface : window_->wayland_subsurfaces_) {
           auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
-              subsurface->wayland_surface()->GetSurfaceId());
+              subsurface->wayland_surface()->get_surface_id());
           EXPECT_TRUE(mock_surface_of_subsurface);
 
           gfx::RRectF rounded_clip_bounds_dip = rounded_corners;
@@ -2527,7 +2527,7 @@ TEST_P(WaylandBufferManagerTest, FeedbacksAreDiscardedIfClientMisbehaves) {
                                                false /* fail */);
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   // There will be 235 frames/commits.
   constexpr uint32_t kNumberOfCommits = 235u;
@@ -2643,7 +2643,7 @@ TEST_P(WaylandBufferManagerTest, DoesNotRequestReleaseForSolidColorBuffers) {
   Sync();
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   std::vector<wl::WaylandOverlayConfig> overlay_configs;
   auto bounds = window_->GetBoundsInPixels();
@@ -2675,7 +2675,7 @@ class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
     Sync();
 
     auto* mock_surface = server_.GetObject<wl::MockSurface>(
-        temp_window->root_surface()->GetSurfaceId());
+        temp_window->root_surface()->get_surface_id());
     ASSERT_TRUE(mock_surface);
 
     ActivateSurface(mock_surface->xdg_surface());
@@ -2727,7 +2727,7 @@ class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
         temp_window->wayland_subsurfaces_.begin()->get();
     DCHECK(subsurface);
     auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
-        subsurface->wayland_surface()->GetSurfaceId());
+        subsurface->wayland_surface()->get_surface_id());
     DCHECK(mock_surface_of_subsurface);
 
     auto* test_vp = mock_surface_of_subsurface->viewport();

@@ -1142,7 +1142,7 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
 
       // Send the window to |output|.
       wl::MockSurface* surface = server->GetObject<wl::MockSurface>(
-          window->root_surface()->GetSurfaceId());
+          window->root_surface()->get_surface_id());
       ASSERT_TRUE(surface);
       wl_surface_send_enter(surface->resource(), output->resource());
       self->Sync();

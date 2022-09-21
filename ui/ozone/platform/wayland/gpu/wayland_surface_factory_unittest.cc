@@ -259,9 +259,9 @@ TEST_P(WaylandSurfaceFactoryTest,
   }
 
   auto* root_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   auto* mock_primary_surface = server_.GetObject<wl::MockSurface>(
-      window_->primary_subsurface()->wayland_surface()->GetSurfaceId());
+      window_->primary_subsurface()->wayland_surface()->get_surface_id());
 
   CallbacksHelper cbs_helper;
   // Submit a frame with an overlay and background.
@@ -353,7 +353,7 @@ TEST_P(WaylandSurfaceFactoryTest,
   auto* mock_overlay_surface = server_.GetObject<wl::MockSurface>(
       (*window_->wayland_subsurfaces().begin())
           ->wayland_surface()
-          ->GetSurfaceId());
+          ->get_surface_id());
 
   // Submit another frame with only an overlay.
   {
@@ -549,9 +549,9 @@ TEST_P(WaylandSurfaceFactoryTest,
   }
 
   auto* root_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   auto* mock_primary_surface = server_.GetObject<wl::MockSurface>(
-      window_->primary_subsurface()->wayland_surface()->GetSurfaceId());
+      window_->primary_subsurface()->wayland_surface()->get_surface_id());
 
   CallbacksHelper cbs_helper;
   // Submit a frame with 1 primary plane, 1 underlay, and 1 background.
@@ -632,7 +632,7 @@ TEST_P(WaylandSurfaceFactoryTest,
   testing::Mock::VerifyAndClearExpectations(&mock_primary_surface);
   auto* subsurface = window_->wayland_subsurfaces().begin()->get();
   auto* mock_overlay_surface = server_.GetObject<wl::MockSurface>(
-      subsurface->wayland_surface()->GetSurfaceId());
+      subsurface->wayland_surface()->get_surface_id());
 
   // Give mojo the chance to pass the callbacks.
   base::RunLoop().RunUntilIdle();
@@ -940,9 +940,9 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
       native_pixmap, test_buffer_size));
 
   auto* root_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   auto* mock_primary_surface = server_.GetObject<wl::MockSurface>(
-      window_->primary_subsurface()->wayland_surface()->GetSurfaceId());
+      window_->primary_subsurface()->wayland_surface()->get_surface_id());
 
   CallbacksHelper cbs_helper;
   // Submit a frame with an overlay and background.

@@ -106,7 +106,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
   ASSERT_TRUE(pointer);
 
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
-      window1->root_surface()->GetSurfaceId());
+      window1->root_surface()->get_surface_id());
   wl_pointer_send_enter(pointer->resource(), 1, surface->resource(), 0, 0);
   wl_pointer_send_frame(pointer->resource());
 
@@ -149,7 +149,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
   ASSERT_TRUE(keyboard);
 
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
-      window1->root_surface()->GetSurfaceId());
+      window1->root_surface()->get_surface_id());
 
   struct wl_array empty;
   wl_array_init(&empty);

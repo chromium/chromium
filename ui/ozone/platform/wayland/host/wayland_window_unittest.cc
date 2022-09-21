@@ -325,7 +325,7 @@ class WaylandWindowTest : public WaylandTest {
 
   wl::TestXdgPopup* GetTestXdgPopupByWindow(WaylandWindow* window) {
     wl::MockSurface* mock_surface = server_.GetObject<wl::MockSurface>(
-        window->root_surface()->GetSurfaceId());
+        window->root_surface()->get_surface_id());
     if (mock_surface) {
       auto* mock_xdg_surface = mock_surface->xdg_surface();
       if (mock_xdg_surface)
@@ -351,7 +351,7 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeConfiguresWaylandWindow) {
 
   window_->set_update_visual_size_immediately_for_testing(false);
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   // Configure event makes Wayland update bounds, but does not change toplevel
   // input region, opaque region or window geometry immediately. Such actions
@@ -381,7 +381,7 @@ TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
   window_->set_apply_pending_state_on_update_visual_size_for_testing(false);
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   // Set*() calls do not send wl_surface requests.
   EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(0);
@@ -428,7 +428,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
 
   // Send the window to |output1|.
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   ASSERT_TRUE(surface);
   wl_surface_send_enter(surface->resource(), output->resource());
 
@@ -593,7 +593,7 @@ TEST_P(WaylandWindowTest, MismatchUpdateVisualSize) {
 
   window_->set_update_visual_size_immediately_for_testing(false);
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   // UpdateVisualSize with different size from configure events does not
   // acknowledge toplevel configure.
@@ -832,7 +832,7 @@ TEST_P(WaylandWindowTest, StartWithFullscreen) {
   // The state must not be changed to the fullscreen before the surface is
   // activated.
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
+      window->root_surface()->get_surface_id());
   EXPECT_FALSE(mock_surface->xdg_surface());
   EXPECT_CALL(delegate, OnWindowStateChanged(_, _)).Times(0);
   window->ToggleFullscreen();
@@ -876,7 +876,7 @@ TEST_P(WaylandWindowTest, StartMaximized) {
 
   // The state gets changed to maximize and the delegate notified.
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
+      window->root_surface()->get_surface_id());
   EXPECT_FALSE(mock_surface->xdg_surface());
   EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
 
@@ -1232,7 +1232,7 @@ TEST_P(WaylandWindowTest, SendsBoundsOnRequest) {
 
 TEST_P(WaylandWindowTest, UpdateWindowRegion) {
   wl::MockSurface* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   // Change bounds.
   const gfx::Rect initial_bounds = window_->GetBoundsInDIP();
@@ -1817,7 +1817,7 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
 
   // Test that CanDispatchEvent is set correctly.
   wl::MockSurface* toplevel_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   wl_pointer_send_enter(server_.seat()->pointer()->resource(), ++serial,
                         toplevel_surface->resource(), 0, 0);
 
@@ -1862,7 +1862,7 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
                              {menu_window.get(), nested_menu_window.get()});
 
   wl::MockSurface* menu_window_surface = server_.GetObject<wl::MockSurface>(
-      menu_window->root_surface()->GetSurfaceId());
+      menu_window->root_surface()->get_surface_id());
 
   wl_pointer_send_leave(server_.seat()->pointer()->resource(), ++serial,
                         toplevel_surface->resource());
@@ -1887,7 +1887,7 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
 
   wl::MockSurface* nested_menu_window_surface =
       server_.GetObject<wl::MockSurface>(
-          nested_menu_window->root_surface()->GetSurfaceId());
+          nested_menu_window->root_surface()->get_surface_id());
 
   wl_pointer_send_leave(server_.seat()->pointer()->resource(), ++serial,
                         menu_window_surface->resource());
@@ -1971,7 +1971,7 @@ TEST_P(WaylandWindowTest, ToplevelWindowUpdateWindowScale) {
 
   // Send the window to |output1|.
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   ASSERT_TRUE(surface);
   wl_surface_send_enter(surface->resource(), output1->resource());
   Sync();
@@ -2012,7 +2012,7 @@ TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
   for (const auto& type : window_types) {
     // Send the window to |output1|.
     wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
-        window_->root_surface()->GetSurfaceId());
+        window_->root_surface()->get_surface_id());
     ASSERT_TRUE(surface);
     wl_surface_send_enter(surface->resource(), output1->resource());
     Sync();
@@ -2076,7 +2076,7 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
   Sync();
 
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   ASSERT_TRUE(surface);
 
   struct {
@@ -2154,7 +2154,7 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferUsesParentScale) {
 
   // Send the window to |output1|.
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   ASSERT_TRUE(surface);
 
   wl_surface_send_enter(surface->resource(), secondary_output->resource());
@@ -2200,7 +2200,7 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
 
   // Send the window to |output1|.
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   ASSERT_TRUE(surface);
   wl_surface_send_enter(surface->resource(), output1->resource());
   wl_surface_send_enter(surface->resource(), output2->resource());
@@ -2324,7 +2324,7 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
 
   // Enter |output1|.
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
   ASSERT_TRUE(surface);
   wl_surface_send_enter(surface->resource(), output1->resource());
   Sync();
@@ -2343,7 +2343,7 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
   // Pretend Wayland sends that menu entered output2, while the toplevel is on
   // output1.  Output1 must still be preferred by the menu.
   wl::MockSurface* menu_surface = server_.GetObject<wl::MockSurface>(
-      menu_window->root_surface()->GetSurfaceId());
+      menu_window->root_surface()->get_surface_id());
   wl_surface_send_enter(menu_surface->resource(), output1->resource());
   Sync();
 
@@ -2544,7 +2544,7 @@ ACTION_P(VerifyRegion, ptr) {
 
 TEST_P(WaylandWindowTest, SetOpaqueRegion) {
   wl::MockSurface* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
+      window_->root_surface()->get_surface_id());
 
   gfx::Rect new_bounds(500, 600);
   auto state_array = MakeStateArray({XDG_TOPLEVEL_STATE_ACTIVATED});
@@ -2600,7 +2600,7 @@ TEST_P(WaylandWindowTest, WaylandPopupSimpleParent) {
   Sync();
 
   auto* mock_surface_popup = server_.GetObject<wl::MockSurface>(
-      wayland_popup->root_surface()->GetSurfaceId());
+      wayland_popup->root_surface()->get_surface_id());
   auto* mock_xdg_popup = mock_surface_popup->xdg_surface()->xdg_popup();
 
   EXPECT_EQ(mock_xdg_popup->anchor_rect().origin(),
@@ -2640,7 +2640,7 @@ TEST_P(WaylandWindowTest, WaylandPopupNestedParent) {
     Sync();
 
     auto* mock_surface_nested = server_.GetObject<wl::MockSurface>(
-        nested_wayland_popup->root_surface()->GetSurfaceId());
+        nested_wayland_popup->root_surface()->get_surface_id());
     auto* mock_xdg_popup_nested =
         mock_surface_nested->xdg_surface()->xdg_popup();
 
@@ -2772,7 +2772,7 @@ TEST_P(WaylandWindowTest, DestroysCreatesSurfaceOnHideShow) {
   Sync();
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
+      window->root_surface()->get_surface_id());
   EXPECT_TRUE(mock_surface->xdg_surface());
   EXPECT_TRUE(mock_surface->xdg_surface()->xdg_toplevel());
 
@@ -2804,7 +2804,7 @@ TEST_P(WaylandWindowTest, DestroysCreatesPopupsOnHideShow) {
   Sync();
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
+      window->root_surface()->get_surface_id());
   EXPECT_TRUE(mock_surface->xdg_surface());
   EXPECT_TRUE(mock_surface->xdg_surface()->xdg_popup());
 
@@ -2855,7 +2855,7 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
 
   // Configure window to be ready to attach wl_buffers.
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
+      window->root_surface()->get_surface_id());
   EXPECT_TRUE(mock_surface->xdg_surface());
   EXPECT_TRUE(mock_surface->xdg_surface()->xdg_toplevel());
   SendConfigureEvent(mock_surface->xdg_surface(), {100, 100}, 1, states.get());
@@ -2924,7 +2924,7 @@ TEST_P(WaylandWindowTest, SetsPropertiesOnShow) {
   Sync();
 
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
+      window->root_surface()->get_surface_id());
   auto* mock_xdg_toplevel = mock_surface->xdg_surface()->xdg_toplevel();
 
   // Only app id must be set now.
@@ -2996,7 +2996,7 @@ TEST_P(WaylandWindowTest, CreatesPopupOnButtonPressSerial) {
     constexpr uint32_t button_release_serial = 4;
 
     wl::MockSurface* toplevel_surface = server_.GetObject<wl::MockSurface>(
-        window_->root_surface()->GetSurfaceId());
+        window_->root_surface()->get_surface_id());
     struct wl_array empty;
     wl_array_init(&empty);
     wl_keyboard_send_enter(server_.seat()->keyboard()->resource(),
@@ -3065,7 +3065,7 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
     constexpr uint32_t touch_up_serial = 3;
 
     wl::MockSurface* toplevel_surface = server_.GetObject<wl::MockSurface>(
-        window_->root_surface()->GetSurfaceId());
+        window_->root_surface()->get_surface_id());
     struct wl_array empty;
     wl_array_init(&empty);
     wl_keyboard_send_enter(server_.seat()->keyboard()->resource(), enter_serial,
@@ -3228,7 +3228,7 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
   // Emulate a nested menu creation triggered by a mouse button event and ensure
   // ozone/wayland does not attempt to grab it, as its parent also has not grab.
   auto* server_root_menu_surface = server_.GetObject<wl::MockSurface>(
-      root_menu->root_surface()->GetSurfaceId());
+      root_menu->root_surface()->get_surface_id());
   ASSERT_TRUE(server_root_menu_surface);
 
   auto* pointer_resource = server_.seat()->pointer()->resource();
@@ -3329,9 +3329,9 @@ class WaylandSubsurfaceTest : public WaylandWindowTest {
     Sync();
 
     auto* mock_surface_root_window = server_.GetObject<wl::MockSurface>(
-        window->root_surface()->GetSurfaceId());
+        window->root_surface()->get_surface_id());
     auto* mock_surface_subsurface = server_.GetObject<wl::MockSurface>(
-        wayland_subsurface->wayland_surface()->GetSurfaceId());
+        wayland_subsurface->wayland_surface()->get_surface_id());
     EXPECT_TRUE(mock_surface_subsurface);
     wayland_subsurface->ConfigureAndShowSurface(
         subsurface_bounds, gfx::RectF(0, 0, 640, 480) /*parent_bounds_px*/,
@@ -3424,15 +3424,15 @@ TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
   wl::TestSubSurface* test_subs[3] = {
       server_
           .GetObject<wl::MockSurface>(
-              subsurfaces[0]->wayland_surface()->GetSurfaceId())
+              subsurfaces[0]->wayland_surface()->get_surface_id())
           ->sub_surface(),
       server_
           .GetObject<wl::MockSurface>(
-              subsurfaces[1]->wayland_surface()->GetSurfaceId())
+              subsurfaces[1]->wayland_surface()->get_surface_id())
           ->sub_surface(),
       server_
           .GetObject<wl::MockSurface>(
-              subsurfaces[2]->wayland_surface()->GetSurfaceId())
+              subsurfaces[2]->wayland_surface()->get_surface_id())
           ->sub_surface()};
 
   EXPECT_CALL(*test_subs[0], PlaceAbove(_)).Times(1);
@@ -3478,7 +3478,7 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
 
   auto* surface = window_->root_surface();
   auto* test_viewport =
-      server_.GetObject<wl::MockSurface>(surface->GetSurfaceId())->viewport();
+      server_.GetObject<wl::MockSurface>(surface->get_surface_id())->viewport();
 
   // Set viewport src and dst.
   EXPECT_CALL(*test_viewport, SetSource(512, 384, 512, 384)).Times(1);
@@ -3561,7 +3561,7 @@ TEST_P(WaylandWindowTest, RepositionPopups) {
   Sync();
 
   auto* mock_surface_popup = server_.GetObject<wl::MockSurface>(
-      menu_window->root_surface()->GetSurfaceId());
+      menu_window->root_surface()->get_surface_id());
   auto* mock_xdg_popup = mock_surface_popup->xdg_surface()->xdg_popup();
 
   EXPECT_EQ(mock_xdg_popup->anchor_rect().origin(),
@@ -3582,7 +3582,7 @@ TEST_P(WaylandWindowTest, RepositionPopups) {
 
   // Xdg objects can be recreated depending on the version of the xdg shell.
   mock_surface_popup = server_.GetObject<wl::MockSurface>(
-      menu_window->root_surface()->GetSurfaceId());
+      menu_window->root_surface()->get_surface_id());
   mock_xdg_popup = mock_surface_popup->xdg_surface()->xdg_popup();
 
   EXPECT_EQ(mock_xdg_popup->anchor_rect().origin(),
@@ -3723,7 +3723,7 @@ TEST_P(WaylandWindowTest, DISABLED_BlockingTouchDownUp_NoCrash) {
 
   // Test that CanDispatchEvent is set correctly.
   wl::MockSurface* toplevel_surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
+      window->root_surface()->get_surface_id());
   Sync();
   VerifyCanDispatchTouchEvents({window.get()}, {});
 
@@ -3778,7 +3778,7 @@ TEST_P(WaylandWindowTest, MAYBE_ChangeFocusDuringDispatch) {
   Sync();
 
   wl::MockSurface* other_surface = server_.GetObject<wl::MockSurface>(
-      other_window->root_surface()->GetSurfaceId());
+      other_window->root_surface()->get_surface_id());
   ASSERT_TRUE(other_surface);
   auto* pointer = server_.seat()->pointer();
 

@@ -47,7 +47,7 @@ WaylandDragDropTest::~WaylandDragDropTest() = default;
 void WaylandDragDropTest::SendDndEnter(WaylandWindow* window,
                                        const gfx::Point& location) {
   auto* surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
+      window->root_surface()->get_surface_id());
   OfferAndEnter(surface, location);
 }
 
@@ -88,7 +88,7 @@ void WaylandDragDropTest::SendPointerEnter(
     WaylandWindow* window,
     MockPlatformWindowDelegate* delegate) {
   auto* surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
+      window->root_surface()->get_surface_id());
   wl_pointer_send_enter(pointer_->resource(), NextSerial(), surface->resource(),
                         0, 0);
   wl_pointer_send_frame(pointer_->resource());
@@ -98,7 +98,7 @@ void WaylandDragDropTest::SendPointerLeave(
     WaylandWindow* window,
     MockPlatformWindowDelegate* delegate) {
   auto* surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
+      window->root_surface()->get_surface_id());
   wl_pointer_send_leave(pointer_->resource(), NextSerial(),
                         surface->resource());
   wl_pointer_send_frame(pointer_->resource());
@@ -122,7 +122,7 @@ void WaylandDragDropTest::SendTouchDown(WaylandWindow* window,
                                         int id,
                                         const gfx::Point& location) {
   auto* surface = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
+      window->root_surface()->get_surface_id());
   wl_touch_send_down(
       touch_->resource(), NextSerial(), NextTime(), surface->resource(), id,
       wl_fixed_from_double(location.x()), wl_fixed_from_double(location.y()));
