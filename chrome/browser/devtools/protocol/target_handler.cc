@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/common/url_constants.h"
+#include "content/public/common/url_utils.h"
 
 namespace {
 NavigateParams CreateNavigateParams(Profile* profile,
@@ -36,7 +38,9 @@ NavigateParams CreateNavigateParams(Profile* profile,
 }
 }  // namespace
 
-TargetHandler::TargetHandler(protocol::UberDispatcher* dispatcher) {
+TargetHandler::TargetHandler(protocol::UberDispatcher* dispatcher,
+                             bool is_trusted)
+    : is_trusted_(is_trusted) {
   protocol::Target::Dispatcher::wire(dispatcher, this);
 }
 
@@ -116,6 +120,11 @@ protocol::Response TargetHandler::CreateTarget(
   GURL gurl(url);
   if (gurl.is_empty()) {
     gurl = GURL(url::kAboutBlankURL);
+  }
+
+  if (!is_trusted_ && gurl.SchemeIs(content::kChromeUIUntrustedScheme)) {
+    return protocol::Response::ServerError(
+        "Refusing to create a target with the specified URL");
   }
 
   create_new_window = !target_browser;

@@ -42,7 +42,8 @@ ChromeDevToolsSession::ChromeDevToolsSession(
   }
   emulation_handler_ =
       std::make_unique<EmulationHandler>(agent_host, &dispatcher_);
-  target_handler_ = std::make_unique<TargetHandler>(&dispatcher_);
+  target_handler_ = std::make_unique<TargetHandler>(
+        &dispatcher_, channel->GetClient()->MayAttachToBrowser());
   if (channel->GetClient()->MayAttachToBrowser()) {
     browser_handler_ =
         std::make_unique<BrowserHandler>(&dispatcher_, agent_host->GetId());
