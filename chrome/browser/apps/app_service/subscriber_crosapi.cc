@@ -233,8 +233,7 @@ void SubscriberCrosapi::SetSupportedLinksPreference(const std::string& app_id) {
 
 void SubscriberCrosapi::UninstallSilently(const std::string& app_id,
                                           UninstallSource uninstall_source) {
-  proxy_->UninstallSilently(
-      app_id, ConvertUninstallSourceToMojomUninstallSource(uninstall_source));
+  proxy_->UninstallSilently(app_id, uninstall_source);
 }
 
 void SubscriberCrosapi::OnSubscriberDisconnected() {
