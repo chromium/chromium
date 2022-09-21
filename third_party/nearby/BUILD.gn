@@ -389,7 +389,6 @@ source_set("platform_api_comm") {
     "src/internal/platform/implementation/ble_v2.h",
     "src/internal/platform/implementation/bluetooth_adapter.h",
     "src/internal/platform/implementation/bluetooth_classic.h",
-    "src/internal/platform/implementation/credential_storage.h",
     "src/internal/platform/implementation/server_sync.h",
     "src/internal/platform/implementation/webrtc.h",
     "src/internal/platform/implementation/wifi.h",
