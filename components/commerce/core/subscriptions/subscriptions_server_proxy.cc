@@ -336,13 +336,14 @@ void SubscriptionsServerProxy::OnGetSubscriptionsJsonParsed(
 base::Value SubscriptionsServerProxy::Serialize(
     const CommerceSubscription& subscription) {
   base::Value subscription_json(base::Value::Type::DICTIONARY);
-  subscription_json.SetIntKey(kSubscriptionTypeKey,
-                              static_cast<int>(subscription.type));
-  subscription_json.SetIntKey(kSubscriptionIdTypeKey,
-                              static_cast<int>(subscription.id_type));
+  subscription_json.SetStringKey(kSubscriptionTypeKey,
+                                 SubscriptionTypeToString(subscription.type));
+  subscription_json.SetStringKey(
+      kSubscriptionIdTypeKey, SubscriptionIdTypeToString(subscription.id_type));
   subscription_json.SetStringKey(kSubscriptionIdKey, subscription.id);
-  subscription_json.SetIntKey(kSubscriptionManagementTypeKey,
-                              static_cast<int>(subscription.management_type));
+  subscription_json.SetStringKey(
+      kSubscriptionManagementTypeKey,
+      SubscriptionManagementTypeToString(subscription.management_type));
   if (auto seen_offer = subscription.user_seen_offer) {
     base::Value seen_offer_json(base::Value::Type::DICTIONARY);
     seen_offer_json.SetStringKey(kSeenOfferIdKey, seen_offer->offer_id);
@@ -359,16 +360,17 @@ base::Value SubscriptionsServerProxy::Serialize(
 absl::optional<CommerceSubscription> SubscriptionsServerProxy::Deserialize(
     const base::Value& value) {
   if (value.is_dict()) {
-    auto type = value.FindIntKey(kSubscriptionTypeKey);
-    auto id_type = value.FindIntKey(kSubscriptionIdTypeKey);
+    auto* type = value.FindStringKey(kSubscriptionTypeKey);
+    auto* id_type = value.FindStringKey(kSubscriptionIdTypeKey);
     auto* id = value.FindStringKey(kSubscriptionIdKey);
-    auto management_type = value.FindIntKey(kSubscriptionManagementTypeKey);
+    auto* management_type = value.FindStringKey(kSubscriptionManagementTypeKey);
     auto timestamp =
         base::ValueToInt64(value.FindKey(kSubscriptionTimestampKey));
     if (type && id_type && id && management_type && timestamp) {
       return absl::make_optional<CommerceSubscription>(
-          SubscriptionType(*type), IdentifierType(*id_type), *id,
-          ManagementType(*management_type), *timestamp);
+          StringToSubscriptionType(*type), StringToSubscriptionIdType(*id_type),
+          *id, StringToSubscriptionManagementType(*management_type),
+          *timestamp);
     }
   }
 

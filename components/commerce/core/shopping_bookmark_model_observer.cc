@@ -43,30 +43,17 @@ void ShoppingBookmarkModelObserver::OnWillChangeBookmarkNode(
 void ShoppingBookmarkModelObserver::BookmarkNodeChanged(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
-  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-      power_bookmarks::GetNodePowerBookmarkMeta(model, node);
+  if (node_to_url_map_[node->id()] != node->url()) {
+    // If the URL did change, clear the power bookmark shopping meta and
+    // unsubscribe if needed.
+    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+        power_bookmarks::GetNodePowerBookmarkMeta(model, node);
 
-  if (meta && meta->has_shopping_specifics()) {
-    power_bookmarks::ShoppingSpecifics* specifics =
-        meta->mutable_shopping_specifics();
-    uint64_t cluster_id = specifics->product_cluster_id();
+    if (meta && meta->has_shopping_specifics()) {
+      power_bookmarks::ShoppingSpecifics* specifics =
+          meta->mutable_shopping_specifics();
 
-    // If the changed bookmark is a shopping item, we check its tracking status
-    // with local subscriptions and if inconsistent, we need to sync local
-    // subscriptions with the server. This is mainly used to keep local
-    // subscriptions up to date when users operate on multiple devices.
-    if (subscriptions_manager_) {
-      CommerceSubscription sub(
-          SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
-          base::NumberToString(cluster_id), ManagementType::kUserManaged);
-
-      subscriptions_manager_->VerifyIfSubscriptionExists(
-          std::move(sub), specifics->is_price_tracked());
-    }
-
-    if (node_to_url_map_[node->id()] != node->url()) {
-      // If the URL did change, clear the power bookmark shopping meta and
-      // unsubscribe if needed.
+      uint64_t cluster_id = specifics->product_cluster_id();
       meta->clear_shopping_specifics();
       power_bookmarks::SetNodePowerBookmarkMeta(model, node, std::move(meta));
 
@@ -114,6 +101,30 @@ void ShoppingBookmarkModelObserver::BookmarkNodeRemoved(
 
   SetPriceTrackingStateForBookmark(shopping_service_, model, node, false,
                                    base::BindOnce([](bool success) {}));
+}
+
+void ShoppingBookmarkModelObserver::BookmarkMetaInfoChanged(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* node) {
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      power_bookmarks::GetNodePowerBookmarkMeta(model, node);
+
+  // If the changed bookmark is a shopping item, we check its tracking status
+  // with local subscriptions and if inconsistent, we need to sync local
+  // subscriptions with the server. This is mainly used to keep local
+  // subscriptions up to date when users operate on multiple devices.
+  if (meta && meta->has_shopping_specifics() && subscriptions_manager_) {
+    power_bookmarks::ShoppingSpecifics* specifics =
+        meta->mutable_shopping_specifics();
+    uint64_t cluster_id = specifics->product_cluster_id();
+
+    CommerceSubscription sub(
+        SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
+        base::NumberToString(cluster_id), ManagementType::kUserManaged);
+
+    subscriptions_manager_->VerifyIfSubscriptionExists(
+        std::move(sub), specifics->is_price_tracked());
+  }
 }
 
 }  // namespace commerce

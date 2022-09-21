@@ -50,9 +50,12 @@ const char kServiceUrlForGet[] =
 
 const std::string kExpectedPostDataForCreate =
     "{\"createShoppingSubscriptionsParams\":{\"subscriptions\":[{"
-    "\"identifier\":\"111\",\"identifierType\":2,\"managementType\":2,\"type\":"
-    "1},{\"identifier\":\"222\",\"identifierType\":2,\"managementType\":2,"
-    "\"type\":1,\"userSeenOffer\":{\"countryCode\":\"us\",\"offerId\":\"333\","
+    "\"identifier\":\"111\",\"identifierType\":\"PRODUCT_CLUSTER_ID\","
+    "\"managementType\":\"USER_MANAGED\",\"type\":"
+    "\"PRICE_TRACK\"},{\"identifier\":\"222\",\"identifierType\":\"PRODUCT_"
+    "CLUSTER_ID\",\"managementType\":\"USER_MANAGED\","
+    "\"type\":\"PRICE_TRACK\",\"userSeenOffer\":{\"countryCode\":\"us\","
+    "\"offerId\":\"333\","
     "\"seenPriceMicros\":\"100\"}}]}}";
 const std::string kExpectedPostDataForDelete =
     "{\"removeShoppingSubscriptionsParams\":{\"eventTimestampMicros\":["
@@ -61,8 +64,9 @@ const std::string kResponseSucceeded = "{ \"status\": { \"code\": 0 } }";
 const std::string kResponseFailed = "{ \"status\": { \"code\": 1 } }";
 const std::string kValidGetResponse =
     "{\"subscriptions\":[{"
-    "\"identifier\":\"111\",\"identifierType\":2,\"managementType\":2,\"type\":"
-    "1,\"eventTimestampMicros\":\"123456\"}]}";
+    "\"identifier\":\"111\",\"identifierType\":\"PRODUCT_CLUSTER_ID\","
+    "\"managementType\":\"USER_MANAGED\",\"type\":"
+    "\"PRICE_TRACK\",\"eventTimestampMicros\":\"123456\"}]}";
 
 // Build a subscription list consisting of two subscriptions.
 std::unique_ptr<std::vector<commerce::CommerceSubscription>>
