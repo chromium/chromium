@@ -4,6 +4,7 @@
 
 #include "chromeos/system/statistics_provider_impl.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -12,6 +13,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_chromeos_version_info.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -643,6 +645,213 @@ TEST_F(StatisticsProviderImplTest, GeneratesStubVpdFileIfNotRunningChromeOS) {
   // The provider shall not record in non-chromeos environment.
   histogram_tester.ExpectTotalCount(kMetricVpdCacheReadResult,
                                     /*count=*/0);
+}
+
+// Test that the provider loads correct statistics OEM file if they
+// have correct format.
+TEST_F(StatisticsProviderImplTest, LoadsOemManifest) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  constexpr char kOemManifestStatistics[] = R"({
+    "device_requisition": "device_requisition_value",
+    "not_oem_statistic_key": "not_oem_statistic_value",
+    "enterprise_managed": true,
+    "can_exit_enrollment": true,
+    "keyboard_driven_oobe": true,
+    "not_oem_flag_key": true
+  })";
+
+  const StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_oem_manifest(
+              CreateFileInTempDir(kOemManifestStatistics, temp_dir()))
+          .Build();
+
+  // Load statistics without OEM flag.
+  auto provider =
+      StatisticsProviderImpl::CreateProviderForTesting(testing_sources);
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  // Check statistics.
+  {
+    std::string result;
+    EXPECT_FALSE(
+        provider->GetMachineStatistic(kOemDeviceRequisitionKey, &result));
+    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
+  }
+
+  {
+    std::string result;
+    EXPECT_FALSE(
+        provider->GetMachineStatistic("not_oem_statistic_key", &result));
+    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
+  }
+
+  for (const auto* oem_flag :
+       {kOemIsEnterpriseManagedKey, kOemCanExitEnterpriseEnrollmentKey,
+        kOemKeyboardDrivenOobeKey}) {
+    bool result = false;
+    EXPECT_FALSE(provider->GetMachineFlag(oem_flag, &result));
+    EXPECT_FALSE(result) << "Unexpected value loaded: " << result;
+  }
+
+  {
+    bool result = false;
+    EXPECT_FALSE(provider->GetMachineFlag("not_oem_flag_key", &result));
+    EXPECT_FALSE(result) << "Unexpected value loaded: " << result;
+  }
+
+  // Load statistics with OEM flag.
+  provider = StatisticsProviderImpl::CreateProviderForTesting(testing_sources);
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/true);
+
+  // Check statistics.
+  {
+    std::string result;
+    EXPECT_TRUE(
+        provider->GetMachineStatistic(kOemDeviceRequisitionKey, &result));
+    EXPECT_EQ(result, "device_requisition_value");
+  }
+
+  {
+    std::string result;
+    EXPECT_FALSE(
+        provider->GetMachineStatistic("not_oem_statistic_key", &result));
+    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
+  }
+
+  for (const auto* oem_flag :
+       {kOemIsEnterpriseManagedKey, kOemCanExitEnterpriseEnrollmentKey,
+        kOemKeyboardDrivenOobeKey}) {
+    bool result = false;
+    EXPECT_TRUE(provider->GetMachineFlag(oem_flag, &result));
+    EXPECT_TRUE(result);
+  }
+
+  {
+    bool result = false;
+    EXPECT_FALSE(provider->GetMachineFlag("not_oem_flag_key", &result));
+    EXPECT_FALSE(result) << "Unexpected value loaded: " << result;
+  }
+}
+
+// Test that the provider loads prefers OEM manifest file set by command line.
+TEST_F(StatisticsProviderImplTest, LoadsOemManifestFromCommandLine) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  constexpr char kOemManifestStatistics[] = R"({
+    "device_requisition": "device_requisition_value",
+    "not_oem_statistic_key": "not_oem_statistic_value",
+    "enterprise_managed": true,
+    "can_exit_enrollment": true,
+    "keyboard_driven_oobe": true,
+    "not_oem_flag_key": true
+  })";
+
+  constexpr char kOemManifestCommandLineStatistics[] = R"({
+    "device_requisition": "device_requisition_command_line_value",
+    "not_oem_statistic_key": "not_oem_statistic_value",
+    "enterprise_managed": false,
+    "can_exit_enrollment": false,
+    "keyboard_driven_oobe": false,
+    "not_oem_flag_key": true
+  })";
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_oem_manifest(
+              CreateFileInTempDir(kOemManifestStatistics, temp_dir()))
+          .Build();
+
+  const base::FilePath oem_manifest_filepath_for_commandline =
+      CreateFileInTempDir(kOemManifestCommandLineStatistics, temp_dir());
+
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchPath(
+      switches::kAppOemManifestFile, oem_manifest_filepath_for_commandline);
+
+  // Load statistics with OEM flag.
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/true);
+
+  // Check statistics.
+  {
+    std::string result;
+    EXPECT_TRUE(
+        provider->GetMachineStatistic(kOemDeviceRequisitionKey, &result));
+    EXPECT_EQ(result, "device_requisition_command_line_value");
+  }
+
+  {
+    std::string result;
+    EXPECT_FALSE(
+        provider->GetMachineStatistic("not_oem_statistic_key", &result));
+    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
+  }
+
+  for (const auto* oem_flag :
+       {kOemIsEnterpriseManagedKey, kOemCanExitEnterpriseEnrollmentKey,
+        kOemKeyboardDrivenOobeKey}) {
+    bool result = true;
+    EXPECT_TRUE(provider->GetMachineFlag(oem_flag, &result));
+    EXPECT_FALSE(result);
+  }
+
+  {
+    bool result = false;
+    EXPECT_FALSE(provider->GetMachineFlag("not_oem_flag_key", &result));
+    EXPECT_FALSE(result) << "Unexpected value loaded: " << result;
+  }
+}
+
+// Tests that StatisticsProvider skips OEM manifest statistics in non-ChromeOS
+// test environment.
+TEST_F(StatisticsProviderImplTest, DoesNotLoadOemManifestIfNotRunningChromeOS) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(
+      kInvalidLsbReleaseContent, base::Time());
+  ASSERT_FALSE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  constexpr char kOemManifestStatistics[] = R"({
+    "device_requisition": "device_requisition_value",
+    "enterprise_managed": true,
+    "can_exit_enrollment": true,
+    "keyboard_driven_oobe": true,
+  })";
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_oem_manifest(
+              CreateFileInTempDir(kOemManifestStatistics, temp_dir()))
+          .Build();
+
+  // Load statistics with OEM flag.
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/true);
+
+  // Check statistics.
+  {
+    std::string result;
+    EXPECT_FALSE(
+        provider->GetMachineStatistic(kOemDeviceRequisitionKey, &result));
+    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
+  }
+
+  for (const auto* oem_flag :
+       {kOemIsEnterpriseManagedKey, kOemCanExitEnterpriseEnrollmentKey,
+        kOemKeyboardDrivenOobeKey}) {
+    bool result = false;
+    EXPECT_FALSE(provider->GetMachineFlag(oem_flag, &result));
+    EXPECT_FALSE(result) << "Unexpected value loaded: " << result;
+  }
 }
 
 }  // namespace chromeos::system
