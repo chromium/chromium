@@ -4,6 +4,7 @@
 
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 
+#include <initializer_list>
 #include <set>
 #include <string>
 
@@ -154,22 +155,21 @@ TEST_F(FirstPartySetsEnabledTest, SetCompleteSets) {
 }
 
 TEST_F(FirstPartySetsEnabledTest, SetCompleteSets_Idempotent) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite aaaa(GURL("https://aaaa.test"));
+
   SetCompleteSets({}, {});
   EXPECT_THAT(FindEntriesAndWait({}), IsEmpty());
 
   // The second call to SetCompleteSets should have no effect.
-  SetCompleteSets({{net::SchemefulSite(GURL("https://aaaa.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 0)},
-                   {net::SchemefulSite(GURL("https://example.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kPrimary, absl::nullopt)}},
-                  {});
+  SetCompleteSets(
+      {{aaaa, net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
+       {example, net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                         absl::nullopt)}},
+      {});
   EXPECT_THAT(FindEntriesAndWait({
-                  net::SchemefulSite(GURL("https://aaaa.test")),
-                  net::SchemefulSite(GURL("https://example.test")),
+                  aaaa,
+                  example,
               }),
               IsEmpty());
 }
@@ -283,12 +283,10 @@ TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata_EmptyContext) {
 
   for (const net::SchemefulSite* top_frame :
        std::initializer_list<net::SchemefulSite*>{&example_site, nullptr}) {
-    EXPECT_EQ(
-        ComputeMetadataAndWait(
-            net::SchemefulSite(GURL("https://nonmember.test")), top_frame, {})
-            .context()
-            .context_type(),
-        Type::kCrossParty);
+    EXPECT_EQ(ComputeMetadataAndWait(nonmember, top_frame, {})
+                  .context()
+                  .context_type(),
+              Type::kCrossParty);
 
     EXPECT_EQ(ComputeMetadataAndWait(example_site, top_frame, {})
                   .context()
@@ -314,79 +312,54 @@ TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata_EmptyContext) {
 }
 
 TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata_ContextIsNonmember) {
-  std::set<net::SchemefulSite> context({
-      net::SchemefulSite(GURL("https://nonmember.test")),
-  });
+  net::SchemefulSite nonmember(GURL("https://nonmember.test"));
+  std::set<net::SchemefulSite> context({nonmember});
 
   net::SchemefulSite example_site(GURL("https://example.test"));
 
   for (const net::SchemefulSite* top_frame :
        std::initializer_list<net::SchemefulSite*>{&example_site, nullptr}) {
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("http://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member1.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://foo.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member2.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(ComputeMetadataAndWait(
-                  net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
-                  context)
-                  .context()
-                  .context_type(),
-              Type::kCrossParty);
+    for (const net::SchemefulSite& site :
+         std::initializer_list<net::SchemefulSite>{
+             example_site,
+             net::SchemefulSite(GURL("http://example.test")),
+             net::SchemefulSite(GURL("http://member1.test")),
+             net::SchemefulSite(GURL("http://foo.test")),
+             net::SchemefulSite(GURL("http://member2.test")),
+             nonmember,
+         }) {
+      EXPECT_EQ(ComputeMetadataAndWait(site, top_frame, context)
+                    .context()
+                    .context_type(),
+                Type::kCrossParty)
+          << site;
+    }
   }
 }
 
 TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata_ContextIsOwner) {
-  std::set<net::SchemefulSite> context(
-      {net::SchemefulSite(GURL("https://example.test"))});
-
   net::SchemefulSite example_site(GURL("https://example.test"));
+  std::set<net::SchemefulSite> context({example_site});
 
   for (const net::SchemefulSite* top_frame :
        std::initializer_list<net::SchemefulSite*>{&example_site, nullptr}) {
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kSameParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("http://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
+    for (const net::SchemefulSite& site :
+         std::initializer_list<net::SchemefulSite>{
+             net::SchemefulSite(GURL("http://example.test")),
+             net::SchemefulSite(GURL("https://foo.test")),
+             net::SchemefulSite(GURL("https://member2.test")),
+             net::SchemefulSite(GURL("https://nonmember.test")),
+         }) {
+      EXPECT_EQ(ComputeMetadataAndWait(site, top_frame, context)
+                    .context()
+                    .context_type(),
+                Type::kCrossParty)
+          << site;
+    }
+    EXPECT_EQ(ComputeMetadataAndWait(example_site, top_frame, context)
+                  .context()
+                  .context_type(),
+              Type::kSameParty);
 
     EXPECT_EQ(
         ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member1.test")),
@@ -394,120 +367,77 @@ TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata_ContextIsOwner) {
             .context()
             .context_type(),
         Type::kSameParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://foo.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member2.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(ComputeMetadataAndWait(
-                  net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
-                  context)
-                  .context()
-                  .context_type(),
-              Type::kCrossParty);
   }
 }
 
 TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata_ContextIsMember) {
-  std::set<net::SchemefulSite> context(
-      {net::SchemefulSite(GURL("https://member1.test"))});
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  std::set<net::SchemefulSite> context({member1});
 
   net::SchemefulSite example_site(GURL("https://example.test"));
 
   for (const net::SchemefulSite* top_frame :
        std::initializer_list<net::SchemefulSite*>{&example_site, nullptr}) {
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kSameParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("http://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kSameParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member1.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kSameParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://foo.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member2.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(ComputeMetadataAndWait(
-                  net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
-                  context)
+    for (const net::SchemefulSite& site :
+         std::initializer_list<net::SchemefulSite>{
+             net::SchemefulSite(GURL("http://example.test")),
+             net::SchemefulSite(GURL("https://foo.test")),
+             net::SchemefulSite(GURL("https://member2.test")),
+             net::SchemefulSite(GURL("https://nonmember.test")),
+         }) {
+      EXPECT_EQ(ComputeMetadataAndWait(site, top_frame, context)
+                    .context()
+                    .context_type(),
+                Type::kCrossParty)
+          << site;
+    }
+    EXPECT_EQ(ComputeMetadataAndWait(example_site, top_frame, context)
                   .context()
                   .context_type(),
-              Type::kCrossParty);
+              Type::kSameParty);
+
+    EXPECT_EQ(ComputeMetadataAndWait(example_site, top_frame, context)
+                  .context()
+                  .context_type(),
+              Type::kSameParty);
+
+    EXPECT_EQ(ComputeMetadataAndWait(member1, top_frame, context)
+                  .context()
+                  .context_type(),
+              Type::kSameParty);
   }
 }
 
 TEST_F(PopulatedFirstPartySetsManagerTest,
        ComputeMetadata_ContextIsOwnerAndMember) {
-  std::set<net::SchemefulSite> context({
-      net::SchemefulSite(GURL("https://example.test")),
-      net::SchemefulSite(GURL("https://member1.test")),
-  });
-
   net::SchemefulSite example_site(GURL("https://example.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  std::set<net::SchemefulSite> context({example_site, member1});
 
   for (const net::SchemefulSite* top_frame :
        std::initializer_list<net::SchemefulSite*>{&example_site, nullptr}) {
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kSameParty);
+    for (const net::SchemefulSite& site :
+         std::initializer_list<net::SchemefulSite>{
+             net::SchemefulSite(GURL("http://example.test")),
+             net::SchemefulSite(GURL("https://foo.test")),
+             net::SchemefulSite(GURL("https://member2.test")),
+             net::SchemefulSite(GURL("https://nonmember.test")),
+         }) {
+      EXPECT_EQ(ComputeMetadataAndWait(site, top_frame, context)
+                    .context()
+                    .context_type(),
+                Type::kCrossParty)
+          << site;
+    }
+    EXPECT_EQ(ComputeMetadataAndWait(example_site, top_frame, context)
+                  .context()
+                  .context_type(),
+              Type::kSameParty);
 
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("http://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member1.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kSameParty);
+    EXPECT_EQ(ComputeMetadataAndWait(member1, top_frame, context)
+                  .context()
+                  .context_type(),
+              Type::kSameParty);
 
     EXPECT_EQ(
         ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member3.test")),
@@ -515,195 +445,90 @@ TEST_F(PopulatedFirstPartySetsManagerTest,
             .context()
             .context_type(),
         Type::kSameParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://foo.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member2.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(ComputeMetadataAndWait(
-                  net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
-                  context)
-                  .context()
-                  .context_type(),
-              Type::kCrossParty);
   }
 }
 
 TEST_F(PopulatedFirstPartySetsManagerTest,
        ComputeMetadata_ContextMixesParties) {
-  std::set<net::SchemefulSite> context({
-      net::SchemefulSite(GURL("https://example.test")),
-      net::SchemefulSite(GURL("https://member1.test")),
-      net::SchemefulSite(GURL("https://foo.test")),
-  });
-
   net::SchemefulSite example_site(GURL("https://example.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  std::set<net::SchemefulSite> context({example_site, member1, foo});
 
   for (const net::SchemefulSite* top_frame :
        std::initializer_list<net::SchemefulSite*>{&example_site, nullptr}) {
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("http://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member1.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://foo.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member2.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(ComputeMetadataAndWait(
-                  net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
-                  context)
-                  .context()
-                  .context_type(),
-              Type::kCrossParty);
+    for (const net::SchemefulSite& site :
+         std::initializer_list<net::SchemefulSite>{
+             example_site,
+             net::SchemefulSite(GURL("http://example.test")),
+             member1,
+             foo,
+             net::SchemefulSite(GURL("https://member2.test")),
+             net::SchemefulSite(GURL("https://nonmember.test")),
+         }) {
+      EXPECT_EQ(ComputeMetadataAndWait(site, top_frame, context)
+                    .context()
+                    .context_type(),
+                Type::kCrossParty)
+          << site;
+    }
   }
 }
 
 TEST_F(PopulatedFirstPartySetsManagerTest,
        ComputeMetadata_ContextMixesMembersAndNonmembers) {
+  net::SchemefulSite example_site(GURL("https://example.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
   std::set<net::SchemefulSite> context({
-      net::SchemefulSite(GURL("https://example.test")),
-      net::SchemefulSite(GURL("https://member1.test")),
+      example_site,
+      member1,
       net::SchemefulSite(GURL("http://nonmember.test")),
   });
 
-  net::SchemefulSite example_site(GURL("https://example.test"));
-
   for (const net::SchemefulSite* top_frame :
        std::initializer_list<net::SchemefulSite*>{&example_site, nullptr}) {
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("http://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member1.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://foo.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member2.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(ComputeMetadataAndWait(
-                  net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
-                  context)
-                  .context()
-                  .context_type(),
-              Type::kCrossParty);
+    for (const net::SchemefulSite& site :
+         std::initializer_list<net::SchemefulSite>{
+             example_site,
+             net::SchemefulSite(GURL("http://example.test")),
+             member1,
+             net::SchemefulSite(GURL("https://foo.test")),
+             net::SchemefulSite(GURL("https://member2.test")),
+             net::SchemefulSite(GURL("https://nonmember.test")),
+         }) {
+      EXPECT_EQ(ComputeMetadataAndWait(site, top_frame, context)
+                    .context()
+                    .context_type(),
+                Type::kCrossParty)
+          << site;
+    }
   }
 }
 
 TEST_F(PopulatedFirstPartySetsManagerTest,
        ComputeMetadata_ContextMixesSchemes) {
-  std::set<net::SchemefulSite> context({
-      net::SchemefulSite(GURL("https://example.test")),
-      net::SchemefulSite(GURL("https://member1.test")),
-      net::SchemefulSite(GURL("http://example.test")),
-  });
-
   net::SchemefulSite example_site(GURL("https://example.test"));
+  net::SchemefulSite example_http(GURL("http://example.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  std::set<net::SchemefulSite> context({example_site, member1, example_http});
 
   for (const net::SchemefulSite* top_frame :
        std::initializer_list<net::SchemefulSite*>{&example_site, nullptr}) {
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("http://example.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member1.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://foo.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(
-        ComputeMetadataAndWait(net::SchemefulSite(GURL("https://member2.test")),
-                               top_frame, context)
-            .context()
-            .context_type(),
-        Type::kCrossParty);
-
-    EXPECT_EQ(ComputeMetadataAndWait(
-                  net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
-                  context)
-                  .context()
-                  .context_type(),
-              Type::kCrossParty);
+    for (const net::SchemefulSite& site :
+         std::initializer_list<net::SchemefulSite>{
+             example_site,
+             example_http,
+             net::SchemefulSite(GURL("https://member1.test")),
+             net::SchemefulSite(GURL("https://foo.test")),
+             net::SchemefulSite(GURL("https://member2.test")),
+             net::SchemefulSite(GURL("https://nonmember.test")),
+         }) {
+      EXPECT_EQ(ComputeMetadataAndWait(site, top_frame, context)
+                    .context()
+                    .context_type(),
+                Type::kCrossParty)
+          << site;
+    }
   }
 }
 
@@ -760,77 +585,21 @@ TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata) {
                                        &associated_entry, &associated_entry));
 }
 
-TEST_F(PopulatedFirstPartySetsManagerTest, FindEntries) {
-  net::SchemefulSite example(GURL("https://example.test"));
-  net::SchemefulSite foo(GURL("https://foo.test"));
-  net::SchemefulSite member1(GURL("https://member1.test"));
-  net::SchemefulSite member2(GURL("https://member2.test"));
-  net::SchemefulSite nonmember(GURL("https://nonmember.test"));
-
-  EXPECT_THAT(
-      FindEntriesAndWait({example}),
-      UnorderedElementsAre(
-          Pair(example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, absl::nullopt))));
-  EXPECT_THAT(FindEntriesAndWait({member1}),
-              UnorderedElementsAre(
-                  Pair(member1, net::FirstPartySetEntry(
-                                    example, net::SiteType::kAssociated, 0))));
-  EXPECT_THAT(FindEntriesAndWait({nonmember}), IsEmpty());
-
-  EXPECT_THAT(
-      FindEntriesAndWait({example, nonmember}),
-      UnorderedElementsAre(
-          Pair(example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, absl::nullopt))));
-  EXPECT_THAT(FindEntriesAndWait({member1, nonmember}),
-              UnorderedElementsAre(
-                  Pair(member1, net::FirstPartySetEntry(
-                                    example, net::SiteType::kAssociated, 0))));
-
-  EXPECT_THAT(
-      FindEntriesAndWait({example, foo}),
-      UnorderedElementsAre(
-          Pair(example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, absl::nullopt)),
-          Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
-                                            absl::nullopt))));
-  EXPECT_THAT(FindEntriesAndWait({member1, foo}),
-              UnorderedElementsAre(
-                  Pair(member1, net::FirstPartySetEntry(
-                                    example, net::SiteType::kAssociated, 0)),
-                  Pair(foo, net::FirstPartySetEntry(
-                                foo, net::SiteType::kPrimary, absl::nullopt))));
-  EXPECT_THAT(
-      FindEntriesAndWait({example, member2}),
-      UnorderedElementsAre(
-          Pair(example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, absl::nullopt)),
-          Pair(member2,
-               net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0))));
-  EXPECT_THAT(FindEntriesAndWait({member1, member2}),
-              UnorderedElementsAre(
-                  Pair(member1, net::FirstPartySetEntry(
-                                    example, net::SiteType::kAssociated, 0)),
-                  Pair(member2, net::FirstPartySetEntry(
-                                    foo, net::SiteType::kAssociated, 0))));
-}
-
 class OverrideSetsFirstPartySetsManagerTest : public FirstPartySetsEnabledTest {
  public:
   OverrideSetsFirstPartySetsManagerTest() {
     net::SchemefulSite foo(GURL("https://foo.test"));
     net::SchemefulSite example_test(GURL("https://example.test"));
     net::SchemefulSite example_cctld(GURL("https://example.cctld"));
+    net::SchemefulSite member1(GURL("https://member1.test"));
+    net::SchemefulSite member2(GURL("https://member2.test"));
 
     SetCompleteSets(
         {
-            {net::SchemefulSite(GURL("https://member1.test")),
-             net::FirstPartySetEntry(example_test, net::SiteType::kAssociated,
-                                     0)},
-            {net::SchemefulSite(GURL("https://member2.test")),
-             net::FirstPartySetEntry(example_test, net::SiteType::kAssociated,
-                                     0)},
+            {member1, net::FirstPartySetEntry(example_test,
+                                              net::SiteType::kAssociated, 0)},
+            {member2, net::FirstPartySetEntry(example_test,
+                                              net::SiteType::kAssociated, 0)},
             // Below are the owner self mappings.
             {example_test,
              net::FirstPartySetEntry(example_test, net::SiteType::kPrimary,
@@ -844,41 +613,15 @@ class OverrideSetsFirstPartySetsManagerTest : public FirstPartySetsEnabledTest {
          {net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
                                   absl::nullopt)}},
         // Removed entry:
-        {net::SchemefulSite(GURL("https://member1.test")), absl::nullopt},
+        {member1, absl::nullopt},
         // Remapped entry:
-        {net::SchemefulSite(GURL("https://member2.test")),
+        {member2,
          {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
         // Removed alias:
         {example_cctld, absl::nullopt},
     });
   }
 };
-
-TEST_F(OverrideSetsFirstPartySetsManagerTest, FindEntries) {
-  net::SchemefulSite foo(GURL("https://foo.test"));
-  net::SchemefulSite example_test(GURL("https://example.test"));
-  net::SchemefulSite example_cctld(GURL("https://example.cctld"));
-  net::SchemefulSite member2(GURL("https://member2.test"));
-
-  EXPECT_THAT(FindEntriesAndWait({
-                  net::SchemefulSite(GURL("https://member1.test")),
-                  member2,
-                  foo,
-                  // No entry for example_cctld since it's been deleted in the
-                  // override, even though it's an alias and its canonical site
-                  // still has a valid entry.
-                  example_cctld,
-                  example_test,
-              }),
-              UnorderedElementsAre(
-                  Pair(foo, net::FirstPartySetEntry(
-                                foo, net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(member2, net::FirstPartySetEntry(
-                                    foo, net::SiteType::kAssociated, 0)),
-                  Pair(example_test, net::FirstPartySetEntry(
-                                         example_test, net::SiteType::kPrimary,
-                                         absl::nullopt))));
-}
 
 TEST_F(OverrideSetsFirstPartySetsManagerTest, ComputeMetadata) {
   net::SchemefulSite example(GURL("https://example.test"));
