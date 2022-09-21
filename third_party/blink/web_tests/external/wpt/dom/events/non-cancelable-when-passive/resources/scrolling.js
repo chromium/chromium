@@ -1,4 +1,15 @@
-function runTest({target, eventName, passive, expectCancelable}) {
+function raf() {
+  return new Promise((resolve) => {
+    // rAF twice.
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(resolve);
+    });
+  });
+}
+
+async function runTest({target, eventName, passive, expectCancelable}) {
+  await raf();
+
   let cancelable = null;
   let arrived = false;
   target.addEventListener(eventName, function (event) {
@@ -14,6 +25,7 @@ function runTest({target, eventName, passive, expectCancelable}) {
     const pos_y = Math.floor(window.innerHeight / 2);
     const delta_x = 0;
     const delta_y = 100;
+
     await new test_driver.Actions()
       .scroll(pos_x, pos_y, delta_x, delta_y).send();
     await waitFor(() => arrived);

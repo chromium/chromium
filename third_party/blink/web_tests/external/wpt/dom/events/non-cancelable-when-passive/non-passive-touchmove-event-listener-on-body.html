@@ -16,7 +16,7 @@
 </style>
 <div id="touchDiv"></div>
 <script>
-  runTest({
+  document.body.onload = () => runTest({
     target: document.body,
     eventName: 'touchmove',
     passive: false,

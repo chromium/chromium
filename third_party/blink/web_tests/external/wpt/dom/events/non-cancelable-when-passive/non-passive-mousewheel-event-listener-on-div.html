@@ -27,7 +27,7 @@
   <div style="height: 200vh"></div>
 </div>
 <script>
-  runTest({
+  document.body.onload = () => runTest({
     target: document.getElementById('div'),
     eventName: 'mousewheel',
     passive: false,
