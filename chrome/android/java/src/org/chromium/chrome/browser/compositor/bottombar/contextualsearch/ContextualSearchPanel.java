@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -1002,9 +1003,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      */
     private ContextualSearchPromoControl getPromoControl() {
         if (mPromoControl == null) {
-            mPromoControl =
-                    new ContextualSearchPromoControl(this, getContextualSearchPromoHost(),
-                            mContext, mContainerView, mResourceLoader);
+            mPromoControl = new ContextualSearchPromoControl(this, getContextualSearchPromoHost(),
+                    mContext, getCoordinatorView(), mResourceLoader);
         }
         return mPromoControl;
     }
@@ -1051,6 +1051,15 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         return mPromoHost;
     }
 
+    private ViewGroup getCoordinatorView() {
+        ViewGroup result = mContainerView;
+        // Use the coordinator inside of the container if we can get it. See crbug.com/1258902.
+        ViewGroup coordinator = mContainerView.findViewById(org.chromium.chrome.R.id.coordinator);
+        // Returns null in tests. TODO(donnd): figure out why - tests should have the same views.
+        if (coordinator != null) result = coordinator;
+        return result;
+    }
+
     // ============================================================================================
     // The Delayed Intelligence Feature support
     // ============================================================================================
@@ -1078,7 +1087,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         if (mRelatedSearchesInContentControl == null) {
             mRelatedSearchesInContentControl =
                     new RelatedSearchesControl(this, getRelatedSearchesInContentHost(), false,
-                            mContext, mContainerView, mResourceLoader);
+                            mContext, getCoordinatorView(), mResourceLoader);
         }
         return mRelatedSearchesInContentControl;
     }
@@ -1135,8 +1144,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     @VisibleForTesting
     public RelatedSearchesControl getRelatedSearchesInBarControl() {
         if (mRelatedSearchesInBarControl == null) {
-            mRelatedSearchesInBarControl = new RelatedSearchesControl(this,
-                    getRelatedSearchesInBarHost(), true, mContext, mContainerView, mResourceLoader);
+            mRelatedSearchesInBarControl =
+                    new RelatedSearchesControl(this, getRelatedSearchesInBarHost(), true, mContext,
+                            getCoordinatorView(), mResourceLoader);
         }
         return mRelatedSearchesInBarControl;
     }

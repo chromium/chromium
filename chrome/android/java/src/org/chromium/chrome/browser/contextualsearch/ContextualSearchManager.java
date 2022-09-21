@@ -918,10 +918,6 @@ public class ContextualSearchManager
         mLoadedSearchUrlTimeMs = System.currentTimeMillis();
         mLastSearchRequestLoaded = mSearchRequest;
         mSearchPanel.loadUrlInPanel(mSearchRequest.getSearchUrl());
-        // Prevent losing focus when clicking a suggestion. See https://crbug.com/1250825.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES)) {
-            mSearchPanel.getContainerView().setFocusableInTouchMode(false);
-        }
         mDidStartLoadingResolvedSearchRequest = true;
 
         // TODO(donnd): If the user taps on a word and quickly after that taps on the
