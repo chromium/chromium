@@ -115,7 +115,7 @@ void ReadAnythingModel::SetDistilledAXTree(
 
 // TODO(1266555): Update with text scaling approach based on UI/UX feedback.
 void ReadAnythingModel::DecreaseTextSize() {
-  font_scale_ -= 0.2f;
+  font_scale_ -= kReadAnythingFontScaleIncrement;
   if (font_scale_ < kReadAnythingMinimumFontScale)
     font_scale_ = kReadAnythingMinimumFontScale;
 
@@ -123,7 +123,7 @@ void ReadAnythingModel::DecreaseTextSize() {
 }
 
 void ReadAnythingModel::IncreaseTextSize() {
-  font_scale_ += 0.2;
+  font_scale_ += kReadAnythingFontScaleIncrement;
   if (font_scale_ > kReadAnythingMaximumFontScale)
     font_scale_ = kReadAnythingMaximumFontScale;
 
@@ -138,9 +138,9 @@ void ReadAnythingModel::NotifyAXTreeDistilled() {
 
 void ReadAnythingModel::NotifyThemeChanged() {
   for (Observer& obs : observers_) {
-    obs.OnReadAnythingThemeChanged(ReadAnythingTheme::New(
-        font_name_, kReadAnythingDefaultFontSize * font_scale_,
-        foreground_color_, background_color_, letter_spacing_));
+    obs.OnReadAnythingThemeChanged(
+        ReadAnythingTheme::New(font_name_, font_scale_, foreground_color_,
+                               background_color_, letter_spacing_));
   }
 }
 

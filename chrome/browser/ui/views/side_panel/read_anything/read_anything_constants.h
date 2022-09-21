@@ -21,13 +21,11 @@ const int kColorsIconSize = 24;
 
 const char kReadAnythingDefaultFontName[] = "Standard font";
 
-// Font size is stored in prefs as a (double) scaling factor, which is a number
-// not presented to the user. The final font size sent to the UI is the default
-// font size * font scale (in pixels).
-const float kReadAnythingDefaultFontSize = 18.0f;
-const double kReadAnythingDefaultFontScale = 1.0;
-const double kReadAnythingMinimumFontScale = 0.2;
-const double kReadAnythingMaximumFontScale = 5.0;
+// Font size in em
+const double kReadAnythingDefaultFontScale = 1;
+const double kReadAnythingMinimumFontScale = 0.5;
+const double kReadAnythingMaximumFontScale = 4.5;
+const double kReadAnythingFontScaleIncrement = 0.25;
 
 // Custom feature colors.
 constexpr SkColor kReadAnythingDarkBackground = SkColorSetRGB(0x33, 0x36, 0x39);

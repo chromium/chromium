@@ -63,8 +63,8 @@ suite('ReadAnythingAppTest', () => {
   });
 
   test('updateTheme fontSize', () => {
-    chrome.readAnything.setThemeForTesting('Standard font', 27.0, 0, 0, 0);
-    assertFontSize('27px');
+    chrome.readAnything.setThemeForTesting('Standard font', 1.0, 0, 0, 0);
+    assertFontSize('16px');  // 1em = 16px
   });
 
   test('updateTheme foregroundColor', () => {
@@ -87,7 +87,8 @@ suite('ReadAnythingAppTest', () => {
   test('updateTheme letterSpacing', () => {
     chrome.readAnything.setThemeForTesting('f', 1, 0, 0, 3);
     const container = readAnythingApp.shadowRoot!.getElementById('container');
-    assertEquals('0.1px', getComputedStyle(container!).letterSpacing);
+    // very loose letter letter spacing = 0.1em, font size = 1em = 16px
+    assertEquals('1.6px', getComputedStyle(container!).letterSpacing);
   });
 
   test('updateContent paragraph', () => {

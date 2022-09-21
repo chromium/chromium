@@ -113,7 +113,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnDecreasedFontSize) {
 
   model_->DecreaseTextSize();
 
-  EXPECT_NEAR(model_->GetFontScale(), 0.8, 0.01);
+  EXPECT_NEAR(model_->GetFontScale(), 0.75, 0.01);
 }
 
 TEST_F(ReadAnythingModelTest, NotificationsOnIncreasedFontSize) {
@@ -123,7 +123,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnIncreasedFontSize) {
 
   model_->IncreaseTextSize();
 
-  EXPECT_NEAR(model_->GetFontScale(), 1.2, 0.01);
+  EXPECT_NEAR(model_->GetFontScale(), 1.25, 0.01);
 }
 
 TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedColorsIndex) {
@@ -144,18 +144,18 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedLetterSpacingIndex) {
 
 TEST_F(ReadAnythingModelTest, MinimumFontScaleIsEnforced) {
   std::string font_name;
-  model_->Init(font_name, 0.3, read_anything::mojom::Colors::kDefaultValue,
+  model_->Init(font_name, 0.5, read_anything::mojom::Colors::kDefaultValue,
                read_anything::mojom::LetterSpacing::kDefaultValue);
   model_->DecreaseTextSize();
-  EXPECT_NEAR(model_->GetFontScale(), 0.2, 0.01);
+  EXPECT_NEAR(model_->GetFontScale(), 0.5, 0.01);
 }
 
 TEST_F(ReadAnythingModelTest, MaximumFontScaleIsEnforced) {
   std::string font_name;
-  model_->Init(font_name, 4.9, read_anything::mojom::Colors::kDefaultValue,
+  model_->Init(font_name, 4.5, read_anything::mojom::Colors::kDefaultValue,
                read_anything::mojom::LetterSpacing::kDefaultValue);
   model_->IncreaseTextSize();
-  EXPECT_NEAR(model_->GetFontScale(), 5.0, 0.01);
+  EXPECT_NEAR(model_->GetFontScale(), 4.5, 0.01);
 }
 
 TEST_F(ReadAnythingModelTest, FontModelIsValidFontName) {

@@ -94,7 +94,7 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedIncreaseUpdatesPref) {
 
   MockOnFontSizeChanged(true);
 
-  EXPECT_NEAR(GetPrefFontScale(), 1.2, 0.01);
+  EXPECT_NEAR(GetPrefFontScale(), 1.25, 0.01);
 }
 
 TEST_F(ReadAnythingControllerTest, OnFontSizeChangedDecreasePref) {
@@ -102,31 +102,33 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedDecreasePref) {
 
   MockOnFontSizeChanged(false);
 
-  EXPECT_NEAR(GetPrefFontScale(), 0.8, 0.01);
+  EXPECT_NEAR(GetPrefFontScale(), 0.75, 0.01);
 }
 
 TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMax) {
   EXPECT_NEAR(GetPrefFontScale(), 1.0, 0.01);
 
   std::string font_name;
-  MockModelInit(font_name, 4.9, read_anything::mojom::Colors::kDefaultValue,
+
+  MockModelInit(font_name, 4.5, read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
 
   MockOnFontSizeChanged(true);
 
-  EXPECT_NEAR(GetPrefFontScale(), 5.0, 0.01);
+  EXPECT_NEAR(GetPrefFontScale(), 4.5, 0.01);
 }
 
 TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMin) {
   EXPECT_NEAR(GetPrefFontScale(), 1.0, 0.01);
 
   std::string font_name;
-  MockModelInit(font_name, 0.3, read_anything::mojom::Colors::kDefaultValue,
+
+  MockModelInit(font_name, 0.5, read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
 
   MockOnFontSizeChanged(false);
 
-  EXPECT_NEAR(GetPrefFontScale(), 0.2, 0.01);
+  EXPECT_NEAR(GetPrefFontScale(), 0.5, 0.01);
 }
 
 TEST_F(ReadAnythingControllerTest, OnColorsChangedUpdatesPref) {
