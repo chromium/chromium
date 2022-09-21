@@ -23,7 +23,7 @@ class SignInFatalErrorView
 
   // Shows the contents of the screen.
   virtual void Show(SignInFatalErrorScreen::Error error,
-                    const base::Value* params) = 0;
+                    const base::Value::Dict& params) = 0;
 };
 
 class SignInFatalErrorScreenHandler : public SignInFatalErrorView,
@@ -39,7 +39,7 @@ class SignInFatalErrorScreenHandler : public SignInFatalErrorView,
 
  private:
   void Show(SignInFatalErrorScreen::Error error,
-            const base::Value* params) override;
+            const base::Value::Dict& params) override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

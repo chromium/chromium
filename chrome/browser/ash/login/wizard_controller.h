@@ -230,7 +230,7 @@ class WizardController : public OobeUI::Observer {
 
   // Configure and show the signin fatal error screen.
   void ShowSignInFatalErrorScreen(SignInFatalErrorScreen::Error error,
-                                  const base::Value* params);
+                                  base::Value::Dict params);
 
   // Show Family Link notice screen.
   void ShowFamilyLinkNoticeScreen();

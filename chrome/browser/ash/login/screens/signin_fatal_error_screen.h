@@ -13,9 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
-#include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 class SignInFatalErrorView;
@@ -45,7 +43,7 @@ class SignInFatalErrorScreen : public BaseScreen {
   ~SignInFatalErrorScreen() override;
 
   // Setting the error methods.
-  void SetErrorState(Error error, const base::Value* params);
+  void SetErrorState(Error error, base::Value::Dict params);
   void SetCustomError(const std::string& error_text,
                       const std::string& keyboard_hint,
                       const std::string& details,
@@ -58,7 +56,7 @@ class SignInFatalErrorScreen : public BaseScreen {
   void OnUserAction(const base::Value::List& args) override;
 
   Error error_state_ = Error::UNKNOWN;
-  absl::optional<base::Value> extra_error_info_;
+  base::Value::Dict extra_error_info_;
 
   base::WeakPtr<chromeos::SignInFatalErrorView> view_;
   base::RepeatingClosure exit_callback_;

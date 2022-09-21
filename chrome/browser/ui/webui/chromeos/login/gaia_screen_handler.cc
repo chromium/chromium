@@ -991,12 +991,11 @@ void GaiaScreenHandler::HandleOnFatalError(int error_code,
                                            const base::Value::Dict& params) {
   if (!LoginDisplayHost::default_host())
     return;
-  const base::Value params_value = base::Value(params.Clone());
   LoginDisplayHost::default_host()
       ->GetWizardController()
       ->ShowSignInFatalErrorScreen(
           static_cast<SignInFatalErrorScreen::Error>(error_code),
-          &params_value);
+          params.Clone());
 }
 
 void GaiaScreenHandler::HandleUserRemoved(const std::string& email) {

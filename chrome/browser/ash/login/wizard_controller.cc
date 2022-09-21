@@ -853,8 +853,8 @@ void WizardController::OnOwnershipStatusCheckDone(
 
 void WizardController::ShowSignInFatalErrorScreen(
     SignInFatalErrorScreen::Error error,
-    const base::Value* params) {
-  GetScreen<SignInFatalErrorScreen>()->SetErrorState(error, params);
+    base::Value::Dict params) {
+  GetScreen<SignInFatalErrorScreen>()->SetErrorState(error, std::move(params));
   AdvanceToScreen(SignInFatalErrorView::kScreenId);
 }
 
@@ -1168,7 +1168,7 @@ void WizardController::OnSamlConfirmPasswordScreenExit(
     case SamlConfirmPasswordScreen::Result::kTooManyAttempts:
       ShowSignInFatalErrorScreen(
           SignInFatalErrorScreen::Error::SCRAPED_PASSWORD_VERIFICATION_FAILURE,
-          nullptr);
+          base::Value::Dict());
   }
 }
 
