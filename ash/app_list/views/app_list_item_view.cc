@@ -164,6 +164,22 @@ bool IsIndexOnRightEdge(GridIndex index, int cols) {
   return ((index.slot + 1) % cols) == 0;
 }
 
+bool IsIndexMovingFromOneEdgeToAnother(GridIndex old_index,
+                                       GridIndex new_index,
+                                       int cols) {
+  return (IsIndexOnLeftEdge(new_index, cols) &&
+          IsIndexOnRightEdge(old_index, cols)) ||
+         (IsIndexOnLeftEdge(old_index, cols) &&
+          IsIndexOnRightEdge(new_index, cols));
+}
+
+bool IsIndexMovingToDifferentRow(GridIndex old_index,
+                                 GridIndex new_index,
+                                 int cols) {
+  return old_index.slot / cols != new_index.slot / cols ||
+         old_index.page != new_index.page;
+}
+
 }  // namespace
 
 // ImageView for the item icon.
@@ -1118,11 +1134,11 @@ void AppListItemView::SetMostRecentGridIndex(GridIndex new_grid_index,
 
   if (most_recent_grid_index_.IsValid()) {
     // Pending row changes are only flagged when the item index changes from one
-    // edge of the grid to the other.
-    if ((IsIndexOnLeftEdge(new_grid_index, columns) &&
-         IsIndexOnRightEdge(most_recent_grid_index_, columns)) ||
-        (IsIndexOnLeftEdge(most_recent_grid_index_, columns) &&
-         IsIndexOnRightEdge(new_grid_index, columns))) {
+    // edge of the grid to the other and into a different row.
+    if (IsIndexMovingFromOneEdgeToAnother(most_recent_grid_index_,
+                                          new_grid_index, columns) &&
+        IsIndexMovingToDifferentRow(most_recent_grid_index_, new_grid_index,
+                                    columns)) {
       has_pending_row_change_ = true;
     } else {
       has_pending_row_change_ = false;

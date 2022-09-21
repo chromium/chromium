@@ -655,8 +655,8 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   }
 
   // Get the number of item layer copies used for the between row animation.
-  int GetNumberOfRowChangeLayersForTest() {
-    return apps_grid_view_->row_change_animator_
+  int GetNumberOfRowChangeLayersForTest(AppsGridView* apps_grid_view) {
+    return apps_grid_view->row_change_animator_
         ->GetNumberOfRowChangeLayersForTest();
   }
 
@@ -844,7 +844,7 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationOnDragToPreviousPage) {
 
   GetPaginationModel()->SelectPage(1 /*page*/, false /*animate*/);
   EXPECT_EQ(1, GetSelectedPage(paged_apps_grid_view_));
-  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest());
+  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
 
   // Begin dragging the third item of the second page.
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 2,
@@ -880,7 +880,7 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationOnDragToPreviousPage) {
   EXPECT_EQ(GridIndex(0, 1), paged_apps_grid_view_->reorder_placeholder());
 
   // Four items should have a layer copy used for animating between rows.
-  EXPECT_EQ(4, GetNumberOfRowChangeLayersForTest());
+  EXPECT_EQ(4, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
 
   for (size_t i = 1; i < view_model->view_size(); i++) {
     AppListItemView* item_view = view_model->view_at(i);
@@ -905,7 +905,53 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationOnDragToPreviousPage) {
   // End the drag and check that no more item layer copies remain.
   EndDrag(apps_grid_view_, false /*cancel*/);
   test_api_->WaitForItemMoveAnimationDone();
-  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest());
+  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
+}
+
+// Test that, within a 4 item folder, a row change animation only triggers when
+// moving an item between rows and not when moving from one side of the grid to
+// the other side in the same row.
+TEST_P(AppsGridViewClamshellAndTabletTest, InFolderBetweenRowsAnimation) {
+  AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(4);
+
+  // Record the bounds of the folder view with 4 items in it.
+  AppsGridView* items_grid_view = app_list_folder_view()->items_grid_view();
+
+  // Open the folder
+  test_api_->PressItemAt(0);
+  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_EQ(4u, folder_item->ChildItemCount());
+
+  auto* dragged_item_view = items_grid_view->GetItemViewAt(0);
+  auto* generator = GetEventGenerator();
+
+  // Start dragging the item at slot 0.
+  generator->MoveMouseTo(
+      dragged_item_view->GetIconBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  dragged_item_view->FireMouseDragTimerForTest();
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Drag the item over slot 1.
+  generator->MoveMouseTo(
+      items_grid_view->GetItemViewAt(1)->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(items_grid_view->reorder_timer_for_test()->IsRunning());
+  items_grid_view->reorder_timer_for_test()->FireNow();
+
+  // Check that there is no row change animation for a drag from slot 0 to
+  // slot 1.
+  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest(items_grid_view));
+  // Drag the item over slot 2.
+  generator->MoveMouseTo(
+      items_grid_view->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(items_grid_view->reorder_timer_for_test()->IsRunning());
+  items_grid_view->reorder_timer_for_test()->FireNow();
+
+  // Check that there is a row change animation for a drag from slot 1 to
+  // slot 2.
+  EXPECT_EQ(1, GetNumberOfRowChangeLayersForTest(items_grid_view));
 }
 
 // Test dragging an app item from the first row to second row, and then back to
@@ -915,7 +961,7 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
   model_->PopulateApps(GetTilesPerPage(0));
   UpdateLayout();
 
-  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest());
+  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
 
   // Begin dragging the first item.
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
@@ -945,7 +991,7 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
   const int first_row_y = GetItemRectOnCurrentPageAt(0, 0).y();
   const int second_row_y = GetItemRectOnCurrentPageAt(0, 6).y();
   EXPECT_GT(second_row_y, first_row_y);
-  EXPECT_EQ(1, GetNumberOfRowChangeLayersForTest());
+  EXPECT_EQ(1, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
 
   // The item in slot 5 should now be on animating into the first row position.
   EXPECT_EQ(item_view->bounds().y(), first_row_y);
@@ -979,12 +1025,12 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
           item_view);
   EXPECT_LT(item_view->bounds().x(), target_bounds.x());
   EXPECT_EQ(target_bounds.y(), second_row_y);
-  EXPECT_EQ(1, GetNumberOfRowChangeLayersForTest());
+  EXPECT_EQ(1, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
 
   // End the drag and check that no more item layer copies remain.
   EndDrag(apps_grid_view_, false /*cancel*/);
   test_api_->WaitForItemMoveAnimationDone();
-  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest());
+  EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest(apps_grid_view_));
 }
 
 TEST_F(AppsGridViewTest, ItemTooltip) {
