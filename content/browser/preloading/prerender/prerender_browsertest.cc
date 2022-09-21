@@ -3967,17 +3967,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 
 // Test to make sure that the completion of iframe navigation in a prerendering
 // page doesn't start another pending prerender request.
-// TODO(crbug.com/1365781): Failing on linux-chromeos-rel.
-#if BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG)
-#define MAYBE_IframeNavigationFinishDontDisruptPrerenderNavigationFinish \
-  DISABLED_IframeNavigationFinishDontDisruptPrerenderNavigationFinish
-#else
-#define MAYBE_IframeNavigationFinishDontDisruptPrerenderNavigationFinish \
-  IframeNavigationFinishDontDisruptPrerenderNavigationFinish
-#endif
 IN_PROC_BROWSER_TEST_F(
     PrerenderSequentialPrerenderingBrowserTest,
-    MAYBE_IframeNavigationFinishDontDisruptPrerenderNavigationFinish) {
+    IframeNavigationFinishDontDisruptPrerenderNavigationFinish) {
   net::test_server::ControllableHttpResponse response2(
       embedded_test_server(), "/empty.html?prerender2");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -4011,6 +4003,7 @@ IN_PROC_BROWSER_TEST_F(
   // Stop the second prerendering initial navigation.
   response2.WaitForRequest();
 
+  WaitForPrerenderLoadCompletion(kPrerender1);
   int host_id = GetHostForUrl(kPrerender1);
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
 
