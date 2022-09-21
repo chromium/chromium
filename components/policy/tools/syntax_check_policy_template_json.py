@@ -74,6 +74,88 @@ LEGACY_NO_ENABLE_DISABLE_DESC = [
     'DisablePluginFinder', 'IntegratedWebAuthenticationAllowed'
 ]
 
+# Device policies which are not prefixed 'Device'.
+LEGACY_DEVICE_POLICY_NAME_OFFENDERS = [
+    'ChromadToCloudMigrationEnabled',
+    'AutoCleanUpStrategy',
+    'EnableDeviceGranularReporting',
+    'ReportCRDSessions',
+    'ReportUploadFrequency',
+    'HeartbeatEnabled',
+    'HeartbeatFrequency',
+    'LogUploadEnabled',
+    'ChromeOsReleaseChannel',
+    'ChromeOsReleaseChannelDelegated',
+    'KioskCRXManifestUpdateURLIgnored',
+    'ManagedGuestSessionPrivacyWarningsEnabled',
+    'SystemTimezone',
+    'SystemUse24HourClock',
+    'UptimeLimit',
+    'RebootAfterUpdate',
+    'AttestationEnabledForDevice',
+    'AttestationForContentProtectionEnabled',
+    'SupervisedUsersEnabled',
+    'ExtensionCacheSize',
+    'DisplayRotationDefault',
+    'AllowKioskAppControlChromeVersion',
+    'LoginAuthenticationBehavior',
+    'UsbDetachableWhitelist',
+    'UsbDetachableAllowlist',
+    'SystemTimezoneAutomaticDetection',
+    'NetworkThrottlingEnabled',
+    'LoginVideoCaptureAllowedUrls',
+    'TPMFirmwareUpdateSettings',
+    'MinimumRequiredChromeVersion',
+    'CastReceiverName',
+    'UnaffiliatedArcAllowed',
+    'VirtualMachinesAllowed',
+    'PluginVmAllowed',
+    'PluginVmLicenseKey',
+    'SystemProxySettings',
+    'RequiredClientCertificateForDevice',
+    'ReportDeviceVersionInfo',
+    'ReportDeviceActivityTimes',
+    'ReportDeviceAudioStatus',
+    'ReportDeviceAudioStatusCheckingRateMs',
+    'ReportDeviceBootMode',
+    'ReportDeviceLocation',
+    'ReportDeviceNetworkConfiguration',
+    'ReportDeviceNetworkInterfaces',
+    'ReportDeviceNetworkStatus',
+    'ReportDeviceNetworkTelemetryCollectionRateMs',
+    'ReportDeviceNetworkTelemetryEventCheckingRateMs',
+    'ReportDeviceUsers',
+    'ReportDeviceHardwareStatus',
+    'ReportDeviceSessionStatus',
+    'ReportDeviceSecurityStatus',
+    'ReportDeviceGraphicsStatus',
+    'ReportDeviceCrashReportInfo',
+    'ReportDeviceOsUpdateStatus',
+    'ReportDevicePowerStatus',
+    'ReportDevicePeripherals',
+    'ReportDeviceStorageStatus',
+    'ReportDeviceBoardStatus',
+    'ReportDeviceCpuInfo',
+    'ReportDeviceTimezoneInfo',
+    'ReportDeviceMemoryInfo',
+    'ReportDeviceBacklightInfo',
+    'ReportDeviceAppInfo',
+    'ReportDeviceBluetoothInfo',
+    'ReportDeviceFanInfo',
+    'ReportDeviceVpdInfo',
+    'ReportDeviceSystemInfo',
+    'ReportDevicePrintJobs',
+    'ReportDeviceLoginLogout',
+    'ReportDeviceSignalStrengthEventDrivenTelemetry',
+]
+
+# User policies which are prefixed with 'Device'.
+LEGACY_USER_POLICY_NAME_OFFENDERS = [
+    'DeviceLocalAccountManagedSessionEnabled',
+    'DeviceAttributesAllowedForOrigins',
+    'DevicePowerAdaptiveChargingEnabled',
+]
+
 # List of policies where not all properties are required to be presented in the
 # example value. This could be useful e.g. in case of mutually exclusive fields.
 # See crbug.com/1068257 for the details.
@@ -233,6 +315,10 @@ def LenWithoutPlaceholderTags(text):
   length -= 5 * text.count('</ph>')
 
   return length
+
+
+def _IsAllowedDevicePolicyPrefix(name):
+  return name.startswith('Device')
 
 
 class DuplicateKeyVisitor(ast.NodeVisitor):
@@ -1109,6 +1195,18 @@ class PolicyTemplateChecker(object):
           'default_for_managed_devices_doc_only' in policy):
         self._Error('default_for_managed_devices_doc_only should only be used '
                     'with policies that have device_only=True.')
+
+      if (policy.get('device_only', False)
+          and not _IsAllowedDevicePolicyPrefix(policy.get('name'))
+          and policy.get('name') not in LEGACY_DEVICE_POLICY_NAME_OFFENDERS):
+        self._Error('%s: Device policy name should be prefixed with '
+                    '\'Device\'' % policy.get('name'))
+
+      if (_IsAllowedDevicePolicyPrefix(policy.get('name'))
+          and not policy.get('device_only', False)
+          and policy.get('name') not in LEGACY_USER_POLICY_NAME_OFFENDERS):
+        self._Error('%s: Policy with the name prefixed with \'Device\' must be '
+                    'device_only' % (policy.get('name')))
 
       # All policies must declare whether they allow changes at runtime.
       self._CheckContains(
