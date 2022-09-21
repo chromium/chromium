@@ -128,6 +128,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     bool real_time_lookup_enabled,
     bool can_rt_check_subresource_url,
     bool can_check_db,
+    bool can_check_high_confidence_allowlist,
     GURL last_committed_url,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
@@ -145,6 +146,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       real_time_lookup_enabled_(real_time_lookup_enabled),
       can_rt_check_subresource_url_(can_rt_check_subresource_url),
       can_check_db_(can_check_db),
+      can_check_high_confidence_allowlist_(can_check_high_confidence_allowlist),
       last_committed_url_(last_committed_url),
       ui_task_runner_(ui_task_runner),
       url_lookup_service_on_ui_(url_lookup_service_on_ui),
@@ -434,7 +436,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
                                 request_destination_);
       safe_synchronously = false;
       AsyncMatch match =
-          can_check_db_
+          (can_check_db_ && can_check_high_confidence_allowlist_)
               ? database_manager_->CheckUrlForHighConfidenceAllowlist(url, this)
               : AsyncMatch::NO_MATCH;
       RecordLocalMatchResult(match, request_destination_);

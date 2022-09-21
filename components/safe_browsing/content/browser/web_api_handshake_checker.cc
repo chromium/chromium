@@ -64,8 +64,8 @@ class WebApiHandshakeChecker::CheckerOnIO
         /*render_frame_id=*/MSG_ROUTING_NONE, frame_tree_node_id_,
         /*real_time_lookup_enabled=*/false,
         /*can_rt_check_subresource_url=*/false,
-        /*can_check_db=*/true, last_committed_url_,
-        content::GetUIThreadTaskRunner({}),
+        /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
+        last_committed_url_, content::GetUIThreadTaskRunner({}),
         /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance());
     url_checker_->CheckUrl(
         url, "GET",

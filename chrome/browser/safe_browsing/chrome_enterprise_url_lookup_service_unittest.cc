@@ -251,7 +251,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 }
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
-       TestCanCheckSafeBrowsingDb_BypassAllowlistFeature) {
+       TestCanCheckSafeBrowsingHighConfidenceAllowlist_BypassAllowlistFeature) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {safe_browsing::kRealTimeUrlLookupForEnterpriseAllowlistBypass}, {});
@@ -263,18 +263,20 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   test_profile_->GetPrefs()->SetInteger(
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
       REAL_TIME_CHECK_DISABLED);
-  EXPECT_TRUE(enterprise_rt_service()->CanCheckSafeBrowsingDb());
+  EXPECT_TRUE(
+      enterprise_rt_service()->CanCheckSafeBrowsingHighConfidenceAllowlist());
 
   // Bypass allowlist if the SafeBrowsingEnterpriseRealTimeUrlCheckMode pref is
   // set.
   test_profile_->GetPrefs()->SetInteger(
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
       REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-  EXPECT_FALSE(enterprise_rt_service()->CanCheckSafeBrowsingDb());
+  EXPECT_FALSE(
+      enterprise_rt_service()->CanCheckSafeBrowsingHighConfidenceAllowlist());
 }
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
-       TestCanCheckSafeBrowsingDb_CheckAllowlist) {
+       TestCanCheckSafeBrowsingHighConfidenceAllowlist_CheckAllowlist) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {}, {safe_browsing::kRealTimeUrlLookupForEnterpriseAllowlistBypass});
@@ -284,7 +286,8 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   test_profile_->GetPrefs()->SetInteger(
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
       REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-  EXPECT_TRUE(enterprise_rt_service()->CanCheckSafeBrowsingDb());
+  EXPECT_TRUE(
+      enterprise_rt_service()->CanCheckSafeBrowsingHighConfidenceAllowlist());
 }
 
 }  // namespace safe_browsing

@@ -241,6 +241,9 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   bool CanPerformFullURLLookup() const override { return true; }
   bool CanCheckSubresourceURL() const override { return false; }
   bool CanCheckSafeBrowsingDb() const override { return true; }
+  bool CanCheckSafeBrowsingHighConfidenceAllowlist() const override {
+    return true;
+  }
   bool CanSendRTSampleRequest() const override { return true; }
 
  private:
@@ -296,6 +299,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         UnsafeResource::kNoRenderFrameId, UnsafeResource::kNoFrameTreeNodeId,
         real_time_lookup_enabled,
         /*can_rt_check_subresource_url=*/false, can_check_safe_browsing_db,
+        /*can_check_high_confidence_allowlist=*/true,
         /*last_committed_url=*/GURL(), base::SequencedTaskRunnerHandle::Get(),
         real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr() : nullptr,
         /*webui_delegate_=*/nullptr);

@@ -148,6 +148,13 @@ bool RealTimeUrlLookupService::CanCheckSafeBrowsingDb() const {
   return true;
 }
 
+bool RealTimeUrlLookupService::CanCheckSafeBrowsingHighConfidenceAllowlist()
+    const {
+  // Always return true, because consumer real time URL check always checks
+  // high confidence allowlist.
+  return true;
+}
+
 bool RealTimeUrlLookupService::CanSendRTSampleRequest() const {
   return IsExtendedReportingEnabled(*pref_service_) &&
          base::FeatureList::IsEnabled(
