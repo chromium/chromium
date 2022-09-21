@@ -26,7 +26,6 @@ test("chromeos_components_unittests") {
     "//chromeos/components/onc:unit_tests",
     "//chromeos/components/quick_answers:unit_tests",
     "//chromeos/components/security_token_pin:unit_tests",
-    "//chromeos/components/sensors:unit_tests",
     "//mojo/core/embedder",
     "//ui/base:base",
   ]
