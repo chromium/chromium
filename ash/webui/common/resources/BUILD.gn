@@ -35,7 +35,6 @@ web_component_files = [
 ]
 
 non_web_component_files = [
-  "cr.js",
   "cr_picture/cr_picture_types.js",
   "cr_picture/png.js",
   "cr_picture/webcam_utils.js",
