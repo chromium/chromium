@@ -105,8 +105,8 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
   // fires the given |event| on it.
   //
   // TODO(nektar): Implement this other than for testing.
-  void FireGeneratedEvent(const ui::AXEventGenerator::Event& event,
-                          const ui::AXNode& node) const;
+  void FireGeneratedEvent(ui::AXEventGenerator::Event event,
+                          const ui::AXNode* node) override;
 
   // The Widget for which this class manages an AXTree.
   //

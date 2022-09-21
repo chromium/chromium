@@ -169,8 +169,10 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   virtual void FireBlinkEvent(ax::mojom::Event event_type,
                               BrowserAccessibility* node,
                               int action_request_id) {}
-  virtual void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
-                                  BrowserAccessibility* node);
+
+  // AXTreemanager overrides.
+  void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
+                          const ui::AXNode* node) override;
 
   // Checks whether focus has changed since the last time it was checked,
   // taking into account whether the window has focus and which frame within

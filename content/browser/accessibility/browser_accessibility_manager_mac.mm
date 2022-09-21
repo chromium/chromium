@@ -129,18 +129,21 @@ bool BrowserAccessibilityManagerMac::IsInGeneratedEventBatch(
 
 void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     ui::AXEventGenerator::Event event_type,
-    BrowserAccessibility* node) {
+    const ui::AXNode* node) {
   BrowserAccessibilityManager::FireGeneratedEvent(event_type, node);
-  BrowserAccessibilityCocoa* native_node = node->GetNativeViewAccessible();
+  BrowserAccessibility* wrapper = GetFromAXNode(node);
+  DCHECK(wrapper);
+  BrowserAccessibilityCocoa* native_node = wrapper->GetNativeViewAccessible();
   DCHECK(native_node);
 
   // Refer to |AXObjectCache::postPlatformNotification| in WebKit source code.
   NSString* mac_notification = nullptr;
   switch (event_type) {
     case ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
-      if (node->GetRole() == ax::mojom::Role::kTree) {
+      if (wrapper->GetRole() == ax::mojom::Role::kTree) {
         mac_notification = NSAccessibilitySelectedRowsChangedNotification;
-      } else if (node->GetRole() == ax::mojom::Role::kTextFieldWithComboBox) {
+      } else if (wrapper->GetRole() ==
+                 ax::mojom::Role::kTextFieldWithComboBox) {
         // Even though the selected item in the combo box has changed, we don't
         // want to post a focus change because this will take the focus out of
         // the combo box where the user might be typing.
@@ -172,8 +175,8 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       mac_notification = NSAccessibilityValueChangedNotification;
       break;
     case ui::AXEventGenerator::Event::COLLAPSED:
-      if (node->GetRole() == ax::mojom::Role::kRow ||
-          node->GetRole() == ax::mojom::Role::kTreeItem) {
+      if (wrapper->GetRole() == ax::mojom::Role::kRow ||
+          wrapper->GetRole() == ax::mojom::Role::kTreeItem) {
         mac_notification = NSAccessibilityRowCollapsedNotification;
       } else {
         mac_notification = ui::NSAccessibilityExpandedChanged;
@@ -203,8 +206,8 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       return;
     }
     case ui::AXEventGenerator::Event::EXPANDED:
-      if (node->GetRole() == ax::mojom::Role::kRow ||
-          node->GetRole() == ax::mojom::Role::kTreeItem) {
+      if (wrapper->GetRole() == ax::mojom::Role::kRow ||
+          wrapper->GetRole() == ax::mojom::Role::kTreeItem) {
         mac_notification = NSAccessibilityRowExpandedNotification;
       } else {
         mac_notification = ui::NSAccessibilityExpandedChanged;
@@ -231,7 +234,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         // Unfortunately this produces an annoying boing sound with each live
         // announcement, but the alternative is almost no live region support.
         PostAnnouncementNotification(
-            base::SysUTF16ToNSString(node->GetTextContentUTF16()));
+            base::SysUTF16ToNSString(wrapper->GetTextContentUTF16()));
         return;
       }
 
@@ -241,10 +244,11 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       GetUIThreadTaskRunner({})->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
-              [](base::scoped_nsobject<BrowserAccessibilityCocoa> node) {
-                if (node && [node instanceActive]) {
+              [](base::scoped_nsobject<BrowserAccessibilityCocoa> wrapper) {
+                if (wrapper && [wrapper instanceActive]) {
                   NSAccessibilityPostNotification(
-                      node, ui::NSAccessibilityLiveRegionChangedNotification);
+                      wrapper,
+                      ui::NSAccessibilityLiveRegionChangedNotification);
                 }
               },
               std::move(retained_node)),
@@ -275,15 +279,16 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       mac_notification = ui::NSAccessibilityMenuItemSelectedNotification;
       break;
     case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
-      DCHECK(node->GetData().IsRangeValueSupported())
-          << "Range value changed but range values are not supported: " << node;
+      DCHECK(wrapper->GetData().IsRangeValueSupported())
+          << "Range value changed but range values are not supported: "
+          << wrapper;
       mac_notification = NSAccessibilityValueChangedNotification;
       break;
     case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
       mac_notification = NSAccessibilityRowCountChangedNotification;
       break;
     case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
-      if (ui::IsTableLike(node->GetRole())) {
+      if (ui::IsTableLike(wrapper->GetRole())) {
         mac_notification = NSAccessibilitySelectedRowsChangedNotification;
       } else {
         // VoiceOver does not read anything if selection changes on the
@@ -293,7 +298,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         BrowserAccessibility* container =
             focus ? focus->PlatformGetSelectionContainer() : nullptr;
 
-        if (focus && node == container &&
+        if (focus && wrapper == container &&
             container->HasState(ax::mojom::State::kMultiselectable) &&
             !IsInGeneratedEventBatch(
                 ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED) &&
@@ -314,16 +319,16 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       }
       break;
     case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
-      DCHECK(ui::IsSelectElement(node->GetRole()));
+      DCHECK(ui::IsSelectElement(wrapper->GetRole()));
       mac_notification = NSAccessibilityValueChangedNotification;
       break;
     case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
-      DCHECK(node->IsTextField());
+      DCHECK(wrapper->IsTextField());
       mac_notification = NSAccessibilityValueChangedNotification;
       if (!text_edits_.empty()) {
         std::u16string deleted_text;
         std::u16string inserted_text;
-        int32_t node_id = node->GetId();
+        int32_t node_id = wrapper->GetId();
         const auto iterator = text_edits_.find(node_id);
         id edit_text_marker = nil;
         if (iterator != text_edits_.end()) {
@@ -412,7 +417,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       return;
   }
 
-  FireNativeMacNotification(mac_notification, node);
+  FireNativeMacNotification(mac_notification, wrapper);
 }
 
 void BrowserAccessibilityManagerMac::FireNativeMacNotification(

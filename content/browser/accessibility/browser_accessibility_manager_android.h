@@ -98,7 +98,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
                       BrowserAccessibility* node,
                       int action_request_id) override;
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
-                          BrowserAccessibility* node) override;
+                          const ui::AXNode* node) override;
 
   void FireLocationChanged(BrowserAccessibility* node);
 

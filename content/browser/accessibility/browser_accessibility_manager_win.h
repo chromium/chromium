@@ -53,7 +53,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
                       BrowserAccessibility* node,
                       int action_request_id) override;
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
-                          BrowserAccessibility* node) override;
+                          const ui::AXNode* node) override;
 
   void FireWinAccessibilityEvent(LONG win_event, BrowserAccessibility* node);
   void FireUiaAccessibilityEvent(LONG uia_event, BrowserAccessibility* node);

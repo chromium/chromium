@@ -311,10 +311,10 @@ bool BrowserAccessibilityManager::CanFireEvents() const {
 
 void BrowserAccessibilityManager::FireGeneratedEvent(
     ui::AXEventGenerator::Event event_type,
-    BrowserAccessibility* node) {
+    const ui::AXNode* node) {
   if (!generated_event_callback_for_testing_.is_null()) {
     generated_event_callback_for_testing_.Run(delegate(), event_type,
-                                              node->GetId());
+                                              node->id());
   }
 }
 
@@ -384,8 +384,10 @@ void BrowserAccessibilityManager::ParentConnectionChanged(
   BrowserAccessibilityManager* parent_manager = parent->manager();
   parent = parent_manager->RetargetBrowserAccessibilityForEvents(
       parent, RetargetEventType::RetargetEventTypeGenerated);
+  DCHECK(parent) << "RetargetBrowserAccessibilityForEvents shouldn't return a "
+                    "null pointer when |parent| is not null.";
   parent_manager->FireGeneratedEvent(
-      ui::AXEventGenerator::Event::CHILDREN_CHANGED, parent);
+      ui::AXEventGenerator::Event::CHILDREN_CHANGED, parent->node());
 }
 
 void BrowserAccessibilityManager::EnsureParentConnectionIfNotRootManager() {
@@ -592,10 +594,12 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
       continue;
 
     // IsDescendantOf() also returns true in the case of equality.
-    if (focus && focus != event_target && focus->IsDescendantOf(event_target))
-      FireGeneratedEvent(targeted_event.event_params.event, event_target);
-    else
+    if (focus && focus != event_target && focus->IsDescendantOf(event_target)) {
+      FireGeneratedEvent(targeted_event.event_params.event,
+                         event_target->node());
+    } else {
       deferred_events.push_back(targeted_event);
+    }
   }
 
   // Screen readers might not process events related to the currently-focused
@@ -622,7 +626,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     if (!event_target->CanFireEvents())
       continue;
 
-    FireGeneratedEvent(targeted_event.event_params.event, event_target);
+    FireGeneratedEvent(targeted_event.event_params.event, event_target->node());
   }
   event_generator().ClearEvents();
 
@@ -1572,15 +1576,13 @@ void BrowserAccessibilityManager::OnTreeDataChanged(
 void BrowserAccessibilityManager::OnNodeWillBeDeleted(ui::AXTree* tree,
                                                       ui::AXNode* node) {
   DCHECK(node);
-  if (BrowserAccessibility* wrapper = GetFromAXNode(node)) {
-    if (node == GetLastFocusedNode())
-      SetLastFocusedNode(nullptr);
+  if (node == GetLastFocusedNode())
+    SetLastFocusedNode(nullptr);
 
-    // We fire these here, immediately, to ensure we can send platform
-    // notifications prior to the actual destruction of the object.
-    if (node->GetRole() == ax::mojom::Role::kMenu)
-      FireGeneratedEvent(ui::AXEventGenerator::Event::MENU_POPUP_END, wrapper);
-  }
+  // We fire these here, immediately, to ensure we can send platform
+  // notifications prior to the actual destruction of the object.
+  if (node->GetRole() == ax::mojom::Role::kMenu)
+    FireGeneratedEvent(ui::AXEventGenerator::Event::MENU_POPUP_END, node);
 }
 
 void BrowserAccessibilityManager::OnSubtreeWillBeDeleted(ui::AXTree* tree,
@@ -1950,7 +1952,7 @@ void BrowserAccessibilityManager::DidActivatePortal(
     base::TimeTicks activation_time) {
   if (GetTreeData().loaded) {
     FireGeneratedEvent(ui::AXEventGenerator::Event::PORTAL_ACTIVATED,
-                       GetBrowserAccessibilityRoot());
+                       GetRoot());
   }
 }
 

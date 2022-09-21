@@ -169,7 +169,7 @@ void ViewsAXTreeManager::UnserializeTreeUpdates(
   for (const ui::AXEventGenerator::TargetedEvent& targeted_event :
        event_generator_) {
     if (ui::AXNode* node = ax_tree_->GetFromId(targeted_event.node_id))
-      FireGeneratedEvent(targeted_event.event_params.event, *node);
+      FireGeneratedEvent(targeted_event.event_params.event, node);
   }
   event_generator_.ClearEvents();
 }
@@ -182,11 +182,10 @@ void ViewsAXTreeManager::FireLoadComplete() {
     root_view->NotifyAccessibilityEvent(ax::mojom::Event::kLoadComplete, true);
 }
 
-void ViewsAXTreeManager::FireGeneratedEvent(
-    const ui::AXEventGenerator::Event& event,
-    const ui::AXNode& node) const {
+void ViewsAXTreeManager::FireGeneratedEvent(ui::AXEventGenerator::Event event,
+                                            const ui::AXNode* node) {
   if (!generated_event_callback_for_testing_.is_null())
-    generated_event_callback_for_testing_.Run(widget_.get(), event, node.id());
+    generated_event_callback_for_testing_.Run(widget_.get(), event, node->id());
   // TODO(nektar): Implement this other than "for testing".
 }
 

@@ -221,14 +221,16 @@ void BrowserAccessibilityManagerAndroid::FireBlinkEvent(
 
 void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     ui::AXEventGenerator::Event event_type,
-    BrowserAccessibility* node) {
+    const ui::AXNode* node) {
   BrowserAccessibilityManager::FireGeneratedEvent(event_type, node);
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
   if (!wcax)
     return;
 
+  BrowserAccessibility* wrapper = GetFromAXNode(node);
+  DCHECK(wrapper);
   BrowserAccessibilityAndroid* android_node =
-      static_cast<BrowserAccessibilityAndroid*>(node);
+      static_cast<BrowserAccessibilityAndroid*>(wrapper);
 
   if (event_type == ui::AXEventGenerator::Event::CHILDREN_CHANGED) {
     BrowserAccessibilityAndroid::ResetLeafCache();
@@ -320,7 +322,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       // leaf node might not be a text field. For example, in the unusual case
       // when the text field is inside a button, the leaf node is the button not
       // the text field.
-      if (android_node->IsTextField() && GetFocus() == node)
+      if (android_node->IsTextField() && GetFocus() == wrapper)
         wcax->HandleEditableTextChanged(android_node->unique_id());
       break;
 
