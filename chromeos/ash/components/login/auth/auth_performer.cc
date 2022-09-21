@@ -101,6 +101,19 @@ void AuthPerformer::OnServiceRunning(std::unique_ptr<UserContext> context,
                               std::move(callback)));
 }
 
+void AuthPerformer::InvalidateAuthSession(std::unique_ptr<UserContext> context,
+                                          AuthOperationCallback callback) {
+  CHECK(!context->GetAuthSessionId().empty());
+
+  user_data_auth::InvalidateAuthSessionRequest request;
+  request.set_auth_session_id(context->GetAuthSessionId());
+
+  client_->InvalidateAuthSession(
+      request, base::BindOnce(&AuthPerformer::OnInvalidateAuthSession,
+                              weak_factory_.GetWeakPtr(), std::move(context),
+                              std::move(callback)));
+}
+
 void AuthPerformer::AuthenticateUsingKnowledgeKey(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
@@ -452,6 +465,25 @@ void AuthPerformer::OnStartAuthSession(
 
   std::move(callback).Run(reply->user_exists(), std::move(context),
                           absl::nullopt);
+}
+
+void AuthPerformer::OnInvalidateAuthSession(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback,
+    absl::optional<user_data_auth::InvalidateAuthSessionReply> reply) {
+  // The auth session is useless even if we failed to invalidate it.
+  context->SetAuthSessionId("");
+
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET &&
+      error != user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
+    LOGIN_LOG(ERROR) << "Could not invalidate authsession " << error;
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
+    return;
+  }
+
+  context->SetAuthSessionId("");
+  std::move(callback).Run(std::move(context), absl::nullopt);
 }
 
 void AuthPerformer::OnAuthenticateAuthSession(

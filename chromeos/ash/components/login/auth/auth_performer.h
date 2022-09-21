@@ -63,6 +63,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
                                 AuthSessionIntent intent,
                                 StartSessionCallback callback);
 
+  // Invalidates the session contained in `context`.
+  virtual void InvalidateAuthSession(std::unique_ptr<UserContext> context,
+                                     AuthOperationCallback callback);
+
   // Attempts to authenticate session using Key in `context`.
   // If key is a plain text, it is assumed that it is a knowledge-based key,
   // so it will be hashed accordingly, and key label would be backfilled
@@ -117,6 +121,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
       std::unique_ptr<UserContext> context,
       StartSessionCallback callback,
       absl::optional<user_data_auth::StartAuthSessionReply> reply);
+
+  void OnInvalidateAuthSession(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::InvalidateAuthSessionReply> reply);
 
   void HashKeyAndAuthenticate(std::unique_ptr<UserContext> context,
                               AuthOperationCallback callback,
