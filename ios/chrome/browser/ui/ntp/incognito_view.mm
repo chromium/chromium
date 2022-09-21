@@ -151,12 +151,14 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 - (instancetype)initWithFrame:(CGRect)frame {
   return [self initWithFrame:frame
       showTopIncognitoImageAndTitle:YES
-          stackViewHorizontalMargin:kStackViewHorizontalMargin];
+          stackViewHorizontalMargin:kStackViewHorizontalMargin
+                  stackViewMaxWidth:kStackViewMaxWidth];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
     showTopIncognitoImageAndTitle:(BOOL)showTopIncognitoImageAndTitle
-        stackViewHorizontalMargin:(CGFloat)stackViewHorizontalMargin {
+        stackViewHorizontalMargin:(CGFloat)stackViewHorizontalMargin
+                stackViewMaxWidth:(CGFloat)stackViewMaxWidth {
   self = [super initWithFrame:frame];
   if (self) {
     _dragDropHandler = [[URLDragDropHandler alloc] init];
@@ -270,7 +272,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 
       // Ensure that the stackview width is constrained.
       [_stackView.widthAnchor
-          constraintLessThanOrEqualToConstant:kStackViewMaxWidth],
+          constraintLessThanOrEqualToConstant:stackViewMaxWidth],
 
       // Activate the height constraints.
       _bottomToolbarMarginHeight,
