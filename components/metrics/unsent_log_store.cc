@@ -265,8 +265,8 @@ void UnsentLogStore::MarkStagedLogAsSent() {
 }
 
 void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
-  ListPrefUpdate update(local_state_, log_data_pref_name_);
-  LogsPrefWriter writer(&update->GetList());
+  ScopedListPrefUpdate update(local_state_, log_data_pref_name_);
+  LogsPrefWriter writer(&update.Get());
 
   std::vector<std::unique_ptr<LogInfo>> trimmed_list;
   size_t bytes_used = 0;
@@ -442,8 +442,8 @@ void UnsentLogStore::WriteToMetricsPref(
   if (metadata_pref_name_ == nullptr)
     return;
 
-  DictionaryPrefUpdate update(local_state_, metadata_pref_name_);
-  base::Value::Dict& pref_data = update->GetDict();
+  ScopedDictPrefUpdate update(local_state_, metadata_pref_name_);
+  base::Value::Dict& pref_data = update.Get();
   pref_data.Set(kLogUnsentCountKey, unsent_samples_count);
   pref_data.Set(kLogSentCountKey, sent_samples_count);
   // Round up to kb.

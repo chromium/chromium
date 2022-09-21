@@ -683,9 +683,9 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
 }
 
 void FileMetricsProvider::AppendToSamplesCountPref(size_t samples_count) {
-  ListPrefUpdate update(pref_service_,
-                        metrics::prefs::kMetricsFileMetricsMetadata);
-  update->GetList().Append(static_cast<int>(samples_count));
+  ScopedListPrefUpdate update(pref_service_,
+                              metrics::prefs::kMetricsFileMetricsMetadata);
+  update->Append(static_cast<int>(samples_count));
 }
 
 void FileMetricsProvider::RecordFileMetadataOnTaskRunner(SourceInfo* source) {
@@ -924,9 +924,9 @@ bool FileMetricsProvider::SimulateIndependentMetrics() {
     return false;
   }
 
-  ListPrefUpdate list_pref(pref_service_,
-                           metrics::prefs::kMetricsFileMetricsMetadata);
-  base::Value::List& list_value = list_pref->GetList();
+  ScopedListPrefUpdate list_pref(pref_service_,
+                                 metrics::prefs::kMetricsFileMetricsMetadata);
+  base::Value::List& list_value = list_pref.Get();
   if (list_value.empty())
     return false;
 
