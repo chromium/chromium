@@ -267,7 +267,6 @@ try_.orchestrator_builder(
         "remove_src_checkout_experiment": 100,
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
-        "weetbix.enable_weetbix_exonerations": 50,
     },
 )
 
@@ -300,6 +299,7 @@ try_.orchestrator_builder(
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
         "remove_src_checkout_experiment": 100,
+        "weetbix.enable_weetbix_exonerations": 50,
     },
 )
 
