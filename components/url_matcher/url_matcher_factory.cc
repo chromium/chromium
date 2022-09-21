@@ -246,13 +246,13 @@ std::unique_ptr<URLMatcherPortFilter> URLMatcherFactory::CreateURLMatcherPorts(
     *error = kInvalidPortRanges;
     return nullptr;
   }
-  base::Value::ConstListView value_list = value->GetListDeprecated();
+  const base::Value::List& value_list = value->GetList();
 
   for (const auto& entry : value_list) {
     if (entry.is_int()) {
       ranges.push_back(URLMatcherPortFilter::CreateRange(entry.GetInt()));
     } else if (entry.is_list()) {
-      base::Value::ConstListView entry_list = entry.GetListDeprecated();
+      const base::Value::List& entry_list = entry.GetList();
       if (entry_list.size() != 2u || !entry_list[0].is_int() ||
           !entry_list[1].is_int()) {
         *error = kInvalidPortRanges;
