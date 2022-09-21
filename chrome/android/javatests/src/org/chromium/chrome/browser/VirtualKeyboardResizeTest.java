@@ -139,10 +139,9 @@ public class VirtualKeyboardResizeTest {
         double keyboardHeight = getKeyboardHeightDp();
 
         // Use less than or equal since the keyboard may actually include accessories like the
-        // Autofill bar. Math.ceil and 1px delta to account for device scale factor rounding.
-        assertWaitForPageHeight(lessThanOrEqualTo((int) Math.ceil(initialHeight - keyboardHeight)));
-        assertWaitForVisualViewportHeight(
-                lessThanOrEqualTo(Math.ceil(initialHeight - keyboardHeight)));
+        // Autofill bar. +1px delta to account for device scale factor rounding.
+        assertWaitForPageHeight(lessThanOrEqualTo((int) (initialHeight - keyboardHeight + 1.0)));
+        assertWaitForVisualViewportHeight(lessThanOrEqualTo(initialHeight - keyboardHeight + 1.0));
 
         // Hide the OSK and ensure the state is correctly restored to the initial height.
         hideKeyboard();
@@ -171,9 +170,8 @@ public class VirtualKeyboardResizeTest {
         double keyboardHeight = getKeyboardHeightDp();
 
         // Use less than or equal since the keyboard may actually include accessories like the
-        // Autofill bar. Math.ceil and account for device scale factor rounding.
-        assertWaitForVisualViewportHeight(
-                lessThanOrEqualTo(Math.ceil(initialHeight - keyboardHeight)));
+        // Autofill bar. +1 to account for device scale factor rounding.
+        assertWaitForVisualViewportHeight(lessThanOrEqualTo(initialHeight - keyboardHeight + 1));
         assertWaitForPageHeight(Matchers.is(initialHeight));
 
         // Hide the OSK and ensure the state is correctly restored to the initial height.
@@ -201,10 +199,9 @@ public class VirtualKeyboardResizeTest {
         double keyboardHeight = getKeyboardHeightDp();
 
         // Use less than or equal since the keyboard may actually include accessories like the
-        // Autofill bar. Math.ceil and 1px delta to account for device scale factor rounding.
-        assertWaitForPageHeight(lessThanOrEqualTo((int) Math.ceil(initialHeight - keyboardHeight)));
-        assertWaitForVisualViewportHeight(
-                lessThanOrEqualTo(Math.ceil(initialHeight - keyboardHeight)));
+        // Autofill bar. +1px to account for device scale factor rounding.
+        assertWaitForPageHeight(lessThanOrEqualTo((int) (initialHeight - keyboardHeight + 1.0)));
+        assertWaitForVisualViewportHeight(lessThanOrEqualTo(initialHeight - keyboardHeight + 1.0));
 
         // Hide the OSK and ensure the state is correctly restored to the initial height.
         // InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
