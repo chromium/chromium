@@ -1031,6 +1031,11 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
       parsing_fragment_ ? CreateElementFlags::ByFragmentParser(document_)
                         : CreateElementFlags::ByParser(document_),
       is);
+  // Check IsStopped() because custom element constructors may synchronously
+  // trigger removal of the document and cancellation of this parser.
+  if (IsStopped()) {
+    return;
+  }
   if (!new_element) {
     StopParsing();
     return;
@@ -1052,7 +1057,6 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
   // Event handlers may synchronously trigger removal of the
   // document and cancellation of this parser.
   if (IsStopped()) {
-    StopParsing();
     return;
   }
 
