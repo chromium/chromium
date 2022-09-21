@@ -7,6 +7,7 @@ module tracing.mojom;
 [EnableIf=is_perfetto_supported_os]
 import "services/tracing/public/mojom/perfetto_service.mojom";
 
+import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/tracing/public/mojom/traced_process.mojom";
 
@@ -19,9 +20,14 @@ struct ClientInfo {
   pending_remote<TracedProcess> process;
 };
 
+[EnableIf=is_linux_or_chromeos]
+const sandbox.mojom.Sandbox kTracingSandbox = sandbox.mojom.Sandbox.kUtility;
+[EnableIfNot=is_linux_or_chromeos]
+const sandbox.mojom.Sandbox kTracingSandbox = sandbox.mojom.Sandbox.kService;
+
 // The main interface to the Tracing service. This is only consumed by
 // privileged clients (e.g. browser process).
-[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+[ServiceSandbox=kTracingSandbox,RequireContext=sandbox.mojom.Context.kBrowser]
 interface TracingService {
   // Initializes the service with the current known set of running processes.
   Initialize(array<ClientInfo> clients);

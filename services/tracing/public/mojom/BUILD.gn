@@ -7,6 +7,11 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom_component("mojom") {
   output_prefix = "tracing_mojom"
   macro_prefix = "TRACING_MOJOM"
+  enabled_features = []
+
+  if (is_linux || is_chromeos) {
+    enabled_features += [ "is_linux_or_chromeos" ]
+  }
 
   sources = [
     "background_tracing_agent.mojom",
@@ -21,7 +26,7 @@ mojom_component("mojom") {
   ]
 
   if (!is_nacl && !is_ios) {
-    enabled_features = [ "is_perfetto_supported_os" ]
+    enabled_features += [ "is_perfetto_supported_os" ]
     sources += [
       "constants.mojom",
       "perfetto_service.mojom",
