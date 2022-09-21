@@ -17,6 +17,7 @@
 -PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginWithPreloadHasNoSameSiteCookies/7
 
 # TODO(crbug.com/1116774)
+-All/SitePerProcessBrowserTest.PageScaleFactorPropagatesToOOPIFs/0
 -All/SitePerProcessBrowserTest.PageScaleFactorPropagatesToOOPIFs/1
 
 # TODO(crbug.com/1344391)
