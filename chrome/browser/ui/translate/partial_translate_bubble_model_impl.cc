@@ -12,21 +12,8 @@
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
-
-namespace {
-
-// Returns a vector of language codes that represent the user's fluent
-// languages.
-std::vector<std::string> GetFluentLanguages(
-    content::WebContents* web_contents) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  std::unique_ptr<translate::TranslatePrefs> translate_prefs =
-      ChromeTranslateClient::CreateTranslatePrefs(profile->GetPrefs());
-  return translate_prefs->GetNeverTranslateLanguages();
-}
-
-}  // namespace
+#include "components/translate/core/common/translate_constants.h"
+#include "components/translate/core/common/translate_errors.h"
 
 PartialTranslateBubbleModelImpl::PartialTranslateBubbleModelImpl(
     ViewState view_state,
@@ -157,9 +144,14 @@ void PartialTranslateBubbleModelImpl::Translate(
   PartialTranslateRequest request;
   request.selection_text = GetSourceText();
   request.selection_encoding = web_contents->GetEncoding();
-  request.source_language = ui_delegate_->GetSourceLanguageCode();
-  request.target_language = ui_delegate_->GetTargetLanguageCode();
-  request.fluent_languages = GetFluentLanguages(web_contents);
+  std::string source_language_code = GetSourceLanguageCode();
+  if (source_language_code != translate::kUnknownLanguageCode) {
+    // source_language_code will be kUnknownLanguageCode if either a) this is
+    // the first time the selection has been translated or b) the user
+    // explicitly selects "Detected Language" in the language list.
+    request.source_language = source_language_code;
+  }
+  request.target_language = GetTargetLanguageCode();
 
   // Cancels any ongoing requests.
   partial_translate_manager_->StartPartialTranslate(
@@ -181,12 +173,17 @@ void PartialTranslateBubbleModelImpl::TranslateFullPage(
 void PartialTranslateBubbleModelImpl::OnPartialTranslateResponse(
     const PartialTranslateRequest& request,
     const PartialTranslateResponse& response) {
-  SetSourceLanguage(response.source_language);
-  SetTargetLanguage(response.target_language);
-  SetSourceText(request.selection_text);
-  SetTargetText(response.translated_text);
-  SetViewState(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
-  error_type_ = translate::TranslateErrors::NONE;
+  if (response.status != PartialTranslateStatus::kSuccess) {
+    error_type_ = translate::TranslateErrors::TRANSLATION_ERROR;
+    SetViewState(PartialTranslateBubbleModel::VIEW_STATE_ERROR);
+  } else {
+    SetSourceLanguage(response.source_language);
+    SetTargetLanguage(response.target_language);
+    SetSourceText(request.selection_text);
+    SetTargetText(response.translated_text);
+    SetViewState(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
+    error_type_ = translate::TranslateErrors::NONE;
+  }
 
   for (PartialTranslateBubbleModel::Observer& obs : observers_) {
     obs.OnPartialTranslateComplete();

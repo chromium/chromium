@@ -110,6 +110,8 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
                            TabSelectedAfterTranslation);
   FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
+                           UpdateLanguageTabsFromResponse);
+  FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
                            SourceLanguageTabUpdatesViewState);
   FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
                            SourceLanguageTabSelectedLogged);
@@ -214,10 +216,8 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   void UpdateTextForViewState(
       PartialTranslateBubbleModel::ViewState view_state);
 
-  // Retrieve the names of the from/to languages and reset the language
-  // indices.
-  void UpdateLanguageNames(std::u16string* source_language_name,
-                           std::u16string* target_language_name);
+  // Update the names of the source/target language tabs.
+  void UpdateLanguageTabNames();
 
   void UpdateInsets(PartialTranslateBubbleModel::ViewState state);
 

@@ -57,11 +57,11 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
   int GetNumberOfTargetLanguages() const override { return 1000; }
 
   std::u16string GetSourceLanguageNameAt(int index) const override {
-    return u"English";
+    return source_name_;
   }
 
   std::u16string GetTargetLanguageNameAt(int index) const override {
-    return u"English";
+    return target_name_;
   }
 
   int GetSourceLanguageIndex() const override { return 1; }
@@ -85,6 +85,8 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
   }
 
   ViewState current_view_state_;
+  std::u16string source_name_ = u"English";
+  std::u16string target_name_ = u"English";
   bool translate_called_ = false;
   bool full_page_translate_called_ = false;
 };
@@ -157,6 +159,19 @@ TEST_F(PartialTranslateBubbleViewTest, TabSelectedAfterTranslation) {
   bubble_->SwitchView(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
   EXPECT_EQ(bubble_->tabbed_pane_->GetSelectedTabIndex(),
             static_cast<size_t>(1));
+}
+
+TEST_F(PartialTranslateBubbleViewTest, UpdateLanguageTabsFromResponse) {
+  CreateAndShowBubble();
+  EXPECT_EQ(bubble_->tabbed_pane_->GetTabAt(0)->GetTitleText(), u"English");
+  EXPECT_EQ(bubble_->tabbed_pane_->GetTabAt(1)->GetTitleText(), u"English");
+
+  mock_model_->source_name_ = u"Japanese";
+  mock_model_->target_name_ = u"French";
+  bubble_->SwitchView(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
+
+  EXPECT_EQ(bubble_->tabbed_pane_->GetTabAt(0)->GetTitleText(), u"Japanese");
+  EXPECT_EQ(bubble_->tabbed_pane_->GetTabAt(1)->GetTitleText(), u"French");
 }
 
 TEST_F(PartialTranslateBubbleViewTest, SourceLanguageTabUpdatesViewState) {

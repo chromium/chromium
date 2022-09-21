@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
 #include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "components/translate/core/common/translate_util.h"
 #include "content/public/browser/web_contents.h"
@@ -148,9 +149,16 @@ void TranslateBubbleController::OnPartialTranslateComplete() {
     return;
   }
 
-  partial_translate_bubble_view_->SetViewState(
-      PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE,
-      translate::TranslateErrors::NONE);
+  if (partial_translate_bubble_view_->model()->GetError() !=
+      translate::TranslateErrors::NONE) {
+    partial_translate_bubble_view_->SetViewState(
+        PartialTranslateBubbleModel::VIEW_STATE_ERROR,
+        partial_translate_bubble_view_->model()->GetError());
+  } else {
+    partial_translate_bubble_view_->SetViewState(
+        PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE,
+        translate::TranslateErrors::NONE);
+  }
 
   partial_translate_bubble_view_->ShowForReason(
       LocationBarBubbleDelegateView::USER_GESTURE);
@@ -202,10 +210,12 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
   if (partial_model_factory_callback_) {
     model = partial_model_factory_callback_.Run();
   } else {
+    // Start with kUnknownLanguageCode to make the server run language
+    // detection.
     auto ui_delegate = std::make_unique<translate::TranslateUIDelegate>(
         ChromeTranslateClient::GetManagerFromWebContents(web_contents)
             ->GetWeakPtr(),
-        source_language, target_language);
+        translate::kUnknownLanguageCode, target_language);
 
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());

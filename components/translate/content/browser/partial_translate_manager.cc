@@ -4,7 +4,6 @@
 
 #include "components/translate/content/browser/partial_translate_manager.h"
 
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 
 PartialTranslateRequest::PartialTranslateRequest() = default;
@@ -54,9 +53,11 @@ std::unique_ptr<ContextualSearchContext> PartialTranslateManager::MakeContext(
                                     request.selection_text);
   context->SetBasePageEncoding(request.selection_encoding);
 
-  context->SetTranslationLanguages(
-      request.source_language, request.target_language,
-      base::JoinString(request.fluent_languages, ","));
+  // The server won't translate text that's in one of the user's fluent
+  // languages, so don't send fluent languages.
+  context->SetTranslationLanguages(request.source_language.value_or(""),
+                                   request.target_language,
+                                   /*fluent_languages=*/"");
 
   return context;
 }
@@ -64,6 +65,12 @@ std::unique_ptr<ContextualSearchContext> PartialTranslateManager::MakeContext(
 PartialTranslateResponse PartialTranslateManager::MakeResponse(
     const ResolvedSearchTerm& resolved_search_term) const {
   PartialTranslateResponse response;
+
+  if (resolved_search_term.response_code != 200) {
+    response.status = PartialTranslateStatus::kError;
+    return response;
+  }
+  response.status = PartialTranslateStatus::kSuccess;
 
   // The translated text is returned in the `caption` field.
   response.translated_text = base::UTF8ToUTF16(resolved_search_term.caption);
@@ -82,7 +89,5 @@ PartialTranslateResponse PartialTranslateManager::MakeResponse(
 
 void PartialTranslateManager::OnResolvedSearchTerm(
     const ResolvedSearchTerm& resolved_search_term) {
-  // TODO(crbug/1357202): Implement error handling, similar to that in Java at
-  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchManager.java;drc=d36aa0494c1d0d5238eb4fd0e3c7db748d95fcbc;l=737.
   std::move(callback_).Run(MakeResponse(resolved_search_term));
 }
