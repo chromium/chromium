@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/webdata/autofill_wallet_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_usage_data_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/contact_info_sync_bridge.h"
 #include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/history/core/browser/sync/history_delete_directives_model_type_controller.h"
@@ -122,6 +123,13 @@ AutofillWalletUsageDataDelegateFromDataService(
       ->GetControllerDelegate();
 }
 
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+ContactInfoDelegateFromDataService(autofill::AutofillWebDataService* service) {
+  return autofill::ContactInfoSyncBridge::FromWebDataService(service)
+      ->change_processor()
+      ->GetControllerDelegate();
+}
+
 // Helper function that deals will null (e.g. tests, iOS webview).
 base::WeakPtr<syncer::SyncableService> SyncableServiceForPrefs(
     sync_preferences::PrefServiceSyncable* prefs_service,
@@ -190,7 +198,7 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
 
   // These features are enabled only if there's a DB thread to post tasks to.
   if (db_thread_) {
-    // Autocomplete sync is enabled by default.  Register unless explicitly
+    // Autocomplete sync is enabled by default. Register unless explicitly
     // disabled.
     if (!disabled_types.Has(syncer::AUTOFILL)) {
       controllers.push_back(std::make_unique<ModelTypeController>(
@@ -201,7 +209,7 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
                               base::RetainedRef(web_data_service_on_disk_)))));
     }
 
-    // Autofill sync is enabled by default.  Register unless explicitly
+    // Autofill sync is enabled by default. Register unless explicitly
     // disabled.
     if (!disabled_types.Has(syncer::AUTOFILL_PROFILE)) {
       controllers.push_back(std::make_unique<syncer::ModelTypeController>(
@@ -209,6 +217,18 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
           std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
               db_thread_, base::BindRepeating(
                               &AutofillProfileDelegateFromDataService,
+                              base::RetainedRef(web_data_service_on_disk_)))));
+    }
+
+    // Contact info sync is enabled by default. Register unless explicitly
+    // disabled.
+    if (base::FeatureList::IsEnabled(syncer::kSyncEnableContactInfoDataType) &&
+        !disabled_types.Has(syncer::CONTACT_INFO)) {
+      controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+          syncer::CONTACT_INFO,
+          std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
+              db_thread_, base::BindRepeating(
+                              &ContactInfoDelegateFromDataService,
                               base::RetainedRef(web_data_service_on_disk_)))));
     }
 

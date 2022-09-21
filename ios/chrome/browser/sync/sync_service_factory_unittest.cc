@@ -67,7 +67,9 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::AUTOFILL_WALLET_METADATA);
     datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);
     datatypes.Put(syncer::BOOKMARKS);
-    // TODO(crbug.com/1348294): Add CONTACT_INFO once it has a controller.
+    if (base::FeatureList::IsEnabled(syncer::kSyncEnableContactInfoDataType)) {
+      datatypes.Put(syncer::CONTACT_INFO);
+    }
     datatypes.Put(syncer::DEVICE_INFO);
     if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
       datatypes.Put(syncer::HISTORY);

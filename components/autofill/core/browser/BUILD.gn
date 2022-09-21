@@ -439,6 +439,8 @@ static_library("browser") {
     "webdata/autofill_webdata_service.cc",
     "webdata/autofill_webdata_service.h",
     "webdata/autofill_webdata_service_observer.h",
+    "webdata/contact_info_sync_bridge.cc",
+    "webdata/contact_info_sync_bridge.h",
     "webdata/system_encryptor.cc",
     "webdata/system_encryptor.h",
   ]
