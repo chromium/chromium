@@ -9,10 +9,7 @@ import android.content.pm.PackageManager;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiManager;
-import android.os.Build;
 import android.os.Handler;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -29,7 +26,6 @@ import java.util.Set;
  * A Java class implementing midi::MidiManagerAndroid functionality.
  */
 @JNINamespace("midi")
-@RequiresApi(Build.VERSION_CODES.M)
 class MidiManagerAndroid {
     /**
      * Set true when this instance is successfully initialized.

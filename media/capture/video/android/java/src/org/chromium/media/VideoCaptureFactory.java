@@ -4,12 +4,6 @@
 
 package org.chromium.media;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
-
-import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -30,24 +24,7 @@ class VideoCaptureFactory {
 
         private static int getNumberOfCameras() {
             if (sNumberOfSystemCameras == -1) {
-                // getNumberOfCameras() would not fail due to lack of permission, but the
-                // following operations on camera would. "No permission" isn't a fatal
-                // error in WebView, specially for those applications which have no purpose
-                // to use a camera, but "load page" requires it. So, output a warning log
-                // and carry on pretending the system has no camera(s).  This optimization
-                // applies only to pre-M on Android because that is when runtime permissions
-                // were introduced.
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M
-                        && ContextUtils.getApplicationContext().getPackageManager().checkPermission(
-                                   Manifest.permission.CAMERA,
-                                   ContextUtils.getApplicationContext().getPackageName())
-                                != PackageManager.PERMISSION_GRANTED) {
-                    sNumberOfSystemCameras = 0;
-                    Log.w(TAG, "Missing android.permission.CAMERA permission, "
-                                    + "no system camera available.");
-                } else {
-                    sNumberOfSystemCameras = VideoCaptureCamera2.getNumberOfCameras();
-                }
+                sNumberOfSystemCameras = VideoCaptureCamera2.getNumberOfCameras();
             }
             return sNumberOfSystemCameras;
         }

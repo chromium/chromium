@@ -7,7 +7,6 @@ package org.chromium.media;
 import android.annotation.SuppressLint;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -79,8 +78,6 @@ public class MediaPlayerBridge {
     @SuppressLint("NewApi")
     @CalledByNative
     protected void setPlaybackRate(double speed) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) return;
-
         try {
             MediaPlayer player = getLocalPlayer();
             player.setPlaybackParams(player.getPlaybackParams().setSpeed((float) speed));
