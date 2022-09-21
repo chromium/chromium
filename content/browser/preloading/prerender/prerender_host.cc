@@ -264,8 +264,9 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   }
 
   // The prerendered contents are considered ready for activation when the
-  // main frame navigation reaches DidFinishNavigation.
-  if (is_prerender_main_frame) {
+  // main frame navigation reaches DidFinishNavigation and the prerender host
+  // has not been canceled yet.
+  if (is_prerender_main_frame && !final_status_) {
     DCHECK(!is_ready_for_activation_);
     is_ready_for_activation_ = true;
 
