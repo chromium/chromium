@@ -50,7 +50,7 @@ class CORE_EXPORT RuleFeatureSet {
   DISALLOW_NEW();
 
  public:
-  RuleFeatureSet();
+  RuleFeatureSet() = default;
   RuleFeatureSet(const RuleFeatureSet&) = delete;
   RuleFeatureSet& operator=(const RuleFeatureSet&) = delete;
   ~RuleFeatureSet();
@@ -165,8 +165,6 @@ class CORE_EXPORT RuleFeatureSet {
 
   bool HasIdsInSelectors() const { return id_invalidation_sets_.size() > 0; }
   bool InvalidatesParts() const { return metadata_.invalidates_parts; }
-
-  bool IsAlive() const { return is_alive_; }
 
   // Format the RuleFeatureSet for debugging purposes.
   //
@@ -732,9 +730,6 @@ class CORE_EXPORT RuleFeatureSet {
   // inside :has().
   bool not_pseudo_in_has_argument_{false};
   PseudosInHasArgument pseudos_in_has_argument_;
-
-  // If true, the RuleFeatureSet is alive and can be used.
-  unsigned is_alive_ : 1;
 
   friend class RuleFeatureSetTest;
   friend struct AddFeaturesToInvalidationSetsForLogicalCombinationInHasContext;

@@ -417,11 +417,7 @@ void RuleFeatureSet::MergeInvalidationSet(
   }
 }
 
-RuleFeatureSet::RuleFeatureSet() : is_alive_(true) {}
-
 RuleFeatureSet::~RuleFeatureSet() {
-  CHECK(is_alive_);
-
   metadata_.Clear();
   class_invalidation_sets_.clear();
   attribute_invalidation_sets_.clear();
@@ -436,8 +432,6 @@ RuleFeatureSet::~RuleFeatureSet() {
   universal_in_has_argument_ = false;
   not_pseudo_in_has_argument_ = false;
   pseudos_in_has_argument_.clear();
-
-  is_alive_ = false;
 }
 
 bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
@@ -466,8 +460,7 @@ bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
          tag_names_in_has_argument_ == other.tag_names_in_has_argument_ &&
          universal_in_has_argument_ == other.universal_in_has_argument_ &&
          not_pseudo_in_has_argument_ == other.not_pseudo_in_has_argument_ &&
-         pseudos_in_has_argument_ == other.pseudos_in_has_argument_ &&
-         is_alive_ == other.is_alive_;
+         pseudos_in_has_argument_ == other.pseudos_in_has_argument_;
 }
 
 ALWAYS_INLINE InvalidationSet& RuleFeatureSet::EnsureClassInvalidationSet(
@@ -1554,7 +1547,6 @@ void RuleFeatureSet::AddFeaturesToInvalidationSets(
 RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromSelector(
     const CSSSelector& selector,
     const StyleScope* style_scope) {
-  CHECK(is_alive_);
   FeatureMetadata metadata;
   const unsigned max_direct_adjacent_selectors = 0;
   if (CollectMetadataFromSelector(selector, max_direct_adjacent_selectors,
@@ -1674,8 +1666,6 @@ bool RuleFeatureSet::FeatureMetadata::operator==(
 }
 
 void RuleFeatureSet::Merge(const RuleFeatureSet& other) {
-  CHECK(is_alive_);
-  CHECK(other.is_alive_);
   CHECK_NE(&other, this);
   for (const auto& entry : other.class_invalidation_sets_)
     MergeInvalidationSet(class_invalidation_sets_, entry.key, entry.value);
@@ -1714,7 +1704,6 @@ void RuleFeatureSet::Merge(const RuleFeatureSet& other) {
 }
 
 void RuleFeatureSet::Clear() {
-  CHECK(is_alive_);
   metadata_.Clear();
   class_invalidation_sets_.clear();
   attribute_invalidation_sets_.clear();
