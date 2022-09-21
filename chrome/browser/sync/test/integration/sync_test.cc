@@ -759,27 +759,25 @@ void SyncTest::SetUpInvalidations(int index) {
       // real clients, those are stored upon subscription with the
       // per-user-topic server. The pref name is defined in
       // per_user_topic_subscription_manager.cc.
-      DictionaryPrefUpdate update(
+      ScopedDictPrefUpdate update(
           GetProfile(index)->GetPrefs(),
           "invalidation.per_sender_registered_for_invalidation");
-      update->SetKey(kInvalidationGCMSenderId,
-                     base::Value(base::Value::Type::DICTIONARY));
+      update->Set(kInvalidationGCMSenderId, base::Value::Dict());
       for (syncer::ModelType model_type :
            GetSyncService(index)->GetPreferredDataTypes()) {
         std::string notification_type;
         if (!RealModelTypeToNotificationType(model_type, &notification_type)) {
           continue;
         }
-        update->FindDictKey(kInvalidationGCMSenderId)
-            ->SetKey(notification_type,
-                     base::Value("/private/" + notification_type +
-                                 "-topic_server_user_id"));
+        update->FindDict(kInvalidationGCMSenderId)
+            ->Set(notification_type,
+                  "/private/" + notification_type + "-topic_server_user_id");
       }
-      DictionaryPrefUpdate update_client_id(
+      ScopedDictPrefUpdate update_client_id(
           GetProfile(index)->GetPrefs(),
           invalidation::prefs::kInvalidationClientIDCache);
 
-      update_client_id->SetStringKey(kInvalidationGCMSenderId, client_id);
+      update_client_id->Set(kInvalidationGCMSenderId, client_id);
       break;
     }
     case SERVER_TYPE_UNDECIDED:
