@@ -22,7 +22,7 @@ namespace {
 int64_t TimeToUS(const base::Time& time) {
   return (time - base::Time::UnixEpoch()).InMicroseconds();
 }
-}
+}  // namespace
 
 // The backoff time is the following: 10min, 10min, 1h, 2h, 2h..., starting
 // after the first failure.
@@ -425,8 +425,9 @@ std::unique_ptr<ReadingListEntry> ReadingListEntry::FromReadingListLocal(
     std::unique_ptr<base::Value> value(
         deserializer.Deserialize(nullptr, nullptr));
     if (value) {
-      backoff = net::BackoffEntrySerializer::DeserializeFromValue(
-          *value, &kBackoffPolicy, nullptr, now);
+      DCHECK(value->is_list());
+      backoff = net::BackoffEntrySerializer::DeserializeFromList(
+          value->GetList(), &kBackoffPolicy, nullptr, now);
     }
   }
 
@@ -636,8 +637,8 @@ ReadingListEntry::AsReadingListLocal(const base::Time& now) const {
   pb_entry->set_failed_download_counter(failed_download_counter_);
 
   if (backoff_) {
-    base::Value backoff =
-        net::BackoffEntrySerializer::SerializeToValue(*backoff_, now);
+    base::Value::List backoff =
+        net::BackoffEntrySerializer::SerializeToList(*backoff_, now);
 
     std::string output;
     JSONStringValueSerializer serializer(&output);

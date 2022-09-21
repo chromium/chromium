@@ -219,9 +219,9 @@ void TileServiceSchedulerImpl::GetTaskWindow(int64_t* start_time_ms,
 }
 
 void TileServiceSchedulerImpl::UpdateBackoff(net::BackoffEntry* backoff) {
-  base::Value value =
-      net::BackoffEntrySerializer::SerializeToValue(*backoff, clock_->Now());
-  prefs_->Set(kBackoffEntryKey, value);
+  base::Value::List serialized =
+      net::BackoffEntrySerializer::SerializeToList(*backoff, clock_->Now());
+  prefs_->SetList(kBackoffEntryKey, std::move(serialized));
 }
 
 void TileServiceSchedulerImpl::MarkFirstRunScheduled() {

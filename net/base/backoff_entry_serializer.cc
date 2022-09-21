@@ -15,7 +15,7 @@
 
 namespace {
 // This max defines how many times we are willing to call
-// |BackoffEntry::InformOfRequest| in |DeserializeFromValue|.
+// |BackoffEntry::InformOfRequest| in |DeserializeFromList|.
 //
 // This value is meant to large enough that the computed backoff duration can
 // still be saturated. Given that the duration is an int64 and assuming 1.01 as
@@ -34,8 +34,9 @@ bool BackoffDurationSafeToSerialize(const base::TimeDelta& duration) {
 
 namespace net {
 
-base::Value BackoffEntrySerializer::SerializeToValue(const BackoffEntry& entry,
-                                                     base::Time time_now) {
+base::Value::List BackoffEntrySerializer::SerializeToList(
+    const BackoffEntry& entry,
+    base::Time time_now) {
   base::Value::List serialized;
   serialized.Append(SerializationFormatVersion::kVersion2);
 
@@ -68,7 +69,7 @@ base::Value BackoffEntrySerializer::SerializeToValue(const BackoffEntry& entry,
   serialized.Append(
       base::NumberToString(absolute_release_time.ToInternalValue()));
 
-  return base::Value(std::move(serialized));
+  return serialized;
 }
 
 std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromList(
@@ -169,17 +170,6 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromList(
   entry->SetCustomReleaseTime(release_time);
 
   return entry;
-}
-
-std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromValue(
-    const base::Value& serialized,
-    const BackoffEntry::Policy* policy,
-    const base::TickClock* tick_clock,
-    base::Time time_now) {
-  if (!serialized.is_list())
-    return nullptr;
-  return DeserializeFromList(serialized.GetList(), policy, tick_clock,
-                             time_now);
 }
 
 }  // namespace net

@@ -99,21 +99,21 @@ void TestDeserialize(const ProtoTranslator& translator) {
 
   // Attempt to deserialize a BackoffEntry.
   std::unique_ptr<BackoffEntry> entry =
-      BackoffEntrySerializer::DeserializeFromValue(*value, &policy, &clock,
-                                                   translator.parse_time());
+      BackoffEntrySerializer::DeserializeFromList(
+          value->GetList(), &policy, &clock, translator.parse_time());
   if (!entry)
     return;
 
-  base::Value reserialized =
-      BackoffEntrySerializer::SerializeToValue(*entry, translator.parse_time());
+  base::Value::List reserialized =
+      BackoffEntrySerializer::SerializeToList(*entry, translator.parse_time());
 
   // Due to fuzzy interpretation in BackoffEntrySerializer::
-  // DeserializeFromValue, we cannot assert that |*reserialized == *value|.
+  // DeserializeFromList, we cannot assert that |*reserialized == *value|.
   // Rather, we can deserialize |reserialized| and check that some weaker
   // properties are preserved.
   std::unique_ptr<BackoffEntry> entry_reparsed =
-      BackoffEntrySerializer::DeserializeFromValue(
-          reserialized, &policy, &clock, translator.parse_time());
+      BackoffEntrySerializer::DeserializeFromList(reserialized, &policy, &clock,
+                                                  translator.parse_time());
   CHECK(entry_reparsed);
   CHECK_EQ(entry_reparsed->failure_count(), entry->failure_count());
   CHECK_LE(entry_reparsed->GetReleaseTime(), entry->GetReleaseTime());
@@ -128,18 +128,17 @@ void TestSerialize(const ProtoTranslator& translator) {
 
   // Serialize the BackoffEntry.
   BackoffEntry native_entry(&policy);
-  base::Value serialized = BackoffEntrySerializer::SerializeToValue(
+  base::Value::List serialized = BackoffEntrySerializer::SerializeToList(
       native_entry, translator.serialize_time());
-  CHECK(serialized.is_list());
 
   MockClock clock;
   clock.SetNow(translator.now_ticks());
 
   // Deserialize it.
   std::unique_ptr<BackoffEntry> deserialized_entry =
-      BackoffEntrySerializer::DeserializeFromValue(serialized, &policy, &clock,
-                                                   translator.parse_time());
-  // Even though SerializeToValue was successful, we're not guaranteed to have a
+      BackoffEntrySerializer::DeserializeFromList(serialized, &policy, &clock,
+                                                  translator.parse_time());
+  // Even though SerializeToList was successful, we're not guaranteed to have a
   // |deserialized_entry|. One reason deserialization may fail is if the parsed
   // |absolute_release_time_us| is below zero.
   if (!deserialized_entry)

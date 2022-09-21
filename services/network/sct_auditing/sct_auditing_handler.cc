@@ -210,9 +210,9 @@ bool SCTAuditingHandler::SerializeData(std::string* output) {
                        reporter->sct_hashdance_metadata()->ToValue());
     }
 
-    base::Value backoff_entry_value =
-        net::BackoffEntrySerializer::SerializeToValue(
-            *reporter->backoff_entry(), base::Time::Now());
+    base::Value::List backoff_entry_value =
+        net::BackoffEntrySerializer::SerializeToList(*reporter->backoff_entry(),
+                                                     base::Time::Now());
     report_entry.Set(kBackoffEntryKey, std::move(backoff_entry_value));
     report_entry.Set(kAlreadyCountedKey,
                      reporter->counted_towards_report_limit());
@@ -249,7 +249,8 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
     std::string* report_string = entry_dict->FindString(kReportKey);
     const absl::optional<base::Value> sct_metadata_value =
         entry_dict->Extract(kSCTHashdanceMetadataKey);
-    const base::Value* backoff_entry_value = entry_dict->Find(kBackoffEntryKey);
+    const base::Value::List* backoff_entry_value =
+        entry_dict->FindList(kBackoffEntryKey);
     const absl::optional<bool> counted_towards_report_limit =
         entry_dict->FindBool(kAlreadyCountedKey);
 
@@ -273,7 +274,7 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
 
     // Try to recreate the BackoffEntry from the serialized value.
     std::unique_ptr<net::BackoffEntry> backoff_entry =
-        net::BackoffEntrySerializer::DeserializeFromValue(
+        net::BackoffEntrySerializer::DeserializeFromList(
             *backoff_entry_value, &SCTAuditingReporter::kDefaultBackoffPolicy,
             nullptr, base::Time::Now());
     if (!backoff_entry) {
