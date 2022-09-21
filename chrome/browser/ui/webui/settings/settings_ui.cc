@@ -16,6 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -71,6 +72,7 @@
 #include "chrome/grit/settings_resources_map.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/shopping_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
@@ -311,6 +313,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "changePriceEmailNotificationsEnabled",
       base::FeatureList::IsEnabled(commerce::kShoppingList));
+  commerce::ShoppingServiceFactory::GetForBrowserContext(profile)
+      ->FetchPriceEmailPref();
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->AddResourcePath("images/google_assistant.svg",

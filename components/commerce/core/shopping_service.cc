@@ -645,6 +645,12 @@ void ShoppingService::Unsubscribe(
                                       std::move(callback));
 }
 
+void ShoppingService::FetchPriceEmailPref() {
+  if (account_checker_) {
+    account_checker_->FetchPriceEmailPref();
+  }
+}
+
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
