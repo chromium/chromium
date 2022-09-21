@@ -317,6 +317,8 @@ class TestingProfile : public Profile {
       override;
   content::ReduceAcceptLanguageControllerDelegate*
   GetReduceAcceptLanguageControllerDelegate() override;
+  content::OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate()
+      override;
 
   TestingProfile* AsTestingProfile() override;
 

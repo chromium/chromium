@@ -26,22 +26,21 @@ OriginTrials::~OriginTrials() = default;
 
 base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOrigin(
     const url::Origin& origin,
-    const base::Time current_time) const {
+    const base::Time current_time) {
   return GetPersistedTrialsForOriginWithMatch(origin, current_time,
                                               absl::nullopt);
 }
 
-bool OriginTrials::IsTrialPersistedForOrigin(
-    const url::Origin& origin,
-    const base::StringPiece trial_name,
-    const base::Time current_time) const {
+bool OriginTrials::IsTrialPersistedForOrigin(const url::Origin& origin,
+                                             const base::StringPiece trial_name,
+                                             const base::Time current_time) {
   return !GetPersistedTrialsForOriginWithMatch(origin, current_time, trial_name)
               .empty();
 }
 
 void OriginTrials::PersistTrialsFromTokens(
     const url::Origin& origin,
-    const base::span<const base::StringPiece> header_tokens,
+    const base::span<const std::string> header_tokens,
     const base::Time current_time) {
   if (origin.opaque())
     return;

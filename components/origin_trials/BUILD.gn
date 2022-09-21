@@ -22,12 +22,15 @@ source_set("browser") {
 
 source_set("common") {
   sources = [
+    "common/features.cc",
+    "common/features.h",
     "common/origin_trials_persistence_provider.h",
     "common/persisted_trial_token.cc",
     "common/persisted_trial_token.h",
   ]
   deps = [
     "//base",
+    "//content/public/common",
     "//third_party/blink/public/common:headers",
     "//url:url",
   ]
@@ -49,6 +52,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/user_prefs:user_prefs",
     "//content/public/browser",
+    "//content/public/common",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/json/values_util.h"
@@ -106,6 +107,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/origin_trials/browser/prefservice_persistence_provider.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/mock_field_info_store.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
@@ -133,7 +135,9 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/mock_download_manager.h"
@@ -156,6 +160,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/favicon_size.h"
 #include "url/gurl.h"
@@ -3460,4 +3465,52 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   token = sb_cache_manager->GetPageLoadToken(url);
   // Token is not found because cookies are deleted.
   ASSERT_FALSE(token.has_token_value());
+}
+
+class ChromeBrowsingDataRemoverDelegateOriginTrialsTest
+    : public ChromeBrowsingDataRemoverDelegateTest {
+ public:
+  ChromeBrowsingDataRemoverDelegateOriginTrialsTest() {
+    feature_list_.InitAndEnableFeature(features::kPersistentOriginTrials);
+  }
+
+ protected:
+  blink::ScopedTestOriginTrialPolicy origin_trial_policy_;
+};
+
+// Test that Persistent Origin Trials are deleted along with other website
+// settings.
+TEST_F(ChromeBrowsingDataRemoverDelegateOriginTrialsTest,
+       PersistentOriginTrialsAreDeleted) {
+  // Generated with:
+  // tools/origin_trials/generate_token.py https://example.com
+  //   FrobulatePersistent
+  //   --expire-timestamp=2000000000
+  const char kPersistentOriginTrialToken[] =
+      "AzZfd1vKZ0SSGRGk/"
+      "8nIszQSlHYjbuYVE3jwaNZG3X4t11zRhzPWWJwTZ+JJDS3JJsyEZcpz+y20pAP6/"
+      "6upOQ4AAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZ"
+      "SI6ICJGcm9idWxhdGVQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+  base::Time kPersistentOriginTrialValidTime =
+      base::Time::FromJavaTime(1000000000);
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+
+  TestingProfile* profile = GetProfile();
+  ASSERT_TRUE(SubresourceFilterProfileContextFactory::GetForProfile(profile));
+
+  std::vector<std::string> tokens{kPersistentOriginTrialToken};
+  profile->GetOriginTrialsControllerDelegate()->PersistTrialsFromTokens(
+      origin, tokens, kPersistentOriginTrialValidTime);
+
+  // Delete all data types that trigger website setting deletions.
+  uint64_t mask = constants::DATA_TYPE_HISTORY |
+                  constants::DATA_TYPE_SITE_DATA |
+                  constants::DATA_TYPE_CONTENT_SETTINGS;
+
+  auto* prefs = profile->GetPrefs();
+  EXPECT_FALSE(prefs->GetDict(origin_trials::kOriginTrialPrefKey).empty());
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(), mask, false);
+
+  EXPECT_TRUE(prefs->GetDict(origin_trials::kOriginTrialPrefKey).empty());
 }

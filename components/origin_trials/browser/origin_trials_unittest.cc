@@ -123,7 +123,7 @@ TEST_F(OriginTrialsTest, CleanObjectHasNoPersistentTrials) {
 }
 
 TEST_F(OriginTrialsTest, EnabledTrialsArePersisted) {
-  std::vector<base::StringPiece> tokens = {kFrobulatePersistentToken};
+  std::vector<std::string> tokens = {kFrobulatePersistentToken};
   origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, tokens,
                                          kValidTime);
 
@@ -135,8 +135,8 @@ TEST_F(OriginTrialsTest, EnabledTrialsArePersisted) {
 }
 
 TEST_F(OriginTrialsTest, OnlyPersistentTrialsAreEnabled) {
-  std::vector<base::StringPiece> tokens = {kFrobulateToken,
-                                           kFrobulatePersistentToken};
+  std::vector<std::string> tokens = {kFrobulateToken,
+                                     kFrobulatePersistentToken};
   origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, tokens,
                                          kValidTime);
 
@@ -149,7 +149,7 @@ TEST_F(OriginTrialsTest, OnlyPersistentTrialsAreEnabled) {
 }
 
 TEST_F(OriginTrialsTest, ResetClearsPersistedTrials) {
-  std::vector<base::StringPiece> tokens = {kFrobulatePersistentToken};
+  std::vector<std::string> tokens = {kFrobulatePersistentToken};
   origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, tokens,
                                          kValidTime);
 
@@ -174,7 +174,7 @@ TEST_F(OriginTrialsTest, TrialNotEnabledByDefault) {
 }
 
 TEST_F(OriginTrialsTest, TrialEnablesFeature) {
-  std::vector<base::StringPiece> tokens = {kFrobulatePersistentToken};
+  std::vector<std::string> tokens = {kFrobulatePersistentToken};
   origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, tokens,
                                          kValidTime);
 
@@ -183,7 +183,7 @@ TEST_F(OriginTrialsTest, TrialEnablesFeature) {
 }
 
 TEST_F(OriginTrialsTest, TrialDoesNotEnableOtherFeatures) {
-  std::vector<base::StringPiece> tokens = {kFrobulatePersistentToken};
+  std::vector<std::string> tokens = {kFrobulatePersistentToken};
   origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, tokens,
                                          kValidTime);
 
@@ -285,7 +285,7 @@ TEST_F(OriginTrialsTest, UserDisabledTokensNotReturned) {
 }
 
 TEST_F(OriginTrialsTest, GracePeriodIsRespected) {
-  std::vector<base::StringPiece> tokens = {kFrobulateManualCompletionToken};
+  std::vector<std::string> tokens = {kFrobulateManualCompletionToken};
   origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, tokens,
                                          kValidTime);
 
@@ -309,7 +309,7 @@ TEST_F(OriginTrialsTest, GracePeriodIsRespected) {
 }
 
 TEST_F(OriginTrialsTest, GracefullyHandleOpaqueOrigins) {
-  std::vector<base::StringPiece> tokens = {kFrobulateManualCompletionToken};
+  std::vector<std::string> tokens = {kFrobulateManualCompletionToken};
   url::Origin opaque_origin;
   origin_trials_.PersistTrialsFromTokens(opaque_origin, tokens, kValidTime);
   // No assert, this just shouldn't crash

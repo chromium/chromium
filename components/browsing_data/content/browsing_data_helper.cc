@@ -13,6 +13,8 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/origin_trials/browser/prefservice_persistence_provider.h"
+#include "components/origin_trials/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/pref_names.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -167,6 +169,12 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
       ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, delete_begin,
       delete_end, HostContentSettingsMap::PatternSourcePredicate());
 #endif
+}
+
+void RemovePersistentOriginTrials(PrefService* pref_service) {
+  if (pref_service->HasPrefPath(origin_trials::kOriginTrialPrefKey)) {
+    pref_service->ClearPref(origin_trials::kOriginTrialPrefKey);
+  }
 }
 
 void RemoveFederatedSiteSettingsData(

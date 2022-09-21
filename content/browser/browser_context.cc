@@ -410,4 +410,9 @@ KAnonymityServiceDelegate* BrowserContext::GetKAnonymityServiceDelegate() {
   return nullptr;
 }
 
+OriginTrialsControllerDelegate*
+BrowserContext::GetOriginTrialsControllerDelegate() {
+  return nullptr;
+}
+
 }  // namespace content

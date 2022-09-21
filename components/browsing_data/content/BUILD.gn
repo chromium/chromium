@@ -38,6 +38,8 @@ static_library("content") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/no_state_prefetch/browser",
+    "//components/origin_trials:browser",
+    "//components/origin_trials:common",
     "//components/prefs",
     "//components/services/storage/privileged/mojom",
     "//components/services/storage/public/cpp",

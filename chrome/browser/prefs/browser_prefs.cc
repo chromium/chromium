@@ -118,6 +118,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/origin_trials/browser/prefservice_persistence_provider.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -1306,6 +1307,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   NotifierStateTracker::RegisterProfilePrefs(registry);
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(registry);
   optimization_guide::prefs::RegisterProfilePrefs(registry);
+  origin_trials::PrefServicePersistenceProvider::RegisterProfilePrefs(registry);
   password_manager::PasswordManager::RegisterProfilePrefs(registry);
   payments::RegisterProfilePrefs(registry);
   performance_manager::user_tuning::prefs::RegisterProfilePrefs(registry);

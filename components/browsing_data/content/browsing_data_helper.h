@@ -77,6 +77,9 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
                             const base::Time& delete_end,
                             HostContentSettingsMap* host_content_settings_map);
 
+// Removes persistent origin trial tokens.
+void RemovePersistentOriginTrials(PrefService* pref_service);
+
 // Remove site settings data related to federated sign in.
 // This clears:
 // - Consent for identity provider to share identity information with

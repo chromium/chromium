@@ -38,6 +38,7 @@
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
+#include "chrome/browser/origin_trials/origin_trials_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"

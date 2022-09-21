@@ -33,6 +33,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/origin_trials/origin_trials_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/policy/schema_registry_service_builder.h"
@@ -974,6 +975,11 @@ TestingProfile::GetBrowsingDataRemoverDelegate() {
 content::ReduceAcceptLanguageControllerDelegate*
 TestingProfile::GetReduceAcceptLanguageControllerDelegate() {
   return nullptr;
+}
+
+content::OriginTrialsControllerDelegate*
+TestingProfile::GetOriginTrialsControllerDelegate() {
+  return OriginTrialsFactory::GetForBrowserContext(this);
 }
 
 bool TestingProfile::WasCreatedByVersionOrLater(const std::string& version) {

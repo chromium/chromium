@@ -60,6 +60,7 @@
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
 #include "chrome/browser/optimization_guide/model_validator_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/origin_trials/origin_trials_factory.h"
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_service_factory.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_memory_tracker_factory.h"
@@ -459,6 +460,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   if (optimization_guide::switches::ShouldValidateModel())
     optimization_guide::ModelValidatorKeyedServiceFactory::GetInstance();
+  OriginTrialsFactory::GetInstance();
   page_load_metrics::PageLoadMetricsMemoryTrackerFactory::GetInstance();
   PasswordStoreFactory::GetInstance();
   PermissionAuditingServiceFactory::GetInstance();

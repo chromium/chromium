@@ -271,6 +271,7 @@ source_set("browser_sources") {
     "notification_service.h",
     "notification_source.h",
     "notification_types.h",
+    "origin_trials_controller_delegate.h",
     "overlay_window.h",
     "overscroll_configuration.h",
     "page.h",

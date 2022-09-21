@@ -96,6 +96,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -1041,6 +1042,40 @@ void CheckPartitionedCookiesOriginTrial(
   if (!IsValidPartitionedCookiesOriginTrial(url, response->headers.get())) {
     cookie_manager->ConvertPartitionedCookiesToUnpartitioned(url);
   }
+}
+
+// If there are any "Origin-Trial" headers on the |response|, persist those
+// that correspond to persistent origin trials, provided the tokens are valid.
+void PersistOriginTrialsFromHeaders(
+    const url::Origin& origin,
+    const network::mojom::URLResponseHead* response,
+    BrowserContext* browser_context) {
+  if (!base::FeatureList::IsEnabled(features::kPersistentOriginTrials))
+    return;
+
+  // It is not possible to serialize opaque origins, so we cannot save any
+  // information for them.
+  if (origin.opaque())
+    return;
+
+  // Skip About:blank, about:srcdoc and a few other URLs, because they can't
+  // have any Origin-Trial header.
+  if (!response || !response->headers)
+    return;
+
+  OriginTrialsControllerDelegate* origin_trials_delegate =
+      browser_context->GetOriginTrialsControllerDelegate();
+  if (!origin_trials_delegate)
+    return;
+
+  size_t iter = 0;
+  std::string token;
+  std::vector<std::string> tokens;
+  while (response->headers->EnumerateHeader(&iter, "Origin-Trial", &token)) {
+    tokens.push_back(token);
+  }
+  origin_trials_delegate->PersistTrialsFromTokens(origin, tokens,
+                                                  base::Time::Now());
 }
 
 }  // namespace
@@ -4945,6 +4980,8 @@ void NavigationRequest::CommitNavigation() {
         common_params_->url, client_hints_delegate, response(),
         commit_params_->enabled_client_hints, frame_tree_node_);
   }
+
+  PersistOriginTrialsFromHeaders(origin, response(), browser_context);
 
   CheckPartitionedCookiesOriginTrial(response(), common_params_->url,
                                      frame_tree_node_->current_frame_host()

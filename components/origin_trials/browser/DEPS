@@ -1,9 +1,12 @@
 include_rules = [
   "+components/origin_trials/common",
+
+  "+components/keyed_service",
   "+components/prefs",
   "+components/user_prefs",
 
   "+content/public/browser",
+  "+content/public/common",
 
   "+third_party/blink/public/common/origin_trials",
 ]

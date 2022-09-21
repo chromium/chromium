@@ -88,6 +88,7 @@ class FederatedIdentityActiveSessionPermissionContextDelegate;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentitySharingPermissionContextDelegate;
 class FileSystemAccessPermissionContext;
+class OriginTrialsControllerDelegate;
 class PermissionController;
 class PermissionControllerDelegate;
 class PlatformNotificationService;
@@ -447,6 +448,10 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Gets the KAnonymityServiceDelegate if supported. Returns nullptr if
   // unavailable.
   virtual KAnonymityServiceDelegate* GetKAnonymityServiceDelegate();
+
+  // Returns the OriginTrialsControllerDelegate associated with the context if
+  // any, nullptr otherwise.
+  virtual OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate();
 
  private:
   // Please don't add more fields to BrowserContext.

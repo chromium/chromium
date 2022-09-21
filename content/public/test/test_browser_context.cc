@@ -19,6 +19,7 @@
 #include "content/test/mock_ssl_host_state_delegate.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 
 namespace content {
 
@@ -78,6 +79,11 @@ void TestBrowserContext::SetPermissionControllerDelegate(
 void TestBrowserContext::SetPlatformNotificationService(
     std::unique_ptr<PlatformNotificationService> service) {
   platform_notification_service_ = std::move(service);
+}
+
+void TestBrowserContext::SetOriginTrialsControllerDelegate(
+    OriginTrialsControllerDelegate* delegate) {
+  origin_trials_controller_delegate_ = delegate;
 }
 
 base::FilePath TestBrowserContext::GetPath() {
@@ -164,6 +170,11 @@ TestBrowserContext::GetBrowsingDataRemoverDelegate() {
 ReduceAcceptLanguageControllerDelegate*
 TestBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
   return reduce_accept_language_controller_delegate_.get();
+}
+
+OriginTrialsControllerDelegate*
+TestBrowserContext::GetOriginTrialsControllerDelegate() {
+  return origin_trials_controller_delegate_.get();
 }
 
 }  // namespace content

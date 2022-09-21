@@ -28,7 +28,7 @@ extern const char kOriginTrialPrefKey[];
 
 class PrefServicePersistenceProvider : public OriginTrialsPersistenceProvider {
  public:
-  // The persistence provider does not own the |pref_service|
+  // The persistence provider does not own the |browser_context|
   explicit PrefServicePersistenceProvider(
       content::BrowserContext* browser_context);
   PrefServicePersistenceProvider(PrefServicePersistenceProvider&) = delete;
@@ -37,7 +37,10 @@ class PrefServicePersistenceProvider : public OriginTrialsPersistenceProvider {
 
   ~PrefServicePersistenceProvider() override;
 
-  // Register the pref.
+  // Register the preference key used by the PersistenceProvider.
+  // This call should _not_ be guarded by the
+  // |features::kPersistentOriginTrialsEnabled| feature flag, as it happens
+  // before feature flags are parsed in certain cases.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   void DeleteExpiredTokens(base::Time current_time);

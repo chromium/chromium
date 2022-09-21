@@ -12,7 +12,9 @@
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/origin_trials/common/origin_trials_persistence_provider.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 
@@ -29,7 +31,8 @@ namespace origin_trials {
 //
 // Persisting the enabled trials is handled by the |persistence_provider| passed
 // in through the constructor.
-class OriginTrials {
+class OriginTrials : public KeyedService,
+                     public content::OriginTrialsControllerDelegate {
  public:
   OriginTrials(
       std::unique_ptr<OriginTrialsPersistenceProvider> persistence_provider,
@@ -40,29 +43,22 @@ class OriginTrials {
   OriginTrials& operator=(const OriginTrials&) = delete;
   OriginTrials& operator=(const OriginTrials&&) = delete;
 
-  ~OriginTrials();
+  ~OriginTrials() override;
 
   // Return the list of persistent origin trials that have been saved for
   // |origin| and haven't expired given the |current_time| parameter.
-  base::flat_set<std::string> GetPersistedTrialsForOrigin(
+  virtual base::flat_set<std::string> GetPersistedTrialsForOrigin(
       const url::Origin& origin,
-      base::Time current_time) const;
+      base::Time current_time);
 
-  // Returns |true| if |trial_name| has been persisted for |origin| and is still
-  // valid.
-  // Prefer using this over |GetPersistedTrialsForOrigin| when checking
-  // individual trials, as it does less work.
-  bool IsTrialPersistedForOrigin(const url::Origin& origin,
-                                 const base::StringPiece trial_name,
-                                 const base::Time current_time) const;
-
-  // Persist all enabled and persistable tokens in the |header_tokens|.
-  // Subsequent calls to this method will overwrite the list of persisted trials
-  // for the |origin|.
+  // content::OriginTrialsControllerDelegate
   void PersistTrialsFromTokens(
       const url::Origin& origin,
-      const base::span<const base::StringPiece> header_tokens,
-      const base::Time current_time);
+      const base::span<const std::string> header_tokens,
+      const base::Time current_time) override;
+  bool IsTrialPersistedForOrigin(const url::Origin& origin,
+                                 const base::StringPiece trial_name,
+                                 const base::Time current_time) override;
 
  private:
   std::unique_ptr<OriginTrialsPersistenceProvider> persistence_provider_;

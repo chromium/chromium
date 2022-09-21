@@ -66,6 +66,7 @@
 #include "chrome/browser/media/media_device_id_salt.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
+#include "chrome/browser/origin_trials/origin_trials_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -1359,6 +1360,11 @@ ProfileImpl::GetKAnonymityServiceDelegate() {
 content::ReduceAcceptLanguageControllerDelegate*
 ProfileImpl::GetReduceAcceptLanguageControllerDelegate() {
   return ReduceAcceptLanguageFactory::GetForProfile(this);
+}
+
+content::OriginTrialsControllerDelegate*
+ProfileImpl::GetOriginTrialsControllerDelegate() {
+  return OriginTrialsFactory::GetForBrowserContext(this);
 }
 
 std::string ProfileImpl::GetMediaDeviceIDSalt() {

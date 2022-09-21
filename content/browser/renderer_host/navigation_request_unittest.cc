@@ -8,15 +8,19 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/i18n/number_formatting.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/test/fenced_frame_test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -28,6 +32,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
+#include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
@@ -1015,6 +1020,100 @@ TEST_F(CSPEmbeddedEnforcementUnitTest,
   EXPECT_TRUE(grand_child_document->required_csp());
   EXPECT_EQ("script-src 'none'",
             grand_child_document->required_csp()->header->header_value);
+}
+
+namespace {
+
+// Mock that allows us to avoid depending on the origin_trials component.
+class OriginTrialsControllerDelegateMock
+    : public OriginTrialsControllerDelegate {
+ public:
+  ~OriginTrialsControllerDelegateMock() override = default;
+
+  void PersistTrialsFromTokens(
+      const url::Origin& origin,
+      const base::span<const std::string> header_tokens,
+      const base::Time current_time) override {
+    persisted_tokens_[origin] =
+        std::vector<std::string>(header_tokens.begin(), header_tokens.end());
+  }
+  bool IsTrialPersistedForOrigin(const url::Origin& origin,
+                                 const base::StringPiece trial_name,
+                                 const base::Time current_time) override {
+    DCHECK(false) << "Method not implemented for test.";
+    return false;
+  }
+
+  base::flat_map<url::Origin, std::vector<std::string>> persisted_tokens_;
+};
+
+}  // namespace
+
+class PersistentOriginTrialNavigationRequestTest
+    : public NavigationRequestTest {
+ public:
+  PersistentOriginTrialNavigationRequestTest()
+      : delegate_mock_(std::make_unique<OriginTrialsControllerDelegateMock>()) {
+
+  }
+  ~PersistentOriginTrialNavigationRequestTest() override = default;
+
+  std::vector<std::string> GetPersistedTokens(const url::Origin& origin) {
+    return delegate_mock_->persisted_tokens_[origin];
+  }
+
+ protected:
+  std::unique_ptr<BrowserContext> CreateBrowserContext() override {
+    std::unique_ptr<TestBrowserContext> context =
+        std::make_unique<TestBrowserContext>();
+    context->SetOriginTrialsControllerDelegate(delegate_mock_.get());
+    return context;
+  }
+
+ private:
+  std::unique_ptr<OriginTrialsControllerDelegateMock> delegate_mock_;
+};
+
+// Ensure that navigations with a valid Origin-Trial header with a persistent
+// origin trial token results in the trial being marked as enabled.
+// Then check that subsequent navigations without headers trigger an update
+// that clears out stored trials.
+TEST_F(PersistentOriginTrialNavigationRequestTest,
+       NavigationCommitsPersistentOriginTrials) {
+  // Generated with:
+  // tools/origin_trials/generate_token.py https://example.com
+  // FrobulatePersistent
+  // --expire-timestamp=2000000000
+  const char kPersistentOriginTrialToken[] =
+      "AzZfd1vKZ0SSGRGk/"
+      "8nIszQSlHYjbuYVE3jwaNZG3X4t11zRhzPWWJwTZ+JJDS3JJsyEZcpz+y20pAP6/"
+      "6upOQ4AAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZ"
+      "SI"
+      "6ICJGcm9idWxhdGVQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kPersistentOriginTrials);
+  blink::ScopedTestOriginTrialPolicy origin_trial_policy_;
+
+  const GURL kUrl = GURL("https://example.com");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  response_headers->SetHeader("Origin-Trial", kPersistentOriginTrialToken);
+  navigation->SetResponseHeaders(response_headers);
+
+  navigation->Commit();
+
+  url::Origin origin = url::Origin::Create(kUrl);
+  EXPECT_EQ(std::vector<std::string>{kPersistentOriginTrialToken},
+            GetPersistedTokens(origin));
+
+  // Navigate again without response headers to assert the trial information is
+  // still updated and cleared.
+  NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh())->Commit();
+  EXPECT_EQ(std::vector<std::string>(), GetPersistedTokens(origin));
 }
 
 }  // namespace content

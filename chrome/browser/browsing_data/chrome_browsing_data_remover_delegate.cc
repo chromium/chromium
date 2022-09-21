@@ -681,6 +681,15 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       // it now as we can not reset this setting before passwords are deleted.
       should_clear_password_account_storage_settings_ = true;
     }
+
+    // Persistent Origin Trial preferences are only saved until the next page
+    // load from the same origin. For that reason, they are not saved with
+    // last-modified information, so deletion will clear all stored information.
+    // Sites should omit setting the Origin-Trial header to clear their
+    // individual information, so rather than filtering origins, we only perform
+    // the removal if we are removing information for all origins.
+    if (filter_builder->MatchesAllOriginsAndDomains())
+      browsing_data::RemovePersistentOriginTrials(prefs);
   }
 
   //////////////////////////////////////////////////////////////////////////////
