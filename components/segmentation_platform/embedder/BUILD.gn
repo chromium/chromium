@@ -19,6 +19,7 @@ source_set("embedder") {
 
   deps = [
     "//base",
+    "//components/bookmarks/browser",
     "//components/commerce/core:shopping_service",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",

@@ -18,6 +18,10 @@ struct ProductInfo;
 class ShoppingService;
 }  // namespace commerce
 
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+
 namespace segmentation_platform::processing {
 
 // InputDelegate implementation that handles FillPolicy::PRICE_TRACKING_HINTS.
@@ -27,9 +31,12 @@ class PriceTrackingInputDelegate : public InputDelegate {
   // A repeating callback used to fetch ShoppingService.
   using ShoppingServiceGetter =
       base::RepeatingCallback<commerce::ShoppingService*()>;
+  using BookmarkModelGetter =
+      base::RepeatingCallback<bookmarks::BookmarkModel*()>;
 
   explicit PriceTrackingInputDelegate(
-      ShoppingServiceGetter shopping_service_getter);
+      ShoppingServiceGetter shopping_service_getter,
+      BookmarkModelGetter bookmark_model_getter);
   ~PriceTrackingInputDelegate() override;
 
   PriceTrackingInputDelegate(PriceTrackingInputDelegate&) = delete;
@@ -50,6 +57,8 @@ class PriceTrackingInputDelegate : public InputDelegate {
   // Callback to fetch shopping service. Shouldn't be invoked after the platform
   // is destroyed.
   ShoppingServiceGetter shopping_service_getter_;
+  // Callback to fetch bookmark model.
+  BookmarkModelGetter bookmark_model_getter_;
 
   base::WeakPtrFactory<PriceTrackingInputDelegate> weak_ptr_factory_;
 };
