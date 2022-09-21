@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/test_data_source.h"
 #include "chrome/browser/ui/webui/web_ui_test_handler.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
@@ -55,6 +54,10 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/test_data_source.h"
+#endif
 
 using content::RenderFrameHost;
 using content::WebContents;
@@ -525,10 +528,12 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
   // SetUpOnMainThread() so skip adding TestDataSource. These tests don't need
   // TestDataSource anyway.
   if (browser()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Register URLDataSource that serves files used in tests at chrome://test/
     // e.g. `chrome://test/mocha.js`.
     content::URLDataSource::Add(browser()->profile(),
                                 std::make_unique<TestDataSource>("webui"));
+#endif
 
     // Register data sources for chrome://webui-test/ URLs
     // e.g. `chrome://webui-test/chai_assert.js`.
