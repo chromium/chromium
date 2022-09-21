@@ -41,9 +41,9 @@ namespace {
 // - Skip calling CFRunLoopTimerSetNextFireDate if the next delayed wake up
 //  time hasn't changed.
 // - Cancel an already scheduled timer wake up if there is no delayed work.
-const base::Feature kMessagePumpMacDelayedWorkOptimizations{
-    "MessagePumpMacDelayedWorkOptimizations",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMessagePumpMacDelayedWorkOptimizations,
+             "MessagePumpMacDelayedWorkOptimizations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Caches the state of the "MessagePumpMacDelayedWorkOptimizations"
 // feature for efficiency.

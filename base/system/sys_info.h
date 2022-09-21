@@ -27,7 +27,7 @@ namespace base {
 // When enabled, NumberOfProcessors() returns the number of physical processors
 // instead of the number of logical processors if CPU security mitigations are
 // enabled for the current process.
-extern const Feature kNumberOfCoresWithCpuSecurityMitigation;
+BASE_EXPORT BASE_DECLARE_FEATURE(kNumberOfCoresWithCpuSecurityMitigation);
 #endif
 
 namespace debug {

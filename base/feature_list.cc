@@ -51,8 +51,9 @@ const Feature* g_initialized_from_accessor = nullptr;
 // TODO(crbug.com/1341292): Remove this global and this feature once the gains
 // are measured.
 bool g_cache_override_state = false;
-const base::Feature kCacheFeatureOverrideState{
-    "CacheFeatureOverrideState", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCacheFeatureOverrideState,
+             "CacheFeatureOverrideState",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if DCHECK_IS_ON()
 // Tracks whether the use of base::Feature is allowed for this module.
@@ -201,8 +202,9 @@ uint32_t PackFeatureCache(FeatureList::OverrideState override_state,
 }  // namespace
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
-const Feature kDCheckIsFatalFeature{"DcheckIsFatal",
-                                    FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDCheckIsFatalFeature,
+             "DcheckIsFatal",
+             FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 FeatureList::FeatureList() = default;

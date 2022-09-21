@@ -44,8 +44,9 @@ namespace {
 #if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
 bool g_use_epoll = false;
 
-const Feature kMessagePumpEpoll{"MessagePumpEpoll",
-                                FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMessagePumpEpoll,
+             "MessagePumpEpoll",
+             FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace

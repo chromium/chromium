@@ -124,8 +124,9 @@ std::atomic<bool> g_use_getrandom;
 
 // Note: the BoringSSL feature takes precedence over the getrandom() trial if
 // both are enabled.
-const Feature kUseGetrandomForRandBytes{"UseGetrandomForRandBytes",
-                                        FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseGetrandomForRandBytes,
+             "UseGetrandomForRandBytes",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 bool UseGetrandom() {
   return g_use_getrandom.load(std::memory_order_relaxed);
@@ -154,8 +155,9 @@ namespace {
 // rand_util_win.cc.
 std::atomic<bool> g_use_boringssl;
 
-const Feature kUseBoringSSLForRandBytes{"UseBoringSSLForRandBytes",
-                                        FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseBoringSSLForRandBytes,
+             "UseBoringSSLForRandBytes",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

@@ -20,7 +20,7 @@
 namespace base::i18n {
 
 // Enable merging of icudtl.dat in Lacros.
-BASE_I18N_EXPORT extern const base::Feature kLacrosMergeIcuDataFile;
+BASE_I18N_EXPORT BASE_DECLARE_FEATURE(kLacrosMergeIcuDataFile);
 
 // Class wrapping the memory-mapped instance of Ash's icudtl.dat.
 // Needed to keep track of its file descriptor.

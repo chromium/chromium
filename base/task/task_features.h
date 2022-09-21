@@ -22,48 +22,48 @@ namespace base {
 // Under this feature, ThreadPoolImpl will use a foreground ThreadGroup backed
 // by a native thread pool implementation. The Windows Thread Pool API and
 // libdispatch are used on Windows and macOS/iOS respectively.
-extern const BASE_EXPORT Feature kUseNativeThreadPool;
+BASE_EXPORT BASE_DECLARE_FEATURE(kUseNativeThreadPool);
 // Under this feature, ThreadPoolImpl will use a background ThreadGroup backed
 // by a native thread pool implementation.
-extern const BASE_EXPORT Feature kUseBackgroundNativeThreadPool;
+BASE_EXPORT BASE_DECLARE_FEATURE(kUseBackgroundNativeThreadPool);
 #endif
 
 // Under this feature, worker threads are not reclaimed after a timeout. Rather,
 // only excess workers are cleaned up immediately after finishing a task.
-extern const BASE_EXPORT Feature kNoWorkerThreadReclaim;
+BASE_EXPORT BASE_DECLARE_FEATURE(kNoWorkerThreadReclaim);
 
 // This feature controls whether wake ups are possible for canceled tasks.
-extern const BASE_EXPORT Feature kNoWakeUpsForCanceledTasks;
+BASE_EXPORT BASE_DECLARE_FEATURE(kNoWakeUpsForCanceledTasks);
 
 // Controls whether or not canceled delayed tasks are removed from task queues.
-extern const BASE_EXPORT base::Feature kRemoveCanceledTasksInTaskQueue;
+BASE_EXPORT BASE_DECLARE_FEATURE(kRemoveCanceledTasksInTaskQueue);
 
 // This feature controls whether or not the scheduled task is always abandoned
 // when a timer is stopped or reset. The re-use of the scheduled task is an
 // optimization that ensures a timer can not leave multiple canceled tasks in
 // the task queue. Meant to be used in conjunction with
 // kRemoveCanceledTasksInTaskQueue.
-extern const BASE_EXPORT base::Feature kAlwaysAbandonScheduledTask;
+BASE_EXPORT BASE_DECLARE_FEATURE(kAlwaysAbandonScheduledTask);
 
 // Under this feature, a non-zero leeway is added to delayed tasks. Along with
 // DelayPolicy, this affects the time at which a delayed task runs.
-extern const BASE_EXPORT Feature kAddTaskLeewayFeature;
+BASE_EXPORT BASE_DECLARE_FEATURE(kAddTaskLeewayFeature);
 constexpr TimeDelta kDefaultLeeway = Milliseconds(8);
 extern const BASE_EXPORT base::FeatureParam<TimeDelta> kTaskLeewayParam;
 
 // Under this feature, wake ups are aligned at a 8ms boundary when allowed per
 // DelayPolicy.
-extern const BASE_EXPORT base::Feature kAlignWakeUps;
+BASE_EXPORT BASE_DECLARE_FEATURE(kAlignWakeUps);
 
 // Under this feature, tasks that need high resolution timer are determined
 // based on explicit DelayPolicy rather than based on a threshold.
-extern const BASE_EXPORT base::Feature kExplicitHighResolutionTimerWin;
+BASE_EXPORT BASE_DECLARE_FEATURE(kExplicitHighResolutionTimerWin);
 
 // Feature to run tasks by batches before pumping out messages.
-extern const BASE_EXPORT base::Feature kRunTasksByBatches;
+BASE_EXPORT BASE_DECLARE_FEATURE(kRunTasksByBatches);
 
 // Feature to run tasks by batches before pumping out messages.
-extern const BASE_EXPORT base::Feature kBrowserPeriodicYieldingToNative;
+BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserPeriodicYieldingToNative);
 extern const BASE_EXPORT base::FeatureParam<TimeDelta>
     kBrowserPeriodicYieldingToNativeNormalInputAfterMsParam;
 extern const BASE_EXPORT base::FeatureParam<TimeDelta>

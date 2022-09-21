@@ -31,8 +31,7 @@ class PersistentSparseHistogramDataManager;
 class WritableSharedMemoryRegion;
 
 // Feature definition for enabling histogram persistence.
-BASE_EXPORT extern const Feature kPersistentHistogramsFeature;
-
+BASE_EXPORT BASE_DECLARE_FEATURE(kPersistentHistogramsFeature);
 
 // A data manager for sparse histograms so each instance of such doesn't have
 // to separately iterate over the entire memory segment. Though this class

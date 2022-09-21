@@ -37,8 +37,9 @@
 
 namespace base {
 
-const Feature kUseThreadPriorityLowest = {"UseThreadPriorityLowest",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseThreadPriorityLowest,
+             "UseThreadPriorityLowest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 

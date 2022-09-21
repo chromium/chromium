@@ -11,8 +11,9 @@
 namespace base {
 namespace features {
 
-const BASE_EXPORT Feature kPartitionAllocDanglingPtr{
-    "PartitionAllocDanglingPtr", FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPartitionAllocDanglingPtr,
+             "PartitionAllocDanglingPtr",
+             FEATURE_DISABLED_BY_DEFAULT);
 constexpr FeatureParam<DanglingPtrMode>::Option kDanglingPtrModeOption[] = {
     {DanglingPtrMode::kCrash, "crash"},
     {DanglingPtrMode::kLogSignature, "log_signature"},
@@ -27,49 +28,54 @@ const base::FeatureParam<DanglingPtrMode> kDanglingPtrModeParam{
 #if defined(PA_ALLOW_PCSCAN)
 // If enabled, PCScan is turned on by default for all partitions that don't
 // disable it explicitly.
-const Feature kPartitionAllocPCScan{"PartitionAllocPCScan",
-                                    FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPartitionAllocPCScan,
+             "PartitionAllocPCScan",
+             FEATURE_DISABLED_BY_DEFAULT);
 #endif  // defined(PA_ALLOW_PCSCAN)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // If enabled, PCScan is turned on only for the browser's malloc partition.
-const Feature kPartitionAllocPCScanBrowserOnly{
-    "PartitionAllocPCScanBrowserOnly", FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPartitionAllocPCScanBrowserOnly,
+             "PartitionAllocPCScanBrowserOnly",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, PCScan is turned on only for the renderer's malloc partition.
-const Feature kPartitionAllocPCScanRendererOnly{
-    "PartitionAllocPCScanRendererOnly", FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPartitionAllocPCScanRendererOnly,
+             "PartitionAllocPCScanRendererOnly",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, this instance belongs to the Control group of the BackupRefPtr
 // binary experiment.
-const Feature kPartitionAllocBackupRefPtrControl{
-    "PartitionAllocBackupRefPtrControl", FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPartitionAllocBackupRefPtrControl,
+             "PartitionAllocBackupRefPtrControl",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 // Use a larger maximum thread cache cacheable bucket size.
-const Feature kPartitionAllocLargeThreadCacheSize{
-  "PartitionAllocLargeThreadCacheSize",
+BASE_FEATURE(kPartitionAllocLargeThreadCacheSize,
+             "PartitionAllocLargeThreadCacheSize",
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)
-      // Not unconditionally enabled on 32 bit Android, since it is a more
-      // memory-constrained platform.
-      FEATURE_DISABLED_BY_DEFAULT
+             // Not unconditionally enabled on 32 bit Android, since it is a
+             // more memory-constrained platform.
+             FEATURE_DISABLED_BY_DEFAULT
 #else
-      FEATURE_ENABLED_BY_DEFAULT
+             FEATURE_ENABLED_BY_DEFAULT
 #endif
-};
+);
 
-const BASE_EXPORT Feature kPartitionAllocLargeEmptySlotSpanRing{
-    "PartitionAllocLargeEmptySlotSpanRing", FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
+             "PartitionAllocLargeEmptySlotSpanRing",
+             FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-const Feature kPartitionAllocBackupRefPtr {
-  "PartitionAllocBackupRefPtr",
+BASE_FEATURE(kPartitionAllocBackupRefPtr,
+             "PartitionAllocBackupRefPtr",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || \
     (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
-      FEATURE_ENABLED_BY_DEFAULT
+             FEATURE_ENABLED_BY_DEFAULT
 #else
-      FEATURE_DISABLED_BY_DEFAULT
+             FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 constexpr FeatureParam<BackupRefPtrEnabledProcesses>::Option
     kBackupRefPtrEnabledProcessesOptions[] = {
@@ -115,8 +121,9 @@ const base::FeatureParam<bool> kBackupRefPtrAsanEnableInstantiationCheckParam{
 
 // If enabled, switches the bucket distribution to an alternate one. Only one of
 // these features may b e enabled at a time.
-const BASE_EXPORT Feature kPartitionAllocUseAlternateDistribution{
-    "PartitionAllocUseAlternateDistribution", FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPartitionAllocUseAlternateDistribution,
+             "PartitionAllocUseAlternateDistribution",
+             FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<AlternateBucketDistributionMode>::Option
     kPartitionAllocAlternateDistributionOption[] = {
         {AlternateBucketDistributionMode::kDefault, "default"},
@@ -131,34 +138,39 @@ const base::FeatureParam<AlternateBucketDistributionMode>
 
 // If enabled, switches PCScan scheduling to a mutator-aware scheduler. Does not
 // affect whether PCScan is enabled itself.
-const Feature kPartitionAllocPCScanMUAwareScheduler{
-    "PartitionAllocPCScanMUAwareScheduler", FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPartitionAllocPCScanMUAwareScheduler,
+             "PartitionAllocPCScanMUAwareScheduler",
+             FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, PCScan frees unconditionally all quarantined objects.
 // This is a performance testing feature.
-const Feature kPartitionAllocPCScanImmediateFreeing{
-    "PartitionAllocPCScanImmediateFreeing", FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPartitionAllocPCScanImmediateFreeing,
+             "PartitionAllocPCScanImmediateFreeing",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, PCScan clears eagerly (synchronously) on free().
-const Feature kPartitionAllocPCScanEagerClearing{
-    "PartitionAllocPCScanEagerClearing", FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPartitionAllocPCScanEagerClearing,
+             "PartitionAllocPCScanEagerClearing",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 // In addition to heap, scan also the stack of the current mutator.
-const Feature kPartitionAllocPCScanStackScanning {
-  "PartitionAllocPCScanStackScanning",
+BASE_FEATURE(kPartitionAllocPCScanStackScanning,
+             "PartitionAllocPCScanStackScanning",
 #if defined(PA_PCSCAN_STACK_SUPPORTED)
-      FEATURE_ENABLED_BY_DEFAULT
+             FEATURE_ENABLED_BY_DEFAULT
 #else
-      FEATURE_DISABLED_BY_DEFAULT
+             FEATURE_DISABLED_BY_DEFAULT
 #endif  // defined(PA_PCSCAN_STACK_SUPPORTED)
-};
+);
 
-const Feature kPartitionAllocDCScan{"PartitionAllocDCScan",
-                                    FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPartitionAllocDCScan,
+             "PartitionAllocDCScan",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to sort the active slot spans in PurgeMemory().
-extern const Feature kPartitionAllocSortActiveSlotSpans{
-    "PartitionAllocSortActiveSlotSpans", FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPartitionAllocSortActiveSlotSpans,
+             "PartitionAllocSortActiveSlotSpans",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace base

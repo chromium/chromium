@@ -38,15 +38,12 @@
 namespace base {
 
 #if BUILDFLAG(IS_CHROMEOS)
-const Feature kOneGroupPerRenderer {
-  "OneGroupPerRenderer",
-
+BASE_FEATURE(kOneGroupPerRenderer,
+             "OneGroupPerRenderer",
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      FEATURE_ENABLED_BY_DEFAULT
-};
+             FEATURE_ENABLED_BY_DEFAULT);
 #else
-      FEATURE_DISABLED_BY_DEFAULT
-};
+             FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

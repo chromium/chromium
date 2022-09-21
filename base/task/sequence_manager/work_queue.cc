@@ -22,8 +22,9 @@ namespace internal {
 
 namespace {
 
-const Feature kDifferentWorkQueueCapacities{"DifferentWorkQueueCapacities",
-                                            FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDifferentWorkQueueCapacities,
+             "DifferentWorkQueueCapacities",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 std::atomic<bool> g_different_work_queue_capacities_feature_enabled(false);
 

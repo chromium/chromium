@@ -83,14 +83,14 @@ void PlatformThread::SetName(const std::string& name) {
 }
 
 // Whether optimized realt-time thread config should be used for audio.
-const Feature kOptimizedRealtimeThreadingMac {
-  "OptimizedRealtimeThreadingMac",
+BASE_FEATURE(kOptimizedRealtimeThreadingMac,
+             "OptimizedRealtimeThreadingMac",
 #if BUILDFLAG(IS_MAC)
-      FEATURE_ENABLED_BY_DEFAULT
+             FEATURE_ENABLED_BY_DEFAULT
 #else
-      FEATURE_DISABLED_BY_DEFAULT
+             FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 namespace {
 

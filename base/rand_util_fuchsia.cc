@@ -22,8 +22,9 @@ namespace {
 // rand_util_win.cc.
 std::atomic<bool> g_use_boringssl;
 
-const Feature kUseBoringSSLForRandBytes{"UseBoringSSLForRandBytes",
-                                        FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseBoringSSLForRandBytes,
+             "UseBoringSSLForRandBytes",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

@@ -177,7 +177,7 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParamValue_ActivatesTrial) {
 
 TEST_F(FieldTrialParamsTest, GetFieldTrialParamsByFeature) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
-  const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
 
   std::map<std::string, std::string> params;
   params["x"] = "1";
@@ -194,7 +194,7 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParamsByFeature) {
 
 TEST_F(FieldTrialParamsTest, GetFieldTrialParamValueByFeature) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
-  const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
 
   std::map<std::string, std::string> params;
   params["x"] = "1";
@@ -210,7 +210,7 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParamValueByFeature) {
 
 TEST_F(FieldTrialParamsTest, GetFieldTrialParamsByFeature_Disable) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
-  const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
 
   std::map<std::string, std::string> params;
   params["x"] = "1";
@@ -226,7 +226,7 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParamsByFeature_Disable) {
 
 TEST_F(FieldTrialParamsTest, GetFieldTrialParamValueByFeature_Disable) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
-  const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
 
   std::map<std::string, std::string> params;
   params["x"] = "1";
@@ -243,7 +243,7 @@ TEST_F(FieldTrialParamsTest, GetFieldTrialParamValueByFeature_Disable) {
 TEST_F(FieldTrialParamsTest, FeatureParamString) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
 
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<std::string> a{&kFeature, "a", "default"};
   static const FeatureParam<std::string> b{&kFeature, "b", ""};
   static const FeatureParam<std::string> c{&kFeature, "c", "default"};
@@ -275,7 +275,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamString) {
 TEST_F(FieldTrialParamsTest, FeatureParamInt) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
 
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<int> a{&kFeature, "a", 0};
   static const FeatureParam<int> b{&kFeature, "b", 0};
   static const FeatureParam<int> c{&kFeature, "c", 0};
@@ -310,7 +310,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamInt) {
 TEST_F(FieldTrialParamsTest, FeatureParamDouble) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
 
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<double> a{&kFeature, "a", 0.0};
   static const FeatureParam<double> b{&kFeature, "b", 0.0};
   static const FeatureParam<double> c{&kFeature, "c", 0.0};
@@ -349,7 +349,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamDouble) {
 TEST_F(FieldTrialParamsTest, FeatureParamBool) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
 
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<bool> a{&kFeature, "a", false};
   static const FeatureParam<bool> b{&kFeature, "b", true};
   static const FeatureParam<bool> c{&kFeature, "c", false};
@@ -381,7 +381,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamBool) {
 TEST_F(FieldTrialParamsTest, FeatureParamTimeDelta) {
   const std::string kTrialName = "GetFieldTrialParamsByFeature";
 
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<base::TimeDelta> a{&kFeature, "a",
                                                base::TimeDelta()};
   static const FeatureParam<base::TimeDelta> b{&kFeature, "b",
@@ -423,7 +423,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnum) {
 
   static const FeatureParam<Hand>::Option hands[] = {
       {ROCK, "rock"}, {PAPER, "paper"}, {SCISSORS, "scissors"}};
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<Hand> a{&kFeature, "a", ROCK, &hands};
   static const FeatureParam<Hand> b{&kFeature, "b", ROCK, &hands};
   static const FeatureParam<Hand> c{&kFeature, "c", ROCK, &hands};
@@ -459,7 +459,7 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnumClass) {
 
   static const FeatureParam<UI>::Option uis[] = {
       {UI::ONE_D, "1d"}, {UI::TWO_D, "2d"}, {UI::THREE_D, "3d"}};
-  static const Feature kFeature{"TestFeature", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kFeature, "TestFeature", FEATURE_DISABLED_BY_DEFAULT);
   static const FeatureParam<UI> a{&kFeature, "a", UI::ONE_D, &uis};
   static const FeatureParam<UI> b{&kFeature, "b", UI::ONE_D, &uis};
   static const FeatureParam<UI> c{&kFeature, "c", UI::ONE_D, &uis};

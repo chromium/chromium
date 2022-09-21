@@ -43,8 +43,9 @@ namespace sequence_manager {
 namespace {
 
 // Controls whether cancelled tasks are removed from the delayed queue.
-const base::Feature kSweepCancelledTasks CONSTINIT{"SweepCancelledTasks",
-                                                   FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSweepCancelledTasks,
+             "SweepCancelledTasks",
+             FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

@@ -290,9 +290,9 @@ size_t SysInfo::VMAllocationGranularity() {
 }
 
 #if BUILDFLAG(IS_MAC)
-const BASE_EXPORT base::Feature kNumberOfCoresWithCpuSecurityMitigation = {
-    "NumberOfCoresWithCpuSecurityMitigation",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNumberOfCoresWithCpuSecurityMitigation,
+             "NumberOfCoresWithCpuSecurityMitigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 void SysInfo::SetIsCpuSecurityMitigationsEnabled(bool is_enabled) {
   is_cpu_security_mitigation_enabled = is_enabled;

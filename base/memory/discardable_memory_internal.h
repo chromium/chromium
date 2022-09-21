@@ -28,7 +28,7 @@ enum DiscardableMemoryTrialGroup : int {
 
 namespace features {
 // Feature flag enabling the discardable memory backing trial.
-BASE_EXPORT extern const base::Feature kDiscardableMemoryBackingTrial;
+BASE_EXPORT BASE_DECLARE_FEATURE(kDiscardableMemoryBackingTrial);
 
 BASE_EXPORT extern const base::FeatureParam<DiscardableMemoryTrialGroup>::Option
     kDiscardableMemoryBackingParamOptions[];

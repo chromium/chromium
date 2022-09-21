@@ -47,8 +47,9 @@ TimeTicks CapAtOneDay(TimeTicks next_run_time, LazyNow* lazy_now) {
 }
 
 // Feature to run tasks by batches before pumping out messages.
-const Feature kRunTasksByBatches = {"RunTasksByBatches",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRunTasksByBatches,
+             "RunTasksByBatches",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 std::atomic_bool g_align_wake_ups = false;
 std::atomic_bool g_run_tasks_by_batches = false;

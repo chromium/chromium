@@ -158,8 +158,9 @@ bool ThreadTypeLoggingLevelGreaterOrEqual(HangWatcher::ThreadType thread_type,
 
 // Determines if the HangWatcher is activated. When false the HangWatcher
 // thread never started.
-const Feature kEnableHangWatcher{"EnableHangWatcher",
-                                 FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableHangWatcher,
+             "EnableHangWatcher",
+             FEATURE_ENABLED_BY_DEFAULT);
 
 // Browser process.
 constexpr base::FeatureParam<int> kIOThreadLogLevel{

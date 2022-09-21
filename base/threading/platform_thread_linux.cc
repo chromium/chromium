@@ -39,7 +39,9 @@
 namespace base {
 
 #if BUILDFLAG(IS_CHROMEOS)
-const Feature kSchedUtilHints{"SchedUtilHints", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSchedUtilHints,
+             "SchedUtilHints",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 namespace {

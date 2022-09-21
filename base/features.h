@@ -14,7 +14,7 @@ namespace base::features {
 // alongside the definition of their values in the .cc file.
 
 // Alphabetical:
-BASE_EXPORT extern const base::Feature kOptimizeDataUrls;
+BASE_EXPORT BASE_DECLARE_FEATURE(kOptimizeDataUrls);
 
 }  // namespace base::features
 

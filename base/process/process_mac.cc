@@ -21,8 +21,9 @@
 namespace base {
 
 // Enables backgrounding hidden renderers on Mac.
-const Feature kMacAllowBackgroundingProcesses{"MacAllowBackgroundingProcesses",
-                                              FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMacAllowBackgroundingProcesses,
+             "MacAllowBackgroundingProcesses",
+             FEATURE_DISABLED_BY_DEFAULT);
 
 Time Process::CreationTime() const {
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, Pid()};

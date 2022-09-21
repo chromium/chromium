@@ -102,8 +102,8 @@ void WorkerThread::Delegate::WaitForWork(WaitableEvent* wake_up_event) {
     defined(PA_THREAD_CACHE_SUPPORTED)
   TimeDelta min_sleep_time = std::min(sleep_time, kPurgeThreadCacheIdleDelay);
 
-  static const base::Feature kDelayFirstWorkerWake{
-      "DelayFirstWorkerWake", base::FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(kDelayFirstWorkerWake, "DelayFirstWorkerWake",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
   // ThreadPoolInstance::Start() must always be after FeatureList
   // initialization. This means this function has access to the feature state on
   // first call. Cache the feature check to avoid the overhead of calling

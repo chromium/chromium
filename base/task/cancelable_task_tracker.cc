@@ -67,8 +67,9 @@ void UmaRecordTaskDuration(bool same_sequence,
   histograms[i]->AddTimeMillisecondsGranularity(duration);
 }
 
-const base::Feature kAllowOffSequenceTaskCancelation{
-    "AllowOffSequenceTaskCancelation", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAllowOffSequenceTaskCancelation,
+             "AllowOffSequenceTaskCancelation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool AllowOffSequenceTaskCancelation() {
   if (!base::FeatureList::GetInstance())

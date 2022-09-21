@@ -49,9 +49,9 @@ namespace {
 using StackUnwinder = SamplingHeapProfiler::StackUnwinder;
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
-constexpr base::Feature kAvoidFramePointerUnwinding CONSTINIT{
-    "HeapProfilerAvoidFramePointerUnwinding",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAvoidFramePointerUnwinding,
+             "HeapProfilerAvoidFramePointerUnwinding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // If a thread name has been set from ThreadIdNameManager, use that. Otherwise,

@@ -17,8 +17,8 @@ namespace test {
 
 namespace {
 
-const Feature kTestFeature1{"TestFeature1", FEATURE_DISABLED_BY_DEFAULT};
-const Feature kTestFeature2{"TestFeature2", FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature1, "TestFeature1", FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature2, "TestFeature2", FEATURE_DISABLED_BY_DEFAULT);
 
 void ExpectFeatures(const std::string& enabled_features,
                     const std::string& disabled_features) {

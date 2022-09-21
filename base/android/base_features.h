@@ -13,9 +13,9 @@ namespace base::android::features {
 // alongside the definition of their values in the .cc file.
 
 // Alphabetical:
-extern const base::Feature kBrowserProcessMemoryPurge;
-extern const base::Feature kCrashBrowserOnChildMismatchIfBrowserChanged;
-extern const base::Feature kCrashBrowserOnAnyChildMismatch;
+BASE_DECLARE_FEATURE(kBrowserProcessMemoryPurge);
+BASE_DECLARE_FEATURE(kCrashBrowserOnChildMismatchIfBrowserChanged);
+BASE_DECLARE_FEATURE(kCrashBrowserOnAnyChildMismatch);
 
 }  // namespace base::android::features
 
