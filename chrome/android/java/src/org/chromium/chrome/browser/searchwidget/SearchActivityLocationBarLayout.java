@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.searchwidget;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -58,11 +58,16 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         mAutocompleteCoordinator.setShouldPreventOmniboxAutocomplete(mPendingSearchPromoDecision);
         findViewById(R.id.url_action_container).setVisibility(View.VISIBLE);
 
-        Drawable backgroundDrawable = ToolbarPhone.createModernLocationBarBackground(getContext());
+        GradientDrawable backgroundDrawable =
+                ToolbarPhone.createModernLocationBarBackground(getContext());
         if (OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
             backgroundDrawable.setTint(OmniboxFeatures.shouldShowActiveColorOnOmnibox()
                             ? mLocationBarDataProvider.getSuggestionStandardBackgroundColor()
                             : mLocationBarDataProvider.getDropdownStandardBackgroundColor());
+            if (OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+                backgroundDrawable.setCornerRadius(getResources().getDimensionPixelSize(
+                        R.dimen.omnibox_suggestion_bg_round_corner_radius));
+            }
         }
         setBackground(backgroundDrawable);
     }
