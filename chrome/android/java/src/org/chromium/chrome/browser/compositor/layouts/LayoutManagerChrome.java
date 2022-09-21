@@ -320,7 +320,7 @@ public class LayoutManagerChrome
     public void doneHiding() {
         if (getNextLayout() == getDefaultLayout()) {
             Tab tab = getTabModelSelector() != null ? getTabModelSelector().getCurrentTab() : null;
-            emptyCachesExcept(tab != null ? tab.getId() : Tab.INVALID_TAB_ID);
+            emptyTabCachesExcept(tab != null ? tab.getId() : Tab.INVALID_TAB_ID);
         }
 
         super.doneHiding();

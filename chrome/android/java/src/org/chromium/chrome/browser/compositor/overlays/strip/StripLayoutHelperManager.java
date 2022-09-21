@@ -589,13 +589,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             }
 
             @Override
-            public void allTabsClosureCommitted(boolean incognito) {
-                if (mLayerTitleCacheSupplier.hasValue()) {
-                    mLayerTitleCacheSupplier.get().clearExcept(Tab.INVALID_TAB_ID);
-                }
-            }
-
-            @Override
             public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                 if (tab.getId() == lastId) return;
                 getStripLayoutHelper(tab.isIncognito())
