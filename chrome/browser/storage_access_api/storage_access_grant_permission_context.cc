@@ -20,9 +20,11 @@
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "net/base/features.h"
+#include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -69,6 +71,22 @@ RequestOutcome RequestOutcomeFromPrompt(ContentSetting content_setting,
 
 void RecordOutcomeSample(RequestOutcome outcome) {
   base::UmaHistogramEnumeration("API.StorageAccess.RequestOutcome", outcome);
+}
+
+StorageAccessRequestType GetStorageAccessRequestType(
+    const GURL& requesting_origin,
+    const GURL& embedding_origin,
+    content::RenderFrameHost* render_frame_host) {
+  // `requestStorageAccessForSite` can only be called from the main frame, and
+  // standard `requestStorageAccess` calls pass the same origin for requesting
+  // and embedding in a top-level context. Any `requestStorageAccessForSite`
+  // calls passing the same origin as the current page are automatically granted
+  // upstream.
+  if (render_frame_host->IsInPrimaryMainFrame() &&
+      requesting_origin != embedding_origin) {
+    return StorageAccessRequestType::kRequestStorageAccessForSite;
+  }
+  return StorageAccessRequestType::kRequestStorageAccess;
 }
 
 }  // namespace
@@ -124,6 +142,12 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     return;
   }
 
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      id.render_process_id(), id.render_frame_id());
+  DCHECK(rfh);
+  StorageAccessRequestType request_type =
+      GetStorageAccessRequestType(requesting_origin, embedding_origin, rfh);
+
   return browser_context()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
@@ -133,7 +157,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
           base::BindOnce(&StorageAccessGrantPermissionContext::
                              CheckForAutoGrantOrAutoDenial,
                          weak_factory_.GetWeakPtr(), id, requesting_origin,
-                         embedding_origin, user_gesture, std::move(callback)));
+                         embedding_origin, user_gesture, request_type,
+                         std::move(callback)));
 }
 
 void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
@@ -141,11 +166,13 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
     const GURL& requesting_origin,
     const GURL& embedding_origin,
     bool user_gesture,
+    const StorageAccessRequestType request_type,
     permissions::BrowserPermissionCallback callback,
     net::FirstPartySetMetadata metadata) {
   // We should only run this method if something might need the FPS metadata.
   DCHECK(net::features::kStorageAccessAPIAutoGrantInFPS.Get() ||
          net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get());
+
   switch (metadata.context().context_type()) {
     case net::SamePartyContext::Type::kCrossParty:
       if (net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get()) {
@@ -159,6 +186,18 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
       break;
     case net::SamePartyContext::Type::kSameParty:
       if (net::features::kStorageAccessAPIAutoGrantInFPS.Get()) {
+        // Service domains are not allowed to request storage access on behalf
+        // of other domains, even in the same First-Party Set.
+        if (request_type ==
+                StorageAccessRequestType::kRequestStorageAccessForSite &&
+            metadata.top_frame_entry()->site_type() ==
+                net::SiteType::kService) {
+          NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
+                                      std::move(callback),
+                                      /*persist=*/true, CONTENT_SETTING_BLOCK,
+                                      RequestOutcome::kDeniedByPrerequisites);
+          return;
+        }
         // Since the sites are in the same First-Party Set, risk of abuse due to
         // allowing access is considered to be low.
         NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
