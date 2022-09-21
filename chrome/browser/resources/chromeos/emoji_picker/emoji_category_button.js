@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './icons.js';
+import './icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './emoji_category_button.html.js';
 import {CATEGORY_BUTTON_CLICK, createCustomEvent} from './events.js';
 
 export class EmojiCategoryButton extends PolymerElement {
@@ -15,7 +16,7 @@ export class EmojiCategoryButton extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -4,10 +4,10 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-component_js_files = [
+web_component_files = [
   "emoji_button.js",
   "emoji_category_button.js",
   "emoji_group_button.js",
@@ -15,9 +15,19 @@ component_js_files = [
   "emoji_picker.js",
   "emoji_search.js",
   "emoji_variants.js",
-  "icons.js",
   "text_group_button.js",
 ]
+
+# Files that are passed as input to html_to_wrapper().
+html_files = [ "icons.html" ]
+foreach(f, web_component_files) {
+  html_files += [ string_replace(f, ".js", ".html") ]
+}
+
+html_wrapper_files = []
+foreach(f, html_files) {
+  html_wrapper_files += [ f + ".js" ]
+}
 
 resources_grd_file = "$target_gen_dir/resources.grd"
 preprocessed_grdp_file = "$target_gen_dir/preprocessed.grdp"
@@ -37,25 +47,25 @@ generate_grd("build_grd") {
   grd_prefix = "emoji_picker"
   out_grd = resources_grd_file
   input_files = [
-    "constants.js",
-    "events.js",
-    "index.html",
-    "metadata_extension.js",
-    "prefix_search.js",
-    "store.js",
-    "structs/trie.js",
-    "types.js",
-    "emoji_picker_api_proxy.js",
-    "no_results.svg",
-    "no_results_dark.svg",
-  ]
+                  "constants.js",
+                  "events.js",
+                  "index.html",
+                  "metadata_extension.js",
+                  "prefix_search.js",
+                  "store.js",
+                  "structs/trie.js",
+                  "types.js",
+                  "emoji_picker_api_proxy.js",
+                  "no_results.svg",
+                  "no_results_dark.svg",
+                ] + web_component_files
+  input_files_base_dir = rebase_path(".", "//")
   grdp_files = [
     preprocessed_grdp_file,
     fuse_grdp_file,
     "$target_gen_dir/mojo_resources.grdp",
     "emoji_ordering.grdp",
   ]
-  input_files_base_dir = rebase_path(".", "//")
 }
 
 generate_grd("build_mojo_grdp") {
@@ -71,10 +81,10 @@ generate_grd("build_mojo_grdp") {
 }
 
 generate_grd("build_preprocessed_grdp") {
-  deps = [ ":web_components" ]
+  deps = [ ":html_wrapper_files" ]
   grd_prefix = "emoji_picker"
   out_grd = preprocessed_grdp_file
-  input_files = component_js_files
+  input_files = html_wrapper_files
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
 }
 
@@ -185,16 +195,17 @@ action("symbol_data") {
 
   deps = [
     ":emoji_data",
-    ":emoji_data_remaining"
+    ":emoji_data_remaining",
   ]
 
   args = [
     "--output",
     rebase_path(outputs[0], root_build_dir),
   ]
-  args += ["--filter-data-paths"] +
-    rebase_path(get_target_outputs(":emoji_data"), root_build_dir) +
-    rebase_path(get_target_outputs(":emoji_data_remaining"), root_build_dir)
+  args +=
+      [ "--filter-data-paths" ] +
+      rebase_path(get_target_outputs(":emoji_data"), root_build_dir) +
+      rebase_path(get_target_outputs(":emoji_data_remaining"), root_build_dir)
 }
 
 copy("symbol_test_data") {
@@ -230,7 +241,6 @@ js_library("emoji_picker_api_proxy") {
 
 js_library("emoji_category_button") {
   deps = [
-    ":icons",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -238,7 +248,6 @@ js_library("emoji_category_button") {
 js_library("emoji_group_button") {
   deps = [
     ":events",
-    ":icons",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -275,13 +284,6 @@ js_library("emoji_search") {
   ]
 
   externs_list = [ "//ui/webui/resources/cr_elements/cr_search_field/cr_search_field_externs.js" ]
-}
-
-js_library("icons") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/iron-iconset-svg",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
 }
 
 js_library("types") {
@@ -339,13 +341,13 @@ js_type_check("closure_compile") {
     ":emoji_search",
     ":emoji_variants",
     ":events",
-    ":icons",
     ":store",
     ":text_group_button",
     ":types",
   ]
 }
 
-html_to_js("web_components") {
-  js_files = component_js_files
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
+  use_js = true
 }

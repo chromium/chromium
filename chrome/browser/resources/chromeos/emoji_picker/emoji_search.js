@@ -5,10 +5,12 @@
 import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {EmojiButton} from './emoji_button.js';
 import {EmojiCategoryButton} from './emoji_category_button.js';
+import {getTemplate} from './emoji_search.html.js';
 import Fuse from './fuse.js';
-import {EmojiGroupData, EmojiVariants, CategoryEnum} from './types.js';
+import {CategoryEnum, EmojiGroupData, EmojiVariants} from './types.js';
 
 export class EmojiSearch extends PolymerElement {
   static get is() {
@@ -16,7 +18,7 @@ export class EmojiSearch extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
