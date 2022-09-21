@@ -13,6 +13,9 @@
 // Displays an eligible promo (selected by the Promos Manager) if one exists.
 - (void)maybeDisplayPromo;
 
+// Makes a request to Apple to present the user the App Store Rating Promo.
+- (void)requestAppStoreReview;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_PROMOS_MANAGER_COMMANDS_H_

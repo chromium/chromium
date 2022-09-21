@@ -17,6 +17,11 @@
 // 4) have Chrome set as their default browser.
 @interface AppStoreRatingDisplayHandler : NSObject <StandardPromoDisplayHandler>
 
+#pragma mark - PromoProtocol
+
+// PromosManagerCommands handler.
+@property(nonatomic, weak) id<PromosManagerCommands> handler;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_APP_STORE_RATING_APP_STORE_RATING_DISPLAY_HANDLER_H_

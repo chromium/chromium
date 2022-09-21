@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_display_handler.h"
 
+#import "base/check.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -15,8 +16,8 @@
 #pragma mark - StandardPromoDisplayHandler
 
 - (void)handleDisplay {
-  // TODO(crbug.com/1364669): Call to Apple's SKStoreReviewController to request
-  // the display of the App Store Rating promo.
+  DCHECK(self.handler);
+  [self.handler requestAppStoreReview];
 }
 
 #pragma mark - PromoProtocol

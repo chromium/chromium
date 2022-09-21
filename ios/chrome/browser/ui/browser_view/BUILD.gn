@@ -89,6 +89,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/activity_services",
     "//ios/chrome/browser/ui/activity_services/requirements",
     "//ios/chrome/browser/ui/alert_coordinator",
+    "//ios/chrome/browser/ui/app_store_rating:features",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt",
@@ -231,6 +232,7 @@ source_set("browser_view") {
   frameworks = [
     "MessageUI.framework",
     "Photos.framework",
+    "StoreKit.framework",
     "UIKit.framework",
   ]
 }

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
 
+#import <StoreKit/StoreKit.h>
 #import <memory>
 
 #import "base/metrics/histogram_functions.h"
@@ -47,6 +48,7 @@
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/alert_coordinator/repost_form_coordinator.h"
+#import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
@@ -1534,6 +1536,15 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
     }
 
     [self.promosManagerCoordinator start];
+  }
+}
+
+- (void)requestAppStoreReview {
+  if (IsAppStoreRatingEnabled()) {
+    UIWindowScene* scene =
+        [SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState()
+            scene];
+    [SKStoreReviewController requestReviewInScene:scene];
   }
 }
 
