@@ -149,13 +149,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
 
   uint64_t GetMemoryUsage() const;
 
-  scoped_refptr<gl::GLImage> CreateImageForGpuMemoryBuffer(
-      gfx::GpuMemoryBufferHandle handle,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferPlane plane,
-      SurfaceHandle surface_handle);
-
   // Executes a DeferredRequest that was previously received and has now been
   // scheduled by the scheduler.
   void ExecuteDeferredRequest(mojom::DeferredRequestParamsPtr params);
