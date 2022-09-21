@@ -79,12 +79,12 @@ ui::AXTreeUpdate BrowserAccessibilityManagerAndroid::GetEmptyDocument() {
 
 bool BrowserAccessibilityManagerAndroid::ShouldRespectDisplayedPasswordText() {
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
-  return wcax ? wcax->ShouldRespectDisplayedPasswordText() : false;
+  return wcax ? wcax->should_respect_displayed_password_text() : false;
 }
 
 bool BrowserAccessibilityManagerAndroid::ShouldExposePasswordText() {
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
-  return wcax ? wcax->ShouldExposePasswordText() : false;
+  return wcax ? wcax->should_expose_password_text() : false;
 }
 
 BrowserAccessibility* BrowserAccessibilityManagerAndroid::GetFocus() const {

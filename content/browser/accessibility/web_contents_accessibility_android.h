@@ -96,6 +96,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   void SetAllowImageDescriptions(JNIEnv* env,
                                  jboolean allow_image_descriptions);
+  void SetPasswordRules(JNIEnv* env,
+                        jboolean should_respect_displayed_password_text,
+                        jboolean should_expost_password_text);
 
   // Tree methods.
   jint GetRootId(JNIEnv* env);
@@ -287,11 +290,19 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Methods called from the BrowserAccessibilityManager
   // --------------------------------------------------------------------------
 
+  // State values that affect tree/node construction, so they must be called
+  // from the BrowserAccessibilityManagerAndroid. The value of these depends on
+  // user settings available in Java-side code, passed here through the JNI.
   bool should_allow_image_descriptions() const {
     return allow_image_descriptions_;
   }
-  bool ShouldRespectDisplayedPasswordText();
-  bool ShouldExposePasswordText();
+  bool should_respect_displayed_password_text() const {
+    return should_respect_displayed_password_text_;
+  }
+  bool should_expose_password_text() const {
+    return should_expose_password_text_;
+  }
+
   void HandlePageLoaded(int32_t unique_id);
   void HandleContentChanged(int32_t unique_id);
   void HandleFocusChanged(int32_t unique_id);
@@ -336,9 +347,17 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   bool frame_info_initialized_;
 
-  // Whether or not this instance should allow the image descriptions feature
-  // to be enabled, set from the Java-side code.
-  bool allow_image_descriptions_;
+  // True if this instance should allow image descriptions, false if the
+  // feature should be disabled (for example in CCT or WebView). Default false.
+  bool allow_image_descriptions_ = false;
+
+  // True if this instance should respect the displayed password text (available
+  // in the shadow DOM), false if it should return bullets. Default false.
+  bool should_respect_displayed_password_text_ = false;
+
+  // True if this instance should expose password text to AT (e.g. as a user is
+  // typing in a field), false if it should return bullets. Default true.
+  bool should_expose_password_text_ = true;
 
   float page_scale_ = 1.f;
 

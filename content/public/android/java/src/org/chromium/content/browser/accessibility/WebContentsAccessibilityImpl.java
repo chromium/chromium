@@ -48,7 +48,6 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEM
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -57,7 +56,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.LocaleSpan;
 import android.text.style.SuggestionSpan;
@@ -753,6 +751,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // Update the AXMode based on screen reader status.
         WebContentsAccessibilityImplJni.get().setAXMode(mNativeObj, newScreenReaderEnabledState,
                 /* isAccessibilityEnabled= */ true);
+
+        // Update the state of how passwords are exposed based on user settings.
+        WebContentsAccessibilityImplJni.get().setPasswordRules(mNativeObj,
+                AccessibilityAutofillHelper.shouldRespectDisplayedPasswordText(),
+                AccessibilityAutofillHelper.shouldExposePasswordText());
 
         // Update the list of events we dispatch to enabled services.
         if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
@@ -2163,74 +2166,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
     }
 
-    boolean isCompatAutofillOnlyPossibleAccessibilityConsumer() {
-        // Compatibility Autofill is only available on Android P+.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            return false;
-        }
-        // The Android Autofill CompatibilityBridge, which is responsible for translating
-        // Accessibility information to Autofill events, directly hooks into the
-        // AccessibilityManager via an AccessibilityPolicy rather than by running an
-        // AccessibilityService. We can thus check whether it is the only consumer of Accessibility
-        // information by reading the names of active accessibility services from settings.
-        //
-        // Note that the CompatibilityBridge makes getEnabledAccessibilityServicesList return a mock
-        // service to indicate its presence. It is thus easier to read the setting directly than
-        // to filter out this service from the returned list. Furthermore, since Accessibility is
-        // only initialized if there is at least one actual service or if Autofill is enabled,
-        // there is no need to check that Autofill is enabled here.
-        //
-        // https://cs.android.com/android/platform/superproject/+/HEAD:frameworks/base/core/java/android/view/autofill/AutofillManager.java;l=2817;drc=dd7d52f9632a0dbb8b14b69520c5ea31e0b3b4a2
-        String activeServices = Settings.Secure.getString(
-                mContext.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
-        if (activeServices != null && !activeServices.isEmpty()) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * On Android O and higher, we should respect whatever is displayed in a password box and
-     * report that via accessibility APIs, whether that's the unobscured password, or all dots.
-     * However, we deviate from this rule if the only consumer of accessibility information is
-     * Autofill in order to allow third-party Autofill services to save the real, unmasked password.
-     *
-     * Previous to O, shouldExposePasswordText() returns a system setting
-     * that determines whether we should return the unobscured password or all
-     * dots, independent of what was displayed visually.
-     */
-    @CalledByNative
-    boolean shouldRespectDisplayedPasswordText() {
-        if (isCompatAutofillOnlyPossibleAccessibilityConsumer()) {
-            return false;
-        }
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-    }
-
-    /**
-     * Only relevant prior to Android O, see shouldRespectDisplayedPasswordText, unless the only
-     * Accessibility consumer is compatibility Autofill.
-     */
-    @CalledByNative
-    boolean shouldExposePasswordText() {
-        // Should always expose the actual password text to Autofill so that third-party Autofill
-        // services can save it rather than obtain only the masking characters.
-        if (isCompatAutofillOnlyPossibleAccessibilityConsumer()) {
-            return true;
-        }
-
-        ContentResolver contentResolver = mContext.getContentResolver();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return (Settings.System.getInt(contentResolver, Settings.System.TEXT_SHOW_PASSWORD, 1)
-                    == 1);
-        }
-
-        return (Settings.Secure.getInt(
-                        contentResolver, Settings.Secure.ACCESSIBILITY_SPEAK_PASSWORD, 0)
-                == 1);
-    }
-
     @NativeMethods
     interface Natives {
         long init(WebContentsAccessibilityImpl caller, WebContents webContents);
@@ -2280,6 +2215,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         void enable(long nativeWebContentsAccessibilityAndroid, boolean screenReaderMode);
         void setAXMode(long nativeWebContentsAccessibilityAndroid, boolean screenReaderMode,
                 boolean isAccessibilityEnabled);
+        void setPasswordRules(long nativeWebContentsAccessibilityAndroid,
+                boolean shouldRespectDisplayedPasswordText, boolean shouldExposePasswordText);
         boolean areInlineTextBoxesLoaded(long nativeWebContentsAccessibilityAndroid, int id);
         void loadInlineTextBoxes(long nativeWebContentsAccessibilityAndroid, int id);
         int[] getCharacterBoundingBoxes(
