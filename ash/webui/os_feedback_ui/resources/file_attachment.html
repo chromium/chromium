@@ -124,7 +124,8 @@
 <input id="selectFileDialog" type="file" on-change="handleFileSelectChange_"
     tabindex="-1">
 <div id="replaceFileContainer" hidden="[[!hasSelectedAFile_]]">
-  <cr-checkbox id="selectFileCheckbox" class="no-label">
+  <cr-checkbox id="selectFileCheckbox" class="no-label"
+      title="[[i18n('attachFileCheckboxArialLabel')]]">
   </cr-checkbox>
   <div id="selectedFileContainer">
     <button id="selectedImageButton" on-click="handleSelectedImageClick_"
