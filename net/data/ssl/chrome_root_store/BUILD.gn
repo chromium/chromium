@@ -11,13 +11,18 @@ compiled_action("gen_root_store_inc") {
     "root_store.certs",
     "root_store.textproto",
   ]
-  outputs = [ "${target_gen_dir}/chrome-root-store-inc.cc" ]
+  outputs = [
+    "${target_gen_dir}/chrome-root-store-inc.cc",
+    "${target_gen_dir}/chrome-ev-roots-inc.cc",
+  ]
   args = [
     "--root-store=" + rebase_path("root_store.textproto", root_build_dir),
     "--certs=" + rebase_path("root_store.certs", root_build_dir),
-    "--write-cpp=" + rebase_path("${target_gen_dir}/chrome-root-store-inc.cc",
-                                 root_build_dir),
-    "--cpp-output-format=root",
+    "--write-cpp-root-store=" +
+        rebase_path("${target_gen_dir}/chrome-root-store-inc.cc",
+                    root_build_dir),
+    "--write-cpp-ev-roots=" +
+        rebase_path("${target_gen_dir}/chrome-ev-roots-inc.cc", root_build_dir),
   ]
 }
 
@@ -32,9 +37,8 @@ compiled_action("gen_root_store_test_inc") {
   args = [
     "--root-store=" + rebase_path("test_store.textproto", root_build_dir),
     "--certs=" + rebase_path("test_store.certs", root_build_dir),
-    "--write-cpp=" +
+    "--write-cpp-root-store=" +
         rebase_path("${target_gen_dir}/chrome-root-store-test-data-inc.cc",
                     root_build_dir),
-    "--cpp-output-format=root",
   ]
 }

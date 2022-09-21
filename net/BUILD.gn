@@ -1060,7 +1060,7 @@ component("net") {
     ":ios_cronet_buildflags",
     ":net_deps",
     "//build:chromeos_buildflags",
-    "//net/data/ssl/ev_roots:gen_ev_root_store_inc",
+    "//net/data/ssl/chrome_root_store:gen_root_store_inc",
     "//net/http:transport_security_state_generated_files",
   ]
 

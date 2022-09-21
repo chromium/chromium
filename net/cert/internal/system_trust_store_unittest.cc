@@ -19,7 +19,7 @@
 namespace net {
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-#include "net/data/ssl/chrome_root_store/chrome-root-store-test-data-inc.cc"
+#include "net/data/ssl/chrome_root_store/chrome-root-store-test-data-inc.cc"  // nogncheck
 
 TEST(SystemTrustStoreChrome, SystemDistrustOverridesChromeTrust) {
   CertificateList certs = CreateCertificateListFromFile(

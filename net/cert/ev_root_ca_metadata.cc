@@ -41,7 +41,7 @@ struct EVMetadata {
   const base::StringPiece policy_oids[kMaxOIDsPerCA];
 };
 
-#include "net/data/ssl/ev_roots/chrome-ev-root-store-inc.cc"
+#include "net/data/ssl/chrome_root_store/chrome-ev-roots-inc.cc"
 
 #endif  // defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 }  // namespace
