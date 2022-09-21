@@ -11,7 +11,7 @@ namespace ash {
 // This enum is used to define the buckets for an enumerated UMA histogram.
 // Hence, existing enumerated constants should never be reordered, and all new
 // constants should only be appended at the end of the  enumeration.
-enum ReauthReason {
+enum class ReauthReason {
   // Default value: no reauth reasons were detected so far, or the reason was
   // already reported.
   NONE = 0,

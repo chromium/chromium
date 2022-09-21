@@ -1290,9 +1290,7 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenForgotPasswordButton) {
   absl::optional<int> reauth_reason =
       user_manager::KnownUser(Shell::Get()->local_state())
           .FindReauthReason(users()[0].basic_user_info.account_id);
-  EXPECT_TRUE(reauth_reason.has_value());
-  EXPECT_EQ(reauth_reason.value(),
-            static_cast<int>(ReauthReason::FORGOT_PASSWORD));
+  EXPECT_EQ(reauth_reason, static_cast<int>(ReauthReason::FORGOT_PASSWORD));
 }
 
 // Gaia is never shown on lock, no mater how many times auth fails.

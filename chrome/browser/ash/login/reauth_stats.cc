@@ -11,30 +11,41 @@
 
 namespace ash {
 
+namespace {
+
+ReauthReason GetReauthReason(const user_manager::KnownUser& known_user,
+                             const AccountId& account_id) {
+  return static_cast<ReauthReason>(
+      known_user.FindReauthReason(account_id)
+          .value_or(static_cast<int>(ReauthReason::NONE)));
+}
+
+}  // namespace
+
 void RecordReauthReason(const AccountId& account_id, ReauthReason reason) {
   if (reason == ReauthReason::NONE)
     return;
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  if (known_user.FindReauthReason(account_id).value_or(ReauthReason::NONE) ==
-      reason) {
+  if (GetReauthReason(known_user, account_id) == reason)
     return;
-  }
-  LOG(WARNING) << "Reauth reason updated: " << reason;
+
+  LOG(WARNING) << "Reauth reason updated: " << static_cast<int>(reason);
   known_user.UpdateReauthReason(account_id, static_cast<int>(reason));
 }
 
 void SendReauthReason(const AccountId& account_id, bool password_changed) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  ReauthReason reauth_reason = static_cast<ReauthReason>(
-      known_user.FindReauthReason(account_id).value_or(ReauthReason::NONE));
+  ReauthReason reauth_reason = GetReauthReason(known_user, account_id);
   if (reauth_reason == ReauthReason::NONE)
     return;
   if (password_changed) {
     base::UmaHistogramEnumeration("Login.PasswordChanged.ReauthReason",
-                                  reauth_reason, NUM_REAUTH_FLOW_REASONS);
+                                  reauth_reason,
+                                  ReauthReason::NUM_REAUTH_FLOW_REASONS);
   } else {
     base::UmaHistogramEnumeration("Login.PasswordNotChanged.ReauthReason",
-                                  reauth_reason, NUM_REAUTH_FLOW_REASONS);
+                                  reauth_reason,
+                                  ReauthReason::NUM_REAUTH_FLOW_REASONS);
   }
   known_user.UpdateReauthReason(account_id,
                                 static_cast<int>(ReauthReason::NONE));

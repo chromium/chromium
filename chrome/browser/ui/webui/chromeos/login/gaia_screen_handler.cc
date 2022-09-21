@@ -305,12 +305,12 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
   // for many times or password changed.
   // TODO(b/197615068): Add metric to record the number of times we prepared for
   // recovery and the number of times recovery is actually required.
-  static const ash::ReauthReason kPossibleReasons[] = {
-      ash::ReauthReason::INCORRECT_PASSWORD_ENTERED,
-      ash::ReauthReason::INVALID_TOKEN_HANDLE,
-      ash::ReauthReason::SYNC_FAILED,
-      ash::ReauthReason::PASSWORD_UPDATE_SKIPPED,
-      ash::ReauthReason::FORGOT_PASSWORD,
+  static constexpr int kPossibleReasons[] = {
+      static_cast<int>(ash::ReauthReason::INCORRECT_PASSWORD_ENTERED),
+      static_cast<int>(ash::ReauthReason::INVALID_TOKEN_HANDLE),
+      static_cast<int>(ash::ReauthReason::SYNC_FAILED),
+      static_cast<int>(ash::ReauthReason::PASSWORD_UPDATE_SKIPPED),
+      static_cast<int>(ash::ReauthReason::FORGOT_PASSWORD),
   };
   user_manager::KnownUser known_user(g_browser_process->local_state());
   absl::optional<int> reauth_reason = known_user.FindReauthReason(account_id);
