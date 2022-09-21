@@ -134,7 +134,7 @@ bool PrefMemberVectorStringUpdate(const base::Value& value,
     return false;
 
   std::vector<std::string> local_vector;
-  for (const auto& item : value.GetListDeprecated()) {
+  for (const auto& item : value.GetList()) {
     if (!item.is_string())
       return false;
     local_vector.push_back(item.GetString());
