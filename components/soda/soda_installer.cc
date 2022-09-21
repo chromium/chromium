@@ -250,15 +250,17 @@ void SodaInstaller::NotifyOnSodaProgress(LanguageCode language_code,
 
 void SodaInstaller::RegisterLanguage(const std::string& language,
                                      PrefService* global_prefs) {
-  ListPrefUpdate update(global_prefs, prefs::kSodaRegisteredLanguagePacks);
-  if (!base::Contains(update->GetList(), base::Value(language))) {
-    update->GetList().Append(language);
+  ScopedListPrefUpdate update(global_prefs,
+                              prefs::kSodaRegisteredLanguagePacks);
+  if (!base::Contains(*update, base::Value(language))) {
+    update->Append(language);
   }
 }
 
 void SodaInstaller::UnregisterLanguages(PrefService* global_prefs) {
-  ListPrefUpdate update(global_prefs, prefs::kSodaRegisteredLanguagePacks);
-  update->GetList().clear();
+  ScopedListPrefUpdate update(global_prefs,
+                              prefs::kSodaRegisteredLanguagePacks);
+  update->clear();
 }
 
 bool SodaInstaller::IsSodaDownloading(LanguageCode language_code) const {
