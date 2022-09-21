@@ -179,6 +179,9 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst);
+  FRIEND_TEST_ALL_PREFIXES(EcheTrayTest, EcheTrayOnDisplayConfigurationChanged);
+  FRIEND_TEST_ALL_PREFIXES(EcheTrayTest,
+                           EcheTrayKeyboardShowHideUpdateBubbleBounds);
 
   // Intercepts all the events targeted to the internal webview in order to
   // process the accelerator keys.
@@ -217,15 +220,14 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   PhoneHubTray* GetPhoneHubTray();
   EcheIconLoadingIndicatorView* GetLoadingIndicator();
 
-  // Updates the bubble's position based on the movements of the shelf.
-  void UpdateBubbleBounds();
+  // Resize Eche size and update the bubble's position.
+  void UpdateEcheSizeAndBubbleBounds();
 
   // ScreenLayoutObserver:
   void OnDisplayConfigurationChanged() override;
 
   // ShelfObserver:
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
-  void OnShelfIconPositionsChanged() override;
 
   // TabletModeObserver:
   void OnTabletModeStarted() override;

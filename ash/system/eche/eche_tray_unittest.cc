@@ -7,6 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "ash/bubble/bubble_constants.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/keyboard/ui/test/keyboard_test_util.h"
+#include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -76,6 +80,9 @@ class EcheTrayTest : public AshTestBase {
         /*disabled_features=*/{});
 
     DCHECK(test_web_view_factory_.get());
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        keyboard::switches::kEnableVirtualKeyboard);
 
     AshTestBase::SetUp();
 
@@ -469,6 +476,61 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Esc) {
 
   // Check to see if the bubble is closed and purged.
   EXPECT_TRUE(is_web_content_unloaded_);
+}
+
+TEST_F(EcheTrayTest, EcheTrayOnDisplayConfigurationChanged) {
+  UpdateDisplay("800x600");
+  gfx::Size expected_eche_size = eche_tray()->CalculateSizeForEche();
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
+  eche_tray()->ShowBubble();
+
+  EXPECT_EQ(expected_eche_size.width(),
+            eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->width());
+  EXPECT_EQ(
+      expected_eche_size.height(),
+      eche_tray()->get_web_view_for_test()->height() + kBubbleMenuPadding * 2);
+
+  UpdateDisplay("1024x786");
+  expected_eche_size = eche_tray()->CalculateSizeForEche();
+
+  eche_tray()->OnDisplayConfigurationChanged();
+
+  EXPECT_EQ(expected_eche_size.width(),
+            eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->width());
+  EXPECT_EQ(
+      expected_eche_size.height(),
+      eche_tray()->get_web_view_for_test()->height() + kBubbleMenuPadding * 2);
+}
+
+TEST_F(EcheTrayTest, EcheTrayKeyboardShowHideUpdateBubbleBounds) {
+  gfx::Size expected_eche_size = eche_tray()->CalculateSizeForEche();
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
+  eche_tray()->ShowBubble();
+
+  EXPECT_EQ(expected_eche_size.width(),
+            eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->width());
+  EXPECT_EQ(
+      expected_eche_size.height(),
+      eche_tray()->get_web_view_for_test()->height() + kBubbleMenuPadding * 2);
+
+  // Place a keyboard window.
+  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
+  keyboard_controller->ShowKeyboard(/*lock=*/true);
+  ASSERT_TRUE(keyboard::WaitUntilShown());
+
+  EXPECT_EQ(expected_eche_size.width(),
+            eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->width());
+
+  // Hide the keyboard
+  keyboard_controller->HideKeyboardByUser();
+
+  EXPECT_EQ(expected_eche_size.width(),
+            eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->width());
+  EXPECT_EQ(
+      expected_eche_size.height(),
+      eche_tray()->get_web_view_for_test()->height() + kBubbleMenuPadding * 2);
 }
 
 }  // namespace ash

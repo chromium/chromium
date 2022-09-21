@@ -348,13 +348,13 @@ void EcheTray::OnLockStateChanged(bool locked) {
 void EcheTray::OnKeyboardUIDestroyed() {
   if (!IsBubbleVisible())
     return;
-  UpdateBubbleBounds();
+  UpdateEcheSizeAndBubbleBounds();
 }
 
 void EcheTray::OnKeyboardHidden(bool is_temporary_hide) {
   if (!IsBubbleVisible())
     return;
-  UpdateBubbleBounds();
+  UpdateEcheSizeAndBubbleBounds();
 }
 
 void EcheTray::SetUrl(const GURL& url) {
@@ -675,22 +675,21 @@ EcheIconLoadingIndicatorView* EcheTray::GetLoadingIndicator() {
   return phone_hub_tray->eche_loading_indicator();
 }
 
-void EcheTray::UpdateBubbleBounds() {
+void EcheTray::UpdateEcheSizeAndBubbleBounds() {
   if (!bubble_ || !bubble_->GetBubbleView())
     return;
+  gfx::Size eche_size = CalculateSizeForEche();
+  bubble_->GetBubbleView()->SetPreferredWidth(eche_size.width());
+  web_view_->SetPreferredSize(eche_size);
   bubble_->GetBubbleView()->ChangeAnchorRect(GetAnchor());
 }
 
 void EcheTray::OnDisplayConfigurationChanged() {
-  UpdateBubbleBounds();
+  UpdateEcheSizeAndBubbleBounds();
 }
 
 void EcheTray::OnAutoHideStateChanged(ShelfAutoHideState state) {
-  UpdateBubbleBounds();
-}
-
-void EcheTray::OnShelfIconPositionsChanged() {
-  UpdateBubbleBounds();
+  UpdateEcheSizeAndBubbleBounds();
 }
 
 void EcheTray::OnTabletModeStarted() {
@@ -706,11 +705,11 @@ void EcheTray::OnTabletModeStarted() {
 }
 
 void EcheTray::OnTabletModeEnded() {
-  UpdateBubbleBounds();
+  UpdateEcheSizeAndBubbleBounds();
 }
 void EcheTray::OnShelfAlignmentChanged(aura::Window* root_window,
                                        ShelfAlignment old_alignment) {
-  UpdateBubbleBounds();
+  UpdateEcheSizeAndBubbleBounds();
 }
 
 gfx::Rect EcheTray::GetAnchor() {
