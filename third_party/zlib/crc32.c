@@ -230,7 +230,7 @@ local once_t made = ONCE_INIT;
   is just exclusive-or, and multiplying a polynomial by x is a right shift by
   one. If we call the above polynomial p, and represent a byte as the
   polynomial q, also with the lowest power in the most significant bit (so the
-  byte 0xb1 is the polynomial x^7+x^3+x+1), then the CRC is (q*x^32) mod p,
+  byte 0xb1 is the polynomial x^7+x^3+x^2+1), then the CRC is (q*x^32) mod p,
   where a mod b means the remainder after dividing a by b.
 
   This calculation is done using the shift-register method of multiplying and
