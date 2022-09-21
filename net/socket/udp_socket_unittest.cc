@@ -866,7 +866,6 @@ TEST_F(UDPSocketTest, ConnectUsingNetworkAsync) {
   // ConnectUsingNetwork() and won't send any datagrams.
   const IPEndPoint fake_server_address(IPAddress::IPv4Localhost(), 8080);
   const handles::NetworkHandle wrong_network_handle = 65536;
-  TestCompletionCallback callback;
 #if BUILDFLAG(IS_ANDROID)
   NetworkChangeNotifierFactoryAndroid ncn_factory;
   NetworkChangeNotifier::DisableForTest ncn_disable_for_test;
@@ -879,6 +878,7 @@ TEST_F(UDPSocketTest, ConnectUsingNetworkAsync) {
     // ERR_NOT_IMPLEMENTED when network handles are supported.
     UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr,
                            NetLogSource());
+    TestCompletionCallback callback;
     int rv = socket.ConnectUsingNetworkAsync(
         wrong_network_handle, fake_server_address, callback.callback());
 
@@ -911,6 +911,7 @@ TEST_F(UDPSocketTest, ConnectUsingNetworkAsync) {
   }
 #else
   UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr, NetLogSource());
+  TestCompletionCallback callback;
   EXPECT_EQ(ERR_NOT_IMPLEMENTED, socket.ConnectUsingNetworkAsync(
                                      wrong_network_handle, fake_server_address,
                                      callback.callback()));
