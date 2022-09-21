@@ -202,8 +202,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mStartSurfaceAsHomepageSupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mIdentityDiscStateSupplier =
-            new ObservableSupplierImpl<>();
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final ConstraintsProxy mConstraintsProxy = new ConstraintsProxy();
 
@@ -1099,7 +1097,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mAppThemeColorProvider, mMenuButtonCoordinator, mOverviewModeMenuButtonCoordinator,
                 mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mTabModelSelectorSupplier,
                 mHomepageEnabledSupplier,
-                mIdentityDiscStateSupplier, (client) -> {
+                identityDiscController, (client) -> {
                     if (invalidator != null) {
                         invalidator.invalidate(client);
                     } else {
@@ -1145,11 +1143,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         HomepageManager.getInstance().addListener(mHomepageStateListener);
         mHomepageStateListener.onHomepageStateUpdated();
 
-        if (toolbarLayout instanceof ToolbarPhone
-                && ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)) {
-            identityDiscController.addObserver(
-                    (canShowHint) -> mIdentityDiscStateSupplier.set(canShowHint));
-        }
         HomeButton homeButton = toolbarLayout.getHomeButton();
         if (homeButton != null) {
             homeButton.init(mHomepageEnabledSupplier, HomepageManager.getInstance()::onMenuClick,
