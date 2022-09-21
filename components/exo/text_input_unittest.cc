@@ -35,9 +35,9 @@ ui::CompositionText GenerateCompositionText(const std::u16string& text) {
   ui::CompositionText t;
   t.text = text;
   t.selection = gfx::Range(text.size());
-  t.ime_text_spans.push_back(
-      ui::ImeTextSpan(ui::ImeTextSpan::Type::kComposition, 0, t.text.size(),
-                      ui::ImeTextSpan::Thickness::kThick));
+  t.ime_text_spans.emplace_back(ui::ImeTextSpan::Type::kComposition, 0,
+                                t.text.size(),
+                                ui::ImeTextSpan::Thickness::kThick);
   return t;
 }
 
