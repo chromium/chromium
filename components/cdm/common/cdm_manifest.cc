@@ -148,7 +148,7 @@ bool GetEncryptionSchemes(
   }
 
   base::flat_set<media::EncryptionScheme> result;
-  for (const auto& item : value->GetListDeprecated()) {
+  for (const auto& item : value->GetList()) {
     if (!item.is_string()) {
       DLOG(ERROR) << "Unrecognized item type in CDM manifest entry "
                   << kCdmSupportedEncryptionSchemesName;
