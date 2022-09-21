@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
       const VariationsSeed& seed,
       const ClientFilterableState& client_state,
       const UIStringOverrideCallback& override_callback,
-      const base::FieldTrial::EntropyProvider* low_entropy_provider,
+      const base::FieldTrial::EntropyProvider& low_entropy_provider,
       base::FeatureList* feature_list);
 
   // If the given |study| should alwoys use low entropy. This is true for any
@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
   void CreateTrialFromStudy(
       const ProcessedStudy& processed_study,
       const UIStringOverrideCallback& override_callback,
-      const base::FieldTrial::EntropyProvider* low_entropy_provider,
+      const base::FieldTrial::EntropyProvider& low_entropy_provider,
       base::FeatureList* feature_list);
 };
 

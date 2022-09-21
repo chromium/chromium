@@ -227,8 +227,6 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
     const std::vector<std::string>& variation_ids,
     const std::string& command_line_variation_ids,
     const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,
-    std::unique_ptr<const base::FieldTrial::EntropyProvider>
-        low_entropy_provider,
     std::unique_ptr<base::FeatureList> feature_list,
     metrics::MetricsStateManager* metrics_state_manager,
     PlatformFieldTrials* platform_field_trials,
@@ -246,7 +244,11 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   // it's in two places.
   VariationsIdsProvider* http_header_provider =
       VariationsIdsProvider::GetInstance();
-  http_header_provider->SetLowEntropySourceValue(low_entropy_source_value);
+
+  if (low_entropy_source_value.has_value()) {
+    http_header_provider->SetLowEntropySourceValue(
+        low_entropy_source_value.value());
+  }
   // Force the variation ids selected in chrome://flags and/or specified using
   // the command-line flag.
   auto result = http_header_provider->ForceVariationIds(
@@ -306,10 +308,12 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
         command_line->GetSwitchValuePath(switches::kVariationsTestSeedPath));
   }
 
+  auto low_entropy_provider = metrics_state_manager->CreateLowEntropyProvider();
+
   bool used_seed = false;
   if (!used_testing_config) {
-    used_seed = CreateTrialsFromSeed(low_entropy_provider.get(),
-                                     feature_list.get(), safe_seed_manager);
+    used_seed = CreateTrialsFromSeed(*low_entropy_provider, feature_list.get(),
+                                     safe_seed_manager);
   }
 
   platform_field_trials->SetUpFeatureControllingFieldTrials(
@@ -579,7 +583,7 @@ bool VariationsFieldTrialCreator::IsSeedForFutureMilestone(bool is_safe_seed) {
 }
 
 bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
-    const base::FieldTrial::EntropyProvider* low_entropy_provider,
+    const base::FieldTrial::EntropyProvider& low_entropy_provider,
     base::FeatureList* feature_list,
     SafeSeedManager* safe_seed_manager) {
   TRACE_EVENT0("startup", "VariationsFieldTrialCreator::CreateTrialsFromSeed");

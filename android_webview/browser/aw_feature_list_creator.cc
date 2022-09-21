@@ -250,20 +250,20 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   auto* metrics_client = AwMetricsServiceClient::GetInstance();
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  // Populate FieldTrialList. Since |low_entropy_provider| is null, it will fall
-  // back to the provider we previously gave to FieldTrialList, which is a low
-  // entropy provider. The X-Client-Data header is not reported on WebView, so
-  // we pass an empty object as the |low_entropy_source_value|.
+
+  // Populate FieldTrialList.
   // If you update this, consider whether "WebViewEnvironment" in
   // components/variations/variations_seed_processor_unittest.cc needs updates.
+  // Passing null low_entropy_source_value to suppress adding the VariationsId
+  // for it. TODO(b/183955043): Re-evaluate if this is necessary.
   variations_field_trial_creator_->SetUpFieldTrials(
       variation_ids,
       command_line->GetSwitchValueASCII(
           variations::switches::kForceVariationIds),
       GetSwitchDependentFeatureOverrides(*command_line),
-      /*low_entropy_provider=*/nullptr, std::move(feature_list),
-      metrics_client->metrics_state_manager(), aw_field_trials_.get(),
-      &ignored_safe_seed_manager, /*low_entropy_source_value=*/absl::nullopt);
+      std::move(feature_list), metrics_client->metrics_state_manager(),
+      aw_field_trials_.get(), &ignored_safe_seed_manager,
+      /*low_entropy_source_value=*/absl::nullopt);
 }
 
 }  // namespace android_webview

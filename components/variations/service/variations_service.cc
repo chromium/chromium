@@ -685,11 +685,6 @@ bool VariationsService::StoreSeed(const std::string& seed_data,
   return true;
 }
 
-std::unique_ptr<const base::FieldTrial::EntropyProvider>
-VariationsService::CreateLowEntropyProvider() {
-  return state_manager_->CreateLowEntropyProvider();
-}
-
 void VariationsService::InitResourceRequestedAllowedNotifier() {
   // ResourceRequestAllowedNotifier does not install an observer if there is no
   // NetworkChangeNotifier, which results in never being notified of changes to
@@ -949,9 +944,8 @@ bool VariationsService::SetUpFieldTrials(
     variations::PlatformFieldTrials* platform_field_trials) {
   return field_trial_creator_.SetUpFieldTrials(
       variation_ids, command_line_variation_ids, extra_overrides,
-      CreateLowEntropyProvider(), std::move(feature_list), state_manager_,
-      platform_field_trials, &safe_seed_manager_,
-      state_manager_->GetLowEntropySource());
+      std::move(feature_list), state_manager_, platform_field_trials,
+      &safe_seed_manager_, state_manager_->GetLowEntropySource());
 }
 
 void VariationsService::OverrideCachedUIStrings() {

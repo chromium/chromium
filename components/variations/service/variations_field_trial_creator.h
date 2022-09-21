@@ -114,7 +114,6 @@ class VariationsFieldTrialCreator {
   // |extra_overrides| gives a list of feature overrides that should be applied
   // after the features explicitly disabled/enabled from the command line via
   // --disable-features and --enable-features, but before field trials.
-  // |low_entropy_provider| allows for field trial randomization. May be null.
   // |feature_list| contains the list of all active features for this client.
   // Must not be null.
   // |metrics_state_manager| facilitates signaling that Chrome has not yet
@@ -125,7 +124,9 @@ class VariationsFieldTrialCreator {
   // state that was activated to create the field trials (only when the return
   // value is true). Must not be null.
   // |low_entropy_source_value| contains the low entropy source value that was
-  // used for client-side randomization of variations.
+  // used for client-side randomization of variations, and indicates a
+  // variations ID for it should be added to FIRST_PARTY variation headers.
+  // TODO(b/183955043): eliminate this argument if we can always add the ID.
   //
   // NOTE: The ordering of the FeatureList method calls is such that the
   // explicit --disable-features and --enable-features from the command line
@@ -136,8 +137,6 @@ class VariationsFieldTrialCreator {
       const std::string& command_line_variation_ids,
       const std::vector<base::FeatureList::FeatureOverrideInfo>&
           extra_overrides,
-      std::unique_ptr<const base::FieldTrial::EntropyProvider>
-          low_entropy_provider,
       std::unique_ptr<base::FeatureList> feature_list,
       metrics::MetricsStateManager* metrics_state_manager,
       PlatformFieldTrials* platform_field_trials,
@@ -220,7 +219,7 @@ class VariationsFieldTrialCreator {
   // successfully; and if so, stores the loaded variations state into the
   // |safe_seed_manager|.
   bool CreateTrialsFromSeed(
-      const base::FieldTrial::EntropyProvider* low_entropy_provider,
+      const base::FieldTrial::EntropyProvider& low_entropy_provider,
       base::FeatureList* feature_list,
       SafeSeedManager* safe_seed_manager);
 

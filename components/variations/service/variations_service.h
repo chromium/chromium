@@ -234,12 +234,6 @@ class VariationsService
                          bool is_delta_compressed,
                          bool is_gzip_compressed);
 
-  // Create an entropy provider based on low entropy. This is used to create
-  // trials for studies that should only depend on low entropy, such as studies
-  // that send experiment IDs to Google web properties. Virtual for testing.
-  virtual std::unique_ptr<const base::FieldTrial::EntropyProvider>
-  CreateLowEntropyProvider();
-
   // Creates the VariationsService with the given |local_state| prefs service
   // and |state_manager|. Does not take ownership of |state_manager|. Caller
   // should ensure that |state_manager| is valid for the lifetime of this class.

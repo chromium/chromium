@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
@@ -208,6 +209,29 @@ void CreateTrialWithFeatureConflictGroup(const std::string& trial_name) {
   trial->Activate();
 }
 
+bool ShouldSessionRandomizeStudy(const ProcessedStudy& processed_study) {
+  return !processed_study.study()->has_consistency() ||
+         processed_study.study()->consistency() !=
+             Study_Consistency_PERMANENT ||
+         // If all assignments are to a single group, no need to enable one time
+         // randomization (which is more expensive to compute), since the result
+         // will be the same.
+         processed_study.all_assignments_to_one_group();
+}
+
+const base::FieldTrial::EntropyProvider& SelectEntropyProviderForStudy(
+    const ProcessedStudy& processed_study,
+    const base::FieldTrial::EntropyProvider& low_entropy_provider) {
+  if (ShouldSessionRandomizeStudy(processed_study)) {
+    return base::FieldTrialList::GetEntropyProviderForSessionRandomization();
+  }
+  if (VariationsSeedProcessor::ShouldStudyUseLowEntropy(
+          *processed_study.study())) {
+    return low_entropy_provider;
+  }
+  return base::FieldTrialList::GetEntropyProviderForOneTimeRandomization();
+}
+
 }  // namespace
 
 VariationsSeedProcessor::VariationsSeedProcessor() = default;
@@ -218,7 +242,7 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
     const VariationsSeed& seed,
     const ClientFilterableState& client_state,
     const UIStringOverrideCallback& override_callback,
-    const base::FieldTrial::EntropyProvider* low_entropy_provider,
+    const base::FieldTrial::EntropyProvider& low_entropy_provider,
     base::FeatureList* feature_list) {
   base::UmaHistogramCounts1000("Variations.AppliedSeed.StudyCount",
                                seed.study().size());
@@ -251,7 +275,7 @@ bool VariationsSeedProcessor::ShouldStudyUseLowEntropy(const Study& study) {
 void VariationsSeedProcessor::CreateTrialFromStudy(
     const ProcessedStudy& processed_study,
     const UIStringOverrideCallback& override_callback,
-    const base::FieldTrial::EntropyProvider* low_entropy_provider,
+    const base::FieldTrial::EntropyProvider& low_entropy_provider,
     base::FeatureList* feature_list) {
   // Since trials and features can come from many different sources (variations
   // seed, about://flags, and command line), there are special cases for when
@@ -337,32 +361,16 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
   if (processed_study.total_probability() <= 0)
     return;
 
-  const auto* entropy_provider =
-      &base::FieldTrialList::GetEntropyProviderForSessionRandomization();
-  uint32_t randomization_seed = 0;
-  if (study.has_consistency() &&
-      study.consistency() == Study_Consistency_PERMANENT &&
-      // If all assignments are to a single group, no need to enable one time
-      // randomization (which is more expensive to compute), since the result
-      // will be the same.
-      !processed_study.all_assignments_to_one_group()) {
-    // WebView currently passes a null low_entropy_provider, which actually
-    // means that the default provider is low-entropy.
-    // TODO(b/183955043): Express that more coherently and without nullptr.
-    if (low_entropy_provider && ShouldStudyUseLowEntropy(study)) {
-      entropy_provider = low_entropy_provider;
-    } else {
-      entropy_provider =
-          &base::FieldTrialList::GetEntropyProviderForOneTimeRandomization();
-    }
-    if (study.has_randomization_seed())
-      randomization_seed = study.randomization_seed();
-  }
+  const auto& entropy_provider =
+      SelectEntropyProviderForStudy(processed_study, low_entropy_provider);
+  uint32_t randomization_seed = ShouldSessionRandomizeStudy(processed_study)
+                                    ? study.randomization_seed()
+                                    : 0;
 
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
           study.name(), processed_study.total_probability(),
-          processed_study.GetDefaultExperimentName(), *entropy_provider,
+          processed_study.GetDefaultExperimentName(), entropy_provider,
           randomization_seed));
 
   bool has_overrides = false;

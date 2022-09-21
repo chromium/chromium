@@ -129,7 +129,7 @@ std::unique_ptr<ClientFilterableState> CreateChromeClientFilterableState() {
 }
 
 // ChromeEnvironment calls CreateTrialsFromSeed with arguments similar to
-// chrome. In particular, it passes a non-nullptr as low_entropy_source.
+// chrome.
 class ChromeEnvironment {
  public:
   void CreateTrialsFromSeed(
@@ -141,19 +141,15 @@ class ChromeEnvironment {
     client_state->platform = Study::PLATFORM_ANDROID;
 
     base::MockEntropyProvider mock_low_entropy_provider(low_entropy);
-    VariationsSeedProcessor seed_processor;
     // This should mimic the call through SetUpFieldTrials from
     // components/variations/service/variations_service.cc
-    seed_processor.CreateTrialsFromSeed(seed, *client_state, callback,
-                                        &mock_low_entropy_provider,
-                                        feature_list);
+    VariationsSeedProcessor().CreateTrialsFromSeed(
+        seed, *client_state, callback, mock_low_entropy_provider, feature_list);
   }
-
-  bool SupportsLayers() { return true; }
 };
 
 // WebViewEnvironment calls CreateTrialsFromSeed with arguments similar to
-// WebView. In particular, it passes a nullptr as low_entropy_source.
+// WebView.
 class WebViewEnvironment {
  public:
   void CreateTrialsFromSeed(
@@ -164,14 +160,12 @@ class WebViewEnvironment {
     auto client_state = CreateChromeClientFilterableState();
     client_state->platform = Study::PLATFORM_ANDROID_WEBVIEW;
 
-    VariationsSeedProcessor seed_processor;
+    base::MockEntropyProvider mock_low_entropy_provider(low_entropy);
     // This should mimic the call through SetUpFieldTrials from
     // android_webview/browser/aw_feature_list_creator.cc
-    seed_processor.CreateTrialsFromSeed(seed, *client_state, callback, nullptr,
-                                        feature_list);
+    VariationsSeedProcessor().CreateTrialsFromSeed(
+        seed, *client_state, callback, mock_low_entropy_provider, feature_list);
   }
-
-  bool SupportsLayers() { return false; }
 };
 
 template <typename Environment>
@@ -467,7 +461,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StartsActive) {
   base::MockEntropyProvider mock_low_entropy_provider(0.9);
   seed_processor.CreateTrialsFromSeed(
       seed, client_state, this->override_callback_.callback(),
-      &mock_low_entropy_provider, base::FeatureList::GetInstance());
+      mock_low_entropy_provider, base::FeatureList::GetInstance());
 
   // Non-specified and ACTIVATE_ON_QUERY should not start active, but
   // ACTIVATE_ON_STARTUP should.
@@ -762,12 +756,7 @@ TYPED_TEST(VariationsSeedProcessorTest, LowEntropyStudyTest) {
 
   // Since an experiment in study2 has google_web_experiment_id set, it will use
   // the low entropy provider, which selects the default group.
-  if (this->env.SupportsLayers()) {
-    EXPECT_EQ(kDefaultName, base::FieldTrialList::FindFullName(kTrial2Name));
-  } else {
-    // On WebView we always use the default entropy provider.
-    EXPECT_EQ(kGroup1Name, base::FieldTrialList::FindFullName(kTrial1Name));
-  }
+  EXPECT_EQ(kDefaultName, base::FieldTrialList::FindFullName(kTrial2Name));
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, StudyWithInvalidLayer) {
@@ -841,11 +830,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerSelected) {
   this->CreateTrialsFromSeed(seed);
 
   // The layer only has the single member, which is what should be chosen.
-  if (this->env.SupportsLayers()) {
-    EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
-  } else {
-    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
-  }
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithNoSlots) {
@@ -905,11 +890,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerWithDuplicateSlots) {
 
   // The layer only has the single member, which is what should be chosen.
   // Having two duplicate slot ranges within that member should not crash.
-  if (this->env.SupportsLayers()) {
-    EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
-  } else {
-    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
-  }
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
 TYPED_TEST(VariationsSeedProcessorTest,
@@ -1056,11 +1037,7 @@ TYPED_TEST(VariationsSeedProcessorTest, LayerWithDefaultEntropy) {
   this->CreateTrialsFromSeed(seed, /*low_entropy=*/0.99);
 
   // The study is a member of the 0xDEAD layer member and should be active.
-  if (this->env.SupportsLayers()) {
-    EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
-  } else {
-    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
-  }
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, LayerWithNoMembers) {

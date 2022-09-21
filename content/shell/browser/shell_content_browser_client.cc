@@ -731,14 +731,14 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
       base::CommandLine::ForCurrentProcess();
   // Since this is a test-only code path, some arguments to SetUpFieldTrials are
   // null.
-  // TODO(crbug/1248066): Consider passing a low entropy provider and source.
+  // TODO(crbug/1248066): Consider passing a low entropy source.
   field_trial_creator.SetUpFieldTrials(
       variation_ids,
       command_line->GetSwitchValueASCII(
           variations::switches::kForceVariationIds),
       content::GetSwitchDependentFeatureOverrides(*command_line),
-      /*low_entropy_provider=*/nullptr, std::move(feature_list),
-      metrics_state_manager.get(), field_trials_.get(), &safe_seed_manager,
+      std::move(feature_list), metrics_state_manager.get(), field_trials_.get(),
+      &safe_seed_manager,
       /*low_entropy_source_value=*/absl::nullopt);
 }
 

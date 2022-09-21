@@ -80,7 +80,7 @@ void CreateTrialsFromStudyFuzzer(const VariationsSeed& seed) {
 
   VariationsSeedProcessor().CreateTrialsFromSeed(
       seed, *client_state, override_callback.callback(),
-      &mock_low_entropy_provider, &feature_list);
+      mock_low_entropy_provider, &feature_list);
 }
 
 DEFINE_PROTO_FUZZER(const VariationsSeed& seed) {

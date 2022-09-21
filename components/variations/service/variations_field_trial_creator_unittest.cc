@@ -302,9 +302,9 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kForceVariationIds),
         std::vector<base::FeatureList::FeatureOverrideInfo>(),
-        /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
-        metrics_state_manager_.get(), &platform_field_trials,
-        safe_seed_manager_, /*low_entropy_source_value=*/absl::nullopt);
+        std::make_unique<base::FeatureList>(), metrics_state_manager_.get(),
+        &platform_field_trials, safe_seed_manager_,
+        metrics_state_manager_->GetLowEntropySource());
   }
 
   TestVariationsSeedStore* seed_store() { return &seed_store_; }
@@ -820,9 +820,9 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedPath) {
       /*variation_ids=*/{},
       /*command_line_variation_ids=*/std::string(),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
-      /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
-      metrics_state_manager.get(), &platform_field_trials, &safe_seed_manager,
-      /*low_entropy_source_value=*/absl::nullopt));
+      std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
+      &platform_field_trials, &safe_seed_manager,
+      metrics_state_manager->GetLowEntropySource()));
 
   EXPECT_TRUE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
   EXPECT_EQ(
@@ -870,9 +870,9 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kForceVariationIds),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
-      /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
-      metrics_state_manager.get(), &platform_field_trials, &safe_seed_manager,
-      /*low_entropy_source_value=*/absl::nullopt));
+      std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
+      &platform_field_trials, &safe_seed_manager,
+      metrics_state_manager->GetLowEntropySource()));
 
   EXPECT_EQ(kTestSeedExperimentName,
             base::FieldTrialList::FindFullName(kTestSeedStudyName));

@@ -20,7 +20,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
  public:
   VariationsLayers(
       const VariationsSeed& seed,
-      const base::FieldTrial::EntropyProvider* low_entropy_provider);
+      const base::FieldTrial::EntropyProvider& low_entropy_provider);
 
   VariationsLayers();
   ~VariationsLayers();

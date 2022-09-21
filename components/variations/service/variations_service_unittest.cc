@@ -207,11 +207,6 @@ class TestVariationsService : public VariationsService {
     return seed_stores_succeed_;
   }
 
-  std::unique_ptr<const base::FieldTrial::EntropyProvider>
-  CreateLowEntropyProvider() override {
-    return std::unique_ptr<const base::FieldTrial::EntropyProvider>(nullptr);
-  }
-
   TestVariationsServiceClient* client() {
     return static_cast<TestVariationsServiceClient*>(
         VariationsService::client());

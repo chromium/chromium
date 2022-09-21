@@ -67,7 +67,7 @@ void CreateTrialFromStudyFuzzer(const Study& study) {
   if (processed_study.Init(&study)) {
     VariationsSeedProcessor().CreateTrialFromStudy(
         processed_study, override_callback.callback(),
-        &mock_low_entropy_provider, &feature_list);
+        mock_low_entropy_provider, &feature_list);
   }
 }
 
