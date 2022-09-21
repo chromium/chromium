@@ -19,15 +19,17 @@ namespace features {
 // regress in performance due to high-priority messages seeing increased
 // latency. Ideally we'd address these cases by giving the affected bindings
 // higher-priority TaskRunners.
-const base::Feature kTaskPerMessage{"MojoTaskPerMessage",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTaskPerMessage,
+             "MojoTaskPerMessage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables measurement of MessageChannel unread message counts. When enabled, a
 // small random selection of Connectors enable the unread message count quota
 // on their associated message pipe, and record the highest unread message count
 // seen during the Connector's lifetime.
-const base::Feature kMojoRecordUnreadMessageCount{
-    "MojoRecordUnreadMessageCount", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMojoRecordUnreadMessageCount,
+             "MojoRecordUnreadMessageCount",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace mojo
