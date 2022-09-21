@@ -24,6 +24,9 @@
 
 namespace chromeos::system {
 
+// Result of loading values from the cached VPD file.
+COMPONENT_EXPORT(CHROMEOS_SYSTEM) extern const char kMetricVpdCacheReadResult[];
+
 class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
     : public StatisticsProvider {
  public:
@@ -45,6 +48,19 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
     base::FilePath vpd_filepath;
     base::FilePath oem_manifest_filepath;
     base::FilePath cros_regions_filepath;
+  };
+
+  // This enum is used to define the buckets for an enumerated UMA histogram.
+  // Hence,
+  //   (a) existing enumerated constants should never be deleted or reordered,
+  //   and
+  //   (b) new constants should only be appended at the end of the enumeration
+  //       (update tools/metrics/histograms/enums.xml as well).
+  enum class VpdCacheReadResult {
+    kSuccess = 0,
+    KMissing = 1,
+    kParseFailed = 2,
+    kMaxValue = kParseFailed,
   };
 
   // Constructs a provider with given `testing_sources` for testing purposes.

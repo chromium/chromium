@@ -134,16 +134,8 @@ bool GetInitialLocaleFromRegionalData(const base::Value& region_dict,
   return JoinListValuesToString(region_dict, kLocalesPath, result);
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class VpdCacheReadResult {
-  kSuccess = 0,
-  KMissing = 1,
-  kParseFailed = 2,
-  kMaxValue = kParseFailed,
-};
-
-void ReportVpdCacheReadResult(VpdCacheReadResult result) {
+void ReportVpdCacheReadResult(
+    StatisticsProviderImpl::VpdCacheReadResult result) {
   base::UmaHistogramEnumeration("Enterprise.VPDCacheReadResult", result);
 }
 
@@ -170,6 +162,8 @@ StatisticsProviderImpl::StatisticsSources CreateDefaultSources() {
 }
 
 }  // namespace
+
+const char kMetricVpdCacheReadResult[] = "Enterprise.VPDCacheReadResult";
 
 StatisticsProviderImpl::StatisticsSources::StatisticsSources() = default;
 

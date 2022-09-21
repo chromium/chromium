@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -26,6 +27,7 @@ constexpr char kInvalidLsbReleaseContent[] = "Just empty";
 
 constexpr char kCrossystemToolFormat[] = "%s = %s   # %s\n";
 constexpr char kMachineInfoFormat[] = "\"%s\"=\"%s\"\n";
+constexpr char kVpdFormat[] = "\"%s\"=\"%s\"\n";
 
 // Creates a file with unique name in the temp dir and fills it with
 // `content`. Returns path to the created file.
@@ -415,6 +417,232 @@ TEST_F(StatisticsProviderImplTest,
 
   // Expect the same statistic as initial.
   EXPECT_EQ(provider->GetEnterpriseMachineID(), initial_machine_id);
+}
+
+// Test that the provider loads statistics from VPD echo and VPD file if they
+// have correct format. Test that the provider records correct metrics.
+TEST_F(StatisticsProviderImplTest, LoadsStatisticsFromVpdFile) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const std::string kVpdEchoStatistics =
+      base::StringPrintf(kVpdFormat, "vpd_echo_key_1", "vpd_echo_value_1") +
+      base::StringPrintf(kVpdFormat, "vpd_echo_key_2", "vpd_echo_value_2") +
+      "vpd_echo_malformed_key_3 = vpd_echo_malformed_value_3\n" +
+      "vpd_echo_malformed_key_4 : \"vpd_echo_malformed_value_4\"\n" +
+      base::StringPrintf(kVpdFormat, "vpd_echo_key_5", "vpd_echo_value_5");
+
+  // Malformed values are skipped here so that provider records success metric
+  // for parsing the VPD file. Malformed values are tested in a separate test
+  // case.
+  const std::string kVpdStatistics =
+      base::StringPrintf(kVpdFormat, "vpd_key_1", "vpd_value_1") +
+      base::StringPrintf(kVpdFormat, "vpd_key_2", "vpd_value_2") +
+      base::StringPrintf(kVpdFormat, "vpd_key_3", "vpd_value_3");
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_vpd_echo(CreateFileInTempDir(kVpdEchoStatistics, temp_dir()))
+          .set_vpd(CreateFileInTempDir(kVpdStatistics, temp_dir()))
+          .Build();
+
+  // Load statistics.
+  base::HistogramTester histogram_tester;
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  // Check statistics.
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic("vpd_echo_key_1", &result));
+    EXPECT_EQ(result, "vpd_echo_value_1");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic("vpd_echo_key_2", &result));
+    EXPECT_EQ(result, "vpd_echo_value_2");
+  }
+
+  {
+    std::string result;
+    EXPECT_FALSE(
+        provider->GetMachineStatistic("vpd_echo_malformed_key_3", &result));
+    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
+  }
+
+  {
+    std::string result;
+    EXPECT_FALSE(
+        provider->GetMachineStatistic("vpd_echo_malformed_key_4", &result));
+    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic("vpd_echo_key_5", &result));
+    EXPECT_EQ(result, "vpd_echo_value_5");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic("vpd_key_1", &result));
+    EXPECT_EQ(result, "vpd_value_1");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic("vpd_key_2", &result));
+    EXPECT_EQ(result, "vpd_value_2");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic("vpd_key_3", &result));
+    EXPECT_EQ(result, "vpd_value_3");
+  }
+
+  // Check histogram recordings.
+  histogram_tester.ExpectUniqueSample(
+      kMetricVpdCacheReadResult,
+      StatisticsProviderImpl::VpdCacheReadResult::kSuccess,
+      /*expected_bucket_count=*/1);
+}
+
+// Test that the provider records correct metrics when VPD file is missing.
+TEST_F(StatisticsProviderImplTest, RecordsErrorIfVpdFileIsMissing) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const base::FilePath kNonExistingVpdFilepath =
+      temp_dir().GetPath().Append("vpd_does_not_exist");
+  ASSERT_FALSE(base::PathExists(kNonExistingVpdFilepath));
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_vpd(std::move(kNonExistingVpdFilepath))
+          .Build();
+
+  // Load statistics.
+  base::HistogramTester histogram_tester;
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  // Check histogram recordings.
+  histogram_tester.ExpectBucketCount(
+      kMetricVpdCacheReadResult,
+      StatisticsProviderImpl::VpdCacheReadResult::KMissing,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kMetricVpdCacheReadResult,
+      StatisticsProviderImpl::VpdCacheReadResult::kParseFailed,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(kMetricVpdCacheReadResult,
+                                    /*count=*/2);
+}
+
+// Test that the provider records correct metrics when VPD file has incorrect
+// values.
+TEST_F(StatisticsProviderImplTest, RecordsErrorIfVpdFileIsMalformed) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const std::string kVpdStatistics =
+      base::StringPrintf(kVpdFormat, "vpd_key_1", "vpd_value_1") +
+      "vpd_malformed_key_2 = vpd_malformed_value_2\n" +
+      "vpd_malformed_key_3 : \"vpd_malformed_value_3\"\n";
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_vpd(CreateFileInTempDir(kVpdStatistics, temp_dir()))
+          .Build();
+
+  // Load statistics.
+  base::HistogramTester histogram_tester;
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  // Check statistics.
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic("vpd_key_1", &result));
+    EXPECT_EQ(result, "vpd_value_1");
+  }
+
+  {
+    std::string result;
+    EXPECT_FALSE(provider->GetMachineStatistic("vpd_malformed_key_2", &result));
+    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
+  }
+
+  {
+    std::string result;
+    EXPECT_FALSE(provider->GetMachineStatistic("vpd_malformed_key_3", &result));
+    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
+  }
+
+  // Check histogram recordings.
+  histogram_tester.ExpectUniqueSample(
+      kMetricVpdCacheReadResult,
+      StatisticsProviderImpl::VpdCacheReadResult::kParseFailed,
+      /*expected_bucket_count=*/1);
+}
+
+// Tests that StatisticsProvider generates stub statistics file for VPD
+// in in non-ChromeOS test environment.
+TEST_F(StatisticsProviderImplTest, GeneratesStubVpdFileIfNotRunningChromeOS) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(
+      kInvalidLsbReleaseContent, base::Time());
+  ASSERT_FALSE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const base::FilePath kVpdFilepath = temp_dir().GetPath().Append("vpd");
+  ASSERT_FALSE(base::PathExists(kVpdFilepath));
+
+  const StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir()).set_vpd(kVpdFilepath).Build();
+
+  // Load statistics.
+  base::HistogramTester histogram_tester;
+  auto provider =
+      StatisticsProviderImpl::CreateProviderForTesting(testing_sources);
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  // Check statistics.
+  std::string initial_activate_date;
+  EXPECT_TRUE(
+      provider->GetMachineStatistic(kActivateDateKey, &initial_activate_date));
+
+  // Check stub file exists.
+  EXPECT_TRUE(base::PathExists(kVpdFilepath));
+
+  // The provider shall not record in non-chromeos environment.
+  histogram_tester.ExpectTotalCount(kMetricVpdCacheReadResult,
+                                    /*count=*/0);
+
+  // Check fresh provider.
+  provider = StatisticsProviderImpl::CreateProviderForTesting(testing_sources);
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  {
+    // Expect the same statistic as initial.
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic(kActivateDateKey, &result));
+    EXPECT_EQ(result, initial_activate_date);
+  }
+
+  // The provider shall not record in non-chromeos environment.
+  histogram_tester.ExpectTotalCount(kMetricVpdCacheReadResult,
+                                    /*count=*/0);
 }
 
 }  // namespace chromeos::system
