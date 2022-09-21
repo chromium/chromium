@@ -112,7 +112,7 @@ try_.orchestrator_builder(
         "remove_src_checkout_experiment": 100,
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
-        "weetbix.enable_weetbix_exonerations": 50,
+        "weetbix.enable_weetbix_exonerations": 100,
     },
     use_orchestrator_pool = True,
 )
@@ -331,6 +331,7 @@ ios_builder(
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
+        "weetbix.enable_weetbix_exonerations": 100,
     },
 )
 
