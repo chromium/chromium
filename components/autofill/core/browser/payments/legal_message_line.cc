@@ -85,9 +85,9 @@ bool LegalMessageLine::Parse(const base::Value& legal_message,
       legal_message.FindKeyOfType("line", base::Value::Type::LIST);
   if (lines_list) {
     LegalMessageLines lines;
-    lines.reserve(lines_list->GetListDeprecated().size());
-    for (const base::Value& single_line : lines_list->GetListDeprecated()) {
-      lines.emplace_back(LegalMessageLine());
+    lines.reserve(lines_list->GetList().size());
+    for (const base::Value& single_line : lines_list->GetList()) {
+      lines.emplace_back();
       if (!single_line.is_dict() ||
           !lines.back().ParseLine(single_line, escape_apostrophes))
         return false;
@@ -112,8 +112,8 @@ bool LegalMessageLine::ParseLine(const base::Value& line,
   const base::Value* template_parameters =
       line.FindKeyOfType("template_parameter", base::Value::Type::LIST);
   if (template_parameters) {
-    base::Value::ConstListView template_parameters_view =
-        template_parameters->GetListDeprecated();
+    const base::Value::List& template_parameters_view =
+        template_parameters->GetList();
     display_texts.reserve(template_parameters_view.size());
     links_.reserve(template_parameters_view.size());
 

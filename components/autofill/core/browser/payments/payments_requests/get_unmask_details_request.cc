@@ -78,8 +78,7 @@ void GetUnmaskDetailsRequest::ParseResponse(const base::Value& response) {
   const auto* fido_eligible_card_ids =
       response.FindKeyOfType("fido_eligible_card_id", base::Value::Type::LIST);
   if (fido_eligible_card_ids) {
-    for (const base::Value& result :
-         fido_eligible_card_ids->GetListDeprecated()) {
+    for (const base::Value& result : fido_eligible_card_ids->GetList()) {
       unmask_details_.fido_eligible_card_ids.insert(result.GetString());
     }
   }

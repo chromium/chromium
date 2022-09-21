@@ -98,7 +98,7 @@ void MigrateCardsRequest::ParseResponse(const base::Value& response) {
 
   save_result_ =
       std::make_unique<std::unordered_map<std::string, std::string>>();
-  for (const base::Value& result : found_list->GetListDeprecated()) {
+  for (const base::Value& result : found_list->GetList()) {
     if (result.is_dict()) {
       const std::string* unique_id = result.FindStringKey("unique_id");
       const std::string* status = result.FindStringKey("status");
