@@ -1234,9 +1234,10 @@ int main(int argc, const char* argv[]) {
   auto non_nullptr_expr_matcher =
       expr(unless(ignoringImplicit(cxxNullPtrLiteralExpr())));
   auto constexpr_ctor_field_initializer_matcher = cxxConstructorDecl(
-      allOf(isConstexpr(), forEachConstructorInitializer(allOf(
-                               forField(field_decl_matcher),
-                               withInitializer(non_nullptr_expr_matcher)))));
+      allOf(isConstexpr(), unless(isImplicit()),
+            forEachConstructorInitializer(
+                allOf(forField(field_decl_matcher),
+                      withInitializer(non_nullptr_expr_matcher)))));
   FilteredExprWriter constexpr_ctor_field_initializer_writer(
       &output_helper, "constexpr-ctor-field-initializer");
   match_finder.addMatcher(constexpr_ctor_field_initializer_matcher,

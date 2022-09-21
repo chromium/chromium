@@ -9,6 +9,7 @@ r:::gen-constexpr-actual.cc:::2853:::12:::raw_ptr<const char>
 r:::gen-constexpr-actual.cc:::2884:::12:::raw_ptr<const char> 
 r:::gen-constexpr-actual.cc:::2913:::12:::raw_ptr<const char> 
 r:::gen-constexpr-actual.cc:::2935:::12:::raw_ptr<const char> 
+r:::gen-constexpr-actual.cc:::3480:::6:::raw_ptr<void> 
 ==== END EDITS ====
 ==== BEGIN FIELD FILTERS ====
 constexpr_variable_designated_initializers::foo()::(anonymous struct)::str2  # const-char, constexpr-var-initializer

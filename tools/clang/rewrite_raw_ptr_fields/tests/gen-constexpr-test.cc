@@ -102,3 +102,23 @@ void foo() {
 }
 
 }  // namespace constexpr_variable_designated_initializers
+
+namespace implicit_constexpr_ctor {
+
+struct Foo {
+  void* expect_rewrite = nullptr;
+};
+
+class Bar {
+  // The compiler will implicitly generate a constexpr constructor. But we want
+  // to rewrite Foo::expect_rewrite_.
+  Bar(){};
+  Foo info_;
+};
+
+struct Baz {
+  constexpr Baz(const void* ptr) : no_rewrite(ptr) {}
+  const void* no_rewrite;
+};
+
+}  // namespace implicit_constexpr_ctor
