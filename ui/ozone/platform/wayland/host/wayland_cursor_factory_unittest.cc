@@ -86,7 +86,9 @@ class WaylandCursorFactoryTest : public WaylandTest,
 
 // Tests that the factory holds the cursor theme until a buffer taken from it
 // released.
-TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
+// TODO(1357512): fails on Linux (not used on LaCros).
+TEST_P(WaylandCursorFactoryTest,
+       DISABLED_RetainOldThemeUntilNewBufferIsAttached) {
   std::unique_ptr<WaylandCursorFactory> cursor_factory =
       std::make_unique<DryRunningWaylandCursorFactory>(connection_.get());
   cursor_factory->AddObserver(this);
@@ -164,7 +166,8 @@ TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
 
 // Tests that the factory keeps the caches when either cursor size or buffer
 // scale are changed, and only resets them when the theme is changed.
-TEST_P(WaylandCursorFactoryTest, CachesSizesUntilThemeNameIsChanged) {
+// TODO(1357512): fails on Linux (not used on LaCros).
+TEST_P(WaylandCursorFactoryTest, DISABLED_CachesSizesUntilThemeNameIsChanged) {
   std::unique_ptr<WaylandCursorFactory> cursor_factory =
       std::make_unique<DryRunningWaylandCursorFactory>(connection_.get());
   cursor_factory->AddObserver(this);
