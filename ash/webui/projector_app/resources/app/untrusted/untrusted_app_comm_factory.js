@@ -4,7 +4,7 @@
 
 import {PostMessageAPIClient} from '//resources/ash/common/post_message_api/post_message_api_client.js';
 import {RequestHandler} from '//resources/ash/common/post_message_api/post_message_api_request_handler.js';
-import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
+import {PromiseResolver} from '//resources/js/promise_resolver.js';
 import {ProjectorError} from 'chrome-untrusted://projector/common/message_types.js';
 
 const TARGET_URL = 'chrome://projector/';

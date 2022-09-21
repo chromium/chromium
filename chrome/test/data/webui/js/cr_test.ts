@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {addSingletonGetter, addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener, webUIListenerCallback, webUIResponse} from 'chrome://resources/js/cr.m.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /** Name of the chrome.send() message to be used in tests. */

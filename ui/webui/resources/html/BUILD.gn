@@ -15,9 +15,5 @@ generate_grd("build_grdp") {
     "test_loader.html",
   ]
 
-  if (is_chromeos_ash) {
-    input_files += [ "promise_resolver.html" ]
-  }
-
   input_files_base_dir = rebase_path(".", "//")
 }

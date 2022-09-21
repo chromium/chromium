@@ -5,7 +5,7 @@
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {NetworkListObserverRemote, NetworkStateObserverRemote} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import {assertDeepEquals, assertEquals, assertTrue} from '../../chai_assert.js';
 

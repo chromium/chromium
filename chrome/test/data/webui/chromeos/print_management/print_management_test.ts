@@ -10,7 +10,7 @@ import {setMetadataProviderForTesting} from 'chrome://print-management/mojo_inte
 import {PrintJobEntryElement} from 'chrome://print-management/print_job_entry.js';
 import {PrintManagementElement} from 'chrome://print-management/print_management.js';
 import {ActivePrintJobInfo, ActivePrintJobState, CompletedPrintJobInfo, PrinterErrorCode, PrintingMetadataProviderInterface, PrintJobCompletionStatus, PrintJobInfo, PrintJobsObserverRemote} from 'chrome://print-management/printing_manager.mojom-webui.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';

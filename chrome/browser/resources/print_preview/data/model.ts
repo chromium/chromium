@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 // <if expr="is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // </if>
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundGraphicsModeRestriction, Policies} from '../native_layer.js';

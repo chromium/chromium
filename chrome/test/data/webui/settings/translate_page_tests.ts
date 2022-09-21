@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import { PromiseResolver } from 'chrome://resources/js/promise_resolver.m.js';
+import { PromiseResolver } from 'chrome://resources/js/promise_resolver.js';
 import { flush } from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import { LanguageHelper, LanguagesBrowserProxyImpl, SettingsAddLanguagesDialogElement, SettingsTranslatePageElement } from 'chrome://settings/lazy_load.js';
 import { CrSettingsPrefs, loadTimeData } from 'chrome://settings/settings.js';

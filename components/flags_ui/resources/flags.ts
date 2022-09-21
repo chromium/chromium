@@ -13,7 +13,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isIOS, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
 let lastChanged: HTMLElement|null = null;

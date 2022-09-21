@@ -161,7 +161,7 @@ checked_in_dts_files = [
   "cr_elements/policy/cr_policy_indicator_behavior.d.ts",
   "cr_elements/web_ui_listener_behavior.d.ts",
   "js/parse_html_subset.d.ts",
-  "js/promise_resolver.m.d.ts",
+  "js/promise_resolver.d.ts",
   "js/static_types.d.ts",
 ]
 

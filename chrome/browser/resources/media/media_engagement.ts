@@ -5,7 +5,7 @@
 import 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import {MediaEngagementConfig, MediaEngagementScoreDetails, MediaEngagementScoreDetailsProvider, MediaEngagementScoreDetailsProviderRemote} from './media_engagement_score_details.mojom-webui.js';
 

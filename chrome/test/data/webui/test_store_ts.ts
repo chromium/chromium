@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Action, Store} from 'chrome://resources/js/cr/ui/store_ts.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /**

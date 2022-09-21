@@ -10,7 +10,7 @@
  * it.
  */
 import {assert, assertNotReached} from './assert.m.js';
-import {PromiseResolver} from './promise_resolver.m.js';
+import {PromiseResolver} from './promise_resolver.js';
 
 /** @typedef {{eventName: string, uid: number}} */
 export let WebUIListener;

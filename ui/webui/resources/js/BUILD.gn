@@ -69,6 +69,7 @@ preprocess_if_expr("preprocess_src") {
     "load_time_data.m.js",
     "parse_html_subset.js",
     "plural_string_proxy.js",
+    "promise_resolver.js",
     "static_types.js",
     "test_loader.js",
     "test_loader_util.js",
@@ -86,10 +87,7 @@ preprocess_if_expr("preprocess_src") {
 
   # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
   if (is_chromeos_ash) {
-    in_files += [
-      "list_property_update_behavior.js",
-      "promise_resolver.js",
-    ]
+    in_files += [ "list_property_update_behavior.js" ]
   }
 
   if (is_ios) {
@@ -111,7 +109,6 @@ preprocess_if_expr("preprocess_generated") {
   in_files = [
     "assert.m.js",
     "load_time_data.js",
-    "promise_resolver.m.js",
   ]
 }
 
@@ -124,7 +121,6 @@ js_type_check("js_resources") {
   deps = [
     ":assert",
     ":load_time_data",
-    ":promise_resolver",
     ":util_deprecated",
     ":webui_resource_test",
   ]
@@ -151,10 +147,6 @@ js_library("load_time_data") {
   extra_deps = [ ":unmodulize" ]
 }
 
-js_library("promise_resolver") {
-  deps = [ ":assert" ]
-}
-
 js_library("util_deprecated") {
 }
 
@@ -168,10 +160,7 @@ js_library("webui_resource_test") {
 # Targets for auto-generating and type-checking JS Modules
 
 js_modulizer("modulize") {
-  input_files = [
-    "assert.js",
-    "promise_resolver.js",
-  ]
+  input_files = [ "assert.js" ]
 }
 
 js_unmodulizer("unmodulize") {
@@ -200,7 +189,7 @@ js_type_check("js_resources_modules") {
     ":load_time_data.m",
     ":parse_html_subset",
     ":plural_string_proxy",
-    ":promise_resolver.m",
+    ":promise_resolver",
     ":static_types",
     ":util.m",
   ]
@@ -214,7 +203,7 @@ js_library("assert.m") {
 js_library("cr.m") {
   deps = [
     ":assert.m",
-    ":promise_resolver.m",
+    ":promise_resolver",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
@@ -242,10 +231,8 @@ js_library("plural_string_proxy") {
   deps = [ ":cr.m" ]
 }
 
-js_library("promise_resolver.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/promise_resolver.m.js" ]
+js_library("promise_resolver") {
   deps = [ ":assert.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("static_types") {

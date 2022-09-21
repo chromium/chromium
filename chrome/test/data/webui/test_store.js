@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Action, Store} from 'chrome://resources/js/cr/ui/store.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 /**
  * This is a generic test store, designed to replace a real Store instance

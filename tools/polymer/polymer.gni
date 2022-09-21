@@ -20,7 +20,6 @@ common_auto_imports = [
   "ui/webui/resources/html/load_time_data.html|loadTimeData",
   "ui/webui/resources/html/parse_html_subset.html|parseHtmlSubset",
   "ui/webui/resources/html/polymer.html|Polymer,html",
-  "ui/webui/resources/html/promise_resolver.html|PromiseResolver",
 
   # TODO(dpapad): Add more auto-imports here, as needed.
 ]

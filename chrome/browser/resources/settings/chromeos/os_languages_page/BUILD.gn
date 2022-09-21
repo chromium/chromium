@@ -47,7 +47,7 @@ js_library("languages") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
+    "//ui/webui/resources/js:promise_resolver",
   ]
   externs_list = [
     "$externs_path/input_method_private.js",

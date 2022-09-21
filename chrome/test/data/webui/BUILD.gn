@@ -346,7 +346,7 @@ js_library("chai_assert") {
 }
 
 js_library("test_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:promise_resolver.m" ]
+  deps = [ "//ui/webui/resources/js:promise_resolver" ]
 }
 
 js_library("test_plural_string_proxy") {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BrowserService, ForeignSession, QueryResult, RemoveVisitsRequest} from 'chrome://history/history.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 

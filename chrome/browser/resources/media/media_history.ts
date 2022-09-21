@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 import {MediaDataTable, MediaDataTableDelegate} from './media_data_table.js';

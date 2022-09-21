@@ -14,7 +14,7 @@
  * |setGlobalScrollTarget| should only be called once.
  */
 
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {Route, Router} from '../router.js';
 import {RouteObserverBehavior} from './route_observer_behavior.js';
 

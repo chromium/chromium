@@ -6,7 +6,7 @@ import {PermissionType, PermissionValue, TriState} from 'chrome://resources/cr_c
 import {AppType, InstallReason, InstallSource, OptionalBool, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
 import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import {AppManagementStore} from './store.js';
 

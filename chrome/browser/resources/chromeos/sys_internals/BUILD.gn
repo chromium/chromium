@@ -19,7 +19,7 @@ js_library("index") {
     "line_chart:line_chart",
     "line_chart:unit_label",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:promise_resolver.m",
+    "//ui/webui/resources/js:promise_resolver",
     "//ui/webui/resources/js:util.m",
   ]
 
