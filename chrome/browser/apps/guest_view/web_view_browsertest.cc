@@ -4355,8 +4355,7 @@ IN_PROC_BROWSER_TEST_P(WebViewPdfTest, ContextMenuNavigationInMimeHandlerView) {
   // Ensure the <webview> has a previous entry, so we can navigate back to it.
   EXPECT_EQ(true,
             content::EvalJs(GetEmbedderWebContents(),
-                            "document.querySelector('webview').canGoBack();")
-                .ExtractBool());
+                            "document.querySelector('webview').canGoBack();"));
 
   // Open a context menu for the MimeHandlerViewGuest. Since the <webview> can
   // navigate back, the Back item should be enabled.
