@@ -4,9 +4,6 @@
 
 #include "components/sync/base/user_selectable_type.h"
 
-#include <type_traits>
-
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/features.h"
@@ -51,24 +48,10 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
   switch (type) {
     case UserSelectableType::kBookmarks:
       return {kBookmarksTypeName, BOOKMARKS, {BOOKMARKS}};
-    case UserSelectableType::kPreferences: {
-      ModelTypeSet model_types = {PREFERENCES, DICTIONARY, PRIORITY_PREFERENCES,
-                                  SEARCH_ENGINES};
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      if (!chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-        // SyncSettingsCategorization makes Printers a separate OS setting.
-        model_types.Put(PRINTERS);
-        model_types.Put(PRINTERS_AUTHORIZATION_SERVERS);
-
-        // Workspace desk template is an OS-only feature. When
-        // SyncSettingsCategorization is disabled, WORKSPACE_DESK should be
-        // enabled with user preferences. Otherwise, WORKSPACE_DESK should be
-        // enabled with OS preferences below.
-        model_types.Put(WORKSPACE_DESK);
-      }
-#endif
-      return {kPreferencesTypeName, PREFERENCES, model_types};
-    }
+    case UserSelectableType::kPreferences:
+      return {kPreferencesTypeName,
+              PREFERENCES,
+              {PREFERENCES, DICTIONARY, PRIORITY_PREFERENCES, SEARCH_ENGINES}};
     case UserSelectableType::kPasswords:
       return {kPasswordsTypeName, PASSWORDS, {PASSWORDS}};
     case UserSelectableType::kAutofill:
@@ -92,36 +75,26 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kExtensions:
       return {
           kExtensionsTypeName, EXTENSIONS, {EXTENSIONS, EXTENSION_SETTINGS}};
-    case UserSelectableType::kApps: {
+    case UserSelectableType::kApps:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      // SyncSettingsCategorization moves apps to Chrome OS settings.
-      if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-        return {kAppsTypeName, UNSPECIFIED};
-      } else {
-        return {kAppsTypeName,
-                APPS,
-                {APP_LIST, APPS, APP_SETTINGS, ARC_PACKAGE, WEB_APPS}};
-      }
+      // In Ash, "Apps" part of Chrome OS settings.
+      return {kAppsTypeName, UNSPECIFIED};
 #else
       return {kAppsTypeName, APPS, {APPS, APP_SETTINGS, WEB_APPS}};
 #endif
-    }
     case UserSelectableType::kReadingList:
       return {kReadingListTypeName, READING_LIST, {READING_LIST}};
-    case UserSelectableType::kTabs: {
+    case UserSelectableType::kTabs:
       return {kTabsTypeName, PROXY_TABS, {PROXY_TABS, SESSIONS}};
-    }
-    case UserSelectableType::kWifiConfigurations: {
+    case UserSelectableType::kWifiConfigurations:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      // SyncSettingsCategorization moves Wi-Fi configurations to Chrome OS
-      // settings.
-      if (chromeos::features::IsSyncSettingsCategorizationEnabled())
-        return {kWifiConfigurationsTypeName, UNSPECIFIED};
-#endif
+      // In Ash, "Wi-Fi configurations" is part of Chrome OS settings.
+      return {kWifiConfigurationsTypeName, UNSPECIFIED};
+#else
       return {kWifiConfigurationsTypeName,
               WIFI_CONFIGURATIONS,
               {WIFI_CONFIGURATIONS}};
-    }
+#endif
   }
   NOTREACHED();
   return {nullptr, UNSPECIFIED, {}};
@@ -246,11 +219,9 @@ absl::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
 
   // Some pref types migrated from browser prefs to OS prefs. Map the browser
   // type name to the OS type so that enterprise policy SyncTypesListDisabled
-  // still applies to the migrated names during SyncSettingsCategorization
-  // roll-out.
+  // still applies to the migrated names.
   // TODO(https://crbug.com/1059309): Rename "osApps" to "apps" and
-  // "osWifiConfigurations" to "wifiConfigurations" after
-  // SyncSettingsCategorization is the default, and remove the mapping for
+  // "osWifiConfigurations" to "wifiConfigurations", and remove the mapping for
   // "preferences".
   if (type == kAppsTypeName) {
     return UserSelectableOsType::kOsApps;
