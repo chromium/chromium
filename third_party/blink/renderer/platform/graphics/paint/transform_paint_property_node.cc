@@ -20,6 +20,13 @@ TransformPaintPropertyNode::TransformAndOrigin::TransformAndOrigin(
   }
 }
 
+TransformationMatrix
+TransformPaintPropertyNode::TransformAndOrigin::SlowMatrix() const {
+  return matrix_and_origin_ ? matrix_and_origin_->matrix
+                            : TransformationMatrix::MakeTranslation(
+                                  translation_2d_.x(), translation_2d_.y());
+}
+
 PaintPropertyChangeType
 TransformPaintPropertyNode::State::ComputeTransformChange(
     const TransformAndOrigin& other,

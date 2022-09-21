@@ -300,7 +300,7 @@ TEST_P(PaintAndRasterInvalidationTest, ResizeRotated) {
                        "transform: rotate(45deg); width: 200px");
   UpdateAllLifecyclePhasesForTest();
   auto expected_rect =
-      TransformationMatrix().Rotate(45).MapRect(gfx::Rect(50, 0, 150, 100));
+      MakeRotationMatrix(45).MapRect(gfx::Rect(50, 0, 150, 100));
   expected_rect.Intersect(gfx::Rect(0, 0, 800, 600));
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{
@@ -325,8 +325,7 @@ TEST_P(PaintAndRasterInvalidationTest, ResizeRotatedChild) {
   child->setAttribute(html_names::kStyleAttr,
                       "width: 100px; height: 50px; background: red");
   UpdateAllLifecyclePhasesForTest();
-  auto expected_rect =
-      TransformationMatrix().Rotate(45).MapRect(gfx::Rect(50, 0, 50, 50));
+  auto expected_rect = MakeRotationMatrix(45).MapRect(gfx::Rect(50, 0, 50, 50));
   expected_rect.Intersect(gfx::Rect(0, 0, 800, 600));
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
               UnorderedElementsAre(RasterInvalidationInfo{

@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/transformation_matrix_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -263,7 +263,7 @@ TEST(TransformationMatrixTest, ValidRangedMatrix) {
 
     test(TransformationMatrix::ColMajor(mv, mv, mv, mv, mv, mv, mv, mv, mv, mv,
                                         mv, mv, mv, mv, mv, mv));
-    test(TransformationMatrix().Translate(mv, mv));
+    test(MakeTranslationMatrix(mv, mv));
   }
 }
 
@@ -290,11 +290,11 @@ TEST(TransformationMatrixTest, BasicOperations) {
 
   {
     TransformationMatrix n;
-    n.ScaleNonUniform(2.f, 3.f);
+    n.Scale(2.f, 3.f);
     EXPECT_EQ(gfx::Point3F(82.f, 129.f, 47.f), n.MapPoint(p));
 
     TransformationMatrix mn = m;
-    mn.ScaleNonUniform(2.f, 3.f);
+    mn.Scale(2.f, 3.f);
     EXPECT_EQ(mn.MapPoint(p), m.MapPoint(n.MapPoint(p)));
   }
 
@@ -321,12 +321,12 @@ TEST(TransformationMatrixTest, BasicOperations) {
 
   {
     TransformationMatrix n;
-    n.Rotate3d(10.f, 10.f, 10.f, 120.f);
+    n.RotateAbout(10.f, 10.f, 10.f, 120.f);
     EXPECT_FLOAT_EQ(0.f,
                     (gfx::Point3F(47.f, 41.f, 43.f) - n.MapPoint(p)).Length());
 
     TransformationMatrix mn = m;
-    mn.Rotate3d(10.f, 10.f, 10.f, 120.f);
+    mn.RotateAbout(10.f, 10.f, 10.f, 120.f);
     EXPECT_FLOAT_EQ(0.f, (mn.MapPoint(p) - m.MapPoint(n.MapPoint(p))).Length());
   }
 
@@ -397,12 +397,12 @@ TEST(TransformationMatrixTest, BasicOperations) {
 
   {
     TransformationMatrix n;
-    n.ApplyPerspective(94.f);
+    n.ApplyPerspectiveDepth(94.f);
     EXPECT_FLOAT_EQ(0.f,
                     (gfx::Point3F(82.f, 86.f, 94.f) - n.MapPoint(p)).Length());
 
     TransformationMatrix mn = m;
-    mn.ApplyPerspective(94.f);
+    mn.ApplyPerspectiveDepth(94.f);
     EXPECT_FLOAT_EQ(0.f, (mn.MapPoint(p) - m.MapPoint(n.MapPoint(p))).Length());
   }
 
@@ -458,36 +458,43 @@ TEST(TransformationMatrix, IsInvertible) {
                                               0, 0, 0, 0, 0)
                    .IsInvertible());
   EXPECT_TRUE(TransformationMatrix().IsInvertible());
-  EXPECT_TRUE(TransformationMatrix().Translate3d(10, 20, 30).IsInvertible());
-  EXPECT_TRUE(TransformationMatrix().Scale(1e-8).IsInvertible());
-  EXPECT_TRUE(TransformationMatrix().Scale3d(1e-8, -1e-8, 1).IsInvertible());
-  EXPECT_FALSE(TransformationMatrix().Scale(0).IsInvertible());
-  EXPECT_FALSE(TransformationMatrix()
-                   .Scale(std::numeric_limits<double>::quiet_NaN())
-                   .IsInvertible());
-  EXPECT_FALSE(TransformationMatrix()
-                   .Scale(std::numeric_limits<double>::min())
-                   .IsInvertible());
+  TransformationMatrix t;
+  t.Translate3d(10, 20, 30);
+  EXPECT_TRUE(t.IsInvertible());
+  EXPECT_TRUE(MakeScaleMatrix(1e-8).IsInvertible());
+  EXPECT_FALSE(MakeScaleMatrix(0).IsInvertible());
+  EXPECT_FALSE(
+      MakeScaleMatrix(std::numeric_limits<double>::quiet_NaN()).IsInvertible());
+  EXPECT_FALSE(
+      MakeScaleMatrix(std::numeric_limits<double>::min()).IsInvertible());
 }
 
 TEST(TransformationMatrix, Inverse) {
-  EXPECT_EQ(TransformationMatrix(), TransformationMatrix().Scale(0).Inverse());
+  EXPECT_EQ(TransformationMatrix(), MakeScaleMatrix(0).Inverse());
   EXPECT_EQ(TransformationMatrix(), TransformationMatrix().Inverse());
-  EXPECT_EQ(TransformationMatrix().Translate3d(-10, 20, -30),
-            TransformationMatrix().Translate3d(10, -20, 30).Inverse());
-  EXPECT_EQ(TransformationMatrix().Scale3d(2, -4, 0.5),
-            TransformationMatrix().Scale3d(0.5, -0.25, 2).Inverse());
-  EXPECT_TRANSFORMATION_MATRIX(TransformationMatrix()
-                                   .Rotate3d(0, 0, -30)
-                                   .Rotate3d(0, 10, 0)
-                                   .Rotate3d(20, 0, 0)
-                                   .ApplyPerspective(100),
-                               TransformationMatrix()
-                                   .ApplyPerspective(-100)
-                                   .Rotate3d(-20, 0, 0)
-                                   .Rotate3d(0, -10, 0)
-                                   .Rotate3d(0, 0, 30)
-                                   .Inverse());
+
+  auto t1 = MakeTranslationMatrix(-10, 20, -30);
+  auto t2 = MakeTranslationMatrix(10, -20, 30);
+  EXPECT_EQ(t1, t2.Inverse());
+  EXPECT_EQ(t2, t1.Inverse());
+
+  auto s1 = MakeScaleMatrix(2, -4, 0.5);
+  auto s2 = MakeScaleMatrix(0.5, -0.25, 2);
+  EXPECT_EQ(s1, s2.Inverse());
+  EXPECT_EQ(s2, s1.Inverse());
+
+  TransformationMatrix m1;
+  m1.RotateAboutZAxis(-30);
+  m1.RotateAboutYAxis(10);
+  m1.RotateAboutXAxis(20);
+  m1.ApplyPerspectiveDepth(100);
+  TransformationMatrix m2;
+  m2.ApplyPerspectiveDepth(-100);
+  m2.RotateAboutXAxis(-20);
+  m2.RotateAboutYAxis(-10);
+  m2.RotateAboutZAxis(30);
+  EXPECT_TRANSFORMATION_MATRIX(m1, m2.Inverse());
+  EXPECT_TRANSFORMATION_MATRIX(m2, m1.Inverse());
 }
 
 TEST(TransformationMatrixTest, Blend2dXFlipTest) {
@@ -627,7 +634,7 @@ TEST(TransformationMatrixTest, QuaternionFromRotationMatrixTest) {
   // Test rotation around each axis.
 
   TransformationMatrix m;
-  m.Rotate3d(1, 0, 0, 60);
+  m.RotateAbout(1, 0, 0, 60);
   TransformationMatrix::DecomposedType decomp;
   EXPECT_TRUE(m.Decompose(decomp));
 
@@ -637,7 +644,7 @@ TEST(TransformationMatrixTest, QuaternionFromRotationMatrixTest) {
   EXPECT_NEAR(cos30deg, decomp.quaternion_w, 1e-6);
 
   m.MakeIdentity();
-  m.Rotate3d(0, 1, 0, 60);
+  m.RotateAbout(0, 1, 0, 60);
   EXPECT_TRUE(m.Decompose(decomp));
   EXPECT_NEAR(0, decomp.quaternion_x, 1e-6);
   EXPECT_NEAR(sin30deg, decomp.quaternion_y, 1e-6);
@@ -645,7 +652,7 @@ TEST(TransformationMatrixTest, QuaternionFromRotationMatrixTest) {
   EXPECT_NEAR(cos30deg, decomp.quaternion_w, 1e-6);
 
   m.MakeIdentity();
-  m.Rotate3d(0, 0, 1, 60);
+  m.RotateAbout(0, 0, 1, 60);
   EXPECT_TRUE(m.Decompose(decomp));
   EXPECT_NEAR(0, decomp.quaternion_x, 1e-6);
   EXPECT_NEAR(0, decomp.quaternion_y, 1e-6);
@@ -655,7 +662,7 @@ TEST(TransformationMatrixTest, QuaternionFromRotationMatrixTest) {
   // Test rotation around non-axis aligned vector.
 
   m.MakeIdentity();
-  m.Rotate3d(1, 1, 0, 60);
+  m.RotateAbout(1, 1, 0, 60);
   EXPECT_TRUE(m.Decompose(decomp));
   EXPECT_NEAR(sin30deg / root2, decomp.quaternion_x, 1e-6);
   EXPECT_NEAR(sin30deg / root2, decomp.quaternion_y, 1e-6);
@@ -669,7 +676,7 @@ TEST(TransformationMatrixTest, QuaternionFromRotationMatrixTest) {
   // stability.
 
   m.MakeIdentity();
-  m.Rotate3d(1, 0, 0, 180);
+  m.RotateAbout(1, 0, 0, 180);
   EXPECT_TRUE(m.Decompose(decomp));
   EXPECT_NEAR(1, decomp.quaternion_x, 1e-6);
   EXPECT_NEAR(0, decomp.quaternion_y, 1e-6);
@@ -677,7 +684,7 @@ TEST(TransformationMatrixTest, QuaternionFromRotationMatrixTest) {
   EXPECT_NEAR(0, decomp.quaternion_w, 1e-6);
 
   m.MakeIdentity();
-  m.Rotate3d(0, 1, 0, 180);
+  m.RotateAbout(0, 1, 0, 180);
   EXPECT_TRUE(m.Decompose(decomp));
   EXPECT_NEAR(0, decomp.quaternion_x, 1e-6);
   EXPECT_NEAR(1, decomp.quaternion_y, 1e-6);
@@ -685,7 +692,7 @@ TEST(TransformationMatrixTest, QuaternionFromRotationMatrixTest) {
   EXPECT_NEAR(0, decomp.quaternion_w, 1e-6);
 
   m.MakeIdentity();
-  m.Rotate3d(0, 0, 1, 180);
+  m.RotateAbout(0, 0, 1, 180);
   EXPECT_TRUE(m.Decompose(decomp));
   EXPECT_NEAR(0, decomp.quaternion_x, 1e-6);
   EXPECT_NEAR(0, decomp.quaternion_y, 1e-6);
@@ -702,7 +709,7 @@ TEST(TransformationMatrixTest, QuaternionFromRotationMatrixTest) {
   EXPECT_NEAR(1, decomp.quaternion_w, 1e-6);
 
   m.MakeIdentity();
-  m.Rotate3d(0, 0, 1, 360);
+  m.RotateAbout(0, 0, 1, 360);
   EXPECT_TRUE(m.Decompose(decomp));
   EXPECT_NEAR(0, decomp.quaternion_x, 1e-6);
   EXPECT_NEAR(0, decomp.quaternion_y, 1e-6);
@@ -752,7 +759,8 @@ TEST(TransformationMatrixTest, QuaternionToRotationMatrixTest) {
   // Test non-axis aligned rotation
   SetRotationDecomp(sin30deg / root2, sin30deg / root2, 0, cos30deg, decomp);
   m.Recompose(decomp);
-  auto rotate_xy_60deg = TransformationMatrix().Rotate3d(1, 1, 0, 60);
+  TransformationMatrix rotate_xy_60deg;
+  rotate_xy_60deg.RotateAbout(1, 1, 0, 60);
   EXPECT_TRANSFORMATION_MATRIX(rotate_xy_60deg, m);
 
   // Test 180deg rotation.
@@ -770,7 +778,7 @@ TEST(TransformationMatrixTest, QuaternionInterpolation) {
   // Rotate from identity matrix.
   TransformationMatrix from_matrix;
   TransformationMatrix to_matrix;
-  to_matrix.Rotate3d(0, 0, 1, 120);
+  to_matrix.RotateAbout(0, 0, 1, 120);
   to_matrix.Blend(from_matrix, 0.5);
   auto rotate_z_60 = TransformationMatrix::Affine(cos60deg, sin60deg, -sin60deg,
                                                   cos60deg, 0, 0);
@@ -778,49 +786,44 @@ TEST(TransformationMatrixTest, QuaternionInterpolation) {
 
   // Rotate to identity matrix.
   from_matrix.MakeIdentity();
-  from_matrix.Rotate3d(0, 0, 1, 120);
+  from_matrix.RotateAbout(0, 0, 1, 120);
   to_matrix.MakeIdentity();
   to_matrix.Blend(from_matrix, 0.5);
   EXPECT_TRANSFORMATION_MATRIX(rotate_z_60, to_matrix);
 
   // Interpolation about a common axis of rotation.
   from_matrix.MakeIdentity();
-  from_matrix.Rotate3d(1, 1, 0, 45);
+  from_matrix.RotateAbout(1, 1, 0, 45);
   to_matrix.MakeIdentity();
-  from_matrix.Rotate3d(1, 1, 0, 135);
+  from_matrix.RotateAbout(1, 1, 0, 135);
   to_matrix.Blend(from_matrix, 0.5);
   TransformationMatrix rotate_xy_90;
-  rotate_xy_90.Rotate3d(1, 1, 0, 90);
+  rotate_xy_90.RotateAbout(1, 1, 0, 90);
   EXPECT_TRANSFORMATION_MATRIX(rotate_xy_90, to_matrix);
 
   // Interpolation without a common axis of rotation.
 
   from_matrix.MakeIdentity();
-  from_matrix.Rotate3d(1, 0, 0, 90);
+  from_matrix.RotateAbout(1, 0, 0, 90);
   TransformationMatrix::DecomposedType decomp;
   to_matrix.MakeIdentity();
-  to_matrix.Rotate3d(0, 0, 1, 90);
+  to_matrix.RotateAbout(0, 0, 1, 90);
   EXPECT_TRUE(to_matrix.Decompose(decomp));
   to_matrix.Blend(from_matrix, 0.5);
   TransformationMatrix expected;
-  expected.Rotate3d(1 / root2, 0, 1 / root2, 70.528778372);
+  expected.RotateAbout(1 / root2, 0, 1 / root2, 70.528778372);
   EXPECT_TRANSFORMATION_MATRIX(expected, to_matrix);
 }
 
 TEST(TransformationMatrixTest, IsInteger2DTranslation) {
   EXPECT_TRUE(TransformationMatrix().IsInteger2DTranslation());
-  EXPECT_TRUE(TransformationMatrix().Translate(1, 2).IsInteger2DTranslation());
-  EXPECT_FALSE(
-      TransformationMatrix().Translate(1.00001, 2).IsInteger2DTranslation());
-  EXPECT_FALSE(
-      TransformationMatrix().Translate(1, 2.00002).IsInteger2DTranslation());
-  EXPECT_FALSE(TransformationMatrix().Rotate(2).IsInteger2DTranslation());
-  EXPECT_FALSE(
-      TransformationMatrix().Translate3d(1, 2, 3).IsInteger2DTranslation());
-  EXPECT_FALSE(
-      TransformationMatrix().Translate(1e20, 0).IsInteger2DTranslation());
-  EXPECT_FALSE(
-      TransformationMatrix().Translate(0, 1e20).IsInteger2DTranslation());
+  EXPECT_TRUE(MakeTranslationMatrix(1, 2).IsInteger2DTranslation());
+  EXPECT_FALSE(MakeTranslationMatrix(1.00001, 2).IsInteger2DTranslation());
+  EXPECT_FALSE(MakeTranslationMatrix(1, 2.00002).IsInteger2DTranslation());
+  EXPECT_FALSE(MakeRotationMatrix(2).IsInteger2DTranslation());
+  EXPECT_FALSE(MakeTranslationMatrix(1, 2, 3).IsInteger2DTranslation());
+  EXPECT_FALSE(MakeTranslationMatrix(1e20, 0).IsInteger2DTranslation());
+  EXPECT_FALSE(MakeTranslationMatrix(0, 1e20).IsInteger2DTranslation());
 }
 
 }  // namespace blink

@@ -90,13 +90,13 @@ XRPose* XRSpace::getPose(const XRSpace* other_space) const {
 
   // Add any origin offset from the other space now.
   TransformationMatrix other_offset_from_mojo =
-      other_space->OffsetFromNativeMatrix().Multiply(*other_from_mojo);
+      other_space->OffsetFromNativeMatrix() * other_from_mojo.value();
 
   // TODO(crbug.com/969133): Update how EmulatedPosition is determined here once
   // spec issue https://github.com/immersive-web/webxr/issues/534 has been
   // resolved.
   TransformationMatrix other_offset_from_offset =
-      other_offset_from_mojo.Multiply(*mojo_from_offset);
+      other_offset_from_mojo * mojo_from_offset.value();
   return MakeGarbageCollected<XRPose>(
       other_offset_from_offset,
       EmulatedPosition() || other_space->EmulatedPosition());
@@ -111,7 +111,7 @@ absl::optional<TransformationMatrix> XRSpace::OffsetFromViewer() const {
     return absl::nullopt;
   }
 
-  return OffsetFromNativeMatrix().Multiply(*native_from_viewer);
+  return OffsetFromNativeMatrix() * *native_from_viewer;
 }
 
 ExecutionContext* XRSpace::GetExecutionContext() const {

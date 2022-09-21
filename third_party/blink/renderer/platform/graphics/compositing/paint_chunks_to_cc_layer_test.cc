@@ -276,7 +276,7 @@ TEST_P(PaintChunksToCcLayerTest, EffectGroupingNested) {
 
 TEST_P(PaintChunksToCcLayerTest, EffectFilterGroupingNestedWithTransforms) {
   // This test verifies nested effects with transforms are grouped properly.
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto t2 = Create2DTranslation(*t1, -50, -50);
   auto e1 = CreateOpacityEffect(e0(), *t2, &c0(), 0.5);
 
@@ -374,7 +374,7 @@ TEST_P(PaintChunksToCcLayerTest, ClipSpaceInversion) {
   // <div style="position:absolute; clip:rect(...)">
   //     <div style="position:fixed;">Clipped but not scroll along.</div>
   // </div>
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto c1 = CreateClip(c0(), *t1, FloatRoundedRect(0.f, 0.f, 1.f, 1.f));
   TestChunks chunks;
   chunks.AddChunk(t0(), *c1, e0());
@@ -402,7 +402,7 @@ TEST_P(PaintChunksToCcLayerTest, OpacityEffectSpaceInversion) {
   //     <div style="position:absolute;">Transparent but not scroll along.</div>
   //   </div>
   // </div>
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto e1 = CreateOpacityEffect(e0(), *t1, &c0(), 0.5);
   TestChunks chunks;
   chunks.AddChunk(t0(), c0(), *e1);
@@ -436,7 +436,7 @@ TEST_P(PaintChunksToCcLayerTest, FilterEffectSpaceInversion) {
   //     <div style="position:absolute;">Filtered but not scroll along.</div>
   //   </div>
   // </div>
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   CompositorFilterOperations filter;
   filter.AppendBlurFilter(5);
   auto e1 = CreateFilterEffect(e0(), *t1, &c0(), filter);
@@ -465,7 +465,7 @@ TEST_P(PaintChunksToCcLayerTest, FilterEffectSpaceInversion) {
 TEST_P(PaintChunksToCcLayerTest, NonRootLayerSimple) {
   // This test verifies a layer with composited property state does not
   // apply properties again internally.
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(0.f, 0.f, 1.f, 1.f));
   auto e1 = CreateOpacityEffect(e0(), 0.5f);
   TestChunks chunks;
@@ -482,7 +482,7 @@ TEST_P(PaintChunksToCcLayerTest, NonRootLayerSimple) {
 TEST_P(PaintChunksToCcLayerTest, NonRootLayerTransformEscape) {
   // This test verifies chunks that have a shallower transform state than the
   // layer can still be painted.
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(0.f, 0.f, 1.f, 1.f));
   auto e1 = CreateOpacityEffect(e0(), 0.5f);
   TestChunks chunks;
@@ -601,8 +601,7 @@ TEST_P(PaintChunksToCcLayerTest,
 }
 
 TEST_P(PaintChunksToCcLayerTest, VisualRect) {
-  auto layer_transform =
-      CreateTransform(t0(), TransformationMatrix().Scale(20));
+  auto layer_transform = CreateTransform(t0(), MakeScaleMatrix(20));
   auto chunk_transform = Create2DTranslation(*layer_transform, 50, 100);
 
   TestChunks chunks;
@@ -728,7 +727,7 @@ TEST_P(PaintChunksToCcLayerTest, EmptyEffectsAreStored) {
 
 TEST_P(PaintChunksToCcLayerTest, CombineClips) {
   FloatRoundedRect clip_rect(0, 0, 100, 100);
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto c1 = CreateClip(c0(), t0(), clip_rect);
   auto c2 = CreateClip(*c1, t0(), clip_rect);
   auto c3 = CreateClip(*c2, *t1, clip_rect);
@@ -766,10 +765,8 @@ TEST_P(PaintChunksToCcLayerTest, CombineClips) {
 TEST_P(PaintChunksToCcLayerTest, CombineClipsAcrossTransform) {
   FloatRoundedRect clip_rect(0, 0, 100, 100);
   auto identity = Create2DTranslation(t0(), 0, 0);
-  auto non_identity =
-      CreateTransform(*identity, TransformationMatrix().Scale(2));
-  auto non_invertible =
-      CreateTransform(*non_identity, TransformationMatrix().Scale(0));
+  auto non_identity = CreateTransform(*identity, MakeScaleMatrix(2));
+  auto non_invertible = CreateTransform(*non_identity, MakeScaleMatrix(0));
   EXPECT_FALSE(non_invertible->Matrix().IsInvertible());
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 100, 100));
   auto c2 = CreateClip(*c1, *identity, FloatRoundedRect(50, 50, 100, 100));
@@ -852,8 +849,8 @@ TEST_P(PaintChunksToCcLayerTest, CombineClipsWithRoundedRects) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, ChunksSamePropertyTreeState) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
-  auto t2 = CreateTransform(*t1, TransformationMatrix().Scale(3.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
+  auto t2 = CreateTransform(*t1, MakeScaleMatrix(3));
   auto c1 = CreateClip(c0(), *t1, FloatRoundedRect(0, 0, 100, 100));
 
   TestChunks chunks;
@@ -923,7 +920,7 @@ TEST_P(PaintChunksToCcLayerTest, NoOpForIdentityTransforms) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, EffectsWithSameTransform) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto e1 = CreateOpacityEffect(e0(), *t1, &c0(), 0.1f);
   auto e2 = CreateOpacityEffect(e0(), *t1, &c0(), 0.2f);
 
@@ -951,7 +948,7 @@ TEST_P(PaintChunksToCcLayerTest, EffectsWithSameTransform) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, NestedEffectsWithSameTransform) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto e1 = CreateOpacityEffect(e0(), *t1, &c0(), 0.1f);
   auto e2 = CreateOpacityEffect(*e1, *t1, &c0(), 0.2f);
 
@@ -979,10 +976,10 @@ TEST_P(PaintChunksToCcLayerTest, NestedEffectsWithSameTransform) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, NoopTransformIsNotEmitted) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2.f));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto noop_t2 = TransformPaintPropertyNodeAlias::Create(*t1);
   auto noop_t3 = TransformPaintPropertyNodeAlias::Create(*noop_t2);
-  auto t4 = CreateTransform(*noop_t3, TransformationMatrix().Scale(2.f));
+  auto t4 = CreateTransform(*noop_t3, MakeScaleMatrix(2));
   auto noop_t5 = TransformPaintPropertyNodeAlias::Create(*t4);
   TestChunks chunks;
   chunks.AddChunk(t0(), c0(), e0());
@@ -1036,7 +1033,7 @@ TEST_P(PaintChunksToCcLayerTest, OnlyNoopTransformIsNotEmitted) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, NoopTransformFirstThenBackToParent) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto noop_t2 = TransformPaintPropertyNodeAlias::Create(*t1);
 
   TestChunks chunks;
@@ -1060,7 +1057,7 @@ TEST_P(PaintChunksToCcLayerTest, NoopTransformFirstThenBackToParent) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, ClipUndoesNoopTransform) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto noop_t2 = TransformPaintPropertyNodeAlias::Create(*t1);
   auto c1 = CreateClip(c0(), *t1, FloatRoundedRect(0.f, 0.f, 1.f, 1.f));
 
@@ -1088,7 +1085,7 @@ TEST_P(PaintChunksToCcLayerTest, ClipUndoesNoopTransform) {
 }
 
 TEST_P(PaintChunksToCcLayerTest, EffectUndoesNoopTransform) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(2));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(2));
   auto noop_t2 = TransformPaintPropertyNodeAlias::Create(*t1);
   auto e1 = CreateOpacityEffect(e0(), *t1, &c0(), 0.5);
 

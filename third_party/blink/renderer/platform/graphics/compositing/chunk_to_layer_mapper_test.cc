@@ -31,9 +31,8 @@ class ChunkToLayerMapperTest : public testing::Test {
   // if the state is used as a layer state.
   PropertyTreeState LayerState() {
     if (!layer_transform_) {
-      layer_transform_ =
-          CreateTransform(t0(), TransformationMatrix().Translate(123, 456),
-                          gfx::Point3F(1, 2, 3));
+      layer_transform_ = CreateTransform(t0(), MakeTranslationMatrix(123, 456),
+                                         gfx::Point3F(1, 2, 3));
       layer_clip_ =
           CreateClip(c0(), *layer_transform_, FloatRoundedRect(12, 34, 56, 78));
       layer_effect_ = EffectPaintPropertyNode::Create(
@@ -89,8 +88,8 @@ TEST_F(ChunkToLayerMapperTest, TwoChunkUsingLayerState) {
 
 TEST_F(ChunkToLayerMapperTest, TwoChunkSameState) {
   ChunkToLayerMapper mapper(LayerState(), gfx::Vector2dF(10, 20));
-  auto transform = CreateTransform(LayerState().Transform(),
-                                   TransformationMatrix().Scale(2));
+  auto transform =
+      CreateTransform(LayerState().Transform(), MakeScaleMatrix(2));
   auto clip = CreateClip(LayerState().Clip(), LayerState().Transform(),
                          FloatRoundedRect(10, 10, 100, 100));
   auto& effect = LayerState().Effect();
@@ -120,8 +119,8 @@ TEST_F(ChunkToLayerMapperTest, TwoChunkSameState) {
 
 TEST_F(ChunkToLayerMapperTest, TwoChunkDifferentState) {
   ChunkToLayerMapper mapper(LayerState(), gfx::Vector2dF(10, 20));
-  auto transform1 = CreateTransform(LayerState().Transform(),
-                                    TransformationMatrix().Scale(2));
+  auto transform1 =
+      CreateTransform(LayerState().Transform(), MakeScaleMatrix(2));
   auto clip1 = CreateClip(LayerState().Clip(), LayerState().Transform(),
                           FloatRoundedRect(10, 10, 100, 100));
   auto& effect = LayerState().Effect();

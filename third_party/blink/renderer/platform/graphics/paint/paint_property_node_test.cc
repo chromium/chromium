@@ -439,10 +439,10 @@ TEST_F(PaintPropertyNodeTest, ChangeTransformDuringCompositedAnimation) {
   TransformPaintPropertyNode::AnimationState animation_state;
   animation_state.is_running_animation_on_compositor = true;
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyCompositedValues,
-            transform.child1->Update(*transform.ancestor,
-                                     TransformPaintPropertyNode::State{
-                                         TransformationMatrix().Scale(2)},
-                                     animation_state));
+            transform.child1->Update(
+                *transform.ancestor,
+                TransformPaintPropertyNode::State{MakeScaleMatrix(2)},
+                animation_state));
 
   EXPECT_FALSE(transform.child1->Changed(
       PaintPropertyChangeType::kChangedOnlyValues, *transform.root));
@@ -484,7 +484,7 @@ TEST_F(PaintPropertyNodeTest,
             transform.child1->Update(
                 *transform.ancestor,
                 TransformPaintPropertyNode::State{
-                    {TransformationMatrix().Rotate(2), gfx::Point3F(1, 2, 3)}},
+                    {MakeRotationMatrix(2), gfx::Point3F(1, 2, 3)}},
                 animation_state));
 
   EXPECT_TRUE(transform.child1->Changed(
@@ -805,35 +805,37 @@ TEST_F(PaintPropertyNodeTest, TransformChange2dAxisAlignment) {
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 
   // Scale doesn't affect 2d axis alignment.
+  auto matrix = MakeScaleMatrix(2, 3, 4);
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
-            t->Update(t0(), TransformPaintPropertyNode::State{
-                                TransformationMatrix().Scale3d(2, 3, 4)}));
+            t->Update(t0(), TransformPaintPropertyNode::State{matrix}));
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues, NodeChanged(*t));
   t->ClearChangedToRoot(++sequence_number);
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 
   // Rotation affects 2d axis alignment.
+  EXPECT_EQ(t->Matrix(), matrix);
+  matrix.Rotate(45);
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
-            t->Update(t0(), TransformPaintPropertyNode::State{
-                                TransformationMatrix(t->Matrix()).Rotate(45)}));
+            t->Update(t0(), TransformPaintPropertyNode::State{matrix}));
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues, NodeChanged(*t));
   t->ClearChangedToRoot(++sequence_number);
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 
   // Changing scale but keeping original rotation doesn't change 2d axis
   // alignment and is treated as simple.
-  EXPECT_EQ(
-      PaintPropertyChangeType::kChangedOnlySimpleValues,
-      t->Update(t0(), TransformPaintPropertyNode::State{
-                          TransformationMatrix(t->Matrix()).Scale3d(3, 4, 5)}));
+  EXPECT_EQ(t->Matrix(), matrix);
+  matrix.Scale3d(3, 4, 5);
+  EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
+            t->Update(t0(), TransformPaintPropertyNode::State{matrix}));
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues, NodeChanged(*t));
   t->ClearChangedToRoot(++sequence_number);
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 
-  // Change rotation rotation again changes 2d axis alignment.
+  // Change rotation again changes 2d axis alignment.
+  EXPECT_EQ(t->Matrix(), matrix);
+  matrix.Rotate(10);
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
-            t->Update(t0(), TransformPaintPropertyNode::State{
-                                TransformationMatrix(t->Matrix()).Rotate(10)}));
+            t->Update(t0(), TransformPaintPropertyNode::State{matrix}));
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues, NodeChanged(*t));
   t->ClearChangedToRoot(++sequence_number);
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));

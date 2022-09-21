@@ -2245,9 +2245,11 @@ void FragmentPaintPropertyTreeBuilder::UpdatePerspective() {
       // The perspective node must not flatten (else nothing will get
       // perspective), but it should still extend the rendering context as
       // most transform nodes do.
+      TransformationMatrix matrix;
+      matrix.ApplyPerspectiveDepth(style.UsedPerspective());
       TransformPaintPropertyNode::State state{
           TransformPaintPropertyNode::TransformAndOrigin(
-              TransformationMatrix().ApplyPerspective(style.UsedPerspective()),
+              matrix,
               gfx::Point3F(PerspectiveOrigin(To<LayoutBox>(object_)) +
                            gfx::Vector2dF(context_.current.paint_offset)))};
       state.flags.flattens_inherited_transform =

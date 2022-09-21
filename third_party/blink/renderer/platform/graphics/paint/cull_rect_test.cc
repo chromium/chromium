@@ -89,8 +89,7 @@ TEST_F(CullRectTest, MoveInfinite) {
 
 TEST_F(CullRectTest, ApplyTransform) {
   CullRect cull_rect(gfx::Rect(1, 1, 50, 50));
-  auto transform =
-      CreateTransform(t0(), TransformationMatrix().Translate(1, 1));
+  auto transform = CreateTransform(t0(), MakeTranslationMatrix(1, 1));
   cull_rect.ApplyTransform(*transform);
 
   EXPECT_EQ(gfx::Rect(0, 0, 50, 50), cull_rect.Rect());
@@ -98,8 +97,7 @@ TEST_F(CullRectTest, ApplyTransform) {
 
 TEST_F(CullRectTest, ApplyTransformInfinite) {
   CullRect cull_rect = CullRect::Infinite();
-  auto transform =
-      CreateTransform(t0(), TransformationMatrix().Translate(1, 1));
+  auto transform = CreateTransform(t0(), MakeTranslationMatrix(1, 1));
   cull_rect.ApplyTransform(*transform);
   EXPECT_TRUE(cull_rect.IsInfinite());
 }
@@ -298,8 +296,8 @@ TEST_F(CullRectTest, ChangedEnoughOldRectTouchingEdge) {
 }
 
 TEST_F(CullRectTest, ApplyPaintPropertiesWithoutClipScroll) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
-  auto t2 = CreateTransform(*t1, TransformationMatrix().Translate(10, 20));
+  auto t1 = CreateTransform(t0(), MakeTranslationMatrix(1, 2));
+  auto t2 = CreateTransform(*t1, MakeTranslationMatrix(10, 20));
   PropertyTreeState root = PropertyTreeState::Root();
   PropertyTreeState state1(*t1, c0(), e0());
   PropertyTreeState state2(*t2, c0(), e0());
@@ -325,7 +323,7 @@ TEST_F(CullRectTest, ApplyPaintPropertiesWithoutClipScroll) {
 }
 
 TEST_F(CullRectTest, SingleScrollWholeScrollingContents) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
+  auto t1 = CreateTransform(t0(), MakeTranslationMatrix(1, 2));
   PropertyTreeState state1(*t1, c0(), e0());
   auto ref_scroll_translation_state = CreateCompositedScrollTranslationState(
       state1, -10, -15, gfx::Rect(20, 10, 40, 50), gfx::Size(2000, 2000));
@@ -353,9 +351,9 @@ TEST_F(CullRectTest, SingleScrollWholeScrollingContents) {
 }
 
 TEST_F(CullRectTest, ApplyTransformsWithOrigin) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
-  auto t2 = CreateTransform(*t1, TransformationMatrix().Scale(0.5),
-                            gfx::Point3F(50, 100, 0));
+  auto t1 = CreateTransform(t0(), MakeTranslationMatrix(1, 2));
+  auto t2 =
+      CreateTransform(*t1, MakeScaleMatrix(0.5), gfx::Point3F(50, 100, 0));
   PropertyTreeState root = PropertyTreeState::Root();
   PropertyTreeState state1(*t1, c0(), e0());
   PropertyTreeState state2(*t2, c0(), e0());
@@ -438,7 +436,7 @@ TEST_F(CullRectTest, TransformUnderScrollTranslation) {
 
 TEST_F(CullRectTest, TransformEscapingScroll) {
   PropertyTreeState root = PropertyTreeState::Root();
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
+  auto t1 = CreateTransform(t0(), MakeTranslationMatrix(1, 2));
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(111, 222, 333, 444));
   PropertyTreeState state1(*t1, *c1, e0());
 
@@ -448,7 +446,7 @@ TEST_F(CullRectTest, TransformEscapingScroll) {
       ref_scroll_translation_state.GetPropertyTreeState();
 
   auto t2 = CreateTransform(scroll_translation_state.Transform(),
-                            TransformationMatrix().Translate(100, 200));
+                            MakeTranslationMatrix(100, 200));
   PropertyTreeState state2(*t2, scroll_translation_state.Clip(), e0());
 
   CullRect cull_rect1(gfx::Rect(0, 0, 50, 100));
@@ -470,7 +468,7 @@ TEST_F(CullRectTest, TransformEscapingScroll) {
 }
 
 TEST_F(CullRectTest, SmallScrollContentsAfterBigScrollContents) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
+  auto t1 = CreateTransform(t0(), MakeTranslationMatrix(1, 2));
   PropertyTreeState state1(*t1, c0(), e0());
 
   auto ref_scroll_translation_state1 = CreateCompositedScrollTranslationState(
@@ -479,7 +477,7 @@ TEST_F(CullRectTest, SmallScrollContentsAfterBigScrollContents) {
       ref_scroll_translation_state1.GetPropertyTreeState();
 
   auto t2 = CreateTransform(scroll_translation_state1.Transform(),
-                            TransformationMatrix().Translate(2000, 3000));
+                            MakeTranslationMatrix(2000, 3000));
   PropertyTreeState state2(*t2, scroll_translation_state1.Clip(), e0());
 
   auto ref_scroll_translation_state2 = CreateCompositedScrollTranslationState(
@@ -502,7 +500,7 @@ TEST_F(CullRectTest, SmallScrollContentsAfterBigScrollContents) {
 }
 
 TEST_F(CullRectTest, BigScrollContentsAfterSmallScrollContents) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
+  auto t1 = CreateTransform(t0(), MakeTranslationMatrix(1, 2));
   PropertyTreeState state1(*t1, c0(), e0());
 
   auto ref_scroll_translation_state1 = CreateCompositedScrollTranslationState(
@@ -511,7 +509,7 @@ TEST_F(CullRectTest, BigScrollContentsAfterSmallScrollContents) {
       ref_scroll_translation_state1.GetPropertyTreeState();
 
   auto t2 = CreateTransform(scroll_translation_state1.Transform(),
-                            TransformationMatrix().Translate(10, 20));
+                            MakeTranslationMatrix(10, 20));
   PropertyTreeState state2(*t2, scroll_translation_state1.Clip(), e0());
 
   auto ref_scroll_translation_state2 = CreateCompositedScrollTranslationState(
@@ -549,7 +547,7 @@ TEST_F(CullRectTest, BigScrollContentsAfterSmallScrollContents) {
 TEST_F(CullRectTest, NonCompositedTransformUnderClip) {
   PropertyTreeState root = PropertyTreeState::Root();
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(100, 200, 300, 400));
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(10, 20));
+  auto t1 = CreateTransform(t0(), MakeTranslationMatrix(10, 20));
   PropertyTreeState state1(*t1, *c1, e0());
 
   CullRect cull_rect1(gfx::Rect(0, 0, 300, 500));
@@ -575,9 +573,10 @@ TEST_F(CullRectTest, NonCompositedTransformUnderClip) {
 TEST_F(CullRectTest, CompositedTranslationUnderClip) {
   PropertyTreeState root = PropertyTreeState::Root();
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(100, 200, 300, 400));
-  auto t1 = CreateTransform(
-      t0(), TransformationMatrix().Translate(10, 20).Scale3d(2, 4, 1),
-      gfx::Point3F(), CompositingReason::kWillChangeTransform);
+  auto transform = MakeTranslationMatrix(10, 20);
+  transform.Scale3d(2, 4, 1);
+  auto t1 = CreateTransform(t0(), transform, gfx::Point3F(),
+                            CompositingReason::kWillChangeTransform);
   PropertyTreeState state1(*t1, *c1, e0());
 
   CullRect cull_rect1(gfx::Rect(0, 0, 300, 500));

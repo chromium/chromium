@@ -33,7 +33,6 @@
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
-#include "third_party/blink/renderer/platform/transforms/rotation.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -285,10 +284,6 @@ TransformationMatrix::TransformationMatrix(const AffineTransform& t) {
   *this = Affine(t.A(), t.B(), t.C(), t.D(), t.E(), t.F());
 }
 
-TransformationMatrix& TransformationMatrix::Scale(double s) {
-  return ScaleNonUniform(s, s);
-}
-
 gfx::PointF TransformationMatrix::ProjectPoint(const gfx::PointF& p,
                                                bool* clamped) const {
   // This is basically raytracing. We have a point in the destination
@@ -454,64 +449,79 @@ gfx::QuadF TransformationMatrix::MapQuad(const gfx::QuadF& q) const {
   return InternalMapQuad(q);
 }
 
-TransformationMatrix& TransformationMatrix::ScaleNonUniform(double sx,
-                                                            double sy) {
+void TransformationMatrix::Scale(double sx, double sy) {
   SetCol(0, Col(0) * sx);
   SetCol(1, Col(1) * sy);
-  return *this;
 }
 
-TransformationMatrix& TransformationMatrix::Scale3d(double sx,
-                                                    double sy,
-                                                    double sz) {
-  ScaleNonUniform(sx, sy);
-
+void TransformationMatrix::Scale3d(double sx, double sy, double sz) {
+  Scale(sx, sy);
   SetCol(2, Col(2) * sz);
-  return *this;
 }
 
-TransformationMatrix& TransformationMatrix::Rotate(double angle) {
-  angle = Deg2rad(angle);
+void TransformationMatrix::RotateAboutXAxis(double angle) {
+  double rad = Deg2rad(angle);
+  double sin_theta = std::sin(rad);
+  double cos_theta = std::cos(rad);
 
   TransformationMatrix rotation_matrix;
-  double sin_theta = std::sin(angle);
-  double cos_theta = std::cos(angle);
+  rotation_matrix.matrix_[1][1] = cos_theta;
+  rotation_matrix.matrix_[1][2] = sin_theta;
+  rotation_matrix.matrix_[2][1] = -sin_theta;
+  rotation_matrix.matrix_[2][2] = cos_theta;
 
+  Multiply(rotation_matrix);
+}
+
+void TransformationMatrix::RotateAboutYAxis(double angle) {
+  double rad = Deg2rad(angle);
+  double sin_theta = std::sin(rad);
+  double cos_theta = std::cos(rad);
+
+  TransformationMatrix rotation_matrix;
+  rotation_matrix.matrix_[0][0] = cos_theta;
+  rotation_matrix.matrix_[0][2] = -sin_theta;
+  rotation_matrix.matrix_[2][0] = sin_theta;
+  rotation_matrix.matrix_[2][2] = cos_theta;
+
+  Multiply(rotation_matrix);
+}
+
+void TransformationMatrix::RotateAboutZAxis(double angle) {
+  double rad = Deg2rad(angle);
+  double sin_theta = std::sin(rad);
+  double cos_theta = std::cos(rad);
+
+  TransformationMatrix rotation_matrix;
   rotation_matrix.matrix_[0][0] = cos_theta;
   rotation_matrix.matrix_[0][1] = sin_theta;
   rotation_matrix.matrix_[1][0] = -sin_theta;
   rotation_matrix.matrix_[1][1] = cos_theta;
 
   Multiply(rotation_matrix);
-  return *this;
 }
 
-TransformationMatrix& TransformationMatrix::Rotate3d(const Rotation& rotation) {
-  return Rotate3d(rotation.axis.x(), rotation.axis.y(), rotation.axis.z(),
-                  rotation.angle);
-}
-
-TransformationMatrix& TransformationMatrix::Rotate3d(double x,
-                                                     double y,
-                                                     double z,
-                                                     double angle) {
+void TransformationMatrix::RotateAbout(double x,
+                                       double y,
+                                       double z,
+                                       double degrees) {
   // Normalize the axis of rotation
   double length = std::sqrt(x * x + y * y + z * z);
   if (length == 0) {
     // A direction vector that cannot be normalized, such as [0, 0, 0], will
     // cause the rotation to not be applied.
-    return *this;
-  } else if (length != 1) {
+    return;
+  }
+
+  if (length != 1) {
     x /= length;
     y /= length;
     z /= length;
   }
 
-  // Angles are in degrees. Switch to radians.
-  angle = Deg2rad(angle);
-
-  double sin_theta = std::sin(angle);
-  double cos_theta = std::cos(angle);
+  double rad = Deg2rad(degrees);
+  double sin_theta = std::sin(rad);
+  double cos_theta = std::cos(rad);
 
   TransformationMatrix mat;
 
@@ -554,67 +564,17 @@ TransformationMatrix& TransformationMatrix::Rotate3d(double x,
     mat.matrix_[2][2] = cos_theta + z * z * one_minus_cos_theta;
   }
   Multiply(mat);
-  return *this;
 }
 
-TransformationMatrix& TransformationMatrix::Rotate3d(double rx,
-                                                     double ry,
-                                                     double rz) {
-  // Angles are in degrees. Switch to radians.
-  rx = Deg2rad(rx);
-  ry = Deg2rad(ry);
-  rz = Deg2rad(rz);
-
-  TransformationMatrix mat;
-
-  double sin_theta = std::sin(rz);
-  double cos_theta = std::cos(rz);
-
-  mat.matrix_[0][0] = cos_theta;
-  mat.matrix_[0][1] = sin_theta;
-  mat.matrix_[1][0] = -sin_theta;
-  mat.matrix_[1][1] = cos_theta;
-
-  TransformationMatrix mat_y;
-  sin_theta = std::sin(ry);
-  cos_theta = std::cos(ry);
-
-  mat_y.matrix_[0][0] = cos_theta;
-  mat_y.matrix_[0][2] = -sin_theta;
-  mat_y.matrix_[2][0] = sin_theta;
-  mat_y.matrix_[2][2] = cos_theta;
-
-  mat.Multiply(mat_y);
-
-  TransformationMatrix mat_x;
-  sin_theta = std::sin(rx);
-  cos_theta = std::cos(rx);
-
-  mat_x.matrix_[1][1] = cos_theta;
-  mat_x.matrix_[1][2] = sin_theta;
-  mat_x.matrix_[2][1] = -sin_theta;
-  mat_x.matrix_[2][2] = cos_theta;
-
-  mat.Multiply(mat_x);
-
-  Multiply(mat);
-  return *this;
-}
-
-TransformationMatrix& TransformationMatrix::Translate(double tx, double ty) {
+void TransformationMatrix::Translate(double tx, double ty) {
   SetCol(3, tx * Col(0) + ty * Col(1) + Col(3));
-  return *this;
 }
 
-TransformationMatrix& TransformationMatrix::Translate3d(double tx,
-                                                        double ty,
-                                                        double tz) {
+void TransformationMatrix::Translate3d(double tx, double ty, double tz) {
   SetCol(3, tx * Col(0) + ty * Col(1) + tz * Col(2) + Col(3));
-  return *this;
 }
 
-TransformationMatrix& TransformationMatrix::PostTranslate(double tx,
-                                                          double ty) {
+void TransformationMatrix::PostTranslate(double tx, double ty) {
   if (tx != 0) {
     matrix_[0][0] += matrix_[0][3] * tx;
     matrix_[1][0] += matrix_[1][3] * tx;
@@ -628,12 +588,9 @@ TransformationMatrix& TransformationMatrix::PostTranslate(double tx,
     matrix_[2][1] += matrix_[2][3] * ty;
     matrix_[3][1] += matrix_[3][3] * ty;
   }
-  return *this;
 }
 
-TransformationMatrix& TransformationMatrix::PostTranslate3d(double tx,
-                                                            double ty,
-                                                            double tz) {
+void TransformationMatrix::PostTranslate3d(double tx, double ty, double tz) {
   PostTranslate(tx, ty);
   if (tz != 0) {
     matrix_[0][2] += matrix_[0][3] * tz;
@@ -641,49 +598,41 @@ TransformationMatrix& TransformationMatrix::PostTranslate3d(double tx,
     matrix_[2][2] += matrix_[2][3] * tz;
     matrix_[3][2] += matrix_[3][3] * tz;
   }
-  return *this;
 }
 
-TransformationMatrix& TransformationMatrix::Skew(double sx, double sy) {
-  // Angles are in degrees. Switch to radians.
-  sx = Deg2rad(sx);
-  sy = Deg2rad(sy);
+void TransformationMatrix::Skew(double degrees_x, double degrees_y) {
+  double rad_x = Deg2rad(degrees_x);
+  double rad_y = Deg2rad(degrees_y);
 
   TransformationMatrix mat;
-  // Note that the y shear goes in the first row.
-  mat.matrix_[0][1] = std::tan(sy);
-  // And the x shear in the second row.
-  mat.matrix_[1][0] = std::tan(sx);
+  // Note that the y shear goes in the first column.
+  mat.matrix_[0][1] = std::tan(rad_y);
+  // And the x shear in the second column.
+  mat.matrix_[1][0] = std::tan(rad_x);
 
   Multiply(mat);
-  return *this;
 }
 
-TransformationMatrix& TransformationMatrix::ApplyPerspective(double p) {
+void TransformationMatrix::ApplyPerspectiveDepth(double p) {
   TransformationMatrix mat;
   if (p != 0)
     mat.matrix_[2][3] = -1 / p;
 
   Multiply(mat);
-  return *this;
 }
 
-TransformationMatrix& TransformationMatrix::ApplyTransformOrigin(double x,
-                                                                 double y,
-                                                                 double z) {
+void TransformationMatrix::ApplyTransformOrigin(double x, double y, double z) {
   PostTranslate3d(x, y, z);
   Translate3d(-x, -y, -z);
-  return *this;
 }
 
-TransformationMatrix& TransformationMatrix::Zoom(double zoom_factor) {
+void TransformationMatrix::Zoom(double zoom_factor) {
   matrix_[0][3] /= zoom_factor;
   matrix_[1][3] /= zoom_factor;
   matrix_[2][3] /= zoom_factor;
   matrix_[3][0] *= zoom_factor;
   matrix_[3][1] *= zoom_factor;
   matrix_[3][2] *= zoom_factor;
-  return *this;
 }
 
 // Calculates *this = *this * mat.
@@ -698,8 +647,7 @@ TransformationMatrix& TransformationMatrix::Zoom(double zoom_factor) {
 // prod.Multiply(rhs);
 // lhs.MapPoint(rhs.MapPoint(p)) == prod.MapPoint(p)
 // Also 'prod' corresponds to CSS transform:rotateZ(90deg)translate(12px,34px).
-TransformationMatrix& TransformationMatrix::Multiply(
-    const TransformationMatrix& mat) {
+void TransformationMatrix::Multiply(const TransformationMatrix& mat) {
   auto c0 = Col(0);
   auto c1 = Col(1);
   auto c2 = Col(2);
@@ -714,7 +662,6 @@ TransformationMatrix& TransformationMatrix::Multiply(
   SetCol(1, c0 * mc1[0] + c1 * mc1[1] + c2 * mc1[2] + c3 * mc1[3]);
   SetCol(2, c0 * mc2[0] + c1 * mc2[1] + c2 * mc2[2] + c3 * mc2[3]);
   SetCol(3, c0 * mc3[0] + c1 * mc3[1] + c2 * mc3[2] + c3 * mc3[3]);
-  return *this;
 }
 
 gfx::PointF TransformationMatrix::TranslatePoint(const gfx::PointF& p) const {
@@ -799,8 +746,8 @@ bool TransformationMatrix::InternalInverse(TransformationMatrix* result) const {
 
     // Translation.
     if (!check_invertibility_only) {
-      *result = TransformationMatrix().Translate3d(
-          -matrix_[3][0], -matrix_[3][1], -matrix_[3][2]);
+      result->MakeIdentity();
+      result->Translate3d(-matrix_[3][0], -matrix_[3][1], -matrix_[3][2]);
     }
     return true;
   }

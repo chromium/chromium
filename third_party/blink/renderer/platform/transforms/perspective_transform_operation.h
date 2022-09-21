@@ -72,7 +72,7 @@ class PLATFORM_EXPORT PerspectiveTransformOperation final
   void Apply(TransformationMatrix& transform,
              const gfx::SizeF&) const override {
     if (Perspective()) {
-      transform.ApplyPerspective(UsedPerspective());
+      transform.ApplyPerspectiveDepth(UsedPerspective());
     }
   }
 

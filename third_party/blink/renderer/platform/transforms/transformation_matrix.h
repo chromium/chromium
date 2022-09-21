@@ -57,7 +57,6 @@ namespace blink {
 
 class AffineTransform;
 class LayoutRect;
-struct Rotation;
 
 class PLATFORM_EXPORT TransformationMatrix {
   // TransformationMatrix must not be allocated on Oilpan's heap since
@@ -156,10 +155,19 @@ class PLATFORM_EXPORT TransformationMatrix {
   // This method preserves NaN and infinity components.
   void GetColMajorF(float v[16]) const;
 
-  TransformationMatrix& MakeIdentity() {
-    *this = TransformationMatrix();
-    return *this;
+  [[nodiscard]] static TransformationMatrix MakeTranslation(double tx,
+                                                            double ty) {
+    return TransformationMatrix::Affine(1, 0, 0, 1, tx, ty);
   }
+  [[nodiscard]] static TransformationMatrix MakeScale(double scale) {
+    return MakeScale(scale, scale);
+  }
+  [[nodiscard]] static TransformationMatrix MakeScale(double sx, double sy) {
+    return TransformationMatrix::Affine(sx, 0, 0, sy, 0, 0);
+  }
+
+  // TODO(crbug.com/1359528): Rename this to SetIdentity or remove it.
+  void MakeIdentity() { *this = TransformationMatrix(); }
 
   bool IsIdentity() const {
     return gfx::AllTrue(
@@ -209,40 +217,52 @@ class PLATFORM_EXPORT TransformationMatrix {
   void TransformBox(gfx::BoxF&) const;
 
   // *this = *this * mat.
-  TransformationMatrix& Multiply(const TransformationMatrix&);
+  void Multiply(const TransformationMatrix&);
 
-  TransformationMatrix& Scale(double);
-  TransformationMatrix& ScaleNonUniform(double sx, double sy);
-  TransformationMatrix& Scale3d(double sx, double sy, double sz);
+  // Applies the current transformation on a scaling and assigns the result
+  // to |this|, i.e *this = *this * scaling;
+  void Scale(double s) { Scale(s, s); }
+  void Scale(double sx, double sy);
+  void Scale3d(double sx, double sy, double sz);
 
-  // Angles are in degrees.
-  TransformationMatrix& Rotate(double d);
-  TransformationMatrix& Rotate3d(double rx, double ry, double rz);
-  TransformationMatrix& Rotate3d(const Rotation&);
+  // Applies the current transformation on an axis-angle rotation and assigns
+  // the result to |this|, i.e. *this = *this * rotation.
+  void RotateAboutXAxis(double degrees);
+  void RotateAboutYAxis(double degrees);
+  void RotateAboutZAxis(double degrees);
+  void Rotate(double degrees) { RotateAboutZAxis(degrees); }
+  // The vector is normalized if it's not already. Will do nothing if the
+  // vector has a zero length.
+  void RotateAbout(const gfx::Vector3dF& axis, double degrees) {
+    RotateAbout(axis.x(), axis.y(), axis.z(), degrees);
+  }
+  void RotateAbout(double x, double y, double z, double degrees);
 
-  // The vector (x,y,z) is normalized if it's not already. A vector of
-  // (0,0,0) uses a vector of (0,0,1).
-  TransformationMatrix& Rotate3d(double x, double y, double z, double angle);
+  // Applies the current transformation on a translation and assigns the result
+  // to |this|, i.e *this = *this * translation;
+  void Translate(double tx, double ty);
+  void Translate3d(double tx, double ty, double tz);
 
-  TransformationMatrix& Translate(double tx, double ty);
-  TransformationMatrix& Translate3d(double tx, double ty, double tz);
+  // Applies a translation to the current transformation and assigns the result
+  // to |this|, i.e. *this = translation * *this.
+  // In other words, it appends translation after existing operations. i.e.
+  //   TransformationMatrix t2 = t1;
+  //   t2.PostTranslate(x, y);
+  //   t2.MapPoint(p) == t1.MapPoint(p) + gfx::Vector(x, y)
+  void PostTranslate(double tx, double ty);
+  void PostTranslate3d(double tx, double ty, double tz);
 
-  // Append translation after existing operations. i.e.
-  // TransformationMatrix t2 = t1;
-  // t2.PostTranslate(x, y);
-  // t2.MapPoint(p) == t1.MapPoint(p) + gfx::PointF(x, y)
-  TransformationMatrix& PostTranslate(double tx, double ty);
-  TransformationMatrix& PostTranslate3d(double tx, double ty, double tz);
+  // Applies the current transformation on a skew and assigns the result
+  // to |this|, i.e. *this = *this * skew.
+  void Skew(double degrees_x, double degrees_y);
+  void SkewX(double degrees_x) { Skew(degrees_x, 0); }
+  void SkewY(double degrees_y) { Skew(0, degrees_y); }
 
-  TransformationMatrix& Skew(double angle_x, double angle_y);
-  TransformationMatrix& SkewX(double angle) { return Skew(angle, 0); }
-  TransformationMatrix& SkewY(double angle) { return Skew(0, angle); }
-
-  TransformationMatrix& ApplyPerspective(double p);
+  void ApplyPerspectiveDepth(double p);
 
   // Changes the transform to apply as if the origin were at (x, y, z).
-  TransformationMatrix& ApplyTransformOrigin(double x, double y, double z);
-  TransformationMatrix& ApplyTransformOrigin(const gfx::Point3F& origin) {
+  void ApplyTransformOrigin(double x, double y, double z);
+  void ApplyTransformOrigin(const gfx::Point3F& origin) {
     return ApplyTransformOrigin(origin.x(), origin.y(), origin.z());
   }
 
@@ -254,7 +274,7 @@ class PLATFORM_EXPORT TransformationMatrix {
   //
   //     new_mat * (scale3d(z, z, z) * x) == scale3d(z, z, z) * (mat * x)
   //
-  TransformationMatrix& Zoom(double zoom_factor);
+  void Zoom(double zoom_factor);
 
   bool IsInvertible() const;
 
@@ -316,7 +336,8 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   // *this = *this * t
   TransformationMatrix& operator*=(const TransformationMatrix& t) {
-    return Multiply(t);
+    Multiply(t);
+    return *this;
   }
 
   // result = *this * t

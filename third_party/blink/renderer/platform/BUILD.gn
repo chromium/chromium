@@ -1885,6 +1885,7 @@ static_library("test_support") {
     "testing/testing_platform_support.h",
     "testing/testing_platform_support_with_mock_scheduler.cc",
     "testing/testing_platform_support_with_mock_scheduler.h",
+    "testing/transformation_matrix_test_helpers.h",
     "testing/unit_test_helpers.cc",
     "testing/unit_test_helpers.h",
     "testing/url_test_helpers.cc",
@@ -1927,6 +1928,7 @@ static_library("test_support") {
     "//third_party/blink/renderer/platform/loader:test_support",
     "//third_party/blink/renderer/platform/media:test_support",
     "//third_party/blink/renderer/platform/scheduler:test_support",
+    "//ui/gfx:test_support",
   ]
 
   deps = [
@@ -2176,7 +2178,6 @@ source_set("blink_platform_unittests_sources") {
     "transforms/rotation_test.cc",
     "transforms/transform_operations_test.cc",
     "transforms/transformation_matrix_test.cc",
-    "transforms/transformation_matrix_test_helpers.h",
     "video_capture/gpu_memory_buffer_test_support.cc",
     "video_capture/gpu_memory_buffer_test_support.h",
     "video_capture/video_capture_impl_test.cc",

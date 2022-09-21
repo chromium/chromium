@@ -115,15 +115,13 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
       DCHECK(IsIdentityOr2DTranslation());
       return translation_2d_;
     }
+
     const TransformationMatrix& Matrix() const {
       DCHECK(matrix_and_origin_);
       return matrix_and_origin_->matrix;
     }
-    TransformationMatrix SlowMatrix() const {
-      return matrix_and_origin_ ? matrix_and_origin_->matrix
-                                : TransformationMatrix().Translate(
-                                      translation_2d_.x(), translation_2d_.y());
-    }
+    TransformationMatrix SlowMatrix() const;
+
     gfx::Point3F Origin() const {
       return matrix_and_origin_ ? matrix_and_origin_->origin : gfx::Point3F();
     }
@@ -273,15 +271,20 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   const TransformationMatrix& Matrix() const {
     return state_.transform_and_origin.Matrix();
   }
+
   TransformationMatrix MatrixWithOriginApplied() const {
-    return TransformationMatrix(Matrix()).ApplyTransformOrigin(Origin());
+    TransformationMatrix result = Matrix();
+    result.ApplyTransformOrigin(Origin());
+    return result;
   }
+
   // The slow version always return meaningful TransformationMatrix regardless
   // of IsIdentityOr2DTranslation(). Should be used only in contexts that are
   // not performance sensitive.
   TransformationMatrix SlowMatrix() const {
     return state_.transform_and_origin.SlowMatrix();
   }
+
   gfx::Point3F Origin() const { return state_.transform_and_origin.Origin(); }
 
   PaintPropertyChangeType DirectlyUpdateTransformAndOrigin(

@@ -690,8 +690,10 @@ TEST_P(PaintPropertyTreeUpdateTest, PerspectiveOriginUpdatesOnSizeChanges) {
   )HTML");
 
   auto* perspective = GetLayoutObjectByElementId("perspective");
+  TransformationMatrix matrix;
+  matrix.ApplyPerspectiveDepth(100);
   EXPECT_EQ(
-      TransformationMatrix().ApplyPerspective(100),
+      matrix,
       perspective->FirstFragment().PaintProperties()->Perspective()->Matrix());
   EXPECT_EQ(
       gfx::Point3F(50, 0, 0),
@@ -701,7 +703,7 @@ TEST_P(PaintPropertyTreeUpdateTest, PerspectiveOriginUpdatesOnSizeChanges) {
   contents->setAttribute(html_names::kStyleAttr, "height: 200px;");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(
-      TransformationMatrix().ApplyPerspective(100),
+      matrix,
       perspective->FirstFragment().PaintProperties()->Perspective()->Matrix());
   EXPECT_EQ(
       gfx::Point3F(50, 100, 0),
@@ -837,8 +839,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ViewportAddRemoveDeviceEmulationNode) {
   }
 
   // These emulate WebViewImpl::SetDeviceEmulationTransform().
-  GetChromeClient().SetDeviceEmulationTransform(
-      TransformationMatrix().Scale(2));
+  GetChromeClient().SetDeviceEmulationTransform(MakeScaleMatrix(2));
   visual_viewport.SetNeedsPaintPropertyUpdate();
 
   UpdateAllLifecyclePhasesForTest();
@@ -1379,7 +1380,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ForwardReferencedSVGElementUpdate) {
   ASSERT_NE(nullptr, rect_properties->Transform());
   EXPECT_EQ(svg2_properties->Perspective(),
             rect_properties->Transform()->Parent());
-  EXPECT_EQ(TransformationMatrix().Translate(1, 0),
+  EXPECT_EQ(MakeTranslationMatrix(1, 0),
             GeometryMapper::SourceToDestinationProjection(
                 *rect_properties->Transform(),
                 *svg2_properties->PaintOffsetTranslation())
@@ -1401,7 +1402,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ForwardReferencedSVGElementUpdate) {
             rect_properties->Transform()->Parent());
 
   // Ensure that GeometryMapper's cache is properly invalidated and updated.
-  EXPECT_EQ(TransformationMatrix().Translate(3, 0),
+  EXPECT_EQ(MakeTranslationMatrix(3, 0),
             GeometryMapper::SourceToDestinationProjection(
                 *rect_properties->Transform(),
                 *svg2_properties->PaintOffsetTranslation())
@@ -1690,7 +1691,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   ASSERT_EQ(transform_node,
             target->FirstFragment().PaintProperties()->Transform());
   EXPECT_TRUE(transform_node->HasActiveTransformAnimation());
-  EXPECT_EQ(TransformationMatrix().Rotate(10), transform_node->Matrix());
+  EXPECT_EQ(MakeRotationMatrix(10), transform_node->Matrix());
   EXPECT_EQ(gfx::Point3F(70, 30, 0), transform_node->Origin());
   EXPECT_TRUE(transform_node->BackfaceVisibilitySameAsParent());
   // Changing only transform or transform-origin values during a composited
@@ -1709,7 +1710,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   ASSERT_EQ(transform_node,
             target->FirstFragment().PaintProperties()->Transform());
   EXPECT_TRUE(transform_node->HasActiveTransformAnimation());
-  EXPECT_EQ(TransformationMatrix().Rotate(10), transform_node->Matrix());
+  EXPECT_EQ(MakeRotationMatrix(10), transform_node->Matrix());
   EXPECT_EQ(gfx::Point3F(70, 30, 0), transform_node->Origin());
   EXPECT_FALSE(transform_node->BackfaceVisibilitySameAsParent());
   // Only transform and transform-origin value changes during composited

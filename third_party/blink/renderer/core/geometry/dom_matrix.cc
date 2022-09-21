@@ -204,7 +204,7 @@ DOMMatrix* DOMMatrix::scaleSelf(double sx,
     translateSelf(ox, oy, oz);
 
   if (is2d_)
-    matrix_.ScaleNonUniform(sx, sy);
+    matrix_.Scale(sx, sy);
   else
     matrix_.Scale3d(sx, sy, sz);
 
@@ -231,15 +231,15 @@ DOMMatrix* DOMMatrix::rotateSelf(double rot_x, double rot_y) {
 
 DOMMatrix* DOMMatrix::rotateSelf(double rot_x, double rot_y, double rot_z) {
   if (rot_z)
-    matrix_.Rotate3d(0, 0, 1, rot_z);
+    matrix_.RotateAboutZAxis(rot_z);
 
   if (rot_y) {
-    matrix_.Rotate3d(0, 1, 0, rot_y);
+    matrix_.RotateAboutYAxis(rot_y);
     is2d_ = false;
   }
 
   if (rot_x) {
-    matrix_.Rotate3d(1, 0, 0, rot_x);
+    matrix_.RotateAboutXAxis(rot_x);
     is2d_ = false;
   }
 
@@ -255,7 +255,7 @@ DOMMatrix* DOMMatrix::rotateAxisAngleSelf(double x,
                                           double y,
                                           double z,
                                           double angle) {
-  matrix_.Rotate3d(x, y, z, angle);
+  matrix_.RotateAbout(x, y, z, angle);
 
   if (x != 0 || y != 0)
     is2d_ = false;
@@ -274,7 +274,7 @@ DOMMatrix* DOMMatrix::skewYSelf(double sy) {
 }
 
 DOMMatrix* DOMMatrix::perspectiveSelf(double p) {
-  matrix_.ApplyPerspective(p);
+  matrix_.ApplyPerspectiveDepth(p);
   return this;
 }
 

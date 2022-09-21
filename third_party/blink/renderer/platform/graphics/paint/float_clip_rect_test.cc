@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/transformation_matrix_test_helpers.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -101,8 +102,8 @@ TEST_F(FloatClipRectTest, ClearIsTight) {
 TEST_F(FloatClipRectTest, Map) {
   FloatClipRect rect;
   TransformationMatrix identity;
-  TransformationMatrix translation = TransformationMatrix().Translate(10, 20);
-  TransformationMatrix rotate = TransformationMatrix().Rotate(45);
+  TransformationMatrix translation = MakeTranslationMatrix(10, 20);
+  TransformationMatrix rotate = MakeRotationMatrix(45);
 
   rect.Map(rotate);
   EXPECT_TRUE(rect.IsInfinite());

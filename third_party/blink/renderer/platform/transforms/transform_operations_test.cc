@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/transformation_matrix_test_helpers.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_transform_operation.h"
@@ -32,7 +33,6 @@
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/skew_transform_operation.h"
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix_test_helpers.h"
 #include "third_party/blink/renderer/platform/transforms/translate_transform_operation.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"

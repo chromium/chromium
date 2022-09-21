@@ -280,9 +280,9 @@ TEST_P(PaintArtifactCompositorTest, OneChunkWithAnOffset) {
 
 TEST_P(PaintArtifactCompositorTest, OneTransform) {
   // A 90 degree clockwise rotation about (100, 100).
-  auto transform = CreateTransform(t0(), TransformationMatrix().Rotate(90),
-                                   gfx::Point3F(100, 100, 0),
-                                   CompositingReason::k3DTransform);
+  auto transform =
+      CreateTransform(t0(), MakeRotationMatrix(90), gfx::Point3F(100, 100, 0),
+                      CompositingReason::k3DTransform);
 
   TestPaintArtifact artifact;
   artifact.Chunk(*transform, c0(), e0())
@@ -321,9 +321,9 @@ TEST_P(PaintArtifactCompositorTest, OneTransform) {
 
 TEST_P(PaintArtifactCompositorTest, OneTransformWithAlias) {
   // A 90 degree clockwise rotation about (100, 100).
-  auto real_transform = CreateTransform(t0(), TransformationMatrix().Rotate(90),
-                                        gfx::Point3F(100, 100, 0),
-                                        CompositingReason::k3DTransform);
+  auto real_transform =
+      CreateTransform(t0(), MakeRotationMatrix(90), gfx::Point3F(100, 100, 0),
+                      CompositingReason::k3DTransform);
   auto transform = TransformPaintPropertyNodeAlias::Create(*real_transform);
 
   TestPaintArtifact artifact;
@@ -364,11 +364,11 @@ TEST_P(PaintArtifactCompositorTest, OneTransformWithAlias) {
 TEST_P(PaintArtifactCompositorTest, TransformCombining) {
   // A translation by (5, 5) within a 2x scale about (10, 10).
   auto transform1 =
-      CreateTransform(t0(), TransformationMatrix().Scale(2),
-                      gfx::Point3F(10, 10, 0), CompositingReason::k3DTransform);
+      CreateTransform(t0(), MakeScaleMatrix(2), gfx::Point3F(10, 10, 0),
+                      CompositingReason::k3DTransform);
   auto transform2 =
-      CreateTransform(*transform1, TransformationMatrix().Translate(5, 5),
-                      gfx::Point3F(), CompositingReason::kWillChangeTransform);
+      CreateTransform(*transform1, MakeTranslationMatrix(5, 5), gfx::Point3F(),
+                      CompositingReason::kWillChangeTransform);
 
   TestPaintArtifact artifact;
   artifact.Chunk(*transform1, c0(), e0())
@@ -448,9 +448,9 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransform) {
     // is flattened, while cc's notion applies in the parent's coordinate space.
     auto transform1 = CreateTransform(t0(), TransformationMatrix());
     auto transform2 =
-        CreateTransform(*transform1, TransformationMatrix().Rotate3d(0, 45, 0));
+        CreateTransform(*transform1, MakeRotationMatrix(0, 45, 0));
     TransformPaintPropertyNode::State transform3_state{
-        TransformationMatrix().Rotate3d(0, 45, 0)};
+        MakeRotationMatrix(0, 45, 0)};
     transform3_state.flags.flattens_inherited_transform =
         transform_is_flattened;
     auto transform3 = TransformPaintPropertyNode::Create(
@@ -501,10 +501,10 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransformWithAlias) {
     auto real_transform1 = CreateTransform(t0(), TransformationMatrix());
     auto transform1 = TransformPaintPropertyNodeAlias::Create(*real_transform1);
     auto real_transform2 =
-        CreateTransform(*transform1, TransformationMatrix().Rotate3d(0, 45, 0));
+        CreateTransform(*transform1, MakeRotationMatrix(0, 45, 0));
     auto transform2 = TransformPaintPropertyNodeAlias::Create(*real_transform2);
     TransformPaintPropertyNode::State transform3_state{
-        TransformationMatrix().Rotate3d(0, 45, 0)};
+        MakeRotationMatrix(0, 45, 0)};
     transform3_state.flags.flattens_inherited_transform =
         transform_is_flattened;
     auto real_transform3 = TransformPaintPropertyNode::Create(
@@ -874,7 +874,7 @@ TEST_P(PaintArtifactCompositorTest, SiblingClipsWithAlias) {
 TEST_P(PaintArtifactCompositorTest, SiblingClipsWithCompositedTransform) {
   auto t1 = CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
                             CompositingReason::kWillChangeTransform);
-  auto t2 = CreateTransform(*t1, TransformationMatrix().Translate(1, 2));
+  auto t2 = CreateTransform(*t1, MakeTranslationMatrix(1, 2));
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 400, 600));
   auto c2 = CreateClip(c0(), *t2, FloatRoundedRect(400, 0, 400, 600));
 
@@ -892,14 +892,13 @@ TEST_P(PaintArtifactCompositorTest, SiblingClipsWithCompositedTransform) {
 
 TEST_P(PaintArtifactCompositorTest, SiblingTransformsWithAlias) {
   auto real_common_transform =
-      CreateTransform(t0(), TransformationMatrix().Translate(5, 6));
+      CreateTransform(t0(), MakeTranslationMatrix(5, 6));
   auto common_transform =
       TransformPaintPropertyNodeAlias::Create(*real_common_transform);
-  auto real_transform1 =
-      CreateTransform(*common_transform, TransformationMatrix().Scale(2));
+  auto real_transform1 = CreateTransform(*common_transform, MakeScaleMatrix(2));
   auto transform1 = TransformPaintPropertyNodeAlias::Create(*real_transform1);
   auto real_transform2 =
-      CreateTransform(*common_transform, TransformationMatrix().Scale(0.5));
+      CreateTransform(*common_transform, MakeScaleMatrix(0.5));
   auto transform2 = TransformPaintPropertyNodeAlias::Create(*real_transform2);
 
   TestPaintArtifact artifact;
@@ -925,8 +924,8 @@ TEST_P(PaintArtifactCompositorTest, SiblingTransformsWithAlias) {
 TEST_P(PaintArtifactCompositorTest, SiblingTransformsWithComposited) {
   auto t1 = CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
                             CompositingReason::kWillChangeTransform);
-  auto t2 = CreateTransform(*t1, TransformationMatrix().Translate(1, 2));
-  auto t3 = CreateTransform(t0(), TransformationMatrix().Translate(3, 4));
+  auto t2 = CreateTransform(*t1, MakeTranslationMatrix(1, 2));
+  auto t3 = CreateTransform(t0(), MakeTranslationMatrix(3, 4));
 
   TestPaintArtifact artifact;
   artifact.Chunk(*t2, c0(), e0())
@@ -1225,9 +1224,9 @@ TEST_P(PaintArtifactCompositorTest, ScrollHitTestLayerOrder) {
   auto scroll_state = ScrollState1();
   auto& scroll = *scroll_state.Transform().ScrollNode();
 
-  auto transform = CreateTransform(
-      scroll_state.Transform(), TransformationMatrix().Translate(5, 5),
-      gfx::Point3F(), CompositingReason::k3DTransform);
+  auto transform =
+      CreateTransform(scroll_state.Transform(), MakeTranslationMatrix(5, 5),
+                      gfx::Point3F(), CompositingReason::k3DTransform);
 
   TestPaintArtifact artifact;
   artifact.Chunk(scroll_state)
@@ -1390,9 +1389,8 @@ TEST_P(PaintArtifactCompositorTest, MergeClip) {
 }
 
 TEST_P(PaintArtifactCompositorTest, Merge2DTransform) {
-  auto transform =
-      CreateTransform(t0(), TransformationMatrix().Translate(50, 50),
-                      gfx::Point3F(100, 100, 0));
+  auto transform = CreateTransform(t0(), MakeTranslationMatrix(50, 50),
+                                   gfx::Point3F(100, 100, 0));
 
   TestPaintArtifact test_artifact;
   test_artifact.Chunk().RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kWhite);
@@ -1424,9 +1422,8 @@ TEST_P(PaintArtifactCompositorTest, Merge2DTransform) {
 TEST_P(PaintArtifactCompositorTest, Merge2DTransformDirectAncestor) {
   auto transform = CreateTransform(t0(), TransformationMatrix(), gfx::Point3F(),
                                    CompositingReason::k3DTransform);
-  auto transform2 =
-      CreateTransform(*transform, TransformationMatrix().Translate(50, 50),
-                      gfx::Point3F(100, 100, 0));
+  auto transform2 = CreateTransform(*transform, MakeTranslationMatrix(50, 50),
+                                    gfx::Point3F(100, 100, 0));
 
   TestPaintArtifact test_artifact;
   test_artifact.Chunk(*transform, c0(), e0())
@@ -1455,8 +1452,8 @@ TEST_P(PaintArtifactCompositorTest, Merge2DTransformDirectAncestor) {
 }
 
 TEST_P(PaintArtifactCompositorTest, MergeTransformOrigin) {
-  auto transform = CreateTransform(t0(), TransformationMatrix().Rotate(45),
-                                   gfx::Point3F(100, 100, 0));
+  auto transform =
+      CreateTransform(t0(), MakeRotationMatrix(45), gfx::Point3F(100, 100, 0));
 
   TestPaintArtifact test_artifact;
   test_artifact.Chunk().RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kWhite);
@@ -1550,9 +1547,8 @@ TEST_P(PaintArtifactCompositorTest, MergeOpacityWithAlias) {
 TEST_P(PaintArtifactCompositorTest, MergeNestedWithAlias) {
   // Tests merging of an opacity effect, inside of a clip, inside of a
   // transform.
-  auto real_transform =
-      CreateTransform(t0(), TransformationMatrix().Translate(50, 50),
-                      gfx::Point3F(100, 100, 0));
+  auto real_transform = CreateTransform(t0(), MakeTranslationMatrix(50, 50),
+                                        gfx::Point3F(100, 100, 0));
   auto transform = TransformPaintPropertyNodeAlias::Create(*real_transform);
   auto real_clip =
       CreateClip(c0(), *transform, FloatRoundedRect(10, 20, 50, 60));
@@ -1592,12 +1588,10 @@ TEST_P(PaintArtifactCompositorTest, ClipPushedUp) {
   // Tests merging of an element which has a clipapplied to it,
   // but has an ancestor transform of them. This can happen for fixed-
   // or absolute-position elements which escape scroll transforms.
-  auto transform =
-      CreateTransform(t0(), TransformationMatrix().Translate(20, 25),
-                      gfx::Point3F(100, 100, 0));
-  auto transform2 =
-      CreateTransform(*transform, TransformationMatrix().Translate(20, 25),
-                      gfx::Point3F(100, 100, 0));
+  auto transform = CreateTransform(t0(), MakeTranslationMatrix(20, 25),
+                                   gfx::Point3F(100, 100, 0));
+  auto transform2 = CreateTransform(*transform, MakeTranslationMatrix(20, 25),
+                                    gfx::Point3F(100, 100, 0));
   auto clip = CreateClip(c0(), *transform2, FloatRoundedRect(10, 20, 50, 60));
 
   TestPaintArtifact test_artifact;
@@ -1632,13 +1626,11 @@ TEST_P(PaintArtifactCompositorTest, EffectPushedUp) {
   // but has an ancestor transform of them. This can happen for fixed-
   // or absolute-position elements which escape scroll transforms.
 
-  auto transform =
-      CreateTransform(t0(), TransformationMatrix().Translate(20, 25),
-                      gfx::Point3F(100, 100, 0));
+  auto transform = CreateTransform(t0(), MakeTranslationMatrix(20, 25),
+                                   gfx::Point3F(100, 100, 0));
 
-  auto transform2 =
-      CreateTransform(*transform, TransformationMatrix().Translate(20, 25),
-                      gfx::Point3F(100, 100, 0));
+  auto transform2 = CreateTransform(*transform, MakeTranslationMatrix(20, 25),
+                                    gfx::Point3F(100, 100, 0));
 
   float opacity = 2.0 / 255.0;
   auto effect = CreateOpacityEffect(e0(), *transform2, &c0(), opacity);
@@ -1673,12 +1665,10 @@ TEST_P(PaintArtifactCompositorTest, EffectAndClipPushedUp) {
   // Tests merging of an element which has an effect applied to it,
   // but has an ancestor transform of them. This can happen for fixed-
   // or absolute-position elements which escape scroll transforms.
-  auto transform =
-      CreateTransform(t0(), TransformationMatrix().Translate(20, 25),
-                      gfx::Point3F(100, 100, 0));
-  auto transform2 =
-      CreateTransform(*transform, TransformationMatrix().Translate(20, 25),
-                      gfx::Point3F(100, 100, 0));
+  auto transform = CreateTransform(t0(), MakeTranslationMatrix(20, 25),
+                                   gfx::Point3F(100, 100, 0));
+  auto transform2 = CreateTransform(*transform, MakeTranslationMatrix(20, 25),
+                                    gfx::Point3F(100, 100, 0));
   auto clip = CreateClip(c0(), *transform, FloatRoundedRect(10, 20, 50, 60));
 
   float opacity = 2.0 / 255.0;
@@ -1778,13 +1768,11 @@ TEST_P(PaintArtifactCompositorTest, TwoClips) {
 }
 
 TEST_P(PaintArtifactCompositorTest, TwoTransformsClipBetween) {
-  auto transform =
-      CreateTransform(t0(), TransformationMatrix().Translate(20, 25),
-                      gfx::Point3F(100, 100, 0));
+  auto transform = CreateTransform(t0(), MakeTranslationMatrix(20, 25),
+                                   gfx::Point3F(100, 100, 0));
   auto clip = CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 50, 60));
-  auto transform2 =
-      CreateTransform(*transform, TransformationMatrix().Translate(20, 25),
-                      gfx::Point3F(100, 100, 0));
+  auto transform2 = CreateTransform(*transform, MakeTranslationMatrix(20, 25),
+                                    gfx::Point3F(100, 100, 0));
   TestPaintArtifact test_artifact;
   test_artifact.Chunk().RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kWhite);
   test_artifact.Chunk(*transform2, *clip, e0())
@@ -1810,9 +1798,9 @@ TEST_P(PaintArtifactCompositorTest, TwoTransformsClipBetween) {
 }
 
 TEST_P(PaintArtifactCompositorTest, OverlapTransform) {
-  auto transform = CreateTransform(
-      t0(), TransformationMatrix().Translate(50, 50), gfx::Point3F(100, 100, 0),
-      CompositingReason::k3DTransform);
+  auto transform = CreateTransform(t0(), MakeTranslationMatrix(50, 50),
+                                   gfx::Point3F(100, 100, 0),
+                                   CompositingReason::k3DTransform);
 
   TestPaintArtifact test_artifact;
   test_artifact.Chunk().RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kWhite);
@@ -1842,7 +1830,7 @@ scoped_refptr<EffectPaintPropertyNode> CreateSampleEffectNodeWithElementId() {
 
 scoped_refptr<TransformPaintPropertyNode>
 CreateSampleTransformNodeWithElementId() {
-  TransformPaintPropertyNode::State state{TransformationMatrix().Rotate(90)};
+  TransformPaintPropertyNode::State state{MakeRotationMatrix(90)};
   state.direct_compositing_reasons = CompositingReason::k3DTransform;
   state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       3, CompositorElementIdNamespace::kPrimaryTransform);
@@ -2268,9 +2256,9 @@ TEST_P(PaintArtifactCompositorTest,
 
 TEST_P(PaintArtifactCompositorTest, UpdateProducesNewSequenceNumber) {
   // A 90 degree clockwise rotation about (100, 100).
-  auto transform = CreateTransform(t0(), TransformationMatrix().Rotate(90),
-                                   gfx::Point3F(100, 100, 0),
-                                   CompositingReason::k3DTransform);
+  auto transform =
+      CreateTransform(t0(), MakeRotationMatrix(90), gfx::Point3F(100, 100, 0),
+                      CompositingReason::k3DTransform);
   auto clip = CreateClip(c0(), t0(), FloatRoundedRect(100, 100, 300, 200));
   auto effect = CreateOpacityEffect(e0(), 0.5);
 
@@ -2611,9 +2599,9 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipSimple) {
 TEST_P(PaintArtifactCompositorTest, SynthesizedClipRotatedNotSupported) {
   // Synthesized clips are not currently supported when rotated (or any
   // transform that is not 2D axis-aligned).
-  auto transform = CreateTransform(t0(), TransformationMatrix().Rotate(45),
-                                   gfx::Point3F(100, 100, 0),
-                                   CompositingReason::k3DTransform);
+  auto transform =
+      CreateTransform(t0(), MakeRotationMatrix(45), gfx::Point3F(100, 100, 0),
+                      CompositingReason::k3DTransform);
 
   FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), *transform, rrect);
@@ -2665,9 +2653,9 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRotatedNotSupported) {
 TEST_P(PaintArtifactCompositorTest, SynthesizedClip90DegRotationSupported) {
   // 90-degree rotations are axis-aligned, and so the synthetic clip is
   // supported.
-  auto transform = CreateTransform(t0(), TransformationMatrix().Rotate(90),
-                                   gfx::Point3F(100, 100, 0),
-                                   CompositingReason::k3DTransform);
+  auto transform =
+      CreateTransform(t0(), MakeRotationMatrix(90), gfx::Point3F(100, 100, 0),
+                      CompositingReason::k3DTransform);
 
   FloatRoundedRect rrect(gfx::RectF(50, 50, 300, 200), 5);
   auto c1 = CreateClip(c0(), *transform, rrect);
@@ -3773,8 +3761,7 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
 // Test that PaintArtifactCompositor creates the correct nodes for the visual
 // viewport's page scale and scroll layers to support pinch-zooming.
 TEST_P(PaintArtifactCompositorTest, CreatesViewportNodes) {
-  TransformationMatrix matrix;
-  matrix.Scale(2);
+  auto matrix = MakeScaleMatrix(2);
   TransformPaintPropertyNode::State transform_state{matrix};
   transform_state.flags.in_subtree_of_page_scale = false;
   const CompositorElementId compositor_element_id =
@@ -3855,9 +3842,7 @@ TEST_P(PaintArtifactCompositorTest, InSubtreeOfPageScale) {
 // Test that PaintArtifactCompositor pushes page scale to the transform tree.
 TEST_P(PaintArtifactCompositorTest, ViewportPageScale) {
   // Create a page scale transform node with a page scale factor of 2.0.
-  TransformationMatrix matrix;
-  matrix.Scale(2);
-  TransformPaintPropertyNode::State transform_state{matrix};
+  TransformPaintPropertyNode::State transform_state{MakeScaleMatrix(2)};
   transform_state.flags.in_subtree_of_page_scale = false;
   transform_state.compositor_element_id =
       CompositorElementIdFromUniqueObjectId(1);
@@ -3928,8 +3913,8 @@ TEST_P(PaintArtifactCompositorTest, OpacityRenderSurfaces) {
       CreateOpacityEffect(*a, 0.6f, CompositingReason::kWillChangeOpacity);
   auto ca =
       CreateOpacityEffect(*c, 0.7f, CompositingReason::kWillChangeOpacity);
-  auto t = CreateTransform(t0(), TransformationMatrix().Rotate(90),
-                           gfx::Point3F(), CompositingReason::k3DTransform);
+  auto t = CreateTransform(t0(), MakeRotationMatrix(90), gfx::Point3F(),
+                           CompositingReason::k3DTransform);
 
   TestPaintArtifact artifact;
   gfx::Rect r(150, 150, 100, 100);
@@ -4015,8 +4000,8 @@ TEST_P(PaintArtifactCompositorTest, OpacityAnimationRenderSurfaces) {
   auto aa = CreateAnimatingOpacityEffect(*a);
   auto ab = CreateAnimatingOpacityEffect(*a);
   auto ca = CreateAnimatingOpacityEffect(*c);
-  auto t = CreateTransform(t0(), TransformationMatrix().Rotate(90),
-                           gfx::Point3F(), CompositingReason::k3DTransform);
+  auto t = CreateTransform(t0(), MakeRotationMatrix(90), gfx::Point3F(),
+                           CompositingReason::k3DTransform);
 
   TestPaintArtifact artifact;
   gfx::Rect r(150, 150, 100, 100);
@@ -4307,7 +4292,7 @@ TEST_P(PaintArtifactCompositorTest,
 }
 
 TEST_P(PaintArtifactCompositorTest, Non2dAxisAlignedClip) {
-  auto rotate = CreateTransform(t0(), TransformationMatrix().Rotate(45));
+  auto rotate = CreateTransform(t0(), MakeRotationMatrix(45));
   auto clip = CreateClip(c0(), *rotate, FloatRoundedRect(50, 50, 50, 50));
   auto opacity = CreateOpacityEffect(
       e0(), 0.5f, CompositingReason::kActiveOpacityAnimation);
@@ -4329,7 +4314,7 @@ TEST_P(PaintArtifactCompositorTest, Non2dAxisAlignedClip) {
 }
 
 TEST_P(PaintArtifactCompositorTest, Non2dAxisAlignedRoundedRectClip) {
-  auto rotate = CreateTransform(t0(), TransformationMatrix().Rotate(45));
+  auto rotate = CreateTransform(t0(), MakeRotationMatrix(45));
   FloatRoundedRect rounded_clip(gfx::RectF(50, 50, 50, 50), 5);
   auto clip = CreateClip(c0(), *rotate, rounded_clip);
   auto opacity = CreateOpacityEffect(
@@ -4362,12 +4347,11 @@ TEST_P(PaintArtifactCompositorTest, Non2dAxisAlignedRoundedRectClip) {
 
 TEST_P(PaintArtifactCompositorTest,
        Non2dAxisAlignedClipUnderLaterRenderSurface) {
-  auto rotate1 =
-      CreateTransform(t0(), TransformationMatrix().Rotate(45), gfx::Point3F(),
-                      CompositingReason::k3DTransform);
+  auto rotate1 = CreateTransform(t0(), MakeRotationMatrix(45), gfx::Point3F(),
+                                 CompositingReason::k3DTransform);
   auto rotate2 =
-      CreateTransform(*rotate1, TransformationMatrix().Rotate(-45),
-                      gfx::Point3F(), CompositingReason::k3DTransform);
+      CreateTransform(*rotate1, MakeRotationMatrix(-45), gfx::Point3F(),
+                      CompositingReason::k3DTransform);
   auto clip = CreateClip(c0(), *rotate2, FloatRoundedRect(50, 50, 50, 50));
   auto opacity = CreateOpacityEffect(
       e0(), *rotate1, &c0(), 0.5f, CompositingReason::kActiveOpacityAnimation);
@@ -4411,7 +4395,7 @@ static TransformPaintPropertyNode::State Transform3dState(
 TEST_P(PaintArtifactCompositorTest, TransformChange) {
   auto t1 = Create2DTranslation(t0(), 10, 20);
   auto t2 = TransformPaintPropertyNode::Create(
-      *t1, Transform3dState(TransformationMatrix().Rotate(45)));
+      *t1, Transform3dState(MakeRotationMatrix(45)));
   FakeDisplayItemClient& client =
       *MakeGarbageCollected<FakeDisplayItemClient>();
   client.Validate();
@@ -4453,7 +4437,7 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
   // Change t2 but not t1.
   layer->ClearSubtreePropertyChangedForTesting();
   ClearPropertyTreeChangedState();
-  t2->Update(*t1, Transform3dState(TransformationMatrix().Rotate(135)));
+  t2->Update(*t1, Transform3dState(MakeRotationMatrix(135)));
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t1->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
             t2->NodeChanged());

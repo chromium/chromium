@@ -74,7 +74,7 @@ class PLATFORM_EXPORT RotateTransformOperation : public TransformOperation {
     if (type_ == kRotate)
       transform.Rotate(Angle());
     else
-      transform.Rotate3d(rotation_);
+      transform.RotateAbout(rotation_.axis, rotation_.angle);
   }
 
   static bool IsMatchingOperationType(OperationType type) {

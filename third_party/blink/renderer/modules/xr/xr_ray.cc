@@ -168,12 +168,11 @@ DOMFloat32Array* XRRay::matrix() {
     } else if (cos_angle < -0.9999) {
       // Vectors are co-linear or almost co-linear & face the opposite
       // direction, rotation by 180 degrees is needed & can be around any vector
-      // perpendicular to (0,0,-1) so let's rotate by (1, 0, 0).
-      matrix.Rotate3d(1, 0, 0, 180);
+      // perpendicular to (0,0,-1) so let's rotate about the x-axis.
+      matrix.RotateAboutXAxis(180);
     } else {
       // Rotation needed - create it from axis-angle.
-      matrix.Rotate3d(axis.x(), axis.y(), axis.z(),
-                      Rad2deg(std::acos(cos_angle)));
+      matrix.RotateAbout(axis, Rad2deg(std::acos(cos_angle)));
     }
 
     // Step 7: Let matrix be the result of premultiplying rotation from the left

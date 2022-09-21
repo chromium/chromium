@@ -274,7 +274,8 @@ TEST_P(GeometryMapperTest, TranslationTransformWithAlias) {
 }
 
 TEST_P(GeometryMapperTest, RotationAndScaleTransform) {
-  expected_transform = TransformationMatrix().Rotate(45).Scale(2);
+  expected_transform = MakeRotationMatrix(45);
+  expected_transform->Scale(2, 2);
   auto transform = CreateTransform(t0(), *expected_transform);
   local_state.SetTransform(*transform);
 
@@ -286,7 +287,8 @@ TEST_P(GeometryMapperTest, RotationAndScaleTransform) {
 }
 
 TEST_P(GeometryMapperTest, RotationAndScaleTransformWithAlias) {
-  expected_transform = TransformationMatrix().Rotate(45).Scale(2);
+  expected_transform = MakeRotationMatrix(45);
+  expected_transform->Scale(2, 2);
   auto real_transform = CreateTransform(t0(), *expected_transform);
   auto transform = TransformPaintPropertyNodeAlias::Create(*real_transform);
   local_state.SetTransform(*transform);
@@ -299,7 +301,8 @@ TEST_P(GeometryMapperTest, RotationAndScaleTransformWithAlias) {
 }
 
 TEST_P(GeometryMapperTest, RotationAndScaleTransformWithTransformOrigin) {
-  expected_transform = TransformationMatrix().Rotate(45).Scale(2);
+  expected_transform = MakeRotationMatrix(45);
+  expected_transform->Scale(2, 2);
   auto transform =
       CreateTransform(t0(), *expected_transform, gfx::Point3F(50, 50, 0));
   local_state.SetTransform(*transform);
@@ -313,10 +316,10 @@ TEST_P(GeometryMapperTest, RotationAndScaleTransformWithTransformOrigin) {
 }
 
 TEST_P(GeometryMapperTest, NestedTransforms) {
-  auto rotate_transform = TransformationMatrix().Rotate(45);
+  auto rotate_transform = MakeRotationMatrix(45);
   auto transform1 = CreateTransform(t0(), rotate_transform);
 
-  auto scale_transform = TransformationMatrix().Scale(2);
+  auto scale_transform = MakeScaleMatrix(2);
   auto transform2 = CreateTransform(*transform1, scale_transform);
   local_state.SetTransform(*transform2);
 
@@ -329,10 +332,10 @@ TEST_P(GeometryMapperTest, NestedTransforms) {
 }
 
 TEST_P(GeometryMapperTest, NestedTransformsFlattening) {
-  auto rotate_transform = TransformationMatrix().Rotate3d(45, 0, 0);
+  auto rotate_transform = MakeRotationMatrix(45, 0, 0);
   auto transform1 = CreateTransform(t0(), rotate_transform);
 
-  auto inverse_rotate_transform = TransformationMatrix().Rotate3d(-45, 0, 0);
+  auto inverse_rotate_transform = MakeRotationMatrix(-45, 0, 0);
   TransformPaintPropertyNode::State inverse_state{inverse_rotate_transform};
   inverse_state.flags.flattens_inherited_transform = true;
   auto transform2 =
@@ -350,10 +353,10 @@ TEST_P(GeometryMapperTest, NestedTransformsFlattening) {
 }
 
 TEST_P(GeometryMapperTest, NestedTransformsScaleAndTranslation) {
-  auto scale_transform = TransformationMatrix().Scale(2);
+  auto scale_transform = MakeScaleMatrix(2);
   auto transform1 = CreateTransform(t0(), scale_transform);
 
-  auto translate_transform = TransformationMatrix().Translate(100, 0);
+  auto translate_transform = MakeTranslationMatrix(100, 0);
   auto transform2 = CreateTransform(*transform1, translate_transform);
   local_state.SetTransform(*transform2);
 
@@ -368,10 +371,10 @@ TEST_P(GeometryMapperTest, NestedTransformsScaleAndTranslation) {
 }
 
 TEST_P(GeometryMapperTest, NestedTransformsIntermediateDestination) {
-  auto translate_transform = TransformationMatrix().Translate(10, 20);
+  auto translate_transform = MakeTranslationMatrix(10, 20);
   auto transform1 = CreateTransform(t0(), translate_transform);
 
-  auto scale_transform = TransformationMatrix().Scale(3);
+  auto scale_transform = MakeScaleMatrix(3);
   auto transform2 = CreateTransform(*transform1, scale_transform);
 
   local_state.SetTransform(*transform2);
@@ -592,7 +595,7 @@ TEST_P(GeometryMapperTest, TwoClipsTransformAbove) {
 }
 
 TEST_P(GeometryMapperTest, ClipBeforeTransform) {
-  expected_transform = TransformationMatrix().Rotate(45);
+  expected_transform = MakeRotationMatrix(45);
   auto transform = CreateTransform(t0(), *expected_transform);
   auto clip = CreateClip(c0(), *transform, FloatRoundedRect(10, 10, 50, 50));
   local_state.SetClip(*clip);
@@ -611,7 +614,7 @@ TEST_P(GeometryMapperTest, ClipBeforeTransform) {
 }
 
 TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeAnimatingTransform) {
-  expected_transform = TransformationMatrix().Rotate(45);
+  expected_transform = MakeRotationMatrix(45);
   auto transform = CreateAnimatingTransform(t0(), *expected_transform);
   auto clip = CreateClip(c0(), *transform, FloatRoundedRect(10, 10, 50, 50));
   local_state.SetClip(*clip);
@@ -633,7 +636,7 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeAnimatingTransform) {
 }
 
 TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeSticky) {
-  expected_transform = TransformationMatrix().Translate(0, 100);
+  expected_transform = MakeTranslationMatrix(0, 100);
   auto transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
                                    CompositingReason::kStickyPosition);
   auto clip = CreateClip(c0(), *transform, FloatRoundedRect(10, 10, 50, 50));
@@ -659,7 +662,7 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeSticky) {
 }
 
 TEST_P(GeometryMapperTest, ClipAfterTransform) {
-  expected_transform = TransformationMatrix().Rotate(45);
+  expected_transform = MakeRotationMatrix(45);
   auto transform = CreateTransform(t0(), *expected_transform);
   auto clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
   local_state.SetClip(*clip);
@@ -677,7 +680,7 @@ TEST_P(GeometryMapperTest, ClipAfterTransform) {
 }
 
 TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterAnimatingTransform) {
-  expected_transform = TransformationMatrix().Rotate(45);
+  expected_transform = MakeRotationMatrix(45);
   auto transform = CreateAnimatingTransform(t0(), *expected_transform);
   auto clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
   local_state.SetClip(*clip);
@@ -699,7 +702,7 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterAnimatingTransform) {
 }
 
 TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterSticky) {
-  expected_transform = TransformationMatrix().Translate(0, 100);
+  expected_transform = MakeTranslationMatrix(0, 100);
   auto transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
                                    CompositingReason::kStickyPosition);
   auto clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
@@ -725,7 +728,7 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterSticky) {
 
 TEST_P(GeometryMapperTest, TwoClipsWithTransformBetween) {
   auto clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
-  expected_transform = TransformationMatrix().Rotate(45);
+  expected_transform = MakeRotationMatrix(45);
   auto transform = CreateTransform(t0(), *expected_transform);
   auto clip2 =
       CreateClip(*clip1, *transform, FloatRoundedRect(10, 10, 200, 200));
@@ -754,7 +757,7 @@ TEST_P(GeometryMapperTest, TwoClipsWithTransformBetween) {
 TEST_P(GeometryMapperTest,
        ExpandVisualRectWithTwoClipsWithAnimatingTransformBetween) {
   auto clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
-  expected_transform = TransformationMatrix().Rotate(45);
+  expected_transform = MakeRotationMatrix(45);
   auto transform = CreateAnimatingTransform(t0(), *expected_transform);
   auto clip2 =
       CreateClip(*clip1, *transform, FloatRoundedRect(10, 10, 200, 200));
@@ -783,7 +786,7 @@ TEST_P(GeometryMapperTest,
 
 TEST_P(GeometryMapperTest, ExpandVisualRectWithTwoClipsWithStickyBetween) {
   auto clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
-  expected_transform = TransformationMatrix().Translate(0, 100);
+  expected_transform = MakeTranslationMatrix(0, 100);
   auto transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
                                    CompositingReason::kStickyPosition);
   auto clip2 =
@@ -848,8 +851,8 @@ TEST_P(GeometryMapperTest, ExpandVisualRectForFixed) {
   // If we're not mapping to the viewport, the fixed rect should not be
   // expanded.
   ancestor_state.SetTransform(*above_viewport);
-  expected_transform = TransformationMatrix().Translate(descendant_offset.x(),
-                                                        descendant_offset.y());
+  expected_transform =
+      MakeTranslationMatrix(descendant_offset.x(), descendant_offset.y());
   expected_visual_rect.ClearIsTight();
   expected_visual_rect_expanded_for_compositing = expected_visual_rect;
   CheckMappings();
@@ -858,10 +861,10 @@ TEST_P(GeometryMapperTest, ExpandVisualRectForFixed) {
 TEST_P(GeometryMapperTest, SiblingTransforms) {
   // These transforms are siblings. Thus mapping from one to the other requires
   // going through the root.
-  auto rotate_transform1 = TransformationMatrix().Rotate(45);
+  auto rotate_transform1 = MakeRotationMatrix(45);
   auto transform1 = CreateTransform(t0(), rotate_transform1);
 
-  auto rotate_transform2 = TransformationMatrix().Rotate(-45);
+  auto rotate_transform2 = MakeRotationMatrix(-45);
   auto transform2 = CreateTransform(t0(), rotate_transform2);
 
   auto transform1_state = PropertyTreeState::Root();
@@ -898,10 +901,10 @@ TEST_P(GeometryMapperTest, SiblingTransforms) {
 TEST_P(GeometryMapperTest, SiblingTransformsWithClip) {
   // These transforms are siblings. Thus mapping from one to the other requires
   // going through the root.
-  auto rotate_transform1 = TransformationMatrix().Rotate(45);
+  auto rotate_transform1 = MakeRotationMatrix(45);
   auto transform1 = CreateTransform(t0(), rotate_transform1);
 
-  auto rotate_transform2 = TransformationMatrix().Rotate(-45);
+  auto rotate_transform2 = MakeRotationMatrix(-45);
   auto transform2 = CreateTransform(t0(), rotate_transform2);
 
   auto clip = CreateClip(c0(), *transform2, FloatRoundedRect(10, 20, 30, 40));
@@ -1087,8 +1090,8 @@ TEST_P(GeometryMapperTest, Reflection) {
 }
 
 TEST_P(GeometryMapperTest, Precision) {
-  auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(32767));
-  auto t2 = CreateTransform(*t1, TransformationMatrix().Rotate(1));
+  auto t1 = CreateTransform(t0(), MakeScaleMatrix(32767));
+  auto t2 = CreateTransform(*t1, MakeRotationMatrix(1));
   auto t3 = Create2DTranslation(*t2, 0, 0);
   auto t4 = Create2DTranslation(*t3, 0, 0);
   EXPECT_TRUE(
@@ -1110,8 +1113,7 @@ TEST_P(GeometryMapperTest, Precision) {
 TEST_P(GeometryMapperTest, MightOverlap) {
   auto t2 = Create2DTranslation(t0(), 99, 0);
   auto t3 = Create2DTranslation(t0(), 100, 0);
-  auto t4 =
-      CreateAnimatingTransform(t0(), TransformationMatrix().Translate(100, 0));
+  auto t4 = CreateAnimatingTransform(t0(), MakeTranslationMatrix(100, 0));
 
   gfx::RectF r(0, 0, 100, 100);
   PropertyTreeState s1 = PropertyTreeState::Root();
