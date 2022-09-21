@@ -12902,7 +12902,7 @@
     },
     {
       'name': 'DeviceUserAllowlist',
-      'owners': ['file://components/policy/resources/OWNERS', 'atwilson@chromium.org'],
+      'owners': ['file://components/policy/resources/OWNERS', 'emaamari@google.com'],
       'type': 'list',
       'schema': {
         'type': 'array',
