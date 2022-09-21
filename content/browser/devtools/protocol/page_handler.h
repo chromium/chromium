@@ -22,6 +22,7 @@
 #include "content/browser/devtools/protocol/page.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/render_widget_host.h"
@@ -184,6 +185,11 @@ class PageHandler : public DevToolsDomainHandler,
  private:
   enum EncodingFormat { PNG, JPEG };
 
+  void CaptureFullPageScreenshot(
+      Maybe<std::string> format,
+      Maybe<int> quality,
+      std::unique_ptr<CaptureScreenshotCallback> callback,
+      const gfx::Size& full_page_size);
   bool ShouldCaptureNextScreencastFrame();
   void NotifyScreencastVisibility(bool visible);
   void OnFrameFromVideoConsumer(scoped_refptr<media::VideoFrame> frame);

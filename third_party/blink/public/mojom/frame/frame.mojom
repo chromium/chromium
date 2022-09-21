@@ -910,6 +910,9 @@ interface LocalMainFrame {
   // onunload event handler.
   ClosePage() => ();
 
+  // Get width and height of the whole page content from the main frame.
+  GetFullPageSize() => (gfx.mojom.Size full_page_size);
+
   // Tells the renderer to focus the first (last if reverse is true) focusable
   // node.
   SetInitialFocus(bool reverse);

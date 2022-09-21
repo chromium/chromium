@@ -202,6 +202,8 @@ class LocalFrameMojoHandler
   void SetScaleFactor(float scale) override;
   void ClosePage(
       mojom::blink::LocalMainFrame::ClosePageCallback callback) override;
+  void GetFullPageSize(
+      mojom::blink::LocalMainFrame::GetFullPageSizeCallback callback) override;
   void PluginActionAt(const gfx::Point& location,
                       mojom::blink::PluginActionType action) override;
   void SetInitialFocus(bool reverse) override;
