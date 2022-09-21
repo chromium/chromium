@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "base/bind.h"
 #include "base/strings/string_util.h"
@@ -37,8 +36,6 @@ constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
           })");
 
 constexpr char kAuthorizationHeaderPrefix[] = "Bearer ";
-
-constexpr char kTranslationApiDomain[] = "translation.googleapis.com";
 
 constexpr char kApiKeyParam[] = "key";
 
@@ -76,6 +73,7 @@ void ProjectorXhrSender::Send(const GURL& url,
                               const std::string& method,
                               const std::string& request_body,
                               bool use_credentials,
+                              bool use_api_key,
                               SendRequestCallback callback,
                               const base::Value::Dict& headers) {
   if (!IsUrlAllowlisted(url.spec())) {
@@ -86,11 +84,6 @@ void ProjectorXhrSender::Send(const GURL& url,
     return;
   }
 
-  // TODO(b/244190982): pass an option to use api key from the XhrSender api
-  // instead.
-  bool use_api_key =
-      ash::features::IsProjectorUseApiKeyForTranslationEnabled() &&
-      url.DomainIs(kTranslationApiDomain);
   GURL request_url = url;
   if (use_api_key) {
     request_url =

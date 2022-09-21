@@ -124,16 +124,19 @@ const CLIENT_DELEGATE = {
    * @param {string=} requestBody the request body data.
    * @param {boolean=} useCredentials authorize the request with end user
    *     credentials. Used for getting streaming URL.
+   * @param {boolean=} useApiKey authorize the request with API key. Used for
+   *     translaton requests.
    * @param {object=} additional headers.
    * @return {!Promise<!projectorApp.XhrResponse>}
    */
-  sendXhr(url, method, requestBody, useCredentials, headers) {
+  sendXhr(url, method, requestBody, useCredentials, useApiKey, headers) {
     return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
         'sendXhr', [
           url,
           method,
           requestBody ? requestBody : '',
           !!useCredentials,
+          !!useApiKey,
           headers,
         ]);
   },

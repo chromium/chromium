@@ -62,6 +62,7 @@ TEST_F(ProjectorXhrSenderTest, Success) {
   sender()->Send(
       GURL(kTestDriveRequestUrl), "GET", /*request_body=*/"",
       /*use_credentials=*/false,
+      /*use_api_key=*/false,
       base::BindOnce(
           [](const std::string& expected_response_body,
              base::RepeatingClosure quit_closure, bool success,
@@ -88,6 +89,7 @@ TEST_F(ProjectorXhrSenderTest, TwoRequests) {
   sender()->Send(
       GURL(kTestDriveRequestUrl), "GET", /*request_body=*/"",
       /*use_credentials=*/false,
+      /*use_api_key=*/false,
       base::BindOnce(
           [](const std::string& expected_response_body,
              base::RepeatingClosure quit_closure, bool success,
@@ -105,6 +107,7 @@ TEST_F(ProjectorXhrSenderTest, TwoRequests) {
   sender()->Send(
       translation_url, "GET", /*request_body=*/"",
       /*use_credentials=*/false,
+      /*use_api_key=*/false,
       base::BindOnce(
           [](const std::string& expected_response_body,
              base::RepeatingClosure quit_closure, bool success,
@@ -120,7 +123,7 @@ TEST_F(ProjectorXhrSenderTest, TwoRequests) {
                                                           test_response_body);
 
   mock_app_client().test_url_loader_factory().AddResponse(
-      GetUrlWithApiKey(translation_url).spec(), test_response_body2);
+      translation_url.spec(), test_response_body2);
 
   mock_app_client().GrantOAuthTokenFor(
       kTestUserEmail,
@@ -136,6 +139,7 @@ TEST_F(ProjectorXhrSenderTest, UseCredentials) {
   sender()->Send(
       GURL(kTestDriveRequestUrl), "GET", /*request_body=*/"",
       /*use_credentials=*/true,
+      /*use_api_key=*/false,
       base::BindOnce(
           [](const std::string& expected_response_body,
              base::RepeatingClosure quit_closure, bool success,
@@ -161,6 +165,7 @@ TEST_F(ProjectorXhrSenderTest, UseApiKey) {
   const std::string& test_response_body = "{}";
   sender()->Send(
       url, "GET", /*request_body=*/"", /*use_credentials=*/false,
+      /*use_api_key=*/true,
       base::BindOnce(
           [](const std::string& expected_response_body,
              base::RepeatingClosure quit_closure, bool success,
@@ -184,7 +189,7 @@ TEST_F(ProjectorXhrSenderTest, NetworkError) {
 
   sender()->Send(
       GURL(kTestDriveRequestUrl), /*method=*/"GET", /*request_body=*/"",
-      /*use_credentials=*/false,
+      /*use_credentials=*/false, /*use_api_key=*/false,
       base::BindOnce(
           [](base::RepeatingClosure quit_closure, bool success,
              const std::string& response_body, const std::string& error) {
@@ -210,7 +215,7 @@ TEST_F(ProjectorXhrSenderTest, UnsupportedUrl) {
 
   sender()->Send(
       GURL("https://example.com"), /*method=*/"GET", /*request_body=*/"",
-      /*use_credentials=*/false,
+      /*use_credentials=*/false, /*use_api_key=*/false,
       base::BindOnce(
           [](base::RepeatingClosure quit_closure, bool success,
              const std::string& response_body, const std::string& error) {

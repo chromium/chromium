@@ -246,6 +246,8 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhr) {
   args.Append(kTestXhrRequestBody);
   // Add useCredentials.
   args.Append(true);
+  // Add useApiKey.
+  args.Append(false);
   // Add additional headers.
   base::Value::Dict dict;
   dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
@@ -295,6 +297,8 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrFailed) {
   args.Append(kTestXhrRequestBody);
   // Add useCredentials.
   args.Append(true);
+  // Add useApiKey.
+  args.Append(false);
   // Add additional headers.
   base::Value::Dict dict;
   dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
@@ -344,6 +348,8 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
   args.Append(kTestXhrRequestBody);
   // Add useCredentials.
   args.Append(true);
+  // Add useApiKey.
+  args.Append(false);
   // Add additional headers.
   base::Value::Dict dict;
   dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);

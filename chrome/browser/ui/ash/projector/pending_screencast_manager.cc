@@ -560,6 +560,7 @@ void PendingScreencastManager::SendDrivePatchRequest(
       GURL(base::StrCat({ash::kDriveV3BaseUrl, file_id})),
       ash::kRequestMethodPatch, request_body,
       /*use_credentials=*/false,
+      /*use_api_key=*/false,
       base::BindOnce([](bool success, const std::string& response_body,
                         const std::string& error) {
         if (!success) {

@@ -21,6 +21,7 @@ void MockXhrSender::Send(const GURL& url,
                          const std::string& method,
                          const std::string& request_body,
                          bool use_credentials,
+                         bool use_api_key,
                          SendRequestCallback callback,
                          const base::Value::Dict& headers) {
   std::move(quit_closure_).Run(url, method, request_body);
