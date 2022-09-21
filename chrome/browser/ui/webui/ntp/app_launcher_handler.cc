@@ -671,10 +671,10 @@ void AppLauncherHandler::FillAppDictionary(base::Value::Dict* dictionary) {
   const base::Value::List& app_page_names =
       prefs->GetList(prefs::kNtpAppPageNames);
   if (!app_page_names.size()) {
-    ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
-    base::Value* list = update.Get();
-    list->Append(l10n_util::GetStringUTF16(IDS_APP_DEFAULT_PAGE_NAME));
-    dictionary->Set("appPageNames", list->Clone());
+    ScopedListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
+    base::Value::List& list = update.Get();
+    list.Append(l10n_util::GetStringUTF16(IDS_APP_DEFAULT_PAGE_NAME));
+    dictionary->Set("appPageNames", list.Clone());
   } else {
     dictionary->Set("appPageNames", app_page_names.Clone());
   }
@@ -1170,12 +1170,12 @@ void AppLauncherHandler::HandleSaveAppPageName(const base::Value::List& args) {
 
   base::AutoReset<bool> auto_reset(&ignore_changes_, true);
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
-  base::Value* list = update.Get();
-  if (page_index < list->GetListDeprecated().size()) {
-    list->GetListDeprecated()[page_index] = base::Value(name);
+  ScopedListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
+  base::Value::List& list = update.Get();
+  if (page_index < list.size()) {
+    list[page_index] = base::Value(name);
   } else {
-    list->Append(name);
+    list.Append(name);
   }
 }
 

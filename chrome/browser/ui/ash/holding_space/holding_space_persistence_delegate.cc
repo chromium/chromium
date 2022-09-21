@@ -66,10 +66,10 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsAdded(
     return;
 
   // Write the new finalized `items` to persistent storage.
-  ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
+  ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   for (const HoldingSpaceItem* item : items) {
     if (item->progress().IsComplete())
-      update->GetList().Append(item->Serialize());
+      update->Append(item->Serialize());
   }
 }
 
@@ -79,8 +79,8 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsRemoved(
     return;
 
   // Remove the `items` from persistent storage.
-  ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
-  update->GetList().EraseIf([&items](const base::Value& persisted_item) {
+  ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
+  update->EraseIf([&items](const base::Value& persisted_item) {
     const std::string& persisted_item_id = HoldingSpaceItem::DeserializeId(
         base::Value::AsDictionaryValue(persisted_item));
     return base::Contains(items, persisted_item_id, &HoldingSpaceItem::id);
@@ -98,8 +98,8 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
     return;
 
   // Attempt to find the finalized `item` in persistent storage.
-  ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
-  base::Value::List& list = update->GetList();
+  ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
+  base::Value::List& list = update.Get();
   auto item_it = base::ranges::find(
       list, item->id(), [](const base::Value& persisted_item) {
         return HoldingSpaceItem::DeserializeId(

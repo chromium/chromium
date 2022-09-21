@@ -87,11 +87,11 @@ void PinnedTabCodec::WritePinnedTabs(Profile* profile,
   if (!prefs)
     return;
 
-  ListPrefUpdate update(prefs, prefs::kPinnedTabs);
-  base::Value* values = update.Get();
-  values->ClearList();
+  ScopedListPrefUpdate update(prefs, prefs::kPinnedTabs);
+  base::Value::List& values = update.Get();
+  values.clear();
   for (const auto& tab : tabs)
-    values->Append(EncodeTab(tab.url));
+    values.Append(EncodeTab(tab.url));
 }
 
 // static
