@@ -854,4 +854,295 @@ TEST_F(StatisticsProviderImplTest, DoesNotLoadOemManifestIfNotRunningChromeOS) {
   }
 }
 
+// Test that the provider loads statistics from regions file if they
+// have correct format.
+TEST_F(StatisticsProviderImplTest, LoadsRegionsFile) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const std::string kMachineInfoStatistics =
+      base::StringPrintf(kMachineInfoFormat, kRegionKey, "region_value");
+
+  // NOTE: keys in regions JSON are different from the ones that are provided.
+  // See `kInitialLocaleKey` and `kLocalesPath`, and
+  // `GetInitialTimezoneFromRegionalData` for example.
+  constexpr char kRegionsStatistics[] = R"({
+    "region_value": {
+      "locales": ["locale_1", "locale_2", "locale_3"],
+      "keyboards": ["layout_1", "layout_2", "layout_3"],
+      "keyboard_mechanical_layout": "mechanical_layout",
+      "time_zones": ["timezone_1", "timezone_2", "timezone_3"],
+      "non_region_key": "non_region_value"
+    }
+  })";
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_machine_info(
+              CreateFileInTempDir(kMachineInfoStatistics, temp_dir()))
+          .set_cros_regions(CreateFileInTempDir(kRegionsStatistics, temp_dir()))
+          .Build();
+
+  // Load statistics.
+  auto provider =
+      StatisticsProviderImpl::CreateProviderForTesting(testing_sources);
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  // Check statistics.
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic(kRegionKey, &result));
+    EXPECT_EQ(result, "region_value");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic(kInitialLocaleKey, &result));
+    EXPECT_EQ(result, "locale_1,locale_2,locale_3");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic(kKeyboardLayoutKey, &result));
+    EXPECT_EQ(result, "layout_1,layout_2,layout_3");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(
+        provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey, &result));
+    EXPECT_EQ(result, "mechanical_layout");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic(kInitialTimezoneKey, &result));
+    EXPECT_EQ(result, "timezone_1");
+  }
+
+  {
+    std::string result;
+    EXPECT_FALSE(provider->GetMachineStatistic("non_region_key", &result));
+    EXPECT_TRUE(result.empty()) << "Unexpected value loaded: " << result;
+  }
+}
+
+// Test that the provider loads statistics from regions file from correct region
+// set by command line if statistics have correct format.
+TEST_F(StatisticsProviderImplTest, SetsRegionFromCommandLine) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const std::string kMachineInfoStatistics =
+      base::StringPrintf(kMachineInfoFormat, kRegionKey, "region_value") +
+      base::StringPrintf(kMachineInfoFormat, kInitialLocaleKey,
+                         "machine_info_locale") +
+      base::StringPrintf(kMachineInfoFormat, kKeyboardLayoutKey,
+                         "machine_info_layout") +
+      base::StringPrintf(kMachineInfoFormat, kKeyboardMechanicalLayoutKey,
+                         "machine_info_mechanical_layout") +
+      base::StringPrintf(kMachineInfoFormat, kInitialTimezoneKey,
+                         "machine_info_mechanical_timezone") +
+      base::StringPrintf(kMachineInfoFormat, "non_region_key",
+                         "machine_info_region_value");
+
+  constexpr char kRegionsStatistics[] = R"({
+    "region_switch": {
+      "locales": ["locale_1", "locale_2", "locale_3"],
+      "keyboards": ["layout_1", "layout_2", "layout_3"],
+      "keyboard_mechanical_layout": "mechanical_layout",
+      "time_zones": ["timezone_1", "timezone_2", "timezone_3"],
+      "non_region_key": "non_region_value"
+    }
+  })";
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_machine_info(
+              CreateFileInTempDir(kMachineInfoStatistics, temp_dir()))
+          .set_cros_regions(CreateFileInTempDir(kRegionsStatistics, temp_dir()))
+          .Build();
+
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kCrosRegion, "region_switch");
+
+  // Load statistics.
+  auto provider =
+      StatisticsProviderImpl::CreateProviderForTesting(testing_sources);
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  // Check statistics.
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic(kRegionKey, &result));
+    EXPECT_EQ(result, "region_switch");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic(kInitialLocaleKey, &result));
+    EXPECT_EQ(result, "locale_1,locale_2,locale_3");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic(kKeyboardLayoutKey, &result));
+    EXPECT_EQ(result, "layout_1,layout_2,layout_3");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(
+        provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey, &result));
+    EXPECT_EQ(result, "mechanical_layout");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic(kInitialTimezoneKey, &result));
+    EXPECT_EQ(result, "timezone_1");
+  }
+
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic("non_region_key", &result));
+    EXPECT_EQ(result, "machine_info_region_value");
+  }
+}
+
+// Test that the provider does not load region statistics when region file does
+// not exist.
+TEST_F(StatisticsProviderImplTest, DoesNotLoadRegionsFileWhenFileIsMissing) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const std::string kMachineInfoStatistics =
+      base::StringPrintf(kMachineInfoFormat, kRegionKey, "region_value");
+
+  const base::FilePath kNonExistingRegionsFilepath =
+      temp_dir().GetPath().Append("vpd_does_not_exist");
+  ASSERT_FALSE(base::PathExists(kNonExistingRegionsFilepath));
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_machine_info(
+              CreateFileInTempDir(kMachineInfoStatistics, temp_dir()))
+          .set_cros_regions(kNonExistingRegionsFilepath)
+          .Build();
+
+  // Load statistics.
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  // Check statistics.
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic(kRegionKey, &result));
+    EXPECT_EQ(result, "region_value");
+  }
+
+  EXPECT_FALSE(provider->GetMachineStatistic(kInitialLocaleKey, nullptr));
+  EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardLayoutKey, nullptr));
+  EXPECT_FALSE(
+      provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey, nullptr));
+  EXPECT_FALSE(provider->GetMachineStatistic(kInitialTimezoneKey, nullptr));
+}
+
+// Test that the provider does not load region statistics when region file has
+// incorrect formatting.
+TEST_F(StatisticsProviderImplTest, DoesNotLoadRegionsFileWhenFileIsMalformed) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const std::string kMachineInfoStatistics =
+      base::StringPrintf(kMachineInfoFormat, kRegionKey, "region_value");
+
+  constexpr char kRegionsStatistics[] = R"({
+    "region_value": ["list", "is", "not", "a" "dictionary"]
+  })";
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_machine_info(
+              CreateFileInTempDir(kMachineInfoStatistics, temp_dir()))
+          .set_cros_regions(CreateFileInTempDir(kRegionsStatistics, temp_dir()))
+          .Build();
+
+  // Load statistics.
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  // Check statistics.
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic(kRegionKey, &result));
+    EXPECT_EQ(result, "region_value");
+  }
+
+  EXPECT_FALSE(provider->GetMachineStatistic(kInitialLocaleKey, nullptr));
+  EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardLayoutKey, nullptr));
+  EXPECT_FALSE(
+      provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey, nullptr));
+  EXPECT_FALSE(provider->GetMachineStatistic(kInitialTimezoneKey, nullptr));
+}
+
+// Test that the provider does not load region statistics when region file does
+// not have correct regions key.
+TEST_F(StatisticsProviderImplTest,
+       DoesNotLoadRegionsFileWhenRegionKeyIsMissing) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  // Setup provider's sources.
+  const std::string kMachineInfoStatistics =
+      base::StringPrintf(kMachineInfoFormat, kRegionKey, "region_value");
+
+  constexpr char kRegionsStatistics[] = R"({
+    "different_region_value": {
+      "locales": ["locale_1", "locale_2", "locale_3"],
+      "keyboards": ["layout_1", "layout_2", "layout_3"],
+      "keyboard_mechanical_layout": "mechanical_layout",
+      "time_zones": ["timezone_1", "timezone_2", "timezone_3"],
+      "non_region_key": "non_region_value"
+    }
+  })";
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_machine_info(
+              CreateFileInTempDir(kMachineInfoStatistics, temp_dir()))
+          .set_cros_regions(CreateFileInTempDir(kRegionsStatistics, temp_dir()))
+          .Build();
+
+  // Load statistics.
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  // Check statistics.
+  {
+    std::string result;
+    EXPECT_TRUE(provider->GetMachineStatistic(kRegionKey, &result));
+    EXPECT_EQ(result, "region_value");
+  }
+
+  EXPECT_FALSE(provider->GetMachineStatistic(kInitialLocaleKey, nullptr));
+  EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardLayoutKey, nullptr));
+  EXPECT_FALSE(
+      provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey, nullptr));
+  EXPECT_FALSE(provider->GetMachineStatistic(kInitialTimezoneKey, nullptr));
+}
+
 }  // namespace chromeos::system
