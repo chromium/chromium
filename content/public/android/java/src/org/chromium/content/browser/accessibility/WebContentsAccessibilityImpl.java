@@ -134,6 +134,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     public static final int CONTENT_CHANGE_TYPE_PANE_APPEARED = 0x00000010;
 
     // Constants defined for AccessibilityNodeInfo Bundle extras keys.
+    public static final String EXTRAS_KEY_BRAILLE_LABEL = "AccessibilityNodeInfo.brailleLabel";
+    public static final String EXTRAS_KEY_BRAILLE_ROLE_DESCRIPTION =
+            "AccessibilityNodeInfo.brailleRoleDescription";
     public static final String EXTRAS_KEY_CHROME_ROLE = "AccessibilityNodeInfo.chromeRole";
     public static final String EXTRAS_KEY_CLICKABLE_SCORE = "AccessibilityNodeInfo.clickableScore";
     public static final String EXTRAS_KEY_CSS_DISPLAY = "AccessibilityNodeInfo.cssDisplay";
@@ -1787,10 +1790,17 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private void setAccessibilityNodeInfoBaseAttributes(AccessibilityNodeInfoCompat node,
             int virtualViewId, int parentId, String className, String role, String roleDescription,
             String hint, String targetUrl, boolean canOpenPopup, boolean multiLine, int inputType,
-            int liveRegion, String errorMessage, int clickableScore, String display) {
+            int liveRegion, String errorMessage, int clickableScore, String display,
+            String brailleLabel, String brailleRoleDescription) {
         node.setClassName(className);
 
         Bundle bundle = node.getExtras();
+        if (!brailleLabel.isEmpty()) {
+            bundle.putCharSequence(EXTRAS_KEY_BRAILLE_LABEL, brailleLabel);
+        }
+        if (!brailleRoleDescription.isEmpty()) {
+            bundle.putCharSequence(EXTRAS_KEY_BRAILLE_ROLE_DESCRIPTION, brailleRoleDescription);
+        }
         bundle.putCharSequence(EXTRAS_KEY_CHROME_ROLE, role);
         bundle.putCharSequence(EXTRAS_KEY_ROLE_DESCRIPTION, roleDescription);
         bundle.putCharSequence(EXTRAS_KEY_HINT, hint);

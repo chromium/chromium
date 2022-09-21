@@ -639,6 +639,20 @@ bool BrowserAccessibilityAndroid::IsLeafConsideringChildren() const {
   return true;
 }
 
+std::u16string BrowserAccessibilityAndroid::GetBrailleLabel() const {
+  if (HasStringAttribute(ax::mojom::StringAttribute::kAriaBrailleLabel))
+    return GetString16Attribute(ax::mojom::StringAttribute::kAriaBrailleLabel);
+  return std::u16string();
+}
+
+std::u16string BrowserAccessibilityAndroid::GetBrailleRoleDescription() const {
+  if (HasStringAttribute(
+          ax::mojom::StringAttribute::kAriaBrailleRoleDescription))
+    return GetString16Attribute(
+        ax::mojom::StringAttribute::kAriaBrailleRoleDescription);
+  return std::u16string();
+}
+
 std::u16string BrowserAccessibilityAndroid::GetTextContentUTF16() const {
   return GetSubstringTextContentUTF16(absl::nullopt);
 }

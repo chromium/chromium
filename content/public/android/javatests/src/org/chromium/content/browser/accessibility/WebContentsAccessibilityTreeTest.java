@@ -246,6 +246,17 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaBrailleLabel() {
+        performAriaTest("aria-braillelabel.html");
+    }
+    @Test
+    @SmallTest
+    public void test_ariaBrailleRoleDescription() {
+        performAriaTest("aria-brailleroledescription.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaBusy() {
         performAriaTest("aria-busy.html");
     }

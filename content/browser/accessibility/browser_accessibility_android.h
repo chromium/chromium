@@ -108,6 +108,9 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool IsLeaf() const override;
   bool IsLeafConsideringChildren() const;
 
+  std::u16string GetBrailleLabel() const;
+  std::u16string GetBrailleRoleDescription() const;
+
   // Note: In the Android accessibility API, the word "text" is used where other
   // platforms would use "name". The value returned here will appear in dump
   // tree tests as "name" in the ...-android.txt files, but as "text" in the
