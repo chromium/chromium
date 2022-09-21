@@ -1457,20 +1457,18 @@ TEST_F(WallpaperControllerTest, RemovePolicyWallpaperNoOp) {
 }
 
 TEST_F(WallpaperControllerTest, SetThirdPartyWallpaper) {
-  SetBypassDecode();
   SimulateUserLogin(account_id_1);
-
   // Verify the user starts with no wallpaper info.
   WallpaperInfo wallpaper_info;
   EXPECT_FALSE(
       pref_manager_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
-
-  // Set a third-party wallpaper for |kUser1|.
   const WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER;
   gfx::ImageSkia third_party_wallpaper = CreateImage(640, 480, kWallpaperColor);
-  ClearWallpaperCount();
+
+  // Set a third-party wallpaper for |kUser1|.
   EXPECT_TRUE(controller_->SetThirdPartyWallpaper(
       account_id_1, file_name_1, layout, third_party_wallpaper));
+
   RunAllTasksUntilIdle();
   // Verify the wallpaper is shown.
   EXPECT_EQ(1, GetWallpaperCount());
@@ -1482,14 +1480,20 @@ TEST_F(WallpaperControllerTest, SetThirdPartyWallpaper) {
       WallpaperType::kCustomized, base::Time::Now().LocalMidnight());
   EXPECT_EQ(wallpaper_info, expected_wallpaper_info);
   EXPECT_EQ(account_id_1, client_.get_save_wallpaper_to_drive_fs_account_id());
+}
 
-  // Switch active user to |kUser2|, but set another third-party wallpaper for
+TEST_F(WallpaperControllerTest, SetThirdPartyWallpaper_NonactiveUser) {
+  // Active user is |kUser2|, but set another third-party wallpaper for
   // |kUser1|; the operation should not be allowed, because |kUser1| is not the
   // active user.
   SimulateUserLogin(account_id_2);
-  ClearWallpaperCount();
+  WallpaperInfo wallpaper_info;
+  const WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER;
+  gfx::ImageSkia third_party_wallpaper = CreateImage(640, 480, kWallpaperColor);
+
   EXPECT_FALSE(controller_->SetThirdPartyWallpaper(
       account_id_1, file_name_2, layout, third_party_wallpaper));
+
   // Verify the wallpaper is not shown.
   EXPECT_EQ(0, GetWallpaperCount());
   // Verify the wallpaper info for |kUser1| is updated, because setting
@@ -1500,11 +1504,18 @@ TEST_F(WallpaperControllerTest, SetThirdPartyWallpaper) {
       base::FilePath(wallpaper_files_id_1).Append(file_name_2).value(), layout,
       WallpaperType::kCustomized, base::Time::Now().LocalMidnight());
   EXPECT_EQ(wallpaper_info, expected_wallpaper_info_2);
+}
 
+TEST_F(WallpaperControllerTest, SetThirdPartyWallpaper_PolicyWallpaper) {
+  SetBypassDecode();
+  SimulateUserLogin(account_id_2);
+  WallpaperInfo wallpaper_info;
+  const WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER;
+  gfx::ImageSkia third_party_wallpaper = CreateImage(640, 480, kWallpaperColor);
   // Set a policy wallpaper for |kUser2|. Verify that |kUser2| becomes policy
   // controlled.
   controller_->SetPolicyWallpaper(account_id_2, user_manager::USER_TYPE_REGULAR,
-                                  std::string() /*data=*/);
+                                  /*data=*/std::string());
   RunAllTasksUntilIdle();
   EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(account_id_2));
   EXPECT_TRUE(controller_->IsActiveUserWallpaperControlledByPolicy());
@@ -1514,6 +1525,7 @@ TEST_F(WallpaperControllerTest, SetThirdPartyWallpaper) {
   ClearWallpaperCount();
   EXPECT_FALSE(controller_->SetThirdPartyWallpaper(
       account_id_2, file_name_1, layout, third_party_wallpaper));
+
   // Verify the wallpaper is not shown.
   EXPECT_EQ(0, GetWallpaperCount());
   // Verify |kUser2| is still policy controlled and has the policy wallpaper
