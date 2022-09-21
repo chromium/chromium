@@ -23,65 +23,12 @@ using bookmarks::BookmarkNode;
 
 namespace {
 
-using bookmark_utils_ios::NodesSection;
-
 class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTest {
  protected:
   base::Time timeFromEpoch(int days, int hours) {
     return base::Time::UnixEpoch() + base::Days(days) + base::Hours(hours);
   }
 };
-
-TEST_F(BookmarkIOSUtilsUnitTest, segregateNodesByCreationDate) {
-  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
-  const BookmarkNode* f1 = AddFolder(mobileNode, @"f1");
-  const BookmarkNode* a = AddBookmark(mobileNode, @"a");
-  bookmark_model_->SetDateAdded(a, timeFromEpoch(169, 5));
-  const BookmarkNode* b = AddBookmark(mobileNode, @"b");
-  bookmark_model_->SetDateAdded(b, timeFromEpoch(170, 6));
-  const BookmarkNode* f2 = AddFolder(mobileNode, @"f2");
-
-  const BookmarkNode* f1a = AddBookmark(f1, @"f1a");
-  bookmark_model_->SetDateAdded(f1a, timeFromEpoch(129, 5));
-  const BookmarkNode* f1b = AddBookmark(f1, @"f1b");
-  bookmark_model_->SetDateAdded(f1b, timeFromEpoch(130, 6));
-  const BookmarkNode* f2a = AddBookmark(f2, @"f2a");
-  bookmark_model_->SetDateAdded(f2a, timeFromEpoch(201, 5));
-  const BookmarkNode* f2b = AddBookmark(f2, @"f2b");
-  bookmark_model_->SetDateAdded(f2b, timeFromEpoch(10, 5));
-
-  std::vector<const BookmarkNode*> toSort;
-  toSort.push_back(a);
-  toSort.push_back(b);
-  toSort.push_back(f1a);
-  toSort.push_back(f1b);
-  toSort.push_back(f2a);
-  toSort.push_back(f2b);
-
-  std::vector<std::unique_ptr<NodesSection>> nodesSectionVector;
-  bookmark_utils_ios::segregateNodes(toSort, nodesSectionVector);
-
-  // Expect the nodes to be sorted in reverse chronological order, grouped by
-  // month.
-  ASSERT_EQ(nodesSectionVector.size(), 4u);
-  NodesSection* section = nodesSectionVector[0].get();
-  ASSERT_EQ(section->vector.size(), 1u);
-  EXPECT_EQ(section->vector[0], f2a);
-
-  section = nodesSectionVector[1].get();
-  ASSERT_EQ(section->vector.size(), 2u);
-  EXPECT_EQ(section->vector[0], b);
-  EXPECT_EQ(section->vector[1], a);
-
-  section = nodesSectionVector[2].get();
-  ASSERT_EQ(section->vector.size(), 2u);
-  EXPECT_EQ(section->vector[0], f1b);
-  EXPECT_EQ(section->vector[1], f1a);
-
-  section = nodesSectionVector[3].get();
-  ASSERT_EQ(section->vector.size(), 1u);
-  EXPECT_EQ(section->vector[0], f2b);
-}
 
 TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
   const BookmarkNode* mobileNode = bookmark_model_->mobile_node();

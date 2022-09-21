@@ -123,32 +123,6 @@ const bookmarks::BookmarkNode* defaultMoveFolder(
     const std::set<const bookmarks::BookmarkNode*>& bookmarks,
     bookmarks::BookmarkModel* model);
 
-#pragma mark - Segregation of nodes by time.
-
-// A container for nodes which have been aggregated by some time property.
-// e.g. (creation date) or (last access date).
-class NodesSection {
- public:
-  NodesSection();
-  virtual ~NodesSection();
-
-  // `vector` is sorted by the relevant time property.
-  NodeVector vector;
-  // A representative time of all nodes in vector.
-  base::Time time;
-  // A string representation of `time`.
-  // e.g. (March 2014) or (4 March 2014).
-  std::string timeRepresentation;
-};
-
-// Given the nodes in `vector`, segregates them by some time property into
-// NodesSections.
-// Automatically clears, populates and sorts `nodesSectionVector`.
-// This method is not thread safe - it should only be called from the ui thread.
-void segregateNodes(
-    const NodeVector& vector,
-    std::vector<std::unique_ptr<NodesSection>>& nodesSectionVector);
-
 #pragma mark - Useful bookmark manipulation.
 
 // Sorts a vector full of folders by title.

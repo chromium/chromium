@@ -376,69 +376,6 @@ const BookmarkNode* defaultMoveFolder(
   return firstParent;
 }
 
-#pragma mark - Segregation of nodes by time.
-
-NodesSection::NodesSection() {}
-
-NodesSection::~NodesSection() {}
-
-void segregateNodes(
-    const NodeVector& vector,
-    std::vector<std::unique_ptr<NodesSection>>& nodesSectionVector) {
-  nodesSectionVector.clear();
-
-  // Make a localized date formatter.
-  NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-  [formatter setDateFormat:@"MMMM yyyy"];
-  // Segregate nodes by creation date.
-  // Nodes that were created in the same month are grouped together.
-  for (auto* node : vector) {
-    @autoreleasepool {
-      base::Time dateAdded = node->date_added();
-      base::TimeDelta delta = dateAdded - base::Time::UnixEpoch();
-      NSDate* date =
-          [[NSDate alloc] initWithTimeIntervalSince1970:delta.InSeconds()];
-      NSString* dateString = [formatter stringFromDate:date];
-      const std::string timeRepresentation =
-          base::SysNSStringToUTF8(dateString);
-
-      BOOL found = NO;
-      for (const auto& nodesSection : nodesSectionVector) {
-        if (nodesSection->timeRepresentation == timeRepresentation) {
-          nodesSection->vector.push_back(node);
-          found = YES;
-          break;
-        }
-      }
-
-      if (found)
-        continue;
-
-      // No NodesSection found.
-      auto nodesSection = std::make_unique<NodesSection>();
-      nodesSection->time = dateAdded;
-      nodesSection->timeRepresentation = timeRepresentation;
-      nodesSection->vector.push_back(node);
-      nodesSectionVector.push_back(std::move(nodesSection));
-    }
-  }
-
-  // Sort the NodesSections.
-  std::sort(nodesSectionVector.begin(), nodesSectionVector.end(),
-            [](const std::unique_ptr<NodesSection>& n1,
-               const std::unique_ptr<NodesSection>& n2) {
-              return n1->time > n2->time;
-            });
-
-  // For each NodesSection, sort the nodes inside.
-  for (const auto& nodesSection : nodesSectionVector) {
-    std::sort(nodesSection->vector.begin(), nodesSection->vector.end(),
-              [](const BookmarkNode* n1, const BookmarkNode* n2) {
-                return n1->date_added() > n2->date_added();
-              });
-  }
-}
-
 #pragma mark - Useful bookmark manipulation.
 
 // Adds all children of `folder` that are not obstructed to `results`. They are
