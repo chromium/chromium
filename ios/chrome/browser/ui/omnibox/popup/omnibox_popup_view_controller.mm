@@ -9,6 +9,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/time/time.h"
+#import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/elements/self_sizing_table_view.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
@@ -445,6 +446,7 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 
 - (BOOL)tableView:(UITableView*)tableView
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  // TODO(crbug.com/1365374): Handle Carousel's highlight.
   return YES;
 }
 
@@ -459,6 +461,7 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
   // early. See b/5813291.
   if (row >= self.currentResult[indexPath.section].suggestions.count)
     return;
+  // TODO(crbug.com/1365374): Handle Carousel's selection.
   [self.delegate
       autocompleteResultConsumer:self
              didSelectSuggestion:self.currentResult[indexPath.section]
@@ -525,7 +528,14 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 
 - (NSInteger)tableView:(UITableView*)tableView
     numberOfRowsInSection:(NSInteger)section {
-  return self.currentResult[section].suggestions.count;
+  switch (self.currentResult[section].displayStyle) {
+    case SuggestionGroupDisplayStyleDefault:
+      return self.currentResult[section].suggestions.count;
+    case SuggestionGroupDisplayStyleCarousel:
+      DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
+      // The carousel displays suggestions on one row.
+      return 1;
+  }
 }
 
 - (BOOL)tableView:(UITableView*)tableView
@@ -566,20 +576,32 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   DCHECK_LT((NSUInteger)indexPath.row,
             self.currentResult[indexPath.section].suggestions.count);
-  OmniboxPopupRowCell* cell = [self.tableView
-      dequeueReusableCellWithIdentifier:OmniboxPopupRowCellReuseIdentifier
-                           forIndexPath:indexPath];
-  cell.faviconRetriever = self.faviconRetriever;
-  cell.imageRetriever = self.imageRetriever;
-  [cell setupWithAutocompleteSuggestion:self.currentResult[indexPath.section]
-                                            .suggestions[indexPath.row]
-                              incognito:self.incognito];
-  cell.showsSeparator =
-      (NSUInteger)indexPath.row <
-      self.currentResult[indexPath.section].suggestions.count - 1;
-  cell.delegate = self;
 
-  return cell;
+  switch (self.currentResult[indexPath.section].displayStyle) {
+    case SuggestionGroupDisplayStyleDefault: {
+      OmniboxPopupRowCell* cell = [self.tableView
+          dequeueReusableCellWithIdentifier:OmniboxPopupRowCellReuseIdentifier
+                               forIndexPath:indexPath];
+      cell.faviconRetriever = self.faviconRetriever;
+      cell.imageRetriever = self.imageRetriever;
+      [cell
+          setupWithAutocompleteSuggestion:self.currentResult[indexPath.section]
+                                              .suggestions[indexPath.row]
+                                incognito:self.incognito];
+      cell.showsSeparator =
+          (NSUInteger)indexPath.row <
+          self.currentResult[indexPath.section].suggestions.count - 1;
+      cell.delegate = self;
+      return cell;
+    }
+    case SuggestionGroupDisplayStyleCarousel: {
+      DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
+      UITableViewCell* cell = [[UITableViewCell alloc] init];
+      cell.backgroundColor = UIColor.blackColor;
+      // TODO(crbug.com/1365374): Replace with OmniboxPopupCarouselCell.
+      return cell;
+    }
+  }
 }
 
 #pragma mark - Internal API methods
