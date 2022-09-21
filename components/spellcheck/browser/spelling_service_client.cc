@@ -263,7 +263,7 @@ bool SpellingServiceClient::ParseResponse(
   if (!misspellings)
     return true;
 
-  for (const base::Value& misspelling : misspellings->GetListDeprecated()) {
+  for (const base::Value& misspelling : misspellings->GetList()) {
     // Retrieve the i-th misspelling region and put it to the given vector. When
     // the Spelling service sends two or more suggestions, we read only the
     // first one because SpellCheckResult can store only one suggestion.
@@ -277,7 +277,7 @@ bool SpellingServiceClient::ParseResponse(
       return false;
     }
 
-    const base::Value& suggestion = suggestions->GetListDeprecated()[0];
+    const base::Value& suggestion = suggestions->GetList()[0];
     if (!suggestion.is_dict())
       return false;
 
