@@ -683,4 +683,64 @@ void cover_fast(void)
         Z_STREAM_END);
 }
 
+/* Adapted from Evgeny Legerov PoC (https://github.com/ivd38/zlib_overflow)
+ * this test case crashes in ASAN builds with the correct payload.
+ */
+local void inf_cve_2022_37434(char *hex, char *what, unsigned step, int win, unsigned len,
+                              int err)
+{
+    int ret;
+    unsigned have;
+    unsigned char *in, *out;
+    z_stream strm, copy;
+    gz_header head;
+
+    mem_setup(&strm);
+    strm.avail_in = 0;
+    strm.next_in = Z_NULL;
+    ret = inflateInit2(&strm, win);
+    if (ret != Z_OK) {
+        mem_done(&strm, what);
+        return;
+    }
+    out = static_cast<unsigned char *>(malloc(len));                          assert(out != NULL);
+    if (win == 47) {
+        head.extra = out;
+        head.extra_max = len;
+        head.name = out;
+        head.name_max = len;
+        head.comment = out;
+        head.comm_max = len;
+        ret = inflateGetHeader(&strm, &head);   assert(ret == Z_OK);
+    }
+    in = h2b(hex, &have);                       assert(in != NULL);
+    if (step == 0 || step > have)
+        step = have;
+    strm.avail_in = step;
+    have -= step;
+    strm.next_in = in;
+    do {
+        strm.avail_out = len;
+        strm.next_out = out;
+        ret = inflate(&strm, Z_NO_FLUSH);
+        if (ret != Z_OK && ret != Z_BUF_ERROR && ret != Z_NEED_DICT)
+            break;
+        have += strm.avail_in;
+        strm.avail_in = step > have ? have : step;
+        have -= strm.avail_in;
+    } while (strm.avail_in);
+    free(in);
+    free(out);
+    ret = inflateReset2(&strm, -8);
+    ret = inflateEnd(&strm);
+    mem_done(&strm, what);
+}
+
+void cover_CVE_2022_37434(void)
+{
+    char payload[] = "1f 8b 08 04 61 62 63 64 61 62 52 51 1f 8b 08 04 61 62 63 64 61 62 52 51 1f 8b 08 04 61 62 63 64 61 62 52 51 1f 8b 08 04 61 62 63 64 61 62 52 51";
+    char cve[] = "wtf";
+    inf_cve_2022_37434(payload, cve, 13, 47, 12, Z_OK);
+}
+
 // clang-format on
