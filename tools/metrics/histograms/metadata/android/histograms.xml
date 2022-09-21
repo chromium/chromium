@@ -3247,6 +3247,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.RequestDesktopSite.DomainSettingChanged"
+    enum="Boolean" expires_after="2023-03-19">
+  <owner>shuyng@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the new domain level Request Desktop Setting when changed. False
+    means Mobile site while true means Desktop site. This is recorded when a
+    user manually edits a domain level Request Desktop Setting from the site
+    settings exception list.
+  </summary>
+</histogram>
+
+<histogram name="Android.RequestDesktopSite.SubDomainSettingChanged"
+    enum="Boolean" expires_after="2023-03-19">
+  <owner>shuyng@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the new subdomain level Request Desktop Setting when changed. False
+    means Mobile site while true means Desktop site. This is recorded when a
+    user manually edits a subdomain level Request Desktop Setting from the site
+    settings exception list.
+  </summary>
+</histogram>
+
 <histogram name="Android.RequestDesktopSite.TabletEligible" enum="Boolean"
     expires_after="2022-04-17">
   <owner>gangwu@chromium.org</owner>
@@ -3275,6 +3299,32 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records if a user switched to request desktop site from the app menu. This
     is recorded when a user manually switches sites between the desktop/mobile.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.RequestDesktopSite.UserSwitchToDesktop.DomainSettingAdded"
+    enum="Boolean" expires_after="2023-03-19">
+  <owner>shuyng@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the new domain level Request Desktop Setting when added. False means
+    Mobile site while true means Desktop site. This is recorded when a user
+    manually adds a domain level Request Desktop Setting from the Add site
+    dialog in Site settings.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.RequestDesktopSite.UserSwitchToDesktop.SubDomainSettingAdded"
+    enum="Boolean" expires_after="2023-03-19">
+  <owner>shuyng@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the new subdomain level Request Desktop Setting when added. False
+    means Mobile site while true means Desktop site. This is recorded when a
+    user manually adds a subdomain level Request Desktop Setting from the Add
+    site dialog in Site settings.
   </summary>
 </histogram>
 

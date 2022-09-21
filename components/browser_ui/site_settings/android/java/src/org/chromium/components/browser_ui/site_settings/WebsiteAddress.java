@@ -30,7 +30,7 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
     private String mDomainAndRegistry;
 
     private static final String SCHEME_SUFFIX = "://";
-    private static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
+    static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
 
     /**
      * Creates a new WebsiteAddress from |originOrHostOrPattern|.

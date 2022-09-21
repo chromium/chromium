@@ -54,6 +54,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/ClearWebsiteStorageDialog.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ContentSettingException.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ContentSettingsResources.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/DesktopSiteMetrics.java",
     "java/src/org/chromium/components/browser_ui/site_settings/FPSCookieInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/FPSCookieSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ForwardingManagedPreferenceDelegate.java",
@@ -140,12 +141,17 @@ android_library("javatests") {
 }
 
 robolectric_library("junit") {
-  sources = [ "junit/src/org/chromium/components/browser_ui/site_settings/AddExceptionPreferenceUnitTest.java" ]
+  sources = [
+    "junit/src/org/chromium/components/browser_ui/site_settings/AddExceptionPreferenceUnitTest.java",
+    "junit/src/org/chromium/components/browser_ui/site_settings/DesktopSiteMetricsUnitTest.java",
+  ]
 
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/content_settings/android:content_settings_enums_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
