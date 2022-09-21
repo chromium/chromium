@@ -58,13 +58,14 @@ DisplayColorSpaces::DisplayColorSpaces(const gfx::ColorSpace& c)
     : DisplayColorSpaces() {
   if (!c.IsValid())
     return;
+  primaries_ = c.GetPrimaries();
   for (size_t i = 0; i < kConfigCount; i++)  // NOLINT (modernize-loop-convert)
     color_spaces_[i] = c;
 }
 
-DisplayColorSpaces::DisplayColorSpaces(const ColorSpace& c, BufferFormat f) {
+DisplayColorSpaces::DisplayColorSpaces(const ColorSpace& c, BufferFormat f)
+    : DisplayColorSpaces(c) {
   for (size_t i = 0; i < kConfigCount; i++) {
-    color_spaces_[i] = c.IsValid() ? c : gfx::ColorSpace::CreateSRGB();
     buffer_formats_[i] = f;
   }
 }
@@ -118,16 +119,6 @@ gfx::ColorSpace DisplayColorSpaces::GetCompositingColorSpace(
 bool DisplayColorSpaces::SupportsHDR() const {
   return GetOutputColorSpace(ContentColorUsage::kHDR, false).IsHDR() ||
          GetOutputColorSpace(ContentColorUsage::kHDR, true).IsHDR();
-}
-
-SkColorSpacePrimaries DisplayColorSpaces::GetPrimaries() const {
-  // TODO(https://crbug.com/1274220): Use `primaries_`, once it is set on all
-  // platforms.
-  return GetRasterColorSpace().GetPrimaries();
-}
-
-void DisplayColorSpaces::SetPrimaries(const SkColorSpacePrimaries& primaries) {
-  // TODO(https://crbug.com/1274220): Store `primaries` in `primaries_`.
 }
 
 ColorSpace DisplayColorSpaces::GetScreenInfoColorSpace() const {
