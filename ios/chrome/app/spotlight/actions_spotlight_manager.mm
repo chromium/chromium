@@ -71,24 +71,27 @@ BOOL SetStartupParametersForSpotlightAction(
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_NEW_INCOGNITO_TAB_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
-    [startupParams setLaunchInIncognito:YES];
+    [startupParams setApplicationMode:ApplicationModeForTabOpening::INCOGNITO];
   } else if ([action isEqualToString:base::SysUTF8ToNSString(
                                          kSpotlightActionVoiceSearch)]) {
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_VOICE_SEARCH_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
+    [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL];
     [startupParams setPostOpeningAction:START_VOICE_SEARCH];
   } else if ([action isEqualToString:base::SysUTF8ToNSString(
                                          kSpotlightActionQRScanner)]) {
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_QR_CODE_SCANNER_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
+    [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL];
     [startupParams setPostOpeningAction:START_QR_CODE_SCANNER];
   } else if ([action isEqualToString:base::SysUTF8ToNSString(
                                          kSpotlightActionNewTab)]) {
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_NEW_TAB_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
+    [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL];
   } else {
     return NO;
   }

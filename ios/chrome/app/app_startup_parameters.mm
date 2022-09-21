@@ -37,24 +37,27 @@
 }
 
 - (instancetype)initWithExternalURL:(const GURL&)externalURL
-                        completeURL:(const GURL&)completeURL {
+                        completeURL:(const GURL&)completeURL
+                    applicationMode:(ApplicationModeForTabOpening)mode {
   self = [super init];
   if (self) {
     _externalURL = externalURL;
     _completeURL = completeURL;
-    if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
-      _applicationMode = ApplicationModeForTabOpening::UNDETERMINED;
-    }
+    _applicationMode = mode;
   }
   return self;
 }
 
-- (instancetype)initWithURLs:(const std::vector<GURL>&)URLs {
+- (instancetype)initWithURLs:(const std::vector<GURL>&)URLs
+             applicationMode:(ApplicationModeForTabOpening)mode {
   if (URLs.empty()) {
     self = [self initWithExternalURL:GURL(kChromeUINewTabURL)
-                         completeURL:GURL(kChromeUINewTabURL)];
+                         completeURL:GURL(kChromeUINewTabURL)
+                     applicationMode:mode];
   } else {
-    self = [self initWithExternalURL:URLs.front() completeURL:URLs.front()];
+    self = [self initWithExternalURL:URLs.front()
+                         completeURL:URLs.front()
+                     applicationMode:mode];
   }
 
   if (self) {
@@ -67,7 +70,7 @@
   NSMutableString* description =
       [NSMutableString stringWithFormat:@"AppStartupParameters: %s",
                                         _externalURL.spec().c_str()];
-  if (self.launchInIncognito) {
+  if (self.applicationMode == ApplicationModeForTabOpening::INCOGNITO) {
     [description appendString:@", should launch in incognito"];
   }
 
@@ -90,18 +93,6 @@
   }
 
   return description;
-}
-
-- (BOOL)launchInIncognito {
-  return _applicationMode == ApplicationModeForTabOpening::INCOGNITO;
-}
-
-- (void)setLaunchInIncognito:(BOOL)launchInIncognito {
-  if (launchInIncognito) {
-    _applicationMode = ApplicationModeForTabOpening::INCOGNITO;
-  } else {
-    _applicationMode = ApplicationModeForTabOpening::NORMAL;
-  }
 }
 
 - (void)setPostOpeningAction:(TabOpeningPostOpeningAction)action {

@@ -328,8 +328,10 @@ TEST_P(UserActivityHandlerTest, ContinueUserActivityForeground) {
 
   id connectionInformationMock =
       [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
-  AppStartupParameters* startupParams =
-      [[AppStartupParameters alloc] initWithExternalURL:gurl completeURL:gurl];
+  AppStartupParameters* startupParams = [[AppStartupParameters alloc]
+      initWithExternalURL:gurl
+              completeURL:gurl
+          applicationMode:ApplicationModeForTabOpening::NORMAL];
   [[[connectionInformationMock stub] andReturn:startupParams]
       startupParameters];
 
@@ -613,8 +615,9 @@ TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentIncognitoForeground) {
     URLs.push_back(net::GURLWithNSURL(URL));
   }
 
-  AppStartupParameters* startupParams =
-      [[AppStartupParameters alloc] initWithURLs:URLs];
+  AppStartupParameters* startupParams = [[AppStartupParameters alloc]
+         initWithURLs:URLs
+      applicationMode:ApplicationModeForTabOpening::NORMAL];
   [[[connectionInformationMock stub] andReturn:startupParams]
       startupParameters];
 
@@ -680,8 +683,9 @@ TEST_P(UserActivityHandlerTest, ContinueUserActivityIntentForeground) {
     URLs.push_back(net::GURLWithNSURL(URL));
   }
 
-  AppStartupParameters* startupParams =
-      [[AppStartupParameters alloc] initWithURLs:URLs];
+  AppStartupParameters* startupParams = [[AppStartupParameters alloc]
+         initWithURLs:URLs
+      applicationMode:ApplicationModeForTabOpening::NORMAL];
   [[[connectionInformationMock stub] andReturn:startupParams]
       startupParameters];
 
@@ -708,10 +712,10 @@ TEST_P(UserActivityHandlerTest, HandleStartupParamsWithExternalFile) {
   GURL externalURL("chrome://test.pdf");
   GURL completeURL("file://test.pdf");
 
-  AppStartupParameters* startupParams =
-      [[AppStartupParameters alloc] initWithExternalURL:externalURL
-                                            completeURL:completeURL];
-  [startupParams setLaunchInIncognito:YES];
+  AppStartupParameters* startupParams = [[AppStartupParameters alloc]
+      initWithExternalURL:externalURL
+              completeURL:completeURL
+          applicationMode:ApplicationModeForTabOpening::INCOGNITO];
 
   id startupInformationMock =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
@@ -804,8 +808,10 @@ TEST_P(UserActivityHandlerTest,
     // Tests.
     EXPECT_EQ(gurlNewTab,
               [fakeConnectionInformation startupParameters].externalURL);
-    EXPECT_EQ([[parameters objectAtIndex:1] boolValue],
-              [fakeConnectionInformation startupParameters].launchInIncognito);
+    EXPECT_EQ([[parameters objectAtIndex:1] boolValue]
+                  ? ApplicationModeForTabOpening::INCOGNITO
+                  : ApplicationModeForTabOpening::NORMAL,
+              [fakeConnectionInformation startupParameters].applicationMode);
     EXPECT_EQ([[parameters objectAtIndex:2] intValue],
               [fakeConnectionInformation startupParameters].postOpeningAction);
     EXPECT_TRUE(completionHandlerExecuted());

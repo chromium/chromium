@@ -465,14 +465,18 @@ bool IsSigninForcedByPolicy() {
   if (self.startupParameters) {
     if ([self isIncognitoForced]) {
       [self.startupParameters
-          setUnexpectedMode:!self.startupParameters.launchInIncognito];
+          setUnexpectedMode:self.startupParameters.applicationMode ==
+                            ApplicationModeForTabOpening::NORMAL];
       // When only incognito mode is available.
-      [self.startupParameters setLaunchInIncognito:YES];
+      [self.startupParameters
+          setApplicationMode:ApplicationModeForTabOpening::INCOGNITO];
     } else if ([self isIncognitoDisabled]) {
       [self.startupParameters
-          setUnexpectedMode:self.startupParameters.launchInIncognito];
+          setUnexpectedMode:self.startupParameters.applicationMode ==
+                            ApplicationModeForTabOpening::INCOGNITO];
       // When incognito mode is disabled.
-      [self.startupParameters setLaunchInIncognito:NO];
+      [self.startupParameters
+          setApplicationMode:ApplicationModeForTabOpening::NORMAL];
     }
 
     [UserActivityHandler
@@ -564,7 +568,10 @@ bool IsSigninForcedByPolicy() {
   self.sceneState.startupHadExternalIntent = YES;
 
   // Perform the action in incognito when only incognito mode is available.
-  [self.startupParameters setLaunchInIncognito:[self isIncognitoForced]];
+  if ([self isIncognitoForced]) {
+    [self.startupParameters
+        setApplicationMode:ApplicationModeForTabOpening::INCOGNITO];
+  }
 
   [UserActivityHandler
       performActionForShortcutItem:shortcutItem

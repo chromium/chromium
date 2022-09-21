@@ -55,10 +55,6 @@ class GURL;
 @property(nonatomic, assign) std::map<std::string, std::string>
     externalURLParams;
 
-// Boolean to track if the app should launch in incognito mode.
-// Explicitly setting this to YES or NO will either set `applicationMode`
-// to INCOGNITO in the first case, or to NORMAL in the second case.
-@property(nonatomic, assign) BOOL launchInIncognito;
 // The mode in which the tab must be opened. Defaults to NORMAL, unless the flag
 // `kIOS3PIntentsInIncognito` is enabled, in which case it is UNDETERMINED.
 // TODO(crbug.com/1318750): Change this comment when flag is enabled by default.
@@ -86,9 +82,11 @@ class GURL;
 
 - (instancetype)initWithExternalURL:(const GURL&)externalURL
                         completeURL:(const GURL&)completeURL
+                    applicationMode:(ApplicationModeForTabOpening)mode
     NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithURLs:(const std::vector<GURL>&)URLs;
+- (instancetype)initWithURLs:(const std::vector<GURL>&)URLs
+             applicationMode:(ApplicationModeForTabOpening)mode;
 
 @end
 

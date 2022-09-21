@@ -142,7 +142,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
           [NSURL URLWithString:base::SysUTF8ToNSString(kChromeUINewTabURL)];
       AppStartupParameters* startupParams = [[AppStartupParameters alloc]
           initWithExternalURL:GURL(kChromeUINewTabURL)
-                  completeURL:GURL(kChromeUINewTabURL)];
+                  completeURL:GURL(kChromeUINewTabURL)
+              applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
       BOOL startupParamsSet = spotlight::SetStartupParametersForSpotlightAction(
           itemID, startupParams);
       if (!startupParamsSet) {
@@ -176,11 +177,12 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 
     AppStartupParameters* startupParams = [[AppStartupParameters alloc]
         initWithExternalURL:GURL(kChromeUINewTabURL)
-                completeURL:GURL(kChromeUINewTabURL)];
+                completeURL:GURL(kChromeUINewTabURL)
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
 
     if (IsIncognitoModeForced(browserState->GetPrefs())) {
       // Set incognito mode to yes if only incognito mode is available.
-      startupParams.launchInIncognito = YES;
+      startupParams.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
     }
 
     SearchInChromeIntent* intent =
@@ -234,8 +236,9 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
       return NO;
     }
 
-    AppStartupParameters* startupParams =
-        [[AppStartupParameters alloc] initWithURLs:URLs];
+    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
+           initWithURLs:URLs
+        applicationMode:ApplicationModeForTabOpening::NORMAL];
 
     [connectionInformation setStartupParameters:startupParams];
     return [self continueUserActivityURLs:URLs
@@ -259,10 +262,10 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 
     std::vector<GURL> URLs = createGURLVectorFromIntentURLs(intent.url);
 
-    AppStartupParameters* startupParams =
-        [[AppStartupParameters alloc] initWithURLs:URLs];
+    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
+           initWithURLs:URLs
+        applicationMode:ApplicationModeForTabOpening::INCOGNITO];
 
-    startupParams.launchInIncognito = YES;
     [connectionInformation setStartupParameters:startupParams];
     return [self continueUserActivityURLs:URLs
                       applicationIsActive:applicationIsActive
@@ -315,7 +318,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
       params.web_params.url = result;
     }
 
-    if (![[connectionInformation startupParameters] launchInIncognito] &&
+    if ([[connectionInformation startupParameters] applicationMode] !=
+            ApplicationModeForTabOpening::INCOGNITO &&
         [tabOpener URLIsOpenedInRegularMode:webpageGURL]) {
       // Record metric.
     }
@@ -334,9 +338,10 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
   [startupInformation resetFirstUserActionRecorder];
 
   if (![connectionInformation startupParameters]) {
-    AppStartupParameters* startupParams =
-        [[AppStartupParameters alloc] initWithExternalURL:webpageGURL
-                                              completeURL:webpageGURL];
+    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
+        initWithExternalURL:webpageGURL
+                completeURL:webpageGURL
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
     [connectionInformation setStartupParameters:startupParams];
   }
   return YES;
@@ -346,7 +351,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
             (id<ConnectionInformation>)connectionInformation
                                         tabOpener:(id<TabOpening>)tabOpener {
   BOOL incognitoMode =
-      connectionInformation.startupParameters.launchInIncognito;
+      connectionInformation.startupParameters.applicationMode ==
+      ApplicationModeForTabOpening::INCOGNITO;
   BOOL dismissOmnibox = [[connectionInformation startupParameters]
                             postOpeningAction] != FOCUS_OMNIBOX;
 
@@ -393,10 +399,12 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
   [startupInformation resetFirstUserActionRecorder];
 
   if (![connectionInformation startupParameters]) {
-    AppStartupParameters* startupParams =
-        [[AppStartupParameters alloc] initWithURLs:webpageURLs];
-
-    startupParams.launchInIncognito = Incognito;
+    AppStartupParameters* startupParams = [[AppStartupParameters alloc]
+           initWithURLs:webpageURLs
+        applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
+    if (Incognito) {
+      startupParams.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
+    }
     [connectionInformation setStartupParameters:startupParams];
   }
   return YES;
@@ -537,7 +545,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     params.web_params.url = result;
   }
 
-  if (![[connectionInformation startupParameters] launchInIncognito] &&
+  if ([[connectionInformation startupParameters] applicationMode] !=
+          ApplicationModeForTabOpening::INCOGNITO &&
       [tabOpener URLIsOpenedInRegularMode:params.web_params.url]) {
     // Record metric.
   }
@@ -579,7 +588,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 
   AppStartupParameters* startupParams = [[AppStartupParameters alloc]
       initWithExternalURL:GURL(kChromeUINewTabURL)
-              completeURL:GURL(kChromeUINewTabURL)];
+              completeURL:GURL(kChromeUINewTabURL)
+          applicationMode:ApplicationModeForTabOpening::NORMAL];
 
   if ([shortcutItem.type isEqualToString:kShortcutNewSearch]) {
     base::RecordAction(
@@ -591,7 +601,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
   } else if ([shortcutItem.type isEqualToString:kShortcutNewIncognitoSearch]) {
     base::RecordAction(
         UserMetricsAction("ApplicationShortcut.NewIncognitoSearchPressed"));
-    startupParams.launchInIncognito = YES;
+    startupParams.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
     startupParams.postOpeningAction = FOCUS_OMNIBOX;
     connectionInformation.startupParameters = startupParams;
     return YES;
