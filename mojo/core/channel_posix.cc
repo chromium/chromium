@@ -7,7 +7,6 @@
 #include <errno.h>
 #include <sys/socket.h>
 
-#include <algorithm>
 #include <atomic>
 #include <limits>
 #include <memory>
@@ -21,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/task/task_runner.h"
@@ -682,9 +682,7 @@ bool ChannelPosix::CloseHandles(const int* fds, size_t num_fds) {
   if (!num_fds)
     return false;
 
-  auto start = std::find_if(
-      fds_to_close_.begin(), fds_to_close_.end(),
-      [&fds](const base::ScopedFD& fd) { return fd.get() == fds[0]; });
+  auto start = base::ranges::find(fds_to_close_, fds[0], &base::ScopedFD::get);
   if (start == fds_to_close_.end())
     return false;
 
