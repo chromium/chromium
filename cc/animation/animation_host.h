@@ -69,13 +69,11 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   void RegisterAnimationForElement(ElementId element_id, Animation* animation);
   void UnregisterAnimationForElement(ElementId element_id,
                                      Animation* animation);
-
-  scoped_refptr<const ElementAnimations> GetElementAnimationsForElementId(
-      ElementId element_id) const;
-  scoped_refptr<ElementAnimations> GetElementAnimationsForElementId(
-      ElementId element_id);
-
+  void UpdateClientAnimationStateForElementAnimations(ElementId element_id);
   gfx::PointF GetScrollOffsetForAnimation(ElementId element_id) const;
+
+  scoped_refptr<const ElementAnimations>
+  GetElementAnimationsForElementIdForTesting(ElementId element_id) const;
 
   // Parent LayerTreeHost or LayerTreeHostImpl.
   MutatorHostClient* mutator_host_client() {
@@ -227,6 +225,11 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
  private:
   explicit AnimationHost(ThreadInstance thread_instance);
+
+  const ElementAnimations* GetElementAnimationsForElementId(
+      ElementId element_id) const;
+  scoped_refptr<ElementAnimations> GetElementAnimationsForElementId(
+      ElementId element_id);
 
   void PushTimelinesToImplThread(AnimationHost* host_impl) const;
   void RemoveTimelinesFromImplThread(AnimationHost* host_impl) const;

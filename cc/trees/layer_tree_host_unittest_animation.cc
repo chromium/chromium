@@ -387,9 +387,9 @@ class LayerTreeHostAnimationTestAddKeyframeModelWithTimingFunction
       return;
     first_animation_frame_ = false;
 
-    scoped_refptr<const AnimationTimeline> timeline_impl =
+    scoped_refptr<AnimationTimeline> timeline_impl =
         GetImplAnimationHost(host_impl)->GetTimelineById(timeline_id_);
-    scoped_refptr<const Animation> animation_child_impl =
+    scoped_refptr<Animation> animation_child_impl =
         timeline_impl->GetAnimationById(animation_child_id_);
 
     KeyframeModel* keyframe_model =
@@ -918,13 +918,14 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationAdjusted
     scroll_layer_element_id_ = scroll_layer_->element_id();
   }
 
-  KeyframeEffect& ScrollOffsetKeyframeEffect(const LayerTreeHostImpl& host_impl,
-                                             ElementId element_id) const {
-    scoped_refptr<ElementAnimations> element_animations =
+  const KeyframeEffect& ScrollOffsetKeyframeEffect(
+      const LayerTreeHostImpl& host_impl,
+      ElementId element_id) const {
+    scoped_refptr<const ElementAnimations> element_animations =
         GetImplAnimationHost(&host_impl)
-            ->GetElementAnimationsForElementId(element_id);
+            ->GetElementAnimationsForElementIdForTesting(element_id);
     DCHECK(element_animations);
-    KeyframeEffect* keyframe_effect =
+    const KeyframeEffect* keyframe_effect =
         &*element_animations->FirstKeyframeEffectForTesting();
     DCHECK(keyframe_effect);
     return *keyframe_effect;

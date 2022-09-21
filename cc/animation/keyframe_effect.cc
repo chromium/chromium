@@ -371,13 +371,8 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
                                     event.monotonic_time);
         keyframe_model->set_received_finished_event(true);
         dispatched = true;
-
-        ElementAnimations* element_animations =
-            animation_->animation_host()
-                ->GetElementAnimationsForElementId(element_id())
-                .get();
-        if (element_animations)
-          element_animations->UpdateClientAnimationState();
+        animation_->animation_host()
+            ->UpdateClientAnimationStateForElementAnimations(element_id());
       }
       break;
 

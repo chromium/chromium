@@ -782,12 +782,6 @@ void ProxyImpl::ScheduledActionCommit() {
   DCHECK(data_for_commit_.get());
   DCHECK(data_for_commit_->IsValid());
 
-  // Relax the cross-thread access restriction to non-thread-safe RefCount.
-  // It's safe since the main thread is blocked while a main-thread-bound
-  // compositor stuff are accessed from the impl thread.
-  base::ScopedAllowCrossThreadRefCountAccess
-      allow_cross_thread_ref_count_access;
-
   auto* commit_state = data_for_commit_->commit_state.get();
   auto* unsafe_state = data_for_commit_->unsafe_state.get();
   host_impl_->BeginCommit(commit_state->source_frame_number,

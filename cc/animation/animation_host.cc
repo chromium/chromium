@@ -259,6 +259,13 @@ void AnimationHost::UnregisterAnimationForElement(ElementId element_id,
   RemoveFromTicking(animation);
 }
 
+void AnimationHost::UpdateClientAnimationStateForElementAnimations(
+    ElementId element_id) {
+  auto* element_animations = GetElementAnimationsForElementId(element_id).get();
+  if (element_animations)
+    element_animations->UpdateClientAnimationState();
+}
+
 void AnimationHost::SetMutatorHostClient(MutatorHostClient* client) {
   if (mutator_host_client() == client)
     return;
@@ -414,13 +421,14 @@ void AnimationHost::PushPropertiesToImplThread(AnimationHost* host_impl) {
       TakePendingThroughputTrackerInfos();
 }
 
-scoped_refptr<const ElementAnimations>
-AnimationHost::GetElementAnimationsForElementId(ElementId element_id) const {
+const ElementAnimations* AnimationHost::GetElementAnimationsForElementId(
+    ElementId element_id) const {
   if (!element_id)
     return nullptr;
   auto iter = element_to_animations_map_.Read(*this).find(element_id);
-  return iter == element_to_animations_map_.Read(*this).end() ? nullptr
-                                                              : iter->second;
+  return iter == element_to_animations_map_.Read(*this).end()
+             ? nullptr
+             : iter->second.get();
 }
 
 scoped_refptr<ElementAnimations>
@@ -430,6 +438,12 @@ AnimationHost::GetElementAnimationsForElementId(ElementId element_id) {
   auto iter = element_to_animations_map_.Write(*this).find(element_id);
   return iter == element_to_animations_map_.Write(*this).end() ? nullptr
                                                                : iter->second;
+}
+
+scoped_refptr<const ElementAnimations>
+AnimationHost::GetElementAnimationsForElementIdForTesting(
+    ElementId element_id) const {
+  return GetElementAnimationsForElementId(element_id);
 }
 
 gfx::PointF AnimationHost::GetScrollOffsetForAnimation(
@@ -635,7 +649,7 @@ void AnimationHost::SetAnimationEvents(
 
 bool AnimationHost::ScrollOffsetAnimationWasInterrupted(
     ElementId element_id) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
+  const auto* element_animations = GetElementAnimationsForElementId(element_id);
   return element_animations
              ? element_animations->ScrollOffsetAnimationWasInterrupted()
              : false;
@@ -644,7 +658,7 @@ bool AnimationHost::ScrollOffsetAnimationWasInterrupted(
 bool AnimationHost::IsAnimatingProperty(ElementId element_id,
                                         ElementListType list_type,
                                         TargetProperty::Type property) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
+  const auto* element_animations = GetElementAnimationsForElementId(element_id);
   return element_animations ? element_animations->IsCurrentlyAnimatingProperty(
                                   property, list_type)
                             : false;
@@ -654,7 +668,7 @@ bool AnimationHost::HasPotentiallyRunningAnimationForProperty(
     ElementId element_id,
     ElementListType list_type,
     TargetProperty::Type property) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
+  const auto* element_animations = GetElementAnimationsForElementId(element_id);
   return element_animations
              ? element_animations->IsPotentiallyAnimatingProperty(property,
                                                                   list_type)
@@ -664,7 +678,7 @@ bool AnimationHost::HasPotentiallyRunningAnimationForProperty(
 bool AnimationHost::HasAnyAnimationTargetingProperty(
     ElementId element_id,
     TargetProperty::Type property) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
+  const auto* element_animations = GetElementAnimationsForElementId(element_id);
   if (!element_animations)
     return false;
 
@@ -674,7 +688,7 @@ bool AnimationHost::HasAnyAnimationTargetingProperty(
 
 bool AnimationHost::AnimationsPreserveAxisAlignment(
     ElementId element_id) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
+  const auto* element_animations = GetElementAnimationsForElementId(element_id);
   return element_animations
              ? element_animations->AnimationsPreserveAxisAlignment()
              : true;
@@ -682,19 +696,21 @@ bool AnimationHost::AnimationsPreserveAxisAlignment(
 
 float AnimationHost::MaximumScale(ElementId element_id,
                                   ElementListType list_type) const {
-  if (auto element_animations = GetElementAnimationsForElementId(element_id))
+  if (const auto* element_animations =
+          GetElementAnimationsForElementId(element_id)) {
     return element_animations->MaximumScale(element_id, list_type);
+  }
   return kInvalidScale;
 }
 
 bool AnimationHost::IsElementAnimating(ElementId element_id) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
+  const auto* element_animations = GetElementAnimationsForElementId(element_id);
   return element_animations ? element_animations->HasAnyKeyframeModel() : false;
 }
 
 bool AnimationHost::HasTickingKeyframeModelForTesting(
     ElementId element_id) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
+  const auto* element_animations = GetElementAnimationsForElementId(element_id);
   return element_animations ? element_animations->HasTickingKeyframeEffect()
                             : false;
 }

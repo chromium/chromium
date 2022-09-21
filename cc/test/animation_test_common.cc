@@ -357,7 +357,8 @@ void AddKeyframeModelToElementWithExistingKeyframeEffect(
     scoped_refptr<AnimationTimeline> timeline,
     std::unique_ptr<KeyframeModel> keyframe_model) {
   scoped_refptr<const ElementAnimations> element_animations =
-      timeline->animation_host()->GetElementAnimationsForElementId(element_id);
+      timeline->animation_host()->GetElementAnimationsForElementIdForTesting(
+          element_id);
   DCHECK(element_animations);
   KeyframeEffect* keyframe_effect =
       element_animations->FirstKeyframeEffectForTesting();
@@ -370,7 +371,8 @@ void RemoveKeyframeModelFromElementWithExistingKeyframeEffect(
     scoped_refptr<AnimationTimeline> timeline,
     int keyframe_model_id) {
   scoped_refptr<const ElementAnimations> element_animations =
-      timeline->animation_host()->GetElementAnimationsForElementId(element_id);
+      timeline->animation_host()->GetElementAnimationsForElementIdForTesting(
+          element_id);
   DCHECK(element_animations);
   KeyframeEffect* keyframe_effect =
       element_animations->FirstKeyframeEffectForTesting();
@@ -383,7 +385,8 @@ KeyframeModel* GetKeyframeModelFromElementWithExistingKeyframeEffect(
     scoped_refptr<AnimationTimeline> timeline,
     int keyframe_model_id) {
   scoped_refptr<const ElementAnimations> element_animations =
-      timeline->animation_host()->GetElementAnimationsForElementId(element_id);
+      timeline->animation_host()->GetElementAnimationsForElementIdForTesting(
+          element_id);
   DCHECK(element_animations);
   KeyframeEffect* keyframe_effect =
       element_animations->FirstKeyframeEffectForTesting();
