@@ -32,7 +32,7 @@ const logContext = log('context');
 export class BrowsingContextProcessor {
   static #contexts: Map<string, BrowsingContextImpl> = new Map();
 
-  static #getTopLevelContexts(): BrowsingContextImpl[] {
+  static getTopLevelContexts(): BrowsingContextImpl[] {
     return Array.from(BrowsingContextProcessor.#contexts.values()).filter(
       (c) => c.parentId === null
     );
@@ -257,7 +257,7 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.GetTreeResult> {
     const resultContexts =
       params.root === undefined
-        ? BrowsingContextProcessor.#getTopLevelContexts()
+        ? BrowsingContextProcessor.getTopLevelContexts()
         : [BrowsingContextProcessor.#getKnownContext(params.root)];
 
     return {

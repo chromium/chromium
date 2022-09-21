@@ -17,6 +17,61 @@ from _helpers import *
 
 
 @pytest.mark.asyncio
+async def test_browsingContext_noInitialLoadEvents(websocket):
+    # Due to the nature, the test does not always fail, even if the
+    # implementation does not guarantee the initial context to be fully loaded.
+    # The test asserts there was no initial "browsingContext.load" emitted
+    # during the following steps:
+    # 1. Subscribe for the "browsingContext.load" event.
+    # 2. Get the currently open context.
+    # 3. Navigate to some url.
+    # 4. Verify the new page is loaded.
+
+    url = "data:text/html,<h2>test</h2>"
+
+    await send_JSON_command(websocket, {
+        "id": 1,
+        "method": "session.subscribe",
+        "params": {
+            "events": ["browsingContext.load"]}})
+
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 1
+
+    await send_JSON_command(websocket, {
+        "id": 2,
+        "method": "browsingContext.getTree",
+        "params": {}})
+
+    resp = await read_JSON_message(websocket)
+    assert resp[
+               "id"] == 2, "The message should be result of command `browsingContext.getTree` with `id`: 2"
+    context_id = resp["result"]["contexts"][0]["context"]
+
+    await send_JSON_command(websocket, {
+        "id": 3,
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": url,
+            "wait": "none",
+            "context": context_id}})
+
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 3
+    navigation = resp["result"]["navigation"]
+
+    # Wait for the navigated page to be loaded.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({
+        'method': 'browsingContext.load',
+        'params': {
+            'context': context_id,
+            'navigation': navigation,
+            'url': url
+        }}, resp)
+
+
+@pytest.mark.asyncio
 async def test_browsingContext_getTree_contextReturned(websocket, context_id):
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
@@ -145,6 +200,7 @@ async def test_browsingContext_getTreeWithNestedCrossOriginContexts_contextsRetu
             "url": page_with_nested_iframe}]},
         result)
 
+
 # TODO(sadym): make offline.
 @pytest.mark.asyncio
 async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginContexts_contextsReturned(
@@ -154,7 +210,7 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginConte
     page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
                               f'<iframe src="{nested_iframe}" />'
     another_page_with_nested_iframe = f'data:text/html,<h1>ANOTHER_MAIN_PAGE</h1>' \
-                              f'<iframe src="{another_nested_iframe}" />'
+                                      f'<iframe src="{another_nested_iframe}" />'
 
     await execute_command(websocket, {
         "method": "browsingContext.navigate",
@@ -186,6 +242,7 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginConte
             "url": another_page_with_nested_iframe}]},
         result)
 
+
 @pytest.mark.asyncio
 async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_contextsReturned(
       websocket, context_id):
@@ -194,7 +251,7 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_context
     page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
                               f'<iframe src="{nested_iframe}" />'
     another_page_with_nested_iframe = f'data:text/html,<h1>ANOTHER_MAIN_PAGE</h1>' \
-                              f'<iframe src="{another_nested_iframe}" />'
+                                      f'<iframe src="{another_nested_iframe}" />'
 
     await execute_command(websocket, {
         "method": "browsingContext.navigate",

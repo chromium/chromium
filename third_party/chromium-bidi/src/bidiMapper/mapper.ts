@@ -25,6 +25,7 @@ import { ITransport } from '../utils/transport';
 
 import { log } from '../utils/log';
 import { EventManager } from './domains/events/EventManager';
+import { BrowsingContextProcessor } from './domains/context/browsingContextProcessor';
 
 const logSystem = log('system');
 
@@ -155,4 +156,8 @@ async function _prepareCdp(cdpClient: CdpClient) {
     waitForDebuggerOnStart: true,
     flatten: true,
   });
+
+  await Promise.all(
+    BrowsingContextProcessor.getTopLevelContexts().map((c) => c.awaitLoaded())
+  );
 }

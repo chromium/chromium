@@ -36,20 +36,12 @@ async def websocket():
         yield connection
 
 
-# noinspection PyUnusedFunction
 @pytest.fixture
 async def context_id(websocket):
-    # Note: there can be a race condition between initially created context's
-    # events and following subscription commands. Sometimes subscribe is called
-    # before the initial context emitted `browsingContext.contextCreated`,
-    # `browsingContext.domContentLoaded`, or `browsingContext.load` events,
-    # which makes events verification way harder. Navigation command guarantees
-    # there will be no follow-up events, as it uses `interactive` flag.
-    # TODO: find a way to avoid mentioned race condition properly.
-
-    open_context_id = await get_open_context_id(websocket)
-    await goto_url(websocket, open_context_id, "about:blank")
-    return open_context_id
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}})
+    return result["contexts"][0]["context"]
 
 
 @pytest.fixture
@@ -135,14 +127,6 @@ def any_timestamp(expected):
 # noinspection PyUnusedLocal
 def any_value(expected):
     return
-
-
-# Returns an id of an open context.
-async def get_open_context_id(websocket):
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}})
-    return result["contexts"][0]["context"]
 
 
 async def send_JSON_command(websocket, command):
