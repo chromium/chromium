@@ -40,7 +40,7 @@ import java.util.Queue;
 public final class AuthenticatorImpl implements Authenticator {
     private static final String GMSCORE_PACKAGE_NAME = "com.google.android.gms";
     public static final int GMSCORE_MIN_VERSION = 16890000;
-    public static final int GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS = 22330000;
+    public static final int GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS = 223300000;
     private final WebAuthenticationDelegate.IntentSender mIntentSender;
     private final RenderFrameHost mRenderFrameHost;
     private final @WebAuthenticationDelegate.Support int mSupportLevel;
