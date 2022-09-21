@@ -89,8 +89,8 @@ BASE_FEATURE(kV8ExperimentalRegexpEngine,
              "V8ExperimentalRegexpEngine",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables experimental Turboprop compiler.
-BASE_FEATURE(kV8Turboprop, "V8Turboprop", base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables experimental Maglev compiler.
+BASE_FEATURE(kV8Maglev, "V8Maglev", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Sparkplug compiler. Note that this only sets the V8 flag when
 // manually overridden; otherwise it defers to whatever the V8 default is.

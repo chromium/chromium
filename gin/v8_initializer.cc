@@ -287,8 +287,7 @@ void SetFlags(IsolateHolder::ScriptMode mode,
       "--no-enable-experimental-regexp-engine-on-excessive-backtracks");
   SetV8FlagsIfOverridden(features::kV8TurboFastApiCalls,
                          "--turbo-fast-api-calls", "--no-turbo-fast-api-calls");
-  SetV8FlagsIfOverridden(features::kV8Turboprop, "--turboprop",
-                         "--no-turboprop");
+  SetV8FlagsIfOverridden(features::kV8Maglev, "--maglev", "--no-maglev");
   SetV8FlagsIfOverridden(features::kV8Sparkplug, "--sparkplug",
                          "--no-sparkplug");
   SetV8FlagsIfOverridden(features::kV8ConcurrentSparkplug,
