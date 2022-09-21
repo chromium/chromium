@@ -85,6 +85,11 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   struct Owner {
     Owner();
     ~Owner();
+    Owner(const Owner&);
+    Owner& operator=(const Owner&);
+    Owner(Owner&&);
+    Owner& operator=(Owner&&);
+
     // The native window that opened the dialog.
     aura::Window* window = nullptr;
     // Android task ID if the owner window is an Android app.
@@ -170,12 +175,8 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   // Pointer to the profile the dialog is running in.
   Profile* profile_ = nullptr;
 
-  // The window that created the dialog.
-  aura::Window* owner_window_ = nullptr;
-
-  // The optional URL or a component type of the caller that created the dialog
-  // (Save As/File Picker).
-  absl::optional<policy::DlpFilesController::DlpFileDestination> dialog_caller_;
+  // Information about the dialog's owner, such as the window or app type.
+  Owner owner_;
 
   // We defer the callback into SelectFileDialog::Listener until the window
   // closes, to match the semantics of file selection on Windows and Mac.
