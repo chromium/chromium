@@ -28,13 +28,6 @@ class CloudPolicyClient;
 
 // Struct containing the result data for a given job.
 struct DMServerJobResult {
-  DMServerJobResult() = default;
-  DMServerJobResult(const DMServerJobResult&) = delete;
-  DMServerJobResult(DMServerJobResult&&) = default;
-  DMServerJobResult& operator=(const DMServerJobResult&) = delete;
-  DMServerJobResult& operator=(DMServerJobResult&&) = default;
-  ~DMServerJobResult() = default;
-
   // Unowned pointer the return value of `DeviceManagementService::CreateJob`.
   const DeviceManagementService::Job* job = nullptr;
 
