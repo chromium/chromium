@@ -89,8 +89,7 @@ bool ShouldLoadUrlInDesktopMode(const GURL& url,
     for (NSDictionary* urlType in urlTypes) {
       DCHECK([urlType isKindOfClass:[NSDictionary class]]);
       _schemes =
-          [base::mac::ObjCCastStrict<NSArray>(urlType[@"CFBundleURLSchemes"])
-              copy];
+          base::mac::ObjCCastStrict<NSArray>(urlType[@"CFBundleURLSchemes"]);
     }
   }
   return _schemes;
