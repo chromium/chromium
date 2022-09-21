@@ -18,6 +18,9 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_context_core_observer.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -43,6 +46,9 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -53,6 +59,50 @@ using ::testing::_;
 using ::testing::Return;
 
 constexpr char kBaseDataDir[] = "content/test/data/";
+
+void ExpectRegisterResultAndRun(blink::ServiceWorkerStatusCode expected,
+                                base::RepeatingClosure continuation,
+                                blink::ServiceWorkerStatusCode actual) {
+  EXPECT_EQ(expected, actual);
+  continuation.Run();
+}
+
+// Observer which waits for a service worker to register in the browser process
+// by observing worker activation status.
+class WorkerStateObserver : public ServiceWorkerContextCoreObserver {
+ public:
+  WorkerStateObserver(scoped_refptr<ServiceWorkerContextWrapper> context,
+                      ServiceWorkerVersion::Status target)
+      : context_(std::move(context)), target_(target) {
+    observation_.Observe(context_.get());
+  }
+
+  WorkerStateObserver(const WorkerStateObserver&) = delete;
+  WorkerStateObserver& operator=(const WorkerStateObserver&) = delete;
+
+  ~WorkerStateObserver() override = default;
+
+  // ServiceWorkerContextCoreObserver overrides.
+  void OnVersionStateChanged(int64_t version_id,
+                             const GURL& scope,
+                             const blink::StorageKey& key,
+                             ServiceWorkerVersion::Status) override {
+    const ServiceWorkerVersion* version = context_->GetLiveVersion(version_id);
+    if (version->status() == target_) {
+      context_->RemoveObserver(this);
+      run_loop_.Quit();
+    }
+  }
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+  scoped_refptr<ServiceWorkerContextWrapper> context_;
+  const ServiceWorkerVersion::Status target_;
+  base::ScopedObservation<ServiceWorkerContextWrapper,
+                          ServiceWorkerContextCoreObserver>
+      observation_{this};
+};
 
 // Waits for the a given |report_url| to be received by the test server. Wraps a
 // ControllableHttpResponse so that it can wait for the server request in a
@@ -181,6 +231,13 @@ class AttributionsBrowserTest : public ContentBrowserTest {
     https_server_->ServeFilesFromSourceDirectory("content/test/data");
     https_server_->ServeFilesFromSourceDirectory(
         "content/test/data/attribution_reporting");
+
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
+    wrapper_ = static_cast<ServiceWorkerContextWrapper*>(
+        partition->GetServiceWorkerContext());
   }
 
   void TearDownOnMainThread() override {
@@ -285,11 +342,16 @@ class AttributionsBrowserTest : public ContentBrowserTest {
     return popup_contents;
   }
 
+  ServiceWorkerContextWrapper* wrapper() { return wrapper_.get(); }
+  ServiceWorkerContext* public_context() { return wrapper(); }
+
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
+
+  scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
 };
 
 // Verifies that storage initialization does not hang when initialized in a
@@ -901,6 +963,164 @@ IN_PROC_BROWSER_TEST_F(
       "b.test", "/attribution_reporting/register_trigger_headers.html");
   EXPECT_TRUE(ExecJs(
       shell2, JsReplace("createAttributionSrcImg($1);", register_trigger_url)));
+
+  expected_report.WaitForReport();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AttributionsBrowserTest,
+    ServiceWorkerPerformsAttributionSrcRedirect_ReporterSet) {
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/attribution_reporting/register_source_redirect");
+
+  ExpectedReportWaiter expected_report(
+      GURL("https://c.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://d.test",
+      /*source_event_id=*/"5", /*source_type=*/"event", /*trigger_data=*/"1",
+      https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+
+  // Setup our service worker.
+  WorkerStateObserver sw_observer(wrapper(), ServiceWorkerVersion::ACTIVATED);
+  blink::mojom::ServiceWorkerRegistrationOptions options(
+      impression_url, blink::mojom::ScriptType::kClassic,
+      blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
+  public_context()->RegisterServiceWorker(
+      https_server()->GetURL("a.test",
+                             "/attribution_reporting/service_worker.js"),
+      key, options,
+      base::BindOnce(&ExpectRegisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
+  sw_observer.Wait();
+
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager());
+
+  base::RunLoop loop;
+  EXPECT_CALL(observer, OnSourceHandled(_, StorableSource::Result::kSuccess))
+      .WillOnce([&]() { loop.Quit(); });
+
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+      JsReplace(
+          "createAttributionSrcImg($1);",
+          https_server()->GetURL(
+              "a.test", "/attribution_reporting/register_source_redirect"))));
+
+  register_response->WaitForRequest();
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response->AddCustomHeader(
+      "Location",
+      https_server()
+          ->GetURL("c.test",
+                   "/attribution_reporting/register_source_headers.html")
+          .spec());
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  // Wait until the source has been stored before registering the trigger;
+  // otherwise the trigger could be processed before the source, in which case
+  // there would be no matching source: crbug.com/1309173.
+  loop.Run();
+
+  GURL conversion_url = https_server()->GetURL(
+      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
+
+  GURL register_trigger_url = https_server()->GetURL(
+      "c.test", "/attribution_reporting/register_trigger_headers.html");
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
+                                               register_trigger_url)));
+
+  expected_report.WaitForReport();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AttributionsBrowserTest,
+    ServiceWorkerPerformsAttributionEligibleRedirect_ReporterSet) {
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server(), "/attribution_reporting/register_source_redirect");
+
+  ExpectedReportWaiter expected_report(
+      GURL("https://c.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://d.test",
+      /*source_event_id=*/"5", /*source_type=*/"event", /*trigger_data=*/"1",
+      https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+
+  // Setup our service worker.
+  WorkerStateObserver sw_observer(wrapper(), ServiceWorkerVersion::ACTIVATED);
+  blink::mojom::ServiceWorkerRegistrationOptions options(
+      impression_url, blink::mojom::ScriptType::kClassic,
+      blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
+  public_context()->RegisterServiceWorker(
+      https_server()->GetURL("a.test",
+                             "/attribution_reporting/service_worker.js"),
+      key, options,
+      base::BindOnce(&ExpectRegisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
+  sw_observer.Wait();
+
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager());
+
+  base::RunLoop loop;
+  EXPECT_CALL(observer, OnSourceHandled(_, StorableSource::Result::kSuccess))
+      .WillOnce([&]() { loop.Quit(); });
+
+  EXPECT_TRUE(ExecJs(
+      web_contents(),
+      JsReplace(
+          "createAttributionEligibleImgSrc($1);",
+          https_server()->GetURL(
+              "a.test", "/attribution_reporting/register_source_redirect"))));
+
+  register_response->WaitForRequest();
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response->AddCustomHeader(
+      "Location",
+      https_server()
+          ->GetURL("c.test",
+                   "/attribution_reporting/register_source_headers.html")
+          .spec());
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  // Wait until the source has been stored before registering the trigger;
+  // otherwise the trigger could be processed before the source, in which case
+  // there would be no matching source: crbug.com/1309173.
+  loop.Run();
+
+  GURL conversion_url = https_server()->GetURL(
+      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
+
+  GURL register_trigger_url = https_server()->GetURL(
+      "c.test", "/attribution_reporting/register_trigger_headers.html");
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
+                                               register_trigger_url)));
 
   expected_report.WaitForReport();
 }
