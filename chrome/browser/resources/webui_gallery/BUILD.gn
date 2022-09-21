@@ -76,6 +76,8 @@ generate_grd("build_grd") {
     "demos/cr_tree/cr_tree_demo.html",
     "demos/cr_toggle_demo.html",
     "demos/md_select/md_select_demo.html",
+    "demos/progress_indicator_nonpolymer_demo.html",
+    "demos/progress_indicator_polymer_demo.html",
     "webui_gallery.html",
   ]
 

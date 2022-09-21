@@ -65,6 +65,16 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'cr_input/cr_input_demo.html',
             },
             {
+              name: 'Progress indicators, Polymer',
+              path: 'progress-polymer',
+              src: 'progress_indicator_polymer_demo.html',
+            },
+            {
+              name: 'Progress indicators, non-Polymer',
+              path: 'progress-nonpolymer',
+              src: 'progress_indicator_nonpolymer_demo.html',
+            },
+            {
               name: 'Radio buttons and groups',
               path: 'radios',
               src: 'cr_radio_demo.html',
