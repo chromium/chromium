@@ -6,6 +6,7 @@
 
 #include <sys/xattr.h>
 
+#include "ash/metrics/histogram_macros.h"
 #include "base/callback.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_util.h"
@@ -85,10 +86,15 @@ bool SetTrashDirectoryPermissions(const base::FilePath& trash_directory) {
                            base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
 }
 
+void RecordDirectorySetupMetric(trash::DirectorySetupUmaType type) {
+  UMA_HISTOGRAM_ENUMERATION(trash::kDirectorySetupHistogramName, type);
+}
+
 base::File::Error SetTrackedExtendedAttribute(const base::FilePath& path) {
   auto tracked_name = base::StrCat({"trash_", path.BaseName().value()});
   if (lsetxattr(path.value().c_str(), trash::kTrackedDirectoryName,
                 tracked_name.c_str(), tracked_name.size(), 0) < 0) {
+    RecordDirectorySetupMetric(trash::DirectorySetupUmaType::FAILED_XATTR);
     PLOG(ERROR) << "Failed to set the xattr";
     return base::File::FILE_ERROR_FAILED;
   }
@@ -388,6 +394,13 @@ void TrashIOTask::OnSetupSubDirectory(
     const storage::FileSystemURL trash_subdirectory,
     base::File::Error error) {
   if (error != base::File::FILE_OK) {
+    auto failed_directory_uma_type =
+        (trash_subdirectory == it->second.trash_files)
+            ? trash::DirectorySetupUmaType::FAILED_FILES_FOLDER
+            : trash::DirectorySetupUmaType::FAILED_INFO_FOLDER;
+    RecordDirectorySetupMetric(failed_directory_uma_type);
+    LOG(ERROR) << "Failed setting up a trash subfolder: "
+               << static_cast<int>(failed_directory_uma_type);
     // TODO(b/231830211): We can potentially continue if one .Trash directory
     // fails to create, but we should also rollback if the files directory
     // succeeds but info fails.
@@ -419,6 +432,8 @@ void TrashIOTask::OnSetDirectoryPermissions(
     trash::TrashPathsMap::const_iterator& it,
     bool set_permissions_success) {
   if (!set_permissions_success) {
+    RecordDirectorySetupMetric(
+        trash::DirectorySetupUmaType::FAILED_PARENT_FOLDER_PERMISSIONS);
     LOG(ERROR) << "Failed setting directory permissions";
     Complete(State::kError);
     return;

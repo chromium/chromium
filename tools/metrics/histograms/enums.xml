@@ -43219,6 +43219,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7" label="Plugin VM App"/>
 </enum>
 
+<enum name="FileManagerTrashDirectorySetupFailedStep">
+  <int value="0" label="Failed creating info folder"/>
+  <int value="1" label="Failed creating files folder"/>
+  <int value="2" label="Failed setting the extended attributes"/>
+  <int value="3" label="Failed setting parent folder permissions"/>
+</enum>
+
 <enum name="FileManagerVolumeType">
 <!-- Keep this in sync with the JS value: QuickViewUma.VolumeType. -->
 

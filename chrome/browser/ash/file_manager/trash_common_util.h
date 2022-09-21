@@ -30,6 +30,10 @@ extern const char kTrashInfoExtension[];
 // to track the files and info directories for deletion by cryptohome.
 extern const char kTrackedDirectoryName[];
 
+// The histogram used to record the success or failure of the lazy creation of
+// the Trash directory and its children.
+extern const char kDirectorySetupHistogramName[];
+
 struct TrashLocation {
   TrashLocation(const base::FilePath supplied_relative_folder_path,
                 const base::FilePath supplied_mount_point_path,
@@ -91,6 +95,17 @@ using TrashPathsMap = std::map<const base::FilePath, TrashLocation>;
 TrashPathsMap GenerateEnabledTrashLocationsForProfile(
     Profile* profile,
     const base::FilePath& base_path);
+
+// Enum of possible UMA values for histogram FileBrowser.Trash.DirectorySetup.
+// Keep the order of this in sync with FileManagerTrashDirectorySetupStep in
+// tools/metrics/histograms/enums.xml.
+enum class DirectorySetupUmaType {
+  FAILED_INFO_FOLDER = 0,
+  FAILED_FILES_FOLDER = 1,
+  FAILED_XATTR = 2,
+  FAILED_PARENT_FOLDER_PERMISSIONS = 3,
+  kMaxValue = FAILED_PARENT_FOLDER_PERMISSIONS,
+};
 
 }  // namespace file_manager::trash
 

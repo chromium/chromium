@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -198,6 +199,8 @@ TEST_F(TrashIOTaskTest, SupportedDirectoryShouldSucceed) {
   // path that adds the drive mount point is exercised.
   drive::DriveIntegrationServiceFactory::GetForProfile(profile_.get());
 
+  base::HistogramTester histogram_tester;
+
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
   const base::FilePath file_path = downloads_dir_.Append("foo.txt");
   ASSERT_TRUE(base::WriteFile(file_path, foo_contents));
@@ -224,9 +227,12 @@ TEST_F(TrashIOTaskTest, SupportedDirectoryShouldSucceed) {
   run_loop.Run();
 
   AssertTrashSetup(downloads_dir_);
+  histogram_tester.ExpectTotalCount(trash::kDirectorySetupHistogramName, 0);
 }
 
 TEST_F(TrashIOTaskTest, OrphanedFilesAreOverwritten) {
+  base::HistogramTester histogram_tester;
+
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
   std::string file_name("foo.txt");
   const base::FilePath file_path = downloads_dir_.Append(file_name);
@@ -278,9 +284,13 @@ TEST_F(TrashIOTaskTest, OrphanedFilesAreOverwritten) {
   AssertTrashSetup(downloads_dir_);
   ExpectFileContents(GenerateInfoPath(file_name), file_trashinfo_contents);
   ExpectFileContents(GenerateFilesPath(file_name), foo_contents);
+
+  histogram_tester.ExpectTotalCount(trash::kDirectorySetupHistogramName, 0);
 }
 
 TEST_F(TrashIOTaskTest, MultipleFilesInvokeProgress) {
+  base::HistogramTester histogram_tester;
+
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
   std::string file_name_1("foo.txt");
   const base::FilePath file_path_1 = downloads_dir_.Append(file_name_1);
@@ -359,6 +369,8 @@ TEST_F(TrashIOTaskTest, MultipleFilesInvokeProgress) {
   ExpectFileContents(GenerateInfoPath(file_name_2), file_trashinfo_contents_2);
   ExpectFileContents(GenerateFilesPath(file_name_1), foo_contents);
   ExpectFileContents(GenerateFilesPath(file_name_2), foo_contents);
+
+  histogram_tester.ExpectTotalCount(trash::kDirectorySetupHistogramName, 0);
 }
 
 }  // namespace

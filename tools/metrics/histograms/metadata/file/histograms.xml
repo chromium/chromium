@@ -776,6 +776,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.Trash.DirectorySetupFailed"
+    enum="FileManagerTrashDirectorySetupFailedStep" expires_after="2023-03-20">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Recorded when failing to create the trash folder (e.g. .Trash) and it's
+    children (e.g. info and files).
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.TrashFiles.{RootType}" units="units"
     expires_after="2023-02-28">
   <owner>simmonsjosh@google.com</owner>
