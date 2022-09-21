@@ -127,7 +127,8 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
       case views::CAPTION_BUTTON_ICON_MINIMIZE:
         return frame_->widget_delegate()->CanMinimize();
       case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE:
-        return frame_->widget_delegate()->CanMaximize();
+        return !chromeos::TabletState::Get()->InTabletMode() &&
+               frame_->widget_delegate()->CanMaximize();
       // Resizable widget can be snapped.
       case views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED:
       case views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED:
@@ -186,16 +187,6 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
   if (custom_button)
     custom_button_ = AddChildView(std::move(custom_button));
 
-  if (chromeos::wm::features::IsFloatWindowEnabled()) {
-    float_button_ = AddChildView(std::make_unique<views::FrameCaptionButton>(
-        base::BindRepeating(
-            &FrameCaptionButtonContainerView::FloatButtonPressed,
-            base::Unretained(this)),
-        views::CAPTION_BUTTON_ICON_FLOAT, HTMENU));
-    float_button_->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT));
-  }
-
   menu_button_ = new views::FrameCaptionButton(
       base::BindRepeating(&FrameCaptionButtonContainerView::MenuButtonPressed,
                           base::Unretained(this)),
@@ -211,6 +202,16 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
   minimize_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
   AddChildView(minimize_button_.get());
+
+  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+    float_button_ = AddChildView(std::make_unique<views::FrameCaptionButton>(
+        base::BindRepeating(
+            &FrameCaptionButtonContainerView::FloatButtonPressed,
+            base::Unretained(this)),
+        views::CAPTION_BUTTON_ICON_FLOAT, HTMENU));
+    float_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT));
+  }
 
   size_button_ = new FrameSizeButton(
       base::BindRepeating(&FrameCaptionButtonContainerView::SizeButtonPressed,

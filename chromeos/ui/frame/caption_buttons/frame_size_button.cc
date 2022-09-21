@@ -229,6 +229,7 @@ void FrameSizeButton::ShowMultitaskMenu() {
   // Show Multitask Menu if float is enabled. Note here float flag is also used
   // to represent other relatable UI/UX changes.
   if (chromeos::wm::features::IsFloatWindowEnabled()) {
+    DCHECK(!chromeos::TabletState::Get()->InTabletMode());
     // Owned by the bubble which contains this view. If there is an existing
     // bubble, it will be deactivated and then close and destroy itself.
     auto* multitask_menu = new MultitaskMenu(/*anchor=*/this, GetWidget());
@@ -392,6 +393,7 @@ void FrameSizeButton::AnimateButtonsToSnapMode() {
 
 void FrameSizeButton::SetButtonsToSnapMode(
     FrameSizeButtonDelegate::Animate animate) {
+  DCHECK(!chromeos::TabletState::Get()->InTabletMode());
   in_snap_mode_ = true;
 
   // When using a right-to-left layout the close button is left of the size

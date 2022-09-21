@@ -213,7 +213,8 @@ TEST_F(FrameCaptionButtonContainerViewTest,
   ASSERT_EQ(initial_close_button_bounds.x(),
             initial_size_button_bounds.right());
 
-  // Button positions should be the same when entering tablet mode.
+  // Maximize/restore button is hidden in tablet mode and the other buttons
+  // should shift accordingly.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   container.UpdateCaptionButtonState(false /*=animate*/);
   test.EndAnimations();
@@ -221,19 +222,17 @@ TEST_F(FrameCaptionButtonContainerViewTest,
   views::test::RunScheduledLayout(&container);
 
   EXPECT_TRUE(test.minimize_button()->GetVisible());
-  EXPECT_TRUE(test.size_button()->GetVisible());
+  EXPECT_FALSE(test.size_button()->GetVisible());
   EXPECT_TRUE(test.close_button()->GetVisible());
   gfx::Rect extra_button_bounds = extra_button->bounds();
   gfx::Rect minimize_button_bounds = test.minimize_button()->bounds();
-  gfx::Rect size_button_bounds = test.size_button()->bounds();
   gfx::Rect close_button_bounds = test.close_button()->bounds();
   EXPECT_EQ(minimize_button_bounds.x(), extra_button_bounds.right());
-  EXPECT_EQ(size_button_bounds.x(), minimize_button_bounds.right());
-  EXPECT_EQ(close_button_bounds.x(), size_button_bounds.right());
-  EXPECT_EQ(initial_size_button_bounds, test.size_button()->bounds());
+  EXPECT_EQ(close_button_bounds.x(), minimize_button_bounds.right());
   EXPECT_EQ(initial_close_button_bounds.size(), close_button_bounds.size());
-  EXPECT_EQ(container.GetPreferredSize().width(),
-            initial_container_bounds.width());
+  EXPECT_EQ(
+      initial_container_bounds.width() - initial_size_button_bounds.width(),
+      container.GetPreferredSize().width());
 
   // Button positions should be the same when leaving tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
