@@ -243,7 +243,7 @@ void AccuracyService::OnAccuracyTipClosed(base::TimeTicks time_opened,
   base::UmaHistogramEnumeration("Privacy.AccuracyTip.AccuracyTipInteraction",
                                 interaction);
   base::UmaHistogramCounts100("Privacy.AccuracyTip.NumDialogsShown",
-                              interaction_list->GetListDeprecated().size());
+                              interaction_list->GetList().size());
   ukm::builders::AccuracyTipDialog ukm_builder(ukm_source_id);
   ukm_builder.SetInteraction(static_cast<int>(interaction));
 
@@ -256,7 +256,7 @@ void AccuracyService::OnAccuracyTipClosed(base::TimeTicks time_opened,
 
     const std::string suffix = GetHistogramSuffix(interaction);
     base::UmaHistogramCounts100("Privacy.AccuracyTip.NumDialogsShown." + suffix,
-                                interaction_list->GetListDeprecated().size());
+                                interaction_list->GetList().size());
     base::UmaHistogramMediumTimes(
         "Privacy.AccuracyTip.AccuracyTipTimeOpen." + suffix, time_open);
   }
