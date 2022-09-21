@@ -276,7 +276,15 @@ def MakeScenarioDriver(scenario_name,
           "https://polygon.com"
       ]
     else:
-      raise ValueError("Invalid navigation scenario.")
+      # For navigation scenarios that are not predefined a site list is needed.
+      if os.path.exists("sites.txt"):
+        NAVIGATED_SITES = []
+        with open("sites.txt") as sites_file:
+          for site in sites_file:
+            NAVIGATED_SITES.append(site.replace("\n", ""))
+      else:
+        raise ValueError(
+            "Use predefined navigation scenarios or create sites.txt")
 
     # Aim for a benchmark that lasts up to 1 hour.
     navigation_duration_in_seconds = 15
