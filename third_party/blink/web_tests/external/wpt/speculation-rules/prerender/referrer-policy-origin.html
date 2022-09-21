@@ -9,6 +9,7 @@
 <script src="resources/referrer-test.js"></script>
 <body>
 <script>
+setup(() => assertSpeculationRulesIsSupported());
 
 // Tests that the referrer on the prerendering navigation request is the
 // triggering page's origin when the referrer policy is set to origin.
