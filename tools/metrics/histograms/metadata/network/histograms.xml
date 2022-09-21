@@ -1815,6 +1815,160 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.PortalDetector.AttemptsToDisconnect.Cellular"
+    units="attempts" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of portal detection attempts before a Cellular network transitions to
+    a non connected state, recorded when Service.State transitions to a non
+    connected state.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.AttemptsToDisconnect.Ethernet"
+    units="attempts" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of portal detection attempts before an Ethernet network transitions
+    to a non connected state, recorded when Service.State transitions to a non
+    connected state.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.AttemptsToDisconnect.Wifi"
+    units="attempts" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of portal detection attempts before a WiFi network transitions to a
+    non connected state, recorded when Service.State transitions to a non
+    connected state.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.AttemptsToOnline.Cellular"
+    units="attempts" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of portal detection attempts until a Cellular network transitions to
+    online, recorded when detection completes with an online result.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.AttemptsToOnline.Ethernet"
+    units="attempts" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of portal detection attempts until an Ethernet network transitions to
+    online, recorded when detection completes with an online result.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.AttemptsToOnline.Wifi"
+    units="attempts" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of portal detection attempts until a WiFi network transitions to
+    online, recorded when detection complets with an online result.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.AttemptsToRedirectFound.Cellular"
+    units="attempts" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of portal detection attempts before a Cellular network transitions to
+    redirect-found, recorded when Service.State transitions to redirect-found.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.AttemptsToRedirectFound.Ethernet"
+    units="attempts" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of portal detection attempts before an Ethernet network transitions
+    to redirect-found, recorded when Service.State transitions to
+    redirect-found.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.AttemptsToRedirectFound.Wifi"
+    units="attempts" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of portal detection attempts before a WiFi network transitions to
+    redirect-found, recorded when Service.State transitions to redirect-found.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.InitialResult.Cellular"
+    enum="PortalDetectorResult" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Shill captive portal detection initial result for a Cellular network,
+    recorded after the initial portal detection attempt.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.InitialResult.Ethernet"
+    enum="PortalDetectorResult" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Shill captive portal detection initial result for an Ethernet network,
+    recorded after the initial portal detection attempt.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.InitialResult.Wifi"
+    enum="PortalDetectorResult" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Shill captive portal detection initial result for a WiFii network, recorded
+    after the initial portal detection attempt.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.RepeatResult.Cellular"
+    enum="PortalDetectorResult" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Shill captive portal detection retry result for a Cellular network, recorded
+    after a repeated detection attempt.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.RepeatResult.Ethernet"
+    enum="PortalDetectorResult" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Shill captive portal detection retry result for an Ethernet network,
+    recorded after a repeated detection attempt.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.RepeatResult.Wifi"
+    enum="PortalDetectorResult" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Shill captive portal detection retry result for a WiFi network, recorded
+    after a repeated detection attempt.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.PPPMTUValue" units="bytes"
     expires_after="2022-12-31">
   <owner>jiejiang@chromium.org</owner>

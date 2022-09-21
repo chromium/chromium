@@ -79264,6 +79264,22 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="HTTPS traffic not blocked, HTTP 204 received"/>
 </enum>
 
+<enum name="PortalDetectorResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Connection Failure"/>
+  <int value="2" label="DNS Failure"/>
+  <int value="3" label="DNS Timeout"/>
+  <int value="4" label="HTTP Failure"/>
+  <int value="5" label="HTTP Timeout"/>
+  <int value="6" label="Content Failure"/>
+  <int value="7" label="Content Timeout"/>
+  <int value="8" label="Redirect Found"/>
+  <int value="9" label="Redirect No Url"/>
+  <int value="10" label="HTTPS Failure"/>
+  <int value="11" label="No Connectivity"/>
+  <int value="12" label="Online"/>
+</enum>
+
 <enum name="Ports">
   <int value="80" label="Port 80"/>
   <int value="443" label="Port 443"/>
