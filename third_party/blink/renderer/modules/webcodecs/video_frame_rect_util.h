@@ -24,6 +24,7 @@ gfx::Rect ToGfxRect(const DOMRectInit* rect,
 
 // Checks |rect| x, y, width, and height for sample alignment in all planes.
 bool ValidateCropAlignment(media::VideoPixelFormat format,
+                           const char* format_str,
                            const gfx::Rect& rect,
                            const char* rect_name,
                            ExceptionState& exception_state);

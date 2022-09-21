@@ -115,6 +115,7 @@ gfx::Rect ToGfxRect(const DOMRectInit* rect,
 }
 
 bool ValidateCropAlignment(media::VideoPixelFormat format,
+                           const char* format_str,
                            const gfx::Rect& rect,
                            const char* rect_name,
                            ExceptionState& exception_state) {
@@ -124,24 +125,36 @@ bool ValidateCropAlignment(media::VideoPixelFormat format,
     const gfx::Size sample_size = media::VideoFrame::SampleSize(format, i);
     if (rect.x() % sample_size.width() != 0) {
       exception_state.ThrowTypeError(String::Format(
-          "Invalid %s. x is not sample-aligned in plane %u.", rect_name, i));
+          "Invalid %s. Expected x to be a multiple of %u in plane %u for "
+          "format %s; was %u. Consider rounding %s inward or outward to a "
+          "sample boundary.",
+          rect_name, sample_size.width(), i, format_str, rect.x(), rect_name));
       return false;
     }
     if (rect.y() % sample_size.height() != 0) {
       exception_state.ThrowTypeError(String::Format(
-          "Invalid %s. y is not sample-aligned in plane %u.", rect_name, i));
+          "Invalid %s. Expected y to be a multiple of %u in plane %u for "
+          "format %s; was %u. Consider rounding %s inward or outward to a "
+          "sample boundary.",
+          rect_name, sample_size.height(), i, format_str, rect.y(), rect_name));
       return false;
     }
     if (rect.width() % sample_size.width() != 0) {
-      exception_state.ThrowTypeError(
-          String::Format("Invalid %s. width is not sample-aligned in plane %u.",
-                         rect_name, i));
+      exception_state.ThrowTypeError(String::Format(
+          "Invalid %s. Expected width to be a multiple of %u in plane %u for "
+          "format %s; was %u. Consider rounding %s inward or outward to a "
+          "sample boundary.",
+          rect_name, sample_size.width(), i, format_str, rect.width(),
+          rect_name));
       return false;
     }
     if (rect.height() % sample_size.height() != 0) {
       exception_state.ThrowTypeError(String::Format(
-          "Invalid %s. height is not sample-aligned in plane %u.", rect_name,
-          i));
+          "Invalid %s. Expected height to be a multiple of %u in plane %u for "
+          "format %s; was %u. Consider rounding %s inward or outward to a "
+          "sample boundary.",
+          rect_name, sample_size.height(), i, format_str, rect.height(),
+          rect_name));
       return false;
     }
   }
