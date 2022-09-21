@@ -664,6 +664,14 @@ class BrowserAutofillManager : public AutofillManager,
                                            const FormFieldData& field,
                                            const std::u16string& old_value);
 
+  // Checks whether JavaScript cleared an autofilled value within
+  // kLimitBeforeRefill after the filling and records metrics for this. This
+  // method should be called after we learend that JavaScript modified an
+  // autofilled field. It's responsible for assessing the nature of the
+  // modification.
+  void AnalyzeJavaScriptChangedAutofilledValue(const FormData& form,
+                                               const FormFieldData& field);
+
   // Replaces the contents of |suggestions| with available suggestions for
   // |field|. |context| will contain additional information about the
   // suggestions, such as if they correspond to credit card suggestions and

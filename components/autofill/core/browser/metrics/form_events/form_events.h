@@ -139,6 +139,10 @@ enum FormEvent {
   // suggestion was filled.
   FORM_EVENT_LOCAL_SUGGESTION_FILLED_FOR_AN_EXISTING_SERVER_CARD_ONCE = 56,
 
+  // A field of the form was cleared by Javascript within kLimitBeforeRefill
+  // after being autofilled. Recorded once per form.
+  FORM_EVENT_AUTOFILLED_FIELD_CLEARED_BY_JAVASCRIPT_AFTER_FILL_ONCE = 57,
+
   NUM_FORM_EVENTS,
 };
 

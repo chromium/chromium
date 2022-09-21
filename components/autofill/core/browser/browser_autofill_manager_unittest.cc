@@ -10167,4 +10167,105 @@ INSTANTIATE_TEST_SUITE_P(
             .triggers_refill = false,
         }));
 
+// Tests that analyze metrics logging in case JavaScript clears a field
+// immediately after it was filled.
+class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
+ public:
+  void SetUp() override {
+    BrowserAutofillManagerTest::SetUp();
+
+    // Set up a CC form.
+    FormData form;
+    form.url = GURL("https://myform.com/form.html");
+    form.action = GURL("https://myform.com/submit.html");
+    FormFieldData field;
+    test::CreateTestFormField("Name on Card", "nameoncard", "", "text", &field);
+    form.fields.push_back(field);
+    test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
+    form.fields.push_back(field);
+    test::CreateTestFormField("Expiration date", "exp_date", "", "text",
+                              &field);
+    form.fields.push_back(field);
+
+    // Notify BrowserAutofillManager of the form.
+    FormsSeen({form});
+
+    // Simulate filling and store the data to be filled in `fill_data_`.
+    const char guid[] = "00000000-0000-0000-0000-000000000004";
+    int response_page_id = 0;
+    FillAutofillFormDataAndSaveResults(
+        kDefaultPageID, form, *form.fields.begin(),
+        MakeFrontendId(guid, std::string()), &response_page_id, &fill_data_);
+    ASSERT_EQ(3u, fill_data_.fields.size());
+    ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley", "text",
+                      fill_data_.fields[0]);
+    ExpectFilledField("Card Number", "cardnumber", "4234567890123456", "text",
+                      fill_data_.fields[1]);
+    ExpectFilledField("Expiration date", "exp_date", "04/2999", "text",
+                      fill_data_.fields[2]);
+  }
+
+  void SimulateOverrideFieldByJavaScript(size_t field_index,
+                                         const std::u16string& new_value) {
+    std::u16string old_value = fill_data_.fields[field_index].value;
+    fill_data_.fields[field_index].value = new_value;
+    browser_autofill_manager_->OnJavaScriptChangedAutofilledValue(
+        fill_data_, fill_data_.fields[field_index], old_value);
+  }
+
+  // Content of the form.
+  FormData fill_data_;
+
+  base::HistogramTester histogram_tester_;
+
+  // Shorter alias of the Autofill.FormEvents we are interested in.
+  const FormEvent kEvent =
+      FORM_EVENT_AUTOFILLED_FIELD_CLEARED_BY_JAVASCRIPT_AFTER_FILL_ONCE;
+};
+
+// Ensure that we log the appropriate Autofill.FormEvents event if an autofilled
+// field is cleared by JavaScript immediately after the filling.
+TEST_F(BrowserAutofillManagerClearFieldTest, OneClearedField) {
+  // Simulate that JavaScript clears the first field.
+  SimulateOverrideFieldByJavaScript(0, u"");
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              base::BucketsInclude(base::Bucket(kEvent, 1)));
+}
+
+// Ensure that we log a single Autofill.FormEvents event even if *two*
+// autofilled fields are cleared by JavaScript immediately after the filling.
+TEST_F(BrowserAutofillManagerClearFieldTest, TwoClearedFields) {
+  // Simulate that JavaScript clears the first two field.
+  SimulateOverrideFieldByJavaScript(0, u"");
+  SimulateOverrideFieldByJavaScript(1, u"");
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              base::BucketsInclude(base::Bucket(kEvent, 1)));
+}
+
+// Ensure that we do not log an Autofill.FormEvents event for the case that
+// JavaScript modifies an autofilled field but does not clear it.
+TEST_F(BrowserAutofillManagerClearFieldTest, ModifiedButDidNotClearField) {
+  // Simulate that JavaScript modifies the value of the field but does not clear
+  // the field.
+  SimulateOverrideFieldByJavaScript(0, u"Elvis Aaron Presley");
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              base::BucketsInclude(base::Bucket(kEvent, 0)));
+}
+
+// Ensure that we do not log an appropriate Autofill.FormEvents event if an
+// autofilled field is cleared by JavaScript too long after it was filled.
+TEST_F(BrowserAutofillManagerClearFieldTest, NoLoggingAfterDelay) {
+  TestAutofillTickClock clock(AutofillTickClock::NowTicks());
+  clock.Advance(base::Seconds(5));
+
+  // Simulate that JavaScript clears the first field.
+  SimulateOverrideFieldByJavaScript(0, u"");
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              base::BucketsInclude(base::Bucket(kEvent, 0)));
+}
+
 }  // namespace autofill

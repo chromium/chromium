@@ -197,6 +197,15 @@ void FormEventLoggerBase::OnEditedAutofilledField() {
   has_logged_edited_autofilled_field_ = true;
 }
 
+void FormEventLoggerBase::
+    OnAutofilledFieldWasClearedByJavaScriptShortlyAfterFill(
+        const FormStructure& form) {
+  if (has_logged_autofilled_field_was_cleared_by_javascript_after_fill_)
+    return;
+  Log(FORM_EVENT_AUTOFILLED_FIELD_CLEARED_BY_JAVASCRIPT_AFTER_FILL_ONCE, form);
+  has_logged_autofilled_field_was_cleared_by_javascript_after_fill_ = true;
+}
+
 void FormEventLoggerBase::Log(FormEvent event,
                               const FormStructure& form) const {
   DCHECK_LT(event, NUM_FORM_EVENTS);

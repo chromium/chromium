@@ -79,6 +79,9 @@ class FormEventLoggerBase {
   void SetTimeFromInteractionToSubmission(
       base::TimeDelta time_from_interaction_to_submission);
 
+  void OnAutofilledFieldWasClearedByJavaScriptShortlyAfterFill(
+      const FormStructure& form);
+
   void Log(FormEvent event, const FormStructure& form) const;
 
   autofill_assistant::AutofillAssistantIntent autofill_assistant_intent() const;
@@ -146,6 +149,8 @@ class FormEventLoggerBase {
   bool logged_suggestion_filled_was_server_data_ = false;
   bool has_logged_typed_into_non_filled_field_ = false;
   bool has_logged_edited_autofilled_field_ = false;
+  bool has_logged_autofilled_field_was_cleared_by_javascript_after_fill_ =
+      false;
   AblationGroup ablation_group_ = AblationGroup::kDefault;
   AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;
   absl::optional<base::TimeDelta> time_from_interaction_to_submission_;

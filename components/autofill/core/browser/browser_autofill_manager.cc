@@ -1625,6 +1625,7 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
                         << Tag{"table"} << Tr{} << GetFieldNumber()
                         << std::move(change);
 
+  AnalyzeJavaScriptChangedAutofilledValue(form, field);
   MaybeTriggerRefillForExpirationDate(form, field, old_value);
 }
 
@@ -1683,6 +1684,39 @@ void BrowserAutofillManager::MaybeTriggerRefillForExpirationDate(
     DCHECK(filling_context);  // This is enforced by ShouldTriggerRefill.
     filling_context->forced_fill_values[field.global_id()] = refill_value;
     ScheduleRefill(form);
+  }
+}
+
+void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
+    const FormData& form,
+    const FormFieldData& field) {
+  // We are interested in reporting the events where JavaScript resets an
+  // autofilled value immediately after filling. For a reset, the value
+  // needs to be empty.
+  if (!field.value.empty())
+    return;
+
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
+    return;
+
+  FillingContext* filling_context = GetFillingContext(*form_structure);
+  if (!filling_context)
+    return;
+
+  base::TimeTicks now = AutofillTickClock::NowTicks();
+  base::TimeDelta delta = now - filling_context->original_fill_time;
+
+  // If the filling happened too long ago, maybe this is just an effect of
+  // the user pressing a "reset form" button.
+  if (delta >= kLimitBeforeRefill)
+    return;
+
+  auto* logger = GetEventFormLogger(autofill_field->Type().group());
+  if (logger) {
+    logger->OnAutofilledFieldWasClearedByJavaScriptShortlyAfterFill(
+        *form_structure);
   }
 }
 

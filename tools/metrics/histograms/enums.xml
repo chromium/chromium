@@ -7237,6 +7237,9 @@ others/histograms.xml -->
              fill)"/>
   <int value="56"
       label="Local suggestion of a deduped server card filled (once)"/>
+  <int value="57"
+      label="Autofilled field was cleared by JavaScript immediately after
+             fill (once)"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">
