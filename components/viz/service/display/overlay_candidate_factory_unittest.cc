@@ -182,7 +182,7 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, TransformIncludesYFlip) {
 // would likely be incorrect since clip rects are generally provided in target
 // space and cannot be baked into the display rect when there is an arbitrary
 // transform in between.
-TEST_F(OverlayCandidateFactoryArbitraryTransformTest, DISABLED_DeathOnNoClipSupport) {
+TEST_F(OverlayCandidateFactoryArbitraryTransformTest, DeathOnNoClipSupport) {
   AggregatedRenderPass render_pass;
   render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1),
                      gfx::Rect(0, 0, 1, 1), gfx::Rect(), gfx::Transform());
@@ -196,7 +196,7 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, DISABLED_DeathOnNoClipSupp
 // calculation. This doesn't make sense with arbitrary transforms, so we expect
 // a DCHECK to trip.
 TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
-       DISABLED_DeathOnResourcelessAndArbitraryTransform) {
+       DeathOnResourcelessAndArbitraryTransform) {
   AggregatedRenderPass render_pass;
   render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1),
                      gfx::Rect(0, 0, 2, 2), gfx::Rect(0, 0, 1, 1),
