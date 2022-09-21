@@ -310,6 +310,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                             help=('Do not run internal WPTs.'))
         parser.add_argument('--flag-specific',
                             choices=sorted(self.port.flag_specific_configs()),
+                            metavar='FLAG_SPECIFIC',
                             help='The name of a flag-specific suite to run.')
 
     def add_metadata_arguments(self, parser):
