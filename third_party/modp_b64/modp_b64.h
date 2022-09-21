@@ -24,6 +24,7 @@
 #ifndef MODP_B64
 #define MODP_B64
 
+#include <limits.h>
 #include <stddef.h>
 
 #ifdef __cplusplus
@@ -81,6 +82,19 @@ size_t modp_b64_encode(char* dest, const char* str, size_t len);
 size_t modp_b64_decode(char* dest, const char* src, size_t len);
 
 /**
+ * The maximum input that can be passed into modp_b64_encode. Lengths beyond
+ * this will overflow modp_b64_encode_len.
+ *
+ * This works because modp_b64_encode_len(A) computes:
+ *     ceiling[max_len / 3] * 4 + 1
+ *   = ceiling[floor[(SIZE_MAX-1)/4]*3 / 3] * 4 + 1
+ *   = floor[(SIZE_MAX-1)/4] * 4 + 1
+ *  <= SIZE_MAX-1 + 1
+ *   = SIZE_MAX
+ */
+#define MODP_B64_MAX_INPUT_LEN ((SIZE_MAX - 1) / 4 * 3)
+
+/**
  * Given a source string of length len, this returns the amount of
  * memory the destination string should have.
  *
@@ -89,6 +103,9 @@ size_t modp_b64_decode(char* dest, const char* src, size_t len);
  * ceiling[len / 3] * 4 + 1
  *
  * +1 is for any extra null.
+ *
+ * WARNING: This expression will overflow if the A is above
+ * MODP_B64_MAX_INPUT_LEN. The caller must check this bound first.
  */
 #define modp_b64_encode_len(A) ((A+2)/3 * 4 + 1)
 
