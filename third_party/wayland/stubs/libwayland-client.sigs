@@ -1,6 +1,7 @@
 // These signatures are obtained by hand from wayland-client-core.h.
 
 void wl_event_queue_destroy(struct wl_event_queue* queue);
+struct wl_proxy* wl_proxy_marshal_array_flags(struct wl_proxy* proxy, uint32_t opcode, const struct wl_interface* interface, uint32_t version, uint32_t flags, union wl_argument* args);
 void wl_proxy_marshal_array(struct wl_proxy* p, uint32_t opcode, union wl_argument* args);
 struct wl_proxy* wl_proxy_create(struct wl_proxy* factory, const struct wl_interface* interface);
 void* wl_proxy_create_wrapper(void* proxy);
@@ -42,6 +43,7 @@ void wl_log_set_handler_client(wl_log_func_t handler);
 // void wl_proxy_marshal(struct wl_proxy* p, uint32_t opcode, ...);
 // struct wl_proxy* wl_proxy_marshal_constructor(struct wl_proxy* proxy, uint32_t opcode, const struct wl_interface* interface, ...);
 // struct wl_proxy* wl_proxy_marshal_constructor_versioned(struct wl_proxy* proxy, uint32_t opcode, const struct wl_interface* interface, uint32_t version, ...);
+// struct wl_proxy* wl_proxy_marshal_flags(struct wl_proxy *proxy, uint32_t opcode, const struct wl_interface *interface, uint32_t version, uint32_t flags, ...);
 
 // These signatures are obtained by hand from wayland-util.h.
 // Wayland utility is not a separate library, but rather included in libwayland-* libraries.

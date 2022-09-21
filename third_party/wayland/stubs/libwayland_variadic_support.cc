@@ -13,6 +13,12 @@
 #include <cstdarg>
 #include <cstdint>
 
+#define CHROME_WAYLAND_CHECK_VERSION(x, y, z)                   \
+  (WAYLAND_VERSION_MAJOR > x ||                                 \
+   (WAYLAND_VERSION_MAJOR == x && WAYLAND_VERSION_MINOR > y) || \
+   (WAYLAND_VERSION_MAJOR == x && WAYLAND_VERSION_MINOR == y && \
+    WAYLAND_VERSION_MICRO >= z))
+
 #define WL_CLOSURE_MAX_ARGS 20
 
 extern "C" {
@@ -136,4 +142,25 @@ struct wl_proxy* wl_proxy_marshal_constructor_versioned(
   return wl_proxy_marshal_array_constructor_versioned(proxy, opcode, args,
                                                       interface, version);
 }
+
+#if CHROME_WAYLAND_CHECK_VERSION(1, 20, 0)
+struct wl_proxy* wl_proxy_marshal_flags(struct wl_proxy* proxy,
+                                        uint32_t opcode,
+                                        const struct wl_interface* interface,
+                                        uint32_t version,
+                                        uint32_t flags,
+                                        ...) {
+  union wl_argument args[WL_CLOSURE_MAX_ARGS];
+  va_list ap;
+
+  va_start(ap, flags);
+  wl_argument_from_va_list(
+      reinterpret_cast<wl_object*>(proxy)->interface->methods[opcode].signature,
+      args, WL_CLOSURE_MAX_ARGS, ap);
+  va_end(ap);
+
+  return wl_proxy_marshal_array_flags(proxy, opcode, interface, version, flags,
+                                      args);
+}
+#endif
 }

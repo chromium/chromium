@@ -31,7 +31,11 @@ if (!use_system_libwayland_client || !use_system_libwayland_server) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
 
-    public_configs = [ ":wayland_config" ]
+    if (use_system_libwayland_client) {
+      configs += [ ":wayland_config" ]
+    } else {
+      public_configs = [ ":wayland_config" ]
+    }
   }
 
   static_library("wayland_private") {
@@ -47,8 +51,13 @@ if (!use_system_libwayland_client || !use_system_libwayland_server) {
     configs += [
       "//build/config/compiler:no_chromium_code",
       "//build/config/linux/libffi",
-      ":wayland_config",
     ]
+
+    if (use_system_libwayland_client) {
+      configs += [ ":wayland_config" ]
+    } else {
+      public_configs = [ ":wayland_config" ]
+    }
   }
 
   static_library("wayland_protocol") {
@@ -59,7 +68,11 @@ if (!use_system_libwayland_client || !use_system_libwayland_server) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
 
-    public_configs = [ ":wayland_config" ]
+    if (use_system_libwayland_client) {
+      configs += [ ":wayland_config" ]
+    } else {
+      public_configs = [ ":wayland_config" ]
+    }
   }
 } else {
   # use_system_libwayland_client && use_system_libwayland_server
@@ -91,7 +104,11 @@ if (!use_system_libwayland_server) {
       "//build/config/linux/libffi",
     ]
 
-    public_configs = [ ":wayland_config" ]
+    if (use_system_libwayland_client) {
+      configs += [ ":wayland_config" ]
+    } else {
+      public_configs = [ ":wayland_config" ]
+    }
   }
 } else {
   pkg_config("wayland_server_config") {
@@ -153,9 +170,10 @@ if (!use_system_libwayland_client) {
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-
-    public_configs = [ ":wayland_config" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      ":wayland_config",
+    ]
   }
 }
 

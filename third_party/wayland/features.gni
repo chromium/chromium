@@ -5,6 +5,7 @@
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build/config/sysroot.gni")
 
 declare_args() {
   # This variable is deprecated.  use_system_libwayland_client should be used
@@ -15,18 +16,22 @@ declare_args() {
   # Controls whether the build should use the version of Wayland
   # library shipped with the system or Chromium third_party (server library).
   use_system_libwayland_server = false
-
-  # Path to wayland-scanner. Has effect only when the system libwayland is used.
-  assert(host_os == "linux")
-  system_wayland_scanner_path = "/usr/bin/wayland-scanner"
-
-  # This may be set by Chromium packagers who do not wish to use the bundled
-  # wayland scanner.
-  use_system_wayland_scanner = false
 }
 
 declare_args() {
   # Controls whether the build should use the version of Wayland
   # library shipped with the system or Chromium third_party (client library).
   use_system_libwayland_client = use_system_libwayland
+}
+
+declare_args() {
+  # This may be set by Chromium packagers who do not wish to use the bundled
+  # wayland scanner.
+  use_system_wayland_scanner = use_system_libwayland_client
+
+  # Path to the wayland-scanner in the sysroot.
+  assert(host_os == "linux")
+  if (use_system_libwayland_client) {
+    system_wayland_scanner_path = "$sysroot/usr/bin/wayland-scanner"
+  }
 }

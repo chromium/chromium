@@ -1,7 +1,7 @@
 Name: wayland
 URL: http://wayland.freedesktop.org/
-Version: 1.18.0
-CPEPrefix: cpe:/a:wayland:wayland:1.18.0
+Version: 1.20.0
+CPEPrefix: cpe:/a:wayland:wayland:1.20.0
 License: MIT
 License File: src/COPYING
 Security Critical: yes
@@ -16,12 +16,14 @@ Modifications:
 
 To import a new snapshot of wayland:
 - Checkout the latest release tag.
-  $ git checkout 1.13.0
+  $ git checkout 1.20.0
 - Update the DEPS entry to the newly checked out commit.
   $ roll-dep --roll-to=<commit>
 - Update generated files:
     (in wayland/src directory)
-    $ ./autogen.sh --disable-dtd-validation && make
-    $ rsync -R $(git ls-files --others '*.h') ../include
-    $ rsync -R $(git ls-files --others 'protocol/*-protocol.c') ..
+    $ meson build/ && ninja -C build/
+    (in wayland/src/build/src directory)
+    $ rsync $(git ls-files --others '*wayland-*protocol*.h') ../../../include/protocol/
+    $ rsync $(git ls-files --others '*-protocol.c') ../../../protocol/
+- DO NOT fix formatting in the generated files.
 - Update this README to reflect the new version number.

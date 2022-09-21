@@ -55,7 +55,7 @@ template("wayland_protocol") {
     if (use_system_wayland_scanner) {
       args += [
         "--cmd",
-        system_wayland_scanner_path,
+        "./" + rebase_path(system_wayland_scanner_path, root_build_dir),
       ]
     } else {
       wayland_scanner_label =
@@ -63,10 +63,9 @@ template("wayland_protocol") {
       deps = [ wayland_scanner_label ]
       wayland_scanner_path = get_label_info(wayland_scanner_label,
                                             "root_out_dir") + "/wayland_scanner"
-      cmd = "./" + rebase_path(wayland_scanner_path, root_build_dir)
       args += [
         "--cmd",
-        cmd,
+        "./" + rebase_path(wayland_scanner_path, root_build_dir),
       ]
     }
   }

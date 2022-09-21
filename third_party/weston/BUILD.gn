@@ -62,6 +62,10 @@ config("weston_config") {
   ]
 
   ldflags = [ "-Wl,-rpath=\$ORIGIN" ]
+
+  if (!use_system_libwayland) {
+    configs = [ "//third_party/wayland:wayland_config" ]
+  }
 }
 
 pkg_config("pixman") {
