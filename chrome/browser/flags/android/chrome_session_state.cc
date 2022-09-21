@@ -73,9 +73,6 @@ void SetActivityType(PrefService* local_state, ActivityType type) {
     SaveActivityTypeToLocalState(local_state, activity_type);
   }
 
-  // TODO(crbug/1228735): deprecate custom tab field.
-  ukm::UkmSource::SetCustomTabVisible(
-      GetCustomTabsVisibleValue(activity_type) == VISIBLE_CUSTOM_TAB);
   ukm::UkmSource::SetAndroidActivityTypeState(static_cast<int>(activity_type));
 }
 

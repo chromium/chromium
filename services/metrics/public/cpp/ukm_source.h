@@ -23,12 +23,6 @@ class Source;
 // Contains UKM URL data for a single source id.
 class METRICS_EXPORT UkmSource {
  public:
-  enum CustomTabState {
-    kCustomTabUnset,
-    kCustomTabTrue,
-    kCustomTabFalse,
-  };
-
   // Extra navigation data associated with a particular Source. Currently, all
   // of these members except |url| are only set for navigation id sources.
   //
@@ -133,10 +127,7 @@ class METRICS_EXPORT UkmSource {
   // Serializes the members of the class into the supplied proto.
   void PopulateProto(Source* proto_source) const;
 
-  // Sets the current "custom tab" state. This can be called from any thread.
-  static void SetCustomTabVisible(bool visible);
-  // Sets the current "android_activity_type" state, this will replace the
-  // "custom tab" state.
+  // Sets the current "android_activity_type" state.
   static void SetAndroidActivityTypeState(int32_t android_activity_type);
 
  private:
@@ -145,11 +136,9 @@ class METRICS_EXPORT UkmSource {
 
   NavigationData navigation_data_;
 
-  // A flag indicating if metric was collected in a custom tab. This is set
-  // automatically when the object is created and so represents the state when
-  // the metric was created.
-  // TODO(crbug/1228735): To be replaced by |android_activity_type_state_|.
-  const CustomTabState custom_tab_state_;
+  // The type of the visible activity when the metric was collected. This is
+  // set automatically when the object is created and so represents the state
+  // when the metric was created.
   const int32_t android_activity_type_state_ = -1;
 
   // When this object was created.
