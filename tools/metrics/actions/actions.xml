@@ -18382,6 +18382,11 @@ should be able to be added at any place in this file.
   <description>User pressed 'Search Copied Image' in the app menu.</description>
 </action>
 
+<action name="MobileMenuSelectTabs">
+  <owner>ckitagawa@chromium.org</owner>
+  <description>User selected tabs in the mobile tab switcher.</description>
+</action>
+
 <action name="MobileMenuSettings">
   <owner>aurimas@chromium.org</owner>
   <description>User pressed 'Settings' in the app menu.</description>
