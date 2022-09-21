@@ -86,15 +86,16 @@ class BluetoothFlossTest : public testing::Test {
 
     auto fake_floss_manager_client = std::make_unique<FakeFlossManagerClient>();
     auto fake_floss_adapter_client = std::make_unique<FakeFlossAdapterClient>();
+    auto fake_floss_socket_manager = std::make_unique<FakeFlossSocketManager>();
     auto fake_floss_lescan_client = std::make_unique<FakeFlossLEScanClient>();
 
     fake_floss_manager_client_ = fake_floss_manager_client.get();
     fake_floss_adapter_client_ = fake_floss_adapter_client.get();
     fake_floss_lescan_client_ = fake_floss_lescan_client.get();
 
-    dbus_setter->SetDefaultFakesForTesting();
     dbus_setter->SetFlossManagerClient(std::move(fake_floss_manager_client));
     dbus_setter->SetFlossAdapterClient(std::move(fake_floss_adapter_client));
+    dbus_setter->SetFlossSocketManager(std::move(fake_floss_socket_manager));
     dbus_setter->SetFlossLEScanClient(std::move(fake_floss_lescan_client));
   }
 
