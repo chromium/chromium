@@ -9,6 +9,7 @@
 #include "base/atomicops.h"
 #include "base/bind.h"
 #include "base/callback_list.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
 #include "base/logging.h"
@@ -18,12 +19,14 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
+#include "base/timer/elapsed_timer.h"
 #include "crypto/mac_security_services_lock.h"
 #include "net/base/hash_value.h"
 #include "net/base/network_notification_thread_mac.h"
 #include "net/cert/known_roots_mac.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/cert_issuer_source_static.h"
+#include "net/cert/pki/extended_key_usage.h"
 #include "net/cert/pki/parse_name.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/test_keychain_search_list_mac.h"
@@ -589,17 +592,16 @@ SHA256HashValue CalculateFingerprint256(const der::Input& buffer) {
   return sha256;
 }
 
-// Watches macOS keychain for trust setting changes, and notifies any
+// Watches macOS keychain for |event_mask| notifications, and notifies any
 // registered callbacks. This is necessary as the keychain callback API is
 // keyed only on the callback function pointer rather than function pointer +
 // context, so it cannot be safely registered multiple callbacks with the same
 // function pointer and different contexts.
-class KeychainTrustSettingsChangedNotifier {
+template <SecKeychainEventMask event_mask>
+class KeychainChangedNotifier {
  public:
-  KeychainTrustSettingsChangedNotifier(
-      const KeychainTrustSettingsChangedNotifier&) = delete;
-  KeychainTrustSettingsChangedNotifier& operator=(
-      const KeychainTrustSettingsChangedNotifier&) = delete;
+  KeychainChangedNotifier(const KeychainChangedNotifier&) = delete;
+  KeychainChangedNotifier& operator=(const KeychainChangedNotifier&) = delete;
 
   // Registers |callback| to be run when the keychain trust settings change.
   // Must be called on the network notification thread.  |callback| will be run
@@ -612,7 +614,7 @@ class KeychainTrustSettingsChangedNotifier {
   }
 
  private:
-  friend base::NoDestructor<KeychainTrustSettingsChangedNotifier>;
+  friend base::NoDestructor<KeychainChangedNotifier>;
 
 // Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
 // Removal of its use is tracked in https://crbug.com/1348251 but deprecation
@@ -620,30 +622,29 @@ class KeychainTrustSettingsChangedNotifier {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-  KeychainTrustSettingsChangedNotifier() {
+  KeychainChangedNotifier() {
     DCHECK(GetNetworkNotificationThreadMac()->RunsTasksInCurrentSequence());
     OSStatus status = SecKeychainAddCallback(
-        &KeychainTrustSettingsChangedNotifier::KeychainCallback,
-        kSecTrustSettingsChangedEventMask, this);
+        &KeychainChangedNotifier::KeychainCallback, event_mask, this);
     if (status != noErr)
       OSSTATUS_LOG(ERROR, status) << "SecKeychainAddCallback failed";
   }
 
 #pragma clang diagnostic pop
 
-  ~KeychainTrustSettingsChangedNotifier() = delete;
+  ~KeychainChangedNotifier() = delete;
 
   static OSStatus KeychainCallback(SecKeychainEvent keychain_event,
                                    SecKeychainCallbackInfo* info,
                                    void* context) {
-    KeychainTrustSettingsChangedNotifier* notifier =
-        reinterpret_cast<KeychainTrustSettingsChangedNotifier*>(context);
+    KeychainChangedNotifier* notifier =
+        reinterpret_cast<KeychainChangedNotifier*>(context);
     notifier->callback_list_.Notify();
     return errSecSuccess;
   }
 
-  static KeychainTrustSettingsChangedNotifier* Get() {
-    static base::NoDestructor<KeychainTrustSettingsChangedNotifier> notifier;
+  static KeychainChangedNotifier* Get() {
+    static base::NoDestructor<KeychainChangedNotifier> notifier;
     return notifier.get();
   }
 
@@ -651,23 +652,23 @@ class KeychainTrustSettingsChangedNotifier {
 };
 
 // Observes keychain events and increments the value returned by Iteration()
-// each time the trust settings change.
-class KeychainTrustObserver {
+// each time an event indicated by |event_mask| is notified.
+template <SecKeychainEventMask event_mask>
+class KeychainObserver {
  public:
-  KeychainTrustObserver() {
+  KeychainObserver() {
     GetNetworkNotificationThreadMac()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &KeychainTrustObserver::RegisterCallbackOnNotificationThread,
-            base::Unretained(this)));
+        base::BindOnce(&KeychainObserver::RegisterCallbackOnNotificationThread,
+                       base::Unretained(this)));
   }
 
-  KeychainTrustObserver(const KeychainTrustObserver&) = delete;
-  KeychainTrustObserver& operator=(const KeychainTrustObserver&) = delete;
+  KeychainObserver(const KeychainObserver&) = delete;
+  KeychainObserver& operator=(const KeychainObserver&) = delete;
 
   // Destroying the observer unregisters the callback. Must be destroyed on the
   // notification thread in order to safely release |subscription_|.
-  ~KeychainTrustObserver() {
+  ~KeychainObserver() {
     DCHECK(GetNetworkNotificationThreadMac()->RunsTasksInCurrentSequence());
   }
 
@@ -679,8 +680,8 @@ class KeychainTrustObserver {
   void RegisterCallbackOnNotificationThread() {
     DCHECK(GetNetworkNotificationThreadMac()->RunsTasksInCurrentSequence());
     subscription_ =
-        KeychainTrustSettingsChangedNotifier::AddCallback(base::BindRepeating(
-            &KeychainTrustObserver::Increment, base::Unretained(this)));
+        KeychainChangedNotifier<event_mask>::AddCallback(base::BindRepeating(
+            &KeychainObserver::Increment, base::Unretained(this)));
   }
 
   void Increment() { base::subtle::Barrier_AtomicIncrement(&iteration_, 1); }
@@ -690,6 +691,18 @@ class KeychainTrustObserver {
 
   base::subtle::Atomic64 iteration_ = 0;
 };
+
+using KeychainTrustObserver =
+    KeychainObserver<kSecTrustSettingsChangedEventMask>;
+
+// kSecDeleteEventMask events could also be checked here, but it's not
+// necessary for correct behavior. Not including that just means the
+// intermediates cache might occasionally be a little larger then necessary.
+// In theory, the kSecAddEvent events could also be filtered to only notify on
+// events for added certificates as opposed to other keychain objects, however
+// that requires some fairly nasty CSSM hackery, so we don't do it.
+using KeychainCertsObserver =
+    KeychainObserver<kSecAddEventMask | kSecKeychainListChangedMask>;
 
 }  // namespace
 
@@ -856,14 +869,16 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
  public:
   explicit TrustImplDomainCacheFullCerts(CFStringRef policy_oid,
                                          TrustDomains domains)
-      : use_system_domain_cache_(domains == TrustDomains::kAll),
+      : policy_oid_(policy_oid, base::scoped_policy::RETAIN),
+        use_system_domain_cache_(domains == TrustDomains::kAll),
         admin_domain_cache_(kSecTrustSettingsDomainAdmin, policy_oid),
         user_domain_cache_(kSecTrustSettingsDomainUser, policy_oid) {
     if (use_system_domain_cache_) {
       system_domain_cache_ = std::make_unique<TrustDomainCacheFullCerts>(
           kSecTrustSettingsDomainSystem, policy_oid);
     }
-    keychain_observer_ = std::make_unique<KeychainTrustObserver>();
+    keychain_trust_observer_ = std::make_unique<KeychainTrustObserver>();
+    keychain_certs_observer_ = std::make_unique<KeychainCertsObserver>();
   }
 
   TrustImplDomainCacheFullCerts(const TrustImplDomainCacheFullCerts&) = delete;
@@ -872,7 +887,9 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
 
   ~TrustImplDomainCacheFullCerts() override {
     GetNetworkNotificationThreadMac()->DeleteSoon(
-        FROM_HERE, std::move(keychain_observer_));
+        FROM_HERE, std::move(keychain_trust_observer_));
+    GetNetworkNotificationThreadMac()->DeleteSoon(
+        FROM_HERE, std::move(keychain_certs_observer_));
   }
 
   // Returns true if |cert| is present in kSecTrustSettingsDomainSystem.
@@ -924,6 +941,7 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
       system_domain_cache_->cert_issuer_source().SyncGetIssuersOf(cert,
                                                                   issuers);
     }
+    intermediates_cert_issuer_source_.SyncGetIssuersOf(cert, issuers);
   }
 
   // Initializes the cache, if it isn't already initialized.
@@ -937,35 +955,180 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
   // |cache_lock_| and before accessing any of the |*_domain_cache_| members.
   void MaybeInitializeCache() EXCLUSIVE_LOCKS_REQUIRED(cache_lock_) {
     cache_lock_.AssertAcquired();
-    int64_t keychain_iteration = keychain_observer_->Iteration();
-    if (iteration_ == keychain_iteration)
-      return;
 
-    iteration_ = keychain_iteration;
-    user_domain_cache_.Initialize();
-    admin_domain_cache_.Initialize();
-    if (use_system_domain_cache_ && !system_domain_initialized_) {
-      // In practice, the system trust domain does not change during runtime,
-      // and SecTrustSettingsCopyCertificates on the system domain is quite
-      // slow, so the system domain cache is not reset on keychain changes.
-      system_domain_cache_->Initialize();
-      system_domain_initialized_ = true;
+    int64_t keychain_trust_iteration = keychain_trust_observer_->Iteration();
+    if (trust_iteration_ != keychain_trust_iteration) {
+      base::ElapsedTimer trust_domain_cache_init_timer;
+      trust_iteration_ = keychain_trust_iteration;
+      user_domain_cache_.Initialize();
+      admin_domain_cache_.Initialize();
+      if (use_system_domain_cache_ && !system_domain_initialized_) {
+        // In practice, the system trust domain does not change during runtime,
+        // and SecTrustSettingsCopyCertificates on the system domain is quite
+        // slow, so the system domain cache is not reset on keychain changes.
+        system_domain_cache_->Initialize();
+        system_domain_initialized_ = true;
+      }
+      base::UmaHistogramMediumTimes(
+          "Net.CertVerifier.MacTrustDomainCacheInitTime",
+          trust_domain_cache_init_timer.Elapsed());
+    }
+
+    int64_t keychain_certs_iteration = keychain_certs_observer_->Iteration();
+    // Intermediates cache is updated on trust changes too, since the
+    // intermediates cache is exclusive of any certs in trust domain caches.
+    if (trust_iteration_ != keychain_trust_iteration ||
+        certs_iteration_ != keychain_certs_iteration) {
+      certs_iteration_ = keychain_certs_iteration;
+      IntializeIntermediatesCache();
     }
   }
 
-  std::unique_ptr<KeychainTrustObserver> keychain_observer_;
+  void IntializeIntermediatesCache() EXCLUSIVE_LOCKS_REQUIRED(cache_lock_) {
+    cache_lock_.AssertAcquired();
+
+    base::ElapsedTimer timer;
+
+    intermediates_cert_issuer_source_.Clear();
+
+    base::ScopedCFTypeRef<CFMutableDictionaryRef> query(
+        CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks,
+                                  &kCFTypeDictionaryValueCallBacks));
+
+    CFDictionarySetValue(query, kSecClass, kSecClassCertificate);
+    CFDictionarySetValue(query, kSecReturnRef, kCFBooleanTrue);
+    CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
+
+    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+
+    base::ScopedCFTypeRef<CFArrayRef> scoped_alternate_keychain_search_list;
+    if (TestKeychainSearchList::HasInstance()) {
+      OSStatus status = TestKeychainSearchList::GetInstance()->CopySearchList(
+          scoped_alternate_keychain_search_list.InitializeInto());
+      if (status) {
+        OSSTATUS_LOG(ERROR, status)
+            << "TestKeychainSearchList::CopySearchList error";
+        return;
+      }
+      CFDictionarySetValue(query, kSecMatchSearchList,
+                           scoped_alternate_keychain_search_list.get());
+    }
+
+    base::ScopedCFTypeRef<CFTypeRef> matching_items;
+    OSStatus err = SecItemCopyMatching(query, matching_items.InitializeInto());
+    if (err == errSecItemNotFound) {
+      RecordCachedIntermediatesHistograms(0, timer.Elapsed());
+      // No matches found.
+      return;
+    }
+    if (err) {
+      RecordCachedIntermediatesHistograms(0, timer.Elapsed());
+      OSSTATUS_LOG(ERROR, err) << "SecItemCopyMatching error";
+      return;
+    }
+    CFArrayRef matching_items_array =
+        base::mac::CFCastStrict<CFArrayRef>(matching_items);
+    for (CFIndex i = 0, item_count = CFArrayGetCount(matching_items_array);
+         i < item_count; ++i) {
+      SecCertificateRef match_cert_handle =
+          base::mac::CFCastStrict<SecCertificateRef>(
+              CFArrayGetValueAtIndex(matching_items_array, i));
+
+      // If cert is already in the trust domain certs cache, don't bother
+      // including it in the intermediates cache.
+      SHA256HashValue cert_hash =
+          x509_util::CalculateFingerprint256(match_cert_handle);
+      if (user_domain_cache_.ContainsCert(cert_hash) ||
+          admin_domain_cache_.ContainsCert(cert_hash) ||
+          (use_system_domain_cache_ &&
+           system_domain_cache_->ContainsCert(cert_hash))) {
+        continue;
+      }
+
+      base::ScopedCFTypeRef<CFDataRef> der_data(
+          SecCertificateCopyData(match_cert_handle));
+      if (!der_data) {
+        LOG(ERROR) << "SecCertificateCopyData error";
+        continue;
+      }
+      auto buffer = x509_util::CreateCryptoBuffer(base::make_span(
+          CFDataGetBytePtr(der_data.get()), CFDataGetLength(der_data.get())));
+      CertErrors errors;
+      ParseCertificateOptions options;
+      options.allow_invalid_serial_numbers = true;
+      scoped_refptr<ParsedCertificate> parsed_cert =
+          ParsedCertificate::Create(std::move(buffer), options, &errors);
+      if (!parsed_cert) {
+        LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
+        continue;
+      }
+      if (IsNotAcceptableIntermediate(parsed_cert.get())) {
+        continue;
+      }
+      intermediates_cert_issuer_source_.AddCert(std::move(parsed_cert));
+    }
+    RecordCachedIntermediatesHistograms(CFArrayGetCount(matching_items_array),
+                                        timer.Elapsed());
+  }
+
+  // Returns true if |cert| would never be a valid intermediate. (A return
+  // value of false does not imply that it is valid.) This is an optimization
+  // to avoid using memory for caching certs that would never lead to a valid
+  // chain. It's not intended to exhaustively test everything that
+  // VerifyCertificateChain does, just to filter out some of the most obviously
+  // unusable certs.
+  bool IsNotAcceptableIntermediate(ParsedCertificate* cert) const {
+    if (!cert->has_basic_constraints() || !cert->basic_constraints().is_ca) {
+      return true;
+    }
+
+    // EKU filter is only implemented for TLS server auth since that's all we
+    // actually care about.
+    if (cert->has_extended_key_usage() &&
+        CFEqual(policy_oid_, kSecPolicyAppleSSL) &&
+        !base::Contains(cert->extended_key_usage(), der::Input(kAnyEKU)) &&
+        !base::Contains(cert->extended_key_usage(), der::Input(kServerAuth))) {
+      return true;
+    }
+
+    // TODO(mattm): filter on other things too? (key usage, ...?)
+    return false;
+  }
+
+  void RecordCachedIntermediatesHistograms(CFIndex total_cert_count,
+                                           base::TimeDelta cache_init_time)
+      const EXCLUSIVE_LOCKS_REQUIRED(cache_lock_) {
+    cache_lock_.AssertAcquired();
+    base::UmaHistogramMediumTimes(
+        "Net.CertVerifier.MacKeychainCerts.IntermediateCacheInitTime",
+        cache_init_time);
+    base::UmaHistogramCounts1000("Net.CertVerifier.MacKeychainCerts.TotalCount",
+                                 total_cert_count);
+    base::UmaHistogramCounts1000(
+        "Net.CertVerifier.MacKeychainCerts.IntermediateCount",
+        intermediates_cert_issuer_source_.size());
+  }
+
+  std::unique_ptr<KeychainTrustObserver> keychain_trust_observer_;
+  std::unique_ptr<KeychainCertsObserver> keychain_certs_observer_;
+  const base::ScopedCFTypeRef<CFStringRef> policy_oid_;
   // Store whether to use the system domain in a const bool that is initialized
   // in constructor so it is safe to read without having to lock first.
   const bool use_system_domain_cache_;
 
   base::Lock cache_lock_;
   // |cache_lock_| must be held while accessing any following members.
-  int64_t iteration_ GUARDED_BY(cache_lock_) = -1;
+  int64_t trust_iteration_ GUARDED_BY(cache_lock_) = -1;
+  int64_t certs_iteration_ GUARDED_BY(cache_lock_) = -1;
+
   bool system_domain_initialized_ GUARDED_BY(cache_lock_) = false;
   std::unique_ptr<TrustDomainCacheFullCerts> system_domain_cache_
       GUARDED_BY(cache_lock_);
   TrustDomainCacheFullCerts admin_domain_cache_ GUARDED_BY(cache_lock_);
   TrustDomainCacheFullCerts user_domain_cache_ GUARDED_BY(cache_lock_);
+
+  CertIssuerSourceStatic intermediates_cert_issuer_source_
+      GUARDED_BY(cache_lock_);
 };
 
 // TrustImplNoCache is the simplest approach which calls

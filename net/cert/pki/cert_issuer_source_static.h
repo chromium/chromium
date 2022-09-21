@@ -30,6 +30,8 @@ class NET_EXPORT CertIssuerSourceStatic : public CertIssuerSource {
   // Clears the set of certificates.
   void Clear();
 
+  size_t size() const { return intermediates_.size(); }
+
   // CertIssuerSource implementation:
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;

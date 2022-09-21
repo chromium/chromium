@@ -23,6 +23,7 @@
 #include "net/cert/known_roots_mac.h"
 #include "net/cert/pem.h"
 #include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/test_helpers.h"
 #include "net/cert/test_keychain_search_list_mac.h"
 #include "net/cert/x509_certificate.h"
@@ -66,19 +67,6 @@ const char kCertificateHeader[] = "CERTIFICATE";
            << errors.ToDebugString();
   }
   return ::testing::AssertionSuccess();
-}
-
-// Returns the DER encodings of the  in |array|.
-std::vector<std::string> CryptoBufferVectorAsStringVector(
-    const std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>& array) {
-  std::vector<std::string> result;
-
-  for (const auto& buffer : array) {
-    result.push_back(
-        std::string(x509_util::CryptoBufferAsStringPiece(buffer.get())));
-  }
-
-  return result;
 }
 
 // Returns the DER encodings of the ParsedCertificates in |list|.
@@ -206,68 +194,45 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
   ASSERT_TRUE(ReadTestCert("multi-root-D-by-D.pem", &d_by_d));
   ASSERT_TRUE(ReadTestCert("multi-root-E-by-E.pem", &e_by_e));
 
-  base::ScopedCFTypeRef<CFDataRef> normalized_name_b =
-      TrustStoreMac::GetMacNormalizedIssuer(a_by_b.get());
-  ASSERT_TRUE(normalized_name_b);
-  base::ScopedCFTypeRef<CFDataRef> normalized_name_c =
-      TrustStoreMac::GetMacNormalizedIssuer(b_by_c.get());
-  ASSERT_TRUE(normalized_name_c);
-  base::ScopedCFTypeRef<CFDataRef> normalized_name_f =
-      TrustStoreMac::GetMacNormalizedIssuer(b_by_f.get());
-  ASSERT_TRUE(normalized_name_f);
-  base::ScopedCFTypeRef<CFDataRef> normalized_name_d =
-      TrustStoreMac::GetMacNormalizedIssuer(c_by_d.get());
-  ASSERT_TRUE(normalized_name_d);
-  base::ScopedCFTypeRef<CFDataRef> normalized_name_e =
-      TrustStoreMac::GetMacNormalizedIssuer(f_by_e.get());
-  ASSERT_TRUE(normalized_name_e);
-
-  // Test that the matching keychain items are found, even though they aren't
-  // trusted.
-  // TODO(eroman): These tests could be using TrustStore::SyncGetIssuersOf().
+  // Test that the untrusted keychain certs would be found during issuer
+  // searching.
   {
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> scoped_matching_items =
-        TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
-            normalized_name_b.get(), trust_domains);
-
-    EXPECT_THAT(CryptoBufferVectorAsStringVector(scoped_matching_items),
+    ParsedCertificateList found_issuers;
+    trust_store.SyncGetIssuersOf(a_by_b.get(), &found_issuers);
+    EXPECT_THAT(ParsedCertificateListAsDER(found_issuers),
                 UnorderedElementsAreArray(
                     ParsedCertificateListAsDER({b_by_c, b_by_f})));
   }
 
   {
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> scoped_matching_items =
-        TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
-            normalized_name_c.get(), trust_domains);
-    EXPECT_THAT(CryptoBufferVectorAsStringVector(scoped_matching_items),
+    ParsedCertificateList found_issuers;
+    trust_store.SyncGetIssuersOf(b_by_c.get(), &found_issuers);
+    EXPECT_THAT(ParsedCertificateListAsDER(found_issuers),
                 UnorderedElementsAreArray(
                     ParsedCertificateListAsDER({c_by_d, c_by_e})));
   }
 
   {
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> scoped_matching_items =
-        TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
-            normalized_name_f.get(), trust_domains);
+    ParsedCertificateList found_issuers;
+    trust_store.SyncGetIssuersOf(b_by_f.get(), &found_issuers);
     EXPECT_THAT(
-        CryptoBufferVectorAsStringVector(scoped_matching_items),
+        ParsedCertificateListAsDER(found_issuers),
         UnorderedElementsAreArray(ParsedCertificateListAsDER({f_by_e})));
   }
 
   {
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> scoped_matching_items =
-        TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
-            normalized_name_d.get(), trust_domains);
+    ParsedCertificateList found_issuers;
+    trust_store.SyncGetIssuersOf(c_by_d.get(), &found_issuers);
     EXPECT_THAT(
-        CryptoBufferVectorAsStringVector(scoped_matching_items),
+        ParsedCertificateListAsDER(found_issuers),
         UnorderedElementsAreArray(ParsedCertificateListAsDER({d_by_d})));
   }
 
   {
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> scoped_matching_items =
-        TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
-            normalized_name_e.get(), trust_domains);
+    ParsedCertificateList found_issuers;
+    trust_store.SyncGetIssuersOf(f_by_e.get(), &found_issuers);
     EXPECT_THAT(
-        CryptoBufferVectorAsStringVector(scoped_matching_items),
+        ParsedCertificateListAsDER(found_issuers),
         UnorderedElementsAreArray(ParsedCertificateListAsDER({e_by_e})));
   }
 
