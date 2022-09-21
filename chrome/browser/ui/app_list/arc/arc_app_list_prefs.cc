@@ -753,24 +753,22 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
   GetInt64FromPref(package, kLastBackupTime, &last_backup_time);
   const base::Value* permission_val = package->Find(kPermissionStates);
   if (permission_val) {
-    const base::DictionaryValue* permission_dict = nullptr;
-    permission_val->GetAsDictionary(&permission_dict);
+    const base::Value::Dict* permission_dict = permission_val->GetIfDict();
     DCHECK(permission_dict);
 
-    for (const auto item : permission_dict->GetDict()) {
+    for (const auto iter : *permission_dict) {
       int64_t permission_type = -1;
-      base::StringToInt64(item.first, &permission_type);
+      base::StringToInt64(iter.first, &permission_type);
       DCHECK_NE(-1, permission_type);
 
-      const base::Value& permission_state = item.second;
+      const base::Value& permission_state = iter.second;
 
-      const base::DictionaryValue* permission_state_dict;
-      if (permission_state.GetAsDictionary(&permission_state_dict)) {
-        bool granted = permission_state_dict->GetDict()
-                           .FindBool(kPermissionStateGranted)
+      const base::Value::Dict* permission_state_dict =
+          permission_state.GetIfDict();
+      if (permission_state_dict) {
+        bool granted = permission_state_dict->FindBool(kPermissionStateGranted)
                            .value_or(false);
-        bool managed = permission_state_dict->GetDict()
-                           .FindBool(kPermissionStateManaged)
+        bool managed = permission_state_dict->FindBool(kPermissionStateManaged)
                            .value_or(false);
         arc::mojom::AppPermission permission =
             static_cast<arc::mojom::AppPermission>(permission_type);

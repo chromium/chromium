@@ -3022,13 +3022,13 @@ WebRequestInternalEventHandledFunction::Run() {
     }
 
     if (auth_credentials_value) {
-      const base::DictionaryValue* credentials_value = nullptr;
-      EXTENSION_FUNCTION_VALIDATE(
-          auth_credentials_value->GetAsDictionary(&credentials_value));
+      const base::Value::Dict* credentials_value =
+          auth_credentials_value->GetIfDict();
+      EXTENSION_FUNCTION_VALIDATE(credentials_value);
       const std::string* username =
-          credentials_value->FindStringKey(keys::kUsernameKey);
+          credentials_value->FindString(keys::kUsernameKey);
       const std::string* password =
-          credentials_value->FindStringKey(keys::kPasswordKey);
+          credentials_value->FindString(keys::kPasswordKey);
       EXTENSION_FUNCTION_VALIDATE(username);
       EXTENSION_FUNCTION_VALIDATE(password);
       response->auth_credentials = net::AuthCredentials(

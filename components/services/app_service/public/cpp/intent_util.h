@@ -9,16 +9,12 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}  // namespace base
 
 namespace apps_util {
 
@@ -222,7 +218,7 @@ base::Value ConvertIntentToValue(const apps::IntentPtr& intent);
 // Gets the string value from base::DictionaryValue, e.g. { "key": "value" }
 // returns "value".
 absl::optional<std::string> GetStringValueFromDict(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     const std::string& key_name);
 
 // Gets absl::optional<bool> value from base::DictionaryValue, e.g. {
@@ -252,6 +248,7 @@ base::flat_map<std::string, std::string> GetExtrasFromDict(
 
 // Converts base::Value to Intent. Returns nullptr for invalid base::Values.
 apps::IntentPtr ConvertValueToIntent(base::Value&& value);
+apps::IntentPtr ConvertDictToIntent(const base::Value::Dict& dict);
 
 // Calculates the least general mime type that matches all of the given ones.
 // E.g., for ["image/jpeg", "image/png"] it will be "image/*". ["text/html",

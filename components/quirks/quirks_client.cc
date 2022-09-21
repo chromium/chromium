@@ -189,16 +189,19 @@ void QuirksClient::Retry() {
 }
 
 bool QuirksClient::ParseResult(const std::string& result, std::string* data) {
-  std::string data64;
-  const base::DictionaryValue* dict;
-  std::unique_ptr<base::Value> json = base::JSONReader::ReadDeprecated(result);
-  if (!json || !json->GetAsDictionary(&dict) ||
-      !dict->GetString("icc", &data64)) {
+  absl::optional<base::Value> maybe_json = base::JSONReader::Read(result);
+  if (!maybe_json || !maybe_json->is_dict()) {
     VLOG(1) << "Failed to parse JSON icc data";
     return false;
   }
 
-  if (!base::Base64Decode(data64, data)) {
+  std::string* data64 = maybe_json->GetDict().FindString("icc");
+  if (!data64) {
+    VLOG(1) << "Missing icc data";
+    return false;
+  }
+
+  if (!base::Base64Decode(*data64, data)) {
     VLOG(1) << "Failed to decode Base64 icc data";
     return false;
   }

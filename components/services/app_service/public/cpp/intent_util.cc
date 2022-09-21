@@ -837,22 +837,26 @@ apps::IntentPtr ConvertValueToIntent(base::Value&& value) {
   if (!dict)
     return nullptr;
 
-  auto action = GetStringValueFromDict(*dict, kActionKey);
+  return ConvertDictToIntent(*dict);
+}
+
+apps::IntentPtr ConvertDictToIntent(const base::Value::Dict& dict) {
+  auto action = GetStringValueFromDict(dict, kActionKey);
   if (!action.has_value())
     return nullptr;
   auto intent = std::make_unique<apps::Intent>(action.value());
-  intent->url = GetGurlValueFromDict(*dict, kUrlKey);
-  intent->mime_type = GetStringValueFromDict(*dict, kMimeTypeKey);
-  intent->files = GetFilesFromDict(*dict, kFileUrlsKey);
-  intent->activity_name = GetStringValueFromDict(*dict, kActivityNameKey);
-  intent->drive_share_url = GetGurlValueFromDict(*dict, kDriveShareUrlKey);
-  intent->share_text = GetStringValueFromDict(*dict, kShareTextKey);
-  intent->share_title = GetStringValueFromDict(*dict, kShareTitleKey);
-  intent->start_type = GetStringValueFromDict(*dict, kStartTypeKey);
-  intent->categories = GetCategoriesFromDict(*dict, kCategoriesKey);
-  intent->data = GetStringValueFromDict(*dict, kDataKey);
-  intent->ui_bypassed = GetBoolValueFromDict(*dict, kUiBypassedKey);
-  intent->extras = GetExtrasFromDict(*dict, kExtrasKey);
+  intent->url = GetGurlValueFromDict(dict, kUrlKey);
+  intent->mime_type = GetStringValueFromDict(dict, kMimeTypeKey);
+  intent->files = GetFilesFromDict(dict, kFileUrlsKey);
+  intent->activity_name = GetStringValueFromDict(dict, kActivityNameKey);
+  intent->drive_share_url = GetGurlValueFromDict(dict, kDriveShareUrlKey);
+  intent->share_text = GetStringValueFromDict(dict, kShareTextKey);
+  intent->share_title = GetStringValueFromDict(dict, kShareTitleKey);
+  intent->start_type = GetStringValueFromDict(dict, kStartTypeKey);
+  intent->categories = GetCategoriesFromDict(dict, kCategoriesKey);
+  intent->data = GetStringValueFromDict(dict, kDataKey);
+  intent->ui_bypassed = GetBoolValueFromDict(dict, kUiBypassedKey);
+  intent->extras = GetExtrasFromDict(dict, kExtrasKey);
 
   return intent;
 }

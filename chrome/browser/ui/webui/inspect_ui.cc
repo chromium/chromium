@@ -705,14 +705,16 @@ void InspectUI::SetPortForwardingDefaults() {
 
   auto enabled =
       GetPrefValue(prefs::kDevToolsPortForwardingEnabled)->GetIfBool();
-  const base::DictionaryValue* config;
-  if (!enabled || !GetPrefValue(prefs::kDevToolsPortForwardingConfig)
-                       ->GetAsDictionary(&config)) {
+  if (!enabled)
     return;
-  }
+
+  const base::Value::Dict* config =
+      GetPrefValue(prefs::kDevToolsPortForwardingConfig)->GetIfDict();
+  if (!config)
+    return;
 
   // Do nothing if user already took explicit action.
-  if (enabled.value() || !config->DictEmpty())
+  if (enabled.value() || !config->empty())
     return;
 
   base::DictionaryValue default_config;
