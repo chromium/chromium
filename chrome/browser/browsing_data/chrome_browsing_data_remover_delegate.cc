@@ -26,6 +26,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -1145,6 +1146,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       prefs->SetString(omnibox::kZeroSuggestCachedResults, std::string());
       prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
                      base::Value::Dict());
+
+      auto* zero_suggest_cache_service =
+          ZeroSuggestCacheServiceFactory::GetForProfile(profile_);
+      if (zero_suggest_cache_service) {
+        zero_suggest_cache_service->ClearCache();
+      }
     }
 
     // |search_prefetch_service| is null if |profile_| is off the record.
