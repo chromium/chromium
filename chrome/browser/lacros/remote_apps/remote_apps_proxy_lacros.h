@@ -82,6 +82,8 @@ class RemoteAppsProxyLacros
                            const std::string& source_id) override;
 
  private:
+  using RemoteIds = std::map<std::string, mojo::RemoteSetElementId>;
+
   // Private constructor which allows setting of the `RemoteAppsLacrosBridge`
   // remote for testing. Called by `CreateForTesting()`.
   explicit RemoteAppsProxyLacros(
@@ -105,7 +107,7 @@ class RemoteAppsProxyLacros
       ash_observer_receiver_{this};
 
   raw_ptr<extensions::EventRouter> event_router_ = nullptr;
-  std::map<std::string, mojo::RemoteSetElementId> source_id_to_remote_id_map_;
+  RemoteIds source_id_to_remote_id_map_;
 };
 
 }  // namespace chromeos

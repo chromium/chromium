@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -317,16 +318,11 @@ std::string SanitizeRemoteFrontendURL(const std::string& value) {
 }
 
 std::string SanitizeEnabledExperiments(const std::string& value) {
-  bool valid = std::find_if_not(value.begin(), value.end(), [](char ch) {
-                 if (base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch) ||
-                     ch == ';' || ch == '_')
-                   return true;
-                 return false;
-               }) == value.end();
-  if (!valid) {
-    return std::string();
-  }
-  return value;
+  const auto is_legal = [](char ch) {
+    return base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch) || ch == ';' ||
+           ch == '_';
+  };
+  return base::ranges::all_of(value, is_legal) ? value : std::string();
 }
 
 std::string SanitizeFrontendQueryParam(
@@ -690,7 +686,7 @@ DevToolsUIBindings::~DevToolsUIBindings() {
   // Remove self from global list.
   DevToolsUIBindingsList& instances =
       DevToolsUIBindings::GetDevToolsUIBindings();
-  auto it(std::find(instances.begin(), instances.end(), this));
+  auto it = base::ranges::find(instances, this);
   DCHECK(it != instances.end());
   instances.erase(it);
 }

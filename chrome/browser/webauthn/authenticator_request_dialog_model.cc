@@ -243,8 +243,7 @@ void AuthenticatorRequestDialogModel::TransitionToModalWebAuthnRequest() {
 void AuthenticatorRequestDialogModel::
     StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection() {
   const auto priority_mechanism_it =
-      std::find_if(mechanisms_.begin(), mechanisms_.end(),
-                   [](const Mechanism& m) -> bool { return m.priority; });
+      base::ranges::find_if(mechanisms_, &Mechanism::priority);
 
   if (pending_step_) {
     SetCurrentStep(*pending_step_);
@@ -1228,12 +1227,9 @@ void AuthenticatorRequestDialogModel::
 
   auto& authenticators =
       ephemeral_state_.saved_authenticators_.authenticator_list();
-  auto platform_authenticator_it =
-      std::find_if(authenticators.begin(), authenticators.end(),
-                   [](const auto& authenticator) {
-                     return authenticator.transport ==
-                            device::FidoTransportProtocol::kInternal;
-                   });
+  auto platform_authenticator_it = base::ranges::find(
+      authenticators, device::FidoTransportProtocol::kInternal,
+      &AuthenticatorReference::transport);
 
   if (platform_authenticator_it == authenticators.end()) {
     return;

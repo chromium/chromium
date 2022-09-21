@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/notification/multi_profile_download_notifier.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/download/public/common/simple_download_manager.h"
 #include "content/public/browser/download_manager.h"
@@ -28,12 +29,10 @@ void MultiProfileDownloadNotifier::AddProfile(Profile* profile) {
     return;
 
   content::DownloadManager* manager = profile->GetDownloadManager();
-  auto it = std::find_if(download_notifiers_.begin(), download_notifiers_.end(),
-                         [manager](const auto& notifier) {
-                           return notifier->GetManager() == manager;
-                         });
-  if (it != download_notifiers_.end())
+  if (base::Contains(download_notifiers_, manager,
+                     &download::AllDownloadItemNotifier::GetManager)) {
     return;
+  }
 
   profile_observer_.AddObservation(profile);
   download_notifiers_.emplace(

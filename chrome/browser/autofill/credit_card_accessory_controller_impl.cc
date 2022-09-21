@@ -4,7 +4,6 @@
 
 #include "chrome/browser/autofill/credit_card_accessory_controller_impl.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 #include <vector>
@@ -13,6 +12,7 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
@@ -230,8 +230,8 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
   }
 
   std::vector<CardOrVirtualCard> cards = GetAllCreditCards();
-  auto card_iter = std::find_if(
-      cards.begin(), cards.end(), [&selection](const auto& card_or_virtual) {
+  auto card_iter =
+      base::ranges::find_if(cards, [&selection](const auto& card_or_virtual) {
         const CreditCard* card = UnwrapCardOrVirtualCard(card_or_virtual);
         return card && card->guid() == selection.id();
       });

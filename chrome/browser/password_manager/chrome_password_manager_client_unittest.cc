@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -590,9 +591,9 @@ TEST_P(ChromePasswordManagerClientSchemeTest,
   EXPECT_EQ(url::Origin::Create(url).GetURL(),
             GetClient()->GetLastCommittedOrigin().GetURL());
 
-  auto* it = std::find_if(
-      std::begin(kSchemeTestCases), std::end(kSchemeTestCases),
-      [](auto test_case) { return strcmp(test_case.scheme, GetParam()) == 0; });
+  auto* it = base::ranges::find_if(kSchemeTestCases, [](auto test_case) {
+    return strcmp(test_case.scheme, GetParam()) == 0;
+  });
   // If saving isn't allowed it shouldn't be due to the setting, so make
   // sure that is enabled.
   MockPasswordManagerSettingsService* settings_service =

@@ -205,6 +205,24 @@ class DownloadManagerService
   friend class DownloadManagerServiceTest;
   friend struct base::DefaultSingletonTraits<DownloadManagerService>;
 
+  enum DownloadAction { RESUME, RETRY, PAUSE, CANCEL, REMOVE, UNKNOWN };
+
+  // Holds params provided to the download function calls.
+  struct DownloadActionParams {
+    explicit DownloadActionParams(DownloadAction download_action);
+    DownloadActionParams(DownloadAction download_action, bool user_gesture);
+    DownloadActionParams(const DownloadActionParams& other);
+
+    ~DownloadActionParams() = default;
+
+    DownloadAction action;
+    bool has_user_gesture;
+  };
+
+  using PendingDownloadActions = std::map<std::string, DownloadActionParams>;
+  using Coordinators =
+      std::map<ProfileKey*, download::SimpleDownloadManagerCoordinator*>;
+
   // Helper function to start the download resumption.
   void ResumeDownloadInternal(const std::string& download_guid,
                               ProfileKey* profile_key,
@@ -269,21 +287,6 @@ class DownloadManagerService
 
   std::vector<ProfileKey*> profiles_with_pending_get_downloads_actions_;
 
-  enum DownloadAction { RESUME, RETRY, PAUSE, CANCEL, REMOVE, UNKNOWN };
-
-  // Holds params provided to the download function calls.
-  struct DownloadActionParams {
-    explicit DownloadActionParams(DownloadAction download_action);
-    DownloadActionParams(DownloadAction download_action, bool user_gesture);
-    DownloadActionParams(const DownloadActionParams& other);
-
-    ~DownloadActionParams() = default;
-
-    DownloadAction action;
-    bool has_user_gesture;
-  };
-
-  using PendingDownloadActions = std::map<std::string, DownloadActionParams>;
   PendingDownloadActions pending_actions_;
 
   void EnqueueDownloadAction(const std::string& download_guid,
@@ -294,8 +297,7 @@ class DownloadManagerService
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
 
-  std::map<ProfileKey*, download::SimpleDownloadManagerCoordinator*>
-      coordinators_;
+  Coordinators coordinators_;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_MANAGER_SERVICE_H_

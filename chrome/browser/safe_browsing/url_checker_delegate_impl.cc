@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/browser_process.h"
@@ -146,10 +147,10 @@ bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     bool originated_from_service_worker) {
   // Check for whether the URL matches the Safe Browsing allowlist domains
   // (a.k. a prefs::kSafeBrowsingAllowlistDomains).
-  return std::find_if(allowlist_domains_.begin(), allowlist_domains_.end(),
-                      [&original_url](const std::string& domain) {
-                        return original_url.DomainIs(domain);
-                      }) != allowlist_domains_.end();
+  return base::ranges::any_of(allowlist_domains_,
+                              [&original_url](const std::string& domain) {
+                                return original_url.DomainIs(domain);
+                              });
 }
 
 void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(

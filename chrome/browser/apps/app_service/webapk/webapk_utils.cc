@@ -4,12 +4,12 @@
 
 #include "chrome/browser/apps/app_service/webapk/webapk_utils.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -167,9 +167,8 @@ void GetWebApkCreationParams(Profile* profile,
   // the manifest. Since we can't be perfect, it's okay to be roughly correct
   // and just send any URL of the correct purpose.
   const auto& manifest_icons = registrar.GetAppIconInfos(app_id);
-  auto it = std::find_if(
-      manifest_icons.begin(), manifest_icons.end(),
-      [&icon_size_and_purpose](const apps::IconInfo& info) {
+  auto it = base::ranges::find_if(
+      manifest_icons, [&icon_size_and_purpose](const apps::IconInfo& info) {
         return info.purpose ==
                ManifestPurposeToIconInfoPurpose(icon_size_and_purpose->purpose);
       });

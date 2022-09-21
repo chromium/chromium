@@ -15,6 +15,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -1539,14 +1540,13 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
 
   std::vector<CoreAccountInfo> signed_in_accounts =
       identity_manager->GetAccountsWithRefreshTokens();
-  auto account_iterator =
-      std::find_if(signed_in_accounts.begin(), signed_in_accounts.end(),
-                   [username](const auto& account) {
-                     return password_manager::AreUsernamesSame(
-                         account.email,
-                         /*is_username1_gaia_account=*/true, username,
-                         /*is_username2_gaia_account=*/true);
-                   });
+  auto account_iterator = base::ranges::find_if(
+      signed_in_accounts, [username](const auto& account) {
+        return password_manager::AreUsernamesSame(
+            account.email,
+            /*is_username1_gaia_account=*/true, username,
+            /*is_username2_gaia_account=*/true);
+      });
   if (account_iterator == signed_in_accounts.end())
     return AccountInfo();
 

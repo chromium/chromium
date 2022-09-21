@@ -8,6 +8,7 @@
 #include <lib/sys/cpp/service_directory.h>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/test/bind.h"
@@ -205,11 +206,9 @@ TEST_F(TestElementManagerImpl, Annotations) {
       element_manager_.GetAnnotations();
   EXPECT_EQ(3u, annotations.size());
   for (const auto* key : {"key1", "key2", "key3"}) {
-    EXPECT_NE(annotations.end(),
-              std::find_if(annotations.begin(), annotations.end(),
-                           [&](const auto& annotation) {
-                             return annotation.key.value == key;
-                           }));
+    EXPECT_TRUE(base::Contains(annotations, key, [](const auto& annotation) {
+      return annotation.key.value;
+    }));
   }
 
   {
@@ -240,11 +239,9 @@ TEST_F(TestElementManagerImpl, Annotations) {
   annotations = element_manager_.GetAnnotations();
   EXPECT_EQ(3u, annotations.size());
   for (const auto* key : {"key1", "key3", "key4"}) {
-    EXPECT_NE(annotations.end(),
-              std::find_if(annotations.begin(), annotations.end(),
-                           [&](const auto& annotation) {
-                             return annotation.key.value == key;
-                           }));
+    EXPECT_TRUE(base::Contains(annotations, key, [](const auto& annotation) {
+      return annotation.key.value;
+    }));
   }
 }
 

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread.h"
@@ -196,9 +197,8 @@ void ProfileWriter::AddBookmarks(
         continue;
       }
 
-      const auto it = std::find_if(
-          parent->children().cbegin(), parent->children().cend(),
-          [folder_name](const auto& node) {
+      const auto it = base::ranges::find_if(
+          parent->children(), [folder_name](const auto& node) {
             return node->is_folder() && node->GetTitle() == *folder_name;
           });
       parent = (it == parent->children().cend())

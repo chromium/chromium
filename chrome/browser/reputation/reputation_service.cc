@@ -8,9 +8,11 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
@@ -188,13 +190,10 @@ void ReputationService::GetReputationStatusWithEngagedSites(
   // Ensure that this URL is not already engaged. We can't use the synchronous
   // SiteEngagementService::IsEngagementAtLeast as it has side effects.  This
   // check intentionally ignores the scheme.
-  const auto already_engaged =
-      std::find_if(engaged_sites.begin(), engaged_sites.end(),
-                   [navigated_domain](const DomainInfo& engaged_domain) {
-                     return (navigated_domain.domain_and_registry ==
-                             engaged_domain.domain_and_registry);
-                   });
-  if (already_engaged != engaged_sites.end()) {
+  const bool already_engaged =
+      base::Contains(engaged_sites, navigated_domain.domain_and_registry,
+                     &DomainInfo::domain_and_registry);
+  if (already_engaged) {
     done_checking_reputation_status = true;
   }
 
@@ -218,7 +217,7 @@ void ReputationService::GetReputationStatusWithEngagedSites(
 
   // 4. Lookalike heuristics.
   GURL safe_url;
-  if (already_engaged == engaged_sites.end() &&
+  if (!already_engaged &&
       ShouldTriggerSafetyTipFromLookalike(url, navigated_domain, engaged_sites,
                                           &safe_url)) {
     if (!done_checking_reputation_status) {

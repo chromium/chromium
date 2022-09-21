@@ -7,8 +7,10 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -685,10 +687,8 @@ std::unique_ptr<UiElement> UiElement::ReplaceChild(
   to_remove->parent_ = nullptr;
   size_t old_size = children_.size();
 
-  auto it = std::find_if(std::begin(children_), std::end(children_),
-                         [to_remove](const std::unique_ptr<UiElement>& child) {
-                           return child.get() == to_remove;
-                         });
+  auto it = base::ranges::find(children_, to_remove,
+                               &std::unique_ptr<UiElement>::get);
   DCHECK(it != std::end(children_));
 
   std::unique_ptr<UiElement> removed(it->release());
@@ -1001,16 +1001,13 @@ void UiElement::SetClipRect(const gfx::RectF& rect) {
 }
 
 UiElement* UiElement::FirstLaidOutChild() const {
-  auto i = std::find_if(
-      children_.begin(), children_.end(),
-      [](const std::unique_ptr<UiElement>& e) { return e->requires_layout(); });
+  auto i = base::ranges::find_if(children_, &UiElement::requires_layout);
   return i == children_.end() ? nullptr : i->get();
 }
 
 UiElement* UiElement::LastLaidOutChild() const {
-  auto i = std::find_if(
-      children_.rbegin(), children_.rend(),
-      [](const std::unique_ptr<UiElement>& e) { return e->requires_layout(); });
+  auto i = base::ranges::find_if(base::Reversed(children_),
+                                 &UiElement::requires_layout);
   return i == children_.rend() ? nullptr : i->get();
 }
 

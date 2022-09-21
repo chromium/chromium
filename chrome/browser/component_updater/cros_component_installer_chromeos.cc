@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -71,9 +72,8 @@ uint32_t GetAshMajorVersion() {
 }
 
 const ComponentConfig* FindConfig(const std::string& name) {
-  const ComponentConfig* config = std::find_if(
-      std::begin(kConfigs), std::end(kConfigs),
-      [&name](const ComponentConfig& config) { return config.name == name; });
+  const ComponentConfig* config =
+      base::ranges::find(kConfigs, name, &ComponentConfig::name);
   if (config == std::end(kConfigs))
     return nullptr;
   return config;

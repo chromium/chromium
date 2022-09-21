@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
+#include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
-#include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 
 absl::optional<base::Time>
@@ -32,11 +32,8 @@ void NearbyShareCertificateStorage::UpdatePrivateCertificate(
     return;
   }
 
-  auto it = std::find_if(
-      certs->begin(), certs->end(),
-      [&private_certificate](const NearbySharePrivateCertificate& cert) {
-        return cert.id() == private_certificate.id();
-      });
+  auto it = base::ranges::find(*certs, private_certificate.id(),
+                               &NearbySharePrivateCertificate::id);
   if (it == certs->end()) {
     NS_LOG(VERBOSE) << __func__ << ": No private certificate with id="
                     << base::HexEncode(private_certificate.id());

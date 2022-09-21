@@ -4,11 +4,11 @@
 
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/predictors/predictors_features.h"
@@ -67,10 +67,8 @@ void ResourcePrefetchPredictorTables::SortOrigins(
     OriginData* data,
     const std::string& main_frame_origin) {
   auto* origins = data->mutable_origins();
-  auto it = std::find_if(origins->begin(), origins->end(),
-                         [&main_frame_origin](const OriginStat& x) {
-                           return x.origin() == main_frame_origin;
-                         });
+  auto it =
+      base::ranges::find(*origins, main_frame_origin, &OriginStat::origin);
   int iterator_offset = 0;
   if (it != origins->end()) {
     origins->SwapElements(0, it - origins->begin());

@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
@@ -166,11 +167,10 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetDiscovered(
 
   // Dedup by the more stable device ID if possible.
   if (share_target.device_id) {
-    auto it = std::find_if(discovered_share_targets_.begin(),
-                           discovered_share_targets_.end(),
-                           [&share_target](const auto& id_share_target_pair) {
-                             return share_target.device_id ==
-                                    id_share_target_pair.second.device_id;
+    auto it =
+        base::ranges::find(discovered_share_targets_, share_target.device_id,
+                           [](const auto& id_share_target_pair) {
+                             return id_share_target_pair.second.device_id;
                            });
 
     if (it != discovered_share_targets_.end()) {

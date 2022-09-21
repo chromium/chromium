@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -95,9 +96,7 @@ void ClosedTabCache::CacheWebContents(
 std::unique_ptr<content::WebContents> ClosedTabCache::RestoreEntry(
     SessionID id) {
   TRACE_EVENT1("browser", "ClosedTabCache::RestoreEntry", "SessionID", id.id());
-  auto matching_entry = std::find_if(
-      entries_.begin(), entries_.end(),
-      [id](const std::unique_ptr<Entry>& entry) { return entry->id == id; });
+  auto matching_entry = base::ranges::find(entries_, id, &Entry::id);
 
   if (matching_entry == entries_.end())
     return nullptr;
@@ -111,9 +110,7 @@ std::unique_ptr<content::WebContents> ClosedTabCache::RestoreEntry(
 }
 
 const content::WebContents* ClosedTabCache::GetWebContents(SessionID id) const {
-  auto matching_entry = std::find_if(
-      entries_.begin(), entries_.end(),
-      [id](const std::unique_ptr<Entry>& entry) { return entry->id == id; });
+  auto matching_entry = base::ranges::find(entries_, id, &Entry::id);
 
   if (matching_entry == entries_.end())
     return nullptr;
@@ -171,9 +168,7 @@ void ClosedTabCache::StartEvictionTimer(Entry* entry) {
 }
 
 void ClosedTabCache::EvictEntryById(SessionID id) {
-  auto matching_entry = std::find_if(
-      entries_.begin(), entries_.end(),
-      [id](const std::unique_ptr<Entry>& entry) { return entry->id == id; });
+  auto matching_entry = base::ranges::find(entries_, id, &Entry::id);
 
   if (matching_entry == entries_.end())
     return;

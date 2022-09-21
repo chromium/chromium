@@ -7,7 +7,6 @@
 #include <math.h>
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -17,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -980,11 +980,8 @@ void IncidentReportingService::OnReportUploadResult(
 
   // The upload is no longer outstanding, so take ownership of the context (from
   // the collection of outstanding uploads) in this scope.
-  auto it =
-      std::find_if(uploads_.begin(), uploads_.end(),
-                   [context](const std::unique_ptr<UploadContext>& value) {
-                     return value.get() == context;
-                   });
+  auto it = base::ranges::find(uploads_, context,
+                               &std::unique_ptr<UploadContext>::get);
   DCHECK(it != uploads_.end());
   std::unique_ptr<UploadContext> upload(std::move(*it));
   uploads_.erase(it);

@@ -4,8 +4,7 @@
 
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
@@ -191,9 +190,7 @@ void MockRenderViewContextMenu::RemoveMenuItem(int command_id) {
 void MockRenderViewContextMenu::RemoveAdjacentSeparators() {}
 
 void MockRenderViewContextMenu::RemoveSeparatorBeforeMenuItem(int command_id) {
-  auto iter = std::find_if(
-      items_.begin(), items_.end(),
-      [command_id](const auto& item) { return item.command_id == command_id; });
+  auto iter = base::ranges::find(items_, command_id, &MockMenuItem::command_id);
 
   if (iter == items_.end()) {
     FAIL() << "Menu observer is trying to remove a separator before a "

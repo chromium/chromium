@@ -4,7 +4,6 @@
 
 #include "chrome/browser/component_updater/third_party_module_list_component_installer_win.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -12,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/win/conflicts/module_blocklist_cache_util.h"
@@ -34,9 +34,7 @@ base::Version GetComponentVersion(
   DCHECK(component_update_service);
 
   auto components = component_update_service->GetComponents();
-  auto iter = std::find_if(
-      components.begin(), components.end(),
-      [](const auto& component) { return component.id == kComponentId; });
+  auto iter = base::ranges::find(components, kComponentId, &ComponentInfo::id);
   DCHECK(iter != components.end());
 
   return iter->version;

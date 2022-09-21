@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
@@ -146,16 +147,16 @@ class AdvancedTestBackgroundModeManager : public TestBackgroundModeManager {
 
   // TestBackgroundModeManager:
   bool HasPersistentBackgroundClient() const override {
-    return std::find_if(profile_app_counts_.begin(), profile_app_counts_.end(),
-                        [](const auto& profile_count_pair) {
-                          return profile_count_pair.second.persistent > 0;
-                        }) != profile_app_counts_.end();
+    return base::ranges::any_of(
+        profile_app_counts_, [](const auto& profile_count_pair) {
+          return profile_count_pair.second.persistent > 0;
+        });
   }
   bool HasAnyBackgroundClient() const override {
-    return std::find_if(profile_app_counts_.begin(), profile_app_counts_.end(),
-                        [](const auto& profile_count_pair) {
-                          return profile_count_pair.second.any > 0;
-                        }) != profile_app_counts_.end();
+    return base::ranges::any_of(profile_app_counts_,
+                                [](const auto& profile_count_pair) {
+                                  return profile_count_pair.second.any > 0;
+                                });
   }
   bool HasPersistentBackgroundClientForProfile(
       const Profile* profile) const override {

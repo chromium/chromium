@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -15,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -1161,9 +1161,7 @@ class BackForwardCachePrintBrowserTest : public PrintBrowserTest {
  private:
   void AddSampleToBuckets(std::vector<base::Bucket>* buckets,
                           base::HistogramBase::Sample sample) {
-    auto it = std::find_if(
-        buckets->begin(), buckets->end(),
-        [sample](const base::Bucket& bucket) { return bucket.min == sample; });
+    auto it = base::ranges::find(*buckets, sample, &base::Bucket::min);
     if (it == buckets->end()) {
       buckets->push_back(base::Bucket(sample, 1));
     } else {

@@ -6,6 +6,7 @@
 
 #include <math.h>
 #include <stddef.h>
+
 #include <queue>
 
 #include "base/bind.h"
@@ -14,6 +15,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -152,8 +154,7 @@ void AutocompleteActionPredictor::RegisterTransitionalMatches(
   const std::u16string lower_user_text(base::i18n::ToLower(user_text));
 
   // Merge this in to an existing match if we already saw |user_text|
-  auto match_it = std::find(transitional_matches_.begin(),
-                            transitional_matches_.end(), lower_user_text);
+  auto match_it = base::ranges::find(transitional_matches_, lower_user_text);
 
   if (match_it == transitional_matches_.end()) {
     if (transitional_matches_size_ + lower_user_text.length() >
@@ -446,9 +447,8 @@ void AutocompleteActionPredictor::DeleteRowsFromCaches(
   DCHECK(id_list);
 
   for (auto it = db_cache_.begin(); it != db_cache_.end();) {
-    if (std::find_if(rows.begin(), rows.end(),
-                     history::URLRow::URLRowHasURL(it->first.url)) !=
-        rows.end()) {
+    if (base::ranges::any_of(rows,
+                             history::URLRow::URLRowHasURL(it->first.url))) {
       const DBIdCacheMap::iterator id_it = db_id_cache_.find(it->first);
       DCHECK(id_it != db_id_cache_.end());
       id_list->push_back(id_it->second);

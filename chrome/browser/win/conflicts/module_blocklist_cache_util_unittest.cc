@@ -4,7 +4,6 @@
 
 #include "chrome/browser/win/conflicts/module_blocklist_cache_util.h"
 
-#include <algorithm>
 #include <memory>
 #include <random>
 #include <set>
@@ -16,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/md5.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chrome/browser/win/conflicts/module_list_filter.h"
 #include "chrome/chrome_elf/sha1/sha1.h"
@@ -244,12 +244,10 @@ TEST_F(ModuleBlocklistCacheUtilTest, RemoveAllowlistedEntries) {
   EXPECT_EQ(kTestModuleCount - kAllowlistedModulesCount,
             blocklisted_modules.size());
   for (const auto& module : allowlisted_modules) {
-    auto iter =
-        std::find_if(blocklisted_modules.begin(), blocklisted_modules.end(),
-                     [&module](const auto& element) {
-                       return internal::ModuleEqual()(module, element);
-                     });
-    EXPECT_EQ(blocklisted_modules.end(), iter);
+    EXPECT_TRUE(base::ranges::none_of(
+        blocklisted_modules, [&module](const auto& element) {
+          return internal::ModuleEqual()(module, element);
+        }));
   }
 }
 
@@ -280,11 +278,10 @@ TEST_F(ModuleBlocklistCacheUtilTest, UpdateModuleBlocklistCacheTimestamps) {
   EXPECT_EQ(kTestModuleCount, blocklisted_modules.size());
   // For each entires, make sure they were updated.
   for (const auto& module : updated_modules) {
-    auto iter =
-        std::find_if(blocklisted_modules.begin(), blocklisted_modules.end(),
-                     [&module](const auto& element) {
-                       return internal::ModuleEqual()(module, element);
-                     });
+    auto iter = base::ranges::find_if(
+        blocklisted_modules, [&module](const auto& element) {
+          return internal::ModuleEqual()(module, element);
+        });
     ASSERT_NE(blocklisted_modules.end(), iter);
     EXPECT_EQ(kNewTimeDateStamp, iter->time_date_stamp);
   }
@@ -326,12 +323,10 @@ TEST_F(ModuleBlocklistCacheUtilTest, RemoveExpiredEntries_OnlyExpired) {
   // The 5 elements were removed.
   EXPECT_EQ(kTestModuleCount - kModulesToRemove, blocklisted_modules.size());
   for (const auto& module : expired_modules) {
-    auto iter =
-        std::find_if(blocklisted_modules.begin(), blocklisted_modules.end(),
-                     [&module](const auto& element) {
-                       return internal::ModuleEqual()(module, element);
-                     });
-    EXPECT_EQ(blocklisted_modules.end(), iter);
+    EXPECT_TRUE(base::ranges::none_of(
+        blocklisted_modules, [&module](const auto& element) {
+          return internal::ModuleEqual()(module, element);
+        }));
   }
 }
 
@@ -367,12 +362,10 @@ TEST_F(ModuleBlocklistCacheUtilTest, RemoveExpiredEntries_NewlyBlocklisted) {
   EXPECT_EQ(kTestModuleCount - kNewlyBlocklistedModuleCount,
             blocklisted_modules.size());
   for (const auto& module : excess_modules) {
-    auto iter =
-        std::find_if(blocklisted_modules.begin(), blocklisted_modules.end(),
-                     [&module](const auto& element) {
-                       return internal::ModuleEqual()(module, element);
-                     });
-    EXPECT_EQ(blocklisted_modules.end(), iter);
+    EXPECT_TRUE(base::ranges::none_of(
+        blocklisted_modules, [&module](const auto& element) {
+          return internal::ModuleEqual()(module, element);
+        }));
   }
 }
 
@@ -409,12 +402,10 @@ TEST_F(ModuleBlocklistCacheUtilTest, RemoveExpiredEntries_MaxSize) {
   // Enough elements were removed.
   EXPECT_EQ(kMaxModuleBlocklistCacheSize, blocklisted_modules.size());
   for (const auto& module : excess_modules) {
-    auto iter =
-        std::find_if(blocklisted_modules.begin(), blocklisted_modules.end(),
-                     [&module](const auto& element) {
-                       return internal::ModuleEqual()(module, element);
-                     });
-    EXPECT_EQ(blocklisted_modules.end(), iter);
+    EXPECT_TRUE(base::ranges::none_of(
+        blocklisted_modules, [&module](const auto& element) {
+          return internal::ModuleEqual()(module, element);
+        }));
   }
 }
 
@@ -453,12 +444,10 @@ TEST_F(ModuleBlocklistCacheUtilTest, RemoveDuplicateEntries) {
 
   EXPECT_EQ(kTestModuleCount, blocklisted_modules.size());
   for (const auto& module : duplicated_modules) {
-    auto iter =
-        std::find_if(blocklisted_modules.begin(), blocklisted_modules.end(),
-                     [&module](const auto& element) {
-                       return internal::ModuleEqual()(module, element) &&
-                              module.time_date_stamp == element.time_date_stamp;
-                     });
-    EXPECT_NE(blocklisted_modules.end(), iter);
+    EXPECT_TRUE(base::ranges::any_of(
+        blocklisted_modules, [&module](const auto& element) {
+          return internal::ModuleEqual()(module, element) &&
+                 module.time_date_stamp == element.time_date_stamp;
+        }));
   }
 }

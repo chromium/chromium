@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -237,15 +238,9 @@ void ChromePermissionsClient::AreSitesImportant(
             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
     if (registerable_domain.empty())
       registerable_domain = host;  // IP address or internal hostname.
-    auto important_domain_search =
-        [&registerable_domain](
-            const site_engagement::ImportantSitesUtil::ImportantDomainInfo&
-                item) {
-          return item.registerable_domain == registerable_domain;
-        };
-    entry.second =
-        std::find_if(important_domains.begin(), important_domains.end(),
-                     important_domain_search) != important_domains.end();
+    entry.second = base::Contains(important_domains, registerable_domain,
+                                  &site_engagement::ImportantSitesUtil::
+                                      ImportantDomainInfo::registerable_domain);
   }
 }
 

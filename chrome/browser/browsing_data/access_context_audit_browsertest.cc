@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -88,9 +89,9 @@ void CheckContainsCookieAndRecord(
     const std::string& domain,
     const std::string& path,
     bool compare_host_only = false) {
-  EXPECT_NE(
-      std::find_if(
-          record_list.begin(), record_list.end(),
+  EXPECT_TRUE(
+      base::ranges::any_of(
+          record_list,
           [=](const AccessContextAuditDatabase::AccessRecord& record) {
             return record.type ==
                        AccessContextAuditDatabase::StorageAPIType::kCookie &&
@@ -100,16 +101,13 @@ void CheckContainsCookieAndRecord(
                         : record.top_frame_origin == top_frame_origin) &&
                    record.name == name && record.domain == domain &&
                    record.path == path;
-          }),
-      record_list.end());
+          }));
 
-  EXPECT_NE(std::find_if(cookies.begin(), cookies.end(),
-                         [=](const net::CanonicalCookie& cookie) {
-                           return cookie.Name() == name &&
-                                  cookie.Domain() == domain &&
-                                  cookie.Path() == path;
-                         }),
-            cookies.end());
+  EXPECT_TRUE(
+      base::ranges::any_of(cookies, [=](const net::CanonicalCookie& cookie) {
+        return cookie.Name() == name && cookie.Domain() == domain &&
+               cookie.Path() == path;
+      }));
 }
 
 // Check that |record_list| contains a record indicating |origin| accessed
@@ -123,8 +121,8 @@ void CheckContainsOriginStorageRecords(
     const url::Origin& top_frame_origin,
     bool compare_host_only = false) {
   for (auto type : types) {
-    auto it = std::find_if(
-        record_list.begin(), record_list.end(),
+    bool found = base::ranges::any_of(
+        record_list,
         [=](const AccessContextAuditDatabase::AccessRecord& record) {
           return record.type == type &&
                  (compare_host_only
@@ -134,13 +132,11 @@ void CheckContainsOriginStorageRecords(
                       : record.top_frame_origin == top_frame_origin &&
                             record.origin == origin);
         });
-    if (origin != top_frame_origin &&
-        type == AccessContextAuditDatabase::StorageAPIType::kWebDatabase) {
-      // WebSQL in third-party contexts is disabled as of M97.
-      EXPECT_EQ(it, record_list.end());
-    } else {
-      EXPECT_NE(it, record_list.end());
-    }
+    // WebSQL in third-party contexts is disabled as of M97.
+    EXPECT_EQ(
+        found,
+        origin == top_frame_origin ||
+            type != AccessContextAuditDatabase::StorageAPIType::kWebDatabase);
   }
 }
 
@@ -467,13 +463,11 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MAYBE_RemoveHistory) {
   // the history deletion should only affect the access record.
   EXPECT_EQ(cookies.size(),
             kEmbeddedPageCookieCount + kTopLevelPageCookieCount);
-  EXPECT_NE(std::find_if(cookies.begin(), cookies.end(),
-                         [=](const net::CanonicalCookie& cookie) {
-                           return cookie.Name() == "embedder" &&
-                                  cookie.Domain() == kTopLevelHost &&
-                                  cookie.Path() == "/";
-                         }),
-            cookies.end());
+  EXPECT_TRUE(
+      base::ranges::any_of(cookies, [=](const net::CanonicalCookie& cookie) {
+        return cookie.Name() == "embedder" &&
+               cookie.Domain() == kTopLevelHost && cookie.Path() == "/";
+      }));
 }
 
 // TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.

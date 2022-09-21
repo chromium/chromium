@@ -89,11 +89,10 @@ void NotificationDisplayQueue::AddNotificationBlocker(
 bool NotificationDisplayQueue::DoRemoveQueuedNotification(
     const std::string& notification_id,
     bool notify) {
-  auto it =
-      std::find_if(queued_notifications_.begin(), queued_notifications_.end(),
-                   [&notification_id](const QueuedNotification& queued) {
-                     return queued.notification.id() == notification_id;
-                   });
+  auto it = base::ranges::find(queued_notifications_, notification_id,
+                               [](const QueuedNotification& queued) {
+                                 return queued.notification.id();
+                               });
 
   if (it == queued_notifications_.end())
     return false;

@@ -17,6 +17,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/nix/xdg_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -49,9 +50,8 @@ std::string GetOsVersion() {
   if (base::PathExists(os_release_file) &&
       base::ReadFileToStringWithMaxSize(os_release_file, &release_info, 8192) &&
       base::SplitStringIntoKeyValuePairs(release_info, '=', '\n', &values)) {
-    auto version_id = std::find_if(values.begin(), values.end(), [](auto v) {
-      return v.first == "VERSION_ID";
-    });
+    auto version_id = base::ranges::find(
+        values, "VERSION_ID", &std::pair<std::string, std::string>::first);
     if (version_id != values.end()) {
       return std::string(
           base::TrimString(version_id->second, "\"", base::TRIM_ALL));

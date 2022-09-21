@@ -7,7 +7,6 @@
 #include <limits.h>
 #include <stddef.h>
 
-#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -19,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -159,18 +159,15 @@ constexpr PersistingImagesTable kPersistingImages[] = {
 };
 
 BrowserThemePack::PersistentID GetPersistentIDByName(const std::string& key) {
-  auto* it =
-      std::find_if(std::begin(kPersistingImages), std::end(kPersistingImages),
-                   [&](const auto& image) {
-                     return base::EqualsCaseInsensitiveASCII(key, image.key);
-                   });
+  auto* it = base::ranges::find_if(kPersistingImages, [&](const auto& image) {
+    return base::EqualsCaseInsensitiveASCII(key, image.key);
+  });
   return it == std::end(kPersistingImages) ? PRS::kInvalid : it->persistent_id;
 }
 
 BrowserThemePack::PersistentID GetPersistentIDByIDR(int idr) {
-  auto* it =
-      std::find_if(std::begin(kPersistingImages), std::end(kPersistingImages),
-                   [&](const auto& image) { return image.idr_id == idr; });
+  auto* it = base::ranges::find(kPersistingImages, idr,
+                                &PersistingImagesTable::idr_id);
   return it == std::end(kPersistingImages) ? PRS::kInvalid : it->persistent_id;
 }
 

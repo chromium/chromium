@@ -7,7 +7,6 @@
 #include <shlobj.h>  // For SHChangeNotify().
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -20,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -332,10 +332,10 @@ void RenameChromeDesktopShortcutForProfile(
   if (!profile_shortcuts->empty()) {
     // From all profile_shortcuts choose the one with a known (canonical) name.
     profiles::internal::ShortcutFilenameMatcher matcher(old_profile_name);
-    auto it = std::find_if(profile_shortcuts->begin(), profile_shortcuts->end(),
-                           [&matcher](const base::FilePath& p) {
-                             return matcher.IsCanonical(p.BaseName().value());
-                           });
+    auto it = base::ranges::find_if(
+        *profile_shortcuts, [&matcher](const base::FilePath& p) {
+          return matcher.IsCanonical(p.BaseName().value());
+        });
     // If all profile_shortcuts were renamed by user, respect it and do not
     // rename.
     if (it == profile_shortcuts->end())

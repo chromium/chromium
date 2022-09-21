@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -698,8 +699,8 @@ void DownloadManagerService::OnPendingDownloadsLoaded() {
   is_pending_downloads_loaded_ = true;
 
   auto result =
-      std::find_if(coordinators_.begin(), coordinators_.end(),
-                   [](const auto& it) { return !it.first->IsOffTheRecord(); });
+      base::ranges::find_if_not(coordinators_, &ProfileKey::IsOffTheRecord,
+                                &Coordinators::value_type::first);
   CHECK(result != coordinators_.end())
       << "A non-OffTheRecord coordinator should exist when "
          "OnPendingDownloadsLoaded is triggered.";

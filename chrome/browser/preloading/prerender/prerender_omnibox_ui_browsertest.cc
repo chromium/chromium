@@ -8,6 +8,7 @@
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -894,13 +895,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
       true, 1);
 
   // Ensure there is a search hint.
-  auto is_prerender_match = [](const AutocompleteMatch& match) {
-    return BaseSearchProvider::ShouldPrerender(match);
-  };
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
-  auto prerender_match = std::find_if(
-      std::begin(autocomplete_controller->result()),
-      std::end(autocomplete_controller->result()), is_prerender_match);
+  auto prerender_match = base::ranges::find_if(
+      autocomplete_controller->result(), &BaseSearchProvider::ShouldPrerender);
   ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
 
   content::NavigationHandleObserver activation_observer(
@@ -998,12 +995,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
   // Ensure there is a search hint.
-  auto is_prerender_match = [](const AutocompleteMatch& match) {
-    return BaseSearchProvider::ShouldPrerender(match);
-  };
-  auto prerender_match = std::find_if(
-      std::begin(autocomplete_controller->result()),
-      std::end(autocomplete_controller->result()), is_prerender_match);
+  auto prerender_match = base::ranges::find_if(
+      autocomplete_controller->result(), &BaseSearchProvider::ShouldPrerender);
   ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
   content::NavigationHandleObserver activation_observer(
       GetActiveWebContents(), prerender_match->destination_url);
@@ -1090,12 +1083,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
   // Ensure there is a search hint.
-  auto is_prerender_match = [](const AutocompleteMatch& match) {
-    return BaseSearchProvider::ShouldPrerender(match);
-  };
-  auto prerender_match = std::find_if(
-      std::begin(autocomplete_controller->result()),
-      std::end(autocomplete_controller->result()), is_prerender_match);
+  auto prerender_match = base::ranges::find_if(
+      autocomplete_controller->result(), &BaseSearchProvider::ShouldPrerender);
   ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
 
   content::NavigationHandleObserver activation_observer(

@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -44,18 +45,6 @@ using PrefTrackingStrategy =
     prefs::mojom::TrackedPreferenceMetadata::PrefTrackingStrategy;
 using ValueType = prefs::mojom::TrackedPreferenceMetadata::ValueType;
 
-class FirstEqualsPredicate {
- public:
-  explicit FirstEqualsPredicate(const std::string& expected)
-      : expected_(expected) {}
-  bool operator()(const PrefValueMap::Map::value_type& pair) {
-    return pair.first == expected_;
-  }
-
- private:
-  const std::string expected_;
-};
-
 // Observes changes to the PrefStore and verifies that only registered prefs are
 // written.
 class RegistryVerifier : public PrefStore::Observer {
@@ -65,10 +54,8 @@ class RegistryVerifier : public PrefStore::Observer {
 
   // PrefStore::Observer implementation
   void OnPrefValueChanged(const std::string& key) override {
-    EXPECT_TRUE(pref_registry_->end() !=
-                std::find_if(pref_registry_->begin(),
-                             pref_registry_->end(),
-                             FirstEqualsPredicate(key)))
+    EXPECT_TRUE(base::Contains(*pref_registry_, key,
+                               &PrefValueMap::Map::value_type::first))
         << "Unregistered key " << key << " was changed.";
   }
 

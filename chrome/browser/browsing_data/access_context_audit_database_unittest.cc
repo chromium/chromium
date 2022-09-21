@@ -5,6 +5,7 @@
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
@@ -497,11 +498,7 @@ TEST_F(AccessContextAuditDatabaseTest, RemoveAllRecordsForTopFrameOrigins) {
       std::remove_if(
           test_records.begin(), test_records.end(),
           [=](const AccessContextAuditDatabase::AccessRecord& record) {
-            return std::find_if(many_visit_origins.begin(),
-                                many_visit_origins.end(),
-                                [=](const url::Origin origin) {
-                                  return record.top_frame_origin == origin;
-                                }) != many_visit_origins.end();
+            return base::Contains(many_visit_origins, record.top_frame_origin);
           }),
       test_records.end());
 

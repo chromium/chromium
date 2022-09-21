@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -806,10 +807,8 @@ void DesktopMediaPickerDialogView::OnDelegatedSourceListDismissed() {
 
   size_t fallback_pane_index = std::distance(
       categories_.begin(),
-      std::find_if(
-          categories_.begin(), categories_.end(), [](const auto& category) {
-            return category.type == DesktopMediaList::Type::kWebContents;
-          }));
+      base::ranges::find(categories_, DesktopMediaList::Type::kWebContents,
+                         &DisplaySurfaceCategory::type));
 
   if (fallback_pane_index >= categories_.size()) {
     Reject();

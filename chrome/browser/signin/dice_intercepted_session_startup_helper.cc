@@ -4,11 +4,11 @@
 
 #include "chrome/browser/signin/dice_intercepted_session_startup_helper.h"
 
-#include <algorithm>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
@@ -33,10 +33,7 @@ bool CookieInfoContains(const signin::AccountsInCookieJarInfo& cookie_info,
                         const CoreAccountId& account_id) {
   const std::vector<gaia::ListedAccount>& accounts =
       cookie_info.signed_in_accounts;
-  return std::find_if(accounts.begin(), accounts.end(),
-                      [&account_id](const gaia::ListedAccount& account) {
-                        return account.id == account_id;
-                      }) != accounts.end();
+  return base::Contains(accounts, account_id, &gaia::ListedAccount::id);
 }
 
 }  // namespace

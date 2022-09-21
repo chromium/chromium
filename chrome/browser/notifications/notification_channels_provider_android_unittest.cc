@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -55,11 +56,9 @@ class FakeNotificationChannelsBridge
   void SetChannelStatus(const std::string& origin,
                         NotificationChannelStatus status) {
     DCHECK_NE(NotificationChannelStatus::UNAVAILABLE, status);
-    auto it = std::find_if(
-        channels_.begin(), channels_.end(),
-        [&origin](const std::pair<std::string, NotificationChannel>& pair) {
-          return pair.second.origin == origin;
-        });
+    auto it = base::ranges::find(
+        channels_, origin,
+        [](const Channels::value_type& pair) { return pair.second.origin; });
     DCHECK(it != channels_.end())
         << "Must call bridge.CreateChannel before SetChannelStatus.";
     it->second.status = status;
@@ -104,10 +103,12 @@ class FakeNotificationChannelsBridge
   }
 
  private:
+  using Channels = std::map<std::string, NotificationChannel>;
+
   bool should_use_channels_;
 
   // Map from channel_id - channel.
-  std::map<std::string, NotificationChannel> channels_;
+  Channels channels_;
 };
 
 class NotificationChannelsProviderAndroidTest : public testing::Test {

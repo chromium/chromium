@@ -4,7 +4,6 @@
 
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <set>
@@ -15,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/supports_user_data.h"
 #include "base/synchronization/waitable_event.h"
@@ -279,12 +279,12 @@ std::string SpellcheckService::GetSupportedAcceptLanguageCode(
   // First try exact match. Per BCP47, tags are in ASCII and should be treated
   // as case-insensitive (although there are conventions for the capitalization
   // of subtags).
-  auto iter =
-      std::find_if(accept_languages.begin(), accept_languages.end(),
-                   [supported_language_full_tag](const auto& accept_language) {
-                     return base::EqualsCaseInsensitiveASCII(
-                         supported_language_full_tag, accept_language);
-                   });
+  auto iter = base::ranges::find_if(
+      accept_languages,
+      [supported_language_full_tag](const auto& accept_language) {
+        return base::EqualsCaseInsensitiveASCII(supported_language_full_tag,
+                                                accept_language);
+      });
   if (iter != accept_languages.end())
     return *iter;
 
@@ -296,17 +296,17 @@ std::string SpellcheckService::GetSupportedAcceptLanguageCode(
   if (!base::Contains(supported_language_full_tag, "-"))
     return "";
 
-  iter =
-      std::find_if(accept_languages.begin(), accept_languages.end(),
-                   [supported_language_full_tag](const auto& accept_language) {
-                     return base::EqualsCaseInsensitiveASCII(
-                         SpellcheckService::GetLanguageAndScriptTag(
-                             supported_language_full_tag,
-                             /* include_script_tag= */ true),
-                         SpellcheckService::GetLanguageAndScriptTag(
-                             accept_language,
-                             /* include_script_tag= */ true));
-                   });
+  iter = base::ranges::find_if(
+      accept_languages,
+      [supported_language_full_tag](const auto& accept_language) {
+        return base::EqualsCaseInsensitiveASCII(
+            SpellcheckService::GetLanguageAndScriptTag(
+                supported_language_full_tag,
+                /* include_script_tag= */ true),
+            SpellcheckService::GetLanguageAndScriptTag(
+                accept_language,
+                /* include_script_tag= */ true));
+      });
 
   if (iter != accept_languages.end())
     return *iter;
@@ -711,17 +711,17 @@ std::string SpellcheckService::GetLanguageAndScriptTag(
 std::string SpellcheckService::GetSupportedAcceptLanguageCodeGenericOnly(
     const std::string& supported_language_full_tag,
     const std::vector<std::string>& accept_languages) {
-  auto iter =
-      std::find_if(accept_languages.begin(), accept_languages.end(),
-                   [supported_language_full_tag](const auto& accept_language) {
-                     return base::EqualsCaseInsensitiveASCII(
-                         SpellcheckService::GetLanguageAndScriptTag(
-                             supported_language_full_tag,
-                             /* include_script_tag= */ false),
-                         SpellcheckService::GetLanguageAndScriptTag(
-                             accept_language,
-                             /* include_script_tag= */ false));
-                   });
+  auto iter = base::ranges::find_if(
+      accept_languages,
+      [supported_language_full_tag](const auto& accept_language) {
+        return base::EqualsCaseInsensitiveASCII(
+            SpellcheckService::GetLanguageAndScriptTag(
+                supported_language_full_tag,
+                /* include_script_tag= */ false),
+            SpellcheckService::GetLanguageAndScriptTag(
+                accept_language,
+                /* include_script_tag= */ false));
+      });
 
   if (iter != accept_languages.end()) {
     // Special case for Serbian--"sr" implies Cyrillic script. Don't mark it as

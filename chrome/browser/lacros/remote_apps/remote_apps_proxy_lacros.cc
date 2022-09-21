@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/apps/platform_apps/api/enterprise_remote_apps.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -142,11 +143,8 @@ void RemoteAppsProxyLacros::OnRemoteAppLaunched(const std::string& app_id,
 }
 
 void RemoteAppsProxyLacros::DisconnectHandler(mojo::RemoteSetElementId id) {
-  const auto& it = std::find_if(
-      source_id_to_remote_id_map_.begin(), source_id_to_remote_id_map_.end(),
-      [&id](const std::pair<std::string, mojo::RemoteSetElementId>& pair) {
-        return pair.second == id;
-      });
+  const auto& it = base::ranges::find(source_id_to_remote_id_map_, id,
+                                      &RemoteIds::value_type::second);
 
   if (it == source_id_to_remote_id_map_.end())
     return;
