@@ -37,6 +37,8 @@ LayoutUnit AdjustSizeToRemainingSize(LayoutUnit current,
 void ClearNeedsLayoutOnHiddenFrames(LayoutObject* object) {
   for (; object; object = object->NextSibling()) {
     object->ClearNeedsLayout();
+    if (auto* box = DynamicTo<LayoutBox>(object))
+      box->ClearLayoutResults();
     ClearNeedsLayoutOnHiddenFrames(object->SlowFirstChild());
   }
 }
