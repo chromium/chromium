@@ -47,7 +47,7 @@ absl::optional<std::vector<NoteTemplateIds>> TryGetRandomOrder(
   }
 
   std::vector<NoteTemplateIds> template_ids;
-  for (const base::Value& current_value : stored_value.GetListDeprecated()) {
+  for (const base::Value& current_value : stored_value.GetList()) {
     absl::optional<int> maybe_int = current_value.GetIfInt();
     if (!maybe_int) {
       continue;
