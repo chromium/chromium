@@ -10,6 +10,7 @@
   .help-item {
     display: flex;
     margin:  12px 0 0;
+    padding: 0 4px 0 4px;
   }
 
   .help-item a {
@@ -23,6 +24,10 @@
     text-decoration: none;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .help-item a:focus {
+    outline: 2px solid var(--cros-focus-ring-color);
   }
 
   .help-item-icon {
@@ -58,7 +63,7 @@
   }
 
   #helpContentContainer {
-    overflow: hidden;
+    overflow: visible;
   }
 </style>
 <iron-media-query query="(prefers-color-scheme: dark)"
