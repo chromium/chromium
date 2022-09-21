@@ -5382,7 +5382,7 @@ String AXNodeObject::Description(
       description_objects->push_back(related_object->object);
   }
 
-  result = CollapseWhitespace(result);
+  result = result.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
 
   if (RoleValue() == ax::mojom::blink::Role::kSpinButton &&
       DatetimeAncestor()) {

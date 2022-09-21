@@ -3705,13 +3705,29 @@ bool AXObject::IsProhibited(ax::mojom::blink::IntAttribute attribute) const {
 
 // Simplify whitespace, but preserve a single leading and trailing whitespace
 // character if it's present.
-// static
-String AXObject::CollapseWhitespace(const String& str) {
+String AXObject::SimplifyName(const String& str) const {
+  if (str.IsEmpty())
+    return "";
+
+  // Do not simplify name for text, unless it is pseudo content.
+  // TODO(accessibility) There seems to be relatively little value for the
+  // special pseudo content rule, and that the null check for node can
+  // probably be removed without harm.
+  if (GetNode() && ui::IsText(RoleValue()))
+    return str;
+
+  bool has_before_space = IsHTMLSpace<UChar>(str[0]);
+  bool has_after_space = IsHTMLSpace<UChar>(str[str.length() - 1]);
+  String simplified = str.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+  if (!has_before_space && !has_after_space)
+    return simplified;
+
+  // Preserve a trailing and/or leading space.
   StringBuilder result;
-  if (!str.IsEmpty() && IsHTMLSpace<UChar>(str[0]))
+  if (has_before_space)
     result.Append(' ');
-  result.Append(str.SimplifyWhiteSpace(IsHTMLSpace<UChar>));
-  if (!str.IsEmpty() && IsHTMLSpace<UChar>(str[str.length() - 1]))
+  result.Append(simplified);
+  if (has_after_space)
     result.Append(' ');
   return result.ToString();
 }
@@ -3733,19 +3749,13 @@ String AXObject::GetName(ax::mojom::blink::NameFrom& name_from,
   String text = TextAlternative(false, nullptr, visited, name_from,
                                 &related_objects, nullptr);
 
-  ax::mojom::blink::Role role = RoleValue();
-  if (!GetNode() || (!IsA<HTMLBRElement>(GetNode()) &&
-                     role != ax::mojom::blink::Role::kStaticText &&
-                     role != ax::mojom::blink::Role::kInlineTextBox))
-    text = CollapseWhitespace(text);
-
   if (name_objects) {
     name_objects->clear();
     for (NameSourceRelatedObject* related_object : related_objects)
       name_objects->push_back(related_object->object);
   }
 
-  return text;
+  return SimplifyName(text);
 }
 
 String AXObject::GetName(NameSources* name_sources) const {
@@ -3754,8 +3764,7 @@ String AXObject::GetName(NameSources* name_sources) const {
   AXRelatedObjectVector tmp_related_objects;
   String text = TextAlternative(false, nullptr, visited, tmp_name_from,
                                 &tmp_related_objects, name_sources);
-  text = text.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
-  return text;
+  return SimplifyName(text);
 }
 
 String AXObject::RecursiveTextAlternative(

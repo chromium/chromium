@@ -5,19 +5,28 @@ RootWebArea
     StaticText "spacer"
       InlineTextBox
   generic
-    StaticText "locked"
+    StaticText "
+      locked
+      "
     generic
-      StaticText "child"
+      StaticText "
+        child
+        "
       generic
         StaticText "grandChild"
-      StaticText
-    StaticText
+      StaticText "
+      "
+    StaticText "
+      "
     generic
       StaticText "invisible"
-    StaticText
+    StaticText "
+      "
     generic
       StaticText "nested"
-    StaticText "text"
+    StaticText "
+      text
+    "
   generic
 
   generic

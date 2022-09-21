@@ -173,8 +173,8 @@ AX_TEST_F(
           })
           .expectSpeech(
               'On, Off, and Stop', 'Heading 1',
-              ' Press Search + Right Arrow, or Search + Left Arrow to navigate ' +
-                  'this lesson ')
+              'Press Search + Right Arrow, or Search + Left Arrow to ' +
+                  'navigate this lesson')
           .call(doCmd('nextButton'))
           .expectSpeech('Next lesson');
       await mockFeedback.replay();
@@ -444,8 +444,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_LessonHint', async function() {
       })
       .expectSpeech('On, Off, and Stop', 'Heading 1')
       .expectSpeech(
-          ' Press Search + Right Arrow, or Search + Left Arrow to navigate' +
-          ' this lesson ');
+          'Press Search + Right Arrow, or Search + Left Arrow to navigate' +
+          ' this lesson');
   await mockFeedback.replay();
 });
 
@@ -618,8 +618,8 @@ AX_TEST_F('ChromeVoxTutorialTest', 'OnlyLessonTest', async function() {
       .call(doCmd('forceClickOnCurrentItem'))
       .expectSpeech('Learn More', 'Heading 1')
       .expectSpeech(
-          ' Press Search + Right Arrow, or Search + Left Arrow to' +
-          ' navigate this lesson ')
+          'Press Search + Right Arrow, or Search + Left Arrow to' +
+          ' navigate this lesson')
       // The 'All lessons' button should be hidden since this is the only
       // lesson for the curriculum.
       .call(doCmd('nextButton'))
