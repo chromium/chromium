@@ -885,6 +885,13 @@ const char kUnfilteredBluetoothDevices[] = "unfiltered-bluetooth-devices";
 // for testing the policy behaviour on the DUT.
 const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
 
+// Flag that stored MyFiles folder inside the user data directory.
+// $HOME/Downloads is used as MyFiles folder for ease access to local files for
+// debugging when running on Linux. By setting this flag, <cryptohome>/MyFiles
+// is used even on Linux.
+const char kUseMyFilesInUserDataDirForTesting[] =
+    "use-myfiles-in-user-data-dir-for-testing";
+
 // Used to tell the policy infrastructure to not let profile initialization
 // complete until policy is manually set by a test. This is used to provide
 // backward compatibility with a few tests that incorrectly use the

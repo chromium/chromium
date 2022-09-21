@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/constants/ash_switches.h"
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/bind.h"
@@ -121,9 +122,17 @@ void OnAllContentUrlsResolved(
   std::move(callback).Run(*urls, *paths_to_share);
 }
 
-// On non-ChromeOS system (test+development), the primary profile uses
-// $HOME/Downloads for ease access to local files for debugging.
+// By default, in ChromeOS it uses the $profile_dir/MyFiles however,
+// for manual tests/development in linux-chromeos it uses $HOME/Downloads for
+// chrome binary and a temp dir for browser tests. The flag
+// `--use-myfiles-in-user-data-dir-for-testing` forces the ChromeOS pattern,
+// even for non-ChromeOS environments.
 bool ShouldMountPrimaryUserDownloads(Profile* profile) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kUseMyFilesInUserDataDirForTesting)) {
+    return false;
+  }
+
   if (!base::SysInfo::IsRunningOnChromeOS() &&
       user_manager::UserManager::IsInitialized()) {
     const user_manager::User* const user =
