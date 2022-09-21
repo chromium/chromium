@@ -123,7 +123,7 @@ RENDER_TEST_MODEL_SDK_CONFIGS = {
 }
 
 _BATCH_SUFFIX = '_batch'
-_TEST_BATCH_MAX_GROUP_SIZE = 256
+_TEST_BATCH_MAX_GROUP_SIZE = 200
 
 
 @contextlib.contextmanager
