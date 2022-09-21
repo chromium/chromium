@@ -16,10 +16,17 @@
 #include "base/files/scoped_file.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/lock.h"
 #include "ui/ozone/platform/wayland/test/test_gtk_primary_selection.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_primary_selection.h"
 
 namespace wl {
+
+namespace {
+// TODO(1365887): This is a lock that workarounds a problem when wl_client_flush
+// is called from multiple threads.
+static base::Lock g_global_lock_;
+}  // namespace
 
 void DisplayDeleter::operator()(wl_display* display) {
   wl_display_destroy(display);
@@ -45,6 +52,13 @@ TestWaylandServerThread::~TestWaylandServerThread() {
 
   Resume();
   Stop();
+}
+
+// static
+void TestWaylandServerThread::FlushClientForResource(wl_resource* resource) {
+  DCHECK(resource);
+  base::AutoLock scoped_lock(g_global_lock_);
+  wl_client_flush(wl_resource_get_client(resource));
 }
 
 bool TestWaylandServerThread::Start(const ServerConfig& config) {
@@ -134,8 +148,10 @@ void TestWaylandServerThread::Pause() {
 }
 
 void TestWaylandServerThread::Resume() {
-  if (display_)
+  if (display_) {
+    base::AutoLock scoped_lock(g_global_lock_);
     wl_display_flush_clients(display_.get());
+  }
   resume_event_.Signal();
 }
 
@@ -207,8 +223,10 @@ TestWaylandServerThread::CreateMessagePump() {
 
 void TestWaylandServerThread::OnFileCanReadWithoutBlocking(int fd) {
   wl_event_loop_dispatch(event_loop_, 0);
-  if (display_)
+  if (display_) {
+    base::AutoLock scoped_lock(g_global_lock_);
     wl_display_flush_clients(display_.get());
+  }
 }
 
 void TestWaylandServerThread::OnFileCanWriteWithoutBlocking(int fd) {}

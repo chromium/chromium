@@ -75,6 +75,9 @@ class TestWaylandServerThread : public base::Thread,
 
   ~TestWaylandServerThread() override;
 
+  // TODO(1365887): This shouldn't really exist.
+  static void FlushClientForResource(wl_resource* resource);
+
   // Starts the test Wayland server thread. If this succeeds, the WAYLAND_SOCKET
   // environment variable will be set to the string representation of a file
   // descriptor that a client can connect to. The caller is responsible for

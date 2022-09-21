@@ -11,6 +11,7 @@
 
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
+#include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 
 // GtkPrimarySelection* classes contain protocol-specific implementation of
 // TestSelection*::Delegate interfaces, such that primary selection test
@@ -75,7 +76,7 @@ struct GtkPrimarySelectionSource : public TestSelectionSource::Delegate {
                 base::ScopedFD write_fd) override {
     gtk_primary_selection_source_send_send(source->resource(),
                                            mime_type.c_str(), write_fd.get());
-    wl_client_flush(wl_resource_get_client(source->resource()));
+    TestWaylandServerThread::FlushClientForResource(source->resource());
   }
 
   void SendFinished() override {

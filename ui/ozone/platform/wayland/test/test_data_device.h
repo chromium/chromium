@@ -13,7 +13,6 @@
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
-struct wl_client;
 struct wl_resource;
 
 namespace wl {
@@ -32,9 +31,7 @@ class TestDataDevice : public TestSelectionDevice {
                            uint32_t serial) = 0;
   };
 
-  TestDataDevice(wl_resource* resource,
-                 wl_client* client,
-                 TestDataDeviceManager* manager);
+  TestDataDevice(wl_resource* resource, TestDataDeviceManager* manager);
 
   TestDataDevice(const TestDataDevice&) = delete;
   TestDataDevice& operator=(const TestDataDevice&) = delete;
@@ -58,10 +55,7 @@ class TestDataDevice : public TestSelectionDevice {
   void OnMotion(uint32_t time, wl_fixed_t x, wl_fixed_t y);
   void OnDrop();
 
-  wl_client* client() { return client_; }
-
  private:
-  raw_ptr<wl_client> client_ = nullptr;
   raw_ptr<DragDelegate> drag_delegate_ = nullptr;
 
   const raw_ptr<TestDataDeviceManager> manager_;

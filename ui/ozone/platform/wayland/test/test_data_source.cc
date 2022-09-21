@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
+#include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 
 namespace wl {
 
@@ -37,20 +38,22 @@ struct WlDataSourceImpl : public TestSelectionSource::Delegate {
                 base::ScopedFD write_fd) override {
     wl_data_source_send_send(source_->resource(), mime_type.c_str(),
                              write_fd.get());
-    wl_client_flush(wl_resource_get_client(source_->resource()));
+    TestWaylandServerThread::FlushClientForResource(source_->resource());
   }
 
   void SendFinished() override {
     wl_data_source_send_dnd_finished(source_->resource());
+    TestWaylandServerThread::FlushClientForResource(source_->resource());
   }
 
   void SendCancelled() override {
     wl_data_source_send_cancelled(source_->resource());
+    TestWaylandServerThread::FlushClientForResource(source_->resource());
   }
 
   void SendDndAction(uint32_t action) override {
     wl_data_source_send_action(source_->resource(), action);
-    wl_client_flush(wl_resource_get_client(source_->resource()));
+    TestWaylandServerThread::FlushClientForResource(source_->resource());
   }
 
   void OnDestroying() override { delete this; }
