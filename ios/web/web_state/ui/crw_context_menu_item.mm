@@ -16,6 +16,16 @@
   return [[CRWContextMenuItem alloc] initWithID:ID title:title action:action];
 }
 
++ (CRWContextMenuItem*)itemWithID:(NSString*)ID
+                            title:(NSString*)title
+                            image:(UIImage*)image
+                           action:(ProceduralBlock)action {
+  return [[CRWContextMenuItem alloc] initWithID:ID
+                                          title:title
+                                          image:image
+                                         action:action];
+}
+
 - (instancetype)initWithID:(NSString*)ID
                      title:(NSString*)title
                     action:(ProceduralBlock)action {
@@ -23,6 +33,20 @@
   if (self) {
     _ID = ID;
     _title = title;
+    _action = action;
+  }
+  return self;
+}
+
+- (instancetype)initWithID:(NSString*)ID
+                     title:(NSString*)title
+                     image:(UIImage*)image
+                    action:(ProceduralBlock)action {
+  self = [super init];
+  if (self) {
+    _ID = ID;
+    _title = title;
+    _image = image;
     _action = action;
   }
   return self;

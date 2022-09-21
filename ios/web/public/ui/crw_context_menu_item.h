@@ -14,17 +14,25 @@
 
 // ID, unique to the set of items to be shown at one time. ID are turned into
 // temporary objc selectors so must follow proper naming convention.
-@property(readonly, assign) NSString* ID;
+@property(readonly, strong) NSString* ID;
 
 // Label of the item.
-@property(readonly, assign) NSString* title;
+@property(readonly, strong) NSString* title;
+
+// Icon of the item, if required.
+@property(readonly, strong) UIImage* image;
 
 // Callback to execute on user tap.
-@property(readonly, assign) ProceduralBlock action;
+@property(readonly, strong) ProceduralBlock action;
 
-// Static ctor helper.
+// Static ctor helpers.
 + (CRWContextMenuItem*)itemWithID:(NSString*)ID
                             title:(NSString*)title
+                           action:(ProceduralBlock)action;
+
++ (CRWContextMenuItem*)itemWithID:(NSString*)ID
+                            title:(NSString*)title
+                            image:(UIImage*)image
                            action:(ProceduralBlock)action;
 @end
 
