@@ -1871,6 +1871,8 @@ static_library("browser") {
     "webapps/chrome_webapps_client.h",
     "webapps/web_app_offline.cc",
     "webapps/web_app_offline.h",
+    "webauthn/webauthn_metrics_util.cc",
+    "webauthn/webauthn_metrics_util.h",
     "webid/federated_identity_account_keyed_permission_context.cc",
     "webid/federated_identity_account_keyed_permission_context.h",
     "webid/federated_identity_active_session_permission_context.cc",

@@ -179,6 +179,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.ConditionalUiPasskeyCount" units="passkeys"
+    expires_after="2023-06-30">
+  <owner>kenrb@chromium.org</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the number of passkeys available for a Conditional UI get request.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.GetAssertionRequestTransport"
     enum="WebAuthenticationFidoTransport" expires_after="2023-03-05">
   <owner>kenrb@chromium.org</owner>

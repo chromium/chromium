@@ -3675,6 +3675,9 @@ enum WebFeature {
   kV8AsyncStackTaggingCreateTaskCall = 4354,
   kWebkitBoxWithoutWebkitLineClamp = 4355,
   kDataUrlInSvgUse = 4356,
+  kWebAuthnConditionalUiGet = 4357,
+  kWebAuthnConditionalUiGetSuccess = 4358,
+  kWebAuthnRkRequiredCreationSuccess = 4359,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

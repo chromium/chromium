@@ -612,6 +612,7 @@ void OnMakePublicKeyCredentialComplete(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     AbortSignal* signal,
     RequiredOriginType required_origin_type,
+    bool is_rk_required,
     AuthenticatorStatus status,
     MakeCredentialAuthenticatorResponsePtr credential,
     WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
@@ -635,6 +636,10 @@ void OnMakePublicKeyCredentialComplete(
   UseCounter::Count(
       resolver->GetExecutionContext(),
       WebFeature::kCredentialManagerMakePublicKeyCredentialSuccess);
+  if (is_rk_required) {
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kWebAuthnRkRequiredCreationSuccess);
+  }
   DOMArrayBuffer* client_data_buffer =
       VectorToDOMArrayBuffer(std::move(credential->info->client_data_json));
   DOMArrayBuffer* raw_id =
@@ -713,8 +718,9 @@ void OnSaveCredentialIdForPaymentExtension(
   }
   OnMakePublicKeyCredentialComplete(
       std::move(scoped_resolver), signal,
-      RequiredOriginType::kSecureWithPaymentPermissionPolicy, status,
-      std::move(credential), /*dom_exception_details=*/nullptr);
+      RequiredOriginType::kSecureWithPaymentPermissionPolicy,
+      /*is_rk_required=*/false, status, std::move(credential),
+      /*dom_exception_details=*/nullptr);
 }
 
 void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
@@ -758,6 +764,7 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
 void OnGetAssertionComplete(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     AbortSignal* signal,
+    bool is_conditional_ui_request,
     AuthenticatorStatus status,
     GetAssertionAuthenticatorResponsePtr credential,
     WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
@@ -772,6 +779,12 @@ void OnGetAssertionComplete(
     UseCounter::Count(
         resolver->GetExecutionContext(),
         WebFeature::kCredentialManagerGetPublicKeyCredentialSuccess);
+
+    if (is_conditional_ui_request) {
+      UseCounter::Count(resolver->GetExecutionContext(),
+                        WebFeature::kWebAuthnConditionalUiGetSuccess);
+    }
+
     auto* authenticator_response =
         MakeGarbageCollected<AuthenticatorAssertionResponse>(
             std::move(credential->info->client_data_json),
@@ -1180,6 +1193,10 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       return promise;
     }
 
+    if (is_conditional_ui_request) {
+      UseCounter::Count(context, WebFeature::kWebAuthnConditionalUiGet);
+    }
+
     auto mojo_options =
         MojoPublicKeyCredentialRequestOptions::From(*options->publicKey());
     if (mojo_options) {
@@ -1193,7 +1210,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
           std::move(mojo_options),
           WTF::BindOnce(&OnGetAssertionComplete,
                         std::make_unique<ScopedPromiseResolver>(resolver),
-                        WrapPersistent(signal)));
+                        WrapPersistent(signal), is_conditional_ui_request));
     } else {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
@@ -1615,16 +1632,23 @@ ScriptPromise CredentialsContainer::create(
             "publicKey.authenticatorSelection.userVerification value"));
   }
 
+  bool is_rk_required = false;
   if (options->publicKey()->hasAuthenticatorSelection() &&
-      options->publicKey()->authenticatorSelection()->hasResidentKey() &&
-      !mojo::ConvertTo<absl::optional<mojom::blink::ResidentKeyRequirement>>(
-          options->publicKey()->authenticatorSelection()->residentKey())) {
-    resolver->DomWindow()->AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kJavaScript,
-            mojom::blink::ConsoleMessageLevel::kWarning,
-            "Ignoring unknown publicKey.authenticatorSelection.residentKey "
-            "value"));
+      options->publicKey()->authenticatorSelection()->hasResidentKey()) {
+    auto rk_requirement =
+        mojo::ConvertTo<absl::optional<mojom::blink::ResidentKeyRequirement>>(
+            options->publicKey()->authenticatorSelection()->residentKey());
+    if (!rk_requirement) {
+      resolver->DomWindow()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "Ignoring unknown publicKey.authenticatorSelection.residentKey "
+              "value"));
+    } else {
+      is_rk_required =
+          (rk_requirement == mojom::blink::ResidentKeyRequirement::REQUIRED);
+    }
   }
   // An empty list uses default algorithm identifiers.
   if (options->publicKey()->pubKeyCredParams().size() != 0) {
@@ -1682,7 +1706,8 @@ ScriptPromise CredentialsContainer::create(
           std::move(mojo_options),
           WTF::BindOnce(&OnMakePublicKeyCredentialComplete,
                         std::make_unique<ScopedPromiseResolver>(resolver),
-                        WrapPersistent(signal), required_origin_type));
+                        WrapPersistent(signal), required_origin_type,
+                        is_rk_required));
     }
   }
 

@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
+#include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -40,6 +41,8 @@ void ConditionalUiDelegateAndroid::OnWebAuthnRequestPending(
     const std::vector<device::DiscoverableCredentialMetadata>& credentials,
     base::OnceCallback<void(const std::vector<uint8_t>& id)> callback) {
   webauthn_account_selection_callback_ = std::move(callback);
+
+  ReportConditionalUiPasskeyCount(credentials.size());
 
   ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
       content::WebContents::FromRenderFrameHost(frame_host))

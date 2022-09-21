@@ -23,6 +23,7 @@
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
+#include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/global_routing_id.h"
@@ -1021,6 +1022,7 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
   auto* render_frame_host = content::RenderFrameHost::FromID(frame_host_id_);
   auto* web_contents = GetWebContents();
   if (web_contents && render_frame_host) {
+    ReportConditionalUiPasskeyCount(ephemeral_state_.creds_.size());
     ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
         ->GetDelegateForFrame(render_frame_host)
         ->OnCredentialsReceived(ephemeral_state_.creds_);
