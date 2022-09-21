@@ -85,7 +85,7 @@ class DriverContext:
     # battery is no longer reporting being fully charged before benchmarking.
 
     power_sampler_args = [
-        self._power_sample_path, "--sample-on-notification",
+        self._power_sample_path, "sample-every-nth-notification=1",
         "--samplers=battery", "--sample-count=1"
     ]
 
@@ -196,8 +196,8 @@ class DriverContext:
                                               stdin=subprocess.PIPE)
 
       power_sampler_args = [
-          self._power_sample_path, "--sample-on-notification",
-          f"--sample-every-notification={int(cycle_length_in_secs/60)}",
+          self._power_sample_path,
+          f"--sample-every-nth-notification={int(cycle_length_in_secs/60)}",
           "--samplers=battery,smc,user_idle_level,main_display",
           f"--timeout={int(scenario_driver.duration.total_seconds())}",
           f"--json-output-file={power_sampler_output}"
