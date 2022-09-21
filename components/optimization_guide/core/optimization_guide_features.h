@@ -22,35 +22,35 @@
 namespace optimization_guide {
 namespace features {
 
-extern const base::Feature kOptimizationHints;
-extern const base::Feature kRemoteOptimizationGuideFetching;
-extern const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent;
-extern const base::Feature kContextMenuPerformanceInfoAndRemoteHintFetching;
-extern const base::Feature kOptimizationTargetPrediction;
-extern const base::Feature kOptimizationGuideModelDownloading;
-extern const base::Feature kPageContentAnnotations;
-extern const base::Feature kPageEntitiesPageContentAnnotations;
-extern const base::Feature kPageVisibilityPageContentAnnotations;
-extern const base::Feature kPageEntitiesModelBypassFilters;
-extern const base::Feature kPageTextExtraction;
-extern const base::Feature kPushNotifications;
-extern const base::Feature kOptimizationGuideMetadataValidation;
-extern const base::Feature kPageTopicsBatchAnnotations;
-extern const base::Feature kPageVisibilityBatchAnnotations;
-extern const base::Feature kPageEntitiesModelResetOnShutdown;
-extern const base::Feature kPageEntitiesModelBypassFilters;
-extern const base::Feature kUseLocalPageEntitiesMetadataProvider;
-extern const base::Feature kPageContentAnnotationsValidation;
-extern const base::Feature kPreventLongRunningPredictionModels;
-extern const base::Feature kOverrideNumThreadsForModelExecution;
-extern const base::Feature kOptGuideEnableXNNPACKDelegateWithTFLite;
-extern const base::Feature kRemotePageMetadata;
-extern const base::Feature kOptimizationHintsComponent;
+BASE_DECLARE_FEATURE(kOptimizationHints);
+BASE_DECLARE_FEATURE(kRemoteOptimizationGuideFetching);
+BASE_DECLARE_FEATURE(kRemoteOptimizationGuideFetchingAnonymousDataConsent);
+BASE_DECLARE_FEATURE(kContextMenuPerformanceInfoAndRemoteHintFetching);
+BASE_DECLARE_FEATURE(kOptimizationTargetPrediction);
+BASE_DECLARE_FEATURE(kOptimizationGuideModelDownloading);
+BASE_DECLARE_FEATURE(kPageContentAnnotations);
+BASE_DECLARE_FEATURE(kPageEntitiesPageContentAnnotations);
+BASE_DECLARE_FEATURE(kPageVisibilityPageContentAnnotations);
+BASE_DECLARE_FEATURE(kPageEntitiesModelBypassFilters);
+BASE_DECLARE_FEATURE(kPageTextExtraction);
+BASE_DECLARE_FEATURE(kPushNotifications);
+BASE_DECLARE_FEATURE(kOptimizationGuideMetadataValidation);
+BASE_DECLARE_FEATURE(kPageTopicsBatchAnnotations);
+BASE_DECLARE_FEATURE(kPageVisibilityBatchAnnotations);
+BASE_DECLARE_FEATURE(kPageEntitiesModelResetOnShutdown);
+BASE_DECLARE_FEATURE(kPageEntitiesModelBypassFilters);
+BASE_DECLARE_FEATURE(kUseLocalPageEntitiesMetadataProvider);
+BASE_DECLARE_FEATURE(kPageContentAnnotationsValidation);
+BASE_DECLARE_FEATURE(kPreventLongRunningPredictionModels);
+BASE_DECLARE_FEATURE(kOverrideNumThreadsForModelExecution);
+BASE_DECLARE_FEATURE(kOptGuideEnableXNNPACKDelegateWithTFLite);
+BASE_DECLARE_FEATURE(kRemotePageMetadata);
+BASE_DECLARE_FEATURE(kOptimizationHintsComponent);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
-extern const base::Feature
-    kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations;
+BASE_DECLARE_FEATURE(
+    kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations);
 
 // The grace period duration for how long to give outstanding page text dump
 // requests to respond after DidFinishLoad.

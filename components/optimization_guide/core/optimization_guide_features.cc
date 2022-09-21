@@ -77,102 +77,120 @@ bool IsSupportedLocaleForFeature(const std::string locale,
 
 // Enables the syncing of the Optimization Hints component, which provides
 // hints for what optimizations can be applied on a page load.
-const base::Feature kOptimizationHints{"OptimizationHints",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOptimizationHints,
+             "OptimizationHints",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables fetching from a remote Optimization Guide Service.
-const base::Feature kRemoteOptimizationGuideFetching{
-    "OptimizationHintsFetching", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kRemoteOptimizationGuideFetching,
+             "OptimizationHintsFetching",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent{
-    "OptimizationHintsFetchingAnonymousDataConsent",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kRemoteOptimizationGuideFetchingAnonymousDataConsent,
+             "OptimizationHintsFetchingAnonymousDataConsent",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables performance info in the context menu and fetching from a remote
 // Optimization Guide Service.
-const base::Feature kContextMenuPerformanceInfoAndRemoteHintFetching{
-    "ContextMenuPerformanceInfoAndRemoteHintFetching",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kContextMenuPerformanceInfoAndRemoteHintFetching,
+             "ContextMenuPerformanceInfoAndRemoteHintFetching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the prediction of optimization targets.
-const base::Feature kOptimizationTargetPrediction{
-    "OptimizationTargetPrediction", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOptimizationTargetPrediction,
+             "OptimizationTargetPrediction",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the downloading of models.
-const base::Feature kOptimizationGuideModelDownloading {
-  "OptimizationGuideModelDownloading",
+BASE_FEATURE(kOptimizationGuideModelDownloading,
+             "OptimizationGuideModelDownloading",
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else   // BUILD_WITH_TFLITE_LIB
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif  // !BUILD_WITH_TFLITE_LIB
-};
+);
 
 // Enables page content to be annotated.
-const base::Feature kPageContentAnnotations{"PageContentAnnotations",
-                                            enabled_by_default_desktop_only};
+BASE_FEATURE(kPageContentAnnotations,
+             "PageContentAnnotations",
+             enabled_by_default_desktop_only);
 
 // Enables fetching page metadata from the remote Optimization Guide service.
-const base::Feature kRemotePageMetadata{"RemotePageMetadata",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRemotePageMetadata,
+             "RemotePageMetadata",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the page entities model to be annotated on every page load.
-const base::Feature kPageEntitiesPageContentAnnotations{
-    "PageEntitiesPageContentAnnotations", enabled_by_default_desktop_only};
+BASE_FEATURE(kPageEntitiesPageContentAnnotations,
+             "PageEntitiesPageContentAnnotations",
+             enabled_by_default_desktop_only);
 // Enables the page visibility model to be annotated on every page load.
-const base::Feature kPageVisibilityPageContentAnnotations{
-    "PageVisibilityPageContentAnnotations", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPageVisibilityPageContentAnnotations,
+             "PageVisibilityPageContentAnnotations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature flag does not allow for the entities model to load the name and
 // prefix filters.
-const base::Feature kPageEntitiesModelBypassFilters{
-    "PageEntitiesModelBypassFilters", enabled_by_default_desktop_only};
+BASE_FEATURE(kPageEntitiesModelBypassFilters,
+             "PageEntitiesModelBypassFilters",
+             enabled_by_default_desktop_only);
 
 // This feature flag enables resetting the entities model on shutdown.
-const base::Feature kPageEntitiesModelResetOnShutdown{
-    "PageEntitiesModelResetOnShutdown", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPageEntitiesModelResetOnShutdown,
+             "PageEntitiesModelResetOnShutdown",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables push notification of hints.
-const base::Feature kPushNotifications{"OptimizationGuidePushNotifications",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPushNotifications,
+             "OptimizationGuidePushNotifications",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature flag does not turn off any behavior, it is only used for
 // experiment parameters.
-const base::Feature kPageTextExtraction{
-    "OptimizationGuidePageContentExtraction", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPageTextExtraction,
+             "OptimizationGuidePageContentExtraction",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the validation of optimization guide metadata.
-const base::Feature kOptimizationGuideMetadataValidation{
-    "OptimizationGuideMetadataValidation", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOptimizationGuideMetadataValidation,
+             "OptimizationGuideMetadataValidation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPageTopicsBatchAnnotations{
-    "PageTopicsBatchAnnotations", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kPageVisibilityBatchAnnotations{
-    "PageVisibilityBatchAnnotations", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPageTopicsBatchAnnotations,
+             "PageTopicsBatchAnnotations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPageVisibilityBatchAnnotations,
+             "PageVisibilityBatchAnnotations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kUseLocalPageEntitiesMetadataProvider{
-    "UseLocalPageEntitiesMetadataProvider", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseLocalPageEntitiesMetadataProvider,
+             "UseLocalPageEntitiesMetadataProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPageContentAnnotationsValidation{
-    "PageContentAnnotationsValidation", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPageContentAnnotationsValidation,
+             "PageContentAnnotationsValidation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPreventLongRunningPredictionModels{
-    "PreventLongRunningPredictionModels", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPreventLongRunningPredictionModels,
+             "PreventLongRunningPredictionModels",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature
-    kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations{
-        "OptimizationGuideUseContinueOnShutdownForPageContentAnnotations",
-        base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations,
+             "OptimizationGuideUseContinueOnShutdownForPageContentAnnotations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kOverrideNumThreadsForModelExecution{
-    "OverrideNumThreadsForModelExecution", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOverrideNumThreadsForModelExecution,
+             "OverrideNumThreadsForModelExecution",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kOptGuideEnableXNNPACKDelegateWithTFLite{
-    "OptGuideEnableXNNPACKDelegateWithTFLite",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOptGuideEnableXNNPACKDelegateWithTFLite,
+             "OptGuideEnableXNNPACKDelegateWithTFLite",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kOptimizationHintsComponent{
-    "OptimizationHintsComponent", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOptimizationHintsComponent,
+             "OptimizationHintsComponent",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
