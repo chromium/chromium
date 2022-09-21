@@ -253,8 +253,42 @@ void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
                                 UnifiedPasswordManagerActiveStatus::kActive);
 }
 
+bool IsAuthenticationError(AndroidBackendAPIErrorCode api_error_code) {
+  switch (api_error_code) {
+    case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
+    case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
+      return true;
+    case AndroidBackendAPIErrorCode::kNetworkError:
+    case AndroidBackendAPIErrorCode::kInternalError:
+    case AndroidBackendAPIErrorCode::kDeveloperError:
+    case AndroidBackendAPIErrorCode::kApiNotConnected:
+    case AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall:
+    case AndroidBackendAPIErrorCode::kReconnectionTimedOut:
+    case AndroidBackendAPIErrorCode::kPassphraseRequired:
+    case AndroidBackendAPIErrorCode::kAccessDenied:
+    case AndroidBackendAPIErrorCode::kBadRequest:
+    case AndroidBackendAPIErrorCode::kBackendGeneric:
+    case AndroidBackendAPIErrorCode::kBackendResourceExhausted:
+    case AndroidBackendAPIErrorCode::kInvalidData:
+    case AndroidBackendAPIErrorCode::kUnmappedErrorCode:
+    case AndroidBackendAPIErrorCode::kUnexpectedError:
+    case AndroidBackendAPIErrorCode::kChromeSyncAPICallError:
+    case AndroidBackendAPIErrorCode::kErrorWhileDoingLeakServiceGRPC:
+    case AndroidBackendAPIErrorCode::kRequiredSyncingAccountMissing:
+    case AndroidBackendAPIErrorCode::kLeakCheckServiceAuthError:
+    case AndroidBackendAPIErrorCode::kLeakCheckServiceResourceExhausted:
+      return false;
+  }
+}
+
 bool IsUnrecoverableBackendError(AndroidBackendAPIErrorCode api_error_code) {
   switch (api_error_code) {
+    case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
+    case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
+      // Error messages encourage users to fix any auth errors. Therefore, treat
+      // them as recoverable errors.
+      return !base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerErrorMessages);
     case AndroidBackendAPIErrorCode::kDeveloperError:
     case AndroidBackendAPIErrorCode::kBadRequest:
       return false;
@@ -722,6 +756,9 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
   absl::optional<JobReturnHandler> reply = GetAndEraseJob(job_id);
   if (!reply.has_value())
     return;  // Task cleaned up after returning from background.
+
+  // Since the API call has succeeded, it's safe to reenable saving.
+  prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, false);
   reply->RecordMetrics(/*error=*/absl::nullopt);
   DCHECK(reply->Holds<LoginsOrErrorReply>());
   main_task_runner_->PostTask(
@@ -738,6 +775,9 @@ void PasswordStoreAndroidBackend::OnLoginsChanged(JobId job_id,
     return;  // Task cleaned up after returning from background.
   reply->RecordMetrics(/*error=*/absl::nullopt);
   DCHECK(reply->Holds<PasswordChangesOrErrorReply>());
+
+  // Since the API call has succeeded, it's safe to reenable saving.
+  prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, false);
 
   main_task_runner_->PostTask(
       FROM_HERE,
@@ -762,6 +802,11 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     // user, unenroll the user from the UPM experience.
     int api_error = error.api_error_code.value();
     auto api_error_code = static_cast<AndroidBackendAPIErrorCode>(api_error);
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kUnifiedPasswordManagerErrorMessages) &&
+        IsAuthenticationError(api_error_code)) {
+      prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);
+    }
     if (password_manager::IsUnrecoverableBackendError(api_error_code)) {
       if (!prefs_->GetBoolean(
               prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {

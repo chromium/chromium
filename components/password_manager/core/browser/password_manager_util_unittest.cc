@@ -330,6 +330,8 @@ class PasswordManagerUtilTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kOfferToSavePasswordsEnabledGMS, true);
     pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kSavePasswordsSuspendedByError, false);
+    pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kAutoSignInEnabledGMS, true);
 #endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

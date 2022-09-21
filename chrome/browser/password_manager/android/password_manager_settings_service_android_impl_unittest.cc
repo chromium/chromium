@@ -8,9 +8,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/android/fake_password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -194,6 +196,8 @@ void PasswordManagerSettingsServiceAndroidImplTest::RegisterPrefs() {
       password_manager::prefs::kCredentialsEnableAutosignin, true);
   test_pref_service_.registry()->RegisterBooleanPref(
       password_manager::prefs::kOfferToSavePasswordsEnabledGMS, true);
+  test_pref_service_.registry()->RegisterBooleanPref(
+      password_manager::prefs::kSavePasswordsSuspendedByError, false);
   test_pref_service_.registry()->RegisterBooleanPref(
       password_manager::prefs::kAutoSignInEnabledGMS, true);
   test_pref_service_.registry()->RegisterStringPref(
@@ -1038,4 +1042,116 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kCredentialsEnableAutosignin));
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kAutoSignInEnabledGMS));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       OverrideOfferToSaveForError) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {password_manager::features::kUnifiedPasswordManagerAndroid,
+       password_manager::features::kUnifiedPasswordManagerErrorMessages},
+      /*disabled_features=*/{});
+  InitializeSettingsService(/*password_sync_enabled=*/true,
+                            /*setting_sync_enabled=*/true);
+  pref_service()->SetUserPref(
+      password_manager::prefs::kCredentialsEnableService, base::Value(true));
+  pref_service()->SetUserPref(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
+      base::Value(true));
+  pref_service()->SetBoolean(
+      password_manager::prefs::kSavePasswordsSuspendedByError, true);
+
+  EXPECT_FALSE(settings_service()->IsSettingEnabled(
+      PasswordManagerSetting::kOfferToSavePasswords));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       OverrideOfferToSaveForErrorWhenNotSyncing) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {password_manager::features::kUnifiedPasswordManagerAndroid,
+       password_manager::features::kUnifiedPasswordManagerErrorMessages},
+      /*disabled_features=*/{});
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/true);
+  pref_service()->SetUserPref(
+      password_manager::prefs::kCredentialsEnableService, base::Value(true));
+  pref_service()->SetUserPref(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
+      base::Value(true));
+  pref_service()->SetBoolean(
+      password_manager::prefs::kSavePasswordsSuspendedByError, true);
+  EXPECT_FALSE(settings_service()->IsSettingEnabled(
+      PasswordManagerSetting::kOfferToSavePasswords));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       OverrideOfferToSaveForErrorWhenManaged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {password_manager::features::kUnifiedPasswordManagerAndroid,
+       password_manager::features::kUnifiedPasswordManagerErrorMessages},
+      /*disabled_features=*/{});
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/true);
+  pref_service()->SetUserPref(
+      password_manager::prefs::kCredentialsEnableService, base::Value(true));
+  pref_service()->SetUserPref(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
+      base::Value(true));
+  pref_service()->SetBoolean(
+      password_manager::prefs::kSavePasswordsSuspendedByError, true);
+  // Saving passwords is allowed by policy but errors enforce the stricter rule.
+  pref_service()->SetManagedPref(
+      password_manager::prefs::kCredentialsEnableService, base::Value(true));
+  EXPECT_FALSE(settings_service()->IsSettingEnabled(
+      PasswordManagerSetting::kOfferToSavePasswords));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       IgnoreOverrideOfferToSaveForErrorWhenUnenrolled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {password_manager::features::kUnifiedPasswordManagerAndroid,
+       password_manager::features::kUnifiedPasswordManagerErrorMessages},
+      /*disabled_features=*/{});
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/true);
+  pref_service()->SetUserPref(
+      password_manager::prefs::kCredentialsEnableService, base::Value(true));
+  pref_service()->SetUserPref(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
+      base::Value(true));
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      true);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kSavePasswordsSuspendedByError, true);
+  EXPECT_TRUE(settings_service()->IsSettingEnabled(
+      PasswordManagerSetting::kOfferToSavePasswords));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       IgnoreOverriddenValueForOfferToSaveWithoutFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{password_manager::features::
+                                kUnifiedPasswordManagerAndroid},
+      /*disabled_features=*/{
+          password_manager::features::kUnifiedPasswordManagerErrorMessages});
+  InitializeSettingsService(/*password_sync_enabled=*/true,
+                            /*setting_sync_enabled=*/true);
+  pref_service()->SetUserPref(
+      password_manager::prefs::kCredentialsEnableService, base::Value(true));
+  pref_service()->SetUserPref(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
+      base::Value(true));
+  pref_service()->SetBoolean(
+      password_manager::prefs::kSavePasswordsSuspendedByError, true);
+  EXPECT_TRUE(settings_service()->IsSettingEnabled(
+      PasswordManagerSetting::kOfferToSavePasswords));
 }
