@@ -3030,7 +3030,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.Latency"
-    units="ms" expires_after="M108">
+    units="ms" expires_after="M112">
   <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
@@ -3042,7 +3042,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.Success"
-    enum="BooleanSuccess" expires_after="M108">
+    enum="BooleanSuccess" expires_after="M112">
   <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
