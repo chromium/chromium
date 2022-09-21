@@ -111,4 +111,17 @@ public class WebsiteGroupTest {
         Assert.assertNotNull(ipaddr);
         Assert.assertTrue(ipaddr instanceof Website);
     }
+
+    @Test
+    @SmallTest
+    public void testFPSInfo() {
+        var fpsInfo = new FPSCookieInfo("google.com", 5);
+        Website origin1 = new Website(WebsiteAddress.create("maps.google.com"), null);
+        Website origin2 = new Website(WebsiteAddress.create("mail.google.com"), null);
+        origin2.setFPSCookieInfo(fpsInfo);
+        WebsiteGroup group = new WebsiteGroup(origin2.getAddress().getDomainAndRegistry(),
+                new ArrayList<>(Arrays.asList(origin2, origin1)));
+
+        Assert.assertEquals(fpsInfo, group.getFPSInfo());
+    }
 }

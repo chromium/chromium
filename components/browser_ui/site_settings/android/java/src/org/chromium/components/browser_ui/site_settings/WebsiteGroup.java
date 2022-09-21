@@ -23,6 +23,8 @@ public class WebsiteGroup implements WebsiteEntry {
     private final List<Website> mWebsites;
     // Total storage taken up by all the stored websites.
     private final long mTotalUsage;
+    // First Party Sets info relative to the eTLD+1.
+    private FPSCookieInfo mFPSInfo;
 
     /**
      * Groups the websites by eTLD+1.
@@ -61,6 +63,9 @@ public class WebsiteGroup implements WebsiteEntry {
         for (Website website : websites) {
             totalUsage += website.getTotalUsage();
         }
+        if (websites.size() > 0) {
+            mFPSInfo = websites.get(0).getFPSCookieInfo();
+        }
         mTotalUsage = totalUsage;
     }
 
@@ -95,6 +100,10 @@ public class WebsiteGroup implements WebsiteEntry {
         }
         // No matches.
         return false;
+    }
+
+    public FPSCookieInfo getFPSInfo() {
+        return mFPSInfo;
     }
 
     public String getDomainAndRegistry() {
