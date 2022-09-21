@@ -145,30 +145,48 @@ class FormDataImporter : public PersonalDataManagerObserver {
     ProfileImportMetadata import_metadata;
   };
 
-  // Scans the given `form` for importable Autofill data and stores it in the
-  // function's out parameters. The function returns true if at least one piece
-  // of importable address or credit card information was found.
-  // If the form contains UPI data and `credit_card_autofill_enabled` is true,
-  // the UPI ID will be stored into `imported_upi_id`. In this case, the
-  // function will return true as well.
+  // Defines data imported from the form.
+  struct ImportFormDataResult {
+    ImportFormDataResult();
+    ImportFormDataResult(const ImportFormDataResult& imported_form_data);
+    ImportFormDataResult& operator=(
+        const ImportFormDataResult& imported_form_data);
+    ~ImportFormDataResult();
+
+    // Credit card extracted from the form, which is a candidate for importing.
+    // This credit card will be present after extraction if the form contained a
+    // valid credit card, and the preconditions for extracting the credit card
+    // were met. See ImportCreditCard() for details on when
+    // the preconditions are met for extracting a credit card from a form.
+    absl::optional<CreditCard> credit_card_import_candidate;
+    // List of address profiles which are candidates for importing. The list is
+    // empty if none of the address profile fulfill import requirements.
+    std::vector<AddressProfileImportCandidate>
+        address_profile_import_candidates;
+    // Present if a UPI (Unified Payment Interface) ID is found in the form.
+    absl::optional<std::string> imported_upi_id;
+  };
+
+  // This function scans the given |form| for importable Autofill data.
+  // Returns true if one of the conditions meet:
+  // 1) the form includes either sufficient address data for a new profile.
+  // 2) ImportCreditCard() returns true
+  // 3) The form contains UPI data and |credit_card_autofill_enabled| is true.
   bool ImportFormData(const FormStructure& form,
                       bool profile_autofill_enabled,
                       bool credit_card_autofill_enabled,
                       bool should_return_local_card,
-                      std::unique_ptr<CreditCard>* imported_credit_card,
-                      std::vector<AddressProfileImportCandidate>&
-                          address_profile_import_candidates,
-                      absl::optional<std::string>* imported_upi_id);
+                      ImportFormDataResult* imported_form_data);
 
   // Attempts to construct AddressProfileImportCandidates by extracting values
-  // from the fields in the `form`'s sections. Extraction can fail if the
+  // from the fields in the |form|'s sections. Extraction can fail if the
   // fields' values don't pass validation. Apart from complete address profiles,
   // partial profiles for silent updates are extracted. All are stored in
-  // `import_candidates`.
+  // |imported_form_data|'s |address_profile_import_candidates|.
   // The function returns the number of _complete_ extracted profiles.
-  size_t ImportAddressProfiles(
-      const FormStructure& form,
-      std::vector<AddressProfileImportCandidate>& import_candidates);
+  size_t ImportAddressProfiles(const FormStructure& form,
+                               std::vector<AddressProfileImportCandidate>*
+                                   address_profile_import_candidates);
 
   // Helper method for ImportAddressProfiles which only considers the fields for
   // a specified |section|. If no section is passed, the import is performed on
@@ -176,47 +194,50 @@ class FormDataImporter : public PersonalDataManagerObserver {
   bool ImportAddressProfileForSection(
       const FormStructure& form,
       const absl::optional<Section>& section,
-      std::vector<AddressProfileImportCandidate>& import_candidates,
+      std::vector<AddressProfileImportCandidate>*
+          address_profile_import_candidates,
       LogBuffer* import_log_buffer);
 
-  // Go through the |form| fields and attempt to extract a new credit card in
-  // |imported_credit_card|, or update an existing card. If we can find a local
-  // card or server card that matches the card in the form, then it will always
-  // be set in |imported_credit_card| and |imported_credit_card_record_type_|
-  // will be set to the corresponding credit card record type (for example,
-  // LOCAL_CARD). If we cannot find a local card or server card that matches the
-  // card in the form, we will set |imported_credit_card| to the extracted card
-  // from the form and |imported_credit_card_record_type_| will be set to
-  // NEW_CARD. In cases where we have both a server card and local card entry
-  // for |imported_credit_card|, we will update the local card entry but set
-  // |imported_credit_card| to the server card data as that is the source of
-  // truth, and |imported_credit_card_record_type_| will be SERVER_CARD. This
-  // function returns true if the extracted card is saveable (such as if it is a
+  // Returns true if the extracted card is saveable (such as if it is a
   // new card or a local card with upload enabled) or if it resulted in updating
   // the data of a local card.
-  bool ImportCreditCard(const FormStructure& form,
-                        bool should_return_local_card,
-                        std::unique_ptr<CreditCard>* imported_credit_card);
+  // This function goes through the |form| fields and attempts to extract a new
+  // credit card or update an existing card. If we can find a local card or
+  // server card that matches the card in the form, it will be returned and
+  // |imported_credit_card_record_type_| will be set to the corresponding credit
+  // card record type (for example, LOCAL_CARD). If we cannot find a local card
+  // or server card that matches the card in the form, we will set the
+  // extracted card from the form to |credit_card_import_candidate| and
+  // |imported_credit_card_record_type_| will be set to NEW_CARD. In cases
+  // where we have both a server card and local card entry for extracted credit
+  // card from the form, we will update the local card entry but set the server
+  // card data to |credit_card_import_candidate| as that is the source of truth,
+  // and |imported_credit_card_record_type_| will be SERVER_CARD.
+  bool ImportCreditCard(
+      const FormStructure& form,
+      bool should_return_local_card,
+      absl::optional<CreditCard>* credit_card_import_candidate);
 
-  // Tries to initiate the saving of |imported_credit_card| if applicable.
-  // |submitted_form| is the form from which the card was imported.
-  // If a UPI id was found it is stored in |detected_upi_id|.
+  // Tries to initiate the saving of the |credit_card_import_candidate|
+  // if applicable. |submitted_form| is the form from which the card was
+  // imported. If a UPI id was found it is stored in |imported_upi_id|.
   // |credit_card_autofill_enabled| indicates if credit card filling is enabled
   // and |is_credit_card_upstream_enabled| indicates if server card storage is
   // enabled. Returns true if a save is initiated.
   bool ProcessCreditCardImportCandidate(
       const FormStructure& submitted_form,
-      std::unique_ptr<CreditCard> imported_credit_card,
-      absl::optional<std::string> detected_upi_id,
+      const absl::optional<CreditCard>& credit_card_import_candidate,
+      const absl::optional<std::string>& imported_upi_id,
       bool credit_card_autofill_enabled,
       bool is_credit_card_upstream_enabled);
 
   // Processes the address profile import candidates.
-  // |import_candidates| contains the addresses extracted from the form.
-  // |allow_prompt| denotes if a prompt can be shown.
+  // |address_profile_import_candidates| contains the addresses extracted
+  // from the form. |allow_prompt| denotes if a prompt can be shown.
   // Returns true if the import of a complete profile is initiated.
   bool ProcessAddressProfileImportCandidates(
-      const std::vector<AddressProfileImportCandidate>& import_candidates,
+      const std::vector<AddressProfileImportCandidate>&
+          address_profile_import_candidates,
       bool allow_prompt = true);
 
   // Extracts credit card from the form structure. |hasDuplicateFieldType| will
@@ -228,16 +249,17 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // will be empty if no UPI ID was found.
   absl::optional<std::string> ImportUpiId(const FormStructure& form);
 
-  // |imported_credit_card| stores a pointer to the card imported from the form.
-  // If no valid card was imported, it is set to nullptr. It might be set to a
-  // copy of a LOCAL_CARD or SERVER_CARD we have already saved if we were able
-  // to find a matching copy. |is_credit_card_upstream_enabled| denotes whether
-  // the user has credit card upload enabled. This function is used to prevent
-  // offering upload card save or local card save in situations where it would
-  // be invalid to offer them. For example, we should not offer to upload card
-  // if it is already a server card.
+  // Returns true if credit card upload or local save should be offered to user.
+  // |credit_card_import_candidate| is the credit card imported from the form if
+  // there is any. If no valid card was imported, it is set to nullopt. It might
+  // be set to a copy of a LOCAL_CARD or SERVER_CARD we have already saved if we
+  // were able to find a matching copy. |is_credit_card_upstream_enabled|
+  // denotes whether the user has credit card upload enabled. This function is
+  // used to prevent offering upload card save or local card save in situations
+  // where it would be invalid to offer them. For example, we should not offer
+  // to upload card if it is already a valid server card.
   bool ShouldOfferUploadCardOrLocalCardSave(
-      const CreditCard* imported_credit_card,
+      const absl::optional<CreditCard>& credit_card_import_candidate,
       bool is_credit_card_upload_enabled);
 
   // If the `profile`'s country is not empty, complements it with
@@ -291,7 +313,8 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // Represents the type of the imported credit card from the submitted form.
   // It will be used to determine whether to offer Upstream or card migration.
   // Will be passed to |credit_card_save_manager_| for metrics.
-  ImportedCreditCardRecordType imported_credit_card_record_type_;
+  ImportedCreditCardRecordType imported_credit_card_record_type_ =
+      ImportedCreditCardRecordType::NO_CARD;
 
   std::string app_locale_;
 

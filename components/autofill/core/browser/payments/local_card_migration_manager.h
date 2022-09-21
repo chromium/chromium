@@ -97,12 +97,13 @@ class LocalCardMigrationManager {
 
   // Returns true if all of the conditions for allowing local credit card
   // migration are satisfied. Initializes the local card list for upload. Stores
-  // a local copy of |imported_credit_card| and
+  // a local copy of |credit_card_import_candidate| and
   // |imported_credit_card_record_type| locally for later check whether the
-  // imported card is supported. |imported_credit_card| might be null if a user
-  // used server card.
-  bool ShouldOfferLocalCardMigration(const CreditCard* imported_credit_card,
-                                     int imported_credit_card_record_type);
+  // imported card is supported. |credit_card_import_candidate| might be null if
+  // a user used server card.
+  bool ShouldOfferLocalCardMigration(
+      const absl::optional<CreditCard>& credit_card_import_candidate,
+      int imported_credit_card_record_type);
 
   // Called from FormDataImporter or settings page when all migration
   // requirements are met. Fetches legal documents and triggers the
