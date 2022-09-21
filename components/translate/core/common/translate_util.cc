@@ -53,6 +53,11 @@ const base::FeatureParam<int>
 const base::FeatureParam<int> kDesktopPartialTranslateBubbleShowDelayMs{
     &kDesktopPartialTranslate, "DesktopPartialTranslateBubbleShowDelayMs", 500};
 
+#if !BUILDFLAG(IS_WIN)
+const base::Feature kMmapLanguageDetectionModel{
+    "MmapLanguageDetectionModel", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 GURL GetTranslateSecurityOrigin() {
   std::string security_origin(kSecurityOrigin);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

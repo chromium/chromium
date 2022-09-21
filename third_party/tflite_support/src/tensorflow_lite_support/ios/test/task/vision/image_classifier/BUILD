@@ -79,7 +79,7 @@ objc_library(
 
 ios_unit_test(
     name = "TFLImageClassifierCoreMLDelegateTest",
-    minimum_os_version = "11.0",
+    minimum_os_version = TFL_MINIMUM_OS_VERSION,
     runner = tflite_ios_lab_runner("IOS_LATEST"),
     tags = TFL_DEFAULT_TAGS + TFL_DISABLED_SANITIZER_TAGS,
     deps = [

@@ -34,7 +34,6 @@ android_library_with_tflite(
 android_library(
     name = "text_searcher_java",
     srcs = glob(["*.java"]),
-    javacopts = ["-source 7 -target 7"],
     manifest = "AndroidManifest.xml",
     deps = [
         "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/core:base_task_api",

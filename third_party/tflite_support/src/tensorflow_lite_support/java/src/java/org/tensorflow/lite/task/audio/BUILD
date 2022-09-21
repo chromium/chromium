@@ -16,7 +16,6 @@ android_library(
         "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/audio/classifier:audio_classifier_src",
     ],
     # TODO(b/163039980): Use JAVACOPTS in TF. "-Xep:RemoveUnusedImports:ERROR" wierdly break the build.
-    javacopts = ["-source 7 -target 7"],
     manifest = "AndroidManifest.xml",
     visibility = ["//visibility:public"],
     # LINT.IfChange(dep)

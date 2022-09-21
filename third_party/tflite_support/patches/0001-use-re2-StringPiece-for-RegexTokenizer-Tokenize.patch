@@ -1,4 +1,4 @@
-From 75beb78f7fd5f832fefdd9d7de003573d3c5da4f Mon Sep 17 00:00:00 2001
+From 097ca97449e4c33e6db6bb44fbbb5e75e572ccb2 Mon Sep 17 00:00:00 2001
 From: Jun Zou <junzou@chromium.org>
 Date: Tue, 30 Aug 2022 17:57:43 +0000
 Subject: [PATCH 01/12] use re2 StringPiece for RegexTokenizer Tokenize
@@ -32,5 +32,5 @@ index 564f5f63a0584..832f9df42f824 100644
      bool has_non_empty_token = token.length() > 0;
  
 -- 
-2.37.2.672.g94769d06f0-goog
+2.37.3.998.g577e59143f-goog
 

@@ -33,6 +33,10 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/core/proto/external_file_proto_inc.h"
 #include "tensorflow_lite_support/metadata/cc/metadata_extractor.h"
 
+#ifdef ABSL_HAVE_MMAP
+#include <sys/mman.h>
+#endif
+
 namespace tflite {
 namespace task {
 namespace core {

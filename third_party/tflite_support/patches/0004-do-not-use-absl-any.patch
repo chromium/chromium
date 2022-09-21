@@ -1,4 +1,4 @@
-From fc97a636ba1314027fed742e7e956cad8c354e8e Mon Sep 17 00:00:00 2001
+From 65b5803e7240b03fa553ee800d49d947ff9d8162 Mon Sep 17 00:00:00 2001
 From: Jun Zou <junzou@chromium.org>
 Date: Tue, 30 Aug 2022 18:01:41 +0000
 Subject: [PATCH 04/12] do not use absl any
@@ -60,5 +60,5 @@ index 344879341479f..77a41e081b72b 100644
    Format format_;
    Orientation orientation_;
 -- 
-2.37.2.672.g94769d06f0-goog
+2.37.3.998.g577e59143f-goog
 

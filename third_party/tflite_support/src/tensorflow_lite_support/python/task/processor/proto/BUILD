@@ -1,7 +1,7 @@
 # Placeholder for internal Python strict library compatibility macro.
 
 package(
-    default_visibility = ["//tensorflow_lite_support:internal"],
+    default_visibility = ["//tensorflow_lite_support:users"],
     licenses = ["notice"],  # Apache 2.0
 )
 

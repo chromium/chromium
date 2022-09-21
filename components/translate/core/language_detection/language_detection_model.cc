@@ -4,6 +4,7 @@
 
 #include "components/translate/core/language_detection/language_detection_model.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
@@ -91,15 +92,26 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
       ->mutable_cpu_settings()
       ->set_num_threads(num_threads_);
 
-  std::string file_content(model_file.GetLength(), '\0');
-  int bytes_read =
-      model_file.Read(0, std::data(file_content), model_file.GetLength());
-  if (bytes_read != model_file.GetLength()) {
-    return;
+// Windows doesn't support using mmap for the language detection model.
+#if !BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(kMmapLanguageDetectionModel)) {
+    options.mutable_base_options()
+        ->mutable_model_file()
+        ->mutable_file_descriptor_meta()
+        ->set_fd(model_file.GetPlatformFile());
+  } else
+#endif
+  {
+    std::string file_content(model_file.GetLength(), '\0');
+    int bytes_read =
+        model_file.Read(0, std::data(file_content), model_file.GetLength());
+    if (bytes_read != model_file.GetLength()) {
+      return;
+    }
+    *options.mutable_base_options()
+         ->mutable_model_file()
+         ->mutable_file_content() = std::move(file_content);
   }
-  *options.mutable_base_options()
-       ->mutable_model_file()
-       ->mutable_file_content() = std::move(file_content);
 
   auto statusor_classifier =
       tflite::task::text::nlclassifier::NLClassifier::CreateFromOptions(

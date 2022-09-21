@@ -32,7 +32,6 @@ android_library(
     srcs = [
         "NLClassifier.java",
     ],
-    javacopts = ["-source 7 -target 7"],
     deps = [
         "//tensorflow_lite_support/java:tensorflowlite_support_java",
         "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/core:base_task_api",
@@ -57,7 +56,6 @@ android_library_with_tflite(
     srcs = [
         "BertNLClassifier.java",
     ],
-    javacopts = ["-source 7 -target 7"],
     tflite_exports = [
         "//tensorflow_lite_support/java/src/native/task/text/nlclassifier/bert:bert_nl_classifier_native",
     ],

@@ -50,7 +50,7 @@ third_party_licenses(
         "AndroidX versionedparcelable library": "third_party/java/android/android_sdk_linux/extras/android/compatibility/versionedparcelable/LICENSE",
         "AndroidX viewpager library": "third_party/java/androidx/viewpager/LICENSE",
         "Animal Sniffer": "third_party/java/animal_sniffer/LICENSE",
-        "Checker Framework Annotations": "third_party/java/checker_framework_annotations/v3_21_4_eisop1/LICENSE",
+        "Checker Framework Annotations": "third_party/java/checker_framework_annotations/LICENSE",
         "Error Prone": "third_party/java/error_prone/LICENSE",
         "Google Auto": "third_party/java/auto/LICENSE",
         "Guava JDK5": "third_party/java/android_libs/guava_jdk5/LICENSE",

@@ -24,7 +24,7 @@ import "tensorflow_lite_support/cc/task/core/proto/external_file.proto";
 // Options for setting up an ImageClassifier.
 // Next Id: 15
 message ImageClassifierOptions {
-  // Base options for configuring Task library, such as specifying the TfLite
+  // Base options for configuring MediaPipe Tasks, such as specifying the TfLite
   // model file with metadata, accelerator options, etc.
   optional tflite.task.core.BaseOptions base_options = 14;
 
