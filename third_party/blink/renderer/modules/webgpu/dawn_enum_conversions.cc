@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_blend_operation.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_binding_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compare_function.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pass_timestamp_location.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_cull_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_error_filter.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_pipeline_statistic_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_primitive_topology.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_query_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_timestamp_location.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_sampler_binding_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_stencil_operation.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_storage_texture_access.h"
@@ -895,6 +897,26 @@ WGPUErrorFilter AsDawnEnum(const V8GPUErrorFilter& webgpu_enum) {
       return WGPUErrorFilter_Validation;
     case V8GPUErrorFilter::Enum::kInternal:
       return WGPUErrorFilter_Internal;
+  }
+}
+
+WGPUComputePassTimestampLocation AsDawnEnum(
+    const V8GPUComputePassTimestampLocation& webgpu_enum) {
+  switch (webgpu_enum.AsEnum()) {
+    case V8GPUComputePassTimestampLocation::Enum::kBeginning:
+      return WGPUComputePassTimestampLocation_Beginning;
+    case V8GPUComputePassTimestampLocation::Enum::kEnd:
+      return WGPUComputePassTimestampLocation_End;
+  }
+}
+
+WGPURenderPassTimestampLocation AsDawnEnum(
+    const V8GPURenderPassTimestampLocation& webgpu_enum) {
+  switch (webgpu_enum.AsEnum()) {
+    case V8GPURenderPassTimestampLocation::Enum::kBeginning:
+      return WGPURenderPassTimestampLocation_Beginning;
+    case V8GPURenderPassTimestampLocation::Enum::kEnd:
+      return WGPURenderPassTimestampLocation_End;
   }
 }
 

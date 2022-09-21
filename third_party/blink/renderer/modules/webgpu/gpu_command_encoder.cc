@@ -7,11 +7,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_encoder_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pass_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pass_timestamp_write.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_buffer.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_color_attachment.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_depth_stencil_attachment.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_timestamp_write.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_doublesequence_gpucolordict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_doublesequence_gpucolordict_gpuloadop.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_float_gpuloadop.h"
@@ -78,6 +80,32 @@ WGPURenderPassColorAttachment AsDawnType(
     // TODO(dawn:1269): Remove when deprecation period is complete.
     dawn_desc.storeOp = WGPUStoreOp_Store;
   }
+
+  return dawn_desc;
+}
+
+WGPUComputePassTimestampWrite AsDawnType(
+    const GPUComputePassTimestampWrite* webgpu_desc) {
+  DCHECK(webgpu_desc);
+  DCHECK(webgpu_desc->querySet());
+
+  WGPUComputePassTimestampWrite dawn_desc = {};
+  dawn_desc.querySet = webgpu_desc->querySet()->GetHandle();
+  dawn_desc.queryIndex = webgpu_desc->queryIndex();
+  dawn_desc.location = AsDawnEnum(webgpu_desc->location());
+
+  return dawn_desc;
+}
+
+WGPURenderPassTimestampWrite AsDawnType(
+    const GPURenderPassTimestampWrite* webgpu_desc) {
+  DCHECK(webgpu_desc);
+  DCHECK(webgpu_desc->querySet());
+
+  WGPURenderPassTimestampWrite dawn_desc = {};
+  dawn_desc.querySet = webgpu_desc->querySet()->GetHandle();
+  dawn_desc.queryIndex = webgpu_desc->queryIndex();
+  dawn_desc.location = AsDawnEnum(webgpu_desc->location());
 
   return dawn_desc;
 }
@@ -288,6 +316,17 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     dawn_desc.occlusionQuerySet = nullptr;
   }
 
+  uint32_t timestamp_writes_count =
+      static_cast<uint32_t>(descriptor->timestampWrites().size());
+  dawn_desc.timestampWriteCount = timestamp_writes_count;
+  std::unique_ptr<WGPURenderPassTimestampWrite[]> timestamp_writes;
+  if (timestamp_writes_count > 0) {
+    timestamp_writes = AsDawnType(descriptor->timestampWrites());
+    dawn_desc.timestampWrites = timestamp_writes.get();
+  } else {
+    dawn_desc.timestampWrites = nullptr;
+  }
+
   WGPURenderPassDescriptorMaxDrawCount max_draw_count = {};
   if (descriptor->hasMaxDrawCount()) {
     max_draw_count.chain.sType = WGPUSType_RenderPassDescriptorMaxDrawCount;
@@ -313,6 +352,17 @@ GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
   if (descriptor->hasLabel()) {
     label = descriptor->label().Utf8();
     dawn_desc.label = label.c_str();
+  }
+
+  uint32_t timestamp_writes_count =
+      static_cast<uint32_t>(descriptor->timestampWrites().size());
+  dawn_desc.timestampWriteCount = timestamp_writes_count;
+  std::unique_ptr<WGPUComputePassTimestampWrite[]> timestamp_writes;
+  if (timestamp_writes_count > 0) {
+    timestamp_writes = AsDawnType(descriptor->timestampWrites());
+    dawn_desc.timestampWrites = timestamp_writes.get();
+  } else {
+    dawn_desc.timestampWrites = nullptr;
   }
 
   GPUComputePassEncoder* encoder = MakeGarbageCollected<GPUComputePassEncoder>(
