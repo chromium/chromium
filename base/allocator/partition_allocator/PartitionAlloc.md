@@ -12,6 +12,10 @@ details. For implementation details, see the comments in
 * [Build Config](./build_config.md): Pertinent GN args, buildflags, and
   macros.
 
+* [Chrome-External Builds](./external_builds.md): Further considerations
+  for standalone PartitionAlloc, plus an embedder's guide for some extra
+  GN args.
+
 ## Overview
 
 PartitionAlloc is a memory allocator optimized for space efficiency,
