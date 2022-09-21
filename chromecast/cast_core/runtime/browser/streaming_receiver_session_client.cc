@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/cast_core/runtime/browser/streaming_controller_base.h"
@@ -111,8 +113,7 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
         continue;
       }
 
-      if (std::find(audio_codecs.begin(), audio_codecs.end(),
-                    converted_codec) == audio_codecs.end()) {
+      if (!base::Contains(audio_codecs, converted_codec)) {
         audio_codecs.push_back(converted_codec);
 
         audio_limits.emplace_back();
@@ -123,12 +124,9 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
         continue;
       }
 
-      auto it = std::find_if(
-          audio_limits.begin(), audio_limits.end(),
-          [converted_codec](
-              const openscreen::cast::ReceiverSession::AudioLimits& limit) {
-            return limit.codec == converted_codec;
-          });
+      auto it = base::ranges::find(
+          audio_limits, converted_codec,
+          &openscreen::cast::ReceiverSession::AudioLimits::codec);
       DCHECK(it != audio_limits.end());
       it->max_sample_rate =
           std::max(it->max_sample_rate, info.max_samples_per_second);
@@ -157,8 +155,7 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
     for (auto& info : *video_codec_infos) {
       const auto converted_codec = ToOpenscreenCodec(info.codec);
       if (converted_codec != openscreen::cast::VideoCodec::kNotSpecified &&
-          std::find(video_codecs.begin(), video_codecs.end(),
-                    converted_codec) == video_codecs.end()) {
+          !base::Contains(video_codecs, converted_codec)) {
         video_codecs.push_back(converted_codec);
       }
     }

@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -219,11 +220,8 @@ const blink::MediaStreamDevice* GetRequestedDeviceOrDefault(
     const blink::MediaStreamDevices& devices,
     const std::string& requested_device_id) {
   if (!requested_device_id.empty()) {
-    auto it = std::find_if(
-        devices.begin(), devices.end(),
-        [requested_device_id](const blink::MediaStreamDevice& device) {
-          return device.id == requested_device_id;
-        });
+    auto it = base::ranges::find(devices, requested_device_id,
+                                 &blink::MediaStreamDevice::id);
     return it != devices.end() ? &(*it) : nullptr;
   }
 

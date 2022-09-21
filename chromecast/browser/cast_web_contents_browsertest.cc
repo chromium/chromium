@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_CAST_WEB_CONTENTS_BROWSERTEST_H_
 #define CHROMECAST_BROWSER_CAST_WEB_CONTENTS_BROWSERTEST_H_
 
-#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -15,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -473,11 +473,9 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ErrorLoadFailSubFrames) {
   ASSERT_TRUE(ExecJs(web_contents_.get(), script));
 
   ASSERT_EQ(2, (int)render_frames_.size());
-  auto it = std::find_if(render_frames_.begin(), render_frames_.end(),
-                         [this](content::RenderFrameHost* frame) {
-                           return frame->GetParent() ==
-                                  web_contents_->GetPrimaryMainFrame();
-                         });
+  auto it =
+      base::ranges::find(render_frames_, web_contents_->GetPrimaryMainFrame(),
+                         &content::RenderFrameHost::GetParent);
   ASSERT_NE(render_frames_.end(), it);
   content::RenderFrameHost* sub_frame = *it;
   ASSERT_NE(nullptr, sub_frame);
