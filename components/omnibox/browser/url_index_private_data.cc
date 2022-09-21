@@ -282,8 +282,8 @@ bool URLIndexPrivateData::UpdateURL(
       row_was_updated = true;
     }
   } else {
-    // This indexed row no longer qualifies and will be de-indexed by
-    // clearing all words associated with this row.
+    // This indexed row no longer qualifies and will be de-indexed by clearing
+    // all words associated with this row.
     RemoveRowFromIndex(row);
     row_was_updated = true;
   }
@@ -348,11 +348,11 @@ scoped_refptr<URLIndexPrivateData> URLIndexPrivateData::RebuildFromHistory(
 
   base::TimeTicks beginning_time = base::TimeTicks::Now();
 
-  scoped_refptr<URLIndexPrivateData>
-      rebuilt_data(new URLIndexPrivateData);
   history::URLDatabase::URLEnumerator history_enum;
   if (!history_db->InitURLEnumeratorForSignificant(&history_enum))
     return nullptr;
+
+  scoped_refptr<URLIndexPrivateData> rebuilt_data(new URLIndexPrivateData);
 
   // Limiting the number of URLs indexed degrades the quality of suggestions to
   // save memory. This limit is only applied for urls indexed at startup and
@@ -716,7 +716,7 @@ bool URLIndexPrivateData::IndexRow(
     base::CancelableTaskTracker* tracker) {
   const GURL& gurl(row.url());
 
-  // Index only URLs with a allowlisted scheme.
+  // Index only URLs with an allowlisted scheme.
   if (!URLSchemeIsAllowlisted(gurl, scheme_allowlist))
     return false;
 

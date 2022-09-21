@@ -844,6 +844,8 @@ void HistoryService::SetImportedFavicons(
                               history_backend_, favicon_usage));
 }
 
+// Querying --------------------------------------------------------------------
+
 base::CancelableTaskTracker::TaskId HistoryService::QueryURL(
     const GURL& url,
     bool want_visits,

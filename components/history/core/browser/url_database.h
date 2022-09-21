@@ -145,13 +145,13 @@ class URLDatabase {
     bool GetNextURL(URLRow* r);
   };
 
-  // Initializes the given enumerator to enumerator all URLs in the database.
+  // Initializes the given enumerator to enumerate all URLs in the database.
   bool InitURLEnumeratorForEverything(URLEnumerator* enumerator);
 
-  // Initializes the given enumerator to enumerator all URLs in the database
-  // that are historically significant: ones having their URL manually typed
-  // more than once, having been visited within 3 days, or having been visited
-  // more than 3 times in the order of the most significant ones first.
+  // Initializes the given enumerator to enumerate all URLs in the database that
+  // are historically significant: ones having their URL manually typed at least
+  // once, having been visited within 3 days, or having been visited at least 4
+  // times in the order of the most significant ones first.
   bool InitURLEnumeratorForSignificant(URLEnumerator* enumerator);
 
   // Autocomplete --------------------------------------------------------------
