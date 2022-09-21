@@ -80,6 +80,7 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
   }
   auto icon = std::make_unique<views::ImageButton>(base::BindRepeating(
       &PhoneHubTray::PhoneHubIconActivated, weak_factory_.GetWeakPtr()));
+  icon->SetFocusBehavior(FocusBehavior::NEVER);
   icon->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
   icon->SetImageVerticalAlignment(
