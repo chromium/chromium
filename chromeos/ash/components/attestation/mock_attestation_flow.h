@@ -84,11 +84,12 @@ class MockAttestationFlow : public AttestationFlow {
   MockAttestationFlow();
   ~MockAttestationFlow() override;
 
-  MOCK_METHOD6(GetCertificate,
+  MOCK_METHOD7(GetCertificate,
                void(AttestationCertificateProfile,
                     const AccountId& account_id,
                     const std::string&,
                     bool,
+                    ::attestation::KeyType,
                     const std::string&, /* key_name */
                     CertificateCallback));
 };

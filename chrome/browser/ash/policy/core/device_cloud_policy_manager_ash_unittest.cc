@@ -628,18 +628,18 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
           mock_attestation_flow_,
           GetCertificate(
               ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-              /*force_new_key=*/false, _, _))
+              /*force_new_key=*/false, _, _, _))
           .Times(1)
           .WillOnce(
-              WithArgs<5>(Invoke(CertCallbackSuccessWithExpiredCertificate)));
+              WithArgs<6>(Invoke(CertCallbackSuccessWithExpiredCertificate)));
       EXPECT_CALL(
           mock_attestation_flow_,
           GetCertificate(
               ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-              /*force_new_key=*/true, _, _))
+              /*force_new_key=*/true, _, _, _))
           .Times(1)
           .WillOnce(
-              WithArgs<5>(Invoke(CertCallbackSuccessWithValidCertificate)));
+              WithArgs<6>(Invoke(CertCallbackSuccessWithValidCertificate)));
     }
     AddStateKeys();
   }
@@ -1051,7 +1051,7 @@ TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, DisableMachineCertReq) {
   EXPECT_CALL(mock_attestation_flow_,
               GetCertificate(ash::attestation::AttestationCertificateProfile::
                                  PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
-                             _, _, _, _, _))
+                             _, _, _, _, _, _))
       .Times(0);
 
   RunTest();

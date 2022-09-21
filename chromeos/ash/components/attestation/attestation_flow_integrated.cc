@@ -117,6 +117,7 @@ void AttestationFlowIntegrated::GetCertificate(
     const AccountId& account_id,
     const std::string& request_origin,
     bool force_new_key,
+    ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     CertificateCallback callback) {
   const std::string attestation_key_name =
@@ -124,10 +125,11 @@ void AttestationFlowIntegrated::GetCertificate(
           ? key_name
           : GetKeyNameForProfile(certificate_profile, request_origin);
 
-  base::OnceCallback<void(bool)> start_certificate_request = base::BindOnce(
-      &AttestationFlowIntegrated::StartCertificateRequest,
-      weak_factory_.GetWeakPtr(), certificate_profile, account_id,
-      request_origin, force_new_key, attestation_key_name, std::move(callback));
+  base::OnceCallback<void(bool)> start_certificate_request =
+      base::BindOnce(&AttestationFlowIntegrated::StartCertificateRequest,
+                     weak_factory_.GetWeakPtr(), certificate_profile,
+                     account_id, request_origin, force_new_key, key_crypto_type,
+                     attestation_key_name, std::move(callback));
 
   base::TimeTicks end_time = base::TimeTicks::Now() + ready_timeout_;
   WaitForAttestationPrepared(end_time, std::move(start_certificate_request));
@@ -171,6 +173,7 @@ void AttestationFlowIntegrated::StartCertificateRequest(
     const AccountId& account_id,
     const std::string& request_origin,
     bool generate_new_key,
+    ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     CertificateCallback callback,
     bool is_prepared) {
@@ -196,6 +199,7 @@ void AttestationFlowIntegrated::StartCertificateRequest(
   if (GetKeyTypeForProfile(certificate_profile) == KEY_USER) {
     request.set_username(cryptohome::Identification(account_id).id());
   }
+  request.set_key_type(key_crypto_type);
   request.set_key_label(key_name);
   request.set_shall_trigger_enrollment(true);
   request.set_forced(generate_new_key);

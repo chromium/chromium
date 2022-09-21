@@ -58,6 +58,7 @@ class AttestationFlowIntegratedTest : public testing::Test {
       ::attestation::ACAType aca_type,
       ::attestation::GetCertificateRequest request) {
     request.set_aca_type(aca_type);
+    request.set_key_type(request.key_type());
     if (request.key_label().empty()) {
       request.set_key_label(
           GetKeyNameForProfile(static_cast<AttestationCertificateProfile>(
@@ -88,6 +89,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificate) {
   request.set_username("username@email.com");
   request.set_key_label("label");
   request.set_request_origin("origin");
+  request.set_key_type(::attestation::KEY_TYPE_RSA);
 
   AllowlistCertificateRequest(::attestation::ACAType::DEFAULT_ACA, request);
 
@@ -105,15 +107,69 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificate) {
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
-      /*generate_new_key=*/true, request.key_label(), callback1.Get());
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, request.key_label(),
+      callback1.Get());
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
-      /*generate_new_key=*/true, request.key_label(), callback2.Get());
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, request.key_label(),
+      callback2.Get());
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
-      /*generate_new_key=*/false, request.key_label(),
+      /*force_new_key=*/false, ::attestation::KEY_TYPE_RSA, request.key_label(),
+      base::BindOnce(
+          &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
+          base::Unretained(this), callback3.Get()));
+  Run();
+  EXPECT_FALSE(certificate1.empty());
+  EXPECT_FALSE(certificate2.empty());
+  EXPECT_NE(certificate1, certificate2);
+  EXPECT_EQ(certificate2, certificate3);
+  histogram_tester_.ExpectUniqueSample(
+      "ChromeOS.Attestation.GetCertificateStatus",
+      ::attestation::STATUS_SUCCESS, 3);
+}
+
+TEST_F(AttestationFlowIntegratedTest, GetCertificateWithECC) {
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      true);
+
+  ::attestation::GetCertificateRequest request;
+  request.set_certificate_profile(
+      ::attestation::CertificateProfile::ENTERPRISE_USER_CERTIFICATE);
+  request.set_username("username@email.com");
+  request.set_key_label("label");
+  request.set_request_origin("origin");
+  request.set_key_type(::attestation::KEY_TYPE_ECC);
+
+  AllowlistCertificateRequest(::attestation::ACAType::DEFAULT_ACA, request);
+
+  base::MockCallback<AttestationFlowIntegrated::CertificateCallback> callback1,
+      callback2, callback3;
+  std::string certificate1, certificate2, certificate3;
+  EXPECT_CALL(callback1, Run(AttestationStatus::ATTESTATION_SUCCESS, _))
+      .WillOnce(SaveArg<1>(&certificate1));
+  EXPECT_CALL(callback2, Run(AttestationStatus::ATTESTATION_SUCCESS, _))
+      .WillOnce(SaveArg<1>(&certificate2));
+  EXPECT_CALL(callback3, Run(AttestationStatus::ATTESTATION_SUCCESS, _))
+      .WillOnce(SaveArg<1>(&certificate3));
+
+  AttestationFlowIntegrated flow;
+  flow.GetCertificate(
+      static_cast<AttestationCertificateProfile>(request.certificate_profile()),
+      AccountId::FromUserEmail(request.username()), request.request_origin(),
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_ECC, request.key_label(),
+      callback1.Get());
+  flow.GetCertificate(
+      static_cast<AttestationCertificateProfile>(request.certificate_profile()),
+      AccountId::FromUserEmail(request.username()), request.request_origin(),
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_ECC, request.key_label(),
+      callback2.Get());
+  flow.GetCertificate(
+      static_cast<AttestationCertificateProfile>(request.certificate_profile()),
+      AccountId::FromUserEmail(request.username()), request.request_origin(),
+      /*force_new_key=*/false, ::attestation::KEY_TYPE_ECC, request.key_label(),
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
           base::Unretained(this), callback3.Get()));
@@ -140,6 +196,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateCreatedByFactory) {
   request.set_username("username@email.com");
   request.set_key_label("label");
   request.set_request_origin("origin");
+  request.set_key_type(::attestation::KEY_TYPE_RSA);
 
   AllowlistCertificateRequest(::attestation::ACAType::DEFAULT_ACA, request);
 
@@ -162,15 +219,17 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateCreatedByFactory) {
   flow->GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
-      /*generate_new_key=*/true, request.key_label(), callback1.Get());
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, request.key_label(),
+      callback1.Get());
   flow->GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
-      /*generate_new_key=*/true, request.key_label(), callback2.Get());
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, request.key_label(),
+      callback2.Get());
   flow->GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
-      /*generate_new_key=*/false, request.key_label(),
+      /*force_new_key=*/false, ::attestation::KEY_TYPE_RSA, request.key_label(),
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
           base::Unretained(this), callback3.Get()));
@@ -194,6 +253,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateFailed) {
   request.set_username("username@email.com");
   request.set_key_label("label");
   request.set_request_origin("origin");
+  request.set_key_type(::attestation::KEY_TYPE_RSA);
 
   base::MockCallback<AttestationFlowIntegrated::CertificateCallback> callback;
   AttestationStatus status = AttestationStatus::ATTESTATION_SUCCESS;
@@ -203,7 +263,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateFailed) {
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
-      /*generate_new_key=*/true, request.key_label(),
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, request.key_label(),
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
           base::Unretained(this), callback.Get()));
@@ -226,6 +286,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateFailedInvalidProfile) {
   request.set_username("username@email.com");
   request.set_key_label("label");
   request.set_request_origin("origin");
+  request.set_key_type(::attestation::KEY_TYPE_RSA);
 
   base::MockCallback<AttestationFlowIntegrated::CertificateCallback> callback;
   AttestationStatus status = AttestationStatus::ATTESTATION_SUCCESS;
@@ -235,7 +296,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateFailedInvalidProfile) {
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
-      /*generate_new_key=*/true, request.key_label(),
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, request.key_label(),
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
           base::Unretained(this), callback.Get()));
@@ -256,6 +317,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNotPrepared) {
   request.set_username("username@email.com");
   request.set_key_label("label");
   request.set_request_origin("origin");
+  request.set_key_type(::attestation::KEY_TYPE_RSA);
 
   AllowlistCertificateRequest(::attestation::ACAType::DEFAULT_ACA, request);
 
@@ -269,7 +331,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNotPrepared) {
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
-      /*generate_new_key=*/true, request.key_label(),
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, request.key_label(),
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
           base::Unretained(this), callback.Get()));
@@ -290,6 +352,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNeverPrepared) {
   request.set_username("username@email.com");
   request.set_key_label("label");
   request.set_request_origin("origin");
+  request.set_key_type(::attestation::KEY_TYPE_RSA);
 
   AllowlistCertificateRequest(::attestation::ACAType::DEFAULT_ACA, request);
 
@@ -303,7 +366,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNeverPrepared) {
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
-      /*generate_new_key=*/true, request.key_label(),
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, request.key_label(),
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
           base::Unretained(this), callback.Get()));
@@ -323,6 +386,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationTestAca) {
   request.set_username("username@email.com");
   request.set_key_label("label");
   request.set_request_origin("origin");
+  request.set_key_type(::attestation::KEY_TYPE_RSA);
 
   AllowlistCertificateRequest(::attestation::ACAType::TEST_ACA, request);
 
@@ -335,7 +399,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationTestAca) {
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
-      /*generate_new_key=*/true, request.key_label(),
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, request.key_label(),
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
           base::Unretained(this), callback.Get()));
@@ -359,6 +423,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAcaTypeFromCommandline) {
   request.set_username("username@email.com");
   request.set_key_label("label");
   request.set_request_origin("origin");
+  request.set_key_type(::attestation::KEY_TYPE_RSA);
 
   AllowlistCertificateRequest(::attestation::ACAType::TEST_ACA, request);
 
@@ -371,7 +436,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAcaTypeFromCommandline) {
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
-      /*generate_new_key=*/true, request.key_label(),
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, request.key_label(),
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
           base::Unretained(this), callback.Get()));
@@ -391,6 +456,7 @@ TEST_F(AttestationFlowIntegratedTest, GetMachineCertificate) {
       ::attestation::CertificateProfile::ENTERPRISE_MACHINE_CERTIFICATE);
   request.set_key_label("label");
   request.set_request_origin("origin");
+  request.set_key_type(::attestation::KEY_TYPE_RSA);
 
   AllowlistCertificateRequest(::attestation::ACAType::DEFAULT_ACA, request);
 
@@ -402,8 +468,8 @@ TEST_F(AttestationFlowIntegratedTest, GetMachineCertificate) {
   AttestationFlowIntegrated flow;
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
-      EmptyAccountId(), request.request_origin(),
-      /*generate_new_key=*/true, request.key_label(),
+      EmptyAccountId(), request.request_origin(), /*force_new_key=*/true,
+      ::attestation::KEY_TYPE_RSA, request.key_label(),
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
           base::Unretained(this), callback.Get()));
@@ -428,6 +494,7 @@ TEST_F(AttestationFlowIntegratedTest, GetMachineCertificateWithAccountId) {
       ::attestation::CertificateProfile::ENTERPRISE_MACHINE_CERTIFICATE);
   request.set_key_label("label");
   request.set_request_origin("origin");
+  request.set_key_type(::attestation::KEY_TYPE_RSA);
 
   AllowlistCertificateRequest(::attestation::ACAType::DEFAULT_ACA, request);
 
@@ -440,7 +507,7 @@ TEST_F(AttestationFlowIntegratedTest, GetMachineCertificateWithAccountId) {
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail("username@gmail.com"), request.request_origin(),
-      /*generate_new_key=*/true, request.key_label(),
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, request.key_label(),
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
           base::Unretained(this), callback.Get()));
@@ -461,6 +528,7 @@ TEST_F(AttestationFlowIntegratedTest,
       ::attestation::CertificateProfile::ENTERPRISE_ENROLLMENT_CERTIFICATE);
   // Note: no key label is set.
   request.set_request_origin("origin");
+  request.set_key_type(::attestation::KEY_TYPE_RSA);
 
   AllowlistCertificateRequest(::attestation::ACAType::DEFAULT_ACA, request);
 
@@ -472,8 +540,8 @@ TEST_F(AttestationFlowIntegratedTest,
   AttestationFlowIntegrated flow;
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
-      EmptyAccountId(), request.request_origin(),
-      /*generate_new_key=*/true, request.key_label(),
+      EmptyAccountId(), request.request_origin(), /*force_new_key=*/true,
+      ::attestation::KEY_TYPE_RSA, request.key_label(),
       base::BindOnce(
           &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
           base::Unretained(this), callback.Get()));

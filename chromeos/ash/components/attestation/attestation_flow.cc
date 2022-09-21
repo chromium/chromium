@@ -84,16 +84,11 @@ AttestationKeyType AttestationFlow::GetKeyTypeForProfile(
   return KEY_USER;
 }
 
-AttestationFlow::AttestationFlow(std::unique_ptr<ServerProxy> server_proxy,
-                                 ::attestation::KeyType crypto_key_type)
+AttestationFlow::AttestationFlow(std::unique_ptr<ServerProxy> server_proxy)
     : attestation_client_(AttestationClient::Get()),
       server_proxy_(std::move(server_proxy)),
-      crypto_key_type_(crypto_key_type),
       ready_timeout_(base::Seconds(kReadyTimeoutInSeconds)),
       retry_delay_(base::Milliseconds(kRetryDelayInMilliseconds)) {}
-
-AttestationFlow::AttestationFlow(std::unique_ptr<ServerProxy> server_proxy)
-    : AttestationFlow(std::move(server_proxy), ::attestation::KEY_TYPE_RSA) {}
 
 AttestationFlow::~AttestationFlow() = default;
 
@@ -102,6 +97,7 @@ void AttestationFlow::GetCertificate(
     const AccountId& account_id,
     const std::string& request_origin,
     bool force_new_key,
+    ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     CertificateCallback callback) {
   std::string attestation_key_name =
@@ -112,7 +108,7 @@ void AttestationFlow::GetCertificate(
   base::OnceCallback<void(bool)> start_certificate_request = base::BindOnce(
       &AttestationFlow::StartCertificateRequest, weak_factory_.GetWeakPtr(),
       certificate_profile, account_id, request_origin, force_new_key,
-      attestation_key_name, std::move(callback));
+      key_crypto_type, attestation_key_name, std::move(callback));
 
   // If this device has not enrolled with the Privacy CA, we need to do that
   // first.  Once enrolled we can proceed with the certificate request.
@@ -238,6 +234,7 @@ void AttestationFlow::StartCertificateRequest(
     const AccountId& account_id,
     const std::string& request_origin,
     bool generate_new_key,
+    ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     CertificateCallback callback,
     bool enrolled) {
@@ -264,7 +261,7 @@ void AttestationFlow::StartCertificateRequest(
     }
     request.set_certificate_profile(*attestation_profile);
     request.set_request_origin(request_origin);
-    request.set_key_type(crypto_key_type_);
+    request.set_key_type(key_crypto_type);
     request.set_aca_type(ToAcaType(server_proxy_->GetType()));
 
     attestation_client_->CreateCertificateRequest(
@@ -282,14 +279,15 @@ void AttestationFlow::StartCertificateRequest(
   attestation_client_->GetKeyInfo(
       request, base::BindOnce(&AttestationFlow::OnGetKeyInfoComplete,
                               weak_factory_.GetWeakPtr(), certificate_profile,
-                              account_id, request_origin, key_name, key_type,
-                              std::move(callback)));
+                              account_id, request_origin, key_crypto_type,
+                              key_name, key_type, std::move(callback)));
 }
 
 void AttestationFlow::OnGetKeyInfoComplete(
     AttestationCertificateProfile certificate_profile,
     const AccountId& account_id,
     const std::string& request_origin,
+    ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     AttestationKeyType key_type,
     CertificateCallback callback,
@@ -304,8 +302,8 @@ void AttestationFlow::OnGetKeyInfoComplete(
   // set to true.
   if (reply.status() == ::attestation::STATUS_INVALID_PARAMETER) {
     StartCertificateRequest(certificate_profile, account_id, request_origin,
-                            /*generate_new_key=*/true, key_name,
-                            std::move(callback), /*enrolled=*/true);
+                            /*generate_new_key=*/true, key_crypto_type,
+                            key_name, std::move(callback), /*enrolled=*/true);
     return;
   }
 

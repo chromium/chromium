@@ -520,7 +520,8 @@ void EnrollmentHandler::StartAttestationBasedEnrollmentFlow(
   attestation_flow_->GetCertificate(
       ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
       EmptyAccountId(), /*request_origin=*/std::string(), force_new_key,
-      /*=key_name=*/std::string(), std::move(callback));
+      ::attestation::KEY_TYPE_RSA, /*=key_name=*/std::string(),
+      std::move(callback));
 }
 
 void EnrollmentHandler::HandleRegistrationCertificateResult(

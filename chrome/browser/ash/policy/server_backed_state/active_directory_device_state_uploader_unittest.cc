@@ -207,10 +207,11 @@ class ActiveDirectoryDeviceStateUploaderTest
           attestation_flow_,
           GetCertificate(
               ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-              /*force_new_key=*/false, _, _))
-          .WillOnce(WithArgs<5>(Invoke(CertCallbackSuccess)));
+              /*force_new_key=*/false, _, _, _))
+          .WillOnce(WithArgs<6>(Invoke(CertCallbackSuccess)));
     } else {
-      EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _)).Times(0);
+      EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _))
+          .Times(0);
     }
   }
 

@@ -75,6 +75,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
   //   force_new_key - If set to true, a new key will be generated even if a key
   //                   already exists for the profile.  The new key will replace
   //                   the existing key on success.
+  //   key_crypto_type - The crypto type of the key.
   //   key_name - The name of the key. If left empty, a default name derived
   //              from the |certificate_profile| and |account_id| will be used.
   //   callback - A callback which will be called when the operation completes.
@@ -84,6 +85,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
                       const AccountId& account_id,
                       const std::string& request_origin,
                       bool force_new_key,
+                      ::attestation::KeyType key_crypto_type,
                       const std::string& key_name,
                       CertificateCallback callback) override;
 
@@ -119,6 +121,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
   //   account_id - Identifies the active user.
   //   request_origin - An identifier for the origin of this request.
   //   generate_new_key - If set to true a new key is generated.
+  //   key_crypto_type - The crypto type of the key.
   //   key_name - The name of the key. If left empty, a default name derived
   //              from the |certificate_profile| and |account_id| will be used.
   //   callback - Called when the operation completes.
@@ -128,6 +131,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
       const AccountId& account_id,
       const std::string& request_origin,
       bool generate_new_key,
+      ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
       CertificateCallback callback,
       bool is_prepared);

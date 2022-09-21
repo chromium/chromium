@@ -117,9 +117,10 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccess) {
   EXPECT_CALL(
       *(test_factory->GetDefaultMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
-                     kFakeOrigin, true, kFakeKeyName, _))
+                     kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
+                     kFakeKeyName, _))
       .WillOnce(
-          WithArg<5>(Invoke([](AttestationFlow::CertificateCallback callback) {
+          WithArg<6>(Invoke([](AttestationFlow::CertificateCallback callback) {
             std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
           })));
   AttestationStatus result_status;
@@ -140,7 +141,52 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccess) {
 
   flow.GetCertificate(
       kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail), kFakeOrigin, true,
-      kFakeKeyName,
+      ::attestation::KEY_TYPE_RSA, kFakeKeyName,
+      base::BindOnce(callback, &run_loop, &result_status, &result_cert));
+  run_loop.Run();
+  EXPECT_EQ(result_status, ATTESTATION_SUCCESS);
+  EXPECT_EQ(result_cert, kFakeCert);
+  // No proxy, run default flow, and default flow works.
+  ExpectReport(0b001100, 1);
+}
+
+TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccessWithECC) {
+  // The ownerships of these testing objects will be transferred to the object
+  // under test.
+  StrictMock<FakeAttestationFlowTypeDecider>* fake_decider =
+      new StrictMock<FakeAttestationFlowTypeDecider>();
+  TestAttestationFlowFactory* test_factory = new TestAttestationFlowFactory();
+
+  fake_decider->set_is_default_attestation_valid(true);
+  EXPECT_CALL(*fake_decider, CheckType(_, _, _)).Times(1);
+  EXPECT_CALL(
+      *(test_factory->GetDefaultMock()),
+      GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
+                     kFakeOrigin, true, ::attestation::KEY_TYPE_ECC,
+                     kFakeKeyName, _))
+      .WillOnce(
+          WithArg<6>(Invoke([](AttestationFlow::CertificateCallback callback) {
+            std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
+          })));
+  AttestationStatus result_status;
+  std::string result_cert;
+
+  base::RunLoop run_loop;
+  auto callback = [](base::RunLoop* run_loop, AttestationStatus* result_status,
+                     std::string* result_cert, AttestationStatus status,
+                     const std::string& cert) {
+    *result_status = status;
+    *result_cert = cert;
+    run_loop->QuitClosure().Run();
+  };
+  AttestationFlowAdaptive flow(
+      std::make_unique<StrictMock<MockServerProxy>>(),
+      std::unique_ptr<AttestationFlowTypeDecider>(fake_decider),
+      std::unique_ptr<AttestationFlowFactory>(test_factory));
+
+  flow.GetCertificate(
+      kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail), kFakeOrigin, true,
+      ::attestation::KEY_TYPE_ECC, kFakeKeyName,
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);
@@ -161,17 +207,19 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowFailureAndFallback) {
   EXPECT_CALL(
       *(test_factory->GetDefaultMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
-                     kFakeOrigin, true, kFakeKeyName, _))
+                     kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
+                     kFakeKeyName, _))
       .WillOnce(
-          WithArg<5>(Invoke([](AttestationFlow::CertificateCallback callback) {
+          WithArg<6>(Invoke([](AttestationFlow::CertificateCallback callback) {
             std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
           })));
   EXPECT_CALL(
       *(test_factory->GetFallbackMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
-                     kFakeOrigin, true, kFakeKeyName, _))
+                     kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
+                     kFakeKeyName, _))
       .WillOnce(
-          WithArg<5>(Invoke([](AttestationFlow::CertificateCallback callback) {
+          WithArg<6>(Invoke([](AttestationFlow::CertificateCallback callback) {
             std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
           })));
   AttestationStatus result_status;
@@ -192,7 +240,7 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowFailureAndFallback) {
 
   flow.GetCertificate(
       kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail), kFakeOrigin, true,
-      kFakeKeyName,
+      ::attestation::KEY_TYPE_RSA, kFakeKeyName,
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);
@@ -214,9 +262,10 @@ TEST_F(AttestationFlowAdaptiveTest, SkipDefaultFlow) {
   EXPECT_CALL(
       *(test_factory->GetFallbackMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
-                     kFakeOrigin, true, kFakeKeyName, _))
+                     kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
+                     kFakeKeyName, _))
       .WillOnce(
-          WithArg<5>(Invoke([](AttestationFlow::CertificateCallback callback) {
+          WithArg<6>(Invoke([](AttestationFlow::CertificateCallback callback) {
             std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
           })));
   AttestationStatus result_status;
@@ -237,7 +286,7 @@ TEST_F(AttestationFlowAdaptiveTest, SkipDefaultFlow) {
 
   flow.GetCertificate(
       kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail), kFakeOrigin, true,
-      kFakeKeyName,
+      ::attestation::KEY_TYPE_RSA, kFakeKeyName,
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);
@@ -259,10 +308,11 @@ TEST_F(AttestationFlowAdaptiveTest, FallbackTwice) {
   EXPECT_CALL(
       *(test_factory->GetFallbackMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
-                     kFakeOrigin, true, kFakeKeyName, _))
+                     kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
+                     kFakeKeyName, _))
       .Times(2)
       .WillRepeatedly(
-          WithArg<5>(Invoke([](AttestationFlow::CertificateCallback callback) {
+          WithArg<6>(Invoke([](AttestationFlow::CertificateCallback callback) {
             std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
           })));
   AttestationStatus result_status;
@@ -283,7 +333,7 @@ TEST_F(AttestationFlowAdaptiveTest, FallbackTwice) {
 
   flow.GetCertificate(
       kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail), kFakeOrigin, true,
-      kFakeKeyName,
+      ::attestation::KEY_TYPE_RSA, kFakeKeyName,
       base::BindOnce(callback, &run_loop, &result_status, &result_cert));
   run_loop.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);
@@ -292,7 +342,7 @@ TEST_F(AttestationFlowAdaptiveTest, FallbackTwice) {
   base::RunLoop run_loop_again;
   flow.GetCertificate(
       kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail), kFakeOrigin, true,
-      kFakeKeyName,
+      ::attestation::KEY_TYPE_RSA, kFakeKeyName,
       base::BindOnce(callback, &run_loop_again, &result_status, &result_cert));
   run_loop_again.Run();
   EXPECT_EQ(result_status, ATTESTATION_SUCCESS);

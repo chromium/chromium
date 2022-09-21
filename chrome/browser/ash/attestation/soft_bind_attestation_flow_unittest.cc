@@ -95,15 +95,15 @@ class SoftBindAttestationFlowTest : public ::testing::Test {
 
   void ExpectMockAttestationFlowGetCertificate() {
     EXPECT_CALL(*mock_attestation_flow_,
-                GetCertificate(PROFILE_SOFT_BIND_CERTIFICATE, _, _, _, _, _))
-        .WillRepeatedly(WithArgs<5>(
+                GetCertificate(PROFILE_SOFT_BIND_CERTIFICATE, _, _, _, _, _, _))
+        .WillRepeatedly(WithArgs<6>(
             Invoke(this, &SoftBindAttestationFlowTest::FakeGetCertificate)));
   }
 
   void ExpectMockAttestationFlowGetCertificateTimeout() {
     EXPECT_CALL(*mock_attestation_flow_,
-                GetCertificate(PROFILE_SOFT_BIND_CERTIFICATE, _, _, _, _, _))
-        .WillRepeatedly(WithArgs<5>(Invoke(
+                GetCertificate(PROFILE_SOFT_BIND_CERTIFICATE, _, _, _, _, _, _))
+        .WillRepeatedly(WithArgs<6>(Invoke(
             this, &SoftBindAttestationFlowTest::FakeGetCertificateTimeout)));
   }
 

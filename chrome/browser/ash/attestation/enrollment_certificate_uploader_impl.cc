@@ -103,7 +103,7 @@ void EnrollmentCertificateUploaderImpl::GetCertificate(bool force_new_key) {
       PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
       EmptyAccountId(),  // Not used.
       std::string(),     // Not used.
-      force_new_key,
+      force_new_key, ::attestation::KEY_TYPE_RSA,
       std::string(),  // Leave key name empty to generate a default name.
       base::BindOnce(
           [](const base::RepeatingCallback<void(const std::string&)> on_success,

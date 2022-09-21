@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
                       const AccountId& account_id,
                       const std::string& request_origin,
                       bool force_new_key,
+                      ::attestation::KeyType key_crypto_type,
                       const std::string& key_name,
                       CertificateCallback callback) override;
 

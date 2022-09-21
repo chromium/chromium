@@ -72,7 +72,7 @@ class CallbackObserver {
 class MockableFakeAttestationFlow : public MockAttestationFlow {
  public:
   MockableFakeAttestationFlow() {
-    ON_CALL(*this, GetCertificate(_, _, _, _, _, _))
+    ON_CALL(*this, GetCertificate(_, _, _, _, _, _, _))
         .WillByDefault(
             Invoke(this, &MockableFakeAttestationFlow::GetCertificateInternal));
   }
@@ -84,6 +84,7 @@ class MockableFakeAttestationFlow : public MockAttestationFlow {
                               const AccountId& account_id,
                               const std::string& request_origin,
                               bool force_new_key,
+                              ::attestation::KeyType key_crypto_type,
                               const std::string& key_name,
                               CertificateCallback callback) {
     std::string certificate;
@@ -163,7 +164,7 @@ class MachineCertificateUploaderTestBase : public ::testing::Test {
     // another costly operation and if it gets triggered more than once during
     // a single pass this indicates a logical problem in the observer.
     if (new_key) {
-      EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _));
+      EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _));
     }
   }
 
@@ -207,14 +208,14 @@ TEST_P(MachineCertificateUploaderTest, UnregisteredPolicyClient) {
 }
 
 TEST_P(MachineCertificateUploaderTest, GetCertificateUnspecifiedFailure) {
-  EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _))
-      .WillRepeatedly(WithArgs<5>(Invoke(CertCallbackUnspecifiedFailure)));
+  EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _))
+      .WillRepeatedly(WithArgs<6>(Invoke(CertCallbackUnspecifiedFailure)));
   RunUploader();
 }
 
 TEST_P(MachineCertificateUploaderTest, GetCertificateBadRequestFailure) {
-  EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _))
-      .WillOnce(WithArgs<5>(Invoke(CertCallbackBadRequestFailure)));
+  EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _))
+      .WillOnce(WithArgs<6>(Invoke(CertCallbackBadRequestFailure)));
   RunUploader();
 }
 
@@ -261,8 +262,8 @@ TEST_P(MachineCertificateUploaderTest, WaitForUploadComplete) {
 }
 
 TEST_P(MachineCertificateUploaderTest, WaitForUploadFail) {
-  EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _))
-      .WillOnce(WithArgs<5>(Invoke(CertCallbackBadRequestFailure)));
+  EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _))
+      .WillOnce(WithArgs<6>(Invoke(CertCallbackBadRequestFailure)));
 
   StrictMock<CallbackObserver> waiting_callback_observer;
   MachineCertificateUploaderImpl uploader(&policy_client_, &attestation_flow_);

@@ -18,6 +18,7 @@ struct AttestationFlowAdaptive::GetCertificateParams {
   AccountId account_id;
   std::string request_origin;
   bool force_new_key;
+  ::attestation::KeyType key_crypto_type;
   std::string key_name;
 };
 
@@ -48,6 +49,7 @@ void AttestationFlowAdaptive::GetCertificate(
     const AccountId& account_id,
     const std::string& request_origin,
     bool force_new_key,
+    ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     CertificateCallback callback) {
   GetCertificateParams params = {
@@ -55,6 +57,7 @@ void AttestationFlowAdaptive::GetCertificate(
       /*.account_id=*/account_id,
       /*.request_origin=*/request_origin,
       /*.force_new_key=*/force_new_key,
+      /*.key_crypto_type=*/key_crypto_type,
       /*.key_name=*/key_name,
   };
 
@@ -94,7 +97,7 @@ void AttestationFlowAdaptive::StartGetCertificate(
         attestation_flow_factory_->GetFallback();
     fallback_attestation_flow->GetCertificate(
         params.certificate_profile, params.account_id, params.request_origin,
-        params.force_new_key, params.key_name,
+        params.force_new_key, params.key_crypto_type, params.key_name,
         base::BindOnce(
             &AttestationFlowAdaptive::OnGetCertificateWithFallbackFlow,
             weak_factory_.GetWeakPtr(), std::move(status_reporter),
@@ -105,7 +108,7 @@ void AttestationFlowAdaptive::StartGetCertificate(
       attestation_flow_factory_->GetDefault();
   default_attestation_flow->GetCertificate(
       params.certificate_profile, params.account_id, params.request_origin,
-      params.force_new_key, params.key_name,
+      params.force_new_key, params.key_crypto_type, params.key_name,
       base::BindOnce(&AttestationFlowAdaptive::OnGetCertificateWithDefaultFlow,
                      weak_factory_.GetWeakPtr(), params,
                      std::move(status_reporter), std::move(callback)));

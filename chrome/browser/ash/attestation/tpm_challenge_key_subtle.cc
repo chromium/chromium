@@ -512,7 +512,7 @@ void TpmChallengeKeySubtleImpl::AskForUserConsentCallback(bool result) {
   attestation_flow_->GetCertificate(
       GetCertificateProfile(), GetAccountIdForAttestationFlow(),
       /*request_origin=*/std::string(),  // Not used.
-      /*force_new_key=*/true, key_name_,
+      /*force_new_key=*/true, ::attestation::KEY_TYPE_RSA, key_name_,
       base::BindOnce(&TpmChallengeKeySubtleImpl::GetCertificateCallback,
                      weak_factory_.GetWeakPtr()));
 }
