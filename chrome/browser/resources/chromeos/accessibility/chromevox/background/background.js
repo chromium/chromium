@@ -8,6 +8,7 @@ import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {InstanceChecker} from '../../common/instance_checker.js';
 import {AbstractEarcons} from '../common/abstract_earcons.js';
+import {NavBraille} from '../common/braille/nav_braille.js';
 import {ExtensionBridge} from '../common/extension_bridge.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
@@ -87,6 +88,10 @@ export class Background extends ChromeVoxState {
   init_() {
     // Initialize legacy background page first.
     ChromeVoxBackground.init(this);
+
+    chrome.accessibilityPrivate.onIntroduceChromeVox.addListener(
+        () => this.onIntroduceChromeVox_());
+
 
     // Read-only earcons.
     Object.defineProperty(ChromeVox, 'earcons', {
@@ -469,6 +474,17 @@ export class Background extends ChromeVoxState {
     if (!start.state[StateType.OFFSCREEN]) {
       start.setSequentialFocusNavigationStartingPoint();
     }
+  }
+
+  /**
+   * Handles the onIntroduceChromeVox event.
+   * @private
+   */
+  onIntroduceChromeVox_() {
+    ChromeVox.tts.speak(
+        Msgs.getMsg('chromevox_intro'), QueueMode.QUEUE,
+        new TtsSpeechProperties({doNotInterrupt: true}));
+    ChromeVox.braille.write(NavBraille.fromText(Msgs.getMsg('intro_brl')));
   }
 
   /**

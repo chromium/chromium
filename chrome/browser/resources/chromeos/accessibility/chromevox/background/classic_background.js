@@ -61,9 +61,6 @@ export class ChromeVoxBackground {
     ChromeVox.tts = this.tts;
     ChromeVox.braille = this.backgroundBraille_;
 
-    chrome.accessibilityPrivate.onIntroduceChromeVox.addListener(
-        this.onIntroduceChromeVox);
-
     // Set up a message passing system for goog.provide() calls from
     // within the content scripts.
     chrome.extension.onMessage.addListener((request, sender, callback) => {
@@ -228,16 +225,6 @@ export class ChromeVoxBackground {
           break;
       }
     });
-  }
-
-  /**
-   * Handles the onIntroduceChromeVox event.
-   */
-  onIntroduceChromeVox() {
-    ChromeVox.tts.speak(
-        Msgs.getMsg('chromevox_intro'), QueueMode.QUEUE,
-        new TtsSpeechProperties({doNotInterrupt: true}));
-    ChromeVox.braille.write(NavBraille.fromText(Msgs.getMsg('intro_brl')));
   }
 
   /**
