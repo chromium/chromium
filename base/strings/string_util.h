@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <sstream>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -108,6 +109,14 @@ constexpr StringPiece16 MakeStringPiece16(Iter begin, Iter end) {
 template <typename Iter>
 constexpr WStringPiece MakeWStringPiece(Iter begin, Iter end) {
   return MakeBasicStringPiece<wchar_t>(begin, end);
+}
+
+// Convert a type with defined `operator<<` into a string.
+template <typename... Streamable>
+std::string StreamableToString(const Streamable&... values) {
+  std::ostringstream ss;
+  (ss << ... << values);
+  return ss.str();
 }
 
 // ASCII-specific tolower.  The standard library's tolower is locale sensitive,

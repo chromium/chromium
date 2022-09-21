@@ -593,12 +593,6 @@ bool WebApp::operator!=(const WebApp& other) const {
 base::Value WebApp::AsDebugValue() const {
   base::Value root(base::Value::Type::DICTIONARY);
 
-  auto ConvertToString = [](const auto& value) {
-    std::stringstream ss;
-    ss << value;
-    return ss.str();
-  };
-
   auto ConvertList = [](const auto& list) {
     base::Value list_json(base::Value::Type::LIST);
     for (const auto& item : list)
@@ -655,7 +649,7 @@ base::Value WebApp::AsDebugValue() const {
   root.SetStringKey("dark_mode_background_color",
                     ColorToString(dark_mode_background_color_));
 
-  root.SetStringKey("capture_links", ConvertToString(capture_links_));
+  root.SetStringKey("capture_links", base::StreamableToString(capture_links_));
 
   root.SetKey("chromeos_data",
               chromeos_data_ ? chromeos_data_->AsDebugValue() : base::Value());
@@ -682,7 +676,8 @@ base::Value WebApp::AsDebugValue() const {
       "downloaded_icon_sizes", base::Value(base::Value::Type::DICTIONARY));
   for (IconPurpose purpose : kIconPurposes) {
     downloaded_icon_sizes_json.SetKey(
-        ConvertToString(purpose), ConvertList(downloaded_icon_sizes(purpose)));
+        base::StreamableToString(purpose),
+        ConvertList(downloaded_icon_sizes(purpose)));
   }
 
   base::Value& downloaded_shortcuts_menu_icons_sizes =
@@ -693,7 +688,7 @@ base::Value WebApp::AsDebugValue() const {
     base::Value entry(base::Value::Type::DICTIONARY);
     entry.SetIntKey("index", i);
     for (IconPurpose purpose : kIconPurposes) {
-      entry.SetKey(ConvertToString(purpose),
+      entry.SetKey(base::StreamableToString(purpose),
                    ConvertList(icon_sizes.GetSizesForPurpose(purpose)));
     }
     downloaded_shortcuts_menu_icons_sizes.Append(std::move(entry));
@@ -718,13 +713,15 @@ base::Value WebApp::AsDebugValue() const {
   }
 
   base::Value::Dict external_map;
-  for (auto it : management_to_external_config_map_)
-    external_map.Set(ConvertToString(it.first), it.second.AsDebugValue());
+  for (auto it : management_to_external_config_map_) {
+    external_map.Set(base::StreamableToString(it.first),
+                     it.second.AsDebugValue());
+  }
 
   root.SetKey("management_type_to_external_configuration_map",
               base::Value(std::move(external_map)));
 
-  root.SetStringKey("install_time", ConvertToString(install_time_));
+  root.SetStringKey("install_time", base::StreamableToString(install_time_));
 
   root.SetBoolKey("is_generated_icon", is_generated_icon_);
 
@@ -737,15 +734,17 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetBoolKey("is_uninstalling", is_uninstalling_);
 
-  root.SetStringKey("last_badging_time", ConvertToString(last_badging_time_));
+  root.SetStringKey("last_badging_time",
+                    base::StreamableToString(last_badging_time_));
 
-  root.SetStringKey("last_launch_time", ConvertToString(last_launch_time_));
+  root.SetStringKey("last_launch_time",
+                    base::StreamableToString(last_launch_time_));
 
   if (launch_handler_) {
     base::Value& launch_handler_json = *root.SetKey(
         "launch_handler", base::Value(base::Value::Type::DICTIONARY));
     launch_handler_json.SetStringKey(
-        "client_mode", ConvertToString(launch_handler_->client_mode));
+        "client_mode", base::StreamableToString(launch_handler_->client_mode));
   } else {
     root.SetKey("launch_handler", base::Value());
   }
@@ -755,15 +754,15 @@ base::Value WebApp::AsDebugValue() const {
   root.SetKey("manifest_id", ConvertOptional(manifest_id_));
 
   root.SetStringKey("manifest_update_time",
-                    ConvertToString(manifest_update_time_));
+                    base::StreamableToString(manifest_update_time_));
 
-  root.SetStringKey("manifest_url", ConvertToString(manifest_url_));
+  root.SetStringKey("manifest_url", base::StreamableToString(manifest_url_));
 
   root.SetStringKey("lock_screen_start_url",
-                    ConvertToString(lock_screen_start_url_));
+                    base::StreamableToString(lock_screen_start_url_));
 
   root.SetStringKey("note_taking_new_note_url",
-                    ConvertToString(note_taking_new_note_url_));
+                    base::StreamableToString(note_taking_new_note_url_));
 
   root.SetStringKey("parent_app_id",
                     parent_app_id_ ? *parent_app_id_ : AppId());
@@ -800,7 +799,7 @@ base::Value WebApp::AsDebugValue() const {
           ? RunOnOsLoginModeToString(*run_on_os_login_os_integration_state_)
           : "not set");
 
-  root.SetStringKey("scope", ConvertToString(scope_));
+  root.SetStringKey("scope", base::StreamableToString(scope_));
 
   root.SetKey("share_target",
               share_target_ ? share_target_->AsDebugValue() : base::Value());
@@ -812,11 +811,13 @@ base::Value WebApp::AsDebugValue() const {
       *root.SetKey("sources", base::Value(base::Value::Type::LIST));
   for (int i = WebAppManagement::Type::kMinValue;
        i <= WebAppManagement::Type::kMaxValue; ++i) {
-    if (sources_[i])
-      sources.Append(ConvertToString(static_cast<WebAppManagement::Type>(i)));
+    if (sources_[i]) {
+      sources.Append(
+          base::StreamableToString(static_cast<WebAppManagement::Type>(i)));
+    }
   }
 
-  root.SetStringKey("start_url", ConvertToString(start_url_));
+  root.SetStringKey("start_url", base::StreamableToString(start_url_));
 
   root.SetKey("sync_fallback_data", sync_fallback_data_.AsDebugValue());
 
@@ -846,21 +847,23 @@ base::Value WebApp::AsDebugValue() const {
     if (absl::holds_alternative<TabStrip::Visibility>(
             tab_strip_.value().new_tab_button)) {
       tab_strip_json.SetStringKey(
-          "new_tab_button", ConvertToString(absl::get<TabStrip::Visibility>(
-                                tab_strip_.value().new_tab_button)));
+          "new_tab_button",
+          base::StreamableToString(absl::get<TabStrip::Visibility>(
+              tab_strip_.value().new_tab_button)));
     } else {
       base::Value& new_tab_button_json = *tab_strip_json.SetKey(
           "new_tab_button", base::Value(base::Value::Type::DICTIONARY));
       new_tab_button_json.SetStringKey(
-          "url", ConvertToString(absl::get<blink::Manifest::NewTabButtonParams>(
-                                     tab_strip_.value().new_tab_button)
-                                     .url.value_or(GURL(""))));
+          "url", base::StreamableToString(
+                     absl::get<blink::Manifest::NewTabButtonParams>(
+                         tab_strip_.value().new_tab_button)
+                         .url.value_or(GURL(""))));
     }
 
     if (absl::holds_alternative<TabStrip::Visibility>(
             tab_strip_.value().home_tab)) {
       tab_strip_json.SetStringKey(
-          "home_tab", ConvertToString(absl::get<TabStrip::Visibility>(
+          "home_tab", base::StreamableToString(absl::get<TabStrip::Visibility>(
                           tab_strip_.value().home_tab)));
     } else {
       tab_strip_json.SetKey("home_tab",

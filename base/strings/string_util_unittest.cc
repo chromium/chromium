@@ -1327,6 +1327,28 @@ TEST(StringUtilTest, MakeBasicStringPieceTest) {
   EXPECT_TRUE(MakeWStringPiece(baz.end(), baz.end()).empty());
 }
 
+enum class StreamableTestEnum { kGreeting, kLocation };
+
+std::ostream& operator<<(std::ostream& os, const StreamableTestEnum& value) {
+  switch (value) {
+    case StreamableTestEnum::kGreeting:
+      return os << "hello";
+    case StreamableTestEnum::kLocation:
+      return os << "world";
+  }
+}
+
+TEST(StringUtilTest, StreamableToString) {
+  EXPECT_EQ(StreamableToString("foo"), "foo");
+  EXPECT_EQ(StreamableToString(123), "123");
+  EXPECT_EQ(StreamableToString(StreamableTestEnum::kGreeting), "hello");
+  EXPECT_EQ(StreamableToString(StreamableTestEnum::kGreeting, " ",
+                               StreamableTestEnum::kLocation),
+            "hello world");
+  EXPECT_EQ(StreamableToString("42 in hex is ", std::hex, 42),
+            "42 in hex is 2a");
+}
+
 TEST(StringUtilTest, RemoveChars) {
   const char kRemoveChars[] = "-/+*";
   std::string input = "A-+bc/d!*";

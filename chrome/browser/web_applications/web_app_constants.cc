@@ -16,6 +16,7 @@ const char kRunOnOsLoginModeWindowed[] = "windowed";
 static_assert(WebAppManagement::kMinValue == 0,
               "Source enum should be zero based");
 
+namespace WebAppManagement {
 std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
   switch (type) {
     case WebAppManagement::Type::kSystem:
@@ -36,6 +37,7 @@ std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
       return os << "CommandLine";
   }
 }
+}  // namespace WebAppManagement
 
 static_assert(OsHookType::kShortcuts == 0,
               "OsHookType enum should be zero based");

@@ -53,9 +53,9 @@ enum Type {
   kDefault,
   kMaxValue = kDefault,
 };
-}  // namespace WebAppManagement
 
 std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type);
+}  // namespace WebAppManagement
 
 // Type of OS hook.
 //
