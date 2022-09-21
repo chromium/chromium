@@ -148,7 +148,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_store.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -402,10 +401,8 @@ StartupProfileInfo CreateInitialProfile(
     // Clear kProfilesLastActive since the user only wants to launch a specific
     // profile. Don't clear it if the user launched a web app, in order to not
     // break any subsequent multi-profile session restore.
-    ListPrefUpdate update(g_browser_process->local_state(),
-                          prefs::kProfilesLastActive);
-    base::Value* profile_list = update.Get();
-    profile_list->ClearList();
+    g_browser_process->local_state()->SetList(prefs::kProfilesLastActive,
+                                              base::Value::List());
   }
 
   StartupProfileInfo profile_info;

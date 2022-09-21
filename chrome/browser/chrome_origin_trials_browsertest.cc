@@ -9,7 +9,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/embedder_support/origin_trials/pref_names.h"
 #include "components/embedder_support/switches.h"
-#include "components/prefs/scoped_user_pref_update.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,23 +57,22 @@ class ChromeOriginTrialsTest : public InProcessBrowserTest {
   }
 
   void AddDisabledFeaturesToPrefs(const std::vector<std::string>& features) {
-    base::Value disabled_feature_list(base::Value::Type::LIST);
+    base::Value::List disabled_feature_list;
     for (const std::string& feature : features) {
       disabled_feature_list.Append(feature);
     }
-    ListPrefUpdate update(
-        local_state(), embedder_support::prefs::kOriginTrialDisabledFeatures);
-    *update = std::move(disabled_feature_list);
+    local_state()->SetList(
+        embedder_support::prefs::kOriginTrialDisabledFeatures,
+        std::move(disabled_feature_list));
   }
 
   void AddDisabledTokensToPrefs(const std::vector<std::string>& tokens) {
-    base::Value disabled_token_list(base::Value::Type::LIST);
+    base::Value::List disabled_token_list;
     for (const std::string& token : tokens) {
       disabled_token_list.Append(token);
     }
-    ListPrefUpdate update(local_state(),
-                          embedder_support::prefs::kOriginTrialDisabledTokens);
-    *update = std::move(disabled_token_list);
+    local_state()->SetList(embedder_support::prefs::kOriginTrialDisabledTokens,
+                           std::move(disabled_token_list));
   }
 
   PrefService* local_state() { return g_browser_process->local_state(); }
