@@ -1948,7 +1948,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
         googleSyncItem.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
         googleSyncItem.iconTintColor = UIColor.whiteColor;
         googleSyncItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
-
       } else {
         googleSyncItem.iconImage = [UIImage imageNamed:kSyncErrorImageName];
       }

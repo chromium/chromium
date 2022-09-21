@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
@@ -330,8 +331,8 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceMultipleErrors) {
       itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
                                        SyncErrorsSectionIdentifier];
   ASSERT_EQ(1UL, error_items.count);
-  SettingsImageDetailTextItem* error_item =
-      base::mac::ObjCCastStrict<SettingsImageDetailTextItem>(error_items[0]);
+  TableViewDetailIconItem* error_item =
+      base::mac::ObjCCastStrict<TableViewDetailIconItem>(error_items[0]);
   EXPECT_NSEQ(
       error_item.detailText,
       l10n_util::GetNSString(

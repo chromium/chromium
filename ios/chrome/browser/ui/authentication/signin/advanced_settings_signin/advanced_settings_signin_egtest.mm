@@ -236,8 +236,12 @@ void WaitForSettingDoneButton() {
   ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                     IDS_IOS_SYNC_ERROR_TITLE))]
+        selectElementWithMatcher:grey_allOf(
+                                     grey_accessibilityLabel(
+                                         l10n_util::GetNSString(
+                                             IDS_IOS_SYNC_ERROR_TITLE)),
+                                     grey_not(grey_userInteractionEnabled()),
+                                     nil)]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
