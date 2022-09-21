@@ -568,6 +568,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Stability.MobileSessionShutdownType2"
+    enum="MobileSessionShutdownType" expires_after="2023-02-26">
+  <owner>justincohen@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Type of the shutdown. This histogram is recorded after processing Crashpad
+    intermediate dumps, and is otherwise identical to
+    Stability.MobileSessionShutdownType, which is recorded at startup and before
+    Crashpad dumps are processed. Because this histogram is not recorded in time
+    for the initial stability log, the histogram will appear in a log that lists
+    the current Chrome version (and other browser metadata), not the Chrome
+    version at the time the crash occurred. The earlier histogram
+    Stability.MobileSessionShutdownType should be in the stability log, which
+    will list the Chrome version at the time of the crash.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
