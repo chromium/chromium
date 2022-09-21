@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 // Possible states of the trusted vault. Keep in sync with
 // syncer::TrustedVaultDeviceRegistrationStateForUMA.
 typedef NS_ENUM(NSInteger, CWVTrustedVaultState) {
-  // DEPRECATED, use `CWVTrustedVaultStateAlreadyRegisteredV0`.
+  // TODO(crbug.com/1362716): DEPRECATED, use
+  // `CWVTrustedVaultStateAlreadyRegisteredV0`.
   CWVTrustedVaultStateAlreadyRegistered = 0,
   CWVTrustedVaultStateAlreadyRegisteredV0 = 0,
   CWVTrustedVaultStateLocalKeysAreStale = 1,
