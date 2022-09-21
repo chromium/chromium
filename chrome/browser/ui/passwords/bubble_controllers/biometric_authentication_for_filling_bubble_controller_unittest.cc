@@ -68,7 +68,9 @@ TEST_F(BiometricAuthenticationForFillingBubbleControllerTest,
   EXPECT_CALL(*delegate(), OnBubbleHidden());
 }
 
-TEST_F(BiometricAuthenticationForFillingBubbleControllerTest, Content) {
+// TODO(crbug.com/1364685): Enable this test back when fixed.
+TEST_F(BiometricAuthenticationForFillingBubbleControllerTest,
+       DISABLED_Content) {
   CreateController();
   EXPECT_NE(std::u16string(), controller()->GetBody());
   EXPECT_NE(std::u16string(), controller()->GetContinueButtonText());
@@ -89,8 +91,9 @@ TEST_F(BiometricAuthenticationForFillingBubbleControllerTest, Cancel) {
       password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo));
 }
 
+// TODO(crbug.com/1364685): Enable this test back when fixed.
 TEST_F(BiometricAuthenticationForFillingBubbleControllerTest,
-       OnAcceptedFailure) {
+       DISABLED_OnAcceptedFailure) {
   CreateController();
 
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
@@ -103,8 +106,9 @@ TEST_F(BiometricAuthenticationForFillingBubbleControllerTest,
       password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo));
 }
 
+// TODO(crbug.com/1364685): Enable this test back when fixed.
 TEST_F(BiometricAuthenticationForFillingBubbleControllerTest,
-       OnAcceptedSuccess) {
+       DISABLED_OnAcceptedSuccess) {
   CreateController();
 
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
