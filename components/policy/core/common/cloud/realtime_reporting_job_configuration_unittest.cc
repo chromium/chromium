@@ -203,9 +203,9 @@ TEST_F(RealtimeReportingJobConfigurationTest, ValidatePayload) {
 
   base::Value* events =
       payload->FindListKey(RealtimeReportingJobConfiguration::kEventListKey);
-  EXPECT_EQ(ids.size(), events->GetListDeprecated().size());
+  EXPECT_EQ(ids.size(), events->GetList().size());
   int i = -1;
-  for (const auto& event : events->GetListDeprecated()) {
+  for (const auto& event : events->GetList()) {
     auto* id = event.FindStringKey(kEventId);
     EXPECT_EQ(ids[++i], *id);
     auto type = event.FindKey(kAppInstallEvent)->FindIntKey(kEventType);
@@ -326,8 +326,8 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnBeforeRetry_PartialBatch) {
       base::JSONReader::Read(configuration_->GetPayload());
   base::Value* events =
       payload->FindListKey(RealtimeReportingJobConfiguration::kEventListKey);
-  EXPECT_EQ(1u, events->GetListDeprecated().size());
-  auto& event = events->GetListDeprecated()[0];
+  EXPECT_EQ(1u, events->GetList().size());
+  auto& event = events->GetList()[0];
   EXPECT_EQ(ids[1], *event.FindStringKey(kEventId));
 }
 
