@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -22,6 +23,7 @@
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
+#include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -81,7 +83,10 @@ AggregatableReportScheduler::TimerDelegate::TimerDelegate(
         on_scheduled_report_time_reached)
     : storage_context_(*storage_context),
       on_scheduled_report_time_reached_(
-          std::move(on_scheduled_report_time_reached)) {
+          std::move(on_scheduled_report_time_reached)),
+      should_not_delay_reports_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kPrivateAggregationDebugMode)) {
   DCHECK(storage_context);
 }
 AggregatableReportScheduler::TimerDelegate::~TimerDelegate() = default;
@@ -107,6 +112,15 @@ void AggregatableReportScheduler::TimerDelegate::OnReportingTimeReached(
 
 void AggregatableReportScheduler::TimerDelegate::AdjustOfflineReportTimes(
     base::OnceCallback<void(absl::optional<base::Time>)> maybe_set_timer_cb) {
+  if (should_not_delay_reports_) {
+    // No need to adjust the report times, just set the timer as appropriate.
+    storage_context_->GetStorage()
+        .AsyncCall(&AggregationServiceStorage::NextReportTimeAfter)
+        .WithArgs(base::Time::Min())
+        .Then(std::move(maybe_set_timer_cb));
+    return;
+  }
+
   storage_context_->GetStorage()
       .AsyncCall(&AggregationServiceStorage::AdjustOfflineReportTimes)
       .WithArgs(base::Time::Now(), kOfflineReportTimeMinimumDelay,

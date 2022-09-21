@@ -2418,6 +2418,13 @@ const char kPrivacySandboxV3Description[] =
     "Enables an updated Privacy Sandbox UI. Also enables some related "
     "features.";
 
+const char kPrivateAggregationDebugModeName[] =
+    "Private Aggregation debug mode";
+const char kPrivateAggregationDebugModeDescription[] =
+    "Enables debug mode for the Private Aggregation API. This removes all "
+    "reporting delays. Only works if the Private Aggregation API is already "
+    "enabled.";
+
 const char kProminentDarkModeActiveTabTitleName[] =
     "Prominent Dark Mode Active Tab Titles";
 const char kProminentDarkModeActiveTabTitleDescription[] =

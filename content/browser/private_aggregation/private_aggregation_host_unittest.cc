@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/guid.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
@@ -21,6 +22,7 @@
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/common/aggregatable_report.mojom.h"
 #include "content/common/private_aggregation_host.mojom.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
@@ -63,8 +65,6 @@ class PrivateAggregationHostTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestBrowserContext test_browser_context_;
 };
-
-}  // namespace
 
 TEST_F(PrivateAggregationHostTest,
        SendHistogramReport_ReportRequestHasCorrectMembers) {
@@ -447,5 +447,50 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationDisallowed_RequestFails) {
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
 }
+
+class PrivateAggregationHostDebugModeTest : public PrivateAggregationHostTest {
+ public:
+  PrivateAggregationHostDebugModeTest() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kPrivateAggregationDebugMode);
+  }
+};
+
+TEST_F(PrivateAggregationHostDebugModeTest,
+       SendHistogramReport_ScheduledReportTimeIsNotDelayed) {
+  const url::Origin kExampleOrigin =
+      url::Origin::Create(GURL("https://example.com"));
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
+
+  mojo::Remote<mojom::PrivateAggregationHost> remote;
+  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
+                                     PrivateAggregationBudgetKey::Api::kFledge,
+                                     remote.BindNewPipeAndPassReceiver()));
+
+  absl::optional<AggregatableReportRequest> validated_request;
+  EXPECT_CALL(mock_callback_,
+              Run(_, Property(&PrivateAggregationBudgetKey::api,
+                              PrivateAggregationBudgetKey::Api::kFledge)))
+      .WillOnce(MoveArg<0>(&validated_request));
+
+  std::vector<mojom::AggregatableReportHistogramContributionPtr> contributions;
+  contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+      /*bucket=*/123, /*value=*/456));
+  remote->SendHistogramReport(std::move(contributions),
+                              mojom::AggregationServiceMode::kDefault,
+                              mojom::DebugModeDetails::New());
+
+  remote.FlushForTesting();
+  EXPECT_TRUE(remote.is_connected());
+
+  ASSERT_TRUE(validated_request);
+
+  // We're using `MOCK_TIME` so we can be sure no time has advanced.
+  EXPECT_EQ(validated_request->shared_info().scheduled_report_time,
+            base::Time::Now());
+}
+
+}  // namespace
 
 }  // namespace content

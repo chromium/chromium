@@ -5447,6 +5447,13 @@
     "expiry_milestone": 108
   },
   {
+    "name": "private-aggregation-debug-mode",
+    "owners": [
+      "//content/browser/private_aggregation/OWNERS"
+    ],
+    "expiry_milestone": 111
+  },
+  {
     "name": "private-network-access-preflight-short-timeout",
     "owners": [ "lyf", "chrome-security-owp-team@google.com" ],
     "expiry_milestone": 107

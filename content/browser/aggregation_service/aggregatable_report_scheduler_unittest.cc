@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -20,6 +21,7 @@
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
+#include "content/public/common/content_switches.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,9 +49,13 @@ class AggregatableReportSchedulerTest : public testing::Test {
  public:
   AggregatableReportSchedulerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        storage_context_(base::DefaultClock::GetInstance()),
-        scheduler_(&storage_context_,
-                   /*on_scheduled_report_time_reached=*/mock_callback_.Get()) {}
+        storage_context_(base::DefaultClock::GetInstance()) {}
+
+  void SetUp() override {
+    scheduler_ = std::make_unique<AggregatableReportScheduler>(
+        &storage_context_,
+        /*on_scheduled_report_time_reached=*/mock_callback_.Get());
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -57,7 +63,7 @@ class AggregatableReportSchedulerTest : public testing::Test {
   base::MockRepeatingCallback<void(
       std::vector<AggregationServiceStorage::RequestAndId>)>
       mock_callback_;
-  AggregatableReportScheduler scheduler_;
+  std::unique_ptr<AggregatableReportScheduler> scheduler_;
 };
 
 TEST_F(AggregatableReportSchedulerTest,
@@ -107,7 +113,7 @@ TEST_F(AggregatableReportSchedulerTest,
             }));
   }
 
-  scheduler_.ScheduleRequest(
+  scheduler_->ScheduleRequest(
       aggregation_service::CloneReportRequest(expected_request));
 
   {
@@ -160,7 +166,7 @@ TEST_F(AggregatableReportSchedulerTest,
       example_request.shared_info().Clone();
   expected_shared_info.scheduled_report_time = kExampleTime;
 
-  scheduler_.ScheduleRequest(
+  scheduler_->ScheduleRequest(
       AggregatableReportRequest::Create(example_request.payload_contents(),
                                         std::move(expected_shared_info))
           .value());
@@ -188,7 +194,7 @@ TEST_F(AggregatableReportSchedulerTest,
   }
 
   // Request IDs are incremented from 1.
-  scheduler_.NotifyInProgressRequestSucceeded(
+  scheduler_->NotifyInProgressRequestSucceeded(
       AggregationServiceStorage::RequestId(1));
   {
     base::RunLoop run_loop;
@@ -217,7 +223,7 @@ TEST_F(AggregatableReportSchedulerTest,
       example_request.shared_info().Clone();
   expected_shared_info.scheduled_report_time = kExampleTime;
 
-  scheduler_.ScheduleRequest(
+  scheduler_->ScheduleRequest(
       AggregatableReportRequest::Create(example_request.payload_contents(),
                                         std::move(expected_shared_info))
           .value());
@@ -245,7 +251,7 @@ TEST_F(AggregatableReportSchedulerTest,
   }
 
   // Request IDs are incremented from 1.
-  scheduler_.NotifyInProgressRequestFailed(
+  scheduler_->NotifyInProgressRequestFailed(
       AggregationServiceStorage::RequestId(1));
   {
     base::RunLoop run_loop;
@@ -306,7 +312,7 @@ TEST_F(AggregatableReportSchedulerTest,
         example_request.shared_info().Clone();
     expected_shared_info.scheduled_report_time = scheduled_report_time;
 
-    scheduler_.ScheduleRequest(
+    scheduler_->ScheduleRequest(
         AggregatableReportRequest::Create(example_request.payload_contents(),
                                           std::move(expected_shared_info))
             .value());
@@ -382,7 +388,7 @@ TEST_F(AggregatableReportSchedulerTest,
         example_request.shared_info().Clone();
     expected_shared_info.scheduled_report_time = scheduled_report_time;
 
-    scheduler_.ScheduleRequest(
+    scheduler_->ScheduleRequest(
         AggregatableReportRequest::Create(example_request.payload_contents(),
                                           std::move(expected_shared_info))
             .value());
@@ -416,7 +422,7 @@ TEST_F(AggregatableReportSchedulerTest,
       example_request.shared_info().Clone();
   expected_shared_info.scheduled_report_time = kExampleTime;
 
-  scheduler_.ScheduleRequest(
+  scheduler_->ScheduleRequest(
       AggregatableReportRequest::Create(example_request.payload_contents(),
                                         std::move(expected_shared_info))
           .value());
@@ -459,7 +465,7 @@ TEST_F(AggregatableReportSchedulerTest,
       example_request.shared_info().Clone();
   expected_shared_info.scheduled_report_time = kExampleTime;
 
-  scheduler_.ScheduleRequest(
+  scheduler_->ScheduleRequest(
       AggregatableReportRequest::Create(example_request.payload_contents(),
                                         std::move(expected_shared_info))
           .value());
@@ -505,7 +511,7 @@ TEST_F(AggregatableReportSchedulerTest,
         example_request.shared_info().Clone();
     expected_shared_info.scheduled_report_time = kExampleTime;
 
-    scheduler_.ScheduleRequest(
+    scheduler_->ScheduleRequest(
         AggregatableReportRequest::Create(example_request.payload_contents(),
                                           std::move(expected_shared_info))
             .value());
@@ -517,6 +523,57 @@ TEST_F(AggregatableReportSchedulerTest,
       Run(Property(&std::vector<AggregationServiceStorage::RequestAndId>::size,
                    AggregationService::kMaxStoredReportsPerReportingOrigin)));
   task_environment_.FastForwardBy(kExampleTime - base::Time::Now());
+}
+
+class AggregatableReportSchedulerDebugModeTest
+    : public AggregatableReportSchedulerTest {
+ public:
+  AggregatableReportSchedulerDebugModeTest() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kPrivateAggregationDebugMode);
+  }
+};
+
+TEST_F(AggregatableReportSchedulerDebugModeTest,
+       NetworkOffline_ReportsAreSentImmediatelyWhenOnline) {
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_NONE);  // Offline
+
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregatableReportSharedInfo expected_shared_info =
+      example_request.shared_info().Clone();
+  expected_shared_info.scheduled_report_time = kExampleTime;
+
+  scheduler_->ScheduleRequest(
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        std::move(expected_shared_info))
+          .value());
+
+  base::TimeDelta fast_forward_required = kExampleTime - base::Time::Now();
+
+  Checkpoint checkpoint;
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_callback_, Run).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_callback_, Run);
+  }
+
+  // Need to fast forward beyond the report time so that it's in the past and
+  // will be updated.
+  task_environment_.FastForwardBy(fast_forward_required +
+                                  base::Microseconds(1));
+
+  checkpoint.Call(1);
+
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);  // Online
+
+  // With the debug mode flag, the report should not be delayed, so all we need
+  // to do is run any pending tasks.
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace content

@@ -1350,6 +1350,9 @@ extern const char kPrivacySandboxAdsAPIsOverrideDescription[];
 extern const char kPrivacySandboxV3Name[];
 extern const char kPrivacySandboxV3Description[];
 
+extern const char kPrivateAggregationDebugModeName[];
+extern const char kPrivateAggregationDebugModeDescription[];
+
 extern const char kProminentDarkModeActiveTabTitleName[];
 extern const char kProminentDarkModeActiveTabTitleDescription[];
 

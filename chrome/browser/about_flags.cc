@@ -7614,6 +7614,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAttributionReportingDebugModeDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kAttributionReportingDebugMode)},
 
+    {"private-aggregation-debug-mode",
+     flag_descriptions::kPrivateAggregationDebugModeName,
+     flag_descriptions::kPrivateAggregationDebugModeDescription, kOsAll,
+     SINGLE_VALUE_TYPE(switches::kPrivateAggregationDebugMode)},
+
     {"client-storage-access-context-auditing",
      flag_descriptions::kClientStorageAccessContextAuditingName,
      flag_descriptions::kClientStorageAccessContextAuditingDescription, kOsAll,
