@@ -122,6 +122,14 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   static void OutputHandleScale(void* data,
                                 struct wl_output* wl_output,
                                 int32_t factor);
+#if CHROME_WAYLAND_CHECK_VERSION(1, 20, 0)
+  static void OutputHandleName(void* data,
+                               struct wl_output* wl_output,
+                               const char* name);
+  static void OutputHandleDescription(void* data,
+                                      struct wl_output* wl_output,
+                                      const char* description);
+#endif
 
   const Id output_id_ = 0;
   wl::Object<wl_output> output_;

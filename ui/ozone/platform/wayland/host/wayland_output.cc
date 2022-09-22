@@ -23,9 +23,9 @@
 namespace ui {
 
 namespace {
-// TODO(crbug.com/1279681): support newer versions.
 constexpr uint32_t kMinVersion = 2;
-}
+constexpr uint32_t kMaxVersion = 4;
+}  // namespace
 
 // static
 constexpr char WaylandOutput::kInterfaceName[];
@@ -38,11 +38,12 @@ void WaylandOutput::Instantiate(WaylandConnection* connection,
                                 uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
 
-  if (!wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
+  if (!wl::CanBind(interface, version, kMinVersion, kMaxVersion)) {
     return;
   }
 
-  auto output = wl::Bind<wl_output>(registry, name, kMinVersion);
+  auto output =
+      wl::Bind<wl_output>(registry, name, std::min(version, kMaxVersion));
   if (!output) {
     LOG(ERROR) << "Failed to bind to wl_output global";
     return;
@@ -90,10 +91,15 @@ void WaylandOutput::Initialize(Delegate* delegate) {
   DCHECK(!delegate_);
   delegate_ = delegate;
   static constexpr wl_output_listener output_listener = {
-      &OutputHandleGeometry,
-      &OutputHandleMode,
-      &OutputHandleDone,
-      &OutputHandleScale,
+    &OutputHandleGeometry,
+    &OutputHandleMode,
+    &OutputHandleDone,
+    &OutputHandleScale,
+#if CHROME_WAYLAND_CHECK_VERSION(1, 20, 0)
+    // since protocol version 4 and Wayland version 1.20
+    &OutputHandleName,
+    &OutputHandleDescription,
+#endif
   };
   wl_output_add_listener(output_.get(), &output_listener, this);
 }
@@ -212,5 +218,21 @@ void WaylandOutput::OutputHandleScale(void* data,
   if (wayland_output)
     wayland_output->scale_factor_ = factor;
 }
+
+#if CHROME_WAYLAND_CHECK_VERSION(1, 20, 0)
+// static
+void WaylandOutput::OutputHandleName(void* data,
+                                     struct wl_output* wl_output,
+                                     const char* name) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+// static
+void WaylandOutput::OutputHandleDescription(void* data,
+                                            struct wl_output* wl_output,
+                                            const char* description) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+#endif
 
 }  // namespace ui

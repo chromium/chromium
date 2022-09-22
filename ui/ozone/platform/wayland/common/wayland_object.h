@@ -10,6 +10,12 @@
 #include "base/check.h"
 #include "ui/ozone/platform/wayland/common/wayland.h"
 
+#define CHROME_WAYLAND_CHECK_VERSION(x, y, z)                   \
+  (WAYLAND_VERSION_MAJOR > x ||                                 \
+   (WAYLAND_VERSION_MAJOR == x && WAYLAND_VERSION_MINOR > y) || \
+   (WAYLAND_VERSION_MAJOR == x && WAYLAND_VERSION_MINOR == y && \
+    WAYLAND_VERSION_MICRO >= z))
+
 struct wl_proxy;
 
 namespace ui {
