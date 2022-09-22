@@ -4,10 +4,10 @@
 
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -63,10 +63,7 @@ content::WebContents* WebContentsModalDialogManager::GetWebContents() const {
 }
 
 void WebContentsModalDialogManager::WillClose(gfx::NativeWindow dialog) {
-  auto dlg = std::find_if(child_dialogs_.begin(), child_dialogs_.end(),
-                          [dialog](const DialogState& child_dialog) {
-                            return child_dialog.dialog == dialog;
-                          });
+  auto dlg = base::ranges::find(child_dialogs_, dialog, &DialogState::dialog);
 
   // The Views tab contents modal dialog calls WillClose twice.  Ignore the
   // second invocation.

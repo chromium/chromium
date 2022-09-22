@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -1041,21 +1042,17 @@ void SkiaRenderer::DidReceiveReleasedOverlays(
     // If this mailbox is for render pass overlay, mark the released render pass
     // overlay backing as available to be re-used.
     auto it =
-        std::find_if(in_flight_render_pass_overlay_backings_.begin(),
-                     in_flight_render_pass_overlay_backings_.end(),
-                     [&mailbox](const RenderPassOverlayParams& overlay) {
-                       return overlay.render_pass_backing.mailbox == mailbox;
-                     });
+        base::ranges::find(in_flight_render_pass_overlay_backings_, mailbox,
+                           [](const RenderPassOverlayParams& overlay) {
+                             return overlay.render_pass_backing.mailbox;
+                           });
     if (it != in_flight_render_pass_overlay_backings_.end()) {
       available_render_pass_overlay_backings_.push_back(*it);
       in_flight_render_pass_overlay_backings_.erase(it);
     }
 
-    auto iter = std::find_if(awaiting_release_overlay_locks_.begin(),
-                             awaiting_release_overlay_locks_.end(),
-                             [&mailbox](const OverlayLock& lock) {
-                               return lock.mailbox() == mailbox;
-                             });
+    auto iter = base::ranges::find(awaiting_release_overlay_locks_, mailbox,
+                                   &OverlayLock::mailbox);
     if (iter == awaiting_release_overlay_locks_.end()) {
 // TODO(crbug.com/1299794): Re-enable this DCHECK on Ozone.
 #if !defined(USE_OZONE)
@@ -3290,15 +3287,14 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
     gfx::ColorSpace color_space,
     const gfx::Size& buffer_size) {
   RenderPassOverlayParams overlay_params;
-  auto it = std::find_if(available_render_pass_overlay_backings_.begin(),
-                         available_render_pass_overlay_backings_.end(),
-                         [&buffer_format, &buffer_size, &color_space](
-                             const RenderPassOverlayParams& overlay) {
-                           auto& backing = overlay.render_pass_backing;
-                           return backing.format == buffer_format &&
-                                  backing.size == buffer_size &&
-                                  backing.color_space == color_space;
-                         });
+  auto it = base::ranges::find_if(available_render_pass_overlay_backings_,
+                                  [&buffer_format, &buffer_size, &color_space](
+                                      const RenderPassOverlayParams& overlay) {
+                                    auto& backing = overlay.render_pass_backing;
+                                    return backing.format == buffer_format &&
+                                           backing.size == buffer_size &&
+                                           backing.color_space == color_space;
+                                  });
   if (it == available_render_pass_overlay_backings_.end()) {
     // Allocate the image for render pass overlay if there is no existing
     // available one.

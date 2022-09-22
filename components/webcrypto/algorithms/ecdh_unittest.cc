@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/ranges/algorithm.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/ec.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
@@ -113,10 +114,9 @@ TEST_F(WebCryptoEcdhTest, DeriveBitsKnownAnswer) {
 // 528 bits.
 KeyPair LoadTestKeys() {
   base::Value::List tests = ReadJsonTestFileAsList("ecdh.json");
-  const auto& test = std::find_if(
-      tests.begin(), tests.end(), [](const base::Value& v) -> bool {
-        return v.GetDict().FindBool("valid_p521_keys").has_value();
-      });
+  const auto& test = base::ranges::find_if(tests, [](const base::Value& v) {
+    return v.GetDict().FindBool("valid_p521_keys").has_value();
+  });
 
   CHECK(test != tests.end()) << "test key set contains no valid P-521 keys";
 
