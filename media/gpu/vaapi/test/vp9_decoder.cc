@@ -133,14 +133,14 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
                                                   GetFormatForProfile(profile));
   }
 
-  // [Re]create context for decode.
   // A resolution change may occur on a frame that is neither keyframe nor
-  // intra-only, i.e. may refer to earlier frames. If the earlier referred frame
-  // is larger than the new frame, consequently, do *not* recreate the context.
-  // See also
-  // https://cgit.freedesktop.org/gstreamer/gstreamer-vaapi/tree/gst-libs/gst/vaapi/gstvaapidecoder_vp9.c?h=1.18#n652
-  if (!va_context_ || va_context_->size().width() < size.width() ||
-      va_context_->size().height() < size.height()) {
+  // intra-only, i.e. may refer to earlier frames. But vaDestroyContext()
+  // cleans up internal states of a driver and makes the driver unable to
+  // reference the earlier frames. Therefore, we don't destroy and recreate
+  // |va_context_| in non keyframe.
+  if (!va_context_ || (frame_hdr.IsKeyframe() &&
+                       (va_context_->size().width() < size.width() ||
+                        va_context_->size().height() < size.height()))) {
     va_context_ =
         std::make_unique<ScopedVAContext>(va_device_, *va_config_, size);
   }
