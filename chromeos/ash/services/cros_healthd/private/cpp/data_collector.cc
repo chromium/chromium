@@ -12,7 +12,7 @@
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chromeos/components/mojo_service_manager/connection.h"
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"

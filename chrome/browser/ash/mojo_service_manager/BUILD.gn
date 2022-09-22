@@ -15,7 +15,7 @@ source_set("mojo_service_manager") {
   deps = [
     "//base",
     "//chromeos:features",
-    "//chromeos/components/mojo_service_manager",
+    "//chromeos/ash/components/mojo_service_manager",
     "//mojo/public/cpp/bindings",
   ]
 }

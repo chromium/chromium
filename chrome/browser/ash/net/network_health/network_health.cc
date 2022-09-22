@@ -12,8 +12,8 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_health/network_health_constants.h"
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/components/network/network_event_log.h"
-#include "chromeos/components/mojo_service_manager/connection.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"

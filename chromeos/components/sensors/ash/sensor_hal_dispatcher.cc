@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/time/time.h"
-#include "chromeos/components/mojo_service_manager/connection.h"
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 
 using chromeos::mojo_service_manager::mojom::ErrorOrServiceState;

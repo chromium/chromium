@@ -24,7 +24,7 @@
 #include "chrome/browser/ash/net/network_diagnostics/signal_strength_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/video_conferencing_routine.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/components/mojo_service_manager/connection.h"
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "components/device_event_log/device_event_log.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"

@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
-#include "chromeos/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
+#include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"

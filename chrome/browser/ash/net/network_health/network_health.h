@@ -11,7 +11,7 @@
 
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/net/network_health/signal_strength_tracker.h"
-#include "chromeos/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
+#include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

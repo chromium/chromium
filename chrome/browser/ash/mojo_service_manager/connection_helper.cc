@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "chromeos/components/mojo_service_manager/connection.h"
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/features.h"
 
 #if !BUILDFLAG(USE_REAL_CHROMEOS_SERVICES)
 #include "base/system/sys_info.h"
-#include "chromeos/components/mojo_service_manager/fake_mojo_service_manager.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #endif
 
 namespace {
