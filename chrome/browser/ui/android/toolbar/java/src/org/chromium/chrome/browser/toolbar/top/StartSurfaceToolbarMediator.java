@@ -34,7 +34,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
@@ -46,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
+import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
@@ -58,7 +58,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
 
 /** The mediator implements interacts between the views and the caller. */
-class StartSurfaceToolbarMediator {
+class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserver {
     private final PropertyModel mPropertyModel;
     private final Callback<IPHCommandBuilder> mShowIdentityIPHCallback;
     private final boolean mHideIncognitoSwitchWhenNoTabs;
@@ -73,6 +73,7 @@ class StartSurfaceToolbarMediator {
     private final Callback<LoadUrlParams> mLogoClickedCallback;
     private final boolean mIsRefactorEnabled;
     private final boolean mShouldFetchDoodle;
+    private final ButtonDataProvider mIdentityDiscController;
 
     private TabModelSelector mTabModelSelector;
     private TabCountProvider mTabCountProvider;
@@ -94,7 +95,7 @@ class StartSurfaceToolbarMediator {
     StartSurfaceToolbarMediator(PropertyModel model,
             Callback<IPHCommandBuilder> showIdentityIPHCallback,
             boolean hideIncognitoSwitchWhenNoTabs, MenuButtonCoordinator menuButtonCoordinator,
-            ObservableSupplier<Boolean> identityDiscStateSupplier,
+            ButtonDataProvider identityDiscController,
             Supplier<ButtonData> identityDiscButtonSupplier,
             boolean shouldShowTabSwitcherButtonOnHomepage, boolean isTabToGtsFadeAnimationEnabled,
             boolean isTabGroupsAndroidContinuationEnabled,
@@ -113,11 +114,8 @@ class StartSurfaceToolbarMediator {
         mLogoClickedCallback = logoClickedCallback;
         mDefaultSearchEngineHasLogo = true;
         mShouldFetchDoodle = shouldFetchDoodle;
-        identityDiscStateSupplier.addObserver((canShowHint) -> {
-            // If the identity disc wants to be hidden and is hidden, there's nothing we need to do.
-            if (!canShowHint && !mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE)) return;
-            updateIdentityDisc(mIdentityDiscButtonSupplier.get());
-        });
+        mIdentityDiscController = identityDiscController;
+        mIdentityDiscController.addObserver(this);
         mIsRefactorEnabled = isRefactorEnabled;
 
         mShouldShowTabSwitcherButtonOnHomepage = shouldShowTabSwitcherButtonOnHomepage;
@@ -163,6 +161,7 @@ class StartSurfaceToolbarMediator {
             mCallbackController.destroy();
             mCallbackController = null;
         }
+        mIdentityDiscController.removeObserver(this);
     }
 
     void onStartSurfaceStateChanged(@StartSurfaceState int newState,
@@ -467,5 +466,12 @@ class StartSurfaceToolbarMediator {
     @VisibleForTesting
     LogoCoordinator getLogoCoordinatorForTesting() {
         return mLogoCoordinator;
+    }
+
+    @Override
+    public void buttonDataChanged(boolean canShowHint) {
+        // If the identity disc wants to be hidden and is hidden, there's nothing we need to do.
+        if (!canShowHint && !mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE)) return;
+        updateIdentityDisc(mIdentityDiscButtonSupplier.get());
     }
 }

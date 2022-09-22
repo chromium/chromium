@@ -46,7 +46,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -128,7 +127,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
     private ArgumentCaptor<IncognitoTabModelObserver> mIncognitoTabModelObserver;
 
     private ButtonDataImpl mButtonData;
-    private ObservableSupplierImpl<Boolean> mIdentityDiscStateSupplier;
 
     @Before
     public void setUp() {
@@ -146,7 +144,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 AdaptiveToolbarButtonVariant.UNKNOWN);
         ButtonDataImpl disabledButtonData = new ButtonDataImpl(
                 false, null, null, 0, false, null, true, AdaptiveToolbarButtonVariant.UNKNOWN);
-        mIdentityDiscStateSupplier = new ObservableSupplierImpl<>();
 
         Profile.setLastUsedProfileForTesting(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
@@ -443,19 +440,18 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
 
-        mButtonData.setCanShow(true);
-
-        mIdentityDiscStateSupplier.set(true);
-        assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
-
         mButtonData.setCanShow(false);
-        mIdentityDiscStateSupplier.set(false);
+        mMediator.buttonDataChanged(true);
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
+
+        mButtonData.setCanShow(true);
+        mMediator.buttonDataChanged(true);
+        assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
 
         // updateIdentityDisc() should properly handle a hint that contradicts the true value of
         // canShow.
         mButtonData.setCanShow(false);
-        mIdentityDiscStateSupplier.set(true);
+        mMediator.buttonDataChanged(true);
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
     }
 
@@ -528,7 +524,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
             boolean shouldShowTabSwitcherButtonOnHomepage,
             boolean isTabGroupsAndroidContinuationEnabled) {
         mMediator = new StartSurfaceToolbarMediator(mPropertyModel, mMockIdentityIPHCallback,
-                hideIncognitoSwitchWhenNoTabs, mMenuButtonCoordinator, mIdentityDiscStateSupplier,
+                hideIncognitoSwitchWhenNoTabs, mMenuButtonCoordinator, mIdentityDiscController,
                 ()
                         -> mIdentityDiscController.getForStartSurface(
                                 mMediator.getOverviewModeStateForTesting(),
