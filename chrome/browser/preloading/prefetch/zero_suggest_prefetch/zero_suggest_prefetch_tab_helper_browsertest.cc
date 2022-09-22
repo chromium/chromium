@@ -77,7 +77,10 @@ class ZeroSuggestPrefetchTabHelperBrowserTestOnNTP
     : public ZeroSuggestPrefetchTabHelperBrowserTest {
  public:
   ZeroSuggestPrefetchTabHelperBrowserTestOnNTP() {
-    feature_list_.InitWithFeatures({omnibox::kZeroSuggestPrefetching}, {});
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kZeroSuggestPrefetching},
+        /*disabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP,
+                               omnibox::kZeroSuggestPrefetchingOnWeb});
   }
 };
 
@@ -85,7 +88,10 @@ class ZeroSuggestPrefetchTabHelperBrowserTestOnSRP
     : public ZeroSuggestPrefetchTabHelperBrowserTest {
  public:
   ZeroSuggestPrefetchTabHelperBrowserTestOnSRP() {
-    feature_list_.InitWithFeatures({omnibox::kZeroSuggestPrefetchingOnSRP}, {});
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnSRP},
+        /*disabled_features=*/{omnibox::kZeroSuggestPrefetching,
+                               omnibox::kZeroSuggestPrefetchingOnWeb});
   }
 };
 
@@ -93,7 +99,10 @@ class ZeroSuggestPrefetchTabHelperBrowserTestOnWeb
     : public ZeroSuggestPrefetchTabHelperBrowserTest {
  public:
   ZeroSuggestPrefetchTabHelperBrowserTestOnWeb() {
-    feature_list_.InitWithFeatures({omnibox::kZeroSuggestPrefetchingOnWeb}, {});
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kZeroSuggestPrefetchingOnWeb},
+        /*disabled_features=*/{omnibox::kZeroSuggestPrefetching,
+                               omnibox::kZeroSuggestPrefetchingOnSRP});
   }
 };
 

@@ -7167,10 +7167,14 @@
             ]
         }
     ],
-    "OmniboxZeroSuggestPrefetching": [
+    "OmniboxZeroSuggestPrefetchingOnSRPAndWeb": [
         {
             "platforms": [
-                "ios"
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
