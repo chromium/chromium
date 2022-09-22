@@ -466,7 +466,7 @@ bool UserSelectionScreen::ShouldForceOnlineSignIn(
   // this might be a leftover from an old version.
   if (has_gaia_account &&
       token_status == user_manager::User::OAUTH2_TOKEN_STATUS_INVALID)
-    RecordReauthReason(user->GetAccountId(), ReauthReason::OTHER);
+    RecordReauthReason(user->GetAccountId(), ReauthReason::kOther);
 
   // We need to force an online signin if the user is marked as requiring it or
   // if there's an invalid OAUTH token that needs to be refreshed.
@@ -693,7 +693,7 @@ void UserSelectionScreen::OnUserStatusChecked(
     const AccountId& account_id,
     TokenHandleUtil::TokenHandleStatus status) {
   if (status == TokenHandleUtil::INVALID) {
-    RecordReauthReason(account_id, ReauthReason::INVALID_TOKEN_HANDLE);
+    RecordReauthReason(account_id, ReauthReason::kInvalidTokenHandle);
     SetAuthType(account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
                 std::u16string());
   }
@@ -821,7 +821,7 @@ void UserSelectionScreen::OnSessionStateChanged() {
 
 void UserSelectionScreen::OnInvalidSyncToken(const AccountId& account_id) {
   RecordReauthReason(account_id,
-                     ReauthReason::SAML_PASSWORD_SYNC_TOKEN_VALIDATION_FAILED);
+                     ReauthReason::kSamlPasswordSyncTokenValidationFailed);
   SetAuthType(account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
               std::u16string());
 }

@@ -351,7 +351,7 @@ void LoginScreenClientImpl::ShowGuestTosScreen() {
 
 void LoginScreenClientImpl::OnMaxIncorrectPasswordAttempted(
     const AccountId& account_id) {
-  RecordReauthReason(account_id, ash::ReauthReason::INCORRECT_PASSWORD_ENTERED);
+  RecordReauthReason(account_id, ash::ReauthReason::kIncorrectPasswordEntered);
 }
 
 void LoginScreenClientImpl::SetPublicSessionKeyboardLayout(

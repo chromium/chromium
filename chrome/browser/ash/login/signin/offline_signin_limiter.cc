@@ -368,9 +368,9 @@ void OfflineSigninLimiter::ForceOnlineLogin() {
   user_manager::UserManager::Get()->SaveForceOnlineSignin(user->GetAccountId(),
                                                           true);
   if (user->using_saml())
-    RecordReauthReason(user->GetAccountId(), ReauthReason::SAML_REAUTH_POLICY);
+    RecordReauthReason(user->GetAccountId(), ReauthReason::kSamlReauthPolicy);
   else
-    RecordReauthReason(user->GetAccountId(), ReauthReason::GAIA_REAUTH_POLICY);
+    RecordReauthReason(user->GetAccountId(), ReauthReason::kGaiaReauthPolicy);
   offline_signin_limit_timer_->Stop();
 }
 
@@ -393,10 +393,10 @@ void OfflineSigninLimiter::ForceOnlineLockScreenReauth() {
 
   if (user->using_saml()) {
     RecordReauthReason(user->GetAccountId(),
-                       ReauthReason::SAML_LOCK_SCREEN_REAUTH_POLICY);
+                       ReauthReason::kSamlLockScreenReauthPolicy);
   } else {
     RecordReauthReason(user->GetAccountId(),
-                       ReauthReason::GAIA_LOCK_SCREEN_REAUTH_POLICY);
+                       ReauthReason::kGaiaLockScreenReauthPolicy);
   }
   offline_lock_screen_signin_limit_timer_->Stop();
 }

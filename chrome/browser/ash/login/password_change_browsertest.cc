@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_P(PasswordChangeTest, MigrateOldCryptohome) {
   SetGaiaScreenCredentials(test_account_id_, "new user password");
   WaitForPasswordChangeScreen();
   histogram_tester.ExpectBucketCount("Login.PasswordChanged.ReauthReason",
-                                     ReauthReason::OTHER, 1);
+                                     ReauthReason::kOther, 1);
 
   test::OobeJS().CreateVisibilityWaiter(true, kPasswordStep)->Wait();
 
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest, SubmitOnEnterKeyPressed) {
   SetUpStubAuthenticatorAndAttemptLogin("old user password");
   WaitForPasswordChangeScreen();
   histogram_tester.ExpectBucketCount("Login.PasswordChanged.ReauthReason",
-                                     ReauthReason::OTHER, 1);
+                                     ReauthReason::kOther, 1);
 
   test::OobeJS().CreateVisibilityWaiter(true, kPasswordStep)->Wait();
 
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, LoginScreenPasswordChange) {
   SetUpStubAuthenticatorAndAttemptLogin("old user password");
   WaitForPasswordChangeScreen();
   histogram_tester.ExpectBucketCount("Login.PasswordChanged.ReauthReason",
-                                     ReauthReason::INVALID_TOKEN_HANDLE, 1);
+                                     ReauthReason::kInvalidTokenHandle, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, LoginScreenNoPasswordChange) {
@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, LoginScreenNoPasswordChange) {
   login_mixin_.LoginWithDefaultContext(login_mixin_.users().back());
   login_mixin_.WaitForActiveSession();
   histogram_tester.ExpectBucketCount("Login.PasswordNotChanged.ReauthReason",
-                                     ReauthReason::INVALID_TOKEN_HANDLE, 1);
+                                     ReauthReason::kInvalidTokenHandle, 1);
 }
 
 // Helper class to create NotificationDisplayServiceTester before notification
@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, Session) {
   SetUpStubAuthenticatorAndAttemptLogin("old user password");
   WaitForPasswordChangeScreen();
   histogram_tester.ExpectBucketCount("Login.PasswordChanged.ReauthReason",
-                                     ReauthReason::INVALID_TOKEN_HANDLE, 1);
+                                     ReauthReason::kInvalidTokenHandle, 1);
 }
 
 // Notification should not be triggered because token was checked on the login

@@ -2457,7 +2457,7 @@ void LockContentsView::ForgotPasswordButtonPressed() {
   if (ash::features::IsCryptohomeRecoveryFlowEnabled()) {
     user_manager::KnownUser(Shell::Get()->local_state())
         .UpdateReauthReason(account_id,
-                            static_cast<int>(ReauthReason::FORGOT_PASSWORD));
+                            static_cast<int>(ReauthReason::kForgotPassword));
   }
   Shell::Get()->login_screen_controller()->ShowGaiaSignin(account_id);
   HideAuthErrorMessage();

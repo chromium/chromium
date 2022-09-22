@@ -85,7 +85,7 @@ void GaiaPasswordChangedScreen::MigrateUserData(
 
 void GaiaPasswordChangedScreen::CancelPasswordChangedFlow() {
   if (account_id_.is_valid()) {
-    RecordReauthReason(account_id_, ReauthReason::PASSWORD_UPDATE_SKIPPED);
+    RecordReauthReason(account_id_, ReauthReason::kPasswordUpdateSkipped);
   }
   SigninProfileHandler::Get()->ClearSigninProfile(
       base::BindOnce(&GaiaPasswordChangedScreen::OnCookiesCleared,

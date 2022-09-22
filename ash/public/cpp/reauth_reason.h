@@ -14,61 +14,61 @@ namespace ash {
 enum class ReauthReason {
   // Default value: no reauth reasons were detected so far, or the reason was
   // already reported.
-  NONE = 0,
+  kNone = 0,
 
   // Legacy profile holders.
-  OTHER = 1,
+  kOther = 1,
 
   // Password changed, revoked credentials, account deleted.
-  INVALID_TOKEN_HANDLE = 2,
+  kInvalidTokenHandle = 2,
 
   // Incorrect password entered 3 times at the user pod.
-  INCORRECT_PASSWORD_ENTERED = 3,
+  kIncorrectPasswordEntered = 3,
 
   // Incorrect password entered by a SAML user once.
   // OS would show a tooltip offering user to complete the online sign-in.
-  INCORRECT_SAML_PASSWORD_ENTERED = 4,
+  kIncorrectSamlPasswordEntered = 4,
 
   // Device policy is set not to show user pods, which requires re-auth on every
   // login.
-  SAML_REAUTH_POLICY = 5,
+  kSamlReauthPolicy = 5,
 
   // Cryptohome is missing, most likely due to deletion during garbage
   // collection.
-  MISSING_CRYPTOHOME = 6,
+  kMissingCryptohome = 6,
 
   // During last login OS failed to connect to the sync with the existing RT.
   // This could be due to account deleted, password changed, account revoked,
   // etc.
-  SYNC_FAILED = 7,
+  kSyncFailed = 7,
 
   // User cancelled the password change prompt when prompted by Chrome OS.
-  PASSWORD_UPDATE_SKIPPED = 8,
+  kPasswordUpdateSkipped = 8,
 
   // SAML password sync token validation failed.
-  SAML_PASSWORD_SYNC_TOKEN_VALIDATION_FAILED = 9,
+  kSamlPasswordSyncTokenValidationFailed = 9,
 
   // Corrupted cryptohome
-  UNRECOVERABLE_CRYPTOHOME = 10,
+  kUnrecoverableCryptohome = 10,
 
   // Gaia policy is set, which requires re-auth on every login if the offline
   // login time limit has been reached.
-  GAIA_REAUTH_POLICY = 11,
+  kGaiaReauthPolicy = 11,
 
   // Gaia lock screen re-auth policy is set, which requires re-auth on lock
   // screen if the offline lock screen time limit has been reached.
-  GAIA_LOCK_SCREEN_REAUTH_POLICY = 12,
+  kGaiaLockScreenReauthPolicy = 12,
 
   // Saml lock screen re-auth policy is set, which requires re-auth on lock
   // screen if the offline lock screen time limit has been reached.
-  SAML_LOCK_SCREEN_REAUTH_POLICY = 13,
+  kSamlLockScreenReauthPolicy = 13,
 
   // "Forgot Password" button clicked on the sign-in screen when password is
   // entered wrongly.
-  FORGOT_PASSWORD = 14,
+  kForgotPassword = 14,
 
   // Must be the last value in this list.
-  NUM_REAUTH_FLOW_REASONS,
+  kNumReauthFlowReasons,
 };
 
 }  // namespace ash

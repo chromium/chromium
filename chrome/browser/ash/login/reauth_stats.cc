@@ -17,13 +17,13 @@ ReauthReason GetReauthReason(const user_manager::KnownUser& known_user,
                              const AccountId& account_id) {
   return static_cast<ReauthReason>(
       known_user.FindReauthReason(account_id)
-          .value_or(static_cast<int>(ReauthReason::NONE)));
+          .value_or(static_cast<int>(ReauthReason::kNone)));
 }
 
 }  // namespace
 
 void RecordReauthReason(const AccountId& account_id, ReauthReason reason) {
-  if (reason == ReauthReason::NONE)
+  if (reason == ReauthReason::kNone)
     return;
   user_manager::KnownUser known_user(g_browser_process->local_state());
   if (GetReauthReason(known_user, account_id) == reason)
@@ -36,19 +36,19 @@ void RecordReauthReason(const AccountId& account_id, ReauthReason reason) {
 void SendReauthReason(const AccountId& account_id, bool password_changed) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   ReauthReason reauth_reason = GetReauthReason(known_user, account_id);
-  if (reauth_reason == ReauthReason::NONE)
+  if (reauth_reason == ReauthReason::kNone)
     return;
   if (password_changed) {
     base::UmaHistogramEnumeration("Login.PasswordChanged.ReauthReason",
                                   reauth_reason,
-                                  ReauthReason::NUM_REAUTH_FLOW_REASONS);
+                                  ReauthReason::kNumReauthFlowReasons);
   } else {
     base::UmaHistogramEnumeration("Login.PasswordNotChanged.ReauthReason",
                                   reauth_reason,
-                                  ReauthReason::NUM_REAUTH_FLOW_REASONS);
+                                  ReauthReason::kNumReauthFlowReasons);
   }
   known_user.UpdateReauthReason(account_id,
-                                static_cast<int>(ReauthReason::NONE));
+                                static_cast<int>(ReauthReason::kNone));
 }
 
 }  // namespace ash
