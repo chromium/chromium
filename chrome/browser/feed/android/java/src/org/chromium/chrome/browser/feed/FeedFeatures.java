@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.feed;
 
+import android.content.Context;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
@@ -15,6 +17,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Helper methods covering more complex Feed related feature checks and states.
@@ -65,6 +68,11 @@ public final class FeedFeatures {
                 .getFieldTrialParamByFeature(
                         ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
                 .equals("new_animation");
+    }
+
+    public static boolean isMultiColumnFeedEnabled(Context context) {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_MULTI_COLUMN);
     }
 
     /**

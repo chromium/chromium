@@ -37,6 +37,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 
 import java.util.Arrays;
 
@@ -51,6 +52,8 @@ public class FeedSliceViewTrackerTest {
     FeedSliceViewTracker.Observer mObserver;
     @Mock
     LinearLayoutManager mLayoutManager;
+    @Mock
+    ListLayoutHelper mLayoutHelper;
     @Mock
     ViewTreeObserver mViewTreeObserver;
     NtpListContentManager mContentManager;
@@ -76,7 +79,8 @@ public class FeedSliceViewTrackerTest {
         mContentManager = new NtpListContentManager();
         doReturn(mLayoutManager).when(mParentView).getLayoutManager();
         doReturn(mViewTreeObserver).when(mParentView).getViewTreeObserver();
-        mTracker = Mockito.spy(new FeedSliceViewTracker(mParentView, mContentManager, mObserver));
+        mTracker = Mockito.spy(
+                new FeedSliceViewTracker(mParentView, mContentManager, mLayoutHelper, mObserver));
     }
 
     @Test
@@ -127,8 +131,8 @@ public class FeedSliceViewTrackerTest {
                         new NtpListContentManager.NativeViewContent(0, "c/key1", mChildA),
                         new NtpListContentManager.NativeViewContent(0, "c/key2", mChildB),
                 }));
-        doReturn(0).when(mLayoutManager).findFirstVisibleItemPosition();
-        doReturn(1).when(mLayoutManager).findLastVisibleItemPosition();
+        doReturn(0).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(1).when(mLayoutHelper).findLastVisibleItemPosition();
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
         doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
 
@@ -152,8 +156,8 @@ public class FeedSliceViewTrackerTest {
                         new NtpListContentManager.NativeViewContent(0, "c/key1", mChildA),
                         new NtpListContentManager.NativeViewContent(0, "c/key2", mChildB),
                 }));
-        doReturn(0).when(mLayoutManager).findFirstVisibleItemPosition();
-        doReturn(1).when(mLayoutManager).findLastVisibleItemPosition();
+        doReturn(0).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(1).when(mLayoutHelper).findLastVisibleItemPosition();
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
         doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
 
@@ -177,8 +181,8 @@ public class FeedSliceViewTrackerTest {
                         new NtpListContentManager.NativeViewContent(0, "non-content-key1", mChildA),
                         new NtpListContentManager.NativeViewContent(0, "non-content-key2", mChildB),
                 }));
-        doReturn(0).when(mLayoutManager).findFirstVisibleItemPosition();
-        doReturn(1).when(mLayoutManager).findLastVisibleItemPosition();
+        doReturn(0).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(1).when(mLayoutHelper).findLastVisibleItemPosition();
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
         doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
 
@@ -201,8 +205,8 @@ public class FeedSliceViewTrackerTest {
                         new NtpListContentManager.NativeViewContent(0, "c/key1", mChildA),
                         new NtpListContentManager.NativeViewContent(0, "c/key2", mChildB),
                 }));
-        doReturn(0).when(mLayoutManager).findFirstVisibleItemPosition();
-        doReturn(1).when(mLayoutManager).findLastVisibleItemPosition();
+        doReturn(0).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(1).when(mLayoutHelper).findLastVisibleItemPosition();
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
         doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
 
@@ -222,8 +226,8 @@ public class FeedSliceViewTrackerTest {
                         new NtpListContentManager.NativeViewContent(0, "c/key1", mChildA),
                         new NtpListContentManager.NativeViewContent(0, "c/key2", mChildB),
                 }));
-        doReturn(RecyclerView.NO_POSITION).when(mLayoutManager).findFirstVisibleItemPosition();
-        doReturn(RecyclerView.NO_POSITION).when(mLayoutManager).findLastVisibleItemPosition();
+        doReturn(RecyclerView.NO_POSITION).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(RecyclerView.NO_POSITION).when(mLayoutHelper).findLastVisibleItemPosition();
 
         mTracker.onPreDraw();
     }
@@ -246,8 +250,8 @@ public class FeedSliceViewTrackerTest {
                         new NtpListContentManager.NativeViewContent(0, "c/key1", mChildA),
                         new NtpListContentManager.NativeViewContent(0, "c/key2", mChildB),
                 }));
-        doReturn(0).when(mLayoutManager).findFirstVisibleItemPosition();
-        doReturn(1).when(mLayoutManager).findLastVisibleItemPosition();
+        doReturn(0).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(1).when(mLayoutHelper).findLastVisibleItemPosition();
         doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
         doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
 

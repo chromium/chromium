@@ -550,6 +550,7 @@ public abstract class ChromeFeatureList {
     public static final String SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY =
             "SplitCacheByNetworkIsolationKey";
     public static final String START_SURFACE_ANDROID = "StartSurfaceAndroid";
+    public static final String FEED_MULTI_COLUMN = "DiscoverFeedMultiColumn";
     public static final String FEED_POSITION_ANDROID = "FeedPositionAndroid";
     public static final String SEARCH_RESUMPTION_MODULE_ANDROID = "SearchResumptionModuleAndroid";
     public static final String START_SURFACE_RETURN_TIME = "StartSurfaceReturnTime";
@@ -575,7 +576,6 @@ public abstract class ChromeFeatureList {
     public static final String TAB_SELECTION_EDITOR_V2 = "TabSelectionEditorV2";
     public static final String TAB_SWITCHER_ON_RETURN = "TabSwitcherOnReturn";
     public static final String TAB_TO_GTS_ANIMATION = "TabToGTSAnimation";
-    public static final String DISCOVER_MULTI_COLUMN = "DiscoverFeedMultiColumn";
     public static final String TAB_STRIP_IMPROVEMENTS = "TabStripImprovements";
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
@@ -727,8 +727,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabStripImprovements =
             new CachedFlag(TAB_STRIP_IMPROVEMENTS, true);
     public static final CachedFlag sTabToGTSAnimation = new CachedFlag(TAB_TO_GTS_ANIMATION, true);
-    public static final CachedFlag sDiscoverMultiColumn =
-            new CachedFlag(DISCOVER_MULTI_COLUMN, false);
+    public static final CachedFlag sDiscoverMultiColumn = new CachedFlag(FEED_MULTI_COLUMN, false);
     public static final CachedFlag sTestDefaultDisabled =
             new CachedFlag(TEST_DEFAULT_DISABLED, false);
     public static final CachedFlag sTestDefaultEnabled = new CachedFlag(TEST_DEFAULT_ENABLED, true);

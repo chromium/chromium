@@ -36,10 +36,16 @@ public class NtpListContentManager implements ListContentManager {
      */
     public abstract static class FeedContent {
         private final String mKey;
+        private final boolean mIsFullSpan;
 
         FeedContent(String key) {
+            this(key, false);
+        }
+
+        FeedContent(String key, boolean isFullSpan) {
             assert key != null && !key.isEmpty();
             mKey = key;
+            mIsFullSpan = isFullSpan;
         }
 
         /**
@@ -52,6 +58,10 @@ public class NtpListContentManager implements ListContentManager {
          */
         public String getKey() {
             return mKey;
+        }
+
+        public boolean isFullSpan() {
+            return mIsFullSpan;
         }
 
         @Nullable
@@ -107,7 +117,7 @@ public class NtpListContentManager implements ListContentManager {
 
         /** Holds an inflated native view. */
         public NativeViewContent(@Px int lateralPaddingsPx, String key, View nativeView) {
-            super(key);
+            super(key, true);
             assert nativeView != null;
             mNativeView = nativeView;
             mLateralPaddingsPx = lateralPaddingsPx;
@@ -115,7 +125,7 @@ public class NtpListContentManager implements ListContentManager {
 
         /** Holds a resource ID used to inflate a native view. */
         public NativeViewContent(@Px int lateralPaddingsPx, String key, int resId) {
-            super(key);
+            super(key, true);
             mResId = resId;
             mLateralPaddingsPx = lateralPaddingsPx;
         }
@@ -372,6 +382,11 @@ public class NtpListContentManager implements ListContentManager {
     @Override
     public boolean isNativeView(int index) {
         return mFeedContentList.get(index).isNativeView();
+    }
+
+    @Override
+    public boolean isFullSpan(int index) {
+        return mFeedContentList.get(index).isFullSpan();
     }
 
     @Override

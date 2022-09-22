@@ -18,8 +18,8 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Function;
@@ -44,10 +44,10 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
-import org.chromium.chrome.browser.xsurface.FeedActionsHandler.FeedIdentifier;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
+import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
@@ -718,8 +718,8 @@ public class FeedStream implements Stream {
 
         mScrollStateToRestore = savedInstanceState;
         manager.setHandlers(mHandlersMap);
-        mSliceViewTracker =
-                new FeedSliceViewTracker(rootView, manager, new FeedStream.ViewTrackerObserver());
+        mSliceViewTracker = new FeedSliceViewTracker(rootView, manager,
+                renderer.getListLayoutHelper(), new FeedStream.ViewTrackerObserver());
         mSliceViewTracker.bind();
 
         rootView.addOnScrollListener(mMainScrollListener);
@@ -921,7 +921,7 @@ public class FeedStream implements Stream {
             return false;
         }
         // Checks if loading more can be triggered.
-        LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+        LayoutManager layoutManager = mRecyclerView.getLayoutManager();
         if (layoutManager == null) {
             return false;
         }
@@ -937,7 +937,7 @@ public class FeedStream implements Stream {
         // beyond the end of the feed. This can occur if maybeLoadMore() is called during a feed
         // swap, after the feed items have been cleared, but before the view has finished updating
         // (which happens asynchronously).
-        int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+        int lastVisibleItem = mRenderer.getListLayoutHelper().findLastVisibleItemPosition();
         if (totalItemCount < lastVisibleItem) {
             return false;
         }
@@ -1141,9 +1141,9 @@ public class FeedStream implements Stream {
         // spinner.
         if (mContentManager.getContent(state.lastPosition).isNativeView()) return false;
 
-        LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
-        if (layoutManager != null) {
-            layoutManager.scrollToPositionWithOffset(state.position, state.offset);
+        ListLayoutHelper layoutHelper = mRenderer.getListLayoutHelper();
+        if (layoutHelper != null) {
+            layoutHelper.scrollToPositionWithOffset(state.position, state.offset);
         }
         return true;
     }
@@ -1153,11 +1153,11 @@ public class FeedStream implements Stream {
         if (!isOnboardingEnabled()) return;
 
         // Scroll to the first position, which should be the tab header.
-        LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
-        if (layoutManager != null) {
+        ListLayoutHelper layoutHelper = mRenderer.getListLayoutHelper();
+        if (layoutHelper != null) {
             int omnibarHeight = (int) (mActivity.getResources().getDimensionPixelSize(
                     R.dimen.toolbar_height_no_shadow));
-            layoutManager.scrollToPositionWithOffset(/*position=*/mHeaderCount - 1,
+            layoutHelper.scrollToPositionWithOffset(/*position=*/mHeaderCount - 1,
                     /*offset=*/omnibarHeight);
         }
     }

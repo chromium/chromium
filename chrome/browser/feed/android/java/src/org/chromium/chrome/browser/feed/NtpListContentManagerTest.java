@@ -208,6 +208,12 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
         assertFalse(mManager.isNativeView(3));
         assertTrue(mManager.isNativeView(4));
 
+        assertFalse(mManager.isFullSpan(0));
+        assertTrue(mManager.isFullSpan(1));
+        assertTrue(mManager.isFullSpan(2));
+        assertFalse(mManager.isFullSpan(3));
+        assertTrue(mManager.isFullSpan(4));
+
         assertArrayEquals("foo".getBytes(), mManager.getExternalViewBytes(0));
         assertEquals(v2, getNativeView(mManager.getViewType(1)));
         assertEquals(v3, getNativeView(mManager.getViewType(2)));

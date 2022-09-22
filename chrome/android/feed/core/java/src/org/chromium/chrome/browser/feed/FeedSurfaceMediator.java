@@ -16,8 +16,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MemoryPressureListener;
@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamType;
+import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
@@ -324,13 +325,15 @@ public class FeedSurfaceMediator
         FeedScrollState state = new FeedScrollState();
         int tabId = mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY);
         state.tabId = tabId;
-        LinearLayoutManager layoutManager = null;
+        LayoutManager layoutManager = null;
         if (mCoordinator.getRecyclerView() != null) {
-            layoutManager = (LinearLayoutManager) mCoordinator.getRecyclerView().getLayoutManager();
+            layoutManager = mCoordinator.getRecyclerView().getLayoutManager();
         }
         if (layoutManager != null) {
-            state.position = layoutManager.findFirstVisibleItemPosition();
-            state.lastPosition = layoutManager.findLastVisibleItemPosition();
+            ListLayoutHelper layoutHelper =
+                    mCoordinator.getHybridListRenderer().getListLayoutHelper();
+            state.position = layoutHelper.findFirstVisibleItemPosition();
+            state.lastPosition = layoutHelper.findLastVisibleItemPosition();
             if (state.position != RecyclerView.NO_POSITION) {
                 View firstVisibleView = layoutManager.findViewByPosition(state.position);
                 if (firstVisibleView != null) {
@@ -928,8 +931,7 @@ public class FeedSurfaceMediator
             return Integer.MIN_VALUE;
         }
 
-        LinearLayoutManager layoutManager =
-                (LinearLayoutManager) mCoordinator.getRecyclerView().getLayoutManager();
+        LayoutManager layoutManager = mCoordinator.getRecyclerView().getLayoutManager();
         if (layoutManager == null) {
             return Integer.MIN_VALUE;
         }
@@ -946,14 +948,13 @@ public class FeedSurfaceMediator
     public boolean isChildVisibleAtPosition(int position) {
         if (!isScrollViewInitialized()) return false;
 
-        LinearLayoutManager layoutManager =
-                (LinearLayoutManager) mCoordinator.getRecyclerView().getLayoutManager();
-        if (layoutManager == null) {
+        ListLayoutHelper layoutHelper = mCoordinator.getHybridListRenderer().getListLayoutHelper();
+        if (layoutHelper == null) {
             return false;
         }
 
-        int firstItemPosition = layoutManager.findFirstVisibleItemPosition();
-        int lastItemPosition = layoutManager.findLastVisibleItemPosition();
+        int firstItemPosition = layoutHelper.findFirstVisibleItemPosition();
+        int lastItemPosition = layoutHelper.findLastVisibleItemPosition();
         if (firstItemPosition == RecyclerView.NO_POSITION
                 || lastItemPosition == RecyclerView.NO_POSITION) {
             return false;

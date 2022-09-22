@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.CommandLine;
@@ -608,7 +607,9 @@ public class FeedSurfaceCoordinator
         RecyclerView view;
         if (mHybridListRenderer != null) {
             // XSurface returns a View, but it should be a RecyclerView.
-            view = (RecyclerView) mHybridListRenderer.bind(mContentManager, mViewportView, false);
+            boolean useStaggeredLayout = FeedFeatures.isMultiColumnFeedEnabled(mActivity);
+            view = (RecyclerView) mHybridListRenderer.bind(
+                    mContentManager, mViewportView, useStaggeredLayout);
             view.setId(R.id.feed_stream_recycler_view);
             view.setClipToPadding(false);
             view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
@@ -917,19 +918,17 @@ public class FeedSurfaceCoordinator
 
     @Override
     public int getItemCount() {
-        return ((LinearLayoutManager) mRecyclerView.getLayoutManager()).getItemCount();
+        return mRecyclerView.getLayoutManager().getItemCount();
     }
 
     @Override
     public int getFirstVisiblePosition() {
-        return ((LinearLayoutManager) mRecyclerView.getLayoutManager())
-                .findFirstVisibleItemPosition();
+        return mHybridListRenderer.getListLayoutHelper().findFirstVisibleItemPosition();
     }
 
     @Override
     public int getLastVisiblePosition() {
-        return ((LinearLayoutManager) mRecyclerView.getLayoutManager())
-                .findLastVisibleItemPosition();
+        return mHybridListRenderer.getListLayoutHelper().findLastVisibleItemPosition();
     }
 
     @Override

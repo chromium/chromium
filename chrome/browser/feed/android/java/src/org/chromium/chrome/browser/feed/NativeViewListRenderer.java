@@ -82,10 +82,11 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         mManager = manager;
         mView = new RecyclerView(mContext);
         mView.setAdapter(this);
-        mView.setLayoutManager(new LinearLayoutManager(mContext));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
+        mView.setLayoutManager(layoutManager);
         mManager.addObserver(this);
         onItemRangeInserted(0, mManager.getItemCount());
-        mLayoutHelper = new NativeViewListLayoutHelper();
+        mLayoutHelper = new NativeViewListLayoutHelper(layoutManager);
         return mView;
     }
 
@@ -148,20 +149,25 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
     }
 
     class NativeViewListLayoutHelper implements ListLayoutHelper {
+        private LinearLayoutManager mLayoutManager;
+
+        public NativeViewListLayoutHelper(LinearLayoutManager layoutManager) {
+            mLayoutManager = layoutManager;
+        }
+
         @Override
         public int findFirstVisibleItemPosition() {
-            return ((LinearLayoutManager) mView.getLayoutManager()).findFirstVisibleItemPosition();
+            return mLayoutManager.findFirstVisibleItemPosition();
         }
 
         @Override
         public int findLastVisibleItemPosition() {
-            return ((LinearLayoutManager) mView.getLayoutManager()).findLastVisibleItemPosition();
+            return mLayoutManager.findLastVisibleItemPosition();
         }
 
         @Override
         public void scrollToPositionWithOffset(int position, int offset) {
-            ((LinearLayoutManager) mView.getLayoutManager())
-                    .scrollToPositionWithOffset(position, offset);
+            mLayoutManager.scrollToPositionWithOffset(position, offset);
         }
     }
 }

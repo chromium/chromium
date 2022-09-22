@@ -196,6 +196,7 @@ public class FeedStreamTest {
         mContentManager = new NtpListContentManager();
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        when(mRenderer.getListLayoutHelper()).thenReturn(mLayoutManager);
 
         setFeatureOverrides(/*feedLoadingPlaceholderOn=*/true, /*onboardingOn=*/false);
 

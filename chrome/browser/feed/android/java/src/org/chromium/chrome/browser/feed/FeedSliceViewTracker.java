@@ -11,8 +11,9 @@ import android.view.ViewTreeObserver;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     private RecyclerView mRootView;
     @Nullable
     private NtpListContentManager mContentManager;
+    private ListLayoutHelper mLayoutHelper;
     // The set of content keys already reported as visible.
     private HashSet<String> mContentKeysVisible = new HashSet<String>();
     private boolean mFeedContentVisible;
@@ -60,9 +62,11 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     }
 
     public FeedSliceViewTracker(@NonNull RecyclerView rootView,
-            @NonNull NtpListContentManager contentManager, @NonNull Observer observer) {
+            @NonNull NtpListContentManager contentManager, @Nullable ListLayoutHelper layoutHelper,
+            @NonNull Observer observer) {
         mRootView = rootView;
         mContentManager = contentManager;
+        mLayoutHelper = layoutHelper;
         mObserver = observer;
     }
 
@@ -85,6 +89,7 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
         mObserver = null;
         mContentManager = null;
         mWatchedSliceMap = null;
+        mLayoutHelper = null;
     }
 
     /**
@@ -137,18 +142,16 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     @Override
     public boolean onPreDraw() {
         // Not sure why, but this method can be called just after destroy().
-        if (mRootView == null) return true;
-        if (!(mRootView.getLayoutManager() instanceof LinearLayoutManager)) return true;
+        if (mRootView == null || mLayoutHelper == null) return true;
 
-        LinearLayoutManager layoutManager = (LinearLayoutManager) mRootView.getLayoutManager();
-        int firstPosition = layoutManager.findFirstVisibleItemPosition();
-        int lastPosition = layoutManager.findLastVisibleItemPosition();
+        int firstPosition = mLayoutHelper.findFirstVisibleItemPosition();
+        int lastPosition = mLayoutHelper.findLastVisibleItemPosition();
         for (int i = firstPosition;
                 i <= lastPosition && i < mContentManager.getItemCount() && i >= 0; ++i) {
             String contentKey = mContentManager.getContent(i).getKey();
             // Feed content slices come with a 'c/' prefix. Ignore everything else.
             if (!contentKey.startsWith("c/")) continue;
-            View childView = layoutManager.findViewByPosition(i);
+            View childView = mRootView.getLayoutManager().findViewByPosition(i);
             if (childView == null) continue;
 
             if (!mFeedContentVisible) {
