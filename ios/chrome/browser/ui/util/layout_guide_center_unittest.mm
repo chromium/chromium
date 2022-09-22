@@ -26,6 +26,25 @@ class LayoutGuideCenterTest : public PlatformTest {
   LayoutGuideCenter* center_;
 };
 
+// Checks that the correct view is referenced.
+TEST_F(LayoutGuideCenterTest, TestReferenced) {
+  UIView* reference_view = [[UIView alloc] init];
+
+  [center_ referenceView:reference_view underName:@"view"];
+
+  EXPECT_EQ([center_ referencedViewUnderName:@"view"], reference_view);
+}
+
+// Checks that the view is no longer referenced.
+TEST_F(LayoutGuideCenterTest, TestDereferenced) {
+  UIView* reference_view = [[UIView alloc] init];
+  [center_ referenceView:reference_view underName:@"view"];
+
+  [center_ referenceView:nil underName:@"view"];
+
+  EXPECT_EQ([center_ referencedViewUnderName:@"view"], nil);
+}
+
 // Checks that a tracking layout guide is correctly updated to match the
 // reference view's frame.
 TEST_F(LayoutGuideCenterTest, LayoutGuideMatchesReferenceView) {
@@ -42,6 +61,7 @@ TEST_F(LayoutGuideCenterTest, LayoutGuideMatchesReferenceView) {
   [window addSubview:view];
 
   EXPECT_TRUE(CGRectEqualToRect(layout_guide.layoutFrame, rect));
+  EXPECT_EQ([center_ referencedViewUnderName:@"view"], reference_view);
 }
 
 // Checks that a tracking layout guide is correctly updated to track the

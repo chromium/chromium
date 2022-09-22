@@ -23,19 +23,29 @@ public class LayoutGuideCenter: NSObject {
   /// References a view under a specific `name`.
   @objc(referenceView:underName:)
   public func reference(view referenceView: UIView?, under name: String) {
-    let oldReferenceView = referenceViews.object(forKey: name as NSString)
+    let oldReferenceView = referencedView(under: name)
     // Early return if `referenceView` is already set.
     if referenceView == oldReferenceView {
       return
     }
     oldReferenceView?.cr_onWindowCoordinatesChanged = nil
-    referenceViews.setObject(referenceView, forKey: name as NSString)
+    if let referenceView = referenceView {
+      referenceViews.setObject(referenceView, forKey: name as NSString)
+    } else {
+      referenceViews.removeObject(forKey: name as NSString)
+    }
     updateGuides(named: name)
     // Schedule updates to the matching layout guides when the reference view
     // moves in its window.
     referenceView?.cr_onWindowCoordinatesChanged = { [weak self] _ in
       self?.updateGuides(named: name)
     }
+  }
+
+  /// Returns the referenced view under `name`.
+  @objc(referencedViewUnderName:)
+  public func referencedView(under name: String) -> UIView? {
+    return referenceViews.object(forKey: name as NSString)
   }
 
   /// Creates a new layout guide tracking the view referenced under a specific `name`.
@@ -67,7 +77,7 @@ public class LayoutGuideCenter: NSObject {
   /// Updates all available guides for the given `name`.
   private func updateGuides(named name: String) {
     // Early return if there is no reference window.
-    guard let referenceView = referenceViews.object(forKey: name as NSString) else { return }
+    guard let referenceView = referencedView(under: name) else { return }
     guard let referenceWindow = referenceView.window else { return }
     // Early return if there are no layout guides.
     guard let layoutGuidesForName = layoutGuides[name] else { return }
