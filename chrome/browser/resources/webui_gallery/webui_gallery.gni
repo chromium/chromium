@@ -8,6 +8,7 @@ web_component_files = [
   "demos/cr_a11y_announcer_demo_component.ts",
   "demos/cr_action_menu_demo_component.ts",
   "demos/cr_dialog_demo_component.ts",
+  "demos/cr_icons/cr_icons_demo_component.ts",
   "demos/cr_input/cr_input_demo_component.ts",
   "demos/cr_slider/cr_slider_demo_component.ts",
   "demos/cr_tabs/cr_tabs_demo_component.ts",

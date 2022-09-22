@@ -60,6 +60,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'cr_dialog_demo.html',
             },
             {
+              name: 'Icons',
+              path: 'icons',
+              src: 'cr_icons/cr_icons_demo.html',
+            },
+            {
               name: 'Inputs',
               path: 'inputs',
               src: 'cr_input/cr_input_demo.html',
