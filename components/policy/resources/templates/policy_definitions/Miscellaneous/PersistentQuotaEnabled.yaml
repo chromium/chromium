@@ -1,5 +1,6 @@
 caption: Force persistent quota to be enabled
 default: false
+deprecated: true
 desc: "Starting in M106 persistent quota will no longer be supported. This policy\
   \ will re-enable persistent quota functionality until M107.\n\n      If this policy\
   \ is set to enabled, webkitRequestFileSystem with persistent type will operate with\

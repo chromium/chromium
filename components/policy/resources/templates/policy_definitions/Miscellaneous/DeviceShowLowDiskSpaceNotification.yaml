@@ -23,7 +23,7 @@ items:
     only 1 user
   value: false
 owners:
-- vsavu@chromium.org
+- vsavu@google.com
 schema:
   type: boolean
 supported_on:

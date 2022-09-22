@@ -10,5 +10,4 @@ SafeBrowsing:
   - SafeBrowsingEnabled
   - SafeBrowsingExtendedReportingEnabled
   - SafeBrowsingProtectionLevel
-  - SafeBrowsingWhitelistDomains
   - SafeBrowsingAllowlistDomains

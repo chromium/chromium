@@ -22,7 +22,7 @@ items:
   name: Allow
   value: 1
 owners:
-- janagrill@chromium.org
+- janagrill@google.com
 - okalitova@chromium.org
 schema:
   enum:

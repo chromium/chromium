@@ -35,23 +35,23 @@ desc: |-
         This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain or Windows 10 Pro or Enterprise instances that are enrolled for device management, and macOS instances that are managed via MDM or joined to a domain via MCX.
 example_value:
   additions:
-  - ccTLDs:
-      https://member2.test:
-      - https://member2.com
-    members:
-    - https://member2.test
-    owner: https://owner2.test
+  - associatedSites:
+    - https://associate2.test
+    ccTLDs:
+      https://associate2.test:
+      - https://associate2.com
+    primary: https://primary2.test
     serviceSites:
-    - https://owner2-content.test
+    - https://associate2-content.test
   replacements:
-  - ccTLDs:
-      https://owner1.test:
-      - https://owner1.co.uk
-    members:
-    - https://member1.test
-    owner: https://owner1.test
+  - associatedSites:
+    - https://associate1.test
+    ccTLDs:
+      https://associate1.test:
+      - https://associate1.co.uk
+    primary: https://primary1.test
     serviceSites:
-    - https://owner1-content.test
+    - https://associate1-content.test
 features:
   dynamic_refresh: false
   per_profile: true
@@ -69,49 +69,49 @@ schema:
     additions:
       items:
         properties:
+          associatedSites:
+            items:
+              type: string
+            type: array
           ccTLDs:
             additionalProperties:
               items:
                 type: string
               type: array
             type: object
-          members:
-            items:
-              type: string
-            type: array
-          owner:
+          primary:
             type: string
           serviceSites:
             items:
               type: string
             type: array
         required:
-        - owner
-        - members
+        - primary
+        - associatedSites
         type: object
       type: array
     replacements:
       items:
         properties:
+          associatedSites:
+            items:
+              type: string
+            type: array
           ccTLDs:
             additionalProperties:
               items:
                 type: string
               type: array
             type: object
-          members:
-            items:
-              type: string
-            type: array
-          owner:
+          primary:
             type: string
           serviceSites:
             items:
               type: string
             type: array
         required:
-        - owner
-        - members
+        - primary
+        - associatedSites
         type: object
       type: array
   type: object

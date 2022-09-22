@@ -21,8 +21,6 @@ example_value:
 features:
   cloud_only: true
   dynamic_refresh: true
-future_on:
-- chrome_os
 owners:
 - lmasopust@google.com
 - rodmartin@google.com
@@ -31,5 +29,7 @@ schema:
   items:
     type: string
   type: array
+supported_on:
+- chrome_os:108-
 tags: []
 type: list

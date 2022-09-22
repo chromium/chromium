@@ -7,8 +7,8 @@
 
 
 # Add removed policies mapping here.
-'':
-  - device_reporting.report_running_kiosk_app
+? ''
+: - device_reporting.report_running_kiosk_app
   - camera_enabled.camera_enabled
   - auto_update_settings.target_version_display_name
 

@@ -1,6 +1,5 @@
 # Mapping between device policies and fields in chrome_device_policy.proto.
 # Code for these policies can be generated. Add new device policies here!
-
 AllowKioskAppControlChromeVersion: allow_kiosk_app_control_chrome_version.allow_kiosk_app_control_chrome_version
 AttestationEnabledForDevice: attestation_settings.attestation_enabled
 AttestationForContentProtectionEnabled: attestation_settings.content_protection_enabled
@@ -111,6 +110,7 @@ DeviceQuirksDownloadEnabled: quirks_download_enabled.quirks_download_enabled
 DeviceRebootOnShutdown: reboot_on_shutdown.reboot_on_shutdown
 DeviceRebootOnUserSignout: device_reboot_on_user_signout.reboot_on_signout_mode
 DeviceReleaseLtsTag: release_channel.release_lts_tag
+DeviceReportXDREvents: device_report_xdr_events.enabled
 DeviceRestrictedManagedGuestSessionEnabled: device_restricted_managed_guest_session_enabled.enabled
 DeviceRollbackAllowedMilestones: auto_update_settings.rollback_allowed_milestones
 DeviceRollbackToTargetVersion: auto_update_settings.rollback_to_target_version

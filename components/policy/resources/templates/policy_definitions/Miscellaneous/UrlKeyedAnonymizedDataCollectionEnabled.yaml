@@ -4,7 +4,7 @@ desc: |-
 
         Setting the policy to Disabled results in no URL-keyed anonymized data collection.
 
-        If you set the policy, users can't change. If not set, then URL-keyed anonymized data collection at first, but users can change it.
+        If this policy is left unset, the user will be able to change this setting manually.
 example_value: true
 features:
   dynamic_refresh: true

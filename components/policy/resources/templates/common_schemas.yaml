@@ -187,14 +187,6 @@ QuickUnlockModeAllowlist:
     - FINGERPRINT
     type: string
   type: array
-QuickUnlockModeWhitelist:
-  items:
-    enum:
-    - all
-    - PIN
-    - FINGERPRINT
-    type: string
-  type: array
 Time:
   description: Time interpreted in local wall-clock 24h format.
   properties:
@@ -216,13 +208,6 @@ TimeUsageLimitEntry:
       type: string
     usage_quota_mins:
       minimum: 0
-      type: integer
-  type: object
-UsbDeviceId:
-  properties:
-    product_id:
-      type: integer
-    vendor_id:
       type: integer
   type: object
 UsbDeviceIdInclusive:

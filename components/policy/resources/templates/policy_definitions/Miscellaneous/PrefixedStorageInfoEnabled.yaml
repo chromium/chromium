@@ -1,7 +1,7 @@
 caption: Re-enable the deprecated window.webkitStorageInfo API
 default: false
-desc: "Starting in M106, the non-standard API window.webkitStorageInfo will be removed.\n\
-  \      This policy re-enables the API until M107.\n      If this policy is set to\
+desc: "Non-standard API window.webkitStorageInfo is deprecated and is planned for\
+  \ removal.\n      This policy re-enables the API.\n      If this policy is set to\
   \ Enabled, the window.webkitStorageInfo API will be available.\n      If this policy\
   \ is set to Disabled or not set, the window.webkitStorageInfo API will be unavailable.\n\
   \      "
@@ -22,8 +22,8 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.*:106-107
-- chrome_os:106-107
-- android:106-107
+- chrome.*:106-
+- chrome_os:106-
+- android:106-
 tags: []
 type: main

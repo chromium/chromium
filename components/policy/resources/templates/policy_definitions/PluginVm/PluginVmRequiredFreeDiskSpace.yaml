@@ -10,7 +10,7 @@ features:
   per_profile: false
 owners:
 - okalitova@chromium.org
-- janagrill@chromium.org
+- janagrill@google.com
 schema:
   maximum: 1000
   minimum: 0

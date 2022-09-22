@@ -63,8 +63,6 @@ features:
   cloud_only: true
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome_os
 owners:
 - sseckler@google.com
 - rogerta@chromium.org
@@ -104,5 +102,7 @@ schema:
         type: string
     type: object
   type: array
+supported_on:
+- chrome_os:108-
 tags: []
 type: dict

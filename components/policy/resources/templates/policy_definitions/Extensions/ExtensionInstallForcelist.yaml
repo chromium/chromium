@@ -1,4 +1,5 @@
-arc_support: Android apps can be force-installed from the Google Admin console using Google Play. They do not use this policy.
+arc_support: Android apps can be force-installed from the Google Admin console using
+  Google Play. They do not use this policy.
 caption: Configure the list of force-installed apps and extensions
 desc: |-
   Setting the policy specifies a list of apps and extensions that install silently, without user interaction, and which users can't uninstall or turn off. Permissions are granted implicitly, including for the enterprise.deviceAttributes and enterprise.platformKeys extension APIs. (These 2 APIs aren't available to apps and extensions that aren't force-installed.)

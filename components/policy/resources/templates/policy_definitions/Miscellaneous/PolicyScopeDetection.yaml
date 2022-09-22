@@ -1,5 +1,6 @@
 caption: Allow policy scope detection on <ph name="MAC_OS_NAME">macOS</ph>
 default: true
+deprecated: true
 desc: " Controls whether browser can detect mandatory policy scope on <ph name=\"\
   MAC_OS_NAME\">macOS</ph> or not.\n\n      If the policy is set to Enabled or not\
   \ set, each policy's scope will be determined by the scope of <ph name=\"MAC_OS_NAME\"\

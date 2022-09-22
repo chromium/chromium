@@ -38,3 +38,4 @@ UserAndDeviceReporting:
   - HeartbeatFrequency
   - LogUploadEnabled
   - DeviceMetricsReportingEnabled
+  - DeviceReportXDREvents

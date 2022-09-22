@@ -25,7 +25,7 @@ items:
   name: AllowForAffiliatedUsers
   value: 2
 owners:
-- janagrill@chromium.org
+- janagrill@google.com
 - okalitova@chromium.org
 schema:
   enum:

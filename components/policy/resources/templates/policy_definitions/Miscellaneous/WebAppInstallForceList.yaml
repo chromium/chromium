@@ -5,7 +5,7 @@ desc: |-
         Each list item of the policy is an object with a mandatory member:
         <ph name="URL_LABEL">url</ph> (the URL of the web app to install)
 
-        and 5 optional members:
+        and 6 optional members:
         - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL">default_launch_container</ph>
         (for how the web app opens—a new tab is the default)
 
@@ -37,6 +37,16 @@ desc: |-
         hash of the icon file. Currently only supported on
         <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.)
 
+        - <ph name="INSTALL_AS_SHORTCUT_LABEL">install_as_shortcut</ph>
+        (Starting with <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
+        version 107). If enabled the given <ph name="URL_LABEL">url</ph>
+        will be installed as a shortcut, as if done via the "Create Shortcut..."
+        option in the desktop browser GUI.
+        Note that when installed as a shortcut it won't be updated if the
+        manifest in <ph name="URL_LABEL">url</ph> changes.
+        If disabled or unset, the web app at the given
+        <ph name="URL_LABEL">url</ph> will be installed normally.
+
         See <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME">PinnedLauncherApps</ph> for pinning apps to the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> shelf.
 example_value:
 - create_desktop_shortcut: true
@@ -47,9 +57,10 @@ example_value:
 - default_launch_container: window
   fallback_app_name: Editor
   url: https://docs.google.com/editor
-- custom_name: Spreadsheets
+- custom_name: My important document
   default_launch_container: window
-  url: https://docs.google.com/sheets
+  install_as_shortcut: true
+  url: https://docs.google.com/document/d/ds187akjqih89
 - custom_icon:
     hash: c28f469c450e9ab2b86ea47038d2b324c6ad3b1e9a4bd8960da13214afd0ca38
     url: https://mydomain.example.com/sunny_icon.png
@@ -87,6 +98,8 @@ schema:
         type: string
       fallback_app_name:
         type: string
+      install_as_shortcut:
+        type: boolean
       url:
         type: string
     required:

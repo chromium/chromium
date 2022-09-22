@@ -54,8 +54,6 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
-- chrome.*
-- chrome_os
 - fuchsia
 owners:
 - file://chrome/browser/enterprise/connectors/OWNERS
@@ -136,5 +134,8 @@ schema:
         type: object
     type: object
   type: array
+supported_on:
+- chrome.*:106-
+- chrome_os:106-
 tags: []
 type: dict

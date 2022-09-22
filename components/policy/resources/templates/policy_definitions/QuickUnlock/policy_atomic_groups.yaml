@@ -9,5 +9,4 @@ QuickUnlock:
   caption: Quick unlock
   policies:
   - QuickUnlockModeAllowlist
-  - QuickUnlockModeWhitelist
   - QuickUnlockTimeout

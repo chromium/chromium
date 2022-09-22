@@ -1,8 +1,6 @@
 NativeMessaging:
   caption: Native messaging
   policies:
-  - NativeMessagingBlacklist
   - NativeMessagingBlocklist
   - NativeMessagingAllowlist
-  - NativeMessagingWhitelist
   - NativeMessagingUserLevelHosts
