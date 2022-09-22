@@ -839,6 +839,15 @@ void TargetHandler::SetAttachedTargetsOfType(
   }
 }
 
+void TargetHandler::TargetInfoChanged(DevToolsAgentHost* host) {
+  // Only send target info for targets we reported in any way.
+  if (!reported_hosts_.count(host) &&
+      auto_attached_sessions_.find(host) == auto_attached_sessions_.end()) {
+    return;
+  }
+  frontend_->TargetInfoChanged(CreateInfo(host));
+}
+
 void TargetHandler::AutoAttacherDestroyed(TargetAutoAttacher* auto_attacher) {
   auto throttles = throttles_;
   for (auto* throttle : throttles_) {
@@ -1195,9 +1204,7 @@ void TargetHandler::DevToolsAgentHostCreated(DevToolsAgentHost* host) {
 }
 
 void TargetHandler::DevToolsAgentHostNavigated(DevToolsAgentHost* host) {
-  if (reported_hosts_.find(host) == reported_hosts_.end())
-    return;
-  frontend_->TargetInfoChanged(CreateInfo(host));
+  TargetInfoChanged(host);
 }
 
 void TargetHandler::DevToolsAgentHostDestroyed(DevToolsAgentHost* host) {
@@ -1208,15 +1215,11 @@ void TargetHandler::DevToolsAgentHostDestroyed(DevToolsAgentHost* host) {
 }
 
 void TargetHandler::DevToolsAgentHostAttached(DevToolsAgentHost* host) {
-  if (reported_hosts_.find(host) == reported_hosts_.end())
-    return;
-  frontend_->TargetInfoChanged(CreateInfo(host));
+  TargetInfoChanged(host);
 }
 
 void TargetHandler::DevToolsAgentHostDetached(DevToolsAgentHost* host) {
-  if (reported_hosts_.find(host) == reported_hosts_.end())
-    return;
-  frontend_->TargetInfoChanged(CreateInfo(host));
+  TargetInfoChanged(host);
 }
 
 void TargetHandler::DevToolsAgentHostCrashed(DevToolsAgentHost* host,

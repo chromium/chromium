@@ -155,6 +155,7 @@ class TargetHandler : public DevToolsDomainHandler,
   std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
       TargetAutoAttacher* auto_attacher,
       NavigationHandle* navigation_handle) override;
+  void TargetInfoChanged(DevToolsAgentHost* host) override;
   void AutoAttacherDestroyed(TargetAutoAttacher* auto_attacher) override;
 
   bool ShouldWaitForDebuggerOnStart(

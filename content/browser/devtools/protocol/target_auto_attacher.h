@@ -39,6 +39,7 @@ class TargetAutoAttacher {
     virtual std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
         TargetAutoAttacher* auto_attacher,
         NavigationHandle* navigation_handle) = 0;
+    virtual void TargetInfoChanged(DevToolsAgentHost* host) = 0;
 
    protected:
     Client() = default;
@@ -81,6 +82,7 @@ class TargetAutoAttacher {
   void DispatchSetAttachedTargetsOfType(
       const base::flat_set<scoped_refptr<DevToolsAgentHost>>& hosts,
       const std::string& type);
+  void DispatchTargetInfoChanged(DevToolsAgentHost* host);
 
  private:
   base::ObserverList<Client, false, true> clients_;
