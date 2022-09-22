@@ -11,13 +11,16 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/sequence_checker.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites.h"
 #include "sql/database.h"
+#include "sql/meta_table.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -208,21 +211,22 @@ void RecoverAndFixup(sql::Database* db, const base::FilePath& db_path) {
   RecordRecoveryEvent(RECOVERY_EVENT_RECOVERED);
 }
 
-void DatabaseErrorCallback(sql::Database* db,
-                           const base::FilePath& db_path,
-                           int extended_error,
-                           sql::Statement* stmt) {
-  // TODO(shess): Assert that this is running on a safe thread.  AFAICT, should
-  // be the history thread, but at this level I can't see how to reach that.
+}  // namespace
+
+void TopSitesDatabase::DatabaseErrorCallback(const base::FilePath& db_path,
+                                             int extended_error,
+                                             sql::Statement* stmt) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
 
   // Attempt to recover corrupt databases.
   if (sql::Recovery::ShouldRecover(extended_error)) {
     // Prevent reentrant calls.
-    db->reset_error_callback();
+    db_->reset_error_callback();
 
     // After this call, the `db` handle is poisoned so that future calls will
     // return errors until the handle is re-opened.
-    RecoverAndFixup(db, db_path);
+    RecoverAndFixup(db_.get(), db_path);
 
     // The DLOG(FATAL) below is intended to draw immediate attention to errors
     // in newly-written code.  Database corruption is generally a result of OS
@@ -249,32 +253,23 @@ void DatabaseErrorCallback(sql::Database* db,
 
   // The default handling is to assert on debug and to ignore on release.
   if (!sql::Database::IsExpectedSqliteError(extended_error))
-    DLOG(FATAL) << db->GetErrorMessage();
+    DLOG(FATAL) << db_->GetErrorMessage();
 }
-
-std::unique_ptr<sql::Database> CreateDB(const base::FilePath& db_name) {
-  // Settings copied from FaviconDatabase.
-  auto db = std::make_unique<sql::Database>(sql::DatabaseOptions{
-      .exclusive_locking = true, .page_size = 4096, .cache_size = 32});
-  db->set_histogram_tag("TopSites");
-  db->set_error_callback(
-      base::BindRepeating(&DatabaseErrorCallback, db.get(), db_name));
-
-  if (!db->Open(db_name))
-    return nullptr;
-  return db;
-}
-
-}  // namespace
 
 // static
 const int TopSitesDatabase::kRankOfNonExistingURL = -2;
 
-TopSitesDatabase::TopSitesDatabase() = default;
+TopSitesDatabase::TopSitesDatabase() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
-TopSitesDatabase::~TopSitesDatabase() = default;
+TopSitesDatabase::~TopSitesDatabase() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 bool TopSitesDatabase::Init(const base::FilePath& db_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Retry failed InitImpl() in case the recovery system fixed things.
   // TODO(shess): Instrument to figure out if there are any persistent failure
   // cases which do not resolve themselves.
@@ -284,7 +279,6 @@ bool TopSitesDatabase::Init(const base::FilePath& db_name) {
     if (InitImpl(db_name))
       return true;
 
-    meta_table_.Reset();
     db_.reset();
   }
   return false;
@@ -293,8 +287,15 @@ bool TopSitesDatabase::Init(const base::FilePath& db_name) {
 bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
   const bool file_existed = base::PathExists(db_name);
 
-  db_ = CreateDB(db_name);
-  if (!db_)
+  // Settings copied from FaviconDatabase.
+  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
+      .exclusive_locking = true, .page_size = 4096, .cache_size = 32});
+  db_->set_histogram_tag("TopSites");
+  db_->set_error_callback(
+      base::BindRepeating(&TopSitesDatabase::DatabaseErrorCallback,
+                          base::Unretained(this), db_name));
+
+  if (!db_->Open(db_name))
     return false;
 
   // An older version had data with no meta table.  Deprecate by razing.
@@ -318,14 +319,16 @@ bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
   if (!transaction.Begin())
     return false;
 
-  if (!meta_table_.Init(db_.get(), kVersionNumber, kVersionNumber))
+  sql::MetaTable meta_table;
+
+  if (!meta_table.Init(db_.get(), kVersionNumber, kVersionNumber))
     return false;
 
   if (!InitTables(db_.get()))
     return false;
 
   // Version check.
-  if (meta_table_.GetVersionNumber() != kVersionNumber)
+  if (meta_table.GetVersionNumber() != kVersionNumber)
     return false;
 
   // Initialization is complete.
@@ -333,6 +336,8 @@ bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
 }
 
 void TopSitesDatabase::ApplyDelta(const TopSitesDelta& delta) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   sql::Transaction transaction(db_.get());
   // TODO: consider returning early if `Begin()` returns false.
   std::ignore = transaction.Begin();
@@ -352,6 +357,8 @@ void TopSitesDatabase::ApplyDelta(const TopSitesDelta& delta) {
 }
 
 void TopSitesDatabase::GetSites(MostVisitedURLList* urls) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE,
                               "SELECT url,title "
@@ -505,6 +512,22 @@ bool TopSitesDatabase::RemoveURLNoTransaction(const MostVisitedURL& url) {
   delete_statement.BindString(0, url.url.spec());
 
   return delete_statement.Run();
+}
+
+sql::Database* TopSitesDatabase::db_for_testing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return db_.get();
+}
+
+int TopSitesDatabase::GetURLRankForTesting(const MostVisitedURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetURLRank(url);
+}
+
+bool TopSitesDatabase::RemoveURLNoTransactionForTesting(
+    const MostVisitedURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return RemoveURLNoTransaction(url);
 }
 
 }  // namespace history
