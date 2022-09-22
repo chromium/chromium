@@ -417,23 +417,6 @@ void RuleFeatureSet::MergeInvalidationSet(
   }
 }
 
-RuleFeatureSet::~RuleFeatureSet() {
-  metadata_.Clear();
-  class_invalidation_sets_.clear();
-  attribute_invalidation_sets_.clear();
-  id_invalidation_sets_.clear();
-  pseudo_invalidation_sets_.clear();
-  universal_sibling_invalidation_set_ = nullptr;
-  nth_invalidation_set_ = nullptr;
-  classes_in_has_argument_.clear();
-  attributes_in_has_argument_.clear();
-  ids_in_has_argument_.clear();
-  tag_names_in_has_argument_.clear();
-  universal_in_has_argument_ = false;
-  not_pseudo_in_has_argument_ = false;
-  pseudos_in_has_argument_.clear();
-}
-
 bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
   return metadata_ == other.metadata_ &&
          InvalidationSetMapsEqual<AtomicString>(
