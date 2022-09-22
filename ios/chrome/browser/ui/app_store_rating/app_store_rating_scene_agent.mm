@@ -8,8 +8,11 @@
 
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 
@@ -115,6 +118,8 @@ NSString* const kActiveDaysInPastWeek = @"ActiveDaysInPastWeek";
 // Calls the PromosManager to request iOS displays the
 // App Store Rating prompt to the user.
 - (void)requestPromoDisplay {
+  GetApplicationContext()->GetPromosManager()->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::AppStoreRating);
 }
 
 // Updates kTotalDaysOnChrome and kActiveDaysInPastWeek in NSUserDefaults.
