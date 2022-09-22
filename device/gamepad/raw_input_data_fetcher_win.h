@@ -28,7 +28,7 @@ class RawInputDataFetcher : public GamepadDataFetcher,
                             public base::SupportsWeakPtr<RawInputDataFetcher> {
  public:
   using Factory = GamepadDataFetcherFactoryImpl<RawInputDataFetcher,
-                                                GAMEPAD_SOURCE_WIN_RAW>;
+                                                GamepadSource::kWinRaw>;
 
   explicit RawInputDataFetcher();
   RawInputDataFetcher(const RawInputDataFetcher&) = delete;

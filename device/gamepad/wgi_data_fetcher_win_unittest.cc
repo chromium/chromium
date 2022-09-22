@@ -265,8 +265,8 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
     ReadGamepadHardwareBuffer(gamepad_buffer, &output);
 
     // The gamepad data at index 0 should reflect the values in `active_data`,
-    // indicating that a gamepad of source GAMEPAD_SOURCE_TEST has been added at
-    // index 0.
+    // indicating that a gamepad of source GamepadSource::kTest has been added
+    // at index 0.
     ASSERT_EQ(active_data.items[0].buttons_length,
               output.items[0].buttons_length);
     EXPECT_EQ(active_data.items[0].buttons[0].value,
@@ -592,10 +592,10 @@ TEST_F(WgiDataFetcherWinTest, WgiGamepadActivationFactoryErrorHandling) {
 
 // This test case checks that the gamepad data obtained by WgiDataFetcherWin is
 // correct for the following PadState array configuration:
-// Index 0: Generic gamepad with source = GAMEPAD_SOURCE_TEST;
-// Index 1: WGI gamepad with source = GAMEPAD_SOURCE_WIN_WGI;
-// Index 2: WGI gamepad with source = GAMEPAD_SOURCE_WIN_WGI;
-// Index 3: Empty with source = GAMEPAD_SOURCE_NONE;
+// Index 0: Generic gamepad with source = GamepadSource::kTest;
+// Index 1: WGI gamepad with source = GamepadSource::kWinWgi;
+// Index 2: WGI gamepad with source = GamepadSource::kWinWgi;
+// Index 3: Empty with source = GamepadSource::kNone;
 // Moreover, this test also asserts that when a meta button press is detected,
 // it should be redirected to the lowest-index WGI gamepad, i.e., the gamepad at
 // index 1.

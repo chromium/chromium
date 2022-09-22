@@ -47,9 +47,8 @@ struct XInputStateEx {
 
 class DEVICE_GAMEPAD_EXPORT XInputDataFetcherWin : public GamepadDataFetcher {
  public:
-  typedef GamepadDataFetcherFactoryImpl<XInputDataFetcherWin,
-                                        GAMEPAD_SOURCE_WIN_XINPUT>
-      Factory;
+  using Factory = GamepadDataFetcherFactoryImpl<XInputDataFetcherWin,
+                                                GamepadSource::kWinXinput>;
 
   // The function types we use from XInput DLL (either xinput1_4.dll or
   // xinput9_1_0.dll).

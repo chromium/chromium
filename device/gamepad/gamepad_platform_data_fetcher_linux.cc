@@ -35,11 +35,11 @@ GamepadPlatformDataFetcherLinux::Factory::CreateDataFetcher() {
 }
 
 GamepadSource GamepadPlatformDataFetcherLinux::Factory::source() {
-  return GAMEPAD_SOURCE_LINUX_UDEV;
+  return GamepadSource::kLinuxUdev;
 }
 
 GamepadSource GamepadPlatformDataFetcherLinux::Factory::static_source() {
-  return GAMEPAD_SOURCE_LINUX_UDEV;
+  return GamepadSource::kLinuxUdev;
 }
 
 GamepadPlatformDataFetcherLinux::GamepadPlatformDataFetcherLinux(

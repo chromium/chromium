@@ -11,9 +11,8 @@ namespace device {
 
 class GameControllerDataFetcherMac : public GamepadDataFetcher {
  public:
-  typedef GamepadDataFetcherFactoryImpl<GameControllerDataFetcherMac,
-                                        GAMEPAD_SOURCE_MAC_GC>
-      Factory;
+  using Factory = GamepadDataFetcherFactoryImpl<GameControllerDataFetcherMac,
+                                                GamepadSource::kMacGc>;
 
   GameControllerDataFetcherMac();
   GameControllerDataFetcherMac(const GameControllerDataFetcherMac&) = delete;

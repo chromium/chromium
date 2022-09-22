@@ -44762,23 +44762,23 @@ Called by update_permissions_policy_enum.py.-->
     device/gamepad/gamepad_pad_state_provider.h. Note that the labeling is off
     for data recorded prior to 73.0.3683.10. See https://crbug.com/984786
   </summary>
-  <int value="0" label="GAMEPAD_SOURCE_NONE"/>
-  <int value="1" label="GAMEPAD_SOURCE_ANDROID"/>
-  <int value="2" label="GAMEPAD_SOURCE_GVR"/>
-  <int value="3" label="GAMEPAD_SOURCE_CARDBOARD"/>
-  <int value="4" label="GAMEPAD_SOURCE_LINUX_UDEV"/>
-  <int value="5" label="GAMEPAD_SOURCE_MAC_GC"/>
-  <int value="6" label="GAMEPAD_SOURCE_MAC_HID"/>
-  <int value="7" label="GAMEPAD_SOURCE_MAC_XBOX"/>
-  <int value="8" label="GAMEPAD_SOURCE_NINTENDO"/>
-  <int value="9" label="GAMEPAD_SOURCE_OCULUS"/>
-  <int value="10" label="GAMEPAD_SOURCE_OPENVR"/>
-  <int value="11" label="GAMEPAD_SOURCE_TEST"/>
-  <int value="12" label="GAMEPAD_SOURCE_WIN_XINPUT"/>
-  <int value="13" label="GAMEPAD_SOURCE_WIN_RAW"/>
-  <int value="14" label="GAMEPAD_SOURCE_WIN_MR"/>
-  <int value="15" label="GAMEPAD_SOURCE_OPENXR"/>
-  <int value="16" label="GAMEPAD_SOURCE_WIN_WGI"/>
+  <int value="0" label="GamepadSource::kNone"/>
+  <int value="1" label="GamepadSource::kAndroid"/>
+  <int value="2" label="GamepadSource::kGvr"/>
+  <int value="3" label="GamepadSource::kCardboard"/>
+  <int value="4" label="GamepadSource::kLinuxUdev"/>
+  <int value="5" label="GamepadSource::kMacGc"/>
+  <int value="6" label="GamepadSource::kMacHid"/>
+  <int value="7" label="GamepadSource::kMacXbox"/>
+  <int value="8" label="GamepadSource::kNintendo"/>
+  <int value="9" label="GamepadSource::kOculus"/>
+  <int value="10" label="GamepadSource::kOpenvr"/>
+  <int value="11" label="GamepadSource::kTest"/>
+  <int value="12" label="GamepadSource::kWinXinput"/>
+  <int value="13" label="GamepadSource::kWinRaw"/>
+  <int value="14" label="GamepadSource::kWinMr"/>
+  <int value="15" label="GamepadSource::kOpenxr"/>
+  <int value="16" label="GamepadSource::kWinWgi"/>
 </enum>
 
 <enum name="GamepadVendorProduct">

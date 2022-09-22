@@ -40,7 +40,7 @@ class DEVICE_GAMEPAD_EXPORT WgiDataFetcherWin final
   };
 
   using Factory =
-      GamepadDataFetcherFactoryImpl<WgiDataFetcherWin, GAMEPAD_SOURCE_WIN_WGI>;
+      GamepadDataFetcherFactoryImpl<WgiDataFetcherWin, GamepadSource::kWinWgi>;
 
   // Define test hooks to use a fake WinRT RoGetActivationFactory
   // implementation to avoid dependencies on the OS for WGI testing.

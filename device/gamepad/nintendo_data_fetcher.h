@@ -44,7 +44,7 @@ class DEVICE_GAMEPAD_EXPORT NintendoDataFetcher : public GamepadDataFetcher,
                                                   mojom::HidManagerClient {
  public:
   using Factory = GamepadDataFetcherFactoryImpl<NintendoDataFetcher,
-                                                GAMEPAD_SOURCE_NINTENDO>;
+                                                GamepadSource::kNintendo>;
   using ControllerMap =
       std::unordered_map<int, std::unique_ptr<NintendoController>>;
 

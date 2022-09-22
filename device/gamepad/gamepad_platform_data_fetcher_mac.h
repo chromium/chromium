@@ -28,7 +28,7 @@ class GamepadDeviceMac;
 class GamepadPlatformDataFetcherMac : public GamepadDataFetcher {
  public:
   using Factory = GamepadDataFetcherFactoryImpl<GamepadPlatformDataFetcherMac,
-                                                GAMEPAD_SOURCE_MAC_HID>;
+                                                GamepadSource::kMacHid>;
 
   GamepadPlatformDataFetcherMac();
 

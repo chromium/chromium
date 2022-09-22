@@ -176,7 +176,7 @@ NintendoDataFetcher::ExtractAssociatedDevice(const NintendoController* device) {
   if (associated_device) {
     PadState* state = GetPadState(associated_device->GetSourceId());
     if (state)
-      state->source = GAMEPAD_SOURCE_NONE;
+      state->source = GamepadSource::kNone;
   }
 
   return associated_device;

@@ -45,7 +45,7 @@ PadState* GamepadPadStateProvider::GetPadState(GamepadSource source,
       state.is_active = true;
       return &state;
     }
-    if (!empty_slot_index && state.source == GAMEPAD_SOURCE_NONE)
+    if (!empty_slot_index && state.source == GamepadSource::kNone)
       empty_slot_index = i;
     if (!state.is_recognized)
       unrecognized_slot_index = i;
@@ -76,7 +76,7 @@ PadState* GamepadPadStateProvider::GetConnectedPadState(uint32_t pad_index) {
     return nullptr;
 
   PadState& pad_state = pad_states_.get()[pad_index];
-  if (pad_state.source == GAMEPAD_SOURCE_NONE)
+  if (pad_state.source == GamepadSource::kNone)
     return nullptr;
 
   return &pad_state;

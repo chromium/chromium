@@ -21,9 +21,9 @@ namespace device {
 
 class GamepadPlatformDataFetcherAndroid : public GamepadDataFetcher {
  public:
-  typedef GamepadDataFetcherFactoryImpl<GamepadPlatformDataFetcherAndroid,
-                                        GAMEPAD_SOURCE_ANDROID>
-      Factory;
+  using Factory =
+      GamepadDataFetcherFactoryImpl<GamepadPlatformDataFetcherAndroid,
+                                    GamepadSource::kAndroid>;
 
   GamepadPlatformDataFetcherAndroid();
   GamepadPlatformDataFetcherAndroid(GamepadPlatformDataFetcherAndroid&&) =

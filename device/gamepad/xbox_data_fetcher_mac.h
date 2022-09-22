@@ -24,9 +24,8 @@ namespace device {
 class XboxDataFetcher : public GamepadDataFetcher,
                         public XboxControllerMac::Delegate {
  public:
-  typedef GamepadDataFetcherFactoryImpl<XboxDataFetcher,
-                                        GAMEPAD_SOURCE_MAC_XBOX>
-      Factory;
+  using Factory =
+      GamepadDataFetcherFactoryImpl<XboxDataFetcher, GamepadSource::kMacXbox>;
 
   XboxDataFetcher();
   XboxDataFetcher(const XboxDataFetcher& entry) = delete;

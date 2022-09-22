@@ -14,7 +14,7 @@ MockGamepadDataFetcher::MockGamepadDataFetcher(const Gamepads& test_data)
 MockGamepadDataFetcher::~MockGamepadDataFetcher() = default;
 
 GamepadSource MockGamepadDataFetcher::source() {
-  return GAMEPAD_SOURCE_TEST;
+  return GamepadSource::kTest;
 }
 
 void MockGamepadDataFetcher::GetGamepadData(bool devices_changed_hint) {
