@@ -31,6 +31,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
+#include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
@@ -170,13 +172,11 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
   if (exception_state.HadException())
     return false;
 
-  const WrapperTypeInfo* wrapper_type_info = wrappable->GetWrapperTypeInfo();
-  if (wrapper_type_info == V8CryptoKey::GetWrapperTypeInfo()) {
-    return WriteCryptoKey(wrappable->ToImpl<CryptoKey>()->Key(),
-                          exception_state);
+  ScriptWrappable::TypeDispatcher dispatcher(wrappable);
+  if (auto* crypto_key = dispatcher.ToMostDerived<CryptoKey>()) {
+    return WriteCryptoKey(crypto_key->Key(), exception_state);
   }
-  if (wrapper_type_info == V8DOMFileSystem::GetWrapperTypeInfo()) {
-    DOMFileSystem* fs = wrappable->ToImpl<DOMFileSystem>();
+  if (auto* fs = dispatcher.ToMostDerived<DOMFileSystem>()) {
     if (!fs->Clonable()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
@@ -190,55 +190,58 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
     WriteUTF8String(fs->RootURL().GetString());
     return true;
   }
-  if (wrapper_type_info == V8FileSystemFileHandle::GetWrapperTypeInfo() &&
-      RuntimeEnabledFeatures::FileSystemAccessEnabled(
-          ExecutionContext::From(GetScriptState()))) {
-    return WriteFileSystemHandle(kFileSystemFileHandleTag,
-                                 wrappable->ToImpl<FileSystemHandle>());
+  if (auto* file_handle = dispatcher.ToMostDerived<FileSystemFileHandle>()) {
+    if (!RuntimeEnabledFeatures::FileSystemAccessEnabled(
+            ExecutionContext::From(GetScriptState()))) {
+      return false;
+    }
+    return WriteFileSystemHandle(kFileSystemFileHandleTag, file_handle);
   }
-  if (wrapper_type_info == V8FileSystemDirectoryHandle::GetWrapperTypeInfo() &&
-      RuntimeEnabledFeatures::FileSystemAccessEnabled(
-          ExecutionContext::From(GetScriptState()))) {
-    return WriteFileSystemHandle(kFileSystemDirectoryHandleTag,
-                                 wrappable->ToImpl<FileSystemHandle>());
+  if (auto* dir_handle =
+          dispatcher.ToMostDerived<FileSystemDirectoryHandle>()) {
+    if (!RuntimeEnabledFeatures::FileSystemAccessEnabled(
+            ExecutionContext::From(GetScriptState()))) {
+      return false;
+    }
+    return WriteFileSystemHandle(kFileSystemDirectoryHandleTag, dir_handle);
   }
-  if (wrapper_type_info == V8RTCCertificate::GetWrapperTypeInfo()) {
-    RTCCertificate* certificate = wrappable->ToImpl<RTCCertificate>();
+  if (auto* certificate = dispatcher.ToMostDerived<RTCCertificate>()) {
     rtc::RTCCertificatePEM pem = certificate->Certificate()->ToPEM();
     WriteTag(kRTCCertificateTag);
     WriteUTF8String(pem.private_key().c_str());
     WriteUTF8String(pem.certificate().c_str());
     return true;
   }
-  if (wrapper_type_info == V8RTCEncodedAudioFrame::GetWrapperTypeInfo()) {
+  if (auto* audio_frame = dispatcher.ToMostDerived<RTCEncodedAudioFrame>()) {
     if (IsForStorage()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "An RTCEncodedAudioFrame cannot be "
                                         "serialized for storage.");
       return false;
     }
-    return WriteRTCEncodedAudioFrame(wrappable->ToImpl<RTCEncodedAudioFrame>());
+    return WriteRTCEncodedAudioFrame(audio_frame);
   }
-  if (wrapper_type_info == V8RTCEncodedVideoFrame::GetWrapperTypeInfo()) {
+  if (auto* video_frame = dispatcher.ToMostDerived<RTCEncodedVideoFrame>()) {
     if (IsForStorage()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "An RTCEncodedVideoFrame cannot be "
                                         "serialized for storage.");
       return false;
     }
-    return WriteRTCEncodedVideoFrame(wrappable->ToImpl<RTCEncodedVideoFrame>());
+    return WriteRTCEncodedVideoFrame(video_frame);
   }
-  if (wrapper_type_info == V8VideoFrame::GetWrapperTypeInfo() &&
-      RuntimeEnabledFeatures::WebCodecsEnabled(
-          ExecutionContext::From(GetScriptState()))) {
+  if (auto* video_frame = dispatcher.ToMostDerived<VideoFrame>()) {
+    if (!RuntimeEnabledFeatures::WebCodecsEnabled(
+            ExecutionContext::From(GetScriptState()))) {
+      return false;
+    }
     if (IsForStorage()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "A VideoFrame cannot be serialized for "
                                         "storage.");
       return false;
     }
-    scoped_refptr<VideoFrameHandle> handle =
-        wrappable->ToImpl<VideoFrame>()->handle()->Clone();
+    scoped_refptr<VideoFrameHandle> handle = video_frame->handle()->Clone();
     if (!handle) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "A VideoFrame could not be cloned "
@@ -247,17 +250,18 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
     }
     return WriteVideoFrameHandle(std::move(handle));
   }
-  if (wrapper_type_info == V8AudioData::GetWrapperTypeInfo() &&
-      RuntimeEnabledFeatures::WebCodecsEnabled(
-          ExecutionContext::From(GetScriptState()))) {
+  if (auto* audio_data = dispatcher.ToMostDerived<AudioData>()) {
+    if (!RuntimeEnabledFeatures::WebCodecsEnabled(
+            ExecutionContext::From(GetScriptState()))) {
+      return false;
+    }
     if (IsForStorage()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "AudioData cannot be serialized for "
                                         "storage.");
       return false;
     }
-    scoped_refptr<media::AudioBuffer> data =
-        wrappable->ToImpl<AudioData>()->data();
+    scoped_refptr<media::AudioBuffer> data = audio_data->data();
     if (!data) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "AudioData could not be cloned "
@@ -266,80 +270,82 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
     }
     return WriteMediaAudioBuffer(std::move(data));
   }
-  if ((wrapper_type_info == V8EncodedAudioChunk::GetWrapperTypeInfo() ||
-       wrapper_type_info == V8EncodedVideoChunk::GetWrapperTypeInfo()) &&
-      RuntimeEnabledFeatures::WebCodecsEnabled(
-          ExecutionContext::From(GetScriptState()))) {
+  if (auto* audio_chunk = dispatcher.ToMostDerived<EncodedAudioChunk>()) {
+    if (!RuntimeEnabledFeatures::WebCodecsEnabled(
+            ExecutionContext::From(GetScriptState()))) {
+      return false;
+    }
     if (IsForStorage()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
           "Encoded chunks cannot be serialized for storage.");
       return false;
     }
-
-    if (wrapper_type_info == V8EncodedAudioChunk::GetWrapperTypeInfo()) {
-      auto data = wrappable->ToImpl<EncodedAudioChunk>()->buffer();
-      return WriteDecoderBuffer(std::move(data), /*for_audio=*/true);
-    }
-
-    auto data = wrappable->ToImpl<EncodedVideoChunk>()->buffer();
-    return WriteDecoderBuffer(std::move(data), /*for_audio=*/false);
+    return WriteDecoderBuffer(audio_chunk->buffer(), /*for_audio=*/true);
   }
-  if (wrapper_type_info == V8MediaStreamTrack::GetWrapperTypeInfo() &&
-      RuntimeEnabledFeatures::MediaStreamTrackTransferEnabled(
-          ExecutionContext::From(GetScriptState()))) {
+  if (auto* video_chunk = dispatcher.ToMostDerived<EncodedVideoChunk>()) {
+    if (!RuntimeEnabledFeatures::WebCodecsEnabled(
+            ExecutionContext::From(GetScriptState()))) {
+      return false;
+    }
+    if (IsForStorage()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "Encoded chunks cannot be serialized for storage.");
+      return false;
+    }
+    return WriteDecoderBuffer(video_chunk->buffer(), /*for_audio=*/false);
+  }
+  if (auto* track = dispatcher.ToMostDerived<MediaStreamTrack>()) {
+    if (!RuntimeEnabledFeatures::MediaStreamTrackTransferEnabled(
+            ExecutionContext::From(GetScriptState()))) {
+      return false;
+    }
     if (IsForStorage()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
           "A MediaStreamTrack cannot be serialized for storage.");
       return false;
     }
-
-    return WriteMediaStreamTrack(wrappable->ToImpl<MediaStreamTrack>(),
-                                 exception_state);
+    return WriteMediaStreamTrack(track, exception_state);
   }
-  if (wrapper_type_info == V8CropTarget::GetWrapperTypeInfo() &&
-      RuntimeEnabledFeatures::RegionCaptureEnabled(
-          ExecutionContext::From(GetScriptState()))) {
+  if (auto* crop_target = dispatcher.ToMostDerived<CropTarget>()) {
+    if (!RuntimeEnabledFeatures::RegionCaptureEnabled(
+            ExecutionContext::From(GetScriptState()))) {
+      return false;
+    }
     if (IsForStorage()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
           "A CropTarget cannot be serialized for storage.");
       return false;
     }
-
-    return WriteCropTarget(wrappable->ToImpl<CropTarget>());
+    return WriteCropTarget(crop_target);
   }
-
-  if (wrapper_type_info == V8MediaSourceHandle::GetWrapperTypeInfo() &&
-      RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
-          ExecutionContext::From(GetScriptState())) &&
-      RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
-          ExecutionContext::From(GetScriptState()))) {
+  if (auto* media_source_handle =
+          dispatcher.ToMostDerived<MediaSourceHandleImpl>()) {
+    if (!(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
+              ExecutionContext::From(GetScriptState())) &&
+          RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
+              ExecutionContext::From(GetScriptState())))) {
+      return false;
+    }
     if (IsForStorage()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
           "A MediaSourceHandle cannot be serialized for storage.");
       return false;
     }
-
-    const Transferables* transferables = GetTransferables();
-    const MediaSourceHandleTransferList* transfer_list = nullptr;
-
-    if (transferables) {
-      transfer_list =
-          transferables
-              ->GetTransferListIfExists<MediaSourceHandleTransferList>();
-      if (transfer_list) {
-        MediaSourceHandleImpl* media_source_handle =
-            wrappable->ToImpl<MediaSourceHandleImpl>();
+    if (const Transferables* transferables = GetTransferables()) {
+      if (const MediaSourceHandleTransferList* transfer_list =
+              transferables
+                  ->GetTransferListIfExists<MediaSourceHandleTransferList>()) {
         if (transfer_list->media_source_handles.Find(media_source_handle) !=
             kNotFound) {
           return WriteMediaSourceHandle(media_source_handle, exception_state);
         }
       }
     }
-
     exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                       "A MediaSourceHandle could not be cloned "
                                       "because it was not transferred.");
