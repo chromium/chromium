@@ -94,6 +94,8 @@ void PressureObserver::Trace(blink::Visitor* visitor) const {
   visitor->Trace(manager_);
   visitor->Trace(options_);
   visitor->Trace(observer_callback_);
+  for (const auto& last_record : last_record_map_)
+    visitor->Trace(last_record);
   visitor->Trace(records_);
   ScriptWrappable::Trace(visitor);
 }
@@ -101,10 +103,15 @@ void PressureObserver::Trace(blink::Visitor* visitor) const {
 void PressureObserver::OnUpdate(V8PressureSource::Enum source,
                                 V8PressureState::Enum state,
                                 DOMHighResTimeStamp timestamp) {
+  if (!HasChangeInData(source, state))
+    return;
+
   auto* record = PressureRecord::Create();
   record->setSource(V8PressureSource(source));
   record->setState(V8PressureState(state));
   record->setTime(timestamp);
+
+  last_record_map_[static_cast<size_t>(source)] = record;
 
   // This should happen infrequently since `records_` is supposed
   // to be emptied at every callback invoking or takeRecords().
@@ -121,6 +128,13 @@ HeapVector<Member<PressureRecord>> PressureObserver::takeRecords() {
   HeapVector<Member<PressureRecord>, kMaxQueuedRecords> records;
   records.swap(records_);
   return records;
+}
+
+// https://wicg.github.io/compute-pressure/#dfn-has-change-in-data
+bool PressureObserver::HasChangeInData(V8PressureSource::Enum source,
+                                       V8PressureState::Enum state) const {
+  const auto& last_record = last_record_map_[static_cast<size_t>(source)];
+  return last_record ? last_record->state() != state : true;
 }
 
 }  // namespace blink

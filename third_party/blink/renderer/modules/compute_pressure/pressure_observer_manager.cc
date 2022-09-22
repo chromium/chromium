@@ -147,9 +147,6 @@ void PressureObserverManager::OnUpdate(
         PressureStateToV8PressureState(update->state),
         static_cast<DOMHighResTimeStamp>(update->timestamp.ToDoubleT()));
   }
-  // Saving last update to notify observer that might be in
-  // |registering_observers_|.
-  last_reported_update_ = update.Clone();
 }
 
 void PressureObserverManager::Trace(blink::Visitor* visitor) const {
@@ -224,16 +221,6 @@ void PressureObserverManager::DidBindObserver(
       registering_observers_[source_index].erase(observer);
       registered_observers_[source_index].insert(observer);
       resolver->Resolve();
-      // Force first update if it came before the binding.
-      if (last_reported_update_) {
-        // TODO(crbug.com/1342184): Consider other sources.
-        // For now, "cpu" is the only source.
-        observer->OnUpdate(
-            V8PressureSource::Enum::kCpu,
-            PressureStateToV8PressureState(last_reported_update_->state),
-            static_cast<DOMHighResTimeStamp>(
-                last_reported_update_->timestamp.ToDoubleT()));
-      }
       break;
     }
     case mojom::blink::PressureStatus::kNotSupported: {

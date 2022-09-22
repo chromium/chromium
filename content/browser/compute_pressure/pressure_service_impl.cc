@@ -118,10 +118,6 @@ void PressureServiceImpl::PressureStateChanged(
     return;
   }
 
-  // No need to send an update if previous value is similar.
-  if (last_reported_update_ && update->state == last_reported_update_->state)
-    return;
-
   if (!render_frame_host().IsActive()) {
     // TODO(jsbell): Is it safe to disconnect observers in this state?
     return;

@@ -60,6 +60,9 @@ class PressureObserver final : public ScriptWrappable {
                 DOMHighResTimeStamp);
 
  private:
+  // Verifies if there is data change in between last update and new one.
+  bool HasChangeInData(V8PressureSource::Enum, V8PressureState::Enum) const;
+
   // Manages registered observer list for each source.
   WeakMember<PressureObserverManager> manager_;
 
@@ -68,6 +71,10 @@ class PressureObserver final : public ScriptWrappable {
 
   // Options for the observer.
   Member<PressureObserverOptions> options_;
+
+  // The last valid record received from the observer manager.
+  // Stored to avoid sending updates whenever the new record is the same.
+  Member<PressureRecord> last_record_map_[V8PressureSource::kEnumSize];
 
   // Last received records from the platform collector.
   // The records are only collected when there is a change in the status.

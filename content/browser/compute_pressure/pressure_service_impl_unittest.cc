@@ -213,29 +213,6 @@ TEST_F(PressureServiceImplTest, UpdateRateLimiting) {
   EXPECT_EQ(observer.updates()[0], update3);
 }
 
-TEST_F(PressureServiceImplTest, NoCallbackInvoked_SameState) {
-  FakePressureObserver observer;
-  ASSERT_EQ(pressure_service_impl_sync_->BindObserver(
-                observer.BindNewPipeAndPassRemote()),
-            blink::mojom::PressureStatus::kOk);
-
-  const base::Time time = base::Time::Now();
-  PressureUpdate update1(PressureState::kFair, time + kRateLimit);
-  pressure_manager_overrider_->UpdateClients(update1);
-  observer.WaitForUpdate();
-  ASSERT_EQ(observer.updates().size(), 1u);
-  EXPECT_EQ(observer.updates()[0], update1);
-
-  // The first update should be discarded due to same state value
-  PressureUpdate update2(PressureState::kFair, time + kRateLimit * 2);
-  pressure_manager_overrider_->UpdateClients(update2);
-  PressureUpdate update3(PressureState::kSerious, time + kRateLimit * 3);
-  pressure_manager_overrider_->UpdateClients(update3);
-  observer.WaitForUpdate();
-  ASSERT_EQ(observer.updates().size(), 2u);
-  EXPECT_EQ(observer.updates()[1], update3);
-}
-
 TEST_F(PressureServiceImplTest, NoVisibility) {
   FakePressureObserver observer;
   ASSERT_EQ(pressure_service_impl_sync_->BindObserver(
