@@ -171,12 +171,38 @@ function addHistograms(histograms: Histogram[]) {
 }
 
 /**
+ * Returns the histograms as a formatted string.
+ */
+function generateHistogramsAsText() {
+  // Expanded/collapsed status is reflected in the text.
+  return $('histograms').innerText;
+}
+
+/**
+ * Callback function when users click the Download button.
+ */
+function downloadHistograms() {
+  const text = generateHistogramsAsText();
+  if (text) {
+    const file = new Blob([text], {type: 'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(file);
+    a.download = 'histograms.txt';
+    a.click();
+  }
+}
+
+/**
  * Load the initial list of histograms.
  */
 document.addEventListener('DOMContentLoaded', function() {
   $('refresh').onclick = requestHistograms;
+  $('download').onclick = downloadHistograms;
   $('enable_monitoring').onclick = enableMonitoring;
   $('disable_monitoring').onclick = disableMonitoring;
+  // Enable calling generateHistogramsAsText() from
+  // histograms_internals_ui_browsertest.js for testing purposes.
+  (document as any).generateHistogramsForTest = generateHistogramsAsText;
   requestHistograms();
 });
 

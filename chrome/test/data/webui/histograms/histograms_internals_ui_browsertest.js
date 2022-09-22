@@ -23,6 +23,11 @@ HistogramsInternalsUIBrowserTest.prototype = {
     GEN('    base::LinearHistogram::FactoryGet("HTMLOut", /*minimum=*/1, /*maximum=*/10,');
     GEN('                                /*bucket_count=*/5, base::HistogramBase::kNoFlags);');
     GEN('histogram->AddCount(/*sample=*/4, /*value=*/5);');
+    GEN('base::HistogramBase* histogram1 =');
+    GEN('    base::LinearHistogram::FactoryGet("HTMLOut1", /*minimum=*/1, /*maximum=*/20,');
+    GEN('                                /*bucket_count=*/4, base::HistogramBase::kNoFlags);');
+    GEN('histogram1->AddCount(/*sample=*/10, /*value=*/2);');
+    GEN('histogram1->AddCount(/*sample=*/15, /*value=*/4);');
   },
 
   extraLibraries: [
@@ -66,6 +71,28 @@ TEST_F('HistogramsInternalsUIBrowserTest', 'NoDummyHistograms', function() {
               });
         });
       });
+
+  mocha.run();
+});
+
+TEST_F('HistogramsInternalsUIBrowserTest', 'DownloadHistograms', function() {
+  // We can assume these two histograms appear next to each other since
+  // the histograms are sorted by name.
+  const expectedContent =
+      '- Histogram: HTMLOut recorded 5 samples, mean = 4.0 (flags = 0x40) [#]\n\n' +
+      '0  ... \n' +
+      '4  -----O                                                                    (5 = 100.0%) {0.0%}\n' +
+      '7  ... \n\n\n' +
+      '- Histogram: HTMLOut1 recorded 6 samples, mean = 13.3 (flags = 0x40) [#]\n\n' +
+      '0   O                                                                         (0 = 0.0%)\n' +
+      '1   --O                                                                       (2 = 33.3%) {0.0%}\n' +
+      '11  ----O                                                                     (4 = 66.7%) {33.3%}\n' +
+      '20  O                                                                         (0 = 0.0%) {100.0%}';
+
+  test('check downloaded content is in expected format', function() {
+    assertNotEquals(
+        document.generateHistogramsForTest().indexOf(expectedContent), -1);
+  });
 
   mocha.run();
 });
