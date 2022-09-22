@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -69,6 +70,26 @@ TEST_F(StandardManagementPolicyProviderTest, RequiredExtension) {
   EXPECT_TRUE(provider_.ExtensionMayModifySettings(policy2.get(), policy.get(),
                                                    nullptr));
   EXPECT_FALSE(provider_.ExtensionMayModifySettings(internal.get(),
+                                                    policy.get(), nullptr));
+  // The Webstore hosted app is an exception, in that it is a component
+  // extension, but it should not be able to modify policy required extensions.
+  // Note: We add to the manifest JSON to build this as a hosted app.
+  // Regression test for crbug.com/1363793
+  constexpr char kHostedApp[] = R"(
+      "app": {
+        "launch": {
+          "web_url": "https://example.com"
+        },
+        "urls": [
+          "https://example.com"
+        ]
+      })";
+  auto webstore = ExtensionBuilder("webstore hosted app")
+                      .AddJSON(kHostedApp)
+                      .SetLocation(ManifestLocation::kComponent)
+                      .SetID(extensions::kWebStoreAppId)
+                      .Build();
+  EXPECT_FALSE(provider_.ExtensionMayModifySettings(webstore.get(),
                                                     policy.get(), nullptr));
 }
 
