@@ -318,6 +318,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://os-credits",
     "chrome://os-settings",
     "chrome://power",
+    "chrome://projector",
     "chrome://proximity-auth/proximity_auth.html",
     "chrome://set-time",
     "chrome://slow",
