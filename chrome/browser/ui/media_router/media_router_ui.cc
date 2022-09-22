@@ -211,7 +211,7 @@ bool MediaRouterUI::CreateRoute(const MediaSink::Id& sink_id,
     return false;
   }
 
-  GetIssueManager()->ClearNonBlockingIssues();
+  GetIssueManager()->ClearAllIssues();
 
   current_route_request_ = absl::make_optional(*params->request);
 

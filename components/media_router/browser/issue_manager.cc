@@ -29,8 +29,7 @@ constexpr int kWarningAutoDismissMins = 5;
 // static
 base::TimeDelta IssueManager::GetAutoDismissTimeout(
     const IssueInfo& issue_info) {
-  if (issue_info.is_blocking)
-    return base::TimeDelta();
+  DCHECK(!issue_info.is_blocking);
 
   switch (issue_info.severity) {
     case IssueInfo::Severity::NOTIFICATION:
@@ -54,9 +53,7 @@ IssueManager::~IssueManager() {
 
 void IssueManager::AddIssue(const IssueInfo& issue_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto& issues_map =
-      issue_info.is_blocking ? blocking_issues_ : non_blocking_issues_;
-  for (const auto& key_value_pair : issues_map) {
+  for (const auto& key_value_pair : issues_map_) {
     const auto& issue = key_value_pair.second->issue;
     if (issue.info() == issue_info)
       return;
@@ -73,23 +70,23 @@ void IssueManager::AddIssue(const IssueInfo& issue_info) {
                                   timeout);
   }
 
-  issues_map.emplace(issue.id(), std::make_unique<IssueManager::Entry>(
-                                     issue, std::move(cancelable_dismiss_cb)));
+  issues_map_.emplace(issue.id(), std::make_unique<IssueManager::Entry>(
+                                      issue, std::move(cancelable_dismiss_cb)));
   MaybeUpdateTopIssue();
 }
 
 void IssueManager::ClearIssue(const Issue::Id& issue_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (non_blocking_issues_.erase(issue_id) || blocking_issues_.erase(issue_id))
+  if (issues_map_.erase(issue_id))
     MaybeUpdateTopIssue();
 }
 
-void IssueManager::ClearNonBlockingIssues() {
+void IssueManager::ClearAllIssues() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (non_blocking_issues_.empty())
+  if (issues_map_.empty())
     return;
 
-  non_blocking_issues_.clear();
+  issues_map_.clear();
   MaybeUpdateTopIssue();
 }
 
@@ -126,12 +123,9 @@ IssueManager::Entry::~Entry() = default;
 
 void IssueManager::MaybeUpdateTopIssue() {
   const Issue* new_top_issue = nullptr;
-  // Select the first blocking issue in the list of issues.
-  // If there are none, simply select the first issue in the list.
-  if (!blocking_issues_.empty()) {
-    new_top_issue = &blocking_issues_.begin()->second->issue;
-  } else if (!non_blocking_issues_.empty()) {
-    new_top_issue = &non_blocking_issues_.begin()->second->issue;
+  // Select the first issue in the list of issues.
+  if (!issues_map_.empty()) {
+    new_top_issue = &issues_map_.begin()->second->issue;
   }
 
   // If we've found a new top issue, then report it via the observer.

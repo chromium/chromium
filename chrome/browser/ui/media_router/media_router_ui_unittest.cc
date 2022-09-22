@@ -510,7 +510,7 @@ TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutIssueTitle) {
   }));
   ui_->SendIssueForRouteTimeout(MediaCastMode::PRESENTATION, "sink_id",
                                 u"presentation_source_name");
-  mock_router_->GetIssueManager()->ClearNonBlockingIssues();
+  mock_router_->GetIssueManager()->ClearAllIssues();
 
   EXPECT_CALL(issues_observer, OnIssue).WillOnce(Invoke([](const Issue& issue) {
     EXPECT_EQ(l10n_util::GetStringUTF8(
@@ -518,7 +518,7 @@ TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutIssueTitle) {
               issue.info().title);
   }));
   ui_->SendIssueForRouteTimeout(MediaCastMode::TAB_MIRROR, "sink_id", u"");
-  mock_router_->GetIssueManager()->ClearNonBlockingIssues();
+  mock_router_->GetIssueManager()->ClearAllIssues();
 
   EXPECT_CALL(issues_observer, OnIssue).WillOnce(Invoke([](const Issue& issue) {
     EXPECT_EQ(l10n_util::GetStringUTF8(
@@ -526,7 +526,7 @@ TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutIssueTitle) {
               issue.info().title);
   }));
   ui_->SendIssueForRouteTimeout(MediaCastMode::DESKTOP_MIRROR, "sink_id", u"");
-  mock_router_->GetIssueManager()->ClearNonBlockingIssues();
+  mock_router_->GetIssueManager()->ClearAllIssues();
 
   EXPECT_CALL(issues_observer, OnIssue).WillOnce(Invoke([](const Issue& issue) {
     EXPECT_EQ(
