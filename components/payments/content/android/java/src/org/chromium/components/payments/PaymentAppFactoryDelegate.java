@@ -4,9 +4,6 @@
 
 package org.chromium.components.payments;
 
-import org.chromium.base.Callback;
-import org.chromium.url.GURL;
-
 /**
  * Interface for providing information to a payment app factory and receiving the list of payment
  * apps.
@@ -56,14 +53,5 @@ public interface PaymentAppFactoryDelegate {
     default void setCanMakePaymentEvenWithoutApps() {}
 
     /** @return The Content-Security-Policy (CSP) checker. */
-    default CSPChecker getCSPChecker() {
-        // TODO(https://crbug.com/1349091): Remove this stub CSP checker.
-        return new CSPChecker() {
-            @Override
-            public void allowConnectToSource(GURL url, GURL urlBeforeRedirects,
-                    boolean didFollowRedirect, Callback<Boolean> resultCallback) {
-                resultCallback.onResult(/*allow=*/true);
-            }
-        };
-    }
+    CSPChecker getCSPChecker();
 }
