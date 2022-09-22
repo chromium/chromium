@@ -3358,7 +3358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.SampleReportSent" enum="Boolean"
-    expires_after="2022-10-31">
+    expires_after="2023-09-21">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
