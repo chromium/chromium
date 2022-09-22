@@ -3866,13 +3866,21 @@ TEST_F(HistoryBackendTest, FindMostRecentClusteredTime) {
   backend_->ReplaceClusters({}, CreateClusters({{1, 2, 3}}));
 
   // Should return the max time across all visits in the cluster.
-  EXPECT_EQ(backend_->FindMostRecentClusteredTime(), GetRelativeTime(20));
+  EXPECT_EQ(backend_->FindMostRecentClusteredTime(), GetRelativeTime(60));
 
   // Add another cluster.
-  backend_->ReplaceClusters({}, CreateClusters({{1}}));
+  AddAnnotatedVisit(10);
+  backend_->ReplaceClusters({}, CreateClusters({{4}}));
 
   // Should return the max time across all clusters.
-  EXPECT_EQ(backend_->FindMostRecentClusteredTime(), GetRelativeTime(20));
+  EXPECT_EQ(backend_->FindMostRecentClusteredTime(), GetRelativeTime(60));
+
+  // Add another cluster.
+  AddAnnotatedVisit(100);
+  backend_->ReplaceClusters({}, CreateClusters({{5}}));
+
+  // Should return the max time across all clusters.
+  EXPECT_EQ(backend_->FindMostRecentClusteredTime(), GetRelativeTime(100));
 }
 
 TEST_F(HistoryBackendTest, ReplaceClusters) {
