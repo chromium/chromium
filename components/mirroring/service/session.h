@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class AudioInputDevice;
@@ -83,10 +84,12 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
       std::unique_ptr<std::vector<media::cast::FrameEvent>> frame_events,
       std::unique_ptr<std::vector<media::cast::PacketEvent>> packet_events);
 
-  // Helper method for setting constraints from the ANSWER response.
-  void SetConstraints(const openscreen::cast::Answer& answer,
-                      media::cast::FrameSenderConfig* audio_config,
-                      media::cast::FrameSenderConfig* video_config);
+  // Helper method for applying the constraints from |answer| to the audio and
+  // video configs.
+  void ApplyConstraintsToConfigs(
+      const openscreen::cast::Answer& answer,
+      absl::optional<media::cast::FrameSenderConfig>& audio_config,
+      absl::optional<media::cast::FrameSenderConfig>& video_config);
 
   // Callback for ANSWER response. If the ANSWER is invalid, |observer_| will
   // get notified with error, and session is stopped. Otherwise, capturing and

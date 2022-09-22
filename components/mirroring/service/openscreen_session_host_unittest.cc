@@ -236,7 +236,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     ASSERT_TRUE(last_sent_offer_);
 
     const openscreen::cast::Offer& offer =
-        absl::get<openscreen::cast::Offer>(last_sent_offer_.value().body);
+        absl::get<openscreen::cast::Offer>(last_sent_offer_->body);
     openscreen::cast::Answer answer{.udp_port = 1234};
 
     if (!offer.audio_streams.empty()) {
@@ -251,7 +251,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
 
     openscreen::cast::ReceiverMessage receiver_message{
         .type = openscreen::cast::ReceiverMessage::Type::kAnswer,
-        .sequence_number = last_sent_offer_.value().sequence_number,
+        .sequence_number = last_sent_offer_->sequence_number,
         .valid = true,
         .body = std::move(answer)};
     Json::Value message_json = receiver_message.ToJson().value();

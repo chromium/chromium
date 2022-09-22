@@ -151,9 +151,9 @@ void AddSenderConfig(int32_t sender_ssrc,
   config.aes_iv_mask = aes_iv;
   config.sender_ssrc = sender_ssrc;
   if (session_params.target_playout_delay) {
-    config.animated_playout_delay = session_params.target_playout_delay.value();
-    config.min_playout_delay = session_params.target_playout_delay.value();
-    config.max_playout_delay = session_params.target_playout_delay.value();
+    config.animated_playout_delay = *session_params.target_playout_delay;
+    config.min_playout_delay = *session_params.target_playout_delay;
+    config.max_playout_delay = *session_params.target_playout_delay;
   }
   config_list->emplace_back(config);
 }
@@ -564,9 +564,10 @@ void Session::OnLoggingEventsReceived(
                                                      std::move(packet_events));
 }
 
-void Session::SetConstraints(const openscreen::cast::Answer& answer,
-                             FrameSenderConfig* audio_config,
-                             FrameSenderConfig* video_config) {
+void Session::ApplyConstraintsToConfigs(
+    const openscreen::cast::Answer& answer,
+    absl::optional<FrameSenderConfig>& audio_config,
+    absl::optional<FrameSenderConfig>& video_config) {
   const auto recommendations =
       openscreen::cast::capture_recommendations::GetRecommendations(answer);
   const auto& audio = recommendations.audio;
@@ -640,8 +641,8 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
   // Select Audio/Video config from ANSWER.
   bool has_audio = false;
   bool has_video = false;
-  FrameSenderConfig audio_config;
-  FrameSenderConfig video_config;
+  absl::optional<FrameSenderConfig> audio_config;
+  absl::optional<FrameSenderConfig> video_config;
   const int video_start_idx = audio_configs.size();
   const int video_idx_bound = video_configs.size() + video_start_idx;
   for (size_t i = 0; i < answer.send_indexes.size(); ++i) {
@@ -657,7 +658,7 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
         return;
       }
       audio_config = audio_configs[answer.send_indexes[i]];
-      audio_config.receiver_ssrc = answer.ssrcs[i];
+      audio_config->receiver_ssrc = answer.ssrcs[i];
       has_audio = true;
     } else {
       // Video
@@ -666,8 +667,8 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
         return;
       }
       video_config = video_configs[answer.send_indexes[i] - video_start_idx];
-      video_config.receiver_ssrc = answer.ssrcs[i];
-      video_config.video_codec_params.number_of_encode_threads =
+      video_config->receiver_ssrc = answer.ssrcs[i];
+      video_config->video_codec_params.number_of_encode_threads =
           NumberOfEncodeThreads();
       has_video = true;
     }
@@ -678,8 +679,7 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
   }
 
   // Set constraints from ANSWER message.
-  SetConstraints(answer, has_audio ? &audio_config : nullptr,
-                 has_video ? &video_config : nullptr);
+  ApplyConstraintsToConfigs(answer, audio_config, video_config);
 
   // Start streaming.
   const bool initially_starting_session =
@@ -710,14 +710,16 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
 
   if (state_ == REMOTING) {
     DCHECK(media_remoter_);
-    DCHECK(audio_config.rtp_payload_type == RtpPayloadType::REMOTE_AUDIO ||
-           video_config.rtp_payload_type == RtpPayloadType::REMOTE_VIDEO);
+    DCHECK(!audio_config ||
+           audio_config->rtp_payload_type == RtpPayloadType::REMOTE_AUDIO);
+    DCHECK(!video_config ||
+           video_config->rtp_payload_type == RtpPayloadType::REMOTE_VIDEO);
     media_remoter_->StartRpcMessaging(cast_environment_, cast_transport_.get(),
                                       audio_config, video_config);
   } else /* MIRRORING */ {
     if (has_audio) {
       auto audio_sender = std::make_unique<media::cast::AudioSender>(
-          cast_environment_, audio_config,
+          cast_environment_, *audio_config,
           base::BindOnce(&Session::OnEncoderStatusChange,
                          weak_factory_.GetWeakPtr()),
           cast_transport_.get());
@@ -744,7 +746,7 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
 
     if (has_video) {
       auto video_sender = std::make_unique<media::cast::VideoSender>(
-          cast_environment_, video_config,
+          cast_environment_, *video_config,
           base::BindRepeating(&Session::OnEncoderStatusChange,
                               weak_factory_.GetWeakPtr()),
           base::BindRepeating(&Session::CreateVideoEncodeAccelerator,

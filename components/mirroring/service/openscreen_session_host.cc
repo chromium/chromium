@@ -196,12 +196,12 @@ void UpdateConfigUsingSessionParameters(
   if (session_params.target_playout_delay) {
     // TODO(https://crbug.com/1363694): animated playout delay should be
     // removed.
-    config.animated_playout_delay = session_params.target_playout_delay.value();
+    config.animated_playout_delay = *session_params.target_playout_delay;
 
     // TODO(https://crbug.com/1363017): adaptive playout delay should be
     // re-enabled.
-    config.min_playout_delay = session_params.target_playout_delay.value();
-    config.max_playout_delay = session_params.target_playout_delay.value();
+    config.min_playout_delay = *session_params.target_playout_delay;
+    config.max_playout_delay = *session_params.target_playout_delay;
   }
 }
 
@@ -433,8 +433,7 @@ void OpenscreenSessionHost::OnNegotiated(
 
     media_remoter_->StartRpcMessaging(
         cast_environment_, senders.audio_sender, senders.video_sender,
-        audio_config.value_or(media::cast::FrameSenderConfig{}),
-        video_config.value_or(media::cast::FrameSenderConfig{}));
+        std::move(audio_config), std::move(video_config));
 
     return;
   }
@@ -442,7 +441,7 @@ void OpenscreenSessionHost::OnNegotiated(
   SetConstraints(capture_recommendations, audio_config, video_config);
   if (senders.audio_sender) {
     auto audio_sender = std::make_unique<media::cast::AudioSender>(
-        cast_environment_, audio_config.value(),
+        cast_environment_, *audio_config,
         base::BindOnce(&OpenscreenSessionHost::OnEncoderStatusChange,
                        // Safe because we own `audio_stream`.
                        weak_factory_.GetWeakPtr()),
@@ -471,7 +470,7 @@ void OpenscreenSessionHost::OnNegotiated(
 
   if (senders.video_sender) {
     auto video_sender = std::make_unique<media::cast::VideoSender>(
-        cast_environment_, video_config.value(),
+        cast_environment_, *video_config,
         base::BindRepeating(&OpenscreenSessionHost::OnEncoderStatusChange,
                             weak_factory_.GetWeakPtr()),
         base::BindRepeating(
@@ -922,9 +921,9 @@ void OpenscreenSessionHost::NegotiateMirroring() {
     last_offered_audio_config_ = MirrorSettings::GetDefaultAudioConfig(
         RtpPayloadType::AUDIO_OPUS, Codec::CODEC_AUDIO_OPUS);
     UpdateConfigUsingSessionParameters(session_params_,
-                                       last_offered_audio_config_.value());
+                                       *last_offered_audio_config_);
     audio_configs.push_back(
-        ToOpenscreenAudioConfig(last_offered_audio_config_.value()));
+        ToOpenscreenAudioConfig(*last_offered_audio_config_));
   }
 
   if (session_params_.type != SessionType::AUDIO_ONLY) {

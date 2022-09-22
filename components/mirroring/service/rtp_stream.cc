@@ -45,7 +45,7 @@ VideoRtpStream::~VideoRtpStream() {}
 void VideoRtpStream::InsertVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame) {
   DCHECK(client_);
-  if (!video_frame->metadata().reference_time.has_value()) {
+  if (!video_frame->metadata().reference_time) {
     client_->OnError("Missing REFERENCE_TIME.");
     return;
   }
