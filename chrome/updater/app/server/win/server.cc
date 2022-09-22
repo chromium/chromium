@@ -23,11 +23,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
-#include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/com_classes.h"
@@ -138,22 +136,6 @@ bool CreateClientStateMedium() {
   return true;
 }
 
-// Signal the legacy GoogleUpdate processes to exit.
-void SignalShutdownEvent(UpdaterScope scope) {
-  NamedObjectAttributes attr;
-  GetNamedObjectAttributes(kShutdownEvent, scope, &attr);
-
-  base::WaitableEvent event(base::win::ScopedHandle(
-      ::CreateEvent(&attr.sa, true, false, attr.name.c_str())));
-  if (!event.handle()) {
-    VLOG(1) << __func__ << "Could not create the shutdown event: " << std::hex
-            << HRESULTFromLastError();
-    return;
-  }
-
-  event.Signal();
-}
-
 // Install Updater.exe as GoogleUpdate.exe in the file system under
 // Google\Update. And add a "pv" registry value under the
 // UPDATER_KEY\Clients\{GoogleUpdateAppId}.
@@ -164,10 +146,6 @@ bool SwapGoogleUpdate(UpdaterScope scope,
                       HKEY root,
                       WorkItemList* list) {
   DCHECK(list);
-
-  // TODO(crbug.com/1290496) Do we need to force kill and wait for any running
-  // GoogleUpdate.exe instances?
-  SignalShutdownEvent(scope);
 
   const absl::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);
@@ -295,6 +273,11 @@ bool ComServerApp::SwapInNewVersion() {
   } else {
     AddComServerWorkItems(updater_path, false, list.get());
   }
+
+  // TODO(crbug.com/1290496) Do we need to force kill and wait for any running
+  // GoogleUpdate.exe instances?
+  const base::ScopedClosureRunner reset_shutdown_event(
+      SignalShutdownEvent(updater_scope()));
 
   if (list->Do()) {
     CheckComInterfaceTypeLib(updater_scope(), true);

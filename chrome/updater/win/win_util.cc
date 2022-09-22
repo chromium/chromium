@@ -36,6 +36,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
@@ -887,6 +888,25 @@ absl::optional<base::ScopedTempDir> CreateSecureTempDir() {
   }
 
   return temp_path;
+}
+
+base::ScopedClosureRunner SignalShutdownEvent(UpdaterScope scope) {
+  NamedObjectAttributes attr;
+  GetNamedObjectAttributes(kShutdownEvent, scope, &attr);
+
+  base::win::ScopedHandle shutdown_event_handle(
+      ::CreateEvent(&attr.sa, true, false, attr.name.c_str()));
+  if (!shutdown_event_handle.IsValid()) {
+    VLOG(1) << __func__ << "Could not create the shutdown event: " << std::hex
+            << HRESULTFromLastError();
+    return {};
+  }
+
+  auto shutdown_event =
+      std::make_unique<base::WaitableEvent>(std::move(shutdown_event_handle));
+  shutdown_event->Signal();
+  return base::ScopedClosureRunner(
+      base::BindOnce(&base::WaitableEvent::Reset, std::move(shutdown_event)));
 }
 
 }  // namespace updater

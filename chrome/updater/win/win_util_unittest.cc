@@ -14,11 +14,15 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
+#include "base/win/scoped_handle.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/unittest_util_win.h"
 #include "chrome/updater/updater_branding.h"
@@ -269,6 +273,29 @@ TEST(WinUtil, CreateSecureTempDir) {
       base::PathService::Get(base::DIR_PROGRAM_FILES, &program_files_dir));
   EXPECT_EQ(program_files_dir.IsParent(temp_dir->GetPath()),
             !!::IsUserAnAdmin());
+}
+
+TEST(WinUtil, SignalShutdownEvent) {
+  NamedObjectAttributes attr;
+  GetNamedObjectAttributes(kShutdownEvent, GetTestScope(), &attr);
+
+  {
+    const base::ScopedClosureRunner reset_shutdown_event(
+        SignalShutdownEvent(GetTestScope()));
+
+    // Expect that the legacy GoogleUpdate shutdown event is signaled.
+    base::WaitableEvent event(base::win::ScopedHandle(
+        ::OpenEvent(EVENT_ALL_ACCESS, false, attr.name.c_str())));
+    ASSERT_TRUE(event.handle())
+        << "Could not open the shutdown event: " << std::hex
+        << HRESULTFromLastError();
+    EXPECT_TRUE(event.IsSignaled());
+  }
+
+  // Expect that the legacy GoogleUpdate shutdown event is invalid now.
+  base::win::ScopedHandle event(
+      ::OpenEvent(EVENT_ALL_ACCESS, false, attr.name.c_str()));
+  EXPECT_FALSE(event.IsValid()) << "Unexpected valid shutdown event handle";
 }
 
 }  // namespace updater

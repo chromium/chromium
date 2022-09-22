@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -283,6 +284,10 @@ bool EnableProcessHeapMetadataProtection();
 // Creates a unique temporary directory. The directory is created under
 // %ProgramFiles% if the caller is admin, so it is secure.
 absl::optional<base::ScopedTempDir> CreateSecureTempDir();
+
+// Signals the shutdown event that causes legacy GoogleUpdate processes to exit.
+// Returns a closure that resets the shutdown event when it goes out of scope.
+[[nodiscard]] base::ScopedClosureRunner SignalShutdownEvent(UpdaterScope scope);
 
 }  // namespace updater
 
