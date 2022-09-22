@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -348,19 +349,7 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
   // Wait until sign-out and the overlay disappears.
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey verifySignedOut];
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:
-                   grey_allOf(grey_accessibilityID(
-                                  kActivityOverlayViewAccessibilityIdentifier),
-                              grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error != nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForActionTimeout, condition),
-             @"Waiting for the overlay to dissapear");
+  WaitForActivityOverlayToDisappear();
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];

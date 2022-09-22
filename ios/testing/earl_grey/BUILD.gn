@@ -63,4 +63,6 @@ source_set("eg_test_support+eg2") {
     "//testing/gtest:gtest",
     "//ui/display",
   ]
+
+  public_deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }

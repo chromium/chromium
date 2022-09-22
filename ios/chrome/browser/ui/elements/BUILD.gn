@@ -97,3 +97,22 @@ source_set("elements_internal") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "activity_overlay_egtest_util.h",
+    "activity_overlay_egtest_util.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/browser/ui/elements:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+}
