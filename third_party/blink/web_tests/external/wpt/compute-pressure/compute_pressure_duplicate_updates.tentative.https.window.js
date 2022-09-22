@@ -4,13 +4,13 @@
 'use strict';
 
 pressure_test(async (t, mockPressureService) => {
-  const pressureUpdates = await new Promise(async resolve => {
-    const updates = [];
+  const pressureChanges = await new Promise(async resolve => {
+    const observer_changes = [];
     let n = 0;
-    const observer = new PressureObserver(update => {
-      updates.push(update);
+    const observer = new PressureObserver(changes => {
+      observer_changes.push(changes);
       if (++n === 2)
-        resolve(updates);
+        resolve(observer_changes);
     }, {sampleRate: 1.0});
     await observer.observe('cpu');
 
@@ -21,7 +21,7 @@ pressure_test(async (t, mockPressureService) => {
     mockPressureService.setPressureUpdate('nominal');
     mockPressureService.sendUpdate();
   });
-  assert_equals(pressureUpdates.length, 2);
-  assert_equals(pressureUpdates[0][0].state, 'critical');
-  assert_equals(pressureUpdates[1][0].state, 'nominal');
-}, 'Updates that fail the "has change in data" test are discarded.');
+  assert_equals(pressureChanges.length, 2);
+  assert_equals(pressureChanges[0][0].state, 'critical');
+  assert_equals(pressureChanges[1][0].state, 'nominal');
+}, 'Changes that fail the "has changes in data" test are discarded.');

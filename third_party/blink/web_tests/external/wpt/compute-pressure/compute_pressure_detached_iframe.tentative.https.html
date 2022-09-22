@@ -65,16 +65,16 @@ promise_test(async t => {
   const observe_promise = observer.observe('cpu');
   iframe.remove();
 
-  // Establish an observer and wait for an update in the main frame. This should
+  // Establish an observer and wait for changes in the main frame. This should
   // keep the test running long enough to catch any crash from the observe()
   // call in the removed iframe's PressureObserver.
-  const update = await new Promise((resolve, reject) => {
+  const changes = await new Promise((resolve, reject) => {
     const observer = new PressureObserver(
         resolve, {sampleRate: 1});
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
   });
-  assert_in_array(update[0].state, ['nominal', 'fair', 'serious', 'critical'],
+  assert_in_array(changes[0].state, ['nominal', 'fair', 'serious', 'critical'],
                   'cpu pressure state');
 }, 'Detaching frame while PressureObserver.observe() settles');
 

@@ -23,16 +23,16 @@ pressure_test((t, mockPressureService) => {
 }, 'Return SecurityError when calling observer()');
 
 pressure_test(async (t, mockPressureService) => {
-  const update = await new Promise(async resolve => {
+  const changes = await new Promise(async resolve => {
     const observer = new PressureObserver(resolve);
     await observer.observe('cpu');
     mockPressureService.setPressureUpdate('critical');
     mockPressureService.sendUpdate();
   });
-  assert_true(update.length === 1);
-  assert_equals(update[0].state, 'critical');
-  assert_equals(update[0].source, 'cpu');
-  assert_equals(typeof update[0].time, 'number');
+  assert_true(changes.length === 1);
+  assert_equals(changes[0].state, 'critical');
+  assert_equals(changes[0].source, 'cpu');
+  assert_equals(typeof changes[0].time, 'number');
 }, 'Basic functionality test');
 
 pressure_test((t, mockPressureService) => {
