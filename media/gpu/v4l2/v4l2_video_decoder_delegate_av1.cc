@@ -248,6 +248,43 @@ void FillLoopFilterDeltaParams(struct v4l2_av1_loop_filter& v4l2_lf,
   v4l2_lf.delta_lf_res = delta_lf.scale;
 }
 
+// Section 5.9.19. CDEF params syntax
+void FillCdefParams(struct v4l2_av1_cdef& v4l2_cdef,
+                    const libgav1::Cdef& cdef,
+                    uint8_t color_bitdepth) {
+  // Damping value parsed in libgav1 is from the spec + (bitdepth - 8).
+  // All the strength values parsed in libgav1 are from the spec and left
+  // shifted by (bitdepth - 8).
+  CHECK_GE(color_bitdepth, 8u);
+  const uint8_t coeff_shift = color_bitdepth - 8u;
+
+  v4l2_cdef.damping_minus_3 =
+      base::checked_cast<uint8_t>(cdef.damping - coeff_shift - 3u);
+
+  v4l2_cdef.bits = cdef.bits;
+
+  static_assert(std::size(decltype(v4l2_cdef.y_pri_strength){}) ==
+                    libgav1::kMaxCdefStrengths,
+                "Invalid size of cdef y_pri_strength strength");
+
+  static_assert(std::size(decltype(v4l2_cdef.y_sec_strength){}) ==
+                    libgav1::kMaxCdefStrengths,
+                "Invalid size of cdef y_sec_strength strength");
+
+  static_assert(std::size(decltype(v4l2_cdef.uv_pri_strength){}) ==
+                    libgav1::kMaxCdefStrengths,
+                "Invalid size of cdef uv_pri_strength strength");
+
+  static_assert(std::size(decltype(v4l2_cdef.uv_sec_strength){}) ==
+                    libgav1::kMaxCdefStrengths,
+                "Invalid size of cdef uv_sec_strength strength");
+
+  SafeArrayMemcpy(v4l2_cdef.y_pri_strength, cdef.y_primary_strength);
+  SafeArrayMemcpy(v4l2_cdef.y_sec_strength, cdef.y_secondary_strength);
+  SafeArrayMemcpy(v4l2_cdef.uv_pri_strength, cdef.uv_primary_strength);
+  SafeArrayMemcpy(v4l2_cdef.uv_sec_strength, cdef.uv_secondary_strength);
+}
+
 V4L2VideoDecoderDelegateAV1::V4L2VideoDecoderDelegateAV1(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
@@ -292,6 +329,11 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
 
   struct v4l2_av1_segmentation v4l2_seg = {};
   FillSegmentationParams(v4l2_seg, frame_header.segmentation);
+
+  const auto color_bitdepth = sequence_header.color_config.bitdepth;
+  struct v4l2_av1_cdef v4l2_cdef = {};
+  FillCdefParams(v4l2_cdef, frame_header.cdef,
+                 base::strict_cast<int8_t>(color_bitdepth));
 
   NOTIMPLEMENTED();
 
