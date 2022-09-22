@@ -482,13 +482,13 @@ class BuildConfigGenerator extends DefaultTask {
                     depsStr += "\"${existingLib}\","
                 }
             } else if (dep.id == 'com_google_android_material_material') {
-                // Material design is pulled in via doubledown, should
-                // use the variable instead of the real target.
-                depsStr += '":material_design_java",'
+                // Material design is pulled in via doubledown, should use the
+                // alias instead of the real target.
+                depsStr += "\"//third_party/android_deps:material_design_java\","
             } else if (dep.id == 'com_google_guava_guava_android') {
-                // guava is pulled in via doubledown, and should
-                // use the variable instead of the real target.
-                depsStr += '":guava_android_java",'
+                // guava is pulled in via doubledown, and should use the alias
+                // instead of the real target.
+                depsStr += "\"//third_party/android_deps:guava_android_java\","
             } else if (excludeDependency(dep)) {
                 String thirdPartyDir = (dep.id.startsWith('androidx')) ? 'androidx' : 'android_deps'
                 depsStr += "\"//third_party/${thirdPartyDir}:${depTargetName}\","
