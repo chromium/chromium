@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/cfi_buildflags.h"
+#include "base/files/file_path.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -1982,6 +1983,16 @@ class ProfilePickerLocalProfileCreationDialogBrowserTest
         ->HandleDone(args);
   }
 
+  // Simulates a click on "Delete profile" on the Profile Customization to
+  // cancel the creation of the local profile.
+  void DeleteLocalProfile(content::WebContents* dialog_web_contents) {
+    dialog_web_contents->GetWebUI()
+        ->GetController()
+        ->GetAs<ProfileCustomizationUI>()
+        ->GetProfileCustomizationHandlerForTesting()
+        ->HandleDeleteProfile(base::Value::List());
+  }
+
  protected:
   const GURL kProfileCustomizationUrl = AppendProfileCustomizationQueryParams(
       GURL("chrome://profile-customization"),
@@ -2034,6 +2045,60 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLocalProfileCreationDialogBrowserTest,
                     ->GetProfileAttributesStorage()
                     .GetNumberOfProfiles());
   EXPECT_FALSE(new_browser->signin_view_controller()->ShowsModalDialog());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerLocalProfileCreationDialogBrowserTest,
+                       CancelLocalProfileCreation) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(1u, g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .GetNumberOfProfiles());
+
+  content::TestNavigationObserver profile_customization_observer(
+      kProfileCustomizationUrl);
+  profile_customization_observer.StartWatchingNewWebContents();
+  BrowserAddedWaiter browser_added_waiter = BrowserAddedWaiter(2u);
+
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
+  // Wait until webUI is fully initialized.
+  WaitForLoadStop(GURL("chrome://profile-picker/new-profile"));
+
+  // Simulate clicking the "Continue without an account" button.
+  CreateLocalProfile();
+
+  Browser* new_browser = browser_added_waiter.Wait();
+  profile_customization_observer.Wait();
+  content::WebContents* dialog_web_contents =
+      new_browser->signin_view_controller()
+          ->GetModalDialogWebContentsForTesting();
+  EXPECT_EQ(dialog_web_contents->GetLastCommittedURL(),
+            kProfileCustomizationUrl);
+
+  base::FilePath profile_path = new_browser->profile()->GetPath();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  ASSERT_EQ(2u, g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .GetNumberOfProfiles());
+  ASSERT_TRUE(entry->IsEphemeral());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  EXPECT_TRUE(new_browser->signin_view_controller()->ShowsModalDialog());
+
+  // Simulate clicking the "Delete profile" button on the profile customization
+  // dialog.
+  DeleteLocalProfile(dialog_web_contents);
+  ui_test_utils::WaitForBrowserToClose(new_browser);
+
+  ASSERT_EQ(1u, g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .GetNumberOfProfiles());
+  ASSERT_EQ(nullptr, g_browser_process->profile_manager()
+                         ->GetProfileAttributesStorage()
+                         .GetProfileAttributesWithPath(profile_path));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

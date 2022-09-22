@@ -185,6 +185,8 @@ class SigninViewController {
                            CloseImmediately);
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerLocalProfileCreationDialogBrowserTest,
                            CreateLocalProfile);
+  FRIEND_TEST_ALL_PREFIXES(ProfilePickerLocalProfileCreationDialogBrowserTest,
+                           CancelLocalProfileCreation);
   friend class login_ui_test_utils::SigninViewControllerTestUtil;
   friend class SigninReauthViewControllerBrowserTest;
   friend class SigninInterceptFirstRunExperienceDialogBrowserTest;
