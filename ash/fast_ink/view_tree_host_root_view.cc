@@ -443,14 +443,11 @@ void ViewTreeHostRootView::SubmitCompositorFrame() {
     resource->damaged = false;
   }
 
-  viz::TransferableResource transferable_resource;
+  viz::TransferableResource transferable_resource =
+      viz::TransferableResource::MakeGpu(
+          resource->mailbox, GL_LINEAR, GL_TEXTURE_2D, resource->sync_token,
+          buffer_size_, viz::RGBA_8888, is_overlay_candidate_);
   transferable_resource.id = id_generator_.GenerateNextId();
-  transferable_resource.format = viz::RGBA_8888;
-  transferable_resource.filter = GL_LINEAR;
-  transferable_resource.size = buffer_size_;
-  transferable_resource.mailbox_holder = gpu::MailboxHolder(
-      resource->mailbox, resource->sync_token, GL_TEXTURE_2D);
-  transferable_resource.is_overlay_candidate = is_overlay_candidate_;
 
   gfx::Transform buffer_to_target_transform;
   bool rv = rotate_transform_.GetInverse(&buffer_to_target_transform);

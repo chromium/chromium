@@ -379,16 +379,13 @@ void FastInkHost::SubmitCompositorFrame() {
     resource->damaged = false;
   }
 
-  viz::TransferableResource transferable_resource;
-  transferable_resource.id = id_generator_.GenerateNextId();
-  transferable_resource.format =
-      SK_B32_SHIFT ? viz::RGBA_8888 : viz::BGRA_8888;
-  transferable_resource.filter = GL_LINEAR;
-  transferable_resource.size = buffer_size_;
-  transferable_resource.mailbox_holder = gpu::MailboxHolder(
-      resource->mailbox, resource->sync_token, GL_TEXTURE_2D);
   // Use HW overlay if continuous updates are expected.
-  transferable_resource.is_overlay_candidate = auto_refresh_;
+  viz::TransferableResource transferable_resource =
+      viz::TransferableResource::MakeGpu(
+          resource->mailbox, GL_LINEAR, GL_TEXTURE_2D, resource->sync_token,
+          buffer_size_, SK_B32_SHIFT ? viz::RGBA_8888 : viz::BGRA_8888,
+          auto_refresh_);
+  transferable_resource.id = id_generator_.GenerateNextId();
 
   gfx::Transform target_to_buffer_transform(window_to_buffer_transform_);
   target_to_buffer_transform.Scale(1.f / device_scale_factor,
