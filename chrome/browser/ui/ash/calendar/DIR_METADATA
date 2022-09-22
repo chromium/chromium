@@ -1,0 +1,10 @@
+team_email: "cros-status-area-eng@google.com"
+buganizer: {
+  component_id:1246126
+}
+buganizer_public: {
+  component_id:1246129
+}
+monorail {
+  component: "UI>Shell>StatusArea>Calendar"
+}
