@@ -4638,6 +4638,30 @@ class CheckBatchAnnotation(unittest.TestCase):
     errors = PRESUBMIT.CheckBatchAnnotation(mock_input, MockOutputApi())
     self.assertEqual(0, len(errors))
 
+class LayoutInTestsTest(unittest.TestCase):
+  def testLayoutInTest(self):
+    mock_input = MockInputApi()
+    mock_input.files = [
+        MockFile('path/to/foo_unittest.cc',
+                 ['  foo->Layout();', '  bar.Layout();']),
+    ]
+    errors = PRESUBMIT.CheckNoLayoutCallsInTests(mock_input, MockOutputApi())
+    self.assertNotEqual(0, len(errors))
+
+  def testNoTriggerOnLayoutOverride(self):
+    mock_input = MockInputApi();
+    mock_input.files = [
+        MockFile('path/to/foo_unittest.cc',
+                 ['class TestView: public views::View {',
+                  ' public:',
+                  '  void Layout(); override {',
+                  '    views::View::Layout();',
+                  '    // perform bespoke layout',
+                  '  }',
+                  '};'])
+    ]
+    errors = PRESUBMIT.CheckNoLayoutCallsInTests(mock_input, MockOutputApi())
+    self.assertEqual(0, len(errors))
 
 if __name__ == '__main__':
   unittest.main()
