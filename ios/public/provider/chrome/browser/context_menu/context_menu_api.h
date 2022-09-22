@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/web/public/ui/context_menu_params.h"
+#import "ios/web/public/ui/crw_context_menu_item.h"
 
 class ChromeBrowserState;
 
@@ -35,6 +36,18 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
     ChromeBrowserState* browser_state,
     web::WebState* web_state,
     web::ContextMenuParams params,
+    UIViewController* presenting_view_controller);
+
+// Returns set of `NSTextCheckingType` representing the intent types that
+// can be handled by the provider, for the given `web_state`.
+NSTextCheckingType GetHandledIntentTypes(web::WebState* web_state);
+
+// Returns `CRWContextMenuItem` items for the given `match`, for the given
+// `web_state`.
+NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
+    web::WebState* web_state,
+    NSTextCheckingResult* match,
+    NSString* text,
     UIViewController* presenting_view_controller);
 
 }  // namespace provider

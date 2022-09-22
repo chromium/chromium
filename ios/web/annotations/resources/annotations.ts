@@ -44,7 +44,8 @@ interface Annotation {
 class Replacement {
   constructor(
       public index: number, public left: number, public right: number,
-      public text: string, public type: string, public data: string) {}
+      public text: string, public type: string, public annotationText: string,
+      public data: string) {}
 }
 
 /**
@@ -174,7 +175,7 @@ function decorateAnnotations(annotations: Annotation[]): void {
         }
         replacements.push(new Replacement(
             annotationIndex, left, right, nodeText, annotation.type,
-            annotation.data));
+            annotation.text, annotation.data));
         // If annotation is completed, move to next annotation and retry on
         // this node to fit more annotations if needed.
         if (end <= index + length) {
@@ -373,7 +374,7 @@ function handleClick(event: Event) {
     command: 'annotations.onClick',
     data: annotation.dataset['data'],
     rect: rectFromElement(annotation),
-    text: `"${annotation.innerText}"`,
+    text: annotation.dataset['annotation'],
   });
 }
 
@@ -426,6 +427,7 @@ function replaceNode(
     const element = document.createElement('chrome_annotation');
     element.setAttribute('data-index', '' + replacement.index);
     element.setAttribute('data-data', replacement.data);
+    element.setAttribute('data-annotation', replacement.annotationText);
     element.innerText = replacement.text;
     element.style.cssText = decorationStyles;
     element.style.borderBottomColor = textColor;

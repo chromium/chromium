@@ -156,7 +156,8 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     BreadcrumbManagerTabHelper::CreateForWebState(web_state);
   }
 
-  if (base::FeatureList::IsEnabled(web::features::kEnableWebPageAnnotations)) {
+  if (base::FeatureList::IsEnabled(web::features::kEnableWebPageAnnotations) &&
+      !is_off_the_record) {
     AnnotationsTabHelper::CreateForWebState(web_state);
   }
 

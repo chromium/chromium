@@ -57,8 +57,7 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
   explicit AnnotationsTabHelper(web::WebState* web_state);
 
   // Receiver for text classifier extracted intents. Must run on main thread.
-  void ApplyDeferredProcessing(web::WebState* web_state,
-                               absl::optional<base::Value> deferred);
+  void ApplyDeferredProcessing(absl::optional<base::Value> deferred);
 
   UIViewController* base_view_controller_ = nil;
 

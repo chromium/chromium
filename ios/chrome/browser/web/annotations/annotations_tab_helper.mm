@@ -9,9 +9,11 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
+#import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 #import "ios/web/annotations/annotations_text_manager.h"
 #import "ios/web/annotations/annotations_utils.h"
 #import "ios/web/common/url_scheme_util.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -43,25 +45,28 @@ NSString* TypeForNSTextCheckingResultData(NSTextCheckingResult* match) {
 // Applies text classifier to extract intents in the given text. Returns
 // a `base::Value::List` of annotations (see i/w/a/annotations_utils.h).
 // This runs in the thread pool.
-absl::optional<base::Value> ApplyDataExtractor(const std::string& text) {
+absl::optional<base::Value> ApplyDataExtractor(
+    const std::string& text,
+    NSTextCheckingType handled_types) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-  // TODO(crbug.com/1350974): move to provider
   if (text.empty()) {
     return absl::nullopt;
   }
 
+  // TODO(crbug.com/1350974): phone doesn't have a ui to set the flag for now.
+  handled_types |= NSTextCheckingTypePhoneNumber;
+
   NSString* source = base::SysUTF8ToNSString(text);
   NSError* error = nil;
-  NSDataDetector* detector = [NSDataDetector
-      dataDetectorWithTypes:NSTextCheckingTypeDate | NSTextCheckingTypeAddress |
-                            NSTextCheckingTypePhoneNumber
-                      error:&error];
+  NSDataDetector* detector = [NSDataDetector dataDetectorWithTypes:handled_types
+                                                             error:&error];
   if (error) {
     return absl::nullopt;
   }
 
+  // TODO(crbug.com/1350974): move extracting to provider
   __block base::Value::List parsed;
   auto match_handler = ^(NSTextCheckingResult* match, NSMatchingFlags flags,
                          BOOL* stop) {
@@ -122,13 +127,16 @@ void AnnotationsTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
                                            const std::string& text) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(web_state_, web_state);
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&ApplyDataExtractor, text),
+      base::BindOnce(&ApplyDataExtractor, text,
+                     ios::provider::GetHandledIntentTypes(web_state)),
       base::BindOnce(&AnnotationsTabHelper::ApplyDeferredProcessing,
-                     weak_factory_.GetWeakPtr(), web_state_));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void AnnotationsTabHelper::OnDecorated(web::WebState* web_state,
@@ -150,47 +158,21 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
     return;
   }
 
-  NSMutableArray* items = [[NSMutableArray alloc] init];
-  if (match.resultType == NSTextCheckingTypeDate) {
-    [items addObject:[CRWContextMenuItem
-                         itemWithID:@"addToGoogleCalendar"
-                              title:@"Add to Google Calendar"
-                             action:^{
-                                 // TODO(crbug.com/1350974): execute
-                             }]];
-  } else if (match.resultType == NSTextCheckingTypeAddress) {
-    [items addObject:[CRWContextMenuItem
-                         itemWithID:@"showMiniMap"
-                              title:@"Show Mini Map"
-                             action:^{
-                                 // TODO(crbug.com/1350974): execute
-                             }]];
-  } else if (match.resultType == NSTextCheckingTypePhoneNumber) {
-    [items addObject:[CRWContextMenuItem
-                         itemWithID:@"callPhoneNumber"
-                              title:@"Call Phone Number"
-                             action:^{
-                                 // TODO(crbug.com/1350974): execute
-                             }]];
+  NSArray<CRWContextMenuItem*>* items =
+      ios::provider::GetContextMenuElementsToAdd(web_state, match,
+                                                 base::SysUTF8ToNSString(text),
+                                                 base_view_controller_);
+
+  if (items.count) {
+    [web_state_->GetWebViewProxy() showMenuWithItems:items rect:rect];
   }
-
-  [items
-      addObject:[CRWContextMenuItem itemWithID:@"copyDate"
-                                         title:@"Copy"
-                                        action:^{
-                                            // TODO(crbug.com/1350974): execute
-                                        }]];
-
-  [web_state_->GetWebViewProxy() showMenuWithItems:items rect:rect];
 }
 
 #pragma mark - Private Methods
 
 void AnnotationsTabHelper::ApplyDeferredProcessing(
-    web::WebState* web_state,
     absl::optional<base::Value> deferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(web_state_, web_state);
 
   if (GetMainFrame(web_state_) && deferred) {
     auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
