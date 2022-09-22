@@ -89,7 +89,7 @@ luci.notifier(
 
 luci.notifier(
     name = "cronet",
-    on_occurrence = ["FAILURE", "INFRA_FAILURE"],
+    on_new_status = ["FAILURE", "INFRA_FAILURE", "SUCCESS"],
     notify_emails = [
         "cronet-sheriff@grotations.appspotmail.com",
     ],
