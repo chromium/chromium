@@ -23,6 +23,13 @@ b) Firebase project support (used by official builders) requires unique
 WEBVIEW_STABLE, WEBVIEW_BETA, WEBVIEW_DEV are all used for standalone webview,
 whereas the others are used for various chrome APKs.
 
+TRICHROME_BETA is used for TrichromeChrome, TrichromeWebView, and
+TrichromeLibrary when these are compiled to use the stable package name. Similar
+to how WEBVIEW_STABLE/WEBVIEW_BETA work, this allows users to opt into the open
+Beta Track for the stable package. When Trichrome is configured to use a
+distinct package name for the Beta package, the version code will use TRICHROME
+instead of TRICHROME_BETA.
+
 Note that a package digit of '3' for Webview is reserved for Trichrome Webview.
 The same versionCode is used for both Trichrome Chrome and Trichrome Webview.
 
@@ -43,6 +50,7 @@ _PACKAGE_NAMES = {
     'CHROME_MODERN': 10,
     'MONOCHROME': 20,
     'TRICHROME': 30,
+    'TRICHROME_BETA': 40,
     'WEBVIEW_STABLE': 0,
     'WEBVIEW_BETA': 10,
     'WEBVIEW_DEV': 20,
@@ -74,6 +82,7 @@ _APKS = {
         ('CHROME_MODERN', 'CHROME_MODERN', '32'),
         ('MONOCHROME', 'MONOCHROME', '32'),
         ('TRICHROME', 'TRICHROME', '32'),
+        ('TRICHROME_BETA', 'TRICHROME_BETA', '32'),
         ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '32'),
         ('WEBVIEW_BETA', 'WEBVIEW_BETA', '32'),
         ('WEBVIEW_DEV', 'WEBVIEW_DEV', '32'),
@@ -91,6 +100,11 @@ _APKS = {
         ('TRICHROME_32_64', 'TRICHROME', '32_64'),
         ('TRICHROME_64_32', 'TRICHROME', '64_32'),
         ('TRICHROME_64', 'TRICHROME', '64'),
+        ('TRICHROME_BETA', 'TRICHROME_BETA', '32_64'),
+        ('TRICHROME_32_BETA', 'TRICHROME_BETA', '32'),
+        ('TRICHROME_32_64_BETA', 'TRICHROME_BETA', '32_64'),
+        ('TRICHROME_64_32_BETA', 'TRICHROME_BETA', '64_32'),
+        ('TRICHROME_64_BETA', 'TRICHROME_BETA', '64'),
         ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '32_64'),
         ('WEBVIEW_BETA', 'WEBVIEW_BETA', '32_64'),
         ('WEBVIEW_DEV', 'WEBVIEW_DEV', '32_64'),
