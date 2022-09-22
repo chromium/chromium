@@ -3,450 +3,15 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
 
 preprocessed_dir = "preprocessed"
-preprocess_folder = "$target_gen_dir/preprocessed"
-preprocessed_manifest = "preprocessed_manifest.json"
-preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
-mojom_webui_folder = "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom"
-
-js_type_check("closure_compile_module") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/",
-                root_build_dir),
-      ]
-  deps = [
-    ":battery_status_card",
-    ":cellular_info",
-    ":connectivity_card",
-    ":cpu_card",
-    ":data_point",
-    ":diagnostics_app",
-    ":diagnostics_browser_proxy",
-    ":diagnostics_card",
-    ":diagnostics_card_frame",
-    ":diagnostics_network_icon",
-    ":diagnostics_sticky_banner",
-    ":diagnostics_types",
-    ":diagnostics_utils",
-    ":ethernet_info",
-    ":fake_data",
-    ":fake_input_data_provider",
-    ":fake_network_health_provider",
-    ":fake_system_data_provider",
-    ":fake_system_routine_controller",
-    ":frequency_channel_utils",
-    ":input_card",
-    ":input_list",
-    ":ip_config_info_drawer",
-    ":keyboard_tester",
-    ":memory_card",
-    ":mojo_interface_provider",
-    ":mojo_utils",
-    ":network_card",
-    ":network_info",
-    ":network_list",
-    ":network_troubleshooting",
-    ":overview_card",
-    ":percent_bar_chart",
-    ":realtime_cpu_chart",
-    ":routine_group",
-    ":routine_list_executor",
-    ":routine_result_entry",
-    ":routine_result_list",
-    ":routine_section",
-    ":system_page",
-    ":text_badge",
-    ":wifi_info",
-  ]
-}
-
-js_library("battery_status_card") {
-  deps = [
-    ":data_point",
-    ":diagnostics_types",
-    ":mojo_interface_provider",
-    ":mojo_utils",
-    ":percent_bar_chart",
-    ":routine_section",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("cellular_info") {
-  deps = [
-    ":data_point",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("connectivity_card") {
-  deps = [
-    ":diagnostics_network_icon",
-    ":ip_config_info_drawer",
-    ":network_info",
-    ":routine_group",
-    ":routine_section",
-    "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-  ]
-}
-
-js_library("cpu_card") {
-  deps = [
-    ":data_point",
-    ":mojo_interface_provider",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("data_point") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("diagnostics_app") {
-  deps = [
-    ":diagnostics_sticky_banner",
-    ":input_list",
-    ":network_list",
-    ":system_page",
-    "//ash/webui/common/resources:navigation_view_panel",
-    "//ash/webui/common/resources:page_toolbar",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("diagnostics_browser_proxy") {
-  deps = [
-    ":diagnostics_types",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("diagnostics_card") {
-  deps = [
-    ":diagnostics_card_frame",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("diagnostics_card_frame") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("diagnostics_types") {
-  deps = [ "//ash/webui/diagnostics_ui/mojom:mojom_webui_js" ]
-}
-
-js_library("diagnostics_network_icon") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/network:network_icon",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-  ]
-}
-
-js_library("diagnostics_sticky_banner") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
-}
-
-js_library("diagnostics_utils") {
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
-}
-
-js_library("ethernet_info") {
-  deps = [
-    ":data_point",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-  ]
-}
-
-js_library("fake_data") {
-  deps = [ ":diagnostics_types" ]
-}
-
-js_library("fake_input_data_provider") {
-  deps = [
-    "//ash/webui/common/resources:fake_method_resolver",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("fake_network_health_provider") {
-  deps = [
-    "//ash/webui/common/resources:fake_observables",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("fake_system_data_provider") {
-  deps = [
-    "//ash/webui/common/resources:fake_method_resolver",
-    "//ash/webui/common/resources:fake_observables",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("fake_system_routine_controller") {
-  deps = [
-    "//ash/webui/common/resources:fake_method_resolver",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("frequency_channel_utils") {
-  deps = [ ":diagnostics_types" ]
-}
-
-js_library("input_card") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("input_list") {
-  deps = [
-    ":diagnostics_browser_proxy",
-    ":diagnostics_types",
-    ":input_card",
-    ":keyboard_tester",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("ip_config_info_drawer") {
-  deps = [
-    ":data_point",
-    ":diagnostics_browser_proxy",
-    ":diagnostics_types",
-    ":diagnostics_utils",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
-}
-
-js_library("keyboard_tester") {
-  deps = [
-    "//ash/webui/common/resources:keyboard_diagram",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
-}
-
-js_library("memory_card") {
-  deps = [
-    ":data_point",
-    ":diagnostics_utils",
-    ":mojo_interface_provider",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("mojo_interface_provider") {
-  deps = [
-    ":diagnostics_types",
-    ":fake_data",
-    ":fake_input_data_provider",
-    ":fake_network_health_provider",
-    ":fake_system_data_provider",
-    ":fake_system_routine_controller",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("mojo_utils") {
-}
-
-js_library("network_card") {
-  deps = [
-    ":diagnostics_card",
-    ":diagnostics_network_icon",
-    ":diagnostics_types",
-    ":ip_config_info_drawer",
-    ":network_info",
-    ":network_troubleshooting",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-  ]
-}
-
-js_library("network_info") {
-  deps = [
-    ":cellular_info",
-    ":diagnostics_types",
-    ":ethernet_info",
-    ":mojo_interface_provider",
-    ":wifi_info",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("network_list") {
-  deps = [
-    ":connectivity_card",
-    ":diagnostics_browser_proxy",
-    ":diagnostics_types",
-    ":mojo_interface_provider",
-    ":network_card",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("network_troubleshooting") {
-  deps = [
-    ":diagnostics_types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("overview_card") {
-  deps = [
-    ":diagnostics_card",
-    ":mojo_interface_provider",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("percent_bar_chart") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("realtime_cpu_chart") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "../../../../third_party/d3/src/externs.js" ]
-}
-
-js_library("routine_group") {
-  deps = [
-    ":routine_list_executor",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("routine_list_executor") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("routine_result_entry") {
-  deps = [
-    ":routine_group",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("routine_result_list") {
-  deps = [
-    ":routine_group",
-    ":routine_list_executor",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("routine_section") {
-  deps = [
-    ":mojo_interface_provider",
-    ":routine_group",
-    ":routine_result_list",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("system_page") {
-  deps = [
-    ":battery_status_card",
-    ":cpu_card",
-    ":diagnostics_browser_proxy",
-    ":diagnostics_card",
-    ":diagnostics_sticky_banner",
-    ":diagnostics_types",
-    ":memory_card",
-    ":mojo_interface_provider",
-    ":overview_card",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_toast/cr_toast_externs.js",
-  ]
-}
-
-js_library("text_badge") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("wifi_info") {
-  deps = [
-    ":data_point",
-    ":frequency_channel_utils",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-copy("copy_webui_mojo") {
-  deps = [ "../mojom:mojom_webui_js" ]
-  sources = [
-    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/network_health_provider.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/system_data_provider.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom-webui.js",
-  ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
 
 non_web_component_files = [
   "diagnostics_browser_proxy.js",
@@ -496,7 +61,6 @@ web_component_files = [
   "wifi_info.js",
 ]
 
-# Files that are passed as input to html_to_wrapper().
 html_files = []
 foreach(f, web_component_files) {
   html_files += [ string_replace(f, ".js", ".html") ]
@@ -504,16 +68,12 @@ foreach(f, web_component_files) {
 
 icons_html_files = [ "icons.html" ]
 
-# Files that are generated by html_to_wrapper().
 html_wrapper_files = []
 foreach(f, html_files + icons_html_files) {
   html_wrapper_files += [ f + ".js" ]
 }
 
-html_to_wrapper("html_wrapper_files") {
-  use_js = true
-  in_files = html_files + icons_html_files
-}
+js_files = web_component_files + non_web_component_files
 
 # Files that are passed as input to css_to_wrapper().
 css_files = [ "diagnostics_shared.css" ]
@@ -524,51 +84,25 @@ foreach(f, css_files) {
   css_wrapper_files += [ f + ".js" ]
 }
 
+static_resource_files = [
+  "app_icon_192.png",
+  "index.html",
+]
+
 css_to_wrapper("css_wrapper_files") {
   in_files = css_files
   use_js = true
 }
 
-preprocess_if_expr("preprocess_mojo") {
-  in_folder = mojom_webui_folder
-  in_files = [
-    "input_data_provider.mojom-webui.js",
-    "network_health_provider.mojom-webui.js",
-    "system_data_provider.mojom-webui.js",
-    "system_routine_controller.mojom-webui.js",
-  ]
-  out_folder = preprocess_folder
-  out_manifest = "$target_gen_dir/manifest_preprocess_mojo.json"
-  deps = [ "//ash/webui/diagnostics_ui/mojom:mojom_webui_js" ]
-}
-
-generate_grd("build_grd") {
-  input_files = [
-    "app_icon_192.png",
-    "index.html",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [
-    ":preprocess",
-    ":preprocess_generated",
-    ":preprocess_mojo",
-    "//third_party/d3:build_grdp",
-  ]
-  manifest_files = [
-    "$target_gen_dir/$preprocessed_manifest",
-    "$target_gen_dir/$preprocessed_gen_manifest",
-    "$target_gen_dir/manifest_preprocess_mojo.json",
-  ]
-  grdp_files = [ "$root_gen_dir/third_party/d3/d3_resources.grdp" ]
-  grd_prefix = "ash_diagnostics_app"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files + icons_html_files
+  use_js = true
 }
 
 preprocess_if_expr("preprocess") {
   in_folder = "."
-  in_files = web_component_files + non_web_component_files
+  in_files = js_files
   out_folder = "$target_gen_dir/$preprocessed_dir"
-  out_manifest = "$target_gen_dir/$preprocessed_manifest"
 }
 
 preprocess_if_expr("preprocess_generated") {
@@ -579,5 +113,55 @@ preprocess_if_expr("preprocess_generated") {
   in_folder = target_gen_dir
   in_files = html_wrapper_files + css_wrapper_files
   out_folder = "$target_gen_dir/$preprocessed_dir"
-  out_manifest = "$target_gen_dir/$preprocessed_gen_manifest"
+}
+
+# The WebUI mojo files are generated by mojom:mojom_webui_js into an
+# external directory, so they need to be copied into this project's directory.
+copy("copy_webui_mojo") {
+  deps = [ "../mojom:mojom_webui_js" ]
+  sources = [
+    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/network_health_provider.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/system_data_provider.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom-webui.js",
+  ]
+  outputs = [ "$target_gen_dir/$preprocessed_dir/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocessed_dir"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = js_files + css_wrapper_files + html_wrapper_files + [
+               "input_data_provider.mojom-webui.js",
+               "network_health_provider.mojom-webui.js",
+               "system_data_provider.mojom-webui.js",
+               "system_routine_controller.mojom-webui.js",
+             ]
+
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+
+  extra_deps = [
+    ":copy_webui_mojo",
+    ":preprocess",
+    ":preprocess_generated",
+    "//ash/webui/common/resources:copy_checked_in_dts_files",
+    "//ash/webui/common/resources:generate_definitions",
+  ]
+}
+
+generate_grd("build_grd") {
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = static_resource_files
+  deps = [ ":build_ts" ]
+  public_deps = [ "//third_party/d3:build_grdp" ]
+  grdp_files = [ "$root_gen_dir/third_party/d3/d3_resources.grdp" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  grd_prefix = "ash_diagnostics_app"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }

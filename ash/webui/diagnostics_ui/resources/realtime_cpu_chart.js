@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './d3/d3.min.js';
+import 'chrome://diagnostics/d3/d3.min.js';
 import './diagnostics_shared.css.js';
 import './strings.m.js';
 

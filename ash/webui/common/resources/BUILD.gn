@@ -164,6 +164,7 @@ generate_definitions_js_files = [
   "cr_picture/icons.html.js",
   "cr_picture/png.js",
   "cr_picture/webcam_utils.js",
+  "navigation_shared_vars.css.js",
   "quick_unlock/lock_screen_constants.js",
   "quick_unlock/pin_keyboard_icons.html.js",
 ]
@@ -183,6 +184,9 @@ ts_definitions("generate_definitions") {
 
 checked_in_dts_files = [
   "fake_method_resolver.d.ts",
+  "keyboard_diagram.d.ts",
+  "keyboard_key.d.ts",
+
   "page_toolbar.d.ts",
   "navigation_view_panel.d.ts",
   "navigation_selector.d.ts",
