@@ -194,7 +194,7 @@ def main():
 
     GenerateConfig('config/linux/x64', linux_env)
     GenerateConfig('config/linux-noasm/x64', linux_env, ['-Denable_asm=false'])
-    GenerateConfig('config/linux-noasm/riscv64', linux_env, ['-Denable_asm=false'])
+    GenerateConfig('config/linux-noasm/generic', linux_env, ['-Denable_asm=false'])
 
     GenerateConfig('config/linux/x86', linux_env,
                    ['--cross-file', '../crossfiles/linux32.crossfile'])
