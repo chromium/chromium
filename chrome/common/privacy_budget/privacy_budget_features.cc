@@ -10,8 +10,9 @@
 
 namespace features {
 
-const base::Feature kIdentifiabilityStudy = {"IdentifiabilityStudy",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kIdentifiabilityStudy,
+             "IdentifiabilityStudy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kIdentifiabilityStudyGeneration = {
     &kIdentifiabilityStudy, "Gen", 0};

@@ -30,8 +30,7 @@ using content::NavigationHandle;
 namespace {
 
 // Controls whether UKM metrics are collected for DIPS.
-const base::Feature kDipsUkm CONSTINIT{"DipsUkm",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDipsUkm, "DipsUkm", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // ServerBounceDetectionState gets attached to NavigationHandle (which is a
 // SupportsUserData subclass) to store data needed to detect stateful

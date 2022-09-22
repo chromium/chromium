@@ -228,8 +228,9 @@ class AnnouncementNotificationServiceImpl
       this};
 };
 
-const base::Feature kAnnouncementNotification{
-    "AnnouncementNotificationService", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAnnouncementNotification,
+             "AnnouncementNotificationService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
 void AnnouncementNotificationService::RegisterProfilePrefs(

@@ -120,8 +120,8 @@ extern const ComponentInfo kLacrosDogfoodDevInfo;
 extern const ComponentInfo kLacrosDogfoodBetaInfo;
 extern const ComponentInfo kLacrosDogfoodStableInfo;
 
-extern const base::Feature kLacrosGooglePolicyRollout;
-extern const base::Feature kLacrosForSupervisedUsers;
+BASE_DECLARE_FEATURE(kLacrosGooglePolicyRollout);
+BASE_DECLARE_FEATURE(kLacrosForSupervisedUsers);
 
 // The default update channel to leverage for Lacros when the channel is
 // unknown.

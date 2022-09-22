@@ -12,8 +12,8 @@
 
 namespace features {
 
-extern const base::Feature kCustomizedTabLoadTimeout;
-extern const base::Feature kTabRanker;
+BASE_DECLARE_FEATURE(kCustomizedTabLoadTimeout);
+BASE_DECLARE_FEATURE(kTabRanker);
 
 }  // namespace features
 

@@ -64,8 +64,9 @@ namespace {
 // A feature to control whether or not the profile icons are sent over mojo.
 // This is used to debug crashes that are only seen in release builds.
 // https://crbug.com/1274236
-const base::Feature kAppShimProfileMenuIcons{"AppShimProfileMenuIcons",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAppShimProfileMenuIcons,
+             "AppShimProfileMenuIcons",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A crash key that is used when dumping because of errors when building and
 // verifying the app shim requirement.

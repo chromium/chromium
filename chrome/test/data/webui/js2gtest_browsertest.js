@@ -6,10 +6,12 @@ GEN(`
 #include "base/metrics/field_trial_params.h"
 #include "content/public/test/browser_test.h"
 
-const base::Feature kTestFeature{"TestFeature",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTestFeatureWithParam{"TestFeatureWithParam",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature,
+             "TestFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureWithParam,
+             "TestFeatureWithParam",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kTestFeatureWithParamCount{
     &kTestFeatureWithParam, "count", 5};
 `);

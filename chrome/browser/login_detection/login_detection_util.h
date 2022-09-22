@@ -15,7 +15,7 @@
 namespace login_detection {
 
 // Enables login detection to sited based on various heuristics.
-extern const base::Feature kLoginDetection;
+BASE_DECLARE_FEATURE(kLoginDetection);
 
 // Returns whether login detection should be enabled.
 bool IsLoginDetectionFeatureEnabled();

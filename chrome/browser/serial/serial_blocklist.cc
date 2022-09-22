@@ -60,8 +60,9 @@ constexpr SerialBlocklist::Entry kStaticEntries[] = {
 
 }  // namespace
 
-constexpr base::Feature kWebSerialBlocklist{"WebSerialBlocklist",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kWebSerialBlocklist,
+             "WebSerialBlocklist",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<std::string> kWebSerialBlocklistAdditions{
     &kWebSerialBlocklist, "BlocklistAdditions", /*default_value=*/""};

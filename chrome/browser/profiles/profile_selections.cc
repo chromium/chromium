@@ -8,13 +8,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/profile_metrics/browser_profile_type.h"
 
-const base::Feature kSystemProfileSelectionDefaultNone{
-    "SystemProfileSelectionDefaultNone",
-    base::FeatureState::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSystemProfileSelectionDefaultNone,
+             "SystemProfileSelectionDefaultNone",
+             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kGuestProfileSelectionDefaultNone{
-    "GuestProfileSlectionDefaultNone",
-    base::FeatureState::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kGuestProfileSelectionDefaultNone,
+             "GuestProfileSlectionDefaultNone",
+             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
 ProfileSelections::Builder::Builder()
     : selections_(base::WrapUnique(new ProfileSelections())) {}

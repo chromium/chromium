@@ -8,26 +8,33 @@
 
 namespace share {
 
-const base::Feature kPersistShareHubOnAppSwitch{
-    "PersistShareHubOnAppSwitch", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kScreenshotsForAndroidV2{"ScreenshotsForAndroidV2",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kSharingDesktopScreenshotsEdit{
-    "SharingDesktopScreenshotsEdit", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kUpcomingSharingFeatures{"UpcomingSharingFeatures",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kShareToGoogleCollections{
-    "ShareToGoogleCollections", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kCormorant{"Cormorant", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPersistShareHubOnAppSwitch,
+             "PersistShareHubOnAppSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kScreenshotsForAndroidV2,
+             "ScreenshotsForAndroidV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSharingDesktopScreenshotsEdit,
+             "SharingDesktopScreenshotsEdit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUpcomingSharingFeatures,
+             "UpcomingSharingFeatures",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShareToGoogleCollections,
+             "ShareToGoogleCollections",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCormorant, "Cormorant", base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-const base::Feature kCrowLaunchTab{"ShareCrowLaunchTab",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCrowLaunchTab,
+             "ShareCrowLaunchTab",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-const base::Feature kDesktopSharePreview{"DesktopSharePreview",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDesktopSharePreview,
+             "DesktopSharePreview",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 extern const char kDesktopSharePreviewVariant16[] = "16";
 extern const char kDesktopSharePreviewVariant40[] = "40";
 extern const char kDesktopSharePreviewVariant72[] = "72";

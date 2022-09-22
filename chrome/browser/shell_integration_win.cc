@@ -63,8 +63,9 @@ namespace shell_integration {
 
 namespace {
 
-const base::Feature kWin10UnattendedDefault{"Win10UnattendedDefault",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kWin10UnattendedDefault,
+             "Win10UnattendedDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool CanSetAsDefaultDirectly() {
   return base::win::GetVersion() >= base::win::Version::WIN10 &&

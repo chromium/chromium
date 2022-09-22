@@ -9,8 +9,9 @@
 
 namespace enterprise_connectors {
 
-const base::Feature kFileSystemConnectorEnabled{
-    "FileSystemConnectorsEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kFileSystemConnectorEnabled,
+             "FileSystemConnectorsEnabled",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 FileSystemServiceSettings::FileSystemServiceSettings(
     const base::Value& settings_value,

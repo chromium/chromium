@@ -27,7 +27,7 @@ namespace features {
 //
 // Enabling the feature doesn't automatically make this client part of the study
 // either.
-extern const base::Feature kIdentifiabilityStudy;
+BASE_DECLARE_FEATURE(kIdentifiabilityStudy);
 
 // Each time the key study parameters change, the study generation also
 // increments. Reporting the study generation alongside metrics allows the data

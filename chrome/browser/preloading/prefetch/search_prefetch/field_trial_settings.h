@@ -8,9 +8,9 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 
-extern const base::Feature kSearchPrefetchServicePrefetching;
+BASE_DECLARE_FEATURE(kSearchPrefetchServicePrefetching);
 
-extern const base::Feature kSearchPrefetchBlockBeforeHeaders;
+BASE_DECLARE_FEATURE(kSearchPrefetchBlockBeforeHeaders);
 
 // Whether matching prefetches can block navigation until they are determined to
 // be serve-able or not based on headers.
@@ -38,7 +38,7 @@ size_t SearchPrefetchMaxCacheEntries();
 // eligible to be served.
 base::TimeDelta SearchPrefetchBlockHeadStart();
 
-extern const base::Feature kSearchNavigationPrefetch;
+BASE_DECLARE_FEATURE(kSearchNavigationPrefetch);
 
 // An experimental feature to measure if starting search prefetches at
 // navigation start provides benefit over the typical navigation flow.

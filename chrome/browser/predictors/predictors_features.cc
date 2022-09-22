@@ -10,28 +10,32 @@
 namespace features {
 
 // Whether local predictions should be used to make preconnect predictions.
-const base::Feature kLoadingPredictorUseLocalPredictions{
-    "LoadingPredictorUseLocalPredictions", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kLoadingPredictorUseLocalPredictions,
+             "LoadingPredictorUseLocalPredictions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Modifies loading predictor so that it only learns about subresources and
 // origins that are high priority.
-const base::Feature kLoadingOnlyLearnHighPriorityResources{
-    "LoadingOnlyLearnHighPriorityResources", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kLoadingOnlyLearnHighPriorityResources,
+             "LoadingOnlyLearnHighPriorityResources",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Configures the loading predictor table size and other base parameters.
-const base::Feature kLoadingPredictorTableConfig{
-    "LoadingPredictorTableConfig", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLoadingPredictorTableConfig,
+             "LoadingPredictorTableConfig",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Modifies loading predictor so that the predictions also contain origins of
 // the redirect target of the navigation.
-const base::Feature kLoadingPreconnectToRedirectTarget{
-    "LoadingPreconnectToRedirectTarget", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLoadingPreconnectToRedirectTarget,
+             "LoadingPreconnectToRedirectTarget",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Modifies loading predictor so that the value of the |always_access_network|
 // attribute is not used when computing the predicting score for an origin.
-const base::Feature kLoadingPredictorDisregardAlwaysAccessesNetwork{
-    "LoadingPredictorDisregardAlwaysAccessesNetwork",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLoadingPredictorDisregardAlwaysAccessesNetwork,
+             "LoadingPredictorDisregardAlwaysAccessesNetwork",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureState
     kLoadingPredictorUseOptimizationGuideDefaultFeatureState =
@@ -43,9 +47,9 @@ const base::FeatureState
 
 // Modifies loading predictor so that it can also use predictions coming from
 // the optimization guide.
-const base::Feature kLoadingPredictorUseOptimizationGuide{
-    "LoadingPredictorUseOptimizationGuide",
-    kLoadingPredictorUseOptimizationGuideDefaultFeatureState};
+BASE_FEATURE(kLoadingPredictorUseOptimizationGuide,
+             "LoadingPredictorUseOptimizationGuide",
+             kLoadingPredictorUseOptimizationGuideDefaultFeatureState);
 
 const base::FeatureState kLoadingPredictorPrefetchDefaultFeatureState =
 #if BUILDFLAG(IS_ANDROID)
@@ -56,8 +60,9 @@ const base::FeatureState kLoadingPredictorPrefetchDefaultFeatureState =
 
 // Modifies loading predictor so that it does prefetches of subresources instead
 // of preconnects.
-const base::Feature kLoadingPredictorPrefetch{
-    "LoadingPredictorPrefetch", kLoadingPredictorPrefetchDefaultFeatureState};
+BASE_FEATURE(kLoadingPredictorPrefetch,
+             "LoadingPredictorPrefetch",
+             kLoadingPredictorPrefetchDefaultFeatureState);
 
 const base::FeatureParam<PrefetchSubresourceType>::Option
     kPrefetchSubresourceTypeParamOptions[] = {
@@ -70,9 +75,9 @@ const base::FeatureParam<PrefetchSubresourceType>
         &kLoadingPredictorPrefetch, "subresource_type",
         PrefetchSubresourceType::kAll, &kPrefetchSubresourceTypeParamOptions};
 
-const base::Feature kLoadingPredictorInflightPredictiveActions{
-    "kLoadingPredictorInflightPredictiveActions",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kLoadingPredictorInflightPredictiveActions,
+             "kLoadingPredictorInflightPredictiveActions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool ShouldUseLocalPredictions() {
   return base::FeatureList::IsEnabled(kLoadingPredictorUseLocalPredictions);

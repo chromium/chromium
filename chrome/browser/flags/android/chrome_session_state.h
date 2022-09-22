@@ -16,7 +16,7 @@ namespace chrome {
 namespace android {
 
 // TODO(b/182286787): A/B experiment monitoring session/activity resume order.
-extern const base::Feature kFixedUmaSessionResumeOrder;
+BASE_DECLARE_FEATURE(kFixedUmaSessionResumeOrder);
 
 enum CustomTabsVisibilityHistogram {
   VISIBLE_CUSTOM_TAB,

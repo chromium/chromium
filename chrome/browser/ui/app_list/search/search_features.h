@@ -10,7 +10,7 @@
 namespace search_features {
 
 // Enables cloud game search in the launcher.
-extern const base::Feature kLauncherGameSearch;
+BASE_DECLARE_FEATURE(kLauncherGameSearch);
 
 bool IsLauncherGameSearchEnabled();
 

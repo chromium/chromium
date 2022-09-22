@@ -24,7 +24,10 @@
 namespace ash {
 namespace enhanced_network_tts {
 
-constexpr base::Feature EnhancedNetworkTtsImpl::kOverrideParams;
+BASE_FEATURE(kEnhancedNetworkTtsOverride,
+             "EnhancedNetworkTtsOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<std::string> EnhancedNetworkTtsImpl::kApiKey;
 
 EnhancedNetworkTtsImpl::ServerRequest::ServerRequest(

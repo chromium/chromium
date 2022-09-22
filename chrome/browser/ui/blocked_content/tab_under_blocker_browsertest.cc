@@ -45,8 +45,7 @@
 class TabUnderBlockerBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   TabUnderBlockerBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        TabUnderNavigationThrottle::kBlockTabUnders);
+    scoped_feature_list_.InitAndEnableFeature(kBlockTabUnders);
 
     provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,

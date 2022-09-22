@@ -10,8 +10,9 @@
 
 namespace prerender_utils {
 
-const base::Feature kHidePrefetchParameter{"HidePrefetchParameter",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kHidePrefetchParameter,
+             "HidePrefetchParameter",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kDefaultSearchEngineMetricSuffix[] = "DefaultSearchEngine";
 const char kDirectUrlInputMetricSuffix[] = "DirectURLInput";

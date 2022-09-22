@@ -7,6 +7,6 @@
 
 #include "base/feature_list.h"
 
-extern const base::Feature kDeleteSessionOnlyDataOnStartup;
+BASE_DECLARE_FEATURE(kDeleteSessionOnlyDataOnStartup);
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSIONS_FEATURES_H_

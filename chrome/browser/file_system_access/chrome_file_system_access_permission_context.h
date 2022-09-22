@@ -32,7 +32,7 @@ class BrowserContext;
 
 namespace features {
 // Enables persistent permissions for the File System Access API.
-extern const base::Feature kFileSystemAccessPersistentPermissions;
+BASE_DECLARE_FEATURE(kFileSystemAccessPersistentPermissions);
 }  // namespace features
 
 // Chrome implementation of FileSystemAccessPermissionContext. This class

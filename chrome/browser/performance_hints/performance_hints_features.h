@@ -13,11 +13,11 @@ namespace performance_hints {
 namespace features {
 
 // Exposed for testing.
-extern const base::Feature kPerformanceHintsObserver;
-extern const base::Feature kPerformanceHintsTreatUnknownAsFast;
-extern const base::Feature kPerformanceHintsHandleRewrites;
-extern const base::Feature kContextMenuPerformanceInfo;
-extern const base::Feature kContextMenuPerformanceInfoAndRemoteHintFetching;
+BASE_DECLARE_FEATURE(kPerformanceHintsObserver);
+BASE_DECLARE_FEATURE(kPerformanceHintsTreatUnknownAsFast);
+BASE_DECLARE_FEATURE(kPerformanceHintsHandleRewrites);
+BASE_DECLARE_FEATURE(kContextMenuPerformanceInfo);
+BASE_DECLARE_FEATURE(kContextMenuPerformanceInfoAndRemoteHintFetching);
 
 // Returns true if PerformanceHintsObserver should be added as a tab helper and
 // fetch performance hints.

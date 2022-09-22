@@ -192,8 +192,8 @@ TEST(AboutFlagsTest, ScopedFeatureEntriesRestoresFeatureEntries) {
   EXPECT_GT(old_entries.size(), 0U);
   const char* first_feature_name = old_entries[0].internal_name;
   {
-    const base::Feature kTestFeature1{"FeatureName1",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
+    static BASE_FEATURE(kTestFeature1, "FeatureName1",
+                        base::FEATURE_ENABLED_BY_DEFAULT);
     testing::ScopedFeatureEntries feature_entries(
         {{"feature-1", "", "", flags_ui::FlagsState::GetCurrentPlatform(),
           FEATURE_VALUE_TYPE(kTestFeature1)}});

@@ -17,8 +17,9 @@ const char kDefaultBaseURL[] =
 
 // A dummy feature that can be used to specify a variation param that overrides
 // the default API URL.
-const base::Feature kKidsManagementAPIFeature{
-    "KidsManagementAPI", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kKidsManagementAPIFeature,
+             "KidsManagementAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kURLParamName[] = "kids_management_api_url";
 

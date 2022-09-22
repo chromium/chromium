@@ -36,8 +36,9 @@ namespace app_list {
 const int kEmptyTotal = -1;
 const int kTopRank = 1;
 
-const base::Feature kUkmAppLaunchEventLogging{"UkmAppLaunchEventLogging",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUkmAppLaunchEventLogging,
+             "UkmAppLaunchEventLogging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Keys for Arc app specific preferences. Defined in
 // chrome/browser/ui/app_list/arc/arc_app_list_prefs.cc.

@@ -140,8 +140,9 @@ BOOL CALLBACK AllHwndCollector(HWND hwnd, LPARAM param) {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
-const base::Feature kWindowCaptureMacV2{"WindowCaptureMacV2",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kWindowCaptureMacV2,
+             "WindowCaptureMacV2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 }  // namespace

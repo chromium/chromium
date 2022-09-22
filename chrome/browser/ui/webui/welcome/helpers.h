@@ -36,7 +36,7 @@ bool HasModulesToShow(Profile* profile);
 base::DictionaryValue GetModules(Profile* profile);
 
 // Exposed for testing.
-extern const base::Feature kForceEnabled;
+BASE_DECLARE_FEATURE(kForceEnabled);
 
 bool CanShowGoogleAppModuleForTesting(const policy::PolicyMap& policies);
 bool CanShowNTPBackgroundModuleForTesting(const policy::PolicyMap& policies,

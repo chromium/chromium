@@ -30,8 +30,9 @@ constexpr static char kSuggestionDomain[] = "a.test";
 constexpr static char16_t kSearchDomain16[] = u"a.test";
 
 // Copy of the feature here to test the actual feature string.
-const base::Feature kNavigationLatencyAblation{
-    "NavigationLatencyAblation", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNavigationLatencyAblation,
+             "NavigationLatencyAblation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
 class LatencyAblationBrowserTest : public InProcessBrowserTest {

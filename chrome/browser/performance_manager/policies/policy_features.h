@@ -21,25 +21,25 @@ namespace features {
 
 #if BUILDFLAG(IS_WIN)
 // The EmptyWorkingSet feature as used on Windows.
-extern const base::Feature kEmptyWorkingSet;
+BASE_DECLARE_FEATURE(kEmptyWorkingSet);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The trim on Memory Pressure feature will trim a process nodes working set
 // according to the parameters below.
-extern const base::Feature kTrimOnMemoryPressure;
+BASE_DECLARE_FEATURE(kTrimOnMemoryPressure);
 
 // If enabled we will periodically walk procfs looking for ARC++ processes to
 // trim under memory pressure.
-extern const base::Feature kTrimArcOnMemoryPressure;
+BASE_DECLARE_FEATURE(kTrimArcOnMemoryPressure);
 
 // If enabled we will try to trim ARCVM's crosvm under memory pressure.
-extern const base::Feature kTrimArcVmOnMemoryPressure;
+BASE_DECLARE_FEATURE(kTrimArcVmOnMemoryPressure);
 
 // The trim on freeze feature will trim the working set of a process when all
 // frames are frozen.
-extern const base::Feature kTrimOnFreeze;
+BASE_DECLARE_FEATURE(kTrimOnFreeze);
 
 // The graph walk backoff is the _minimum_ backoff time between graph walks
 // under moderate pressure in seconds. By default we will not walk more than

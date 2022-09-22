@@ -18,7 +18,7 @@ class GURL;
 
 namespace safe_browsing {
 
-extern const base::Feature kSettingsResetPrompt;
+BASE_DECLARE_FEATURE(kSettingsResetPrompt);
 
 // Encapsulates the state of the reset prompt experiment as well as
 // associated data.

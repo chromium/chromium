@@ -50,14 +50,14 @@ bool IsInterstitialReload(const GURL& current_url,
          stored_redirect_chain[stored_redirect_chain.size() - 1] == current_url;
 }
 
-const base::Feature kOptimizeLookalikeUrlNavigationThrottle{
-    "OptimizeLookalikeUrlNavigationThrottle",
+BASE_FEATURE(kOptimizeLookalikeUrlNavigationThrottle,
+             "OptimizeLookalikeUrlNavigationThrottle",
 #if BUILDFLAG(IS_ANDROID)
-    base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-    base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 // Records latency histograms for an invocation of PerformChecks() just before
 // it will return a value of PROCEED.

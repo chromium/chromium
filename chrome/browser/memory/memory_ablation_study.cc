@@ -40,8 +40,9 @@ enum class UXStudy1Arm {
 };
 
 // The name of the Finch study that turns on the experiment.
-const base::Feature kMemoryAblationStudy{"MemoryAblationStudy",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMemoryAblationStudy,
+             "MemoryAblationStudy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The total amount of memory to ablate in MB.
 const char kAblationSizeMb[] = "ablation-size-mb";

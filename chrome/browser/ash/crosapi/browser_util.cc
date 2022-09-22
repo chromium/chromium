@@ -247,13 +247,15 @@ const ComponentInfo kLacrosDogfoodStableInfo = {
     "lacros-dogfood-stable", "ehpjbaiafkpkmhjocnenjbbhmecnfcjb"};
 
 // A kill switch for lacros chrome apps.
-const base::Feature kLacrosDisableChromeApps{"LacrosDisableChromeApps",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLacrosDisableChromeApps,
+             "LacrosDisableChromeApps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When this feature is enabled, Lacros is allowed to roll out by policy to
 // Googlers.
-const base::Feature kLacrosGooglePolicyRollout{
-    "LacrosGooglePolicyRollout", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kLacrosGooglePolicyRollout,
+             "LacrosGooglePolicyRollout",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Makes LaCrOS allowed for Family Link users.
 // With this feature disabled LaCrOS cannot be enabled for Family Link users.
@@ -261,8 +263,9 @@ const base::Feature kLacrosGooglePolicyRollout{
 // launch switches.
 // Note: Family Link users do not have access to chrome://flags and this feature
 // flag is meant to help with development and testing.
-const base::Feature kLacrosForSupervisedUsers{
-    "LacrosForSupervisedUsers", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLacrosForSupervisedUsers,
+             "LacrosForSupervisedUsers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const Channel kLacrosDefaultChannel = Channel::DEV;
 

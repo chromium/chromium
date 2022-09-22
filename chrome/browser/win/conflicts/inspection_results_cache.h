@@ -41,8 +41,9 @@ enum class ReadCacheResult {
   kMaxValue = kFailInvalidMD5
 };
 
-constexpr base::Feature kInspectionResultsCache{
-    "InspectionResultsCache", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kInspectionResultsCache,
+             "InspectionResultsCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The InspectionResultsCache maps ModuleInfoKey to a ModuleInspectionResult.
 // The uint32_t is a time stamp that keep tracks of when the inspection result

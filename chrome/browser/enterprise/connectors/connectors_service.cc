@@ -139,11 +139,13 @@ absl::optional<std::string> GetDeviceDMToken() {
 #endif
 }  // namespace
 
-const base::Feature kEnterpriseConnectorsEnabled{
-    "EnterpriseConnectorsEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnterpriseConnectorsEnabled,
+             "EnterpriseConnectorsEnabled",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kEnterpriseConnectorsEnabledOnMGS{
-    "EnterpriseConnectorsEnabledOnMGS", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnterpriseConnectorsEnabledOnMGS,
+             "EnterpriseConnectorsEnabledOnMGS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // --------------------------------
 // ConnectorsService implementation

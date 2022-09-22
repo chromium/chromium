@@ -12,8 +12,9 @@ namespace crosapi {
 
 namespace {
 // A kill switch for lacros hosted apps.
-const base::Feature kStandaloneBrowserDisableHostedApps{
-    "StandaloneBrowserDisableHostedApps", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kStandaloneBrowserDisableHostedApps,
+             "StandaloneBrowserDisableHostedApps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

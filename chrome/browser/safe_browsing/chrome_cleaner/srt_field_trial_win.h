@@ -57,7 +57,7 @@ enum PromptTypeHistogramValue {
 
 // Feature, parameters of which control which software reporter and cleanup tool
 // versions will be downloaded. When not enabled, default versions will be used.
-extern const base::Feature kChromeCleanupDistributionFeature;
+BASE_DECLARE_FEATURE(kChromeCleanupDistributionFeature);
 
 // A "tag" value to be sent with the component update request in
 // SwReporterInstallerPolicy, controlling which version of the reporter

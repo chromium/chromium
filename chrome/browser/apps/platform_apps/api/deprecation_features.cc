@@ -7,7 +7,8 @@
 namespace chrome_apps::features {
 
 // Deprecates the Media Galleries Chrome App APIs.
-const base::Feature kDeprecateMediaGalleriesApis = {
-    "DeprecateMediaGalleriesApis", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDeprecateMediaGalleriesApis,
+             "DeprecateMediaGalleriesApis",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace chrome_apps::features

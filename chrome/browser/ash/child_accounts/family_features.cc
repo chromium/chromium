@@ -6,8 +6,9 @@
 
 namespace ash {
 
-const base::Feature kFamilyLinkOobeHandoff{"FamilyLinkOobeHandoff",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kFamilyLinkOobeHandoff,
+             "FamilyLinkOobeHandoff",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsFamilyLinkOobeHandoffEnabled() {
   return base::FeatureList::IsEnabled(kFamilyLinkOobeHandoff);

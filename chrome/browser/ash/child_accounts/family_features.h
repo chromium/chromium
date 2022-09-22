@@ -10,7 +10,7 @@
 namespace ash {
 
 // Enables showing handoff screen to Family Link user during OOBE.
-extern const base::Feature kFamilyLinkOobeHandoff;
+BASE_DECLARE_FEATURE(kFamilyLinkOobeHandoff);
 
 bool IsFamilyLinkOobeHandoffEnabled();
 

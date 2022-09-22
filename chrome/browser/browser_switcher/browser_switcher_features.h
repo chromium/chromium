@@ -7,6 +7,6 @@
 
 #include "base/feature_list.h"
 
-extern const base::Feature kBrowserSwitcherNoneIsGreylist;
+BASE_DECLARE_FEATURE(kBrowserSwitcherNoneIsGreylist);
 
 #endif  // CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_FEATURES_H_

@@ -19,23 +19,26 @@ namespace features {
 
 #if BUILDFLAG(IS_WIN)
 // Empty the working set of processes in which all frames are frozen.
-const base::Feature kEmptyWorkingSet{"EmptyWorkingSet",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEmptyWorkingSet,
+             "EmptyWorkingSet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-const base::Feature kTrimOnMemoryPressure{"TrimOnMemoryPressure",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTrimOnMemoryPressure,
+             "TrimOnMemoryPressure",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kTrimArcOnMemoryPressure{"TrimArcOnMemoryPressure",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTrimArcOnMemoryPressure,
+             "TrimArcOnMemoryPressure",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kTrimArcVmOnMemoryPressure{
-    "TrimArcVmOnMemoryPressure", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTrimArcVmOnMemoryPressure,
+             "TrimArcVmOnMemoryPressure",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kTrimOnFreeze{"TrimOnFreeze",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTrimOnFreeze, "TrimOnFreeze", base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kGraphWalkBackoffTimeSec = {
     &kTrimOnMemoryPressure, "GraphWalkBackoffTimeSec", 180};

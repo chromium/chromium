@@ -508,8 +508,6 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_IvyBridge) {
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_IvyBridge_HostAndGuest) {
-  const base::Feature kCWPCollectionOnHostAndGuest{
-      "CWPCollectionOnHostAndGuest", base::FEATURE_DISABLED_BY_DEFAULT};
   feature_list_.InitAndEnableFeature(kCWPCollectionOnHostAndGuest);
   CPUIdentity cpuid;
   cpuid.arch = "x86_64";
@@ -627,8 +625,6 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tigerlake) {
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tigerlake_HostAndGuest) {
-  const base::Feature kCWPCollectionOnHostAndGuest{
-      "CWPCollectionOnHostAndGuest", base::FEATURE_DISABLED_BY_DEFAULT};
   feature_list_.InitAndEnableFeature(kCWPCollectionOnHostAndGuest);
   CPUIdentity cpuid;
   cpuid.arch = "x86_64";
@@ -764,8 +760,6 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnArch_Arm64) {
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnArch_Arm64_HostAndGuest) {
-  const base::Feature kCWPCollectionOnHostAndGuest{
-      "CWPCollectionOnHostAndGuest", base::FEATURE_DISABLED_BY_DEFAULT};
   feature_list_.InitAndEnableFeature(kCWPCollectionOnHostAndGuest);
   CPUIdentity cpuid;
   cpuid.arch = "aarch64";
@@ -783,8 +777,6 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnArch_Arm64_HostAndGuest) {
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnArch_Arm64_ETM) {
-  const base::Feature kCWPCollectsETM{"CWPCollectsETM",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
   feature_list_.InitAndEnableFeature(kCWPCollectsETM);
   CPUIdentity cpuid;
   cpuid.arch = "aarch64";

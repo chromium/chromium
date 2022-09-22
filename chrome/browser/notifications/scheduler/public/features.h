@@ -11,7 +11,7 @@ namespace notifications {
 namespace features {
 
 // The feature to enable NotificationScheduleService.
-extern const base::Feature kNotificationScheduleService;
+BASE_DECLARE_FEATURE(kNotificationScheduleService);
 
 }  // namespace features
 

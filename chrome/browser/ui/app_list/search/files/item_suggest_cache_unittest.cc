@@ -138,7 +138,7 @@ class ItemSuggestCacheTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   ScopedFeatureList scoped_feature_list_;
-  base::Feature feature_ = ItemSuggestCache::kExperiment;
+  const base::Feature& feature_ = kLauncherItemSuggest;
 
   const base::HistogramTester histogram_tester_;
 };

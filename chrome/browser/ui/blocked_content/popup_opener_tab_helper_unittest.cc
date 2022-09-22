@@ -437,8 +437,7 @@ class BlockTabUnderTest : public PopupOpenerTabHelperTest {
  public:
   BlockTabUnderTest() {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitAndEnableFeature(
-        TabUnderNavigationThrottle::kBlockTabUnders);
+    scoped_feature_list_->InitAndEnableFeature(kBlockTabUnders);
   }
 
   BlockTabUnderTest(const BlockTabUnderTest&) = delete;
@@ -751,8 +750,7 @@ TEST_F(BlockTabUnderTest, OnlyCreateThrottleForPrimaryMainframe) {
 class BlockTabUnderDisabledTest : public BlockTabUnderTest {
  public:
   BlockTabUnderDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        TabUnderNavigationThrottle::kBlockTabUnders);
+    scoped_feature_list_.InitAndDisableFeature(kBlockTabUnders);
   }
 
  private:

@@ -20,9 +20,9 @@
 namespace reporting {
 namespace {
 
-const base::Feature kEncryptedReportingManualTestHeartbeatEvent{
-    "EncryptedReportingManualTestHeartbeatEvent",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEncryptedReportingManualTestHeartbeatEvent,
+             "EncryptedReportingManualTestHeartbeatEvent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

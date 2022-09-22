@@ -10,13 +10,16 @@
 namespace performance_hints {
 namespace features {
 
-const base::Feature kPerformanceHintsObserver{
-    "PerformanceHintsObserver", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kPerformanceHintsTreatUnknownAsFast{
-    "PerformanceHintsTreatUnknownAsFast", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPerformanceHintsObserver,
+             "PerformanceHintsObserver",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPerformanceHintsTreatUnknownAsFast,
+             "PerformanceHintsTreatUnknownAsFast",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kPerformanceHintsHandleRewrites{
-    "PerformanceHintsHandleRewrites", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPerformanceHintsHandleRewrites,
+             "PerformanceHintsHandleRewrites",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<std::string> kRewriteConfig{
     &kPerformanceHintsHandleRewrites, "rewrite_config",
     "www.google.com/url?url"};
@@ -26,8 +29,9 @@ constexpr base::FeatureParam<bool> kUseFastHostHints{
 constexpr base::FeatureParam<bool> kUseLinkPerformanceHints{
     &kPerformanceHintsObserver, "use_link_performance_hints", false};
 
-const base::Feature kContextMenuPerformanceInfo{
-    "ContextMenuPerformanceInfo", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kContextMenuPerformanceInfo,
+             "ContextMenuPerformanceInfo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsPerformanceHintsObserverEnabled() {
   return IsContextMenuPerformanceInfoEnabled() ||

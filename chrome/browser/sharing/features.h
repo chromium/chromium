@@ -9,7 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 
 // Feature flag for matching device expiration to pulse interval.
-extern const base::Feature kSharingMatchPulseInterval;
+BASE_DECLARE_FEATURE(kSharingMatchPulseInterval);
 
 // The delta from the pulse interval in hours after which a device is considered
 // expired, for Desktop devices. Chrome on Desktop is expected to update the
@@ -25,13 +25,13 @@ extern const base::FeatureParam<int> kSharingPulseDeltaDesktopHours;
 extern const base::FeatureParam<int> kSharingPulseDeltaAndroidHours;
 
 // Feature flag for configuring the timeout in the sharing message bridge.
-extern const base::Feature kSharingMessageBridgeTimeout;
+BASE_DECLARE_FEATURE(kSharingMessageBridgeTimeout);
 extern const base::FeatureParam<int> kSharingMessageBridgeTimeoutSeconds;
 
 // Feature flag for sending sharing message via Sync.
-extern const base::Feature kSharingSendViaSync;
+BASE_DECLARE_FEATURE(kSharingSendViaSync);
 
 // Feature flag for prefer sending sharing message using VAPID.
-extern const base::Feature kSharingPreferVapid;
+BASE_DECLARE_FEATURE(kSharingPreferVapid);
 
 #endif  // CHROME_BROWSER_SHARING_FEATURES_H_

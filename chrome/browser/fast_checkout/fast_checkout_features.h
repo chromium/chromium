@@ -14,11 +14,11 @@ namespace features {
 #if BUILDFLAG(IS_ANDROID)
 // Feature that enables Fast Checkout experiences on Android to help users
 // speed up the checkout process.
-extern const base::Feature kFastCheckout;
+BASE_DECLARE_FEATURE(kFastCheckout);
 
 // Force enables fast checkout capabilities for every domain, regardless of
 // the server response. The flag is meant for end-to-end testing purposes only.
-extern const base::Feature kForceEnableFastCheckoutCapabilities;
+BASE_DECLARE_FEATURE(kForceEnableFastCheckoutCapabilities);
 
 // Enables consentless execution and disables fast checkout on any domain not
 // supporting consentless execution.

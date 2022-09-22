@@ -30,8 +30,9 @@ namespace chrome {
 namespace android {
 
 // TODO(b/182286787): A/B experiment monitoring session/activity resume order.
-const base::Feature kFixedUmaSessionResumeOrder{
-    "FixedUmaSessionResumeOrder", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kFixedUmaSessionResumeOrder,
+             "FixedUmaSessionResumeOrder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 CustomTabsVisibilityHistogram GetCustomTabsVisibleValue(
     ActivityType activity_type) {

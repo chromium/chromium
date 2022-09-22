@@ -11,7 +11,7 @@ namespace video_tutorials {
 namespace features {
 
 // Main feature flag for the video tutorials feature.
-extern const base::Feature kVideoTutorials;
+BASE_DECLARE_FEATURE(kVideoTutorials);
 
 }  // namespace features
 

@@ -46,8 +46,9 @@ constexpr char kTabReactivatedPrefix[] = "TabReactivated-";
 constexpr char kTabOpenedPrefix[] = "TabOpened-";
 
 // Enables Hashed Logging for CrOSAction.
-const base::Feature kCrOSActionStructuredMetrics{
-    "CrOSActionStructuredMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCrOSActionStructuredMetrics,
+             "CrOSActionStructuredMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Represents the events of the CrOSActionRecorder.
 // This enum is used for a histogram and should not be renumbered and the old

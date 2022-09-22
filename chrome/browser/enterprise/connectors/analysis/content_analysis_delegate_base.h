@@ -11,7 +11,7 @@
 
 namespace enterprise_connectors {
 
-extern const base::Feature kBypassJustificationEnabled;
+BASE_DECLARE_FEATURE(kBypassJustificationEnabled);
 
 class ContentAnalysisDelegateBase {
  public:

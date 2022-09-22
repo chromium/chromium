@@ -36,8 +36,9 @@ const bool kDefaultSkipInBackground = true;
 
 namespace features {
 // Feature to control preconnect to search.
-const base::Feature kPreconnectToSearch{"PreconnectToSearch",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPreconnectToSearch,
+             "PreconnectToSearch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 SearchEnginePreconnector::SearchEnginePreconnector(

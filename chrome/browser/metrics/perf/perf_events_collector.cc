@@ -31,15 +31,17 @@
 
 namespace metrics {
 
+BASE_FEATURE(kCWPCollectionOnHostAndGuest,
+             "CWPCollectionOnHostAndGuest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCWPCollectsETM,
+             "CWPCollectsETM",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 const char kCWPFieldTrialName[] = "ChromeOSWideProfilingCollection";
-
-const base::Feature kCWPCollectionOnHostAndGuest{
-    "CWPCollectionOnHostAndGuest", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kCWPCollectsETM{"CWPCollectsETM",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Name the histogram that represents the success and various failure modes for
 // parsing CPU frequencies.

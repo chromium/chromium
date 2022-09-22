@@ -103,8 +103,9 @@ void LogTabUnderAttempt(content::NavigationHandle* handle) {
 
 }  // namespace
 
-const base::Feature TabUnderNavigationThrottle::kBlockTabUnders{
-    "BlockTabUnders", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBlockTabUnders,
+             "BlockTabUnders",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
 std::unique_ptr<content::NavigationThrottle>

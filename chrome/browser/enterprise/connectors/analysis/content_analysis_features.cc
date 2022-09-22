@@ -6,7 +6,8 @@
 
 namespace enterprise_connectors {
 
-const base::Feature kLocalContentAnalysisEnabled{
-    "LocalContentAnalysisEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLocalContentAnalysisEnabled,
+             "LocalContentAnalysisEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace enterprise_connectors

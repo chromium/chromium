@@ -8,10 +8,7 @@
 
 namespace screentime {
 
-const base::Feature kScreenTime{
-    "ScreenTime",
-    base::FEATURE_DISABLED_BY_DEFAULT,
-};
+BASE_FEATURE(kScreenTime, "ScreenTime", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsScreenTimeEnabled() {
   if (__builtin_available(macOS 12.1, *)) {

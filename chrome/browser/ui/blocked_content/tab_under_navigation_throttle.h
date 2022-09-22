@@ -18,6 +18,9 @@ constexpr char kBlockTabUnderFormatMessage[] =
     "Chrome stopped this site from navigating to %s, see "
     "https://www.chromestatus.com/feature/5675755719622656 for more details.";
 
+// TODO(https://crbug.com/954178): Remove this.
+BASE_DECLARE_FEATURE(kBlockTabUnders);
+
 // This class blocks navigations that we've classified as tab-unders. It does so
 // by communicating with the popup opener tab helper.
 //
@@ -40,9 +43,6 @@ constexpr char kBlockTabUnderFormatMessage[] =
 //  legitimate for some cases (like auth).
 class TabUnderNavigationThrottle : public content::NavigationThrottle {
  public:
-  // TODO(https://crbug.com/954178): Remove this.
-  static const base::Feature kBlockTabUnders;
-
   // This enum backs a histogram. Update enums.xml if you make any updates, and
   // put new entries before |kLast|.
   enum class Action {

@@ -7,7 +7,7 @@
 
 #include "base/feature_list.h"
 
-extern const base::Feature kWindows10CustomTitlebar;
+BASE_DECLARE_FEATURE(kWindows10CustomTitlebar);
 
 // Returns whether we should custom draw the titlebar even if we're using the
 // native frame.

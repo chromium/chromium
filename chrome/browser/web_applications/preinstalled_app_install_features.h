@@ -14,18 +14,18 @@ class Profile;
 
 namespace web_app {
 
-extern const base::Feature kMigrateDefaultChromeAppToWebAppsGSuite;
+BASE_DECLARE_FEATURE(kMigrateDefaultChromeAppToWebAppsGSuite);
 
-extern const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite;
+BASE_DECLARE_FEATURE(kMigrateDefaultChromeAppToWebAppsNonGSuite);
 
-extern const base::Feature kDefaultCalculatorWebApp;
+BASE_DECLARE_FEATURE(kDefaultCalculatorWebApp);
 
 #if BUILDFLAG(IS_CHROMEOS)
-extern const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers;
+BASE_DECLARE_FEATURE(kAllowDefaultWebAppMigrationForChromeOsManagedUsers);
 
-extern const base::Feature kCursiveManagedStylusPreinstall;
+BASE_DECLARE_FEATURE(kCursiveManagedStylusPreinstall);
 
-extern const base::Feature kMessagesPreinstall;
+BASE_DECLARE_FEATURE(kMessagesPreinstall);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Returns the base::Feature in |kPreinstalledAppInstallFeatures| that

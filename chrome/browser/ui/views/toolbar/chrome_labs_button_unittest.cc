@@ -38,14 +38,11 @@ constexpr char kFakeGaiaId[] = "1234567890";
 #endif
 
 const char kFirstTestFeatureId[] = "feature-1";
-const base::Feature kTestFeature1{"FeatureName1",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature1, "FeatureName1", base::FEATURE_ENABLED_BY_DEFAULT);
 const char kSecondTestFeatureId[] = "feature-2";
-const base::Feature kTestFeature2{"FeatureName2",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature2, "FeatureName2", base::FEATURE_DISABLED_BY_DEFAULT);
 const char kExpiredFlagTestFeatureId[] = "expired-feature";
-const base::Feature kTestFeatureExpired{"Expired",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeatureExpired, "Expired", base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

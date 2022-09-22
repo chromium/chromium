@@ -7,20 +7,25 @@
 
 namespace apps::features {
 
-const base::Feature kLinkCapturingUiUpdate{"LinkCapturingUiUpdate",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLinkCapturingUiUpdate,
+             "LinkCapturingUiUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kLinkCapturingInfoBar{"LinkCapturingInfoBar",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLinkCapturingInfoBar,
+             "LinkCapturingInfoBar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kIntentChipSkipsPicker{"IntentChipSkipsPicker",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kIntentChipSkipsPicker,
+             "IntentChipSkipsPicker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kIntentChipAppIcon{"AppIconInIntentChip",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kIntentChipAppIcon,
+             "AppIconInIntentChip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kLinkCapturingAutoDisplayIntentPicker{
-    "LinkCapturingAutoDisplayIntentPicker", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLinkCapturingAutoDisplayIntentPicker,
+             "LinkCapturingAutoDisplayIntentPicker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool LinkCapturingUiUpdateEnabled() {
   return base::FeatureList::IsEnabled(kLinkCapturingUiUpdate);

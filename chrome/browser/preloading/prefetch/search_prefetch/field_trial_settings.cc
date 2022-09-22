@@ -9,11 +9,13 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 
-const base::Feature kSearchPrefetchServicePrefetching{
-    "SearchPrefetchServicePrefetching", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSearchPrefetchServicePrefetching,
+             "SearchPrefetchServicePrefetching",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kSearchPrefetchBlockBeforeHeaders{
-    "SearchPrefetchBlockBeforeHeaders", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSearchPrefetchBlockBeforeHeaders,
+             "SearchPrefetchBlockBeforeHeaders",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool SearchPrefetchBlockBeforeHeadersIsEnabled() {
   return base::FeatureList::IsEnabled(kSearchPrefetchBlockBeforeHeaders);
@@ -56,8 +58,9 @@ base::TimeDelta SearchPrefetchBlockHeadStart() {
       kSearchPrefetchBlockBeforeHeaders, "block_head_start_ms", 0));
 }
 
-const base::Feature kSearchNavigationPrefetch{
-    "SearchNavigationPrefetch", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSearchNavigationPrefetch,
+             "SearchNavigationPrefetch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsSearchNavigationPrefetchEnabled() {
   return base::FeatureList::IsEnabled(kSearchNavigationPrefetch);

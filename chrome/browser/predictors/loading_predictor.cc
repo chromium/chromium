@@ -25,10 +25,12 @@
 namespace features {
 
 // Don't preconnect on weak signal to save power.
-const base::Feature kNoPreconnectToSearchOnWeakSignal{
-    "NoPreconnectToSearchOnWeakSignal", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kNoNavigationPreconnectOnWeakSignal{
-    "NoNavigationPreconnectOnWeakSignal", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNoPreconnectToSearchOnWeakSignal,
+             "NoPreconnectToSearchOnWeakSignal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNoNavigationPreconnectOnWeakSignal,
+             "NoNavigationPreconnectOnWeakSignal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 

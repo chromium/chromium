@@ -48,14 +48,14 @@
 
 namespace safe_browsing {
 
-const base::Feature kIncidentReportingEnableUpload {
-  "IncidentReportingEnableUpload",
+BASE_FEATURE(kIncidentReportingEnableUpload,
+             "IncidentReportingEnableUpload",
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 namespace {
 

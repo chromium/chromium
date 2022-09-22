@@ -11,8 +11,9 @@
 
 namespace search_features {
 
-const base::Feature kLauncherGameSearch{"LauncherGameSearch",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLauncherGameSearch,
+             "LauncherGameSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsLauncherGameSearchEnabled() {
   if (!ash::features::IsProductivityLauncherEnabled())

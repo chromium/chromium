@@ -9,11 +9,11 @@
 
 namespace supervised_users {
 
-extern const base::Feature kWebFilterInterstitialRefresh;
+BASE_DECLARE_FEATURE(kWebFilterInterstitialRefresh);
 
-extern const base::Feature kLocalWebApprovals;
+BASE_DECLARE_FEATURE(kLocalWebApprovals);
 
-extern const base::Feature kAllowHistoryDeletionForChildAccounts;
+BASE_DECLARE_FEATURE(kAllowHistoryDeletionForChildAccounts);
 
 // Returns whether refreshed version of the website filter interstitial is
 // enabled.

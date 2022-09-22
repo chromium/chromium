@@ -19,8 +19,9 @@
 #include "content/public/browser/web_contents.h"
 
 namespace {
-const base::Feature kNavigationLatencyAblation{
-    "NavigationLatencyAblation", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNavigationLatencyAblation,
+             "NavigationLatencyAblation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The amount of time to stall before resuming loading.
 const base::FeatureParam<base::TimeDelta> kNavigationLatencyAblationDuration{

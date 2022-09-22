@@ -9,8 +9,8 @@
 
 namespace features {
 
-extern const base::Feature kIsolatePrerenders;
-extern const base::Feature kIsolatePrerendersMustProbeOrigin;
+BASE_DECLARE_FEATURE(kIsolatePrerenders);
+BASE_DECLARE_FEATURE(kIsolatePrerendersMustProbeOrigin);
 
 }  // namespace features
 

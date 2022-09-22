@@ -70,9 +70,9 @@
 #endif
 
 namespace features {
-const base::Feature kFileSystemAccessPersistentPermissions{
-    "kFileSystemAccessPersistentPermissions",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kFileSystemAccessPersistentPermissions,
+             "kFileSystemAccessPersistentPermissions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace {

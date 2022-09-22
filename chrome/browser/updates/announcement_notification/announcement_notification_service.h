@@ -21,7 +21,7 @@ class PrefService;
 class Profile;
 
 // Whether to enable announcement notification system.
-extern const base::Feature kAnnouncementNotification;
+BASE_DECLARE_FEATURE(kAnnouncementNotification);
 
 // The Finch parameter name for a boolean value that whether to show
 // notification on first run.

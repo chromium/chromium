@@ -9,8 +9,9 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/history/history_service_factory.h"
 
-const base::Feature GoogleSearchDomainMixingMetricsEmitterFactory::kFeature{
-    "EmitGoogleSearchDomainMixingMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEmitGoogleSearchDomainMixingMetrics,
+             "EmitGoogleSearchDomainMixingMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
 GoogleSearchDomainMixingMetricsEmitterFactory*
@@ -52,5 +53,5 @@ GoogleSearchDomainMixingMetricsEmitterFactory::BuildServiceInstanceFor(
 
 bool GoogleSearchDomainMixingMetricsEmitterFactory::
     ServiceIsCreatedWithBrowserContext() const {
-  return base::FeatureList::IsEnabled(kFeature);
+  return base::FeatureList::IsEnabled(kEmitGoogleSearchDomainMixingMetrics);
 }

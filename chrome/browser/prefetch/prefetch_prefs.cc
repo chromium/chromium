@@ -10,8 +10,9 @@
 
 namespace prefetch {
 
-const base::Feature kPreloadingHoldback{"PreloadingHoldback",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPreloadingHoldback,
+             "PreloadingHoldback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 void RegisterPredictionOptionsProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {

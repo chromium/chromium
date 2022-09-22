@@ -59,19 +59,21 @@ bool IsMigrationFeature(const base::Feature& feature) {
 
 // Enables migration of default installed GSuite apps over to their replacement
 // web apps.
-const base::Feature kMigrateDefaultChromeAppToWebAppsGSuite{
-    "MigrateDefaultChromeAppToWebAppsGSuite", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kMigrateDefaultChromeAppToWebAppsGSuite,
+             "MigrateDefaultChromeAppToWebAppsGSuite",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables migration of default installed non-GSuite apps over to their
 // replacement web apps.
-const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite{
-    "MigrateDefaultChromeAppToWebAppsNonGSuite",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kMigrateDefaultChromeAppToWebAppsNonGSuite,
+             "MigrateDefaultChromeAppToWebAppsNonGSuite",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables installing the PWA version of the chrome os calculator instead of the
 // deprecated chrome app.
-const base::Feature kDefaultCalculatorWebApp{"DefaultCalculatorWebApp",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDefaultCalculatorWebApp,
+             "DefaultCalculatorWebApp",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Whether to allow the MigrateDefaultChromeAppToWebAppsGSuite and
@@ -84,18 +86,20 @@ const base::Feature kDefaultCalculatorWebApp{"DefaultCalculatorWebApp",
 // Because admin installed Chrome apps conflict with the default web app
 // migration we need to maintain separate control over the rollout for mananged
 // users.
-const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers{
-    "AllowDefaultWebAppMigrationForChromeOsManagedUsers",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAllowDefaultWebAppMigrationForChromeOsManagedUsers,
+             "AllowDefaultWebAppMigrationForChromeOsManagedUsers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables installing the Cursive app on managed devices with a built-in
 // stylus-capable screen.
-const base::Feature kCursiveManagedStylusPreinstall{
-    "CursiveManagedStylusPreinstall", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCursiveManagedStylusPreinstall,
+             "CursiveManagedStylusPreinstall",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables installing the Messages app on unmanaged devices.
-const base::Feature kMessagesPreinstall{"MessagesPreinstall",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kMessagesPreinstall,
+             "MessagesPreinstall",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

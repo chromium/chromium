@@ -11,7 +11,7 @@ namespace enterprise_connectors {
 
 // Controls whether the local content analysis feature can be used for any
 // service provider and/or policy configuration.
-extern const base::Feature kLocalContentAnalysisEnabled;
+BASE_DECLARE_FEATURE(kLocalContentAnalysisEnabled);
 
 }  // namespace enterprise_connectors
 

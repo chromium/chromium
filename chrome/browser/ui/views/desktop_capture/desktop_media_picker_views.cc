@@ -71,9 +71,9 @@ DesktopMediaID::Id AcceleratedWidgetToDesktopMediaId(
 }
 #endif
 
-const base::Feature kWarnUserOfSystemWideLocalAudioSuppression CONSTINIT{
-    "WarnUserOfSystemWideLocalAudioSuppression",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kWarnUserOfSystemWideLocalAudioSuppression,
+             "WarnUserOfSystemWideLocalAudioSuppression",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

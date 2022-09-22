@@ -10,7 +10,7 @@
 namespace enterprise_connectors {
 
 // Controls whether the Device Trust connector client code is enabled or not.
-extern const base::Feature kDeviceTrustConnectorEnabled;
+BASE_DECLARE_FEATURE(kDeviceTrustConnectorEnabled);
 
 // Return true if the device trust connector Finch feature is enabled.
 bool IsDeviceTrustConnectorFeatureEnabled();

@@ -14,7 +14,7 @@
 namespace arc {
 
 // base::FeatureList feature for ARC media view.
-extern const base::Feature kMediaViewFeature;
+BASE_DECLARE_FEATURE(kMediaViewFeature);
 
 // Authority of MediaDocumentsProvider in Android.
 extern const char kMediaDocumentsProviderAuthority[];

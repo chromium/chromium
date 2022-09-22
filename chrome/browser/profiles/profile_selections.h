@@ -17,11 +17,11 @@
 // This feature flag will only affect builders that has are marked as
 // `Experimental Builders` below, and any customized builder that will not
 // explicitly use `ProfileSelections::Builder::WithSystem()`.
-extern const base::Feature kSystemProfileSelectionDefaultNone;
+BASE_DECLARE_FEATURE(kSystemProfileSelectionDefaultNone);
 
 // Similar experiment to `kSystemProfileSelectionDefaultNone` described above
 // affecting Guest Profile.
-extern const base::Feature kGuestProfileSelectionDefaultNone;
+BASE_DECLARE_FEATURE(kGuestProfileSelectionDefaultNone);
 
 class Profile;
 

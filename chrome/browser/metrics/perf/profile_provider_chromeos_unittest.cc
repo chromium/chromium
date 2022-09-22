@@ -377,12 +377,6 @@ TEST_F(ProfileProviderTest, JankinessCollectionThrottled) {
 // callbacks from the jank monitor.
 class ProfileProviderJankinessTest : public ProfileProviderTest {
  public:
-  ProfileProviderJankinessTest() : ProfileProviderTest() {
-    const base::Feature kBrowserJankinessProfiling{
-        "BrowserJankinessProfiling", base::FEATURE_DISABLED_BY_DEFAULT};
-    scoped_feature_list_.InitAndEnableFeature(kBrowserJankinessProfiling);
-  }
-
   void SetUp() override {
     ProfileProviderTest::SetUp();
     // Jankiness collection requires that the user is logged in.
@@ -394,9 +388,6 @@ class ProfileProviderJankinessTest : public ProfileProviderTest {
       collector->Deactivate();
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test profile collection triggered by a UI thread jank.

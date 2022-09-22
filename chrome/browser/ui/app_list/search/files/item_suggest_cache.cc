@@ -170,9 +170,10 @@ absl::optional<ItemSuggestCache::Results> ConvertResults(
 
 }  // namespace
 
-// static
-const base::Feature ItemSuggestCache::kExperiment{
-    "LauncherItemSuggest", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLauncherItemSuggest,
+             "LauncherItemSuggest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<bool> ItemSuggestCache::kEnabled;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kServerUrl;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kModelName;

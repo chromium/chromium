@@ -17,8 +17,7 @@ bool ShouldReportFullNames() {
   // but this allows a small group to be enabled on other channels if there are
   // a large percentage of hashes collected on these channels that are not
   // resolved to names previously collected on Canary channel.
-  bool enabled = base::FeatureList::IsEnabled(
-      AntiVirusMetricsProvider::kReportNamesFeature);
+  bool enabled = base::FeatureList::IsEnabled(kReportFullAVProductDetails);
 
   if (chrome::GetChannel() == version_info::Channel::CANARY)
     return true;
@@ -28,7 +27,9 @@ bool ShouldReportFullNames() {
 
 }  // namespace
 
-constexpr base::Feature AntiVirusMetricsProvider::kReportNamesFeature;
+BASE_FEATURE(kReportFullAVProductDetails,
+             "ReportFullAVProductDetails",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 AntiVirusMetricsProvider::AntiVirusMetricsProvider() = default;
 

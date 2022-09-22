@@ -21,8 +21,9 @@
 
 namespace features {
 // Enables remembering of access code cast devices.
-const base::Feature kAccessCodeCastRememberDevices{
-    "AccessCodeCastRememberDevices", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAccessCodeCastRememberDevices,
+             "AccessCodeCastRememberDevices",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace media_router {

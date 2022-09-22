@@ -9,7 +9,7 @@
 
 namespace screentime {
 
-extern const base::Feature kScreenTime;
+BASE_DECLARE_FEATURE(kScreenTime);
 
 bool IsScreenTimeEnabled();
 

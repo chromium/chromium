@@ -19,8 +19,7 @@
 
 namespace {
 const char kFirstTestFeatureId[] = "feature-1";
-const base::Feature kTestFeature1{"FeatureName1",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature1, "FeatureName1", base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
 class ChromeLabsUiTest : public DialogBrowserTest {

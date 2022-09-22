@@ -19,8 +19,9 @@ using content::BrowserThread;
 
 #if BUILDFLAG(IS_ANDROID)
 namespace {
-const base::Feature kRunLegacyDataUseMeasurment{
-    "RunLegacyDataUseMeasurement", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRunLegacyDataUseMeasurment,
+             "RunLegacyDataUseMeasurement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // anonymous namespace
 #endif
 

@@ -58,8 +58,9 @@ std::u16string GetApplicationTitle(content::WebContents* web_contents) {
 // is shown to the user, offering a selection of possible sources.
 // If this feature is enabled, the order is: tabs / windows / screens
 // If this feature is disabled, the order is: screens / windows / tabs
-const base::Feature kNewGetDisplayMediaPickerOrder CONSTINIT{
-    "NewGetDisplayMediaPickerOrder", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNewGetDisplayMediaPickerOrder,
+             "NewGetDisplayMediaPickerOrder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

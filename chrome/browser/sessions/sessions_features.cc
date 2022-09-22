@@ -5,5 +5,6 @@
 
 #include "chrome/browser/sessions/sessions_features.h"
 
-const base::Feature kDeleteSessionOnlyDataOnStartup{
-    "DeleteSessionOnlyDataOnStartup", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDeleteSessionOnlyDataOnStartup,
+             "DeleteSessionOnlyDataOnStartup",
+             base::FEATURE_ENABLED_BY_DEFAULT);

@@ -19,7 +19,7 @@
 namespace enterprise_connectors {
 
 // Experimental flag to enable or disable the file system connector.
-extern const base::Feature kFileSystemConnectorEnabled;
+BASE_DECLARE_FEATURE(kFileSystemConnectorEnabled);
 
 // The settings for a report service obtained from a connector policy.
 class FileSystemServiceSettings {

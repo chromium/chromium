@@ -17,7 +17,7 @@
 
 // Feature used to configure entries in the Web Serial API blocklist which can
 // be deployed using a server configuration.
-extern const base::Feature kWebSerialBlocklist;
+BASE_DECLARE_FEATURE(kWebSerialBlocklist);
 
 // Dynamic additions to the Web Serial API device blocklist.
 //

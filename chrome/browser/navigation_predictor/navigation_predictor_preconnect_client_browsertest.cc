@@ -256,8 +256,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(2, preresolve_done_count_);
 }
 
-const base::Feature kPreconnectOnDidFinishNavigation{
-    "PreconnectOnDidFinishNavigation", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPreconnectOnDidFinishNavigation,
+             "PreconnectOnDidFinishNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 class
     NavigationPredictorPreconnectClientBrowserTestPreconnectOnDidFinishNavigationSecondDelay
@@ -361,8 +362,9 @@ IN_PROC_BROWSER_TEST_F(
 
 namespace {
 // Feature to control preconnect to search.
-const base::Feature kPreconnectToSearchTest{"PreconnectToSearch",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPreconnectToSearchTest,
+             "PreconnectToSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
 class NavigationPredictorPreconnectClientBrowserTestWithSearch

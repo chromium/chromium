@@ -47,7 +47,7 @@ class TrackedPreferenceValidationDelegate;
 
 namespace safe_browsing {
 
-extern const base::Feature kIncidentReportingEnableUpload;
+BASE_DECLARE_FEATURE(kIncidentReportingEnableUpload);
 
 class ClientDownloadRequest;
 class ClientIncidentReport;

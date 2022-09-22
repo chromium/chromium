@@ -16,7 +16,7 @@ class TimeDelta;
 }
 
 namespace features {
-extern const base::Feature kAccessCodeCastRememberDevices;
+BASE_DECLARE_FEATURE(kAccessCodeCastRememberDevices);
 }
 
 namespace media_router {

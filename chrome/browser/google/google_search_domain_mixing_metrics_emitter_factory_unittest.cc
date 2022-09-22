@@ -22,7 +22,7 @@ TEST_F(GoogleSearchDomainMixingMetricsEmitterFactoryTest, DisabledByDefault) {
 TEST_F(GoogleSearchDomainMixingMetricsEmitterFactoryTest, Enabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      GoogleSearchDomainMixingMetricsEmitterFactory::kFeature);
+      kEmitGoogleSearchDomainMixingMetrics);
 
   EXPECT_TRUE(ServiceIsCreatedWithBrowserContext());
 }

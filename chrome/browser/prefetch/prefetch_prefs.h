@@ -14,7 +14,7 @@ class PrefRegistrySyncable;
 class PrefService;
 
 namespace prefetch {
-extern const base::Feature kPreloadingHoldback;
+BASE_DECLARE_FEATURE(kPreloadingHoldback);
 
 // Enum describing when to allow network predictions.  The numerical value is
 // stored in the prefs file, therefore the same enum with the same order must be

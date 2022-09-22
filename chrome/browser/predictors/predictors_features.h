@@ -13,26 +13,26 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
-extern const base::Feature kLoadingPredictorUseLocalPredictions;
+BASE_DECLARE_FEATURE(kLoadingPredictorUseLocalPredictions);
 
-extern const base::Feature kLoadingOnlyLearnHighPriorityResources;
+BASE_DECLARE_FEATURE(kLoadingOnlyLearnHighPriorityResources);
 
-extern const base::Feature kLoadingPredictorTableConfig;
+BASE_DECLARE_FEATURE(kLoadingPredictorTableConfig);
 
-extern const base::Feature kLoadingPreconnectToRedirectTarget;
+BASE_DECLARE_FEATURE(kLoadingPreconnectToRedirectTarget);
 
-extern const base::Feature kLoadingPredictorDisregardAlwaysAccessesNetwork;
+BASE_DECLARE_FEATURE(kLoadingPredictorDisregardAlwaysAccessesNetwork);
 
-extern const base::Feature kLoadingPredictorUseOptimizationGuide;
+BASE_DECLARE_FEATURE(kLoadingPredictorUseOptimizationGuide);
 
-extern const base::Feature kLoadingPredictorPrefetch;
+BASE_DECLARE_FEATURE(kLoadingPredictorPrefetch);
 
 enum class PrefetchSubresourceType { kAll, kCss, kJsAndCss };
 
 extern const base::FeatureParam<PrefetchSubresourceType>
     kLoadingPredictorPrefetchSubresourceType;
 
-extern const base::Feature kLoadingPredictorInflightPredictiveActions;
+BASE_DECLARE_FEATURE(kLoadingPredictorInflightPredictiveActions);
 
 // Returns whether local predictions should be used to make preconnect
 // predictions.

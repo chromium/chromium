@@ -13,8 +13,7 @@ class Profile;
 
 namespace predictors {
 
-extern const char kSpeculativePreconnectFeatureName[];
-extern const base::Feature kSpeculativePreconnectFeature;
+BASE_DECLARE_FEATURE(kSpeculativePreconnectFeature);
 
 // Returns whether the speculative preconnect feature is enabled.
 bool IsPreconnectFeatureEnabled();

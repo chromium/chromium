@@ -16,13 +16,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
+BASE_DECLARE_FEATURE(kReportFullAVProductDetails);
+
 // AntiVirusMetricsProvider is responsible for adding antivirus information to
 // the UMA system profile proto.
 class AntiVirusMetricsProvider : public metrics::MetricsProvider {
  public:
-  static constexpr base::Feature kReportNamesFeature = {
-      "ReportFullAVProductDetails", base::FEATURE_DISABLED_BY_DEFAULT};
-
   AntiVirusMetricsProvider();
 
   AntiVirusMetricsProvider(const AntiVirusMetricsProvider&) = delete;

@@ -9,7 +9,7 @@
 
 namespace chrome_apps::features {
 
-extern const base::Feature kDeprecateMediaGalleriesApis;
+BASE_DECLARE_FEATURE(kDeprecateMediaGalleriesApis);
 
 }  // namespace chrome_apps::features
 

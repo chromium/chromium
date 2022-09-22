@@ -62,15 +62,13 @@ const char kTestFeatureWithVariationId[] = "feature-2";
 const char kThirdTestFeatureId[] = "feature-3";
 const char kExpiredFlagTestFeatureId[] = "expired-feature";
 
-const base::Feature kTestFeature1{"FeatureName1",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTestFeature2{"FeatureName2",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTestFeature3{"FeatureName3",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature1, "FeatureName1", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature2, "FeatureName2", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature3, "FeatureName3", base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kExpiredFlagTestFeature{"Expired",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kExpiredFlagTestFeature,
+             "Expired",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const flags_ui::FeatureEntry::FeatureParam kTestVariationOther2[] = {
     {"Param1", "Value"}};

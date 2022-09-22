@@ -13,16 +13,16 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
+// Flag to enable computing domain mixing metrics based on the Google search
+// activity of the user.
+// For more details, see http://goto.google.com/chrome-no-searchdomaincheck.
+BASE_DECLARE_FEATURE(kEmitGoogleSearchDomainMixingMetrics);
+
 // Singleton that owns all GoogleSearchDomainMixingMetricsEmitters and
 // associates them with Profiles.
 class GoogleSearchDomainMixingMetricsEmitterFactory
     : public ProfileKeyedServiceFactory {
  public:
-  // Flag to enable computing domain mixing metrics based on the Google search
-  // activity of the user.
-  // For more details, see http://goto.google.com/chrome-no-searchdomaincheck.
-  static const base::Feature kFeature;
-
   // Returns the singleton instance of the factory.
   static GoogleSearchDomainMixingMetricsEmitterFactory* GetInstance();
 

@@ -72,8 +72,9 @@ namespace internal {
 // Metrics reporting feature. This feature, along with user consent, controls if
 // recording and reporting are enabled. If the feature is enabled, but no
 // consent is given, then there will be no recording or reporting.
-const base::Feature kMetricsReportingFeature{"MetricsReporting",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kMetricsReportingFeature,
+             "MetricsReporting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // Same as |kMetricsReportingFeature|, but this feature is associated with a
@@ -81,8 +82,9 @@ const base::Feature kMetricsReportingFeature{"MetricsReporting",
 // in which the old sampling rate was not being applied correctly. In order for
 // the fix to not affect the overall sampling rate, this new feature was
 // created. See crbug/1306481.
-const base::Feature kPostFREFixMetricsReportingFeature{
-    "PostFREFixMetricsReporting", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPostFREFixMetricsReportingFeature,
+             "PostFREFixMetricsReporting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Name of the variations param that defines the sampling rate.

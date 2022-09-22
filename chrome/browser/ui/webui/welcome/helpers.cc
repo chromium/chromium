@@ -42,10 +42,11 @@ const char kDefaultNewUserModules[] =
 const char kDefaultReturningUserModules[] = "nux-set-as-default";
 
 // Feature flag.
-const base::Feature kFeature{"NuxOnboarding", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kFeature, "NuxOnboarding", base::FEATURE_ENABLED_BY_DEFAULT);
 // For testing purposes
-const base::Feature kForceEnabled = {"NuxOnboardingForceEnabled",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kForceEnabled,
+             "NuxOnboardingForceEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The value of these FeatureParam values should be a comma-delimited list
 // of element names allowlisted in the MODULES_WHITELIST list, defined in
@@ -120,14 +121,18 @@ static bool CanExperimentWithVariations(Profile* profile) {
 // These feature flags are used to tie our experiment to specific studies.
 // go/navi-app-variation for details.
 // TODO(hcarmona): find a solution that scales better.
-const base::Feature kNaviControlEnabled = {"NaviControlEnabled",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kNaviAppVariationEnabled = {
-    "NaviAppVariationEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kNaviNTPVariationEnabled = {
-    "NaviNTPVariationEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kNaviShortcutVariationEnabled = {
-    "NaviShortcutVariationEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNaviControlEnabled,
+             "NaviControlEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNaviAppVariationEnabled,
+             "NaviAppVariationEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNaviNTPVariationEnabled,
+             "NaviNTPVariationEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNaviShortcutVariationEnabled,
+             "NaviShortcutVariationEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Get the group for users who onboard in this experiment.
 // Groups are:
