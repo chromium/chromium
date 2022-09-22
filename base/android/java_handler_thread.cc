@@ -160,8 +160,9 @@ JavaHandlerThread::State::State()
           sequence_manager::SequenceManager::Settings::Builder()
               .SetMessagePumpType(base::MessagePumpType::JAVA)
               .Build())),
-      default_task_queue(sequence_manager->CreateTaskQueue(
-          sequence_manager::TaskQueue::Spec("default_tq"))) {
+      default_task_queue(
+          sequence_manager->CreateTaskQueue(sequence_manager::TaskQueue::Spec(
+              sequence_manager::QueueName::DEFAULT_TQ))) {
   // TYPE_JAVA to get the Android java style message loop.
   std::unique_ptr<MessagePump> message_pump =
       MessagePump::Create(base::MessagePumpType::JAVA);

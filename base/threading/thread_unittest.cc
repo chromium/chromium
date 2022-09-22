@@ -550,15 +550,15 @@ TEST_F(ThreadTest, GetTaskExecutorForCurrentThread) {
 
 namespace {
 
+using TaskQueue = base::sequence_manager::TaskQueue;
+
 class SequenceManagerThreadDelegate : public Thread::Delegate {
  public:
   SequenceManagerThreadDelegate()
       : sequence_manager_(
             base::sequence_manager::CreateUnboundSequenceManager()),
-        task_queue_(
-            sequence_manager_
-                ->CreateTaskQueueWithType<base::sequence_manager::TaskQueue>(
-                    base::sequence_manager::TaskQueue::Spec("default_tq"))) {
+        task_queue_(sequence_manager_->CreateTaskQueueWithType<TaskQueue>(
+            TaskQueue::Spec(base::sequence_manager::QueueName::DEFAULT_TQ))) {
     sequence_manager_->SetDefaultTaskRunner(GetDefaultTaskRunner());
   }
 
@@ -582,7 +582,7 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
 
  private:
   std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
-  scoped_refptr<base::sequence_manager::TaskQueue> task_queue_;
+  scoped_refptr<TaskQueue> task_queue_;
 };
 
 }  // namespace

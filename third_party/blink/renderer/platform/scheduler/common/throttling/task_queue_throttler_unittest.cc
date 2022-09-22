@@ -78,7 +78,7 @@ class TaskQueueThrottlerTest : public testing::Test {
     wake_up_budget_pool_->SetWakeUpInterval(base::TimeTicks(),
                                             base::Seconds(1));
 
-    timer_queue_ = CreateTaskQueue("Timer queue");
+    timer_queue_ = CreateTaskQueue(base::sequence_manager::QueueName::TEST_TQ);
     task_queue_throttler_ = CreateThrottlerForTaskQueue(timer_queue_.get());
 
     wake_up_budget_pool_->AddThrottler(test_task_runner_->NowTicks(),
@@ -93,7 +93,7 @@ class TaskQueueThrottlerTest : public testing::Test {
   }
 
   scoped_refptr<base::sequence_manager::TaskQueue> CreateTaskQueue(
-      const char* name) {
+      base::sequence_manager::QueueName name) {
     return sequence_manager_->CreateTaskQueue(
         base::sequence_manager::TaskQueue::Spec(name).SetDelayedFencesAllowed(
             true));
@@ -623,7 +623,8 @@ TEST_P(TaskQueueThrottlerWithAutoAdvancingTimeTest,
 
   scoped_refptr<base::sequence_manager::TaskQueue> second_queue =
       sequence_manager_->CreateTaskQueue(
-          base::sequence_manager::TaskQueue::Spec("Second queue")
+          base::sequence_manager::TaskQueue::Spec(
+              base::sequence_manager::QueueName::TEST2_TQ)
               .SetDelayedFencesAllowed(true));
   auto second_queue_throttler = CreateThrottlerForTaskQueue(second_queue.get());
 
@@ -921,7 +922,8 @@ TEST_P(TaskQueueThrottlerWithAutoAdvancingTimeTest,
 
   scoped_refptr<base::sequence_manager::TaskQueue> second_queue =
       sequence_manager_->CreateTaskQueue(
-          base::sequence_manager::TaskQueue::Spec("Second queue")
+          base::sequence_manager::TaskQueue::Spec(
+              base::sequence_manager::QueueName::TEST2_TQ)
               .SetDelayedFencesAllowed(true));
   auto second_queue_throttler = CreateThrottlerForTaskQueue(second_queue.get());
   wake_up_budget_pool_->AddThrottler(base::TimeTicks(),
@@ -975,7 +977,8 @@ TEST_F(TaskQueueThrottlerTest, TwoBudgetPools) {
 
   scoped_refptr<base::sequence_manager::TaskQueue> second_queue =
       sequence_manager_->CreateTaskQueue(
-          base::sequence_manager::TaskQueue::Spec("Second queue")
+          base::sequence_manager::TaskQueue::Spec(
+              base::sequence_manager::QueueName::TEST2_TQ)
               .SetDelayedFencesAllowed(true));
   auto second_queue_throttler = CreateThrottlerForTaskQueue(second_queue.get());
 
@@ -1148,7 +1151,8 @@ TEST_F(TaskQueueThrottlerTest,
                                       base::Minutes(2));
   scoped_refptr<base::sequence_manager::TaskQueue> two_minutes_queue =
       sequence_manager_->CreateTaskQueue(
-          base::sequence_manager::TaskQueue::Spec("Second queue")
+          base::sequence_manager::TaskQueue::Spec(
+              base::sequence_manager::QueueName::TEST2_TQ)
               .SetDelayedFencesAllowed(true));
   auto two_minutes_queue_throttler =
       CreateThrottlerForTaskQueue(two_minutes_queue.get());
@@ -1217,7 +1221,8 @@ TEST_F(TaskQueueThrottlerTest,
                                       base::Minutes(2));
   scoped_refptr<base::sequence_manager::TaskQueue> two_minutes_queue =
       sequence_manager_->CreateTaskQueue(
-          base::sequence_manager::TaskQueue::Spec("Second queue")
+          base::sequence_manager::TaskQueue::Spec(
+              base::sequence_manager::QueueName::TEST2_TQ)
               .SetDelayedFencesAllowed(true));
   auto two_minutes_queue_throttler =
       CreateThrottlerForTaskQueue(two_minutes_queue.get());
@@ -1293,7 +1298,8 @@ TEST_F(TaskQueueThrottlerTest,
   two_minutes_pool->AllowLowerAlignmentIfNoRecentWakeUp(base::Seconds(1));
   scoped_refptr<base::sequence_manager::TaskQueue> two_minutes_queue =
       sequence_manager_->CreateTaskQueue(
-          base::sequence_manager::TaskQueue::Spec("Second queue")
+          base::sequence_manager::TaskQueue::Spec(
+              base::sequence_manager::QueueName::TEST2_TQ)
               .SetDelayedFencesAllowed(true));
   auto two_minutes_queue_throttler =
       CreateThrottlerForTaskQueue(two_minutes_queue.get());
@@ -1398,7 +1404,8 @@ TEST_F(TaskQueueThrottlerTest,
   unaligned_pool->AllowLowerAlignmentIfNoRecentWakeUp(base::Seconds(1));
   scoped_refptr<base::sequence_manager::TaskQueue> unaligned_queue =
       sequence_manager_->CreateTaskQueue(
-          base::sequence_manager::TaskQueue::Spec("Second queue")
+          base::sequence_manager::TaskQueue::Spec(
+              base::sequence_manager::QueueName::TEST2_TQ)
               .SetDelayedFencesAllowed(true));
   auto unaligned_queue_throttler =
       CreateThrottlerForTaskQueue(unaligned_queue.get());

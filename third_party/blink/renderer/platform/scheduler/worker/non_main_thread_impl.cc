@@ -115,7 +115,8 @@ NonMainThreadImpl::SimpleThreadImpl::SimpleThreadImpl(
           .SetRandomisedSamplingEnabled(true)
           .Build());
   internal_task_queue_ = sequence_manager_->CreateTaskQueue(
-      base::sequence_manager::TaskQueue::Spec("worker_thread_internal_tq"));
+      base::sequence_manager::TaskQueue::Spec(
+          base::sequence_manager::QueueName::WORKER_THREAD_INTERNAL_TQ));
   internal_task_runner_ = internal_task_queue_->CreateTaskRunner(
       base::sequence_manager::kTaskTypeNone);
 }

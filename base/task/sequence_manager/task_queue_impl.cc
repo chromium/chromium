@@ -347,6 +347,10 @@ void TaskQueueImpl::UnregisterTaskQueue() {
 }
 
 const char* TaskQueueImpl::GetName() const {
+  return perfetto::protos::pbzero::SequenceManagerTask::QueueName_Name(name_);
+}
+
+QueueName TaskQueueImpl::GetProtoName() const {
   return name_;
 }
 
@@ -357,7 +361,6 @@ void TaskQueueImpl::PostTask(PostedTask task) {
           : TaskQueueImpl::CurrentThread::kNotMainThread;
 
 #if DCHECK_IS_ON()
-  MaybeLogPostTask(task);
   TimeDelta delay = GetTaskDelayAdjustment(current_thread);
   if (absl::holds_alternative<base::TimeTicks>(
           task.delay_or_delayed_run_time)) {
@@ -386,22 +389,6 @@ void TaskQueueImpl::RemoveCancelableTask(HeapHandle heap_handle) {
     LazyNow lazy_now(sequence_manager_->main_thread_clock());
     UpdateWakeUp(&lazy_now);
   }
-}
-
-void TaskQueueImpl::MaybeLogPostTask(const PostedTask& task) {
-#if DCHECK_IS_ON()
-  if (!sequence_manager_->settings().log_post_task)
-    return;
-
-  LOG(INFO) << name_ << " PostTask " << task.location.ToString();
-  if (absl::holds_alternative<base::TimeDelta>(task.delay_or_delayed_run_time))
-    LOG(INFO) << "delay "
-              << absl::get<base::TimeDelta>(task.delay_or_delayed_run_time);
-  else if (absl::holds_alternative<base::TimeTicks>(
-               task.delay_or_delayed_run_time))
-    LOG(INFO) << "delayed_run_time "
-              << absl::get<base::TimeTicks>(task.delay_or_delayed_run_time);
-#endif  // DCHECK_IS_ON()
 }
 
 TimeDelta TaskQueueImpl::GetTaskDelayAdjustment(CurrentThread current_thread) {
@@ -456,7 +443,7 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
     sequence_manager_->WillQueueTask(
         &any_thread_.immediate_incoming_queue.back());
     MaybeReportIpcTaskQueuedFromAnyThreadLocked(
-        any_thread_.immediate_incoming_queue.back(), name_);
+        any_thread_.immediate_incoming_queue.back());
 
     for (auto& handler : any_thread_.on_task_posted_handlers) {
       DCHECK(!handler.second.is_null());
@@ -522,7 +509,7 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueueFromMainThread(
 
   if (notify_task_annotator) {
     sequence_manager_->WillQueueTask(&pending_task);
-    MaybeReportIpcTaskQueuedFromMainThread(pending_task, name_);
+    MaybeReportIpcTaskQueuedFromMainThread(pending_task);
   }
   RecordQueuingDelayedTaskMetrics(pending_task, lazy_now);
   main_thread_only().delayed_incoming_queue.push(std::move(pending_task));
@@ -533,7 +520,7 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueueFromMainThread(
 
 void TaskQueueImpl::PushOntoDelayedIncomingQueue(Task pending_task) {
   sequence_manager_->WillQueueTask(&pending_task);
-  MaybeReportIpcTaskQueuedFromAnyThreadUnlocked(pending_task, name_);
+  MaybeReportIpcTaskQueuedFromAnyThreadUnlocked(pending_task);
 
 #if DCHECK_IS_ON()
   pending_task.cross_thread_ = true;
@@ -769,7 +756,7 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(
     // The top task is ready to run. Move it to the delayed work queue.
 #if DCHECK_IS_ON()
     if (sequence_manager_->settings().log_task_delay_expiry)
-      VLOG(0) << name_ << " Delay expired for "
+      VLOG(0) << GetName() << " Delay expired for "
               << ready_task.posted_from.ToString();
 #endif  // DCHECK_IS_ON()
     DCHECK(!ready_task.delayed_run_time.is_null());
@@ -1440,8 +1427,7 @@ void TaskQueueImpl::ActivateDelayedFenceIfNeeded(const Task& task) {
 }
 
 void TaskQueueImpl::MaybeReportIpcTaskQueuedFromMainThread(
-    const Task& pending_task,
-    const char* task_queue_name) {
+    const Task& pending_task) {
   if (!pending_task.ipc_hash)
     return;
 
@@ -1465,7 +1451,7 @@ void TaskQueueImpl::MaybeReportIpcTaskQueuedFromMainThread(
       sequence_manager_->main_thread_clock()->NowTicks() -
       main_thread_only().disabled_time.value();
 
-  ReportIpcTaskQueued(pending_task, task_queue_name, time_since_disabled);
+  ReportIpcTaskQueued(pending_task, time_since_disabled);
 }
 
 bool TaskQueueImpl::ShouldReportIpcTaskQueuedFromAnyThreadLocked(
@@ -1486,8 +1472,7 @@ bool TaskQueueImpl::ShouldReportIpcTaskQueuedFromAnyThreadLocked(
 }
 
 void TaskQueueImpl::MaybeReportIpcTaskQueuedFromAnyThreadLocked(
-    const Task& pending_task,
-    const char* task_queue_name) {
+    const Task& pending_task) {
   if (!pending_task.ipc_hash)
     return;
 
@@ -1499,12 +1484,11 @@ void TaskQueueImpl::MaybeReportIpcTaskQueuedFromAnyThreadLocked(
 
   base::TimeDelta time_since_disabled;
   if (ShouldReportIpcTaskQueuedFromAnyThreadLocked(&time_since_disabled))
-    ReportIpcTaskQueued(pending_task, task_queue_name, time_since_disabled);
+    ReportIpcTaskQueued(pending_task, time_since_disabled);
 }
 
 void TaskQueueImpl::MaybeReportIpcTaskQueuedFromAnyThreadUnlocked(
-    const Task& pending_task,
-    const char* task_queue_name) {
+    const Task& pending_task) {
   if (!pending_task.ipc_hash)
     return;
 
@@ -1523,19 +1507,17 @@ void TaskQueueImpl::MaybeReportIpcTaskQueuedFromAnyThreadUnlocked(
   }
 
   if (should_report)
-    ReportIpcTaskQueued(pending_task, task_queue_name, time_since_disabled);
+    ReportIpcTaskQueued(pending_task, time_since_disabled);
 }
 
 void TaskQueueImpl::ReportIpcTaskQueued(
     const Task& pending_task,
-    const char* task_queue_name,
     const base::TimeDelta& time_since_disabled) {
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("lifecycles"), "task_posted_to_disabled_queue",
       [&](perfetto::EventContext ctx) {
         auto* proto = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                           ->set_chrome_task_posted_to_disabled_queue();
-        proto->set_task_queue_name(task_queue_name);
         proto->set_time_since_disabled_ms(
             checked_cast<uint64_t>(time_since_disabled.InMilliseconds()));
         proto->set_ipc_hash(pending_task.ipc_hash);

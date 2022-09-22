@@ -114,9 +114,9 @@ class BASE_EXPORT SequenceManagerImpl
   // according to its default state.
   static void ResetNoWakeUpsForCanceledTasksForTesting();
 
-  // Emitting the task priority if scheduler category is enabled.
-  static void EmitTaskPriority(perfetto::EventContext& ctx,
-                               TaskQueue::QueuePriority task_queue_priority);
+  static void MaybeEmitTaskDetails(
+      perfetto::EventContext& ctx,
+      const SequencedTaskSource::SelectedTask& selected_task);
 
   // SequenceManager implementation:
   void BindToCurrentThread() override;
@@ -252,7 +252,7 @@ class BASE_EXPORT SequenceManagerImpl
                   TaskQueue::TaskTiming task_timing)
         : pending_task(std::move(task)),
           task_queue(task_queue),
-          task_queue_name(task_queue->GetName()),
+          task_queue_name(task_queue->GetProtoName()),
           task_timing(task_timing),
           priority(task_queue->GetQueuePriority()),
           task_type(pending_task.task_type) {}
@@ -263,7 +263,7 @@ class BASE_EXPORT SequenceManagerImpl
     // analysis of sampling profiler data and tab_search:top100:2020).
     RAW_PTR_EXCLUSION internal::TaskQueueImpl* task_queue = nullptr;
     // Save task_queue_name as the task queue can be deleted within the task.
-    const char* task_queue_name;
+    QueueName task_queue_name;
     TaskQueue::TaskTiming task_timing;
     // Save priority as it might change after running a task.
     TaskQueue::QueuePriority priority;

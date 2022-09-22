@@ -33,7 +33,8 @@ class SequencedTaskSource {
     SelectedTask(const SelectedTask&);
     SelectedTask(Task& task,
                  TaskExecutionTraceLogger task_execution_trace_logger,
-                 TaskQueue::QueuePriority priority);
+                 TaskQueue::QueuePriority priority,
+                 QueueName task_queue_name);
     ~SelectedTask();
 
     Task& task;
@@ -42,6 +43,7 @@ class SequencedTaskSource {
     TaskExecutionTraceLogger task_execution_trace_logger =
         TaskExecutionTraceLogger();
     TaskQueue::QueuePriority priority;
+    QueueName task_queue_name;
   };
 
   virtual ~SequencedTaskSource() = default;

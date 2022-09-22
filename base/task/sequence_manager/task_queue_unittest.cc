@@ -25,7 +25,8 @@ TEST(TaskQueueTest, TaskQueueVoters) {
   auto sequence_manager = CreateSequenceManagerOnCurrentThreadWithPump(
       MessagePump::Create(MessagePumpType::DEFAULT));
 
-  auto queue = sequence_manager->CreateTaskQueue(TaskQueue::Spec("test"));
+  auto queue =
+      sequence_manager->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
 
   // The task queue should be initially enabled.
   EXPECT_TRUE(queue->IsQueueEnabled());
@@ -73,7 +74,8 @@ TEST(TaskQueueTest, TaskQueueVoters) {
 TEST(TaskQueueTest, ShutdownQueueBeforeEnabledVoterDeleted) {
   auto sequence_manager = CreateSequenceManagerOnCurrentThreadWithPump(
       MessagePump::Create(MessagePumpType::DEFAULT));
-  auto queue = sequence_manager->CreateTaskQueue(TaskQueue::Spec("test"));
+  auto queue =
+      sequence_manager->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
 
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter =
       queue->CreateQueueEnabledVoter();
@@ -88,7 +90,8 @@ TEST(TaskQueueTest, ShutdownQueueBeforeEnabledVoterDeleted) {
 TEST(TaskQueueTest, ShutdownQueueBeforeDisabledVoterDeleted) {
   auto sequence_manager = CreateSequenceManagerOnCurrentThreadWithPump(
       MessagePump::Create(MessagePumpType::DEFAULT));
-  auto queue = sequence_manager->CreateTaskQueue(TaskQueue::Spec("test"));
+  auto queue =
+      sequence_manager->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
 
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter =
       queue->CreateQueueEnabledVoter();
@@ -123,7 +126,8 @@ TEST(TaskQueueTest, CanceledTaskRemovedIfFeatureEnabled) {
 
     auto sequence_manager = CreateSequenceManagerOnCurrentThreadWithPump(
         MessagePump::Create(MessagePumpType::DEFAULT));
-    auto queue = sequence_manager->CreateTaskQueue(TaskQueue::Spec("test"));
+    auto queue =
+        sequence_manager->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
 
     // Get the default task runner.
     auto task_runner = queue->task_runner();
@@ -162,7 +166,8 @@ TEST(TaskQueueTest, ValidCancelableTaskIsNotCanceled) {
 
   auto sequence_manager = CreateSequenceManagerOnCurrentThreadWithPump(
       MessagePump::Create(MessagePumpType::DEFAULT));
-  auto queue = sequence_manager->CreateTaskQueue(TaskQueue::Spec("test"));
+  auto queue =
+      sequence_manager->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
 
   // Get the default task runner.
   auto task_runner = queue->task_runner();

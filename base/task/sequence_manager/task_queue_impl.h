@@ -130,6 +130,7 @@ class BASE_EXPORT TaskQueueImpl {
 
   // TaskQueue implementation.
   const char* GetName() const;
+  QueueName GetProtoName() const;
   bool IsQueueEnabled() const;
   void SetQueueEnabled(bool enabled);
   void SetShouldReportPostedTasksWhenDisabled(bool should_report);
@@ -531,24 +532,18 @@ class BASE_EXPORT TaskQueueImpl {
   void UpdateCrossThreadQueueStateLocked()
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
 
-  void MaybeLogPostTask(const PostedTask& task);
   TimeDelta GetTaskDelayAdjustment(CurrentThread current_thread);
 
   // Reports the task if it was due to IPC and was posted to a disabled queue.
   // This should be called after WillQueueTask has been called for the task.
-  void MaybeReportIpcTaskQueuedFromMainThread(const Task& pending_task,
-                                              const char* task_queue_name);
+  void MaybeReportIpcTaskQueuedFromMainThread(const Task& pending_task);
   bool ShouldReportIpcTaskQueuedFromAnyThreadLocked(
       base::TimeDelta* time_since_disabled)
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
-  void MaybeReportIpcTaskQueuedFromAnyThreadLocked(const Task& pending_task,
-                                                   const char* task_queue_name)
+  void MaybeReportIpcTaskQueuedFromAnyThreadLocked(const Task& pending_task)
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
-  void MaybeReportIpcTaskQueuedFromAnyThreadUnlocked(
-      const Task& pending_task,
-      const char* task_queue_name);
+  void MaybeReportIpcTaskQueuedFromAnyThreadUnlocked(const Task& pending_task);
   void ReportIpcTaskQueued(const Task& pending_task,
-                           const char* task_queue_name,
                            const base::TimeDelta& time_since_disabled);
 
   // Invoked when the queue becomes enabled and not blocked by a fence.
@@ -559,7 +554,7 @@ class BASE_EXPORT TaskQueueImpl {
   void RemoveOnTaskPostedHandler(
       OnTaskPostedCallbackHandleImpl* on_task_posted_callback_handle);
 
-  const char* name_;
+  QueueName name_;
   const raw_ptr<SequenceManagerImpl> sequence_manager_;
 
   const scoped_refptr<const AssociatedThreadId> associated_thread_;

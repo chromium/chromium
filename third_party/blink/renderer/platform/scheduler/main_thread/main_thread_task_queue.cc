@@ -25,53 +25,53 @@ using base::sequence_manager::internal::TaskQueueImpl;
 
 using perfetto::protos::pbzero::ChromeTrackEvent;
 using perfetto::protos::pbzero::RendererMainThreadTaskExecution;
-
+using QueueName = ::perfetto::protos::pbzero::SequenceManagerTask::QueueName;
 // static
-const char* MainThreadTaskQueue::NameForQueueType(
+QueueName MainThreadTaskQueue::NameForQueueType(
     MainThreadTaskQueue::QueueType queue_type) {
   switch (queue_type) {
     case MainThreadTaskQueue::QueueType::kControl:
-      return "control_tq";
+      return QueueName::CONTROL_TQ;
     case MainThreadTaskQueue::QueueType::kDefault:
-      return "default_tq";
+      return QueueName::DEFAULT_TQ;
     case MainThreadTaskQueue::QueueType::kFrameLoading:
-      return "frame_loading_tq";
+      return QueueName::FRAME_LOADING_TQ;
     case MainThreadTaskQueue::QueueType::kFrameThrottleable:
-      return "frame_throttleable_tq";
+      return QueueName::FRAME_THROTTLEABLE_TQ;
     case MainThreadTaskQueue::QueueType::kFrameDeferrable:
-      return "frame_deferrable_tq";
+      return QueueName::FRAME_DEFERRABLE_TQ;
     case MainThreadTaskQueue::QueueType::kFramePausable:
-      return "frame_pausable_tq";
+      return QueueName::FRAME_PAUSABLE_TQ;
     case MainThreadTaskQueue::QueueType::kFrameUnpausable:
-      return "frame_unpausable_tq";
+      return QueueName::FRAME_UNPAUSABLE_TQ;
     case MainThreadTaskQueue::QueueType::kCompositor:
-      return "compositor_tq";
+      return QueueName::COMPOSITOR_TQ;
     case MainThreadTaskQueue::QueueType::kIdle:
-      return "idle_tq";
+      return QueueName::IDLE_TQ;
     case MainThreadTaskQueue::QueueType::kTest:
-      return "test_tq";
+      return QueueName::TEST_TQ;
     case MainThreadTaskQueue::QueueType::kFrameLoadingControl:
-      return "frame_loading_control_tq";
+      return QueueName::FRAME_LOADING_CONTROL_TQ;
     case MainThreadTaskQueue::QueueType::kV8:
-      return "v8_tq";
+      return QueueName::V8_TQ;
     case MainThreadTaskQueue::QueueType::kInput:
-      return "input_tq";
+      return QueueName::INPUT_TQ;
     case MainThreadTaskQueue::QueueType::kDetached:
-      return "detached_tq";
+      return QueueName::DETACHED_TQ;
     case MainThreadTaskQueue::QueueType::kOther:
-      return "other_tq";
+      return QueueName::OTHER_TQ;
     case MainThreadTaskQueue::QueueType::kWebScheduling:
-      return "web_scheduling_tq";
+      return QueueName::WEB_SCHEDULING_TQ;
     case MainThreadTaskQueue::QueueType::kNonWaking:
-      return "non_waking_tq";
+      return QueueName::NON_WAKING_TQ;
     case MainThreadTaskQueue::QueueType::kIPCTrackingForCachedPages:
-      return "ipc_tracking_for_cached_pages_tq";
+      return QueueName::IPC_TRACKING_FOR_CACHED_PAGES_TQ;
     case MainThreadTaskQueue::QueueType::kCount:
       NOTREACHED();
-      return nullptr;
+      return QueueName::UNKNOWN_TQ;
   }
   NOTREACHED();
-  return nullptr;
+  return QueueName::UNKNOWN_TQ;
 }
 
 // static

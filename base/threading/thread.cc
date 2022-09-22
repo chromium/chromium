@@ -60,7 +60,8 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
                     .SetMessagePumpType(message_pump_type)
                     .Build())),
         default_task_queue_(sequence_manager_->CreateTaskQueue(
-            sequence_manager::TaskQueue::Spec("default_tq"))),
+            sequence_manager::TaskQueue::Spec(
+                sequence_manager::QueueName::DEFAULT_TQ))),
         message_pump_factory_(std::move(message_pump_factory)) {
     sequence_manager_->SetDefaultTaskRunner(default_task_queue_->task_runner());
   }

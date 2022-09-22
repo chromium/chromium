@@ -21,79 +21,80 @@ namespace content {
 namespace {
 
 using QueuePriority = ::base::sequence_manager::TaskQueue::QueuePriority;
+using QueueName = ::perfetto::protos::pbzero::SequenceManagerTask::QueueName;
 using InsertFencePosition =
     ::base::sequence_manager::TaskQueue::InsertFencePosition;
 
-const char* GetControlTaskQueueName(BrowserThread::ID thread_id) {
+QueueName GetControlTaskQueueName(BrowserThread::ID thread_id) {
   switch (thread_id) {
     case BrowserThread::UI:
-      return "ui_control_tq";
+      return QueueName::UI_CONTROL_TQ;
     case BrowserThread::IO:
-      return "io_control_tq";
+      return QueueName::IO_CONTROL_TQ;
     case BrowserThread::ID_COUNT:
       break;
   }
   NOTREACHED();
-  return "";
+  return QueueName::UNKNOWN_TQ;
 }
 
-const char* GetRunAllPendingTaskQueueName(BrowserThread::ID thread_id) {
+QueueName GetRunAllPendingTaskQueueName(BrowserThread::ID thread_id) {
   switch (thread_id) {
     case BrowserThread::UI:
-      return "ui_run_all_pending_tq";
+      return QueueName::UI_RUN_ALL_PENDING_TQ;
     case BrowserThread::IO:
-      return "io_run_all_pending_tq";
+      return QueueName::IO_RUN_ALL_PENDING_TQ;
     case BrowserThread::ID_COUNT:
       break;
   }
   NOTREACHED();
-  return "";
+  return QueueName::UNKNOWN_TQ;
 }
 
-const char* GetUITaskQueueName(BrowserTaskQueues::QueueType queue_type) {
+QueueName GetUITaskQueueName(BrowserTaskQueues::QueueType queue_type) {
   switch (queue_type) {
     case BrowserTaskQueues::QueueType::kBestEffort:
-      return "ui_best_effort_tq";
+      return QueueName::UI_BEST_EFFORT_TQ;
     case BrowserTaskQueues::QueueType::kBootstrap:
-      return "ui_bootstrap_tq";
+      return QueueName::UI_BOOTSTRAP_TQ;
     case BrowserTaskQueues::QueueType::kDefault:
-      return "ui_default_tq";
+      return QueueName::UI_DEFAULT_TQ;
     case BrowserTaskQueues::QueueType::kUserBlocking:
-      return "ui_user_blocking_tq";
+      return QueueName::UI_USER_BLOCKING_TQ;
     case BrowserTaskQueues::QueueType::kUserVisible:
-      return "ui_user_visible_tq";
+      return QueueName::UI_USER_VISIBLE_TQ;
     case BrowserTaskQueues::QueueType::kUserInput:
-      return "ui_user_input_tq";
+      return QueueName::UI_USER_INPUT_TQ;
     case BrowserTaskQueues::QueueType::kNavigationNetworkResponse:
-      return "ui_navigation_network_response_tq";
+      return QueueName::UI_NAVIGATION_NETWORK_RESPONSE_TQ;
     case BrowserTaskQueues::QueueType::kServiceWorkerStorageControlResponse:
-      return "ui_service_worker_storage_control_response_tq";
+      return QueueName::UI_SERVICE_WORKER_STORAGE_CONTROL_RESPONSE_TQ;
   }
 }
 
-const char* GetIOTaskQueueName(BrowserTaskQueues::QueueType queue_type) {
+QueueName GetIOTaskQueueName(BrowserTaskQueues::QueueType queue_type) {
   switch (queue_type) {
     case BrowserTaskQueues::QueueType::kBestEffort:
-      return "io_best_effort_tq";
+      return QueueName::IO_BEST_EFFORT_TQ;
     case BrowserTaskQueues::QueueType::kBootstrap:
-      return "io_bootstrap_tq";
+      return QueueName::IO_BOOTSTRAP_TQ;
     case BrowserTaskQueues::QueueType::kDefault:
-      return "io_default_tq";
+      return QueueName::IO_DEFAULT_TQ;
     case BrowserTaskQueues::QueueType::kUserBlocking:
-      return "io_user_blocking_tq";
+      return QueueName::IO_USER_BLOCKING_TQ;
     case BrowserTaskQueues::QueueType::kUserVisible:
-      return "io_user_visible_tq";
+      return QueueName::IO_USER_VISIBLE_TQ;
     case BrowserTaskQueues::QueueType::kUserInput:
-      return "io_user_input_tq";
+      return QueueName::IO_USER_INPUT_TQ;
     case BrowserTaskQueues::QueueType::kNavigationNetworkResponse:
-      return "io_navigation_network_response_tq";
+      return QueueName::IO_NAVIGATION_NETWORK_RESPONSE_TQ;
     case BrowserTaskQueues::QueueType::kServiceWorkerStorageControlResponse:
-      return "io_service_worker_storage_control_response_tq";
+      return QueueName::IO_SERVICE_WORKER_STORAGE_CONTROL_RESPONSE_TQ;
   }
 }
 
-const char* GetTaskQueueName(BrowserThread::ID thread_id,
-                             BrowserTaskQueues::QueueType queue_type) {
+QueueName GetTaskQueueName(BrowserThread::ID thread_id,
+                           BrowserTaskQueues::QueueType queue_type) {
   switch (thread_id) {
     case BrowserThread::UI:
       return GetUITaskQueueName(queue_type);
@@ -103,20 +104,20 @@ const char* GetTaskQueueName(BrowserThread::ID thread_id,
       break;
   }
   NOTREACHED();
-  return "";
+  return QueueName::UNKNOWN_TQ;
 }
 
-const char* GetDefaultQueueName(BrowserThread::ID thread_id) {
+QueueName GetDefaultQueueName(BrowserThread::ID thread_id) {
   switch (thread_id) {
     case BrowserThread::UI:
-      return "ui_thread_tq";
+      return QueueName::UI_THREAD_TQ;
     case BrowserThread::IO:
-      return "io_thread_tq";
+      return QueueName::IO_THREAD_TQ;
     case BrowserThread::ID_COUNT:
       break;
   }
   NOTREACHED();
-  return "";
+  return QueueName::UNKNOWN_TQ;
 }
 
 }  // namespace

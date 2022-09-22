@@ -139,7 +139,8 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
     running_stack_.push_back(std::move(tasks_.front()));
     tasks_.pop();
     return SelectedTask(running_stack_.back(), TaskExecutionTraceLogger(),
-                        TaskQueue::QueuePriority::kNormalPriority);
+                        TaskQueue::QueuePriority::kNormalPriority,
+                        QueueName::TEST_TQ);
   }
 
   void DidRunTask(LazyNow& lazy_now) override { running_stack_.pop_back(); }

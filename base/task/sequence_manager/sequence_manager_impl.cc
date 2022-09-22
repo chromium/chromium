@@ -559,9 +559,9 @@ void SequenceManagerImpl::SetNextWakeUp(LazyNow* lazy_now,
   }
 }
 
-void SequenceManagerImpl::EmitTaskPriority(
+void SequenceManagerImpl::MaybeEmitTaskDetails(
     perfetto::EventContext& ctx,
-    TaskQueue::QueuePriority task_queue_priority) {
+    const SequencedTaskSource::SelectedTask& selected_task) {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
   // Other parameters are included only when "scheduler" category is enabled.
   const uint8_t* scheduler_category_enabled =
@@ -571,7 +571,10 @@ void SequenceManagerImpl::EmitTaskPriority(
     return;
   auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
   auto* sequence_manager_task = event->set_sequence_manager_task();
-  sequence_manager_task->set_priority(TaskPriorityToProto(task_queue_priority));
+  sequence_manager_task->set_priority(
+      TaskPriorityToProto(selected_task.priority));
+  sequence_manager_task->set_queue_name(selected_task.task_queue_name);
+
 #endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
@@ -712,7 +715,7 @@ SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
     return SelectedTask(
         executing_task.pending_task,
         executing_task.task_queue->task_execution_trace_logger(),
-        executing_task.priority);
+        executing_task.priority, executing_task.task_queue_name);
   }
 }
 

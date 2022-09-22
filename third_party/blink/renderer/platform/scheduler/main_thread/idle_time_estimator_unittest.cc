@@ -49,7 +49,8 @@ class IdleTimeEstimatorTest : public testing::Test {
 
   scoped_refptr<MainThreadTaskQueue> NewTaskQueue() {
     return manager_->CreateTaskQueueWithType<MainThreadTaskQueue>(
-        base::sequence_manager::TaskQueue::Spec("test_tq"),
+        base::sequence_manager::TaskQueue::Spec(
+            base::sequence_manager::QueueName::TEST_TQ),
         MainThreadTaskQueue::QueueCreationParams(
             MainThreadTaskQueue::QueueType::kCompositor),
         nullptr);

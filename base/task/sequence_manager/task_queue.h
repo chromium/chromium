@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_TASK_QUEUE_H_
 #define BASE_TASK_SEQUENCE_MANAGER_TASK_QUEUE_H_
 
+#include <cstdint>
 #include <memory>
 
 #include "base/base_export.h"
@@ -17,6 +18,7 @@
 #include "base/task/task_observer.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -29,6 +31,8 @@ namespace base {
 class TaskObserver;
 
 namespace sequence_manager {
+
+using QueueName = ::perfetto::protos::pbzero::SequenceManagerTask::QueueName;
 
 namespace internal {
 class AssociatedThreadId;
@@ -127,7 +131,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
 
   // Options for constructing a TaskQueue.
   struct Spec {
-    explicit Spec(const char* name) : name(name) {}
+    explicit Spec(QueueName name) : name(name) {}
 
     Spec SetShouldMonitorQuiescence(bool should_monitor) {
       should_monitor_quiescence = should_monitor;
@@ -151,7 +155,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
       return *this;
     }
 
-    const char* name;
+    QueueName name;
     bool should_monitor_quiescence = false;
     bool should_notify_observers = true;
     bool delayed_fence_allowed = false;
@@ -465,7 +469,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
 
   int enabled_voter_count_ = 0;
   int voter_count_ = 0;
-  const char* name_;
+  QueueName name_;
 
   base::WeakPtrFactory<TaskQueue> weak_ptr_factory_{this};
 };

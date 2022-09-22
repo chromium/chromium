@@ -161,7 +161,8 @@ const char* OptionalTaskDescriptionToString(
     return TaskTypeNames::TaskTypeToString(desc->task_type);
   if (!desc->queue_type)
     return "detached_tq";
-  return MainThreadTaskQueue::NameForQueueType(desc->queue_type.value());
+  return perfetto::protos::pbzero::SequenceManagerTask::QueueName_Name(
+      MainThreadTaskQueue::NameForQueueType(desc->queue_type.value()));
 }
 
 const char* OptionalTaskPriorityToString(
@@ -829,7 +830,8 @@ MainThreadSchedulerImpl::NewThrottleableTaskQueueForTest(
 scoped_refptr<base::sequence_manager::TaskQueue>
 MainThreadSchedulerImpl::NewTaskQueueForTest() {
   return sequence_manager_->CreateTaskQueue(
-      base::sequence_manager::TaskQueue::Spec("test"));
+      base::sequence_manager::TaskQueue::Spec(
+          base::sequence_manager::QueueName::TEST_TQ));
 }
 
 void MainThreadSchedulerImpl::OnShutdownTaskQueue(

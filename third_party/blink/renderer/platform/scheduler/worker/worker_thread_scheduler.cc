@@ -102,8 +102,8 @@ WorkerThreadScheduler::WorkerThreadScheduler(
     : NonMainThreadSchedulerBase(sequence_manager,
                                  TaskType::kWorkerThreadTaskQueueDefault),
       thread_type_(thread_type),
-      idle_helper_queue_(
-          GetHelper().NewTaskQueue(TaskQueue::Spec("worker_idle_tq"))),
+      idle_helper_queue_(GetHelper().NewTaskQueue(
+          TaskQueue::Spec(base::sequence_manager::QueueName::WORKER_IDLE_TQ))),
       idle_helper_(&GetHelper(),
                    this,
                    "WorkerSchedulerIdlePeriod",

@@ -153,7 +153,8 @@ class WorkerThreadSchedulerTest : public testing::Test {
             &timeline_)) {
     scheduler_->Init();
     scheduler_->AttachToCurrentThread();
-    default_task_queue_ = scheduler_->CreateTaskQueue("test_tq");
+    default_task_queue_ =
+        scheduler_->CreateTaskQueue(base::sequence_manager::QueueName::TEST_TQ);
     default_task_runner_ =
         default_task_queue_->GetTaskRunnerWithDefaultTaskType();
     idle_task_runner_ = scheduler_->IdleTaskRunner();

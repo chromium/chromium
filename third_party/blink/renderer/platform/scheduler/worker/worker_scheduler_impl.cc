@@ -37,13 +37,13 @@ WorkerSchedulerImpl::PauseHandleImpl::~PauseHandleImpl() {
 WorkerSchedulerImpl::WorkerSchedulerImpl(
     WorkerThreadScheduler* worker_thread_scheduler,
     WorkerSchedulerProxy* proxy)
-    : throttleable_task_queue_(
-          worker_thread_scheduler->CreateTaskQueue("worker_throttleable_tq",
-                                                   true)),
-      pausable_task_queue_(
-          worker_thread_scheduler->CreateTaskQueue("worker_pausable_tq")),
-      unpausable_task_queue_(
-          worker_thread_scheduler->CreateTaskQueue("worker_unpausable_tq")),
+    : throttleable_task_queue_(worker_thread_scheduler->CreateTaskQueue(
+          base::sequence_manager::QueueName::WORKER_THROTTLEABLE_TQ,
+          true)),
+      pausable_task_queue_(worker_thread_scheduler->CreateTaskQueue(
+          base::sequence_manager::QueueName::WORKER_PAUSABLE_TQ)),
+      unpausable_task_queue_(worker_thread_scheduler->CreateTaskQueue(
+          base::sequence_manager::QueueName::WORKER_UNPAUSABLE_TQ)),
       thread_scheduler_(worker_thread_scheduler),
       back_forward_cache_disabling_feature_tracker_(&tracing_controller_,
                                                     thread_scheduler_) {
@@ -309,7 +309,8 @@ std::unique_ptr<WebSchedulingTaskQueue>
 WorkerSchedulerImpl::CreateWebSchedulingTaskQueue(
     WebSchedulingPriority priority) {
   scoped_refptr<NonMainThreadTaskQueue> task_queue =
-      thread_scheduler_->CreateTaskQueue("worker_web_scheduling_tq");
+      thread_scheduler_->CreateTaskQueue(
+          base::sequence_manager::QueueName::WORKER_WEB_SCHEDULING_TQ);
   task_queue->SetWebSchedulingPriority(priority);
   return std::make_unique<NonMainThreadWebSchedulingTaskQueueImpl>(
       std::move(task_queue));

@@ -19,8 +19,9 @@ NonMainThreadSchedulerBase::NonMainThreadSchedulerBase(
 NonMainThreadSchedulerBase::~NonMainThreadSchedulerBase() = default;
 
 scoped_refptr<NonMainThreadTaskQueue>
-NonMainThreadSchedulerBase::CreateTaskQueue(const char* name,
-                                            bool can_be_throttled) {
+NonMainThreadSchedulerBase::CreateTaskQueue(
+    base::sequence_manager::QueueName name,
+    bool can_be_throttled) {
   helper_.CheckOnValidThread();
   return helper_.NewTaskQueue(
       base::sequence_manager::TaskQueue::Spec(name).SetShouldMonitorQuiescence(

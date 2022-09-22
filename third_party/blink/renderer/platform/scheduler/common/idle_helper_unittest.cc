@@ -192,8 +192,8 @@ class BaseIdleHelperTest : public testing::Test {
     scheduler_helper_ = std::make_unique<NonMainThreadSchedulerHelper>(
         sequence_manager_.get(), nullptr, TaskType::kInternalTest);
     scheduler_helper_->AttachToCurrentThread();
-    idle_helper_queue_ =
-        scheduler_helper_->NewTaskQueue(TaskQueue::Spec("idle_test"));
+    idle_helper_queue_ = scheduler_helper_->NewTaskQueue(
+        TaskQueue::Spec(base::sequence_manager::QueueName::IDLE_TQ));
     idle_helper_ = std::make_unique<IdleHelperForTest>(
         scheduler_helper_.get(),
         required_quiescence_duration_before_long_idle_period,
