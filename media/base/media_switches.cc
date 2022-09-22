@@ -89,6 +89,12 @@ const char kDisableAudioInput[] = "disable-audio-input";
 // Present video content as overlays.
 const char kUseOverlaysForVideo[] = "use-overlays-for-video";
 
+// Minimum size for buffer size used for output video frames in
+// FuchsiaVideoDecoder. May be set to avoid re-allocating video buffers when an
+// application upgrades video resolution mid-stream.
+const char kMinVideoDecoderOutputBufferSize[] =
+    "min-video-decoder-output-buffer-size";
+
 // Forces AudioManagerFuchsia to assume that the AudioCapturer implements echo
 // cancellation.
 // TODO(crbug.com/852834): Remove this once AudioManagerFuchsia is updated to

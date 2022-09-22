@@ -4,6 +4,7 @@
 
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
 
+#include <fuchsia/sysmem/cpp/fidl.h>
 #include <vulkan/vulkan.h>
 
 #include "base/bind.h"
@@ -15,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_metrics.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -63,6 +65,42 @@ constexpr size_t kNumInputBuffers = 2;
 // spec), plus 128KiB for SEI/SPS/PPS. (note that the same size is used for all
 // codecs, not just H264).
 constexpr size_t kInputBufferSize = 1920 * 1080 * 3 / 2 / 2 + 128 * 1024;
+
+const fuchsia::sysmem::PixelFormatType kSupportedPixelFormats[] = {
+    fuchsia::sysmem::PixelFormatType::NV12,
+    fuchsia::sysmem::PixelFormatType::I420,
+    fuchsia::sysmem::PixelFormatType::YV12,
+};
+const fuchsia::sysmem::ColorSpaceType kSupportedColorSpaces[] = {
+    fuchsia::sysmem::ColorSpaceType::REC601_NTSC,
+    fuchsia::sysmem::ColorSpaceType::REC601_NTSC_FULL_RANGE,
+    fuchsia::sysmem::ColorSpaceType::REC601_PAL,
+    fuchsia::sysmem::ColorSpaceType::REC601_PAL_FULL_RANGE,
+    fuchsia::sysmem::ColorSpaceType::REC709,
+};
+
+absl::optional<gfx::Size> ParseMinBufferSize() {
+  std::string min_buffer_size_arg =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kMinVideoDecoderOutputBufferSize);
+  if (min_buffer_size_arg.empty())
+    return absl::nullopt;
+  size_t width;
+  size_t height;
+  if (sscanf(min_buffer_size_arg.c_str(), "%zux%zu" SCNu32, &width, &height) !=
+      2) {
+    LOG(WARNING) << "Invalid value for --"
+                 << switches::kMinVideoDecoderOutputBufferSize << ": '"
+                 << min_buffer_size_arg << "'";
+    return absl::nullopt;
+  }
+  return gfx::Size(width, height);
+}
+
+absl::optional<gfx::Size> GetMinBufferSize() {
+  static absl::optional<gfx::Size> value = ParseMinBufferSize();
+  return value;
+}
 
 }  // namespace
 
@@ -413,6 +451,41 @@ void FuchsiaVideoDecoder::OnStreamProcessorAllocateOutputBuffers(
   buffer_constraints.min_buffer_count_for_camping = kOutputBuffersForCamping;
   buffer_constraints.min_buffer_count_for_shared_slack =
       kMaxUsedOutputBuffers - kOutputBuffersForCamping;
+
+  buffer_constraints.image_format_constraints_count =
+      std::size(kSupportedPixelFormats);
+  for (size_t pixel_format_index = 0;
+       pixel_format_index < std::size(kSupportedPixelFormats);
+       ++pixel_format_index) {
+    auto& image_format_constraints =
+        buffer_constraints.image_format_constraints[pixel_format_index];
+    image_format_constraints.pixel_format.type =
+        kSupportedPixelFormats[pixel_format_index];
+    image_format_constraints.pixel_format.has_format_modifier = true;
+    image_format_constraints.pixel_format.format_modifier.value =
+        fuchsia::sysmem::FORMAT_MODIFIER_LINEAR;
+
+    image_format_constraints.color_spaces_count =
+        std::size(kSupportedColorSpaces);
+    for (size_t i = 0; i < std::size(kSupportedColorSpaces); ++i) {
+      image_format_constraints.color_space[i].type = kSupportedColorSpaces[i];
+    }
+  }
+
+  auto min_buffer_size = GetMinBufferSize();
+  if (min_buffer_size) {
+    for (size_t pixel_format_index = 0;
+         pixel_format_index < std::size(kSupportedPixelFormats);
+         ++pixel_format_index) {
+      auto& image_format_constraints =
+          buffer_constraints.image_format_constraints[pixel_format_index];
+      image_format_constraints.required_max_coded_width =
+          min_buffer_size->width();
+      image_format_constraints.required_max_coded_height =
+          min_buffer_size->height();
+    }
+  }
+
   output_buffer_collection_->Initialize(std::move(buffer_constraints),
                                         "ChromiumVideoDecoderOutput");
 }

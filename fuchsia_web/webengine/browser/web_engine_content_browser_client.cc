@@ -90,6 +90,7 @@ static constexpr char const* kRendererSwitchesToCopy[] = {
     switches::kEnableCastStreamingReceiver,
     switches::kEnableProtectedVideoBuffers,
     switches::kUseOverlaysForVideo,
+    switches::kMinVideoDecoderOutputBufferSize,
 
     // TODO(crbug/1013412): Delete these two switches when fixed.
     switches::kEnableWidevine,

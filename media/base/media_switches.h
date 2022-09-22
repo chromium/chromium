@@ -55,6 +55,7 @@ MEDIA_EXPORT extern const char kEnableProtectedVideoBuffers[];
 MEDIA_EXPORT extern const char kForceProtectedVideoOutputBuffers[];
 MEDIA_EXPORT extern const char kDisableAudioInput[];
 MEDIA_EXPORT extern const char kUseOverlaysForVideo[];
+MEDIA_EXPORT extern const char kMinVideoDecoderOutputBufferSize[];
 MEDIA_EXPORT extern const char kAudioCapturerWithEchoCancellation[];
 #endif
 
