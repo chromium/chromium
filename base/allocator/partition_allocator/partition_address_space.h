@@ -165,8 +165,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     } else if (pool == kBRPPoolHandle) {
       return brp_pool_shadow_offset_;
     } else {
-      // Shadow is not created for ConfigurablePool, so this part should be
-      // unreachable.
+      // TODO(crbug.com/1362969): Add shadow for configurable pool as well.
+      // Shadow is not created for ConfigurablePool for now, so this part should
+      // be unreachable.
       PA_NOTREACHED();
       return 0;
     }
@@ -330,6 +331,12 @@ PA_ALWAYS_INLINE pool_handle GetPool(uintptr_t address) {
 PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
   return PartitionAddressSpace::OffsetInBRPPool(address);
 }
+
+#if defined(PA_ENABLE_SHADOW_METADATA)
+PA_ALWAYS_INLINE std::ptrdiff_t ShadowPoolOffset(pool_handle pool) {
+  return PartitionAddressSpace::ShadowPoolOffset(pool);
+}
+#endif
 
 }  // namespace internal
 
