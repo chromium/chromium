@@ -195,8 +195,14 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS" desc="Explanation text on the sync consent dialog to explain the user they can customize sync settings. [iOS only]">
         You can always choose what to sync in <ph name="BEGIN_LINK">BEGIN_LINK</ph>settings<ph name="END_LINK">END_LINK</ph>.
       </message>
+      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS_POST_RESTORE_PROMO" desc="Explanation text on the sync consent dialog to explain the user they can customize sync settings. This is presented to the user after device restore from backup. [iOS only]">
+        Your sync settings will be restored based on your last backup. You can always choose what to sync in <ph name="BEGIN_LINK">BEGIN_LINK</ph>settings<ph name="END_LINK">END_LINK</ph>.
+      </message>
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS" desc="Explanation text on the sync consent dialog to explain the user they can customize sync settings when sync types are limited. [iOS only]">
         <ph name="BEGIN_LINK">BEGIN_LINK</ph>See What You Can Sync<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS_POST_RESTORE_PROMO" desc="Explanation text on the sync consent dialog to explain the user they can customize sync settings when sync types are limited. This is presented to the user after device restore from backup. [iOS only]">
+        Your sync settings will be restored based on your last backup. <ph name="BEGIN_LINK">BEGIN_LINK</ph>See What You Can Sync<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT" desc="Title of the button to add an account [Length: 15m] [iOS only]">
         Add Account

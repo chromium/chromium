@@ -24,10 +24,18 @@
 // Returns YES if the consent view is scrolled to the bottom.
 @property(nonatomic, assign, readonly) BOOL isScrolledToBottom;
 
-// -[UnifiedConsentViewController init] should be used.
+// -[UnifiedConsentViewController initWithPostRestoreSigninPromo:] should be
+// used.
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
+// Initializes the instance.
+// `postRestoreSigninPromoView` should be set to YES, if the dialog is used for
+// post restore sign-in promo.
+- (instancetype)initWithPostRestoreSigninPromo:(BOOL)postRestoreSigninPromo
+    NS_DESIGNATED_INITIALIZER;
 
 // List of string ids used for the user consent. The string ids order matches
 // the way they appear on the screen.

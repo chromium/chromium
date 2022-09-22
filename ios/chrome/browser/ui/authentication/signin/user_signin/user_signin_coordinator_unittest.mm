@@ -87,6 +87,8 @@ class UserSigninCoordinatorTest : public PlatformTest {
     logger_mock_ = OCMStrictClassMock([UserSigninLogger class]);
     OCMStub([logger_mock_ promoAction])
         .andReturn(signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
+    OCMStub([logger_mock_ accessPoint])
+        .andReturn(signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
     OCMExpect([logger_mock_ logSigninStarted]);
   }
 

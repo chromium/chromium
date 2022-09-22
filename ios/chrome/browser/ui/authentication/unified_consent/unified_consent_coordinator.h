@@ -71,6 +71,17 @@
 // Returns true if there are account restrictions.
 @property(nonatomic, readonly) BOOL hasAccountRestrictions;
 
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Initializes the instance.
+// `postRestoreSigninPromoView` should be set to YES, if the dialog is used for
+// post restore sign-in promo.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                    postRestoreSigninPromo:(BOOL)postRestoreSigninPromo
+    NS_DESIGNATED_INITIALIZER;
+
 // List of string ids used for the user consent. The string ids order matches
 // the way they appear on the screen.
 - (const std::vector<int>&)consentStringIds;

@@ -23,7 +23,8 @@ NSString* kTestEmail = @"test@gmail.com";
 class UnifiedConsentViewControllerTest : public PlatformTest {
  public:
   void SetUp() override {
-    view_controller_ = [[UnifiedConsentViewController alloc] init];
+    view_controller_ = [[UnifiedConsentViewController alloc]
+        initWithPostRestoreSigninPromo:NO];
     [view_controller_ view];
   }
 

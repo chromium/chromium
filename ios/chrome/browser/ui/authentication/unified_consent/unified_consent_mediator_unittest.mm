@@ -49,8 +49,8 @@ class UnifiedConsentMediatorTest : public PlatformTest {
         base::BindRepeating(
             &AuthenticationServiceFake::CreateAuthenticationService));
     browser_state_ = builder.Build();
-
-    view_controller_ = [[UnifiedConsentViewController alloc] init];
+    view_controller_ = [[UnifiedConsentViewController alloc]
+        initWithPostRestoreSigninPromo:NO];
     pref_service_ = new TestingPrefServiceSimple();
 
     mediator_delegate_mock_ =

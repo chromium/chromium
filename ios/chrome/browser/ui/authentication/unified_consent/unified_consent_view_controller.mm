@@ -49,6 +49,8 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 @interface UnifiedConsentViewController () <UIScrollViewDelegate,
                                             UITextViewDelegate> {
   std::vector<int> _consentStringIds;
+  // YES if the dialog is used for post restore sign-in promo.
+  BOOL _postRestoreSigninPromo;
 }
 
 // Read/write internal.
@@ -75,6 +77,14 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 @end
 
 @implementation UnifiedConsentViewController
+
+- (instancetype)initWithPostRestoreSigninPromo:(BOOL)postRestoreSigninPromo {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _postRestoreSigninPromo = postRestoreSigninPromo;
+  }
+  return self;
+}
 
 - (const std::vector<int>&)consentStringIds {
   return _consentStringIds;
@@ -206,10 +216,17 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   self.syncSettingsTextView.translatesAutoresizingMaskIntoConstraints = NO;
   [container addSubview:self.syncSettingsTextView];
 
-  self.openSettingsStringId =
-      self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
-          ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS
-          : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS;
+  if (_postRestoreSigninPromo) {
+    self.openSettingsStringId =
+        self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
+            ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS_POST_RESTORE_PROMO
+            : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS_POST_RESTORE_PROMO;
+  } else {
+    self.openSettingsStringId =
+        self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
+            ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS
+            : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS;
+  }
 
   // Layouts
   NSDictionary* views = @{

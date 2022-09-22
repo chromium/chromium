@@ -43,10 +43,12 @@
 @implementation UnifiedConsentCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
+                                   browser:(Browser*)browser
+                    postRestoreSigninPromo:(BOOL)postRestoreSigninPromo {
   self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
-    _unifiedConsentViewController = [[UnifiedConsentViewController alloc] init];
+    _unifiedConsentViewController = [[UnifiedConsentViewController alloc]
+        initWithPostRestoreSigninPromo:postRestoreSigninPromo];
     _unifiedConsentViewController.delegate = self;
 
     _authenticationService = AuthenticationServiceFactory::GetForBrowserState(

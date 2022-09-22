@@ -159,9 +159,13 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   self.mediator.delegate = self;
 
   // Setup UnifiedConsentCoordinator.
+  BOOL postRestoreSigninPromo =
+      self.logger.accessPoint ==
+      AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO;
   self.unifiedConsentCoordinator = [[UnifiedConsentCoordinator alloc]
       initWithBaseViewController:nil
-                         browser:self.browser];
+                         browser:self.browser
+          postRestoreSigninPromo:postRestoreSigninPromo];
   self.unifiedConsentCoordinator.delegate = self;
   if (self.defaultIdentity) {
     self.unifiedConsentCoordinator.selectedIdentity = self.defaultIdentity;
