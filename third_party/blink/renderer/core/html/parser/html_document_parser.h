@@ -112,6 +112,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
 
   bool DidPumpTokenizerForTesting() const { return did_pump_tokenizer_; }
 
+  unsigned GetChunkCountForTesting() const;
+
   TextPosition GetTextPosition() const final;
   OrdinalNumber LineNumber() const final;
 
@@ -227,6 +229,11 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void CreateTokenProducer(
       bool can_use_background_token_producer = true,
       HTMLTokenizer::State initial_state = HTMLTokenizer::kDataState);
+
+  // Returns true if the data should be processed (tokenizer pumped) now. If
+  // this returns false, SchedulePumpTokenizer() should be called. This is
+  // called when data is available.
+  bool ShouldPumpTokenizerNowForFinishAppend() const;
 
   const HTMLParserOptions options_;
   HTMLInputStream input_;

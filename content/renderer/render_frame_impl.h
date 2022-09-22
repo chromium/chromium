@@ -1113,6 +1113,10 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
       blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces);
 
+  // Resets membmers that are needed for the duration of commit (time between
+  // CommitNavigation() and DidCommitNavigation().
+  void ResetMembersUsedForDurationOfCommit();
+
   // Stores the WebLocalFrame we are associated with.  This is null from the
   // constructor until BindToFrame() is called, and it is null after
   // FrameDetached() is called until destruction (which is asynchronous in the

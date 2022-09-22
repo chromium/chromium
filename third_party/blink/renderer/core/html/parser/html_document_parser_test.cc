@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 
 #include <memory>
+
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
@@ -179,6 +181,67 @@ TEST_P(HTMLDocumentParserTest, AppendNoPrefetch) {
   EXPECT_EQ(script_runner_host->HasPreloadScanner(),
             GetParam() == kAllowDeferredParsing);
   EXPECT_TRUE(parser->DidPumpTokenizerForTesting());
+  // Cancel any pending work to make sure that RuntimeFeatures DCHECKs do not
+  // fire.
+  static_cast<DocumentParser*>(parser)->StopParsing();
+}
+
+class HTMLDocumentParserProcessImmediatelyTest : public PageTestBase {
+ protected:
+  void SetUp() override {
+    PageTestBase::SetUp();
+    GetDocument().SetURL(KURL("https://example.test"));
+  }
+
+  HTMLDocumentParser* CreateParser(HTMLDocument& document) {
+    auto* parser = MakeGarbageCollected<HTMLDocumentParser>(
+        document, kAllowDeferredParsing);
+    std::unique_ptr<TextResourceDecoder> decoder(
+        BuildTextResourceDecoderFor(&document, "text/html", g_null_atom));
+    parser->SetDecoder(std::move(decoder));
+    return parser;
+  }
+
+ private:
+};
+
+TEST_F(HTMLDocumentParserProcessImmediatelyTest, FirstChunk) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kProcessHtmlDataImmediately,
+      {{features::kProcessHtmlDataImmediatelyFirstChunk.name, "true"}});
+  auto& document = To<HTMLDocument>(GetDocument());
+  HTMLDocumentParser* parser = CreateParser(document);
+  ScopedParserDetacher detacher(parser);
+  const char kBytes[] = "<htttttt";
+  parser->AppendBytes(kBytes, sizeof(kBytes));
+  // Because kProcessHtmlDataImmediatelyFirstChunk is set,
+  // DidPumpTokenizerForTesting() should be true.
+  EXPECT_TRUE(parser->DidPumpTokenizerForTesting());
+  // Cancel any pending work to make sure that RuntimeFeatures DCHECKs do not
+  // fire.
+  static_cast<DocumentParser*>(parser)->StopParsing();
+}
+
+TEST_F(HTMLDocumentParserProcessImmediatelyTest, SecondChunk) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kProcessHtmlDataImmediately,
+      {{features::kProcessHtmlDataImmediatelySubsequentChunks.name, "true"}});
+  auto& document = To<HTMLDocument>(GetDocument());
+  HTMLDocumentParser* parser = CreateParser(document);
+  ScopedParserDetacher detacher(parser);
+  const char kBytes[] = "<div><div><div>";
+  parser->AppendBytes(kBytes, sizeof(kBytes) - 1);
+  // The first chunk should not have been processed yet (it was scheduled).
+  EXPECT_FALSE(parser->DidPumpTokenizerForTesting());
+  test::RunPendingTasks();
+  EXPECT_TRUE(parser->DidPumpTokenizerForTesting());
+  EXPECT_EQ(1u, parser->GetChunkCountForTesting());
+  parser->AppendBytes(kBytes, sizeof(kBytes) - 1);
+  // As kProcessHtmlDataImmediatelySubsequentChunks is true, the second chunk
+  // should be processed immediately.
+  EXPECT_EQ(2u, parser->GetChunkCountForTesting());
   // Cancel any pending work to make sure that RuntimeFeatures DCHECKs do not
   // fire.
   static_cast<DocumentParser*>(parser)->StopParsing();

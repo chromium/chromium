@@ -2839,10 +2839,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
   if (!weak_self)
     return;
 
-  pending_loader_factories_ = nullptr;
-  pending_code_cache_host_.reset();
-  pending_cookie_manager_info_.reset();
-  pending_storage_info_.reset();
+  ResetMembersUsedForDurationOfCommit();
 }
 
 void RenderFrameImpl::CommitFailedNavigation(
@@ -3000,8 +2997,7 @@ void RenderFrameImpl::CommitFailedNavigation(
   if (!weak_this)
     return;
 
-  pending_loader_factories_ = nullptr;
-  browser_side_navigation_pending_ = false;
+  ResetMembersUsedForDurationOfCommit();
 }
 
 void RenderFrameImpl::CommitSameDocumentNavigation(
@@ -3783,6 +3779,8 @@ void RenderFrameImpl::DidCommitNavigation(
   NotifyObserversOfNavigationCommit(transition);
 
   document_state->clear_navigation_state();
+
+  ResetMembersUsedForDurationOfCommit();
 }
 
 void RenderFrameImpl::DidCommitDocumentReplacementNavigation(
@@ -6297,6 +6295,14 @@ WebView* RenderFrameImpl::CreateNewWindow(
   }
 
   return web_view;
+}
+
+void RenderFrameImpl::ResetMembersUsedForDurationOfCommit() {
+  pending_loader_factories_ = nullptr;
+  pending_code_cache_host_.reset();
+  pending_cookie_manager_info_.reset();
+  pending_storage_info_.reset();
+  browser_side_navigation_pending_ = false;
 }
 
 }  // namespace content

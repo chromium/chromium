@@ -1596,5 +1596,14 @@ BASE_FEATURE(kRunTextInputUpdatePostLifecycle,
              "RunTextInputUpdatePostLifecycle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+const base::Feature kProcessHtmlDataImmediately{
+    "ProcessHtmlDataImmediately", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<bool> kProcessHtmlDataImmediatelyFirstChunk{
+    &kProcessHtmlDataImmediately, "first", false};
+
+const base::FeatureParam<bool> kProcessHtmlDataImmediatelySubsequentChunks{
+    &kProcessHtmlDataImmediately, "rest", false};
+
 }  // namespace features
 }  // namespace blink

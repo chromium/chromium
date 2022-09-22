@@ -828,6 +828,23 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoCentralWebCacheLimitControl);
 // than the beginning.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRunTextInputUpdatePostLifecycle);
 
+// If set, HTMLDocumentParser processes data immediately rather than after a
+// delay. This is further controlled by the feature params starting with the
+// same name. Also note that this only applies to uses that are normally
+// deferred (for example, when HTMLDocumentParser is created for inner-html it
+// is not deferred).
+BLINK_COMMON_EXPORT extern const base::Feature kProcessHtmlDataImmediately;
+
+// If set, the first chunk of data available for html processing is processed
+// immediately.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kProcessHtmlDataImmediatelyFirstChunk;
+
+// If set, subsequent chunks of data available for html processing are processed
+// immediately.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kProcessHtmlDataImmediatelySubsequentChunks;
+
 }  // namespace features
 }  // namespace blink
 

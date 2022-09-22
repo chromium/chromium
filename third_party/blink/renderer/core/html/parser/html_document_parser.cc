@@ -598,6 +598,12 @@ bool HTMLDocumentParser::HasPendingWorkScheduledForTesting() const {
   return task_runner_state_->IsScheduled();
 }
 
+unsigned HTMLDocumentParser::GetChunkCountForTesting() const {
+  // If `metrics_reporter_` is not set, chunk count is not tracked.
+  DCHECK(metrics_reporter_);
+  return metrics_reporter_->chunk_count();
+}
+
 void HTMLDocumentParser::Detach() {
   // Unwind any nested batch operations before being detached
   FlushFetchBatch();
@@ -1136,16 +1142,10 @@ void HTMLDocumentParser::Append(const String& input_source) {
 }
 
 void HTMLDocumentParser::FinishAppend() {
-  // Schedule a tokenizer pump to process this new data. We schedule to give
-  // paint a chance to happen, and because devtools somehow depends on it
-  // for js loads.
-  if (task_runner_state_->GetMode() ==
-          ParserSynchronizationPolicy::kAllowDeferredParsing &&
-      !task_runner_state_->ShouldComplete()) {
-    SchedulePumpTokenizer(/*from_finish_append=*/true);
-  } else {
+  if (ShouldPumpTokenizerNowForFinishAppend())
     PumpTokenizerIfPossible();
-  }
+  else
+    SchedulePumpTokenizer(/*from_finish_append=*/true);
 }
 
 void HTMLDocumentParser::CommitPreloadedData() {
@@ -1676,6 +1676,28 @@ void HTMLDocumentParser::FlushFetchBatch() {
       fetcher->EndBatch();
     }
   }
+}
+
+bool HTMLDocumentParser::ShouldPumpTokenizerNowForFinishAppend() const {
+  if (task_runner_state_->GetMode() !=
+          ParserSynchronizationPolicy::kAllowDeferredParsing ||
+      task_runner_state_->ShouldComplete()) {
+    return true;
+  }
+  if (!base::FeatureList::IsEnabled(features::kProcessHtmlDataImmediately))
+    return false;
+
+  // When a debugger is attached a nested message loop may be created during
+  // commit. Processing the data now can lead to unexpected states.
+  // TODO(https://crbug.com/1364695): see if this limitation can be removed.
+  if (auto* sink = probe::ToCoreProbeSink(GetDocument())) {
+    if (sink->HasAgentsGlobal(CoreProbeSink::kInspectorDOMDebuggerAgent))
+      return false;
+  }
+
+  return did_pump_tokenizer_
+             ? features::kProcessHtmlDataImmediatelySubsequentChunks.Get()
+             : features::kProcessHtmlDataImmediatelyFirstChunk.Get();
 }
 
 }  // namespace blink

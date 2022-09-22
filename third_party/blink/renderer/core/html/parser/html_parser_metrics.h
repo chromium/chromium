@@ -33,6 +33,8 @@ class CORE_EXPORT HTMLParserMetrics {
 
   void ReportMetricsAtParseEnd();
 
+  unsigned chunk_count() const { return chunk_count_; }
+
  private:
   void ReportUMAs();
 
