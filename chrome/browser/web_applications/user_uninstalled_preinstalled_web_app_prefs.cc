@@ -48,9 +48,9 @@ void UserUninstalledPreinstalledWebAppPrefs::Add(
         base::UserMetricsAction(kUserUninstalledPreinstalledAppAction));
   }
 
-  DictionaryPrefUpdate update(pref_service_,
+  ScopedDictPrefUpdate update(pref_service_,
                               prefs::kUserUninstalledPreinstalledWebAppPref);
-  update->SetKey(app_id, base::Value(std::move(url_list)));
+  update->Set(app_id, std::move(url_list));
 }
 
 absl::optional<AppId>
@@ -142,16 +142,16 @@ bool UserUninstalledPreinstalledWebAppPrefs::RemoveByInstallUrl(
   if (install_urls.size() == url_list->size())
     return false;
 
-  DictionaryPrefUpdate update(pref_service_,
+  ScopedDictPrefUpdate update(pref_service_,
                               prefs::kUserUninstalledPreinstalledWebAppPref);
 
   // Add the URLs back to the pref and clear pref in case there are
   // app_ids with empty URLs.
   if (install_urls.size() == 0)
-    return update->RemoveKey(app_id);
+    return update->Remove(app_id);
 
   // Add the remaining URLs to the preinstalled prefs after deletion.
-  update->SetKey(app_id, base::Value(std::move(install_urls)));
+  update->Set(app_id, std::move(install_urls));
   return true;
 }
 
@@ -164,9 +164,9 @@ bool UserUninstalledPreinstalledWebAppPrefs::RemoveByAppId(
   // Pref does not contain the app_id, so no need of removal.
   if (!ids_to_urls.contains(app_id))
     return false;
-  DictionaryPrefUpdate update(pref_service_,
+  ScopedDictPrefUpdate update(pref_service_,
                               prefs::kUserUninstalledPreinstalledWebAppPref);
-  return update->RemoveKey(app_id);
+  return update->Remove(app_id);
 }
 
 bool UserUninstalledPreinstalledWebAppPrefs::AppIdContainsAllUrls(

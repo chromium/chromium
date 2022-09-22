@@ -664,9 +664,9 @@ bool WasAppMigratedToWebApp(Profile* profile, const std::string& app_id) {
 void MarkAppAsMigratedToWebApp(Profile* profile,
                                const std::string& app_id,
                                bool was_migrated) {
-  ListPrefUpdate update(profile->GetPrefs(),
-                        webapps::kWebAppsMigratedPreinstalledApps);
-  base::Value::List& update_list = update->GetList();
+  ScopedListPrefUpdate update(profile->GetPrefs(),
+                              webapps::kWebAppsMigratedPreinstalledApps);
+  base::Value::List& update_list = update.Get();
   if (was_migrated)
     EnsureContains(update_list, app_id);
   else
@@ -688,9 +688,9 @@ bool WasMigrationRun(Profile* profile, base::StringPiece feature_name) {
 void SetMigrationRun(Profile* profile,
                      base::StringPiece feature_name,
                      bool was_migrated) {
-  ListPrefUpdate update(profile->GetPrefs(),
-                        prefs::kWebAppsDidMigrateDefaultChromeApps);
-  base::Value::List& update_list = update->GetList();
+  ScopedListPrefUpdate update(profile->GetPrefs(),
+                              prefs::kWebAppsDidMigrateDefaultChromeApps);
+  base::Value::List& update_list = update.Get();
   if (was_migrated)
     EnsureContains(update_list, feature_name);
   else
@@ -714,8 +714,8 @@ void MarkPreinstalledAppAsUninstalled(Profile* profile,
                                       const std::string& app_id) {
   if (WasPreinstalledAppUninstalled(profile, app_id))
     return;
-  ListPrefUpdate update(profile->GetPrefs(),
-                        prefs::kWebAppsUninstalledDefaultChromeApps);
-  EnsureContains(update->GetList(), app_id);
+  ScopedListPrefUpdate update(profile->GetPrefs(),
+                              prefs::kWebAppsUninstalledDefaultChromeApps);
+  EnsureContains(update.Get(), app_id);
 }
 }  // namespace web_app

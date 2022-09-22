@@ -196,13 +196,13 @@ void ExternallyInstalledWebAppPrefs::Insert(
   dict.SetKey(kExtensionId, base::Value(app_id));
   dict.SetKey(kInstallSource, base::Value(static_cast<int>(install_source)));
 
-  DictionaryPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
-  update->SetKey(url.spec(), std::move(dict));
+  ScopedDictPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
+  update->Set(url.spec(), std::move(dict));
 }
 
 bool ExternallyInstalledWebAppPrefs::Remove(const GURL& url) {
-  DictionaryPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
-  return update->RemoveKey(url.spec());
+  ScopedDictPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
+  return update->Remove(url.spec());
 }
 
 absl::optional<AppId> ExternallyInstalledWebAppPrefs::LookupAppId(
@@ -241,13 +241,13 @@ void ExternallyInstalledWebAppPrefs::SetIsPlaceholder(const GURL& url,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   DCHECK(pref_service_->GetDict(prefs::kWebAppsExtensionIDs).Find(url.spec()));
-  DictionaryPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
-  base::Value* map = update.Get();
+  ScopedDictPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
+  base::Value::Dict& map = update.Get();
 
-  auto* app_entry = map->FindKey(url.spec());
+  auto* app_entry = map.FindDict(url.spec());
   DCHECK(app_entry);
 
-  app_entry->SetBoolKey(kIsPlaceholder, is_placeholder);
+  app_entry->Set(kIsPlaceholder, is_placeholder);
 }
 
 bool ExternallyInstalledWebAppPrefs::IsPlaceholderApp(

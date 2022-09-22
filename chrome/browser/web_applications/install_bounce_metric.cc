@@ -80,13 +80,12 @@ void WriteInstallMetricsToPrefs(const InstallMetrics& install_metrics,
                                 PrefService* pref_service,
                                 const web_app::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey(kInstallTimestamp, SerializeTime(install_metrics.timestamp));
-  dict.SetKey(kInstallSource,
-              base::Value(static_cast<int>(install_metrics.source)));
+  base::Value::Dict dict;
+  dict.Set(kInstallTimestamp, SerializeTime(install_metrics.timestamp));
+  dict.Set(kInstallSource, static_cast<int>(install_metrics.source));
 
-  DictionaryPrefUpdate update(pref_service, prefs::kWebAppInstallMetrics);
-  update->SetKey(app_id, std::move(dict));
+  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppInstallMetrics);
+  update->Set(app_id, std::move(dict));
 }
 
 }  // namespace

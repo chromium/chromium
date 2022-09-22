@@ -172,8 +172,7 @@ void EmitRecords(Profile* profile) {
 }
 
 void RemoveRecords(PrefService* prefs) {
-  DictionaryPrefUpdate update(prefs, prefs::kWebAppsDailyMetrics);
-  update->DictClear();
+  prefs->SetDict(prefs::kWebAppsDailyMetrics, base::Value::Dict());
 }
 
 void UpdateRecord(DailyInteraction& record, PrefService* prefs) {
@@ -194,9 +193,9 @@ void UpdateRecord(DailyInteraction& record, PrefService* prefs) {
   }
 
   std::unique_ptr<DictionaryValue> record_dict = RecordToDict(record);
-  DictionaryPrefUpdate update(prefs, prefs::kWebAppsDailyMetrics);
+  ScopedDictPrefUpdate update(prefs, prefs::kWebAppsDailyMetrics);
 
-  update->SetKey(url, std::move(*record_dict));
+  update->Set(url, std::move(*record_dict));
 }
 
 }  // namespace

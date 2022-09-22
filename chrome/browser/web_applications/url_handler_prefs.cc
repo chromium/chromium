@@ -368,14 +368,11 @@ bool IsHandlerForApp(const AppId& app_id,
 // Removes entries that match |profile_path| and |app_id|.
 // |profile_path| is always compared while |app_id| is only compared when it is
 // not empty.
-void RemoveEntries(base::Value& pref_value,
+void RemoveEntries(base::Value::Dict& pref_value,
                    const AppId& app_id,
                    const base::FilePath& profile_path) {
-  if (!pref_value.is_dict())
-    return;
-
   std::vector<std::string> origins_to_remove;
-  for (auto origin_value : pref_value.DictItems()) {
+  for (auto origin_value : pref_value) {
     base::Value::List handlers = std::move(origin_value.second.GetList());
     handlers.EraseIf([&app_id, &profile_path](const base::Value& handler) {
       return IsHandlerForApp(app_id, profile_path,
@@ -390,7 +387,7 @@ void RemoveEntries(base::Value& pref_value,
   }
 
   for (const auto& origin_to_remove : origins_to_remove)
-    pref_value.RemoveKey(origin_to_remove);
+    pref_value.Remove(origin_to_remove);
 }
 
 using PathSet = base::flat_set<std::string>;
@@ -543,10 +540,10 @@ void SaveChoiceImpl(const AppId* app_id,
                     const GURL& url,
                     const UrlHandlerSavedChoice choice,
                     const base::Time& time,
-                    base::Value& pref_value,
+                    base::Value::Dict& pref_value,
                     const std::string& origin_str,
                     const bool origin_trimmed) {
-  base::Value::List* handlers = pref_value.GetDict().FindList(origin_str);
+  base::Value::List* handlers = pref_value.FindList(origin_str);
   if (!handlers)
     return;
 
@@ -574,10 +571,8 @@ void SaveChoice(PrefService* local_state,
   DCHECK(choice != UrlHandlerSavedChoice::kInBrowser ||
          (app_id == nullptr && profile_path == nullptr));
 
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
-  base::Value* const pref_value = update.Get();
-  if (!pref_value || !pref_value->is_dict())
-    return;
+  ScopedDictPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  base::Value::Dict& pref_value = update.Get();
 
   url::Origin origin = url::Origin::Create(url);
   if (origin.opaque())
@@ -590,9 +585,9 @@ void SaveChoice(PrefService* local_state,
 
   // SaveChoiceImpl modifies prefs but produces no output.
   TryDifferentOriginSubstrings(
-      origin_str, [app_id, profile_path, &url, choice, &time, pref_value](
+      origin_str, [app_id, profile_path, &url, choice, &time, &pref_value](
                       const std::string& origin_str, bool origin_trimmed) {
-        SaveChoiceImpl(app_id, profile_path, url, choice, time, *pref_value,
+        SaveChoiceImpl(app_id, profile_path, url, choice, time, pref_value,
                        origin_str, origin_trimmed);
       });
 }
@@ -706,10 +701,8 @@ void AddWebApp(PrefService* local_state,
   if (profile_path.empty() || url_handlers.empty())
     return;
 
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
-  base::Value* const pref_value = update.Get();
-  if (!pref_value || !pref_value->is_dict())
-    return;
+  ScopedDictPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  base::Value::Dict& pref_value = update.Get();
 
   for (const apps::UrlHandlerInfo& handler_info : url_handlers) {
     const url::Origin& origin = handler_info.origin;
@@ -718,8 +711,7 @@ void AddWebApp(PrefService* local_state,
 
     base::Value new_handler(
         NewHandler(app_id, profile_path, handler_info, time));
-    base::Value::List* const handlers =
-        pref_value->GetDict().FindList(origin.Serialize());
+    base::Value::List* const handlers = pref_value.FindList(origin.Serialize());
     // One or more apps are already associated with this origin.
     if (handlers) {
       auto it = base::ranges::find_if(
@@ -737,7 +729,7 @@ void AddWebApp(PrefService* local_state,
     } else {
       base::Value::List new_handlers;
       new_handlers.Append(std::move(new_handler));
-      pref_value->GetDict().Set(origin.Serialize(), std::move(new_handlers));
+      pref_value.Set(origin.Serialize(), std::move(new_handlers));
     }
   }
 }
@@ -747,17 +739,15 @@ void UpdateWebApp(PrefService* local_state,
                   const base::FilePath& profile_path,
                   apps::UrlHandlers new_url_handlers,
                   const base::Time& time) {
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
-  base::Value* const pref_value = update.Get();
-  if (!pref_value || !pref_value->is_dict())
-    return;
+  ScopedDictPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  base::Value::Dict& pref_value = update.Get();
 
   // In order to update data in URL handler prefs relevant to 'app_id' and
   // 'profile_path', perform an exhaustive search of all handler entries under
   // all keys. The previous url_handlers data could have had entries under any
   // origin key.
   std::vector<std::string> origins_to_remove;
-  for (auto origin_value : pref_value->DictItems()) {
+  for (auto origin_value : pref_value) {
     const std::string& origin_str = origin_value.first;
     base::Value::List curent_handlers =
         std::move(origin_value.second.GetList());
@@ -826,7 +816,7 @@ void UpdateWebApp(PrefService* local_state,
 
   // Remove any origin keys that have no more entries.
   for (const auto& origin_to_remove : origins_to_remove)
-    pref_value->RemoveKey(origin_to_remove);
+    pref_value.Remove(origin_to_remove);
 
   // Add the remaining items in 'new_url_handlers'.
   AddWebApp(local_state, app_id, profile_path, new_url_handlers, time);
@@ -838,12 +828,10 @@ void RemoveWebApp(PrefService* local_state,
   if (app_id.empty() || profile_path.empty())
     return;
 
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
-  base::Value* const pref_value = update.Get();
-  if (!pref_value || !pref_value->is_dict())
-    return;
+  ScopedDictPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  base::Value::Dict& pref_value = update.Get();
 
-  RemoveEntries(*pref_value, app_id, profile_path);
+  RemoveEntries(pref_value, app_id, profile_path);
 }
 
 void RemoveProfile(PrefService* local_state,
@@ -851,12 +839,10 @@ void RemoveProfile(PrefService* local_state,
   if (profile_path.empty())
     return;
 
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
-  base::Value* const pref_value = update.Get();
-  if (!pref_value || !pref_value->is_dict())
-    return;
+  ScopedDictPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  base::Value::Dict& pref_value = update.Get();
 
-  RemoveEntries(*pref_value, /*app_id*/ "", profile_path);
+  RemoveEntries(pref_value, /*app_id*/ "", profile_path);
 }
 
 bool IsHandlerForProfile(const base::Value& handler,
@@ -885,9 +871,7 @@ bool ProfileHasUrlHandlers(PrefService* local_state,
 }
 
 void Clear(PrefService* local_state) {
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
-  base::Value* const pref_value = update.Get();
-  pref_value->DictClear();
+  local_state->SetDict(prefs::kWebAppsUrlHandlerInfo, base::Value::Dict());
 }
 
 std::vector<UrlHandlerLaunchParams> FindMatchingUrlHandlers(
@@ -929,15 +913,13 @@ void ResetSavedChoice(PrefService* local_state,
                       bool has_origin_wildcard,
                       const std::string& url_path,
                       const base::Time& time) {
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
-  base::Value* const pref_value = update.Get();
-  if (!pref_value || !pref_value->is_dict())
-    return;
-  base::Value* const handlers_mutable = pref_value->FindListKey(origin);
+  ScopedDictPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  base::Value::Dict& pref_value = update.Get();
+  base::Value::List* const handlers_mutable = pref_value.FindList(origin);
   if (!handlers_mutable)
     return;
 
-  for (auto& handler : handlers_mutable->GetListDeprecated()) {
+  for (auto& handler : *handlers_mutable) {
     auto handler_view = GetHandlerView(handler);
     if (!handler_view)
       continue;

@@ -165,9 +165,9 @@ IN_PROC_BROWSER_TEST_P(
     ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration,
     OldPrefFormat) {
   // Set up the old format for this pref {url -> app_id}.
-  DictionaryPrefUpdate update(profile()->GetPrefs(),
+  ScopedDictPrefUpdate update(profile()->GetPrefs(),
                               prefs::kWebAppsExtensionIDs);
-  update->SetStringKey("https://example.com", "add_id_string");
+  update->Set("https://example.com", "add_id_string");
   // This should not crash on invalid pref data.
   EXPECT_FALSE(provider().registrar().IsPlaceholderApp(
       "app_id_string", WebAppManagement::kPolicy));
