@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -71,6 +72,8 @@ namespace {
 
 // The time between updating the bandwidth estimates.
 constexpr base::TimeDelta kBandwidthUpdateInterval = base::Milliseconds(500);
+
+constexpr char kLogPrefix[] = "OpenscreenSessionHost: ";
 
 int NumberOfEncodeThreads() {
   // Do not saturate CPU utilization just for encoding. On a lower-end system
@@ -369,10 +372,6 @@ void OpenscreenSessionHost::OnNegotiated(
     const openscreen::cast::SenderSession* session,
     openscreen::cast::SenderSession::ConfiguredSenders senders,
     Recommendations capture_recommendations) {
-  DVLOG(1) << __func__ << ": negotiated a new "
-           << (state_ == State::kRemoting ? "remoting" : "mirroring")
-           << " session.";
-
   if (state_ == State::kStopped)
     return;
 
@@ -520,6 +519,22 @@ void OpenscreenSessionHost::OnNegotiated(
   if (initially_starting_session && observer_) {
     observer_->DidStart();
   }
+
+  LogInfoMessage(base::StringPrintf(
+      "negotiated a new %s session. audio codec=%s, video codec=%s (%s)",
+      (state_ == State::kRemoting ? "remoting" : "mirroring"),
+      // TODO(https://crbug.com/1363514): media::cast::Codec should be removed.
+      // For now, we log the integer value of the enum but this should be
+      // serialized to a string once we use AudioCodec, VideoCodec.
+      (audio_config
+           ? base::NumberToString(static_cast<int>(audio_config->codec)).c_str()
+           : "none"),
+      (video_config
+           ? base::NumberToString(static_cast<int>(video_config->codec)).c_str()
+           : "none"),
+      (video_config
+           ? (video_config->use_external_encoder ? "hardware" : "software")
+           : "n/a")));
 }
 
 void OpenscreenSessionHost::OnCapabilitiesDetermined(
@@ -573,7 +588,8 @@ void OpenscreenSessionHost::OnError(const std::string& message) {
 }
 
 void OpenscreenSessionHost::RequestRefreshFrame() {
-  DVLOG(3) << __func__;
+  LogInfoMessage("Requesting a refresh frame from the video client");
+
   if (video_capture_client_)
     video_capture_client_->RequestRefreshFrame();
 }
@@ -649,12 +665,19 @@ void OpenscreenSessionHost::OnAsyncInitialized(
     std::move(initialized_cb_).Run();
 }
 
+void OpenscreenSessionHost::LogInfoMessage(const std::string& message) {
+  const std::string log_message = kLogPrefix + message;
+  DVLOG(1) << log_message;
+  if (observer_)
+    observer_->LogInfoMessage(log_message);
+}
+
 void OpenscreenSessionHost::ReportAndLogError(SessionError error,
                                               const std::string& message) {
   UMA_HISTOGRAM_ENUMERATION("MediaRouter.MirroringService.SessionError", error);
 
   if (observer_)
-    observer_->LogErrorMessage(message);
+    observer_->LogErrorMessage(kLogPrefix + message);
 
   if (state_ == State::kRemoting) {
     // Try to fallback to mirroring.
@@ -670,7 +693,9 @@ void OpenscreenSessionHost::ReportAndLogError(SessionError error,
 }
 
 void OpenscreenSessionHost::StopStreaming() {
-  DVLOG(2) << __func__ << " state=" << static_cast<int>(state_);
+  LogInfoMessage(
+      base::StrCat({"stopped streaming. state=",
+                    base::NumberToString(static_cast<int>(state_))}));
   if (!cast_environment_)
     return;
 
@@ -688,7 +713,9 @@ void OpenscreenSessionHost::StopStreaming() {
 }
 
 void OpenscreenSessionHost::StopSession() {
-  DVLOG(1) << __func__ << " state=" << static_cast<int>(state_);
+  LogInfoMessage(
+      base::StrCat({"stopped session. state=",
+                    base::NumberToString(static_cast<int>(state_))}));
   if (state_ == State::kStopped)
     return;
 
@@ -817,6 +844,10 @@ void OpenscreenSessionHost::SetTargetPlayoutDelay(
     audio_stream_->SetTargetPlayoutDelay(playout_delay);
   if (video_stream_)
     video_stream_->SetTargetPlayoutDelay(playout_delay);
+
+  LogInfoMessage(base::StrCat(
+      {"Updated target playout delay to ",
+       base::NumberToString(playout_delay.InMilliseconds()), "ms"}));
 }
 
 void OpenscreenSessionHost::ProcessFeedback(
@@ -857,12 +888,11 @@ void OpenscreenSessionHost::UpdateBandwidthEstimate() {
     bandwidth_being_utilized_ = usable_bandwidth;
   }
 
-  DVLOG(2) << ": updated bandwidth to " << bandwidth_being_utilized_ << "/"
-           << bandwidth_estimate_ << " ("
-           << static_cast<int>(
-                  (static_cast<float>(bandwidth_being_utilized_) * 100) /
-                  bandwidth_estimate_)
-           << "%)";
+  VLOG(2) << ": updated bandwidth to " << bandwidth_being_utilized_ << "/"
+          << bandwidth_estimate_ << " ("
+          << static_cast<int>(static_cast<float>(bandwidth_being_utilized_) *
+                              100 / bandwidth_estimate_)
+          << "%).";
 }
 
 void OpenscreenSessionHost::Negotiate() {

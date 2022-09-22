@@ -141,6 +141,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // to software rendering being used.
   void OnAsyncInitialized(const SupportedProfiles& profiles);
 
+  // Notify `observer_` of a relevant logging message.
+  void LogInfoMessage(const std::string& message);
+
   // Notify `observer_` that error occurred and close the session.
   void ReportAndLogError(mojom::SessionError error, const std::string& message);
 
