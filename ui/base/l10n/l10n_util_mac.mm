@@ -21,6 +21,19 @@ base::LazyInstance<std::string>::DestructorAtExit g_overridden_locale =
 
 namespace l10n_util {
 
+// Thread-safety:
+//
+// This function returns a reference to a global variable that is mutated by
+// OverrideLocaleWithCocoaLocale(), is called from multiple thread and doesn't
+// include locking.
+//
+// This may appear thread-unsafe. However, OverrideLocaleWithCocoaLocale() is
+// only called once during the application startup before the creation of the
+// Chromium threads, thus for the threads this can be considered as a constant
+// and can be safely be accessed without synchronisation nor memory barrier.
+//
+// This is only true as long as no new usage of OverrideLocaleWithCocoaLocale()
+// is added to the code base.
 const std::string& GetLocaleOverride() {
   return g_overridden_locale.Get();
 }
