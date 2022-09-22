@@ -6,7 +6,6 @@
 
 #include <sstream>
 #include <string>
-#include <tuple>
 #include <utility>
 
 #include "base/logging.h"
@@ -20,9 +19,8 @@ namespace content {
 
 namespace {
 
-absl::optional<std::tuple<net::SchemefulSite,
-                          FirstPartySetParser::SingleSet,
-                          FirstPartySetParser::Aliases>>
+absl::optional<
+    std::pair<FirstPartySetParser::SingleSet, FirstPartySetParser::Aliases>>
 CanonicalizeSet(const std::string& use_first_party_set_flag_value) {
   std::istringstream stream(use_first_party_set_flag_value);
 
@@ -49,8 +47,8 @@ CanonicalizeSet(const std::string& use_first_party_set_flag_value) {
     return absl::nullopt;
   }
 
-  return absl::make_optional(std::make_tuple(
-      std::move(primary), std::move(entries), std::move(aliases)));
+  return absl::make_optional(
+      std::make_pair(std::move(entries), std::move(aliases)));
 }
 
 }  // namespace
@@ -63,9 +61,8 @@ LocalSetDeclaration::LocalSetDeclaration(
     : LocalSetDeclaration(CanonicalizeSet(use_first_party_set_flag_value)) {}
 
 LocalSetDeclaration::LocalSetDeclaration(
-    absl::optional<std::tuple<net::SchemefulSite,
-                              FirstPartySetParser::SingleSet,
-                              FirstPartySetParser::Aliases>> parsed_set)
+    absl::optional<std::pair<FirstPartySetParser::SingleSet,
+                             FirstPartySetParser::Aliases>> parsed_set)
     : parsed_set_(std::move(parsed_set)) {}
 
 LocalSetDeclaration::~LocalSetDeclaration() = default;
@@ -78,21 +75,16 @@ LocalSetDeclaration::LocalSetDeclaration(LocalSetDeclaration&&) = default;
 LocalSetDeclaration& LocalSetDeclaration::operator=(LocalSetDeclaration&&) =
     default;
 
-const net::SchemefulSite& LocalSetDeclaration::GetPrimary() const {
-  DCHECK(!empty());
-  return std::get<0>(parsed_set_.value());
-}
-
 const FirstPartySetParser::SingleSet& LocalSetDeclaration::GetSet() const {
   DCHECK(!empty());
-  const FirstPartySetParser::SingleSet& set = std::get<1>(parsed_set_.value());
+  const FirstPartySetParser::SingleSet& set = parsed_set_.value().first;
   DCHECK(!set.empty());
   return set;
 }
 
 const FirstPartySetParser::Aliases& LocalSetDeclaration::GetAliases() const {
   DCHECK(!empty());
-  return std::get<2>(parsed_set_.value());
+  return parsed_set_.value().second;
 }
 
 }  // namespace content

@@ -194,7 +194,6 @@ TEST_F(PublicSetsTest, Empty_NonemptyEntries) {
 TEST_F(PublicSetsTest, Empty_NonemptyManualSet) {
   PublicSets public_sets;
   public_sets.ApplyManuallySpecifiedSet(
-      kPrimary,
       {
           {kPrimary,
            FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
@@ -241,7 +240,6 @@ TEST_F(PopulatedPublicSetsTest,
   // kPrimary overlaps as primary of both sets, so the existing set should be
   // wiped out.
   public_sets().ApplyManuallySpecifiedSet(
-      kPrimary,
       {
           {kPrimary,
            FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
@@ -273,7 +271,6 @@ TEST_F(PopulatedPublicSetsTest,
   // kPrimary overlaps as a primary of the public set and non-primary of the CLI
   // set, so the existing set should be wiped out.
   public_sets().ApplyManuallySpecifiedSet(
-      kPrimary3,
       {
           {kPrimary3,
            FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
@@ -306,7 +303,6 @@ TEST_F(PopulatedPublicSetsTest,
   // CLI set, so the CLI set should steal it and wipe out its alias, but
   // otherwise leave the set intact.
   public_sets().ApplyManuallySpecifiedSet(
-      kAssociated1,
       {
           {kAssociated1,
            FirstPartySetEntry(kAssociated1, SiteType::kPrimary, absl::nullopt)},
@@ -346,7 +342,6 @@ TEST_F(PopulatedPublicSetsTest,
   // kAssociated1 overlaps as a non-primary of the public set and non-primary of
   // the CLI set, so the CLI set should steal it and wipe out its alias.
   public_sets().ApplyManuallySpecifiedSet(
-      kPrimary3,
       {
           {kPrimary3,
            FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
@@ -385,7 +380,6 @@ TEST_F(PopulatedPublicSetsTest,
   // Steal kAssociated3, so that kPrimary2 becomes a singleton, and verify that
   // kPrimary2 is no longer considered in a set.
   public_sets().ApplyManuallySpecifiedSet(
-      kPrimary3,
       {
           {kPrimary3,
            FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
@@ -403,7 +397,6 @@ TEST_F(PopulatedPublicSetsTest, ApplyManuallySpecifiedSet_RespectsManualAlias) {
   // kAssociated1, but both define a different set for that site too.  Only the
   // locally-defined alias should be observable.
   public_sets().ApplyManuallySpecifiedSet(
-      kPrimary3,
       {
           {kPrimary3,
            FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},

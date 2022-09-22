@@ -76,7 +76,6 @@ class NET_EXPORT PublicSets {
   // Modifies this instance such that it will respect the given
   // manually-specified set.
   void ApplyManuallySpecifiedSet(
-      const SchemefulSite& manual_primary,
       const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries,
       const base::flat_map<SchemefulSite, SchemefulSite>& manual_aliases);
 

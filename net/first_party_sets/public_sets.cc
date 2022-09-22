@@ -147,7 +147,6 @@ base::flat_map<SchemefulSite, FirstPartySetEntry> PublicSets::FindEntries(
 }
 
 void PublicSets::ApplyManuallySpecifiedSet(
-    const SchemefulSite& manual_primary,
     const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries,
     const base::flat_map<SchemefulSite, SchemefulSite>& manual_aliases) {
   DCHECK(manual_config_.empty());

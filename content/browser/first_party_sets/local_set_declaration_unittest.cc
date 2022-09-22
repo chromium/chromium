@@ -23,14 +23,11 @@ using ::testing::UnorderedElementsAre;
 
 namespace content {
 
-MATCHER_P3(SetIs, primary_matcher, set_matcher, aliases_matcher, "") {
+MATCHER_P2(SetIs, set_matcher, aliases_matcher, "") {
   const LocalSetDeclaration& local_set = arg;
-  const net::SchemefulSite& primary = local_set.GetPrimary();
   const FirstPartySetParser::SingleSet& set = local_set.GetSet();
   const FirstPartySetParser::Aliases& aliases = local_set.GetAliases();
-  return testing::ExplainMatchResult(primary_matcher, primary,
-                                     result_listener) &&
-         testing::ExplainMatchResult(set_matcher, set, result_listener) &&
+  return testing::ExplainMatchResult(set_matcher, set, result_listener) &&
          testing::ExplainMatchResult(aliases_matcher, aliases, result_listener);
 }
 
@@ -55,8 +52,7 @@ TEST(LocalSetDeclarationTest, Valid_Basic) {
   EXPECT_THAT(
       LocalSetDeclaration(R"({"primary": "https://primary.test",)"
                           R"("associatedSites": ["https://associated.test"]})"),
-      SetIs(primary,
-            UnorderedElementsAre(
+      SetIs(UnorderedElementsAre(
                 Pair(primary,
                      net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
                                              absl::nullopt)),
@@ -82,8 +78,7 @@ TEST(LocalSetDeclarationTest, Valid_MultipleSubsetsAndAliases) {
           R"(  "https://associated2.test": ["https://associated2.cctld"])"
           R"(})"
           R"(})"),
-      SetIs(primary,
-            UnorderedElementsAre(
+      SetIs(UnorderedElementsAre(
                 Pair(primary,
                      net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
                                              absl::nullopt)),

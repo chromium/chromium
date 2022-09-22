@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_FIRST_PARTY_SETS_LOCAL_SET_DECLARATION_H_
 
 #include <string>
-#include <tuple>
+#include <utility>
 
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/common/content_export.h"
@@ -44,16 +44,14 @@ class CONTENT_EXPORT LocalSetDeclaration {
 
  private:
   explicit LocalSetDeclaration(
-      absl::optional<std::tuple<net::SchemefulSite,
-                                FirstPartySetParser::SingleSet,
-                                FirstPartySetParser::Aliases>> parsed_set);
+      absl::optional<std::pair<FirstPartySetParser::SingleSet,
+                               FirstPartySetParser::Aliases>> parsed_set);
 
   // Stores the result of parsing the inputs. Specifically, this may be empty if
-  // no set was locally defined; otherwise, it holds the primary site, the
-  // collection of FirstPartySetEntries, and any ccTLD aliases.
-  absl::optional<std::tuple<net::SchemefulSite,
-                            FirstPartySetParser::SingleSet,
-                            FirstPartySetParser::Aliases>>
+  // no set was locally defined; otherwise, it holds the collection of
+  // FirstPartySetEntries and any ccTLD aliases.
+  absl::optional<
+      std::pair<FirstPartySetParser::SingleSet, FirstPartySetParser::Aliases>>
       parsed_set_;
 };
 
