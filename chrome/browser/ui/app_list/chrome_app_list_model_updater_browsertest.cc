@@ -154,16 +154,6 @@ INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
                          ChromeAppListModelUpdaterTest,
                          ::testing::Bool());
 
-// Test cases with productivity launcher enabled.
-class ChromeAppListModelUpdaterLegacyLauncherTest
-    : public ChromeAppListModelUpdaterTestBase {
- public:
-  ChromeAppListModelUpdaterLegacyLauncherTest()
-      : ChromeAppListModelUpdaterTestBase(
-            /*enable_productivity_launcher=*/false) {}
-  ~ChromeAppListModelUpdaterLegacyLauncherTest() override = default;
-};
-
 class ChromeAppListModelUpdaterProductivityLauncherTest
     : public ChromeAppListModelUpdaterTestBase {
  public:
@@ -743,41 +733,4 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterProductivityLauncherTest,
   EXPECT_FALSE(app1_item->is_new_install());
   EXPECT_FALSE(app2_item->is_new_install());
   EXPECT_FALSE(folder_item->is_new_install());
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterLegacyLauncherTest,
-                       PRE_PersistTrailingUserCreatedPage) {
-  const std::string app1_id =
-      LoadExtension(test_data_dir_.AppendASCII("app1"))->id();
-  ASSERT_FALSE(app1_id.empty());
-  const std::string app2_id =
-      LoadExtension(test_data_dir_.AppendASCII("app2"))->id();
-  ASSERT_FALSE(app2_id.empty());
-
-  // Create the app list view and show the apps grid.
-  ash::AcceleratorController::Get()->PerformActionIfEnabled(
-      ash::TOGGLE_APP_LIST, {});
-  ASSERT_EQ(1, app_list_test_api_.GetPaginationModel()->total_pages());
-
-  app_list_test_api_.GetLastItemInAppsGridView()->RequestFocus();
-
-  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
-      nullptr, ui::VKEY_DOWN, /*control=*/true, /*shift=*/false,
-      /*alt=*/false, /*command=*/false));
-  EXPECT_EQ(2, app_list_test_api_.GetPaginationModel()->total_pages());
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterLegacyLauncherTest,
-                       PersistTrailingUserCreatedPage) {
-  const std::string app1_id =
-      LoadExtension(test_data_dir_.AppendASCII("app1"))->id();
-  ASSERT_FALSE(app1_id.empty());
-  const std::string app2_id =
-      LoadExtension(test_data_dir_.AppendASCII("app2"))->id();
-  ASSERT_FALSE(app2_id.empty());
-
-  // Verify that the app list still has 2 pages after session restart.
-  ash::AcceleratorController::Get()->PerformActionIfEnabled(
-      ash::TOGGLE_APP_LIST, {});
-  EXPECT_EQ(2, app_list_test_api_.GetPaginationModel()->total_pages());
 }
