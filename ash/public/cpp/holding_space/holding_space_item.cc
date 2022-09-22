@@ -159,7 +159,7 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
   const absl::optional<int> version = dict.FindIntPath(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
-  const Type type = static_cast<Type>(dict.FindIntPath(kTypePath).value());
+  const Type type = DeserializeType(dict);
   const base::FilePath file_path = DeserializeFilePath(dict);
 
   // NOTE: `std::make_unique` does not work with private constructors.
@@ -196,6 +196,17 @@ base::FilePath HoldingSpaceItem::DeserializeFilePath(
   DCHECK(file_path.has_value());
 
   return file_path.value();
+}
+
+// static
+// NOTE: This method must remain in sync with `Serialize()`. If multiple
+// serialization versions are supported, care must be taken to handle each.
+HoldingSpaceItem::Type HoldingSpaceItem::DeserializeType(
+    const base::DictionaryValue& dict) {
+  const absl::optional<int> version = dict.FindIntPath(kVersionPath);
+  DCHECK(version.has_value() && version.value() == kVersion);
+
+  return static_cast<Type>(dict.FindIntPath(kTypePath).value());
 }
 
 // NOTE: This method must remain in sync with `Deserialize()`. The

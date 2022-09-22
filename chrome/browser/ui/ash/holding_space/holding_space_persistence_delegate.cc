@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -131,6 +132,9 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
 void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
   DCHECK(model()->items().empty());
 
+  // Clear suggestions before restoration if needed.
+  MaybeRemoveSuggestionsFromPersistence();
+
   const auto& persisted_holding_space_items =
       profile()->GetPrefs()->GetList(kPersistencePath);
 
@@ -155,6 +159,19 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
 
   // Notify completion of persistence restoration.
   std::move(persistence_restored_callback_).Run();
+}
+
+void HoldingSpacePersistenceDelegate::MaybeRemoveSuggestionsFromPersistence() {
+  DCHECK(is_restoring_persistence());
+
+  if (features::IsHoldingSpaceSuggestionsEnabled())
+    return;
+
+  ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
+  update->GetList().EraseIf([](const base::Value& persisted_item) {
+    return HoldingSpaceItem::IsSuggestion(HoldingSpaceItem::DeserializeType(
+        base::Value::AsDictionaryValue(persisted_item)));
+  });
 }
 
 }  // namespace ash

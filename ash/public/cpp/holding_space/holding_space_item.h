@@ -136,6 +136,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Deserializes `file_path_` from a serialized `HoldingSpaceItem`.
   static base::FilePath DeserializeFilePath(const base::DictionaryValue& dict);
 
+  // Deserializes `type_` from a serialized `HoldingSpaceItem`.
+  static Type DeserializeType(const base::DictionaryValue& dict);
+
   // Serializes from `HoldingSpaceItem` to `base::DictionaryValue`.
   base::DictionaryValue Serialize() const;
 

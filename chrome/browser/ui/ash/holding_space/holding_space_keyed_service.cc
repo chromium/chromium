@@ -449,8 +449,6 @@ void HoldingSpaceKeyedService::InitializeDelegates() {
 
   // The `HoldingSpaceSuggestionsDelegate` manages file suggestions (i.e. the
   // files predicted to be used).
-  // TODO(https://crbug.com/1364240): ensure that if the feature is disabled,
-  // the suggestions restored from the persistence do not appear in the model.
   if (features::IsHoldingSpaceSuggestionsEnabled()) {
     delegates_.push_back(std::make_unique<HoldingSpaceSuggestionsDelegate>(
         this, &holding_space_model_));

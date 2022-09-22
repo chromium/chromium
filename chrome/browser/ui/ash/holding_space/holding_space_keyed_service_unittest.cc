@@ -498,13 +498,28 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   arc::ArcServiceManager arc_service_manager_;
 };
 
-class HoldingSpaceKeyedServiceWithPredictabilityFeatureTest
+class HoldingSpaceKeyedServiceWithExperimentalFeatureTest
     : public HoldingSpaceKeyedServiceTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          std::tuple</*enable_predictability=*/bool,
+                     /*enable_suggestion=*/bool>> {
  public:
-  HoldingSpaceKeyedServiceWithPredictabilityFeatureTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpacePredictability, GetParam());
+  HoldingSpaceKeyedServiceWithExperimentalFeatureTest() {
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+    if (std::get<0>(GetParam())) {
+      enabled_features.push_back(features::kHoldingSpacePredictability);
+    } else {
+      disabled_features.push_back(features::kHoldingSpacePredictability);
+    }
+
+    if (std::get<1>(GetParam())) {
+      enabled_features.push_back(features::kHoldingSpaceSuggestions);
+    } else {
+      disabled_features.push_back(features::kHoldingSpaceSuggestions);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  private:
@@ -512,11 +527,10 @@ class HoldingSpaceKeyedServiceWithPredictabilityFeatureTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
-                         ::testing::Bool());
+                         HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
-       GuestUserProfile) {
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest, GuestUserProfile) {
   // Construct a guest session profile.
   TestingProfile::Builder guest_profile_builder;
   guest_profile_builder.SetGuestSession();
@@ -571,7 +585,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
             secondary_otr_guest_profile_service);
 }
 
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        OffTheRecordProfile) {
   // Service instances should be created for on the record profiles.
   HoldingSpaceKeyedService* const primary_profile_service =
@@ -595,7 +609,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
   ASSERT_FALSE(incognito_primary_profile_service);
 }
 
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        SecondaryUserProfile) {
   HoldingSpaceKeyedService* const primary_holding_space_service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
@@ -621,7 +635,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
 }
 
 // Verifies that updates to the holding space model are persisted.
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        UpdatePersistentStorage) {
   // Create a file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
@@ -674,7 +688,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
 // Verifies that only finalized holding space items are persisted and that,
 // once finalized, previously in progress holding space items are persisted at
 // the appropriate index.
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        PersistenceOfInProgressItems) {
   // Create a file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
@@ -802,7 +816,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
 
 // Verifies that when a file backing a holding space item is moved, the holding
 // space item is updated in place and persistence storage is updated.
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        UpdatePersistentStorageAfterMove) {
   // Create a file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
@@ -929,7 +943,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
 // backing file is changed using move operation. Furthermore, verifies that
 // conflicts caused by moving a holding space item file to another path present
 // in the holding space get resolved.
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        UpdateItemsOverwrittenByMove) {
   // Create a file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
@@ -1074,7 +1088,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
 // Verifies that the holding space model is restored from persistence. Note that
 // when restoring from persistence, existence of backing files is verified and
 // any stale holding space items are removed.
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        RestorePersistentStorage) {
   // Verify expected histograms.
   base::HistogramTester histogram_tester;
@@ -1117,15 +1131,21 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
           persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
 
-          // We expect the `fresh_holding_space_item` to still be in persistence
-          // after model restoration since its backing file exists.
-          persisted_holding_space_items_after_restoration.Append(
-              fresh_holding_space_item->Serialize());
+          // Suggestions should not be restored if the suggestion feature is
+          // disabled.
+          if (!HoldingSpaceItem::IsSuggestion(type) ||
+              features::IsHoldingSpaceSuggestionsEnabled()) {
+            // We expect the `fresh_holding_space_item` to still be in
+            // persistence after model restoration since its backing file
+            // exists.
+            persisted_holding_space_items_after_restoration.Append(
+                fresh_holding_space_item->Serialize());
 
-          // We expect the `fresh_holding_space_item` to be restored from
-          // persistence since its backing file exists.
-          restored_holding_space_items.push_back(
-              std::move(fresh_holding_space_item));
+            // We expect the `fresh_holding_space_item` to be restored from
+            // persistence since its backing file exists.
+            restored_holding_space_items.push_back(
+                std::move(fresh_holding_space_item));
+          }
 
           base::FilePath file_path = downloads_mount->GetRootPath().AppendASCII(
               base::UnguessableToken::Create().ToString());
@@ -1184,16 +1204,21 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
       "HoldingSpace.Item.TotalCount.All",
       secondary_holding_space_model->items().size(), 1);
   for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+    // Suggestions are not added to the model if the feature is disabled.
+    const bool should_restore = !HoldingSpaceItem::IsSuggestion(type) ||
+                                features::IsHoldingSpaceSuggestionsEnabled();
+    const int expected_count = should_restore ? 1 : 0;
+
     histogram_tester.ExpectBucketCount(
         base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
                            holding_space_util::ToString(type).c_str()),
-        /*sample=*/1, /*expected_count=*/1);
+        /*sample=*/1, expected_count);
   }
 }
 
 // Verifies that items from volumes that are not immediately mounted during
 // startup get restored into the holding space.
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        RestorePersistentStorageForDelayedVolumeMount) {
   // Create file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
@@ -1226,16 +1251,25 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
               HoldingSpaceItem::CreateFileBackedItem(
                   type, delayed_mount_file, GURL("filesystem:fake"),
                   base::BindOnce(&CreateTestHoldingSpaceImage));
-          // The item should be restored after delayed volume mount, and remain
-          // in persistent storage.
           persisted_holding_space_items_before_restoration.Append(
               delayed_holding_space_item->Serialize());
-          persisted_holding_space_items_after_restoration.Append(
-              delayed_holding_space_item->Serialize());
-          persisted_holding_space_items_after_delayed_mount.Append(
-              delayed_holding_space_item->Serialize());
-          restored_holding_space_items.push_back(
-              std::move(delayed_holding_space_item));
+
+          // Suggestions should not be restored if the suggestion feature is
+          // disabled.
+          const bool should_restore =
+              !HoldingSpaceItem::IsSuggestion(type) ||
+              features::IsHoldingSpaceSuggestionsEnabled();
+
+          // If an item should be restored, it should be restored after delayed
+          // volume mount, and remain in persistent storage.
+          if (should_restore) {
+            persisted_holding_space_items_after_restoration.Append(
+                delayed_holding_space_item->Serialize());
+            persisted_holding_space_items_after_delayed_mount.Append(
+                delayed_holding_space_item->Serialize());
+            restored_holding_space_items.push_back(
+                std::move(delayed_holding_space_item));
+          }
 
           const base::FilePath non_existent_path =
               delayed_mount->GetRootPath().Append("non-existent");
@@ -1249,8 +1283,11 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
           // until the associated volume is mounted.
           persisted_holding_space_items_before_restoration.Append(
               non_existant_delayed_holding_space_item->Serialize());
-          persisted_holding_space_items_after_restoration.Append(
-              non_existant_delayed_holding_space_item->Serialize());
+
+          if (should_restore) {
+            persisted_holding_space_items_after_restoration.Append(
+                non_existant_delayed_holding_space_item->Serialize());
+          }
 
           const base::FilePath file = downloads_mount->CreateArbitraryFile();
           const GURL file_system_url = GetFileSystemUrl(GetProfile(), file);
@@ -1260,19 +1297,21 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
                   base::BindOnce(&holding_space_util::ResolveImage,
                                  primary_holding_space_service
                                      ->thumbnail_loader_for_testing()));
-
-          // The item should be immediately added to the model, and remain in
-          // the persistent storage.
           persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
-          initialized_items_before_delayed_mount.push_back(
-              fresh_holding_space_item->id());
-          persisted_holding_space_items_after_restoration.Append(
-              fresh_holding_space_item->Serialize());
-          persisted_holding_space_items_after_delayed_mount.Append(
-              fresh_holding_space_item->Serialize());
-          restored_holding_space_items.push_back(
-              std::move(fresh_holding_space_item));
+
+          // The item should be immediately added to the model, and remain in
+          // the persistent storage if it should be restored.
+          if (should_restore) {
+            initialized_items_before_delayed_mount.push_back(
+                fresh_holding_space_item->id());
+            persisted_holding_space_items_after_restoration.Append(
+                fresh_holding_space_item->Serialize());
+            persisted_holding_space_items_after_delayed_mount.Append(
+                fresh_holding_space_item->Serialize());
+            restored_holding_space_items.push_back(
+                std::move(fresh_holding_space_item));
+          }
         }
 
         pref_store->SetValueSilently(
@@ -1350,7 +1389,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
 // startup get restored into the holding space - same as
 // RestorePersistentStorageForDelayedVolumeMount, but the volume gets mounted
 // while item restoration is in progress.
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        RestorePersistentStorageForDelayedVolumeMountDuringRestoration) {
   // Create file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
@@ -1381,14 +1420,23 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
               HoldingSpaceItem::CreateFileBackedItem(
                   type, delayed_mount_file, GURL("filesystem:fake"),
                   base::BindOnce(&CreateTestHoldingSpaceImage));
-          // The item should be restored after delayed volume mount, and remain
-          // in persistent storage.
           persisted_holding_space_items_before_restoration.Append(
               delayed_holding_space_item->Serialize());
-          persisted_holding_space_items_after_delayed_mount.Append(
-              delayed_holding_space_item->Serialize());
-          restored_holding_space_items.push_back(
-              std::move(delayed_holding_space_item));
+
+          // Suggestions should not be restored if the suggestion feature is
+          // disabled.
+          const bool should_restore =
+              !HoldingSpaceItem::IsSuggestion(type) ||
+              features::IsHoldingSpaceSuggestionsEnabled();
+
+          // The item is restored after delayed volume mount, and remain
+          // in persistent storage if it should be restored.
+          if (should_restore) {
+            persisted_holding_space_items_after_delayed_mount.Append(
+                delayed_holding_space_item->Serialize());
+            restored_holding_space_items.push_back(
+                std::move(delayed_holding_space_item));
+          }
 
           base::FilePath non_existent_path =
               delayed_mount->GetRootPath().Append("non-existent");
@@ -1412,14 +1460,17 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
                                  primary_holding_space_service
                                      ->thumbnail_loader_for_testing()));
 
-          // The item should be immediately added to the model, and remain in
-          // the persistent storage.
           persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
-          persisted_holding_space_items_after_delayed_mount.Append(
-              fresh_holding_space_item->Serialize());
-          restored_holding_space_items.push_back(
-              std::move(fresh_holding_space_item));
+
+          // The item should be immediately added to the model, and remain in
+          // the persistent storage if it should be restored.
+          if (should_restore) {
+            persisted_holding_space_items_after_delayed_mount.Append(
+                fresh_holding_space_item->Serialize());
+            restored_holding_space_items.push_back(
+                std::move(fresh_holding_space_item));
+          }
         }
 
         pref_store->SetValueSilently(
@@ -1475,7 +1526,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
 
 // Verifies that mounting volumes that contain no holding space items does not
 // interfere with holding space restoration.
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        RestorePersistentStorageWithUnrelatedVolumeMounts) {
   // Create file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
@@ -1514,18 +1565,24 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
                                  primary_holding_space_service
                                      ->thumbnail_loader_for_testing()));
 
-          // The item should be immediately added to the model, and remain in
-          // the persistent storage.
           persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
-          initialized_items_before_delayed_mount.push_back(
-              fresh_holding_space_item->id());
-          persisted_holding_space_items_after_restoration.Append(
-              fresh_holding_space_item->Serialize());
-          persisted_holding_space_items_after_delayed_mount.Append(
-              fresh_holding_space_item->Serialize());
-          restored_holding_space_items.push_back(
-              std::move(fresh_holding_space_item));
+
+          // The item should be immediately added to the model, and remain in
+          // the persistent storage if it should be restored.
+          const bool should_restore =
+              !HoldingSpaceItem::IsSuggestion(type) ||
+              features::IsHoldingSpaceSuggestionsEnabled();
+          if (should_restore) {
+            initialized_items_before_delayed_mount.push_back(
+                fresh_holding_space_item->id());
+            persisted_holding_space_items_after_restoration.Append(
+                fresh_holding_space_item->Serialize());
+            persisted_holding_space_items_after_delayed_mount.Append(
+                fresh_holding_space_item->Serialize());
+            restored_holding_space_items.push_back(
+                std::move(fresh_holding_space_item));
+          }
         }
 
         pref_store->SetValueSilently(
@@ -1593,7 +1650,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
 }
 
 // Tests that items from an unmounted volume get removed from the holding space.
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        RemoveItemsFromUnmountedVolumes) {
   auto test_mount_1 = std::make_unique<ScopedTestMountPoint>(
       "test_mount_1", storage::kFileSystemTypeLocal,
@@ -1643,7 +1700,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
 // `kMaxFileAge`, when the predictability feature is off.
 // Verifies that files restored from persistence are restored, regardless of
 // `kMaxFileAge`, when the predictability feature is on.
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        RemoveOlderFilesFromPersistence) {
   // Create file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
@@ -1677,12 +1734,22 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
           persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
 
-          // Only pinned files are exempt from age checks. In this test, we
-          // expect all holding space items of other types to be removed from
-          // persistence during restoration due to being older than
-          // `kMaxFileAge`.
-          if (features::IsHoldingSpacePredictabilityEnabled() ||
-              type == HoldingSpaceItem::Type::kPinnedFile) {
+          bool should_restore = false;
+          if (!features::IsHoldingSpaceSuggestionsEnabled() &&
+              HoldingSpaceItem::IsSuggestion(type)) {
+            // Suggestion items should not be restored if the suggestion feature
+            // is disabled.
+            should_restore = false;
+          } else {
+            // Pinned files are exempt from age checks. If the predictability
+            // feature is disabled, we expect all holding space items of other
+            // types to be removed from persistence during restoration due to
+            // being older than `kMaxFileAge`.
+            should_restore = features::IsHoldingSpacePredictabilityEnabled() ||
+                             type == HoldingSpaceItem::Type::kPinnedFile;
+          }
+
+          if (should_restore) {
             persisted_holding_space_items_after_restoration.Append(
                 fresh_holding_space_item->Serialize());
             restored_holding_space_items.push_back(
@@ -1738,7 +1805,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
             persisted_holding_space_items_after_restoration);
 }
 
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        AddArcDownloadItem) {
   // Wait for the holding space model to attach.
   TestingProfile* profile = GetProfile();
@@ -1775,7 +1842,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
                 base::FilePath("Download.png")));
 }
 
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        AddInProgressDownloadItem) {
   // Wait for the holding space model to attach.
   TestingProfile* profile = GetProfile();
@@ -2043,7 +2110,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
   EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
 }
 
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest, RemoveAll) {
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest, RemoveAll) {
   // Wait for the holding space model to attach.
   TestingProfile* profile = GetProfile();
   HoldingSpaceModelAttachedWaiter(profile).Wait();
@@ -2079,7 +2146,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest, RemoveAll) {
   EXPECT_EQ(0u, model->items().size());
 }
 
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        CreateInterruptedDownloadItem) {
   // Wait for the holding space model to attach.
   TestingProfile* profile = GetProfile();
@@ -2155,7 +2222,7 @@ TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
   EXPECT_TRUE(model->items()[0]->progress().IsComplete());
 }
 
-TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
        InterruptAndResumeDownload) {
   // Wait for the holding space model to attach.
   TestingProfile* profile = GetProfile();
