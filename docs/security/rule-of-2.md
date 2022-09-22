@@ -306,16 +306,11 @@ its parent using `../`).
 
 ## Existing Code That Violates The Rule
 
-We still have a lot of code that violates this rule. For example, until very
-recently, all of the network stack was in the browser process, and its whole job
-is to parse complex and untrustworthy inputs (TLS, QUIC, HTTP, DNS, X.509, and
-more). This dangerous combination is why bugs in that area of code are often of
-Critical severity:
+We still have code that violates this rule.  For example, Chrome's Omnibox
+[still parses JSON in the browser
+process](https://bugs.chromium.org/p/chromium/issues/detail?id=863193&q=%22rule%20of%202%22%20omnibox&can=1).
+Additionally, the networking process on Windows is (at present) unsandboxed by
+default, though there is [ongoing
+work](https://bugs.chromium.org/p/chromium/issues/detail?id=841001)
+to change that default.
 
-  * [OOB Write in `QuicStreamSequencerBuffer::OnStreamData`](https://bugs.chromium.org/p/chromium/issues/detail?id=778505)
-  * [Stack Buffer Overflow in `QuicClientPromisedInfo::OnPromiseHeaders`](https://bugs.chromium.org/p/chromium/issues/detail?id=777728)
-
-We now have the network stack in its own dedicated process, and have begun the
-process of reducing that process' privilege. ([macOS
-bug](https://bugs.chromium.org/p/chromium/issues/detail?id=915910), [Windows
-bug](https://bugs.chromium.org/p/chromium/issues/detail?id=841001))
