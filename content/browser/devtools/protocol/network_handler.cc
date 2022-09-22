@@ -1860,35 +1860,6 @@ String BuildServiceWorkerResponseSource(
   }
 }
 
-String AlternateProtocolUsageToString(
-    net::AlternateProtocolUsage alternate_protocol_usage) {
-  switch (alternate_protocol_usage) {
-    case net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_NO_RACE:
-      return protocol::Network::AlternateProtocolUsageEnum::
-          AlternativeJobWonWithoutRace;
-    case net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_WON_RACE:
-      return protocol::Network::AlternateProtocolUsageEnum::
-          AlternativeJobWonRace;
-    case net::AlternateProtocolUsage::
-        ALTERNATE_PROTOCOL_USAGE_MAIN_JOB_WON_RACE:
-      return protocol::Network::AlternateProtocolUsageEnum::MainJobWonRace;
-    case net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_MAPPING_MISSING:
-      return protocol::Network::AlternateProtocolUsageEnum::MappingMissing;
-    case net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_BROKEN:
-      return protocol::Network::AlternateProtocolUsageEnum::Broken;
-    case net::AlternateProtocolUsage::
-        ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITHOUT_RACE:
-      return protocol::Network::AlternateProtocolUsageEnum::
-          DnsAlpnH3JobWonWithoutRace;
-    case net::AlternateProtocolUsage::
-        ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE:
-      return protocol::Network::AlternateProtocolUsageEnum::DnsAlpnH3JobWonRace;
-    case net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_MAX:
-      return protocol::Network::AlternateProtocolUsageEnum::UnspecifiedReason;
-  }
-  return protocol::Network::AlternateProtocolUsageEnum::UnspecifiedReason;
-}
-
 std::unique_ptr<Network::Response> BuildResponse(
     const GURL& url,
     const network::mojom::URLResponseHeadDevToolsInfo& info) {
@@ -1933,8 +1904,6 @@ std::unique_ptr<Network::Response> BuildResponse(
   }
 
   response->SetProtocol(GetProtocol(url, info));
-  response->SetAlternateProtocolUsage(
-      AlternateProtocolUsageToString(info.alternate_protocol_usage));
   response->SetRemoteIPAddress(
       net::HostPortPair::FromIPEndPoint(info.remote_endpoint).HostForURL());
   response->SetRemotePort(info.remote_endpoint.port());

@@ -736,7 +736,6 @@ void WebURLLoader::PopulateURLResponse(
   response->SetWasAlpnNegotiated(head.was_alpn_negotiated);
   response->SetAlpnNegotiatedProtocol(
       WebString::FromUTF8(head.alpn_negotiated_protocol));
-  response->SetAlternateProtocolUsage(head.alternate_protocol_usage);
   response->SetHasAuthorizationCoveredByWildcardOnPreflight(
       head.has_authorization_covered_by_wildcard_on_preflight);
   response->SetWasAlternateProtocolAvailable(

@@ -415,11 +415,6 @@ void WebURLResponse::SetAlpnNegotiatedProtocol(
   resource_response_->SetAlpnNegotiatedProtocol(alpn_negotiated_protocol);
 }
 
-void WebURLResponse::SetAlternateProtocolUsage(
-    const net::AlternateProtocolUsage alternate_protocol_usage) {
-  resource_response_->SetAlternateProtocolUsage(alternate_protocol_usage);
-}
-
 bool WebURLResponse::HasAuthorizationCoveredByWildcardOnPreflight() const {
   return resource_response_->HasAuthorizationCoveredByWildcardOnPreflight();
 }

@@ -16,7 +16,6 @@ mojom("mojom_ip_address") {
   sources = [
     "address_family.mojom",
     "address_list.mojom",
-    "alternate_protocol_usage.mojom",
     "connection_endpoint_metadata.mojom",
     "host_resolver_endpoint_result.mojom",
     "ip_address.mojom",
@@ -66,22 +65,6 @@ mojom("mojom_ip_address") {
       traits_headers = [
         "//net/http/http_response_info.h",
         "//services/network/public/cpp/network_ipc_param_traits.h",
-      ]
-      traits_public_deps = [
-        "//net",
-        "//services/network/public/cpp:ip_address_mojom_support",
-      ]
-    },
-    {
-      types = [
-        {
-          mojom = "network.mojom.AlternateProtocolUsage"
-          cpp = "::net::AlternateProtocolUsage"
-        },
-      ]
-      traits_headers = [
-        "//net/http/alternate_protocol_usage.h",
-        "//services/network/public/cpp/alternate_protocol_usage_mojom_traits.h",
       ]
       traits_public_deps = [
         "//net",
