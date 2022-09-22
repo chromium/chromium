@@ -62,7 +62,7 @@ const SVGViewSpec* SVGViewSpec::CreateForViewElement(
 }
 
 bool SVGViewSpec::ParseViewSpec(const String& spec) {
-  if (spec.IsEmpty())
+  if (spec.empty())
     return false;
   return WTF::VisitCharacters(spec, [&](const auto* chars, unsigned length) {
     return ParseViewSpecInternal(chars, chars + length);

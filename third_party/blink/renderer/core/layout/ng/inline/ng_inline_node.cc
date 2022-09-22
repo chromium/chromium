@@ -541,7 +541,7 @@ void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
   if (ds_controller.AllowDeferredShaping() &&
       !GetLayoutBox()->IsInsideFlowThread() &&
       Style().IsContentVisibilityVisible() &&
-      Style().PageTransitionTag().IsEmpty()) {
+      Style().PageTransitionTag().empty()) {
     DCHECK(IsHorizontalWritingMode(Style().GetWritingMode()));
     const LayoutUnit viewport_bottom = ds_controller.CurrentViewportBottom();
     DCHECK_NE(viewport_bottom, kIndefiniteSize) << GetLayoutBox();
@@ -1209,7 +1209,7 @@ void NGInlineNode::SegmentText(NGInlineNodeData* data) const {
 // Segment NGInlineItem by script, Emoji, and orientation using RunSegmenter.
 void NGInlineNode::SegmentScriptRuns(NGInlineNodeData* data) const {
   String& text_content = data->text_content;
-  if (text_content.IsEmpty()) {
+  if (text_content.empty()) {
     data->segments = nullptr;
     return;
   }

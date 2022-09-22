@@ -50,7 +50,7 @@ void ExpectBuilderContent(const String& expected,
 
 void ExpectEmpty(const StringBuilder& builder) {
   EXPECT_EQ(0U, builder.length());
-  EXPECT_TRUE(builder.IsEmpty());
+  EXPECT_TRUE(builder.empty());
   EXPECT_EQ(nullptr, builder.Characters8());
 }
 

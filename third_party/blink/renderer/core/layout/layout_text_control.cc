@@ -171,7 +171,7 @@ bool LayoutTextControl::HasValidAvgCharWidth(const Font& font) {
       nullptr;
 
   const AtomicString& family = font.GetFontDescription().Family().FamilyName();
-  if (family.IsEmpty())
+  if (family.empty())
     return false;
 
   if (!font_families_with_invalid_char_width_map) {

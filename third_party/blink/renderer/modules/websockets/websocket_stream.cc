@@ -463,7 +463,7 @@ void WebSocketStream::close(WebSocketCloseInfo* info,
   String reason = info->reason();
   if (info->hasCode()) {
     code = info->code();
-  } else if (!reason.IsNull() && !reason.IsEmpty()) {
+  } else if (!reason.IsNull() && !reason.empty()) {
     code = WebSocketChannel::kCloseEventCodeNormalClosure;
   }
   CloseInternal(code, info->reason(), exception_state);

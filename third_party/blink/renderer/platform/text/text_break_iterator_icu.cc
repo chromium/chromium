@@ -67,7 +67,7 @@ class LineBreakIteratorPool final {
 
     if (!iterator) {
       UErrorCode open_status = U_ZERO_ERROR;
-      bool locale_is_empty = locale.IsEmpty();
+      bool locale_is_empty = locale.empty();
       iterator = icu::BreakIterator::createLineInstance(
           locale_is_empty ? icu::Locale(CurrentTextBreakLocaleID())
                           : icu::Locale(locale.Utf8().c_str()),
@@ -647,7 +647,7 @@ TextBreakIterator* WordBreakIterator(base::span<const UChar> string) {
 TextBreakIterator* WordBreakIterator(const String& string,
                                      int start,
                                      int length) {
-  if (string.IsEmpty())
+  if (string.empty())
     return nullptr;
   if (string.Is8Bit())
     return WordBreakIterator(string.Span8().subspan(start, length));
@@ -750,7 +750,7 @@ NonSharedCharacterBreakIterator::NonSharedCharacterBreakIterator(
       offset_(0),
       length_(0),
       iterator_(nullptr) {
-  if (string.IsEmpty())
+  if (string.empty())
     return;
 
   is_8bit_ = string.Is8Bit();

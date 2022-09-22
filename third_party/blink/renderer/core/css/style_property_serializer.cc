@@ -288,7 +288,7 @@ String StylePropertySerializer::AsText() const {
         continue;
 
       String shorthand_result = SerializeShorthand(shorthand_property);
-      if (shorthand_result.IsEmpty())
+      if (shorthand_result.empty())
         continue;
 
       result.Append(GetPropertyText(
@@ -309,7 +309,7 @@ String StylePropertySerializer::AsText() const {
                                   property.IsImportant(), num_decls++));
   }
 
-  DCHECK(!num_decls ^ !result.IsEmpty());
+  DCHECK(!num_decls ^ !result.empty());
   return result.ReleaseString();
 }
 
@@ -683,7 +683,7 @@ bool StylePropertySerializer::AppendFontLonghandValueIfNotNormal(
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNormal)
     return true;
 
-  if (!result.IsEmpty()) {
+  if (!result.empty()) {
     switch (property.PropertyID()) {
       case CSSPropertyID::kFontStyle:
         break;  // No prefix.
@@ -929,11 +929,11 @@ String StylePropertySerializer::FontValue() const {
       AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontStretch(), result);
   if (!font_stretch_valid)
     return String();
-  if (!result.IsEmpty())
+  if (!result.empty())
     result.Append(' ');
   result.Append(font_size_property.Value()->CssText());
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyLineHeight(), result);
-  if (!result.IsEmpty())
+  if (!result.empty())
     result.Append(' ');
   result.Append(font_family_property.Value()->CssText());
   return result.ReleaseString();
@@ -953,7 +953,7 @@ String StylePropertySerializer::FontVariantValue() const {
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantEastAsian(),
                                      result);
 
-  if (result.IsEmpty()) {
+  if (result.empty()) {
     return "normal";
   }
 
@@ -1000,7 +1000,7 @@ String StylePropertySerializer::FontSynthesisValue() const {
   if (font_synthesis_style_identifier_value &&
       font_synthesis_style_identifier_value->GetValueID() ==
           CSSValueID::kAuto) {
-    if (!result.IsEmpty())
+    if (!result.empty())
       result.Append(' ');
     result.Append("style");
   }
@@ -1010,12 +1010,12 @@ String StylePropertySerializer::FontSynthesisValue() const {
   if (font_synthesis_small_caps_identifier_value &&
       font_synthesis_small_caps_identifier_value->GetValueID() ==
           CSSValueID::kAuto) {
-    if (!result.IsEmpty())
+    if (!result.empty())
       result.Append(' ');
     result.Append("small-caps");
   }
 
-  if (result.IsEmpty())
+  if (result.empty())
     return "none";
 
   return result.ReleaseString();
@@ -1037,7 +1037,7 @@ String StylePropertySerializer::OffsetValue() const {
   const CSSValue* rotate =
       property_set_.GetPropertyCSSValue(GetCSSPropertyOffsetRotate());
   if (!path->IsInitialValue()) {
-    if (!result.IsEmpty())
+    if (!result.empty())
       result.Append(" ");
     result.Append(path->CssText());
     if (!distance->IsInitialValue()) {
@@ -1085,12 +1085,12 @@ String StylePropertySerializer::TextDecorationValue() const {
           continue;
       }
     }
-    if (!result.IsEmpty())
+    if (!result.empty())
       result.Append(" ");
     result.Append(value_text);
   }
 
-  if (result.IsEmpty()) {
+  if (result.empty()) {
     return "none";
   }
   return result.ReleaseString();
@@ -1280,7 +1280,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
             layer_result.Append(" / ");
           else
             layer_result.Append(" 0% 0% / ");
-        } else if (!layer_result.IsEmpty()) {
+        } else if (!layer_result.empty()) {
           // Do this second to avoid ending up with an extra space in the output
           // if we hit the continue above.
           layer_result.Append(' ');
@@ -1308,8 +1308,8 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         }
       }
     }
-    if (!layer_result.IsEmpty()) {
-      if (!result.IsEmpty())
+    if (!layer_result.empty()) {
+      if (!result.empty())
         result.Append(", ");
       result.Append(layer_result);
     }
@@ -1328,7 +1328,7 @@ String StylePropertySerializer::GetShorthandValue(
     String value_text = value->CssText();
     if (value->IsInitialValue())
       continue;
-    if (!result.IsEmpty())
+    if (!result.empty())
       result.Append(separator);
     result.Append(value_text);
   }
@@ -1481,7 +1481,7 @@ String StylePropertySerializer::GetShorthandValueForGridTemplate(
     for (const auto& row_value : *template_row_value_list) {
       const String row_value_text = row_value->CssText();
       if (row_value->IsGridLineNamesValue()) {
-        if (!result.IsEmpty())
+        if (!result.empty())
           result.Append(' ');
         result.Append(row_value_text);
         continue;
@@ -1493,15 +1493,15 @@ String StylePropertySerializer::GetShorthandValueForGridTemplate(
         if (column != grid_area_column_count - 1)
           grid_area_text.Append(' ');
       }
-      if (!grid_area_text.IsEmpty()) {
-        if (!result.IsEmpty())
+      if (!grid_area_text.empty()) {
+        if (!result.empty())
           result.Append(' ');
         result.Append('"');
         result.Append(grid_area_text);
         result.Append('"');
         ++grid_area_index;
       }
-      if (!result.IsEmpty())
+      if (!result.empty())
         result.Append(' ');
       result.Append(row_value_text);
     }
@@ -1563,11 +1563,11 @@ String StylePropertySerializer::BorderPropertyValue(
       return String();
     if (value == "initial")
       continue;
-    if (!result.IsEmpty())
+    if (!result.empty())
       result.Append(' ');
     result.Append(value);
   }
-  return result.IsEmpty() ? String() : result.ReleaseString();
+  return result.empty() ? String() : result.ReleaseString();
 }
 
 String StylePropertySerializer::BorderImagePropertyValue() const {
@@ -1579,7 +1579,7 @@ String StylePropertySerializer::BorderImagePropertyValue() const {
   size_t length = std::size(properties);
   for (size_t i = 0; i < length; ++i) {
     const CSSValue& value = *property_set_.GetPropertyCSSValue(*properties[i]);
-    if (!result.IsEmpty())
+    if (!result.empty())
       result.Append(" ");
     if (i == 2 || i == 3)
       result.Append("/ ");

@@ -348,7 +348,7 @@ const AtomicString& HTMLAnchorElement::GetName() const {
 
 const AtomicString& HTMLAnchorElement::GetEffectiveTarget() const {
   const AtomicString& target = FastGetAttribute(html_names::kTargetAttr);
-  if (!target.IsEmpty())
+  if (!target.empty())
     return target;
   return GetDocument().BaseTarget();
 }
@@ -528,7 +528,7 @@ void HTMLAnchorElement::HandleClick(Event& event) {
 
     const AtomicString& attribution_src_value =
         FastGetAttribute(html_names::kAttributionsrcAttr);
-    if (!attribution_src_value.IsEmpty()) {
+    if (!attribution_src_value.empty()) {
       frame_request.SetImpression(
           frame->GetAttributionSrcLoader()->RegisterNavigation(
               GetDocument().CompleteURL(attribution_src_value), this));

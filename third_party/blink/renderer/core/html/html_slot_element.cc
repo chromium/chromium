@@ -63,7 +63,7 @@ HTMLSlotElement::HTMLSlotElement(Document& document)
 
 // static
 AtomicString HTMLSlotElement::NormalizeSlotName(const AtomicString& name) {
-  return (name.IsNull() || name.IsEmpty()) ? g_empty_atom : name;
+  return (name.IsNull() || name.empty()) ? g_empty_atom : name;
 }
 
 // static

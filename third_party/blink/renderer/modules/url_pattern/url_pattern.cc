@@ -35,7 +35,7 @@ namespace {
 // kURL values this mainly consists of a check for a leading slash.  For
 // patterns we do some additional checking for escaped or grouped slashes.
 bool IsAbsolutePathname(const String& pathname, ValueType type) {
-  if (pathname.IsEmpty())
+  if (pathname.empty())
     return false;
 
   if (pathname[0] == '/')
@@ -63,7 +63,7 @@ bool IsAbsolutePathname(const String& pathname, ValueType type) {
 // Utility function to determine if the default port for the given protocol
 // matches the given port number.
 bool IsProtocolDefaultPort(const String& protocol, const String& port) {
-  if (protocol.IsEmpty() || port.IsEmpty())
+  if (protocol.empty() || port.empty())
     return false;
 
   bool port_ok = false;

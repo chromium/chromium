@@ -224,7 +224,7 @@ void ScriptController::ExecuteJavaScriptURL(
   if (!should_bypass_trusted_type_check) {
     script_source = TrustedTypesCheckForJavascriptURLinNavigation(
         script_source, window_.Get());
-    if (script_source.IsEmpty())
+    if (script_source.empty())
       return;
   }
 
@@ -342,7 +342,7 @@ ScriptController::CreateNewInspectorIsolatedWorld(const String& world_name) {
   // Bail out if we could not create an isolated world.
   if (!world)
     return nullptr;
-  if (!world_name.IsEmpty()) {
+  if (!world_name.empty()) {
     DOMWrapperWorld::SetNonMainWorldHumanReadableName(world->GetWorldId(),
                                                       world_name);
   }

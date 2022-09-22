@@ -1107,7 +1107,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     if (options->publicKey()->hasExtensions()) {
       if (options->publicKey()->extensions()->hasAppid()) {
         const auto& appid = options->publicKey()->extensions()->appid();
-        if (!appid.IsEmpty()) {
+        if (!appid.empty()) {
           KURL appid_url(appid);
           if (!appid_url.IsValid()) {
             resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -1528,7 +1528,7 @@ ScriptPromise CredentialsContainer::create(
     if (options->publicKey()->extensions()->hasAppidExclude()) {
       const auto& appid_exclude =
           options->publicKey()->extensions()->appidExclude();
-      if (!appid_exclude.IsEmpty()) {
+      if (!appid_exclude.empty()) {
         KURL appid_exclude_url(appid_exclude);
         if (!appid_exclude_url.IsValid()) {
           resolver->Reject(MakeGarbageCollected<DOMException>(

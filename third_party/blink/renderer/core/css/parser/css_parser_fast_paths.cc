@@ -116,7 +116,7 @@ static inline bool ParseSimpleLength(const CharacterType* characters,
 static CSSValue* ParseSimpleLengthValue(CSSPropertyID property_id,
                                         const String& string,
                                         CSSParserMode css_parser_mode) {
-  DCHECK(!string.IsEmpty());
+  DCHECK(!string.empty());
   bool accepts_negative_numbers = false;
 
   // In @viewport, width and height are shorthands, not simple length values.
@@ -794,7 +794,7 @@ static CSSValue* ParseColor(CSSPropertyID property_id,
   if (!IsColorPropertyID(property_id))
     return nullptr;
 
-  DCHECK(!string.IsEmpty());
+  DCHECK(!string.empty());
   CSSValueID value_id = CssValueKeywordID(string);
   if (StyleColor::IsColorKeyword(value_id)) {
     if (!isValueAllowedInMode(value_id, parser_mode))
@@ -1396,7 +1396,7 @@ bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {
 static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
                                    const String& string,
                                    CSSParserMode parser_mode) {
-  DCHECK(!string.IsEmpty());
+  DCHECK(!string.empty());
 
   if (!CSSParserFastPaths::IsKeywordPropertyID(property_id)) {
     // All properties accept CSS-wide keywords.
@@ -1669,7 +1669,7 @@ static bool TransformCanLikelyUseFastPath(const CharType* chars,
 
 static CSSValue* ParseSimpleTransform(CSSPropertyID property_id,
                                       const String& string) {
-  DCHECK(!string.IsEmpty());
+  DCHECK(!string.empty());
 
   if (property_id != CSSPropertyID::kTransform)
     return nullptr;

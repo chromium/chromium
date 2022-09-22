@@ -634,7 +634,7 @@ static absl::optional<DocumentMarker::MarkerType> MarkerTypeFrom(
 
 static absl::optional<DocumentMarker::MarkerTypes> MarkerTypesFrom(
     const String& marker_type) {
-  if (marker_type.IsEmpty() || EqualIgnoringASCIICase(marker_type, "all"))
+  if (marker_type.empty() || EqualIgnoringASCIICase(marker_type, "all"))
     return DocumentMarker::MarkerTypes::All();
   absl::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
   if (!type)
@@ -1093,7 +1093,7 @@ String Internals::elementLayoutTreeAsText(Element* element,
   element->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   String representation = ExternalRepresentation(element);
-  if (representation.IsEmpty()) {
+  if (representation.empty()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
         "The element provided has no external representation.");
@@ -1764,12 +1764,12 @@ void Internals::setSuggestedValue(Element* element,
 
   if (auto* select = DynamicTo<HTMLSelectElement>(*element)) {
     // A Null string resets the suggested value.
-    select->SetSuggestedValue(value.IsEmpty() ? String() : value);
+    select->SetSuggestedValue(value.empty() ? String() : value);
   }
 
   To<HTMLFormControlElement>(element)->SetAutofillState(
-      value.IsEmpty() ? WebAutofillState::kNotFilled
-                      : WebAutofillState::kPreviewed);
+      value.empty() ? WebAutofillState::kNotFilled
+                    : WebAutofillState::kPreviewed);
 }
 
 void Internals::setAutofilledValue(Element* element,
@@ -1800,10 +1800,10 @@ void Internals::setAutofilledValue(Element* element,
 
   if (auto* select = DynamicTo<HTMLSelectElement>(*element)) {
     select->SetAutofillValue(
-        value.IsEmpty() ? String()  // Null string resets the autofill state.
-                        : value,
-        value.IsEmpty() ? WebAutofillState::kNotFilled
-                        : WebAutofillState::kAutofilled);
+        value.empty() ? String()  // Null string resets the autofill state.
+                      : value,
+        value.empty() ? WebAutofillState::kNotFilled
+                      : WebAutofillState::kAutofilled);
   }
 }
 
@@ -3865,7 +3865,7 @@ ReadableStream* Internals::createReadableStream(
     const String& optimizer,
     ExceptionState& exception_state) {
   TestReadableStreamSource::Type type;
-  if (optimizer.IsEmpty()) {
+  if (optimizer.empty()) {
     type = TestReadableStreamSource::Type::kWithNullOptimizer;
   } else if (optimizer == "perform-null") {
     type = TestReadableStreamSource::Type::kWithPerformNullOptimizer;
@@ -3892,7 +3892,7 @@ ScriptValue Internals::createWritableStreamAndSink(
     const String& optimizer,
     ExceptionState& exception_state) {
   TestWritableStreamSink::Type type;
-  if (optimizer.IsEmpty()) {
+  if (optimizer.empty()) {
     type = TestWritableStreamSink::Type::kWithNullOptimizer;
   } else if (optimizer == "perform-null") {
     type = TestWritableStreamSink::Type::kWithPerformNullOptimizer;

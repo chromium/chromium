@@ -60,7 +60,7 @@ void SimRequestBase::UsedForNavigation(
 
 void SimRequestBase::StartInternal() {
   DCHECK(!started_);
-  DCHECK(redirect_url_.IsEmpty());  // client_ is nullptr on redirects
+  DCHECK(redirect_url_.empty());  // client_ is nullptr on redirects
   DCHECK(client_);
   started_ = true;
   client_->DidReceiveResponse(response_);
@@ -113,7 +113,7 @@ void SimRequestBase::Complete(const String& data) {
     ServePending();
   if (!started_)
     StartInternal();
-  if (!data.IsEmpty())
+  if (!data.empty())
     Write(data);
   Finish();
 }

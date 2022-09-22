@@ -67,7 +67,7 @@ namespace {
 // TODO(chrisha): Lift this somewhere public and common in components/extensions
 // and reuse it from there.
 bool IsExtensionStableWorldId(const String& stable_world_id) {
-  if (stable_world_id.IsNull() || stable_world_id.IsEmpty())
+  if (stable_world_id.IsNull() || stable_world_id.empty())
     return false;
   if (stable_world_id.length() != 32)
     return false;

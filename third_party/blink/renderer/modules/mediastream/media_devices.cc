@@ -799,7 +799,7 @@ void MediaDevices::ResolveProduceCropIdPromise(Element* element,
   ScriptPromiseResolver* const resolver = it->value;
   crop_id_resolvers_.erase(it);
 
-  if (crop_id.IsEmpty()) {
+  if (crop_id.empty()) {
     resolver->Reject();
     RecordUma(ProduceCropTargetPromiseResult::kPromiseRejected);
   } else {

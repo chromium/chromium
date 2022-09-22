@@ -160,7 +160,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
 
   String url_string = url.GetString();
   String label = in_label.StripWhiteSpace();
-  if (label.IsEmpty()) {
+  if (label.empty()) {
     draw_url_string = false;
     label = url_string;
   }

@@ -68,7 +68,7 @@ void LayoutWorkletGlobalScope::registerLayout(
     const AtomicString& name,
     V8NoArgumentConstructor* layout_ctor,
     ExceptionState& exception_state) {
-  if (name.IsEmpty()) {
+  if (name.empty()) {
     exception_state.ThrowTypeError("The empty string is not a valid name.");
     return;
   }

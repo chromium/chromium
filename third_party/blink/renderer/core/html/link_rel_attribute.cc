@@ -52,7 +52,7 @@ LinkRelAttribute::LinkRelAttribute()
       is_web_bundle_(false) {}
 
 LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
-  if (rel.IsEmpty())
+  if (rel.empty())
     return;
   String rel_copy = rel;
   rel_copy.Replace('\n', ' ');

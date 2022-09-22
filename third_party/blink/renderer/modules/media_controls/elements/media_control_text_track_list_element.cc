@@ -155,7 +155,7 @@ Element* MediaControlTextTrackListElement::CreateTextTrackListItem(
 
   // Add a track kind marker icon if there are multiple tracks with the same
   // label or if the track has no label.
-  if (track && (track->label().IsEmpty() || HasDuplicateLabel(track))) {
+  if (track && (track->label().empty() || HasDuplicateLabel(track))) {
     auto* track_kind_marker =
         MakeGarbageCollected<HTMLSpanElement>(GetDocument());
     if (track->kind() == track->CaptionsKeyword()) {

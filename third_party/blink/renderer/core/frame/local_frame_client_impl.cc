@@ -791,33 +791,33 @@ String LocalFrameClientImpl::UserAgentOverride() {
 
 String LocalFrameClientImpl::UserAgent() {
   String override = UserAgentOverride();
-  if (!override.IsEmpty()) {
+  if (!override.empty()) {
     return override;
   }
 
-  if (user_agent_.IsEmpty())
+  if (user_agent_.empty())
     user_agent_ = Platform::Current()->UserAgent();
   return user_agent_;
 }
 
 String LocalFrameClientImpl::ReducedUserAgent() {
   String override = UserAgentOverride();
-  if (!override.IsEmpty()) {
+  if (!override.empty()) {
     return override;
   }
 
-  if (reduced_user_agent_.IsEmpty())
+  if (reduced_user_agent_.empty())
     reduced_user_agent_ = Platform::Current()->ReducedUserAgent();
   return reduced_user_agent_;
 }
 
 String LocalFrameClientImpl::FullUserAgent() {
   String override = UserAgentOverride();
-  if (!override.IsEmpty()) {
+  if (!override.empty()) {
     return override;
   }
 
-  if (full_user_agent_.IsEmpty())
+  if (full_user_agent_.empty())
     full_user_agent_ = Platform::Current()->FullUserAgent();
   return full_user_agent_;
 }

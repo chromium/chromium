@@ -192,7 +192,7 @@ void AnimationWorkletGlobalScope::registerAnimator(
     return;
   }
 
-  if (name.IsEmpty()) {
+  if (name.empty()) {
     exception_state.ThrowTypeError("The empty string is not a valid name.");
     return;
   }

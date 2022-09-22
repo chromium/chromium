@@ -64,7 +64,7 @@ static const unsigned kMaxSuggestions = 1000;
 static const unsigned kMaxSuggestionLabelLength = 1000;
 
 static bool IsValidColorString(const String& value) {
-  if (value.IsEmpty())
+  if (value.empty())
     return false;
   if (value[0] != '#')
     return false;
@@ -279,7 +279,7 @@ Vector<mojom::blink::ColorSuggestionPtr> ColorInputType::Suggestions() const {
   if (data_list) {
     HTMLDataListOptionsCollection* options = data_list->options();
     for (unsigned i = 0; HTMLOptionElement* option = options->Item(i); i++) {
-      if (option->IsDisabledFormControl() || option->value().IsEmpty())
+      if (option->IsDisabledFormControl() || option->value().empty())
         continue;
       if (!GetElement().IsValidValue(option->value()))
         continue;

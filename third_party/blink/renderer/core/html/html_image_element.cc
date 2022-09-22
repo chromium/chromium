@@ -371,7 +371,7 @@ void HTMLImageElement::ParseAttribute(
     }
   } else if (name == html_names::kAttributionsrcAttr) {
     LocalDOMWindow* window = GetDocument().domWindow();
-    if (!params.new_value.IsEmpty() && window && window->GetFrame()) {
+    if (!params.new_value.empty() && window && window->GetFrame()) {
       window->GetFrame()->GetAttributionSrcLoader()->Register(
           GetDocument().CompleteURL(params.new_value), this);
     }
@@ -408,7 +408,7 @@ bool HTMLImageElement::SupportedImageType(
     const HashSet<String>* disabled_image_types) {
   String trimmed_type = ContentType(type).GetType();
   // An empty type attribute is implicitly supported.
-  if (trimmed_type.IsEmpty())
+  if (trimmed_type.empty())
     return true;
   if (disabled_image_types && disabled_image_types->Contains(trimmed_type)) {
     return false;
@@ -439,7 +439,7 @@ ImageCandidate HTMLImageElement::FindBestFitImageFromPictureParent() {
                                     WebFeature::kPictureSourceSrc);
     }
     String srcset = source->FastGetAttribute(html_names::kSrcsetAttr);
-    if (srcset.IsEmpty())
+    if (srcset.empty())
       continue;
     String type = source->FastGetAttribute(html_names::kTypeAttr);
     if (!SupportedImageType(type, &disabled_image_types))

@@ -170,7 +170,7 @@ int WindowOrWorkerGlobalScope::setTimeout(ScriptState* script_state,
     return 0;
   // Don't allow setting timeouts to run empty functions.  Was historically a
   // performance issue.
-  if (handler.IsEmpty())
+  if (handler.empty())
     return 0;
   auto* action = MakeGarbageCollected<ScheduledAction>(
       script_state, execution_context, handler);
@@ -203,7 +203,7 @@ int WindowOrWorkerGlobalScope::setInterval(ScriptState* script_state,
     return 0;
   // Don't allow setting timeouts to run empty functions.  Was historically a
   // performance issue.
-  if (handler.IsEmpty())
+  if (handler.empty())
     return 0;
   auto* action = MakeGarbageCollected<ScheduledAction>(
       script_state, execution_context, handler);

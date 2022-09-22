@@ -99,7 +99,7 @@ ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
     return promise;
   }
 
-  if (payment_method.IsEmpty()) {
+  if (payment_method.empty()) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(), "Empty payment method"));
     return promise;

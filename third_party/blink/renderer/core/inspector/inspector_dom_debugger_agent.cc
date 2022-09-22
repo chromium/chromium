@@ -85,7 +85,7 @@ namespace {
 // we'll match any target.
 WTF::String EventListenerBreakpointKey(const WTF::String& event_name,
                                        const WTF::String& target_name) {
-  if (target_name.IsEmpty() || target_name == "*")
+  if (target_name.empty() || target_name == "*")
     return event_name + "$$" + "*";
   return event_name + "$$" + target_name.LowerASCII();
 }
@@ -252,7 +252,7 @@ Response InspectorDOMDebuggerAgent::setInstrumentationBreakpoint(
 
 Response InspectorDOMDebuggerAgent::SetBreakpoint(const String& event_name,
                                                   const String& target_name) {
-  if (event_name.IsEmpty())
+  if (event_name.empty())
     return Response::ServerError("Event name is empty");
   event_listener_breakpoints_.Set(
       EventListenerBreakpointKey(event_name, target_name), true);
@@ -276,7 +276,7 @@ Response InspectorDOMDebuggerAgent::removeInstrumentationBreakpoint(
 Response InspectorDOMDebuggerAgent::RemoveBreakpoint(
     const String& event_name,
     const String& target_name) {
-  if (event_name.IsEmpty())
+  if (event_name.empty())
     return Response::ServerError("Event name is empty");
   event_listener_breakpoints_.Clear(
       EventListenerBreakpointKey(event_name, target_name));
@@ -691,7 +691,7 @@ void InspectorDOMDebuggerAgent::DidFireWebGLError(const String& error_name) {
       PreparePauseOnNativeEventData(kWebglErrorFiredEventName, nullptr);
   if (!event_data)
     return;
-  if (!error_name.IsEmpty())
+  if (!error_name.empty())
     event_data->setString(kWebglErrorNameProperty, error_name);
   PauseOnNativeEventIfNeeded(std::move(event_data), true);
 }
@@ -753,7 +753,7 @@ void InspectorDOMDebuggerAgent::BreakableLocation(const char* name) {
 }
 
 Response InspectorDOMDebuggerAgent::setXHRBreakpoint(const String& url) {
-  if (url.IsEmpty())
+  if (url.empty())
     pause_on_all_xhrs_.Set(true);
   else
     xhr_breakpoints_.Set(url, true);
@@ -762,7 +762,7 @@ Response InspectorDOMDebuggerAgent::setXHRBreakpoint(const String& url) {
 }
 
 Response InspectorDOMDebuggerAgent::removeXHRBreakpoint(const String& url) {
-  if (url.IsEmpty())
+  if (url.empty())
     pause_on_all_xhrs_.Set(false);
   else
     xhr_breakpoints_.Clear(url);

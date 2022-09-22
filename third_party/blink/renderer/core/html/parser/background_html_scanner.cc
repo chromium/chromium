@@ -218,7 +218,7 @@ void BackgroundHTMLScanner::ScriptTokenScanner::ScanToken(
           in_tag_ == InsideTag::kScript) {
         in_tag_ = InsideTag::kNone;
         // The script was empty, do nothing.
-        if (builder_.IsEmpty())
+        if (builder_.empty())
           return;
 
         String script_text = builder_.ReleaseString();
@@ -251,7 +251,7 @@ void BackgroundHTMLScanner::ScriptTokenScanner::ScanToken(
                  in_tag_ == InsideTag::kStyle) {
         in_tag_ = InsideTag::kNone;
         // The style was empty, do nothing.
-        if (builder_.IsEmpty())
+        if (builder_.empty())
           return;
 
         String style_text = builder_.ReleaseString();

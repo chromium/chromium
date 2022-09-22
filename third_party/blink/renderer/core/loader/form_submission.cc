@@ -89,7 +89,7 @@ static void AppendMailtoPostFormDataToURL(KURL& url,
 
   StringBuilder query;
   query.Append(url.Query());
-  if (!query.IsEmpty())
+  if (!query.empty())
     query.Append('&');
   query.Append(body);
   url.SetQuery(query.ToString());
@@ -226,7 +226,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
   }
 
   Document& document = form->GetDocument();
-  KURL action_url = document.CompleteURL(copied_attributes.Action().IsEmpty()
+  KURL action_url = document.CompleteURL(copied_attributes.Action().empty()
                                              ? document.Url().GetString()
                                              : copied_attributes.Action());
 
@@ -282,7 +282,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
 
   form_data->SetIdentifier(GenerateFormDataIdentifier());
   form_data->SetContainsPasswordData(dom_form_data->ContainsPasswordData());
-  AtomicString target_or_base_target = copied_attributes.Target().IsEmpty()
+  AtomicString target_or_base_target = copied_attributes.Target().empty()
                                            ? document.BaseTarget()
                                            : copied_attributes.Target();
 
@@ -300,7 +300,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
     resource_request->SetHttpBody(form_data);
 
     // construct some user headers if necessary
-    if (boundary.IsEmpty()) {
+    if (boundary.empty()) {
       resource_request->SetHTTPContentType(encoding_type);
     } else {
       resource_request->SetHTTPContentType(encoding_type +

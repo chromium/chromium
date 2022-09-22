@@ -101,7 +101,7 @@ Decimal StepRange::ClampValue(const Decimal& value) const {
 Decimal StepRange::ParseStep(AnyStepHandling any_step_handling,
                              const StepDescription& step_description,
                              const String& step_string) {
-  if (step_string.IsEmpty())
+  if (step_string.empty())
     return step_description.DefaultValue();
 
   if (EqualIgnoringASCIICase(step_string, "any")) {

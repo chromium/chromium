@@ -195,7 +195,7 @@ void InitializeAudioTrackControls(UserMediaRequest* user_media_request,
       constraints.Basic().media_stream_source.Exact().empty()
           ? String()
           : String(constraints.Basic().media_stream_source.Exact()[0]);
-  if (!source_constraint.IsEmpty()) {
+  if (!source_constraint.empty()) {
     if (source_constraint == blink::kMediaStreamSourceTab) {
       *stream_type = MediaStreamType::GUM_TAB_AUDIO_CAPTURE;
     } else if (source_constraint == blink::kMediaStreamSourceDesktop ||
@@ -238,7 +238,7 @@ void InitializeVideoTrackControls(UserMediaRequest* user_media_request,
       constraints.Basic().media_stream_source.Exact().empty()
           ? String()
           : String(constraints.Basic().media_stream_source.Exact()[0]);
-  if (!source_constraint.IsEmpty()) {
+  if (!source_constraint.empty()) {
     if (source_constraint == blink::kMediaStreamSourceTab) {
       *stream_type = MediaStreamType::GUM_TAB_VIDEO_CAPTURE;
     } else if (source_constraint == blink::kMediaStreamSourceDesktop ||
@@ -743,7 +743,7 @@ void UserMediaProcessor::SelectAudioSettings(
   if (!settings.HasValue()) {
     String failed_constraint_name = String(settings.failed_constraint_name());
     MediaStreamRequestResult result =
-        failed_constraint_name.IsEmpty()
+        failed_constraint_name.empty()
             ? MediaStreamRequestResult::NO_HARDWARE
             : MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED;
     GetUserMediaRequestFailed(result, failed_constraint_name);
@@ -914,7 +914,7 @@ void UserMediaProcessor::SelectVideoDeviceSettings(
   if (!settings.HasValue()) {
     String failed_constraint_name = String(settings.failed_constraint_name());
     MediaStreamRequestResult result =
-        failed_constraint_name.IsEmpty()
+        failed_constraint_name.empty()
             ? MediaStreamRequestResult::NO_HARDWARE
             : MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED;
     GetUserMediaRequestFailed(result, failed_constraint_name);
@@ -951,7 +951,7 @@ void UserMediaProcessor::SelectVideoContentSettings() {
           screen_size.width(), screen_size.height());
   if (!settings.HasValue()) {
     String failed_constraint_name = String(settings.failed_constraint_name());
-    DCHECK(!failed_constraint_name.IsEmpty());
+    DCHECK(!failed_constraint_name.empty());
 
     GetUserMediaRequestFailed(
         MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED,

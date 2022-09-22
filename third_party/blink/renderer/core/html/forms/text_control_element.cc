@@ -190,8 +190,8 @@ bool TextControlElement::IsPlaceholderEmpty() const {
 }
 
 bool TextControlElement::PlaceholderShouldBeVisible() const {
-  return SupportsPlaceholder() && InnerEditorValue().IsEmpty() &&
-         !IsPlaceholderEmpty() && SuggestedValue().IsEmpty();
+  return SupportsPlaceholder() && InnerEditorValue().empty() &&
+         !IsPlaceholderEmpty() && SuggestedValue().empty();
 }
 
 HTMLElement* TextControlElement::PlaceholderElement() const {
@@ -217,14 +217,14 @@ void TextControlElement::UpdatePlaceholderVisibility() {
 
   placeholder->SetInlineStyleProperty(
       CSSPropertyID::kDisplay,
-      IsPlaceholderVisible() || !SuggestedValue().IsEmpty() ? CSSValueID::kBlock
-                                                            : CSSValueID::kNone,
+      IsPlaceholderVisible() || !SuggestedValue().empty() ? CSSValueID::kBlock
+                                                          : CSSValueID::kNone,
       true);
 
   // If there was a visibility change not caused by the suggested value, set
   // that the pseudo state changed.
   if (place_holder_was_visible != IsPlaceholderVisible() &&
-      SuggestedValue().IsEmpty()) {
+      SuggestedValue().empty()) {
     PseudoStateChanged(CSSSelector::kPseudoPlaceholderShown);
   }
 }
@@ -862,7 +862,7 @@ void TextControlElement::SetInnerEditorValue(const String& value) {
     inner_editor->RemoveChild(inner_editor->lastChild(), ASSERT_NO_EXCEPTION);
 
   // We don't use setTextContent.  It triggers unnecessary paint.
-  if (value.IsEmpty())
+  if (value.empty())
     inner_editor->RemoveChildren();
   else
     ReplaceChildrenWithText(inner_editor, value, ASSERT_NO_EXCEPTION);
@@ -1062,17 +1062,17 @@ void TextControlElement::SetAutofillValue(const String& value,
   SetValue(value.Substring(0, maxLength()),
            TextFieldEventBehavior::kDispatchInputAndChangeEvent,
            TextControlSetValueSelection::kSetSelectionToEnd,
-           value.IsEmpty() ? WebAutofillState::kNotFilled : autofill_state);
+           value.empty() ? WebAutofillState::kNotFilled : autofill_state);
 }
 
 // TODO(crbug.com/772433): Create and use a new suggested-value element instead.
 void TextControlElement::SetSuggestedValue(const String& value) {
   suggested_value_ = value.Substring(0, maxLength());
-  if (!suggested_value_.IsEmpty() && !InnerEditorValue().IsEmpty()) {
+  if (!suggested_value_.empty() && !InnerEditorValue().empty()) {
     // If there is an inner editor value, hide it so the suggested value can be
     // shown to the user.
     InnerEditorElement()->SetVisibility(false);
-  } else if (suggested_value_.IsEmpty() && InnerEditorElement()) {
+  } else if (suggested_value_.empty() && InnerEditorElement()) {
     // If there is no suggested value and there is an InnerEditorElement, reset
     // its visibility.
     InnerEditorElement()->SetVisibility(true);
@@ -1086,7 +1086,7 @@ void TextControlElement::SetSuggestedValue(const String& value) {
 
   UpdatePlaceholderVisibility();
 
-  if (suggested_value_.IsEmpty()) {
+  if (suggested_value_.empty()) {
     // Reset the pseudo-id for placeholders to use the appropriated style
     placeholder->SetShadowPseudoId(
         shadow_element_names::kPseudoInputPlaceholder);

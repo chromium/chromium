@@ -109,7 +109,7 @@ static String ExtractMessageForConsole(v8::Isolate* isolate,
     const WrapperTypeInfo* type = ToWrapperTypeInfo(obj);
     if (V8DOMException::GetWrapperTypeInfo()->IsSubclass(type)) {
       DOMException* exception = V8DOMException::ToImpl(obj);
-      if (exception && !exception->MessageForConsole().IsEmpty())
+      if (exception && !exception->MessageForConsole().empty())
         return exception->ToStringForConsole();
     }
   }
@@ -184,7 +184,7 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
       ScriptValue::From(script_state, data), &script_state->World());
 
   String message_for_console = ExtractMessageForConsole(isolate, data);
-  if (!message_for_console.IsEmpty())
+  if (!message_for_console.empty())
     event->SetUnsanitizedMessage("Uncaught " + message_for_console);
 
   context->DispatchErrorEvent(event, sanitize_script_errors);
@@ -297,7 +297,7 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
 
   String message_for_console =
       ExtractMessageForConsole(isolate, data.GetValue());
-  if (!message_for_console.IsEmpty())
+  if (!message_for_console.empty())
     error_message = "Uncaught " + message_for_console;
 
   rejected_promises.RejectedWithNoHandler(script_state, data, error_message,
@@ -613,7 +613,7 @@ v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
   if (v8_referrer_resource_url->IsString()) {
     String referrer_resource_url_str =
         ToCoreString(v8::Local<v8::String>::Cast(v8_referrer_resource_url));
-    if (!referrer_resource_url_str.IsEmpty())
+    if (!referrer_resource_url_str.empty())
       referrer_resource_url = KURL(NullURL(), referrer_resource_url_str);
   }
 

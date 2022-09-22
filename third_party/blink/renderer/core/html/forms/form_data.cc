@@ -264,9 +264,8 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
       if (auto* file = DynamicTo<File>(entry->GetBlob())) {
         // For file blob, use the filename (or relative path if it is
         // present) as the name.
-        name = file->webkitRelativePath().IsEmpty()
-                   ? file->name()
-                   : file->webkitRelativePath();
+        name = file->webkitRelativePath().empty() ? file->name()
+                                                  : file->webkitRelativePath();
 
         // If a filename is passed in FormData.append(), use it instead
         // of the file blob's name.
@@ -288,7 +287,7 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
       // Add the content type if available, or "application/octet-stream"
       // otherwise (RFC 1867).
       String content_type;
-      if (entry->GetBlob()->type().IsEmpty())
+      if (entry->GetBlob()->type().empty())
         content_type = "application/octet-stream";
       else
         content_type = entry->GetBlob()->type();
@@ -303,7 +302,7 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
       if (entry->GetBlob()->HasBackingFile()) {
         auto* file = To<File>(entry->GetBlob());
         // Do not add the file if the path is empty.
-        if (!file->GetPath().IsEmpty())
+        if (!file->GetPath().empty())
           form_data->AppendFile(file->GetPath(), file->LastModifiedTime());
       } else {
         form_data->AppendBlob(entry->GetBlob()->Uuid(),

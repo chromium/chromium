@@ -224,7 +224,7 @@ bool DataObjectItem::IsFilename() const {
 }
 
 bool DataObjectItem::HasFileSystemId() const {
-  return kind_ == kFileKind && !file_system_id_.IsEmpty();
+  return kind_ == kFileKind && !file_system_id_.empty();
 }
 
 String DataObjectItem::FileSystemId() const {

@@ -24,7 +24,7 @@ class ScriptWebBundleError final {
 
   ScriptWebBundleError(Type type, String message)
       : type_(type), message_(std::move(message)) {
-    DCHECK(!message_.IsEmpty());
+    DCHECK(!message_.empty());
   }
 
   ~ScriptWebBundleError() = default;

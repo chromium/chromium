@@ -298,7 +298,7 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   Vector<String> protocols;
   // Avoid placing an empty token in the Vector when the protocol string is
   // empty.
-  if (!protocol.IsEmpty()) {
+  if (!protocol.empty()) {
     // Since protocol is already verified and escaped, we can simply split
     // it.
     protocol.Split(", ", true, protocols);

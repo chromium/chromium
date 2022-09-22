@@ -112,7 +112,7 @@ class SetContentDecryptionModuleResult final
     StringBuilder result;
     result.Append(message);
     if (system_code != 0) {
-      if (result.IsEmpty())
+      if (result.empty())
         result.Append("Rejected with system code");
       result.Append(" (");
       result.AppendNumber(system_code);

@@ -23,7 +23,7 @@ class ImportMapError final {
 
   ImportMapError(Type type, String message)
       : type_(type), message_(std::move(message)) {
-    DCHECK(!message_.IsEmpty());
+    DCHECK(!message_.empty());
   }
 
   ImportMapError(ImportMapError&&) = default;

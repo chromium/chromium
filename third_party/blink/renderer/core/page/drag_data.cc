@@ -78,7 +78,7 @@ int DragData::GetModifiers() const {
 void DragData::AsFilePaths(Vector<String>& result) const {
   const Vector<String>& filenames = platform_drag_data_->Filenames();
   for (wtf_size_t i = 0; i < filenames.size(); ++i) {
-    if (!filenames[i].IsEmpty())
+    if (!filenames[i].empty())
       result.push_back(filenames[i]);
   }
 }

@@ -512,7 +512,7 @@ ImageCandidate BestFitSourceForImageAttributes(float device_scale_factor,
   ParseImageCandidatesFromSrcsetAttribute(srcset_attribute, image_candidates,
                                           document);
 
-  if (!src_attribute.IsEmpty())
+  if (!src_attribute.empty())
     image_candidates.push_back(
         ImageCandidate(src_attribute, 0, src_attribute.length(),
                        DescriptorParsingResult(), ImageCandidate::kSrcOrigin));
@@ -531,7 +531,7 @@ String BestFitSourceForImageAttributes(float device_scale_factor,
   Vector<ImageCandidate> image_candidates;
   image_candidates.push_back(srcset_image_candidate);
 
-  if (!src_attribute.IsEmpty())
+  if (!src_attribute.empty())
     image_candidates.push_back(
         ImageCandidate(src_attribute, 0, src_attribute.length(),
                        DescriptorParsingResult(), ImageCandidate::kSrcOrigin));

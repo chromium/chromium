@@ -255,7 +255,7 @@ TEST(HTTPParsersTest, ParseHTTPRefresh) {
 
   EXPECT_TRUE(ParseHTTPRefresh("123 ", nullptr, delay, url));
   EXPECT_EQ(base::Seconds(123), delay);
-  EXPECT_TRUE(url.IsEmpty());
+  EXPECT_TRUE(url.empty());
 
   EXPECT_TRUE(ParseHTTPRefresh("1 ; url=dest", nullptr, delay, url));
   EXPECT_EQ(base::Seconds(1), delay);

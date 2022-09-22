@@ -359,7 +359,7 @@ bool FindTaskController::ShouldFindMatches(
   // time it was searched, then we don't have to search it again if the user is
   // just adding to the search string or sending the same search string again.
   if (last_find_request_completed_with_no_matches_ &&
-      !last_search_string_.IsEmpty()) {
+      !last_search_string_.empty()) {
     // Check to see if the search string prefixes match.
     String previous_search_prefix =
         search_text.Substring(0, last_search_string_.length());

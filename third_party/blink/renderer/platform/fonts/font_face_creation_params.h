@@ -67,7 +67,7 @@ class FontFaceCreationParams {
     // font.  Because we do vertical flow by ourselves, we don't want to use the
     // Windows feature.  IE disregards "@" regardless of the orientation, so we
     // follow the behavior and normalize the family name.
-    family_ = (family_.IsEmpty() || family_[0] != '@')
+    family_ = (family_.empty() || family_[0] != '@')
                   ? family_
                   : AtomicString(family_.Impl()->Substring(1));
 #endif
@@ -115,7 +115,7 @@ class FontFaceCreationParams {
           sizeof(fontconfig_interface_id_));
       return hasher.GetHash();
     }
-    return CaseFoldingHash::GetHash(family_.IsEmpty() ? "" : family_);
+    return CaseFoldingHash::GetHash(family_.empty() ? "" : family_);
   }
 
   bool operator==(const FontFaceCreationParams& other) const {

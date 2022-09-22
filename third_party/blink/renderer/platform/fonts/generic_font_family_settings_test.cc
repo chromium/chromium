@@ -10,7 +10,7 @@ namespace blink {
 
 TEST(GenericFontFamilySettingsTest, FirstAvailableFontFamily) {
   GenericFontFamilySettings settings;
-  EXPECT_TRUE(settings.Standard().IsEmpty());
+  EXPECT_TRUE(settings.Standard().empty());
 
   // Returns the first available font if starts with ",".
   settings.UpdateStandard(",not exist, Arial");
@@ -29,21 +29,21 @@ TEST(GenericFontFamilySettingsTest, FirstAvailableFontFamily) {
 TEST(GenericFontFamilySettingsTest, TestAllNames) {
   GenericFontFamilySettings settings;
 
-  EXPECT_TRUE(settings.Standard().IsEmpty());
-  EXPECT_TRUE(settings.Fixed().IsEmpty());
-  EXPECT_TRUE(settings.Serif().IsEmpty());
-  EXPECT_TRUE(settings.SansSerif().IsEmpty());
-  EXPECT_TRUE(settings.Cursive().IsEmpty());
-  EXPECT_TRUE(settings.Fantasy().IsEmpty());
-  EXPECT_TRUE(settings.Math().IsEmpty());
+  EXPECT_TRUE(settings.Standard().empty());
+  EXPECT_TRUE(settings.Fixed().empty());
+  EXPECT_TRUE(settings.Serif().empty());
+  EXPECT_TRUE(settings.SansSerif().empty());
+  EXPECT_TRUE(settings.Cursive().empty());
+  EXPECT_TRUE(settings.Fantasy().empty());
+  EXPECT_TRUE(settings.Math().empty());
 
-  EXPECT_TRUE(settings.Standard(USCRIPT_ARABIC).IsEmpty());
-  EXPECT_TRUE(settings.Fixed(USCRIPT_ARABIC).IsEmpty());
-  EXPECT_TRUE(settings.Serif(USCRIPT_ARABIC).IsEmpty());
-  EXPECT_TRUE(settings.SansSerif(USCRIPT_ARABIC).IsEmpty());
-  EXPECT_TRUE(settings.Cursive(USCRIPT_ARABIC).IsEmpty());
-  EXPECT_TRUE(settings.Fantasy(USCRIPT_ARABIC).IsEmpty());
-  EXPECT_TRUE(settings.Math(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.Standard(USCRIPT_ARABIC).empty());
+  EXPECT_TRUE(settings.Fixed(USCRIPT_ARABIC).empty());
+  EXPECT_TRUE(settings.Serif(USCRIPT_ARABIC).empty());
+  EXPECT_TRUE(settings.SansSerif(USCRIPT_ARABIC).empty());
+  EXPECT_TRUE(settings.Cursive(USCRIPT_ARABIC).empty());
+  EXPECT_TRUE(settings.Fantasy(USCRIPT_ARABIC).empty());
+  EXPECT_TRUE(settings.Math(USCRIPT_ARABIC).empty());
 
   settings.UpdateStandard("CustomStandard");
   settings.UpdateFixed("CustomFixed");
@@ -79,21 +79,21 @@ TEST(GenericFontFamilySettingsTest, TestAllNames) {
 
   settings.Reset();
 
-  EXPECT_TRUE(settings.Standard().IsEmpty());
-  EXPECT_TRUE(settings.Fixed().IsEmpty());
-  EXPECT_TRUE(settings.Serif().IsEmpty());
-  EXPECT_TRUE(settings.SansSerif().IsEmpty());
-  EXPECT_TRUE(settings.Cursive().IsEmpty());
-  EXPECT_TRUE(settings.Fantasy().IsEmpty());
-  EXPECT_TRUE(settings.Math().IsEmpty());
+  EXPECT_TRUE(settings.Standard().empty());
+  EXPECT_TRUE(settings.Fixed().empty());
+  EXPECT_TRUE(settings.Serif().empty());
+  EXPECT_TRUE(settings.SansSerif().empty());
+  EXPECT_TRUE(settings.Cursive().empty());
+  EXPECT_TRUE(settings.Fantasy().empty());
+  EXPECT_TRUE(settings.Math().empty());
 
-  EXPECT_TRUE(settings.Standard(USCRIPT_ARABIC).IsEmpty());
-  EXPECT_TRUE(settings.Fixed(USCRIPT_ARABIC).IsEmpty());
-  EXPECT_TRUE(settings.Serif(USCRIPT_ARABIC).IsEmpty());
-  EXPECT_TRUE(settings.SansSerif(USCRIPT_ARABIC).IsEmpty());
-  EXPECT_TRUE(settings.Cursive(USCRIPT_ARABIC).IsEmpty());
-  EXPECT_TRUE(settings.Fantasy(USCRIPT_ARABIC).IsEmpty());
-  EXPECT_TRUE(settings.Math(USCRIPT_ARABIC).IsEmpty());
+  EXPECT_TRUE(settings.Standard(USCRIPT_ARABIC).empty());
+  EXPECT_TRUE(settings.Fixed(USCRIPT_ARABIC).empty());
+  EXPECT_TRUE(settings.Serif(USCRIPT_ARABIC).empty());
+  EXPECT_TRUE(settings.SansSerif(USCRIPT_ARABIC).empty());
+  EXPECT_TRUE(settings.Cursive(USCRIPT_ARABIC).empty());
+  EXPECT_TRUE(settings.Fantasy(USCRIPT_ARABIC).empty());
+  EXPECT_TRUE(settings.Math(USCRIPT_ARABIC).empty());
 }
 
 }  // namespace blink

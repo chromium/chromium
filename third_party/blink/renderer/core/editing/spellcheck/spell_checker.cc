@@ -231,7 +231,7 @@ void SpellChecker::AdvanceToNextMisspelling(bool start_before_selection) {
         FindFirstMisspelling(spelling_search_start, spelling_search_end);
   }
 
-  if (misspelled_word.IsEmpty()) {
+  if (misspelled_word.empty()) {
     SpellCheckPanelHostClient().UpdateSpellingUIWithMisspelledWord({});
   } else {
     // We found a misspelling. Select the misspelling, update the spelling
@@ -694,7 +694,7 @@ std::pair<String, int> SpellChecker::FindFirstMisspelling(const Position& start,
           }
         }
 
-        if (!misspelled_word.IsEmpty()) {
+        if (!misspelled_word.empty()) {
           int spelling_offset = spelling_location - current_start_offset;
           if (!first_iteration)
             spelling_offset +=

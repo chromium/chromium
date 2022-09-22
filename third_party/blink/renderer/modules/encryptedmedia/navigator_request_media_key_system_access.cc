@@ -147,7 +147,7 @@ ScriptPromise NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
   // When this method is invoked, the user agent must run the following steps:
   // 1. If keySystem is the empty string, return a promise rejected with a
   //    newly created TypeError.
-  if (key_system.IsEmpty()) {
+  if (key_system.empty()) {
     exception_state.ThrowTypeError("The keySystem parameter is empty.");
     return ScriptPromise();
   }

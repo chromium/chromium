@@ -177,7 +177,7 @@ HashMap<String, String> Dictionary::GetOwnPropertiesAsStringHashMap(
     if (!string_value.Prepare(GetIsolate(), exception_state))
       return HashMap<String, String>();
 
-    if (!static_cast<const String&>(string_key).IsEmpty())
+    if (!static_cast<const String&>(string_key).empty())
       own_properties.Set(string_key, string_value);
   }
 

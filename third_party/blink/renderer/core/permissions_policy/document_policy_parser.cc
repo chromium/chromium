@@ -186,7 +186,7 @@ void ApplyDefaultEndpoint(DocumentPolicy::ParsedDocumentPolicy& parsed_policy,
 absl::optional<DocumentPolicy::ParsedDocumentPolicy>
 DocumentPolicyParser::Parse(const String& policy_string,
                             PolicyParserMessageBuffer& logger) {
-  if (policy_string.IsEmpty())
+  if (policy_string.empty())
     return absl::make_optional<DocumentPolicy::ParsedDocumentPolicy>({});
 
   return ParseInternal(policy_string, GetDocumentPolicyNameFeatureMap(),

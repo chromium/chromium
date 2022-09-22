@@ -189,7 +189,7 @@ ContentSecurityPolicy* IsolatedWorldCSP::CreateIsolatedWorldCSP(
   IsolatedWorldCSPDelegate* delegate =
       MakeGarbageCollected<IsolatedWorldCSPDelegate>(
           window, self_origin, world_id,
-          policy.IsEmpty() ? CSPType::kEmpty : CSPType::kNonEmpty);
+          policy.empty() ? CSPType::kEmpty : CSPType::kNonEmpty);
   csp->BindToDelegate(*delegate);
   csp->AddPolicies(ParseContentSecurityPolicies(
       policy, network::mojom::blink::ContentSecurityPolicyType::kEnforce,

@@ -149,7 +149,7 @@ std::string StringView::Utf8(UTF8ConversionMode mode) const {
 bool StringView::ContainsOnlyASCIIOrEmpty() const {
   if (StringImpl* impl = SharedImpl())
     return impl->ContainsOnlyASCIIOrEmpty();
-  if (IsEmpty())
+  if (empty())
     return true;
   ASCIIStringAttributes attrs =
       Is8Bit() ? CharacterAttributes(Characters8(), length())
@@ -183,7 +183,7 @@ bool StringView::SubstringContainsOnlyWhitespaceOrEmpty(unsigned from,
 String StringView::ToString() const {
   if (IsNull())
     return String();
-  if (IsEmpty())
+  if (empty())
     return g_empty_string;
   if (StringImpl* impl = SharedImpl())
     return impl;
@@ -195,7 +195,7 @@ String StringView::ToString() const {
 AtomicString StringView::ToAtomicString() const {
   if (IsNull())
     return g_null_atom;
-  if (IsEmpty())
+  if (empty())
     return g_empty_atom;
   if (StringImpl* impl = SharedImpl())
     return AtomicString(impl);

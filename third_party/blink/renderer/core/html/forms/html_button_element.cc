@@ -153,7 +153,7 @@ void HTMLButtonElement::SetActivatedSubmit(bool flag) {
 }
 
 void HTMLButtonElement::AppendToFormData(FormData& form_data) {
-  if (type_ == kSubmit && !GetName().IsEmpty() && is_activated_submit_)
+  if (type_ == kSubmit && !GetName().empty() && is_activated_submit_)
     form_data.AppendFromElement(GetName(), Value());
 }
 

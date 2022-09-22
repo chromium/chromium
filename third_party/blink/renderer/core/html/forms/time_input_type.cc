@@ -116,7 +116,7 @@ String TimeInputType::LocalizeValue(const String& proposed_value) const {
                                        : Locale::kFormatTypeShort;
 
   String localized = GetElement().GetLocale().FormatDateTime(date, format_type);
-  return localized.IsEmpty() ? proposed_value : localized;
+  return localized.empty() ? proposed_value : localized;
 }
 
 String TimeInputType::FormatDateTimeFieldsState(

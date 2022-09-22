@@ -13,7 +13,7 @@
 namespace blink {
 
 base::FilePath StringToFilePath(const String& str) {
-  if (str.IsEmpty())
+  if (str.empty())
     return base::FilePath();
 
   if (!str.Is8Bit()) {

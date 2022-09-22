@@ -373,51 +373,51 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
 
   // Audio input device with matched output ID.
   Member<MediaDeviceInfo> device = device_infos()[0];
-  EXPECT_FALSE(device->deviceId().IsEmpty());
+  EXPECT_FALSE(device->deviceId().empty());
   EXPECT_EQ("audioinput", device->kind());
-  EXPECT_FALSE(device->label().IsEmpty());
-  EXPECT_FALSE(device->groupId().IsEmpty());
+  EXPECT_FALSE(device->label().empty());
+  EXPECT_FALSE(device->groupId().empty());
 
   // Audio input device with Airpods label.
   device = device_infos()[1];
-  EXPECT_FALSE(device->deviceId().IsEmpty());
+  EXPECT_FALSE(device->deviceId().empty());
   EXPECT_EQ("audioinput", device->kind());
-  EXPECT_FALSE(device->label().IsEmpty());
-  EXPECT_FALSE(device->groupId().IsEmpty());
+  EXPECT_FALSE(device->label().empty());
+  EXPECT_FALSE(device->groupId().empty());
 
   // Audio input device without matched output ID.
   device = device_infos()[2];
-  EXPECT_FALSE(device->deviceId().IsEmpty());
+  EXPECT_FALSE(device->deviceId().empty());
   EXPECT_EQ("audioinput", device->kind());
-  EXPECT_FALSE(device->label().IsEmpty());
-  EXPECT_FALSE(device->groupId().IsEmpty());
+  EXPECT_FALSE(device->label().empty());
+  EXPECT_FALSE(device->groupId().empty());
 
   // Video input devices.
   device = device_infos()[3];
-  EXPECT_FALSE(device->deviceId().IsEmpty());
+  EXPECT_FALSE(device->deviceId().empty());
   EXPECT_EQ("videoinput", device->kind());
-  EXPECT_FALSE(device->label().IsEmpty());
-  EXPECT_FALSE(device->groupId().IsEmpty());
+  EXPECT_FALSE(device->label().empty());
+  EXPECT_FALSE(device->groupId().empty());
 
   device = device_infos()[4];
-  EXPECT_FALSE(device->deviceId().IsEmpty());
+  EXPECT_FALSE(device->deviceId().empty());
   EXPECT_EQ("videoinput", device->kind());
-  EXPECT_FALSE(device->label().IsEmpty());
-  EXPECT_FALSE(device->groupId().IsEmpty());
+  EXPECT_FALSE(device->label().empty());
+  EXPECT_FALSE(device->groupId().empty());
 
   // Audio output device.
   device = device_infos()[5];
-  EXPECT_FALSE(device->deviceId().IsEmpty());
+  EXPECT_FALSE(device->deviceId().empty());
   EXPECT_EQ("audiooutput", device->kind());
-  EXPECT_FALSE(device->label().IsEmpty());
-  EXPECT_FALSE(device->groupId().IsEmpty());
+  EXPECT_FALSE(device->label().empty());
+  EXPECT_FALSE(device->groupId().empty());
 
   // Audio output device with Airpods label.
   device = device_infos()[6];
-  EXPECT_FALSE(device->deviceId().IsEmpty());
+  EXPECT_FALSE(device->deviceId().empty());
   EXPECT_EQ("audiooutput", device->kind());
-  EXPECT_FALSE(device->label().IsEmpty());
-  EXPECT_FALSE(device->groupId().IsEmpty());
+  EXPECT_FALSE(device->label().empty());
+  EXPECT_FALSE(device->groupId().empty());
 
   // Verify group IDs.
   EXPECT_EQ(device_infos()[0]->groupId(), device_infos()[3]->groupId());

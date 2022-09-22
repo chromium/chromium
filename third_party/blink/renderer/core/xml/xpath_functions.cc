@@ -416,8 +416,8 @@ static inline String ExpandedName(Node* node) {
       break;
   }
 
-  return prefix.IsEmpty() ? ExpandedNameLocalPart(node)
-                          : prefix + ":" + ExpandedNameLocalPart(node);
+  return prefix.empty() ? ExpandedNameLocalPart(node)
+                        : prefix + ":" + ExpandedNameLocalPart(node);
 }
 
 Value FunLocalName::Evaluate(EvaluationContext& context) const {
@@ -489,7 +489,7 @@ Value FunStartsWith::Evaluate(EvaluationContext& context) const {
   String s1 = Arg(0)->Evaluate(context).ToString();
   String s2 = Arg(1)->Evaluate(cloned_context).ToString();
 
-  if (s2.IsEmpty())
+  if (s2.empty())
     return true;
 
   return s1.StartsWith(s2);
@@ -500,7 +500,7 @@ Value FunContains::Evaluate(EvaluationContext& context) const {
   String s1 = Arg(0)->Evaluate(context).ToString();
   String s2 = Arg(1)->Evaluate(cloned_context).ToString();
 
-  if (s2.IsEmpty())
+  if (s2.empty())
     return true;
 
   return s1.Contains(s2) != 0;
@@ -511,7 +511,7 @@ Value FunSubstringBefore::Evaluate(EvaluationContext& context) const {
   String s1 = Arg(0)->Evaluate(context).ToString();
   String s2 = Arg(1)->Evaluate(cloned_context).ToString();
 
-  if (s2.IsEmpty())
+  if (s2.empty())
     return "";
 
   wtf_size_t i = s1.Find(s2);

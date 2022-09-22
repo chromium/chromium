@@ -101,7 +101,7 @@ void PasswordInputType::CreateShadowSubtree() {
 void PasswordInputType::DidSetValueByUserEdit() {
   if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
     // If the last character is deleted, we hide the reveal button.
-    if (GetElement().Value().IsEmpty()) {
+    if (GetElement().Value().empty()) {
       should_show_reveal_button_ = false;
     }
     UpdatePasswordRevealButton();
@@ -212,7 +212,7 @@ void PasswordInputType::HandleBeforeTextInsertedEvent(
   if (RuntimeEnabledFeatures::PasswordRevealEnabled()) {
     // This is the only scenario we go from no reveal button to showing the
     // reveal button: the password is empty and we have some user input.
-    if (GetElement().Value().IsEmpty())
+    if (GetElement().Value().empty())
       should_show_reveal_button_ = true;
   }
 

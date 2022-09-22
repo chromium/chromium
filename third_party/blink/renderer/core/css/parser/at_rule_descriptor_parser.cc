@@ -211,7 +211,7 @@ CSSValue* ConsumeFontFaceSrcLocal(CSSParserTokenRange& range,
     String family_name = css_parsing_utils::ConcatenateFamilyName(args);
     if (!args.AtEnd())
       return nullptr;
-    if (family_name.IsEmpty())
+    if (family_name.empty())
       return nullptr;
     return CSSFontFaceSrcValue::CreateLocal(
         family_name, context.JavascriptWorld(),

@@ -92,7 +92,7 @@ FetchParameters CSSImageValue::PrepareFetch(
     resource_request.SetIsAdResource();
   ExecutionContext* execution_context = document.GetExecutionContext();
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
-  options.initiator_info.name = initiator_name_.IsEmpty()
+  options.initiator_info.name = initiator_name_.empty()
                                     ? fetch_initiator_type_names::kCSS
                                     : initiator_name_;
   if (referrer_.referrer != Referrer::ClientReferrerString())
@@ -123,7 +123,7 @@ StyleImage* CSSImageValue::CacheImage(
     FetchParameters::ImageRequestBehavior image_request_behavior,
     CrossOriginAttributeValue cross_origin) {
   if (!cached_image_) {
-    if (absolute_url_.IsEmpty())
+    if (absolute_url_.empty())
       ReResolveURL(document);
 
     FetchParameters params =
@@ -145,8 +145,8 @@ void CSSImageValue::RestoreCachedResourceIfNeeded(
 
   cached_content->EmulateLoadStartedForInspector(
       document.Fetcher(), KURL(absolute_url_),
-      initiator_name_.IsEmpty() ? fetch_initiator_type_names::kCSS
-                                : initiator_name_);
+      initiator_name_.empty() ? fetch_initiator_type_names::kCSS
+                              : initiator_name_);
 }
 
 bool CSSImageValue::HasFailedOrCanceledSubresources() const {
@@ -158,7 +158,7 @@ bool CSSImageValue::HasFailedOrCanceledSubresources() const {
 }
 
 bool CSSImageValue::Equals(const CSSImageValue& other) const {
-  if (absolute_url_.IsEmpty() && other.absolute_url_.IsEmpty())
+  if (absolute_url_.empty() && other.absolute_url_.empty())
     return relative_url_ == other.relative_url_;
   return absolute_url_ == other.absolute_url_;
 }

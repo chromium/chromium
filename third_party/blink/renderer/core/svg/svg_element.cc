@@ -156,7 +156,7 @@ String SVGElement::title() const {
 
   if (InUseShadowTree()) {
     String use_title(OwnerShadowHost()->title());
-    if (!use_title.IsEmpty())
+    if (!use_title.empty())
       return use_title;
   }
 

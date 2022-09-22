@@ -684,14 +684,14 @@ void HTMLCanvasElement::Reset() {
 
   unsigned w = 0;
   AtomicString value = FastGetAttribute(html_names::kWidthAttr);
-  if (value.IsEmpty() || !ParseHTMLNonNegativeInteger(value, w) ||
+  if (value.empty() || !ParseHTMLNonNegativeInteger(value, w) ||
       w > 0x7fffffffu) {
     w = kDefaultCanvasWidth;
   }
 
   unsigned h = 0;
   value = FastGetAttribute(html_names::kHeightAttr);
-  if (value.IsEmpty() || !ParseHTMLNonNegativeInteger(value, h) ||
+  if (value.empty() || !ParseHTMLNonNegativeInteger(value, h) ||
       h > 0x7fffffffu) {
     h = kDefaultCanvasHeight;
   }

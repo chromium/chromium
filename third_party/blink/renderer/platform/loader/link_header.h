@@ -34,8 +34,7 @@ class LinkHeader {
   const absl::optional<String>& Anchor() const { return anchor_; }
   bool Valid() const { return is_valid_; }
   bool IsViewportDependent() const {
-    return !Media().IsEmpty() || !ImageSrcset().IsEmpty() ||
-           !ImageSizes().IsEmpty();
+    return !Media().empty() || !ImageSrcset().empty() || !ImageSizes().empty();
   }
 
   enum LinkParameterName {

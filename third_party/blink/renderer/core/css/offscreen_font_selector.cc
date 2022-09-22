@@ -56,7 +56,7 @@ scoped_refptr<FontData> OffscreenFontSelector::GetFontData(
   // handed the generic font family name.
   AtomicString settings_family_name =
       FamilyNameFromSettings(font_description, font_family);
-  if (settings_family_name.IsEmpty())
+  if (settings_family_name.empty())
     return nullptr;
 
   ReportFontFamilyLookupByGenericFamily(

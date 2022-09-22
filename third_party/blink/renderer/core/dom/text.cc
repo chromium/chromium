@@ -226,7 +226,7 @@ Text* Text::ReplaceWholeText(const String& new_text) {
     }
   }
 
-  if (new_text.IsEmpty()) {
+  if (new_text.empty()) {
     if (parent && parentNode() == parent)
       parent->RemoveChild(this, IGNORE_EXCEPTION_FOR_TESTING);
     return nullptr;

@@ -413,7 +413,7 @@ void ElementInnerTextCollector::Result::EmitRequiredLineBreak(int count) {
     return;
   // 4. Remove any runs of consecutive required line break count items at the
   // start or end of results.
-  if (builder_.IsEmpty()) {
+  if (builder_.empty()) {
     DCHECK_EQ(required_line_break_count_, 0);
     return;
   }
@@ -429,7 +429,7 @@ void ElementInnerTextCollector::Result::EmitTab() {
 }
 
 void ElementInnerTextCollector::Result::EmitText(const StringView& text) {
-  if (text.IsEmpty())
+  if (text.empty())
     return;
   FlushRequiredLineBreak();
   DCHECK_EQ(required_line_break_count_, 0);

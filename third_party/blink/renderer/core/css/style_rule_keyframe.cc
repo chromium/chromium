@@ -57,7 +57,7 @@ String StyleRuleKeyframe::CssText() const {
   result.Append(" { ");
   String decls = properties_->AsText();
   result.Append(decls);
-  if (!decls.IsEmpty())
+  if (!decls.empty())
     result.Append(' ');
   result.Append('}');
   return result.ReleaseString();

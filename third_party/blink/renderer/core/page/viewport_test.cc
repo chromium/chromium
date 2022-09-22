@@ -3266,7 +3266,7 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardResizeLayout) {
     <meta name="viewport" content="virtual-keyboard=resize-layout">
   )HTML");
 
-  EXPECT_TRUE(ConsoleMessages().IsEmpty()) << ConsoleMessages().front();
+  EXPECT_TRUE(ConsoleMessages().empty()) << ConsoleMessages().front();
   EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
             ui::mojom::blink::VirtualKeyboardMode::kResizeLayout);
 
@@ -3283,7 +3283,7 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardResizeLayout) {
     <meta name="viewport" content="width=device-width,virtual-keyboard=resize-layout,minimum-scale=1">
   )HTML");
 
-  EXPECT_TRUE(ConsoleMessages().IsEmpty()) << ConsoleMessages().front();
+  EXPECT_TRUE(ConsoleMessages().empty()) << ConsoleMessages().front();
   EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
             ui::mojom::blink::VirtualKeyboardMode::kResizeLayout);
 }

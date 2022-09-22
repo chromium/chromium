@@ -367,7 +367,7 @@ void DevToolsSession::Trace(Visitor* visitor) const {
 blink::mojom::blink::DevToolsMessagePtr DevToolsSession::FinalizeMessage(
     std::vector<uint8_t> message) const {
   std::vector<uint8_t> message_to_send = std::move(message);
-  if (!session_id_.IsEmpty()) {
+  if (!session_id_.empty()) {
     crdtp::Status status = crdtp::cbor::AppendString8EntryToCBORMap(
         crdtp::SpanFrom(kSessionId), crdtp::SpanFrom(session_id_.Ascii()),
         &message_to_send);

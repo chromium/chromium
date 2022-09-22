@@ -359,7 +359,7 @@ scoped_refptr<SimpleFontData> FontCache::GetDWriteFallbackFamily(
               service_, &fallback_family, &fallback_style))
         return nullptr;
 
-      if (fallback_family.IsEmpty())
+      if (fallback_family.empty())
         return nullptr;
     }
 

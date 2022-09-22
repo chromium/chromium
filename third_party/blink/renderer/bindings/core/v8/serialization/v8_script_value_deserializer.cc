@@ -738,7 +738,7 @@ V8ScriptValueDeserializer::GetOrCreateBlobDataHandle(const String& uuid,
   // Creating a BlobDataHandle from an empty string will get this renderer
   // killed, so since we're parsing untrusted data (from possibly another
   // process/renderer) return null instead.
-  if (uuid.IsEmpty())
+  if (uuid.empty())
     return nullptr;
   return BlobDataHandle::Create(uuid, type, size);
 }

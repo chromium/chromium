@@ -1866,7 +1866,7 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
         network_utils::kIncludePrivateRegistries);
     String destination_domain = network_utils::GetDomainAndRegistry(
         destination_url.Host(), network_utils::kIncludePrivateRegistries);
-    if (!target_domain.IsEmpty() && !destination_domain.IsEmpty() &&
+    if (!target_domain.empty() && !destination_domain.empty() &&
         target_domain == destination_domain &&
         (target_frame.GetSecurityContext()->GetSecurityOrigin()->Protocol() ==
              destination_url.Protocol() ||
@@ -3115,7 +3115,7 @@ void LocalFrame::PostMessageEvent(
   // We must pass in the target_origin to do the security check on this side,
   // since it may have changed since the original postMessage call was made.
   scoped_refptr<SecurityOrigin> target_security_origin;
-  if (!target_origin.IsEmpty()) {
+  if (!target_origin.empty()) {
     target_security_origin = SecurityOrigin::CreateFromString(target_origin);
   }
 

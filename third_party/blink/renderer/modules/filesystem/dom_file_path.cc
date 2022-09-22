@@ -104,7 +104,7 @@ String DOMFilePath::RemoveExtraParentReferences(const String& path) {
 }
 
 bool DOMFilePath::IsValidPath(const String& path) {
-  if (path.IsEmpty() || path == DOMFilePath::kRoot)
+  if (path.empty() || path == DOMFilePath::kRoot)
     return true;
 
   // Embedded NULs are not allowed.
@@ -126,7 +126,7 @@ bool DOMFilePath::IsValidPath(const String& path) {
 }
 
 bool DOMFilePath::IsValidName(const String& name) {
-  if (name.IsEmpty())
+  if (name.empty())
     return true;
   // '/' is not allowed in name.
   if (name.Contains('/'))

@@ -47,7 +47,7 @@ bool SameBlockWordIterator<Direction>::AdvanceNextWord() {
     String next_word =
         Direction::Substring(current_node_text_, current_text_offset_, pos)
             .StripWhiteSpace();
-    if (!next_word.IsEmpty()) {
+    if (!next_word.empty()) {
       current_text_offset_ = pos;
       return true;
     }

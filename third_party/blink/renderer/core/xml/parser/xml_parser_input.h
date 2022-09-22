@@ -42,7 +42,7 @@ class XMLParserInput {
  public:
   explicit XMLParserInput(const String& source)
       : source_(source), encoding_(nullptr), data_(nullptr), size_(0) {
-    if (source_.IsEmpty())
+    if (source_.empty())
       return;
 
     const UChar kBOM = 0xFEFF;

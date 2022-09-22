@@ -120,7 +120,7 @@ SpellCheckRequest* SpellCheckRequest::Create(
       PlainText(checking_range, TextIteratorBehavior::Builder()
                                     .SetEmitsObjectReplacementCharacter(true)
                                     .Build());
-  if (text.IsEmpty())
+  if (text.empty())
     return nullptr;
 
   Range* checking_range_object = CreateRange(checking_range);

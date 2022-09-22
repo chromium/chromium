@@ -63,7 +63,7 @@ class CORE_EXPORT IdTargetObserverRegistry final
 
 inline void IdTargetObserverRegistry::NotifyObservers(const AtomicString& id) {
   DCHECK(!notifying_observers_in_set_);
-  if (id.IsEmpty() || registry_.empty())
+  if (id.empty() || registry_.empty())
     return;
   IdTargetObserverRegistry::NotifyObserversInternal(id);
 }

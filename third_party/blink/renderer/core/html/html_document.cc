@@ -89,7 +89,7 @@ Document* HTMLDocument::CloneDocumentWithoutChildren() const {
 // --------------------------------------------------------------------------
 
 void HTMLDocument::AddNamedItem(const AtomicString& name) {
-  if (name.IsEmpty())
+  if (name.empty())
     return;
   named_item_counts_.insert(name);
   if (LocalDOMWindow* window = domWindow()) {
@@ -100,7 +100,7 @@ void HTMLDocument::AddNamedItem(const AtomicString& name) {
 }
 
 void HTMLDocument::RemoveNamedItem(const AtomicString& name) {
-  if (name.IsEmpty())
+  if (name.empty())
     return;
   named_item_counts_.erase(name);
   if (LocalDOMWindow* window = domWindow()) {

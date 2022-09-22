@@ -808,7 +808,7 @@ void HTMLInputElement::ParseAttribute(
     if (EqualIgnoringASCIICase(value, "off")) {
       autocomplete_ = kOff;
     } else {
-      if (value.IsEmpty())
+      if (value.empty())
         autocomplete_ = kUninitialized;
       else
         autocomplete_ = kOn;
@@ -849,7 +849,7 @@ void HTMLInputElement::ParseAttribute(
     SetNeedsValidityCheck();
   } else if (name == html_names::kSizeAttr) {
     unsigned size = 0;
-    if (value.IsEmpty() || !ParseHTMLNonNegativeInteger(value, size) ||
+    if (value.empty() || !ParseHTMLNonNegativeInteger(value, size) ||
         size == 0 || size > 0x7fffffffu)
       size = kDefaultSize;
     if (size_ != size) {
@@ -901,7 +901,7 @@ void HTMLInputElement::ParseAttribute(
     TextControlElement::ParseAttribute(params);
     input_type_view_->ReadonlyAttributeChanged();
   } else if (name == html_names::kListAttr) {
-    has_non_empty_list_ = !value.IsEmpty();
+    has_non_empty_list_ = !value.empty();
     if (has_non_empty_list_) {
       ResetListAttributeTargetObserver();
       ListAttributeTargetChanged();
@@ -1180,8 +1180,8 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
   }
   needs_to_update_view_value_ = true;
   String sanitized_value = SanitizeValue(value);
-  SetAutofillState(sanitized_value.IsEmpty() ? WebAutofillState::kNotFilled
-                                             : WebAutofillState::kPreviewed);
+  SetAutofillState(sanitized_value.empty() ? WebAutofillState::kNotFilled
+                                           : WebAutofillState::kPreviewed);
   TextControlElement::SetSuggestedValue(sanitized_value);
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
@@ -1208,7 +1208,7 @@ void HTMLInputElement::SetInnerEditorValue(const String& value) {
 void HTMLInputElement::setValueForBinding(const String& value,
                                           ExceptionState& exception_state) {
   // FIXME: Remove type check.
-  if (type() == input_type_names::kFile && !value.IsEmpty()) {
+  if (type() == input_type_names::kFile && !value.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "This input element accepts a filename, "
                                       "which may only be programmatically set "
@@ -1221,7 +1221,7 @@ void HTMLInputElement::setValueForBinding(const String& value,
     String old_value = this->Value();
     SetValue(value, TextFieldEventBehavior::kDispatchNoEvent,
              TextControlSetValueSelection::kSetSelectionToEnd,
-             old_value == value && !value.IsEmpty()
+             old_value == value && !value.empty()
                  ? WebAutofillState::kAutofilled
                  : WebAutofillState::kNotFilled);
     if (Page* page = GetDocument().GetPage()) {
@@ -1261,7 +1261,7 @@ void HTMLInputElement::SetValue(const String& value,
 
     if (value_changed) {
       NotifyFormStateChanged();
-      if (sanitized_value.IsEmpty() && HasBeenPasswordField() &&
+      if (sanitized_value.empty() && HasBeenPasswordField() &&
           GetDocument().GetPage()) {
         GetDocument().GetPage()->GetChromeClient().PasswordFieldReset(*this);
       }
@@ -1363,7 +1363,7 @@ void HTMLInputElement::SetValueFromRenderer(const String& value) {
 
   // Renderer and our event handler are responsible for sanitizing values.
   DCHECK(value == input_type_->SanitizeUserInputValue(value) ||
-         input_type_->SanitizeUserInputValue(value).IsEmpty());
+         input_type_->SanitizeUserInputValue(value).empty());
 
   DCHECK(!value.IsNull());
   SetValueBeforeFirstUserEditIfNotSet();
@@ -1570,14 +1570,14 @@ static bool IsValidFileExtension(const String& type) {
 static Vector<String> ParseAcceptAttribute(const String& accept_string,
                                            bool (*predicate)(const String&)) {
   Vector<String> types;
-  if (accept_string.IsEmpty())
+  if (accept_string.empty())
     return types;
 
   Vector<String> split_types;
   accept_string.Split(',', false, split_types);
   for (const String& split_type : split_types) {
     String trimmed_type = StripLeadingAndTrailingHTMLSpaces(split_type);
-    if (trimmed_type.IsEmpty())
+    if (trimmed_type.empty())
       continue;
     if (!predicate(trimmed_type))
       continue;
@@ -1785,7 +1785,7 @@ bool HTMLInputElement::HasValidDataListOptions() const {
     return false;
   HTMLDataListOptionsCollection* options = data_list->options();
   for (unsigned i = 0; HTMLOptionElement* option = options->Item(i); ++i) {
-    if (!option->value().IsEmpty() && !option->IsDisabledFormControl())
+    if (!option->value().empty() && !option->IsDisabledFormControl())
       return true;
   }
   return false;
@@ -1828,7 +1828,7 @@ HTMLInputElement::FilteredDataListOptions() const {
           continue;
         HTMLOptionElement* option = options->Item(i);
         DCHECK(option);
-        if (!value.IsEmpty()) {
+        if (!value.empty()) {
           // Firefox shows OPTIONs with matched labels, Edge shows OPTIONs
           // with matches values. We show both.
           if (!(option->value()
@@ -1849,7 +1849,7 @@ HTMLInputElement::FilteredDataListOptions() const {
   for (unsigned i = 0; i < options->length(); ++i) {
     HTMLOptionElement* option = options->Item(i);
     DCHECK(option);
-    if (option->value().IsEmpty() || option->IsDisabledFormControl())
+    if (option->value().empty() || option->IsDisabledFormControl())
       continue;
     if (filtering_flag[i])
       filtered.push_back(option);
@@ -1904,7 +1904,7 @@ int HTMLInputElement::scrollWidth() {
     return TextControlElement::scrollWidth();
   // If in preview state, fake the scroll width to prevent that any information
   // about the suggested content can be derived from the size.
-  if (!SuggestedValue().IsEmpty())
+  if (!SuggestedValue().empty())
     return clientWidth();
 
   GetDocument().UpdateStyleAndLayoutForNode(this,
@@ -1931,7 +1931,7 @@ int HTMLInputElement::scrollHeight() {
 
   // If in preview state, fake the scroll height to prevent that any information
   // about the suggested content can be derived from the size.
-  if (!SuggestedValue().IsEmpty())
+  if (!SuggestedValue().empty())
     return clientHeight();
 
   GetDocument().UpdateStyleAndLayoutForNode(this,
@@ -1962,11 +1962,11 @@ bool HTMLInputElement::SupportsPlaceholder() const {
 }
 
 void HTMLInputElement::UpdatePlaceholderText() {
-  return input_type_view_->UpdatePlaceholderText(!SuggestedValue().IsEmpty());
+  return input_type_view_->UpdatePlaceholderText(!SuggestedValue().empty());
 }
 
 String HTMLInputElement::GetPlaceholderValue() const {
-  return !SuggestedValue().IsEmpty() ? SuggestedValue() : StrippedPlaceholder();
+  return !SuggestedValue().empty() ? SuggestedValue() : StrippedPlaceholder();
 }
 
 String HTMLInputElement::DefaultToolTip() const {
@@ -2094,7 +2094,7 @@ bool HTMLInputElement::SetupDateTimeChooserParameters(
   } else {
     AtomicString computed_locale = ComputeInheritedLanguage();
     parameters.locale =
-        computed_locale.IsEmpty() ? DefaultLanguage() : computed_locale;
+        computed_locale.empty() ? DefaultLanguage() : computed_locale;
   }
 
   StepRange step_range = CreateStepRange(kRejectAny);
@@ -2117,7 +2117,7 @@ bool HTMLInputElement::SetupDateTimeChooserParameters(
   if (HTMLDataListElement* data_list = DataList()) {
     HTMLDataListOptionsCollection* options = data_list->options();
     for (unsigned i = 0; HTMLOptionElement* option = options->Item(i); ++i) {
-      if (option->value().IsEmpty() || option->IsDisabledFormControl() ||
+      if (option->value().empty() || option->IsDisabledFormControl() ||
           !IsValidValue(option->value()))
         continue;
       auto suggestion = mojom::blink::DateTimeSuggestion::New();
@@ -2235,7 +2235,7 @@ bool HTMLInputElement::IsDraggedSlider() const {
 
 void HTMLInputElement::MaybeReportPiiMetrics() {
   // Don't report metrics if the field is empty.
-  if (Value().IsEmpty())
+  if (Value().empty())
     return;
 
   // Report the PII types derived from autofill field semantic type prediction.

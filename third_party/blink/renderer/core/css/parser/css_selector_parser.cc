@@ -1365,7 +1365,7 @@ bool CSSSelectorParser<UseArena>::ConsumeANPlusB(CSSParserTokenRange& range,
 
   range.ConsumeWhitespace();
 
-  if (n_string.IsEmpty() || !IsASCIIAlphaCaselessEqual(n_string[0], 'n'))
+  if (n_string.empty() || !IsASCIIAlphaCaselessEqual(n_string[0], 'n'))
     return false;
   if (n_string.length() > 1 && n_string[1] != '-')
     return false;
@@ -1421,7 +1421,7 @@ const AtomicString& CSSSelectorParser<UseArena>::DetermineNamespace(
     const AtomicString& prefix) {
   if (prefix.IsNull())
     return DefaultNamespace();
-  if (prefix.IsEmpty())
+  if (prefix.empty())
     return g_empty_atom;  // No namespace. If an element/attribute has a
                           // namespace, we won't match it.
   if (prefix == g_star_atom)

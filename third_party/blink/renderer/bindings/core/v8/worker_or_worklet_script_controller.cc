@@ -186,7 +186,7 @@ void WorkerOrWorkletScriptController::Initialize(const KURL& url_for_debugger) {
 
   if (global_scope_->IsMainThreadWorkletGlobalScope()) {
     // Set the human readable name for the world.
-    DCHECK(!global_scope_->Name().IsEmpty());
+    DCHECK(!global_scope_->Name().empty());
     world_->SetNonMainWorldHumanReadableName(world_->GetWorldId(),
                                              global_scope_->Name());
   } else {
@@ -197,12 +197,12 @@ void WorkerOrWorkletScriptController::Initialize(const KURL& url_for_debugger) {
                              context);
   }
 
-  if (!disable_eval_pending_.IsEmpty()) {
+  if (!disable_eval_pending_.empty()) {
     DisableEvalInternal(disable_eval_pending_);
     disable_eval_pending_ = String();
   }
 
-  if (!disable_wasm_eval_pending_.IsEmpty()) {
+  if (!disable_wasm_eval_pending_.empty()) {
     SetWasmEvalErrorMessageInternal(disable_wasm_eval_pending_);
     disable_wasm_eval_pending_ = String();
   }
@@ -271,7 +271,7 @@ void WorkerOrWorkletScriptController::PrepareForEvaluation() {
 void WorkerOrWorkletScriptController::DisableEvalInternal(
     const String& error_message) {
   DCHECK(IsContextInitialized());
-  DCHECK(!error_message.IsEmpty());
+  DCHECK(!error_message.empty());
 
   ScriptState::Scope scope(script_state_);
   script_state_->GetContext()->AllowCodeGenerationFromStrings(false);
@@ -282,7 +282,7 @@ void WorkerOrWorkletScriptController::DisableEvalInternal(
 void WorkerOrWorkletScriptController::SetWasmEvalErrorMessageInternal(
     const String& error_message) {
   DCHECK(IsContextInitialized());
-  DCHECK(!error_message.IsEmpty());
+  DCHECK(!error_message.empty());
 
   ScriptState::Scope scope(script_state_);
   script_state_->GetContext()->SetErrorMessageForWasmCodeGeneration(
@@ -300,7 +300,7 @@ bool WorkerOrWorkletScriptController::IsExecutionForbidden() const {
 }
 
 void WorkerOrWorkletScriptController::DisableEval(const String& error_message) {
-  DCHECK(!error_message.IsEmpty());
+  DCHECK(!error_message.empty());
   // Currently, this can be called before or after
   // WorkerOrWorkletScriptController::Initialize() because of messy
   // worker/worklet initialization sequences. Tidy them up after
@@ -316,13 +316,13 @@ void WorkerOrWorkletScriptController::DisableEval(const String& error_message) {
   // WorkerOrWorkletScriptController::Initialize() to be called from
   // WorkerThread::InitializeOnWorkerThread() immediately and synchronously
   // after returning here. Keep the error message until that time.
-  DCHECK(disable_eval_pending_.IsEmpty());
+  DCHECK(disable_eval_pending_.empty());
   disable_eval_pending_ = error_message;
 }
 
 void WorkerOrWorkletScriptController::SetWasmEvalErrorMessage(
     const String& error_message) {
-  DCHECK(!error_message.IsEmpty());
+  DCHECK(!error_message.empty());
   // Currently, this can be called before or after
   // WorkerOrWorkletScriptController::Initialize() because of messy
   // worker/worklet initialization sequences. Tidy them up after
@@ -338,7 +338,7 @@ void WorkerOrWorkletScriptController::SetWasmEvalErrorMessage(
   // WorkerOrWorkletScriptController::Initialize() to be called from
   // WorkerThread::InitializeOnWorkerThread() immediately and synchronously
   // after returning here. Keep the error message until that time.
-  DCHECK(disable_wasm_eval_pending_.IsEmpty());
+  DCHECK(disable_wasm_eval_pending_.empty());
   disable_wasm_eval_pending_ = error_message;
 }
 

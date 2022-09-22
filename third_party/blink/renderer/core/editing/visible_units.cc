@@ -414,7 +414,7 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
     if (block_flow->HasNGInlineNodeData() &&
         block_flow->GetNGInlineNodeData()
             ->ItemsData(false)
-            .text_content.IsEmpty() &&
+            .text_content.empty() &&
         block_flow->HasLineIfEmpty())
       return false;
   }

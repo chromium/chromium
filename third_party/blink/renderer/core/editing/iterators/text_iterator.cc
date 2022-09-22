@@ -1058,7 +1058,7 @@ static String CreatePlainText(const EphemeralRangeTemplate<Strategy>& range,
   for (; !it.AtEnd(); it.Advance())
     it.GetTextState().AppendTextToStringBuilder(builder);
 
-  if (builder.IsEmpty())
+  if (builder.empty())
     return g_empty_string;
 
   return builder.ToString();

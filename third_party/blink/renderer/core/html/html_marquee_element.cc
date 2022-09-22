@@ -143,7 +143,7 @@ bool HTMLMarqueeElement::IsHorizontal() const {
 unsigned HTMLMarqueeElement::scrollAmount() const {
   unsigned scroll_amount = 0;
   AtomicString value = FastGetAttribute(html_names::kScrollamountAttr);
-  if (value.IsEmpty() || !ParseHTMLNonNegativeInteger(value, scroll_amount) ||
+  if (value.empty() || !ParseHTMLNonNegativeInteger(value, scroll_amount) ||
       scroll_amount > 0x7fffffffu)
     return kDefaultScrollAmount;
   return scroll_amount;
@@ -157,7 +157,7 @@ void HTMLMarqueeElement::setScrollAmount(unsigned value) {
 unsigned HTMLMarqueeElement::scrollDelay() const {
   unsigned scroll_delay = 0;
   AtomicString value = FastGetAttribute(html_names::kScrolldelayAttr);
-  if (value.IsEmpty() || !ParseHTMLNonNegativeInteger(value, scroll_delay) ||
+  if (value.empty() || !ParseHTMLNonNegativeInteger(value, scroll_delay) ||
       scroll_delay > 0x7fffffffu)
     return kDefaultScrollDelayMS;
   return scroll_delay;

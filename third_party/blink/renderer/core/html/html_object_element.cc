@@ -133,7 +133,7 @@ void HTMLObjectElement::ParametersForPlugin(PluginParameters& plugin_params) {
     for (HTMLParamElement* p = Traversal<HTMLParamElement>::FirstChild(*this);
          p; p = Traversal<HTMLParamElement>::NextSibling(*p)) {
       String name = p->GetName();
-      if (name.IsEmpty())
+      if (name.empty())
         continue;
 
       unique_param_names.insert(name.Impl());
@@ -146,7 +146,7 @@ void HTMLObjectElement::ParametersForPlugin(PluginParameters& plugin_params) {
       // for compatibility, allow the resource's URL to be given by a param
       // element with one of the common names if we know that resource points
       // to a plugin.
-      if (url_.IsEmpty() && !EqualIgnoringASCIICase(name, "data") &&
+      if (url_.empty() && !EqualIgnoringASCIICase(name, "data") &&
           HTMLParamElement::IsURLParameter(name)) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kHTMLParamElementURLParameter);
@@ -156,7 +156,7 @@ void HTMLObjectElement::ParametersForPlugin(PluginParameters& plugin_params) {
       }
       // TODO(schenney): crbug.com/572908 serviceType calculation does not
       // belong in this function.
-      if (service_type_.IsEmpty() && EqualIgnoringASCIICase(name, "type")) {
+      if (service_type_.empty() && EqualIgnoringASCIICase(name, "type")) {
         wtf_size_t pos = p->Value().Find(";");
         if (pos != kNotFound)
           SetServiceType(p->Value().GetString().Left(pos));
@@ -212,7 +212,7 @@ bool HTMLObjectElement::HasValidClassId() const {
 
   // HTML5 says that fallback content should be rendered if a non-empty
   // classid is specified for which the UA can't find a suitable plugin.
-  return ClassId().IsEmpty();
+  return ClassId().empty();
 }
 
 void HTMLObjectElement::ReloadPluginOnAttributeChange(
@@ -285,7 +285,7 @@ void HTMLObjectElement::UpdatePluginInternal() {
   }
 
   if (!HasValidClassId() || !RequestObject(plugin_params)) {
-    if (!url_.IsEmpty())
+    if (!url_.empty())
       DispatchErrorEvent();
     if (HasFallbackContent())
       RenderFallbackContent(ErrorEventPolicy::kDoNotDispatch);

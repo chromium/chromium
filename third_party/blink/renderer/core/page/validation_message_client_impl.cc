@@ -62,7 +62,7 @@ void ValidationMessageClientImpl::ShowValidationMessage(
     TextDirection message_dir,
     const String& sub_message,
     TextDirection sub_message_dir) {
-  if (original_message.IsEmpty()) {
+  if (original_message.empty()) {
     HideValidationMessage(anchor);
     return;
   }

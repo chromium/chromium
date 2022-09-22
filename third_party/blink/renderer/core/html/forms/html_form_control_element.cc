@@ -65,7 +65,7 @@ void HTMLFormControlElement::Trace(Visitor* visitor) const {
 
 String HTMLFormControlElement::formAction() const {
   const AtomicString& action = FastGetAttribute(html_names::kFormactionAttr);
-  if (action.IsEmpty()) {
+  if (action.empty()) {
     return GetDocument().Url();
   }
   return GetDocument().CompleteURL(StripLeadingAndTrailingHTMLSpaces(action));
@@ -217,7 +217,7 @@ bool HTMLFormControlElement::IsAutocompleteEmailUrlOrPassword() const {
 }
 
 const AtomicString& HTMLFormControlElement::autocapitalize() const {
-  if (!FastGetAttribute(html_names::kAutocapitalizeAttr).IsEmpty())
+  if (!FastGetAttribute(html_names::kAutocapitalizeAttr).empty())
     return HTMLElement::autocapitalize();
 
   // If the form control itself does not have the autocapitalize attribute set,
@@ -422,7 +422,7 @@ HTMLFormControlElement::EnclosingFormControlElement(const Node* node) {
 String HTMLFormControlElement::NameForAutofill() const {
   String full_name = GetName();
   String trimmed_name = full_name.StripWhiteSpace();
-  if (!trimmed_name.IsEmpty())
+  if (!trimmed_name.empty())
     return trimmed_name;
   full_name = GetIdAttribute();
   trimmed_name = full_name.StripWhiteSpace();

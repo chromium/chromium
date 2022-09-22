@@ -321,7 +321,7 @@ TEST_F(SurroundingTextTest, EmptyInputElementWithChild) {
 
   // Surrounding text should not crash. See http://crbug.com/758438.
   SurroundingText surrounding_text(EphemeralRange(start, end), 8);
-  EXPECT_TRUE(surrounding_text.TextContent().IsEmpty());
+  EXPECT_TRUE(surrounding_text.TextContent().empty());
 }
 
 TEST_F(SurroundingTextTest, ButtonsAndParagraph) {
@@ -352,7 +352,7 @@ TEST_F(SurroundingTextTest, ButtonsAndParagraph) {
     EphemeralRange selection = Select(0);
     SurroundingText surrounding_text(selection, 0);
 
-    EXPECT_TRUE(surrounding_text.TextContent().IsEmpty());
+    EXPECT_TRUE(surrounding_text.TextContent().empty());
   }
 
   {
@@ -443,14 +443,14 @@ TEST_F(SurroundingTextTest, EmptySurroundingTextInOptionsAndButton) {
     EphemeralRange selection = Select(1);
     SurroundingText surrounding_text(selection, 100);
 
-    EXPECT_TRUE(surrounding_text.TextContent().IsEmpty());
+    EXPECT_TRUE(surrounding_text.TextContent().empty());
   }
 
   {
     EphemeralRange selection = Select(3);
     SurroundingText surrounding_text(selection, 100);
 
-    EXPECT_TRUE(surrounding_text.TextContent().IsEmpty());
+    EXPECT_TRUE(surrounding_text.TextContent().empty());
   }
 }
 

@@ -301,7 +301,7 @@ void StylePropertyMap::set(
         break;
     }
 
-    if (css_text.IsEmpty() ||
+    if (css_text.empty() ||
         !SetShorthandProperty(property.PropertyID(), css_text,
                               execution_context->GetSecureContextMode())) {
       exception_state.ThrowTypeError("Invalid type for property");

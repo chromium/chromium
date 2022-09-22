@@ -124,7 +124,7 @@ bool AXObjectCache::IsInsideFocusableElementOrARIAWidget(const Node& node) {
       if (element->IsFocusable())
         return true;
       String role = element->getAttribute("role");
-      if (!role.IsEmpty() && IncludesARIAWidgetRole(role))
+      if (!role.empty() && IncludesARIAWidgetRole(role))
         return true;
       if (HasInteractiveARIAAttribute(*element))
         return true;

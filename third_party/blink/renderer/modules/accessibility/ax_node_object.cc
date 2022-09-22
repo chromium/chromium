@@ -306,7 +306,7 @@ String GetTitle(blink::Element* element) {
     // Unfortunately, this must duplicate some logic from SVGElement::title().
     if (svg_element->InUseShadowTree()) {
       String title = GetTitle(svg_element->OwnerShadowHost());
-      if (!title.IsEmpty())
+      if (!title.empty())
         return title;
     }
     // If we aren't an instance in a <use> or the <use> title was not found,
@@ -543,7 +543,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // Note: this is duplicated from AXLayoutObject because CSS alt text may apply
   // to both Elements and pseudo-elements.
   absl::optional<String> alt_text = GetCSSAltText(GetNode());
-  if (alt_text && !alt_text->IsEmpty())
+  if (alt_text && !alt_text->empty())
     return kIncludeObject;
 
   // Don't ignored legends, because JAWS uses them to determine redundant text.
@@ -647,7 +647,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // check if there's some kind of accessible name for the element)
   // to decide an element's visibility is not as definitive as
   // previous checks, so this should remain as one of the last.
-  if (HasAriaAttribute() || !GetAttribute(kTitleAttr).IsEmpty())
+  if (HasAriaAttribute() || !GetAttribute(kTitleAttr).empty())
     return kIncludeObject;
 
   if (IsImage() && !IsA<SVGElement>(node)) {
@@ -655,7 +655,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     // A null alt attribute means the attribute is not present. We assume this
     // is a mistake, and expose the image so that it can be repaired.
     // In contrast, alt="" is treated as intentional markup to ignore the image.
-    if (!alt.IsEmpty() || alt.IsNull())
+    if (!alt.empty() || alt.IsNull())
       return kIncludeObject;
     if (ignored_reasons)
       ignored_reasons->push_back(IgnoredReason(kAXEmptyAlt));
@@ -2624,7 +2624,7 @@ ax::mojom::blink::AriaCurrentState AXNodeObject::GetAriaCurrentState() const {
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kCurrent);
   if (attribute_value.IsNull())
     return ax::mojom::blink::AriaCurrentState::kNone;
-  if (attribute_value.IsEmpty() ||
+  if (attribute_value.empty() ||
       EqualIgnoringASCIICase(attribute_value, "false"))
     return ax::mojom::blink::AriaCurrentState::kFalse;
   if (EqualIgnoringASCIICase(attribute_value, "true"))
@@ -2640,7 +2640,7 @@ ax::mojom::blink::AriaCurrentState AXNodeObject::GetAriaCurrentState() const {
   if (EqualIgnoringASCIICase(attribute_value, "time"))
     return ax::mojom::blink::AriaCurrentState::kTime;
   // An unknown value should return true.
-  if (!attribute_value.IsEmpty())
+  if (!attribute_value.empty())
     return ax::mojom::blink::AriaCurrentState::kTrue;
 
   return AXObject::GetAriaCurrentState();
@@ -2666,7 +2666,7 @@ ax::mojom::blink::InvalidState AXNodeObject::GetInvalidState() const {
                : ax::mojom::blink::InvalidState::kNone;
   }
   // Any other non-empty value is considered true.
-  if (!attribute_value.IsEmpty()) {
+  if (!attribute_value.empty()) {
     return ax::mojom::blink::InvalidState::kTrue;
   }
 
@@ -2892,7 +2892,7 @@ KURL AXNodeObject::Url() const {
     String source_url = html_image_element->ImageSourceURL();
     String stripped_image_source_url =
         StripLeadingAndTrailingHTMLSpaces(source_url);
-    if (!stripped_image_source_url.IsEmpty())
+    if (!stripped_image_source_url.empty())
       return GetDocument()->CompleteURL(stripped_image_source_url);
   }
 
@@ -3267,7 +3267,7 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
     // the name of the <input> element.
     name_objects->clear();
     String input_name = DatetimeAncestor()->GetName(name_from, name_objects);
-    if (!input_name.IsEmpty())
+    if (!input_name.empty())
       return name + " " + input_name;
   }
 
@@ -3331,7 +3331,7 @@ String AXNodeObject::TextAlternative(
       NativeTextAlternative(visited, name_from, related_objects, name_sources,
                             &found_text_alternative);
   const bool has_text_alternative =
-      !text_alternative.IsEmpty() ||
+      !text_alternative.empty() ||
       name_from == ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty;
   if (has_text_alternative && !name_sources)
     return text_alternative;
@@ -3355,7 +3355,7 @@ String AXNodeObject::TextAlternative(
             TextFromDescendants(visited, aria_label_or_description_root, false);
       }
 
-      if (!text_alternative.IsEmpty()) {
+      if (!text_alternative.empty()) {
         if (name_sources) {
           found_text_alternative = true;
           name_sources->back().text = text_alternative;
@@ -3373,7 +3373,7 @@ String AXNodeObject::TextAlternative(
     name_sources->back().type = name_from;
   }
   const AtomicString& title = GetAttribute(kTitleAttr);
-  if (!title.IsEmpty()) {
+  if (!title.empty()) {
     text_alternative = title;
     name_from = ax::mojom::blink::NameFrom::kTitle;
     if (name_sources) {
@@ -3526,7 +3526,7 @@ String AXNodeObject::TextFromDescendants(
                                         visited, child_name_from);
     }
 
-    if (!result.IsEmpty() && previous && accumulated_text.length() &&
+    if (!result.empty() && previous && accumulated_text.length() &&
         !IsHTMLSpace(accumulated_text[accumulated_text.length() - 1]) &&
         !IsHTMLSpace(result[0])) {
       if (ShouldInsertSpaceBetweenObjectsIfNeeded(
@@ -3548,7 +3548,7 @@ String AXNodeObject::TextFromDescendants(
     // Example: Three spans, the first with an aria-label, the second with no
     // content, and the third whose name comes from content. There should be a
     // space between the first and third because of the aria-label in the first.
-    if (!result.IsEmpty())
+    if (!result.empty())
       last_used_name_from = child_name_from;
   }
 
@@ -3814,7 +3814,7 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
   // compute offset mappings for empty LayoutText objects. Other text objects
   // (such as some list markers) are not affected.
   if (const LayoutText* layout_text = DynamicTo<LayoutText>(layout_obj)) {
-    if (layout_text->GetText().IsEmpty())
+    if (layout_text->GetText().empty())
       return AXObject::TextOffsetInFormattingContext(offset);
   }
 
@@ -3933,7 +3933,7 @@ void AXNodeObject::AddImageMapChildren() {
   DCHECK(curr_image_element);
   DCHECK(curr_image_element->IsLink());
   String usemap = curr_image_element->FastGetAttribute(html_names::kUsemapAttr);
-  DCHECK(!usemap.IsEmpty());
+  DCHECK(!usemap.empty());
 
   // Even though several images can point to the same map via usemap, only
   // use one reported via HTMLImageMapElement::ImageElement(), which is always
@@ -4909,7 +4909,7 @@ String AXNodeObject::NativeTextAlternative(
            ++label_index) {
         Element* label = labels->item(label_index);
         if (name_sources) {
-          if (!label->FastGetAttribute(html_names::kForAttr).IsEmpty() &&
+          if (!label->FastGetAttribute(html_names::kForAttr).empty() &&
               label->FastGetAttribute(html_names::kForAttr) ==
                   html_element->GetIdAttribute()) {
             name_sources->back().native_source = kAXTextFromNativeHTMLLabelFor;
@@ -4988,7 +4988,7 @@ String AXNodeObject::NativeTextAlternative(
       input_element->getAttribute(kTypeAttr) == input_type_names::kImage) {
     // alt attr
     const AtomicString& alt = input_element->getAttribute(kAltAttr);
-    const bool is_empty = alt.IsEmpty() && !alt.IsNull();
+    const bool is_empty = alt.empty() && !alt.IsNull();
     name_from = is_empty ? ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty
                          : ax::mojom::blink::NameFrom::kAttribute;
     if (name_sources) {
@@ -5071,7 +5071,7 @@ String AXNodeObject::NativeTextAlternative(
       source.type = name_from;
     }
     const String placeholder = PlaceholderFromNativeAttribute();
-    if (!placeholder.IsEmpty()) {
+    if (!placeholder.empty()) {
       text_alternative = placeholder;
       if (name_sources) {
         NameSource& source = name_sources->back();
@@ -5094,7 +5094,7 @@ String AXNodeObject::NativeTextAlternative(
 
     String displayed_file_path = GetValueForControl();
     String upload_button_text = input_element->UploadButton()->Value();
-    if (!displayed_file_path.IsEmpty()) {
+    if (!displayed_file_path.empty()) {
       text_alternative = displayed_file_path + ", " + upload_button_text;
     } else {
       text_alternative = upload_button_text;
@@ -5121,7 +5121,7 @@ String AXNodeObject::NativeTextAlternative(
     }
     const AtomicString& aria_placeholder =
         GetAOMPropertyOrARIAAttribute(AOMStringProperty::kPlaceholder);
-    if (!aria_placeholder.IsEmpty()) {
+    if (!aria_placeholder.empty()) {
       text_alternative = aria_placeholder;
       if (name_sources) {
         NameSource& source = name_sources->back();
@@ -5141,7 +5141,7 @@ String AXNodeObject::NativeTextAlternative(
       (GetLayoutObject() && GetLayoutObject()->IsSVGImage())) {
     // alt
     const AtomicString& alt = GetAttribute(kAltAttr);
-    const bool is_empty = alt.IsEmpty() && !alt.IsNull();
+    const bool is_empty = alt.empty() && !alt.IsNull();
     name_from = is_empty ? ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty
                          : ax::mojom::blink::NameFrom::kAttribute;
     if (name_sources) {
@@ -5242,7 +5242,7 @@ String AXNodeObject::NativeTextAlternative(
       // agents must expose their values. Therefore until we hear otherwise,
       // just use the inner text. See https://github.com/w3c/svgwg/issues/867
       text_alternative = title->GetInnerTextWithoutUpdate();
-      if (!text_alternative.IsEmpty()) {
+      if (!text_alternative.empty()) {
         if (name_sources) {
           NameSource& source = name_sources->back();
           source.text = text_alternative;
@@ -5266,7 +5266,7 @@ String AXNodeObject::NativeTextAlternative(
       const AtomicString& title_attr =
           DynamicTo<Element>(GetNode())->FastGetAttribute(
               xlink_names::kTitleAttr);
-      if (!title_attr.IsEmpty()) {
+      if (!title_attr.empty()) {
         text_alternative = title_attr;
         if (name_sources) {
           NameSource& source = name_sources->back();
@@ -5331,7 +5331,7 @@ String AXNodeObject::NativeTextAlternative(
         const AtomicString& aria_label =
             AccessibleNode::GetPropertyOrARIAAttribute(
                 document_element, AOMStringProperty::kLabel);
-        if (!aria_label.IsEmpty()) {
+        if (!aria_label.empty()) {
           text_alternative = aria_label;
 
           if (name_sources) {
@@ -5347,7 +5347,7 @@ String AXNodeObject::NativeTextAlternative(
 
       text_alternative = document->title();
       bool is_empty_title_element =
-          text_alternative.IsEmpty() && document->TitleElement();
+          text_alternative.empty() && document->TitleElement();
       if (is_empty_title_element)
         name_from = ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty;
       else
@@ -5395,9 +5395,9 @@ String AXNodeObject::Description(
       description_objects->clear();
     String ancestor_description = DatetimeAncestor()->Description(
         datetime_ancestor_name_from, description_from, description_objects);
-    if (!result.IsEmpty() && !ancestor_description.IsEmpty())
+    if (!result.empty() && !ancestor_description.empty())
       return result + " " + ancestor_description;
-    if (!ancestor_description.IsEmpty())
+    if (!ancestor_description.empty())
       return ancestor_description;
   }
 
@@ -5611,7 +5611,7 @@ String AXNodeObject::Description(
     AXObjectSet visited;
     description = TextFromDescendants(visited, nullptr, false);
 
-    if (!description.IsEmpty()) {
+    if (!description.empty()) {
       if (description_sources) {
         found_description = true;
         description_sources->back().text = description;
@@ -5630,7 +5630,7 @@ String AXNodeObject::Description(
       description_sources->back().type = description_from;
     }
     const AtomicString& title = GetAttribute(kTitleAttr);
-    if (!title.IsEmpty()) {
+    if (!title.empty()) {
       description = title;
       if (description_sources) {
         found_description = true;
@@ -5723,7 +5723,7 @@ String AXNodeObject::SVGDescription(
     // agents must expose their values. Therefore until we hear otherwise, just
     // use the inner text. See https://github.com/w3c/svgwg/issues/867
     description = desc->GetInnerTextWithoutUpdate();
-    if (!description.IsEmpty()) {
+    if (!description.empty()) {
       if (description_sources) {
         DescriptionSource& source = description_sources->back();
         source.related_objects = *related_objects;
@@ -5757,7 +5757,7 @@ String AXNodeObject::SVGDescription(
       // agents must expose their values. Therefore until we hear otherwise,
       // just use the inner text. See https://github.com/w3c/svgwg/issues/867
       description = title->GetInnerTextWithoutUpdate();
-      if (!description.IsEmpty()) {
+      if (!description.empty()) {
         if (description_sources) {
           DescriptionSource& source = description_sources->back();
           source.related_objects = *related_objects;
@@ -5778,7 +5778,7 @@ String AXNodeObject::SVGDescription(
     const AtomicString& title_attr =
         DynamicTo<Element>(GetNode())->FastGetAttribute(
             xlink_names::kTitleAttr);
-    if (!title_attr.IsEmpty()) {
+    if (!title_attr.empty()) {
       description = title_attr;
       if (description_sources) {
         found_description = true;
@@ -5800,12 +5800,12 @@ String AXNodeObject::Placeholder(ax::mojom::blink::NameFrom name_from) const {
     return String();
 
   String native_placeholder = PlaceholderFromNativeAttribute();
-  if (!native_placeholder.IsEmpty())
+  if (!native_placeholder.empty())
     return native_placeholder;
 
   const AtomicString& aria_placeholder =
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kPlaceholder);
-  if (!aria_placeholder.IsEmpty())
+  if (!aria_placeholder.empty())
     return aria_placeholder;
 
   return String();

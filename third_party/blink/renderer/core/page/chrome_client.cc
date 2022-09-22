@@ -206,7 +206,7 @@ void ChromeClient::UpdateTooltipUnderCursor(LocalFrame& frame,
   // The ::UpdateTooltipUnderCursor overload, which is be called down the road,
   // ensures a new tooltip to be displayed with the new context.
   if (result.InnerNodeOrImageMapImage() != last_mouse_over_node_ &&
-      !last_tool_tip_text_.IsEmpty() && tool_tip == last_tool_tip_text_)
+      !last_tool_tip_text_.empty() && tool_tip == last_tool_tip_text_)
     ClearToolTip(frame);
 
   last_tool_tip_point_ = location.Point();

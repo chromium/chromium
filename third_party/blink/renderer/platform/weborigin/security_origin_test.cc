@@ -657,7 +657,7 @@ TEST_F(SecurityOriginTest, EffectiveDomain) {
     if (test.expected_effective_domain) {
       EXPECT_EQ(test.expected_effective_domain, origin->Domain());
     } else {
-      EXPECT_TRUE(origin->Domain().IsEmpty());
+      EXPECT_TRUE(origin->Domain().empty());
     }
   }
 }

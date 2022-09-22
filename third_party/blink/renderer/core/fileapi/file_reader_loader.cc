@@ -190,7 +190,7 @@ ArrayBufferContents FileReaderLoader::TakeContents() {
 }
 
 void FileReaderLoader::SetEncoding(const String& encoding) {
-  if (!encoding.IsEmpty())
+  if (!encoding.empty())
     encoding_ = WTF::TextEncoding(encoding);
 }
 
@@ -418,7 +418,7 @@ String FileReaderLoader::ConvertToDataURL() {
   if (!bytes_loaded_)
     return builder.ToString();
 
-  if (data_type_.IsEmpty()) {
+  if (data_type_.empty()) {
     // Match Firefox in defaulting to application/octet-stream when the MIME
     // type is unknown. See https://crbug.com/48368.
     builder.Append("application/octet-stream");

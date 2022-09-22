@@ -188,7 +188,9 @@ class WTF_EXPORT AtomicString {
   static AtomicString Number(double, unsigned precision = 6);
 
   bool IsNull() const { return string_.IsNull(); }
-  bool IsEmpty() const { return string_.IsEmpty(); }
+  bool empty() const { return string_.empty(); }
+  // TODO(wangxianzhu): This is deprecated. Remove it.
+  bool IsEmpty() const { return empty(); }
 
 #ifdef __OBJC__
   AtomicString(NSString* s) : string_(Add((CFStringRef)s)) {}

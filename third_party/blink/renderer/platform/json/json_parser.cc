@@ -654,7 +654,7 @@ std::unique_ptr<JSONValue> ParseJSON(const String& json,
   JSONParseError error;
   bool has_comments = false;
 
-  if (json.IsEmpty()) {
+  if (json.empty()) {
     error.type = Error::kSyntaxError;
     error.line = 0;
     error.column = 0;

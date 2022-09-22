@@ -145,7 +145,7 @@ void HTMLEmbedElement::UpdatePluginInternal() {
   DCHECK(NeedsPluginUpdate());
   SetNeedsPluginUpdate(false);
 
-  if (url_.IsEmpty() && service_type_.IsEmpty())
+  if (url_.empty() && service_type_.empty())
     return;
 
   // Note these pass url_ and service_type_ to allow better code sharing with

@@ -231,7 +231,7 @@ bool CSSNumericValue::IsValidUnit(CSSPrimitiveValue::UnitType unit) {
 }
 
 CSSPrimitiveValue::UnitType CSSNumericValue::UnitFromName(const String& name) {
-  if (name.IsEmpty())
+  if (name.empty())
     return CSSPrimitiveValue::UnitType::kUnknown;
   if (EqualIgnoringASCIICase(name, "number"))
     return CSSPrimitiveValue::UnitType::kNumber;

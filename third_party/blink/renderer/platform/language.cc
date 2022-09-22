@@ -69,7 +69,7 @@ void InitializePlatformLanguage() {
       const AtomicString, platform_language, (([]() {
         String canonicalized = CanonicalizeLanguageIdentifier(
             Platform::Current()->DefaultLocale());
-        if (!canonicalized.IsEmpty()) {
+        if (!canonicalized.empty()) {
           StringImpl* impl = StringImpl::CreateStatic(
               reinterpret_cast<const char*>(canonicalized.Characters8()),
               canonicalized.length(),

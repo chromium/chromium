@@ -266,15 +266,15 @@ void Locale::SetLocaleData(const Vector<String, kDecimalSymbolsSize>& symbols,
                            const String& negative_prefix,
                            const String& negative_suffix) {
   for (wtf_size_t i = 0; i < symbols.size(); ++i) {
-    DCHECK(!symbols[i].IsEmpty());
+    DCHECK(!symbols[i].empty());
     decimal_symbols_[i] = symbols[i];
   }
   positive_prefix_ = positive_prefix;
   positive_suffix_ = positive_suffix;
   negative_prefix_ = negative_prefix;
   negative_suffix_ = negative_suffix;
-  DCHECK(!positive_prefix_.IsEmpty() || !positive_suffix_.IsEmpty() ||
-         !negative_prefix_.IsEmpty() || !negative_suffix_.IsEmpty());
+  DCHECK(!positive_prefix_.empty() || !positive_suffix_.empty() ||
+         !negative_prefix_.empty() || !negative_suffix_.empty());
   has_locale_data_ = true;
 
   StringBuilder builder;
@@ -309,7 +309,7 @@ void Locale::SetLocaleData(const Vector<String, kDecimalSymbolsSize>& symbols,
 
 String Locale::ConvertToLocalizedNumber(const String& input) {
   InitializeLocaleData();
-  if (!has_locale_data_ || input.IsEmpty())
+  if (!has_locale_data_ || input.empty())
     return input;
 
   unsigned i = 0;
@@ -353,7 +353,7 @@ String Locale::ConvertToLocalizedNumber(const String& input) {
 }
 
 static bool Matches(const String& text, unsigned position, const String& part) {
-  if (part.IsEmpty())
+  if (part.empty())
     return true;
   if (position + part.length() > text.length())
     return false;
@@ -371,7 +371,7 @@ bool Locale::DetectSignAndGetDigitRange(const String& input,
   DCHECK_EQ(input.Find(IsASCIISpace), WTF::kNotFound);
   start_index = 0;
   end_index = input.length();
-  if (negative_prefix_.IsEmpty() && negative_suffix_.IsEmpty()) {
+  if (negative_prefix_.empty() && negative_suffix_.empty()) {
     if (input.StartsWith(positive_prefix_) &&
         input.EndsWith(positive_suffix_)) {
       is_negative = false;
@@ -423,7 +423,7 @@ unsigned Locale::MatchedDecimalSymbolIndex(const String& input,
 String Locale::ConvertFromLocalizedNumber(const String& localized) {
   InitializeLocaleData();
   String input = localized.RemoveCharacters(IsASCIISpace);
-  if (!has_locale_data_ || input.IsEmpty())
+  if (!has_locale_data_ || input.empty())
     return input;
 
   bool is_negative;

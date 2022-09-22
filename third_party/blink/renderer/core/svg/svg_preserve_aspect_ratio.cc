@@ -162,7 +162,7 @@ SVGParsingError SVGPreserveAspectRatio::ParseInternal(const CharType*& ptr,
 SVGParsingError SVGPreserveAspectRatio::SetValueAsString(const String& string) {
   SetDefault();
 
-  if (string.IsEmpty())
+  if (string.empty())
     return SVGParseStatus::kNoError;
 
   return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {

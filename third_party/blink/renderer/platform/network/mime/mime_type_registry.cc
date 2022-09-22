@@ -48,7 +48,7 @@ std::string ToLowerASCIIInternal(CHARTYPE* str, SIZETYPE length) {
 
 // Does the same as ToASCIIOrEmpty, but also makes the chars lower.
 std::string ToLowerASCIIOrEmpty(const String& str) {
-  if (str.IsEmpty() || !str.ContainsOnlyASCIIOrEmpty())
+  if (str.empty() || !str.ContainsOnlyASCIIOrEmpty())
     return std::string();
   if (str.Is8Bit())
     return ToLowerASCIIInternal(str.Characters8(), str.length());

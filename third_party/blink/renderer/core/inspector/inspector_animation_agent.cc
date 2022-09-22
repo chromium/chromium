@@ -50,7 +50,7 @@ double AsDoubleOrZero(V8UnionDoubleOrTimelineOffset* value) {
 }
 
 String AnimationDisplayName(const Animation& animation) {
-  if (!animation.id().IsEmpty())
+  if (!animation.id().empty())
     return animation.id();
   else if (auto* css_animation = DynamicTo<CSSAnimation>(animation))
     return css_animation->animationName();

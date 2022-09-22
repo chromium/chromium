@@ -260,7 +260,7 @@ IDBObjectStore* IDBDatabase::createObjectStore(
   }
 
   if (auto_increment && ((key_path.GetType() == mojom::IDBKeyPathType::String &&
-                          key_path.GetString().IsEmpty()) ||
+                          key_path.GetString().empty()) ||
                          key_path.GetType() == mojom::IDBKeyPathType::Array)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,

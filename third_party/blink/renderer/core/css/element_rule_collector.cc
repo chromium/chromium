@@ -512,7 +512,7 @@ void ElementRuleCollector::CollectMatchingRules(
 
   Element& element = context_.GetElement();
   const AtomicString& pseudo_id = element.ShadowPseudoId();
-  if (!pseudo_id.IsEmpty()) {
+  if (!pseudo_id.empty()) {
     DCHECK(element.IsStyledElement());
     for (const auto bundle : match_request.AllRuleSets()) {
       CollectMatchingRulesForList(

@@ -93,8 +93,8 @@ class CORE_EXPORT ErrorEvent final : public Event {
 
   // Not exposed to JavaScript, prefers |unsanitized_message_|.
   const String& MessageForConsole() const {
-    return !unsanitized_message_.IsEmpty() ? unsanitized_message_
-                                           : sanitized_message_;
+    return !unsanitized_message_.empty() ? unsanitized_message_
+                                         : sanitized_message_;
   }
   SourceLocation* Location() const { return location_.get(); }
 

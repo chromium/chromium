@@ -2051,7 +2051,7 @@ static inline bool IsInlineFlowOrEmptyText(const LayoutObject* o) {
     return true;
   if (!o->IsText())
     return false;
-  return To<LayoutText>(o)->GetText().IsEmpty();
+  return To<LayoutText>(o)->GetText().empty();
 }
 
 OnlyWhitespaceOrNbsp LayoutText::ContainsOnlyWhitespaceOrNbsp() const {

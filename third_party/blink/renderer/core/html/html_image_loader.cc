@@ -56,7 +56,7 @@ void HTMLImageLoader::DispatchLoadEvent() {
 void HTMLImageLoader::NoImageResourceToLoad() {
   // FIXME: Use fallback content even when there is no alt-text. The only
   // blocker is the large amount of rebaselining it requires.
-  if (To<HTMLElement>(GetElement())->AltText().IsEmpty())
+  if (To<HTMLElement>(GetElement())->AltText().empty())
     return;
 
   if (auto* image = DynamicTo<HTMLImageElement>(GetElement()))

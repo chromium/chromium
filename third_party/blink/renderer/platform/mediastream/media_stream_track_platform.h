@@ -60,7 +60,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   };
 
   struct CaptureHandle {
-    bool IsEmpty() const { return origin.IsEmpty() && handle.IsEmpty(); }
+    bool IsEmpty() const { return origin.empty() && handle.empty(); }
 
     String origin;
     String handle;

@@ -48,7 +48,7 @@ PublicKeyCredential::PublicKeyCredential(
     mojom::blink::AuthenticatorAttachment authenticator_attachment,
     const AuthenticationExtensionsClientOutputs* extension_outputs,
     const String& type)
-    : Credential(id, type.IsEmpty() ? kPublicKeyCredentialType : type),
+    : Credential(id, type.empty() ? kPublicKeyCredentialType : type),
       raw_id_(raw_id),
       response_(response),
       authenticator_attachment_(

@@ -27,7 +27,7 @@ bool IsValidTerm(const String& term) {
   DCHECK_EQ(term.find(','), kNotFound);
   DCHECK_EQ(term.find('&'), kNotFound);
 
-  if (term.IsEmpty())
+  if (term.empty())
     return false;
 
   wtf_size_t hyphen_pos = term.find('-');
@@ -35,14 +35,14 @@ bool IsValidTerm(const String& term) {
 }
 
 bool IsPrefix(const String& term) {
-  if (term.IsEmpty())
+  if (term.empty())
     return false;
 
   return term[term.length() - 1] == '-';
 }
 
 bool IsSuffix(const String& term) {
-  if (term.IsEmpty())
+  if (term.empty())
     return false;
 
   return term[0] == '-';
@@ -124,21 +124,21 @@ TextFragmentSelector::TextFragmentSelector(SelectorType type) : type_(type) {}
 
 String TextFragmentSelector::ToString() const {
   StringBuilder selector;
-  if (!prefix_.IsEmpty()) {
+  if (!prefix_.empty()) {
     selector.Append(EscapeSelectorSpecialCharacters(prefix_));
     selector.Append("-,");
   }
 
-  if (!start_.IsEmpty()) {
+  if (!start_.empty()) {
     selector.Append(EscapeSelectorSpecialCharacters(start_));
   }
 
-  if (!end_.IsEmpty()) {
+  if (!end_.empty()) {
     selector.Append(",");
     selector.Append(EscapeSelectorSpecialCharacters(end_));
   }
 
-  if (!suffix_.IsEmpty()) {
+  if (!suffix_.empty()) {
     selector.Append(",-");
     selector.Append(EscapeSelectorSpecialCharacters(suffix_));
   }

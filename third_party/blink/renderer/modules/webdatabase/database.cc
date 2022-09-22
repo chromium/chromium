@@ -470,7 +470,7 @@ bool Database::PerformOpenAndVerify(bool should_set_version_in_new_database,
                                     DatabaseError& error,
                                     String& error_message) {
   DoneCreatingDatabaseOnExitCaller on_exit_caller(this);
-  DCHECK(error_message.IsEmpty());
+  DCHECK(error_message.empty());
   DCHECK_EQ(error,
             DatabaseError::kNone);  // Better not have any errors already.
   // Presumed failure. We'll clear it if we succeed below.

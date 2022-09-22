@@ -51,7 +51,7 @@ struct FromString<String> {
 
 template <>
 struct FromString<bool> {
-  bool operator()(const String& s) { return s.IsEmpty() || s == "true"; }
+  bool operator()(const String& s) { return s.empty() || s == "true"; }
 };
 
 template <>

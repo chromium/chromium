@@ -469,7 +469,7 @@ void CSSAnimations::CalculateScrollTimelineUpdate(CSSAnimationUpdate& update,
       timeline_data ? timeline_data->GetScrollTimeline() : nullptr;
   CSSScrollTimeline* new_timeline = nullptr;
 
-  if (!name.IsEmpty()) {
+  if (!name.empty()) {
     // If the computed values of scroll-timeline-* would produce a
     // CSSScrollTimeline identical to the existing one, we reuse the existing
     // one instead.
@@ -519,7 +519,7 @@ void CSSAnimations::CalculateViewTimelineUpdate(CSSAnimationUpdate& update,
 
   for (wtf_size_t i = 0; i < names.size(); ++i) {
     const AtomicString& name = names[i];
-    if (name.IsEmpty())
+    if (name.empty())
       continue;
     TimelineAxis axis = axes.empty() ? TimelineAxis::kBlock
                                      : axes[std::min(i, axes.size() - 1)];

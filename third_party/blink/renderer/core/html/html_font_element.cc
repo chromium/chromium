@@ -107,7 +107,7 @@ static bool ParseFontSize(const CharacterType* characters,
 }
 
 static bool ParseFontSize(const String& input, int& size) {
-  if (input.IsEmpty())
+  if (input.empty())
     return false;
 
   if (input.Is8Bit())
@@ -186,7 +186,7 @@ void HTMLFontElement::CollectStyleForPresentationAttribute(
     }
   } else if (name == html_names::kColorAttr) {
     AddHTMLColorToStyle(style, CSSPropertyID::kColor, value);
-  } else if (name == html_names::kFaceAttr && !value.IsEmpty()) {
+  } else if (name == html_names::kFaceAttr && !value.empty()) {
     if (const CSSValueList* font_face_value = CreateFontFaceValueWithPool(
             value, GetExecutionContext()->GetSecureContextMode())) {
       style->SetProperty(CSSPropertyValue(

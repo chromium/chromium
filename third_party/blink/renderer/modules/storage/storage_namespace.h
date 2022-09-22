@@ -94,7 +94,7 @@ class MODULES_EXPORT StorageNamespace final
   // Removes any CachedStorageAreas that aren't referenced by any source.
   void CleanUpUnusedAreas();
 
-  bool IsSessionStorage() const { return !namespace_id_.IsEmpty(); }
+  bool IsSessionStorage() const { return !namespace_id_.empty(); }
 
   void AddInspectorStorageAgent(InspectorDOMStorageAgent* agent);
   void RemoveInspectorStorageAgent(InspectorDOMStorageAgent* agent);

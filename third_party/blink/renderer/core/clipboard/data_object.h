@@ -109,7 +109,7 @@ class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
     filesystem_id_ = file_system_id;
   }
   const String& FilesystemId() const {
-    DCHECK(!filesystem_id_.IsEmpty());
+    DCHECK(!filesystem_id_.empty());
     return filesystem_id_;
   }
 

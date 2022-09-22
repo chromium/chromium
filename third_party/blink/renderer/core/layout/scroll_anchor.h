@@ -30,7 +30,7 @@ struct SerializedAnchor {
   SerializedAnchor(const String& s, const LayoutPoint& p, uint64_t hash)
       : selector(s), relative_offset(p), simhash(hash) {}
 
-  bool IsValid() const { return !selector.IsEmpty(); }
+  bool IsValid() const { return !selector.empty(); }
 
   // Used to locate an element previously used as a scroll anchor.
   const String selector;

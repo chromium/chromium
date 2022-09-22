@@ -535,7 +535,7 @@ double ToRestrictedDouble(v8::Isolate* isolate,
 static bool HasUnmatchedSurrogates(const String& string) {
   // By definition, 8-bit strings are confined to the Latin-1 code page and
   // have no surrogates, matched or otherwise.
-  if (string.IsEmpty() || string.Is8Bit())
+  if (string.empty() || string.Is8Bit())
     return false;
 
   const UChar* characters = string.Characters16();

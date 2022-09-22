@@ -111,7 +111,7 @@ String CSSStyleRule::cssText() const {
   result.Append(" { ");
   String decls = style_rule_->Properties().AsText();
   result.Append(decls);
-  if (!decls.IsEmpty())
+  if (!decls.empty())
     result.Append(' ');
   result.Append('}');
   return result.ReleaseString();

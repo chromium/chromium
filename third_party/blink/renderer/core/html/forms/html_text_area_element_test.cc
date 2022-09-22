@@ -61,7 +61,7 @@ TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaks) {
   )HTML");
   HTMLTextAreaElement& textarea = TestElement();
   RunDocumentLifecycle();
-  EXPECT_TRUE(textarea.ValueWithHardLineBreaks().IsEmpty());
+  EXPECT_TRUE(textarea.ValueWithHardLineBreaks().empty());
 
   textarea.SetValue("12345678");
   RunDocumentLifecycle();

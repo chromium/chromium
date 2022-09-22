@@ -182,7 +182,7 @@ bool DateTimeFormat::Parse(const String& source, TokenHandler& token_handler) {
       case kStateSymbol: {
         DCHECK_NE(field_type, kFieldTypeInvalid);
         DCHECK_NE(field_type, kFieldTypeLiteral);
-        DCHECK(literal_buffer.IsEmpty());
+        DCHECK(literal_buffer.empty());
 
         FieldType field_type2 = MapCharacterToFieldType(ch);
         if (field_type2 == kFieldTypeInvalid)

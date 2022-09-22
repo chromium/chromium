@@ -450,7 +450,7 @@ int CSSStyleSheet::addRule(const String& selector,
   text.Append(selector);
   text.Append(" { ");
   text.Append(style);
-  if (!style.IsEmpty())
+  if (!style.empty())
     text.Append(' ');
   text.Append('}');
   insertRule(text.ReleaseString(), index, exception_state);
@@ -608,11 +608,11 @@ bool CSSStyleSheet::CanBeActivated(
   if (!owner_node_ ||
       owner_node_->getNodeType() == Node::kProcessingInstructionNode ||
       !html_link_element || !html_link_element->IsEnabledViaScript()) {
-    if (!title_.IsEmpty() && title_ != current_preferrable_name)
+    if (!title_.empty() && title_ != current_preferrable_name)
       return false;
   }
 
-  if (IsAlternate() && title_.IsEmpty())
+  if (IsAlternate() && title_.empty())
     return false;
 
   return true;

@@ -54,7 +54,7 @@ SVGParsingError SVGLengthList::ParseInternal(const CharType* ptr,
     if (ptr == start)
       break;
     String value_string(start, static_cast<wtf_size_t>(ptr - start));
-    if (value_string.IsEmpty())
+    if (value_string.empty())
       break;
 
     auto* length = MakeGarbageCollected<SVGLength>(mode_);
@@ -71,7 +71,7 @@ SVGParsingError SVGLengthList::ParseInternal(const CharType* ptr,
 SVGParsingError SVGLengthList::SetValueAsString(const String& value) {
   Clear();
 
-  if (value.IsEmpty())
+  if (value.empty())
     return SVGParseStatus::kNoError;
 
   return WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {

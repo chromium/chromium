@@ -23,11 +23,11 @@ constexpr char kPasswordCredentialType[] = "password";
 PasswordCredential* PasswordCredential::Create(
     const PasswordCredentialData* data,
     ExceptionState& exception_state) {
-  if (data->id().IsEmpty()) {
+  if (data->id().empty()) {
     exception_state.ThrowTypeError("'id' must not be empty.");
     return nullptr;
   }
-  if (data->password().IsEmpty()) {
+  if (data->password().empty()) {
     exception_state.ThrowTypeError("'password' must not be empty.");
     return nullptr;
   }
@@ -63,7 +63,7 @@ PasswordCredential* PasswordCredential::Create(
     // The "form data set" contains an entry for a |submittable_element| only if
     // it has a non-empty `name` attribute.
     // https://html.spec.whatwg.org/C/#constructing-the-form-data-set
-    if (submittable_element->GetName().IsEmpty())
+    if (submittable_element->GetName().empty())
       continue;
 
     V8FormDataEntryValue* value =
@@ -126,7 +126,7 @@ PasswordCredential::PasswordCredential(const String& id,
       password_(password),
       name_(name),
       icon_url_(icon_url) {
-  DCHECK(!password.IsEmpty());
+  DCHECK(!password.empty());
 }
 
 bool PasswordCredential::IsPasswordCredential() const {

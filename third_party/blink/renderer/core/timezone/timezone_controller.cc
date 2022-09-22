@@ -73,7 +73,7 @@ void DispatchTimeZoneChangeEventToFrames() {
 }
 
 bool SetIcuTimeZoneAndNotifyV8(const String& timezone_id) {
-  DCHECK(!timezone_id.IsEmpty());
+  DCHECK(!timezone_id.empty());
   std::unique_ptr<icu::TimeZone> timezone(icu::TimeZone::createTimeZone(
       icu::UnicodeString(timezone_id.Ascii().data(), -1, US_INV)));
   CHECK(timezone);
@@ -138,7 +138,7 @@ bool CanonicalEquals(const String& time_zone_a, const String& time_zone_b) {
 // static
 std::unique_ptr<TimeZoneController::TimeZoneOverride>
 TimeZoneController::SetTimeZoneOverride(const String& timezone_id) {
-  DCHECK(!timezone_id.IsEmpty());
+  DCHECK(!timezone_id.empty());
   if (HasTimeZoneOverride()) {
     VLOG(1) << "Cannot override existing timezone override.";
     return nullptr;
@@ -158,7 +158,7 @@ TimeZoneController::SetTimeZoneOverride(const String& timezone_id) {
 
 // static
 bool TimeZoneController::HasTimeZoneOverride() {
-  return !instance().override_timezone_id_.IsEmpty();
+  return !instance().override_timezone_id_.empty();
 }
 
 // static
@@ -176,7 +176,7 @@ void TimeZoneController::ClearTimeZoneOverride() {
 
 // static
 void TimeZoneController::ChangeTimeZoneOverride(const String& timezone_id) {
-  DCHECK(!timezone_id.IsEmpty());
+  DCHECK(!timezone_id.empty());
   if (!HasTimeZoneOverride()) {
     VLOG(1) << "Cannot change if there are no existing timezone override.";
     return;

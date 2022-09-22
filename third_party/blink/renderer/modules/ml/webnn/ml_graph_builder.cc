@@ -604,7 +604,7 @@ void MLGraphBuilder::Trace(Visitor* visitor) const {
 MLOperand* MLGraphBuilder::input(String name,
                                  const MLOperandDescriptor* desc,
                                  ExceptionState& exception_state) {
-  if (name.IsEmpty()) {
+  if (name.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       "The name is empty.");
     return nullptr;

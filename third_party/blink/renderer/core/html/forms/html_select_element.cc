@@ -147,7 +147,7 @@ bool HTMLSelectElement::HasPlaceholderLabelOption() const {
   if (!option_element)
     return false;
 
-  return option_element->value().IsEmpty();
+  return option_element->value().empty();
 }
 
 String HTMLSelectElement::validationMessage() const {
@@ -1035,7 +1035,7 @@ void HTMLSelectElement::ParseMultipleAttribute(const AtomicString& value) {
 
 void HTMLSelectElement::AppendToFormData(FormData& form_data) {
   const AtomicString& name = GetName();
-  if (name.IsEmpty())
+  if (name.empty())
     return;
 
   for (auto* const option : GetOptionList()) {

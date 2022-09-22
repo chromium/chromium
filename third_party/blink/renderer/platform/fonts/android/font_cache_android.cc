@@ -173,7 +173,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
       return fallback_postscript_name.equals(kNotoColorEmoji);
     };
 
-    if (family_name.IsEmpty() || skia_fallback_is_noto_color_emoji()) {
+    if (family_name.empty() || skia_fallback_is_noto_color_emoji()) {
       FontPlatformData* emoji_gms_core_font = GetFontPlatformData(
           font_description,
           FontFaceCreationParams(AtomicString(kNotoColorEmojiCompat)));
@@ -191,7 +191,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   // Remaining case, if fallback priority is not emoij or the GMS core emoji
   // font was not found or an OEM emoji font was not to be overridden.
 
-  if (family_name.IsEmpty())
+  if (family_name.empty())
     return GetLastResortFallbackFont(font_description, kDoNotRetain);
 
   return FontDataFromFontPlatformData(

@@ -57,7 +57,7 @@ void HTMLTablePartElement::CollectStyleForPresentationAttribute(
     AddHTMLColorToStyle(style, CSSPropertyID::kBackgroundColor, value);
   } else if (name == html_names::kBackgroundAttr) {
     String url = StripLeadingAndTrailingHTMLSpaces(value);
-    if (!url.IsEmpty()) {
+    if (!url.empty()) {
       CSSImageValue* image_value = MakeGarbageCollected<CSSImageValue>(
           AtomicString(url), GetDocument().CompleteURL(url),
           Referrer(GetExecutionContext()->OutgoingReferrer(),
@@ -102,7 +102,7 @@ void HTMLTablePartElement::CollectStyleForPresentationAttribute(
                                               value);
     }
   } else if (name == html_names::kHeightAttr) {
-    if (!value.IsEmpty())
+    if (!value.empty())
       AddHTMLLengthToStyle(style, CSSPropertyID::kHeight, value);
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);

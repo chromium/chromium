@@ -124,7 +124,7 @@ void HTMLTextAreaElement::RestoreFormControlState(
 }
 
 int HTMLTextAreaElement::scrollWidth() {
-  if (SuggestedValue().IsEmpty())
+  if (SuggestedValue().empty())
     return TextControlElement::scrollWidth();
   // If in preview state, fake the scroll width to prevent that any information
   // about the suggested content can be derived from the size.
@@ -142,7 +142,7 @@ int HTMLTextAreaElement::scrollWidth() {
 }
 
 int HTMLTextAreaElement::scrollHeight() {
-  if (SuggestedValue().IsEmpty())
+  if (SuggestedValue().empty())
     return TextControlElement::scrollHeight();
   // If in preview state, fake the scroll height to prevent that any
   // information about the suggested content can be derived from the size.
@@ -209,7 +209,7 @@ void HTMLTextAreaElement::ParseAttribute(
   const AtomicString& value = params.new_value;
   if (name == html_names::kRowsAttr) {
     unsigned rows = 0;
-    if (value.IsEmpty() || !ParseHTMLNonNegativeInteger(value, rows) ||
+    if (value.empty() || !ParseHTMLNonNegativeInteger(value, rows) ||
         rows <= 0 || rows > 0x7fffffffu)
       rows = kDefaultRows;
     if (rows_ != rows) {
@@ -222,7 +222,7 @@ void HTMLTextAreaElement::ParseAttribute(
     }
   } else if (name == html_names::kColsAttr) {
     unsigned cols = 0;
-    if (value.IsEmpty() || !ParseHTMLNonNegativeInteger(value, cols) ||
+    if (value.empty() || !ParseHTMLNonNegativeInteger(value, cols) ||
         cols <= 0 || cols > 0x7fffffffu)
       cols = kDefaultCols;
     if (cols_ != cols) {
@@ -274,7 +274,7 @@ LayoutObject* HTMLTextAreaElement::CreateLayoutObject(
 }
 
 void HTMLTextAreaElement::AppendToFormData(FormData& form_data) {
-  if (GetName().IsEmpty())
+  if (GetName().empty())
     return;
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kForm);
@@ -567,8 +567,8 @@ void HTMLTextAreaElement::setDefaultValue(const String& default_value) {
 }
 
 void HTMLTextAreaElement::SetSuggestedValue(const String& value) {
-  SetAutofillState(!value.IsEmpty() ? WebAutofillState::kPreviewed
-                                    : WebAutofillState::kNotFilled);
+  SetAutofillState(!value.empty() ? WebAutofillState::kPreviewed
+                                  : WebAutofillState::kNotFilled);
   TextControlElement::SetSuggestedValue(value);
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
@@ -607,7 +607,7 @@ bool HTMLTextAreaElement::ValueMissing(const String* value) const {
   // For textarea elements, the value is missing only if it is mutable.
   // https://html.spec.whatwg.org/multipage/form-elements.html#attr-textarea-required
   return IsRequiredFormControl() && !IsDisabledOrReadOnly() &&
-         (value ? *value : this->Value()).IsEmpty();
+         (value ? *value : this->Value()).empty();
 }
 
 bool HTMLTextAreaElement::TooLong() const {
@@ -685,8 +685,8 @@ void HTMLTextAreaElement::SetPlaceholderVisibility(bool visible) {
 void HTMLTextAreaElement::UpdatePlaceholderText() {
   HTMLElement* placeholder = PlaceholderElement();
   const String placeholder_text = GetPlaceholderValue();
-  const bool is_suggested_value = !SuggestedValue().IsEmpty();
-  if (placeholder_text.IsEmpty()) {
+  const bool is_suggested_value = !SuggestedValue().empty();
+  if (placeholder_text.empty()) {
     if (placeholder)
       UserAgentShadowRoot()->RemoveChild(placeholder);
     return;
@@ -715,7 +715,7 @@ void HTMLTextAreaElement::UpdatePlaceholderText() {
 }
 
 String HTMLTextAreaElement::GetPlaceholderValue() const {
-  return !SuggestedValue().IsEmpty()
+  return !SuggestedValue().empty()
              ? SuggestedValue()
              : FastGetAttribute(html_names::kPlaceholderAttr);
 }

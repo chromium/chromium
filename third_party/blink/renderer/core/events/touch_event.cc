@@ -143,7 +143,7 @@ void TouchEvent::preventDefault() {
   }
 
   auto* local_dom_window = DynamicTo<LocalDOMWindow>(view());
-  if (!message.IsEmpty() && local_dom_window && local_dom_window->GetFrame()) {
+  if (!message.empty() && local_dom_window && local_dom_window->GetFrame()) {
     Intervention::GenerateReport(local_dom_window->GetFrame(), id, message);
   }
 

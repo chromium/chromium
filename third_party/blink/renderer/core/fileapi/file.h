@@ -172,7 +172,7 @@ class CORE_EXPORT File final : public Blob {
   // associated DOM properties) that differs from the one provided in the path.
   static File* CreateForUserProvidedFile(const String& path,
                                          const String& display_name) {
-    if (display_name.IsEmpty()) {
+    if (display_name.empty()) {
       return MakeGarbageCollected<File>(path, File::kAllContentTypes,
                                         File::kIsUserVisible);
     }
@@ -184,7 +184,7 @@ class CORE_EXPORT File final : public Blob {
       const String& path,
       const String& name,
       ContentTypeLookupPolicy policy = kWellKnownContentTypes) {
-    if (name.IsEmpty())
+    if (name.empty())
       return MakeGarbageCollected<File>(path, policy, File::kIsNotUserVisible);
     return MakeGarbageCollected<File>(path, name, policy,
                                       File::kIsNotUserVisible);
@@ -259,7 +259,7 @@ class CORE_EXPORT File final : public Blob {
     return !HasBackingFile() || file_system_url_.IsEmpty();
   }
   // Instances not backed by a file must have an empty path set.
-  bool HasValidFilePath() const { return HasBackingFile() || path_.IsEmpty(); }
+  bool HasValidFilePath() const { return HasBackingFile() || path_.empty(); }
 #endif
 
   bool has_backing_file_;

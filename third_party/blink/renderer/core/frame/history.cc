@@ -285,7 +285,7 @@ void History::replaceState(ScriptState* script_state,
 KURL History::UrlForState(const String& url_string) {
   if (url_string.IsNull())
     return DomWindow()->Url();
-  if (url_string.IsEmpty())
+  if (url_string.empty())
     return DomWindow()->BaseURL();
 
   return KURL(DomWindow()->BaseURL(), url_string);

@@ -112,7 +112,7 @@ static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
   // host.
   DCHECK(!((relevant_url.ProtocolIsInHTTPFamily() ||
             relevant_url.ProtocolIs("ftp")) &&
-           relevant_url.Host().IsEmpty()));
+           relevant_url.Host().empty()));
 
   if (base::Contains(url::GetNoAccessSchemes(),
                      relevant_url.Protocol().Ascii()))
@@ -311,7 +311,7 @@ String SecurityOrigin::RegistrableDomain() const {
   OriginAccessEntry entry(
       *this, network::mojom::CorsDomainMatchMode::kAllowRegistrableDomains);
   String domain = entry.registrable_domain();
-  return domain.IsEmpty() ? String() : domain;
+  return domain.empty() ? String() : domain;
 }
 
 const base::UnguessableToken* SecurityOrigin::GetNonceForSerialization() const {

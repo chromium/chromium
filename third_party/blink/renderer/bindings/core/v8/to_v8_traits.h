@@ -326,7 +326,7 @@ struct ToV8Traits<
   // TODO(crbug.com/1184543): Remove this overload.
   [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
                                                       const String& value) {
-    DCHECK(!value.IsEmpty());
+    DCHECK(!value.empty());
     return V8String(script_state->GetIsolate(), value);
   }
 
@@ -334,7 +334,7 @@ struct ToV8Traits<
   [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
       const AtomicString& value) {
-    DCHECK(!value.IsEmpty());
+    DCHECK(!value.empty());
     return V8String(script_state->GetIsolate(), value);
   }
 };

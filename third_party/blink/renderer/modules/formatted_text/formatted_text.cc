@@ -136,10 +136,10 @@ FormattedText* FormattedText::FormatImpl(
     if (single_run->IsFormattedTextRun()) {
       // This is a dictionary object with 'text' and 'style' members
       const FormattedTextRun* text_run = single_run->GetAsFormattedTextRun();
-      if (text_run->hasText() && !text_run->text().IsEmpty()) {
+      if (text_run->hasText() && !text_run->text().empty()) {
         auto* ft_run = MakeGarbageCollected<FormattedTextRunInternal>(
             execution_context, text_run->text());
-        if (text_run->hasStyle() && !text_run->style().IsEmpty())
+        if (text_run->hasStyle() && !text_run->style().empty())
           ft_run->SetStyle(parser_context(), text_run->style());
         formatted_text->AppendRun(ft_run, exception_state);
       }
@@ -147,7 +147,7 @@ FormattedText* FormattedText::FormatImpl(
       // This is a simple string, without any styles
       DCHECK(single_run->IsString());
       const String& text = single_run->GetAsString();
-      if (!text.IsEmpty()) {
+      if (!text.empty()) {
         auto* ft_run = MakeGarbageCollected<FormattedTextRunInternal>(
             execution_context, text);
         formatted_text->AppendRun(ft_run, exception_state);
@@ -169,7 +169,7 @@ FormattedText* FormattedText::FormatImpl(
   }
 
   // Apply global styles
-  if (!style.IsEmpty())
+  if (!style.empty())
     formatted_text->SetStyle(parser_context(), style);
   return formatted_text;
 }
