@@ -1738,6 +1738,22 @@ TEST(ValuesTest, Clone) {
   EXPECT_TRUE(copy_nested_dictionary->Find("key"));
 }
 
+TEST(ValuesTest, TakeString) {
+  Value value("foo");
+  std::string taken = std::move(value).TakeString();
+  EXPECT_EQ(taken, "foo");
+}
+
+// Check that the value can still be used after `TakeString()` was called, as
+// long as a new value was assigned to it.
+TEST(ValuesTest, PopulateAfterTakeString) {
+  Value value("foo");
+  std::string taken = std::move(value).TakeString();
+
+  value = Value(false);
+  EXPECT_EQ(value, Value(false));
+}
+
 TEST(ValuesTest, TakeDict) {
   Value::Dict dict;
   dict.Set("foo", 123);

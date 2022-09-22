@@ -345,9 +345,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // Returns a value for both `Value::Type::DOUBLE` and `Value::Type::INT`,
   // converting the latter to a double.
   double GetDouble() const;
-  // Callers that want to transfer ownership can use std::move() in conjunction
-  // with one of the mutable variants below, e.g.:
-  //   std::string taken_string = std::move(value.GetString());
   const std::string& GetString() const;
   std::string& GetString();
   const BlobStorage& GetBlob() const;
@@ -361,6 +358,7 @@ class BASE_EXPORT GSL_OWNER Value {
   // transferring the ownership `*this` is in a valid, but unspecified, state.
   // Prefer over `std::move(value.Get...())` so clang-tidy can warn about
   // potential use-after-move mistakes.
+  std::string TakeString() &&;
   Dict TakeDict() &&;
   List TakeList() &&;
 
