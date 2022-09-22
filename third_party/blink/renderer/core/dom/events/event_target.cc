@@ -427,7 +427,8 @@ bool EventTarget::AddEventListenerInternal(
 
   // Consider `Permissions-Policy: unload`.
   if (event_type == event_type_names::kUnload &&
-      RuntimeEnabledFeatures::PermissionsPolicyUnloadEnabled() &&
+      RuntimeEnabledFeatures::PermissionsPolicyUnloadEnabled(
+          execution_context) &&
       !execution_context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kUnload,
           ReportOptions::kReportOnFailure)) {
