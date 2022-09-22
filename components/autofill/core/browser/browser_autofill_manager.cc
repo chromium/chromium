@@ -422,6 +422,16 @@ std::u16string RemoveWhiteSpaceAndConjugatingCharacters(
   return sanitized_value;
 }
 
+base::StringPiece RenderFormDataActionToString(
+    mojom::RendererFormDataAction action) {
+  switch (action) {
+    case mojom::RendererFormDataAction::kFill:
+      return "fill";
+    case mojom::RendererFormDataAction::kPreview:
+      return "preview";
+  }
+}
+
 }  // namespace
 
 BrowserAutofillManager::FillingContext::FillingContext(
@@ -1968,6 +1978,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   DCHECK(autofill_field);
 
   LogBuffer buffer(IsLoggingActive(log_manager()));
+  LOG_AF(buffer) << "action: " << RenderFormDataActionToString(action);
   LOG_AF(buffer) << "is credit card section: " << is_credit_card << Br{};
   LOG_AF(buffer) << "is refill: " << is_refill << Br{};
   LOG_AF(buffer) << *form_structure << Br{};
