@@ -2,6 +2,7 @@ include_rules = [
   "+chromeos/startup",
   "+components/discardable_memory",
   "+components/download",
+  "+components/optimization_guide",
   "+components/tracing/common",
   "+content",
   "+device/bluetooth",
@@ -13,4 +14,5 @@ include_rules = [
   "+services/network/public/cpp/features.h",
   "+services/resource_coordinator/public",
   "+services/tracing/public/cpp",
+  "+third_party/cpuinfo/src/include/cpuinfo.h",
 ]

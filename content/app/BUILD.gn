@@ -6,6 +6,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
+import("//third_party/tflite/features.gni")
 
 extra_configs = [
   "//build/config/compiler:wexit_time_destructors",
@@ -73,6 +74,7 @@ source_set("content_main_runner_app") {
 
   configs += extra_configs
   deps = content_app_deps + [
+           "//components/optimization_guide:machine_learning_tflite_buildflags",
            "//components/power_scheduler",
            "//content/browser",
            "//content/gpu:gpu_sources",
@@ -89,6 +91,9 @@ source_set("content_main_runner_app") {
       "//chromeos/startup",
       "//chromeos/startup:constants",
     ]
+  }
+  if (build_tflite_with_xnnpack) {
+    deps += [ "//third_party/cpuinfo" ]
   }
 }
 
