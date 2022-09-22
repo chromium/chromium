@@ -324138,10 +324138,6 @@
        }
       },
       "the-input-element": {
-       "files-expected.txt": [
-        "ae5e06959e69fbe081996f1d91445cd6f477f681",
-        []
-       ],
        "hidden-charset-case-sensitive-child.html": [
         "92c9981a1123454af8462cea7840a099721109a0",
         []
@@ -337425,6 +337421,10 @@
     ],
     "devicepixel2-ref.html": [
      "7674eb0ab835a1b02541a28b4ed9084e61b2e088",
+     []
+    ],
+    "fragments-expected.txt": [
+     "3b584d2684ee96c7a53deb4246f26015120a6cf0",
      []
     ],
     "iframe-same-origin-ref.html": [
@@ -403380,6 +403380,13 @@
       ],
       "auto-009.html": [
        "ca5e4985066f6b8ef0edc45e15f71c31da1715c9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "auto-010.html": [
+       "021612a3aeb286f68ce2f3c896d620b75800f235",
        [
         null,
         {}
@@ -509977,7 +509984,7 @@
      ]
     ],
     "mediasource-is-type-supported.html": [
-     "22fe3d6c47157a282b12b00093c7793fa20b7869",
+     "93b067c6926fe46a48fedb1a6af808bf8f71470c",
      [
       null,
       {}
@@ -536132,6 +536139,13 @@
     ],
     "eventloop.html": [
      "3a9e453faf2eaef798daaa1171a426ea281009f5",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fragments.html": [
+     "bba94db88e265413a491f945c9e379e876ff9e18",
      [
       null,
       {}
