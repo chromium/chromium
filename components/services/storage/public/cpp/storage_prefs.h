@@ -17,6 +17,8 @@ extern const char kPersistentQuotaEnabled[];
 
 extern const char kPrefixedStorageInfoEnabled[];
 
+extern const char kFileSystemSyncAccessHandleAsyncInterfaceEnabled[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace storage

@@ -32488,6 +32488,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1017" label="TrashEnabled"/>
   <int value="1018" label="ShoppingListEnabled"/>
   <int value="1019" label="DeskAPIThirdPartyAccessEnabled"/>
+  <int value="1020" label="FileSystemSyncAccessHandleAsyncInterfaceEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

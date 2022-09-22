@@ -22,11 +22,17 @@ const char kPersistentQuotaEnabled[] = "policy.persistent_quota_enabled";
 const char kPrefixedStorageInfoEnabled[] =
     "policy.prefixed_storage_info_enabled";
 
+// Boolean policy to force async interface in SyncAccessHandle to be enabled.
+const char kFileSystemSyncAccessHandleAsyncInterfaceEnabled[] =
+    "policy.file_system_sync_access_handle_async_interface_enabled";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kWebSQLAccess, false);
   registry->RegisterBooleanPref(kWebSQLNonSecureContextEnabled, false);
   registry->RegisterBooleanPref(kPersistentQuotaEnabled, false);
   registry->RegisterBooleanPref(kPrefixedStorageInfoEnabled, false);
+  registry->RegisterBooleanPref(
+      kFileSystemSyncAccessHandleAsyncInterfaceEnabled, false);
 }
 
 }  // namespace storage

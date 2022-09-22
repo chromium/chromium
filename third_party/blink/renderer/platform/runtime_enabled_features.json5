@@ -1210,7 +1210,6 @@
       // Shared objects by OPFS and non-OPFS File System Access API.
       name: "FileSystemAccess",
       implied_by: ["FileSystemAccessLocal", "FileSystemAccessOriginPrivate"],
-
     },
     {
       name: "FileSystemAccessAccessHandle",
@@ -1230,6 +1229,12 @@
       // OPFS File System Access API.
       name: "FileSystemAccessOriginPrivate",
       status: {"Android": "experimental", "default": "stable"},
+    },
+    {
+      // Whether to re-enable async interface for FileSystemSyncAccessHandle
+      // This is used by enterprise policy during migration.
+      name: "FileSystemSyncAccessHandleAsyncInterfaceOverride",
+      public: true,
     },
     {
       name: "FirstPartySets",

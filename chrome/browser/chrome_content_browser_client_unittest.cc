@@ -1006,6 +1006,31 @@ TEST_F(ChromeContentBrowserClientSwitchTest, PersistentQuotaEnabledEnabled) {
   EXPECT_TRUE(result.HasSwitch(blink::switches::kPersistentQuotaEnabled));
 }
 
+TEST_F(ChromeContentBrowserClientSwitchTest,
+       FileSystemSyncAccessHandleAsyncInterfaceEnabledDefault) {
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_FALSE(result.HasSwitch(
+      switches::kFileSystemSyncAccessHandleAsyncInterfaceEnabled));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest,
+       FileSystemSyncAccessHandleAsyncInterfaceEnabledDisabled) {
+  profile()->GetPrefs()->SetBoolean(
+      storage::kFileSystemSyncAccessHandleAsyncInterfaceEnabled, false);
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_FALSE(result.HasSwitch(
+      switches::kFileSystemSyncAccessHandleAsyncInterfaceEnabled));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest,
+       FileSystemSyncAccessHandleAsyncInterfaceEnabledEnabled) {
+  profile()->GetPrefs()->SetBoolean(
+      storage::kFileSystemSyncAccessHandleAsyncInterfaceEnabled, true);
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_TRUE(result.HasSwitch(
+      switches::kFileSystemSyncAccessHandleAsyncInterfaceEnabled));
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeContentBrowserClientSwitchTest,
        ShouldSetForceAppModeSwitchInRendererProcessIfItIsSetInCurrentProcess) {

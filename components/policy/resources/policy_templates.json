@@ -577,6 +577,7 @@
         'FileHandlingBlockedForUrls',
         'FileSystemReadAskForUrls',
         'FileSystemReadBlockedForUrls',
+        'FileSystemSyncAccessHandleAsyncInterfaceEnabled',
         'FileSystemWriteAskForUrls',
         'FileSystemWriteBlockedForUrls',
         'ImagesAllowedForUrls',
@@ -8052,6 +8053,37 @@
       URL patterns can't conflict with <ph name="FILE_SYSTEM_READ_ASK_FOR_URLS_POLICY_NAME">FileSystemReadAskForUrls</ph>. Neither policy takes precedence if a URL matches with both.
 
       For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
+    },
+    {
+      'name': 'FileSystemSyncAccessHandleAsyncInterfaceEnabled',
+      'owners': ['dslee@chromium.org', 'chrome-owp-storage@google.com'],
+      'caption': 'Re-enable the deprecated async interface for <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph> in File System Access API',
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:107-110', 'chrome_os:107-110', 'android:107-110'],
+      'future_on': ['fuchsia'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': '''Enables <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph> methods to be invoked asynchronously''',
+        },
+        {
+          'value': False,
+          'caption': '''Disables any asynchronous methods of <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph>.''',
+        },
+      ],
+      'default': False,
+      'example_value': False,
+      'id': 1020,
+      'tags': [],
+      'desc': '''Starting in M107, all of <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph> methods will be invoked synchronously.
+      Until M110, this policy re-enables asynchronous invocation of <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph> methods.
+      If this policy is set to Enabled, <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph> methods are invoked asynchronously.
+      If this policy is set to Disabled or not set, all of <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE">FileSystemSyncAccessHandle</ph> methods are invoked synchronously.''',
     },
     {
       'name': 'FileSystemWriteAskForUrls',
@@ -34503,6 +34535,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1019,
+  'highest_id_currently_used': 1020,
   'highest_atomic_group_id_currently_used': 43
 }

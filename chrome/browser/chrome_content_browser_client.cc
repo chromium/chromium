@@ -2509,6 +2509,14 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
             blink::switches::kPrefixedStorageInfoEnabled);
       }
 
+      // Enabled async interface for FileSystemSyncAccessHandle if enabled by
+      // enterprise policy.
+      if (prefs->GetBoolean(
+              storage::kFileSystemSyncAccessHandleAsyncInterfaceEnabled)) {
+        command_line->AppendSwitch(
+            switches::kFileSystemSyncAccessHandleAsyncInterfaceEnabled);
+      }
+
 #if !BUILDFLAG(IS_ANDROID)
       InstantService* instant_service =
           InstantServiceFactory::GetForProfile(profile);

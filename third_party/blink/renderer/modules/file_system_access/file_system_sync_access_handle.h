@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -72,13 +73,11 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   uint64_t DoWrite(MaybeShared<DOMArrayBufferView> buffer,
                    FileSystemReadWriteOptions* options,
                    ExceptionState&);
-
   void DispatchQueuedClose();
 
   // Must be called right before calling async methods on file_delegate.
   bool EnterOperation() {
-    if (base::FeatureList::IsEnabled(
-            blink::features::kSyncAccessHandleAllSyncSurface)) {
+    if (is_all_sync_interface_enabled_) {
       NOTREACHED();
       return false;
     }
@@ -89,8 +88,7 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   }
 
   void ExitOperation() {
-    if (base::FeatureList::IsEnabled(
-            blink::features::kSyncAccessHandleAllSyncSurface)) {
+    if (is_all_sync_interface_enabled_) {
       NOTREACHED();
       return;
     }
@@ -100,9 +98,7 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   }
 
   FileSystemAccessFileDelegate* file_delegate() {
-    DCHECK(io_pending_ ||
-           base::FeatureList::IsEnabled(
-               blink::features::kSyncAccessHandleAllSyncSurface));
+    DCHECK(io_pending_ || is_all_sync_interface_enabled_);
     return file_delegate_.Get();
   }
 
@@ -162,6 +158,14 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   bool io_pending_ = false;
 
   bool is_closed_ = false;
+
+  // Whether all-sync interface feature is enabled and the async interface is
+  // not force-enabled by enterprise policy, as indicated by the switch.
+  const bool is_all_sync_interface_enabled_ =
+      base::FeatureList::IsEnabled(
+          blink::features::kSyncAccessHandleAllSyncSurface) &&
+      !RuntimeEnabledFeatures::
+          FileSystemSyncAccessHandleAsyncInterfaceOverrideEnabled();
 
   // crbug.com/1338340: Note that this is only used (and valid) when async
   // methods are in-use before the migration to the all-sync interface.

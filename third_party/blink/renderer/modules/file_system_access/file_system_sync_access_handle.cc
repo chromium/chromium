@@ -4,11 +4,9 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_sync_access_handle.h"
 
-#include "base/feature_list.h"
 #include "base/files/file_error_or.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
@@ -43,8 +41,7 @@ void FileSystemSyncAccessHandle::Trace(Visitor* visitor) const {
 }
 
 ScriptValue FileSystemSyncAccessHandle::close(ScriptState* script_state) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSyncAccessHandleAllSyncSurface)) {
+  if (is_all_sync_interface_enabled_) {
     CloseSync(script_state);
     return ScriptValue::From(script_state, ToV8UndefinedGenerator());
   } else {
@@ -125,8 +122,7 @@ void FileSystemSyncAccessHandle::DispatchQueuedClose() {
 
 ScriptValue FileSystemSyncAccessHandle::flush(ScriptState* script_state,
                                               ExceptionState& exception_state) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSyncAccessHandleAllSyncSurface)) {
+  if (is_all_sync_interface_enabled_) {
     FlushSync(script_state, exception_state);
     return ScriptValue::From(script_state, ToV8UndefinedGenerator());
   } else {
@@ -199,8 +195,7 @@ ScriptPromise FileSystemSyncAccessHandle::FlushAsync(
 ScriptValue FileSystemSyncAccessHandle::getSize(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSyncAccessHandleAllSyncSurface)) {
+  if (is_all_sync_interface_enabled_) {
     return ScriptValue::From(script_state,
                              GetSizeSync(script_state, exception_state));
   } else {
@@ -279,8 +274,7 @@ ScriptValue FileSystemSyncAccessHandle::truncate(
     ScriptState* script_state,
     uint64_t size,
     ExceptionState& exception_state) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSyncAccessHandleAllSyncSurface)) {
+  if (is_all_sync_interface_enabled_) {
     TruncateSync(script_state, size, exception_state);
     return ScriptValue::From(script_state, ToV8UndefinedGenerator());
   } else {
@@ -390,8 +384,7 @@ uint64_t FileSystemSyncAccessHandle::read(
     MaybeShared<DOMArrayBufferView> buffer,
     FileSystemReadWriteOptions* options,
     ExceptionState& exception_state) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSyncAccessHandleAllSyncSurface)) {
+  if (is_all_sync_interface_enabled_) {
     return DoRead(buffer, options, exception_state);
   } else {
     // TODO(crbug.com/1338340): OperationScope is only used for async methods.
@@ -442,8 +435,7 @@ uint64_t FileSystemSyncAccessHandle::write(
     MaybeShared<DOMArrayBufferView> buffer,
     FileSystemReadWriteOptions* options,
     ExceptionState& exception_state) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSyncAccessHandleAllSyncSurface)) {
+  if (is_all_sync_interface_enabled_) {
     return DoWrite(buffer, options, exception_state);
   } else {
     // TODO(crbug.com/1338340): OperationScope is only used for async methods.
