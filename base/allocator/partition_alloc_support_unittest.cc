@@ -13,6 +13,7 @@
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/feature_list.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -224,16 +225,16 @@ TEST(PartitionAllocDanglingPtrChecks, FreeNotRecorded) {
             HasSubstr("The dangling raw_ptr was released at:")));
 }
 
+// DCHECK message are stripped in official build. It causes death tests with
+// matchers to fail.
+#if !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
 TEST(PartitionAllocDanglingPtrChecks, DoubleDetection) {
   ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
   partition_alloc::GetDanglingRawPtrDetectedFn()(42);
-#if DCHECK_IS_ON()
-  EXPECT_DEATH(partition_alloc::GetDanglingRawPtrDetectedFn()(42),
-               AllOf(HasSubstr("Check failed: !entry || entry->id != id")));
-#else
-  partition_alloc::GetDanglingRawPtrDetectedFn()(42);
-#endif
+  EXPECT_DCHECK_DEATH_WITH(partition_alloc::GetDanglingRawPtrDetectedFn()(42),
+                           "Check failed: !entry \\|\\| entry->id != id");
 }
+#endif  // !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
 
 #endif
 

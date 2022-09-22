@@ -4092,6 +4092,9 @@ TEST_P(PartitionAllocTest, RawPtrReleasedBeforeFree) {
 }
 
 #if defined(PA_HAS_DEATH_TESTS)
+// DCHECK message are stripped in official build. It causes death tests with
+// matchers to fail.
+#if !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
 
 // Acquire() once, Release() twice => CRASH
 TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
@@ -4115,6 +4118,7 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowDanglingPtr) {
   allocator.root()->Free(ptr);
 }
 
+#endif  //! defined(OFFICIAL_BUILD) || !defined(NDEBUG)
 #endif  // defined(PA_HAS_DEATH_TESTS)
 #endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
@@ -4318,14 +4322,13 @@ TEST_P(PartitionAllocTest, FastPathOrReturnNull) {
 }
 
 #if defined(PA_HAS_DEATH_TESTS)
+// DCHECK message are stripped in official build. It causes death tests with
+// matchers to fail.
 #if !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
 
 TEST_P(PartitionAllocDeathTest, CheckTriggered) {
-  using ::testing::ContainsRegex;
-#if BUILDFLAG(PA_DCHECK_IS_ON)
-  EXPECT_DEATH(PA_CHECK(5 == 7), ContainsRegex("Check failed.*5 == 7"));
-#endif
-  EXPECT_DEATH(PA_CHECK(5 == 7), ContainsRegex("Check failed.*5 == 7"));
+  EXPECT_DCHECK_DEATH_WITH(PA_CHECK(5 == 7), "Check failed.*5 == 7");
+  EXPECT_DEATH(PA_CHECK(5 == 7), "Check failed.*5 == 7");
 }
 
 #endif  // !defined(OFFICIAL_BUILD) && !defined(NDEBUG)
