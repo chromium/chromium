@@ -47,6 +47,7 @@ found in the LICENSE file.
           android:id="@+id/close_button"
           android:layout_height="48dp"
           android:layout_width="48dp"
+          android:layout_gravity="center_vertical"
           android:background="?attr/selectableItemBackground"
           android:contentDescription="@string/close"
           android:scaleType="center"
