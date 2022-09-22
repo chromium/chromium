@@ -4,6 +4,9 @@
 
 module url.mojom;
 
+// 2 * 1024 * 1024
+const uint32 kMaxURLChars = 2097152;
+
 [Stable]
 struct Url {
   string url;

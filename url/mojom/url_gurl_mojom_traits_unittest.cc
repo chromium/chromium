@@ -200,4 +200,10 @@ TEST_F(MojoGURLStructTraitsTest, OriginSerialization) {
   EXPECT_FALSE(output.opaque());
 }
 
+// Test that the "kMaxURLChars" values are the same in url.mojom and
+// url_constants.cc.
+TEST_F(MojoGURLStructTraitsTest, TestMaxURLChars) {
+  EXPECT_EQ(kMaxURLChars, mojom::kMaxURLChars);
+}
+
 }  // namespace url
