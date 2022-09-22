@@ -148,7 +148,7 @@ CSSStyleValue* StylePropertyMapReadOnlyMainThread::GetShorthandProperty(
   DCHECK(CSSProperty::IsShorthand(name));
   const CSSProperty& property = CSSProperty::Get(name.Id());
   const auto serialization = SerializationForShorthand(property);
-  if (serialization.empty())
+  if (serialization.IsEmpty())
     return nullptr;
   return MakeGarbageCollected<CSSUnsupportedStyleValue>(
       CSSPropertyName(property.PropertyID()), serialization);

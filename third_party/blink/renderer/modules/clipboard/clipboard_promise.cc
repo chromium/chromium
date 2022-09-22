@@ -417,8 +417,8 @@ void ClipboardPromise::HandlePromiseBlobsWrite(
     // in type.
     String web_custom_format = Clipboard::ParseWebCustomFormat(type);
     if ((!type_with_args.Contains(type.LowerASCII()) &&
-         web_custom_format.empty()) ||
-        (!web_custom_format.empty() &&
+         web_custom_format.IsEmpty()) ||
+        (!web_custom_format.IsEmpty() &&
          !type_with_args.Contains(web_custom_format))) {
       script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,

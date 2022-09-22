@@ -259,7 +259,7 @@ static bool HasTextContent(const Resource* cached_resource) {
 static std::unique_ptr<TextResourceDecoder> CreateResourceTextDecoder(
     const String& mime_type,
     const String& text_encoding_name) {
-  if (!text_encoding_name.empty()) {
+  if (!text_encoding_name.IsEmpty()) {
     return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
         TextResourceDecoderOptions::kPlainTextContent,
         WTF::TextEncoding(text_encoding_name)));
@@ -406,7 +406,7 @@ bool InspectorPageAgent::CachedResourceContent(const Resource* cached_resource,
     default:
       String text_encoding_name =
           cached_resource->GetResponse().TextEncodingName();
-      if (text_encoding_name.empty() &&
+      if (text_encoding_name.IsEmpty() &&
           cached_resource->GetType() != blink::ResourceType::kRaw)
         text_encoding_name = "WinLatin1";
       return InspectorPageAgent::SharedBufferContent(
@@ -958,7 +958,7 @@ void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
 
     ScriptState* script_state = nullptr;
     const String world_name = worlds_to_evaluate_on_load_.Get(key);
-    if (world_name.empty()) {
+    if (world_name.IsEmpty()) {
       script_state = ToScriptStateForMainWorld(window->GetFrame());
     } else if (scoped_refptr<DOMWrapperWorld> world = EnsureDOMWrapperWorld(
                    frame, world_name, true /* grant_universal_access */)) {
@@ -985,7 +985,7 @@ void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
             ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
   }
 
-  if (!script_to_evaluate_on_load_once_.empty()) {
+  if (!script_to_evaluate_on_load_once_.IsEmpty()) {
     ClassicScript::CreateUnspecifiedScript(script_to_evaluate_on_load_once_)
         ->RunScript(frame->DomWindow(),
                     ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
@@ -1408,7 +1408,7 @@ std::unique_ptr<protocol::Page::Frame> InspectorPageAgent::BuildObjectForFrame(
   if (parent_frame) {
     frame_object->setParentId(IdentifiersFactory::FrameId(parent_frame));
     AtomicString name = frame->Tree().GetName();
-    if (name.empty() && frame->DeprecatedLocalOwner()) {
+    if (name.IsEmpty() && frame->DeprecatedLocalOwner()) {
       name =
           frame->DeprecatedLocalOwner()->FastGetAttribute(html_names::kIdAttr);
     }

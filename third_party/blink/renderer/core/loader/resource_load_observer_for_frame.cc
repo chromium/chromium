@@ -156,7 +156,7 @@ void ResourceLoadObserverForFrame::WillSendRequest(
   }
 
   if (!redirect_response.IsNull() &&
-      !redirect_response.HttpHeaderField(http_names::kExpectCT).empty()) {
+      !redirect_response.HttpHeaderField(http_names::kExpectCT).IsEmpty()) {
     Deprecation::CountDeprecation(frame->DomWindow(),
                                   mojom::blink::WebFeature::kExpectCTHeader);
   }
@@ -268,7 +268,7 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
 
   RecordAddressSpaceFeature(frame, response);
 
-  if (!response.HttpHeaderField(http_names::kExpectCT).empty()) {
+  if (!response.HttpHeaderField(http_names::kExpectCT).IsEmpty()) {
     Deprecation::CountDeprecation(frame->DomWindow(),
                                   mojom::blink::WebFeature::kExpectCTHeader);
   }

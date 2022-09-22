@@ -479,11 +479,11 @@ void InternalPopupMenu::AddOption(ItemIterationContext& context,
   PagePopupClient::AddString("{", data);
   AddProperty("label", element.DisplayLabel(), data);
   AddProperty("value", context.list_index_, data);
-  if (!element.title().empty())
+  if (!element.title().IsEmpty())
     AddProperty("title", element.title(), data);
   const AtomicString& aria_label =
       element.FastGetAttribute(html_names::kAriaLabelAttr);
-  if (!aria_label.empty())
+  if (!aria_label.IsEmpty())
     AddProperty("ariaLabel", aria_label, data);
   if (element.IsDisabledFormControl())
     AddProperty("disabled", true, data);
@@ -551,7 +551,7 @@ void InternalPopupMenu::SetValueAndClosePopup(int num_value,
                                               const String& string_value) {
   DCHECK(popup_);
   DCHECK(owner_element_);
-  if (!string_value.empty()) {
+  if (!string_value.IsEmpty()) {
     bool success;
     int list_index = string_value.ToInt(&success);
     DCHECK(success);

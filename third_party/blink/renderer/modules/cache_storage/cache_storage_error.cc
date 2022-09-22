@@ -50,7 +50,7 @@ void RejectCacheStorageWithError(ScriptPromiseResolver* resolver,
                                  const String& message) {
   String final_message =
 
-      !message.empty() ? message : GetDefaultMessage(web_error);
+      !message.IsEmpty() ? message : GetDefaultMessage(web_error);
   switch (web_error) {
     case mojom::CacheStorageError::kSuccess:
       // This function should only be called with an error.

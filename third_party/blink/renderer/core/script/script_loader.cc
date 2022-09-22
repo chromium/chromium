@@ -170,7 +170,7 @@ void ScriptLoader::ChildrenChanged() {
 // <spec step="C">The script element is connected and has a src attribute set
 // where previously the element had no such attribute.</spec>
 void ScriptLoader::HandleSourceAttribute(const String& source_url) {
-  if (!parser_inserted_ && element_->IsConnected() && !source_url.empty()) {
+  if (!parser_inserted_ && element_->IsConnected() && !source_url.IsEmpty()) {
     PendingScript* pending_script = PrepareScript(
         ParserBlockingInlineOption::kDeny, TextPosition::MinimumPosition());
     DCHECK(!pending_script);
@@ -214,7 +214,7 @@ bool IsValidClassicScriptTypeAndLanguage(const String& type,
     //
     // <spec step="8.C">el has neither a type attribute nor a language
     // attribute</spec>
-    if (language.empty())
+    if (language.IsEmpty())
       return true;
 
     // <spec step="8">... Otherwise, el has a non-empty language attribute; let
@@ -222,7 +222,7 @@ bool IsValidClassicScriptTypeAndLanguage(const String& type,
     // value of el's language attribute.</spec>
     if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType("text/" + language))
       return true;
-  } else if (type.empty()) {
+  } else if (type.IsEmpty()) {
     // <spec step="8.A">el has a type attribute whose value is the empty
     // string;</spec>
     return true;
@@ -490,7 +490,7 @@ PendingScript* ScriptLoader::PrepareScript(
 
   // <spec step="6">If el has no src attribute, and source text is the empty
   // string, then return.</spec>
-  if (!element_->HasSourceAttribute() && source_text.empty())
+  if (!element_->HasSourceAttribute() && source_text.IsEmpty())
     return nullptr;
 
   // <spec step="7">If el is not connected, then return.</spec>
@@ -616,7 +616,7 @@ PendingScript* ScriptLoader::PrepareScript(
   // the empty string.</spec>
   String integrity_attr = element_->IntegrityAttributeValue();
   IntegrityMetadataSet integrity_metadata;
-  if (!integrity_attr.empty()) {
+  if (!integrity_attr.IsEmpty()) {
     SubresourceIntegrity::IntegrityFeatures integrity_features =
         SubresourceIntegrityHelper::GetFeatures(
             element_->GetExecutionContext());
@@ -632,7 +632,7 @@ PendingScript* ScriptLoader::PrepareScript(
   String referrerpolicy_attr = element_->ReferrerPolicyAttributeValue();
   network::mojom::ReferrerPolicy referrer_policy =
       network::mojom::ReferrerPolicy::kDefault;
-  if (!referrerpolicy_attr.empty()) {
+  if (!referrerpolicy_attr.IsEmpty()) {
     SecurityPolicy::ReferrerPolicyFromString(
         referrerpolicy_attr, kDoNotSupportReferrerPolicyLegacyKeywords,
         &referrer_policy);
@@ -733,7 +733,7 @@ PendingScript* ScriptLoader::PrepareScript(
 
     // <spec step="29.2">If src is the empty string, then queue a task to fire
     // an event named error at el, and return.</spec>
-    if (src.empty()) {
+    if (src.IsEmpty()) {
       element_document.GetTaskRunner(TaskType::kDOMManipulation)
           ->PostTask(FROM_HERE,
                      WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
@@ -834,7 +834,7 @@ PendingScript* ScriptLoader::PrepareScript(
         //
         // TODO(hiroshige): Should we handle failure in getting an encoding?
         WTF::TextEncoding encoding;
-        if (!element_->CharsetAttributeValue().empty())
+        if (!element_->CharsetAttributeValue().IsEmpty())
           encoding = WTF::TextEncoding(element_->CharsetAttributeValue());
         else
           encoding = element_document.Encoding();

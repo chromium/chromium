@@ -94,7 +94,7 @@ void WorkerMainScriptLoader::Start(
   }
 
   script_encoding_ =
-      resource_response_.TextEncodingName().empty()
+      resource_response_.TextEncodingName().IsEmpty()
           ? UTF8Encoding()
           : WTF::TextEncoding(resource_response_.TextEncodingName());
 

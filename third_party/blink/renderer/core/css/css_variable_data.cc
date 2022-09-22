@@ -98,7 +98,7 @@ bool CSSVariableData::operator==(const CSSVariableData& other) const {
 
 void CSSVariableData::ConsumeAndUpdateTokens(const CSSParserTokenRange& range) {
   DCHECK_EQ(num_tokens_, 0u);
-  DCHECK(backing_string_.empty());
+  DCHECK(backing_string_.IsEmpty());
   StringBuilder string_builder;
   CSSParserTokenRange local_range = range;
 

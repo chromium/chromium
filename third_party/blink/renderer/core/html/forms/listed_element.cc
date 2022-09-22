@@ -347,7 +347,7 @@ void ListedElement::UpdateWillValidateCache() {
 }
 
 bool ListedElement::CustomError() const {
-  return !custom_validation_message_.empty();
+  return !custom_validation_message_.IsEmpty();
 }
 
 bool ListedElement::HasBadInput() const {
@@ -423,7 +423,7 @@ void ListedElement::FindCustomValidationMessageTextDirection(
     String& sub_message,
     TextDirection& sub_message_dir) {
   message_dir = DetermineDirectionality(message);
-  if (!sub_message.empty()) {
+  if (!sub_message.IsEmpty()) {
     sub_message_dir = ToHTMLElement().GetLayoutObject()->Style()->Direction();
   }
 }
@@ -445,7 +445,7 @@ void ListedElement::UpdateVisibleValidationMessage() {
   TextDirection message_dir = TextDirection::kLtr;
   TextDirection sub_message_dir = TextDirection::kLtr;
   String sub_message = ValidationSubMessage().StripWhiteSpace();
-  if (message.empty()) {
+  if (message.IsEmpty()) {
     client->HideValidationMessage(element);
   } else {
     FindCustomValidationMessageTextDirection(message, message_dir, sub_message,

@@ -32,7 +32,7 @@ struct StructTraits<url::mojom::UrlDataView, ::blink::KURL> {
       return false;
 
     *out = ::blink::KURL(::blink::KURL(), urlString);
-    if (!urlString.empty() && !out->IsValid())
+    if (!urlString.IsEmpty() && !out->IsValid())
       return false;
 
     return true;

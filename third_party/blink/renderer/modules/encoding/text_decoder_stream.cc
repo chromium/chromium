@@ -102,14 +102,14 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
       return;
     }
 
-    if (outputChunk.empty())
+    if (outputChunk.IsEmpty())
       return;
 
     if (!ignore_bom_ && !bom_seen_) {
       bom_seen_ = true;
       if (encoding_has_bom_removal_ && outputChunk[0] == kBOM) {
         outputChunk.Remove(0);
-        if (outputChunk.empty())
+        if (outputChunk.IsEmpty())
           return;
       }
     }

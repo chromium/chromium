@@ -31,7 +31,7 @@ void ResolveOrReject(ScriptPromiseResolver* resolver,
 
   // Convert empty message to a null string, to make sure we get the default
   // error message if no custom error message is provided.
-  const String message = error.message.empty() ? String() : error.message;
+  const String message = error.message.IsEmpty() ? String() : error.message;
 
   switch (error.status) {
     case mojom::blink::FileSystemAccessStatus::kOk:

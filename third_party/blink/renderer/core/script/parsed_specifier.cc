@@ -45,7 +45,7 @@ ParsedSpecifier ParsedSpecifier::Create(const String& specifier,
     // <spec
     // href="https://wicg.github.io/import-maps/#normalize-a-specifier-key"
     // step="1">If specifierKey is the empty string, then:</spec>
-    if (specifier.empty())
+    if (specifier.IsEmpty())
       return ParsedSpecifier();
 
     // <spec label="import-specifier" step="3">If url is failure, then return

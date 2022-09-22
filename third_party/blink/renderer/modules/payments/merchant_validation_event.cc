@@ -55,7 +55,7 @@ MerchantValidationEvent::MerchantValidationEvent(
     exception_state.ThrowTypeError("Invalid validation URL");
     return;
   }
-  if (!method_name_.empty() &&
+  if (!method_name_.IsEmpty() &&
       !PaymentsValidators::IsValidMethodFormat(method_name_)) {
     exception_state.ThrowRangeError("Invalid payment method identifier.");
     return;

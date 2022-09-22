@@ -333,7 +333,7 @@ TEST_P(HTMLInputElementPasswordFieldResetTest, PasswordFieldReset) {
 
   EXPECT_CALL(chrome_client(),
               PasswordFieldReset(Truly([this](const HTMLInputElement& e) {
-                return e.isSameNode(&TestElement()) && e.Value().empty();
+                return e.isSameNode(&TestElement()) && e.Value().IsEmpty();
               })))
       .Times(GetParam().expected_call ? 1 : 0);
   TestElement().SetValue("");

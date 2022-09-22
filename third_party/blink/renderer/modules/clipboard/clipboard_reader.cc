@@ -77,7 +77,7 @@ class ClipboardTextReader final : public ClipboardReader {
 
  private:
   void OnRead(const String& plain_text) {
-    if (plain_text.empty()) {
+    if (plain_text.IsEmpty()) {
       NextRead(Vector<uint8_t>());
       return;
     }
@@ -143,7 +143,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     LocalFrame* frame = promise_->GetLocalFrame();
-    if (!frame || html_string.empty()) {
+    if (!frame || html_string.IsEmpty()) {
       NextRead(Vector<uint8_t>());
       return;
     }
@@ -155,7 +155,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
         *frame->GetDocument(), html_string, fragment_start, fragment_end, url,
         kIncludeNode, kResolveAllURLs);
 
-    if (sanitized_html.empty()) {
+    if (sanitized_html.IsEmpty()) {
       NextRead(Vector<uint8_t>());
       return;
     }
@@ -229,7 +229,7 @@ class ClipboardSvgReader final : public ClipboardReader {
         *frame->GetDocument(), svg_string, fragment_start, svg_string.length(),
         url, kIncludeNode, kResolveAllURLs);
 
-    if (sanitized_svg.empty()) {
+    if (sanitized_svg.IsEmpty()) {
       NextRead(Vector<uint8_t>());
       return;
     }

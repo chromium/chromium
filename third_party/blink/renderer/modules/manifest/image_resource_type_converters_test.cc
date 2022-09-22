@@ -150,12 +150,12 @@ TEST(ImageResourceConverter, EmptyTypeTest) {
       blink::ManifestImageResource::Create();
 
   ManifestImageResourcePtr converted = ManifestImageResource::From(resource);
-  ASSERT_TRUE(converted->type.empty());
+  ASSERT_TRUE(converted->type.IsEmpty());
 
   // Explicitly set to empty.
   resource->setType("");
   converted = ManifestImageResource::From(resource);
-  ASSERT_TRUE(converted->type.empty());
+  ASSERT_TRUE(converted->type.IsEmpty());
 }
 
 TEST(ImageResourceConverter, InvalidTypeTest) {
@@ -164,7 +164,7 @@ TEST(ImageResourceConverter, InvalidTypeTest) {
 
   resource->setType("image/NOTVALID!");
   ManifestImageResourcePtr converted = ManifestImageResource::From(resource);
-  ASSERT_TRUE(converted->type.empty());
+  ASSERT_TRUE(converted->type.IsEmpty());
 }
 
 TEST(ImageResourceConverter, ValidTypeTest) {

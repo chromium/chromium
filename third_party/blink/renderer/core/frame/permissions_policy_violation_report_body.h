@@ -22,7 +22,7 @@ class CORE_EXPORT PermissionsPolicyViolationReportBody
                                        const String& disposition)
       : feature_id_(feature_id),
         message_("Permissions policy violation: " +
-                 (message.empty()
+                 (message.IsEmpty()
                       ? feature_id + " is not allowed in this document."
                       : message)),
         disposition_(disposition) {}

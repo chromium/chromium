@@ -97,7 +97,7 @@ URLSearchParams* URLSearchParams::Create(const Vector<Vector<String>>& init,
 
 URLSearchParams::URLSearchParams(const String& query_string, DOMURL* url_object)
     : url_object_(url_object) {
-  if (!query_string.empty())
+  if (!query_string.IsEmpty())
     SetInputWithoutUpdate(query_string);
 }
 

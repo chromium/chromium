@@ -118,7 +118,7 @@ void RangeInputType::SetValueAsDouble(double new_value,
 }
 
 bool RangeInputType::TypeMismatchFor(const String& value) const {
-  return !value.empty() && !std::isfinite(ParseToDoubleForNumberType(value));
+  return !value.IsEmpty() && !std::isfinite(ParseToDoubleForNumberType(value));
 }
 
 bool RangeInputType::SupportsRequired() const {
@@ -310,7 +310,7 @@ String RangeInputType::SanitizeValue(const String& proposed_value) const {
 }
 
 void RangeInputType::WarnIfValueIsInvalid(const String& value) const {
-  if (value.empty() || !GetElement().SanitizeValue(value).empty())
+  if (value.IsEmpty() || !GetElement().SanitizeValue(value).IsEmpty())
     return;
   AddWarningToConsole(
       "The specified value %s cannot be parsed, or is out of range.", value);
@@ -364,7 +364,7 @@ void RangeInputType::UpdateTickMarkValues() {
   for (unsigned i = 0; i < options->length(); ++i) {
     HTMLOptionElement* option_element = options->Item(i);
     String option_value = option_element->value();
-    if (option_element->IsDisabledFormControl() || option_value.empty())
+    if (option_element->IsDisabledFormControl() || option_value.IsEmpty())
       continue;
     if (!GetElement().IsValidValue(option_value))
       continue;

@@ -548,12 +548,12 @@ String Resource::ReasonNotDeletable() const {
     builder.Append(')');
   }
   if (loader_) {
-    if (!builder.empty())
+    if (!builder.IsEmpty())
       builder.Append(' ');
     builder.Append("loader_");
   }
   if (IsMainThread() && MemoryCache::Get()->Contains(this)) {
-    if (!builder.empty())
+    if (!builder.IsEmpty())
       builder.Append(' ');
     builder.Append("in_memory_cache");
   }

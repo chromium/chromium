@@ -94,7 +94,7 @@ ErrorEvent::ErrorEvent(const String& message,
 }
 
 void ErrorEvent::SetUnsanitizedMessage(const String& message) {
-  DCHECK(unsanitized_message_.empty());
+  DCHECK(unsanitized_message_.IsEmpty());
   unsanitized_message_ = message;
 }
 

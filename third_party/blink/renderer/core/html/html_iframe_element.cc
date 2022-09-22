@@ -279,7 +279,7 @@ void HTMLIFrameElement::ParseAttribute(
     if (allow_ != value) {
       allow_ = value;
       UpdateContainerPolicy();
-      if (!value.empty()) {
+      if (!value.IsEmpty()) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kFeaturePolicyAllowAttribute);
       }
@@ -340,7 +340,7 @@ DocumentPolicyFeatureState HTMLIFrameElement::ConstructRequiredPolicy() const {
           GetExecutionContext()))
     return {};
 
-  if (!required_policy_.empty()) {
+  if (!required_policy_.IsEmpty()) {
     UseCounter::Count(
         GetDocument(),
         mojom::blink::WebFeature::kDocumentPolicyIframePolicyAttribute);

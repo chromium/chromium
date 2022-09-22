@@ -409,7 +409,8 @@ void TypingCommand::InsertText(
   }
 
   // Do nothing if no need to delete and insert.
-  if (passed_selection_for_insertion_as_undo_step.IsCaret() && new_text.empty())
+  if (passed_selection_for_insertion_as_undo_step.IsCaret() &&
+      new_text.IsEmpty())
     return;
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
@@ -634,7 +635,7 @@ void TypingCommand::InsertTextInternal(const String& text,
                                        EditingState* editing_state) {
   text_to_insert_ = text;
 
-  if (text.empty()) {
+  if (text.IsEmpty()) {
     InsertTextRunWithoutNewlines(text, editing_state);
     return;
   }

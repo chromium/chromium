@@ -146,7 +146,7 @@ static bool ParsePointInternal(const CharType* ptr,
 }
 
 static bool ParsePoint(const String& string, gfx::PointF& point) {
-  if (string.empty())
+  if (string.IsEmpty())
     return false;
   return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
     return ParsePointInternal(chars, chars + length, point);

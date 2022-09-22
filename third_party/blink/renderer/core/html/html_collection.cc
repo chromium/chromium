@@ -476,7 +476,7 @@ void HTMLCollection::SupportedPropertyNames(Vector<String>& names) {
   for (unsigned i = 0; i < length; ++i) {
     Element* element = item(i);
     const AtomicString& id_attribute = element->GetIdAttribute();
-    if (!id_attribute.empty()) {
+    if (!id_attribute.IsEmpty()) {
       HashSet<AtomicString>::AddResult add_result =
           existing_names.insert(id_attribute);
       if (add_result.is_new_entry)
@@ -486,7 +486,7 @@ void HTMLCollection::SupportedPropertyNames(Vector<String>& names) {
     if (!html_element)
       continue;
     const AtomicString& name_attribute = element->GetNameAttribute();
-    if (!name_attribute.empty() &&
+    if (!name_attribute.IsEmpty() &&
         (GetType() != kDocAll ||
          NameShouldBeVisibleInDocumentAll(*html_element))) {
       HashSet<AtomicString>::AddResult add_result =
@@ -511,13 +511,13 @@ void HTMLCollection::UpdateIdNameCache() const {
   for (unsigned i = 0; i < length; ++i) {
     Element* element = item(i);
     const AtomicString& id_attr_val = element->GetIdAttribute();
-    if (!id_attr_val.empty())
+    if (!id_attr_val.IsEmpty())
       cache->AddElementWithId(id_attr_val, element);
     auto* html_element = DynamicTo<HTMLElement>(element);
     if (!html_element)
       continue;
     const AtomicString& name_attr_val = element->GetNameAttribute();
-    if (!name_attr_val.empty() && id_attr_val != name_attr_val &&
+    if (!name_attr_val.IsEmpty() && id_attr_val != name_attr_val &&
         (GetType() != kDocAll ||
          NameShouldBeVisibleInDocumentAll(*html_element)))
       cache->AddElementWithName(name_attr_val, element);
@@ -530,7 +530,7 @@ void HTMLCollection::UpdateIdNameCache() const {
 void HTMLCollection::NamedItems(const AtomicString& name,
                                 HeapVector<Member<Element>>& result) const {
   DCHECK(result.empty());
-  if (name.empty())
+  if (name.IsEmpty())
     return;
 
   UpdateIdNameCache();

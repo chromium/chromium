@@ -433,7 +433,7 @@ bool Color::ParseHexColor(const UChar* name, unsigned length, Color& color) {
 }
 
 bool Color::ParseHexColor(const StringView& name, Color& color) {
-  if (name.empty())
+  if (name.IsEmpty())
     return false;
   if (name.Is8Bit())
     return ParseHexColor(name.Characters8(), name.length(), color);

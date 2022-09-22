@@ -215,7 +215,7 @@ static void TestResourcePruningLater(ResourceFetcher* fetcher,
       ResourceRequest("data:image/jpeg,resource1"));
   Resource* resource1 = FakeDecodedResource::Fetch(params1, fetcher, nullptr);
   MemoryCache::Get()->Remove(resource1);
-  if (!identifier1.empty())
+  if (!identifier1.IsEmpty())
     resource1->SetCacheIdentifier(identifier1);
   resource1->AppendData(kData, 3u);
   resource1->FinishForTest();
@@ -225,7 +225,7 @@ static void TestResourcePruningLater(ResourceFetcher* fetcher,
       MakeGarbageCollected<MockResourceClient>();
   Resource* resource2 = FakeDecodedResource::Fetch(params2, fetcher, client);
   MemoryCache::Get()->Remove(resource2);
-  if (!identifier2.empty())
+  if (!identifier2.IsEmpty())
     resource2->SetCacheIdentifier(identifier2);
   resource2->AppendData(kData, 4u);
   resource2->FinishForTest();
@@ -284,9 +284,9 @@ static void TestClientRemoval(ResourceFetcher* fetcher,
   // Remove and re-Add the resources, with proper cache identifiers.
   MemoryCache::Get()->Remove(resource1);
   MemoryCache::Get()->Remove(resource2);
-  if (!identifier1.empty())
+  if (!identifier1.IsEmpty())
     resource1->SetCacheIdentifier(identifier1);
-  if (!identifier2.empty())
+  if (!identifier2.IsEmpty())
     resource2->SetCacheIdentifier(identifier2);
   MemoryCache::Get()->Add(resource1);
   MemoryCache::Get()->Add(resource2);

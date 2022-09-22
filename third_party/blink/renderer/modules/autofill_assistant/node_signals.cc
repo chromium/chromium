@@ -69,7 +69,7 @@ WebString GetAttributes(const Element& element,
   WebVector<WebString> values;
   for (const QualifiedName& attribute : attributes) {
     const auto& attribute_value = element.getAttribute(attribute);
-    if (!attribute_value.IsNull() && !attribute_value.empty()) {
+    if (!attribute_value.IsNull() && !attribute_value.IsEmpty()) {
       values.push_back(attribute_value);
     }
   }
@@ -78,7 +78,7 @@ WebString GetAttributes(const Element& element,
 
 bool AddAtomicIfNotNullOrEmpty(const AtomicString& atomic,
                                WebVector<WebString>* text) {
-  if (atomic.IsNull() || atomic.empty()) {
+  if (atomic.IsNull() || atomic.IsEmpty()) {
     return false;
   }
 
@@ -203,7 +203,7 @@ WebString GetLabelRelatedAttribute(
     const Element& element,
     const HashMap<AtomicString, Member<Element>>& labels) {
   AtomicString id = element.getAttribute(html_names::kIdAttr);
-  if (id.IsNull() || id.empty()) {
+  if (id.IsNull() || id.IsEmpty()) {
     return WebString();
   }
 
@@ -221,7 +221,7 @@ bool AddLabelRelatedAriaLabelledby(const Element& element,
   // TODO(b/204839535): Find out if we need html_names::kAriaLabeledbyAttr.
   AtomicString labelledby =
       element.getAttribute(html_names::kAriaLabelledbyAttr);
-  if (labelledby.IsNull() || labelledby.empty()) {
+  if (labelledby.IsNull() || labelledby.IsEmpty()) {
     return false;
   }
 

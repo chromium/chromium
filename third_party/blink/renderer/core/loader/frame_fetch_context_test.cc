@@ -132,7 +132,7 @@ class FrameFetchContextTest : public testing::Test {
     if (url.IsValid()) {
       auto params = WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), url);
-      if (!permissions_policy_header.empty()) {
+      if (!permissions_policy_header.IsEmpty()) {
         params->response.SetHttpHeaderField(http_names::kFeaturePolicy,
                                             permissions_policy_header);
       }

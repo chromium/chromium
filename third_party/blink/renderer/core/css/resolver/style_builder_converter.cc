@@ -218,7 +218,7 @@ static bool ConvertFontFamilyName(
     if (generic_family != FontDescription::kNoFamily) {
       family_name = font_builder->GenericFontFamilyName(generic_family);
       if (document_for_count && cssValueID == CSSValueID::kWebkitBody &&
-          !family_name.empty()) {
+          !family_name.IsEmpty()) {
         // TODO(crbug.com/1065468): Remove this counter when it's no longer
         // necessary.
         document_for_count->CountUse(
@@ -232,7 +232,7 @@ static bool ConvertFontFamilyName(
     }
   }
 
-  return !family_name.empty();
+  return !family_name.IsEmpty();
 }
 
 FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(

@@ -479,7 +479,7 @@ void CacheStorage::MatchImplHelper(
              const MultiCacheQueryOptions* options, int64_t trace_id,
              CacheStorage* self, mojom::blink::MatchResultPtr result) {
             base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
-            if (!options->hasCacheName() || options->cacheName().empty()) {
+            if (!options->hasCacheName() || options->cacheName().IsEmpty()) {
               base::UmaHistogramLongTimes(
                   "ServiceWorkerCache.CacheStorage.Renderer.MatchAllCaches",
                   elapsed);

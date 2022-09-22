@@ -25,7 +25,7 @@ scoped_refptr<MediaSourceAttachment> MediaSourceAttachment::LookupMediaSource(
   // The only expected caller is an HTMLMediaElement on the main thread.
   DCHECK(IsMainThread());
 
-  if (!registry_ || url.empty())
+  if (!registry_ || url.IsEmpty())
     return nullptr;
 
   // This cast is safe because the only setter of |registry_| is SetRegistry().

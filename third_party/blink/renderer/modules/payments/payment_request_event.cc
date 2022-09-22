@@ -340,7 +340,7 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
     return;
 
   auto* dictionary = MakeGarbageCollected<PaymentRequestDetailsUpdate>();
-  if (!response->error.IsNull() && !response->error.empty()) {
+  if (!response->error.IsNull() && !response->error.IsEmpty()) {
     dictionary->setError(response->error);
   }
 
@@ -377,7 +377,7 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
         mod->setTotal(total);
       }
 
-      if (!response_modifier->method_data->stringified_data.empty()) {
+      if (!response_modifier->method_data->stringified_data.IsEmpty()) {
         v8::Local<v8::Value> parsed_value = FromJSONString(
             script_state->GetIsolate(), script_state->GetContext(),
             response_modifier->method_data->stringified_data, exception_state);
@@ -415,7 +415,7 @@ void PaymentRequestEvent::OnChangePaymentRequestDetailsResponse(
   }
 
   if (response->stringified_payment_method_errors &&
-      !response->stringified_payment_method_errors.empty()) {
+      !response->stringified_payment_method_errors.IsEmpty()) {
     v8::Local<v8::Value> parsed_value = FromJSONString(
         script_state->GetIsolate(), script_state->GetContext(),
         response->stringified_payment_method_errors, exception_state);

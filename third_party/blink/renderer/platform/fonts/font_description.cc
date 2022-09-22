@@ -402,7 +402,7 @@ unsigned FontDescription::GetHash() const {
   unsigned hash = StyleHashWithoutFamilyList();
   for (const FontFamily* family = &family_list_; family;
        family = family->Next()) {
-    if (family->FamilyName().empty())
+    if (family->FamilyName().IsEmpty())
       continue;
     WTF::AddIntToHash(hash, family->FamilyIsGeneric());
     WTF::AddIntToHash(hash,

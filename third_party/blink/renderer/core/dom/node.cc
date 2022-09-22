@@ -1881,7 +1881,7 @@ bool Node::isDefaultNamespace(
   // https://dom.spec.whatwg.org/#dom-node-isdefaultnamespace
 
   // 1. If namespace is the empty string, then set it to null.
-  const AtomicString& namespace_uri = namespace_uri_maybe_empty.empty()
+  const AtomicString& namespace_uri = namespace_uri_maybe_empty.IsEmpty()
                                           ? g_null_atom
                                           : namespace_uri_maybe_empty;
 
@@ -1899,7 +1899,7 @@ const AtomicString& Node::lookupPrefix(
   // Implemented according to
   // https://dom.spec.whatwg.org/#dom-node-lookupprefix
 
-  if (namespace_uri.empty() || namespace_uri.IsNull())
+  if (namespace_uri.IsEmpty() || namespace_uri.IsNull())
     return g_null_atom;
 
   const Element* context;
@@ -1936,7 +1936,7 @@ const AtomicString& Node::lookupNamespaceURI(
 
   // 1. If prefix is the empty string, then set it to null.
   String prefix = specified_prefix;
-  if (!specified_prefix.IsNull() && specified_prefix.empty())
+  if (!specified_prefix.IsNull() && specified_prefix.IsEmpty())
     prefix = String();
 
   // 2. Return the result of running locate a namespace for the context object
@@ -1960,12 +1960,12 @@ const AtomicString& Node::lookupNamespaceURI(
       AttributeCollection attributes = element.Attributes();
       for (const Attribute& attr : attributes) {
         if (attr.Prefix() == g_xmlns_atom && attr.LocalName() == prefix) {
-          if (!attr.Value().empty())
+          if (!attr.Value().IsEmpty())
             return attr.Value();
           return g_null_atom;
         }
         if (attr.LocalName() == g_xmlns_atom && prefix.IsNull()) {
-          if (!attr.Value().empty())
+          if (!attr.Value().IsEmpty())
             return attr.Value();
           return g_null_atom;
         }
@@ -2065,13 +2065,13 @@ void Node::setTextContent(const String& text) {
       // See crbug.com/352836 also.
       // No need to do anything if the text is identical.
       if (container->HasOneTextChild() &&
-          To<Text>(container->firstChild())->data() == text && !text.empty())
+          To<Text>(container->firstChild())->data() == text && !text.IsEmpty())
         return;
 
       ChildListMutationScope mutation(*this);
       // Note: This API will not insert empty text nodes:
       // https://dom.spec.whatwg.org/#dom-node-textcontent
-      if (text.empty()) {
+      if (text.IsEmpty()) {
         container->RemoveChildren(kDispatchSubtreeModifiedEvent);
       } else {
         container->RemoveChildren(kOmitSubtreeModifiedEvent);
@@ -2304,7 +2304,7 @@ static void DumpAttributeDesc(const Node& node,
   if (!element)
     return;
   const AtomicString& value = element->getAttribute(name);
-  if (value.empty())
+  if (value.IsEmpty())
     return;
   builder.Append(' ');
   builder.Append(name.ToString());
@@ -2344,7 +2344,7 @@ String Node::ToString() const {
     return builder.ReleaseString();
   } else if (const auto* element = DynamicTo<Element>(this)) {
     const AtomicString& pseudo = element->ShadowPseudoId();
-    if (!pseudo.empty()) {
+    if (!pseudo.IsEmpty()) {
       builder.Append(" ::");
       builder.Append(pseudo);
     }
@@ -2389,7 +2389,7 @@ void Node::PrintNodePathTo(std::ostream& stream) const {
 
         const auto* element = To<Element>(node);
         const AtomicString& idattr = element->GetIdAttribute();
-        bool has_id_attr = !idattr.IsNull() && !idattr.empty();
+        bool has_id_attr = !idattr.IsNull() && !idattr.IsEmpty();
         if (node->previousSibling() || node->nextSibling()) {
           int count = 0;
           for (const Node* previous = node->previousSibling(); previous;

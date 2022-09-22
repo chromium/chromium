@@ -64,7 +64,7 @@ class Attribute {
 
   const QualifiedName& GetName() const { return name_; }
 
-  bool IsEmpty() const { return value_.empty(); }
+  bool IsEmpty() const { return value_.IsEmpty(); }
   bool Matches(const QualifiedName&) const;
   bool MatchesCaseInsensitive(const QualifiedName&) const;
 

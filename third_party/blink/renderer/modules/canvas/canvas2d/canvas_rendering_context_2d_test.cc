@@ -940,7 +940,7 @@ static void TestDrawSingleHighBitDepthPNGOnCanvas(
     ImageDataSettings* color_setting,
     ScriptState* script_state) {
   scoped_refptr<SharedBuffer> pixel_buffer = test::ReadFromFile(filepath);
-  ASSERT_EQ(false, pixel_buffer->empty());
+  ASSERT_EQ(false, pixel_buffer->IsEmpty());
 
   ImageResourceContent* resource_content =
       ImageResourceContent::CreateNotStarted();

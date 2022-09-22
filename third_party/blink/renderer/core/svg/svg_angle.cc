@@ -210,7 +210,7 @@ static SVGParsingError ParseValue(const CharType* start,
 }
 
 SVGParsingError SVGAngle::SetValueAsString(const String& value) {
-  if (value.empty()) {
+  if (value.IsEmpty()) {
     NewValueSpecifiedUnits(kSvgAngletypeUnspecified, 0);
     return SVGParseStatus::kNoError;
   }

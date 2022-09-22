@@ -34,7 +34,7 @@ TypeConverter<ui::mojom::blink::AttributedStringPtr, NSAttributedString*>::
     if (font) {
       font_name = String([font fontName]);
       font_point_size = [font pointSize];
-      if (!font_name.empty()) {
+      if (!font_name.IsEmpty()) {
         // Convert the attributes.
         ui::mojom::blink::FontAttributePtr attrs =
             ui::mojom::blink::FontAttribute::New(font_name, font_point_size,

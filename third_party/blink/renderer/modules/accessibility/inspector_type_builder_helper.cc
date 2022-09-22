@@ -110,7 +110,7 @@ std::unique_ptr<AXRelatedNode> RelatedNodeForAXObject(const AXObject& ax_object,
     return related_node;
 
   String idref = element->GetIdAttribute();
-  if (!idref.empty())
+  if (!idref.IsEmpty())
     related_node->setIdref(idref);
 
   if (name)

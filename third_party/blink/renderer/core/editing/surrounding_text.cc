@@ -139,7 +139,7 @@ wtf_size_t SurroundingText::EndOffsetInTextContent() const {
 }
 
 bool SurroundingText::IsEmpty() const {
-  return text_content_.empty();
+  return text_content_.IsEmpty();
 }
 
 }  // namespace blink

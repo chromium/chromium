@@ -892,7 +892,7 @@ ScriptPromise RTCPeerConnection::setLocalDescription(
   String sdp = session_description_init->sdp();
   // https://w3c.github.io/webrtc-pc/#dom-peerconnection-setlocaldescription
   // step 4.4 and 4.5: If SDP is empty, return the last created offer or answer.
-  if (sdp.empty()) {
+  if (sdp.IsEmpty()) {
     switch (session_description_init->type().AsEnum()) {
       case V8RTCSdpType::Enum::kOffer:
         sdp = last_offer_;
@@ -944,7 +944,7 @@ ScriptPromise RTCPeerConnection::setLocalDescription(
   String sdp = session_description_init->sdp();
   // https://w3c.github.io/webrtc-pc/#dom-peerconnection-setlocaldescription
   // step 4.4 and 4.5: If SDP is empty, return the last created offer or answer.
-  if (sdp.empty() && session_description_init->hasType()) {
+  if (sdp.IsEmpty() && session_description_init->hasType()) {
     switch (session_description_init->type().AsEnum()) {
       case V8RTCSdpType::Enum::kOffer:
         sdp = last_offer_;
@@ -1389,7 +1389,7 @@ ScriptPromise RTCPeerConnection::addIceCandidate(
     return ScriptPromise();
   }
 
-  if (candidate->hasCandidate() && candidate->candidate().empty()) {
+  if (candidate->hasCandidate() && candidate->candidate().IsEmpty()) {
     // Temporary mitigation to avoid throwing an exception when candidate is
     // empty or nothing was passed.
     // TODO(crbug.com/978582): Remove this mitigation when the WebRTC layer
@@ -1445,7 +1445,7 @@ ScriptPromise RTCPeerConnection::addIceCandidate(
   // empty.
   // TODO(crbug.com/978582): Remove this mitigation when the WebRTC layer
   // handles the empty candidate field or the null candidate correctly.
-  if (platform_candidate->Candidate().empty())
+  if (platform_candidate->Candidate().IsEmpty())
     return ScriptPromise::CastUndefined(script_state);
 
   DisableBackForwardCache(GetExecutionContext());

@@ -3092,7 +3092,7 @@ CSSValue* ComputedStyleUtils::ValueForStyleNameOrKeyword(
 
 CSSValue* ComputedStyleUtils::ValueForCustomIdentOrNone(
     const AtomicString& ident) {
-  if (ident.empty())
+  if (ident.IsEmpty())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   return MakeGarbageCollected<CSSCustomIdentValue>(ident);
 }

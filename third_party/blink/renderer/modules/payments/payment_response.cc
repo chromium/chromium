@@ -48,7 +48,7 @@ v8::Local<v8::Value> BuildDetails(
     return result->Wrap(script_state).ToLocalChecked();
   }
 
-  if (json.empty()) {
+  if (json.IsEmpty()) {
     return V8ObjectBuilder(script_state).V8Value();
   }
 

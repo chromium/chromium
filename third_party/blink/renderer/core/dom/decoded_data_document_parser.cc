@@ -94,7 +94,7 @@ void DecodedDataDocumentParser::UpdateDocument(String& decoded_data) {
   if (!DocumentXSLT::HasTransformSourceDocument(*GetDocument()))
     GetDocument()->SetEncodingData(DocumentEncodingData(*decoder_.get()));
 
-  if (!decoded_data.empty())
+  if (!decoded_data.IsEmpty())
     Append(decoded_data);
 }
 

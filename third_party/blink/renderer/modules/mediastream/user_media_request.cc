@@ -695,7 +695,7 @@ void UserMediaRequest::OnMediaStreamsInitialized(MediaStreamVector streams) {
 
 void UserMediaRequest::FailConstraint(const String& constraint_name,
                                       const String& message) {
-  DCHECK(!constraint_name.empty());
+  DCHECK(!constraint_name.IsEmpty());
   DCHECK(!is_resolved_);
   if (!GetExecutionContext())
     return;

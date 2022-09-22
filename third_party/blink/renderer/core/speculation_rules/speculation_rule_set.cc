@@ -20,7 +20,7 @@ bool IsValidContextName(const String& name_or_keyword) {
   // "A valid browsing context name is any string with at least one character
   // that does not start with a U+005F LOW LINE character. (Names starting with
   // an underscore are reserved for special keywords.)"
-  if (name_or_keyword.empty())
+  if (name_or_keyword.IsEmpty())
     return false;
   if (name_or_keyword.StartsWith("_"))
     return false;

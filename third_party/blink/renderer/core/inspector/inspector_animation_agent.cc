@@ -42,7 +42,7 @@ namespace blink {
 namespace {
 
 String AnimationDisplayName(const Animation& animation) {
-  if (!animation.id().empty())
+  if (!animation.id().IsEmpty())
     return animation.id();
   else if (auto* css_animation = DynamicTo<CSSAnimation>(animation))
     return css_animation->animationName();

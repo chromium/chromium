@@ -141,7 +141,7 @@ void LocaleWin::GetLocaleInfo(LCTYPE type, DWORD& result) {
 }
 
 void LocaleWin::EnsureShortMonthLabels() {
-  if (!short_month_labels_.empty())
+  if (!short_month_labels_.IsEmpty())
     return;
   const LCTYPE kTypes[12] = {
       LOCALE_SABBREVMONTHNAME1,  LOCALE_SABBREVMONTHNAME2,
@@ -154,7 +154,7 @@ void LocaleWin::EnsureShortMonthLabels() {
   short_month_labels_.ReserveCapacity(std::size(kTypes));
   for (unsigned i = 0; i < std::size(kTypes); ++i) {
     short_month_labels_.push_back(GetLocaleInfoString(kTypes[i]));
-    if (short_month_labels_.back().empty()) {
+    if (short_month_labels_.back().IsEmpty()) {
       short_month_labels_.Shrink(0);
       short_month_labels_.ReserveCapacity(std::size(WTF::kMonthName));
       for (unsigned m = 0; m < std::size(WTF::kMonthName); ++m)
@@ -269,7 +269,7 @@ static String ConvertWindowsDateTimeFormat(const String& format) {
 }
 
 void LocaleWin::EnsureMonthLabels() {
-  if (!month_labels_.empty())
+  if (!month_labels_.IsEmpty())
     return;
   const LCTYPE kTypes[12] = {
       LOCALE_SMONTHNAME1,  LOCALE_SMONTHNAME2,  LOCALE_SMONTHNAME3,
@@ -280,7 +280,7 @@ void LocaleWin::EnsureMonthLabels() {
   month_labels_.ReserveCapacity(std::size(kTypes));
   for (unsigned i = 0; i < std::size(kTypes); ++i) {
     month_labels_.push_back(GetLocaleInfoString(kTypes[i]));
-    if (month_labels_.back().empty()) {
+    if (month_labels_.back().IsEmpty()) {
       month_labels_.Shrink(0);
       month_labels_.ReserveCapacity(std::size(WTF::kMonthFullName));
       for (unsigned m = 0; m < std::size(WTF::kMonthFullName); ++m)
@@ -291,7 +291,7 @@ void LocaleWin::EnsureMonthLabels() {
 }
 
 void LocaleWin::EnsureWeekDayShortLabels() {
-  if (!week_day_short_labels_.empty())
+  if (!week_day_short_labels_.IsEmpty())
     return;
   const LCTYPE kTypes[7] = {LOCALE_SSHORTESTDAYNAME7,  // Sunday
                             LOCALE_SSHORTESTDAYNAME1,  // Monday
@@ -301,7 +301,7 @@ void LocaleWin::EnsureWeekDayShortLabels() {
   week_day_short_labels_.ReserveCapacity(std::size(kTypes));
   for (unsigned i = 0; i < std::size(kTypes); ++i) {
     week_day_short_labels_.push_back(GetLocaleInfoString(kTypes[i]));
-    if (week_day_short_labels_.back().empty()) {
+    if (week_day_short_labels_.back().IsEmpty()) {
       week_day_short_labels_.Shrink(0);
       week_day_short_labels_.ReserveCapacity(std::size(WTF::kWeekdayName));
       for (unsigned w = 0; w < std::size(WTF::kWeekdayName); ++w) {
@@ -372,7 +372,7 @@ String LocaleWin::ShortTimeFormat() {
     return time_format_without_seconds_;
   String format = GetLocaleInfoString(LOCALE_SSHORTTIME);
   // Vista or older Windows doesn't support LOCALE_SSHORTTIME.
-  if (format.empty()) {
+  if (format.IsEmpty()) {
     format = GetLocaleInfoString(LOCALE_STIMEFORMAT);
     StringBuilder builder;
     builder.Append(GetLocaleInfoString(LOCALE_STIME));
@@ -423,7 +423,7 @@ const Vector<String>& LocaleWin::ShortStandAloneMonthLabels() {
 }
 
 const Vector<String>& LocaleWin::TimeAMPMLabels() {
-  if (time_ampm_labels_.empty()) {
+  if (time_ampm_labels_.IsEmpty()) {
     time_ampm_labels_.push_back(GetLocaleInfoString(LOCALE_S1159));
     time_ampm_labels_.push_back(GetLocaleInfoString(LOCALE_S2359));
   }

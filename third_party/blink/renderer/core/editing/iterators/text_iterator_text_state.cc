@@ -227,7 +227,7 @@ void TextIteratorTextState::EmitText(const Text& text_node,
           ? RepeatString("x", string.length())
           : string;
 
-  DCHECK(!text.empty());
+  DCHECK(!text.IsEmpty());
   DCHECK_LT(text_start_offset, text.length());
   DCHECK_LE(text_end_offset, text.length());
   DCHECK_LE(text_start_offset, text_end_offset);

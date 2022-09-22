@@ -14,7 +14,7 @@ TEST(DisplayItemTest, DebugStringsExist) {
   for (int type = 0; type <= DisplayItem::kTypeLast; type++) {
     String debug_string =
         DisplayItem::TypeAsDebugString(static_cast<DisplayItem::Type>(type));
-    EXPECT_FALSE(debug_string.empty());
+    EXPECT_FALSE(debug_string.IsEmpty());
     EXPECT_NE("Unknown", debug_string);
   }
 }

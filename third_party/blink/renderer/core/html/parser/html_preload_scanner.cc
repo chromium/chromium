@@ -213,13 +213,13 @@ class TokenPreloadScanner::StartTagScanner {
 
   void HandlePictureSourceURL(PictureData& picture_data) {
     if (Match(tag_impl_, html_names::kSourceTag) && matched_ &&
-        picture_data.source_url.empty()) {
+        picture_data.source_url.IsEmpty()) {
       picture_data.source_url = srcset_image_candidate_.ToString();
       picture_data.source_size_set = source_size_set_;
       picture_data.source_size = source_size_;
       picture_data.picked = true;
     } else if (Match(tag_impl_, html_names::kImgTag) &&
-               !picture_data.source_url.empty()) {
+               !picture_data.source_url.IsEmpty()) {
       SetUrlToLoad(picture_data.source_url, kAllowURLReplacement);
     }
   }
@@ -580,10 +580,10 @@ class TokenPreloadScanner::StartTagScanner {
   void SetUrlToLoad(const String& value, URLReplacement replacement) {
     // We only respect the first src/href, per HTML5:
     // http://www.whatwg.org/specs/web-apps/current-work/multipage/tokenization.html#attribute-name-state
-    if (replacement == kDisallowURLReplacement && !url_to_load_.empty())
+    if (replacement == kDisallowURLReplacement && !url_to_load_.IsEmpty())
       return;
     String url = StripLeadingAndTrailingHTMLSpaces(value);
-    if (url.empty())
+    if (url.IsEmpty())
       return;
     url_to_load_ = url;
   }
@@ -619,22 +619,22 @@ class TokenPreloadScanner::StartTagScanner {
 
   bool ShouldPreconnect() const {
     return Match(tag_impl_, html_names::kLinkTag) && link_is_preconnect_ &&
-           !url_to_load_.empty();
+           !url_to_load_.IsEmpty();
   }
 
   bool IsLinkRelPreload() const {
     return Match(tag_impl_, html_names::kLinkTag) && link_is_preload_ &&
-           !url_to_load_.empty();
+           !url_to_load_.IsEmpty();
   }
 
   bool IsLinkRelModulePreload() const {
     return Match(tag_impl_, html_names::kLinkTag) && link_is_modulepreload_ &&
-           !url_to_load_.empty();
+           !url_to_load_.IsEmpty();
   }
 
   bool ShouldPreloadLink(absl::optional<ResourceType>& type) const {
     if (link_is_style_sheet_) {
-      return type_attribute_value_.empty() ||
+      return type_attribute_value_.IsEmpty() ||
              MIMETypeRegistry::IsSupportedStyleSheetMIMEType(
                  ContentType(type_attribute_value_).GetType());
     } else if (link_is_preload_) {
@@ -642,7 +642,7 @@ class TokenPreloadScanner::StartTagScanner {
         return HTMLImageElement::SupportedImageType(type_attribute_value_,
                                                     disabled_image_types_);
       }
-      if (type_attribute_value_.empty())
+      if (type_attribute_value_.IsEmpty())
         return true;
       String type_from_attribute = ContentType(type_attribute_value_).GetType();
       if ((type == ResourceType::kFont &&
@@ -660,7 +660,7 @@ class TokenPreloadScanner::StartTagScanner {
   }
 
   bool ShouldPreload(absl::optional<ResourceType>& type) const {
-    if (url_to_load_.empty())
+    if (url_to_load_.IsEmpty())
       return false;
     if (!matched_)
       return false;
@@ -841,7 +841,7 @@ static void HandleMetaReferrer(const String& attribute_value,
                                CSSPreloadScanner* css_scanner) {
   network::mojom::ReferrerPolicy meta_referrer_policy =
       network::mojom::ReferrerPolicy::kDefault;
-  if (!attribute_value.empty() && !attribute_value.IsNull() &&
+  if (!attribute_value.IsEmpty() && !attribute_value.IsNull() &&
       SecurityPolicy::ReferrerPolicyFromString(
           attribute_value, kSupportReferrerPolicyLegacyKeywords,
           &meta_referrer_policy)) {

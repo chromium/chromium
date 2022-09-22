@@ -110,7 +110,7 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
   if (i != attrs.end())
     type = i->value;
 
-  is_css_ = type.empty() || type == "text/css";
+  is_css_ = type.IsEmpty() || type == "text/css";
   is_xsl_ = (type == "text/xml" || type == "text/xsl" ||
              type == "application/xml" || type == "application/xhtml+xml" ||
              type == "application/rss+xml" || type == "application/atom+xml");
@@ -129,7 +129,7 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
   auto it_media = attrs.find("media");
   media_ = it_media != attrs.end() ? it_media->value : "";
 
-  return !alternate_ || !title_.empty();
+  return !alternate_ || !title_.IsEmpty();
 }
 
 void ProcessingInstruction::Process(const String& href, const String& charset) {
@@ -160,8 +160,8 @@ void ProcessingInstruction::Process(const String& href, const String& charset) {
         network::mojom::RequestMode::kSameOrigin);
     XSLStyleSheetResource::Fetch(params, GetDocument().Fetcher(), this);
   } else {
-    params.SetCharset(charset.empty() ? GetDocument().Encoding()
-                                      : WTF::TextEncoding(charset));
+    params.SetCharset(charset.IsEmpty() ? GetDocument().Encoding()
+                                        : WTF::TextEncoding(charset));
     GetDocument().GetStyleEngine().AddPendingBlockingSheet(
         *this, PendingSheetType::kBlocking);
     CSSStyleSheetResource::Fetch(params, GetDocument().Fetcher(), this);
@@ -217,7 +217,7 @@ void ProcessingInstruction::NotifyFinished(Resource* resource) {
     auto* css_sheet = MakeGarbageCollected<CSSStyleSheet>(new_sheet, *this);
     css_sheet->setDisabled(alternate_);
     css_sheet->SetTitle(title_);
-    if (!alternate_ && !title_.empty()) {
+    if (!alternate_ && !title_.IsEmpty()) {
       GetDocument().GetStyleEngine().SetPreferredStylesheetSetNameIfNotSet(
           title_);
     }

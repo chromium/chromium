@@ -265,7 +265,7 @@ TEST(SecurityPolicyTest, GenerateReferrer) {
           << " should have been '" << test.expected << "': was '"
           << result.referrer.Utf8() << "'.";
     } else {
-      EXPECT_TRUE(result.referrer.empty())
+      EXPECT_TRUE(result.referrer.IsEmpty())
           << "'" << test.referrer << "' to '" << test.destination
           << "' should have been empty: was '" << result.referrer.Utf8()
           << "'.";

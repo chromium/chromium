@@ -1107,7 +1107,7 @@ bool Page::IsMainFrameFencedFrameRoot() const {
 void Page::SetMediaFeatureOverride(const AtomicString& media_feature,
                                    const String& value) {
   if (!media_feature_overrides_) {
-    if (value.empty())
+    if (value.IsEmpty())
       return;
     media_feature_overrides_ = std::make_unique<MediaFeatureOverrides>();
   }

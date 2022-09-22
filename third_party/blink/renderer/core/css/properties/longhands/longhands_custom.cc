@@ -147,7 +147,7 @@ const CSSValue* AnchorName::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (style.AnchorName().empty())
+  if (style.AnchorName().IsEmpty())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   return MakeGarbageCollected<CSSCustomIdentValue>(style.AnchorName());
 }
@@ -166,7 +166,7 @@ const CSSValue* AnchorScroll::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (style.AnchorScroll().empty())
+  if (style.AnchorScroll().IsEmpty())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   return MakeGarbageCollected<CSSCustomIdentValue>(style.AnchorScroll());
 }
@@ -5887,7 +5887,7 @@ const CSSValue* PositionFallback::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (style.PositionFallback().empty())
+  if (style.PositionFallback().IsEmpty())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   return MakeGarbageCollected<CSSCustomIdentValue>(style.PositionFallback());
 }
@@ -6560,7 +6560,7 @@ const CSSValue* ScrollTimelineName::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
   const AtomicString& ident = style.ScrollTimelineName();
-  if (ident.empty())
+  if (ident.IsEmpty())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   return MakeGarbageCollected<CSSCustomIdentValue>(ident);
 }

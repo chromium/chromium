@@ -261,7 +261,7 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
   }
 
   void Append(const String& string) {
-    if (string.empty())
+    if (string.IsEmpty())
       return;
     if (string.Is8Bit())
       this->AppendSpan(string.Span8());

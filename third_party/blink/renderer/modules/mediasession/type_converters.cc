@@ -12,7 +12,7 @@ TypeConverter<const blink::MediaSessionActionDetails*,
     ConvertWithActionName(
         const blink::mojom::blink::MediaSessionActionDetailsPtr& details,
         const WTF::AtomicString& action_name) {
-  DCHECK(!action_name.empty());
+  DCHECK(!action_name.IsEmpty());
   blink::MediaSessionActionDetails* blink_details;
 
   if (details && details->is_seek_to()) {

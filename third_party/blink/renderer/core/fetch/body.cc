@@ -247,7 +247,7 @@ ScriptPromise Body::formData(ScriptState* script_state,
     const String boundary =
         parsedTypeWithParameters.ParameterValueForName("boundary");
     auto* body_buffer = BodyBuffer();
-    if (body_buffer && !boundary.empty()) {
+    if (body_buffer && !boundary.IsEmpty()) {
       body_buffer->StartLoading(
           FetchDataLoader::CreateLoaderAsFormData(boundary),
           MakeGarbageCollected<BodyFormDataConsumer>(resolver),

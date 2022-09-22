@@ -369,7 +369,7 @@ void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
                      CSSParserMode mode) {
   MediaQuerySet* query_set = nullptr;
   for (unsigned i = 0; test_cases[i].input; ++i) {
-    if (String(test_cases[i].input).empty()) {
+    if (String(test_cases[i].input).IsEmpty()) {
       query_set = MediaQuerySet::Create();
     } else {
       query_set = MediaQueryParser::ParseMediaQuerySetInMode(

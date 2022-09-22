@@ -101,12 +101,12 @@ void HTMLTableCellElement::CollectStyleForPresentationAttribute(
     AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWhiteSpace,
                                             CSSValueID::kNowrap);
   } else if (name == html_names::kWidthAttr) {
-    if (!value.empty()) {
+    if (!value.IsEmpty()) {
       AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value,
                            kAllowPercentageValues, kDontAllowZeroValues);
     }
   } else if (name == html_names::kHeightAttr) {
-    if (!value.empty()) {
+    if (!value.IsEmpty()) {
       AddHTMLLengthToStyle(style, CSSPropertyID::kHeight, value,
                            kAllowPercentageValues, kDontAllowZeroValues);
     }

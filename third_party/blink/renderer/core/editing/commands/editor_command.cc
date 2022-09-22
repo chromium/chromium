@@ -350,7 +350,7 @@ static bool ExecuteCreateLink(LocalFrame& frame,
                               Event*,
                               EditorCommandSource,
                               const String& value) {
-  if (value.empty())
+  if (value.IsEmpty())
     return false;
   DCHECK(frame.GetDocument());
   return MakeGarbageCollected<CreateLinkCommand>(*frame.GetDocument(), value)

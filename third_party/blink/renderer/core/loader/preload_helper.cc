@@ -72,7 +72,7 @@ void SendMessageToConsoleForPossiblyNullDocument(
 }
 
 bool IsSupportedType(ResourceType resource_type, const String& mime_type) {
-  if (mime_type.empty())
+  if (mime_type.IsEmpty())
     return true;
   switch (resource_type) {
     case ResourceType::kImage:
@@ -270,7 +270,7 @@ void PreloadHelper::PreloadIfNeeded(
 
   MediaValuesCached* media_values = nullptr;
   KURL url;
-  if (resource_type == ResourceType::kImage && !params.image_srcset.empty()) {
+  if (resource_type == ResourceType::kImage && !params.image_srcset.IsEmpty()) {
     UseCounter::Count(document, WebFeature::kLinkRelPreloadImageSrcset);
     media_values = CreateMediaValues(document, viewport_description);
     url = GetBestFitImageURL(document, base_url, media_values, params.href,
@@ -290,7 +290,7 @@ void PreloadHelper::PreloadIfNeeded(
 
   bool media_matches = true;
 
-  if (!params.media.empty()) {
+  if (!params.media.IsEmpty()) {
     if (!media_values)
       media_values = CreateMediaValues(document, viewport_description);
     media_matches = MediaMatches(params.media, media_values,
@@ -370,7 +370,7 @@ void PreloadHelper::PreloadIfNeeded(
   if (resource_type == ResourceType::kScript ||
       resource_type == ResourceType::kCSSStyleSheet ||
       resource_type == ResourceType::kFont) {
-    if (!integrity_attr.empty()) {
+    if (!integrity_attr.IsEmpty()) {
       IntegrityMetadataSet metadata_set;
       SubresourceIntegrity::ParseIntegrityAttribute(
           integrity_attr,
@@ -382,7 +382,7 @@ void PreloadHelper::PreloadIfNeeded(
           integrity_attr);
     }
   } else {
-    if (!integrity_attr.empty()) {
+    if (!integrity_attr.IsEmpty()) {
       document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kOther,
           mojom::ConsoleMessageLevel::kWarning,
@@ -458,7 +458,7 @@ void PreloadHelper::ModulePreloadIfNeeded(
   // networking task source to fire an event named error at the link element,
   // and return." [spec text]
   // Currently we only support as="script".
-  if (!params.as.empty() && params.as != "script") {
+  if (!params.as.IsEmpty() && params.as != "script") {
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kOther,
         mojom::ConsoleMessageLevel::kWarning,
@@ -494,7 +494,7 @@ void PreloadHelper::ModulePreloadIfNeeded(
 
   // Preload only if media matches.
   // https://html.spec.whatwg.org/C/#processing-the-media-attribute
-  if (!params.media.empty()) {
+  if (!params.media.IsEmpty()) {
     MediaValuesCached* media_values =
         CreateMediaValues(document, viewport_description);
     if (!MediaMatches(params.media, media_values,
@@ -514,7 +514,7 @@ void PreloadHelper::ModulePreloadIfNeeded(
   // Step 8. "Let integrity metadata be the value of the integrity attribute, if
   // it is specified, or the empty string otherwise." [spec text]
   IntegrityMetadataSet integrity_metadata;
-  if (!params.integrity.empty()) {
+  if (!params.integrity.IsEmpty()) {
     SubresourceIntegrity::IntegrityFeatures integrity_features =
         SubresourceIntegrityHelper::GetFeatures(document.GetExecutionContext());
     SubresourceIntegrity::ReportInfo report_info;
@@ -640,11 +640,11 @@ void PreloadHelper::LoadLinksFromHeader(
     std::unique_ptr<AlternateSignedExchangeResourceInfo>
         alternate_resource_info,
     const base::UnguessableToken* recursive_prefetch_token) {
-  if (header_value.empty())
+  if (header_value.IsEmpty())
     return;
   LinkHeaderSet header_set(header_value);
   for (auto& header : header_set) {
-    if (!header.Valid() || header.Url().empty() || header.Rel().empty())
+    if (!header.Valid() || header.Url().IsEmpty() || header.Rel().IsEmpty())
       continue;
 
     if (media_policy == kOnlyLoadMedia && !header.IsViewportDependent())
@@ -669,7 +669,7 @@ void PreloadHelper::LoadLinksFromHeader(
       absl::optional<ResourceType> resource_type =
           PreloadHelper::GetResourceTypeFromAsAttribute(params.as);
       if (resource_type == ResourceType::kImage &&
-          !params.image_srcset.empty()) {
+          !params.image_srcset.IsEmpty()) {
         // |media_values| is created based on the viewport dimensions of the
         // current page that prefetched SXGs, not on the viewport of the SXG
         // content.

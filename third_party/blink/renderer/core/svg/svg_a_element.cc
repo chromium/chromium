@@ -68,7 +68,7 @@ void SVGAElement::Trace(Visitor* visitor) const {
 String SVGAElement::title() const {
   // If the xlink:title is set (non-empty string), use it.
   const AtomicString& title = FastGetAttribute(xlink_names::kTitleAttr);
-  if (!title.empty())
+  if (!title.IsEmpty())
     return title;
 
   // Otherwise, use the title of this element.
@@ -129,7 +129,7 @@ void SVGAElement::DefaultEventHandler(Event& event) {
       }
 
       AtomicString target(svg_target_->CurrentValue()->Value());
-      if (target.empty() && FastGetAttribute(xlink_names::kShowAttr) == "new")
+      if (target.IsEmpty() && FastGetAttribute(xlink_names::kShowAttr) == "new")
         target = AtomicString("_blank");
       event.SetDefaultHandled();
 

@@ -278,9 +278,9 @@ static bool DiffAffectsScrollAnimations(const ComputedStyle& old_style,
 // if they reference a named timeline which appeared/disappeared.
 static bool AffectsScrollAnimations(const ComputedStyle* old_style,
                                     const ComputedStyle* new_style) {
-  if (old_style && !old_style->ScrollTimelineName().empty())
+  if (old_style && !old_style->ScrollTimelineName().IsEmpty())
     return true;
-  if (new_style && !new_style->ScrollTimelineName().empty())
+  if (new_style && !new_style->ScrollTimelineName().IsEmpty())
     return true;
   return false;
 }

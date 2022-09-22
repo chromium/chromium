@@ -60,7 +60,7 @@ bool SVGAnimationElement::ParseValues(const String& value,
   unsigned last = parse_list.size() - 1;
   for (unsigned i = 0; i <= last; ++i) {
     parse_list[i] = parse_list[i].StripWhiteSpace(IsHTMLSpace<UChar>);
-    if (parse_list[i].empty()) {
+    if (parse_list[i].IsEmpty()) {
       // Tolerate trailing ';'
       if (i < last)
         goto fail;
@@ -150,7 +150,7 @@ static bool ParseKeySplinesInternal(const CharType* ptr,
 static bool ParseKeySplines(const String& string,
                             Vector<gfx::CubicBezier>& result) {
   result.clear();
-  if (string.empty())
+  if (string.IsEmpty())
     return true;
   bool parsed =
       WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
@@ -305,10 +305,10 @@ void SVGAnimationElement::UpdateAnimationMode() {
   // http://www.w3.org/TR/2001/REC-smil-animation-20010904/#AnimFuncValues
   if (hasAttribute(svg_names::kValuesAttr))
     SetAnimationMode(kValuesAnimation);
-  else if (!ToValue().empty())
-    SetAnimationMode(FromValue().empty() ? kToAnimation : kFromToAnimation);
-  else if (!ByValue().empty())
-    SetAnimationMode(FromValue().empty() ? kByAnimation : kFromByAnimation);
+  else if (!ToValue().IsEmpty())
+    SetAnimationMode(FromValue().IsEmpty() ? kToAnimation : kFromToAnimation);
+  else if (!ByValue().IsEmpty())
+    SetAnimationMode(FromValue().IsEmpty() ? kByAnimation : kFromByAnimation);
   else
     SetAnimationMode(kNoAnimation);
 }

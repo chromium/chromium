@@ -69,8 +69,8 @@ TEST_F(HTMLTokenizerTest, SaveAndRestoreSnapshot) {
 
   // Append an empty snapshot, which should clear the data.
   tokenizer2.RestoreSnapshot(HTMLTokenizerSnapshot());
-  EXPECT_TRUE(GetAppropriateEndTagName(tokenizer2).empty());
-  EXPECT_TRUE(GetBufferedEndTagName(tokenizer2).empty());
+  EXPECT_TRUE(GetAppropriateEndTagName(tokenizer2).IsEmpty());
+  EXPECT_TRUE(GetBufferedEndTagName(tokenizer2).IsEmpty());
 }
 
 }  // namespace blink

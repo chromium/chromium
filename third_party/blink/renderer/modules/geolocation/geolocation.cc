@@ -505,7 +505,7 @@ void Geolocation::OnPositionUpdated(
 
     auto* context = GetExecutionContext();
     DCHECK(context);
-    if (!position->error_technical.empty()) {
+    if (!position->error_technical.IsEmpty()) {
       context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kNetwork,
           mojom::blink::ConsoleMessageLevel::kError,

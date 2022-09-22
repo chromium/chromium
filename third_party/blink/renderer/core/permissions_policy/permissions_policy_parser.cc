@@ -248,7 +248,7 @@ void ParsingContext::ReportAllowlistTypeUsage() {
 
 absl::optional<mojom::blink::PermissionsPolicyFeature>
 ParsingContext::ParseFeatureName(const String& feature_name) {
-  DCHECK(!feature_name.empty());
+  DCHECK(!feature_name.IsEmpty());
   if (!feature_names_.Contains(feature_name)) {
     logger_.Warn("Unrecognized feature: '" + feature_name + "'.");
     return absl::nullopt;
@@ -284,7 +284,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
     }
   } else {
     for (const String& origin_string : origin_strings) {
-      DCHECK(!origin_string.empty());
+      DCHECK(!origin_string.IsEmpty());
 
       if (!origin_string.ContainsOnlyASCIIOrEmpty()) {
         logger_.Warn("Non-ASCII characters in origin.");
@@ -538,7 +538,7 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
                            feature_name));
         continue;
       }
-      if (!allowlist_item.empty())
+      if (!allowlist_item.IsEmpty())
         allowlist.push_back(allowlist_item);
     }
 

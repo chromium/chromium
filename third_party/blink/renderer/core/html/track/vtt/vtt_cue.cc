@@ -669,8 +669,8 @@ void VTTCue::UpdatePastAndFutureNodes(double movie_time) {
 
     if (auto* child_vtt_element = DynamicTo<VTTElement>(child)) {
       child_vtt_element->SetIsPastNode(is_past_node);
-      // Make an element id match a cue id for style matching purposes.
-      if (!id().empty())
+      // Make an elemenet id match a cue id for style matching purposes.
+      if (!id().IsEmpty())
         To<Element>(child).SetIdAttribute(id());
     }
   }

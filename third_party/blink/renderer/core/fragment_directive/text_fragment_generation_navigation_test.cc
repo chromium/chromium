@@ -187,7 +187,7 @@ TextFragmentGenerationNavigationTest::GenerateAndNavigate(
   // Generate text fragment selector.
   String selector = GenerateSelector(*selection_range);
 
-  if (selector.empty()) {
+  if (selector.IsEmpty()) {
     return shared_highlighting::SharedHighlightingDataDrivenTestResults();
   }
 

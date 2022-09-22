@@ -320,7 +320,7 @@ bool CanLoadURL(const KURL& url, const String& content_type_str) {
 
   // If the MIME type is missing or is not meaningful, try to figure it out from
   // the URL.
-  if (content_mime_type.empty() ||
+  if (content_mime_type.IsEmpty() ||
       content_mime_type == "application/octet-stream" ||
       content_mime_type == "text/plain") {
     if (url.ProtocolIsData())
@@ -328,7 +328,7 @@ bool CanLoadURL(const KURL& url, const String& content_type_str) {
   }
 
   // If no MIME type is specified, always attempt to load.
-  if (content_mime_type.empty())
+  if (content_mime_type.IsEmpty())
     return true;
 
   // 4.8.12.3 MIME types - In the absence of a specification to the contrary,
@@ -336,7 +336,7 @@ bool CanLoadURL(const KURL& url, const String& content_type_str) {
   // "application/octet-stream;codecs=theora", is a type that the user agent
   // knows it cannot render.
   if (content_mime_type != "application/octet-stream" ||
-      content_type_codecs.empty()) {
+      content_type_codecs.IsEmpty()) {
     return MIMETypeRegistry::SupportsMediaMIMEType(content_mime_type,
                                                    content_type_codecs) !=
            MIMETypeRegistry::kNotSupported;
@@ -395,7 +395,7 @@ MIMETypeRegistry::SupportsType HTMLMediaElement::GetSupportsType(
   // per http://tools.ietf.org/html/rfc4281#page-7.
   String type_codecs = content_type.Parameter("codecs");
 
-  if (type.empty())
+  if (type.IsEmpty())
     return MIMETypeRegistry::kNotSupported;
 
   // 4.8.12.3 MIME types - The canPlayType(type) method must return the empty
@@ -779,7 +779,7 @@ Node::InsertionNotificationRequest HTMLMediaElement::InsertedInto(
   HTMLElement::InsertedInto(insertion_point);
   if (insertion_point.isConnected()) {
     UseCounter::Count(GetDocument(), WebFeature::kHTMLMediaElementInDocument);
-    if ((!FastGetAttribute(html_names::kSrcAttr).empty() ||
+    if ((!FastGetAttribute(html_names::kSrcAttr).IsEmpty() ||
          src_object_stream_descriptor_ || src_object_media_source_handle_) &&
         network_state_ == kNetworkEmpty) {
       ignore_preload_none_ = false;
@@ -1216,7 +1216,7 @@ void HTMLMediaElement::LoadSourceFromObject() {
     // MediaSource with a blob URL.
     const String media_source_handle_url_ =
         src_object_media_source_handle_->GetInternalBlobURL();
-    DCHECK(!media_source_handle_url_.empty());
+    DCHECK(!media_source_handle_url_.IsEmpty());
 
     KURL media_url = GetDocument().CompleteURL(media_source_handle_url_);
     if (!IsSafeToLoadURL(media_url, kComplain)) {
@@ -1246,7 +1246,7 @@ void HTMLMediaElement::LoadSourceFromAttribute() {
 
   // If the src attribute's value is the empty string ... jump down to the
   // failed step below
-  if (src_value.empty()) {
+  if (src_value.IsEmpty()) {
     DVLOG(3) << "LoadSourceFromAttribute(" << *this << "), empty 'src'";
     MediaLoadingFailed(WebMediaPlayer::kNetworkStateFormatError,
                        BuildElementErrorMessage("Empty src attribute"));
@@ -1445,9 +1445,9 @@ void HTMLMediaElement::StartPlayerLoad() {
     // media resource URL should be treated, then update the handling
     // here to match.
     KURL request_url = current_src_.GetSourceIfVisible();
-    if (!request_url.User().empty())
+    if (!request_url.User().IsEmpty())
       request_url.SetUser(String());
-    if (!request_url.Pass().empty())
+    if (!request_url.Pass().IsEmpty())
       request_url.SetPass(String());
 
     KURL kurl(request_url);
@@ -1906,7 +1906,7 @@ void HTMLMediaElement::MediaLoadingFailed(WebMediaPlayer::NetworkState error,
              (load_state_ == kLoadingFromSrcAttr ||
               (load_state_ == kLoadingFromSrcObject &&
                src_object_media_source_handle_))) {
-    if (message.empty()) {
+    if (message.IsEmpty()) {
       // Generate a more meaningful error message to differentiate the two types
       // of MEDIA_SRC_ERR_NOT_SUPPORTED.
       NoneSupported(BuildElementErrorMessage(
@@ -3477,7 +3477,7 @@ KURL HTMLMediaElement::SelectNextSourceChild(
       DVLOG(3) << "selectNextSourceChild(" << *this << ") - 'src' is "
                << UrlForLoggingMedia(media_url);
     }
-    if (src_value.empty())
+    if (src_value.IsEmpty())
       goto checkAgain;
 
     // 3. Let urlString be the resulting URL string that would have resulted
@@ -3495,9 +3495,9 @@ KURL HTMLMediaElement::SelectNextSourceChild(
     // 5. If candidate has a type attribute whose value, when parsed as a
     // MIME type ...
     type = source->type();
-    if (type.empty() && media_url.ProtocolIsData())
+    if (type.IsEmpty() && media_url.ProtocolIsData())
       type = MimeTypeFromDataURL(media_url);
-    if (!type.empty()) {
+    if (!type.IsEmpty()) {
       if (should_log) {
         DVLOG(3) << "selectNextSourceChild(" << *this << ") - 'type' is '"
                  << type << "'";

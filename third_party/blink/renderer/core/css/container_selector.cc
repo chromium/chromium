@@ -26,7 +26,7 @@ ContainerSelector::ContainerSelector(AtomicString name,
 }
 
 unsigned ContainerSelector::GetHash() const {
-  unsigned hash = !name_.empty() ? AtomicStringHash::GetHash(name_) : 0;
+  unsigned hash = !name_.IsEmpty() ? AtomicStringHash::GetHash(name_) : 0;
   WTF::AddIntToHash(hash, physical_axes_.value());
   WTF::AddIntToHash(hash, logical_axes_.value());
   WTF::AddIntToHash(hash, has_style_query_);

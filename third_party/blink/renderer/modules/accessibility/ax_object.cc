@@ -509,7 +509,7 @@ void TruncateAndAddStringAttribute(
     ax::mojom::blink::StringAttribute attribute,
     const String& value,
     uint32_t max_len = kMaxStringAttributeLength) {
-  if (value.empty())
+  if (value.IsEmpty())
     return;
   std::string value_utf8 = value.Utf8(kStrictUTF8Conversion);
   if (value_utf8.size() > max_len) {
@@ -1617,7 +1617,7 @@ void AXObject::SerializeNameAndDescriptionAttributes(
                                   std::string());
     node_data->SetNameFrom(
         ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty);
-  } else if (!name.empty()) {
+  } else if (!name.IsEmpty()) {
     int max_length = node_data->role == ax::mojom::blink::Role::kStaticText
                          ? kMaxStaticTextLength
                          : kMaxStringAttributeLength;
@@ -1633,7 +1633,7 @@ void AXObject::SerializeNameAndDescriptionAttributes(
   AXObjectVector description_objects;
   String description =
       Description(name_from, description_from, &description_objects);
-  if (!description.empty()) {
+  if (!description.IsEmpty()) {
     DCHECK(description_from != ax::mojom::blink::DescriptionFrom::kNone);
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kDescription,
@@ -1665,7 +1665,7 @@ void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) {
                               *computed_style, /* layout_object */ nullptr,
                               /* allow_visited_style */ false)
                           ->CssText();
-      if (!display_style.empty()) {
+      if (!display_style.IsEmpty()) {
         TruncateAndAddStringAttribute(
             node_data, ax::mojom::blink::StringAttribute::kDisplay,
             display_style);
@@ -1692,7 +1692,7 @@ void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) {
       Element* element = To<Element>(node);
       if (element->IsHTMLWithTagName("input")) {
         String type = element->getAttribute("type");
-        if (type.empty())
+        if (type.IsEmpty())
           type = "text";
         TruncateAndAddStringAttribute(
             node_data, ax::mojom::blink::StringAttribute::kInputType, type);
@@ -3706,7 +3706,7 @@ bool AXObject::IsProhibited(ax::mojom::blink::IntAttribute attribute) const {
 // Simplify whitespace, but preserve a single leading and trailing whitespace
 // character if it's present.
 String AXObject::SimplifyName(const String& str) const {
-  if (str.empty())
+  if (str.IsEmpty())
     return "";
 
   // Do not simplify name for text, unless it is pseudo content.
@@ -4018,7 +4018,7 @@ String AXObject::AriaTextAlternative(
   }
   const AtomicString& aria_label =
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kLabel);
-  if (!aria_label.empty()) {
+  if (!aria_label.IsEmpty()) {
     text_alternative = aria_label;
 
     if (name_sources) {
@@ -4056,8 +4056,8 @@ String AXObject::TextFromElements(
       visited.insert(ax_element);
       local_related_objects.push_back(
           MakeGarbageCollected<NameSourceRelatedObject>(ax_element, result));
-      if (!result.empty()) {
-        if (!accumulated_text.empty())
+      if (!result.IsEmpty()) {
+        if (!accumulated_text.IsEmpty())
           accumulated_text.Append(' ');
         accumulated_text.Append(result);
       }
@@ -4078,7 +4078,7 @@ void AXObject::TokenVectorFromAttribute(Element* element,
     return;
 
   String attribute_value = element->FastGetAttribute(attribute).GetString();
-  if (attribute_value.empty())
+  if (attribute_value.IsEmpty())
     return;
 
   attribute_value = attribute_value.SimplifyWhiteSpace();
@@ -4137,7 +4137,7 @@ bool AXObject::IsNameFromAriaAttribute(Element* element) {
 
   const AtomicString& aria_label = AccessibleNode::GetPropertyOrARIAAttribute(
       element, AOMStringProperty::kLabel);
-  if (!aria_label.empty())
+  if (!aria_label.IsEmpty())
     return true;
 
   return false;
@@ -4380,12 +4380,12 @@ int AXObject::IndexInParent() const {
 
 bool AXObject::IsLiveRegionRoot() const {
   const AtomicString& live_region = LiveRegionStatus();
-  return !live_region.empty();
+  return !live_region.IsEmpty();
 }
 
 bool AXObject::IsActiveLiveRegionRoot() const {
   const AtomicString& live_region = LiveRegionStatus();
-  return !live_region.empty() && !EqualIgnoringASCIICase(live_region, "off");
+  return !live_region.IsEmpty() && !EqualIgnoringASCIICase(live_region, "off");
 }
 
 const AtomicString& AXObject::LiveRegionStatus() const {
@@ -4398,7 +4398,7 @@ const AtomicString& AXObject::LiveRegionStatus() const {
   const AtomicString& live_region_status =
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kLive);
   // These roles have implicit live region status.
-  if (live_region_status.empty()) {
+  if (live_region_status.IsEmpty()) {
     switch (RoleValue()) {
       case ax::mojom::blink::Role::kAlert:
         return live_region_status_assertive;
@@ -4423,7 +4423,7 @@ const AtomicString& AXObject::LiveRegionRelevant() const {
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRelevant);
 
   // Default aria-relevant = "additions text".
-  if (relevant.empty())
+  if (relevant.IsEmpty())
     return default_live_region_relevant;
 
   return relevant;
@@ -4477,7 +4477,7 @@ ax::mojom::blink::Role AXObject::AriaRoleAttribute() const {
 ax::mojom::blink::Role AXObject::RawAriaRole() const {
   const AtomicString& aria_role =
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole);
-  if (aria_role.IsNull() || aria_role.empty())
+  if (aria_role.IsNull() || aria_role.IsEmpty())
     return ax::mojom::blink::Role::kUnknown;
   return AriaRoleStringToRoleEnum(aria_role);
 }
@@ -5300,7 +5300,7 @@ AtomicString AXObject::Language() const {
   // 3. The browser's default language.
 
   const AtomicString& lang = GetAttribute(html_names::kLangAttr);
-  if (!lang.empty())
+  if (!lang.IsEmpty())
     return lang;
 
   // Only fallback for the root node, propagating this value down the tree is
@@ -6248,12 +6248,13 @@ bool AXObject::HasARIAOwns(Element* element) {
   // TODO(accessibility): do we need to check !AriaOwnsElements.empty() ? Is
   // that fundamentally different from HasExplicitlySetAttrAssociatedElements()?
   // And is an element even necessary in the case of virtual nodes?
-  return !aria_owns.empty() || element->HasExplicitlySetAttrAssociatedElements(
-                                   html_names::kAriaOwnsAttr);
+  return !aria_owns.IsEmpty() ||
+         element->HasExplicitlySetAttrAssociatedElements(
+             html_names::kAriaOwnsAttr);
 }
 
 ax::mojom::blink::Role AXObject::AriaRoleStringToRoleEnum(const String& value) {
-  DCHECK(!value.empty());
+  DCHECK(!value.IsEmpty());
 
   static const ARIARoleMap* role_map = CreateARIARoleMap();
 

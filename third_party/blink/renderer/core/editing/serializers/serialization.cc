@@ -235,7 +235,7 @@ static void CompleteURLs(DocumentFragment& fragment, const String& base_url) {
     AttributeCollection attributes = element.Attributes();
     // AttributeCollection::iterator end = attributes.end();
     for (const auto& attribute : attributes) {
-      if (element.IsURLAttribute(attribute) && !attribute.Value().empty())
+      if (element.IsURLAttribute(attribute) && !attribute.Value().IsEmpty())
         changes.push_back(AttributeChange(
             &element, attribute.GetName(),
             KURL(parsed_base_url, attribute.Value()).GetString()));
@@ -451,7 +451,7 @@ DocumentFragment* CreateFragmentFromMarkup(
 
   fragment->ParseHTML(markup, fake_body, parser_content_policy);
 
-  if (!base_url.empty() && base_url != BlankURL() &&
+  if (!base_url.IsEmpty() && base_url != BlankURL() &&
       base_url != document.BaseURL())
     CompleteURLs(*fragment, base_url);
 
@@ -584,7 +584,7 @@ static void FillContainerFromString(ContainerNode* paragraph,
                                     const String& string) {
   Document& document = paragraph->GetDocument();
 
-  if (string.empty()) {
+  if (string.IsEmpty()) {
     paragraph->AppendChild(MakeGarbageCollected<HTMLBRElement>(document));
     return;
   }
@@ -600,8 +600,8 @@ static void FillContainerFromString(ContainerNode* paragraph,
     const String& s = tab_list[i];
 
     // append the non-tab textual part
-    if (!s.empty()) {
-      if (!tab_text.empty()) {
+    if (!s.IsEmpty()) {
+      if (!tab_text.IsEmpty()) {
         paragraph->AppendChild(
             CreateTabSpanElement(document, tab_text.ToString()));
         tab_text.Clear();
@@ -615,7 +615,7 @@ static void FillContainerFromString(ContainerNode* paragraph,
     // (if the last character is a tab, the list gets an extra empty entry)
     if (i + 1 != num_entries)
       tab_text.Append('\t');
-    else if (!tab_text.empty())
+    else if (!tab_text.IsEmpty())
       paragraph->AppendChild(
           CreateTabSpanElement(document, tab_text.ToString()));
 
@@ -664,7 +664,7 @@ DocumentFragment* CreateFragmentFromText(const EphemeralRange& context,
   Document& document = context.GetDocument();
   DocumentFragment* fragment = document.createDocumentFragment();
 
-  if (text.empty())
+  if (text.IsEmpty())
     return fragment;
 
   String string = text;
@@ -703,7 +703,7 @@ DocumentFragment* CreateFragmentFromText(const EphemeralRange& context,
     const String& s = list[i];
 
     Element* element = nullptr;
-    if (s.empty() && i + 1 == num_lines) {
+    if (s.IsEmpty() && i + 1 == num_lines) {
       // For last line, use the "magic BR" rather than a P.
       element = MakeGarbageCollected<HTMLBRElement>(document);
       element->setAttribute(html_names::kClassAttr, AppleInterchangeNewline);
@@ -980,7 +980,7 @@ String CreateSanitizedMarkupWithContext(Document& document,
                                         AbsoluteURLs should_resolve_urls,
                                         IncludeShadowRoots include_shadow_roots,
                                         ClosedRootsSet include_closed_roots) {
-  if (raw_markup.empty())
+  if (raw_markup.IsEmpty())
     return String();
 
   Document* staging_document = CreateStagingDocumentForMarkupSanitization(

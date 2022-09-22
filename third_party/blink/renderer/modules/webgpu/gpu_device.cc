@@ -237,7 +237,7 @@ bool GPUDevice::ValidateTextureFormatUsage(V8GPUTextureFormat format,
 
 std::string GPUDevice::formattedLabel() const {
   std::string deviceLabel =
-      label().empty() ? "[Device]" : "[Device \"" + label().Utf8() + "\"]";
+      label().IsEmpty() ? "[Device]" : "[Device \"" + label().Utf8() + "\"]";
 
   return deviceLabel;
 }

@@ -634,7 +634,7 @@ SQLTransactionState SQLTransactionBackend::OpenTransactionAndPreflight() {
     database_->EnableAuthorizer();
     return NextStateForTransactionError();
   }
-  has_version_mismatch_ = !database_->ExpectedVersion().empty() &&
+  has_version_mismatch_ = !database_->ExpectedVersion().IsEmpty() &&
                           (database_->ExpectedVersion() != actual_version);
 
   // Spec 4.3.2.3: Perform preflight steps, jumping to the error callback if

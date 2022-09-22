@@ -143,7 +143,7 @@ ScriptPromise FileSystemHandle::move(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
-  String dest_name = new_entry_name.empty() ? name_ : new_entry_name;
+  String dest_name = new_entry_name.IsEmpty() ? name_ : new_entry_name;
 
   MoveImpl(
       destination_directory->Transfer(), dest_name,

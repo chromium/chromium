@@ -1529,7 +1529,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlob) {
       Blob::Create(reinterpret_cast<const unsigned char*>(&kHelloWorld),
                    sizeof(kHelloWorld), "text/plain");
   String uuid = blob->Uuid();
-  EXPECT_FALSE(uuid.empty());
+  EXPECT_FALSE(uuid.IsEmpty());
   v8::Local<v8::Value> wrapper = ToV8(blob, scope.GetScriptState());
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   ASSERT_TRUE(V8Blob::HasInstance(result, scope.GetIsolate()));
@@ -1563,7 +1563,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlobIndex) {
       Blob::Create(reinterpret_cast<const unsigned char*>(&kHelloWorld),
                    sizeof(kHelloWorld), "text/plain");
   String uuid = blob->Uuid();
-  EXPECT_FALSE(uuid.empty());
+  EXPECT_FALSE(uuid.IsEmpty());
   v8::Local<v8::Value> wrapper = ToV8(blob, scope.GetScriptState());
   WebBlobInfoArray blob_info_array;
   v8::Local<v8::Value> result =
@@ -1648,7 +1648,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileBackedByBlob) {
   ASSERT_TRUE(V8File::HasInstance(result, scope.GetIsolate()));
   File* new_file = V8File::ToImpl(result.As<v8::Object>());
   EXPECT_FALSE(new_file->HasBackingFile());
-  EXPECT_TRUE(file->GetPath().empty());
+  EXPECT_TRUE(file->GetPath().IsEmpty());
   EXPECT_TRUE(new_file->FileSystemURL().IsEmpty());
 }
 
@@ -1680,7 +1680,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileNonNativeSnapshot) {
   ASSERT_TRUE(V8File::HasInstance(result, scope.GetIsolate()));
   File* new_file = V8File::ToImpl(result.As<v8::Object>());
   EXPECT_FALSE(new_file->HasBackingFile());
-  EXPECT_TRUE(file->GetPath().empty());
+  EXPECT_TRUE(file->GetPath().IsEmpty());
   EXPECT_TRUE(new_file->FileSystemURL().IsEmpty());
 }
 
@@ -1876,7 +1876,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileIndex) {
   File* new_file = V8File::ToImpl(result.As<v8::Object>());
   EXPECT_EQ("d875dfc2-4505-461b-98fe-0cf6cc5eaf44", new_file->Uuid());
   EXPECT_EQ("text/plain", new_file->type());
-  EXPECT_TRUE(new_file->GetPath().empty());
+  EXPECT_TRUE(new_file->GetPath().IsEmpty());
   EXPECT_EQ("path", new_file->name());
 }
 
@@ -2035,7 +2035,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileListIndex) {
   FileList* new_file_list = V8FileList::ToImpl(result.As<v8::Object>());
   EXPECT_EQ(1u, new_file_list->length());
   File* new_file = new_file_list->item(0);
-  EXPECT_TRUE(new_file->GetPath().empty());
+  EXPECT_TRUE(new_file->GetPath().IsEmpty());
   EXPECT_EQ("name", new_file->name());
   EXPECT_EQ("d875dfc2-4505-461b-98fe-0cf6cc5eaf44", new_file->Uuid());
   EXPECT_EQ("text/plain", new_file->type());

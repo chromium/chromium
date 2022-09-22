@@ -68,7 +68,7 @@ HTMLSourceElement::~HTMLSourceElement() = default;
 
 void HTMLSourceElement::CreateMediaQueryList(const AtomicString& media) {
   RemoveMediaQueryListListener();
-  if (media.empty()) {
+  if (media.IsEmpty()) {
     media_query_list_ = nullptr;
     return;
   }

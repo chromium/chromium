@@ -34,7 +34,7 @@ namespace blink {
 Pattern::RepeatMode CanvasPattern::ParseRepetitionType(
     const String& type,
     ExceptionState& exception_state) {
-  if (type.empty() || type == "repeat")
+  if (type.IsEmpty() || type == "repeat")
     return Pattern::kRepeatModeXY;
 
   if (type == "no-repeat")

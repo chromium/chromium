@@ -92,7 +92,7 @@ void CustomElementDefinition::CheckConstructorResult(
   // 6.1.4. through 6.1.9.
   const String message =
       ErrorMessageForConstructorResult(*element, document, tag_name);
-  if (!message.empty()) {
+  if (!message.IsEmpty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       message);
   }

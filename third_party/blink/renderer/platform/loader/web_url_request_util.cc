@@ -50,7 +50,7 @@ class HeaderFlattener : public WebHTTPHeaderVisitor {
     if (EqualIgnoringASCIICase(wtf_name, "referer"))
       return;
 
-    if (!buffer_.empty())
+    if (!buffer_.IsEmpty())
       buffer_.Append("\r\n");
     buffer_.Append(wtf_name);
     buffer_.Append(": ");

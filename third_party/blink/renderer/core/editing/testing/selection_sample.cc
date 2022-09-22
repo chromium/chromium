@@ -235,7 +235,7 @@ class Serializer final {
 
   void HandleAttribute(const Attribute& attribute) {
     builder_.Append(attribute.GetName().ToString());
-    if (attribute.Value().empty())
+    if (attribute.Value().IsEmpty())
       return;
     builder_.Append("=\"");
     for (wtf_size_t i = 0; i < attribute.Value().length(); ++i) {

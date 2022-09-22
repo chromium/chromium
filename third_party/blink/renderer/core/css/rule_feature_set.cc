@@ -450,7 +450,7 @@ ALWAYS_INLINE InvalidationSet& RuleFeatureSet::EnsureClassInvalidationSet(
     const AtomicString& class_name,
     InvalidationType type,
     PositionType position) {
-  CHECK(!class_name.empty());
+  CHECK(!class_name.IsEmpty());
   return EnsureInvalidationSet(class_invalidation_sets_, class_name, type,
                                position);
 }
@@ -459,7 +459,7 @@ ALWAYS_INLINE InvalidationSet& RuleFeatureSet::EnsureAttributeInvalidationSet(
     const AtomicString& attribute_name,
     InvalidationType type,
     PositionType position) {
-  CHECK(!attribute_name.empty());
+  CHECK(!attribute_name.IsEmpty());
   return EnsureInvalidationSet(attribute_invalidation_sets_, attribute_name,
                                type, position);
 }
@@ -468,7 +468,7 @@ ALWAYS_INLINE InvalidationSet& RuleFeatureSet::EnsureIdInvalidationSet(
     const AtomicString& id,
     InvalidationType type,
     PositionType position) {
-  CHECK(!id.empty());
+  CHECK(!id.IsEmpty());
   return EnsureInvalidationSet(id_invalidation_sets_, id, type, position);
 }
 
@@ -2171,7 +2171,7 @@ String RuleFeatureSet::ToString() const {
   metadata.Append(
       format_max_direct_adjancent(metadata_.max_direct_adjacent_selectors));
 
-  if (!metadata.empty()) {
+  if (!metadata.IsEmpty()) {
     builder.Append("META:");
     builder.Append(metadata.ReleaseString());
   }

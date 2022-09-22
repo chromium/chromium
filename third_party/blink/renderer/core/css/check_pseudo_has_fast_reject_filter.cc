@@ -130,11 +130,11 @@ inline unsigned GetPseudoHasArgumentHash(const CSSSelector* simple_selector) {
   DCHECK(simple_selector);
   switch (simple_selector->Match()) {
     case CSSSelector::kId:
-      if (simple_selector->Value().empty())
+      if (simple_selector->Value().IsEmpty())
         break;
       return GetIdHash(simple_selector->Value());
     case CSSSelector::kClass:
-      if (simple_selector->Value().empty())
+      if (simple_selector->Value().IsEmpty())
         break;
       return GetClassHash(simple_selector->Value());
     case CSSSelector::kTag:

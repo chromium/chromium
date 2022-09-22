@@ -544,10 +544,10 @@ HTMLPlugInElement::ObjectContentType HTMLPlugInElement::GetObjectContentType()
     const {
   String mime_type = service_type_;
   KURL url = GetDocument().CompleteURL(url_);
-  if (mime_type.empty()) {
+  if (mime_type.IsEmpty()) {
     // Try to guess the MIME type based off the extension.
     mime_type = GetMIMETypeFromURL(url);
-    if (mime_type.empty())
+    if (mime_type.IsEmpty())
       return ObjectContentType::kFrame;
   }
 
@@ -594,13 +594,14 @@ bool HTMLPlugInElement::AllowedToLoadFrameURL(const String& url) {
 }
 
 bool HTMLPlugInElement::RequestObject(const PluginParameters& plugin_params) {
-  if (url_.empty() && service_type_.empty())
+  if (url_.IsEmpty() && service_type_.IsEmpty())
     return false;
 
   if (ProtocolIsJavaScript(url_))
     return false;
 
-  KURL completed_url = url_.empty() ? KURL() : GetDocument().CompleteURL(url_);
+  KURL completed_url =
+      url_.IsEmpty() ? KURL() : GetDocument().CompleteURL(url_);
   if (!AllowedToLoadObject(completed_url, service_type_))
     return false;
 
@@ -610,8 +611,8 @@ bool HTMLPlugInElement::RequestObject(const PluginParameters& plugin_params) {
       AllowedToLoadPlugin(completed_url, service_type_) &&
       GetDocument().GetFrame()->Client()->IsPluginHandledExternally(
           *this, completed_url,
-          service_type_.empty() ? GetMIMETypeFromURL(completed_url)
-                                : service_type_);
+          service_type_.IsEmpty() ? GetMIMETypeFromURL(completed_url)
+                                  : service_type_);
   if (handled_externally)
     ResetInstance();
   if (object_type == ObjectContentType::kFrame ||
@@ -728,7 +729,7 @@ void HTMLPlugInElement::DispatchErrorEvent() {
 
 bool HTMLPlugInElement::AllowedToLoadObject(const KURL& url,
                                             const String& mime_type) {
-  if (url.IsEmpty() && mime_type.empty())
+  if (url.IsEmpty() && mime_type.IsEmpty())
     return false;
 
   LocalFrame* frame = GetDocument().GetFrame();
@@ -751,7 +752,7 @@ bool HTMLPlugInElement::AllowedToLoadObject(const KURL& url,
   }
   // If the URL is empty, a plugin could still be instantiated if a MIME-type
   // is specified.
-  return (!mime_type.empty() && url.IsEmpty()) ||
+  return (!mime_type.IsEmpty() && url.IsEmpty()) ||
          !MixedContentChecker::ShouldBlockFetch(
              frame, mojom::blink::RequestContextType::OBJECT,
              network::mojom::blink::IPAddressSpace::kUnknown, url,
@@ -825,7 +826,7 @@ void HTMLPlugInElement::ReattachOnPluginChangeIfNeeded() {
 }
 
 void HTMLPlugInElement::UpdateServiceTypeIfEmpty() {
-  if (service_type_.empty() && ProtocolIs(url_, "data")) {
+  if (service_type_.IsEmpty() && ProtocolIs(url_, "data")) {
     service_type_ = MimeTypeFromDataURL(url_);
   }
 }

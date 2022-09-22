@@ -116,7 +116,7 @@ void HTMLScriptElement::ParseAttribute(
           *this);
     }
   } else if (params.name == html_names::kAttributionsrcAttr) {
-    if (!params.new_value.empty() && GetDocument().GetFrame()) {
+    if (!params.new_value.IsEmpty() && GetDocument().GetFrame()) {
       GetDocument().GetFrame()->GetAttributionSrcLoader()->Register(
           GetDocument().CompleteURL(params.new_value), this);
     }

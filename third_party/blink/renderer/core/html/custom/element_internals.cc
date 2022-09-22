@@ -116,7 +116,7 @@ void ElementInternals::setValidity(ValidityStateFlags* flags,
   }
   // Custom element authors should provide a message. They can omit the message
   // argument only if nothing if | flags| is true.
-  if (!IsValidityStateFlagsValid(flags) && message.empty()) {
+  if (!IsValidityStateFlagsValid(flags) && message.IsEmpty()) {
     exception_state.ThrowTypeError(
         "The second argument should not be empty if one or more flags in the "
         "first argument are true.");
@@ -384,7 +384,7 @@ void ElementInternals::AppendToFormData(FormData& form_data) {
     return;
 
   const AtomicString& name = Target().FastGetAttribute(html_names::kNameAttr);
-  if (!value_->IsFormData() && name.empty())
+  if (!value_->IsFormData() && name.IsEmpty())
     return;
 
   switch (value_->GetContentType()) {

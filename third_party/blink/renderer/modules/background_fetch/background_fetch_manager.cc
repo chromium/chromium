@@ -82,7 +82,7 @@ bool ShouldBlockCredentials(ExecutionContext* execution_context,
   // "A URL includes credentials if its username or password is not the empty
   // string."
   // https://url.spec.whatwg.org/#include-credentials
-  return !request_url.User().empty() || !request_url.Pass().empty();
+  return !request_url.User().IsEmpty() || !request_url.Pass().IsEmpty();
 }
 
 bool ShouldBlockScheme(const KURL& request_url) {
@@ -345,7 +345,7 @@ ScriptPromise BackgroundFetchManager::get(ScriptState* script_state,
 
   ScriptState::Scope scope(script_state);
 
-  if (id.empty()) {
+  if (id.IsEmpty()) {
     exception_state.ThrowTypeError("The provided id is invalid.");
     return ScriptPromise();
   }

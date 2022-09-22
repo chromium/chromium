@@ -22,7 +22,7 @@ String CSSContainerRule::cssText() const {
   result.Append("@container ");
 
   String name = ContainerQuery().Selector().Name();
-  if (!name.empty()) {
+  if (!name.IsEmpty()) {
     SerializeIdentifier(name, result);
     result.Append(' ');
   }

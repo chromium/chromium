@@ -61,11 +61,11 @@ void SVGTitleElement::SetText(const String& value) {
   {
     // Avoid calling Document::setTitleElement() during intermediate steps.
     base::AutoReset<bool> inhibit_title_update_scope(
-        &ignore_title_updates_when_children_change_, !value.empty());
+        &ignore_title_updates_when_children_change_, !value.IsEmpty());
     RemoveChildren(kOmitSubtreeModifiedEvent);
   }
 
-  if (!value.empty()) {
+  if (!value.IsEmpty()) {
     AppendChild(GetDocument().createTextNode(value.Impl()),
                 IGNORE_EXCEPTION_FOR_TESTING);
   }

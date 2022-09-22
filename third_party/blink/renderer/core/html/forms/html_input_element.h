@@ -441,7 +441,7 @@ class CORE_EXPORT HTMLInputElement
   bool TooShort(const String&, NeedsToCheckDirtyFlag) const;
 
   void UpdatePlaceholderText() final;
-  bool IsEmptyValue() const final { return InnerEditorValue().empty(); }
+  bool IsEmptyValue() const final { return InnerEditorValue().IsEmpty(); }
   void HandleBlurEvent() final;
   void DispatchFocusInEvent(const AtomicString& event_type,
                             Element* old_focused_element,

@@ -942,7 +942,7 @@ bool HTMLSelectMenuElement::MayTriggerVirtualKeyboard() const {
 }
 
 void HTMLSelectMenuElement::AppendToFormData(FormData& form_data) {
-  if (!GetName().empty())
+  if (!GetName().IsEmpty())
     form_data.AppendFromElement(GetName(), value());
 }
 
@@ -975,7 +975,7 @@ bool HTMLSelectMenuElement::ValueMissing() const {
     // If a non-placeholder label option is selected, it's not value-missing.
     // https://html.spec.whatwg.org/multipage/form-elements.html#placeholder-label-option
     return selected_option == FirstOptionPart() &&
-           selected_option->value().empty();
+           selected_option->value().IsEmpty();
   }
 
   return true;

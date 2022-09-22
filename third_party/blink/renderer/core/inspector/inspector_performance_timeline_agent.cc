@@ -42,11 +42,11 @@ BuildEventDetails(const LargestContentfulPaint& lcp,
                     .setLoadTime(ToProtocolTime(timeOrigin, lcp.loadTime()))
                     .setSize(lcp.size())
                     .build();
-  if (!lcp.id().empty())
+  if (!lcp.id().IsEmpty())
     result->setElementId(lcp.id());
   if (Element* element = lcp.element())
     result->setNodeId(IdentifiersFactory::IntIdForNode(element));
-  if (!lcp.url().empty())
+  if (!lcp.url().IsEmpty())
     result->setUrl(lcp.url());
   return result;
 }

@@ -199,11 +199,11 @@ void AnnotationAgentContainerImpl::DidFinishSelectorGeneration(
       pending_agent_receiver.InitWithNewPipeAndPassRemote();
   selector_creation_result->serialized_selector =
       annotation_selector->Serialize();
-  DCHECK(!selector_creation_result->serialized_selector.empty())
+  DCHECK(!selector_creation_result->serialized_selector.IsEmpty())
       << "User note creation received an empty selector for mojo binding "
          "result";
   selector_creation_result->selected_text = selected_text;
-  DCHECK(!selector_creation_result->selected_text.empty())
+  DCHECK(!selector_creation_result->selected_text.IsEmpty())
       << "User note creation received an empty text for mojo binding result";
 
   std::move(callback).Run(std::move(selector_creation_result), error,
@@ -237,7 +237,7 @@ bool AnnotationAgentContainerImpl::ShouldPreemptivelyGenerate() {
     return false;
   }
 
-  if (frame->Selection().SelectedText().empty())
+  if (frame->Selection().SelectedText().IsEmpty())
     return false;
 
   if (frame->IsOutermostMainFrame())

@@ -28,13 +28,13 @@ TEST(AtomicHTMLTokenTest, EmptyAttributeValueFromHTMLToken) {
       QualifiedName(AtomicString(), "b", AtomicString()));
   ASSERT_TRUE(attribute_b);
   EXPECT_FALSE(attribute_b->Value().IsNull());
-  EXPECT_TRUE(attribute_b->Value().empty());
+  EXPECT_TRUE(attribute_b->Value().IsEmpty());
 
   const blink::Attribute* attribute_c = atoken.GetAttributeItem(
       QualifiedName(AtomicString(), "c", AtomicString()));
   ASSERT_TRUE(attribute_c);
   EXPECT_FALSE(attribute_c->Value().IsNull());
-  EXPECT_TRUE(attribute_c->Value().empty());
+  EXPECT_TRUE(attribute_c->Value().IsEmpty());
 
   const blink::Attribute* attribute_d = atoken.GetAttributeItem(
       QualifiedName(AtomicString(), "d", AtomicString()));

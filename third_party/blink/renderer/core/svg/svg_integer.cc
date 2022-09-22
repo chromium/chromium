@@ -49,7 +49,7 @@ String SVGInteger::ValueAsString() const {
 SVGParsingError SVGInteger::SetValueAsString(const String& string) {
   value_ = 0;
 
-  if (string.empty())
+  if (string.IsEmpty())
     return SVGParseStatus::kNoError;
 
   bool valid = true;

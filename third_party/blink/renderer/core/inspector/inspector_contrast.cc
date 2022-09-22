@@ -210,7 +210,7 @@ ContrastInfo InspectorContrast::GetContrast(Element* top_element) {
     return result;
 
   const String& text = text_node->data().StripWhiteSpace();
-  if (text.empty())
+  if (text.IsEmpty())
     return result;
 
   const LayoutObject* layout_object = top_element->GetLayoutObject();

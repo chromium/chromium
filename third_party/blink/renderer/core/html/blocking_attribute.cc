@@ -31,7 +31,7 @@ HashSet<AtomicString>& BlockingAttribute::SupportedTokens() {
 bool BlockingAttribute::HasRenderToken(const String& attribute_value) {
   if (!RuntimeEnabledFeatures::BlockingAttributeEnabled())
     return false;
-  if (attribute_value.empty())
+  if (attribute_value.IsEmpty())
     return false;
   return SpaceSplitString(AtomicString(attribute_value)).Contains(kRenderToken);
 }

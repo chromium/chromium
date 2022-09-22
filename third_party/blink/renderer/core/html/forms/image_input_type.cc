@@ -64,7 +64,7 @@ void ImageInputType::AppendToFormData(FormData& form_data) const {
   if (!GetElement().IsActivatedSubmit())
     return;
   const AtomicString& name = GetElement().GetName();
-  if (name.empty()) {
+  if (name.IsEmpty()) {
     form_data.AppendFromElement("x", click_location_.x());
     form_data.AppendFromElement("y", click_location_.y());
     return;

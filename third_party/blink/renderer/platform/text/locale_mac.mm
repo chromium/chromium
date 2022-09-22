@@ -118,7 +118,7 @@ base::scoped_nsobject<NSDateFormatter> LocaleMac::ShortDateFormatter() {
 }
 
 const Vector<String>& LocaleMac::MonthLabels() {
-  if (!month_labels_.empty())
+  if (!month_labels_.IsEmpty())
     return month_labels_;
   month_labels_.ReserveCapacity(12);
   NSArray* array = [ShortDateFormatter() monthSymbols];
@@ -133,7 +133,7 @@ const Vector<String>& LocaleMac::MonthLabels() {
 }
 
 const Vector<String>& LocaleMac::WeekDayShortLabels() {
-  if (!week_day_short_labels_.empty())
+  if (!week_day_short_labels_.IsEmpty())
     return week_day_short_labels_;
   week_day_short_labels_.ReserveCapacity(7);
   NSArray* array = [ShortDateFormatter() veryShortWeekdaySymbols];
@@ -246,7 +246,7 @@ String LocaleMac::DateTimeFormatWithoutSeconds() {
 }
 
 const Vector<String>& LocaleMac::ShortMonthLabels() {
-  if (!short_month_labels_.empty())
+  if (!short_month_labels_.IsEmpty())
     return short_month_labels_;
   short_month_labels_.ReserveCapacity(12);
   NSArray* array = [ShortDateFormatter() shortMonthSymbols];
@@ -261,7 +261,7 @@ const Vector<String>& LocaleMac::ShortMonthLabels() {
 }
 
 const Vector<String>& LocaleMac::StandAloneMonthLabels() {
-  if (!stand_alone_month_labels_.empty())
+  if (!stand_alone_month_labels_.IsEmpty())
     return stand_alone_month_labels_;
   NSArray* array = [ShortDateFormatter() standaloneMonthSymbols];
   if ([array count] == 12) {
@@ -275,7 +275,7 @@ const Vector<String>& LocaleMac::StandAloneMonthLabels() {
 }
 
 const Vector<String>& LocaleMac::ShortStandAloneMonthLabels() {
-  if (!short_stand_alone_month_labels_.empty())
+  if (!short_stand_alone_month_labels_.IsEmpty())
     return short_stand_alone_month_labels_;
   NSArray* array = [ShortDateFormatter() shortStandaloneMonthSymbols];
   if ([array count] == 12) {
@@ -289,7 +289,7 @@ const Vector<String>& LocaleMac::ShortStandAloneMonthLabels() {
 }
 
 const Vector<String>& LocaleMac::TimeAMPMLabels() {
-  if (!time_ampm_labels_.empty())
+  if (!time_ampm_labels_.IsEmpty())
     return time_ampm_labels_;
   time_ampm_labels_.ReserveCapacity(2);
   base::scoped_nsobject<NSDateFormatter> formatter(ShortTimeFormatter());

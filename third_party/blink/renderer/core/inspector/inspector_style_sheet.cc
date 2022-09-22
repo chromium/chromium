@@ -324,7 +324,7 @@ void StyleSheetHandler::ObserveComment(unsigned start_offset,
     return;
   comment_text =
       comment_text.Substring(0, comment_text.length() - 2).StripWhiteSpace();
-  if (comment_text.empty())
+  if (comment_text.IsEmpty())
     return;
 
   // FIXME: Use the actual rule type rather than STYLE_RULE?
@@ -823,7 +823,7 @@ String CanonicalCSSText(CSSRule* rule) {
     builder.Append(':');
     builder.Append(style->GetPropertyValueWithHint(name, index));
     String priority = style->GetPropertyPriorityWithHint(name, index);
-    if (!priority.empty()) {
+    if (!priority.IsEmpty()) {
       builder.Append(' ');
       builder.Append(priority);
     }
@@ -875,7 +875,7 @@ InspectorStyle::InspectorStyle(CSSStyleDeclaration* style,
 std::unique_ptr<protocol::CSS::CSSStyle> InspectorStyle::BuildObjectForStyle() {
   std::unique_ptr<protocol::CSS::CSSStyle> result = StyleWithProperties();
   if (source_data_) {
-    if (parent_style_sheet_ && !parent_style_sheet_->Id().empty())
+    if (parent_style_sheet_ && !parent_style_sheet_->Id().IsEmpty())
       result->setStyleSheetId(parent_style_sheet_->Id());
     result->setRange(parent_style_sheet_->BuildSourceRangeObject(
         source_data_->rule_body_range));
@@ -927,7 +927,7 @@ void InspectorStyle::PopulateAllProperties(
       continue;
 
     String value = style_->GetPropertyValueWithHint(name, i);
-    bool important = !style_->GetPropertyPriorityWithHint(name, i).empty();
+    bool important = !style_->GetPropertyPriorityWithHint(name, i).IsEmpty();
     if (important)
       value = value + " !important";
     result.push_back(CSSPropertySourceData(name, value, important, false, true,
@@ -980,14 +980,14 @@ std::unique_ptr<protocol::CSS::CSSStyle> InspectorStyle::StyleWithProperties() {
         property->setImplicit(true);
 
       String shorthand = style_->GetPropertyShorthand(name);
-      if (!shorthand.empty()) {
+      if (!shorthand.IsEmpty()) {
         if (found_shorthands.insert(shorthand).is_new_entry) {
           std::unique_ptr<protocol::CSS::ShorthandEntry> entry =
               protocol::CSS::ShorthandEntry::create()
                   .setName(shorthand)
                   .setValue(ShorthandValue(shorthand))
                   .build();
-          if (!style_->getPropertyPriority(name).empty())
+          if (!style_->getPropertyPriority(name).IsEmpty())
             entry->setImportant(true);
           shorthand_entries->emplace_back(std::move(entry));
         }
@@ -1011,7 +1011,7 @@ std::unique_ptr<protocol::CSS::CSSStyle> InspectorStyle::StyleWithProperties() {
 String InspectorStyle::ShorthandValue(const String& shorthand_property) {
   StringBuilder builder;
   String value = style_->getPropertyValue(shorthand_property);
-  if (value.empty()) {
+  if (value.IsEmpty()) {
     for (unsigned i = 0; i < style_->length(); ++i) {
       String individual_property = style_->item(i);
       if (style_->GetPropertyShorthand(individual_property) !=
@@ -1022,7 +1022,7 @@ String InspectorStyle::ShorthandValue(const String& shorthand_property) {
       String individual_value = style_->getPropertyValue(individual_property);
       if (individual_value == "initial")
         continue;
-      if (!builder.empty())
+      if (!builder.IsEmpty())
         builder.Append(' ');
       builder.Append(individual_value);
     }
@@ -1030,7 +1030,7 @@ String InspectorStyle::ShorthandValue(const String& shorthand_property) {
     builder.Append(value);
   }
 
-  if (!style_->getPropertyPriority(shorthand_property).empty())
+  if (!style_->getPropertyPriority(shorthand_property).IsEmpty())
     builder.Append(" !important");
 
   return builder.ToString();
@@ -1168,7 +1168,7 @@ static String StyleSheetURL(CSSStyleSheet* page_style_sheet) {
 
 String InspectorStyleSheet::FinalURL() {
   String url = StyleSheetURL(page_style_sheet_.Get());
-  return url.empty() ? document_url_ : url;
+  return url.IsEmpty() ? document_url_ : url;
 }
 
 bool InspectorStyleSheet::SetText(const String& text,
@@ -1872,7 +1872,7 @@ InspectorStyleSheet::BuildObjectForStyleSheetInfo() {
   }
 
   String source_map_url_value = SourceMapURL();
-  if (!source_map_url_value.empty())
+  if (!source_map_url_value.IsEmpty())
     result->setSourceMapURL(source_map_url_value);
   return result;
 }
@@ -1946,7 +1946,7 @@ InspectorStyleSheet::BuildObjectForRuleWithoutAncestorData(CSSStyleRule* rule) {
           .build();
 
   if (CanBind(origin_)) {
-    if (!Id().empty())
+    if (!Id().IsEmpty())
       result->setStyleSheetId(Id());
   }
 
@@ -1988,7 +1988,7 @@ InspectorStyleSheet::BuildObjectForKeyframeRule(
           .setOrigin(origin_)
           .setStyle(BuildObjectForStyle(keyframe_rule->style()))
           .build();
-  if (CanBind(origin_) && !Id().empty())
+  if (CanBind(origin_) && !Id().IsEmpty())
     result->setStyleSheetId(Id());
   return result;
 }
@@ -2048,7 +2048,7 @@ String InspectorStyleSheet::SourceURL() {
   bool success = GetText(&style_sheet_text);
   if (success) {
     String comment_value = FindMagicComment(style_sheet_text, "sourceURL");
-    if (!comment_value.empty()) {
+    if (!comment_value.IsEmpty()) {
       source_url_ = comment_value;
       return comment_value;
     }
@@ -2077,7 +2077,7 @@ String InspectorStyleSheet::Url() {
 }
 
 bool InspectorStyleSheet::HasSourceURL() {
-  return !SourceURL().empty();
+  return !SourceURL().IsEmpty();
 }
 
 bool InspectorStyleSheet::StartsAtZero() {
@@ -2098,7 +2098,7 @@ String InspectorStyleSheet::SourceMapURL() {
   if (success) {
     String comment_value =
         FindMagicComment(style_sheet_text, "sourceMappingURL");
-    if (!comment_value.empty())
+    if (!comment_value.IsEmpty())
       return comment_value;
   }
   return page_style_sheet_->Contents()->SourceMapURL();
@@ -2423,7 +2423,7 @@ InspectorStyle* InspectorStyleSheetForInlineStyle::GetInspectorStyle(
 CSSRuleSourceData* InspectorStyleSheetForInlineStyle::RuleSourceData() {
   const String& text = ElementStyleText();
   CSSRuleSourceData* rule_source_data = nullptr;
-  if (text.empty()) {
+  if (text.IsEmpty()) {
     rule_source_data =
         MakeGarbageCollected<CSSRuleSourceData>(StyleRule::kStyle);
     rule_source_data->rule_body_range.start = 0;

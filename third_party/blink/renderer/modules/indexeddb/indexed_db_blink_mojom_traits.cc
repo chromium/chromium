@@ -191,7 +191,7 @@ StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
     }
     blob_info->size = info.size();
     blob_info->uuid = info.Uuid();
-    DCHECK(!blob_info->uuid.empty());
+    DCHECK(!blob_info->uuid.IsEmpty());
     String mime_type = info.GetType();
     if (mime_type.IsNull())
       mime_type = g_empty_string;

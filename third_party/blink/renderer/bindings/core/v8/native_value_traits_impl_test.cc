@@ -118,7 +118,7 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
             scope.GetIsolate(), proxy, exception_state_from_proxy);
     EXPECT_EQ(0U, record_from_proxy.size());
     EXPECT_TRUE(exception_state_from_proxy.HadException());
-    EXPECT_TRUE(exception_state_from_proxy.Message().empty());
+    EXPECT_TRUE(exception_state_from_proxy.Message().IsEmpty());
     v8::Local<v8::Value> v8_exception =
         exception_state_from_proxy.GetException();
     EXPECT_TRUE(v8_exception->IsString());
@@ -168,7 +168,7 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
             scope.GetIsolate(), v8_object, exception_state);
     EXPECT_TRUE(record.empty());
     EXPECT_TRUE(exception_state.HadException());
-    EXPECT_TRUE(exception_state.Message().empty());
+    EXPECT_TRUE(exception_state.Message().IsEmpty());
   }
   {
     v8::Local<v8::Object> v8_object =

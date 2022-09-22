@@ -130,7 +130,7 @@ Notification* Notification::Create(ExecutionContext* context,
 
   // TODO(https://crbug.com/595685): Make |token| a constructor parameter
   // once persistent notifications have been mojofied too.
-  if (notification->tag().IsNull() || notification->tag().empty()) {
+  if (notification->tag().IsNull() || notification->tag().IsEmpty()) {
     auto unguessable_token = base::UnguessableToken::Create();
     notification->SetToken(unguessable_token.ToString().c_str());
   } else {

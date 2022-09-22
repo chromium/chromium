@@ -2454,7 +2454,7 @@ ReprocessBuffer:
     }
     case kInHeadMode: {
       StringView leading_whitespace = buffer.TakeLeadingWhitespace();
-      if (!leading_whitespace.empty())
+      if (!leading_whitespace.IsEmpty())
         tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
       if (buffer.IsEmpty())
         return;
@@ -2463,7 +2463,7 @@ ReprocessBuffer:
     }
     case kAfterHeadMode: {
       StringView leading_whitespace = buffer.TakeLeadingWhitespace();
-      if (!leading_whitespace.empty())
+      if (!leading_whitespace.IsEmpty())
         tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
       if (buffer.IsEmpty())
         return;
@@ -2480,7 +2480,7 @@ ReprocessBuffer:
     case kInTableMode:
     case kInTableBodyMode:
     case kInRowMode: {
-      DCHECK(pending_table_characters_.empty());
+      DCHECK(pending_table_characters_.IsEmpty());
       if (tree_.CurrentStackItem()->IsElementNode() &&
           (tree_.CurrentStackItem()->MatchesHTMLTag(HTMLTag::kTable) ||
            tree_.CurrentStackItem()->MatchesHTMLTag(HTMLTag::kTbody) ||
@@ -2503,7 +2503,7 @@ ReprocessBuffer:
     }
     case kInColumnGroupMode: {
       StringView leading_whitespace = buffer.TakeLeadingWhitespace();
-      if (!leading_whitespace.empty())
+      if (!leading_whitespace.IsEmpty())
         tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
       if (buffer.IsEmpty())
         return;
@@ -2520,7 +2520,7 @@ ReprocessBuffer:
     case kAfterAfterBodyMode: {
       // FIXME: parse error
       StringView leading_whitespace = buffer.TakeLeadingWhitespace();
-      if (!leading_whitespace.empty()) {
+      if (!leading_whitespace.IsEmpty()) {
         InsertionMode mode = GetInsertionMode();
         SetInsertionMode(kInBodyMode);
         tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
@@ -2537,7 +2537,7 @@ ReprocessBuffer:
     }
     case kInHeadNoscriptMode: {
       StringView leading_whitespace = buffer.TakeLeadingWhitespace();
-      if (!leading_whitespace.empty())
+      if (!leading_whitespace.IsEmpty())
         tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
       if (buffer.IsEmpty())
         return;
@@ -2547,7 +2547,7 @@ ReprocessBuffer:
     case kInFramesetMode:
     case kAfterFramesetMode: {
       String leading_whitespace = buffer.TakeRemainingWhitespace();
-      if (!leading_whitespace.empty())
+      if (!leading_whitespace.IsEmpty())
         tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
       // FIXME: We should generate a parse error if we skipped over any
       // non-whitespace characters.
@@ -2560,7 +2560,7 @@ ReprocessBuffer:
     }
     case kAfterAfterFramesetMode: {
       String leading_whitespace = buffer.TakeRemainingWhitespace();
-      if (!leading_whitespace.empty()) {
+      if (!leading_whitespace.IsEmpty()) {
         tree_.ReconstructTheActiveFormattingElements();
         tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
       }

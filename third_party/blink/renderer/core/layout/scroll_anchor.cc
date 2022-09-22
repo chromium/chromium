@@ -226,7 +226,7 @@ static const String UniqueSimpleSelectorAmongSiblings(Element* element) {
 
   if (element->HasClass()) {
     AtomicString unique_classname = UniqueClassnameAmongSiblings(element);
-    if (!unique_classname.empty()) {
+    if (!unique_classname.IsEmpty()) {
       return AtomicString(".") + unique_classname;
     }
   }
@@ -778,7 +778,7 @@ const SerializedAnchor ScrollAnchor::GetSerializedAnchor() {
 
   // It's safe to return saved_selector_ before checking anchor_object_, since
   // clearing anchor_object_ also clears saved_selector_.
-  if (!saved_selector_.empty()) {
+  if (!saved_selector_.IsEmpty()) {
     DCHECK(anchor_object_);
     return SerializedAnchor(
         saved_selector_,

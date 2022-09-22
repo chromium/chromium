@@ -39,20 +39,20 @@ WTF::String ValidateDescription(const ContentDescription& description,
                                 ServiceWorkerRegistration* registration) {
   // TODO(crbug.com/973844): Should field sizes be capped?
 
-  if (description.id().empty())
+  if (description.id().IsEmpty())
     return "ID cannot be empty";
 
-  if (description.title().empty())
+  if (description.title().IsEmpty())
     return "Title cannot be empty";
 
-  if (description.description().empty())
+  if (description.description().IsEmpty())
     return "Description cannot be empty";
 
-  if (description.url().empty())
+  if (description.url().IsEmpty())
     return "Invalid launch URL provided";
 
   for (const auto& icon : description.icons()) {
-    if (icon->src().empty())
+    if (icon->src().IsEmpty())
       return "Invalid icon URL provided";
     KURL icon_url =
         registration->GetExecutionContext()->CompleteURL(icon->src());

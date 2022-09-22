@@ -38,11 +38,11 @@ void ManifestUmaUtil::ParseSucceeded(
   if (manifest == empty_manifest)
     return;
 
-  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.name", !manifest->name.empty());
+  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.name", !manifest->name.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.short_name",
-                        !manifest->short_name.empty());
+                        !manifest->short_name.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.description",
-                        !manifest->description.empty());
+                        !manifest->description.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.start_url",
                         !manifest->start_url.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN(
@@ -60,7 +60,7 @@ void ManifestUmaUtil::ParseSucceeded(
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.protocol_handlers",
                         !manifest->protocol_handlers.empty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.gcm_sender_id",
-                        !manifest->gcm_sender_id.empty());
+                        !manifest->gcm_sender_id.IsEmpty());
 }
 
 void ManifestUmaUtil::ParseFailed() {

@@ -66,7 +66,7 @@ void RunCallback(ExecutionContext* execution_context,
 DOMFileSystem* DOMFileSystem::CreateIsolatedFileSystem(
     ExecutionContext* context,
     const String& filesystem_id) {
-  if (filesystem_id.empty())
+  if (filesystem_id.IsEmpty())
     return nullptr;
 
   StringBuilder filesystem_name;

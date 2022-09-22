@@ -412,11 +412,11 @@ class RTCPeerConnectionHandlerTest : public SimTest {
       const String& audio_track_label) {
     rtc::scoped_refptr<webrtc::MediaStreamInterface> stream(
         mock_dependency_factory_->CreateLocalMediaStream(stream_label).get());
-    if (!video_track_label.empty()) {
+    if (!video_track_label.IsEmpty()) {
       InvokeAddTrack(
           stream, MockWebRtcVideoTrack::Create(video_track_label.Utf8()).get());
     }
-    if (!audio_track_label.empty()) {
+    if (!audio_track_label.IsEmpty()) {
       InvokeAddTrack(
           stream, MockWebRtcAudioTrack::Create(audio_track_label.Utf8()).get());
     }

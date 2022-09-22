@@ -103,14 +103,14 @@ String GetOriginUrl(const Node* node) {
     return String();
   v8::HandleScope handleScope(isolate);
   String url = GetCurrentScriptUrl(isolate);
-  if (!url.empty())
+  if (!url.IsEmpty())
     return url;
   // If we did not get anything from the sync stack, let's try the slow
   // way that also checks async stacks.
   auto trace = debugger->GetV8Inspector()->captureStackTrace(true);
   if (trace)
     url = ToCoreString(trace->firstNonEmptySourceURL());
-  if (!url.empty())
+  if (!url.IsEmpty())
     return url;
   // Fall back to document url.
   return node->GetDocument().Url().GetString();
@@ -339,7 +339,7 @@ protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
 }
 
 int InspectorDOMSnapshotAgent::AddString(const String& string) {
-  if (string.empty())
+  if (string.IsEmpty())
     return -1;
   auto it = string_table_.find(string);
   int index;

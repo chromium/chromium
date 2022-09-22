@@ -78,7 +78,7 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation(
 
   String url = ToCoreStringWithUndefinedOrNullCheck(
       message->GetScriptOrigin().ResourceName());
-  if (url.empty())
+  if (url.IsEmpty())
     url = execution_context->Url();
   return std::make_unique<SourceLocation>(url, String(), line_number,
                                           column_number, std::move(stack_trace),

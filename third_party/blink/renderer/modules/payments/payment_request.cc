@@ -258,7 +258,7 @@ void ValidateShippingOptionOrPaymentItem(const T* item,
     return;
   }
 
-  if (item->label().empty()) {
+  if (item->label().IsEmpty()) {
     execution_context.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kError,
@@ -334,7 +334,7 @@ void ValidateAndConvertShippingOptions(
       return;
     }
 
-    if (option->id().empty()) {
+    if (option->id().IsEmpty()) {
       execution_context.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kJavaScript,
           mojom::ConsoleMessageLevel::kWarning,
@@ -812,7 +812,7 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  if (!not_supported_for_invalid_origin_or_ssl_error_.empty()) {
+  if (!not_supported_for_invalid_origin_or_ssl_error_.IsEmpty()) {
     return ScriptPromise::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kNotSupportedError,
@@ -924,7 +924,7 @@ ScriptPromise PaymentRequest::abort(ScriptState* script_state,
 
 ScriptPromise PaymentRequest::canMakePayment(ScriptState* script_state,
                                              ExceptionState& exception_state) {
-  if (!not_supported_for_invalid_origin_or_ssl_error_.empty()) {
+  if (!not_supported_for_invalid_origin_or_ssl_error_.IsEmpty()) {
     return ScriptPromise::Cast(script_state,
                                ScriptValue::From(script_state, false));
   }
@@ -949,7 +949,7 @@ ScriptPromise PaymentRequest::canMakePayment(ScriptState* script_state,
 ScriptPromise PaymentRequest::hasEnrolledInstrument(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (!not_supported_for_invalid_origin_or_ssl_error_.empty()) {
+  if (!not_supported_for_invalid_origin_or_ssl_error_.IsEmpty()) {
     return ScriptPromise::Cast(script_state,
                                ScriptValue::From(script_state, false));
   }
@@ -1160,7 +1160,7 @@ void PaymentRequest::OnUpdatePaymentDetails(
   if (is_waiting_for_show_promise_to_resolve_) {
     is_waiting_for_show_promise_to_resolve_ = false;
 
-    if (!validated_details->error.empty()) {
+    if (!validated_details->error.IsEmpty()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError,
           "Cannot specify 'error' when resolving the "
@@ -1363,7 +1363,7 @@ void PaymentRequest::OnPaymentMethodChange(const String& method_name,
       PaymentMethodChangeEventInit::Create(script_state->GetIsolate());
   init->setMethodName(method_name);
 
-  if (!stringified_details.empty()) {
+  if (!stringified_details.IsEmpty()) {
     ExceptionState exception_state(script_state->GetIsolate(),
                                    ExceptionState::kConstructionContext,
                                    "PaymentMethodChangeEvent");
@@ -1440,7 +1440,7 @@ void PaymentRequest::OnPaymentResponse(PaymentResponsePtr response) {
 
   ScriptPromiseResolver* resolver = GetPendingAcceptPromiseResolver();
   if (options_->requestShipping()) {
-    if (!response->shipping_address || response->shipping_option.empty()) {
+    if (!response->shipping_address || response->shipping_option.IsEmpty()) {
       resolver->Reject(
           MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError));
       ClearResolversAndCloseMojoConnection();
@@ -1469,9 +1469,9 @@ void PaymentRequest::OnPaymentResponse(PaymentResponsePtr response) {
   }
 
   DCHECK(response->payer);
-  if ((options_->requestPayerName() && response->payer->name.empty()) ||
-      (options_->requestPayerEmail() && response->payer->email.empty()) ||
-      (options_->requestPayerPhone() && response->payer->phone.empty()) ||
+  if ((options_->requestPayerName() && response->payer->name.IsEmpty()) ||
+      (options_->requestPayerEmail() && response->payer->email.IsEmpty()) ||
+      (options_->requestPayerPhone() && response->payer->phone.IsEmpty()) ||
       (!options_->requestPayerName() && !response->payer->name.IsNull()) ||
       (!options_->requestPayerEmail() && !response->payer->email.IsNull()) ||
       (!options_->requestPayerPhone() && !response->payer->phone.IsNull())) {
@@ -1512,7 +1512,7 @@ void PaymentRequest::OnPaymentResponse(PaymentResponsePtr response) {
 
 void PaymentRequest::OnError(PaymentErrorReason error,
                              const String& error_message) {
-  DCHECK(!error_message.empty());
+  DCHECK(!error_message.IsEmpty());
   DOMExceptionCode exception_code = DOMExceptionCode::kUnknownError;
 
   switch (error) {
@@ -1566,7 +1566,7 @@ void PaymentRequest::OnError(PaymentErrorReason error,
   }
 
   if (can_make_payment_resolver_) {
-    if (!not_supported_for_invalid_origin_or_ssl_error_.empty()) {
+    if (!not_supported_for_invalid_origin_or_ssl_error_.IsEmpty()) {
       can_make_payment_resolver_->Reject(false);
     } else {
       can_make_payment_resolver_->Reject(
@@ -1575,7 +1575,7 @@ void PaymentRequest::OnError(PaymentErrorReason error,
   }
 
   if (has_enrolled_instrument_resolver_) {
-    if (!not_supported_for_invalid_origin_or_ssl_error_.empty()) {
+    if (!not_supported_for_invalid_origin_or_ssl_error_.IsEmpty()) {
       has_enrolled_instrument_resolver_->Reject(false);
     } else {
       has_enrolled_instrument_resolver_->Reject(

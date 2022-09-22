@@ -133,7 +133,7 @@ void TreeScope::ClearScopedStyleResolver() {
 }
 
 Element* TreeScope::getElementById(const AtomicString& element_id) const {
-  if (element_id.empty())
+  if (element_id.IsEmpty())
     return nullptr;
   if (!elements_by_id_)
     return nullptr;
@@ -144,7 +144,7 @@ const HeapVector<Member<Element>>& TreeScope::GetAllElementsById(
     const AtomicString& element_id) const {
   DEFINE_STATIC_LOCAL(Persistent<HeapVector<Member<Element>>>, empty_vector,
                       (MakeGarbageCollected<HeapVector<Member<Element>>>()));
-  if (element_id.empty())
+  if (element_id.IsEmpty())
     return *empty_vector;
   if (!elements_by_id_)
     return *empty_vector;
@@ -430,7 +430,7 @@ DOMSelection* TreeScope::GetSelection() const {
 }
 
 Element* TreeScope::FindAnchorWithName(const String& name) {
-  if (name.empty())
+  if (name.IsEmpty())
     return nullptr;
   if (Element* element = getElementById(AtomicString(name)))
     return element;
@@ -475,7 +475,7 @@ Node* TreeScope::FindAnchor(const String& fragment) {
 
   // 7. If decodedFragment is "top", top of the document.
   // TODO(1117212) Move the IsEmpty check to step 2.
-  if (fragment.empty() || EqualIgnoringASCIICase(name, "top"))
+  if (fragment.IsEmpty() || EqualIgnoringASCIICase(name, "top"))
     anchor = &GetDocument();
 
   return anchor;
@@ -657,7 +657,7 @@ bool TreeScope::IsInclusiveAncestorOf(const TreeScope& scope) const {
 }
 
 Element* TreeScope::GetElementByAccessKey(const String& key) const {
-  if (key.empty())
+  if (key.IsEmpty())
     return nullptr;
   Element* result = nullptr;
   Node& root = RootNode();

@@ -37,7 +37,7 @@ void IdTargetObserverRegistry::Trace(Visitor* visitor) const {
 
 void IdTargetObserverRegistry::AddObserver(const AtomicString& id,
                                            IdTargetObserver* observer) {
-  if (id.empty())
+  if (id.IsEmpty())
     return;
 
   IdToObserverSetMap::AddResult result = registry_.insert(id.Impl(), nullptr);
@@ -49,7 +49,7 @@ void IdTargetObserverRegistry::AddObserver(const AtomicString& id,
 
 void IdTargetObserverRegistry::RemoveObserver(const AtomicString& id,
                                               IdTargetObserver* observer) {
-  if (id.empty() || registry_.empty())
+  if (id.IsEmpty() || registry_.empty())
     return;
 
   IdToObserverSetMap::iterator iter = registry_.find(id.Impl());
@@ -61,7 +61,7 @@ void IdTargetObserverRegistry::RemoveObserver(const AtomicString& id,
 }
 
 void IdTargetObserverRegistry::NotifyObserversInternal(const AtomicString& id) {
-  DCHECK(!id.empty());
+  DCHECK(!id.IsEmpty());
   DCHECK(!registry_.empty());
 
   auto it_reg = registry_.find(id.Impl());
@@ -84,7 +84,7 @@ void IdTargetObserverRegistry::NotifyObserversInternal(const AtomicString& id) {
 }
 
 bool IdTargetObserverRegistry::HasObservers(const AtomicString& id) const {
-  if (id.empty() || registry_.empty())
+  if (id.IsEmpty() || registry_.empty())
     return false;
   auto it = registry_.find(id.Impl());
   return it != registry_.end() ? !it->value->empty() : false;

@@ -40,7 +40,7 @@ void MathMLSpaceElement::CollectStyleForPresentationAttribute(
     // width/height.
     String height = FastGetAttribute(mathml_names::kHeightAttr);
     String depth = FastGetAttribute(mathml_names::kDepthAttr);
-    if (!height.empty() && !depth.empty()) {
+    if (!height.IsEmpty() && !depth.IsEmpty()) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kHeight,
           "calc(" + height + " + " + depth + ")");

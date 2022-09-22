@@ -240,7 +240,7 @@ scoped_refptr<TimingFunction> AnimationInputHelpers::ParseTimingFunction(
     const String& string,
     Document* document,
     ExceptionState& exception_state) {
-  if (string.empty()) {
+  if (string.IsEmpty()) {
     exception_state.ThrowTypeError("Easing may not be the empty string");
     return nullptr;
   }

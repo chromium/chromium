@@ -16,12 +16,12 @@ DocumentPolicyViolationReportBody::DocumentPolicyViolationReportBody(
     : LocationReportBody(resource_url),
       feature_id_(feature_id),
       message_("Document policy violation: " +
-               (message.empty()
+               (message.IsEmpty()
                     ? feature_id + " is not allowed in this document."
                     : message)),
       disposition_(disposition) {
-  DCHECK(!feature_id.empty());
-  DCHECK(!disposition.empty());
+  DCHECK(!feature_id.IsEmpty());
+  DCHECK(!disposition.IsEmpty());
 }
 
 void DocumentPolicyViolationReportBody::BuildJSONValue(

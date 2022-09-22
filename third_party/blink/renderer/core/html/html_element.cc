@@ -272,7 +272,7 @@ static inline CSSValueID UnicodeBidiAttributeForDirAuto(HTMLElement* element) {
 unsigned HTMLElement::ParseBorderWidthAttribute(
     const AtomicString& value) const {
   unsigned border_width = 0;
-  if (value.empty() || !ParseHTMLNonNegativeInteger(value, border_width)) {
+  if (value.IsEmpty() || !ParseHTMLNonNegativeInteger(value, border_width)) {
     if (HasTagName(html_names::kTableTag) && !value.IsNull())
       return 1;
   }
@@ -292,7 +292,7 @@ void HTMLElement::ApplyBorderAttributeToStyle(
 void HTMLElement::MapLanguageAttributeToLocale(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (!value.empty()) {
+  if (!value.IsEmpty()) {
     // Have to quote so the locale id is treated as a string instead of as a CSS
     // keyword.
     AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWebkitLocale,
@@ -357,7 +357,7 @@ void HTMLElement::CollectStyleForPresentationAttribute(
                                               value);
     }
   } else if (name == html_names::kContenteditableAttr) {
-    if (value.empty() || EqualIgnoringASCIICase(value, "true")) {
+    if (value.IsEmpty() || EqualIgnoringASCIICase(value, "true")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserModify, CSSValueID::kReadWrite);
       AddPropertyToPresentationAttributeStyle(
@@ -943,7 +943,7 @@ void HTMLElement::setInnerText(const String& text,
   // FIXME: This doesn't take whitespace collapsing into account at all.
 
   if (!text.Contains('\n') && !text.Contains('\r')) {
-    if (text.empty()) {
+    if (text.IsEmpty()) {
       RemoveChildren();
       return;
     }
@@ -1086,7 +1086,7 @@ ContentEditableType HTMLElement::contentEditableNormalized() const {
 
   if (value.IsNull())
     return ContentEditableType::kInherit;
-  if (value.empty() || EqualIgnoringASCIICase(value, "true"))
+  if (value.IsEmpty() || EqualIgnoringASCIICase(value, "true"))
     return ContentEditableType::kContentEditable;
   if (EqualIgnoringASCIICase(value, "false"))
     return ContentEditableType::kNotContentEditable;
@@ -1190,7 +1190,7 @@ const AtomicString& HTMLElement::autocapitalize() const {
   DEFINE_STATIC_LOCAL(const AtomicString, kSentences, ("sentences"));
 
   const AtomicString& value = FastGetAttribute(html_names::kAutocapitalizeAttr);
-  if (value.empty())
+  if (value.IsEmpty())
     return g_empty_atom;
 
   if (EqualIgnoringASCIICase(value, kNone) ||
@@ -1709,7 +1709,7 @@ bool HTMLElement::ParseColorWithLegacyRules(const String& attribute_value,
                                             Color& parsed_color) {
   // An empty string doesn't apply a color. (One containing only whitespace
   // does, which is why this check occurs before stripping.)
-  if (attribute_value.empty())
+  if (attribute_value.IsEmpty())
     return false;
 
   String color_string = attribute_value.StripWhiteSpace();

@@ -111,7 +111,7 @@ static String TruncateString(const String& string,
                              float max_width,
                              const Font& font,
                              TruncationFunction truncate_to_buffer) {
-  if (string.empty())
+  if (string.IsEmpty())
     return string;
 
   DCHECK_GE(max_width, 0);

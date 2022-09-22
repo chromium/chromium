@@ -106,7 +106,7 @@ TEST_F(EditorTest, DontCopyHiddenSelections) {
 
   const String copied =
       GetDocument().GetFrame()->GetSystemClipboard()->ReadPlainText();
-  EXPECT_TRUE(copied.empty()) << copied << " was copied.";
+  EXPECT_TRUE(copied.IsEmpty()) << copied << " was copied.";
 }
 
 TEST_F(EditorTest, ReplaceSelection) {

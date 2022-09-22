@@ -166,7 +166,7 @@ void FragmentDirective::ParseDirectives(const String& fragment_directive) {
   for (String& directive_string : directive_strings) {
     if (directive_string.StartsWith("text=")) {
       String value = directive_string.Right(directive_string.length() - 5);
-      if (value.empty())
+      if (value.IsEmpty())
         continue;
 
       if (TextDirective* text_directive = TextDirective::Create(value))

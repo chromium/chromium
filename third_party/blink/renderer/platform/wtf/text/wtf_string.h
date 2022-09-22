@@ -119,7 +119,7 @@ class WTF_EXPORT String {
 
   explicit operator bool() const { return !IsNull(); }
   bool IsNull() const { return !impl_; }
-  bool empty() const { return !impl_ || !impl_->length(); }
+  bool IsEmpty() const { return !impl_ || !impl_->length(); }
 
   StringImpl* Impl() const { return impl_.get(); }
   scoped_refptr<StringImpl> ReleaseImpl() { return std::move(impl_); }
@@ -263,13 +263,14 @@ class WTF_EXPORT String {
       TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
     return impl_
                ? DISPATCH_CASE_OP(case_sensitivity, impl_->StartsWith, (prefix))
-               : prefix.empty();
+               : prefix.IsEmpty();
   }
   bool StartsWithIgnoringCase(const StringView& prefix) const {
-    return impl_ ? impl_->StartsWithIgnoringCase(prefix) : prefix.empty();
+    return impl_ ? impl_->StartsWithIgnoringCase(prefix) : prefix.IsEmpty();
   }
   bool StartsWithIgnoringASCIICase(const StringView& prefix) const {
-    return impl_ ? impl_->StartsWithIgnoringASCIICase(prefix) : prefix.empty();
+    return impl_ ? impl_->StartsWithIgnoringASCIICase(prefix)
+                 : prefix.IsEmpty();
   }
   bool StartsWith(UChar character) const {
     return impl_ ? impl_->StartsWith(character) : false;
@@ -279,13 +280,13 @@ class WTF_EXPORT String {
       const StringView& suffix,
       TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
     return impl_ ? DISPATCH_CASE_OP(case_sensitivity, impl_->EndsWith, (suffix))
-                 : suffix.empty();
+                 : suffix.IsEmpty();
   }
   bool EndsWithIgnoringCase(const StringView& prefix) const {
-    return impl_ ? impl_->EndsWithIgnoringCase(prefix) : prefix.empty();
+    return impl_ ? impl_->EndsWithIgnoringCase(prefix) : prefix.IsEmpty();
   }
   bool EndsWithIgnoringASCIICase(const StringView& prefix) const {
-    return impl_ ? impl_->EndsWithIgnoringASCIICase(prefix) : prefix.empty();
+    return impl_ ? impl_->EndsWithIgnoringASCIICase(prefix) : prefix.IsEmpty();
   }
   bool EndsWith(UChar character) const {
     return impl_ ? impl_->EndsWith(character) : false;
@@ -610,7 +611,7 @@ inline const UChar* String::GetCharacters<UChar>() const {
 }
 
 inline bool String::ContainsOnlyLatin1OrEmpty() const {
-  if (empty())
+  if (IsEmpty())
     return true;
 
   if (Is8Bit())
@@ -628,7 +629,7 @@ inline bool String::ContainsOnlyLatin1OrEmpty() const {
 // "nil if empty", so we try to maintain longstanding behavior for the sake of
 // entrenched clients
 inline NSString* NsStringNilIfEmpty(const String& str) {
-  return str.empty() ? nil : (NSString*)str;
+  return str.IsEmpty() ? nil : (NSString*)str;
 }
 #endif
 

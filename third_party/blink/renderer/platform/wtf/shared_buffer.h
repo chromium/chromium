@@ -135,7 +135,7 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
 
   size_t size() const { return size_; }
 
-  bool empty() const { return !size(); }
+  bool IsEmpty() const { return !size(); }
 
   void Append(const SharedBuffer&);
 

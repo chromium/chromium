@@ -977,7 +977,7 @@ Response InspectorDOMAgent::setAttributesAsText(int element_id,
   }
 
   if (!found_original_attribute && name.isJust() &&
-      !name.fromJust().StripWhiteSpace().empty()) {
+      !name.fromJust().StripWhiteSpace().IsEmpty()) {
     return dom_editor_->RemoveAttribute(element, case_adjusted_name);
   }
   return Response::Success();
@@ -1830,7 +1830,7 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
       if (auto tag = To<PseudoElement>(element)->document_transition_tag())
         value->setPseudoIdentifier(tag);
     } else {
-      if (!element->ownerDocument()->xmlVersion().empty())
+      if (!element->ownerDocument()->xmlVersion().IsEmpty())
         value->setXmlVersion(element->ownerDocument()->xmlVersion());
       if (auto* slot = element->AssignedSlotWithoutRecalc())
         value->setAssignedSlot(BuildBackendNode(slot));

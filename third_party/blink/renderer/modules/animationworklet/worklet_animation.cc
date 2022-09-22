@@ -551,7 +551,7 @@ void WorkletAnimation::UpdateCompositingState() {
 #if DCHECK_IS_ON()
     String warning_message;
     DCHECK(CheckCanStart(&warning_message));
-    DCHECK(warning_message.empty());
+    DCHECK(warning_message.IsEmpty());
 #endif  // DCHECK_IS_ON()
     if (StartOnCompositor())
       return;

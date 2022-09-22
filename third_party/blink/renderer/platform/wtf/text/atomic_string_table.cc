@@ -407,7 +407,7 @@ AtomicStringTable::WeakResult AtomicStringTable::WeakFindSlowForTesting(
 
 AtomicStringTable::WeakResult AtomicStringTable::WeakFindLowercase(
     const AtomicString& string) {
-  DCHECK(!string.empty());
+  DCHECK(!string.IsEmpty());
   DCHECK(!string.IsLowerASCII());
   DCHECK(string.length());
   HashTranslatorLowercaseBuffer buffer(string.Impl());

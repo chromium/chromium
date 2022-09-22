@@ -85,7 +85,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     size_t size,
     const KURL& resource_url,
     ReportInfo& report_info) {
-  if (integrity_metadata.empty())
+  if (integrity_metadata.IsEmpty())
     return true;
 
   IntegrityMetadataSet metadata_set;

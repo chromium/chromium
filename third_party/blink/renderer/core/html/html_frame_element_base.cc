@@ -58,7 +58,7 @@ HTMLFrameElementBase::HTMLFrameElementBase(const QualifiedName& tag_name,
       margin_height_(-1) {}
 
 bool HTMLFrameElementBase::IsURLAllowed() const {
-  if (url_.empty())
+  if (url_.IsEmpty())
     return true;
 
   const KURL& complete_url = GetDocument().CompleteURL(url_);
@@ -84,7 +84,7 @@ void HTMLFrameElementBase::OpenURL(bool replace_current_item) {
   if (!IsURLAllowed())
     return;
 
-  if (url_.empty())
+  if (url_.IsEmpty())
     url_ = AtomicString(BlankURL().GetString());
 
   LocalFrame* parent_frame = GetDocument().GetFrame();

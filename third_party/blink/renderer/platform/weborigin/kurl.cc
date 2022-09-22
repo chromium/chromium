@@ -119,7 +119,7 @@ class KURLCharsetConverter final : public url::CharsetConverter {
 
 bool IsValidProtocol(const String& protocol) {
   // RFC3986: ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
-  if (protocol.empty())
+  if (protocol.IsEmpty())
     return false;
   if (!IsSchemeFirstChar(protocol[0]))
     return false;
@@ -303,7 +303,7 @@ bool KURL::IsNull() const {
 }
 
 bool KURL::IsEmpty() const {
-  return string_.empty();
+  return string_.IsEmpty();
 }
 
 bool KURL::IsValid() const {
@@ -607,7 +607,7 @@ void KURL::SetHostAndPort(const String& input) {
   }
 
   // Replace port next.
-  if (is_valid_ && !port.empty()) {
+  if (is_valid_ && !port.IsEmpty()) {
     url::Replacements<char> replacements;
     StringUTF8Adaptor port_utf8(port);
     replacements.SetPort(CharactersOrEmpty(port_utf8),
@@ -627,7 +627,7 @@ void KURL::RemovePort() {
 void KURL::SetPort(const String& input) {
   String port = RemoveURLWhitespace(input);
   String parsed_port = ParsePortFromStringPosition(port, 0);
-  if (!parsed_port.empty())
+  if (!parsed_port.IsEmpty())
     SetPort(parsed_port.ToUInt());
 }
 
@@ -649,7 +649,7 @@ void KURL::SetPort(uint16_t port) {
 void KURL::SetUser(const String& user) {
   // This function is commonly called to clear the username, which we
   // normally don't have, so we optimize this case.
-  if (user.empty() && !parsed_.username.is_valid())
+  if (user.IsEmpty() && !parsed_.username.is_valid())
     return;
 
   // The canonicalizer will clear any usernames that are empty, so we
@@ -667,7 +667,7 @@ void KURL::SetUser(const String& user) {
 void KURL::SetPass(const String& pass) {
   // This function is commonly called to clear the password, which we
   // normally don't have, so we optimize this case.
-  if (pass.empty() && !parsed_.password.is_valid())
+  if (pass.IsEmpty() && !parsed_.password.is_valid())
     return;
 
   // The canonicalizer will clear any passwords that are empty, so we

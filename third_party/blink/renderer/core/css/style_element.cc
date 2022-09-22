@@ -41,7 +41,7 @@
 namespace blink {
 
 static bool IsCSS(const Element& element, const AtomicString& type) {
-  return type.empty() ||
+  return type.IsEmpty() ||
          (element.IsHTMLElement() ? EqualIgnoringASCIICase(type, "text/css")
                                   : (type == "text/css"));
 }
@@ -167,7 +167,7 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
     MediaQuerySet* media_queries = nullptr;
     const AtomicString& media_string = media();
     bool media_query_matches = true;
-    if (!media_string.empty()) {
+    if (!media_string.IsEmpty()) {
       media_queries =
           MediaQuerySet::Create(media_string, element.GetExecutionContext());
       if (LocalFrame* frame = document.GetFrame()) {

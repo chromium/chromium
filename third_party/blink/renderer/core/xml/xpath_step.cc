@@ -83,8 +83,8 @@ bool OptimizeStepPair(Step* first, Step* second) {
       first->GetNodeTest().GetKind() == Step::NodeTest::kAnyNodeTest &&
       !first->predicates_.size() &&
       !first->GetNodeTest().MergedPredicates().size()) {
-    DCHECK(first->GetNodeTest().Data().empty());
-    DCHECK(first->GetNodeTest().NamespaceURI().empty());
+    DCHECK(first->GetNodeTest().Data().IsEmpty());
+    DCHECK(first->GetNodeTest().NamespaceURI().IsEmpty());
 
     // Optimize the common case of "//" AKA
     // /descendant-or-self::node()/child::NodeTest to /descendant::NodeTest.
@@ -172,7 +172,7 @@ static inline bool NodeMatchesBasicTest(Node* node,
     case Step::NodeTest::kProcessingInstructionNodeTest: {
       const AtomicString& name = node_test.Data();
       return node->getNodeType() == Node::kProcessingInstructionNode &&
-             (name.empty() || node->nodeName() == name);
+             (name.IsEmpty() || node->nodeName() == name);
     }
     case Step::NodeTest::kAnyNodeTest:
       return true;
@@ -189,7 +189,8 @@ static inline bool NodeMatchesBasicTest(Node* node,
           return false;
 
         if (name == g_star_atom)
-          return namespace_uri.empty() || attr->namespaceURI() == namespace_uri;
+          return namespace_uri.IsEmpty() ||
+                 attr->namespaceURI() == namespace_uri;
 
         if (attr->GetDocument().IsHTMLDocument() && attr->ownerElement() &&
             attr->ownerElement()->IsHTMLElement() && namespace_uri.IsNull() &&
@@ -213,7 +214,7 @@ static inline bool NodeMatchesBasicTest(Node* node,
         return false;
 
       if (name == g_star_atom) {
-        return namespace_uri.empty() ||
+        return namespace_uri.IsEmpty() ||
                namespace_uri == element->namespaceURI();
       }
 

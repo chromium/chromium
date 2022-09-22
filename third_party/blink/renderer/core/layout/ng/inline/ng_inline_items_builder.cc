@@ -84,7 +84,7 @@ bool ShouldRemoveNewlineSlow(const StringBuilder& before,
       return true;
   }
   UChar32 next = 0;
-  if (!after.empty()) {
+  if (!after.IsEmpty()) {
     next = after[0];
     if (next == kZeroWidthSpaceCharacter)
       return true;
@@ -504,7 +504,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
     LayoutText* layout_object) {
   DCHECK(layout_object);
 
-  if (string.empty()) {
+  if (string.IsEmpty()) {
     AppendEmptyTextItem(layout_object);
     return;
   }
@@ -584,7 +584,7 @@ void NGInlineItemsBuilderTemplate<
     OffsetMappingBuilder>::AppendCollapseWhitespace(const StringView string,
                                                     const ComputedStyle* style,
                                                     LayoutText* layout_object) {
-  DCHECK(!string.empty());
+  DCHECK(!string.IsEmpty());
 
   // This algorithm segments the input string at the collapsible space, and
   // process collapsible space run and non-space run alternately.
@@ -795,7 +795,7 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::
   // after a forced break.
   if (index)
     return string[index - 1] == kNewlineCharacter;
-  return text_.empty() || text_[text_.length() - 1] == kNewlineCharacter;
+  return text_.IsEmpty() || text_[text_.length() - 1] == kNewlineCharacter;
 }
 
 template <typename OffsetMappingBuilder>

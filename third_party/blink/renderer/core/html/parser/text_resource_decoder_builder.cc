@@ -159,7 +159,7 @@ std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoderFor(
   }
   DCHECK(decoder);
 
-  if (!encoding.empty()) {
+  if (!encoding.IsEmpty()) {
     decoder->SetEncoding(WTF::TextEncoding(encoding.GetString()),
                          TextResourceDecoder::kEncodingFromHTTPHeader);
   } else if (use_hint_encoding) {

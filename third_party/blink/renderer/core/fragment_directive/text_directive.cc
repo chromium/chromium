@@ -45,8 +45,8 @@ TextDirective* TextDirective::Create(TextDirectiveOptions* options) {
 
   TextFragmentSelector::SelectorType type = TextFragmentSelector::kInvalid;
 
-  if (!textStart.empty()) {
-    if (!textEnd.empty())
+  if (!textStart.IsEmpty()) {
+    if (!textEnd.IsEmpty())
       type = TextFragmentSelector::kRange;
     else
       type = TextFragmentSelector::kExact;

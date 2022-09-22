@@ -60,7 +60,7 @@ LinkLoadParameters::LinkLoadParameters(const LinkHeader& header,
       image_sizes(header.ImageSizes()),
       blocking(header.Blocking()),
       reason(Reason::kDefault) {
-  if (!header.ReferrerPolicy().empty()) {
+  if (!header.ReferrerPolicy().IsEmpty()) {
     SecurityPolicy::ReferrerPolicyFromString(
         header.ReferrerPolicy(), kDoNotSupportReferrerPolicyLegacyKeywords,
         &referrer_policy);

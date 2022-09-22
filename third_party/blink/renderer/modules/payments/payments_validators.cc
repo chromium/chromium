@@ -160,7 +160,7 @@ bool PaymentsValidators::IsValidMethodFormat(const String& identifier) {
 
   // URL PMI validation rules:
   // https://www.w3.org/TR/payment-method-id/#dfn-validate-a-url-based-payment-method-identifier
-  if (!url.User().empty() || !url.Pass().empty())
+  if (!url.User().IsEmpty() || !url.Pass().IsEmpty())
     return false;
 
   // TODO(http://crbug.com/1200225): Align this with the specification.

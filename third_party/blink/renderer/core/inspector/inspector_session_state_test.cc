@@ -253,7 +253,7 @@ TEST(InspectorSessionStateTest, MultipleAgents) {
 
     EXPECT_TRUE(maps_agent.doubles_.IsEmpty());
     EXPECT_TRUE(maps_agent.strings_.IsEmpty());
-    EXPECT_FALSE(simple_agent.message_.Get().empty());  // other agent.
+    EXPECT_FALSE(simple_agent.message_.Get().IsEmpty());  // other agent.
 
     dev_tools_session.ApplyUpdates(session_state.TakeUpdates());
   }

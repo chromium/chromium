@@ -65,7 +65,7 @@ String CSSImportRule::cssText() const {
 
   if (import_rule_->MediaQueries()) {
     String media_text = import_rule_->MediaQueries()->MediaText();
-    if (!media_text.empty()) {
+    if (!media_text.IsEmpty()) {
       result.Append(' ');
       result.Append(media_text);
     }

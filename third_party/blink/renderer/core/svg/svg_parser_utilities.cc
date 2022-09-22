@@ -197,7 +197,7 @@ bool ParseArcFlag(const UChar*& ptr, const UChar* end, bool& flag) {
 }
 
 bool ParseNumberOptionalNumber(const String& string, float& x, float& y) {
-  if (string.empty())
+  if (string.IsEmpty())
     return false;
 
   return WTF::VisitCharacters(string, [&](const auto* ptr, unsigned length) {

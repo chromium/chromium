@@ -44,7 +44,7 @@ String CSSFontPaletteValuesRule::cssText() const {
   }
 
   String override_colors = overrideColors();
-  if (!override_colors.empty()) {
+  if (!override_colors.IsEmpty()) {
     result.Append(" override-colors: ");
     result.Append(override_colors);
     result.Append(";");

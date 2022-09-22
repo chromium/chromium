@@ -355,7 +355,7 @@ bool IsValidHTTPHeaderValue(const String& name) {
 
 // See RFC 7230, Section 3.2.6.
 bool IsValidHTTPToken(const String& characters) {
-  if (characters.empty())
+  if (characters.IsEmpty())
     return false;
   for (unsigned i = 0; i < characters.length(); ++i) {
     UChar c = characters[i];
@@ -483,7 +483,7 @@ AtomicString ExtractMIMETypeFromMediaType(const AtomicString& media_type) {
 
 ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
     const String& value) {
-  if (value.empty())
+  if (value.IsEmpty())
     return kContentTypeOptionsNone;
 
   Vector<String> results;
@@ -623,7 +623,7 @@ CacheControlHeader ParseCacheControlDirectives(
   static const char kMaxAgeDirective[] = "max-age";
   static const char kStaleWhileRevalidateDirective[] = "stale-while-revalidate";
 
-  if (!cache_control_value.empty()) {
+  if (!cache_control_value.IsEmpty()) {
     Vector<std::pair<String, String>> directives;
     ParseCacheHeader(cache_control_value, directives);
 
@@ -632,7 +632,7 @@ CacheControlHeader ParseCacheControlDirectives(
       // RFC2616 14.9.1: A no-cache directive with a value is only meaningful
       // for proxy caches.  It should be ignored by a browser level cache.
       if (EqualIgnoringASCIICase(directives[i].first, kNoCacheDirective) &&
-          directives[i].second.empty()) {
+          directives[i].second.IsEmpty()) {
         cache_control_header.contains_no_cache = true;
       } else if (EqualIgnoringASCIICase(directives[i].first,
                                         kNoStoreDirective)) {

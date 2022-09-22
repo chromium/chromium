@@ -230,7 +230,7 @@ void FillWidgetProperties(AXObject& ax_object,
       node_data
           .GetStringAttribute(ax::mojom::blink::StringAttribute::kAutoComplete)
           .c_str();
-  if (!autocomplete.empty())
+  if (!autocomplete.IsEmpty())
     properties.emplace_back(
         CreateProperty(AXPropertyNameEnum::Autocomplete,
                        CreateValue(autocomplete, AXValueTypeEnum::Token)));
@@ -960,7 +960,7 @@ void InspectorAccessibilityAgent::FillCoreProperties(
   AXObject::AXObjectVector description_objects;
   String description =
       ax_object.Description(name_from, description_from, &description_objects);
-  if (!description.empty()) {
+  if (!description.IsEmpty()) {
     node_object->setDescription(
         CreateValue(description, AXValueTypeEnum::ComputedString));
   }
@@ -971,7 +971,7 @@ void InspectorAccessibilityAgent::FillCoreProperties(
       node_object->setValue(CreateValue(value));
   } else {
     String value = ax_object.SlowGetValueForControlIncludingContentEditable();
-    if (!value.empty())
+    if (!value.IsEmpty())
       node_object->setValue(CreateValue(value));
   }
 }

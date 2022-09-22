@@ -388,7 +388,7 @@ MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
   // Setting the value to an empty string just removes the property in both IE
   // and Gecko. Setting it to null seems to produce less consistent results, but
   // we treat it just the same.
-  if (value.empty()) {
+  if (value.IsEmpty()) {
     return RemoveProperty(ResolveCSSPropertyID(unresolved_property))
                ? kChangedPropertySet
                : kUnchanged;
@@ -408,7 +408,7 @@ MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
     SecureContextMode secure_context_mode,
     StyleSheetContents* context_style_sheet,
     bool is_animation_tainted) {
-  if (value.empty()) {
+  if (value.IsEmpty()) {
     return RemoveProperty(custom_property_name) ? kChangedPropertySet
                                                 : kUnchanged;
   }

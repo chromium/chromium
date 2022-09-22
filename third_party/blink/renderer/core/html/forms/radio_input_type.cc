@@ -71,7 +71,7 @@ bool RadioInputType::ValueMissing(const String&) const {
   DCHECK(!input.isConnected());
   DCHECK(!input.formOwner());
   const AtomicString& name = input.GetName();
-  if (name.empty())
+  if (name.IsEmpty())
     return false;
   bool is_required = false;
   bool is_checked = false;
@@ -294,7 +294,7 @@ HTMLInputElement* RadioInputType::CheckedRadioButtonForGroup() const {
   DCHECK(!input.isConnected());
   DCHECK(!input.formOwner());
   const AtomicString& name = input.GetName();
-  if (name.empty())
+  if (name.IsEmpty())
     return nullptr;
   Node& root = input.TreeRoot();
   for (auto* another = Traversal<HTMLInputElement>::InclusiveFirstWithin(root);

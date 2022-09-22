@@ -20,7 +20,7 @@ String CSSNamespaceRule::cssText() const {
   StringBuilder result;
   result.Append("@namespace ");
   SerializeIdentifier(prefix(), result);
-  if (!prefix().empty())
+  if (!prefix().IsEmpty())
     result.Append(' ');
   result.Append("url(");
   result.Append(SerializeString(namespaceURI()));

@@ -57,8 +57,8 @@ TEST_F(AlternateSignedExchangeResourceInfoTest, Simple) {
             resource->alternative_url());
   EXPECT_EQ("sha256-7KheEN4nyNxE3c4yQZdgCBJthJ2UwgpLSBeSUpII+jg=",
             resource->header_integrity());
-  EXPECT_TRUE(resource->variants().empty());
-  EXPECT_TRUE(resource->variant_key().empty());
+  EXPECT_TRUE(resource->variants().IsEmpty());
+  EXPECT_TRUE(resource->variant_key().IsEmpty());
 
   EXPECT_EQ(resource.get(),
             info->FindMatchingEntry(KURL("https://publisher.example/script.js"),
@@ -106,8 +106,8 @@ TEST_F(AlternateSignedExchangeResourceInfoTest, MultipleResources) {
         resource->alternative_url());
     EXPECT_EQ("sha256-7KheEN4nyNxE3c4yQZdgCBJthJ2UwgpLSBeSUpII+jg=",
               resource->header_integrity());
-    EXPECT_TRUE(resource->variants().empty());
-    EXPECT_TRUE(resource->variant_key().empty());
+    EXPECT_TRUE(resource->variants().IsEmpty());
+    EXPECT_TRUE(resource->variant_key().IsEmpty());
     EXPECT_EQ(resource.get(), info->FindMatchingEntry(
                                   KURL("https://publisher.example/script.js"),
                                   absl::nullopt, {"en"}));
@@ -122,8 +122,8 @@ TEST_F(AlternateSignedExchangeResourceInfoTest, MultipleResources) {
               resource->alternative_url());
     EXPECT_EQ("sha256-q1phjFcR+umcl0zBaEz6E5AGVlnc9yF0zOjDYi5c6aM=",
               resource->header_integrity());
-    EXPECT_TRUE(resource->variants().empty());
-    EXPECT_TRUE(resource->variant_key().empty());
+    EXPECT_TRUE(resource->variants().IsEmpty());
+    EXPECT_TRUE(resource->variant_key().IsEmpty());
     EXPECT_EQ(resource.get(),
               info->FindMatchingEntry(KURL("https://publisher.example/image"),
                                       absl::nullopt, {"en"}));
@@ -153,8 +153,8 @@ TEST_F(AlternateSignedExchangeResourceInfoTest,
   EXPECT_FALSE(resource->alternative_url().IsValid());
   EXPECT_EQ("sha256-7KheEN4nyNxE3c4yQZdgCBJthJ2UwgpLSBeSUpII+jg=",
             resource->header_integrity());
-  EXPECT_TRUE(resource->variants().empty());
-  EXPECT_TRUE(resource->variant_key().empty());
+  EXPECT_TRUE(resource->variants().IsEmpty());
+  EXPECT_TRUE(resource->variant_key().IsEmpty());
 
   EXPECT_EQ(resource.get(),
             info->FindMatchingEntry(KURL("https://publisher.example/script.js"),
@@ -187,8 +187,8 @@ TEST_F(AlternateSignedExchangeResourceInfoTest, NoType) {
   EXPECT_FALSE(resource->alternative_url().IsValid());
   EXPECT_EQ("sha256-7KheEN4nyNxE3c4yQZdgCBJthJ2UwgpLSBeSUpII+jg=",
             resource->header_integrity());
-  EXPECT_TRUE(resource->variants().empty());
-  EXPECT_TRUE(resource->variant_key().empty());
+  EXPECT_TRUE(resource->variants().IsEmpty());
+  EXPECT_TRUE(resource->variant_key().IsEmpty());
 
   EXPECT_EQ(resource.get(),
             info->FindMatchingEntry(KURL("https://publisher.example/script.js"),
@@ -223,8 +223,8 @@ TEST_F(AlternateSignedExchangeResourceInfoTest, InvalidOuterURL) {
   EXPECT_FALSE(resource->alternative_url().IsValid());
   EXPECT_EQ("sha256-7KheEN4nyNxE3c4yQZdgCBJthJ2UwgpLSBeSUpII+jg=",
             resource->header_integrity());
-  EXPECT_TRUE(resource->variants().empty());
-  EXPECT_TRUE(resource->variant_key().empty());
+  EXPECT_TRUE(resource->variants().IsEmpty());
+  EXPECT_TRUE(resource->variant_key().IsEmpty());
 
   EXPECT_EQ(resource.get(),
             info->FindMatchingEntry(KURL("https://publisher.example/script.js"),

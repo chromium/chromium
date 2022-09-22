@@ -822,7 +822,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
     return ScriptPromise();
   }
   // Validation errors should return above.
-  DCHECK(message.empty());
+  DCHECK(message.IsEmpty());
 
   if (is_webrtc) {
     UseCounter::Count(ExecutionContext::From(script_state),
@@ -937,7 +937,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
       (config->hasVideo() &&
        !IsVideoCodecValid(video_mime_str, video_codec_str, &video_codec,
                           &video_profile, &message))) {
-    DCHECK(!message.empty());
+    DCHECK(!message.IsEmpty());
     if (ExecutionContext* execution_context =
             ExecutionContext::From(script_state)) {
       execution_context->AddConsoleMessage(mojom::ConsoleMessageSource::kOther,
@@ -949,7 +949,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
   }
 
   // Validation errors should return above.
-  DCHECK(message.empty());
+  DCHECK(message.IsEmpty());
 
   media::VideoColorSpace video_color_space;
   gfx::HdrMetadataType hdr_metadata_type = gfx::HdrMetadataType::kNone;
@@ -980,7 +980,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
                                                    script_state, config);
   }
 
-  DCHECK(message.empty());
+  DCHECK(message.IsEmpty());
   DCHECK(config->hasVideo());
 
   // Return early for unsupported configurations.
@@ -1024,7 +1024,7 @@ ScriptPromise MediaCapabilities::encodingInfo(
     return ScriptPromise();
   }
   // Validation errors should return above.
-  DCHECK(message.empty());
+  DCHECK(message.IsEmpty());
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
@@ -1244,7 +1244,7 @@ ScriptPromise MediaCapabilities::GetEmeSupport(
   const MediaCapabilitiesKeySystemConfiguration* key_system_config =
       configuration->keySystemConfiguration();
   if (!key_system_config->hasKeySystem() ||
-      key_system_config->keySystem().empty()) {
+      key_system_config->keySystem().IsEmpty()) {
     exception_state.ThrowTypeError("The key system String is not valid.");
     return ScriptPromise();
   }
@@ -1257,7 +1257,7 @@ ScriptPromise MediaCapabilities::GetEmeSupport(
   // TODO(chcunningham): double check that this default is idiomatic. Here we
   // can't check hasInitDataType() because the default ("") makes that always
   // true. The default in EME is an empty list.
-  if (!key_system_config->initDataType().empty()) {
+  if (!key_system_config->initDataType().IsEmpty()) {
     eme_config->setInitDataTypes(
         Vector<String>(1, key_system_config->initDataType()));
   }

@@ -30,7 +30,7 @@ String RequestDebugHeaderScope::CaptureStackIdForCurrentLocation(
 
 RequestDebugHeaderScope::RequestDebugHeaderScope(ExecutionContext* context,
                                                  const String& header) {
-  if (header.empty())
+  if (header.IsEmpty())
     return;
   stack_trace_id_ =
       v8_inspector::V8StackTraceId(ToV8InspectorStringView(header));

@@ -561,7 +561,7 @@ void CompositeEditCommand::InsertTextIntoNode(Text* node,
                                               unsigned offset,
                                               const String& text) {
   // InsertIntoTextNodeCommand is never aborted.
-  if (!text.empty())
+  if (!text.IsEmpty())
     ApplyCommandToComposite(
         MakeGarbageCollected<InsertIntoTextNodeCommand>(node, offset, text),
         ASSERT_NO_EDITING_ABORT);
@@ -732,7 +732,7 @@ void CompositeEditCommand::RebalanceWhitespaceOnTextSubstring(Text* text_node,
                                                               int start_offset,
                                                               int end_offset) {
   String text = text_node->data();
-  DCHECK(!text.empty());
+  DCHECK(!text.IsEmpty());
 
   // Set upstream and downstream to define the extent of the whitespace
   // surrounding text[offset].
@@ -865,7 +865,7 @@ void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
   if (text_layout_object->IsInLayoutNGInlineFormattingContext()) {
     const String string = PlainText(
         EphemeralRange(Position(*text_node, start), Position(*text_node, end)));
-    if (string.empty())
+    if (string.IsEmpty())
       return DeleteTextFromNode(text_node, start, end - start);
     // Replace the text between start and end with collapsed version.
     return ReplaceTextInNode(text_node, start, end - start, string);
@@ -924,7 +924,7 @@ void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
 
   if (!str.IsNull()) {
     // Replace the text between start and end with our pruned version.
-    if (!str.empty()) {
+    if (!str.IsEmpty()) {
       ReplaceTextInNode(text_node, start, end - start, str);
     } else {
       // Assert that we are not going to delete all of the text in the node.

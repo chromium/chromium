@@ -87,7 +87,7 @@ String UnionTypesTest::doubleOrStringSequenceArg(
   StringBuilder builder;
   for (auto& double_or_string : sequence) {
     DCHECK(double_or_string);
-    if (!builder.empty())
+    if (!builder.IsEmpty())
       builder.Append(", ");
     switch (double_or_string->GetContentType()) {
       case V8UnionDoubleOrString::ContentType::kDouble:

@@ -118,14 +118,14 @@ class FragmentTreeDumper {
         builder_->Append("Box");
         String box_type = StringForBoxType(*fragment);
         has_content = true;
-        if (!box_type.empty()) {
+        if (!box_type.IsEmpty()) {
           builder_->Append(" (");
           builder_->Append(box_type);
           builder_->Append(")");
         }
         if (flags_ & NGPhysicalFragment::DumpSelfPainting &&
             box->HasSelfPaintingLayer()) {
-          if (box_type.empty())
+          if (box_type.IsEmpty())
             builder_->Append(" ");
           builder_->Append("(self paint)");
         }

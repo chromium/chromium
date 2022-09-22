@@ -46,7 +46,7 @@ void TextPainter::Paint(unsigned start_offset,
                               auto_dark_mode);
   }
 
-  if (!emphasis_mark_.empty()) {
+  if (!emphasis_mark_.IsEmpty()) {
     if (combined_text_) {
       graphics_context_.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
       PaintEmphasisMarkForCombinedText(

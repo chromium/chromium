@@ -70,7 +70,7 @@ CookieStoreGetOptions* ToCookieChangeSubscription(
   CookieStoreGetOptions* subscription = CookieStoreGetOptions::Create();
   subscription->setUrl(backend_subscription.url);
 
-  if (!backend_subscription.name.empty())
+  if (!backend_subscription.name.IsEmpty())
     subscription->setName(backend_subscription.name);
 
   return subscription;

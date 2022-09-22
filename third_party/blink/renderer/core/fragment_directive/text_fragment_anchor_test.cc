@@ -2349,7 +2349,7 @@ TEST_F(TextFragmentAnchorTest, OpenedFromHighlightDoesNotSelectAdditionalText) {
 
   // No additional text should be selected.
   FrameSelection& selection = GetDocument().GetFrame()->Selection();
-  EXPECT_TRUE(selection.SelectedText().empty());
+  EXPECT_TRUE(selection.SelectedText().IsEmpty());
 
   // Create a mouse event at the center of <p> four.
   const DOMRect* last_rect = last_element->getBoundingClientRect();
@@ -2370,7 +2370,7 @@ TEST_F(TextFragmentAnchorTest, OpenedFromHighlightDoesNotSelectAdditionalText) {
       WebCoalescedInputEvent(last_mouse_up_event, ui::LatencyInfo()));
 
   // The text underneath the cursor should be selected.
-  EXPECT_FALSE(selection.SelectedText().empty());
+  EXPECT_FALSE(selection.SelectedText().IsEmpty());
 }
 
 // Test that on Android, a user can display a context menu by tapping on

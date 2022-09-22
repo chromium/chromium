@@ -68,7 +68,7 @@ SVGParsingError SVGNumber::Parse(const CharType* ptr, const CharType* end) {
 SVGParsingError SVGNumber::SetValueAsString(const String& string) {
   value_ = 0;
 
-  if (string.empty())
+  if (string.IsEmpty())
     return SVGParseStatus::kNoError;
 
   return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
@@ -131,7 +131,7 @@ SVGParsingError SVGNumberAcceptPercentage::SetValueAsString(
     const String& string) {
   value_ = 0;
 
-  if (string.empty())
+  if (string.IsEmpty())
     return SVGParseStatus::kExpectedNumberOrPercentage;
 
   float number = 0;

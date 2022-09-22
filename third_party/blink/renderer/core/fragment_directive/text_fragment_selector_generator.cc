@@ -38,7 +38,7 @@ bool IsFirstVisiblePosition(Node* node, unsigned pos_offset) {
   return node->getNodeType() == Node::kElementNode || pos_offset == 0 ||
          PlainText(EphemeralRangeInFlatTree(range_start, range_end))
              .StripWhiteSpace()
-             .empty();
+             .IsEmpty();
 }
 
 // Returns true if text from |pos_offset| until end of |node| can be considered
@@ -50,7 +50,7 @@ bool IsLastVisiblePosition(Node* node, unsigned pos_offset) {
          pos_offset == node->textContent().length() ||
          PlainText(EphemeralRangeInFlatTree(range_start, range_end))
              .StripWhiteSpace()
-             .empty();
+             .IsEmpty();
 }
 
 struct ForwardDirection {
@@ -86,7 +86,7 @@ Node* NextNonEmptyVisibleTextNode(Node* start_node) {
     if (next_node->GetLayoutObject() &&
         !PlainText(EphemeralRange::RangeOfContents(*next_node))
              .StripWhiteSpace()
-             .empty())
+             .IsEmpty())
       return next_node;
     node = next_node;
   }
@@ -326,7 +326,7 @@ void TextFragmentSelectorGenerator::StartGeneration() {
 
   // Shouldn't continue if selection is empty.
   String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
-  if (selected_text.empty()) {
+  if (selected_text.IsEmpty()) {
     state_ = kFailure;
     error_ = LinkGenerationError::kEmptySelection;
     ResolveSelectorState();

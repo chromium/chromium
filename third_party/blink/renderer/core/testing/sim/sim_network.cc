@@ -99,7 +99,7 @@ void SimNetwork::AddRequest(SimRequestBase& request) {
   response.SetMimeType(request.mime_type_);
   response.AddHttpHeaderField("Content-Type", request.mime_type_);
 
-  if (request.redirect_url_.empty()) {
+  if (request.redirect_url_.IsEmpty()) {
     response.SetHttpStatusCode(request.response_http_status_);
   } else {
     response.SetHttpStatusCode(302);

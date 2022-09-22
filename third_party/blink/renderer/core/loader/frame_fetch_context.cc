@@ -472,8 +472,8 @@ void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(
     return;
 
   const String& reduced_accept_language = GetReducedAcceptLanguage();
-  if (!reduced_accept_language.empty() &&
-      request.HttpHeaderField(http_names::kAcceptLanguage).empty()) {
+  if (!reduced_accept_language.IsEmpty() &&
+      request.HttpHeaderField(http_names::kAcceptLanguage).IsEmpty()) {
     request.SetHttpHeaderField(http_names::kAcceptLanguage,
                                reduced_accept_language.Ascii().c_str());
   }
@@ -636,7 +636,7 @@ bool FrameFetchContext::ShouldBlockFetchAsCredentialedSubresource(
     const ResourceRequest& resource_request,
     const KURL& url) const {
   // URLs with no embedded credentials should load correctly.
-  if (url.User().empty() && url.Pass().empty())
+  if (url.User().IsEmpty() && url.Pass().IsEmpty())
     return false;
 
   if (resource_request.GetRequestContext() ==
@@ -743,7 +743,7 @@ String FrameFetchContext::GetReducedAcceptLanguage() const {
   // header as the overridden value.
   String override_accept_language;
   probe::ApplyAcceptLanguageOverride(Probe(), &override_accept_language);
-  return override_accept_language.empty()
+  return override_accept_language.IsEmpty()
              ? frame->GetReducedAcceptLanguage().GetString()
              : network_utils::GenerateAcceptLanguageHeader(
                    override_accept_language);

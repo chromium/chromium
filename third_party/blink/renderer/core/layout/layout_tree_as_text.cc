@@ -80,7 +80,7 @@ static String GetTagName(Node* n) {
     return "COMMENT";
   if (const auto* element = DynamicTo<Element>(n)) {
     const AtomicString& pseudo = element->ShadowPseudoId();
-    if (!pseudo.empty())
+    if (!pseudo.IsEmpty())
       return "::" + pseudo;
   }
   return n->nodeName();
@@ -166,7 +166,7 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
 
   if (o.GetNode()) {
     String tag_name = GetTagName(o.GetNode());
-    if (!tag_name.empty())
+    if (!tag_name.IsEmpty())
       ts << " {" << tag_name << "}";
   }
 
@@ -276,7 +276,7 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
 
   if (o.IsListMarkerForNormalContent()) {
     String text = To<LayoutListMarker>(o).GetText();
-    if (!text.empty()) {
+    if (!text.IsEmpty()) {
       if (text.length() != 1) {
         text = QuoteAndEscapeNonPrintables(text);
       } else {

@@ -734,7 +734,7 @@ bool CopyDirectFromSellerSignalsFromIdlToMojo(
         "must match seller origin; only https scheme is supported."));
     return false;
   }
-  if (!direct_from_seller_signals_prefix.Query().empty()) {
+  if (!direct_from_seller_signals_prefix.Query().IsEmpty()) {
     exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
         input, "directFromSellerSignals", input.directFromSellerSignals(),
         "URL prefix must not have a query string."));

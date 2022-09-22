@@ -105,7 +105,7 @@ KeyframeEffect* KeyframeEffect::Create(
         EffectModel::StringToCompositeOperation(effect_options->composite())
             .value();
     if (RuntimeEnabledFeatures::WebAnimationsAPIEnabled() &&
-        !effect_options->pseudoElement().empty()) {
+        !effect_options->pseudoElement().IsEmpty()) {
       pseudo = effect_options->pseudoElement();
       if (!ValidateAndCanonicalizePseudo(pseudo)) {
         // TODO(gtsteel): update when
@@ -124,7 +124,7 @@ KeyframeEffect* KeyframeEffect::Create(
   KeyframeEffect* effect =
       MakeGarbageCollected<KeyframeEffect>(element, model, timing);
 
-  if (!pseudo.empty()) {
+  if (!pseudo.IsEmpty()) {
     effect->target_pseudo_ = pseudo;
     if (element) {
       element->GetDocument().UpdateStyleAndLayoutTreeForNode(element);
@@ -220,7 +220,7 @@ void KeyframeEffect::RefreshTarget() {
   Element* new_target;
   if (!target_element_) {
     new_target = nullptr;
-  } else if (target_pseudo_.empty()) {
+  } else if (target_pseudo_.IsEmpty()) {
     new_target = target_element_;
   } else {
     target_element_->GetDocument().UpdateStyleAndLayoutTreeForNode(

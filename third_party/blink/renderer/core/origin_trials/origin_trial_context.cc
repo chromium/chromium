@@ -186,7 +186,7 @@ std::unique_ptr<Vector<String>> OriginTrialContext::ParseHeaderValue(
   unsigned len = header_value.length();
   while (pos < len) {
     String token = ExtractTokenOrQuotedString(header_value, pos);
-    if (!token.empty())
+    if (!token.IsEmpty())
       tokens->push_back(token);
     // Make sure tokens are comma-separated.
     if (pos < len && header_value[pos++] != ',')
@@ -198,7 +198,7 @@ std::unique_ptr<Vector<String>> OriginTrialContext::ParseHeaderValue(
 // static
 void OriginTrialContext::AddTokensFromHeader(ExecutionContext* context,
                                              const String& header_value) {
-  if (header_value.empty())
+  if (header_value.IsEmpty())
     return;
   std::unique_ptr<Vector<String>> tokens(ParseHeaderValue(header_value));
   if (!tokens)
@@ -329,7 +329,7 @@ void OriginTrialContext::AddTokenInternal(
     const String& token,
     const OriginInfo origin,
     const Vector<OriginInfo>* script_origins) {
-  if (token.empty())
+  if (token.IsEmpty())
     return;
 
   bool enabled = EnableTrialFromToken(token, origin, script_origins);
@@ -346,7 +346,7 @@ void OriginTrialContext::AddTokens(const Vector<String>& tokens) {
   bool found_valid = false;
   OriginInfo origin_info = GetCurrentOriginInfo();
   for (const String& token : tokens) {
-    if (!token.empty()) {
+    if (!token.IsEmpty()) {
       if (EnableTrialFromToken(token, origin_info))
         found_valid = true;
     }
@@ -596,7 +596,7 @@ bool OriginTrialContext::EnableTrialFromToken(
     const String& token,
     const OriginInfo origin_info,
     const Vector<OriginInfo>* script_origins) {
-  DCHECK(!token.empty());
+  DCHECK(!token.IsEmpty());
   OriginTrialStatus trial_status = OriginTrialStatus::kValidTokenNotProvided;
   StringUTF8Adaptor token_string(token);
   // TODO(https://crbug.com/1153336): Remove explicit validator.

@@ -1023,7 +1023,7 @@ bool HTMLDocumentParser::HasInsertionPoint() {
 
 void HTMLDocumentParser::insert(const String& source) {
   // No need to do any processing if the supplied text is empty.
-  if (IsStopped() || source.empty())
+  if (IsStopped() || source.IsEmpty())
     return;
 
   TRACE_EVENT2("blink", "HTMLDocumentParser::insert", "source_length",

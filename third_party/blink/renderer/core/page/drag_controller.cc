@@ -176,15 +176,15 @@ static DocumentFragment* DocumentFragmentFromDragData(
     if (drag_data->ContainsURL(DragData::kDoNotConvertFilenames)) {
       String title;
       String url = drag_data->AsURL(DragData::kDoNotConvertFilenames, &title);
-      if (!url.empty()) {
+      if (!url.IsEmpty()) {
         auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(document);
         anchor->SetHref(AtomicString(url));
-        if (title.empty()) {
+        if (title.IsEmpty()) {
           // Try the plain text first because the url might be normalized or
           // escaped.
           if (drag_data->ContainsPlainText())
             title = drag_data->AsPlainText();
-          if (title.empty())
+          if (title.IsEmpty())
             title = url;
         }
         Node* anchor_text = document.createTextNode(title);
@@ -704,7 +704,7 @@ bool DragController::ConcludeEditDrag(DragData* drag_data) {
     }
   } else {
     String text = drag_data->AsPlainText();
-    if (text.empty())
+    if (text.IsEmpty())
       return false;
 
     if (SetSelectionToDragCaret(inner_frame, drag_caret.AsSelection(), range,
@@ -1078,7 +1078,7 @@ bool CanDragImage(const Element& element) {
   // We shouldn't be starting a drag for an image that can't provide an
   // extension.
   // This is an early detection for problems encountered later upon drop.
-  DCHECK(!image_content->GetImage()->FilenameExtension().empty());
+  DCHECK(!image_content->GetImage()->FilenameExtension().IsEmpty());
   return true;
 }
 

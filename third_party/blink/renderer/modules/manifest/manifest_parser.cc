@@ -624,7 +624,7 @@ ManifestParser::ParseIconPurpose(const JSONObject* icon) {
   bool unrecognised_purpose = false;
   for (auto& keyword : keywords) {
     keyword = keyword.StripWhiteSpace();
-    if (keyword.empty())
+    if (keyword.IsEmpty())
       continue;
 
     if (EqualIgnoringASCIICase(keyword, "any")) {
@@ -926,7 +926,7 @@ void ManifestParser::ParseFileFilter(
     Vector<mojom::blink::ManifestFileFilterPtr>* files) {
   auto file = mojom::blink::ManifestFileFilter::New();
   file->name = ParseFileFilterName(file_object);
-  if (file->name.empty()) {
+  if (file->name.IsEmpty()) {
     // https://wicg.github.io/web-share-target/level-2/#share_target-member
     // step 7.1 requires that we invalidate this FileFilter if 'name' is an
     // empty string. We also invalidate if 'name' is undefined or not a
@@ -1556,7 +1556,7 @@ ManifestParser::ParseRelatedApplications(const JSONObject* object) {
     auto application = mojom::blink::ManifestRelatedApplication::New();
     application->platform = ParseRelatedApplicationPlatform(application_object);
     // "If platform is undefined, move onto the next item if any are left."
-    if (application->platform.empty()) {
+    if (application->platform.IsEmpty()) {
       AddErrorInfo(
           "'platform' is a required field, related application"
           " ignored.");
@@ -1568,7 +1568,7 @@ ManifestParser::ParseRelatedApplications(const JSONObject* object) {
     // "If both id and url are undefined, move onto the next item if any are
     // left."
     if ((!application->url.has_value() || !application->url->IsValid()) &&
-        application->id.empty()) {
+        application->id.IsEmpty()) {
       AddErrorInfo(
           "one of 'url' or 'id' is required, related application"
           " ignored.");

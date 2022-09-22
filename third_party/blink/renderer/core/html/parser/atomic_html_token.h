@@ -68,7 +68,7 @@ class CORE_EXPORT HTMLTokenName {
   // Returns an HTMLTokenName for the specified string. This function looks up
   // the HTMLTag from the supplied string.
   static HTMLTokenName FromLocalName(const AtomicString& local_name) {
-    if (local_name.empty())
+    if (local_name.IsEmpty())
       return HTMLTokenName(html_names::HTMLTag::kUnknown);
 
     if (local_name.Is8Bit()) {
@@ -101,7 +101,7 @@ class CORE_EXPORT HTMLTokenName {
     if (tag == html_names::HTMLTag::kUnknown) {
       // If the tag is unknown, then `name` must either be empty, or not
       // identify any other HTMLTag.
-      if (!name.empty()) {
+      if (!name.IsEmpty()) {
         if (name.Is8Bit()) {
           DCHECK_EQ(html_names::HTMLTag::kUnknown,
                     lookupHTMLTag(name.Characters8(), name.length()));

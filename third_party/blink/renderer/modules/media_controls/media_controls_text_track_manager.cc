@@ -24,10 +24,10 @@ String MediaControlsTextTrackManager::GetTextTrackLabel(
 
   String track_label = track->label();
 
-  if (track_label.empty())
+  if (track_label.IsEmpty())
     track_label = track->language();
 
-  if (track_label.empty()) {
+  if (track_label.IsEmpty()) {
     track_label = String(media_element_->GetLocale().QueryString(
         IDS_MEDIA_TRACKS_NO_LABEL, String::Number(track->TrackIndex() + 1)));
   }

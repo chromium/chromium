@@ -51,7 +51,7 @@ class StaticDataNavigationBodyLoaderTest
       freeze_mode_ = LoaderFreezeMode::kNone;
       loader_->SetDefersLoading(LoaderFreezeMode::kStrict);
     }
-    if (!buffer_to_write_.empty()) {
+    if (!buffer_to_write_.IsEmpty()) {
       String buffer = buffer_to_write_;
       buffer_to_write_ = String();
       expecting_data_received_ = true;

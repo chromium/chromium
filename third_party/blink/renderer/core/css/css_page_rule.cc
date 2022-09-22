@@ -52,7 +52,7 @@ String CSSPageRule::selectorText() const {
   const CSSSelector* selector = page_rule_->Selector();
   if (selector) {
     String page_specification = selector->SelectorText();
-    if (!page_specification.empty())
+    if (!page_specification.IsEmpty())
       text.Append(page_specification);
   }
   return text.ReleaseString();
@@ -79,12 +79,12 @@ String CSSPageRule::cssText() const {
   result.Append("@page ");
   String page_selectors = selectorText();
   result.Append(page_selectors);
-  if (!page_selectors.empty())
+  if (!page_selectors.IsEmpty())
     result.Append(' ');
   result.Append("{ ");
   String decls = page_rule_->Properties().AsText();
   result.Append(decls);
-  if (!decls.empty())
+  if (!decls.IsEmpty())
     result.Append(' ');
   result.Append('}');
   return result.ReleaseString();

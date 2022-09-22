@@ -83,11 +83,11 @@ inline void CollectDescendantSelectorIdentifierHashes(
     unsigned*& hash) {
   switch (selector.Match()) {
     case CSSSelector::kId:
-      if (!selector.Value().empty())
+      if (!selector.Value().IsEmpty())
         (*hash++) = selector.Value().Impl()->ExistingHash() * kIdSalt;
       break;
     case CSSSelector::kClass:
-      if (!selector.Value().empty())
+      if (!selector.Value().IsEmpty())
         (*hash++) = selector.Value().Impl()->ExistingHash() * kClassSalt;
       break;
     case CSSSelector::kTag:

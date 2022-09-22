@@ -71,7 +71,7 @@ void FontFaceSetWorker::FireDoneEventIfPossible() {
 
 bool FontFaceSetWorker::ResolveFontStyle(const String& font_string,
                                          Font& font) {
-  if (font_string.empty())
+  if (font_string.IsEmpty())
     return false;
 
   // Interpret fontString in the same way as the 'font' attribute of

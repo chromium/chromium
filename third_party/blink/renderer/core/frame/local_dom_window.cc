@@ -2061,7 +2061,7 @@ void LocalDOMWindow::PrintErrorMessage(const String& message) const {
   if (!IsCurrentlyDisplayedInFrame())
     return;
 
-  if (message.empty())
+  if (message.IsEmpty())
     return;
 
   GetFrameConsole()->AddMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -2096,10 +2096,10 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
     return nullptr;
 
   UseCounter::Count(*entered_window, WebFeature::kDOMWindowOpen);
-  if (!features.empty())
+  if (!features.IsEmpty())
     UseCounter::Count(*entered_window, WebFeature::kDOMWindowOpenFeatures);
 
-  KURL completed_url = url_string.empty()
+  KURL completed_url = url_string.IsEmpty()
                            ? KURL(g_empty_string)
                            : entered_window->CompleteURL(url_string);
   if (!completed_url.IsEmpty() && !completed_url.IsValid()) {
@@ -2147,7 +2147,7 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
 
   FrameTree::FindResult result =
       GetFrame()->Tree().FindOrCreateFrameForNavigation(
-          frame_request, target.empty() ? "_blank" : target);
+          frame_request, target.IsEmpty() ? "_blank" : target);
   if (!result.frame)
     return nullptr;
 

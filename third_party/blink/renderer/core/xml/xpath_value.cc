@@ -79,7 +79,7 @@ bool Value::ToBoolean() const {
     case kNumberValue:
       return number_ && !std::isnan(number_);
     case kStringValue:
-      return !data_->string_.empty();
+      return !data_->string_.IsEmpty();
   }
   NOTREACHED();
   return false;

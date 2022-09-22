@@ -189,7 +189,7 @@ static bool ShouldIgnoreListItem(Node* node) {
       IsA<HTMLOListElement>(*parent)) {
     AtomicString role = AccessibleNode::GetPropertyOrARIAAttribute(
         parent, AOMStringProperty::kRole);
-    if (!role.empty() && role != "list" && role != "directory")
+    if (!role.IsEmpty() && role != "list" && role != "directory")
       return true;
   }
   return false;
@@ -588,7 +588,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   // FIXME(aboxhall): may need to move?
   absl::optional<String> alt_text = GetCSSAltText(node);
   if (alt_text)
-    return alt_text->empty();
+    return alt_text->IsEmpty();
 
   if (layout_object_->IsListMarkerIncludingAll()) {
     // Ignore TextAlternative of the list marker for SUMMARY because:
@@ -1122,7 +1122,7 @@ String AXLayoutObject::TextAlternative(
       String visible_text = layout_text->PlainText();  // Actual rendered text.
       // If no text boxes we assume this is unrendered end-of-line whitespace.
       // TODO find robust way to deterministically detect end-of-line space.
-      if (visible_text.empty()) {
+      if (visible_text.IsEmpty()) {
         // No visible rendered text -- must be whitespace.
         // Either it is useful whitespace for separating words or not.
         if (layout_text->IsAllCollapsibleWhitespace()) {
@@ -1284,12 +1284,12 @@ bool AXLayoutObject::IsDataTable() const {
 
   // If there is a caption element, summary, THEAD, or TFOOT section, it's most
   // certainly a data table
-  if (!table_element->Summary().empty() || table_element->tHead() ||
+  if (!table_element->Summary().IsEmpty() || table_element->tHead() ||
       table_element->tFoot() || table_element->caption())
     return true;
 
   // if someone used "rules" attribute than the table should appear
-  if (!table_element->Rules().empty())
+  if (!table_element->Rules().IsEmpty())
     return true;
 
   // if there's a colgroup or col element, it's probably a data table.
@@ -1350,9 +1350,9 @@ bool AXLayoutObject::IsDataTable() const {
       // Check for an explicitly assigned a "data" table attribute.
       auto* cell_elem = DynamicTo<HTMLTableCellElement>(*cell);
       if (cell_elem) {
-        if (!cell_elem->Headers().empty() || !cell_elem->Abbr().empty() ||
-            !cell_elem->Axis().empty() ||
-            !cell_elem->FastGetAttribute(html_names::kScopeAttr).empty())
+        if (!cell_elem->Headers().IsEmpty() || !cell_elem->Abbr().IsEmpty() ||
+            !cell_elem->Axis().IsEmpty() ||
+            !cell_elem->FastGetAttribute(html_names::kScopeAttr).IsEmpty())
           return true;
       }
 
@@ -1594,7 +1594,7 @@ ax::mojom::blink::SortDirection AXLayoutObject::GetSortDirection() const {
 
   const AtomicString& aria_sort =
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kSort);
-  if (aria_sort.empty())
+  if (aria_sort.IsEmpty())
     return ax::mojom::blink::SortDirection::kNone;
   if (EqualIgnoringASCIICase(aria_sort, "none"))
     return ax::mojom::blink::SortDirection::kNone;

@@ -137,7 +137,7 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
   if (properties_.dictionary_category !=
       MathMLOperatorDictionaryCategory::kUndefined)
     return;
-  if (GetTokenContent().characters.empty()) {
+  if (GetTokenContent().characters.IsEmpty()) {
     properties_.dictionary_category = MathMLOperatorDictionaryCategory::kNone;
     return;
   }

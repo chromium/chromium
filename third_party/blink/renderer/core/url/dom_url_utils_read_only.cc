@@ -61,12 +61,12 @@ String DOMURLUtilsReadOnly::port(const KURL& kurl) {
 
 String DOMURLUtilsReadOnly::search(const KURL& kurl) {
   String query = kurl.Query();
-  return query.empty() ? g_empty_string : "?" + query;
+  return query.IsEmpty() ? g_empty_string : "?" + query;
 }
 
 String DOMURLUtilsReadOnly::hash(const KURL& kurl) {
   String fragment_identifier = kurl.FragmentIdentifier();
-  if (fragment_identifier.empty())
+  if (fragment_identifier.IsEmpty())
     return g_empty_string;
   return AtomicString(String("#" + fragment_identifier));
 }

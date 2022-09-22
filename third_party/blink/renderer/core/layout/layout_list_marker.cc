@@ -219,7 +219,7 @@ LayoutUnit LayoutListMarker::GetWidthOfText(
     ListMarker::ListStyleCategory category) const {
   NOT_DESTROYED();
   // TODO(crbug.com/1012289): this code doesn't support bidi algorithm.
-  if (text_.empty())
+  if (text_.IsEmpty())
     return LayoutUnit();
   const Font& font = StyleRef().GetFont();
   LayoutUnit item_width =

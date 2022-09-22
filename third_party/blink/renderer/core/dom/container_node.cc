@@ -1565,8 +1565,8 @@ HTMLCollection* ContainerNode::getElementsByTagNameNS(
     const AtomicString& namespace_uri,
     const AtomicString& local_name) {
   return EnsureCachedCollection<TagCollectionNS>(
-      kTagCollectionNSType, namespace_uri.empty() ? g_null_atom : namespace_uri,
-      local_name);
+      kTagCollectionNSType,
+      namespace_uri.IsEmpty() ? g_null_atom : namespace_uri, local_name);
 }
 
 // Takes an AtomicString in argument because it is common for elements to share
@@ -1596,7 +1596,7 @@ RadioNodeList* ContainerNode::GetRadioNodeList(const AtomicString& name,
 Element* ContainerNode::getElementById(const AtomicString& id) const {
   // According to https://dom.spec.whatwg.org/#concept-id, empty IDs are
   // treated as equivalent to the lack of an id attribute.
-  if (id.empty()) {
+  if (id.IsEmpty()) {
     return nullptr;
   }
 

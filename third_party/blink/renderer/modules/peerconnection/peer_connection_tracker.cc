@@ -1122,7 +1122,7 @@ void PeerConnectionTracker::TrackSessionId(RTCPeerConnectionHandler* pc_handler,
                                            const String& session_id) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
   DCHECK(pc_handler);
-  DCHECK(!session_id.empty());
+  DCHECK(!session_id.IsEmpty());
   const int local_id = GetLocalIDForHandler(pc_handler);
   if (local_id == -1) {
     return;

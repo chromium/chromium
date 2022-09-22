@@ -145,7 +145,7 @@ KURL ResourceResponse::ResponseUrl() const {
 }
 
 bool ResourceResponse::IsServiceWorkerPassThrough() const {
-  return cache_storage_cache_name_.empty() &&
+  return cache_storage_cache_name_.IsEmpty() &&
          !url_list_via_service_worker_.empty() &&
          ResponseUrl() == CurrentRequestUrl();
 }
@@ -271,7 +271,7 @@ void ResourceResponse::AddHttpHeaderFieldWithMultipleValues(
   if (it != http_header_fields_.end())
     value_builder.Append(it->value);
   for (const auto& value : values) {
-    if (!value_builder.empty())
+    if (!value_builder.IsEmpty())
       value_builder.Append(", ");
     value_builder.Append(value);
   }
@@ -316,8 +316,8 @@ bool ResourceResponse::CacheControlContainsMustRevalidate() const {
 bool ResourceResponse::HasCacheValidatorFields() const {
   static const char kLastModifiedHeader[] = "last-modified";
   static const char kETagHeader[] = "etag";
-  return !http_header_fields_.Get(kLastModifiedHeader).empty() ||
-         !http_header_fields_.Get(kETagHeader).empty();
+  return !http_header_fields_.Get(kLastModifiedHeader).IsEmpty() ||
+         !http_header_fields_.Get(kETagHeader).IsEmpty();
 }
 
 absl::optional<base::TimeDelta> ResourceResponse::CacheControlMaxAge() const {
@@ -347,7 +347,7 @@ static absl::optional<base::Time> ParseDateValueInHeader(
     const HTTPHeaderMap& headers,
     const AtomicString& header_name) {
   const AtomicString& header_value = headers.Get(header_name);
-  if (header_value.empty())
+  if (header_value.IsEmpty())
     return absl::nullopt;
   // This handles all date formats required by RFC2616:
   // Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123

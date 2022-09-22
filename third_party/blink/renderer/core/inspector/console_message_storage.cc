@@ -51,7 +51,7 @@ const char* MessageSourceToString(mojom::ConsoleMessageSource source) {
 std::unique_ptr<TracedValue> MessageTracedValue(ConsoleMessage* message) {
   auto value = std::make_unique<TracedValue>();
   value->SetString("content", message->Message());
-  if (!message->Location()->Url().empty()) {
+  if (!message->Location()->Url().IsEmpty()) {
     value->SetString("url", message->Location()->Url());
   }
   return value;

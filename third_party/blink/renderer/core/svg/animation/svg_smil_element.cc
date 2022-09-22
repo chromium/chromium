@@ -171,7 +171,7 @@ void SVGSMILElement::Condition::Trace(Visitor* visitor) const {
 }
 
 void SVGSMILElement::Condition::ConnectSyncBase(SVGSMILElement& timed_element) {
-  DCHECK(!base_id_.empty());
+  DCHECK(!base_id_.IsEmpty());
   DCHECK_EQ(type_, kSyncBase);
   DCHECK(!base_element_);
   auto* svg_smil_element =
@@ -201,7 +201,7 @@ void SVGSMILElement::Condition::ConnectEventBase(
   DCHECK(!base_element_);
   DCHECK(!event_listener_);
   SVGElement* target;
-  if (base_id_.empty()) {
+  if (base_id_.IsEmpty()) {
     target = timed_element.targetElement();
   } else {
     target = DynamicTo<SVGElement>(SVGURIReference::ObserveTarget(
@@ -274,7 +274,7 @@ void SVGSMILElement::BuildPendingResource() {
 
   const AtomicString& href = SVGURIReference::LegacyHrefString(*this);
   Element* target;
-  if (href.empty()) {
+  if (href.IsEmpty()) {
     target = parentElement();
   } else {
     target = SVGURIReference::ObserveTarget(target_id_observer_, *this, href);
@@ -426,7 +426,7 @@ bool SVGSMILElement::ParseCondition(const String& value,
     if (is_negated)
       offset = -offset;
   }
-  if (condition_string.empty())
+  if (condition_string.IsEmpty())
     return false;
   pos = condition_string.find('.');
 
@@ -438,7 +438,7 @@ bool SVGSMILElement::ParseCondition(const String& value,
     base_id = condition_string.Left(pos);
     name_string = condition_string.Substring(pos + 1);
   }
-  if (name_string.empty())
+  if (name_string.IsEmpty())
     return false;
 
   Condition::Type type;
@@ -451,7 +451,7 @@ bool SVGSMILElement::ParseCondition(const String& value,
     name_string = "repeat";
     type = Condition::kSyncBase;
   } else if (name_string == "begin" || name_string == "end") {
-    if (base_id.empty())
+    if (base_id.IsEmpty())
       return false;
     UseCounter::Count(&GetDocument(),
                       WebFeature::kSVGSMILBeginOrEndSyncbaseValue);

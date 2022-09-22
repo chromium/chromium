@@ -1133,12 +1133,12 @@ class DeviceContainer {
                   bool is_device_capture,
                   bool is_reconfiguration_allowed)
       : device_parameters_(capability.Parameters()) {
-    if (!capability.DeviceID().empty()) {
+    if (!capability.DeviceID().IsEmpty()) {
       device_id_container_ =
           StringContainer(StringSet({capability.DeviceID().Utf8()}));
     }
 
-    if (!capability.GroupID().empty()) {
+    if (!capability.GroupID().IsEmpty()) {
       group_id_container_ =
           StringContainer(StringSet({capability.GroupID().Utf8()}));
     }
@@ -1496,7 +1496,7 @@ AudioDeviceCaptureCapability::AudioDeviceCaptureCapability(
     : device_id_(std::move(device_id)),
       group_id_(std::move(group_id)),
       parameters_(parameters) {
-  DCHECK(!device_id_.empty());
+  DCHECK(!device_id_.IsEmpty());
 }
 
 AudioDeviceCaptureCapability::AudioDeviceCaptureCapability(

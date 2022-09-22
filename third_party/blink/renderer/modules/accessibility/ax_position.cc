@@ -449,7 +449,7 @@ int AXPosition::MaxTextOffset() const {
   // compute offset mappings for empty LayoutText objects. Other text objects
   // (such as some list markers) are not affected.
   if (const LayoutText* layout_text = DynamicTo<LayoutText>(layout_object)) {
-    if (layout_text->GetText().empty())
+    if (layout_text->GetText().IsEmpty())
       return container_object_->ComputedName().length();
   }
 

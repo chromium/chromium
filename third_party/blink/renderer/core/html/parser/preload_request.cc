@@ -74,7 +74,7 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
   // data URLs if the document's URL is a data URL. We don't want to create
   // extra resource requests with data URLs to avoid copy / initialization
   // overhead, which can be significant for large URLs.
-  if (resource_url.empty() || resource_url.StartsWith("#") ||
+  if (resource_url.IsEmpty() || resource_url.StartsWith("#") ||
       ProtocolIs(resource_url, "data")) {
     return nullptr;
   }
@@ -149,8 +149,8 @@ Resource* PreloadRequest::Start(Document* document) {
     params.SetDecoderOptions(TextResourceDecoderOptions::CreateUTF8Decode());
   } else if (resource_type_ == ResourceType::kScript ||
              resource_type_ == ResourceType::kCSSStyleSheet) {
-    params.SetCharset(charset_.empty() ? document->Encoding()
-                                       : WTF::TextEncoding(charset_));
+    params.SetCharset(charset_.IsEmpty() ? document->Encoding()
+                                         : WTF::TextEncoding(charset_));
   }
   FetchParameters::SpeculativePreloadType speculative_preload_type =
       FetchParameters::SpeculativePreloadType::kInDocument;

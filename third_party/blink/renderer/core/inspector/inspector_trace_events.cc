@@ -944,7 +944,7 @@ void inspector_receive_response_event::Data(perfetto::TracedValue context,
   if (!response.ResponseTime().is_null()) {
     dict.Add("responseTime", response.ResponseTime().ToJsTime());
   }
-  if (!response.CacheStorageCacheName().empty()) {
+  if (!response.CacheStorageCacheName().IsEmpty()) {
     dict.Add("cacheStorageCacheName", response.CacheStorageCacheName());
   }
 

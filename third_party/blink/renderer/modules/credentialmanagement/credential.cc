@@ -18,14 +18,14 @@ Credential::~Credential() = default;
 
 Credential::Credential(const String& id, const String& type)
     : id_(id), type_(type) {
-  DCHECK(!id_.empty() || type == kOtpCredentialType ||
+  DCHECK(!id_.IsEmpty() || type == kOtpCredentialType ||
          type == kFederatedCredentialType || type == kIdentityCredentialType);
-  DCHECK(!type_.empty());
+  DCHECK(!type_.IsEmpty());
 }
 
 KURL Credential::ParseStringAsURLOrThrow(const String& url,
                                          ExceptionState& exception_state) {
-  if (url.empty())
+  if (url.IsEmpty())
     return KURL();
   KURL parsed_url = KURL(NullURL(), url);
   if (!parsed_url.IsValid()) {

@@ -124,7 +124,7 @@ Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> ConvertAccepts(
     Vector<String> extensions;
     for (const auto& a : t->accept()) {
       String type = a.first.StripWhiteSpace(IsHTTPWhitespace);
-      if (type.empty()) {
+      if (type.IsEmpty()) {
         exception_state.ThrowTypeError("Invalid type: " + a.first);
         return {};
       }

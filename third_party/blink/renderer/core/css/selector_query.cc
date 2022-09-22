@@ -465,7 +465,7 @@ SelectorQuery::SelectorQuery(CSSSelectorList selector_list)
 SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
                                        const Document& document,
                                        ExceptionState& exception_state) {
-  if (selectors.empty()) {
+  if (selectors.IsEmpty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "The provided selector is empty.");
     return nullptr;

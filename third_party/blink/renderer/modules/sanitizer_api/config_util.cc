@@ -109,7 +109,7 @@ bool AllValidCharacters(const String& name) {
 }
 
 bool IsValidName(const String& name) {
-  return !name.empty() && AllValidCharacters(name);
+  return !name.IsEmpty() && AllValidCharacters(name);
 }
 
 String ElementFromAPI(const String& name) {

@@ -616,7 +616,8 @@ void ChromeClientImpl::ShowMouseOverURL(const HitTestResult& result) {
   // scrollbar and an element in the case of overlay scrollbars.
   if (!result.GetScrollbar()) {
     // Find out if the mouse is over a link, and if so, let our UI know...
-    if (result.IsLiveLink() && !result.AbsoluteLinkURL().GetString().empty()) {
+    if (result.IsLiveLink() &&
+        !result.AbsoluteLinkURL().GetString().IsEmpty()) {
       url = result.AbsoluteLinkURL();
     } else if (result.InnerNode() &&
                (IsA<HTMLObjectElement>(*result.InnerNode()) ||
@@ -639,7 +640,7 @@ void ChromeClientImpl::UpdateTooltipUnderCursor(LocalFrame& frame,
                                                 TextDirection dir) {
   WebFrameWidgetImpl* widget =
       WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
-  if (!tooltip_text.empty()) {
+  if (!tooltip_text.IsEmpty()) {
     widget->UpdateTooltipUnderCursor(tooltip_text, dir);
     did_request_non_empty_tool_tip_ = true;
   } else if (did_request_non_empty_tool_tip_) {

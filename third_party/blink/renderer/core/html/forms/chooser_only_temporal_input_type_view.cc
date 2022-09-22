@@ -111,7 +111,7 @@ void ChooserOnlyTemporalInputTypeView::UpdateView() {
     display_value = GetElement().SuggestedValue();
   else
     display_value = input_type_->VisibleValue();
-  if (display_value.empty()) {
+  if (display_value.IsEmpty()) {
     // Need to put something to keep text baseline.
     display_value = " ";
   }

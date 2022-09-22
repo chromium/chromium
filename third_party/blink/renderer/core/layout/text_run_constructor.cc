@@ -128,7 +128,7 @@ TextRun ConstructTextRun(const Font& font,
                          const ComputedStyle& style,
                          TextRunFlags flags) {
   return ConstructTextRun(font, string, style,
-                          string.empty() || string.Is8Bit()
+                          string.IsEmpty() || string.Is8Bit()
                               ? TextDirection::kLtr
                               : DetermineDirectionality(string),
                           flags);

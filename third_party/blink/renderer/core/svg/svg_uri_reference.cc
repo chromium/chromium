@@ -119,7 +119,7 @@ Element* SVGURIReference::TargetElementFromIRIString(
     const TreeScope& tree_scope,
     AtomicString* fragment_identifier) {
   AtomicString id = FragmentIdentifierFromIRIString(url_string, tree_scope);
-  if (id.empty())
+  if (id.IsEmpty())
     return nullptr;
   if (fragment_identifier)
     *fragment_identifier = id;
@@ -147,7 +147,7 @@ Element* SVGURIReference::ObserveTarget(Member<IdTargetObserver>& observer,
                                         const AtomicString& id,
                                         base::RepeatingClosure closure) {
   DCHECK(!observer);
-  if (id.empty())
+  if (id.IsEmpty())
     return nullptr;
   observer = MakeGarbageCollected<SVGElementReferenceObserver>(
       tree_scope, id, std::move(closure));

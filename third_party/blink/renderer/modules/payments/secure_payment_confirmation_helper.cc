@@ -79,13 +79,13 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
     return nullptr;
   }
 
-  if (request->instrument()->displayName().empty()) {
+  if (request->instrument()->displayName().IsEmpty()) {
     exception_state.ThrowTypeError(
         "The \"secure-payment-confirmation\" method requires a non-empty "
         "\"instrument.displayName\" field.");
     return nullptr;
   }
-  if (request->instrument()->icon().empty()) {
+  if (request->instrument()->icon().IsEmpty()) {
     exception_state.ThrowTypeError(
         "The \"secure-payment-confirmation\" method requires a non-empty "
         "\"instrument.icon\" field.");
@@ -104,8 +104,8 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
     return nullptr;
   }
   if ((!request->hasPayeeOrigin() && !request->hasPayeeName()) ||
-      (request->hasPayeeOrigin() && request->payeeOrigin().empty()) ||
-      (request->hasPayeeName() && request->payeeName().empty())) {
+      (request->hasPayeeOrigin() && request->payeeOrigin().IsEmpty()) ||
+      (request->hasPayeeName() && request->payeeName().IsEmpty())) {
     exception_state.ThrowTypeError(
         "The \"secure-payment-confirmation\" method requires a non-empty "
         "\"payeeOrigin\" or \"payeeName\" field.");

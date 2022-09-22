@@ -87,7 +87,7 @@ void BaseTemporalInputType::SetValueAsDouble(
 }
 
 bool BaseTemporalInputType::TypeMismatchFor(const String& value) const {
-  return !value.empty() && !ParseToDateComponents(value, nullptr);
+  return !value.IsEmpty() && !ParseToDateComponents(value, nullptr);
 }
 
 bool BaseTemporalInputType::TypeMismatch() const {
@@ -137,7 +137,7 @@ Decimal BaseTemporalInputType::ParseToNumber(
 
 bool BaseTemporalInputType::ParseToDateComponents(const String& source,
                                                   DateComponents* out) const {
-  if (source.empty())
+  if (source.IsEmpty())
     return false;
   DateComponents ignored_result;
   if (!out)
@@ -180,7 +180,7 @@ String BaseTemporalInputType::LocalizeValue(
     return proposed_value;
 
   String localized = GetElement().GetLocale().FormatDateTime(date);
-  return localized.empty() ? proposed_value : localized;
+  return localized.IsEmpty() ? proposed_value : localized;
 }
 
 String BaseTemporalInputType::VisibleValue() const {
@@ -204,7 +204,7 @@ bool BaseTemporalInputType::ValueMissing(const String& value) const {
   // For text-mode input elements (including dates), the value is missing only
   // if it is mutable.
   // https://html.spec.whatwg.org/multipage/input.html#the-required-attribute
-  return GetElement().IsRequired() && value.empty() &&
+  return GetElement().IsRequired() && value.IsEmpty() &&
          !GetElement().IsDisabledOrReadOnly();
 }
 

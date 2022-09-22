@@ -176,7 +176,7 @@ class LinkSelectionTest : public LinkSelectionTestBase {
 
 TEST_F(LinkSelectionTest, MouseDragWithoutAltAllowNoLinkSelection) {
   EmulateMouseDrag(left_point_in_link_, right_point_in_link_, 0);
-  EXPECT_TRUE(GetSelectionText().empty());
+  EXPECT_TRUE(GetSelectionText().IsEmpty());
 }
 
 TEST_F(LinkSelectionTest, MouseDragWithAltAllowSelection) {
@@ -261,7 +261,7 @@ TEST_F(LinkSelectionTest, SingleClickWithAltStartsDownloadWhenTextSelected) {
   const auto& selection_rect = range_to_select->BoundingBox();
   main_frame_->MoveRangeSelection(selection_rect.origin(),
                                   selection_rect.bottom_right());
-  EXPECT_FALSE(GetSelectionText().empty());
+  EXPECT_FALSE(GetSelectionText().IsEmpty());
 
   EmulateMouseClick(left_point_in_link_, WebMouseEvent::Button::kLeft,
                     WebInputEvent::kAltKey);
@@ -321,7 +321,7 @@ class LinkSelectionClickEventsTest : public LinkSelectionTestBase {
                       0, click_count);
 
     if (double_click_event) {
-      EXPECT_EQ(element.innerText().empty(), GetSelectionText().empty());
+      EXPECT_EQ(element.innerText().IsEmpty(), GetSelectionText().IsEmpty());
     }
   }
 };

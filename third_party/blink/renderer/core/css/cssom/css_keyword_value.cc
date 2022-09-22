@@ -18,7 +18,7 @@ namespace blink {
 
 CSSKeywordValue* CSSKeywordValue::Create(const String& keyword,
                                          ExceptionState& exception_state) {
-  if (keyword.empty()) {
+  if (keyword.IsEmpty()) {
     exception_state.ThrowTypeError(
         "CSSKeywordValue does not support empty strings");
     return nullptr;
@@ -64,7 +64,7 @@ CSSKeywordValue* CSSKeywordValue::FromCSSValue(const CSSValue& value) {
 }
 
 CSSKeywordValue* CSSKeywordValue::Create(const String& keyword) {
-  DCHECK(!keyword.empty());
+  DCHECK(!keyword.IsEmpty());
   return MakeGarbageCollected<CSSKeywordValue>(keyword);
 }
 
@@ -74,7 +74,7 @@ const String& CSSKeywordValue::value() const {
 
 void CSSKeywordValue::setValue(const String& keyword,
                                ExceptionState& exception_state) {
-  if (keyword.empty()) {
+  if (keyword.IsEmpty()) {
     exception_state.ThrowTypeError(
         "CSSKeywordValue does not support empty strings");
     return;

@@ -63,7 +63,7 @@ FindInPage::FindInPage(WebLocalFrameImpl& frame,
 void FindInPage::Find(int request_id,
                       const String& search_text,
                       mojom::blink::FindOptionsPtr options) {
-  DCHECK(!search_text.empty());
+  DCHECK(!search_text.IsEmpty());
 
   // Record the fact that we have a find-in-page request.
   frame_->GetFrame()->GetDocument()->MarkHasFindInPageRequest();

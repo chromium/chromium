@@ -54,7 +54,7 @@ void AudioWorkletGlobalScope::registerProcessor(
   DCHECK(IsContextThread());
 
   // 1. If name is an empty string, throw a NotSupportedError.
-  if (name.empty()) {
+  if (name.IsEmpty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "The processor name cannot be empty.");
     return;

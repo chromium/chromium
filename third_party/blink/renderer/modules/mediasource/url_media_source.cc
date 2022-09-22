@@ -107,7 +107,7 @@ String URLMediaSource::createObjectURL(ScriptState* script_state,
 
   // If attachment's registration failed, release its start-at-one reference to
   // let it be destructed.
-  if (url.empty())
+  if (url.IsEmpty())
     attachment->Release();
 
   return url;

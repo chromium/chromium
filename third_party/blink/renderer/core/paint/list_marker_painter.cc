@@ -181,7 +181,7 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
     return;
   }
 
-  if (layout_list_marker_.GetText().empty())
+  if (layout_list_marker_.GetText().IsEmpty())
     return;
 
   Color color(layout_list_marker_.ResolveColor(GetCSSPropertyColor()));

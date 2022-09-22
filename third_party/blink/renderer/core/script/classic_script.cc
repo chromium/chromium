@@ -49,7 +49,7 @@ KURL SanitizeBaseUrl(const KURL& raw_base_url,
 
 String SourceMapUrlFromResponse(const ResourceResponse& response) {
   String source_map_url = response.HttpHeaderField(http_names::kSourceMap);
-  if (!source_map_url.empty())
+  if (!source_map_url.IsEmpty())
     return source_map_url;
 
   // Try to get deprecated header.

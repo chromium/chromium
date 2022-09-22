@@ -193,7 +193,7 @@ SourceBuffer* MediaSource::addSourceBuffer(const String& type,
   // https://www.w3.org/TR/media-source/#dom-mediasource-addsourcebuffer
   // 1. If type is an empty string then throw a TypeError exception
   //    and abort these steps.
-  if (type.empty()) {
+  if (type.IsEmpty()) {
     LogAndThrowTypeError(exception_state, "The type provided is empty");
     return nullptr;
   }
@@ -545,7 +545,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // Section 2.2 isTypeSupported() method steps.
   // https://dvcs.w3.org/hg/html-media/raw-file/tip/media-source/media-source.html#widl-MediaSource-isTypeSupported-boolean-DOMString-type
   // 1. If type is an empty string, then return false.
-  if (type.empty()) {
+  if (type.IsEmpty()) {
     DVLOG(1) << __func__ << "(" << type << ", "
              << (enforce_codec_specificity ? "true" : "false")
              << ") -> false (empty input)";
@@ -555,7 +555,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // 2. If type does not contain a valid MIME type string, then return false.
   ContentType content_type(type);
   String mime_type = content_type.GetType();
-  if (mime_type.empty()) {
+  if (mime_type.IsEmpty()) {
     DVLOG(1) << __func__ << "(" << type << ", "
              << (enforce_codec_specificity ? "true" : "false")
              << ") -> false (invalid mime type)";
@@ -1275,7 +1275,7 @@ MediaSourceHandleImpl* MediaSource::handle(ExceptionState& exception_state) {
     // security checks and logging for legacy MSE object URLs.
     SecurityOrigin* origin = GetExecutionContext()->GetMutableSecurityOrigin();
     String internal_blob_url = BlobURL::CreatePublicURL(origin).GetString();
-    DCHECK(!internal_blob_url.empty());
+    DCHECK(!internal_blob_url.IsEmpty());
     worker_media_source_handle_ = MakeGarbageCollected<MediaSourceHandleImpl>(
         std::move(attachment_provider), std::move(internal_blob_url));
   }

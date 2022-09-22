@@ -45,7 +45,8 @@ TEST_P(PaymentsCurrencyValidatorTest, IsValidCurrencyCodeFormat) {
             PaymentsValidators::IsValidCurrencyCodeFormat(GetParam().code,
                                                           &error_message))
       << error_message;
-  EXPECT_EQ(GetParam().expected_valid, error_message.empty()) << error_message;
+  EXPECT_EQ(GetParam().expected_valid, error_message.IsEmpty())
+      << error_message;
 
   EXPECT_EQ(
       GetParam().expected_valid,
@@ -96,7 +97,8 @@ TEST_P(PaymentsAmountValidatorTest, IsValidAmountFormat) {
             PaymentsValidators::IsValidAmountFormat(
                 GetParam().input, "test value", &error_message))
       << error_message;
-  EXPECT_EQ(GetParam().expected_valid, error_message.empty()) << error_message;
+  EXPECT_EQ(GetParam().expected_valid, error_message.IsEmpty())
+      << error_message;
 
   EXPECT_EQ(GetParam().expected_valid,
             PaymentsValidators::IsValidAmountFormat(GetParam().input,
@@ -141,7 +143,8 @@ TEST_P(PaymentsRegionValidatorTest, IsValidCountryCodeFormat) {
             PaymentsValidators::IsValidCountryCodeFormat(GetParam().input,
                                                          &error_message))
       << error_message;
-  EXPECT_EQ(GetParam().expected_valid, error_message.empty()) << error_message;
+  EXPECT_EQ(GetParam().expected_valid, error_message.IsEmpty())
+      << error_message;
 
   EXPECT_EQ(
       GetParam().expected_valid,
@@ -179,7 +182,8 @@ TEST_P(PaymentsShippingAddressValidatorTest, IsValidShippingAddress) {
   EXPECT_EQ(GetParam().expected_valid,
             PaymentsValidators::IsValidShippingAddress(address, &error_message))
       << error_message;
-  EXPECT_EQ(GetParam().expected_valid, error_message.empty()) << error_message;
+  EXPECT_EQ(GetParam().expected_valid, error_message.IsEmpty())
+      << error_message;
 
   EXPECT_EQ(GetParam().expected_valid,
             PaymentsValidators::IsValidShippingAddress(address, nullptr));

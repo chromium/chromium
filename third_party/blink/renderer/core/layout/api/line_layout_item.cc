@@ -28,7 +28,7 @@ const ComputedStyle& LineLayoutItem::StyleRef(bool first_line) const {
 }
 
 bool LineLayoutItem::IsEmptyText() const {
-  return IsText() && To<LayoutText>(layout_object_.Get())->GetText().empty();
+  return IsText() && To<LayoutText>(layout_object_.Get())->GetText().IsEmpty();
 }
 
 int LineLayoutItem::CaretMaxOffset() const {

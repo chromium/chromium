@@ -55,7 +55,7 @@ bool ReferrerScriptInfo::IsDefaultValue(
     const KURL& script_origin_resource_name) const {
   return GetStoredBaseUrl(*this, script_origin_resource_name).IsNull() &&
          credentials_mode_ == network::mojom::CredentialsMode::kSameOrigin &&
-         nonce_.empty() && parser_state_ == kNotParserInserted &&
+         nonce_.IsEmpty() && parser_state_ == kNotParserInserted &&
          referrer_policy_ == network::mojom::ReferrerPolicy::kDefault;
 }
 
@@ -79,7 +79,7 @@ ReferrerScriptInfo ReferrerScriptInfo::FromV8HostDefinedOptions(
   SECURITY_CHECK(base_url_value->IsString());
   String base_url_string =
       ToCoreString(v8::Local<v8::String>::Cast(base_url_value));
-  KURL base_url = base_url_string.empty() ? KURL() : KURL(base_url_string);
+  KURL base_url = base_url_string.IsEmpty() ? KURL() : KURL(base_url_string);
   DCHECK(base_url.IsNull() || base_url.IsValid());
   if (base_url.IsNull()) {
     // If base URL is null, defer to `script_origin_resource_name`.

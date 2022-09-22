@@ -82,7 +82,7 @@ WTF::Vector<Purpose> ParsePurpose(const WTF::String& purpose) {
 }
 
 WTF::String ParseType(const WTF::String& type) {
-  if (type.IsNull() || type.empty())
+  if (type.IsNull() || type.IsEmpty())
     return "";
 
   if (!blink::IsSupportedMimeType(type.Ascii())) {

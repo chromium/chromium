@@ -132,7 +132,7 @@ void FrameConsole::DidFailLoading(DocumentLoader* loader,
 
   StringBuilder message;
   message.Append("Failed to load resource");
-  if (!error.LocalizedDescription().empty()) {
+  if (!error.LocalizedDescription().IsEmpty()) {
     message.Append(": ");
     message.Append(error.LocalizedDescription());
   }

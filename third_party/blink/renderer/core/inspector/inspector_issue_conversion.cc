@@ -26,7 +26,7 @@ std::unique_ptr<protocol::Audits::AffectedRequest> BuildAffectedRequest(
   auto protocol_request = protocol::Audits::AffectedRequest::create()
                               .setRequestId(request->request_id)
                               .build();
-  if (!request->url.empty()) {
+  if (!request->url.IsEmpty()) {
     protocol_request->setUrl(request->url);
   }
   return protocol_request;
@@ -325,7 +325,7 @@ std::unique_ptr<protocol::Audits::SourceCodeLocation> BuildAffectedLocation(
           .setColumnNumber(affected_location->column)
           .setLineNumber(affected_location->line)
           .build();
-  if (!affected_location->script_id.empty())
+  if (!affected_location->script_id.IsEmpty())
     protocol_affected_location->setScriptId(affected_location->script_id);
   return protocol_affected_location;
 }

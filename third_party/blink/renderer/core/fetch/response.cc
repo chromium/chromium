@@ -311,7 +311,7 @@ Response* Response::Create(ScriptState* script_state,
     // "4. If |Content-Type| is non-null and |r|'s response's header list
     // contains no header named `Content-Type`, append `Content-Type`/
     // |Content-Type| to |r|'s response's header list."
-    if (!content_type.empty() &&
+    if (!content_type.IsEmpty() &&
         !r->response_->HeaderList()->Has("Content-Type"))
       r->response_->HeaderList()->Append("Content-Type", content_type);
   }

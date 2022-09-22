@@ -228,7 +228,7 @@ MHTMLArchive* MHTMLArchive::CreateArchive(
   archive->archive_url_ = url;
 
   // |data| may be null if archive file is empty.
-  if (!data || data->empty()) {
+  if (!data || data->IsEmpty()) {
     archive->load_result_ = MHTMLLoadResult::kEmptyFile;
     return archive;
   }
@@ -307,8 +307,8 @@ void MHTMLArchive::GenerateMHTMLHeader(const String& boundary,
                                        const String& mime_type,
                                        base::Time date,
                                        Vector<char>& output_buffer) {
-  DCHECK(!boundary.empty());
-  DCHECK(!mime_type.empty());
+  DCHECK(!boundary.IsEmpty());
+  DCHECK(!mime_type.IsEmpty());
 
   String date_string = MakeRFC2822DateString(date, 0);
 
@@ -347,8 +347,8 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
                                      EncodingPolicy encoding_policy,
                                      const SerializedResource& resource,
                                      Vector<char>& output_buffer) {
-  DCHECK(!boundary.empty());
-  DCHECK(content_id.empty() || content_id[0] == '<');
+  DCHECK(!boundary.IsEmpty());
+  DCHECK(content_id.IsEmpty() || content_id[0] == '<');
 
   StringBuilder string_builder;
   // Per the spec, the boundary must occur at the beginning of a line.
@@ -360,7 +360,7 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
   string_builder.Append(resource.mime_type);
   string_builder.Append("\r\n");
 
-  if (!content_id.empty()) {
+  if (!content_id.IsEmpty()) {
     string_builder.Append("Content-ID: ");
     string_builder.Append(content_id);
     string_builder.Append("\r\n");
@@ -429,7 +429,7 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
 
 void MHTMLArchive::GenerateMHTMLFooterForTesting(const String& boundary,
                                                  Vector<char>& output_buffer) {
-  DCHECK(!boundary.empty());
+  DCHECK(!boundary.IsEmpty());
   std::string utf8_string = String("\r\n--" + boundary + "--\r\n").Utf8();
   output_buffer.Append(utf8_string.c_str(),
                        static_cast<wtf_size_t>(utf8_string.length()));

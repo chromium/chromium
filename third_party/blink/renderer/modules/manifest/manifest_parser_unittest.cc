@@ -1294,7 +1294,7 @@ TEST_F(ManifestParserTest, IconTypeParseRules) {
     auto& manifest =
         ParseManifest(R"({ "icons": [ {"src": "", "type": {} } ] })");
     EXPECT_FALSE(manifest->icons.empty());
-    EXPECT_TRUE(manifest->icons[0]->type.empty());
+    EXPECT_TRUE(manifest->icons[0]->type.IsEmpty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'type' ignored, type string expected.", errors()[0]);
   }
@@ -1304,7 +1304,7 @@ TEST_F(ManifestParserTest, IconTypeParseRules) {
     auto& manifest =
         ParseManifest(R"({ "icons": [ {"src": "", "type": 42 } ] })");
     EXPECT_FALSE(manifest->icons.empty());
-    EXPECT_TRUE(manifest->icons[0]->type.empty());
+    EXPECT_TRUE(manifest->icons[0]->type.IsEmpty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'type' ignored, type string expected.", errors()[0]);
   }

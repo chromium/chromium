@@ -645,9 +645,9 @@ def _make_reflect_process_keyword_state(cg_context):
 
     if "ReflectEmpty" in ext_attrs:
         empty_default = ext_attrs.value_of("ReflectEmpty")
-        branches.append(cond="reflect_value.empty()",
-                        body=F("${return_value} = {};",
-                               constant(empty_default)))
+        branches.append(
+            cond="reflect_value.IsEmpty()",
+            body=F("${return_value} = {};", constant(empty_default)))
 
     keywords = ext_attrs.values_of("ReflectOnly")
     expr = " || ".join(
@@ -3143,7 +3143,7 @@ def make_named_property_getter_callback(cg_context, function_name):
     # existence by heuristics.
     type = cg_context.return_type.unwrap()
     if type.is_any or type.is_object:
-        not_found_expr = "${return_value}.empty()"
+        not_found_expr = "${return_value}.IsEmpty()"
     elif type.is_string:
         not_found_expr = "${return_value}.IsNull()"
     elif type.is_interface:

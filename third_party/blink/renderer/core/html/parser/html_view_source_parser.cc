@@ -108,7 +108,7 @@ void HTMLViewSourceParser::EndTracker(SegmentedString& current_input,
 }
 
 String HTMLViewSourceParser::SourceForToken(const HTMLToken& token) {
-  if (!cached_source_for_token_.empty())
+  if (!cached_source_for_token_.IsEmpty())
     return cached_source_for_token_;
 
   wtf_size_t length;

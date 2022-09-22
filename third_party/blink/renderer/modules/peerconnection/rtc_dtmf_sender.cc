@@ -120,7 +120,7 @@ void RTCDTMFSender::insertDTMF(const String& tones,
   // Spec: a-d should be represented in the tone buffer as A-D
   tone_buffer_ = tones.UpperASCII();
 
-  if (tone_buffer_.empty()) {
+  if (tone_buffer_.IsEmpty()) {
     return;
   }
   if (!playout_task_is_scheduled_) {
@@ -136,7 +136,7 @@ void RTCDTMFSender::PlayoutTask() {
   playout_task_is_scheduled_ = false;
   // TODO(crbug.com/891638): Add check on transceiver's "stopped"
   // and "currentDirection" attributes as per spec.
-  if (tone_buffer_.empty()) {
+  if (tone_buffer_.IsEmpty()) {
     Member<Event> event = MakeGarbageCollected<RTCDTMFToneChangeEvent>("");
     DispatchEvent(*event.Release());
     return;
@@ -158,7 +158,7 @@ void RTCDTMFSender::PlayoutTask() {
 void RTCDTMFSender::DidPlayTone(const String& tone) {
   // We're using the DidPlayTone with an empty buffer to signal the
   // end of the tone.
-  if (tone.empty()) {
+  if (tone.IsEmpty()) {
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kNetworking)
         ->PostDelayedTask(

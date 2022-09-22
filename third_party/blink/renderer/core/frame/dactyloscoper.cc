@@ -65,7 +65,7 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         const String& str) {
   if (!context || !ShouldSample(feature))
     return;
-  if (str.empty())
+  if (str.IsEmpty())
     return;
   Dactyloscoper::RecordDirectSurface(context, feature,
                                      IdentifiabilitySensitiveStringToken(str));

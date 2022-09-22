@@ -849,7 +849,7 @@ void XMLHttpRequest::send(Blob* body, ExceptionState& exception_state) {
   if (AreMethodAndURLValidForSend()) {
     if (!HasContentTypeRequestHeader()) {
       const String& blob_type = FetchUtils::NormalizeHeaderValue(body->type());
-      if (!blob_type.empty() && ParsedContentType(blob_type).IsValid()) {
+      if (!blob_type.IsEmpty() && ParsedContentType(blob_type).IsValid()) {
         SetRequestHeaderInternal(http_names::kContentType,
                                  AtomicString(blob_type));
       }
@@ -859,7 +859,7 @@ void XMLHttpRequest::send(Blob* body, ExceptionState& exception_state) {
     http_body = EncodedFormData::Create();
     if (body->HasBackingFile()) {
       auto* file = To<File>(body);
-      if (!file->GetPath().empty())
+      if (!file->GetPath().IsEmpty())
         http_body->AppendFile(file->GetPath(), file->LastModifiedTime());
       else
         NOTREACHED();
@@ -1544,7 +1544,7 @@ const AtomicString& XMLHttpRequest::getResponseHeader(
 AtomicString XMLHttpRequest::FinalResponseMIMEType() const {
   AtomicString overridden_type =
       ExtractMIMETypeFromMediaType(mime_type_override_);
-  if (!overridden_type.empty())
+  if (!overridden_type.IsEmpty())
     return overridden_type;
 
   if (response_.IsHTTP()) {
@@ -1557,7 +1557,7 @@ AtomicString XMLHttpRequest::FinalResponseMIMEType() const {
 
 AtomicString XMLHttpRequest::FinalResponseMIMETypeWithFallback() const {
   AtomicString final_type = FinalResponseMIMEType();
-  if (!final_type.empty())
+  if (!final_type.IsEmpty())
     return final_type;
 
   return AtomicString("text/xml");
@@ -1575,7 +1575,7 @@ WTF::TextEncoding XMLHttpRequest::FinalResponseCharset() const {
   // it. [spec text]
   String override_response_charset =
       ExtractCharsetFromMediaType(mime_type_override_);
-  if (!override_response_charset.empty())
+  if (!override_response_charset.IsEmpty())
     label = override_response_charset;
 
   // 4. If label is null, then return null. [spec text]
@@ -1717,7 +1717,7 @@ void XMLHttpRequest::DidFinishLoadingInternal() {
   if (decoder_) {
     auto text = decoder_->Flush();
 
-    if (!text.empty() && !response_text_overflow_) {
+    if (!text.IsEmpty() && !response_text_overflow_) {
       response_text_.Concat(isolate_, text);
       response_text_overflow_ = response_text_.IsEmpty();
     }
@@ -1909,7 +1909,7 @@ void XMLHttpRequest::DidReceiveData(const char* data, unsigned len) {
       decoder_ = CreateDecoder();
 
     auto text = decoder_->Decode(data, len);
-    if (!text.empty() && !response_text_overflow_) {
+    if (!text.IsEmpty() && !response_text_overflow_) {
       response_text_.Concat(isolate_, text);
       response_text_overflow_ = response_text_.IsEmpty();
     }

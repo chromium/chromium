@@ -469,7 +469,7 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
       return true;
     case CSSSelector::kAttributeList: {
       // Ignore empty selectors or selectors containing HTML spaces
-      if (selector_value.empty() ||
+      if (selector_value.IsEmpty() ||
           selector_value.Find(&IsHTMLSpace<UChar>) != kNotFound)
         return false;
 
@@ -491,15 +491,15 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
       return true;
     }
     case CSSSelector::kAttributeContain:
-      if (selector_value.empty())
+      if (selector_value.IsEmpty())
         return false;
       return value.Contains(selector_value, case_sensitivity);
     case CSSSelector::kAttributeBegin:
-      if (selector_value.empty())
+      if (selector_value.IsEmpty())
         return false;
       return value.StartsWith(selector_value, case_sensitivity);
     case CSSSelector::kAttributeEnd:
-      if (selector_value.empty())
+      if (selector_value.IsEmpty())
         return false;
       return value.EndsWith(selector_value, case_sensitivity);
     case CSSSelector::kAttributeHyphen:
@@ -1183,7 +1183,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           break;
         }
         if (auto* text_node = DynamicTo<Text>(n)) {
-          if (!text_node->data().empty()) {
+          if (!text_node->data().IsEmpty()) {
             if (text_node->ContainsOnlyWhitespaceOrEmpty()) {
               has_whitespace = true;
             } else {
@@ -1473,7 +1473,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       AtomicString value = vtt_element ? vtt_element->Language()
                                        : element.ComputeInheritedLanguage();
       const AtomicString& argument = selector.Argument();
-      if (value.empty() ||
+      if (value.IsEmpty() ||
           !value.StartsWith(argument, kTextCaseASCIIInsensitive))
         break;
       if (value.length() != argument.length() &&
@@ -1483,7 +1483,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     }
     case CSSSelector::kPseudoDir: {
       const AtomicString& argument = selector.Argument();
-      if (argument.empty())
+      if (argument.IsEmpty())
         break;
 
       TextDirection direction;

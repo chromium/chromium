@@ -76,7 +76,7 @@ bool NeedsIncrementalInsertion(const LocalFrame& frame,
 
   // No need to apply incremental insertion if the old text (text to be
   // replaced) or the new text (text to be inserted) is empty.
-  if (frame.SelectedText().empty() || new_text.empty())
+  if (frame.SelectedText().IsEmpty() || new_text.IsEmpty())
     return false;
 
   return true;
@@ -469,7 +469,7 @@ void InputMethodController::InsertTextDuringCompositionWithEvents(
       // Calling |TypingCommand::insertText()| with empty text will result in an
       // incorrect ending selection. We need to delete selection first.
       // https://crbug.com/693481
-      if (text.empty())
+      if (text.IsEmpty())
         TypingCommand::DeleteSelection(*frame.GetDocument(), 0);
       frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
       TypingCommand::InsertText(*frame.GetDocument(), text, options,
@@ -864,7 +864,7 @@ bool InputMethodController::InsertTextAndMoveCaret(
   EventQueueScope scope;
 
   // Don't fire events for a no-op operation.
-  if (!text.empty() || selection_range.length() > 0) {
+  if (!text.IsEmpty() || selection_range.length() > 0) {
     if (!InsertText(text))
       return false;
   }
@@ -970,7 +970,7 @@ void InputMethodController::SetComposition(
   // 3. Canceling the ongoing composition.
   //    Send a compositionend event when function deletes the existing
   //    composition node, i.e. !hasComposition() && test.isEmpty().
-  if (text.empty()) {
+  if (text.IsEmpty()) {
     // Suppress input and compositionend events until after we move the caret
     // to the new position.
     EventQueueScope scope;
@@ -1004,7 +1004,7 @@ void InputMethodController::SetComposition(
     return;
   }
 
-  DCHECK(!text.empty());
+  DCHECK(!text.IsEmpty());
 
   Clear();
 
@@ -1689,7 +1689,7 @@ ui::TextInputAction InputMethodController::InputActionOfFocusedElement() const {
   AtomicString action =
       GetEnterKeyHintAttribute(GetDocument().FocusedElement());
 
-  if (action.empty())
+  if (action.IsEmpty())
     return ui::TextInputAction::kDefault;
   if (action == keywords::kEnter)
     return ui::TextInputAction::kEnter;
@@ -1711,7 +1711,7 @@ ui::TextInputAction InputMethodController::InputActionOfFocusedElement() const {
 WebTextInputMode InputMethodController::InputModeOfFocusedElement() const {
   AtomicString mode = GetInputModeAttribute(GetDocument().FocusedElement());
 
-  if (mode.empty())
+  if (mode.IsEmpty())
     return kWebTextInputModeDefault;
   if (mode == keywords::kNone)
     return kWebTextInputModeNone;

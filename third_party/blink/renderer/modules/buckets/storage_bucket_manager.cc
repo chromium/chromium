@@ -28,7 +28,7 @@ bool IsValidName(const String& name) {
   if (!name.ContainsOnlyASCIIOrEmpty())
     return false;
 
-  if (name.empty() || name.length() >= 64)
+  if (name.IsEmpty() || name.length() >= 64)
     return false;
 
   // | name | must only contain lowercase latin letters, digits 0-9, or special

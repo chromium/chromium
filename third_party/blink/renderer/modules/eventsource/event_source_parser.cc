@@ -69,8 +69,8 @@ void EventSourceParser::ParseLine() {
       DCHECK_EQ(data_[data_.size() - 1], '\n');
       String data = FromUTF8(data_.data(), data_.size() - 1);
       client_->OnMessageEvent(
-          event_type_.empty() ? event_type_names::kMessage : event_type_, data,
-          last_event_id_);
+          event_type_.IsEmpty() ? event_type_names::kMessage : event_type_,
+          data, last_event_id_);
       data_.clear();
     }
     event_type_ = g_null_atom;

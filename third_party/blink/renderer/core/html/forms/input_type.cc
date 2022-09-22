@@ -106,7 +106,7 @@ namespace blink {
 
 InputType* InputType::Create(HTMLInputElement& element,
                              const AtomicString& type_name) {
-  if (type_name.empty())
+  if (type_name.IsEmpty())
     return MakeGarbageCollected<TextInputType>(element);
 
 #define INPUT_TYPE_FACTORY(input_type, class_name) \
@@ -120,7 +120,7 @@ InputType* InputType::Create(HTMLInputElement& element,
 
 const AtomicString& InputType::NormalizeTypeName(
     const AtomicString& type_name) {
-  if (type_name.empty())
+  if (type_name.IsEmpty())
     return input_type_names::kText;
 
   AtomicString type_name_lower = type_name.LowerASCII();
@@ -214,7 +214,7 @@ bool InputType::ShouldSaveAndRestoreFormControlState() const {
 
 bool InputType::IsFormDataAppendable() const {
   // There is no form data unless there's a name for non-image types.
-  return !GetElement().GetName().empty();
+  return !GetElement().GetName().IsEmpty();
 }
 
 void InputType::AppendToFormData(FormData& form_data) const {

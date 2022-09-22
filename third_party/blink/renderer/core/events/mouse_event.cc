@@ -410,7 +410,7 @@ DispatchEventResult MouseEvent::DispatchEvent(EventDispatcher& dispatcher) {
     return DispatchEventResult::kCanceledBeforeDispatch;
   }
 
-  if (type().empty())
+  if (type().IsEmpty())
     return DispatchEventResult::kNotCanceled;  // Shouldn't happen.
 
   if (is_click) {
