@@ -98,7 +98,6 @@ class MetadataWriter {
         proto::CustomInput_FillPolicy_UNKNOWN_FILL_POLICY};
     const float default_value{0};
     const char* name{nullptr};
-    // TODO(shaktisahu): Support additional_args.
   };
 
   // Appends the list of UMA features in order.
@@ -107,8 +106,9 @@ class MetadataWriter {
   // Appends the list of SQL features in order.
   void AddSqlFeatures(const SqlFeature features[], size_t features_size);
 
-  // Appends the list of SQL features in order.
-  void AddCustomInput(const CustomInput& feature);
+  // Creates a custom input feature and appeands to the list of custom inputs in
+  // order.
+  proto::CustomInput* AddCustomInput(const CustomInput& feature);
 
   // Appends a list of discrete mapping in order.
   void AddDiscreteMappingEntries(const std::string& key,

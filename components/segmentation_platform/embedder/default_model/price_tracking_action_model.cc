@@ -33,10 +33,12 @@ void PriceTrackingActionModel::InitAndFetchModel(
       /*signal_storage_length_days=*/1);
 
   // Add price tracking custom input.
-  writer.AddCustomInput(MetadataWriter::CustomInput{
-      .tensor_length = 1,
-      .fill_policy = proto::CustomInput_FillPolicy_PRICE_TRACKING_HINTS,
-      .name = "price_tracking"});
+  proto::CustomInput* custom_input =
+      writer.AddCustomInput(MetadataWriter::CustomInput{
+          .tensor_length = 1,
+          .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+          .name = "price_tracking"});
+  (*custom_input->mutable_additional_args())["name"] = "is_price_tracking";
 
   // Set discrete mapping.
   writer.AddBooleanSegmentDiscreteMapping(kContextualPageActionsKey);
