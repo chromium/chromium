@@ -186,6 +186,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Network.Ash.{TechnologyType}.EnabledState.{Operation}.ResultCode"
+    enum="ShillConnectResult" expires_after="2023-08-01">
+  <owner>nikhilcn@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    This metric is emitted when users perform {Operation} operation on the
+    {TechnologyType} technology. We capture all result codes returned by the
+    platform API.
+  </summary>
+  <token key="TechnologyType">
+    <variant name="Cellular"/>
+    <variant name="Ethernet"/>
+    <variant name="VPN"/>
+    <variant name="WiFi"/>
+  </token>
+  <token key="Operation">
+    <variant name="Disable"/>
+    <variant name="Enable"/>
+  </token>
+</histogram>
+
 <histogram name="Network.CacheTransparency.CacheNotUsed"
     enum="CacheTransparencyCacheNotUsedReason" expires_after="2023-03-05">
   <owner>nidhijaju@chromium.org</owner>

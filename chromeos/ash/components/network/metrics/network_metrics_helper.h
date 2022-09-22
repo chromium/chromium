@@ -47,13 +47,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
 
   // Logs result of an attempt to enable a shill associated network technology
   // type.
-  static void LogEnableTechnologyResult(const std::string& technology,
-                                        bool success);
+  static void LogEnableTechnologyResult(
+      const std::string& technology,
+      bool success,
+      const absl::optional<std::string>& shill_error = absl::nullopt);
 
   // Logs result of an attempt to disable a shill associated network technology
   // type.
-  static void LogDisableTechnologyResult(const std::string& technology,
-                                         bool success);
+  static void LogDisableTechnologyResult(
+      const std::string& technology,
+      bool success,
+      const absl::optional<std::string>& shill_error = absl::nullopt);
 
   NetworkMetricsHelper();
   ~NetworkMetricsHelper();

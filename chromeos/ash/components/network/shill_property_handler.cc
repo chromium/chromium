@@ -174,7 +174,7 @@ void ShillPropertyHandler::SetTechnologyEnabled(
     shill_manager_->EnableTechnology(
         technology,
         base::BindOnce(&NetworkMetricsHelper::LogEnableTechnologyResult,
-                       technology, /*success=*/true),
+                       technology, /*success=*/true, absl::nullopt),
         base::BindOnce(&ShillPropertyHandler::EnableTechnologyFailed,
                        AsWeakPtr(), technology, std::move(error_callback)));
   } else {
@@ -184,7 +184,7 @@ void ShillPropertyHandler::SetTechnologyEnabled(
     shill_manager_->DisableTechnology(
         technology,
         base::BindOnce(&NetworkMetricsHelper::LogDisableTechnologyResult,
-                       technology, /*success=*/true),
+                       technology, /*success=*/true, absl::nullopt),
         base::BindOnce(&ShillPropertyHandler::DisableTechnologyFailed,
                        AsWeakPtr(), technology, std::move(error_callback)));
   }
@@ -575,7 +575,8 @@ void ShillPropertyHandler::EnableTechnologyFailed(
     const std::string& dbus_error_name,
     const std::string& dbus_error_message) {
   NetworkMetricsHelper::LogEnableTechnologyResult(technology,
-                                                  /*success=*/false);
+                                                  /*success=*/false,
+                                                  dbus_error_name);
   enabling_technologies_.erase(technology);
   network_handler::ShillErrorCallbackFunction(
       "EnableTechnology Failed", technology, std::move(error_callback),
@@ -589,7 +590,8 @@ void ShillPropertyHandler::DisableTechnologyFailed(
     const std::string& dbus_error_name,
     const std::string& dbus_error_message) {
   NetworkMetricsHelper::LogDisableTechnologyResult(technology,
-                                                   /*success=*/false);
+                                                   /*success=*/false,
+                                                   dbus_error_name);
   disabling_technologies_.erase(technology);
   network_handler::ShillErrorCallbackFunction(
       "DisableTechnology Failed", technology, std::move(error_callback),

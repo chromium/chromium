@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/network/metrics/connection_results.h"
+#include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -30,7 +31,11 @@ const char kDisconnectionsWithoutUserActionSuffix[] =
     ".DisconnectionsWithoutUserAction";
 
 const char kEnableTechnologyResultSuffix[] = ".EnabledState.Enable.Result";
+const char kEnableTechnologyResultCodeSuffix[] =
+    ".EnabledState.Enable.ResultCode";
 const char kDisableTechnologyResultSuffix[] = ".EnabledState.Disable.Result";
+const char kDisableTechnologyResultCodeSuffix[] =
+    ".EnabledState.Disable.ResultCode";
 
 const char kCellular[] = "Cellular";
 const char kCellularESim[] = "Cellular.ESim";
@@ -231,12 +236,32 @@ void NetworkMetricsHelper::LogConnectionStateResult(const std::string& guid,
 
 void NetworkMetricsHelper::LogEnableTechnologyResult(
     const std::string& technology,
-    bool success) {
+    bool success,
+    const absl::optional<std::string>& shill_error) {
   absl::optional<const std::string> suffix =
       GetTechnologyTypeSuffix(technology);
 
   if (!suffix)
     return;
+
+  if (success == shill_error.has_value()) {
+    if (shill_error.has_value()) {
+      NET_LOG(ERROR) << "Error code: " << *shill_error
+                     << " for successful enable operation on: " << technology;
+    } else {
+      NET_LOG(ERROR)
+          << "Missing error code for unsuccessful enable operation on: "
+          << technology;
+    }
+  }
+
+  ShillConnectResult result = shill_error
+                                  ? ShillErrorToConnectResult(*shill_error)
+                                  : ShillConnectResult::kSuccess;
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {kNetworkMetricsPrefix, *suffix, kEnableTechnologyResultCodeSuffix}),
+      result);
 
   base::UmaHistogramBoolean(base::StrCat({kNetworkMetricsPrefix, *suffix,
                                           kEnableTechnologyResultSuffix}),
@@ -246,12 +271,32 @@ void NetworkMetricsHelper::LogEnableTechnologyResult(
 // static
 void NetworkMetricsHelper::LogDisableTechnologyResult(
     const std::string& technology,
-    bool success) {
+    bool success,
+    const absl::optional<std::string>& shill_error) {
   absl::optional<const std::string> suffix =
       GetTechnologyTypeSuffix(technology);
 
   if (!suffix)
     return;
+
+  if (success == shill_error.has_value()) {
+    if (shill_error.has_value()) {
+      NET_LOG(ERROR) << "Error code: " << *shill_error
+                     << " for successful disable operation on: " << technology;
+    } else {
+      NET_LOG(ERROR)
+          << "Missing error code for unsuccessful disable operation on: "
+          << technology;
+    }
+  }
+
+  ShillConnectResult result = shill_error
+                                  ? ShillErrorToConnectResult(*shill_error)
+                                  : ShillConnectResult::kSuccess;
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {kNetworkMetricsPrefix, *suffix, kDisableTechnologyResultCodeSuffix}),
+      result);
 
   base::UmaHistogramBoolean(base::StrCat({kNetworkMetricsPrefix, *suffix,
                                           kDisableTechnologyResultSuffix}),

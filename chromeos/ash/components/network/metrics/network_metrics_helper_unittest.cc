@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/network/metrics/connection_results.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_ui_data.h"
 #include "components/prefs/testing_pref_service.h"
@@ -136,22 +137,38 @@ const char kEthernetNoEapConnectionStateHistogram[] =
 // LogEnableTechnologyResult() histograms.
 const char kEnableWifiResultHistogram[] =
     "Network.Ash.WiFi.EnabledState.Enable.Result";
+const char kEnableWifiResultCodeHistogram[] =
+    "Network.Ash.WiFi.EnabledState.Enable.ResultCode";
 const char kEnableEthernetResultHistogram[] =
     "Network.Ash.Ethernet.EnabledState.Enable.Result";
+const char kEnableEthernetResultCodeHistogram[] =
+    "Network.Ash.Ethernet.EnabledState.Enable.ResultCode";
 const char kEnableCellularResultHistogram[] =
     "Network.Ash.Cellular.EnabledState.Enable.Result";
+const char kEnableCellularResultCodeHistogram[] =
+    "Network.Ash.Cellular.EnabledState.Enable.ResultCode";
 const char kEnableVpnResultHistogram[] =
     "Network.Ash.VPN.EnabledState.Enable.Result";
+const char kEnableVpnResultCodeHistogram[] =
+    "Network.Ash.VPN.EnabledState.Enable.ResultCode";
 
 // LogDisableTechnologyResult() histograms.
 const char kDisableWifiResultHistogram[] =
     "Network.Ash.WiFi.EnabledState.Disable.Result";
+const char kDisableWifiResultCodeHistogram[] =
+    "Network.Ash.WiFi.EnabledState.Disable.ResultCode";
 const char kDisableEthernetResultHistogram[] =
     "Network.Ash.Ethernet.EnabledState.Disable.Result";
+const char kDisableEthernetResultCodeHistogram[] =
+    "Network.Ash.Ethernet.EnabledState.Disable.ResultCode";
 const char kDisableCellularResultHistogram[] =
     "Network.Ash.Cellular.EnabledState.Disable.Result";
+const char kDisableCellularResultCodeHistogram[] =
+    "Network.Ash.Cellular.EnabledState.Disable.ResultCode";
 const char kDisableVpnResultHistogram[] =
     "Network.Ash.VPN.EnabledState.Disable.Result";
+const char kDisableVpnResultCodeHistogram[] =
+    "Network.Ash.VPN.EnabledState.Disable.ResultCode";
 
 const char kTestGuid[] = "test_guid";
 const char kTestServicePath[] = "/service/network";
@@ -216,6 +233,74 @@ class NetworkMetricsHelperTest : public testing::Test {
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;
 };
+
+TEST_F(NetworkMetricsHelperTest, EnableTechnologyWithErrors) {
+  NetworkMetricsHelper::LogEnableTechnologyResult(
+      shill::kTypeWifi,
+      /*success=*/false, "org.chromium.flimflam.Error.AlreadyConnected");
+  histogram_tester_->ExpectTotalCount(kEnableWifiResultCodeHistogram, 1);
+  histogram_tester_->ExpectBucketCount(
+      kEnableWifiResultCodeHistogram,
+      ShillConnectResult::kErrorResultAlreadyConnected, 1);
+
+  NetworkMetricsHelper::LogEnableTechnologyResult(
+      shill::kTypeEthernet,
+      /*success=*/false, "org.chromium.flimflam.Error.OperationTimeout");
+  histogram_tester_->ExpectTotalCount(kEnableEthernetResultCodeHistogram, 1);
+  histogram_tester_->ExpectBucketCount(
+      kEnableEthernetResultCodeHistogram,
+      ShillConnectResult::kErrorResultOperationTimeout, 1);
+
+  NetworkMetricsHelper::LogEnableTechnologyResult(
+      shill::kTypeCellular,
+      /*success=*/false, "org.chromium.flimflam.Error.NoCarrier");
+  histogram_tester_->ExpectTotalCount(kEnableCellularResultCodeHistogram, 1);
+  histogram_tester_->ExpectBucketCount(
+      kEnableCellularResultCodeHistogram,
+      ShillConnectResult::kErrorResultNoCarrier, 1);
+
+  NetworkMetricsHelper::LogEnableTechnologyResult(
+      shill::kTypeVPN,
+      /*success=*/false, "org.chromium.flimflam.Error.WrongState");
+  histogram_tester_->ExpectTotalCount(kEnableVpnResultCodeHistogram, 1);
+  histogram_tester_->ExpectBucketCount(
+      kEnableVpnResultCodeHistogram, ShillConnectResult::kErrorResultWrongState,
+      1);
+}
+
+TEST_F(NetworkMetricsHelperTest, DisableTechnologyWithErrors) {
+  NetworkMetricsHelper::LogDisableTechnologyResult(
+      shill::kTypeWifi,
+      /*success=*/false, "org.chromium.flimflam.Error.AlreadyConnected");
+  histogram_tester_->ExpectTotalCount(kDisableWifiResultCodeHistogram, 1);
+  histogram_tester_->ExpectBucketCount(
+      kDisableWifiResultCodeHistogram,
+      ShillConnectResult::kErrorResultAlreadyConnected, 1);
+
+  NetworkMetricsHelper::LogDisableTechnologyResult(
+      shill::kTypeEthernet,
+      /*success=*/false, "org.chromium.flimflam.Error.OperationTimeout");
+  histogram_tester_->ExpectTotalCount(kDisableEthernetResultCodeHistogram, 1);
+  histogram_tester_->ExpectBucketCount(
+      kDisableEthernetResultCodeHistogram,
+      ShillConnectResult::kErrorResultOperationTimeout, 1);
+
+  NetworkMetricsHelper::LogDisableTechnologyResult(
+      shill::kTypeCellular,
+      /*success=*/false, "org.chromium.flimflam.Error.NoCarrier");
+  histogram_tester_->ExpectTotalCount(kDisableCellularResultCodeHistogram, 1);
+  histogram_tester_->ExpectBucketCount(
+      kDisableCellularResultCodeHistogram,
+      ShillConnectResult::kErrorResultNoCarrier, 1);
+
+  NetworkMetricsHelper::LogDisableTechnologyResult(
+      shill::kTypeVPN,
+      /*success=*/false, "org.chromium.flimflam.Error.WrongState");
+  histogram_tester_->ExpectTotalCount(kDisableVpnResultCodeHistogram, 1);
+  histogram_tester_->ExpectBucketCount(
+      kDisableVpnResultCodeHistogram,
+      ShillConnectResult::kErrorResultWrongState, 1);
+}
 
 TEST_F(NetworkMetricsHelperTest, EnableDisableTechnology) {
   NetworkMetricsHelper::LogEnableTechnologyResult(shill::kTypeWifi,
