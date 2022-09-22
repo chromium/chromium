@@ -1657,9 +1657,6 @@
     'prefetch_proxy': {
       'filepath': 'chrome/browser/preloading/prefetch/prefetch_proxy',
     },
-    'prepopulated_engines': {
-      'filepath': 'components/search_engines/prepopulated_engines.json',
-    },
     'prerender': {
       'filepath': 'chrome/browser/chrome_content_browser_client_binder_policies' \
                   '|chrome/browser/preloading/prerender/' \
@@ -2844,7 +2841,6 @@
     'precache': ['wifiprefetch-reviews@google.com'],
     'prefetch_proxy': ['marcinjb+p4watch@google.com',
                        'spelchat+chromereviews@google.com'],
-    'prepopulated_engines': ['vasilii+watch@chromium.org'],
     'prerender': ['gavinp+prer@chromium.org',
                   'prerendering-reviews@chromium.org',
                   'tburkard+watch@chromium.org'],
