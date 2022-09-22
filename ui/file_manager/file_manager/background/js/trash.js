@@ -7,7 +7,7 @@
  * https://specifications.freedesktop.org/trash-spec/trashspec-1.0.html
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {AUTO_DELETE_INTERVAL_MS, TrashConfig, TrashDirs, TrashEntry} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';

@@ -12,5 +12,5 @@ js_type_check("closure_compile_module") {
 }
 
 js_library("cr_policy_indicator_behavior") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
+  deps = [ "//ui/webui/resources/js:assert" ]
 }

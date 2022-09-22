@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {assert} from '../../assert.m.js';
+import {assert} from '../../assert.js';
 
 import {FocusRow, FocusRowDelegate} from './focus_row.js';
 // clang-format on

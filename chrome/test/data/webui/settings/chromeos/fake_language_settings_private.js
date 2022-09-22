@@ -7,7 +7,7 @@
  * for testing.
  */
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 
 import {FakeChromeEvent} from '../../fake_chrome_event.js';

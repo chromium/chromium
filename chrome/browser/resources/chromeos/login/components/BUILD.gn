@@ -157,7 +157,7 @@ js_library("network_select_login.m") {
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_components/chromeos/network:network_select",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   extra_deps = [ ":network_select_login_module" ]
 }

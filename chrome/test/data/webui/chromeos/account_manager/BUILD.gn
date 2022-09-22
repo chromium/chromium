@@ -25,7 +25,7 @@ js_library("account_migration_welcome_test") {
     ":test_account_manager_browser_proxy",
     "../..:chai_assert",
     "//chrome/browser/resources/chromeos/account_manager:account_migration_welcome_app",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

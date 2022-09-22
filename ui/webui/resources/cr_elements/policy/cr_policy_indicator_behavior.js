@@ -8,7 +8,7 @@
  * rework the "policy" naming scheme throughout this directory.
  */
 
-import {assertNotReached} from '../../js/assert.m.js';
+import {assertNotReached} from '../../js/assert.js';
 
 /**
  * Strings required for policy indicators. These must be set at runtime.

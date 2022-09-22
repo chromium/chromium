@@ -147,7 +147,7 @@ js_unittest("actions_submenu_unittest") {
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:mock_actions_model",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -165,7 +165,7 @@ js_library("combobutton") {
 
 js_library("command") {
   deps = [
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:ui",
     "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list_js",
@@ -183,7 +183,7 @@ js_unittest("command_unittest") {
 js_library("commandbutton") {
   deps = [
     ":command",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:ui",
   ]
@@ -195,7 +195,7 @@ js_library("context_menu_handler") {
     ":menu_button",
     ":menu_item",
     ":position_util",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:event_tracker",
     "//ui/webui/resources/js/cr:event_target",
@@ -257,7 +257,7 @@ js_library("directory_tree") {
     "//ui/file_manager/file_manager/foreground/js:directory_model",
     "//ui/file_manager/file_manager/foreground/js:navigation_list_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
   ]
   visibility +=
@@ -283,7 +283,7 @@ js_unittest("directory_tree_unittest") {
     "//ui/file_manager/file_manager/foreground/js:mock_navigation_list_model",
     "//ui/file_manager/file_manager/foreground/js:navigation_list_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -310,7 +310,7 @@ js_library("file_grid") {
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
   ]
@@ -360,7 +360,7 @@ js_unittest("file_manager_dialog_base_unittest") {
     ":file_manager_dialog_base",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -402,7 +402,7 @@ js_library("file_manager_ui") {
     "//ui/file_manager/file_manager/foreground/js:banner_controller",
     "//ui/file_manager/file_manager/foreground/js:launch_param",
     "//ui/file_manager/file_manager/foreground/js:providers_model",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js/cr:ui",
   ]
 
@@ -440,7 +440,7 @@ js_library("file_table") {
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -471,7 +471,7 @@ js_library("file_table_list") {
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -494,7 +494,7 @@ js_unittest("file_table_list_unittest") {
 }
 
 js_library("file_tap_handler") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
+  deps = [ "//ui/webui/resources/js:assert" ]
 }
 
 js_unittest("file_tap_handler_unittest") {
@@ -523,7 +523,7 @@ js_library("files_menu") {
   deps = [
     ":menu",
     ":menu_item",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "//ui/file_manager/file_manager/externs/paper_elements.js" ]
 }
@@ -531,7 +531,7 @@ js_library("files_menu") {
 js_library("gear_menu") {
   deps = [
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
@@ -558,7 +558,7 @@ js_library("install_linux_package_dialog") {
   deps = [
     ":file_manager_dialog_base",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -566,7 +566,7 @@ js_unittest("install_linux_package_dialog_unittest") {
   deps = [
     ":install_linux_package_dialog",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
@@ -610,7 +610,7 @@ js_library("list_container") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -667,7 +667,7 @@ js_library("list_single_selection_model_unittest") {
 js_library("menu") {
   deps = [
     ":menu_item",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:ui",
   ]
@@ -688,7 +688,7 @@ js_library("menu_button") {
     ":menu",
     ":menu_item",
     ":position_util",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:event_tracker",
     "//ui/webui/resources/js/cr:ui",
@@ -707,7 +707,7 @@ js_unittest("menu_button_unittest") {
 js_library("menu_item") {
   deps = [
     ":command",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr:ui",
@@ -718,7 +718,7 @@ js_library("multi_menu") {
   deps = [
     ":menu",
     ":menu_item",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:event_tracker",
     "//ui/webui/resources/js/cr:ui",
   ]
@@ -732,7 +732,7 @@ js_library("multi_menu_button") {
     ":multi_menu",
     ":position_util",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:event_tracker",
     "//ui/webui/resources/js/cr:ui",
   ]
@@ -745,7 +745,7 @@ js_unittest("multi_menu_unittest") {
     ":multi_menu_button",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js/cr:ui",
   ]
 }
@@ -766,7 +766,7 @@ js_library("progress_center_panel") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:progress_center_panel",
     "//ui/file_manager/file_manager/foreground/elements:xf_display_panel",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -776,7 +776,7 @@ js_library("providers_menu") {
     ":menu",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:providers_model",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js/cr:ui",
   ]
 }
@@ -789,7 +789,7 @@ js_library("search_box") {
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:event_target",
   ]
@@ -813,7 +813,7 @@ js_unittest("splitter_unittest") {
 }
 
 js_library("tree") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
+  deps = [ "//ui/webui/resources/js:assert" ]
 }
 
 js_library("autocomplete_list") {

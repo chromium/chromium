@@ -7,7 +7,7 @@ import '../../../cr_elements/cr_button/cr_button.js';
 import '../../../cr_elements/cr_shared_style.css.js';
 import '../../../cr_elements/cr_shared_vars.css.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink_js.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

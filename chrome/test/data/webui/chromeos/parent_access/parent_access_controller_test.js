@@ -5,7 +5,7 @@
 import '../../mojo_webui_test_support.js';
 
 import {ParentAccessController} from 'chrome://parent-access/parent_access_controller.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 
 const TARGET_URL = 'chrome://test/chromeos/parent_access/test_content.html';

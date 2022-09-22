@@ -7,7 +7,7 @@
  *     edge snapping and collisions.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {getDisplayApi} from './device_page_browser_proxy.js';
 

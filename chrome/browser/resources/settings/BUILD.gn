@@ -28,7 +28,7 @@ if (is_chromeos_ash) {
 
   js_library("router") {
     deps = [
-      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:assert",
       "//ui/webui/resources/js:load_time_data.m",
     ]
     externs_list = [ "$externs_path/metrics_private.js" ]

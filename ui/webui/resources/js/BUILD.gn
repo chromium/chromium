@@ -99,17 +99,11 @@ preprocess_if_expr("preprocess_src") {
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [
-    ":modulize",
-    ":unmodulize",
-  ]
+  deps = [ ":unmodulize" ]
   in_folder = target_gen_dir
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [
-    "assert.m.js",
-    "load_time_data.js",
-  ]
+  in_files = [ "load_time_data.js" ]
 }
 
 group("closure_compile") {
@@ -119,7 +113,6 @@ group("closure_compile") {
 js_type_check("js_resources") {
   uses_legacy_modules = true
   deps = [
-    ":assert",
     ":load_time_data",
     ":util_deprecated",
     ":webui_resource_test",
@@ -139,9 +132,6 @@ if (is_chromeos_ash) {
   }
 }
 
-js_library("assert") {
-}
-
 js_library("load_time_data") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/load_time_data.js" ]
   extra_deps = [ ":unmodulize" ]
@@ -158,10 +148,6 @@ js_library("webui_resource_test") {
 }
 
 # Targets for auto-generating and type-checking JS Modules
-
-js_modulizer("modulize") {
-  input_files = [ "assert.js" ]
-}
 
 js_unmodulizer("unmodulize") {
   input_files = [ "load_time_data.m.js" ]
@@ -181,7 +167,7 @@ group("closure_compile_modules") {
 js_type_check("js_resources_modules") {
   is_polymer3 = true
   deps = [
-    ":assert.m",
+    ":assert",
     ":cr.m",
     ":event_tracker",
     ":icon",
@@ -195,14 +181,12 @@ js_type_check("js_resources_modules") {
   ]
 }
 
-js_library("assert.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/assert.m.js" ]
-  extra_deps = [ ":modulize" ]
+js_library("assert") {
 }
 
 js_library("cr.m") {
   deps = [
-    ":assert.m",
+    ":assert",
     ":promise_resolver",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
@@ -232,16 +216,16 @@ js_library("plural_string_proxy") {
 }
 
 js_library("promise_resolver") {
-  deps = [ ":assert.m" ]
+  deps = [ ":assert" ]
 }
 
 js_library("static_types") {
-  deps = [ ":assert.m" ]
+  deps = [ ":assert" ]
 }
 
 js_library("util.m") {
   deps = [
-    ":assert.m",
+    ":assert",
     ":cr.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]

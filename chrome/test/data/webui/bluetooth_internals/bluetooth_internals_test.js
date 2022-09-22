@@ -10,7 +10,7 @@ import {connectedDevices} from 'chrome://bluetooth-internals/device_broker.js';
 import {Snackbar} from 'chrome://bluetooth-internals/snackbar.js';
 import {UUID} from 'chrome://bluetooth-internals/uuid.mojom-webui.js';
 import {ValueControl, ValueDataType} from 'chrome://bluetooth-internals/value_control.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {$} from 'chrome://resources/js/util.m.js';
 

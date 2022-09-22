@@ -15,7 +15,7 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.js';
 import {BluetoothDeviceProperties, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
-import {assertNotReached} from '../../../js/assert.m.js';
+import {assertNotReached} from '../../../js/assert.js';
 
 import {DeviceItemState} from './bluetooth_types.js';
 import {mojoString16ToString} from './bluetooth_utils.js';

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from './assert.m.js';
+import {assertNotReached} from './assert.js';
 
 /**
  * @fileoverview PromiseResolver is a helper class that allows creating a

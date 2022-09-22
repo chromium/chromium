@@ -99,7 +99,7 @@ js_library("display_overscan_dialog") {
 
 js_library("drag_behavior") {
   deps = [
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -111,7 +111,7 @@ js_library("keyboard") {
     "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js/cr/ui:focus_without_ink_js",
   ]
   externs_list = [ "../settings_controls_types.js" ]
@@ -119,7 +119,7 @@ js_library("keyboard") {
 
 js_library("layout_behavior") {
   deps = [
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [
@@ -162,7 +162,7 @@ js_library("storage") {
     "..:route_origin_behavior",
     "../..:router",
     "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink_js",
   ]
@@ -192,7 +192,7 @@ js_library("stylus") {
     "..:route_observer_behavior",
     "../..:router",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]

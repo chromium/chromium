@@ -19,7 +19,7 @@
  * @closurePrimitive {asserts.truthy}
  * @suppress {reportUnknownTypes} because T is not sufficiently constrained.
  */
-/* #export */ function assert(condition, opt_message) {
+export function assert(condition, opt_message) {
   if (!condition) {
     let message = 'Assertion failed';
     if (opt_message) {
@@ -64,7 +64,7 @@
  * @param {string=} message A message to show when this is hit.
  * @closurePrimitive {asserts.fail}
  */
-/* #export */ function assertNotReached(message) {
+export function assertNotReached(message) {
   assert(false, message || 'Unreachable code hit');
 }
 
@@ -75,7 +75,7 @@
  * @return {T}
  * @template T
  */
-/* #export */ function assertInstanceof(value, type, message) {
+export function assertInstanceof(value, type, message) {
   // We don't use assert immediately here so that we avoid constructing an error
   // message if we don't have to.
   if (!(value instanceof type)) {
@@ -86,4 +86,3 @@
   return value;
 }
 
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

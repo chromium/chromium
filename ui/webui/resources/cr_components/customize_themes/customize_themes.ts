@@ -16,7 +16,7 @@ import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-w
 import {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/lib/elements/dom-repeat.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert} from '../../js/assert.m.js';
+import {assert} from '../../js/assert.js';
 import {hexColorToSkColor, skColorToRgba} from '../../js/color_utils.js';
 import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
 

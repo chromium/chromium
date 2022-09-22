@@ -231,7 +231,7 @@ copy("copy_checked_in_dts_files") {
 # Files for which .d.ts files will be auto-generated with ts_definitions().
 generate_definitions_js_files = [
   "js/action_link.js",
-  "js/assert.m.js",
+  "js/assert.js",
   "js/color_utils.js",
   "js/cr/event_target.js",
   "js/cr.m.js",

@@ -38,7 +38,7 @@ js_library("emoji_picker_test") {
     "//chrome/browser/resources/chromeos/emoji_picker:emoji_button",
     "//chrome/browser/resources/chromeos/emoji_picker:emoji_picker",
     "//chrome/browser/resources/chromeos/emoji_picker:emoji_variants",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -47,7 +47,7 @@ js_library("emoji_picker_store_test") {
   deps = [
     "//chrome/browser/resources/chromeos/emoji_picker:store",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -55,7 +55,7 @@ js_library("emoji_picker_store_test") {
 js_library("emoji_picker_extension_test") {
   deps = [
     "//chrome/browser/resources/chromeos/emoji_picker:emoji_picker",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -63,7 +63,7 @@ js_library("emoji_picker_extension_test") {
 js_library("emoji_picker_extension_emoji_test") {
   deps = [
     "//chrome/browser/resources/chromeos/emoji_picker:emoji_picker",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -71,7 +71,7 @@ js_library("emoji_picker_extension_emoji_test") {
 js_library("emoji_picker_extension_symbol_test") {
   deps = [
     "//chrome/browser/resources/chromeos/emoji_picker:emoji_picker",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -79,7 +79,7 @@ js_library("emoji_picker_extension_symbol_test") {
 js_library("emoji_picker_extension_emoticon_test") {
   deps = [
     "//chrome/browser/resources/chromeos/emoji_picker:emoji_picker",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -88,7 +88,7 @@ js_library("emoji_picker_prefix_search_test") {
   deps = [
     "//chrome/browser/resources/chromeos/emoji_picker:prefix_search",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -97,7 +97,7 @@ js_library("emoji_picker_search_test") {
   deps = [
     "//chrome/browser/resources/chromeos/emoji_picker:emoji_picker",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -105,7 +105,7 @@ js_library("emoji_picker_search_test") {
 js_library("emoji_picker_trie_test") {
   deps = [
     "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

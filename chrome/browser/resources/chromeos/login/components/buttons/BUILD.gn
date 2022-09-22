@@ -43,7 +43,7 @@ js_library("oobe_base_button.m") {
   deps = [
     "../behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   extra_deps = [ ":modulize" ]
 }

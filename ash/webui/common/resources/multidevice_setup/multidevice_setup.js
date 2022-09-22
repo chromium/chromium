@@ -12,7 +12,7 @@ import '//resources/js/cr.m.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {WebUIListenerBehavior} from '//resources/cr_elements/web_ui_listener_behavior.js';
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_api.js';

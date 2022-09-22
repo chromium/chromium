@@ -111,7 +111,7 @@ js_library("web_ui_listener_behavior") {
 
 if (is_chromeos_ash) {
   js_library("cr_container_shadow_behavior") {
-    deps = [ "//ui/webui/resources/js:assert.m" ]
+    deps = [ "//ui/webui/resources/js:assert" ]
   }
 
   js_library("cr_scrollable_behavior") {
@@ -123,7 +123,7 @@ if (is_chromeos_ash) {
 
   js_library("find_shortcut_behavior") {
     deps = [
-      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:assert",
       "//ui/webui/resources/js:cr.m",
       "//ui/webui/resources/js:util.m",
       "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list_js",

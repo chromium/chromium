@@ -9,7 +9,7 @@
  * calls.
  */
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 
 export const AppState = {};
 

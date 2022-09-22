@@ -152,7 +152,7 @@ js_library("authenticator.m") {
   deps = [
     ":saml_handler.m",
     ":saml_password_attributes.m",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:event_target",
@@ -168,7 +168,7 @@ js_library("password_change_authenticator.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/gaia_auth_host/password_change_authenticator.m.js" ]
   deps = [
     ":saml_handler.m",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:event_target",
   ]

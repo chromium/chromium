@@ -123,7 +123,7 @@ js_library("app_util") {
 
 js_library("array_data_model") {
   deps = [
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
@@ -156,7 +156,7 @@ js_unittest("files_app_entry_types_unittest") {
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -186,7 +186,7 @@ js_library("file_type") {
     ":files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -217,7 +217,7 @@ js_library("filtered_volume_manager") {
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_info_list",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:event_target",
   ]
@@ -288,7 +288,7 @@ js_unittest("recent_date_bucket_unittest") {
   deps = [
     ":mock_chrome",
     ":recent_date_bucket",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
@@ -344,7 +344,7 @@ js_library("util") {
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr:ui",
   ]
@@ -373,7 +373,7 @@ js_unittest("volume_manager_types_unittest") {
 js_library("volume_manager_types") {
   deps = [
     "//ui/file_manager/file_manager/externs:file_manager_private",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 

@@ -9,7 +9,7 @@
  * logic in js_modulizer.py only to address the cr.js case, which is not worth
  * it.
  */
-import {assert, assertNotReached} from './assert.m.js';
+import {assert, assertNotReached} from './assert.js';
 import {PromiseResolver} from './promise_resolver.js';
 
 /** @typedef {{eventName: string, uid: number}} */

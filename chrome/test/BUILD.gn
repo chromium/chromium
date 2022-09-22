@@ -1560,7 +1560,6 @@ if (!is_android) {
       "//third_party/shell-encryption:serialization_proto",
       "//third_party/widevine/cdm:widevine_test_license_server",
       "//tools/media_engagement_preload:make_dafsa_runtime",
-      "//ui/webui/resources/js:modulize_runtime_data",
     ]
 
     if (!is_component_build) {

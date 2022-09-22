@@ -7,7 +7,7 @@
  *     chrome://bluetooth-internals/.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
 import {DiscoverySessionRemote} from './adapter.mojom-webui.js';

@@ -15,7 +15,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/cr_elements/i18n_behavior.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertNotReached} from '../../../js/assert.m.js';
+import {assertNotReached} from '../../../js/assert.js';
 import {focusWithoutInk} from '../../../js/cr/ui/focus_without_ink_js.js';
 
 import {ButtonBarState, ButtonName, ButtonState} from './bluetooth_types.js';

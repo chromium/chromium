@@ -495,7 +495,7 @@ js_library("deep_linking_behavior") {
   deps = [
     "..:router",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
@@ -512,7 +512,7 @@ js_library("main_page_behavior") {
   deps = [
     "..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:util.m",
   ]
 }
@@ -555,7 +555,7 @@ js_library("os_settings_routes") {
 }
 
 js_library("prefs_behavior") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
+  deps = [ "//ui/webui/resources/js:assert" ]
   externs_list = [ "$externs_path/settings_private.js" ]
 }
 
@@ -569,7 +569,7 @@ js_library("pref_to_setting_metric_converter") {
 js_library("route_observer_behavior") {
   deps = [
     "..:router",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {RecentlyUsedStore} from 'chrome://emoji-picker/store.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {assertDeepEquals} from '../../chai_assert.js';
 

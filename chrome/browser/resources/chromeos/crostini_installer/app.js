@@ -15,7 +15,7 @@ import 'chrome://resources/cros_elements/button/button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 
 import {BrowserProxy} from 'chrome://crostini-installer/browser_proxy.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

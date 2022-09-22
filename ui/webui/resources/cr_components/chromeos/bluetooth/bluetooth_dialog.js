@@ -19,7 +19,7 @@ import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert} from '../../../js/assert.m.js';
+import {assert} from '../../../js/assert.js';
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
 const PairingEventType = chrome.bluetoothPrivate.PairingEventType;

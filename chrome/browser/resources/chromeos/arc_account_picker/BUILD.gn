@@ -77,7 +77,7 @@ js_library("arc_account_picker_browser_proxy") {
 }
 
 js_library("arc_util") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
+  deps = [ "//ui/webui/resources/js:assert" ]
 }
 
 html_to_js("web_components") {

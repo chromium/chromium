@@ -76,7 +76,7 @@ js_library("inline_login_test") {
     "..:chai_assert",
     "..:test_util",
     "//chrome/browser/resources/inline_login:inline_login_app",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -89,7 +89,7 @@ if (is_chromeos_ash) {
       "..:chai_assert",
       "..:test_util",
       "//chrome/browser/resources/inline_login:inline_login_app",
-      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:assert",
       "//ui/webui/resources/js:load_time_data.m",
     ]
     externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -101,7 +101,7 @@ if (is_chromeos_ash) {
       "..:chai_assert",
       "..:test_util",
       "//chrome/browser/resources/inline_login:inline_login_app",
-      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:assert",
       "//ui/webui/resources/js:load_time_data.m",
     ]
     externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -114,7 +114,7 @@ if (is_chromeos_ash) {
       "..:test_util",
       "../chromeos/arc_account_picker:test_util",
       "//chrome/browser/resources/inline_login:inline_login_app",
-      "//ui/webui/resources/js:assert.m",
+      "//ui/webui/resources/js:assert",
       "//ui/webui/resources/js:load_time_data.m",
     ]
     externs_list = [ "$externs_path/mocha-2.5.js" ]

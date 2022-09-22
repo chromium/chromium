@@ -16,7 +16,7 @@ import './network_shared_css.js';
 
 import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.js';
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ApnProperties, ManagedApnProperties, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 

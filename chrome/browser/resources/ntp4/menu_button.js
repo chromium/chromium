@@ -7,7 +7,7 @@
 // should only be used by legacy UIs that have not yet been updated to new
 // patterns. Use Web Components in any new code.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';

@@ -19,7 +19,7 @@ import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 import {CellularSimState, CrosNetworkConfigRemote, GlobalPolicy} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
-import {assertNotReached} from '../../../js/assert.m.js';
+import {assertNotReached} from '../../../js/assert.js';
 import {loadTimeData} from '../../../js/load_time_data.m.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';

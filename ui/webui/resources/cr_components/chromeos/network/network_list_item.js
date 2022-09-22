@@ -18,7 +18,7 @@ import './network_icon.js';
 
 import {CellularSetupPageName} from '//resources/cr_components/chromeos/cellular_setup/cellular_types.js';
 import {getESimProfileProperties} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_utils.js';
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ActivationStateType, CrosNetworkConfigRemote, GlobalPolicy, ManagedCellularProperties, ManagedProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';

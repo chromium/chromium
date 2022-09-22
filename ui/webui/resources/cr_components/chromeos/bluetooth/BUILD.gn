@@ -74,7 +74,7 @@ js_library("bluetooth_dialog") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list =
       chrome_extension_public_externs + [
@@ -137,7 +137,7 @@ js_library("bluetooth_pairing_ui") {
     ":cros_bluetooth_config",
     "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 

@@ -17,7 +17,7 @@ import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 import {CellularMetadata} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
-import {assert} from '../../../js/assert.m.js';
+import {assert} from '../../../js/assert.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {postDeviceDataToWebview} from './webview_post_util.js';

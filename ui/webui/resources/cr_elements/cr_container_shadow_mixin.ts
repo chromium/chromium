@@ -33,7 +33,7 @@
 
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert} from '../js/assert.m.js';
+import {assert} from '../js/assert.js';
 
 export enum CrContainerShadowSide {
   TOP = 'top',

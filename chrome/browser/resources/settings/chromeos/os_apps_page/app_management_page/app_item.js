@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 
 import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppType} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';

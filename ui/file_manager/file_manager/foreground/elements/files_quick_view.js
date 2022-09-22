@@ -9,7 +9,7 @@ import './files_safe_media.js';
 import './files_tooltip.js';
 import './icons.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {toSandboxedURL} from '../../common/js/url_constants.js';

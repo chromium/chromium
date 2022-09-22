@@ -7,7 +7,7 @@
 
 // clang-format off
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js'
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {assert} from 'chrome://resources/js/assert.js';
 // #import {$, appendParam} from 'chrome://resources/js/util.m.js';
 // #import {sendWithPromise, getPropertyDescriptor} from 'chrome://resources/js/cr.m.js';
 

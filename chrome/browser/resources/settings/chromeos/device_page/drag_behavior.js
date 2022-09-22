@@ -7,7 +7,7 @@
  *     Draggable elements must have the 'draggable' attribute set.
  */
 
-import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 
 /**
  * @typedef {{

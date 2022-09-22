@@ -6,7 +6,7 @@
  * @fileoverview Common prefs behavior.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 /** @polymerBehavior */
 export const PrefsBehavior = {

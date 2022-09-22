@@ -66,7 +66,7 @@ js_library("app_detail_view") {
     "../../..:router",
     "./borealis_page:borealis_detail_view",
     "./plugin_vm_page:plugin_vm_detail_view",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -135,7 +135,7 @@ js_library("chrome_app_detail_view") {
 js_library("dom_switch") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:promise_resolver",
   ]
 }
@@ -157,7 +157,7 @@ js_library("main_view") {
     "../..:os_route",
     "../..:route_observer_behavior",
     "../../..:router",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
@@ -168,7 +168,7 @@ js_library("pin_to_shelf_item") {
     ":util",
     "../..:metrics_recorder",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -194,7 +194,7 @@ js_library("resize_lock_item") {
   deps = [
     ":browser_proxy",
     ":util",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -228,7 +228,7 @@ js_library("supported_links_overlapping_apps_dialog") {
   deps = [
     ":store_client",
     "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [
     "./types.js",

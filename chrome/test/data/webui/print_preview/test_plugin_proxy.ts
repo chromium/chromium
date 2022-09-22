@@ -4,7 +4,7 @@
 
 import {PDFPlugin} from 'chrome://print/pdf/pdf_scripting_api.js';
 import {PluginProxy, ViewportChangedCallback} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**

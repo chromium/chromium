@@ -11,7 +11,7 @@ import './edu_coexistence_ui.js';
 import './arc_account_picker/arc_account_picker_app.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';

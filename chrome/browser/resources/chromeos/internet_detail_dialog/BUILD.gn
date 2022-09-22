@@ -93,7 +93,7 @@ js_library("internet_detail_dialog") {
     "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }

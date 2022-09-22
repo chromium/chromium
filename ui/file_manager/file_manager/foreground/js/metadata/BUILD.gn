@@ -97,7 +97,7 @@ js_library("content_metadata_provider") {
     "//ui/file_manager/file_manager/foreground/js:thumbnail_loader",
     "//ui/file_manager/image_loader:image_loader_client",
     "//ui/file_manager/image_loader:load_image_request",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -148,7 +148,7 @@ js_library("external_metadata_provider") {
     ":metadata_provider",
     ":metadata_request",
     "//ui/file_manager/file_manager/externs:file_manager_private",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -217,7 +217,7 @@ js_library("image_parsers") {
 js_library("metadata_cache_item") {
   deps = [
     ":metadata_item",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -295,7 +295,7 @@ js_library("metadata_provider") {
   deps = [
     ":metadata_item",
     ":metadata_request",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 
@@ -325,7 +325,7 @@ js_library("multi_metadata_provider") {
     ":metadata_request",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
 

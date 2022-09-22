@@ -13,7 +13,7 @@ import '../../../cr_elements/cr_shared_style.css.js';
 import './cr_policy_network_indicator_mojo.js';
 import './network_shared_css.js';
 
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert.js';
 import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ActivationStateType, SecurityType, SubjectAltName, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';

@@ -23,7 +23,7 @@
 import '../../cr_elements/cr_shared_vars.css.js';
 import '../../cr_elements/cr_shared_style.css.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './localized_link.html.js';

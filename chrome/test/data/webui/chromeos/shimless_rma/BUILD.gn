@@ -106,7 +106,7 @@ js_library("shimless_rma_app_test") {
     "//ash/webui/shimless_rma/resources:mojo_interface_provider",
     "//ash/webui/shimless_rma/resources:shimless_rma",
     "//ash/webui/shimless_rma/resources:shimless_rma_types",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -117,7 +117,7 @@ js_library("onboarding_choose_destination_page_test") {
     "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",
     "//ash/webui/shimless_rma/resources:mojo_interface_provider",
     "//ash/webui/shimless_rma/resources:onboarding_choose_destination_page",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:promise_resolver",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -127,7 +127,7 @@ js_library("onboarding_choose_wipe_device_page_test") {
   deps = [
     "../..:chai_assert",
     "//ash/webui/shimless_rma/resources:onboarding_choose_wipe_device_page",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -171,7 +171,7 @@ js_library("onboarding_select_components_page_test") {
     "//ash/webui/shimless_rma/resources:onboarding_select_components_page",
     "//ash/webui/shimless_rma/resources:repair_component_chip",
     "//ash/webui/shimless_rma/resources:shimless_rma",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:promise_resolver",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

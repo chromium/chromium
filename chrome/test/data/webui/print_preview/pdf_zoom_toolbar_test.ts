@@ -8,7 +8,7 @@ import {FittingType} from 'chrome://print/pdf/constants.js';
 import {ViewerZoomButtonElement} from 'chrome://print/pdf/elements/viewer-zoom-button.js';
 import {ViewerZoomToolbarElement} from 'chrome://print/pdf/elements/viewer-zoom-toolbar.js';
 import {CrIconButtonElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

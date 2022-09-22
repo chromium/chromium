@@ -4,7 +4,7 @@
 
 import {EduCoexistenceBrowserProxyImpl} from 'chrome://chrome-signin/edu_coexistence_browser_proxy.js';
 import {EduCoexistenceController} from 'chrome://chrome-signin/edu_coexistence_controller.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TestEduCoexistenceBrowserProxy} from './edu_coexistence_test_util.js';

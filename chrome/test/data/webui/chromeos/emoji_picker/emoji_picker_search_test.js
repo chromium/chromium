@@ -4,7 +4,7 @@
 
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EMOJI_BUTTON_CLICK, EMOJI_PICKER_READY} from 'chrome://emoji-picker/events.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertGT} from '../../chai_assert.js';

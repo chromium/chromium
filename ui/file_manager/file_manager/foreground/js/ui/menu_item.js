@@ -4,7 +4,7 @@
 
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {Command} from './command.js';
 import {define as crUiDefine, decorate, swallowDoubleClick} from 'chrome://resources/js/cr/ui.js';
 import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';

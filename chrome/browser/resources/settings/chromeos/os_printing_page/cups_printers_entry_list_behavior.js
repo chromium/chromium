@@ -8,7 +8,7 @@
  * saved and nearby printers.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {findDifference} from './cups_printer_dialog_util.js';
 import {PrinterListEntry} from './cups_printer_types.js';

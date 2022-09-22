@@ -14,7 +14,7 @@ import '../../components/dialogs/oobe_loading_dialog.m.js';
 import '../../components/oobe_icons.m.js';
 import '../../components/oobe_slide.m.js';
 
-import {assert} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';

@@ -41,7 +41,7 @@ js_library("bluetooth_page") {
     "../..:router",
     "//services/device/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [
     "$externs_path/bluetooth.js",
@@ -62,7 +62,7 @@ js_library("bluetooth_subpage") {
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_metrics_utils",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior",
     "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:list_property_update_behavior",
   ]
   externs_list = [

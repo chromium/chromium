@@ -20,7 +20,7 @@ js_type_check("closure_compile_local") {
 js_library("fake_network_config_mojom") {
   deps = [
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:promise_resolver",
   ]
 }

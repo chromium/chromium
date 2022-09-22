@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PrintServerStore, PrintServerStoreEventType} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUIListener, removeWebUIListener, WebUIListener, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
 import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

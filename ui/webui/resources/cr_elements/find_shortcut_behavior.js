@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from '../js/assert.m.js';
+import {assert, assertNotReached} from '../js/assert.js';
 import {isMac} from '../js/cr.m.js';
 import {KeyboardShortcutList} from '../js/cr/ui/keyboard_shortcut_list_js.js';
 import {isTextInputElement} from '../js/util.m.js';

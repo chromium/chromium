@@ -72,7 +72,7 @@ js_library("fingerprint_list") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink_js",
   ]
@@ -93,7 +93,7 @@ js_library("lock_screen") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:plural_string_proxy",
     "//ui/webui/resources/js/cr/ui:focus_without_ink_js",
@@ -138,7 +138,7 @@ js_library("os_people_page") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:icon",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink_js",
@@ -164,7 +164,7 @@ js_library("os_sync_controls") {
     "../../:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list =
@@ -215,7 +215,7 @@ js_library("users_add_user_dialog") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [
     "$externs_path/users_private.js",
@@ -233,7 +233,7 @@ js_library("users_page") {
     "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js/cr/ui:focus_without_ink_js",
   ]
 }

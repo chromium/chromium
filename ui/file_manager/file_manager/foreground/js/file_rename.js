@@ -7,7 +7,7 @@
  * by the files app frontend.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {getEntry, getParentEntry, moveEntryTo, validatePathNameLength} from '../../common/js/api.js';
 import {str, strf, util} from '../../common/js/util.js';

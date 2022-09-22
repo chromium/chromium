@@ -82,7 +82,7 @@ if (is_chromeos_ash) {
 
   js_library("focus_row_js") {
     deps = [
-      "../..:assert.m",
+      "../..:assert",
       "../..:event_tracker",
       "../..:util.m",
     ]
@@ -92,14 +92,14 @@ if (is_chromeos_ash) {
     deps = [
       ":focus_row_js",
       ":focus_without_ink_js",
-      "../..:assert.m",
+      "../..:assert",
       "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     ]
   }
 
   js_library("focus_without_ink_js") {
     deps = [
-      "../..:assert.m",
+      "../..:assert",
       "../..:cr.m",
     ]
   }
@@ -113,7 +113,7 @@ if (is_chromeos_ash) {
   js_library("store_client") {
     deps = [
       ":store",
-      "../..:assert.m",
+      "../..:assert",
     ]
   }
 }

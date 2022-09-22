@@ -44,6 +44,6 @@ js_library("cr_picture_list") {
     ":cr_picture_types",
     ":png",
     "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
 }
