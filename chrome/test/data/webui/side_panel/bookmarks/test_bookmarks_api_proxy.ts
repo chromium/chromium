@@ -21,6 +21,7 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
+      'getTopLevelBookmarks',
       'getFolders',
       'openBookmark',
       'cutBookmark',
@@ -37,6 +38,11 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       onMoved: new FakeChromeEvent(),
       onRemoved: new FakeChromeEvent(),
     };
+  }
+
+  getTopLevelBookmarks() {
+    this.methodCalled('getTopLevelBookmarks');
+    return Promise.resolve(this.folders_);
   }
 
   getFolders() {

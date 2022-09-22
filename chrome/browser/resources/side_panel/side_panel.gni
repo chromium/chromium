@@ -14,6 +14,7 @@ web_component_files = [
   "app.ts",
   "bookmarks/bookmark_folder.ts",
   "bookmarks/bookmarks_list.ts",
+  "bookmarks/power_bookmark_row.ts",
   "history_clusters/app.ts",
   "bookmarks/commerce/shopping_list.ts",
   "read_anything/app.ts",

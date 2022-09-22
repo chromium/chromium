@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './commerce/shopping_list.js';
+import './power_bookmark_row.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.js';
@@ -41,6 +42,11 @@ export class BookmarksListElement extends PolymerElement {
 
   static get properties() {
     return {
+      topLevelBookmarks_: {
+        type: Array,
+        value: () => [],
+      },
+
       folders_: {
         type: Array,
         value: () => [],
@@ -55,9 +61,16 @@ export class BookmarksListElement extends PolymerElement {
         type: Array,
         value: () => [],
       },
+
+      showPowerBookmarks_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: loadTimeData.getBoolean('showPowerBookmarks'),
+      },
     };
   }
 
+  private topLevelBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
   private shoppingListApi_: ShoppingListApiProxy =
@@ -71,6 +84,7 @@ export class BookmarksListElement extends PolymerElement {
   hoverVisible: boolean;
   private openFolders_: string[];
   private shoppingListenerIds_: number[] = [];
+  private showPowerBookmarks_: boolean;
 
   override ready() {
     super.ready();
@@ -92,6 +106,9 @@ export class BookmarksListElement extends PolymerElement {
         setTimeout(() => this.bookmarksApi_.showUI(), 0);
       });
     }
+    this.bookmarksApi_.getTopLevelBookmarks().then(topLevelBookmarks => {
+      this.topLevelBookmarks_ = topLevelBookmarks;
+    });
     this.bookmarksApi_.getFolders().then(folders => {
       this.folders_ = folders;
 

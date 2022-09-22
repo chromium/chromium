@@ -88,6 +88,10 @@ BASE_FEATURE(kForceSignInReauth,
              "ForceSignInReauth",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Bookmarks++ Side Panel UI.
+const base::Feature kPowerBookmarksSidePanel{"PowerBookmarksSidePanel",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables a more prominent active tab title in dark mode to aid with
 // accessibility.
 BASE_FEATURE(kProminentDarkModeActiveTabTitle,

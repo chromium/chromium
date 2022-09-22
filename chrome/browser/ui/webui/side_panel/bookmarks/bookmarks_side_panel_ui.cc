@@ -67,6 +67,10 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean("unifiedSidePanel",
                      base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
 
+  source->AddBoolean(
+      "showPowerBookmarks",
+      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel));
+
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));

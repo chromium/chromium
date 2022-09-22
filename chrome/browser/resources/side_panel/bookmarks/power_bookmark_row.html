@@ -1,0 +1,54 @@
+<style include="mwb-element-shared-style cr-shared-style">
+  :host {
+    --row-height: 54px;
+    display: block;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .content {
+    color: var(--cr-primary-text-color);
+    padding: 4px 16px;
+    text-overflow: ellipsis;
+  }
+
+  .row {
+    align-items: center;
+    appearance: none;
+    background: transparent;
+    border: none;
+    box-sizing: border-box;
+    color: currentColor;
+    display: grid;
+    font-size: var(--mwb-primary-text-font-size);
+    height: var(--row-height);
+    padding: 0;
+    text-align: start;
+    width: 100%;
+  }
+
+  .row:hover {
+    background-color: var(--mwb-list-item-hover-background-color);
+  }
+
+  .row:focus,
+  .row:focus:hover {
+    background-color: var(--mwb-list-item-selected-background-color);
+    outline: none;
+  }
+
+  .row:focus-visible:focus {
+    outline: none;
+  }
+
+  .row:active {
+    background-color: var(--cr-active-background-color);
+  }
+</style>
+<div id="container" role="treeitem">
+  <button id="rowButton" class="row"
+      title="[[bookmark.title]]"
+      data-bookmark="[[bookmark]]">
+    <div class="content">[[bookmark.title]]</div>
+  </button>
+</div>

@@ -13,6 +13,7 @@ export interface BookmarksApiProxy {
   callbackRouter: {[key: string]: ChromeEvent<Function>};
   cutBookmark(id: string): void;
   copyBookmark(id: string): Promise<void>;
+  getTopLevelBookmarks(): Promise<chrome.bookmarks.BookmarkTreeNode[]>;
   getFolders(): Promise<chrome.bookmarks.BookmarkTreeNode[]>;
   openBookmark(
       id: string, depth: number, clickModifiers: ClickModifiers,
@@ -50,6 +51,23 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     return new Promise<void>(resolve => {
       chrome.bookmarkManagerPrivate.copy([id], resolve);
     });
+  }
+
+  getTopLevelBookmarks() {
+    return new Promise<chrome.bookmarks.BookmarkTreeNode[]>(
+        resolve => chrome.bookmarks.getTree(results => {
+          if (results[0] && results[0].children) {
+            let allBookmarks: chrome.bookmarks.BookmarkTreeNode[] = [];
+            for (const child of results[0].children) {
+              if (child.children) {
+                allBookmarks = allBookmarks.concat(child.children);
+              }
+            }
+            resolve(allBookmarks);
+            return;
+          }
+          resolve([]);
+        }));
   }
 
   getFolders() {
