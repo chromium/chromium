@@ -1019,7 +1019,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Marks all read entries as unread, when there is a lot of entries. This is to
 // prevent crbug.com/1013708 from regressing.
-- (void)testMarkAllUnreadLotOfEntry {
+// TODO(crbug.com/1366621): Flaky on iOS Simulator
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMarkAllUnreadLotOfEntry DISABLED_testMarkAllUnreadLotOfEntry
+#else
+#define MAYBE_testMarkAllUnreadLotOfEntry testMarkAllUnreadLotOfEntry
+#endif
+- (void)MAYBE_testMarkAllUnreadLotOfEntry {
   AddLotOfEntriesAndEnterEdit();
 
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
