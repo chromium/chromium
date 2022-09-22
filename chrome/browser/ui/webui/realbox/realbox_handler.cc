@@ -321,6 +321,9 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
           : kSearchIconResourceName);
   source->AddString("realboxHint", l10n_util::GetStringUTF8(
                                        IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD));
+  source->AddBoolean(
+      "realboxLensSearch",
+      base::FeatureList::IsEnabled(ntp_features::kNtpRealboxLensSearch));
 }
 
 // static

@@ -53,11 +53,11 @@ BASE_DECLARE_FEATURE(kNtpPhotosModuleCustomizedOptInArtWork);
 BASE_DECLARE_FEATURE(kNtpPhotosModuleSplitSvgOptInArtWork);
 BASE_DECLARE_FEATURE(kNtpFeedModule);
 BASE_DECLARE_FEATURE(kNtpOneGoogleBar);
+BASE_DECLARE_FEATURE(kNtpRealboxLensSearch);
 BASE_DECLARE_FEATURE(kNtpRecipeTasksModule);
 BASE_DECLARE_FEATURE(kNtpRemoveScrim);
 BASE_DECLARE_FEATURE(kNtpSafeBrowsingModule);
 BASE_DECLARE_FEATURE(kNtpShortcuts);
-
 BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
 
 // Parameter for the CSS selector for the button elements on the OGB.
