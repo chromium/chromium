@@ -255400,14 +255400,6 @@
      "05bacb7f16db124a998a98ce242775fae91078bd",
      []
     ],
-    "compute_pressure_different_quantizations_across_iframes.tentative.https.window-expected.txt": [
-     "4f67fa3d9a50c7bbe3d8643ea4a41de85c15d78f",
-     []
-    ],
-    "compute_pressure_take_records.tentative.https.window-expected.txt": [
-     "375f8f449013c2d2f5a7c2f4f61d9999f4c236ac",
-     []
-    ],
     "resources": {
      "pressure-helpers.js": [
       "5234cf2d78c90d559d3cfd8ee1b86d9b3fa97861",
@@ -305975,8 +305967,12 @@
       "a8d74b3eb1e0a59f0c5b5989c60349720487a00b",
       []
      ],
+     "selectall-in-editinghost-expected.txt": [
+      "8feb63d41d883a7b8fb1736348cf6d3cf22bf0c6",
+      []
+     ],
      "selectall-without-focus-expected.txt": [
-      "b4c1aa9a4884bd57530c22d8fed93e583ed62924",
+      "59bb588da2d7edb0b800b5d4c514679818f55369",
       []
      ],
      "typing-around-link-element-at-collapsed-selection.tentative_target=DesignMode-expected.txt": [
@@ -321078,14 +321074,6 @@
          "e09fab1984dfee3abe55b7860af737c00489fa98",
          []
         ],
-        "location.sub_encoding=windows-1252-expected.txt": [
-         "3e52ba438993bc62a322b439ef9c67e3a0de9058",
-         []
-        ],
-        "location.sub_encoding=x-cp1251-expected.txt": [
-         "163d1356ed2ff327dea9d646c352a70d57bfb425",
-         []
-        ],
         "lone-surrogates.sub_encoding=windows-1252-expected.txt": [
          "a581aae810a039486dfca73921405c2d63d35025",
          []
@@ -330912,7 +330900,7 @@
     ]
    },
    "lint.ignore": [
-    "270ce639576ff4534976680b37ecc78b7f822315",
+    "6a77f87891df3e36392bb91917db17a5c4a828d4",
     []
    ],
    "loading": {
@@ -335061,7 +335049,7 @@
      []
     ],
     "pointerevent_support.js": [
-     "727909fee72ee94b8970d2616384123c597cc731",
+     "636ccc124383f1989949667e69840a92765e73c1",
      []
     ],
     "pointerlock": {
@@ -338026,7 +338014,7 @@
       []
      ],
      "mock-pressure-service.js": [
-      "e8a21ac7b3d2944019758a9ab9d1044a4404b149",
+      "47fc3c3673abbacc0ba16644a2fe35f79b8ad5ad",
       []
      ],
      "mock-pressure-service.js.headers": [
@@ -339577,6 +339565,90 @@
       "82c8165c34f3df1366bf49099aa5d75b79c59e7e",
       []
      ],
+     "cache-add.https.any-expected.txt": [
+      "3d82496870edb6921cc927be315fb6db78bc5ad4",
+      []
+     ],
+     "cache-add.https.any.serviceworker-expected.txt": [
+      "3d82496870edb6921cc927be315fb6db78bc5ad4",
+      []
+     ],
+     "cache-add.https.any.sharedworker-expected.txt": [
+      "3d82496870edb6921cc927be315fb6db78bc5ad4",
+      []
+     ],
+     "cache-add.https.any.worker-expected.txt": [
+      "3d82496870edb6921cc927be315fb6db78bc5ad4",
+      []
+     ],
+     "cache-keys-attributes-for-service-worker.https-expected.txt": [
+      "452fa9f031ea6bd368b357cf30629498c633399b",
+      []
+     ],
+     "cache-keys.https.any-expected.txt": [
+      "cfd4098aa4635d68e8550034a6c40582de362909",
+      []
+     ],
+     "cache-keys.https.any.serviceworker-expected.txt": [
+      "cfd4098aa4635d68e8550034a6c40582de362909",
+      []
+     ],
+     "cache-keys.https.any.sharedworker-expected.txt": [
+      "cfd4098aa4635d68e8550034a6c40582de362909",
+      []
+     ],
+     "cache-keys.https.any.worker-expected.txt": [
+      "cfd4098aa4635d68e8550034a6c40582de362909",
+      []
+     ],
+     "cache-match.https.any-expected.txt": [
+      "07557f11a9c0fe2abaf363c568c8b2a81349c8be",
+      []
+     ],
+     "cache-match.https.any.serviceworker-expected.txt": [
+      "07557f11a9c0fe2abaf363c568c8b2a81349c8be",
+      []
+     ],
+     "cache-match.https.any.sharedworker-expected.txt": [
+      "07557f11a9c0fe2abaf363c568c8b2a81349c8be",
+      []
+     ],
+     "cache-match.https.any.worker-expected.txt": [
+      "07557f11a9c0fe2abaf363c568c8b2a81349c8be",
+      []
+     ],
+     "cache-matchAll.https.any-expected.txt": [
+      "391a706b5bda0b78cc4cab483f5f70a719fc1f94",
+      []
+     ],
+     "cache-matchAll.https.any.serviceworker-expected.txt": [
+      "391a706b5bda0b78cc4cab483f5f70a719fc1f94",
+      []
+     ],
+     "cache-matchAll.https.any.sharedworker-expected.txt": [
+      "391a706b5bda0b78cc4cab483f5f70a719fc1f94",
+      []
+     ],
+     "cache-matchAll.https.any.worker-expected.txt": [
+      "391a706b5bda0b78cc4cab483f5f70a719fc1f94",
+      []
+     ],
+     "cache-storage.https.any-expected.txt": [
+      "d1c62496bacf4b31a2cf5671693042fba8abfef4",
+      []
+     ],
+     "cache-storage.https.any.serviceworker-expected.txt": [
+      "d1c62496bacf4b31a2cf5671693042fba8abfef4",
+      []
+     ],
+     "cache-storage.https.any.sharedworker-expected.txt": [
+      "d1c62496bacf4b31a2cf5671693042fba8abfef4",
+      []
+     ],
+     "cache-storage.https.any.worker-expected.txt": [
+      "d1c62496bacf4b31a2cf5671693042fba8abfef4",
+      []
+     ],
      "cross-partition.https.tentative-expected.txt": [
       "e32cd4678b8dec940c9ab885b91a75df9490fb35",
       []
@@ -339623,48 +339695,10 @@
        []
       ]
      },
-     "script-tests": {
-      "cache-abort.js": [
-       "3c7aa5cd2ffc9ef975e45456b10a60d1c4281693",
-       []
-      ],
-      "cache-add.js": [
-       "62b44c7880168b5762785ed9f75c2dfa167f9401",
-       []
-      ],
-      "cache-delete.js": [
-       "e5238c455620fc9741a7b149bd060cf10a410874",
-       []
-      ],
-      "cache-keys.js": [
-       "94b34d1ebf0d91681059875a2e30d83b31e9ca4b",
-       []
-      ],
-      "cache-match.js": [
-       "22c0689d36d60cb036376482ffa4a9ca334fc14b",
-       []
-      ],
-      "cache-matchAll.js": [
-       "438ddebbdc0c716702de01c7cf457678b1276ec5",
-       []
-      ],
-      "cache-put.js": [
-       "f4251105cab0e0e397c65304f784f9af62d17af7",
-       []
-      ],
-      "cache-storage-keys.js": [
-       "ef06ccdff5c8df29c2aefb5d11c4d3dfcf493bf6",
-       []
-      ],
-      "cache-storage-match.js": [
-       "54be7e7b5d78b35314b9fafecd1166203eec9b4d",
-       []
-      ],
-      "cache-storage.js": [
-       "0de2dbb05e96dd6756f94af769ab2417f3902a95",
-       []
-      ]
-     },
+     "sandboxed-iframes.https-expected.txt": [
+      "a0a646099cfa729b63cc3bd1f56bfb4dedd94b46",
+      []
+     ],
      "serviceworker": {
       "cache-keys-attributes-for-service-worker.https-expected.txt": [
        "452fa9f031ea6bd368b357cf30629498c633399b",
@@ -376325,22 +376359,15 @@
     ]
    },
    "compute-pressure": {
-    "compute_pressure_arguments.tentative.https.window.js": [
-     "0c391a2ae104e19d3e17211c0e3318ecabed171b",
-     [
-      "compute-pressure/compute_pressure_arguments.tentative.https.window.html",
-      {}
-     ]
-    ],
     "compute_pressure_basic.tentative.https.window.js": [
-     "7c939ba56b86482df5986ec3ba9fe03065aba107",
+     "2f463e502b3754626ee0c3cc0403d9ab65b0dec8",
      [
       "compute-pressure/compute_pressure_basic.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_basic_async.tentative.https.window.js": [
-     "17c12222a1191ef8115d5100f881273ad434ece2",
+     "b8adeeeee0e1f4d5d3de8062c7a27138c0e00fa9",
      [
       "compute-pressure/compute_pressure_basic_async.tentative.https.window.html",
       {
@@ -376358,70 +376385,74 @@
      ]
     ],
     "compute_pressure_detached_iframe.tentative.https.html": [
-     "7522b3f174297c812e9db24f6e24d476c19069bf",
+     "3b0a5504e536acf9426476122f59b7c8ed24b150",
      [
       null,
       {}
      ]
     ],
-    "compute_pressure_different_quantizations.tentative.https.window.js": [
-     "8fe2794c973880298b380532d9ac644050268a7f",
-     [
-      "compute-pressure/compute_pressure_different_quantizations.tentative.https.window.html",
-      {}
-     ]
-    ],
-    "compute_pressure_different_quantizations_across_iframes.tentative.https.window.js": [
-     "e1816a1502e1936f71eaec649ee4c90fa61e09ed",
-     [
-      "compute-pressure/compute_pressure_different_quantizations_across_iframes.tentative.https.window.html",
-      {}
-     ]
-    ],
     "compute_pressure_disconnect.tentative.https.window.js": [
-     "b39af20ff34669962d1520c01e6d497c291d3ac3",
+     "a311d9ba3ff5849994c4b19b285fe3d4f611011d",
      [
       "compute-pressure/compute_pressure_disconnect.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_disconnect_idempotent.tentative.https.window.js": [
-     "10e3ad6e44f3dedbf12952d1ad885156e6e803e0",
+     "b76e62e80e71cf36d7a68bc467eaaf2bd3d26505",
      [
       "compute-pressure/compute_pressure_disconnect_idempotent.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_disconnect_immediately.tentative.https.window.js": [
-     "10e3ad6e44f3dedbf12952d1ad885156e6e803e0",
+     "90db9fd396ea90350dcaa4cd5d2fc9a4c3c9e89c",
      [
       "compute-pressure/compute_pressure_disconnect_immediately.tentative.https.window.html",
       {}
      ]
     ],
+    "compute_pressure_duplicate_updates.tentative.https.window.js": [
+     "485ebc2b93e64df3c1ee9b9d6019d340485725e6",
+     [
+      "compute-pressure/compute_pressure_duplicate_updates.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "compute_pressure_multiple.tentative.https.window.js": [
-     "fef47e3733dcac54f4b9825112f90551321d442c",
+     "6015ae1f81bc495e642a7482757934fa1c1a1924",
      [
       "compute-pressure/compute_pressure_multiple.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_multiple_across_iframes.tentative.https.window.js": [
-     "dff994c84fd69e49448c9691dcafc863a0303554",
+     "838b9a17a00f2bf14f8443673fac1fbc4560e6fe",
      [
       "compute-pressure/compute_pressure_multiple_across_iframes.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_observe_idempotent.tentative.https.window.js": [
-     "925f73a37bcf1b96f524d27fb0358447fee26e91",
+     "e60115fee87c15cb25c55382e418e7611514c892",
      [
       "compute-pressure/compute_pressure_observe_idempotent.tentative.https.window.html",
       {}
      ]
     ],
     "compute_pressure_observe_unobserve_failure.tentative.https.window.js": [
-     "7d6e94cdedb9b7fb06b59357a73adbcbb75d6598",
+     "69fe12555b8ed8755f6a27739248e44312f792bb",
      [
       "compute-pressure/compute_pressure_observe_unobserve_failure.tentative.https.window.html",
       {}
@@ -376435,17 +376466,21 @@
      ]
     ],
     "compute_pressure_take_records.tentative.https.window.js": [
-     "c6da8f6190d6158c06101cd2a43b4b8bcee60972",
+     "7ef50e6d463607b25f4ba6081d0fbc3e6cb10e08",
      [
       "compute-pressure/compute_pressure_take_records.tentative.https.window.html",
-      {}
-     ]
-    ],
-    "compute_pressure_values.tentative.https.window.js": [
-     "b51a3e372c8999de5c8bcada7efde861ef7ce40b",
-     [
-      "compute-pressure/compute_pressure_values.tentative.https.window.html",
-      {}
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ]
+       ]
+      }
      ]
     ]
    },
@@ -423856,8 +423891,15 @@
        }
       ]
      ],
+     "selectall-in-editinghost.html": [
+      "680817a77146764f5f80854da4d375f94b20ab1c",
+      [
+       null,
+       {}
+      ]
+     ],
      "selectall-without-focus.html": [
-      "f75e930907f1d69cbefd095b545c98784ef2220b",
+      "508fdc47a2fe0af3679e17133dd8443b8cfea474",
       [
        null,
        {}
@@ -483523,7 +483565,7 @@
          ]
         ],
         "location.sub.html": [
-         "a5c131e2bece1d4a92d4eb782fbcc5b0c42306a1",
+         "1403cf18cd18360ca9ff6f476383d5274f5fd071",
          [
           "html/infrastructure/urls/resolving-urls/query-encoding/location.sub.html?encoding=utf8",
           {}
@@ -488126,6 +488168,13 @@
          ],
          "track-element-dom-change.html": [
           "ff447f33f2e85d77dbfc1d84e46e4a2c2ec245ac",
+          [
+           null,
+           {}
+          ]
+         ],
+         "track-element-src-aborted-load.html": [
+          "234e0873133ccf191467e5896346676d84102681",
           [
            null,
            {}
@@ -504770,7 +504819,7 @@
        ]
       ],
       "penPointerEvents.html": [
-       "c5a2b1c06d902d54f63b329ef3f5253b5d72ff04",
+       "7141fb56556795fdd25a8ed740c25b2d7edcac9d",
        [
         null,
         {
@@ -541483,13 +541532,1091 @@
    },
    "service-workers": {
     "cache-storage": {
-     "common.https.html": [
-      "c06e1f13a67f145c5d0bfb3b0555236db515d3f5",
+     "cache-abort.https.any.js": [
+      "960d1bb1bffd7dfa6ec8a35b6428baff231352e4",
       [
-       null,
+       "service-workers/cache-storage/cache-abort.https.any.html",
        {
+        "script_metadata": [
+         [
+          "title",
+          "Cache Storage: Abort"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
         "timeout": "long"
        }
+      ],
+      [
+       "service-workers/cache-storage/cache-abort.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache Storage: Abort"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-abort.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache Storage: Abort"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-abort.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache Storage: Abort"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "cache-add.https.any.js": [
+      "eca516abd5f3933510d299859bf44bb0a2f56052",
+      [
+       "service-workers/cache-storage/cache-add.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.add and Cache.addAll"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-add.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.add and Cache.addAll"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-add.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.add and Cache.addAll"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-add.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.add and Cache.addAll"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "cache-delete.https.any.js": [
+      "3eae2b6a08b7954a6a5e644b8248f6ebab562a83",
+      [
+       "service-workers/cache-storage/cache-delete.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.delete"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-delete.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.delete"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-delete.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.delete"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-delete.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.delete"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "cache-keys-attributes-for-service-worker.https.html": [
+      "3c96348e0e033cf0b0a14b1f025b70d787febb35",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cache-keys.https.any.js": [
+      "232fb760d4080a02051ba5cf5e8d2964771fda9a",
+      [
+       "service-workers/cache-storage/cache-keys.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.keys"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-keys.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.keys"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-keys.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.keys"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-keys.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.keys"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "cache-match.https.any.js": [
+      "9ca45903cbb101810488ced4b31bb9f34957b1ef",
+      [
+       "service-workers/cache-storage/cache-match.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.match"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-match.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.match"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-match.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.match"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-match.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.match"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "cache-matchAll.https.any.js": [
+      "93c55178918c333df25104e69ca74af5dbf04be9",
+      [
+       "service-workers/cache-storage/cache-matchAll.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.matchAll"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-matchAll.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.matchAll"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-matchAll.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.matchAll"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-matchAll.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.matchAll"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "cache-put.https.any.js": [
+      "15aadc96f3571c022ba77a07b0482be29506a0dc",
+      [
+       "service-workers/cache-storage/cache-put.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.put"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-put.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.put"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-put.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.put"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-put.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache.put"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "cache-storage-keys.https.any.js": [
+      "f19522be1b437d619b356b5b0290679a8f391866",
+      [
+       "service-workers/cache-storage/cache-storage-keys.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "CacheStorage.keys"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-storage-keys.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "CacheStorage.keys"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-storage-keys.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "CacheStorage.keys"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-storage-keys.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "CacheStorage.keys"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "cache-storage-match.https.any.js": [
+      "0c31b726294b14b1b849ecbeb369d23a59d126d8",
+      [
+       "service-workers/cache-storage/cache-storage-match.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "CacheStorage.match"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-storage-match.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "CacheStorage.match"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-storage-match.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "CacheStorage.match"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-storage-match.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "CacheStorage.match"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "cache-storage.https.any.js": [
+      "b7d5af7b532036351ab842de451002ca36f7b4af",
+      [
+       "service-workers/cache-storage/cache-storage.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "CacheStorage"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-storage.https.any.serviceworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "CacheStorage"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-storage.https.any.sharedworker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "CacheStorage"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "service-workers/cache-storage/cache-storage.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "CacheStorage"
+         ],
+         [
+          "global",
+          "window,worker"
+         ],
+         [
+          "script",
+          "./resources/test-helpers.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "common.https.window.js": [
+      "eba312c273de149ae9007d69bb4796b147e03841",
+      [
+       "service-workers/cache-storage/common.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Cache Storage: Verify that Window and Workers see same storage"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "credentials.https.html": [
+      "0fe4a0a0ac0de1097a3ba35689df5396eaa613ec",
+      [
+       null,
+       {}
       ]
      ],
      "cross-partition.https.tentative.html": [
@@ -541501,305 +542628,15 @@
        }
       ]
      ],
-     "serviceworker": {
-      "cache-abort.https.html": [
-       "5a8b539be81ef0e4b43f1193d4bb62972968442c",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-add.https.html": [
-       "232de668e41ccf60e60ff776c423d31b091b095b",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-delete.https.html": [
-       "6ff27be300d89f5eaf84fc2805b4b8c516cca8ce",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-keys-attributes-for-service-worker.https.html": [
-       "b6044c581b83eeb9fd9d3bfb2f936712b90d0175",
-       [
-        null,
-        {}
-       ]
-      ],
-      "cache-keys.https.html": [
-       "736f74d98960aa81e1569432683705ccc7c3ceee",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-match.https.html": [
-       "81db70943f0a9871719b704d094bfd042152f809",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-matchAll.https.html": [
-       "f1a38ff079bbe92cfecdda9b9e770ae7f355b8b3",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-put.https.html": [
-       "961602386686665e33202d177a5d8d1c14bef9bb",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-storage-keys.https.html": [
-       "adde95eb85b0a83e787089ef91c573478db1fee7",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-storage-match.https.html": [
-       "fef14074d4625c2f5a2d5da67ce2b990535c96fc",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-storage.https.html": [
-       "3934258f28f7daf9180998aebbc6401f9ef7dedf",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "credentials.https.html": [
-       "7bc494eb140a644dfb6072b3906bbcf390c441cc",
-       [
-        null,
-        {}
-       ]
+     "sandboxed-iframes.https.html": [
+      "098fa89daf446f57da6313c865e53a0a67983059",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
       ]
-     },
-     "window": {
-      "cache-abort.https.html": [
-       "405d34d665c27cee93a03f7013f087cfc0a61af7",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-add.https.html": [
-       "b5a64c6c369b5028b4aba1396738dc892bc62d3b",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-delete.https.html": [
-       "077e6a3fdc1b2a02dae333007ae9603e62217d43",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-keys.https.html": [
-       "8398c33e146c5983c10922457b7f8591b49f5ed8",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-match.https.html": [
-       "f28efad0b76b341171ad230e18d243e229153687",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-matchAll.https.html": [
-       "1288b2c034335759364ad6ddc8f44d22ab2eeeae",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-put.https.html": [
-       "9641c3470518636f1d2afbbc692f721f20790739",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-storage-keys.https.html": [
-       "669ab9105e24219ce16f50b59555e85c9ce36a18",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-storage-match.https.html": [
-       "f16c45d001e7f2eac0ef6cf2a17c85338b47b179",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-storage.https.html": [
-       "b2f5c385983a7b4a0fe56f2a2756e3a5fb345e24",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "sandboxed-iframes.https.html": [
-       "4a99d2af1b02a60a939780aa1a2347c45f5dad91",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ]
-     },
-     "worker": {
-      "cache-abort.https.html": [
-       "68bbade07d3862c883bf0f95b02a5cb6181d8e79",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-add.https.html": [
-       "2658e1e50f9ebfe8ac5971a16af9e26b02d140a8",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-delete.https.html": [
-       "3d63a2f7f7d3120a5af4b43dc528223b1d9f85b5",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-keys.https.html": [
-       "6bafe21d30bb55d4e0dfdc8f3633bcf359fc7d6c",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-match.https.html": [
-       "479a29d1eec5f49416a075aae9306bcd5b5cc3e6",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-matchAll.https.html": [
-       "c7e893a23cd63c30d9c0108d92effc55e2c0bfe6",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-put.https.html": [
-       "20aeb2351efb70ceedbd7c5c46dc7d500def71f8",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-storage-keys.https.html": [
-       "71d995bc9400b173bef486b178f43d29b8038076",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-storage-match.https.html": [
-       "cd93410d234886ce63d97e6c13461b90a9d4d369",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ],
-      "cache-storage.https.html": [
-       "0899609e4aeb46463baf719cbeaea50a3523940e",
-       [
-        null,
-        {
-         "timeout": "long"
-        }
-       ]
-      ]
-     }
+     ]
     },
     "idlharness.https.any.js": [
      "8db5d4d10ff7b90f990d77394dac2dddbd2aa45f",
@@ -554400,7 +555237,14 @@
        ]
       ],
       "SVGLength-ic.html": [
-       "ed8a636411e956370868a340b19f7a809b347f35",
+       "583a964444ecc5dc3878d11e62c3e884084a89b0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "SVGLength-lh.html": [
+       "023d04fbd0c507a7f16168256653773f7525b9dc",
        [
         null,
         {}

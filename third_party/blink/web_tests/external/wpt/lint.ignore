@@ -210,7 +210,7 @@ SET TIMEOUT: resource-timing/resources/nested-contexts.js
 SET TIMEOUT: reporting/resources/first-csp-report.https.sub.html
 SET TIMEOUT: reporting/resources/second-csp-report.https.sub.html
 SET TIMEOUT: secure-contexts/basic-popup-and-iframe-tests.https.js
-SET TIMEOUT: service-workers/cache-storage/script-tests/cache-abort.js
+SET TIMEOUT: service-workers/cache-storage/cache-abort.https.any.js
 SET TIMEOUT: service-workers/service-worker/activation.https.html
 SET TIMEOUT: service-workers/service-worker/fetch-frame-resource.https.html
 SET TIMEOUT: service-workers/service-worker/fetch-request-redirect.https.html

@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+PASS Cache.matchAll with no matching entries
+PASS Cache.matchAll with URL
+PASS Cache.matchAll with Request
+PASS Cache.matchAll with new Request
+PASS Cache.matchAll with HEAD
+PASS Cache.matchAll with ignoreSearch option (request with no search parameters)
+PASS Cache.matchAll with ignoreSearch option (request with search parameters)
+PASS Cache.matchAll supports ignoreMethod
+PASS Cache.matchAll supports ignoreVary
+PASS Cache.matchAll with URL containing fragment
+PASS Cache.matchAll with string fragment "http" as query
+PASS Cache.matchAll without parameters
+PASS Cache.matchAll with explicitly undefined request
+PASS Cache.matchAll with explicitly undefined request and empty options
+FAIL Cache.matchAll with responses containing "Vary" header assert_equals: Cache.matchAll should match the entire header if a vary header is present in both the query and cached requests. expected 1 but got 0
+FAIL Cache.matchAll with multiple vary pairs assert_equals: Cache.matchAll should support multiple vary request/response pairs. expected 3 but got 1
+Harness: the test ran to completion.
+

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS location [PutForwards]
-PASS location.assign()
-PASS location.replace()
-PASS location.href
-FAIL location.search assert_equals: expected "?%26%23255%3B" but got "?%C3%BF"
-Harness: the test ran to completion.
-

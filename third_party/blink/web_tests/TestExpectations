@@ -3522,7 +3522,6 @@ crbug.com/626703 [ Win ] external/wpt/websockets/stream/tentative/constructor.an
 crbug.com/626703 [ Win ] external/wpt/websockets/stream/tentative/constructor.any.worker.html?wss [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/basic-auth.any.sharedworker.html?wss [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/stream/tentative/constructor.any.html?wss [ Failure Timeout ]
-crbug.com/626703 [ Win ] external/wpt/service-workers/cache-storage/serviceworker/cache-abort.https.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/remove-own-iframe-during-onerror.window.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/stream/tentative/constructor.any.sharedworker.html?wss [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/constructor/010.html [ Failure Timeout ]
@@ -5948,7 +5947,6 @@ crbug.com/1231699 [ Linux ] virtual/text-antialias/color-emoji.html [ Failure Pa
 crbug.com/1228261 http/tests/inspector-protocol/browser-grant-permissions.js [ Failure Pass Timeout ]
 
 # Flakes that might be caused or aggravated by PlzServiceWorker
-crbug.com/996511 external/wpt/service-workers/cache-storage/window/cache-abort.https.html [ Crash Failure Pass ]
 crbug.com/996511 external/wpt/service-workers/service-worker/getregistrations.https.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2021-07-14

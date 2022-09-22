@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+PASS Cache.add called with no arguments
+PASS Cache.add called with relative URL specified as a string
+PASS Cache.add called with non-HTTP/HTTPS URL
+PASS Cache.add called with Request object
+PASS Cache.add called with POST request
+PASS Cache.add called twice with the same Request object
+PASS Cache.add with request with null body (not consumed)
+PASS Cache.add with 206 response
+PASS Cache.addAll with 206 response
+PASS Cache.addAll with opaque-filtered 206 response
+PASS Cache.add with request that results in a status of 404
+PASS Cache.add with request that results in a status of 500
+PASS Cache.addAll with no arguments
+PASS Cache.addAll with a mix of valid and undefined arguments
+PASS Cache.addAll with an empty array
+PASS Cache.addAll with string URL arguments
+PASS Cache.addAll with Request arguments
+PASS Cache.addAll with a mix of succeeding and failing requests
+FAIL Cache.addAll called with the same Request object specified twice promise_rejects_dom: Cache.addAll should throw InvalidStateError if the same request is added twice. function "function() { throw e }" threw object "TypeError: Failed to execute 'addAll' on 'Cache': Request failed" that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
+PASS Cache.addAll should succeed when entries differ by vary header
+PASS Cache.addAll should reject when entries are duplicate by vary header
+PASS Cache.addAll should reject when one entry has a vary header matching another entry
+Harness: the test ran to completion.
+
