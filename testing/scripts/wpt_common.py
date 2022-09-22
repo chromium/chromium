@@ -150,10 +150,12 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         parser.add_argument(
             '--isolated-script-test-launcher-retry-limit',
             '--test-launcher-retry-limit',
-            metavar='LIMIT',
+            '--retry-unexpected',
+            metavar='RETRIES',
             type=int,
-            default=0,
-            help='Maximum number of times to rerun a failed test')
+            help=(
+                'Maximum number of times to rerun unexpectedly failed tests. '
+                'Defaults to 3 unless given an explicit list of tests to run.'))
         # `--gtest_filter` and `--isolated-script-test-filter` have slightly
         # different formats and behavior, so keep them as separate options.
         # See: crbug/1316164#c4
@@ -212,11 +214,25 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
     def generate_test_repeat_args(self, repeat_count):
         return ['--repeat=%d' % repeat_count]
 
-    # pylint: disable=unused-argument
+    @property
+    def _has_explicit_tests(self):
+        # TODO(crbug.com/1356318): `run_wpt_tests` has multiple ways to
+        # explicitly specify tests. Some are inherited from wptrunner, the rest
+        # from Chromium infra. After we consolidate `run_wpt_tests` and
+        # `wpt_common`, maybe we should build a single explicit test list to
+        # simplify this check?
+        for test_or_option in super().rest_args:
+            if not test_or_option.startswith('-'):
+                return True
+        return (getattr(self.options, 'include', None) or
+                getattr(self.options, 'include_file', None) or
+                getattr(self.options, 'gtest_filter', None) or
+                self._include_filename)
+
     def generate_test_launcher_retry_limit_args(self, retry_limit):
-        # TODO(crbug/1306222): wptrunner currently cannot rerun individual
-        # failed tests, so this flag is accepted but not used.
-        return []
+        if retry_limit is None:
+            retry_limit = 0 if self._has_explicit_tests else 3
+        return ['--retry-unexpected=%d' % retry_limit]
 
     def generate_sharding_args(self, total_shards, shard_index):
         return ['--total-chunks=%d' % total_shards,
