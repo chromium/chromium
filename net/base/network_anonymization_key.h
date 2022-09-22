@@ -5,6 +5,7 @@
 #ifndef NET_BASE_NETWORK_ANONYMIZATION_KEY_H_
 #define NET_BASE_NETWORK_ANONYMIZATION_KEY_H_
 
+#include <cstddef>
 #include <string>
 #include <tuple>
 
@@ -92,6 +93,26 @@ class NET_EXPORT NetworkAnonymizationKey {
     return std::tie(top_frame_site_, frame_site_, is_cross_site_, nonce_) <
            std::tie(other.top_frame_site_, other.frame_site_,
                     other.is_cross_site_, other.nonce_);
+  }
+
+  // This is a temporary method to allow for an iterative transition from using
+  // the NetworkIsolationKey to using the NetworkAnonymizationKey to partition
+  // the network state. When the two keys are not configured to use the same
+  // scheme the results of this conversion are inaccurate.
+
+  // TODO(@brgoldstein): Remove this method once key conversion is complete and
+  // before partitioning experiments are enabled.
+  operator NetworkIsolationKey() const {
+    if (!top_frame_site_) {
+      return NetworkIsolationKey();
+    }
+    if (!frame_site_) {
+      return NetworkIsolationKey(top_frame_site_.value(),
+                                 top_frame_site_.value(),
+                                 nonce_.value() ? &nonce_.value() : nullptr);
+    }
+    return NetworkIsolationKey(top_frame_site_.value(), frame_site_.value(),
+                               nonce_.value() ? &nonce_.value() : nullptr);
   }
 
   // Creates a NetworkAnonymizationKey from a NetworkIsolationKey. This is
