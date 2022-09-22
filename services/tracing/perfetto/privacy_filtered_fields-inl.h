@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -368,6 +368,10 @@ constexpr MessageInfo kChromeSqlDiagnostics = {kChromeSqlDiagnosticsIndices,
 constexpr int kAndroidToolbarIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kAndroidToolbar = {kAndroidToolbarIndices, nullptr};
 
+// Proto Message: ActiveProcesses
+constexpr int kActiveProcessesIndices[] = {1, -1};
+constexpr MessageInfo kActiveProcesses = {kActiveProcessesIndices, nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
     1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,   22,
@@ -375,7 +379,7 @@ constexpr int kTrackEventIndices[] = {
     35,   36,   38,   39,   40,   41,   42,   43,   47,   48,   1001, 1002,
     1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014,
     1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1031,
-    1032, 1033, 1034, 1036, 1038, 1039, 1041, -1};
+    1032, 1033, 1034, 1036, 1038, 1039, 1041, 1042, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -443,7 +447,8 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     &kAndroidIPC,
     &kChromeSqlDiagnostics,
-    &kAndroidToolbar};
+    &kAndroidToolbar,
+    &kActiveProcesses};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
