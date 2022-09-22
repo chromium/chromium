@@ -38,14 +38,16 @@ enum class AboutThisSiteStatus {
 };
 
 AboutThisSiteStatus ValidateMetadata(
-    const absl::optional<proto::AboutThisSiteMetadata>& metadata);
+    const absl::optional<proto::AboutThisSiteMetadata>& metadata,
+    bool allow_missing_description);
 
 AboutThisSiteStatus ValidateSource(const proto::Hyperlink& link);
 AboutThisSiteStatus ValidateDescription(
     const proto::SiteDescription& description);
 AboutThisSiteStatus ValidateFirstSeen(const proto::SiteFirstSeen& first_seen);
 AboutThisSiteStatus ValidateMoreAbout(const proto::MoreAbout& more_about);
-AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info);
+AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info,
+                                     bool allow_missing_description);
 
 }  // namespace about_this_site_validation
 }  // namespace page_info

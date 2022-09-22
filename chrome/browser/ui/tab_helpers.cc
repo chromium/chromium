@@ -49,6 +49,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
+#include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/performance_hints/performance_hints_features.h"
@@ -311,8 +312,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
   // --- Section 1: Common tab helpers ---
 #if defined(TOOLKIT_VIEWS)
-  if (base::FeatureList::IsEnabled(
-          page_info::kAboutThisSitePersistentSidePanelEntry)) {
+  if (page_info::IsPersistentSidePanelEntryFeatureEnabled()) {
     auto* optimization_guide_decider =
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
     auto* about_this_site_service =

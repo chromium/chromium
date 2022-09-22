@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -126,9 +127,7 @@ void ChromePageInfoUiDelegate::AboutThisSiteSourceClicked(
 void ChromePageInfoUiDelegate::OpenMoreAboutThisPageUrl(
     const GURL& url,
     const ui::Event& event) {
-  DCHECK(base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
-  DCHECK(
-      base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteMoreInfo));
+  DCHECK(page_info::IsMoreAboutThisSiteFeatureEnabled());
   ShowAboutThisSiteSidePanel(web_contents_, url);
 }
 #endif

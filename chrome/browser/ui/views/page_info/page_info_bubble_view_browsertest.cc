@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -743,15 +744,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrerenderBrowserTest,
 
 class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
  public:
-  PageInfoBubbleViewAboutThisSiteBrowserTest() {
-    feature_list.InitWithFeatures(
-        {page_info::kPageInfoAboutThisSiteEn,
-         page_info::kPageInfoAboutThisSiteNonEn,
-         page_info::kPageInfoAboutThisSiteMoreInfo,
-         page_info::kPageInfoAboutThisSiteDescriptionPlaceholder,
-         features::kUnifiedSidePanel},
-        {});
-  }
+  PageInfoBubbleViewAboutThisSiteBrowserTest() { InitFeatureList(); }
 
   void SetUp() override {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -759,6 +752,16 @@ class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(https_server_.Start());
 
     InProcessBrowserTest::SetUp();
+  }
+
+  virtual void InitFeatureList() {
+    feature_list_.InitWithFeatures(
+        {page_info::kPageInfoAboutThisSiteEn,
+         page_info::kPageInfoAboutThisSiteNonEn,
+         page_info::kPageInfoAboutThisSiteMoreInfo,
+         page_info::kPageInfoAboutThisSiteDescriptionPlaceholder,
+         features::kUnifiedSidePanel},
+        {});
   }
 
   void SetUpOnMainThread() override {
@@ -782,16 +785,15 @@ class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
     site_info.mutable_more_about()->set_url(
         https_server_.GetURL("a.test", "/title2.html").spec());
     EXPECT_EQ(
-        page_info::about_this_site_validation::ValidateSiteInfo(site_info),
+        page_info::about_this_site_validation::ValidateSiteInfo(
+            site_info, page_info::IsDescriptionPlaceholderFeatureEnabled()),
         AboutThisSiteStatus::kValid);
     return site_info;
   }
 
  protected:
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-
- private:
-  base::test::ScopedFeatureList feature_list;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
@@ -860,7 +862,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
   auto url = https_server_.GetURL("a.test", "/title1.html");
   auto site_info = CreateValidSiteInfo();
   site_info.clear_description();
-  EXPECT_EQ(page_info::about_this_site_validation::ValidateSiteInfo(site_info),
+  EXPECT_EQ(page_info::about_this_site_validation::ValidateSiteInfo(
+                site_info, page_info::IsDescriptionPlaceholderFeatureEnabled()),
             AboutThisSiteStatus::kValid);
   AddHintForTesting(browser(), url, site_info);
 
@@ -981,6 +984,60 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDisabledBrowserTest,
   ukm_recorder.ExpectEntryMetric(
       entries[0], ukm::builders::AboutThisSiteStatus::kStatusName,
       static_cast<int>(AboutThisSiteStatus::kUnknown));
+}
+
+class PageInfoBubbleViewAboutThisSiteWithoutSidePanelBrowserTest
+    : public PageInfoBubbleViewAboutThisSiteBrowserTest {
+ public:
+  void InitFeatureList() override {
+    feature_list_.InitWithFeatures(
+        {
+            page_info::kPageInfoAboutThisSiteEn,
+            page_info::kPageInfoAboutThisSiteNonEn,
+            page_info::kPageInfoAboutThisSiteMoreInfo,
+            page_info::kPageInfoAboutThisSiteDescriptionPlaceholder,
+        },
+        {features::kUnifiedSidePanel});
+  }
+
+  page_info::proto::SiteInfo CreateSiteInfoWithoutDescription() {
+    auto site_info = CreateValidSiteInfo();
+    site_info.mutable_description()->clear_description();
+    return site_info;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PageInfoBubbleViewAboutThisSiteWithoutSidePanelBrowserTest,
+    AboutThisSiteInteraction) {
+  auto url = https_server_.GetURL("a.test", "/title1.html");
+  AddHintForTesting(browser(), url, CreateValidSiteInfo());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  OpenPageInfoBubble(browser());
+
+  auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
+  views::View* button = page_info->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
+  ASSERT_TRUE(button);
+  PerformMouseClickOnView(button);
+  // PageInfo should stay open since the side panel is disabled.
+  EXPECT_TRUE(PageInfoBubbleView::GetPageInfoBubbleForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageInfoBubbleViewAboutThisSiteWithoutSidePanelBrowserTest,
+    AboutThisSiteWithoutDescription) {
+  auto url = https_server_.GetURL("a.test", "/title1.html");
+  AddHintForTesting(browser(), url, CreateSiteInfoWithoutDescription());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  OpenPageInfoBubble(browser());
+
+  auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
+  views::View* button = page_info->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
+  EXPECT_FALSE(button);
 }
 
 class PageInfoBubbleViewSiteSettingsBrowserTest : public InProcessBrowserTest {

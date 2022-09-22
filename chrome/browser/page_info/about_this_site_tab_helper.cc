@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/buildflag.h"
+#include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -88,7 +89,9 @@ void AboutThisSiteTabHelper::OnOptimizationGuideDecision(
   absl::optional<AboutThisSiteMetadata> about_this_site_metadata =
       metadata.ParsedMetadata<AboutThisSiteMetadata>();
 
-  auto status = ValidateMetadata(about_this_site_metadata);
+  auto status =
+      ValidateMetadata(about_this_site_metadata,
+                       page_info::IsDescriptionPlaceholderFeatureEnabled());
 
   base::UmaHistogramEnumeration("Privacy.AboutThisSite.PageLoadValidation",
                                 status);

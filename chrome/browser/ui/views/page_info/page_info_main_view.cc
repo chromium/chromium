@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/reputation/safety_tip_ui_helper.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
@@ -576,8 +577,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
 
   PageInfoHoverButton* about_this_site_button = nullptr;
 
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteMoreInfo) &&
-      base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+  if (page_info::IsMoreAboutThisSiteFeatureEnabled()) {
     const auto& description =
         info.has_description()
             ? base::UTF8ToUTF16(info.description().description())

@@ -32,14 +32,15 @@ extern const base::Feature kPageInfoAboutThisSiteNonEn;
 extern const base::FeatureParam<bool> kShowSampleContent;
 
 // Shows a link with more info about a site in PageInfo.
+// Use page_info::IsAboutThisSiteFeatureEnabled() instead of checking this flag
+// directly.
 extern const base::Feature kPageInfoAboutThisSiteMoreInfo;
 
 // Shows a placeholder when a description is missing. Only enable in combination
 // with kPageInfoAboutThisSiteMoreInfo.
+// Use page_info::IsDescriptionPlaceholderEnabled() instead of checking this
+// flag directly.
 extern const base::Feature kPageInfoAboutThisSiteDescriptionPlaceholder;
-
-// Enables the persistent "About this site" entry in the side panel.
-extern const base::Feature kAboutThisSitePersistentSidePanelEntry;
 
 #if !BUILDFLAG(IS_ANDROID)
 // Enables the history section for Page Info on desktop.
