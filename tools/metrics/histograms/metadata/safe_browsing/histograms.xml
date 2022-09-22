@@ -1797,6 +1797,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.RT.IsPopulationMbbOrEsb" enum="Boolean"
     expires_after="2022-10-23">
+  <obsolete>
+    Removed 09-2022. This histogram was added as part of a short-lived
+    investigation, which is no longer being prioritized.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

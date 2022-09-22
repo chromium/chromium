@@ -558,12 +558,6 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
   }
 
   *request->mutable_population() = get_user_population_callback_.Run();
-  RecordBooleanWithAndWithoutSuffix(
-      "SafeBrowsing.RT.IsPopulationMbbOrEsb", GetMetricSuffix(),
-      request->population().is_mbb_enabled() ||
-          request->population().user_population() ==
-              ChromeUserPopulation::ENHANCED_PROTECTION);
-
   if (referrer_chain_provider_) {
     referrer_chain_provider_->IdentifyReferrerChainByPendingEventURL(
         SanitizeURL(url), GetReferrerUserGestureLimit(),
