@@ -638,4 +638,110 @@ TEST_F(CertVerifyProcBuiltinTest, DebugData) {
       (time - der_verification_time_converted_back_to_base_time).InSeconds());
 }
 
+namespace {
+
+// Returns a TLV to use as an invalid signature algorithm when building a cert.
+// This is a SEQUENCE so that it will pass the ParseCertificate code
+// and fail inside ParseSignatureAlgorithm.
+// SEQUENCE {
+//   INTEGER { 42 }
+// }
+std::string InvalidSignatureAlgorithmTLV() {
+  const uint8_t kInvalidSignatureAlgorithmTLV[] = {0x30, 0x03, 0x02, 0x01,
+                                                   0x2a};
+  return std::string(std::begin(kInvalidSignatureAlgorithmTLV),
+                     std::end(kInvalidSignatureAlgorithmTLV));
+}
+
+}  // namespace
+
+TEST_F(CertVerifyProcBuiltinTest,
+       UnparsableMismatchedTBSSignatureAlgorithmTarget) {
+  std::unique_ptr<CertBuilder> leaf, root;
+  CreateChain(&leaf, &root);
+  ASSERT_TRUE(leaf && root);
+  // Set only the tbsCertificate signature to an invalid value.
+  leaf->SetTBSSignatureAlgorithmTLV(InvalidSignatureAlgorithmTLV());
+
+  // Trust the root and build a chain to verify.
+  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  int flags = 0;
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", flags, CertificateList(),
+         &verify_result, &verify_net_log_source, callback.callback());
+  int error = callback.WaitForResult();
+  // Invalid signature algorithm in the leaf cert should result in the
+  // cert being invalid.
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
+  EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+}
+
+TEST_F(CertVerifyProcBuiltinTest,
+       UnparsableMismatchedTBSSignatureAlgorithmIntermediate) {
+  std::unique_ptr<CertBuilder> leaf, intermediate, root;
+  CreateChain(&leaf, &intermediate, &root);
+  ASSERT_TRUE(leaf && intermediate && root);
+  // Set only the tbsCertificate signature to an invalid value.
+  intermediate->SetTBSSignatureAlgorithmTLV(InvalidSignatureAlgorithmTLV());
+
+  // Trust the root and build a chain to verify that includes the intermediate.
+  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+  ASSERT_EQ(chain->intermediate_buffers().size(), 1U);
+
+  int flags = 0;
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", flags, CertificateList(),
+         &verify_result, &verify_net_log_source, callback.callback());
+  int error = callback.WaitForResult();
+  // Invalid signature algorithm in the intermediate cert should result in the
+  // cert being invalid.
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
+  EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+}
+
+// This test is disabled on Android as adding the invalid root through
+// ScopedTestRoot causes it to be parsed by the Java X509 code which barfs. We
+// could re-enable if Chrome on Android has fully switched to the
+// builtin-verifier and ScopedTestRoot no longer has Android-specific code.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_UnparsableMismatchedTBSSignatureAlgorithmRoot \
+  DISABLED_UnparsableMismatchedTBSSignatureAlgorithmRoot
+#else
+#define MAYBE_UnparsableMismatchedTBSSignatureAlgorithmRoot \
+  UnparsableMismatchedTBSSignatureAlgorithmRoot
+#endif
+TEST_F(CertVerifyProcBuiltinTest,
+       MAYBE_UnparsableMismatchedTBSSignatureAlgorithmRoot) {
+  std::unique_ptr<CertBuilder> leaf, intermediate, root;
+  CreateChain(&leaf, &intermediate, &root);
+  ASSERT_TRUE(leaf && intermediate && root);
+  // Set only the tbsCertificate signature to an invalid value.
+  root->SetTBSSignatureAlgorithmTLV(InvalidSignatureAlgorithmTLV());
+
+  // Trust the root and build a chain to verify that includes the intermediate.
+  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  int flags = 0;
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", flags, CertificateList(),
+         &verify_result, &verify_net_log_source, callback.callback());
+  int error = callback.WaitForResult();
+  // Invalid signature algorithm in the root cert should have no effect on
+  // verification.
+  EXPECT_THAT(error, IsOk());
+}
+
 }  // namespace net
