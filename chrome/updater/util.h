@@ -6,14 +6,11 @@
 #define CHROME_UPDATER_UTIL_H_
 
 #include <string>
-#include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
@@ -217,13 +214,6 @@ absl::optional<base::FilePath> WriteInstallerDataToTempFile(
 
 // Creates and starts a thread pool for this process.
 void InitializeThreadPool(const char* name);
-
-// Adapts `callback` so that the callback is posted on the current sequence.
-template <typename CallbackT>
-CallbackT OnCurrentSequence(CallbackT callback) {
-  return base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                            std::move(callback));
-}
 
 }  // namespace updater
 
