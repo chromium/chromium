@@ -6,12 +6,14 @@
 #include <tuple>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pending_beacon_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/pending_beacon_dispatcher.h"
 #include "third_party/blink/renderer/core/frame/pending_get_beacon.h"
 #include "third_party/blink/renderer/core/frame/pending_post_beacon.h"
@@ -235,4 +237,27 @@ TEST_P(PendingBeaconSendTest, SetNonPendingAfterTimeoutTimerStart) {
   // Unregistering is handled by dispatcher.
 }
 
+class PendingBeaconContextDestroyedTest
+    : public PendingBeaconTestBase,
+      public ::testing::WithParamInterface<BeaconMethodTestType> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PendingBeaconContextDestroyedTest,
+                         ::testing::Values(kPendingGetBeaconTestCase,
+                                           kPendingPostBeaconTestCase),
+                         BeaconMethodTestType::TestParamInfoToName);
+
+TEST_P(PendingBeaconContextDestroyedTest,
+       BecomeNonPendingAfterContextDestroyed) {
+  PendingBeacon* beacon = nullptr;
+  {
+    V8TestingScope v8_scope;
+    const auto& method = GetParam().method;
+    beacon = CreatePendingBeacon(v8_scope, method);
+    ASSERT_TRUE(beacon->pending());
+  }
+  // Lets `v8_scope` get destroyed to simulate unloading the document.
+
+  EXPECT_FALSE(beacon->pending());
+}
 }  // namespace blink

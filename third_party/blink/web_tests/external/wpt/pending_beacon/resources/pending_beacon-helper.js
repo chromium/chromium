@@ -200,3 +200,18 @@ function postBeaconSendDataTest(dataType, testData, description, options) {
     });
   }, `PendingPostBeacon(${dataType}): ${description}`);
 }
+
+function generateHTML(script) {
+  return `<!DOCTYPE html><body><script>${script}</script></body>`;
+}
+
+// Loads `script` into an iframe and appends it to the current document.
+// Returns the loaded iframe element.
+async function loadScriptAsIframe(script) {
+  const iframe = document.createElement('iframe');
+  iframe.srcdoc = generateHTML(script);
+  const iframeLoaded = new Promise(resolve => iframe.onload = resolve);
+  document.body.appendChild(iframe);
+  await iframeLoaded;
+  return iframe;
+}
