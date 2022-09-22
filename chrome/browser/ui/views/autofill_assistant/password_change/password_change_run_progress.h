@@ -19,14 +19,16 @@ class PasswordChangeRunProgress : public views::View {
   METADATA_HEADER(PasswordChangeRunProgress);
 
   // IDs that identify a view within the dialog that was used in browsertests.
+  // The offset is used to ensure that the IDs do not overlap with the parent
+  // dialog.
   enum class ChildrenViewsIds : int {
-    kStartStepIcon,
-    kChangePasswordStepIcon,
-    kChangePasswordStepBar,
-    kSavePasswordStepIcon,
-    kSavePasswordStepBar,
-    kEndStepIcon,
-    kEndStepBar,
+    kStartStepIcon = 100,
+    kChangePasswordStepIcon = 101,
+    kChangePasswordStepBar = 102,
+    kSavePasswordStepIcon = 103,
+    kSavePasswordStepBar = 104,
+    kEndStepIcon = 105,
+    kEndStepBar = 106,
   };
 
   // `childrendsIDsOffset` can be used by parent views to make sure that the
