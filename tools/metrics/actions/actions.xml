@@ -7525,6 +7525,25 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DesktopSiteContentSetting.SettingsPage.Entered">
+  <owner>shuyng@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    User entered the SingleCategoryPreferences page for Desktop site. It is
+    emitted whenever this page is shown regardless how it is triggered. Android
+    only.
+  </description>
+</action>
+
+<action name="DesktopSiteContentSetting.SettingsPage.SiteException.Opened">
+  <owner>shuyng@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    User opened the site exception edit dialog by clicking on a site in the
+    SingleCategoryPreferences page for Desktop site. Android only.
+  </description>
+</action>
+
 <action name="Destination_Application_Edit">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

@@ -393,6 +393,9 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 : null;
 
         configureGlobalToggles();
+        if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
+            RecordUserAction.record("DesktopSiteContentSetting.SettingsPage.Entered");
+        }
 
         setHasOptionsMenu(true);
 
@@ -475,6 +478,10 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
             } else {
                 buildPreferenceDialog(website_pref.site()).show();
+                if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
+                    RecordUserAction.record(
+                            "DesktopSiteContentSetting.SettingsPage.SiteException.Opened");
+                }
             }
         }
 
