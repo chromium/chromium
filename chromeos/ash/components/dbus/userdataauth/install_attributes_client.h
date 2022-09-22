@@ -66,11 +66,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) InstallAttributesClient {
       const ::user_data_auth::InstallAttributesGetRequest& request,
       InstallAttributesGetCallback callback) = 0;
 
-  // Set an install attribute.
-  virtual void InstallAttributesSet(
-      const ::user_data_auth::InstallAttributesSetRequest& request,
-      InstallAttributesSetCallback callback) = 0;
-
   // Finalizes the install attribute.
   virtual void InstallAttributesFinalize(
       const ::user_data_auth::InstallAttributesFinalizeRequest& request,

@@ -33,9 +33,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeInstallAttributesClient
   void InstallAttributesGet(
       const ::user_data_auth::InstallAttributesGetRequest& request,
       InstallAttributesGetCallback callback) override;
-  void InstallAttributesSet(
-      const ::user_data_auth::InstallAttributesSetRequest& request,
-      InstallAttributesSetCallback callback) override;
   void InstallAttributesFinalize(
       const ::user_data_auth::InstallAttributesFinalizeRequest& request,
       InstallAttributesFinalizeCallback callback) override;

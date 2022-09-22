@@ -86,14 +86,6 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
                     std::move(callback));
   }
 
-  void InstallAttributesSet(
-      const ::user_data_auth::InstallAttributesSetRequest& request,
-      InstallAttributesSetCallback callback) override {
-    CallProtoMethod(::user_data_auth::kInstallAttributesSet,
-                    ::user_data_auth::kInstallAttributesInterface, request,
-                    std::move(callback));
-  }
-
   void InstallAttributesFinalize(
       const ::user_data_auth::InstallAttributesFinalizeRequest& request,
       InstallAttributesFinalizeCallback callback) override {

@@ -180,9 +180,6 @@ class InstallAttributesClientTest : public testing::Test {
                ::user_data_auth::kInstallAttributesGet) {
       writer.AppendProtoAsArrayOfBytes(expected_install_attributes_get_reply_);
     } else if (method_call->GetMember() ==
-               ::user_data_auth::kInstallAttributesSet) {
-      writer.AppendProtoAsArrayOfBytes(expected_install_attributes_set_reply_);
-    } else if (method_call->GetMember() ==
                ::user_data_auth::kInstallAttributesFinalize) {
       writer.AppendProtoAsArrayOfBytes(
           expected_install_attributes_finalize_reply_);
@@ -266,19 +263,6 @@ TEST_F(InstallAttributesClientTest, InstallAttributesGetInvalidProtobuf) {
                                 CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(result_reply, absl::nullopt);
-}
-
-TEST_F(InstallAttributesClientTest, InstallAttributesSet) {
-  expected_install_attributes_set_reply_.set_error(
-      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::user_data_auth::InstallAttributesSetReply> result_reply;
-
-  client_->InstallAttributesSet(::user_data_auth::InstallAttributesSetRequest(),
-                                CreateCopyCallback(&result_reply));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(ProtobufEquals(result_reply.value(),
-                             expected_install_attributes_set_reply_));
 }
 
 TEST_F(InstallAttributesClientTest, InstallAttributesFinalize) {

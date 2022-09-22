@@ -56,11 +56,6 @@ void FakeInstallAttributesClient::InstallAttributesGet(
     InstallAttributesGetCallback callback) {
   NOTIMPLEMENTED();
 }
-void FakeInstallAttributesClient::InstallAttributesSet(
-    const ::user_data_auth::InstallAttributesSetRequest& request,
-    InstallAttributesSetCallback callback) {
-  NOTIMPLEMENTED();
-}
 void FakeInstallAttributesClient::InstallAttributesFinalize(
     const ::user_data_auth::InstallAttributesFinalizeRequest& request,
     InstallAttributesFinalizeCallback callback) {
