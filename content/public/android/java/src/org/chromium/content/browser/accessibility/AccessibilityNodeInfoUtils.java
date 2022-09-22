@@ -241,6 +241,12 @@ public class AccessibilityNodeInfoUtils {
                     || action.equals(ACTION_CONTEXT_CLICK)) {
                 continue;
             }
+            // Scroll actions are dependent on screen size, so ignore them to reduce flakiness
+            if (action.equals(ACTION_SCROLL_FORWARD) || action.equals(ACTION_SCROLL_BACKWARD)
+                    || action.equals(ACTION_SCROLL_DOWN) || action.equals(ACTION_SCROLL_UP)
+                    || action.equals(ACTION_SCROLL_RIGHT) || action.equals(ACTION_SCROLL_LEFT)) {
+                continue;
+            }
 
             actionStrings.add(toString(action.getId()));
         }

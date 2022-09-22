@@ -11,4 +11,4 @@ WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chr
 ++++CheckBox viewIdResName:"checkbox" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="checkBox", clickableScore="300", roleDescription="checkbox"]
 ++View text:"All the above in one" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="splitter", roleDescription="splitter"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++SeekBar text:"50" viewIdResName:"range" clickable focusable RangeInfo:[current=50.0, min=0.0, max=100.0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SCROLL_FORWARD, SCROLL_BACKWARD, SET_PROGRESS] bundle:[chromeRole="slider", roleDescription="slider"]
+++++SeekBar text:"50" viewIdResName:"range" clickable focusable RangeInfo:[current=50.0, min=0.0, max=100.0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider", roleDescription="slider"]
