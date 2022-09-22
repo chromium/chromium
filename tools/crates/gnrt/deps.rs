@@ -44,15 +44,18 @@ pub struct Package {
     /// human consumption when debugging missing packages.
     pub dependency_path: Vec<String>,
     /// Whether the source is a local path. Is `false` if cargo resolved this
-    /// dependency from online (crates.io or git). This should be `true` for all
-    /// valid packages. Returning `false` for a dependency allows better error
-    /// messages later.
+    /// dependency from a registry (e.g. crates.io) or git. If `false` the
+    /// package may still be locally vendored through cargo configuration (see
+    /// https://doc.rust-lang.org/cargo/reference/source-replacement.html)
     pub is_local: bool,
+    /// Whether this package is a member of the cargo workspace the metadata
+    /// came from, as opposed to a third-party dependency.
+    pub is_workspace_member: bool,
 }
 
 impl Package {
-    pub fn third_party_crate_id(&self) -> crates::ThirdPartyCrate {
-        crates::ThirdPartyCrate {
+    pub fn third_party_crate_id(&self) -> crates::ChromiumVendoredCrate {
+        crates::ChromiumVendoredCrate {
             name: self.package_name.clone(),
             epoch: Epoch::from_version(&self.version),
         }
@@ -73,8 +76,8 @@ pub struct DepOfDep {
 }
 
 impl DepOfDep {
-    pub fn third_party_crate_id(&self) -> crates::ThirdPartyCrate {
-        crates::ThirdPartyCrate {
+    pub fn third_party_crate_id(&self) -> crates::ChromiumVendoredCrate {
+        crates::ChromiumVendoredCrate {
             name: self.package_name.clone(),
             epoch: Epoch::from_version(&self.version),
         }
@@ -115,6 +118,14 @@ pub struct BinTarget {
 pub enum LibType {
     /// A normal Rust rlib library.
     Rlib,
+    /// A Rust dynamic library. See
+    /// https://doc.rust-lang.org/reference/linkage.html for details and the
+    /// distinction between dylib and cdylib.
+    Dylib,
+    /// A C-compatible dynamic library. See
+    /// https://doc.rust-lang.org/reference/linkage.html for details and the
+    /// distinction between dylib and cdylib.
+    Cdylib,
     /// A procedural macro.
     ProcMacro,
 }
@@ -123,6 +134,8 @@ impl std::fmt::Display for LibType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match *self {
             Self::Rlib => f.write_str("rlib"),
+            Self::Dylib => f.write_str("dylib"),
+            Self::Cdylib => f.write_str("cdylib"),
             Self::ProcMacro => f.write_str("proc-macro"),
         }
     }
@@ -268,9 +281,12 @@ pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<Package>
             }
         }
 
-        // Make sure the package comes from our vendored source. If not, report the
-        // error for later.
+        // Make sure the package comes from our vendored source. If not, report
+        // the error for later.
         dep.is_local = package.source == None;
+
+        // Determine whether it's a workspace member or third-party dependency.
+        dep.is_workspace_member = dep_graph.workspace_members.contains(&package.id);
     }
 
     // Return a flat list of dependencies.
@@ -313,6 +329,7 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
         build_script: None,
         dependency_path: path,
         is_local: false,
+        is_workspace_member: false,
     };
 
     state.path.push(node.id.repr.clone());
@@ -388,6 +405,7 @@ fn iter_node_deps(node: &cargo_metadata::Node) -> impl Iterator<Item = Dependenc
 struct MetadataGraph<'a> {
     nodes: HashMap<&'a cargo_metadata::PackageId, &'a cargo_metadata::Node>,
     packages: HashMap<&'a cargo_metadata::PackageId, &'a cargo_metadata::Package>,
+    workspace_members: HashSet<&'a cargo_metadata::PackageId>,
     roots: Vec<&'a cargo_metadata::PackageId>,
 }
 
@@ -410,7 +428,12 @@ fn build_graph<'a>(metadata: &'a cargo_metadata::Metadata) -> MetadataGraph<'a> 
         .chain(metadata.workspace_members.iter())
         .collect();
 
-    MetadataGraph { nodes: graph, packages, roots }
+    MetadataGraph {
+        nodes: graph,
+        packages,
+        workspace_members: metadata.workspace_members.iter().collect(),
+        roots,
+    }
 }
 
 /// A crate target type we support.
@@ -423,18 +446,14 @@ enum TargetType {
 
 impl TargetType {
     fn from_name(name: &str) -> Option<Self> {
-        if name == "lib" || name == "rlib" {
-            Some(Self::Lib(LibType::Rlib))
-        } else if name == "bin" {
-            Some(Self::Bin)
-        } else if name == "custom-build" {
-            Some(Self::BuildScript)
-        } else if name == "proc-macro" {
-            Some(Self::Lib(LibType::ProcMacro))
-        } else if name == "dylib" || name == "cdylib" {
-            panic!("unsupported lib target type {:?}", name)
-        } else {
-            None
+        match name {
+            "lib" | "rlib" => Some(Self::Lib(LibType::Rlib)),
+            "dylib" => Some(Self::Lib(LibType::Dylib)),
+            "cdylib" => Some(Self::Lib(LibType::Cdylib)),
+            "bin" => Some(Self::Bin),
+            "custom-build" => Some(Self::BuildScript),
+            "proc-macro" => Some(Self::Lib(LibType::ProcMacro)),
+            _ => None,
         }
     }
 }

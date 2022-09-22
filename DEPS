@@ -592,7 +592,7 @@ deps = {
       },
     ],
     'dep_type': 'cipd',
-    'condition': 'checkout_rust_toolchain_deps',
+    'condition': 'checkout_rust_toolchain_deps or use_rust',
   },
 
   # We don't know target_cpu at deps time. At least until there's a universal

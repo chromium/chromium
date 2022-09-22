@@ -8,9 +8,12 @@ use crate::manifest;
 
 use std::fmt::{self, Display};
 use std::fs;
+use std::hash::Hash;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
+
+use semver::Version;
 
 /// A normalized version as used in third_party/rust crate paths.
 ///
@@ -49,7 +52,7 @@ impl Epoch {
     /// Compute the Epoch from a `semver::Version`. This is useful since we can
     /// parse versions from `cargo_metadata` and in Cargo.toml files using the
     /// `semver` library.
-    pub fn from_version(version: &semver::Version) -> Self {
+    pub fn from_version(version: &Version) -> Self {
         match version.major {
             0 => Self::Minor(version.minor.try_into().unwrap()),
             x => Self::Major(x.try_into().unwrap()),
@@ -200,16 +203,17 @@ impl fmt::Display for NormalizedName {
     }
 }
 
-/// Identifies a vendored third-party crate.
+/// Identifies a third-party crate vendored in the format described by
+/// third_party/rust/README.md
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct ThirdPartyCrate {
+pub struct ChromiumVendoredCrate {
     /// The upstream name as specified in its Cargo.toml.
     pub name: String,
     /// The crate's epoch, as defined by `Epoch`.
     pub epoch: Epoch,
 }
 
-impl ThirdPartyCrate {
+impl ChromiumVendoredCrate {
     /// The normalized name we use in our vendoring structure.
     pub fn normalized_name(&self) -> NormalizedName {
         NormalizedName::from_crate_name(&self.name)
@@ -240,18 +244,18 @@ impl ThirdPartyCrate {
     }
 }
 
-impl fmt::Display for ThirdPartyCrate {
+impl fmt::Display for ChromiumVendoredCrate {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_fmt(format_args!("{} {}", self.name, self.epoch))
     }
 }
 
 /// Traverse vendored third-party crates and collect the set of names and
-/// epochs. Each `ThirdPartyCrate` entry is paired with the package metadata
-/// from its manifest. The returned list is in unspecified order.
+/// epochs. Each `ChromiumVendoredCrate` entry is paired with the package
+/// metadata from its manifest. The returned list is in unspecified order.
 pub fn collect_third_party_crates<P: AsRef<Path>>(
     crates_path: P,
-) -> io::Result<Vec<(ThirdPartyCrate, manifest::CargoPackage)>> {
+) -> io::Result<Vec<(ChromiumVendoredCrate, manifest::CargoPackage)>> {
     let mut crates = Vec::new();
 
     for crate_dir in fs::read_dir(crates_path)? {
@@ -307,8 +311,130 @@ pub fn collect_third_party_crates<P: AsRef<Path>>(
             let manifest: manifest::CargoManifest = toml::de::from_str(&manifest_contents).unwrap();
             let package_name = manifest.package.name.clone();
 
-            crates.push((ThirdPartyCrate { name: package_name, epoch }, manifest.package));
+            crates.push((ChromiumVendoredCrate { name: package_name, epoch }, manifest.package));
         }
+    }
+
+    Ok(crates)
+}
+
+/// Identifies a third-party crate vendored in `cargo vendor` format. This is
+/// used in the Rust source tree.
+#[derive(Clone, Debug, Eq)]
+pub struct StdVendoredCrate {
+    /// The upstream name as specified in its Cargo.toml.
+    pub name: String,
+    /// The crate's version.
+    pub version: Version,
+    /// Whether this is the latest version in the vendored set. If this is
+    /// false, there is a version suffix in the path. Otherwise, it is just the
+    /// package name.
+    ///
+    /// This is not factored into comparisons or hashing.
+    pub is_latest: bool,
+}
+
+impl Hash for StdVendoredCrate {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.name.hash(state);
+        self.version.hash(state);
+    }
+}
+
+impl PartialEq for StdVendoredCrate {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name && self.version == other.version
+    }
+}
+
+impl Ord for StdVendoredCrate {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.name.cmp(&other.name).then(self.version.cmp(&other.version))
+    }
+}
+
+impl PartialOrd for StdVendoredCrate {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl StdVendoredCrate {
+    /// The crate's path relative to the `vendor/` dir, taking into account
+    /// whether it's the latest version (and so whether the name is abridged).
+    pub fn crate_path(&self) -> PathBuf {
+        PathBuf::from(if self.is_latest { self.abridged_dir_name() } else { self.full_dir_name() })
+    }
+
+    /// The subdirectory name including the full version.
+    fn full_dir_name(&self) -> String {
+        format!("{}-{}", self.name, self.version)
+    }
+
+    /// The subdirectory name without the version.
+    fn abridged_dir_name(&self) -> String {
+        self.name.clone()
+    }
+}
+
+impl fmt::Display for StdVendoredCrate {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{} {}", self.name, self.version)
+    }
+}
+
+/// Traverse vendored third-party crates in the Rust source package. Each
+/// `StdVendoredCrate` is paired with the package metadata from its manifest.
+/// The returned list is in unspecified order.
+pub fn collect_std_vendored_crates<P: AsRef<Path>>(
+    vendor_path: P,
+) -> io::Result<Vec<(StdVendoredCrate, manifest::CargoPackage)>> {
+    let mut crates = Vec::new();
+
+    for vendored_crate in fs::read_dir(vendor_path)? {
+        let vendored_crate: fs::DirEntry = vendored_crate?;
+        if !vendored_crate.file_type()?.is_dir() {
+            continue;
+        }
+
+        let crate_path = vendored_crate.path();
+        let manifest_path = crate_path.join("Cargo.toml");
+        let manifest: manifest::CargoManifest =
+            toml::de::from_str(&fs::read_to_string(&manifest_path)?).unwrap();
+
+        // Vendored crate directories are named as either "{package_name}" or
+        // "{package_name}-{version}". The latest version of the vendored
+        // package is named as the former, and older ones as the latter.
+        //
+        // We must determine which format is used. A simple way is to compute
+        // both names and compare it to the directory.
+        let dir_name = crate_path.file_name().unwrap().to_str().unwrap();
+
+        let mut crate_id = StdVendoredCrate {
+            name: manifest.package.name.clone(),
+            version: manifest.package.version.clone(),
+            // Placeholder value.
+            is_latest: false,
+        };
+
+        crate_id.is_latest = if crate_id.full_dir_name() == dir_name {
+            false
+        } else if crate_id.abridged_dir_name() == dir_name {
+            true
+        } else {
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                format!(
+                    "directory name {dir_name} does not match package information for {crate_id:?}"
+                ),
+            ));
+        };
+
+        // Check that we correctly determined `is_latest` and our computed
+        // subdirectory name is correct.
+        assert_eq!(crate_path.file_name().unwrap(), std::ffi::OsStr::new(&crate_id.crate_path()));
+
+        crates.push((crate_id, manifest.package));
     }
 
     Ok(crates)

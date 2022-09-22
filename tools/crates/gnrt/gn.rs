@@ -91,10 +91,10 @@ impl RuleDep {
 pub fn build_files_from_deps<'a, 'b, Iter: IntoIterator<Item = &'a deps::Package>>(
     deps: Iter,
     paths: &'b paths::ChromiumPaths,
-    metadata: &HashMap<ThirdPartyCrate, CargoPackage>,
-    build_script_outputs: &HashMap<ThirdPartyCrate, Vec<String>>,
-    pub_deps: &HashSet<ThirdPartyCrate>,
-) -> HashMap<ThirdPartyCrate, BuildFile> {
+    metadata: &HashMap<ChromiumVendoredCrate, CargoPackage>,
+    build_script_outputs: &HashMap<ChromiumVendoredCrate, Vec<String>>,
+    pub_deps: &HashSet<ChromiumVendoredCrate>,
+) -> HashMap<ChromiumVendoredCrate, BuildFile> {
     deps.into_iter()
         .filter_map(|dep| {
             make_build_file_for_dep(dep, paths, metadata, build_script_outputs, pub_deps)
@@ -107,10 +107,10 @@ pub fn build_files_from_deps<'a, 'b, Iter: IntoIterator<Item = &'a deps::Package
 fn make_build_file_for_dep(
     dep: &deps::Package,
     paths: &paths::ChromiumPaths,
-    metadata: &HashMap<ThirdPartyCrate, CargoPackage>,
-    build_script_outputs: &HashMap<ThirdPartyCrate, Vec<String>>,
-    pub_deps: &HashSet<ThirdPartyCrate>,
-) -> Option<(ThirdPartyCrate, BuildFile)> {
+    metadata: &HashMap<ChromiumVendoredCrate, CargoPackage>,
+    build_script_outputs: &HashMap<ChromiumVendoredCrate, Vec<String>>,
+    pub_deps: &HashSet<ChromiumVendoredCrate>,
+) -> Option<(ChromiumVendoredCrate, BuildFile)> {
     let third_party_path_str = paths.third_party.to_str().unwrap();
     let crate_id = dep.third_party_crate_id();
     let crate_abs_path = paths.root.join(paths.third_party.join(crate_id.build_path()));
