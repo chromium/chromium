@@ -37,6 +37,7 @@
 #include <string>
 
 #include "base/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host.h"
@@ -126,9 +127,10 @@ WebMouseEvent CreateMouseEvent(WebInputEvent::Type,
 // Helper for creating a local child frame of a local parent frame.
 WebLocalFrameImpl* CreateLocalChild(
     WebLocalFrame& parent,
-    blink::mojom::blink::TreeScopeType,
+    mojom::blink::TreeScopeType,
     TestWebFrameClient*,
-    WebPolicyContainerBindParams policy_container_bind_params);
+    WebPolicyContainerBindParams policy_container_bind_params,
+    WebLocalFrameClient::FinishChildFrameCreationFn finish_creation);
 
 // Similar, but unlike the overload which takes the client as a raw pointer,
 // ownership of the TestWebFrameClient is transferred to the test framework.
@@ -137,7 +139,8 @@ WebLocalFrameImpl* CreateLocalChild(
     WebLocalFrame& parent,
     blink::mojom::blink::TreeScopeType,
     std::unique_ptr<TestWebFrameClient>,
-    WebPolicyContainerBindParams policy_container_bind_params);
+    WebPolicyContainerBindParams policy_container_bind_params,
+    WebLocalFrameClient::FinishChildFrameCreationFn finish_creation);
 
 // Helper for creating a remote frame. Generally used when creating a remote
 // frame to swap into the frame tree.
@@ -490,8 +493,8 @@ class TestWebFrameClient : public WebLocalFrameClient {
       const FramePolicy&,
       const WebFrameOwnerProperties&,
       FrameOwnerElementType,
-      WebPolicyContainerBindParams policy_container_bind_params) override;
-  void InitializeAsChildFrame(WebLocalFrame* parent) override;
+      WebPolicyContainerBindParams policy_container_bind_params,
+      FinishChildFrameCreationFn finish_creation) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
   bool SwapIn(WebFrame* previous_frame) override;

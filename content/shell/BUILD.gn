@@ -166,6 +166,8 @@ static_library("content_shell_lib") {
     "common/shell_switches.h",
     "gpu/shell_content_gpu_client.cc",
     "gpu/shell_content_gpu_client.h",
+    "renderer/render_frame_test_helper.cc",
+    "renderer/render_frame_test_helper.h",
     "renderer/shell_content_renderer_client.cc",
     "renderer/shell_content_renderer_client.h",
     "renderer/shell_render_frame_observer.cc",
@@ -862,8 +864,12 @@ mojom("content_browsertests_mojom") {
   sources = [
     "common/main_frame_counter_test.mojom",
     "common/power_monitor_test.mojom",
+    "common/render_frame_test_helper.mojom",
   ]
-  public_deps = [ "//sandbox/policy/mojom" ]
+  public_deps = [
+    "//sandbox/policy/mojom",
+    "//third_party/blink/public/mojom/tokens",
+  ]
 }
 
 group("content_shell_crash_test") {

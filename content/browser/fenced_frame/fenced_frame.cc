@@ -33,7 +33,8 @@ FrameTreeNode* CreateDelegateFrameTreeNode(
       /*associated_interface_provider_receiver=*/mojo::NullAssociatedReceiver(),
       blink::mojom::TreeScopeType::kDocument, "", "", true,
       blink::LocalFrameToken(), base::UnguessableToken::Create(),
-      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
+      blink::DocumentToken(), blink::FramePolicy(),
+      blink::mojom::FrameOwnerProperties(), false,
       blink::FrameOwnerElementType::kFencedframe,
       /*is_dummy_frame_for_inner_tree=*/true);
 }

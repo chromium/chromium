@@ -148,6 +148,7 @@ class WebRtcAudioRendererTest : public testing::Test {
             &web_local_frame_client_,
             nullptr,
             LocalFrameToken(),
+            DocumentToken(),
             /*policy_container=*/nullptr)) {
     MediaStreamComponentVector dummy_components;
     stream_descriptor_ = MakeGarbageCollected<MediaStreamDescriptor>(

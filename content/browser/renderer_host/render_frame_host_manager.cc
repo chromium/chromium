@@ -390,7 +390,8 @@ void RenderFrameHostManager::InitRoot(
       CreateFrameCase::kInitRoot, site_instance,
       /*frame_routing_id=*/MSG_ROUTING_NONE,
       mojo::PendingAssociatedRemote<mojom::Frame>(), blink::LocalFrameToken(),
-      renderer_initiated_creation, browsing_context_state));
+      blink::DocumentToken(), renderer_initiated_creation,
+      browsing_context_state));
 
   // Creating a main RenderFrameHost also creates a new Page, so notify the
   // delegate about this.
@@ -403,6 +404,7 @@ void RenderFrameHostManager::InitChild(
     int32_t frame_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
+    const blink::DocumentToken& document_token,
     blink::FramePolicy frame_policy,
     std::string frame_name,
     std::string frame_unique_name) {
@@ -429,7 +431,7 @@ void RenderFrameHostManager::InitChild(
   browsing_context_state->CommitFramePolicy(frame_policy);
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitChild, site_instance, frame_routing_id,
-      std::move(frame_remote), frame_token,
+      std::move(frame_remote), frame_token, document_token,
       /*renderer_initiated_creation=*/false, browsing_context_state));
 }
 
@@ -2111,6 +2113,17 @@ bool RenderFrameHostManager::InitializeMainRenderFrameForImmediateUse() {
 
   render_frame_host_->reset_must_be_replaced();
 
+  // If the render frame was previously deleted, this is a signal that the
+  // RenderFrameHost is being reused after a crash.
+  if (render_frame_host_->is_render_frame_deleted()) {
+    // The DocumentAssociatedData needs to be reinitialized now to ensure that
+    // the render frame is created with a new DocumentToken. Note that this
+    // needs to remain in sync with `RenderFrameHostImpl::RenderFrameCreated()`,
+    // which dispatches the actual notification about a new Page object for this
+    // case.
+    render_frame_host_->ReinitializeDocumentAssociatedDataForReuseAfterCrash();
+  }
+
   if (!ReinitializeMainRenderFrame(render_frame_host_.get())) {
     NOTREACHED();
     return false;
@@ -2706,6 +2719,7 @@ RenderFrameHostManager::CreateRenderFrameHost(
     int32_t frame_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
+    const blink::DocumentToken& document_token,
     bool renderer_initiated_creation,
     scoped_refptr<BrowsingContextState> browsing_context_state) {
   FrameTree* frame_tree = frame_tree_node_->frame_tree();
@@ -2781,7 +2795,7 @@ RenderFrameHostManager::CreateRenderFrameHost(
   return RenderFrameHostFactory::Create(
       site_instance, std::move(render_view_host),
       frame_tree->render_frame_delegate(), frame_tree, frame_tree_node_,
-      frame_routing_id, std::move(frame_remote), frame_token,
+      frame_routing_id, std::move(frame_remote), frame_token, document_token,
       renderer_initiated_creation, lifecycle_state,
       std::move(browsing_context_state));
 }
@@ -2919,7 +2933,7 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
       CreateRenderFrameHost(CreateFrameCase::kCreateSpeculative, instance,
                             /*frame_routing_id=*/MSG_ROUTING_NONE,
                             mojo::PendingAssociatedRemote<mojom::Frame>(),
-                            blink::LocalFrameToken(),
+                            blink::LocalFrameToken(), blink::DocumentToken(),
                             /*renderer_initiated_creation=*/false,
                             browsing_context_state);
   DCHECK_EQ(new_render_frame_host->GetSiteInstance(), instance);

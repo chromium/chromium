@@ -1608,6 +1608,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     int32_t routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
+    const blink::DocumentToken& document_token,
     bool renderer_initiated_creation_of_main_frame,
     LifecycleStateImpl lifecycle_state,
     scoped_refptr<BrowsingContextState> browsing_context_state,
@@ -1635,7 +1636,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       subframe_unload_timeout_(RenderViewHostImpl::kUnloadTimeout),
       media_device_id_salt_base_(
           BrowserContext::CreateRandomMediaDeviceIDSalt()),
-      document_associated_data_(absl::in_place, *this),
+      document_associated_data_(absl::in_place, *this, document_token),
       lifecycle_state_(lifecycle_state),
       inner_tree_main_frame_tree_node_id_(
           FrameTreeNode::kFrameTreeNodeInvalidId),
@@ -3277,11 +3278,12 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   params->tree_scope_type = frame_tree_node()->tree_scope_type();
   params->replication_state =
       browsing_context_state_->current_replication_state().Clone();
-  params->token = frame_token_;
+  params->frame_token = frame_token_;
   params->devtools_frame_token = frame_tree_node()->devtools_frame_token();
   BindAssociatedInterfaceProviderReceiver(
       params->associated_interface_provider_remote
           .InitWithNewEndpointAndPassReceiver());
+  params->document_token = document_associated_data_->token;
 
   // If this is a new RenderFrameHost for a frame that has already committed a
   // document, we don't have a policy container yet. Indeed, in that case, this
@@ -3462,26 +3464,15 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   render_frame_state_ = RenderFrameState::kCreated;
 
   if (old_render_frame_state == RenderFrameState::kDeleted) {
-    // Clear all the document-associated data for this RenderFrameHost when its
-    // RenderFrame is recreated after a crash. Note that the user data is
-    // intentionally not cleared at the time of crash. Please refer to
-    // https://crbug.com/1099237 for more details.
-    //
-    // Clearing of user data should be called before RenderFrameCreated to
-    // ensure:
-    // - a) the new state set in RenderFrameCreated doesn't get deleted.
-    // - b) the old state is not leaked to a new RenderFrameHost.
-    document_associated_data_.emplace(*this);
-
-    // Dispatch update notification when a Page is recreated after a crash.
-    if (is_main_frame()) {
-      // Only a current RenderFrameHost should be recreating its RenderFrame
-      // here, since speculative and pending deletion RenderFrameHosts get
-      // deleted immediately after crash, whereas prerender gets cancelled and
-      // bfcache entry gets evicted.
-      DCHECK_EQ(frame_tree_node_->current_frame_host(), this);
-      frame_tree_node_->frame_tree()->delegate()->NotifyPageChanged(GetPage());
-    }
+    // Dispatch update notification when a Page is recreated after a crash. Only
+    // main RenderFrameHosts should ever be reused.
+    DCHECK(is_main_frame());
+    // Only a current RenderFrameHost should be recreating its RenderFrame
+    // here, since speculative and pending deletion RenderFrameHosts get
+    // deleted immediately after crash, whereas prerender gets cancelled and
+    // bfcache entry gets evicted.
+    DCHECK_EQ(frame_tree_node_->current_frame_host(), this);
+    frame_tree_node_->frame_tree()->delegate()->NotifyPageChanged(GetPage());
   }
 
   // Initialize the RenderWidgetHost which marks it and the RenderViewHost as
@@ -3751,6 +3742,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     bool is_created_by_script,
     const blink::LocalFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
+    const blink::DocumentToken& document_token,
     const blink::FramePolicy& frame_policy,
     const blink::mojom::FrameOwnerProperties& frame_owner_properties,
     blink::FrameOwnerElementType owner_type) {
@@ -3778,17 +3770,17 @@ void RenderFrameHostImpl::OnCreateChildFrame(
       return;
   }
 
-  // |new_routing_id|, |browser_interface_broker_receiver| and
-  // |devtools_frame_token| were generated on the browser's IO thread and not
-  // taken from the renderer process.
+  // `new_routing_id`, `frame_token`, `devtools_frame_token` and
+  // `document_token` were generated on the browser's IO thread and not taken
+  // from the renderer process.
   frame_tree_->AddFrame(
       this, GetProcess()->GetID(), new_routing_id, std::move(frame_remote),
       std::move(browser_interface_broker_receiver),
       std::move(policy_container_bind_params),
       std::move(associated_interface_provider_receiver), scope, frame_name,
       frame_unique_name, is_created_by_script, frame_token,
-      devtools_frame_token, frame_policy, frame_owner_properties,
-      was_discarded_, owner_type,
+      devtools_frame_token, document_token, frame_policy,
+      frame_owner_properties, was_discarded_, owner_type,
       /*is_dummy_frame_for_inner_tree=*/false);
 }
 
@@ -3809,9 +3801,11 @@ void RenderFrameHostImpl::CreateChildFrame(
     blink::FrameOwnerElementType owner_type) {
   blink::LocalFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
+  blink::DocumentToken document_token;
   if (!static_cast<RenderProcessHostImpl*>(GetProcess())
            ->TakeFrameTokensForFrameRoutingID(new_routing_id, frame_token,
-                                              devtools_frame_token)) {
+                                              devtools_frame_token,
+                                              document_token)) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_CREATE_CHILD_FRAME_TOKENS_NOT_FOUND);
     return;
@@ -3844,8 +3838,8 @@ void RenderFrameHostImpl::CreateChildFrame(
                      std::move(policy_container_bind_params),
                      std::move(associated_interface_provider_receiver), scope,
                      frame_name, frame_unique_name, is_created_by_script,
-                     frame_token, devtools_frame_token, frame_policy,
-                     *frame_owner_properties, owner_type);
+                     frame_token, devtools_frame_token, document_token,
+                     frame_policy, *frame_owner_properties, owner_type);
 }
 
 void RenderFrameHostImpl::DidNavigate(
@@ -4176,6 +4170,7 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
     int frame_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
+    const blink::DocumentToken& document_token,
     const blink::FramePolicy& frame_policy,
     std::string frame_name,
     std::string frame_unique_name) {
@@ -4184,7 +4179,7 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
   // a different one if they navigate away.
   child->render_manager()->InitChild(
       GetSiteInstance(), frame_routing_id, std::move(frame_remote), frame_token,
-      frame_policy, frame_name, frame_unique_name);
+      document_token, frame_policy, frame_name, frame_unique_name);
 
   // Other renderer processes in this BrowsingInstance may need to find out
   // about the new frame.  Create a proxy for the child frame in all
@@ -7507,6 +7502,7 @@ void RenderFrameHostImpl::CreateNewWindow(
       std::move(page_broadcast_receiver), std::move(browser_interface_broker),
       std::move(pending_associated_interface_provider), cloned_namespace->id(),
       new_main_rfh->GetDevToolsFrameToken(), wait_for_debugger,
+      new_main_rfh->GetDocumentToken(),
       new_main_rfh->policy_container_host()->CreatePolicyContainerForBlink());
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
@@ -8757,6 +8753,7 @@ void RenderFrameHostImpl::CommitNavigation(
     absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
         subresource_overrides,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
+    const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
     std::unique_ptr<WebBundleHandle> web_bundle_handle) {
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::CommitNavigation",
@@ -9187,7 +9184,7 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(subresource_loader_factories),
         std::move(subresource_overrides), std::move(controller),
         std::move(container_info), std::move(prefetch_loader_factory),
-        manifest_policy, std::move(policy_container),
+        manifest_policy, std::move(policy_container), document_token,
         devtools_navigation_token);
     navigation_request->frame_tree_node()
         ->navigator()
@@ -9211,7 +9208,8 @@ void RenderFrameHostImpl::FailedNavigation(
     bool has_stale_copy_in_cache,
     int error_code,
     int extended_error_code,
-    const absl::optional<std::string>& error_page_content) {
+    const absl::optional<std::string>& error_page_content,
+    const blink::DocumentToken& document_token) {
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::FailedNavigation",
                "navigation_request", navigation_request, "error", error_code);
 
@@ -9248,11 +9246,12 @@ void RenderFrameHostImpl::FailedNavigation(
   blink::mojom::PolicyContainerPtr policy_container =
       navigation_request->CreatePolicyContainerForBlink();
 
-  SendCommitFailedNavigation(
-      navigation_client, navigation_request, common_params.Clone(),
-      commit_params.Clone(), has_stale_copy_in_cache, error_code,
-      extended_error_code, error_page_content,
-      std::move(subresource_loader_factories), std::move(policy_container));
+  SendCommitFailedNavigation(navigation_client, navigation_request,
+                             common_params.Clone(), commit_params.Clone(),
+                             has_stale_copy_in_cache, error_code,
+                             extended_error_code, error_page_content,
+                             std::move(subresource_loader_factories),
+                             document_token, std::move(policy_container));
 
   // TODO(crbug/1129537): support UKM source creation for failed navigations
   // too.
@@ -11830,7 +11829,28 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       // RenderFrameHost commits before the navigation commits. This happens
       // when the current RenderFrameHost crashes before navigating to a new
       // URL.
-      document_associated_data_.emplace(*this);
+      document_associated_data_.emplace(*this,
+                                        navigation_request->GetDocumentToken());
+    } else {
+      // Cross-RenderFrameHost navigations that commit into a speculative
+      // RenderFrameHost do not create a new DocumentAssociatedData.
+      // Unfortunately, this means that DocumentAssociatedData::token cannot be
+      // immutable: skipping this update means the tokens would be mismatched
+      // between the browser and the renderer. This is unfortunate, but still
+      // better than the alternative:
+      //
+      // - change NavigationRequest to figure out if the above branch will be
+      //   taken; if not, reuse the DocumentToken. This means the logic between
+      //   RenderFrameHostImpl and NavigationRequest must remain in sync.
+      //
+      // - in addition, the resulting commit will reuse the DocumentToken
+      //   between the ostensibly non-observable initial document in a
+      //   speculative RenderFrameHost and the actual document committed by the
+      //   navigation. As much as possible, it would be better to minimize
+      //   DocumentToken reuse across cross-document navigations. Note that this
+      //   reuse *does* happen internally to the renderer in one case that is
+      //   almost never visible. See https://crbug.com/778318 for the details.
+      document_associated_data_->token = navigation_request->GetDocumentToken();
     }
 
     const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
@@ -12230,6 +12250,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
         prefetch_loader_factory,
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
+    const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token) {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::SendCommitNavigation");
   base::ElapsedTimer timer;
@@ -12318,10 +12339,11 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(url_loader_client_endpoints),
       std::move(subresource_loader_factories), std::move(subresource_overrides),
       std::move(controller), std::move(container_info),
-      std::move(prefetch_loader_factory), devtools_navigation_token,
-      permissions_policy, std::move(policy_container),
-      std::move(code_cache_host), std::move(cookie_manager_info),
-      std::move(storage_info), std::move(not_restored_reasons),
+      std::move(prefetch_loader_factory), document_token,
+      devtools_navigation_token, permissions_policy,
+      std::move(policy_container), std::move(code_cache_host),
+      std::move(cookie_manager_info), std::move(storage_info),
+      std::move(not_restored_reasons),
       BuildCommitNavigationCallback(navigation_request));
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.SendCommitNavigationTime.",
@@ -12340,6 +12362,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
     const absl::optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
+    const blink::DocumentToken& document_token,
     blink::mojom::PolicyContainerPtr policy_container) {
   DCHECK(navigation_client && navigation_request);
   DCHECK_NE(GURL(), common_params->url);
@@ -12349,7 +12372,8 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
       std::move(common_params), std::move(commit_params),
       has_stale_copy_in_cache, error_code, extended_error_code,
       navigation_request->GetResolveErrorInfo(), error_page_content,
-      std::move(subresource_loader_factories), std::move(policy_container),
+      std::move(subresource_loader_factories), document_token,
+      std::move(policy_container),
       GetContentClient()->browser()->GetAlternativeErrorPageOverrideInfo(
           navigation_request->GetURL(), this, GetBrowserContext(), error_code),
       BuildCommitFailedNavigationCallback(navigation_request));
@@ -13765,6 +13789,30 @@ RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
 }
 #endif
 
+const blink::DocumentToken& RenderFrameHostImpl::GetDocumentToken() const {
+  DCHECK_NE(LifecycleStateImpl::kPendingCommit, lifecycle_state());
+  DCHECK_NE(LifecycleStateImpl::kSpeculative, lifecycle_state());
+
+  return GetDocumentTokenIgnoringSafetyRestrictions();
+}
+
+void RenderFrameHostImpl::
+    ReinitializeDocumentAssociatedDataForReuseAfterCrash() {
+  DCHECK(is_main_frame());
+  DCHECK_EQ(RenderFrameState::kDeleted, render_frame_state_);
+
+  // Clear all the document-associated data for this RenderFrameHost when its
+  // RenderFrame is recreated after a crash. Note that the user data is
+  // intentionally not cleared at the time of crash. Please refer to
+  // https://crbug.com/1099237 for more details.
+  //
+  // Clearing of user data should be called before RenderFrameCreated to
+  // ensure:
+  // - a) the new state set in RenderFrameCreated doesn't get deleted.
+  // - b) the old state is not leaked to a new RenderFrameHost.
+  document_associated_data_.emplace(*this, blink::DocumentToken());
+}
+
 void RenderFrameHostImpl::IsClipboardPasteContentAllowed(
     const ui::ClipboardFormatType& data_type,
     const std::string& data,
@@ -14328,8 +14376,9 @@ void RenderFrameHostImpl::BindCacheStorageForBucket(
 }
 
 RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
-    RenderFrameHostImpl& document)
-    : weak_ptr_factory(&document) {
+    RenderFrameHostImpl& document,
+    const blink::DocumentToken& token)
+    : token(token), weak_ptr_factory(&document) {
   // Only create page object for the main document as the PageImpl is 1:1 with
   // main document.
   if (!document.GetParent()) {

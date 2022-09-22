@@ -1476,8 +1476,8 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
 
   WebLocalFrame* web_frame = WebLocalFrame::CreateMainFrame(
       web_view, render_frame, render_frame->blink_interface_registry_.get(),
-      params->token, ToWebPolicyContainer(std::move(params->policy_container)),
-      opener,
+      params->frame_token, params->document_token,
+      ToWebPolicyContainer(std::move(params->policy_container)), opener,
       // This conversion is a little sad, as this often comes from a
       // WebString...
       WebString::FromUTF8(replication_state->name),
@@ -1547,7 +1547,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
 // static
 void RenderFrameImpl::CreateFrame(
     AgentSchedulingGroup& agent_scheduling_group,
-    const blink::LocalFrameToken& token,
+    const blink::LocalFrameToken& frame_token,
     int routing_id,
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -1564,6 +1564,7 @@ void RenderFrameImpl::CreateFrame(
     mojom::CreateFrameWidgetParamsPtr widget_params,
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
     bool is_on_initial_empty_document,
+    const blink::DocumentToken& document_token,
     blink::mojom::PolicyContainerPtr policy_container) {
   // TODO(danakj): Split this method into two pieces. The first block makes a
   // WebLocalFrame and collects the `blink::WebView` and RenderFrame for it. The
@@ -1610,8 +1611,9 @@ void RenderFrameImpl::CreateFrame(
         replicated_state->frame_policy, render_frame,
         render_frame->blink_interface_registry_.get(),
         previous_sibling_web_frame,
-        frame_owner_properties->To<blink::WebFrameOwnerProperties>(), token,
-        opener, ToWebPolicyContainer(std::move(policy_container)));
+        frame_owner_properties->To<blink::WebFrameOwnerProperties>(),
+        frame_token, opener, document_token,
+        ToWebPolicyContainer(std::move(policy_container)));
 
     // The RenderFrame is created and inserted into the frame tree in the above
     // call to createLocalChild.
@@ -1635,8 +1637,8 @@ void RenderFrameImpl::CreateFrame(
         std::move(browser_interface_broker),
         std::move(associated_interface_provider), devtools_frame_token);
     web_frame = blink::WebLocalFrame::CreateProvisional(
-        render_frame, render_frame->blink_interface_registry_.get(), token,
-        previous_web_frame, replicated_state->frame_policy,
+        render_frame, render_frame->blink_interface_registry_.get(),
+        frame_token, previous_web_frame, replicated_state->frame_policy,
         WebString::FromUTF8(replicated_state->name));
     // The new |web_frame| is a main frame iff the previous frame was.
     DCHECK_EQ(!previous_web_frame->Parent(), !web_frame->Parent());
@@ -2557,6 +2559,7 @@ void RenderFrameImpl::CommitNavigation(
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
+    const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
@@ -2594,8 +2597,8 @@ void RenderFrameImpl::CommitNavigation(
   // Check if the navigation being committed originated as a client redirect.
   bool is_client_redirect =
       !!(common_params->transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT);
-  auto navigation_params =
-      std::make_unique<WebNavigationParams>(devtools_navigation_token);
+  auto navigation_params = std::make_unique<WebNavigationParams>(
+      document_token, devtools_navigation_token);
   navigation_params->is_client_redirect = is_client_redirect;
   FillMiscNavigationParams(*common_params, *commit_params,
                            navigation_params.get());
@@ -2852,6 +2855,7 @@ void RenderFrameImpl::CommitFailedNavigation(
     const absl::optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
+    const blink::DocumentToken& document_token,
     blink::mojom::PolicyContainerPtr policy_container,
     mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
     mojom::NavigationClient::CommitFailedNavigationCallback callback) {
@@ -2894,7 +2898,9 @@ void RenderFrameImpl::CommitFailedNavigation(
       WebURLError::IsWebSecurityViolation::kFalse, common_params->url,
       WebURLError::ShouldCollapseInitiator::kFalse);
 
-  auto navigation_params = std::make_unique<WebNavigationParams>();
+  auto navigation_params = std::make_unique<WebNavigationParams>(
+      document_token,
+      /*devtools_navigation_token=*/base::UnguessableToken::Create());
   FillNavigationParamsRequest(*common_params, *commit_params,
                               navigation_params.get());
   // Use kUnreachableWebDataURL as the document URL (instead of the URL that
@@ -3410,7 +3416,8 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
     const blink::FramePolicy& frame_policy,
     const blink::WebFrameOwnerProperties& frame_owner_properties,
     blink::FrameOwnerElementType frame_owner_element_type,
-    blink::WebPolicyContainerBindParams policy_container_bind_params) {
+    blink::WebPolicyContainerBindParams policy_container_bind_params,
+    FinishChildFrameCreationFn finish_creation) {
   // Tracing analysis uses this to find main frames when this value is
   // MSG_ROUTING_NONE, and build the frame tree otherwise.
   CreateChildFrameTraceEvent trace_event(routing_id_);
@@ -3419,8 +3426,10 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   int child_routing_id;
   blink::LocalFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
+  blink::DocumentToken document_token;
   if (!RenderThread::Get()->GenerateFrameRoutingID(
-          child_routing_id, frame_token, devtools_frame_token)) {
+          child_routing_id, frame_token, devtools_frame_token,
+          document_token)) {
     return nullptr;
   }
   trace_event.child_routing_id = child_routing_id;
@@ -3479,17 +3488,12 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   blink::WebLocalFrame* web_frame = frame_->CreateLocalChild(
       scope, child_render_frame,
       child_render_frame->blink_interface_registry_.get(), frame_token);
+  finish_creation(web_frame, document_token);
 
   child_render_frame->in_frame_tree_ = true;
+  child_render_frame->Initialize(/*parent=*/GetWebFrame());
 
-  // The WebLocalFrame created here is not fully initialized yet, so we delay
-  // our Initialize() step until that has completed, at which point
-  // InitializeAsChildFrame() is called.
   return web_frame;
-}
-
-void RenderFrameImpl::InitializeAsChildFrame(blink::WebLocalFrame* parent) {
-  Initialize(parent);
 }
 
 void RenderFrameImpl::DidCreateFencedFrame(
@@ -5223,6 +5227,9 @@ void RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318(
 
   // TODO(dgozman): should we follow the RFI::CommitNavigation path instead?
   auto navigation_params = WebNavigationParams::CreateFromInfo(*info);
+  // This quirk is internal to the renderer, so just reuse the previous
+  // DocumentToken.
+  navigation_params->document_token = frame_->GetDocument().Token();
   navigation_params->is_synchronous_commit_for_bug_778318 = true;
   // We need the provider to be non-null, otherwise Blink crashes, even
   // though the provider should not be used for any actual networking.
@@ -6261,11 +6268,12 @@ WebView* RenderFrameImpl::CreateNewWindow(
   view_params->devtools_main_frame_token = reply->devtools_main_frame_token;
 
   auto main_frame_params = mojom::CreateLocalMainFrameParams::New();
-  main_frame_params->token = reply->main_frame_token;
+  main_frame_params->frame_token = reply->main_frame_token;
   main_frame_params->routing_id = reply->main_frame_route_id;
   main_frame_params->frame = std::move(reply->frame);
   main_frame_params->interface_broker =
       std::move(reply->main_frame_interface_broker);
+  main_frame_params->document_token = reply->document_token;
   main_frame_params->policy_container = std::move(reply->policy_container);
   main_frame_params->associated_interface_provider_remote =
       std::move(reply->associated_interface_provider);

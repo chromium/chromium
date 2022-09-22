@@ -867,7 +867,8 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
         FrameInsertType::kInsertInConstructor, LocalFrameToken(), nullptr,
         nullptr);
     frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
-    frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr, StorageKey());
+    frame->Init(/*opener=*/nullptr, DocumentToken(),
+                /*policy_container=*/nullptr, StorageKey());
   }
 
   // SVG Images will always synthesize a viewBox, if it's not available, and

@@ -218,6 +218,7 @@ struct SameSizeAsDocumentLoader
   std::unique_ptr<WebNavigationParams> params;
   std::unique_ptr<PolicyContainer> policy_container;
   absl::optional<ParsedPermissionsPolicy> isolated_app_permissions_policy;
+  DocumentToken token;
   KURL url;
   AtomicString http_method;
   AtomicString referrer;
@@ -322,6 +323,7 @@ DocumentLoader::DocumentLoader(
     : params_(std::move(navigation_params)),
       policy_container_(std::move(policy_container)),
       initial_permissions_policy_(params_->permissions_policy_override),
+      token_(params_->document_token),
       url_(params_->url),
       http_method_(static_cast<String>(params_->http_method)),
       referrer_(static_cast<String>(params_->referrer)),
@@ -403,6 +405,7 @@ DocumentLoader::DocumentLoader(
       extra_data_(std::move(extra_data)),
       reduced_accept_language_(params_->reduced_accept_language) {
   DCHECK(frame_);
+  DCHECK(params_);
 
   // TODO(dgozman): we should get rid of this boolean field, and make client
   // responsible for it's own view of "replaces current item", based on the
@@ -506,6 +509,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   // TODO(https://crbug.com/1151954): Copy |archive_| and other attributes.
   auto params = std::make_unique<WebNavigationParams>();
   LocalDOMWindow* window = frame_->DomWindow();
+  params->document_token = frame_->GetDocument()->Token();
   params->url = window->Url();
   params->unreachable_url = unreachable_url_;
   params->referrer = referrer_;
@@ -2371,6 +2375,7 @@ void DocumentLoader::CommitNavigation() {
   Document* document = frame_->DomWindow()->InstallNewDocument(
       DocumentInit::Create()
           .WithWindow(frame_->DomWindow(), owner_document)
+          .WithToken(token_)
           .ForInitialEmptyDocument(commit_reason_ ==
                                    CommitReason::kInitialization)
           .ForPrerendering(is_prerendering_)

@@ -773,7 +773,8 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
 
   HeaderAndFooterClient frame_client;
   blink::WebLocalFrame* frame = blink::WebLocalFrame::CreateMainFrame(
-      web_view, &frame_client, nullptr, blink::LocalFrameToken(), nullptr);
+      web_view, &frame_client, nullptr, blink::LocalFrameToken(),
+      blink::DocumentToken(), nullptr);
 
   mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
   mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
@@ -898,8 +899,8 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
       const blink::FramePolicy& frame_policy,
       const blink::WebFrameOwnerProperties& frame_owner_properties,
       blink::FrameOwnerElementType owner_type,
-      blink::WebPolicyContainerBindParams policy_container_bind_params)
-      override;
+      blink::WebPolicyContainerBindParams policy_container_bind_params,
+      FinishChildFrameCreationFn finish_creation) override;
   void FrameDetached() override;
   std::unique_ptr<blink::WebURLLoaderFactory> CreateURLLoaderFactory() override;
 
@@ -1048,7 +1049,8 @@ void PrepareFrameAndViewForPrint::CopySelection(
       /*page_base_background_color=*/absl::nullopt);
   blink::WebView::ApplyWebPreferences(prefs, web_view);
   blink::WebLocalFrame* main_frame = blink::WebLocalFrame::CreateMainFrame(
-      web_view, this, nullptr, blink::LocalFrameToken(), nullptr);
+      web_view, this, nullptr, blink::LocalFrameToken(), blink::DocumentToken(),
+      nullptr);
   frame_.Reset(main_frame);
   mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
   mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
@@ -1132,7 +1134,8 @@ blink::WebLocalFrame* PrepareFrameAndViewForPrint::CreateChildFrame(
     const blink::FramePolicy& frame_policy,
     const blink::WebFrameOwnerProperties& frame_owner_properties,
     blink::FrameOwnerElementType frame_owner_type,
-    blink::WebPolicyContainerBindParams policy_container_bind_params) {
+    blink::WebPolicyContainerBindParams policy_container_bind_params,
+    FinishChildFrameCreationFn finish_creation) {
   // This is called when printing a selection and when this selection contains
   // an iframe. This is not supported yet. An empty rectangle will be displayed
   // instead.

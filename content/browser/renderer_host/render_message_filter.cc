@@ -123,9 +123,11 @@ void RenderMessageFilter::GenerateFrameRoutingID(
   int32_t routing_id = render_widget_helper_->GetNextRoutingID();
   auto frame_token = blink::LocalFrameToken();
   auto devtools_frame_token = base::UnguessableToken::Create();
-  render_widget_helper_->StoreNextFrameRoutingID(routing_id, frame_token,
-                                                 devtools_frame_token);
-  std::move(callback).Run(routing_id, frame_token, devtools_frame_token);
+  auto document_token = blink::DocumentToken();
+  render_widget_helper_->StoreNextFrameRoutingID(
+      routing_id, frame_token, devtools_frame_token, document_token);
+  std::move(callback).Run(routing_id, frame_token, devtools_frame_token,
+                          document_token);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

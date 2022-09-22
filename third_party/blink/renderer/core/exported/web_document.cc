@@ -82,6 +82,10 @@ static const blink::WebStyleSheetKey GenerateStyleSheetKey() {
 
 namespace blink {
 
+const DocumentToken& WebDocument::Token() const {
+  return ConstUnwrap<Document>()->Token();
+}
+
 WebURL WebDocument::Url() const {
   return ConstUnwrap<Document>()->Url();
 }

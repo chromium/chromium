@@ -797,9 +797,10 @@ int RenderThreadImpl::GenerateRoutingID() {
 bool RenderThreadImpl::GenerateFrameRoutingID(
     int32_t& routing_id,
     blink::LocalFrameToken& frame_token,
-    base::UnguessableToken& devtools_frame_token) {
+    base::UnguessableToken& devtools_frame_token,
+    blink::DocumentToken& document_token) {
   return render_message_filter()->GenerateFrameRoutingID(
-      &routing_id, &frame_token, &devtools_frame_token);
+      &routing_id, &frame_token, &devtools_frame_token, &document_token);
 }
 
 void RenderThreadImpl::AddFilter(IPC::MessageFilter* filter) {

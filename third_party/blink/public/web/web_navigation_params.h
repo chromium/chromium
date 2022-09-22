@@ -181,9 +181,11 @@ struct BLINK_EXPORT WebNavigationParams {
   WebNavigationParams();
   ~WebNavigationParams();
 
-  // Allows to specify |devtools_navigation_token|, instead of creating
-  // a new one.
-  explicit WebNavigationParams(const base::UnguessableToken&);
+  // Construct with a specific `document_token` and `devtools_navigation_token`,
+  // rather than randomly creating new ones.
+  explicit WebNavigationParams(
+      const blink::DocumentToken& document_token,
+      const base::UnguessableToken& devtools_navigation_token);
 
   // Shortcut for navigating based on WebNavigationInfo parameters.
   //
@@ -324,6 +326,7 @@ struct BLINK_EXPORT WebNavigationParams {
   // taking into account the origin computed by the renderer.
   StorageKey storage_key;
 
+  blink::DocumentToken document_token;
   // The devtools token for this navigation. See DocumentLoader
   // for details.
   base::UnguessableToken devtools_navigation_token;

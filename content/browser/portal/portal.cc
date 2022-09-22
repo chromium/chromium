@@ -153,7 +153,8 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal(
           mojo::NullAssociatedReceiver(),
           blink::mojom::TreeScopeType::kDocument, "", "", true,
           blink::LocalFrameToken(), base::UnguessableToken::Create(),
-          blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
+          blink::DocumentToken(), blink::FramePolicy(),
+          blink::mojom::FrameOwnerProperties(), false,
           blink::FrameOwnerElementType::kPortal,
           /*is_dummy_frame_for_inner_tree=*/true);
   outer_node->AddObserver(this);

@@ -291,7 +291,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // * reference fragment navigations
   // * pushState/replaceState
   // * same page history navigation
-  virtual bool IsSameDocument() = 0;
+  virtual bool IsSameDocument() const = 0;
 
   // Whether the navigation has encountered a server redirect or not.
   virtual bool WasServerRedirect() = 0;

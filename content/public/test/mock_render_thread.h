@@ -65,10 +65,10 @@ class MockRenderThread : public RenderThread {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void RemoveRoute(int32_t routing_id) override;
   int GenerateRoutingID() override;
-  bool GenerateFrameRoutingID(
-      int32_t& routing_id,
-      blink::LocalFrameToken& frame_token,
-      base::UnguessableToken& devtools_frame_token) override;
+  bool GenerateFrameRoutingID(int32_t& routing_id,
+                              blink::LocalFrameToken& frame_token,
+                              base::UnguessableToken& devtools_frame_token,
+                              blink::DocumentToken& document_token) override;
   void AddFilter(IPC::MessageFilter* filter) override;
   void RemoveFilter(IPC::MessageFilter* filter) override;
   void AddObserver(RenderThreadObserver* observer) override;

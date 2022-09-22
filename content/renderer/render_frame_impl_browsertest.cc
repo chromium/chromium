@@ -168,7 +168,7 @@ class RenderFrameImplTest : public RenderViewTest {
         blink::mojom::TreeScopeType::kDocument,
         std::move(frame_replication_state), std::move(widget_params),
         blink::mojom::FrameOwnerProperties::New(),
-        /*has_committed_real_load=*/true,
+        /*has_committed_real_load=*/true, blink::DocumentToken(),
         blink::mojom::PolicyContainer::New(
             blink::mojom::PolicyContainerPolicies::New(),
             mock_policy_container_host

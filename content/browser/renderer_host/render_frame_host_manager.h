@@ -190,6 +190,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
                  int32_t frame_routing_id,
                  mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
                  const blink::LocalFrameToken& frame_token,
+                 const blink::DocumentToken& document_token,
                  blink::FramePolicy frame_policy,
                  std::string frame_name,
                  std::string frame_unique_name);
@@ -781,6 +782,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       int32_t frame_routing_id,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       const blink::LocalFrameToken& frame_token,
+      const blink::DocumentToken& document_token,
       bool renderer_initiated_creation,
       scoped_refptr<BrowsingContextState> browsing_context_state);
 

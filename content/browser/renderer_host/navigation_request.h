@@ -326,7 +326,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsExternalProtocol() override;
   net::Error GetNetErrorCode() override;
   RenderFrameHostImpl* GetRenderFrameHost() const override;
-  bool IsSameDocument() override;
+  bool IsSameDocument() const override;
   bool HasCommitted() const override;
   bool IsErrorPage() const override;
   bool HasSubframeNavigationEntryCommitted() override;
@@ -726,6 +726,12 @@ class CONTENT_EXPORT NavigationRequest
   // Returns a pointer to the policies copied from the navigation initiator.
   // Returns nullptr if this navigation had no initiator.
   const PolicyContainerPolicies* GetInitiatorPolicyContainerPolicies() const;
+
+  // The DocumentToken that should be used for the document created as a result
+  // of committing this navigation.
+  // - must only be called for cross-document navigations
+  // - must not be called before the navigation is ready to commit
+  const blink::DocumentToken& GetDocumentToken() const;
 
   // Returns the policies of the new document being navigated to.
   //
@@ -1722,6 +1728,13 @@ class CONTENT_EXPORT NavigationRequest
   // to the renderer. Used by ServiceWorker and
   // SignedExchangeSubresourcePrefetch.
   absl::optional<SubresourceLoaderParams> subresource_loader_params_;
+
+  // DocumentToken to use for the newly-committed document in a cross-document
+  // navigation. Currently set immediately before sending CommitNavigation to
+  // the renderer. In the future, this may be populated earlier to allow lookup
+  // of a navigation request by the document that it may create, similar to how
+  // `NavigationOrDocumentHandle` behaves.
+  absl::optional<blink::DocumentToken> document_token_;
 
   // See comment on accessor.
   const base::UnguessableToken devtools_navigation_token_ =

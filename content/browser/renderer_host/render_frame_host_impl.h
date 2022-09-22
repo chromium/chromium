@@ -109,6 +109,7 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
@@ -478,6 +479,37 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Additional non-override const version of GetMainFrame.
   const RenderFrameHostImpl* GetMainFrame() const;
 
+  // Returns the token for the document currently associated with this frame.
+  // This can change over time if a `RenderFrameHost` is reused when navigating
+  // to a new document.
+  //
+  // Retrieving the document token is disallowed if:
+  // - the RenderFrameHost is pending commit, e.g. waiting for the renderer to
+  //   acknowledge the commit, since the DocumentToken will change as soon as
+  //   the navigation actually commits.
+  // - the RenderFrameHost is speculative
+  const blink::DocumentToken& GetDocumentToken() const;
+
+  // Retrieving the document token is disallowed during times when the result
+  // might be misleading / confusing (kPendingCommit or kSpeculative).
+  // Internally, the content implementation may still need to retrieve the
+  // document token at those times, so provide an escape hatch.
+  const blink::DocumentToken& GetDocumentTokenIgnoringSafetyRestrictions()
+      const {
+    return document_associated_data_->token;
+  }
+
+  // A RenderFrame was previously created but no longer exists, e.g. the
+  // renderer process is gone due to a crash.
+  bool is_render_frame_deleted() const {
+    return render_frame_state_ == RenderFrameState::kDeleted;
+  }
+
+  // Immediately reinitializes DocumentUserData when the RenderFrameHost needs
+  // to be immediately reused after a crash. Only usable for a main frame where
+  // `is_render_frame_deleted()` is true.
+  void ReinitializeDocumentAssociatedDataForReuseAfterCrash();
+
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  The implementation delegates to
   // RenderFrameHostDelegate::IsClipboardPasteContentAllowed().  See the
@@ -613,13 +645,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Called when this frame has added a child. This is a continuation of an IPC
   // that was partially handled on the IO thread (to allocate |new_routing_id|,
-  // |frame_token| and |devtools_frame_token|), and is forwarded here. The
-  // renderer has already been told to create a RenderFrame with the specified
-  // ID values. |browser_interface_broker_receiver| is the receiver end of the
-  // BrowserInterfaceBroker interface in the child frame. RenderFrameHost should
-  // bind this receiver to expose services to the renderer process. The caller
-  // takes care of sending down the client end of the pipe to the child
-  // RenderFrame to use.
+  // |frame_token|, |devtools_frame_token|, |document_token|), and is forwarded
+  // here. The renderer has already been told to create a RenderFrame with the
+  // specified ID values. |browser_interface_broker_receiver| is the receiver
+  // end of the BrowserInterfaceBroker interface in the child frame.
+  // RenderFrameHost should bind this receiver to expose services to the
+  // renderer process. The caller takes care of sending down the client end of
+  // the pipe to the child RenderFrame to use.
   void OnCreateChildFrame(
       int new_routing_id,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
@@ -634,6 +666,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool is_created_by_script,
       const blink::LocalFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
+      const blink::DocumentToken& document_token,
       const blink::FramePolicy& frame_policy,
       const blink::mojom::FrameOwnerProperties& frame_owner_properties,
       blink::FrameOwnerElementType owner_type);
@@ -665,6 +698,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int frame_routing_id,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       const blink::LocalFrameToken& frame_token,
+      const blink::DocumentToken& document_token,
       const blink::FramePolicy& frame_policy,
       std::string frame_name,
       std::string frame_unique_name);
@@ -1273,6 +1307,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
           subresource_overrides,
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
+      const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
       std::unique_ptr<WebBundleHandle> web_bundle_handle);
 
@@ -1285,7 +1320,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool has_stale_copy_in_cache,
       int error_code,
       int extended_error_code,
-      const absl::optional<std::string>& error_page_content);
+      const absl::optional<std::string>& error_page_content,
+      const blink::DocumentToken& document_token);
 
   // Sends a renderer-debug URL to the renderer process for handling.
   void HandleRendererDebugURL(const GURL& url);
@@ -2574,6 +2610,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int32_t routing_id,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       const blink::LocalFrameToken& frame_token,
+      const blink::DocumentToken& document_token,
       bool renderer_initiated_creation_of_main_frame,
       LifecycleStateImpl lifecycle_state,
       scoped_refptr<BrowsingContextState> browsing_context_state,
@@ -2601,6 +2638,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
           prefetch_loader_factory,
       const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
+      const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token);
   virtual void SendCommitFailedNavigation(
       mojom::NavigationClient* navigation_client,
@@ -2613,6 +2651,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const absl::optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
+      const blink::DocumentToken& document_token,
       blink::mojom::PolicyContainerPtr policy_container);
 
   // The Build*Callback functions below are responsible for building the
@@ -3395,7 +3434,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Has the RenderFrame been created in the renderer process and not yet been
   // deleted, exited or crashed. See RenderFrameState.
-  bool is_render_frame_created() {
+  bool is_render_frame_created() const {
     return render_frame_state_ == RenderFrameState::kCreated;
   }
 
@@ -4117,10 +4156,20 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // GetDocumentUserData(). Please refer to the description at
   // content/public/browser/document_user_data.h for more details.
   struct DocumentAssociatedData : public base::SupportsUserData {
-    explicit DocumentAssociatedData(RenderFrameHostImpl& document);
+    explicit DocumentAssociatedData(RenderFrameHostImpl& document,
+                                    const blink::DocumentToken& token);
     ~DocumentAssociatedData() override;
     DocumentAssociatedData(const DocumentAssociatedData&) = delete;
     DocumentAssociatedData& operator=(const DocumentAssociatedData&) = delete;
+
+    // An opaque token that uniquely identifies the document currently
+    // associated with this RenderFrameHost. In general, this token does not
+    // change for the lifetime of the DocumentAssociatedData, with one
+    // exception: a speculative RenderFrameHost is created with an initial
+    // DocumentAssociatedData. If the speculative RenderFrameHost commits, the
+    // DocumentAssociatedData is not reset, but a new DocumentToken is still
+    // assigned.
+    blink::DocumentToken token;
 
     // The Page object associated with the main document. It is nullptr for
     // subframes.

@@ -554,6 +554,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   const absl::optional<ParsedPermissionsPolicy> initial_permissions_policy_;
 
   // These fields are copied from WebNavigationParams, see there for definition.
+  DocumentToken token_;
   KURL url_;
   AtomicString http_method_;
   // The referrer on the final request for this document.

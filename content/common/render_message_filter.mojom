@@ -12,12 +12,13 @@ interface RenderMessageFilter {
   // Synchronously generates a new routing ID for the caller.
   [Sync] GenerateRoutingID() => (int32 routing_id);
 
-  // Similar to GenerateRoutingID but also generates a frame token and
-  // devtools_frame_token. A subsequent call to FrameHost::CreateChildFrame
-  // is expected after this call.
+  // Similar to GenerateRoutingID but also generates a `frame token`,
+  // `devtools_frame_token`, and `document_token`. A subsequent call to
+  // `FrameHost::CreateChildFrame` is expected after this call.
   [Sync] GenerateFrameRoutingID() => (int32 routing_id,
                    blink.mojom.LocalFrameToken frame_token,
-                   mojo_base.mojom.UnguessableToken devtools_frame_token);
+                   mojo_base.mojom.UnguessableToken devtools_frame_token,
+                   blink.mojom.DocumentToken document_token);
 
   // A renderer sends this when it wants to know whether a gpu process exists.
   [Sync] HasGpuProcess() => (bool has_gpu_process);

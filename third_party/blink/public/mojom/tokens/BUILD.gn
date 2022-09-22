@@ -14,6 +14,12 @@ mojom_component("tokens") {
   shared_cpp_typemaps = [
     {
       types = [
+        # DOCUMENT TOKENS
+        {
+          mojom = "blink.mojom.DocumentToken"
+          cpp = "::blink::DocumentToken"
+        },
+
         # FRAME TOKENS
         {
           mojom = "blink.mojom.LocalFrameToken"

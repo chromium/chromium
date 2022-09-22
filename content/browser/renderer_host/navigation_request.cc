@@ -2651,6 +2651,13 @@ NavigationRequest::GetInitiatorPolicyContainerPolicies() const {
   return policy_container_builder_->InitiatorPolicies();
 }
 
+const blink::DocumentToken& NavigationRequest::GetDocumentToken() const {
+  DCHECK(!IsSameDocument());
+  DCHECK_GE(state_, READY_TO_COMMIT);
+
+  return *document_token_;
+}
+
 const PolicyContainerPolicies& NavigationRequest::GetPolicyContainerPolicies()
     const {
   DCHECK_GE(state_, READY_TO_COMMIT);
@@ -4843,9 +4850,10 @@ void NavigationRequest::CommitErrorPage(
 
   // Use a separate cache shard, and no cookies, for error pages.
   isolation_info_for_subresources_ = net::IsolationInfo::CreateTransient();
-  render_frame_host_->FailedNavigation(
-      this, *common_params_, *commit_params_, has_stale_copy_in_cache_,
-      net_error_, extended_error_code_, error_page_content);
+  render_frame_host_->FailedNavigation(this, *common_params_, *commit_params_,
+                                       has_stale_copy_in_cache_, net_error_,
+                                       extended_error_code_, error_page_content,
+                                       document_token_.emplace());
 
   SendDeferredConsoleMessages();
 }
@@ -5057,8 +5065,8 @@ void NavigationRequest::CommitNavigation() {
       std::move(response_head), std::move(response_body_),
       std::move(url_loader_client_endpoints_),
       std::move(subresource_loader_params_), std::move(subresource_overrides_),
-      std::move(service_worker_container_info), devtools_navigation_token_,
-      std::move(web_bundle_handle_));
+      std::move(service_worker_container_info), document_token_.emplace(),
+      devtools_navigation_token_, std::move(web_bundle_handle_));
   UpdateNavigationHandleTimingsOnCommitSent();
 
   // Give SpareRenderProcessHostManager a heads-up about the most recently used
@@ -5775,7 +5783,7 @@ void NavigationRequest::IgnoreCommitInterfaceDisconnection() {
   return commit_navigation_client_.set_disconnect_handler(base::DoNothing());
 }
 
-bool NavigationRequest::IsSameDocument() {
+bool NavigationRequest::IsSameDocument() const {
   return NavigationTypeUtils::IsSameDocument(common_params_->navigation_type);
 }
 

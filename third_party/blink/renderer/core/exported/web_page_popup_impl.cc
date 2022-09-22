@@ -400,7 +400,8 @@ WebPagePopupImpl::WebPagePopupImpl(
   }
 
   // TODO(https://crbug.com/1355751) Initialize `storage_key`.
-  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr, StorageKey());
+  frame->Init(/*opener=*/nullptr, DocumentToken(), /*policy_container=*/nullptr,
+              StorageKey());
   frame->View()->SetParentVisible(true);
   frame->View()->SetSelfVisible(true);
 

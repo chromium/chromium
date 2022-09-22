@@ -2,6 +2,7 @@ include_rules = [
     "+base/callback.h",
     "+base/callback_forward.h",
     "+base/callback_helpers.h",
+    "+base/functional/function_ref.h",
     "+base/memory/raw_ptr.h",
     "+base/notreached.h",
     "+base/observer_list.h",

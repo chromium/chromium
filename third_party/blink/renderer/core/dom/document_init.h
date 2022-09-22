@@ -32,6 +32,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -100,6 +101,9 @@ class CORE_EXPORT DocumentInit final {
   DocumentInit& WithWindow(LocalDOMWindow*, Document* owner_document);
   LocalDOMWindow* GetWindow() const { return window_; }
 
+  DocumentInit& WithToken(const DocumentToken& token);
+  const DocumentToken& GetToken() const;
+
   DocumentInit& ForInitialEmptyDocument(bool empty);
   bool IsInitialEmptyDocument() const { return is_initial_empty_document_; }
 
@@ -147,6 +151,9 @@ class CORE_EXPORT DocumentInit final {
   bool is_initial_empty_document_ = false;
   String mime_type_;
   LocalDOMWindow* window_ = nullptr;
+  // Mutable because the token is lazily-generated on demand if no token is
+  // explicitly set.
+  mutable absl::optional<DocumentToken> token_;
   ExecutionContext* execution_context_ = nullptr;
   KURL url_;
   Document* owner_document_ = nullptr;

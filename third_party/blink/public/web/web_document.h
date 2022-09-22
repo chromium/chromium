@@ -35,6 +35,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-shared.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -77,7 +78,9 @@ class BLINK_EXPORT WebDocument : public WebNode {
   }
   void Assign(const WebDocument& e) { WebNode::Assign(e); }
 
+  const DocumentToken& Token() const;
   WebURL Url() const;
+
   // Note: Security checks should use the getSecurityOrigin(), not url().
   WebSecurityOrigin GetSecurityOrigin() const;
   bool IsSecureContext() const;

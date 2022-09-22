@@ -438,7 +438,7 @@ bool RenderViewHostImpl::CreateRenderView(
 
   if (main_rfh) {
     auto local_frame_params = mojom::CreateLocalMainFrameParams::New();
-    local_frame_params->token = main_rfh->GetFrameToken();
+    local_frame_params->frame_token = main_rfh->GetFrameToken();
     local_frame_params->routing_id = main_frame_routing_id_;
     mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
     local_frame_params->frame =
@@ -452,6 +452,11 @@ bool RenderViewHostImpl::CreateRenderView(
 
     local_frame_params->is_on_initial_empty_document =
         main_rfh->frame_tree_node()->is_on_initial_empty_document();
+    // It is safe to ignore safety restrictions here, since it is necessary to
+    // retrieve the document token, even if the frame is speculative, in order
+    // to create the corresponding renderer-side objects.
+    local_frame_params->document_token =
+        main_rfh->GetDocumentTokenIgnoringSafetyRestrictions();
 
     // If this is a new RenderFrameHost for a frame that has already committed a
     // document, we don't have a PolicyContainerHost yet. Indeed, in that case,

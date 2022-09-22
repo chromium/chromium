@@ -395,6 +395,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const AtomicString& name,
       WindowAgentFactory*,
       WebFrame* opener,
+      const DocumentToken& document_token,
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
       const StorageKey& storage_key,
       network::mojom::blink::WebSandboxFlags sandbox_flags =
@@ -413,6 +414,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       WebFrame* opener,
       const WebString& name,
       network::mojom::blink::WebSandboxFlags,
+      const DocumentToken& document_token,
       std::unique_ptr<WebPolicyContainer>);
   static WebLocalFrameImpl* CreateProvisional(
       WebLocalFrameClient*,
@@ -603,6 +605,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const AtomicString& name,
       WindowAgentFactory*,
       WebFrame* opener,
+      const DocumentToken& document_token,
       std::unique_ptr<PolicyContainer> policy_container,
       const StorageKey& storage_key,
       network::mojom::blink::WebSandboxFlags sandbox_flags =

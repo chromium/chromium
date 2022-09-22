@@ -267,7 +267,7 @@ void TestRenderFrame::Navigate(
       std::move(pending_factory_bundle), absl::nullopt,
       blink::mojom::ControllerServiceWorkerInfoPtr(),
       blink::mojom::ServiceWorkerContainerInfoForClientPtr(),
-      mojo::NullRemote() /* prefetch_loader_factory */,
+      mojo::NullRemote() /* prefetch_loader_factory */, blink::DocumentToken(),
       base::UnguessableToken::Create(), blink::ParsedPermissionsPolicy(),
       blink::mojom::PolicyContainer::New(
           blink::mojom::PolicyContainerPolicies::New(),
@@ -301,7 +301,8 @@ void TestRenderFrame::NavigateWithError(
       std::move(common_params), std::move(commit_params),
       /*has_stale_copy_in_cache=*/false, error_code,
       /*extended_error_code=*/0, resolve_error_info, error_page_content,
-      std::move(pending_factory_bundle), CreateStubPolicyContainer(),
+      std::move(pending_factory_bundle), blink::DocumentToken(),
+      CreateStubPolicyContainer(),
       /*alternative_error_page_info=*/nullptr,
       base::BindOnce(&MockFrameHost::DidCommitProvisionalLoad,
                      base::Unretained(mock_frame_host_.get())));

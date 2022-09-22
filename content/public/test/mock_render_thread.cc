@@ -53,9 +53,11 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
     int routing_id;
     blink::LocalFrameToken frame_token;
     base::UnguessableToken devtools_frame_token;
-    RenderThread::Get()->GenerateFrameRoutingID(routing_id, frame_token,
-                                                devtools_frame_token);
-    std::move(callback).Run(routing_id, frame_token, devtools_frame_token);
+    blink::DocumentToken document_token;
+    RenderThread::Get()->GenerateFrameRoutingID(
+        routing_id, frame_token, devtools_frame_token, document_token);
+    std::move(callback).Run(routing_id, frame_token, devtools_frame_token,
+                            document_token);
   }
 
   void HasGpuProcess(HasGpuProcessCallback callback) override {
@@ -148,10 +150,12 @@ int MockRenderThread::GenerateRoutingID() {
 bool MockRenderThread::GenerateFrameRoutingID(
     int32_t& routing_id,
     blink::LocalFrameToken& frame_token,
-    base::UnguessableToken& devtools_frame_token) {
+    base::UnguessableToken& devtools_frame_token,
+    blink::DocumentToken& document_token) {
   routing_id = GetNextRoutingID();
   frame_token = blink::LocalFrameToken();
   devtools_frame_token = base::UnguessableToken::Create();
+  document_token = blink::DocumentToken();
   return true;
 }
 

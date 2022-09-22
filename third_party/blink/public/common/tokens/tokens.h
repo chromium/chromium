@@ -22,6 +22,10 @@ namespace blink {
 // See README.md for more details.
 
 ////////////////////////////////////////////////////////////////////////////////
+// DOCUMENT TOKENS
+using DocumentToken = base::TokenType<class DocumentTokenTypeMarker>;
+
+////////////////////////////////////////////////////////////////////////////////
 // FRAME TOKENS
 
 // Uniquely identifies a blink::LocalFrame / blink::WebLocalFrame /

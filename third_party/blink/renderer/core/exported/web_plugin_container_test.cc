@@ -202,10 +202,11 @@ class TestPluginWebFrameClient : public frame_test_helpers::TestWebFrameClient {
       const FramePolicy&,
       const WebFrameOwnerProperties&,
       FrameOwnerElementType owner_type,
-      WebPolicyContainerBindParams policy_container_bind_params) override {
-    return CreateLocalChild(*Frame(), scope,
-                            std::make_unique<TestPluginWebFrameClient>(),
-                            std::move(policy_container_bind_params));
+      WebPolicyContainerBindParams policy_container_bind_params,
+      FinishChildFrameCreationFn finish_creation) override {
+    return CreateLocalChild(
+        *Frame(), scope, std::make_unique<TestPluginWebFrameClient>(),
+        std::move(policy_container_bind_params), finish_creation);
   }
 
   WebPlugin* CreatePlugin(const WebPluginParams& params) override {

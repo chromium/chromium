@@ -241,7 +241,8 @@ void FrameLoader::Trace(Visitor* visitor) const {
   visitor->Trace(document_loader_);
 }
 
-void FrameLoader::Init(std::unique_ptr<PolicyContainer> policy_container,
+void FrameLoader::Init(const DocumentToken& document_token,
+                       std::unique_ptr<PolicyContainer> policy_container,
                        const StorageKey& storage_key) {
   DCHECK(policy_container);
   ScriptForbiddenScope forbid_scripts;
@@ -249,9 +250,10 @@ void FrameLoader::Init(std::unique_ptr<PolicyContainer> policy_container,
   // Load the initial empty document:
   auto navigation_params = std::make_unique<WebNavigationParams>();
   navigation_params->url = KURL(g_empty_string);
+  navigation_params->storage_key = storage_key;
+  navigation_params->document_token = document_token;
   navigation_params->frame_policy =
       frame_->Owner() ? frame_->Owner()->GetFramePolicy() : FramePolicy();
-  navigation_params->storage_key = storage_key;
 
   DocumentLoader* new_document_loader = MakeGarbageCollected<DocumentLoader>(
       frame_, kWebNavigationTypeOther, std::move(navigation_params),

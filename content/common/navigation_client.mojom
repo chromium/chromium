@@ -30,6 +30,7 @@ import "third_party/blink/public/mojom/permissions_policy/policy_value.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -258,6 +259,7 @@ interface NavigationClient {
       blink.mojom.ControllerServiceWorkerInfo? controller_service_worker_info,
       blink.mojom.ServiceWorkerContainerInfoForClient? container_info,
       pending_remote<network.mojom.URLLoaderFactory>? prefetch_loader_factory,
+      blink.mojom.DocumentToken document_token,
       mojo_base.mojom.UnguessableToken devtools_navigation_token,
       array<blink.mojom.ParsedPermissionsPolicyDeclaration>? permissions_policy,
       blink.mojom.PolicyContainer policy_container,
@@ -289,6 +291,7 @@ interface NavigationClient {
       network.mojom.ResolveErrorInfo resolve_error_info,
       string? error_page_content,
       blink.mojom.URLLoaderFactoryBundle? subresource_loader_factories,
+      blink.mojom.DocumentToken document_token,
       blink.mojom.PolicyContainer policy_container,
       AlternativeErrorPageOverrideInfo? alternative_error_page_info)
       => (DidCommitProvisionalLoadParams params,

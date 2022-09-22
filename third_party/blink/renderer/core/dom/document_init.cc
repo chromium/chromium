@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/document_init.h"
 
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
@@ -95,6 +96,18 @@ DocumentInit& DocumentInit::WithWindow(LocalDOMWindow* window,
   execution_context_ = window;
   owner_document_ = owner_document;
   return *this;
+}
+
+DocumentInit& DocumentInit::WithToken(const DocumentToken& token) {
+  token_ = token;
+  return *this;
+}
+
+const DocumentToken& DocumentInit::GetToken() const {
+  if (!token_) {
+    token_.emplace();
+  }
+  return *token_;
 }
 
 DocumentInit& DocumentInit::ForInitialEmptyDocument(bool empty) {

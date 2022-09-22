@@ -35,6 +35,7 @@ ScopedWebFrame::ScopedWebFrame()
                                                    &frame_client_,
                                                    nullptr,
                                                    blink::LocalFrameToken(),
+                                                   blink::DocumentToken(),
                                                    nullptr)) {
   view_->DidAttachLocalMainFrame();
 }

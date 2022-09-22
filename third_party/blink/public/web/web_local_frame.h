@@ -130,6 +130,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
       WebLocalFrameClient*,
       blink::InterfaceRegistry*,
       const LocalFrameToken& frame_token,
+      const DocumentToken& document_token,
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
       WebFrame* opener = nullptr,
       const WebString& name = WebString(),

@@ -38,7 +38,8 @@ class FencedFrameTreeNodeTest : public RenderViewHostImplTestHarness {
         TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
         blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName0",
         false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
-        frame_policy, blink::mojom::FrameOwnerProperties(), false, owner_type,
+        blink::DocumentToken(), frame_policy,
+        blink::mojom::FrameOwnerProperties(), false, owner_type,
         /*is_dummy_frame_for_inner_tree=*/false);
   }
 

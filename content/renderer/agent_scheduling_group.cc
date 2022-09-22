@@ -334,7 +334,7 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
 
 void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
   RenderFrameImpl::CreateFrame(
-      *this, params->token, params->routing_id, std::move(params->frame),
+      *this, params->frame_token, params->routing_id, std::move(params->frame),
       std::move(params->interface_broker),
       std::move(params->associated_interface_provider_remote),
       params->previous_frame_token, params->opener_frame_token,
@@ -342,7 +342,7 @@ void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
       params->devtools_frame_token, params->tree_scope_type,
       std::move(params->replication_state), std::move(params->widget_params),
       std::move(params->frame_owner_properties),
-      params->is_on_initial_empty_document,
+      params->is_on_initial_empty_document, params->document_token,
       std::move(params->policy_container));
 }
 

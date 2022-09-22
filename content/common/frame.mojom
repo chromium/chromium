@@ -173,7 +173,7 @@ union CreateMainFrameUnion {
 // Parameters used for browser-initiated local main frame creation.
 struct CreateLocalMainFrameParams {
   // The frame token. Used to map between LocalFrame and RenderFrameHostImpl.
-  blink.mojom.LocalFrameToken token;
+  blink.mojom.LocalFrameToken frame_token;
 
   // The ID of the main frame hosted in the view. Must not be kRoutingIdNone.
   int32 routing_id = IPC.mojom.kRoutingIdNone;
@@ -191,6 +191,12 @@ struct CreateLocalMainFrameParams {
 
   // Whether the frame is still on the initial empty document or not.
   bool is_on_initial_empty_document = true;
+
+  // The document token to use for the initial document in the created frame.
+  // Note that this is independent of `is_on_initial_empty_document`: every
+  // fully-initialized frame always contains a document, even a provisional
+  // frame that is not yet swapped in.
+  blink.mojom.DocumentToken document_token;
 
   // Null when the main frame has no policy container yet (for example, because
   // it is a speculative RenderFrameHost), and the policy container will be
@@ -241,7 +247,7 @@ struct CreateFrameWidgetParams {
 //
 struct CreateFrameParams {
   // The frame token. Used to map between LocalFrame and RenderFrameHostImpl.
-  blink.mojom.LocalFrameToken token;
+  blink.mojom.LocalFrameToken frame_token;
 
   // Specifies the routing ID of the new RenderFrame object.
   int32 routing_id;
@@ -295,6 +301,12 @@ struct CreateFrameParams {
 
   // Whether the frame is still on the initial empty document or not.
   bool is_on_initial_empty_document = true;
+
+  // The document token to use for the initial document in the created frame.
+  // Note that this is independent of `is_on_initial_empty_document`: every
+  // fully-initialized frame always contains a document, even a provisional
+  // frame that is not yet swapped in.
+  blink.mojom.DocumentToken document_token;
 
   // The policy container for the frame to be created. This can be null if we
   // could not determine a policy container yet, for example in case of a
@@ -642,6 +654,8 @@ struct CreateNewWindowReply {
   // that it should pause created window and wait for an explicit resume command
   // from the client.
   bool wait_for_debugger;
+
+  blink.mojom.DocumentToken document_token;
 
   // The policy container for the new frame that will be created by Blink in
   // response.

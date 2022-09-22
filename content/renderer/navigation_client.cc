@@ -37,6 +37,7 @@ void NavigationClient::CommitNavigation(
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
+    const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
@@ -58,11 +59,11 @@ void NavigationClient::CommitNavigation(
       std::move(url_loader_client_endpoints), std::move(subresource_loaders),
       std::move(subresource_overrides),
       std::move(controller_service_worker_info), std::move(container_info),
-      std::move(prefetch_loader_factory), devtools_navigation_token,
-      permissions_policy, std::move(policy_container),
-      std::move(code_cache_host), std::move(cookie_manager_info),
-      std::move(storage_info), std::move(not_restored_reasons),
-      std::move(callback));
+      std::move(prefetch_loader_factory), document_token,
+      devtools_navigation_token, permissions_policy,
+      std::move(policy_container), std::move(code_cache_host),
+      std::move(cookie_manager_info), std::move(storage_info),
+      std::move(not_restored_reasons), std::move(callback));
 }
 
 void NavigationClient::CommitFailedNavigation(
@@ -74,6 +75,7 @@ void NavigationClient::CommitFailedNavigation(
     const net::ResolveErrorInfo& resolve_error_info,
     const absl::optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_loaders,
+    const blink::DocumentToken& document_token,
     blink::mojom::PolicyContainerPtr policy_container,
     mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
     CommitFailedNavigationCallback callback) {
@@ -82,8 +84,8 @@ void NavigationClient::CommitFailedNavigation(
       std::move(common_params), std::move(commit_params),
       has_stale_copy_in_cache, error_code, extended_error_code,
       resolve_error_info, error_page_content, std::move(subresource_loaders),
-      std::move(policy_container), std::move(alternative_error_page_info),
-      std::move(callback));
+      document_token, std::move(policy_container),
+      std::move(alternative_error_page_info), std::move(callback));
 }
 
 void NavigationClient::Bind(

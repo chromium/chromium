@@ -4428,8 +4428,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     params->parent_frame_token =
         shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken();
     params->frame_owner_properties = blink::mojom::FrameOwnerProperties::New();
-    params->token = frame_token;
+    params->frame_token = frame_token;
     params->devtools_frame_token = base::UnguessableToken::Create();
+    params->document_token = blink::DocumentToken();
     params->policy_container = CreateStubPolicyContainer();
     params->replication_state = blink::mojom::FrameReplicationState::New();
     agent_scheduling_group->CreateFrame(std::move(params));
@@ -4527,8 +4528,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
     params->replication_state = blink::mojom::FrameReplicationState::New();
     params->replication_state->name = "name";
     params->replication_state->unique_name = "name";
-    params->token = frame_token;
+    params->frame_token = frame_token;
     params->devtools_frame_token = base::UnguessableToken::Create();
+    params->document_token = blink::DocumentToken();
     params->policy_container = CreateStubPolicyContainer();
     agent_scheduling_group->CreateFrame(std::move(params));
   }

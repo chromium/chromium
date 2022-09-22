@@ -17,6 +17,12 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 // See third_party/blink/public/common/tokens/tokens.h for more details.
 
 ////////////////////////////////////////////////////////////////////////////////
+// DOCUMENT TOKENS
+struct DocumentToken {
+  mojo_base.mojom.UnguessableToken value;
+};
+
+////////////////////////////////////////////////////////////////////////////////
 // FRAME TOKENS
 
 struct LocalFrameToken {

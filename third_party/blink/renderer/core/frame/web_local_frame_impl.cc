@@ -1976,13 +1976,14 @@ WebLocalFrame* WebLocalFrame::CreateMainFrame(
     WebLocalFrameClient* client,
     InterfaceRegistry* interface_registry,
     const LocalFrameToken& frame_token,
+    const DocumentToken& document_token,
     std::unique_ptr<WebPolicyContainer> policy_container,
     WebFrame* opener,
     const WebString& name,
     network::mojom::blink::WebSandboxFlags sandbox_flags) {
   return WebLocalFrameImpl::CreateMainFrame(
       web_view, client, interface_registry, frame_token, opener, name,
-      sandbox_flags, std::move(policy_container));
+      sandbox_flags, document_token, std::move(policy_container));
 }
 
 WebLocalFrame* WebLocalFrame::CreateProvisional(
@@ -2005,6 +2006,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
     WebFrame* opener,
     const WebString& name,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
+    const DocumentToken& document_token,
     std::unique_ptr<WebPolicyContainer> policy_container) {
   auto* frame = MakeGarbageCollected<WebLocalFrameImpl>(
       base::PassKey<WebLocalFrameImpl>(),
@@ -2022,7 +2024,8 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
   frame->InitializeCoreFrame(
       page, nullptr, nullptr, nullptr, FrameInsertType::kInsertInConstructor,
       name, opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr,
-      opener, std::move(policy_container), storage_key, sandbox_flags);
+      opener, document_token, std::move(policy_container), storage_key,
+      sandbox_flags);
   return frame;
 }
 
@@ -2062,12 +2065,18 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
   // unscriptable. Once the provisional frame gets properly attached and is
   // observable, it will have the real FrameOwner, and any subsequent real
   // documents will correctly inherit sandbox flags from the owner.
+  //
+  // Note: this intentionally initializes the initial document of the
+  // provisional frame with a random DocumentToken rather than plumbing it
+  // through from //content. The fact that provisional frames have an initial
+  // document is a weird implementation detail and this is an attempt to
+  // minimize its visibility/usefulness.
   web_frame->InitializeCoreFrame(
       *previous_frame->GetPage(), MakeGarbageCollected<DummyFrameOwner>(),
       previous_web_frame->Parent(), nullptr, FrameInsertType::kInsertLater,
       name, &ToCoreFrame(*previous_web_frame)->window_agent_factory(),
-      previous_web_frame->Opener(), /*policy_container=*/nullptr, StorageKey(),
-      sandbox_flags);
+      previous_web_frame->Opener(), DocumentToken(),
+      /*policy_container=*/nullptr, StorageKey(), sandbox_flags);
 
   LocalFrame* new_frame = web_frame->GetFrame();
   previous_frame->SetProvisionalFrame(new_frame);
@@ -2154,11 +2163,13 @@ void WebLocalFrameImpl::InitializeCoreFrame(
     const AtomicString& name,
     WindowAgentFactory* window_agent_factory,
     WebFrame* opener,
+    const DocumentToken& document_token,
     std::unique_ptr<blink::WebPolicyContainer> policy_container,
     const StorageKey& storage_key,
     network::mojom::blink::WebSandboxFlags sandbox_flags) {
   InitializeCoreFrameInternal(page, owner, parent, previous_sibling,
                               insert_type, name, window_agent_factory, opener,
+                              document_token,
                               PolicyContainer::CreateFromWebPolicyContainer(
                                   std::move(policy_container)),
                               storage_key, sandbox_flags);
@@ -2173,6 +2184,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
     const AtomicString& name,
     WindowAgentFactory* window_agent_factory,
     WebFrame* opener,
+    const DocumentToken& document_token,
     std::unique_ptr<PolicyContainer> policy_container,
     const StorageKey& storage_key,
     network::mojom::blink::WebSandboxFlags sandbox_flags) {
@@ -2211,7 +2223,8 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
 
   // We must call init() after frame_ is assigned because it is referenced
   // during init().
-  frame_->Init(opener_frame, std::move(policy_container), storage_key);
+  frame_->Init(opener_frame, document_token, std::move(policy_container),
+               storage_key);
 
   if (!owner) {
     // This trace event is needed to detect the main frame of the
@@ -2260,6 +2273,28 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
   policy_container_data->sandbox_flags |= frame_policy.sandbox_flags;
   frame_policy.sandbox_flags = policy_container_data->sandbox_flags;
 
+  auto complete_initialization = [this, owner_element, &policy_container_remote,
+                                  &policy_container_data,
+                                  &name](WebLocalFrame* new_child_frame,
+                                         const DocumentToken& document_token) {
+    // The initial empty document's anonymous bit is the union of:
+    // - its parent's anonymous bit.
+    // - its frame's anonymous attribute.
+    policy_container_data->is_anonymous |= owner_element->Anonymous();
+
+    std::unique_ptr<PolicyContainer> policy_container =
+        std::make_unique<PolicyContainer>(std::move(policy_container_remote),
+                                          std::move(policy_container_data));
+
+    To<WebLocalFrameImpl>(new_child_frame)
+        ->InitializeCoreFrameInternal(
+            *GetFrame()->GetPage(), owner_element, this, LastChild(),
+            FrameInsertType::kInsertInConstructor, name,
+            &GetFrame()->window_agent_factory(), nullptr, document_token,
+            std::move(policy_container),
+            GetFrame()->DomWindow()->GetStorageKey());
+  };
+
   // FIXME: Using subResourceAttributeName as fallback is not a perfect
   // solution. subResourceAttributeName returns just one attribute name. The
   // element might not have the attribute, and there might be other attributes
@@ -2270,28 +2305,14 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
           owner_element->getAttribute(
               owner_element->SubResourceAttributeName()),
           std::move(frame_policy), owner_properties, owner_element->OwnerType(),
-          WebPolicyContainerBindParams{std::move(policy_container_receiver)}));
+          WebPolicyContainerBindParams{std::move(policy_container_receiver)},
+          complete_initialization));
   if (!webframe_child)
     return nullptr;
 
-  // The initial empty document's anonymous bit is the union of:
-  // - its parent's anonymous bit.
-  // - its frame's anonymous attribute.
-  policy_container_data->is_anonymous |= owner_element->Anonymous();
-
-  std::unique_ptr<PolicyContainer> policy_container =
-      std::make_unique<PolicyContainer>(std::move(policy_container_remote),
-                                        std::move(policy_container_data));
-
-  webframe_child->InitializeCoreFrameInternal(
-      *GetFrame()->GetPage(), owner_element, this, LastChild(),
-      FrameInsertType::kInsertInConstructor, name,
-      &GetFrame()->window_agent_factory(), nullptr, std::move(policy_container),
-      GetFrame()->DomWindow()->GetStorageKey());
-
-  webframe_child->Client()->InitializeAsChildFrame(/*parent=*/this);
-
   DCHECK(webframe_child->Parent());
+  // If the lambda to complete initialization is not called, this will fail.
+  DCHECK(webframe_child->GetFrame());
   return webframe_child->GetFrame();
 }
 

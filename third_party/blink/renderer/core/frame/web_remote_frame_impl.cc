@@ -224,6 +224,7 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     const WebFrameOwnerProperties& frame_owner_properties,
     const LocalFrameToken& frame_token,
     WebFrame* opener,
+    const DocumentToken& document_token,
     std::unique_ptr<WebPolicyContainer> policy_container) {
   auto* child = MakeGarbageCollected<WebLocalFrameImpl>(
       base::PassKey<WebRemoteFrameImpl>(), scope, client, interface_registry,
@@ -248,7 +249,7 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
   child->InitializeCoreFrame(
       *GetFrame()->GetPage(), owner, this, previous_sibling,
       FrameInsertType::kInsertInConstructor, name, window_agent_factory, opener,
-      std::move(policy_container), storage_key);
+      document_token, std::move(policy_container), storage_key);
   DCHECK(child->GetFrame());
   return child;
 }

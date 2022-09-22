@@ -4794,11 +4794,13 @@ class ContextLifetimeTestWebFrameClient
       const FramePolicy&,
       const WebFrameOwnerProperties&,
       FrameOwnerElementType,
-      WebPolicyContainerBindParams policy_container_bind_params) override {
+      WebPolicyContainerBindParams policy_container_bind_params,
+      FinishChildFrameCreationFn finish_creation) override {
     return CreateLocalChild(*Frame(), scope,
                             std::make_unique<ContextLifetimeTestWebFrameClient>(
                                 create_notifications_, release_notifications_),
-                            std::move(policy_container_bind_params));
+                            std::move(policy_container_bind_params),
+                            finish_creation);
   }
 
   void DidCreateScriptContext(v8::Local<v8::Context> context,
@@ -7736,12 +7738,14 @@ class TestCachePolicyWebFrameClient
       const FramePolicy&,
       const WebFrameOwnerProperties& frame_owner_properties,
       FrameOwnerElementType,
-      WebPolicyContainerBindParams policy_container_bind_params) override {
+      WebPolicyContainerBindParams policy_container_bind_params,
+      FinishChildFrameCreationFn finish_creation) override {
     auto child = std::make_unique<TestCachePolicyWebFrameClient>();
     auto* child_ptr = child.get();
     child_clients_.push_back(std::move(child));
     return CreateLocalChild(*Frame(), scope, child_ptr,
-                            std::move(policy_container_bind_params));
+                            std::move(policy_container_bind_params),
+                            finish_creation);
   }
   void BeginNavigation(std::unique_ptr<WebNavigationInfo> info) override {
     cache_mode_ = info->url_request.GetCacheMode();
@@ -8172,7 +8176,8 @@ class FailCreateChildFrame : public frame_test_helpers::TestWebFrameClient {
       const FramePolicy&,
       const WebFrameOwnerProperties& frame_owner_properties,
       FrameOwnerElementType,
-      WebPolicyContainerBindParams policy_container_bind_params) override {
+      WebPolicyContainerBindParams policy_container_bind_params,
+      FinishChildFrameCreationFn finish_creation) override {
     ++call_count_;
     return nullptr;
   }
@@ -9188,10 +9193,11 @@ class WebFrameSwapTestClient : public frame_test_helpers::TestWebFrameClient {
       const FramePolicy&,
       const WebFrameOwnerProperties&,
       FrameOwnerElementType,
-      WebPolicyContainerBindParams policy_container_bind_params) override {
-    return CreateLocalChild(*Frame(), scope,
-                            std::make_unique<WebFrameSwapTestClient>(this),
-                            std::move(policy_container_bind_params));
+      WebPolicyContainerBindParams policy_container_bind_params,
+      FinishChildFrameCreationFn finish_creation) override {
+    return CreateLocalChild(
+        *Frame(), scope, std::make_unique<WebFrameSwapTestClient>(this),
+        std::move(policy_container_bind_params), finish_creation);
   }
 
   void DidChangeFrameOwnerProperties(
@@ -11282,9 +11288,11 @@ class WebLocalFrameVisibilityChangeTest
       const FramePolicy&,
       const WebFrameOwnerProperties&,
       FrameOwnerElementType,
-      WebPolicyContainerBindParams policy_container_bind_params) override {
+      WebPolicyContainerBindParams policy_container_bind_params,
+      FinishChildFrameCreationFn finish_creation) override {
     return CreateLocalChild(*Frame(), scope, &child_client_,
-                            std::move(policy_container_bind_params));
+                            std::move(policy_container_bind_params),
+                            finish_creation);
   }
 
   TestLocalFrameHostForVisibility& ChildHost() { return child_host_; }
@@ -13036,9 +13044,11 @@ TEST_F(WebFrameTest, NoLoadingCompletionCallbacksInDetach) {
         const FramePolicy&,
         const WebFrameOwnerProperties&,
         FrameOwnerElementType,
-        WebPolicyContainerBindParams policy_container_bind_params) override {
+        WebPolicyContainerBindParams policy_container_bind_params,
+        FinishChildFrameCreationFn finish_creation) override {
       return CreateLocalChild(*Frame(), scope, &child_client_,
-                              std::move(policy_container_bind_params));
+                              std::move(policy_container_bind_params),
+                              finish_creation);
     }
 
     LoadingObserverFrameClient& ChildClient() { return child_client_; }

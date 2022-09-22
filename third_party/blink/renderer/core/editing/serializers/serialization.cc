@@ -926,7 +926,8 @@ static Document* CreateStagingDocumentForMarkupSanitization(
       MakeGarbageCollected<LocalFrameView>(*frame, gfx::Size(800, 600));
   frame->SetView(frame_view);
   // TODO(https://crbug.com/1355751) Initialize `storage_key`.
-  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr, StorageKey());
+  frame->Init(/*opener=*/nullptr, DocumentToken(), /*policy_container=*/nullptr,
+              StorageKey());
 
   Document* document = frame->GetDocument();
   DCHECK(document);

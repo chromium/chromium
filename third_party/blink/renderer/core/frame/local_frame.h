@@ -42,6 +42,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
@@ -206,6 +207,7 @@ class CORE_EXPORT LocalFrame final
   // response to the creation of a RenderFrameHost) or by blink if this is a
   // synchronously created LocalFrame child.
   void Init(Frame* opener,
+            const DocumentToken& document_token,
             std::unique_ptr<PolicyContainer> policy_container,
             const StorageKey& storage_key);
   void SetView(LocalFrameView*);

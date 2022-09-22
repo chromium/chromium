@@ -339,6 +339,7 @@ class CONTENT_EXPORT FrameTree {
       bool is_created_by_script,
       const blink::LocalFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
+      const blink::DocumentToken& document_token,
       const blink::FramePolicy& frame_policy,
       const blink::mojom::FrameOwnerProperties& frame_owner_properties,
       bool was_discarded,

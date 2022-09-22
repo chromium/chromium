@@ -305,6 +305,7 @@ LocalFrame* LocalFrame::FromFrameToken(const LocalFrameToken& frame_token) {
 }
 
 void LocalFrame::Init(Frame* opener,
+                      const DocumentToken& document_token,
                       std::unique_ptr<PolicyContainer> policy_container,
                       const StorageKey& storage_key) {
   if (!policy_container)
@@ -318,7 +319,7 @@ void LocalFrame::Init(Frame* opener,
   mojo_handler_ = MakeGarbageCollected<LocalFrameMojoHandler>(*this);
 
   SetOpenerDoNotNotify(opener);
-  loader_.Init(std::move(policy_container), storage_key);
+  loader_.Init(document_token, std::move(policy_container), storage_key);
 }
 
 void LocalFrame::SetView(LocalFrameView* view) {

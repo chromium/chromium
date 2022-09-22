@@ -56,7 +56,7 @@ LocalFrame* SingleChildLocalFrameClient::CreateFrame(
   auto policy_container = std::make_unique<PolicyContainer>(
       dummy_host.Unbind(), std::move(policy_container_data));
 
-  child->Init(/*opener=*/nullptr, std::move(policy_container),
+  child->Init(/*opener=*/nullptr, DocumentToken(), std::move(policy_container),
               parent_frame->DomWindow()->GetStorageKey());
 
   return child;

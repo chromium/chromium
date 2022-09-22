@@ -16,6 +16,13 @@ namespace mojo {
 // See third_party/blink/public/common/tokens/tokens.h for more details.
 
 ////////////////////////////////////////////////////////////////////////////////
+// DOCUMENT TOKENS
+template <>
+struct StructTraits<blink::mojom::DocumentTokenDataView, blink::DocumentToken>
+    : public blink::TokenMojomTraitsHelper<blink::mojom::DocumentTokenDataView,
+                                           blink::DocumentToken> {};
+
+////////////////////////////////////////////////////////////////////////////////
 // FRAME TOKENS
 
 template <>

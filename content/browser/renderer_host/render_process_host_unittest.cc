@@ -172,7 +172,8 @@ TEST_F(RenderProcessHostUnitTest, ReuseCommittedSite) {
       TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
       blink::mojom::TreeScopeType::kDocument, std::string(), unique_name, false,
       blink::LocalFrameToken(), base::UnguessableToken::Create(),
-      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(),
+      blink::DocumentToken(), blink::FramePolicy(),
+      blink::mojom::FrameOwnerProperties(),
       blink::FrameOwnerElementType::kIframe);
   TestRenderFrameHost* subframe =
       static_cast<TestRenderFrameHost*>(contents()

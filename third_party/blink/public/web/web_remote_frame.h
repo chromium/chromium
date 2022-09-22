@@ -64,6 +64,7 @@ class BLINK_EXPORT WebRemoteFrame : public WebFrame {
       const WebFrameOwnerProperties&,
       const LocalFrameToken& frame_token,
       WebFrame* opener,
+      const DocumentToken& document_token,
       std::unique_ptr<WebPolicyContainer> policy_container) = 0;
 
   // Returns the frame associated with the |frame_token|.

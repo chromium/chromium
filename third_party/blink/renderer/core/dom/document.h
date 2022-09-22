@@ -44,6 +44,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
@@ -847,6 +848,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void writeln(v8::Isolate*, TrustedHTML*, ExceptionState&);
 
   bool WellFormed() const { return well_formed_; }
+
+  const DocumentToken& Token() const { return token_; }
 
   // Return the document URL, or an empty URL if it's unavailable.
   // This is not an implementation of web-exposed Document.prototype.URL.
@@ -2117,6 +2120,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void TrustTokenQueryAnswererConnectionError();
 
   void RunPostPrerenderingActivationSteps();
+
+  const DocumentToken token_;
 
   // Bitfield used for tracking UKM sampling of media features such that each
   // media feature is sampled only once per document.

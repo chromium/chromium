@@ -488,7 +488,8 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
 
   frame_test_helpers::TestWebFrameClient web_frame_client;
   WebLocalFrame* frame = WebLocalFrame::CreateMainFrame(
-      web_view, &web_frame_client, nullptr, LocalFrameToken(), nullptr);
+      web_view, &web_frame_client, nullptr, LocalFrameToken(), DocumentToken(),
+      nullptr);
   web_frame_client.Bind(frame);
 
   frame_test_helpers::TestWebFrameWidget* widget =
@@ -2737,7 +2738,8 @@ TEST_F(WebViewTest, ClientTapHandlingNullWebViewClient) {
       /*page_base_background_color=*/absl::nullopt));
   frame_test_helpers::TestWebFrameClient web_frame_client;
   WebLocalFrame* local_frame = WebLocalFrame::CreateMainFrame(
-      web_view, &web_frame_client, nullptr, LocalFrameToken(), nullptr);
+      web_view, &web_frame_client, nullptr, LocalFrameToken(), DocumentToken(),
+      nullptr);
   web_frame_client.Bind(local_frame);
   WebNonCompositedWidgetClient widget_client;
   frame_test_helpers::TestWebFrameWidget* widget =
@@ -4087,7 +4089,9 @@ class CreateChildCounterFrameClient
       const FramePolicy&,
       const WebFrameOwnerProperties&,
       FrameOwnerElementType,
-      WebPolicyContainerBindParams policy_container_bind_params) override;
+      WebPolicyContainerBindParams policy_container_bind_params,
+      base::FunctionRef<void(WebLocalFrame*, const DocumentToken&)>
+          complete_initialization) override;
 
   int Count() const { return count_; }
 
@@ -4102,11 +4106,14 @@ WebLocalFrame* CreateChildCounterFrameClient::CreateChildFrame(
     const FramePolicy& frame_policy,
     const WebFrameOwnerProperties& frame_owner_properties,
     FrameOwnerElementType frame_owner_element_type,
-    WebPolicyContainerBindParams policy_container_bind_params) {
+    WebPolicyContainerBindParams policy_container_bind_params,
+    base::FunctionRef<void(WebLocalFrame*, const DocumentToken&)>
+        complete_initialization) {
   ++count_;
   return TestWebFrameClient::CreateChildFrame(
       scope, name, fallback_name, frame_policy, frame_owner_properties,
-      frame_owner_element_type, std::move(policy_container_bind_params));
+      frame_owner_element_type, std::move(policy_container_bind_params),
+      complete_initialization);
 }
 
 TEST_F(WebViewTest, ChangeDisplayMode) {
