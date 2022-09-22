@@ -44,6 +44,14 @@ class StyleScope;
 // invalidation sets from them and makes them available via several
 // CollectInvalidationSetForFoo methods which use the indices to quickly gather
 // the relevant InvalidationSets for a particular DOM mutation.
+//
+// The name may be somewhat confusing and is for historical reasons.
+// The original “features” extracted from the selectors were the ones
+// in FeatureMetadata (e.g. “does any selector use ::first-line”);
+// invalidation sets were added later. So even though 90% of the code
+// in the class is about invalidation sets, and they are the primary
+// “features” being extracted from the selector now, the file does not
+// live in css/invalidation/. Perhaps this should be changed.
 class CORE_EXPORT RuleFeatureSet {
   DISALLOW_NEW();
 
@@ -55,7 +63,7 @@ class CORE_EXPORT RuleFeatureSet {
   bool operator==(const RuleFeatureSet&) const;
   bool operator!=(const RuleFeatureSet& o) const { return !(*this == o); }
 
-  // Methods for updating the data in this object.
+  // Merge the given RuleFeatureSet (which remains unchanged) into this one.
   void Merge(const RuleFeatureSet&);
   void Clear();
 
@@ -67,7 +75,7 @@ class CORE_EXPORT RuleFeatureSet {
   SelectorPreMatch CollectFeaturesFromSelector(const CSSSelector&,
                                                const StyleScope*);
 
-  // Methods for accessing the data in this object.
+  // Member functions for accessing non-invalidation-set related features.
   bool UsesFirstLineRules() const { return metadata_.uses_first_line_rules; }
   bool UsesWindowInactiveSelector() const {
     return metadata_.uses_window_inactive_selector;
@@ -75,15 +83,12 @@ class CORE_EXPORT RuleFeatureSet {
   bool NeedsFullRecalcForRuleSetInvalidation() const {
     return metadata_.needs_full_recalc_for_rule_set_invalidation;
   }
-
   unsigned MaxDirectAdjacentSelectors() const {
     return metadata_.max_direct_adjacent_selectors;
   }
-
   bool HasSelectorForId(const AtomicString& id_value) const {
     return id_invalidation_sets_.Contains(id_value);
   }
-
   MediaQueryResultFlags& MutableMediaQueryResultFlags() {
     return media_query_result_flags_;
   }
@@ -94,7 +99,12 @@ class CORE_EXPORT RuleFeatureSet {
   bool HasViewportDependentMediaQueries() const;
   bool HasDynamicViewportDependentMediaQueries() const;
 
-  // Collect descendant and sibling invalidation sets.
+  // Collect descendant and sibling invalidation sets, for a given type of
+  // change (e.g. “if this element added or removed the given class, what other
+  // types of elements need to change?”). This is called during DOM mutations.
+  // CollectInvalidationSets* govern self-invalidation and descendant
+  // invalidations, while CollectSiblingInvalidationSets* govern sibling
+  // invalidations.
   void CollectInvalidationSetsForClass(InvalidationLists&,
                                        Element&,
                                        const AtomicString& class_name) const;
@@ -123,6 +133,8 @@ class CORE_EXPORT RuleFeatureSet {
       Element&,
       const QualifiedName& attribute_name,
       unsigned min_direct_adjacent) const;
+
+  // TODO: Document.
   void CollectUniversalSiblingInvalidationSet(
       InvalidationLists&,
       unsigned min_direct_adjacent) const;
@@ -130,6 +142,7 @@ class CORE_EXPORT RuleFeatureSet {
   void CollectPartInvalidationSet(InvalidationLists&) const;
   void CollectTypeRuleInvalidationSet(InvalidationLists&, ContainerNode&) const;
 
+  // Quick tests for whether we need to consider :has() invalidation.
   bool NeedsHasInvalidationForClass(const AtomicString& class_name) const;
   bool NeedsHasInvalidationForAttribute(
       const QualifiedName& attribute_name) const;

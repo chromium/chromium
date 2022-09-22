@@ -679,6 +679,8 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
   return nullptr;
 }
 
+// Update all invalidation sets for a given selector (potentially in the
+// given @scope). See UpdateInvalidationSetsForComplex() for details.
 void RuleFeatureSet::UpdateInvalidationSets(const CSSSelector& selector,
                                             const StyleScope* style_scope) {
   InvalidationSetFeatures features;
@@ -694,6 +696,10 @@ void RuleFeatureSet::UpdateInvalidationSets(const CSSSelector& selector,
   UpdateRuleSetInvalidation(features);
 }
 
+// Update all invalidation sets for a given CSS selector; this is usually
+// called for the entire selector at top level, but can also end up calling
+// itself recursively if any of the selectors contain selector lists
+// (e.g. for :not() or :has()).
 RuleFeatureSet::FeatureInvalidationType
 RuleFeatureSet::UpdateInvalidationSetsForComplex(
     const CSSSelector& complex,
@@ -705,13 +711,16 @@ RuleFeatureSet::UpdateInvalidationSetsForComplex(
   // found in its selector. The first step is to extract the features from the
   // rightmost compound selector (ExtractInvalidationSetFeaturesFromCompound).
   // Secondly, add those features to the invalidation sets for the features
-  // found in the other compound selectors (addFeaturesToInvalidationSets). If
-  // we find a feature in the right-most compound selector that requires a
-  // subtree recalc, nextCompound will be the rightmost compound and we will
-  // addFeaturesToInvalidationSets for that one as well.
+  // found in the other compound selectors (AddFeaturesToInvalidationSets).
+  // If we find a feature in the right-most compound selector that requires a
+  // subtree recalc, next_compound will be the rightmost compound and we will
+  // AddFeaturesToInvalidationSets for that one as well.
 
   InvalidationSetFeatures* sibling_features = nullptr;
 
+  // Step 1. Note that this also, in passing, inserts self-invalidation
+  // InvalidationSets for the rightmost compound selector. This probably
+  // isn't the prettiest, but it's how the structure is at this point.
   const CSSSelector* last_in_compound =
       ExtractInvalidationSetFeaturesFromCompound(
           complex, features, position,
@@ -735,6 +744,7 @@ RuleFeatureSet::UpdateInvalidationSetsForComplex(
     nth_set.SetInvalidatesSelf();
   }
 
+  // Step 2.
   const CSSSelector* next_compound =
       last_in_compound ? last_in_compound->TagHistory() : &complex;
 
@@ -846,15 +856,21 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
   }
 }
 
+// Extract invalidation set features and return a pointer to the the last
+// simple selector of the compound, or nullptr if one of the selectors
+// RequiresSubtreeInvalidation().
+//
+// It also deals with inserting self-invalidation entries for the compound
+// itself, so it is not a pure “extract“ despite the name.
 const CSSSelector* RuleFeatureSet::ExtractInvalidationSetFeaturesFromCompound(
     const CSSSelector& compound,
     InvalidationSetFeatures& features,
     PositionType position,
     bool for_logical_combination_in_has) {
-  // Extract invalidation set features and return a pointer to the the last
-  // simple selector of the compound, or nullptr if one of the selectors
-  // requiresSubtreeInvalidation().
-
+  // NOTE: Due to the check at the bottom of the loop, this loop stops
+  // once we are at the end of the compound, ie., we see a relation that
+  // is not a sub-selector. So for e.g. .a .b.c#d, we will see #d, .c, .b
+  // and then stop, returning a pointer to .b.
   const CSSSelector* simple_selector = &compound;
   for (;; simple_selector = simple_selector->TagHistory()) {
     // Fall back to use subtree invalidations, even for features in the
