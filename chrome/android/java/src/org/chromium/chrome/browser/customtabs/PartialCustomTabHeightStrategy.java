@@ -962,8 +962,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         int bottomY = mDisplayHeight - mNavbarHeight;
         int animateEndY = -1;
 
-        if (finalY == initialY) return false;
-
         if (finalY < initialY) { // Move up
             if (Math.abs(topY - finalY) < Math.abs(finalY - initialY)) {
                 mTargetStatus = HeightStatus.TOP;
