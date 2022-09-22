@@ -1128,8 +1128,6 @@ class Vector
   wtf_size_t capacity() const { return Base::capacity(); }
   size_t CapacityInBytes() const { return Base::AllocationSize(capacity()); }
   bool empty() const { return !size(); }
-  // TODO(wangxianzhu): Remove this after renaming all callsites.
-  bool IsEmpty() const { return empty(); }
 
   // at() and operator[]: Obtain the reference of the element that is located
   // at the given index. The reference may be invalidated on a reallocation.
