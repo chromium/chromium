@@ -1760,6 +1760,17 @@ void AXObjectCacheImpl::Remove(Node* node) {
   }
 }
 
+void AXObjectCacheImpl::Remove(Document* document) {
+  DCHECK(IsPopup(*document)) << "Call Dispose() to remove the main document.";
+  for (Node* node = document; node;
+       node = LayoutTreeBuilderTraversal::Next(*node, nullptr)) {
+    Remove(node);
+  }
+  notifications_to_post_popup_.clear();
+  tree_update_callback_queue_popup_.clear();
+  invalidated_ids_popup_.clear();
+}
+
 // This is safe to call even if there isn't a current mapping.
 void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {
   if (!inline_text_box)

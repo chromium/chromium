@@ -2915,24 +2915,22 @@ void Document::Shutdown() {
   if (this == &AXObjectCacheOwner()) {
     ax_contexts_.clear();
     ClearAXObjectCache();
+  } else {
+    DCHECK(!ax_object_cache_ || ExistingAXObjectCache())
+        << "Had AXObjectCache for parent, but not for popup document.";
+    if (AXObjectCache* cache = ExistingAXObjectCache()) {
+      // This is a popup document. Clear all accessibility state related to it
+      // by removing the AXObject for its root. The AXObjectCache is
+      // retrieved from the main document, but it maintains both documents.
+      cache->Remove(this);
+    }
   }
+
   computed_node_mapping_.clear();
 
   DetachLayoutTree();
   layout_view_ = nullptr;
   DCHECK(!View()->IsAttached());
-
-  if (this != &AXObjectCacheOwner()) {
-    if (AXObjectCache* cache = ExistingAXObjectCache()) {
-      // Documents that are not a root document use the AXObjectCache in
-      // their root document. Node::removedFrom is called after the
-      // document has been detached so it can't find the root document.
-      // We do the removals here instead.
-      for (Node& node : NodeTraversal::DescendantsOf(*this)) {
-        cache->Remove(&node);
-      }
-    }
-  }
 
   GetStyleEngine().DidDetach();
 

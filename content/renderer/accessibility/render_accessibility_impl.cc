@@ -1082,14 +1082,6 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
     dirty_objects_.pop_front();
     auto obj = current_dirty_object->obj;
 
-    // TODO(accessibility) Remove this forced layout. Doing so
-    // currently causes issues with color picker popup tests, but this is
-    // strange, because we already called UpdateLayout(GetPopupDoument()), so
-    // that means something is dirtying the document even though we use
-    // WebDisallowTransitionScope on both the main and popup document.
-    if (!WebAXObject::MaybeUpdateLayoutAndCheckValidity(obj.GetDocument()))
-      continue;
-
     // Cannot serialize detached or unincluded object.
     // Dirty objects can be added using MarkWebAXObjectDirty(obj) from other
     // parts of the code as well, so we need to ensure the object still exists

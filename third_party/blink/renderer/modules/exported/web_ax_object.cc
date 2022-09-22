@@ -194,6 +194,16 @@ void WebAXObject::Serialize(ui::AXNodeData* node_data,
   if (IsDetached())
     return;
 
+#if DCHECK_IS_ON()
+  if (Node* node = private_->GetNode()) {
+    Document* document = private_->GetDocument();
+    DCHECK(
+        !document->NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*node) ||
+        DisplayLockUtilities::LockedAncestorPreventingPaint(*node))
+        << "Node needs layout update and is not display locked";
+  }
+#endif
+
   private_->Serialize(node_data, accessibility_mode);
 }
 
@@ -1339,8 +1349,13 @@ void WebAXObject::UpdateLayout(const WebDocument& web_document) {
 bool WebAXObject::MaybeUpdateLayoutAndCheckValidity(
     const WebDocument& web_document) {
   const Document* document = web_document.ConstUnwrap<Document>();
-  if (!document || !document->View())
+  if (!document)
     return false;
+
+  DCHECK(document->defaultView());
+  DCHECK(document->GetFrame());
+  DCHECK(document->View());
+  DCHECK(document->ExistingAXObjectCache());
 
   if (document->NeedsLayoutTreeUpdate() || document->View()->NeedsLayout() ||
       document->Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {

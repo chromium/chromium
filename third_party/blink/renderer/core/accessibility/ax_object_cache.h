@@ -94,6 +94,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Returns true if the AXObject is removed.
   virtual bool Remove(LayoutObject*) = 0;
   virtual void Remove(Node*) = 0;
+  virtual void Remove(Document*) = 0;
   virtual void Remove(AbstractInlineTextBox*) = 0;
 
   virtual const Element* RootAXEditableElement(const Node*) = 0;

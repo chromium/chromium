@@ -134,6 +134,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Returns false if no associated AXObject exists in the cache.
   bool Remove(LayoutObject*) override;
   void Remove(Node*) override;
+  void Remove(Document*) override;
   void Remove(AbstractInlineTextBox*) override;
   void Remove(AXObject*);  // Calls more specific Remove methods as necessary.
   // For any ancestor that could contain the passed-in AXObject* in their cached
