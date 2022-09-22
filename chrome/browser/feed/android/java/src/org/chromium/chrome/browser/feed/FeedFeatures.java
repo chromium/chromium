@@ -53,6 +53,20 @@ public final class FeedFeatures {
                 && !Profile.getLastUsedRegularProfile().isChild();
     }
 
+    public static boolean shouldUseWebFeedAwarenessIPH() {
+        return ChromeFeatureList
+                .getFieldTrialParamByFeature(
+                        ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
+                .equals("IPH");
+    }
+
+    public static boolean shouldUseNewIndicator() {
+        return ChromeFeatureList
+                .getFieldTrialParamByFeature(
+                        ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
+                .equals("new_animation");
+    }
+
     /**
      * @return Whether the feed should automatically scroll down when it first loads so that the
      *         first card is at the top of the screen. This is for use with screenshot utilities.

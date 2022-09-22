@@ -2201,7 +2201,7 @@ const FeatureEntry::FeatureVariation kWebFeedVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kWebFeedAwareness_new_animation[] = {
-    {"awareness_style", "new animation"}};
+    {"awareness_style", "new_animation"}};
 
 const FeatureEntry::FeatureParam kWebFeedAwareness_IPH[] = {
     {"awareness_style", "IPH"}};

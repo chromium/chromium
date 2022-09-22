@@ -501,6 +501,12 @@ public class FeedSurfaceMediator
         if (shouldHaveWebFeedTab) {
             addHeaderAndStream(mContext.getResources().getString(R.string.ntp_following),
                     mCoordinator.createFeedStream(StreamKind.FOLLOWING));
+            if (FeedFeatures.shouldUseNewIndicator()) {
+                mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                        .get(getTabIdForSection(StreamKind.FOLLOWING))
+                        .set(SectionHeaderProperties.BADGE_TEXT_KEY,
+                                mContext.getResources().getString(R.string.ntp_new));
+            }
         }
     }
 
@@ -583,11 +589,6 @@ public class FeedSurfaceMediator
     /** @return The stream that represents the 1st tab. */
     boolean hasStreams() {
         return !mTabToStreamMap.isEmpty();
-    }
-
-    boolean isActivityLoggingEnabledForCurrentStream() {
-        if (mCurrentStream == null) return false;
-        return mCurrentStream.isActivityLoggingEnabled();
     }
 
     long getLastFetchTimeMsForCurrentStream() {

@@ -86,7 +86,8 @@ public class SectionHeaderViewBinder
             SectionHeaderView view, int index, int count, PropertyKey payload) {
         PropertyModel header = headers.get(0);
         if (payload == null || payload == SectionHeaderProperties.HEADER_TEXT_KEY
-                || payload == SectionHeaderProperties.UNREAD_CONTENT_KEY) {
+                || payload == SectionHeaderProperties.UNREAD_CONTENT_KEY
+                || payload == SectionHeaderProperties.BADGE_TEXT_KEY) {
             // Only use 1st tab for legacy headerText;
             view.setHeaderText(header.get(SectionHeaderProperties.HEADER_TEXT_KEY));
 
@@ -95,8 +96,8 @@ public class SectionHeaderViewBinder
                 PropertyModel tabModel = headers.get(i);
                 boolean hasUnreadContent = tabModel.get(SectionHeaderProperties.UNREAD_CONTENT_KEY);
 
-                view.setHeaderAt(
-                        tabModel.get(SectionHeaderProperties.HEADER_TEXT_KEY), hasUnreadContent, i);
+                view.setHeaderAt(tabModel.get(SectionHeaderProperties.HEADER_TEXT_KEY),
+                        hasUnreadContent, tabModel.get(SectionHeaderProperties.BADGE_TEXT_KEY), i);
             }
         }
         if (payload == null

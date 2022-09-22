@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.feed.sections;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
@@ -14,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import com.google.android.material.shape.MaterialShapeDrawable;
@@ -24,24 +28,33 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 /**
  * Drawable representing the unread dot.
  *
- * Allows for setting of text and animating the width when text changes.
+ * Allows for setting of text inside the dot and animating the width when text changes.
  */
 public class SectionHeaderBadgeDrawable extends Drawable {
-    private Paint mPaint;
-    // Only used for calculating text width in dps and to easily apply text appearances.
-    private AppCompatTextView mTextView;
-    private MaterialShapeDrawable mShapeDrawable;
+    private static final int ANIMATION_DURATION_MS = 400;
+    private static final int ANIMATION_START_DELAY_MS = 500;
+
+    private final Paint mPaint;
+    private final MaterialShapeDrawable mShapeDrawable;
+    private final Context mContext;
+    // Default text size.
+    private final float mTextSize;
+
     private String mText;
-    private Context mContext;
+    private ValueAnimator mAnimator;
+    private View mAnchor;
+    private boolean mHasPendingAnimation;
 
     public SectionHeaderBadgeDrawable(Context context) {
         mContext = context;
 
         // This textview is only used to easily set the text parameters and calculate textual width.
-        mTextView = new AppCompatTextView(context);
-        mTextView.setTextAppearance(context, R.style.TextAppearance_Material3_LabelSmall);
-        mPaint = mTextView.getPaint();
+        AppCompatTextView textView = new AppCompatTextView(context);
+        textView.setTextAppearance(context, R.style.TextAppearance_Material3_LabelSmall);
+        mPaint = textView.getPaint();
         mPaint.setTextAlign(Paint.Align.CENTER);
+        mPaint.setColor(SemanticColorUtils.getDefaultTextColorOnAccent1(context));
+        mTextSize = mPaint.getTextSize();
 
         mShapeDrawable = new MaterialShapeDrawable();
         mShapeDrawable.setCornerSize(
@@ -51,9 +64,47 @@ public class SectionHeaderBadgeDrawable extends Drawable {
         mText = "";
     }
 
+    /**
+     * Sets the text showing inside the dot.
+     *
+     * If we are currently attached to an anchor and the text is not empty, we will show
+     * the text and start the animation back into a text-less dot after 500ms. Otherwise, we will
+     * perform the animation back into a text-less dot 500ms after attaching to an anchor.
+     *
+     * @param text The text to show inside the dot.
+     */
     public void setText(String text) {
-        mText = text;
-        mTextView.setText(text);
+        // Cast null to empty string first.
+        final String finalText = (text == null) ? "" : text;
+        // Do nothing if no change.
+        if (mText.equals(finalText)) return;
+        mText = finalText;
+        // Text -> empty animation. Otherwise, don't animate.
+        if (!mText.isEmpty()) {
+            // Stop previous animation if there is one.
+            if (mAnimator != null && mAnimator.isStarted()) {
+                mAnimator.pause();
+            }
+            // Don't animate if we aren't attached to an anchor.
+            // Set pending animation to true so that we will start the
+            // pending animation after attaching to an anchor.
+            if (mAnchor == null) {
+                mHasPendingAnimation = true;
+                return;
+            }
+            mHasPendingAnimation = false;
+            setUpAndRunAnimation();
+        } else {
+            // Restore alpha and text sizes, in case we had an animation before.
+            mPaint.setAlpha(255);
+            mPaint.setTextSize(mTextSize);
+            mHasPendingAnimation = false; // Turn off any pending animation.
+            // Recalculate bounds and redraw if we are attached.
+            if (mAnchor != null) {
+                setBounds(calculateBounds(mAnchor, mText));
+                invalidateSelf();
+            }
+        }
     }
 
     @Override
@@ -69,7 +120,7 @@ public class SectionHeaderBadgeDrawable extends Drawable {
         // Draws the full text with the top left corner at (centerX, centerY-(halfheight of text)).
         // We define halfheight as the average of ascent and descent to ensure the text does not
         // appear lopsided even if the font changes.
-        canvas.drawText(mText, 0, mText.length(), bounds.centerX(),
+        canvas.drawText(mText, bounds.centerX(),
                 bounds.centerY() - ((mPaint.descent() + mPaint.ascent()) / 2), mPaint);
     }
 
@@ -85,29 +136,10 @@ public class SectionHeaderBadgeDrawable extends Drawable {
         invalidateSelf();
     }
 
-    /**
-     * Called when we are attaching the drawable to a new overlay.
-     *
-     * @param anchorBounds the bounding box for the overlay.
-     */
     @Override
-    public void setBounds(Rect anchorBounds) {
-        // CenterY is the top of the bounding box + a custom vertical offset.
-        int centerY = anchorBounds.top
-                + mContext.getResources().getDimensionPixelSize(R.dimen.feed_badge_voffset);
-        int halfHeight = mContext.getResources().getDimensionPixelSize(R.dimen.feed_badge_radius);
-        // HalfWidth is the radius if no text, or the text width/2.
-        int halfWidth = Math.max(halfHeight, mTextView.getMeasuredWidth() / 2);
-        // CenterX is the right side of the bounding box + radius + offset.
-        int centerX = anchorBounds.right + halfWidth
-                - mContext.getResources().getDimensionPixelSize(R.dimen.feed_badge_hoffset);
-        // The new bounds for the dot + any text to be rendered therein.
-        Rect newBounds = new Rect(centerX - halfWidth, centerY - halfHeight, centerX + halfWidth,
-                centerY + halfHeight);
-        // We don't set bounding box for the textview because
-        // one does not set bounds for views, and it's not part of the drawing.
-        mShapeDrawable.setBounds(newBounds);
-        super.setBounds(newBounds);
+    public void setBounds(Rect bounds) {
+        mShapeDrawable.setBounds(bounds);
+        super.setBounds(bounds);
     }
 
     @Override
@@ -115,16 +147,116 @@ public class SectionHeaderBadgeDrawable extends Drawable {
         return mPaint.getAlpha();
     }
 
+    /**
+     * Attaches the drawable to an anchor.
+     *
+     * Does not do anything if we are already attached to this anchor. Otherwise,
+     * triggers a draw loop which will put this drawable in the top right corner of the anchor.
+     * @param anchor View to anchor this Drawable to.
+     */
     public void attach(View anchor) {
-        Rect badgeBounds = new Rect();
-        anchor.getDrawingRect(badgeBounds);
-        setBounds(badgeBounds);
+        // Do not re-attach to same anchor view. Otherwise, this forces a layout
+        // that messes up any ongoing animation.
+        if (mAnchor != null && mAnchor.equals(anchor)) {
+            invalidateSelf();
+            return;
+        }
+        mAnchor = anchor;
+        setBounds(calculateBounds(anchor, mText));
         anchor.getOverlay().add(this);
+        invalidateSelf();
+        // If we have a pending animation, set it up and run it..
+        if (mHasPendingAnimation) {
+            mHasPendingAnimation = false;
+            setUpAndRunAnimation();
+        }
+    }
+
+    /**
+     * Detaches the drawable from the anchor.
+     *
+     * Does nothing if we are not attached to this anchor.
+     * @param anchor View anchor that we previously called attach on.
+     */
+    public void detach(View anchor) {
+        if (mAnchor == null || !mAnchor.equals(anchor)) {
+            return;
+        }
+        mAnchor = null;
+        anchor.getOverlay().remove(this);
         invalidateSelf();
     }
 
-    public void detach(View anchor) {
-        anchor.getOverlay().remove(this);
-        invalidateSelf();
+    /**
+     * Calculates the bounds for this drawable if we were anchored to this view and
+     * contains this text. Does not actually modify anything.
+     *
+     * @param anchor The view we are hypothetically anchored to.
+     * @param text The text we hypothetically should display.
+     * @return The bounds we should have in order to show in the top right corner.
+     */
+    private Rect calculateBounds(View anchor, String text) {
+        Rect anchorBounds = new Rect();
+        anchor.getDrawingRect(anchorBounds);
+
+        Rect textBounds = new Rect();
+        mPaint.getTextBounds(text, 0, text.length(), textBounds);
+
+        int radius = mContext.getResources().getDimensionPixelSize(R.dimen.feed_badge_radius);
+        // HalfHeight is radius if no text, or text height / 2.
+        int halfHeight = Math.max(radius, (textBounds.bottom - textBounds.top) / 2 + radius);
+        // HalfWidth is the radius if no text, or the text width/2.
+        int halfWidth = Math.max(radius, (textBounds.right - textBounds.left) / 2 + radius);
+
+        // CenterY is the top of the bounding box + a custom vertical offset.
+        int centerY = anchorBounds.top
+                + mContext.getResources().getDimensionPixelSize(R.dimen.feed_badge_voffset)
+                + halfHeight;
+        // CenterX is the right side of the bounding box + radius + offset.
+        int centerX = anchorBounds.right + halfWidth
+                - mContext.getResources().getDimensionPixelSize(R.dimen.feed_badge_hoffset);
+
+        // The new bounds for the dot + any text to be rendered therein.
+        return new Rect(centerX - halfWidth, centerY - halfHeight, centerX + halfWidth,
+                centerY + halfHeight);
+    }
+
+    /**
+     * Sets up and starts an animation which would turn us from a badge containing text
+     * back into a dot not containing any text.
+     *
+     * The animation will have a 500ms delay before beginning.
+     */
+    private void setUpAndRunAnimation() {
+        mAnimator = ValueAnimator.ofInt(0, 100);
+        Rect bounds = getBounds();
+        Rect toBounds = calculateBounds(mAnchor, "");
+        mAnimator.addUpdateListener((ValueAnimator animation) -> {
+            float fraction = animation.getAnimatedFraction();
+            Rect newBounds =
+                    new Rect((int) (bounds.left - (bounds.left - toBounds.left) * fraction),
+                            (int) (bounds.top - (bounds.top - toBounds.top) * fraction),
+                            (int) (bounds.right - (bounds.right - toBounds.right) * fraction),
+                            (int) (bounds.bottom - (bounds.bottom - toBounds.bottom) * fraction));
+            mPaint.setAlpha((int) (255 - 255 * fraction));
+            mPaint.setTextSize(mTextSize - mTextSize * fraction);
+            setBounds(newBounds);
+            invalidateSelf();
+        });
+        mAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                mText = "";
+                invalidateSelf();
+            }
+        });
+        mAnimator.setStartDelay(ANIMATION_START_DELAY_MS);
+        mAnimator.setDuration(ANIMATION_DURATION_MS);
+        mAnimator.start();
+    }
+
+    @VisibleForTesting
+    boolean getHasPendingAnimationForTest() {
+        return mHasPendingAnimation;
     }
 }

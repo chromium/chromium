@@ -110,6 +110,8 @@ public class SectionHeaderView extends LinearLayout {
         // Null when unread indicator isn't shown.
         @Nullable
         public UnreadIndicator unreadIndicator;
+        // The text to show on the unreadIndicator, if any.
+        public String unreadIndicatorText;
         // The tab's displayed text.
         public String text = "";
     }
@@ -218,12 +220,12 @@ public class SectionHeaderView extends LinearLayout {
      * Set the properties for the header tab at a particular index to text.
      *
      * Does nothing if index is invalid. Make sure to call addTab() beforehand.
-     *
      * @param text Text to set the tab to.
      * @param hasUnreadContent Whether there is unread content.
+     * @param unreadContentText
      * @param index Index of the tab to set.
      */
-    void setHeaderAt(String text, boolean hasUnreadContent, int index) {
+    void setHeaderAt(String text, boolean hasUnreadContent, String unreadContentText, int index) {
         TabLayout.Tab tab = getTabAt(index);
         if (tab == null) {
             return;
@@ -232,6 +234,7 @@ public class SectionHeaderView extends LinearLayout {
 
         state.text = text;
         state.hasUnreadContent = hasUnreadContent;
+        state.unreadIndicatorText = unreadContentText;
         applyTabState(tab);
     }
 
@@ -505,6 +508,7 @@ public class SectionHeaderView extends LinearLayout {
                             new UnreadIndicator(tab.view.findViewById(android.R.id.text1));
                 }
             }
+            state.unreadIndicator.mNewBadge.setText(state.unreadIndicatorText);
         } else {
             if (state.unreadIndicator != null) {
                 state.unreadIndicator.destroy();

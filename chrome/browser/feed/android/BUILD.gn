@@ -293,6 +293,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementMediatorTest.java",
     "java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementMediatorTest.java",
+    "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderBadgeDrawableTest.java",
     "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderViewTest.java",
     "java/src/org/chromium/chrome/browser/feed/sort_ui/FeedOptionsCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/TestWebFeedFaviconFetcher.java",

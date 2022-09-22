@@ -22,11 +22,13 @@ public class SectionHeaderProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableBooleanPropertyKey OPTIONS_INDICATOR_IS_OPEN_KEY =
             new WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableObjectPropertyKey<String> BADGE_TEXT_KEY =
+            new PropertyModel.WritableObjectPropertyKey<>();
 
     public static PropertyModel createSectionHeader(String headerText) {
         return new PropertyModel
                 .Builder(HEADER_TEXT_KEY, UNREAD_CONTENT_KEY, OPTIONS_INDICATOR_VISIBILITY_KEY,
-                        OPTIONS_INDICATOR_IS_OPEN_KEY)
+                        OPTIONS_INDICATOR_IS_OPEN_KEY, BADGE_TEXT_KEY)
                 .with(HEADER_TEXT_KEY, headerText)
                 .with(UNREAD_CONTENT_KEY, false)
                 .build();

@@ -371,7 +371,7 @@ public class FeedSurfaceCoordinator
     }
 
     public void maybeShowWebFeedAwarenessIph() {
-        if (mWebFeedHasContent && mSectionHeaderView.shouldUseWebFeedAwarenessIPH()) {
+        if (mWebFeedHasContent && FeedFeatures.shouldUseWebFeedAwarenessIPH()) {
             UserEducationHelper helper = new UserEducationHelper(mActivity, mHandler);
             mSectionHeaderView.showWebFeedAwarenessIph(
                     helper, StreamTabId.FOLLOWING, new Scroller());
