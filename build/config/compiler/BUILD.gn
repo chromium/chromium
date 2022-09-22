@@ -1179,6 +1179,15 @@ config("compiler_cpu_abi") {
         ldflags += [ "--target=riscv64-linux-gnu" ]
       }
       cflags += [ "-mabi=lp64d" ]
+    } else if (current_cpu == "loong64") {
+      if (is_clang) {
+        cflags += [ "--target=loongarch64-linux-gnu" ]
+        ldflags += [ "--target=loongarch64-linux-gnu" ]
+      }
+      cflags += [
+        "-mabi=lp64d",
+        "-mcmodel=medium",
+      ]
     } else if (current_cpu == "s390x") {
       cflags += [ "-m64" ]
       ldflags += [ "-m64" ]
@@ -1632,7 +1641,7 @@ config("chromium_code") {
     if (!is_debug && !using_sanitizer && current_cpu != "s390x" &&
         current_cpu != "s390" && current_cpu != "ppc64" &&
         current_cpu != "mips" && current_cpu != "mips64" &&
-        current_cpu != "riscv64") {
+        current_cpu != "riscv64" && current_cpu != "loong64") {
       # Non-chromium code is not guaranteed to compile cleanly with
       # _FORTIFY_SOURCE. Also, fortified build may fail when optimizations are
       # disabled, so only do that for Release build.
@@ -2398,10 +2407,11 @@ config("symbols") {
   }
 
   configs = []
+
   # Compress debug on 32-bit ARM to stay under 4GB for ChromeOS
   # https://b/243982712.
   if (symbol_level == 2 && is_chromeos_device && !use_debug_fission &&
-        !is_nacl && current_cpu == "arm") {
+      !is_nacl && current_cpu == "arm") {
     configs += [ "//build/config:compress_debug_sections" ]
   }
 

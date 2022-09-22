@@ -416,7 +416,7 @@ clang_toolchain("clang_loong64") {
 }
 
 gcc_toolchain("loong64") {
-  toolprefix = "loongarch64-linux-gnu"
+  toolprefix = "loongarch64-unknown-linux-gnu"
 
   cc = "${toolprefix}-gcc"
   cxx = "${toolprefix}-g++"
