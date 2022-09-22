@@ -48,6 +48,7 @@ public class AddToHomescreenIPHController {
 
     /**
      * Creates an {@link AddToHomescreenIPHController}.
+     *
      * @param activity The associated activity.
      * @param windowAndroid The associated {@link WindowAndroid}.
      * @param modalDialogManager The {@link ModalDialogManager} for showing the dialog.
@@ -64,9 +65,14 @@ public class AddToHomescreenIPHController {
 
     /**
      * Called to show in-product-help message.
+     *
      * @param tab The current tab.
      */
     public void showAddToHomescreenIPH(Tab tab) {
+        if (!mTracker.shouldTriggerHelpUI(FeatureConstants.ADD_TO_HOMESCREEN_MESSAGE_FEATURE)) {
+            return;
+        }
+
         if (mActivity == null) return;
         if (!canShowAddToHomescreenMenuItem(mActivity, tab)) return;
         showMessageIPH(tab);
