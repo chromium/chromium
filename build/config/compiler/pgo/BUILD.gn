@@ -42,21 +42,32 @@ config("pgo_optimization_flags") {
     if (is_win) {
       if (target_cpu == "x64") {
         _pgo_target = "win64"
-        inputs = [ "//chrome/build/win64.pgo.txt" ]
       } else {
         _pgo_target = "win32"
-        inputs = [ "//chrome/build/win32.pgo.txt" ]
       }
     } else if (is_mac) {
       if (target_cpu == "arm64") {
         _pgo_target = "mac-arm"
-        inputs = [ "//chrome/build/mac-arm.pgo.txt" ]
       } else {
         _pgo_target = "mac"
-        inputs = [ "//chrome/build/mac.pgo.txt" ]
       }
     } else if (is_linux || is_chromeos_lacros) {
       _pgo_target = "linux"
+    } else if (is_android) {
+      # Temporarily use mac-arm profile until Android native PGO support works.
+      # TODO(crbug.com/1308749): fix this.
+      _pgo_target = "mac-arm"
+    }
+
+    if (_pgo_target == "win64") {
+      inputs = [ "//chrome/build/win64.pgo.txt" ]
+    } else if (_pgo_target == "win32") {
+      inputs = [ "//chrome/build/win32.pgo.txt" ]
+    } else if (_pgo_target == "mac-arm") {
+      inputs = [ "//chrome/build/mac-arm.pgo.txt" ]
+    } else if (_pgo_target == "mac") {
+      inputs = [ "//chrome/build/mac-arm.pgo.txt" ]
+    } else if (_pgo_target == "linux") {
       inputs = [ "//chrome/build/linux.pgo.txt" ]
     }
 
