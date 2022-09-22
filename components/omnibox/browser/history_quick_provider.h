@@ -13,6 +13,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct ScoredHistoryMatch;
 
@@ -49,9 +50,11 @@ class HistoryQuickProvider : public HistoryProvider {
   // Performs the autocomplete matching and scoring.
   void DoAutocomplete();
 
-  // Calculates the initial max match score for applying to matches, lowering
-  // it if we believe that there will be a URL-what-you-typed match.
-  int FindMaxMatchScore(const ScoredHistoryMatches& matches);
+  // Predicts if there may be a URL-what-you-typed match. If so, returns a
+  // prediction of its score, which HQP suggestions shouldn't exceed. Returns
+  // `nullopt` otherwise. The goal is for URL-what-you-typed matches for visited
+  // URLs to beat out any longer URLs, no matter how frequently they're visited.
+  absl::optional<int> MaxMatchScore();
 
   // Creates an AutocompleteMatch from |history_match|, assigning it
   // the score |score|.

@@ -97,11 +97,10 @@ void HistoryQuickProvider::DoAutocomplete() {
   if (matches.empty())
     return;
 
-  // Loop over every result and add it to matches_.  In the process,
-  // guarantee that scores are decreasing.  |max_match_score| keeps
-  // track of the highest score we can assign to any later results we
-  // see.
-  int max_match_score = FindMaxMatchScore(matches);
+  // Loop over every result and add it to matches_. In the process, guarantee
+  // that scores are decreasing. `max_match_score` keeps track of the highest
+  // score we can assign to any later results we see.
+  int max_match_score = MaxMatchScore().value_or(matches[0].raw_score);
   for (const auto& history_match : matches) {
     // Set max_match_score to the score we'll assign this result.
     max_match_score = std::min(max_match_score, history_match.raw_score);
@@ -111,8 +110,7 @@ void HistoryQuickProvider::DoAutocomplete() {
   }
 }
 
-int HistoryQuickProvider::FindMaxMatchScore(
-    const ScoredHistoryMatches& matches) {
+absl::optional<int> HistoryQuickProvider::MaxMatchScore() {
   // Figure out if HistoryURL provider has a URL-what-you-typed match
   // that ought to go first and what its score will be.
   bool will_have_url_what_you_typed_match_first = false;
@@ -140,10 +138,9 @@ int HistoryQuickProvider::FindMaxMatchScore(
     // normal.
     if (history_service) {
       history::URLDatabase* url_db = history_service->InMemoryDatabase();
-      // url_db can be NULL if it hasn't finished initializing (or
-      // failed to to initialize).  In this case, we let HistoryQuick
-      // provider completions compete with the URL-what-you-typed
-      // match as normal.
+      // `url_db` can be null if it hasn't finished initializing (or failed to
+      // initialize). In this case, let `HistoryQuickProvider` completions
+      // compete with the URL-what-you-typed match as normal.
       if (url_db) {
         const std::string host(
             base::UTF16ToUTF8(autocomplete_input_.text().substr(
@@ -199,17 +196,9 @@ int HistoryQuickProvider::FindMaxMatchScore(
       }
     }
   }
-  // Return a |max_match_score| that is the raw score for the first match, but
-  // reduce it if we think there will be a URL-what-you-typed match.  (We want
-  // URL-what-you-typed matches for visited URLs to beat out any longer URLs, no
-  // matter how frequently they're visited.)  The strength of this reduction
-  // depends on the likely score for the URL-what-you-typed result.
-  int max_match_score = matches.begin()->raw_score;
-  if (will_have_url_what_you_typed_match_first) {
-    max_match_score =
-        std::min(max_match_score, url_what_you_typed_match_score - 1);
-  }
-  return max_match_score;
+  return will_have_url_what_you_typed_match_first
+             ? absl::optional<int>{url_what_you_typed_match_score - 1}
+             : absl::nullopt;
 }
 
 AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
