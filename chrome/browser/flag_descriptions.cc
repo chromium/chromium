@@ -3504,6 +3504,14 @@ const char kCriticalPersistedTabDataDescription[] =
     "A new method of persisting Tab data across restarts has been devised "
     "and implemented. This actives the new approach.";
 
+const char kContextMenuPopupForAllScreenSizesName[] =
+    "Context menu popup for all screen sizes";
+const char kContextMenuPopupForAllScreenSizesDescription[] =
+    "When disabled, context menu will be shown as pop-up window only for "
+    "devices in tablet mode, while shown as a fullscreen dialog for mobile "
+    "devices; when enabled, context menu will be shown as a pop-up window "
+    "for all form factors regardless of the screen sizes.";
+
 const char kContextualSearchDebugName[] = "Contextual Search debug";
 const char kContextualSearchDebugDescription[] =
     "Enables internal debugging of Contextual Search behavior on the client "

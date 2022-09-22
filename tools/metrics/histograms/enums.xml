@@ -57866,6 +57866,7 @@ from previous Chrome versions.
   <int value="-1259901957" label="VrBrowserKeyboard:disabled"/>
   <int value="-1259627326" label="AllowRepeatedUpdates:disabled"/>
   <int value="-1258141852" label="ScrollUnification:enabled"/>
+  <int value="-1257822114" label="ContextMenuPopupForAllScreenSizes:disabled"/>
   <int value="-1256823053" label="WebRtcHWVP9Encoding:enabled"/>
   <int value="-1256747007"
       label="OminboxUIExperimentUseGenericSearchEngineIcon:disabled"/>
@@ -63240,6 +63241,7 @@ from previous Chrome versions.
   <int value="2059322877" label="new-avatar-menu"/>
   <int value="2062752242" label="ApnRevamp:enabled"/>
   <int value="2063091429" label="OfflinePagesSharing:enabled"/>
+  <int value="2063238104" label="ContextMenuPopupForAllScreenSizes:enabled"/>
   <int value="2063420769" label="SharedHighlightingV2:disabled"/>
   <int value="2065833330" label="CanvasContextLostInBackground:enabled"/>
   <int value="2066015302" label="QueryTiles:disabled"/>

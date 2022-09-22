@@ -9562,6 +9562,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"tab-selection-editor-v2", flag_descriptions::kTabSelectionEditorV2Name,
      flag_descriptions::kTabSelectionEditorV2Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabSelectionEditorV2)},
+
+    {"context-menu-popup-for-all-screen-sizes",
+     flag_descriptions::kContextMenuPopupForAllScreenSizesName,
+     flag_descriptions::kContextMenuPopupForAllScreenSizesDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kContextMenuPopupForAllScreenSizes)},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

@@ -1079,6 +1079,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "context-menu-popup-for-all-screen-sizes",
+    "owners": ["wenyufu", "clank-large-form-factors@google.com"],
+    "expiry_milestone": 112
+  },
+  {
     "name": "context-menu-search-with-google-lens",
     "owners": [ "benwgold@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 107
