@@ -39,8 +39,8 @@ class ProfilePickerDiceSignInProvider
   // casing is not needed here.
   using SignedInCallback =
       base::OnceCallback<void(Profile* profile,
-                              std::unique_ptr<content::WebContents>,
-                              bool is_saml)>;
+                              bool is_saml,
+                              std::unique_ptr<content::WebContents>)>;
 
   explicit ProfilePickerDiceSignInProvider(ProfilePickerWebContentsHost* host);
   ~ProfilePickerDiceSignInProvider() override;

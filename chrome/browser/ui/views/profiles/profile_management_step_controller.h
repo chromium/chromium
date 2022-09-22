@@ -9,10 +9,12 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
 
-class Profile;
-class ProfilePickerDiceSignInProvider;
-class ProfilePickerWebContentsHost;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
+#endif
+
 class ProfilePickerSignedInFlowController;
+class ProfilePickerWebContentsHost;
 
 namespace content {
 class WebContents;
@@ -32,9 +34,7 @@ class ProfileManagementStepController {
   static std::unique_ptr<ProfileManagementStepController> CreateForDiceSignIn(
       ProfilePickerWebContentsHost* host,
       std::unique_ptr<ProfilePickerDiceSignInProvider> dice_sign_in_provider,
-      base::OnceCallback<void(Profile* profile,
-                              std::unique_ptr<content::WebContents>,
-                              bool is_saml)> signed_in_callback);
+      ProfilePickerDiceSignInProvider::SignedInCallback signed_in_callback);
 #endif
 
   static std::unique_ptr<ProfileManagementStepController>

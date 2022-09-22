@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 
 #include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -29,9 +28,9 @@ class ProfilePickerDiceSignInToolbar;
 #endif
 
 class Profile;
-class ProfileManagementStepController;
-class ProfilePickerSignedInFlowController;
 class ScopedProfileKeepAlive;
+class ProfileManagementFlowController;
+class ProfilePickerFlowController;
 
 namespace base {
 class FilePath;
@@ -48,26 +47,6 @@ class WebContents;
 class ProfilePickerView : public views::WidgetDelegateView,
                           public ProfilePickerWebContentsHost {
  public:
-  // TODO(https://crbug.com/1358843): Split the steps more granularly across
-  // logical steps instead of according to implementation details.
-  enum class Step {
-    kUnknown,
-    // Renders the `chrome://profile-picker` app, covering the profile picker,
-    // the profile type choice at the beginning of the profile creation
-    // flow and the account selection on Lacros.
-    kProfilePicker,
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    // Renders the sign in screen on Dice platforms.
-    // TODO(https://crbug.com/1360773): Support the `kAccountSelection` step on
-    // Lacros. Picking an account during the `kLacrosSelectAvailableAccount`
-    // flow and the profile creation should be implemented as a standalone step.
-    kAccountSelection,
-#endif
-    // Renders all post-sign in screens: enterprise management consent, profile
-    // switch, sync opt-in, etc.
-    kPostSignInFlow
-  };
-
   METADATA_HEADER(ProfilePickerView);
 
   ProfilePickerView(const ProfilePickerView&) = delete;
@@ -176,13 +155,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
       Profile* new_profile);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SwitchToSignedInFlow(Profile* signed_in_profile,
-                            std::unique_ptr<content::WebContents> contents,
-                            bool is_saml);
-
-  // Cancel the signed-in profile setup and returns back to the main picker
-  // screen (if themoriginal EntryPoint was to open the picker).
-  void CancelSignedInFlow();
+                            std::unique_ptr<content::WebContents> contents);
+#endif
 
   // views::WidgetDelegate:
   void WindowClosing() override;
@@ -226,19 +202,14 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // profile selection instead of the new tab page.
   GURL GetOnSelectProfileTargetUrl() const;
 
+  ProfilePickerFlowController* GetProfilePickerFlowController() const;
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Called when the user selects an account on the Lacros-specific account
   // selection screen. Only called for existing profiles, not as part of profile
   // creation.
   void NotifyAccountSelected(const std::string& gaia_id);
 #endif
-
-  void SwitchToStep(
-      Step step,
-      bool reset_state = false,
-      base::OnceClosure pop_step_callback = base::OnceClosure(),
-      base::OnceCallback<void(bool)> step_switch_finished_callback =
-          base::OnceCallback<void(bool)>());
 
   ScopedKeepAlive keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
@@ -278,19 +249,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   raw_ptr<ProfilePickerDiceSignInToolbar> toolbar_ = nullptr;
 #endif
 
-  Step current_step_ = Step::kUnknown;
-
-  absl::optional<SkColor> profile_color_;
-
-  base::flat_map<Step, std::unique_ptr<ProfileManagementStepController>>
-      initialized_steps_;
-
-  // TODO(crbug.com/1359352): To be refactored out.
-  // This is used for `ProfilePicker::GetSwitchProfilePath()`. The information
-  // should ideally be provided to the handler of the profile switch page once
-  // its controller is created instead of relying on static calls.
-  base::WeakPtr<ProfilePickerSignedInFlowController>
-      weak_signed_in_flow_controller_;
+  std::unique_ptr<ProfileManagementFlowController> flow_controller_;
 
   // Creation time of the picker, to measure performance on startup. Only set
   // when the picker is shown on startup.

@@ -164,12 +164,6 @@ class ProfilePicker {
                               base::OnceClosure maybe_callback);
 #endif
 
-    // Returns the URL to load as initial content for the profile picker. If an
-    // empty URL is returned, the profile picker should not be shown until
-    // another explicit call with a non-empty URL given to the view
-    // (see `ProfilePickerView::ShowScreen()` for example)
-    GURL GetInitialURL() const;
-
     // Returns whether the current profile picker window can be reused for
     // different parameters. If this returns false, the picker cannot be reused
     // and must be closed and repoen.
@@ -219,10 +213,12 @@ class ProfilePicker {
       base::OnceCallback<void(bool)> switch_finished_callback);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Starts the flow to set-up a signed-in profile. `signed_in_profile` must
   // have an unconsented primary account.
   static void SwitchToSignedInFlow(absl::optional<SkColor> profile_color,
                                    Profile* signed_in_profile);
+#endif
 
   // Cancel the signed-in flow and returns back to the main picker screen (if
   // the original EntryPoint was to open the picker). Must only be called from

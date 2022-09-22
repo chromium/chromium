@@ -98,9 +98,9 @@ class DiceSignInStepController : public ProfileManagementStepController {
 
  private:
   void OnStepFinished(Profile* profile,
-                      std::unique_ptr<content::WebContents> contents,
-                      bool is_saml) {
-    std::move(signed_in_callback_).Run(profile, std::move(contents), is_saml);
+                      bool is_saml,
+                      std::unique_ptr<content::WebContents> contents) {
+    std::move(signed_in_callback_).Run(profile, is_saml, std::move(contents));
     // The step controller can be destroyed when `signed_in_callback_` runs.
     // Don't interact with members below.
   }
@@ -156,9 +156,7 @@ std::unique_ptr<ProfileManagementStepController>
 ProfileManagementStepController::CreateForDiceSignIn(
     ProfilePickerWebContentsHost* host,
     std::unique_ptr<ProfilePickerDiceSignInProvider> dice_sign_in_provider,
-    base::OnceCallback<void(Profile* profile,
-                            std::unique_ptr<content::WebContents>,
-                            bool is_saml)> signed_in_callback) {
+    ProfilePickerDiceSignInProvider::SignedInCallback signed_in_callback) {
   return std::make_unique<DiceSignInStepController>(
       host, std::move(dice_sign_in_provider), std::move(signed_in_callback));
 }

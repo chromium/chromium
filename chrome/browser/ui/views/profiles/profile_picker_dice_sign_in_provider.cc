@@ -278,5 +278,5 @@ void ProfilePickerDiceSignInProvider::FinishFlow(bool is_saml) {
   host_->SetNativeToolbarVisible(false);
   contents()->SetDelegate(nullptr);
   identity_manager_observation_.Reset();
-  std::move(callback_).Run(profile_.get(), std::move(contents_), is_saml);
+  std::move(callback_).Run(profile_.get(), is_saml, std::move(contents_));
 }
