@@ -68,14 +68,22 @@ export class SettingsSafetyCheckPageElement extends
       /** UI string to display for the parent status. */
       parentDisplayString_: String,
 
-      /**
-       * Boolean that decides if the entry point for unused site permissions
-       * should be shown.
-       */
-      safetyCheckPermissionsEnabled_: {
+      /** Boolean to show/hide entry point for notification permissions. */
+      safetyCheckNotificationPermissionsEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('safetyCheckPermissionsEnabled');
+          return loadTimeData.getBoolean(
+              'safetyCheckNotificationPermissionsEnabled');
+        },
+      },
+
+
+      /** Boolean to show/hide entry point for unused site permissions. */
+      safetyCheckUnusedSitePermissionsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'safetyCheckUnusedSitePermissionsEnabled');
         },
       },
     };
@@ -83,7 +91,8 @@ export class SettingsSafetyCheckPageElement extends
 
   private parentStatus_: SafetyCheckParentStatus;
   private parentDisplayString_: string;
-  private safetyCheckPermissionsEnabled_: boolean;
+  private safetyCheckNotificationPermissionsEnabled_: boolean;
+  private safetyCheckUnusedSitePermissionsEnabled_: boolean;
   private safetyCheckBrowserProxy_: SafetyCheckBrowserProxy =
       SafetyCheckBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =

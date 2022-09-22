@@ -9208,9 +9208,17 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"safety-check-permissions", flag_descriptions::kSafetyCheckPermissionsName,
-     flag_descriptions::kSafetyCheckPermissionsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSafetyCheckPermissions)},
+    {"safety-check-notification-permissions",
+     flag_descriptions::kSafetyCheckNotificationPermissionsName,
+     flag_descriptions::kSafetyCheckNotificationPermissionsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSafetyCheckNotificationPermissions)},
+
+    {"safety-check-unused-site-permissions",
+     flag_descriptions::kSafetyCheckUnusedSitePermissionsName,
+     flag_descriptions::kSafetyCheckUnusedSitePermissionsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSafetyCheckUnusedSitePermissions)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -930,9 +930,14 @@ BASE_FEATURE(kRequestDesktopSiteForTablets,
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-// Enables permission modules on Safety Check.
-BASE_FEATURE(kSafetyCheckPermissions,
-             "SafetyCheckPermissions",
+// Enables notification permission module in Safety Check.
+BASE_FEATURE(kSafetyCheckNotificationPermissions,
+             "SafetyCheckNotificationPermissions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables unused site permission module in Safety Check.
+BASE_FEATURE(kSafetyCheckUnusedSitePermissions,
+             "SafetyCheckUnusedSitePermissions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

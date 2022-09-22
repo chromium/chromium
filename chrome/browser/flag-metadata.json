@@ -5799,9 +5799,14 @@
     "expiry_milestone": 115
   },
   {
-    "name": "safety-check-permissions",
+    "name": "safety-check-notification-permissions",
     "owners": ["sideyilmaz"],
-    "expiry_milestone": 111
+    "expiry_milestone": 115
+  },
+  {
+    "name": "safety-check-unused-site-permissions",
+    "owners": ["sideyilmaz"],
+    "expiry_milestone": 115
   },
   {
     "name": "sameparty-cookies-considered-first-party",

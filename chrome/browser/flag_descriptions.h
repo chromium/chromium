@@ -1403,8 +1403,11 @@ extern const char kRoundedDisplayDescription[];
 extern const char kMBIModeName[];
 extern const char kMBIModeDescription[];
 
-extern const char kSafetyCheckPermissionsName[];
-extern const char kSafetyCheckPermissionsDescription[];
+extern const char kSafetyCheckNotificationPermissionsName[];
+extern const char kSafetyCheckNotificationPermissionsDescription[];
+
+extern const char kSafetyCheckUnusedSitePermissionsName[];
+extern const char kSafetyCheckUnusedSitePermissionsDescription[];
 
 extern const char kSamePartyCookiesConsideredFirstPartyName[];
 extern const char kSamePartyCookiesConsideredFirstPartyDescription[];

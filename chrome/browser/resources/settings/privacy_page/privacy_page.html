@@ -515,7 +515,8 @@
             <div class="secondary">
               $i18n{siteSettingsNotificationsDescription}
             </div>
-            <template is="dom-if" if="[[safetyCheckPermissionsEnabled_]]">
+            <template is="dom-if"
+                if="[[safetyCheckNotificationPermissionsEnabled_]]">
               <review-notification-permissions>
               </review-notification-permissions>
             </template>

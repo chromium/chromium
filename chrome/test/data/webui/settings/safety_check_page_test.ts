@@ -4,10 +4,12 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {HatsBrowserProxyImpl, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckExtensionsStatus, SafetyCheckIconStatus, SafetyCheckInteractions, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus, SettingsSafetyCheckChildElement, SettingsSafetyCheckExtensionsChildElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckPasswordsChildElement, SettingsSafetyCheckSafeBrowsingChildElement ,SettingsSafetyCheckUpdatesChildElement, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
@@ -948,5 +950,55 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
       managedIcon: true,
       rowClickable: true,
     });
+  });
+});
+
+suite('SafetyCheckPagePermissionModulesTest', function() {
+  let page: SettingsSafetyCheckPageElement;
+  const notificationElementName =
+      'settings-safety-check-notification-permissions';
+  const unusedSiteElementName = 'settings-safety-check-unused-site-permissions';
+
+  function createPage() {
+    document.body.innerHTML = '';
+    page = document.createElement('settings-safety-check-page');
+    document.body.appendChild(page);
+    flush();
+  }
+
+  teardown(function() {
+    page.remove();
+  });
+
+  test('notificationPermissionModuleVisible', () => {
+    loadTimeData.overrideValues(
+        {safetyCheckNotificationPermissionsEnabled: true});
+    createPage();
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector(notificationElementName)));
+  });
+
+  test('notificationPermissionModuleNotVisible', () => {
+    loadTimeData.overrideValues(
+        {safetyCheckNotificationPermissionsEnabled: false});
+    createPage();
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector(notificationElementName)));
+  });
+
+  test('unusedSitePermissionsModuleVisible', () => {
+    loadTimeData.overrideValues(
+        {safetyCheckUnusedSitePermissionsEnabled: true});
+    createPage();
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector(unusedSiteElementName)));
+  });
+
+  test('unusedSitePermissionsModuleNotVisible', () => {
+    loadTimeData.overrideValues(
+        {safetyCheckUnusedSitePermissionsEnabled: false});
+    createPage();
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector(unusedSiteElementName)));
   });
 });

@@ -433,9 +433,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
         "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);
   }
 
-  html_source->AddBoolean(
-      "safetyCheckPermissionsEnabled",
-      base::FeatureList::IsEnabled(features::kSafetyCheckPermissions));
+  html_source->AddBoolean("safetyCheckNotificationPermissionsEnabled",
+                          base::FeatureList::IsEnabled(
+                              features::kSafetyCheckNotificationPermissions));
+  html_source->AddBoolean("safetyCheckUnusedSitePermissionsEnabled",
+                          base::FeatureList::IsEnabled(
+                              features::kSafetyCheckUnusedSitePermissions));
 
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());

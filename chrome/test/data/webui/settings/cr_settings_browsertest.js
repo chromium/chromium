@@ -353,7 +353,8 @@ var CrSettingsSafetyCheckPermissionsTest = class extends CrSettingsBrowserTest {
   get featureListInternal() {
     return {
       enabled: [
-        'features::kSafetyCheckPermissions',
+        'features::kSafetyCheckUnusedSitePermissions',
+        'features::kSafetyCheckNotificationPermissions',
       ],
     };
   }
@@ -834,7 +835,7 @@ var CrSettingsReviewNotificationPermissionsTest =
   get featureList() {
     return {
       enabled: [
-        'features::kSafetyCheckPermissions',
+        'features::kSafetyCheckNotificationPermissions',
       ],
     };
   }

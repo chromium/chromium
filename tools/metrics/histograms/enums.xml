@@ -56593,6 +56593,7 @@ from previous Chrome versions.
   <int value="-1992999120" label="composite-after-paint"/>
   <int value="-1992488524" label="AutofillAcrossIframes:disabled"/>
   <int value="-1991935790" label="ShareCrowLaunchTab:enabled"/>
+  <int value="-1990678808" label="SafetyCheckUnusedSitePermissions:disabled"/>
   <int value="-1990614981" label="StoragePressureUI:disabled"/>
   <int value="-1990238241" label="ChromeOSHWVBREncoding:enabled"/>
   <int value="-1989747818" label="TabStripKeyboardFocus:disabled"/>
@@ -58123,6 +58124,7 @@ from previous Chrome versions.
   <int value="-1089665395" label="HTMLParamElementUrlSupport:enabled"/>
   <int value="-1088804127" label="DuetTabStripIntegrationAndroid:disabled"/>
   <int value="-1087409065" label="RoundedDisplay:enabled"/>
+  <int value="-1087109069" label="SafetyCheckNotificationPermissions:enabled"/>
   <int value="-1086987072" label="NearbySharingSelfShareAutoAccept:enabled"/>
   <int value="-1086728979" label="kids-management-url-classification:enabled"/>
   <int value="-1086656172"
@@ -59498,6 +59500,7 @@ from previous Chrome versions.
       label="AutofillHighlightOnlyChangedValuesInPreviewMode:enabled"/>
   <int value="-245342115" label="PermissionChip:enabled"/>
   <int value="-242836432" label="EnableFakeKeyboardHeuristic:disabled"/>
+  <int value="-242441279" label="SafetyCheckUnusedSitePermissions:enabled"/>
   <int value="-242431978" label="StartSurfaceRefactor:enabled"/>
   <int value="-241353344" label="MidiManagerWinrt:disabled"/>
   <int value="-240531943" label="ContextualSearchRankerQuery:disabled"/>
@@ -61998,6 +62001,7 @@ from previous Chrome versions.
   <int value="1289433604" label="RecoverFromNeverSaveAndroid:enabled"/>
   <int value="1289495171" label="AssistantBetterOnboarding:disabled"/>
   <int value="1289670142" label="ArcAccountRestrictions:disabled"/>
+  <int value="1290343279" label="SafetyCheckNotificationPermissions:disabled"/>
   <int value="1290904214" label="DiagnosticsAppNavigation:enabled"/>
   <int value="1291257442" label="TabsInCBD:disabled"/>
   <int value="1291761696" label="CCTModuleDexLoading:disabled"/>
