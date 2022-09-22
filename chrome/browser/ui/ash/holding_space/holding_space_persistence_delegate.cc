@@ -167,8 +167,8 @@ void HoldingSpacePersistenceDelegate::MaybeRemoveSuggestionsFromPersistence() {
   if (features::IsHoldingSpaceSuggestionsEnabled())
     return;
 
-  ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
-  update->GetList().EraseIf([](const base::Value& persisted_item) {
+  ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
+  update->EraseIf([](const base::Value& persisted_item) {
     return HoldingSpaceItem::IsSuggestion(HoldingSpaceItem::DeserializeType(
         base::Value::AsDictionaryValue(persisted_item)));
   });
