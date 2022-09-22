@@ -2815,14 +2815,20 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220912",
+                    "name": "Enabled_20220922",
+                    "params": {
+                        "default-parser-budget": "10ms",
+                        "long-parser-budget": "50ms",
+                        "num-yields-with-default-budget": "2"
+                    },
                     "enable_features": [
                         "BatchImageDecoding",
                         "DecodeScriptSourceOffThread",
                         "EstablishGpuChannelAsync",
                         "OptimizeDataUrls",
                         "PrefetchFontLookupTables",
-                        "SplitCompositorTask"
+                        "SplitCompositorTask",
+                        "TimedHTMLParserBudget"
                     ]
                 }
             ]
@@ -2837,8 +2843,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220912",
+                    "name": "Enabled_20220922",
                     "params": {
+                        "default-parser-budget": "10ms",
+                        "long-parser-budget": "500ms",
+                        "num-yields-with-default-budget": "6",
                         "prewarm_cursive": "false",
                         "prewarm_fantasy": "false",
                         "prewarm_fixed": "false",
@@ -2849,7 +2858,8 @@
                     "enable_features": [
                         "DecodeScriptSourceOffThread",
                         "OptimizeDataUrls",
-                        "PrewarmDefaultFontFamilies"
+                        "PrewarmDefaultFontFamilies",
+                        "TimedHTMLParserBudget"
                     ]
                 }
             ]
@@ -2860,12 +2870,20 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220912",
+                    "name": "Enabled_20220922",
+                    "params": {
+                        "default-parser-budget": "10ms",
+                        "long-parser-budget": "50ms",
+                        "max_input_stream_bytes_available_unknown": "2048",
+                        "num-yields-with-default-budget": "2"
+                    },
                     "enable_features": [
                         "DecodeScriptSourceOffThread",
                         "EstablishGpuChannelAsync",
                         "OptimizeDataUrls",
-                        "PrefetchFontLookupTables"
+                        "OptimizeNetworkBuffers2",
+                        "PrefetchFontLookupTables",
+                        "TimedHTMLParserBudget"
                     ]
                 }
             ]
@@ -7303,24 +7321,6 @@
             ]
         }
     ],
-    "OptimizeNetworkBuffers2": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "4KB_input_stream_20220829",
-                    "params": {
-                        "max_input_stream_bytes_available_unknown": "4096"
-                    },
-                    "enable_features": [
-                        "OptimizeNetworkBuffers2"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptionalToolbarButton": [
         {
             "platforms": [
@@ -10122,33 +10122,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ThrottleIntersectionObserverUMA"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TimedHTMLParserBudget": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "20x500x3",
-                    "params": {
-                        "default-parser-budget": "20ms",
-                        "long-parser-budget": "500ms",
-                        "num-yields-with-default-budget": "3"
-                    },
-                    "enable_features": [
-                        "TimedHTMLParserBudget"
                     ]
                 }
             ]
