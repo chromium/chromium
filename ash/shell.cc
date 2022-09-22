@@ -37,7 +37,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/controls/contextual_tooltip.h"
-#include "ash/curtain/security_curtain_controller_impl.h"
 #include "ash/dbus/ash_dbus_services.h"
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/detachable_base/detachable_base_notification_controller.h"
@@ -1346,9 +1345,6 @@ void Shell::Init(
 
   color_enhancement_controller_ =
       std::make_unique<ColorEnhancementController>();
-
-  security_curtain_controller_ =
-      std::make_unique<curtain::SecurityCurtainControllerImpl>(this);
 
   docked_magnifier_controller_ = std::make_unique<DockedMagnifierController>();
 

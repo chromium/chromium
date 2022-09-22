@@ -28,7 +28,7 @@ class Point;
 namespace ui {
 class WindowTreeHost;
 class SimpleMenuModel;
-}  // namespace ui
+}
 
 namespace views {
 class MenuRunner;
@@ -59,10 +59,6 @@ class TouchHudDebug;
 class TouchHudProjection;
 class WallpaperWidgetController;
 class WorkAreaInsets;
-
-namespace curtain {
-class SecurityCurtainWidgetController;
-}
 
 // This class maintains the per root window state for ash. This class
 // owns the root window and other dependent objects that should be
@@ -246,12 +242,6 @@ class ASH_EXPORT RootWindowController {
   // Returns accessibility panel layout manager for this root window.
   AccessibilityPanelLayoutManager* GetAccessibilityPanelLayoutManagerForTest();
 
-  void SetSecurityCurtainWidgetController(
-      std::unique_ptr<curtain::SecurityCurtainWidgetController> controller);
-  void ClearSecurityCurtainWidgetController();
-  curtain::SecurityCurtainWidgetController*
-  security_curtain_widget_controller();
-
  private:
   FRIEND_TEST_ALL_PREFIXES(RootWindowControllerTest,
                            ContextMenuDisappearsInTabletMode);
@@ -327,9 +317,6 @@ class ASH_EXPORT RootWindowController {
       lock_screen_action_background_controller_;
 
   std::unique_ptr<views::Widget> ambient_widget_;
-
-  std::unique_ptr<curtain::SecurityCurtainWidgetController>
-      security_curtain_widget_controller_;
 
   std::unique_ptr<AshColorProviderSource> color_provider_source_;
 

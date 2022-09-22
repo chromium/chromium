@@ -236,10 +236,6 @@ namespace quick_pair {
 class Mediator;
 }  // namespace quick_pair
 
-namespace curtain {
-class SecurityCurtainController;
-}  // namespace curtain
-
 // Shell is a singleton object that presents the Shell API and implements the
 // RootWindow's delegate interface.
 //
@@ -394,9 +390,6 @@ class ASH_EXPORT Shell : public SessionObserver,
     return cros_display_config_.get();
   }
   ::wm::CursorManager* cursor_manager() { return cursor_manager_.get(); }
-  curtain::SecurityCurtainController& security_curtain_controller() {
-    return *security_curtain_controller_;
-  }
   DarkLightModeControllerImpl* dark_light_mode_controller() {
     return dark_light_mode_controller_.get();
   }
@@ -819,8 +812,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<BrightnessControlDelegate> brightness_control_delegate_;
   std::unique_ptr<CalendarController> calendar_controller_;
   std::unique_ptr<CrosDisplayConfig> cros_display_config_;
-  std::unique_ptr<curtain::SecurityCurtainController>
-      security_curtain_controller_;
   std::unique_ptr<DarkLightModeControllerImpl> dark_light_mode_controller_;
   std::unique_ptr<DesksController> desks_controller_;
   std::unique_ptr<DesksTemplatesDelegate> desks_templates_delegate_;
