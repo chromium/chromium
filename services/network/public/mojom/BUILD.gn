@@ -635,6 +635,8 @@ mojom("mojom_schemeful_site") {
       ]
     },
   ]
+
+  webui_module_path = "/"
 }
 
 mojom("mojom_network_param") {

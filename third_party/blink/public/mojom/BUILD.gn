@@ -164,8 +164,6 @@ mojom("mojom_platform") {
     "presentation/presentation.mojom",
     "push_messaging/push_messaging.mojom",
     "push_messaging/push_messaging_status.mojom",
-    "quota/quota_manager_host.mojom",
-    "quota/quota_types.mojom",
     "render_accessibility.mojom",
     "renderer_preference_watcher.mojom",
     "renderer_preferences.mojom",
@@ -200,8 +198,6 @@ mojom("mojom_platform") {
     "speech/speech_recognizer.mojom",
     "speech/speech_synthesis.mojom",
     "storage_access/storage_access_automation.mojom",
-    "storage_key/ancestor_chain_bit.mojom",
-    "storage_key/storage_key.mojom",
     "subapps/sub_apps_service.mojom",
     "timing/performance_mark_or_measure.mojom",
     "timing/resource_timing.mojom",
@@ -267,7 +263,9 @@ mojom("mojom_platform") {
     "//services/viz/public/mojom",
     "//skia/public/mojom",
     "//third_party/blink/public/mojom/gpu",
+    "//third_party/blink/public/mojom/quota",
     "//third_party/blink/public/mojom/service_worker:storage",
+    "//third_party/blink/public/mojom/storage_key",
     "//third_party/blink/public/mojom/tokens",
     "//third_party/blink/public/mojom/usb",
     "//ui/accessibility/mojom",
@@ -737,15 +735,6 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.StorageKey"
-          cpp = "::blink::StorageKey"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/storage_key/storage_key_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
           mojom = "blink.mojom.UseCounterFeature"
           cpp = "::blink::UseCounterFeature"
         },
@@ -827,15 +816,6 @@ mojom("mojom_platform") {
         },
       ]
       traits_headers = [ "//third_party/blink/renderer/platform/mojo/shared_storage_mojom_traits.h" ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.StorageKey"
-          cpp = "::blink::BlinkStorageKey"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/renderer/platform/storage/blink_storage_key_mojom_traits.h" ]
     },
   ]
   cpp_typemaps += shared_cpp_typemaps
@@ -1095,6 +1075,7 @@ mojom("mojom_core") {
     "//services/viz/public/mojom",
     "//skia/public/mojom",
     "//third_party/blink/public/mojom/service_worker:storage",
+    "//third_party/blink/public/mojom/storage_key",
     "//ui/base/dragdrop/mojom",
     "//ui/base/mojom",
     "//ui/display/mojom",
