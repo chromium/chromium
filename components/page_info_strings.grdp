@@ -709,37 +709,37 @@
   </message>
 
   <!-- Cookies subpage -->
-  <message name="IDS_PAGE_INFO_COOKIES_HEADER" desc="The header label of cookies subpage in Page Info bubble." translateable="false">
+  <message name="IDS_PAGE_INFO_COOKIES_HEADER" desc="The header label of cookies subpage in Page Info bubble.">
   Cookies and site data
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_DESCRIPTION" desc="The descritpion of cookies in Cookies Subpage with placeholder for link to settings." translateable="false">
+  <message name="IDS_PAGE_INFO_COOKIES_DESCRIPTION" desc="The descritpion of cookies in Cookies Subpage with placeholder for link to settings.">
     Cookies and other site data are used to remember you, for example to sign you in or to personalize ads. To manage cookies for all sites, see <ph name="SETTINGS">$1<ex>Settings</ex></ph>.
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_SETTINGS_LINK" desc="The text of the link to cookies settings." translateable="false">
+  <message name="IDS_PAGE_INFO_COOKIES_SETTINGS_LINK" desc="The text of the link to cookies settings.">
     Settings
   </message>
-  <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TITLE" desc="The title on the blocking third-party cookies toggle in cookies subpage." translateable="false">
+  <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TITLE" desc="The title on the blocking third-party cookies toggle in cookies subpage.">
     Block third-party cookies
   </message>
-  <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE_TOOLTIP" desc="The tooltip on the blocking third-party cookies toggle in cookies subpage." translateable="false">
+  <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE_TOOLTIP" desc="The tooltip on the blocking third-party cookies toggle in cookies subpage. It is only used by screen reader so no screenshot for that.">
     Block third-party cookies
   </message>
-  <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP" desc="The tooltip on the blocking third-party cookies icon in cookies subpage if blocking is explicitly set by user in cookies settings." translateable="false">
+  <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP" desc="The tooltip on the blocking third-party cookies icon in cookies subpage if blocking is explicitly set by user in cookies settings.">
     Managed by cookies settings
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT" desc="The label of the count for sites that have blocked access to cookies on the page. This text will be shown on the blocking third-party cookies toggle." translateable="false">
-        {NUM_COOKIES, plural, =0 {No sites} =1 {1 site} other {# sites}} blocked
+  <message name="IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT" desc="The label of the count for sites that have blocked access to cookies on the page. This text will be shown on the blocking third-party cookies toggle.">
+    {NUM_COOKIES, plural, =0 {No sites blocked} =1 {1 site blocked} other {# sites blocked}}
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT_WHEN_FPS_BLOCKED" desc="The label of the count for sites that have blocked access to cookies on the page when fps is blocked. This text will be shown on the blocking third-party cookies toggle." translateable="false">
-        {NUM_COOKIES, plural, =0 {No sites} =1 {1 site} other {# sites}} blocked, including related sites
+  <message name="IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT_WHEN_FPS_BLOCKED" desc="The label of the count for sites that have blocked access to cookies on the page when fps is blocked. This text will be shown on the blocking third-party cookies toggle.">
+    {NUM_COOKIES, plural, =0 {No sites blocked, including related sites} =1 {1 site blocked, including related sites} other {# sites blocked, including related sites}}
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT" desc="The label of the count for sites with allowed cookies on the page. This text will be shown on the cookies dialog button." translateable="false">
-        {NUM_COOKIES, plural,=0 {No sites} =1 {1 site} other {# sites}} allowed
+  <message name="IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT" desc="The label of the count for sites with allowed cookies on the page. This text will be shown on the cookies dialog button.">
+    {NUM_COOKIES, plural, =0 {No sites allowed} =1 {1 site allowed} other {# sites allowed}}
   </message>
-   <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE" desc="The title on the button opening cookies in use dialog in cookies subpage." translateable="false">
+   <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE" desc="The title on the button opening cookies in use dialog in cookies subpage.">
     Manage cookies and site data
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP" desc="The text of the tooltip on the button opening cookies in use dialog in cookies subpage." translateable="false">
+  <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP" desc="The text of the tooltip on the button opening cookies in use dialog in cookies subpage.">
     Show cookies
   </message>
   <message name="IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP" desc="The tooltip of first-party sets button in cookies subpage, which opens 'All Sites' settings page with a filter for this sets' pages." translateable="false">
@@ -749,7 +749,7 @@
     See sites related to <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>
   </message>
   <message name="IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE" desc="The subtitle of first-party sets button in cookies subpage with placeholder for name of the owner of this set." translateable="false">
-    <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph> says these sites are related
+    This site is in <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>'s group of sites that can see your activity in the group
   </message>
 
   <!-- History strings -->

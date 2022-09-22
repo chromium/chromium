@@ -152,7 +152,7 @@ void PageInfoMainView::EnsureCookieInfo() {
                                                          PageInfoHoverButton>(
           base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
                               base::Unretained(navigation_handler_)),
-          icon, IDS_PAGE_INFO_COOKIES, std::u16string(),
+          icon, IDS_PAGE_INFO_COOKIES_HEADER, std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE,
           tooltip, std::u16string(),
           PageInfoViewFactory::GetOpenSubpageIcon()));
