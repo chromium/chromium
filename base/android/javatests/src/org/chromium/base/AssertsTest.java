@@ -20,10 +20,13 @@ import org.chromium.build.BuildConfig;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class AssertsTest {
+    private static final String TAG = "AssertsTest";
+
     @Test
     @SmallTest
     @SuppressWarnings("UseCorrectAssertInTests")
     public void testAssertsWorkAsExpected() {
+        Log.i(TAG, "BuildConfig.ENABLE_ASSERTS=%b", BuildConfig.ENABLE_ASSERTS);
         if (BuildConfig.ENABLE_ASSERTS) {
             try {
                 assert false;
