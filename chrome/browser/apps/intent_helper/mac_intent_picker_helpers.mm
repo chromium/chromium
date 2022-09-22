@@ -64,13 +64,22 @@ absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
 }
 
 void LaunchMacApp(const GURL& url, const std::string& launch_name) {
-  [[NSWorkspace sharedWorkspace]
-                  openURLs:@[ net::NSURLWithGURL(url) ]
-      withApplicationAtURL:[NSURL fileURLWithPath:base::SysUTF8ToNSString(
-                                                      launch_name)]
-                   options:0
-             configuration:@{}
-                     error:nil];
+  if (@available(macOS 10.15, *)) {
+    [[NSWorkspace sharedWorkspace]
+                    openURLs:@[ net::NSURLWithGURL(url) ]
+        withApplicationAtURL:[NSURL fileURLWithPath:base::SysUTF8ToNSString(
+                                                        launch_name)]
+               configuration:[NSWorkspaceOpenConfiguration configuration]
+           completionHandler:nil];
+  } else {
+    [[NSWorkspace sharedWorkspace]
+                    openURLs:@[ net::NSURLWithGURL(url) ]
+        withApplicationAtURL:[NSURL fileURLWithPath:base::SysUTF8ToNSString(
+                                                        launch_name)]
+                     options:0
+               configuration:@{}
+                       error:nil];
+  }
 }
 
 }  // namespace apps
