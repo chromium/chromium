@@ -577,9 +577,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mFeedPlaceholderCoordinator.onOverviewShownAtLaunch(activityCreationTimeMs);
             }
         }
-        if (StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP.getValue()) {
-            ReturnToChromeUtil.cachePrimaryAccountSyncStatus();
-        }
         if (ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)) {
             Log.i(TAG, "Recorded %s = %b", START_SHOWN_AT_STARTUP_UMA, isOverviewShownOnStartup);
             RecordHistogram.recordBooleanHistogram(

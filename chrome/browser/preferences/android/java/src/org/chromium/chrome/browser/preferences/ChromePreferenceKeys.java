@@ -760,7 +760,6 @@ public final class ChromePreferenceKeys {
     /**
      * Keys used to store user actions for behavioral targeting of showing Start surface on startup.
      */
-    public static final String PRIMARY_ACCOUNT_SYNC = "Chrome.StartSurface.PrimaryAccountSync";
     public static final String START_SHOW_ON_STARTUP = "Chrome.StartSurface.ShownOnStartup";
     public static final String START_NEXT_SHOW_ON_STARTUP_DECISION_MS =
             "Chrome.StartSurface.ShownOnStartupDecisionMs";
@@ -1143,7 +1142,6 @@ public final class ChromePreferenceKeys {
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT,
                 PRICE_TRACKING_TRACK_PRICES_ON_TABS,
                 PRICE_TRACKING_USER_MANAGED_NOTIFICATIONS_TIMESTAMPS,
-                PRIMARY_ACCOUNT_SYNC,
                 PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
                 PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
                 PROMO_IS_DISMISSED.pattern(),

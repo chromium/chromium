@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.features.start_surface;
 
-import static org.mockito.Mockito.when;
-
-import android.app.Activity;
-import android.content.Intent;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -18,7 +14,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
@@ -26,11 +21,9 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -47,8 +40,6 @@ public class StartSurfaceCoordinatorUnitTest {
     @Rule
     public StartSurfaceCoordinatorUnitTestRule mTestRule =
             new StartSurfaceCoordinatorUnitTestRule();
-    @Mock
-    ChromeInactivityTracker mChromeInactivityTracker;
 
     StartSurfaceCoordinator mCoordinator;
 
@@ -282,36 +273,6 @@ public class StartSurfaceCoordinatorUnitTest {
                 manager, StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD.getValue());
     }
 
-    @Test
-    @Features.EnableFeatures(
-            {ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.TAB_SWITCHER_ON_RETURN})
-    // clang-format off
-    public void testShowStartWithSyncCheck() {
-        // clang-format on
-        TabModelSelector mTabModelSelector = mTestRule.getTabModelSelector();
-        Activity mActivity = mTestRule.getActivity();
-
-        StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP.setForTesting(true);
-        ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.setForTesting(0);
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
-
-        mActivity.getIntent().setAction(Intent.ACTION_MAIN);
-        mActivity.getIntent().addCategory(Intent.CATEGORY_LAUNCHER);
-        when(mChromeInactivityTracker.getLastBackgroundedTimeMs()).thenReturn(10L);
-
-        Assert.assertFalse(ReturnToChromeUtil.isPrimaryAccountSync());
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(mActivity, mActivity.getIntent(),
-                        mTabModelSelector, mChromeInactivityTracker, false /* isTablet */));
-        ReturnToChromeUtil.setSyncForTesting(true);
-        Assert.assertTrue(ReturnToChromeUtil.isPrimaryAccountSync());
-        Assert.assertTrue(
-                ReturnToChromeUtil.shouldShowOverviewPageOnStart(mActivity, mActivity.getIntent(),
-                        mTabModelSelector, mChromeInactivityTracker, false /* isTablet */));
-
-        ReturnToChromeUtil.setSyncForTesting(false);
-    }
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.FEED_INTERACTIVE_REFRESH})

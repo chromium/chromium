@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -54,7 +53,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.segmentation_platform.SegmentSelectionResult;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -498,43 +496,15 @@ public final class ReturnToChromeUtil {
         // If the overview page won't be shown on startup, stops here.
         if (!tabSwitcherOnReturn) return false;
 
-        if (isStartSurfaceEnabled) {
-            if (StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP.getValue()) {
-                // We only check the sync status when flag CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP
-                // and the Start surface are both enabled.
-                return ReturnToChromeUtil.isPrimaryAccountSync();
-            } else if (!TextUtils.isEmpty(
-                               StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue())) {
-                return ReturnToChromeUtil.userBehaviourSupported();
-            }
+        if (isStartSurfaceEnabled
+                && !TextUtils.isEmpty(StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue())) {
+            return ReturnToChromeUtil.userBehaviourSupported();
         }
 
         // If Start surface is disable and should show the Grid tab switcher at startup, or flag
         // CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP and behavioural targeting flag aren't enabled,
         // return true here.
         return true;
-    }
-
-    /**
-     * Returns whether user has a primary account with syncing on.
-     */
-    @VisibleForTesting
-    public static boolean isPrimaryAccountSync() {
-        return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.PRIMARY_ACCOUNT_SYNC, false);
-    }
-
-    /**
-     * Caches the status of whether the primary account is synced.
-     */
-    public static void cachePrimaryAccountSyncStatus() {
-        boolean isPrimaryAccountSync =
-                IdentityServicesProvider.get()
-                        .getSigninManager(Profile.getLastUsedRegularProfile())
-                        .getIdentityManager()
-                        .hasPrimaryAccount(ConsentLevel.SYNC);
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.PRIMARY_ACCOUNT_SYNC, isPrimaryAccountSync);
     }
 
     /**
@@ -953,12 +923,6 @@ public final class ReturnToChromeUtil {
     @VisibleForTesting
     public static String getBehaviourTypeKeyForTesting(String key) {
         return getBehaviourType(key);
-    }
-
-    @VisibleForTesting
-    public static void setSyncForTesting(boolean isSyncing) {
-        SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
-        manager.writeBoolean(ChromePreferenceKeys.PRIMARY_ACCOUNT_SYNC, isSyncing);
     }
 
     /**

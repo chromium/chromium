@@ -170,14 +170,6 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         return mCoordinator;
     }
 
-    public TabModelSelector getTabModelSelector() {
-        return mTabModelSelector;
-    }
-
-    public Activity getActivity() {
-        return mActivity;
-    }
-
     private void initJniMocks() {
         Profile profile = Mockito.mock(Profile.class);
         PrefService prefService = Mockito.mock(PrefService.class);

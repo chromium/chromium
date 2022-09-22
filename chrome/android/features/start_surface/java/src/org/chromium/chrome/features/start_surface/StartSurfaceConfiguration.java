@@ -59,12 +59,6 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, SUPPORT_ACCESSIBILITY_PARAM, true);
 
-    private static final String CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP_PARAM =
-            "check_sync_before_show_start_at_startup";
-    public static final BooleanCachedFieldTrialParameter CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
-                    CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP_PARAM, false);
-
     private static final String BEHAVIOURAL_TARGETING_PARAM = "behavioural_targeting";
     public static final StringCachedFieldTrialParameter BEHAVIOURAL_TARGETING =
             new StringCachedFieldTrialParameter(
