@@ -212,18 +212,19 @@ Animation* Animation::Create(AnimationEffect* effect,
       // TODO(crbug.com/1216527)
       // Eventually we hope to be able to be more flexible with
       // iteration_duration "auto" and its interaction with start_delay and
-      // end_delay. For now we will throw an exception if either delay is set.
+      // end_delay. For now we will throw an exception if either delay is set
+      // to a non-zero time-based value.
       // Once the spec (https://github.com/w3c/csswg-drafts/pull/6337) has been
       // ratified, we will be able to better handle mixed scenarios like "auto"
       // and time based delays.
 
       // If either delay or end_delay are non-zero, we can't yet handle "auto"
-      if (!effect->timing_.start_delay.is_zero() ||
-          !effect->timing_.end_delay.is_zero()) {
+      if (effect->timing_.start_delay.IsNonzeroTimeBasedDelay() ||
+          effect->timing_.end_delay.IsNonzeroTimeBasedDelay()) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kNotSupportedError,
-            "Effect duration \"auto\" with delays is not yet implemented when "
-            "used with Scroll Timelines");
+            "Effect duration \"auto\" with time-based delays is not yet "
+            "implemented when used with Scroll Timelines");
         return nullptr;
       }
     }

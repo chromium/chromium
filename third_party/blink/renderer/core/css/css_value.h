@@ -181,6 +181,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsLightDarkValuePair() const {
     return class_type_ == kLightDarkValuePairClass;
   }
+
   bool IsScrollValue() const { return class_type_ == kScrollClass; }
   bool IsRatioValue() const { return class_type_ == kRatioClass; }
 

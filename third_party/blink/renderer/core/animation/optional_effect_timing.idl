@@ -5,8 +5,8 @@
 // https://drafts.csswg.org/web-animations-1/#the-effecttiming-dictionaries
 
 dictionary OptionalEffectTiming {
-    double                                                delay;
-    double                                                endDelay;
+    (double or TimelineOffset)                            delay;
+    (double or TimelineOffset)                            endDelay;
     FillMode                                              fill;
     double                                                iterationStart;
     unrestricted double                                   iterations;

@@ -8,13 +8,21 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_animation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_timeline_offset.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_timeline_offset_phase.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_timelineoffset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeanimationoptions_unrestricteddouble.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
+#include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace {
@@ -37,6 +45,58 @@ absl::optional<AnimationTimeDelta> ConvertIterationDuration(
         duration->GetAsUnrestrictedDouble());
   }
   return absl::nullopt;
+}
+
+Timing::Delay ConvertDelay(const V8UnionDoubleOrTimelineOffset* delay,
+                           double default_percent,
+                           ExceptionState& exception_state) {
+  Timing::Delay result;
+  if (delay->IsDouble()) {
+    double delay_in_ms = delay->GetAsDouble();
+    DCHECK(std::isfinite(delay_in_ms));
+    result.time_delay = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(delay_in_ms);
+  } else if (delay->IsTimelineOffset()) {
+    if (!RuntimeEnabledFeatures::ScrollTimelineEnabled())
+      exception_state.ThrowTypeError("Delay must be a finite double");
+
+    TimelineOffset* timeline_offset = delay->GetAsTimelineOffset();
+    V8TimelineOffsetPhase::Enum timeline_offset_phase =
+        timeline_offset->hasPhase() ? timeline_offset->phase().AsEnum()
+                                    : V8TimelineOffsetPhase::Enum::kCover;
+    switch (timeline_offset_phase) {
+      case V8TimelineOffsetPhase::Enum::kCover:
+        result.phase = Timing::TimelineNamedPhase::kCover;
+        break;
+
+      case V8TimelineOffsetPhase::Enum::kContain:
+        result.phase = Timing::TimelineNamedPhase::kContain;
+        break;
+
+      case V8TimelineOffsetPhase::Enum::kEnter:
+        result.phase = Timing::TimelineNamedPhase::kEnter;
+        break;
+
+      case V8TimelineOffsetPhase::Enum::kExit:
+        result.phase = Timing::TimelineNamedPhase::kExit;
+        break;
+
+      default:
+        NOTREACHED();
+    }
+    if (timeline_offset->hasPercent()) {
+      CSSUnitValue* percent = timeline_offset->percent()->to(
+          CSSPrimitiveValue::UnitType::kPercentage);
+      if (!percent) {
+        exception_state.ThrowTypeError(
+            "CSSNumericValue must be a percentage for animation delay.");
+        return result;
+      }
+      result.relative_offset = percent->value() / 100;
+    } else {
+      result.relative_offset = 0.01 * default_percent;
+    }
+  }
+  return result;
 }
 
 Timing ConvertEffectTiming(const EffectTiming* timing_input,
@@ -192,17 +252,14 @@ bool TimingInput::Update(Timing& timing,
   // of effect as follows:
   bool changed = false;
   if (input->hasDelay()) {
-    DCHECK(std::isfinite(input->delay()));
     changed |= UpdateValueIfChanged(
-        timing.start_delay,
-        ANIMATION_TIME_DELTA_FROM_MILLISECONDS(input->delay()));
+        timing.start_delay, ConvertDelay(input->delay(), 0, exception_state));
     timing.SetTimingOverride(Timing::kOverrideStartDelay);
   }
   if (input->hasEndDelay()) {
-    DCHECK(std::isfinite(input->endDelay()));
     changed |= UpdateValueIfChanged(
         timing.end_delay,
-        ANIMATION_TIME_DELTA_FROM_MILLISECONDS(input->endDelay()));
+        ConvertDelay(input->endDelay(), 100, exception_state));
     timing.SetTimingOverride(Timing::kOverrideEndDelay);
   }
   if (input->hasFill()) {

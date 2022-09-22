@@ -50,8 +50,18 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   bool IsViewTimeline() const override { return true; }
 
+  AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const Timing&) override;
+
   // IDL API implementation.
   Element* subject() const { return ReferenceElement(); }
+
+  // Converts a delay that is expressed as a (phase,percentage) pair to
+  // a fractional offset.
+  absl::optional<double> ToFractionalOffset(const Timing::Delay& delay) const;
+
+  AnimationTimeline::TimeDelayPair TimelineOffsetsToTimeDelays(
+      const Timing& timing) const override;
 
  protected:
   const Inset& GetInset() const { return inset_; }
@@ -61,6 +71,12 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
       ScrollOrientation physical_orientation) const override;
 
  private:
+  // Cache values to make timeline phase conversions more efficient.
+  mutable double target_offset_;
+  mutable double target_size_;
+  mutable double viewport_size_;
+  mutable double start_side_inset_;
+  mutable double end_side_inset_;
   Inset inset_;
 };
 

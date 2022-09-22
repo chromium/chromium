@@ -37,11 +37,13 @@
 #include "cc/animation/keyframe_model.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_timelineoffset.h"
 #include "third_party/blink/renderer/core/animation/animation_time_delta.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -82,6 +84,44 @@ struct CORE_EXPORT Timing {
     kOverrideAll = (1 << 8) - 1
   };
 
+  enum class TimelineNamedPhase { kNone, kCover, kContain, kEnter, kExit };
+
+  // Delay can be directly expressed as time delays or calculated based on a
+  // position on a view timeline. As part of the normalization process, a
+  // timeline offsets are converted to time-based delays.
+  struct Delay {
+    TimelineNamedPhase phase = TimelineNamedPhase::kNone;
+    double relative_offset = 0;
+    AnimationTimeDelta time_delay;
+
+    Delay() = default;
+
+    explicit Delay(AnimationTimeDelta time) : time_delay(time) {}
+
+    bool IsInfinite() const {
+      return phase == TimelineNamedPhase::kNone && time_delay.is_inf();
+    }
+
+    bool operator==(const Delay& other) const {
+      return phase == other.phase && relative_offset == other.relative_offset &&
+             time_delay == other.time_delay;
+    }
+
+    bool operator!=(const Delay& other) const { return !(*this == other); }
+
+    bool IsNonzeroTimeBasedDelay() const {
+      return phase == TimelineNamedPhase::kNone && !time_delay.is_zero();
+    }
+
+    bool IsTimelineOffset() const { return phase != TimelineNamedPhase::kNone; }
+
+    void Scale(double scale_factor) { time_delay *= scale_factor; }
+
+    AnimationTimeDelta AsTimeValue() const { return time_delay; }
+
+    V8UnionDoubleOrTimelineOffset* ToV8UnionDoubleOrTimelineOffset() const;
+  };
+
   using FillMode = cc::KeyframeModel::FillMode;
   using PlaybackDirection = cc::KeyframeModel::Direction;
 
@@ -94,8 +134,8 @@ struct CORE_EXPORT Timing {
   Timing() = default;
 
   void AssertValid() const {
-    DCHECK(!start_delay.is_inf());
-    DCHECK(!end_delay.is_inf());
+    DCHECK(!start_delay.IsInfinite());
+    DCHECK(!end_delay.IsInfinite());
     DCHECK(std::isfinite(iteration_start));
     DCHECK_GE(iteration_start, 0);
     DCHECK_GE(iteration_count, 0);
@@ -134,8 +174,8 @@ struct CORE_EXPORT Timing {
                                   absl::optional<AnimationTimeDelta>) const;
 
   // TODO(crbug.com/1216527): Support CSSNumberish delays
-  AnimationTimeDelta start_delay;
-  AnimationTimeDelta end_delay;
+  Delay start_delay;
+  Delay end_delay;
   FillMode fill_mode = FillMode::AUTO;
   double iteration_start = 0;
   double iteration_count = 1;
@@ -173,6 +213,8 @@ struct CORE_EXPORT Timing {
     // Value used in normalization math. Stored so that we can convert back if
     // needed.
     absl::optional<AnimationTimeDelta> timeline_duration;
+    // Though timing delays may be expressed as either times or (phase,offset)
+    // pairs, post normalization, delays is expressed in time.
     AnimationTimeDelta start_delay;
     AnimationTimeDelta end_delay;
     AnimationTimeDelta iteration_duration;

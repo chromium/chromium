@@ -991,11 +991,11 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
                                     previous_timeline->GetDuration().value();
 
                   AnimationTimeDelta end_time = std::max(
-                      specified_timing.start_delay +
+                      specified_timing.start_delay.AsTimeValue() +
                           MultiplyZeroAlwaysGivesZero(
                               specified_timing.iteration_duration.value(),
                               specified_timing.iteration_count) +
-                          specified_timing.end_delay,
+                          specified_timing.end_delay.AsTimeValue(),
                       AnimationTimeDelta());
 
                   inherited_time = progress * end_time;
@@ -1603,7 +1603,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   Timing timing = state.transition_data->ConvertToTiming(transition_index);
   // CSS Transitions always have a valid duration (i.e. the value 'auto' is not
   // supported), so iteration_duration will always be set.
-  if (timing.start_delay + timing.iteration_duration.value() <=
+  if (timing.start_delay.AsTimeValue() + timing.iteration_duration.value() <=
       AnimationTimeDelta()) {
     // We may have started a transition in a prior CSSTransitionData update,
     // this CSSTransitionData update needs to override them.
@@ -1629,8 +1629,8 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
                       (1 - interrupted_transition->reversing_shortening_factor),
                   0.0, 1.0);
       timing.iteration_duration.value() *= reversing_shortening_factor;
-      if (timing.start_delay < AnimationTimeDelta()) {
-        timing.start_delay *= reversing_shortening_factor;
+      if (timing.start_delay.AsTimeValue() < AnimationTimeDelta()) {
+        timing.start_delay.Scale(reversing_shortening_factor);
       }
     }
   }

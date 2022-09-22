@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_timelineoffset.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
@@ -40,6 +41,13 @@
 namespace blink {
 
 namespace {
+
+double AsDoubleOrZero(V8UnionDoubleOrTimelineOffset* value) {
+  if (!value->IsDouble())
+    return 0;
+
+  return value->GetAsDouble();
+}
 
 String AnimationDisplayName(const Animation& animation) {
   if (!animation.id().IsEmpty())
@@ -106,14 +114,15 @@ void InspectorAnimationAgent::DidCommitLoadForLocalFrame(LocalFrame* frame) {
 static std::unique_ptr<protocol::Animation::AnimationEffect>
 BuildObjectForAnimationEffect(KeyframeEffect* effect) {
   ComputedEffectTiming* computed_timing = effect->getComputedTiming();
-  double delay = computed_timing->delay();
+  double delay = AsDoubleOrZero(computed_timing->delay());
+  double end_delay = AsDoubleOrZero(computed_timing->endDelay());
   double duration = computed_timing->duration()->GetAsUnrestrictedDouble();
   String easing = effect->SpecifiedTiming().timing_function->ToString();
 
   std::unique_ptr<protocol::Animation::AnimationEffect> animation_object =
       protocol::Animation::AnimationEffect::create()
           .setDelay(delay)
-          .setEndDelay(computed_timing->endDelay())
+          .setEndDelay(end_delay)
           .setIterationStart(computed_timing->iterationStart())
           .setIterations(computed_timing->iterations())
           .setDuration(duration)
@@ -396,7 +405,7 @@ Response InspectorAnimationAgent::setTiming(const String& animation_id,
   timing->setDuration(
       MakeGarbageCollected<V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
           duration));
-  timing->setDelay(delay);
+  timing->setDelay(MakeGarbageCollected<V8UnionDoubleOrTimelineOffset>(delay));
   animation->effect()->updateTiming(timing, exception_state);
   return Response::Success();
 }

@@ -1571,6 +1571,12 @@
     "self-block",
     "self-inline",
 
+    // animation-[end-]delay
+    // contain
+    // cover
+    "enter",
+    "exit",
+
     // scroll()
     "root",
     "nearest",

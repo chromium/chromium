@@ -280,8 +280,8 @@ TEST_F(AnimationKeyframeEffectV8Test, SpecifiedGetters) {
       script_state, element.Get(), js_keyframes, timing_input_dictionary);
 
   EffectTiming* timing = animation->getTiming();
-  EXPECT_EQ(2, timing->delay());
-  EXPECT_EQ(0.5, timing->endDelay());
+  EXPECT_EQ(2, timing->delay()->GetAsDouble());
+  EXPECT_EQ(0.5, timing->endDelay()->GetAsDouble());
   EXPECT_EQ("backwards", timing->fill());
   EXPECT_EQ(2, timing->iterationStart());
   EXPECT_EQ(10, timing->iterations());
@@ -371,8 +371,8 @@ TEST_F(AnimationKeyframeEffectV8Test, SetKeyframesAdditiveCompositeOperation) {
 TEST_F(KeyframeEffectTest, TimeToEffectChange) {
   Timing timing;
   timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(100);
-  timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(100);
-  timing.end_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(100);
+  timing.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
+  timing.end_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
   timing.fill_mode = Timing::FillMode::NONE;
   auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
       nullptr, CreateEmptyEffectModel(), timing);

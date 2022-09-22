@@ -72,6 +72,16 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
       const Timing&) {
     return AnimationTimeDelta();
   }
+
+  // Converts timeline offsets to start and end delays in time units based on
+  // the timeline duration. In the event that the timeline is not an instance
+  // of a view timeline, the delays are zero.
+  using TimeDelayPair = std::pair<AnimationTimeDelta, AnimationTimeDelta>;
+  virtual TimeDelayPair TimelineOffsetsToTimeDelays(
+      const Timing& timing) const {
+    return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
+  }
+
   Document* GetDocument() const { return document_; }
   virtual void AnimationAttached(Animation*);
   virtual void AnimationDetached(Animation*);
