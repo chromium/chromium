@@ -8,9 +8,44 @@
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "ui/gl/gl_bindings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gl/gl_utils.h"
 
 namespace gpu {
+
+// Object used to restore state around GL upload and copy.
+class ScopedUnpackState {
+ public:
+  explicit ScopedUnpackState(bool uploading_data, int unpack_row_length = 0);
+
+  ScopedUnpackState(const ScopedUnpackState&) = delete;
+  ScopedUnpackState& operator=(const ScopedUnpackState&) = delete;
+
+  ~ScopedUnpackState();
+
+ private:
+  const raw_ptr<gl::GLApi> api_;
+
+  // Always used if |es3_capable|.
+  GLint unpack_buffer_ = 0;
+
+  // Always used when |uploading_data|.
+  absl::optional<gl::ScopedPixelStore> unpack_alignment_;
+
+  // Used when |uploading_data_| and (|es3_capable| or
+  // |supports_unpack_subimage|).
+  absl::optional<gl::ScopedPixelStore> unpack_row_length_;
+  absl::optional<gl::ScopedPixelStore> unpack_skip_pixels_;
+  absl::optional<gl::ScopedPixelStore> unpack_skip_rows_;
+
+  // Used when |uploading_data| and |es3_capable|.
+  absl::optional<gl::ScopedPixelStore> unpack_skip_images_;
+  absl::optional<gl::ScopedPixelStore> unpack_image_height_;
+
+  // Used when |desktop_gl|.
+  absl::optional<gl::ScopedPixelStore> unpack_swap_bytes_;
+  absl::optional<gl::ScopedPixelStore> unpack_lsb_first_;
+};
 
 // Common helper functions for GLTextureImageBacking and GLImageBacking.
 class GPU_GLES2_EXPORT GLTextureImageBackingHelper {
@@ -24,42 +59,6 @@ class GPU_GLES2_EXPORT GLTextureImageBackingHelper {
     bool is_cleared = false;
     bool framebuffer_attachment_angle = false;
     bool has_immutable_storage = false;
-  };
-
-  // Object used to restore state around GL upload and copy.
-  class ScopedResetAndRestoreUnpackState {
-   public:
-    explicit ScopedResetAndRestoreUnpackState(bool uploading_data);
-
-    ScopedResetAndRestoreUnpackState(const ScopedResetAndRestoreUnpackState&) =
-        delete;
-    ScopedResetAndRestoreUnpackState& operator=(
-        const ScopedResetAndRestoreUnpackState&) = delete;
-
-    ~ScopedResetAndRestoreUnpackState();
-
-   private:
-    const raw_ptr<gl::GLApi> api_;
-
-    // Always used if |es3_capable|.
-    GLint unpack_buffer_ = 0;
-
-    // Always used when |uploading_data|.
-    GLint unpack_alignment_ = 4;
-
-    // Used when |uploading_data_| and (|es3_capable| or
-    // |supports_unpack_subimage|).
-    GLint unpack_row_length_ = 0;
-    GLint unpack_skip_pixels_ = 0;
-    GLint unpack_skip_rows_ = 0;
-
-    // Used when |uploading_data| and |es3_capable|.
-    GLint unpack_skip_images_ = 0;
-    GLint unpack_image_height_ = 0;
-
-    // Used when |desktop_gl|.
-    GLboolean unpack_swap_bytes_ = GL_FALSE;
-    GLboolean unpack_lsb_first_ = GL_FALSE;
   };
 
   // Object used to restore texture bindings.

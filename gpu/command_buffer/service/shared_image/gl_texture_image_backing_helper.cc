@@ -16,12 +16,12 @@
 
 namespace gpu {
 
-GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState::
-    ScopedResetAndRestoreUnpackState(bool uploading_data)
+ScopedUnpackState::ScopedUnpackState(bool uploading_data, int unpack_row_length)
     : api_(gl::g_current_gl_context) {
   const auto* version_info = gl::g_current_gl_version;
+  bool is_es3_capable = version_info->is_es3_capable;
 
-  if (version_info->is_es3_capable) {
+  if (is_es3_capable) {
     // Need to unbind any GL_PIXEL_UNPACK_BUFFER for the nullptr in
     // glTexImage2D to mean "no pixels" (as opposed to offset 0 in the
     // buffer).
@@ -30,63 +30,32 @@ GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState::
       api_->glBindBufferFn(GL_PIXEL_UNPACK_BUFFER, 0);
   }
   if (uploading_data) {
-    api_->glGetIntegervFn(GL_UNPACK_ALIGNMENT, &unpack_alignment_);
-    if (unpack_alignment_ != 4)
-      api_->glPixelStoreiFn(GL_UNPACK_ALIGNMENT, 4);
+    unpack_alignment_.emplace(GL_UNPACK_ALIGNMENT, 4);
 
-    if (version_info->is_es3_capable ||
+    if (is_es3_capable ||
         gl::g_current_gl_driver->ext.b_GL_EXT_unpack_subimage) {
-      api_->glGetIntegervFn(GL_UNPACK_ROW_LENGTH, &unpack_row_length_);
-      if (unpack_row_length_)
-        api_->glPixelStoreiFn(GL_UNPACK_ROW_LENGTH, 0);
-      api_->glGetIntegervFn(GL_UNPACK_SKIP_ROWS, &unpack_skip_rows_);
-      if (unpack_skip_rows_)
-        api_->glPixelStoreiFn(GL_UNPACK_SKIP_ROWS, 0);
-      api_->glGetIntegervFn(GL_UNPACK_SKIP_PIXELS, &unpack_skip_pixels_);
-      if (unpack_skip_pixels_)
-        api_->glPixelStoreiFn(GL_UNPACK_SKIP_PIXELS, 0);
+      unpack_row_length_.emplace(GL_UNPACK_ROW_LENGTH, unpack_row_length);
+      unpack_skip_rows_.emplace(GL_UNPACK_SKIP_ROWS, 0);
+      unpack_skip_pixels_.emplace(GL_UNPACK_SKIP_PIXELS, 0);
+    } else {
+      DCHECK_EQ(unpack_row_length, 0);
     }
 
-    if (version_info->is_es3_capable) {
-      api_->glGetIntegervFn(GL_UNPACK_SKIP_IMAGES, &unpack_skip_images_);
-      if (unpack_skip_images_)
-        api_->glPixelStoreiFn(GL_UNPACK_SKIP_IMAGES, 0);
-      api_->glGetIntegervFn(GL_UNPACK_IMAGE_HEIGHT, &unpack_image_height_);
-      if (unpack_image_height_)
-        api_->glPixelStoreiFn(GL_UNPACK_IMAGE_HEIGHT, 0);
+    if (is_es3_capable) {
+      unpack_skip_images_.emplace(GL_UNPACK_SKIP_IMAGES, 0);
+      unpack_image_height_.emplace(GL_UNPACK_IMAGE_HEIGHT, 0);
     }
 
     if (!version_info->is_es) {
-      api_->glGetBooleanvFn(GL_UNPACK_SWAP_BYTES, &unpack_swap_bytes_);
-      if (unpack_swap_bytes_)
-        api_->glPixelStoreiFn(GL_UNPACK_SWAP_BYTES, GL_FALSE);
-      api_->glGetBooleanvFn(GL_UNPACK_LSB_FIRST, &unpack_lsb_first_);
-      if (unpack_lsb_first_)
-        api_->glPixelStoreiFn(GL_UNPACK_LSB_FIRST, GL_FALSE);
+      unpack_swap_bytes_.emplace(GL_UNPACK_SWAP_BYTES, GL_FALSE);
+      unpack_lsb_first_.emplace(GL_UNPACK_LSB_FIRST, GL_FALSE);
     }
   }
 }
 
-GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState::
-    ~ScopedResetAndRestoreUnpackState() {
+ScopedUnpackState::~ScopedUnpackState() {
   if (unpack_buffer_)
     api_->glBindBufferFn(GL_PIXEL_UNPACK_BUFFER, unpack_buffer_);
-  if (unpack_alignment_ != 4)
-    api_->glPixelStoreiFn(GL_UNPACK_ALIGNMENT, unpack_alignment_);
-  if (unpack_row_length_)
-    api_->glPixelStoreiFn(GL_UNPACK_ROW_LENGTH, unpack_row_length_);
-  if (unpack_image_height_)
-    api_->glPixelStoreiFn(GL_UNPACK_IMAGE_HEIGHT, unpack_image_height_);
-  if (unpack_skip_rows_)
-    api_->glPixelStoreiFn(GL_UNPACK_SKIP_ROWS, unpack_skip_rows_);
-  if (unpack_skip_images_)
-    api_->glPixelStoreiFn(GL_UNPACK_SKIP_IMAGES, unpack_skip_images_);
-  if (unpack_skip_pixels_)
-    api_->glPixelStoreiFn(GL_UNPACK_SKIP_PIXELS, unpack_skip_pixels_);
-  if (unpack_swap_bytes_)
-    api_->glPixelStoreiFn(GL_UNPACK_SWAP_BYTES, unpack_swap_bytes_);
-  if (unpack_lsb_first_)
-    api_->glPixelStoreiFn(GL_UNPACK_LSB_FIRST, unpack_lsb_first_);
 }
 
 GLTextureImageBackingHelper::ScopedRestoreTexture::ScopedRestoreTexture(

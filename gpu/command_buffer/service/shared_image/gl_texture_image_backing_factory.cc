@@ -20,9 +20,6 @@ namespace gpu {
 
 namespace {
 
-using ScopedResetAndRestoreUnpackState =
-    GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState;
-
 using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
 
 using InitializeGLTextureParams =
@@ -213,7 +210,7 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
     }
 
     if (!pixel_data.empty()) {
-      ScopedResetAndRestoreUnpackState scoped_unpack_state(
+      ScopedUnpackState scoped_unpack_state(
           /*uploading_data=*/true);
       gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
       api->glTexSubImage2DFn(target, 0, 0, 0, size.width(), size.height(),
@@ -221,13 +218,13 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
                              pixel_data.data());
     }
   } else if (format_info.is_compressed) {
-    ScopedResetAndRestoreUnpackState scoped_unpack_state(!pixel_data.empty());
+    ScopedUnpackState scoped_unpack_state(!pixel_data.empty());
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
     api->glCompressedTexImage2DFn(target, 0, format_info.image_internal_format,
                                   size.width(), size.height(), 0,
                                   pixel_data.size(), pixel_data.data());
   } else {
-    ScopedResetAndRestoreUnpackState scoped_unpack_state(!pixel_data.empty());
+    ScopedUnpackState scoped_unpack_state(!pixel_data.empty());
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
     api->glTexImage2DFn(target, 0, format_info.image_internal_format,
                         size.width(), size.height(), 0,

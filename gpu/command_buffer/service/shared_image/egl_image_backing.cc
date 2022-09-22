@@ -397,21 +397,19 @@ EGLImageBacking::GenEGLImageSibling(base::span<const uint8_t> pixel_data) {
                                  size().width(), size().height());
 
         if (!pixel_data.empty()) {
-          GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState
-              scoped_unpack_state(/*uploading_data=*/true);
+          ScopedUnpackState scoped_unpack_state(
+              /*uploading_data=*/true);
           api->glTexSubImage2DFn(target, 0, 0, 0, size().width(),
                                  size().height(), format_info_.adjusted_format,
                                  format_info_.gl_type, pixel_data.data());
         }
       } else if (format_info_.is_compressed) {
-        GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState
-            scoped_unpack_state(!pixel_data.empty());
+        ScopedUnpackState scoped_unpack_state(!pixel_data.empty());
         api->glCompressedTexImage2DFn(
             target, 0, format_info_.image_internal_format, size().width(),
             size().height(), 0, pixel_data.size(), pixel_data.data());
       } else {
-        GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState
-            scoped_unpack_state(!pixel_data.empty());
+        ScopedUnpackState scoped_unpack_state(!pixel_data.empty());
 
         api->glTexImage2DFn(target, 0, format_info_.image_internal_format,
                             size().width(), size().height(), 0,

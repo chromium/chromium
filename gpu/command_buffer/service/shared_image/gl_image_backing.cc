@@ -36,9 +36,6 @@ size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
   return estimated_size;
 }
 
-using ScopedResetAndRestoreUnpackState =
-    GLTextureImageBackingHelper::ScopedResetAndRestoreUnpackState;
-
 using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
 
 using InitializeGLTextureParams =
@@ -773,7 +770,7 @@ bool GLImageBacking::BindOrCopyImageIfNeeded() {
     }
     new_state = gles2::Texture::BOUND;
   } else {
-    ScopedResetAndRestoreUnpackState scoped_unpack_state(
+    ScopedUnpackState scoped_unpack_state(
         /*uploading_data=*/true);
     if (!image_->CopyTexImage(target)) {
       LOG(ERROR) << "Failed to copy GLImage to target";
@@ -808,7 +805,7 @@ void GLImageBacking::InitializePixels(GLenum format,
   gl::GLApi* api = gl::g_current_gl_context;
   ScopedRestoreTexture scoped_restore(api, target);
   api->glBindTextureFn(target, GetGLServiceId());
-  ScopedResetAndRestoreUnpackState scoped_unpack_state(
+  ScopedUnpackState scoped_unpack_state(
       /*uploading_data=*/true);
   api->glTexSubImage2DFn(target, 0, 0, 0, size().width(), size().height(),
                          format, type, data);
