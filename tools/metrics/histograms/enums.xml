@@ -7238,8 +7238,8 @@ others/histograms.xml -->
   <int value="56"
       label="Local suggestion of a deduped server card filled (once)"/>
   <int value="57"
-      label="Autofilled field was cleared by JavaScript immediately after
-             fill (once)"/>
+      label="Autofilled field was cleared by JavaScript within
+             kLimitBeforeRefill (1s) after being filled (once)"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">
