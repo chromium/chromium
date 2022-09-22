@@ -43,11 +43,6 @@ const base::Feature kWebApkUniqueId{"WebApkUniqueId",
 const base::Feature kCreateShortcutIgnoresManifest{
     "CreateShortcutIgnoresManifest", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Skip the service worker in all install criteria check. This affect both
-// "intallable" and "promotable" status of a web app.
-const base::Feature kSkipServiceWorkerCheckAll{
-    "SkipServiceWorkerCheckAll", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Skip the service worker install criteria check for installing. This affect
 // only the "installable" status but not "promotable".
 const base::Feature kSkipServiceWorkerCheckInstallOnly{
@@ -63,13 +58,8 @@ const base::Feature kSkipServiceWorkerCheckInstallOnly{
 const base::Feature kDesktopPWAsDetailedInstallDialog{
     "DesktopPWAsDetailedInstallDialog", base::FEATURE_ENABLED_BY_DEFAULT};
 
-bool SkipBannerServiceWorkerCheck() {
-  return base::FeatureList::IsEnabled(kSkipServiceWorkerCheckAll);
-}
-
 bool SkipInstallServiceWorkerCheck() {
-  return base::FeatureList::IsEnabled(kSkipServiceWorkerCheckAll) ||
-         base::FeatureList::IsEnabled(kSkipServiceWorkerCheckInstallOnly);
+  return base::FeatureList::IsEnabled(kSkipServiceWorkerCheckInstallOnly);
 }
 
 }  // namespace features

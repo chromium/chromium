@@ -366,8 +366,8 @@ InstallableParams AppBannerManager::ParamsToPerformInstallableWebAppCheck() {
   InstallableParams params;
   params.valid_primary_icon = true;
   params.valid_manifest = true;
-  params.has_worker = !features::SkipBannerServiceWorkerCheck();
-  params.wait_for_worker = !features::SkipBannerServiceWorkerCheck();
+  params.has_worker = true;
+  params.wait_for_worker = true;
   params.fetch_screenshots = true;
 
   return params;

@@ -1082,11 +1082,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerFencedFrameBrowserTest,
   EXPECT_EQ(manager->state(), AppBannerManager::State::INACTIVE);
 }
 
-enum class ServiceWorkerCriteriaType {
-  kDisabled,
-  kSkipForInstalls,
-  kSkipAll,
-};
+enum class ServiceWorkerCriteriaType { kDisabled, kSkipForInstalls };
 
 class AppBannerServiceWorkerCriteriaTest
     : public AppBannerManagerBrowserTest,
@@ -1095,19 +1091,12 @@ class AppBannerServiceWorkerCriteriaTest
   AppBannerServiceWorkerCriteriaTest() {
     switch (GetParam()) {
       case ServiceWorkerCriteriaType::kDisabled:
-        scoped_feature_list_.InitWithFeatures(
-            {}, {features::kSkipServiceWorkerCheckAll,
-                 features::kSkipServiceWorkerCheckInstallOnly});
+        scoped_feature_list_.InitAndDisableFeature(
+            features::kSkipServiceWorkerCheckInstallOnly);
         break;
       case ServiceWorkerCriteriaType::kSkipForInstalls:
-        scoped_feature_list_.InitWithFeatures(
-            {features::kSkipServiceWorkerCheckInstallOnly},
-            {features::kSkipServiceWorkerCheckAll});
-        break;
-      case ServiceWorkerCriteriaType::kSkipAll:
-        scoped_feature_list_.InitWithFeatures(
-            {features::kSkipServiceWorkerCheckAll},
-            {features::kSkipServiceWorkerCheckInstallOnly});
+        scoped_feature_list_.InitAndEnableFeature(
+            features::kSkipServiceWorkerCheckInstallOnly);
         break;
     }
   }
@@ -1150,9 +1139,6 @@ IN_PROC_BROWSER_TEST_P(AppBannerServiceWorkerCriteriaTest, NoServiceWorker) {
     case ServiceWorkerCriteriaType::kSkipForInstalls:
       expected_code = SERVICE_WORKER_NOT_REQUIRED;
       break;
-    case ServiceWorkerCriteriaType::kSkipAll:
-      expected_code = absl::nullopt;
-      break;
   }
 
   RunBannerTest(browser(), manager.get(),
@@ -1179,9 +1165,6 @@ IN_PROC_BROWSER_TEST_P(AppBannerServiceWorkerCriteriaTest, NoFetchHandler) {
     case ServiceWorkerCriteriaType::kSkipForInstalls:
       expected_code = SERVICE_WORKER_NOT_REQUIRED;
       break;
-    case ServiceWorkerCriteriaType::kSkipAll:
-      expected_code = absl::nullopt;
-      break;
   }
 
   RunBannerTest(browser(), manager.get(),
@@ -1200,8 +1183,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     AppBannerServiceWorkerCriteriaTest,
     testing::Values(ServiceWorkerCriteriaType::kDisabled,
-                    ServiceWorkerCriteriaType::kSkipForInstalls,
-                    ServiceWorkerCriteriaType::kSkipAll));
+                    ServiceWorkerCriteriaType::kSkipForInstalls));
 
 }  // namespace
 }  // namespace webapps
