@@ -59384,6 +59384,8 @@ from previous Chrome versions.
   <int value="-333216449" label="MouseSubframeNoImplicitCapture:enabled"/>
   <int value="-332010491" label="RetailCoupons:enabled"/>
   <int value="-331952590" label="OmniboxTriggerForPrerender2:enabled"/>
+  <int value="-331137136"
+      label="WebAssemblyExperimentalStackSwitching:disabled"/>
   <int value="-329727402" label="disable-files-quick-view"/>
   <int value="-328361990" label="enable-experimental-extension-apis"/>
   <int value="-328339709" label="WebFeedAwareness:enabled"/>
@@ -61680,6 +61682,8 @@ from previous Chrome versions.
   <int value="1084972292" label="WebXRAnchors:enabled"/>
   <int value="1085130793" label="LongPressBackForHistory:disabled"/>
   <int value="1086592430" label="WebAppEnableLinkCapturing:enabled"/>
+  <int value="1086775696"
+      label="WebAssemblyExperimentalStackSwitching:enabled"/>
   <int value="1087235172" label="file-manager-enable-new-audio-player"/>
   <int value="1088915385" label="new-password-form-parsing:enabled"/>
   <int value="1089106835" label="ContextMenuPopupStyle:enabled"/>

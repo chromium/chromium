@@ -3700,7 +3700,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExperimentalWebAssemblyStackSwitchingName,
      flag_descriptions::kExperimentalWebAssemblyStackSwitchingDescription,
      kOsAll,
-     SINGLE_VALUE_TYPE(switches::kEnableExperimentalWebAssemblyStackSwitching)},
+     FEATURE_VALUE_TYPE(
+         features::kEnableExperimentalWebAssemblyStackSwitching)},
 #endif  // defined(ARCH_CPU_X86_64)
     {"enable-webassembly-baseline", flag_descriptions::kEnableWasmBaselineName,
      flag_descriptions::kEnableWasmBaselineDescription, kOsAll,
