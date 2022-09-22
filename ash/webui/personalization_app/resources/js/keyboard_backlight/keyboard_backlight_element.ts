@@ -257,7 +257,8 @@ export class KeyboardBacklight extends WithPersonalizationStore {
                   outline-offset: -2px;`;
     switch (colorId) {
       case this.rainbowColorId_:
-        return `background-image: linear-gradient(${colors['redColor'].hexVal},
+        return `background-image: linear-gradient(90deg,
+            ${colors['redColor'].hexVal},
             ${colors['yellowColor'].hexVal},
             ${colors['greenColor'].hexVal},
             ${colors['indigoColor'].hexVal});
