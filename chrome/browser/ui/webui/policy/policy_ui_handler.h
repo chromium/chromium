@@ -21,6 +21,7 @@
 #include "chrome/browser/policy/value_provider/chrome_policies_value_provider.h"
 #include "chrome/browser/policy/value_provider/policy_value_provider.h"
 #include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -46,13 +47,10 @@ class ChromePoliciesValueProvider;
 
 class PrefChangeRegistrar;
 
-namespace policy {
-class PolicyStatusProvider;
-}
-
 // The JavaScript message handler for the chrome://policy page.
 class PolicyUIHandler : public content::WebUIMessageHandler,
                         public policy::PolicyValueProvider::Observer,
+                        public policy::PolicyStatusProvider::Observer,
                         public ui::SelectFileDialog::Listener {
  public:
   PolicyUIHandler();
@@ -70,6 +68,9 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 
   // policy::PolicyValueProvider::Observer implementation.
   void OnPolicyValueChanged() override;
+
+  // policy::PolicyValueProvider::Observer implementation.
+  void OnPolicyStatusChanged() override;
 
  protected:
   // ui::SelectFileDialog::Listener implementation.
@@ -142,6 +143,10 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   base::ScopedMultiSourceObservation<policy::PolicyValueProvider,
                                      policy::PolicyValueProvider::Observer>
       policy_value_provider_observations_{this};
+
+  base::ScopedMultiSourceObservation<policy::PolicyStatusProvider,
+                                     policy::PolicyStatusProvider::Observer>
+      policy_status_provider_observations_{this};
 
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};
 };

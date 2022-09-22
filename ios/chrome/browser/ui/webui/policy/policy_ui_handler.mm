@@ -119,13 +119,12 @@ void PolicyUIHandler::RegisterMessages() {
             new policy::MachineLevelUserCloudPolicyContext(
                 {dmTokenStorage->RetrieveEnrollmentToken(),
                  dmTokenStorage->RetrieveClientId(), lastCloudReportSent}));
+    machine_status_provider_observation_.Observe(
+        machine_status_provider_.get());
   }
 
   if (!machine_status_provider_)
     machine_status_provider_ = std::make_unique<policy::PolicyStatusProvider>();
-
-  machine_status_provider_->SetStatusChangeCallback(base::BindRepeating(
-      &PolicyUIHandler::SendStatus, base::Unretained(this)));
 
   GetPolicyService()->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
 
@@ -178,6 +177,10 @@ void PolicyUIHandler::OnPolicyUpdated(const policy::PolicyNamespace& ns,
                                       const policy::PolicyMap& previous,
                                       const policy::PolicyMap& current) {
   SendPolicies();
+}
+
+void PolicyUIHandler::OnPolicyStatusChanged() {
+  SendStatus();
 }
 
 base::Value::Dict PolicyUIHandler::GetPolicyNames() const {

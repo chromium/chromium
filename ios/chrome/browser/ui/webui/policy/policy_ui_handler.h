@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/policy_service.h"
@@ -24,6 +25,7 @@ struct PolicyNamespace;
 // The JavaScript message handler for the chrome://policy page.
 class PolicyUIHandler : public web::WebUIIOSMessageHandler,
                         public policy::PolicyService::Observer,
+                        public policy::PolicyStatusProvider::Observer,
                         public policy::SchemaRegistry::Observer {
  public:
   PolicyUIHandler();
@@ -41,6 +43,9 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   void OnPolicyUpdated(const policy::PolicyNamespace& ns,
                        const policy::PolicyMap& previous,
                        const policy::PolicyMap& current) override;
+
+  // policy::PolicyValueProvider::Observer implementation.
+  void OnPolicyStatusChanged() override;
 
   // policy::SchemaRegistry::Observer.
   void OnSchemaRegistryUpdated(bool has_new_schemas) override;
@@ -84,6 +89,10 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
 
   // Provider that supply status dictionary for machine policy,
   std::unique_ptr<policy::PolicyStatusProvider> machine_status_provider_;
+
+  base::ScopedObservation<policy::PolicyStatusProvider,
+                          policy::PolicyStatusProvider::Observer>
+      machine_status_provider_observation_{this};
 
   // Vends WeakPtrs for this object.
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};

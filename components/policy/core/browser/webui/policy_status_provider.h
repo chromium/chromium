@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -33,13 +35,15 @@ POLICY_EXPORT extern const char kPolicyDescriptionKey[];
 // actual policies themselves.
 class POLICY_EXPORT PolicyStatusProvider {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnPolicyStatusChanged() = 0;
+  };
+
   PolicyStatusProvider();
   PolicyStatusProvider(const PolicyStatusProvider&) = delete;
   PolicyStatusProvider& operator=(const PolicyStatusProvider&) = delete;
   virtual ~PolicyStatusProvider();
-
-  // Sets a callback to invoke upon status changes.
-  virtual void SetStatusChangeCallback(const base::RepeatingClosure& callback);
 
   // Returns a dictionary with metadata about policies.
   virtual base::Value::Dict GetStatus();
@@ -53,6 +57,9 @@ class POLICY_EXPORT PolicyStatusProvider {
   static base::ScopedClosureRunner OverrideClockForTesting(
       base::Clock* clock_for_testing);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  protected:
   void NotifyStatusChange();
   static std::u16string GetPolicyStatusFromStore(const CloudPolicyStore*,
@@ -60,7 +67,7 @@ class POLICY_EXPORT PolicyStatusProvider {
   static std::u16string GetTimeSinceLastActionString(base::Time);
 
  private:
-  base::RepeatingClosure callback_;
+  base::ObserverList<Observer, /*check_empty=*/true> observers_;
 };
 
 }  // namespace policy

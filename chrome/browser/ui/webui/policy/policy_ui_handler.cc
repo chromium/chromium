@@ -298,9 +298,13 @@ void PolicyUIHandler::RegisterMessages() {
 
   auto update_callback(base::BindRepeating(&PolicyUIHandler::SendStatus,
                                            base::Unretained(this)));
-  user_status_provider_->SetStatusChangeCallback(update_callback);
-  device_status_provider_->SetStatusChangeCallback(update_callback);
-  machine_status_provider_->SetStatusChangeCallback(update_callback);
+
+  policy_status_provider_observations_.AddObservation(
+      user_status_provider_.get());
+  policy_status_provider_observations_.AddObservation(
+      device_status_provider_.get());
+  policy_status_provider_observations_.AddObservation(
+      machine_status_provider_.get());
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   updater_status_and_value_provider_ =
@@ -308,7 +312,8 @@ void PolicyUIHandler::RegisterMessages() {
           Profile::FromWebUI(web_ui()));
   policy_value_provider_observations_.AddObservation(
       updater_status_and_value_provider_.get());
-  updater_status_and_value_provider_->SetStatusChangeCallback(update_callback);
+  policy_status_provider_observations_.AddObservation(
+      updater_status_and_value_provider_.get());
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -353,6 +358,10 @@ void PolicyUIHandler::OnPolicyValueChanged() {
   // Send also the status to UI because when policy value is updated, policy
   // status also might be updated and PolicyStatusProviders may not be listening
   // this change.
+  SendStatus();
+}
+
+void PolicyUIHandler::OnPolicyStatusChanged() {
   SendStatus();
 }
 

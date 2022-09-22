@@ -65,12 +65,14 @@ PolicyStatusProvider::PolicyStatusProvider() = default;
 
 PolicyStatusProvider::~PolicyStatusProvider() = default;
 
-void PolicyStatusProvider::SetStatusChangeCallback(
-    const base::RepeatingClosure& callback) {
-  callback_ = callback;
+void PolicyStatusProvider::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
 }
 
-// static
+void PolicyStatusProvider::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 base::Value::Dict PolicyStatusProvider::GetStatus() {
   // This method is called when the client is not enrolled.
   // Thus return an empty dictionary.
@@ -78,8 +80,8 @@ base::Value::Dict PolicyStatusProvider::GetStatus() {
 }
 
 void PolicyStatusProvider::NotifyStatusChange() {
-  if (callback_)
-    callback_.Run();
+  for (auto& observer : observers_)
+    observer.OnPolicyStatusChanged();
 }
 
 // static
