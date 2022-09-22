@@ -239,10 +239,13 @@ FileType.isHosted = (entry, opt_mimeType) => {
  *     It refers to a file 'images/filetype_' + icon + '.png'.
  */
 FileType.getIcon = (entry, opt_mimeType, opt_rootType) => {
-  const fileType = FileType.getType(entry, opt_mimeType);
-  const overridenIcon = FileType.getIconOverrides(entry, opt_rootType);
-  return entry.iconName || overridenIcon || fileType.icon || fileType.type ||
-      'unknown';
+  let icon;
+  if (entry) {
+    const fileType = FileType.getType(entry, opt_mimeType);
+    const overridenIcon = FileType.getIconOverrides(entry, opt_rootType);
+    icon = entry.iconName || overridenIcon || fileType.icon || fileType.type;
+  }
+  return icon || 'unknown';
 };
 
 /**
