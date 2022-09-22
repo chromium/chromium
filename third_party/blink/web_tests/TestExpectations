@@ -1359,8 +1359,6 @@ crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-007.html [
 crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-008.html [ Failure ]
 crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-009.html [ Failure ]
 crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/row-wrap-001.html [ Failure ]
-crbug.com/240765 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-border-sizing.html [ Failure ]
-crbug.com/240765 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-content-sizing.html [ Failure ]
 
 # These require css-align-3 positional keywords that Blink doesn't yet support for flexbox.
 crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-safe-overflow-position-001.html [ Failure ]
