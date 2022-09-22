@@ -651,7 +651,7 @@ TEST_F(PrefServiceSyncableMergeTest, RegisterShouldClearTypeMismatchingData) {
 
   pref_registry_->RegisterListPref(
       pref_name, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  EXPECT_TRUE(GetPreferenceValue(pref_name).GetListDeprecated().empty());
+  EXPECT_TRUE(GetPreferenceValue(pref_name).GetList().empty());
   EXPECT_FALSE(user_prefs_->GetValue(pref_name, nullptr));
 
   prefs_.RemoveSyncedPrefObserver(pref_name, &observer);
