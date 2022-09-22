@@ -79,6 +79,9 @@ extern const wchar_t kRegValueDmToken[];
 extern const wchar_t kWindowsServiceName[];
 extern const wchar_t kWindowsInternalServiceName[];
 
+// Windows event name used to signal the legacy GoogleUpdate processes to exit.
+constexpr wchar_t kShutdownEvent[] = L"{A0C1F415-D2CE-4ddc-9B48-14E56FD55162}";
+
 // crbug.com/1259178: there is a race condition on activating the COM service
 // and the service shutdown. The race condition is likely to occur when a new
 // instance of an updater coclass is created right after the last reference
