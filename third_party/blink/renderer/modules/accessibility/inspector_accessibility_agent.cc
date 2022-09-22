@@ -1047,10 +1047,6 @@ void InspectorAccessibilityAgent::queryAXTree(
     vector.emplace_back(std::move(query));
     queries_.insert(&document, std::move(vector));
   }
-  // The agent might not be enabled because querying is allowed without
-  // enabling the Accessibility domain. Therefore, we register the agent
-  // with the cache to receive the AXReadyCallback.
-  cache.AddInspectorAgent(this);
   // ScheduleVisualUpdate() ensures the lifecycle doesn't get stalled,
   // and therefore ensures we get the AXReadyCallback callback as soon as a11y
   // is clean again.
@@ -1318,9 +1314,6 @@ void InspectorAccessibilityAgent::ProvideTo(LocalFrame* frame) {
 
 void InspectorAccessibilityAgent::RetainAXContextForDocument(
     Document* document) {
-  if (!enabled_.Get()) {
-    return;
-  }
   if (!document_to_context_map_.Contains(document)) {
     auto context = std::make_unique<AXContext>(*document, ui::kAXModeComplete);
     auto& cache = To<AXObjectCacheImpl>(context->GetAXObjectCache());
