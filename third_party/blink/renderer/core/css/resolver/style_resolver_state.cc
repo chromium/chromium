@@ -151,8 +151,7 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData()
 void StyleResolverState::SetParentStyle(
     scoped_refptr<const ComputedStyle> parent_style) {
   parent_style_ = std::move(parent_style);
-  // TODO(crbug.com/937104): UpdateLengthConversionData() for both SetStyle()
-  // and SetParentStyle() is probably inefficient.
+  // Need to update conversion data for 'lh' units.
   UpdateLengthConversionData();
 }
 
