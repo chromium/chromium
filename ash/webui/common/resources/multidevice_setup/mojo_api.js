@@ -2,18 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-import 'chrome://resources/mojo/chromeos/ash/components/multidevice/mojom/multidevice_types.mojom-lite.js';
-import 'chrome://resources/mojo/ash/services/device_sync/public/mojom/device_sync.mojom-lite.js';
-import 'chrome://resources/mojo/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-lite.js';
-
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {MultiDeviceSetup, MultiDeviceSetupRemote} from 'chrome://resources/mojo/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 
 /** @interface */
 export class MojoInterfaceProvider {
   /**
-   * @return {!ash.multideviceSetup.mojom.MultiDeviceSetupRemote}
+   * @return {!MultiDeviceSetupRemote}
    */
   getMojoServiceRemote() {}
 }
@@ -21,14 +16,14 @@ export class MojoInterfaceProvider {
 /** @implements {MojoInterfaceProvider} */
 export class MojoInterfaceProviderImpl {
   constructor() {
-    /** @private {?ash.multideviceSetup.mojom.MultiDeviceSetupRemote} */
+    /** @private {?MultiDeviceSetupRemote} */
     this.remote_ = null;
   }
 
   /** @override */
   getMojoServiceRemote() {
     if (!this.remote_) {
-      this.remote_ = ash.multideviceSetup.mojom.MultiDeviceSetup.getRemote();
+      this.remote_ = MultiDeviceSetup.getRemote();
     }
 
     return this.remote_;

@@ -11,4 +11,7 @@ mojom("mojom") {
   sources = [ "multidevice_setup.mojom" ]
 
   public_deps = [ "//ash/services/device_sync/public/mojom" ]
+
+  webui_module_path =
+      "chrome://resources/mojo/ash/services/multidevice_setup/public/mojom"
 }

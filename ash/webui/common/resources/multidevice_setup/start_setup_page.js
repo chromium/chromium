@@ -14,6 +14,8 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import {WebUIListenerBehavior} from '//resources/cr_elements/web_ui_listener_behavior.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ConnectivityStatus} from 'chrome://resources/mojo/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js';
+import {HostDevice} from 'chrome://resources/mojo/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 
 import {MultiDeviceSetupDelegate} from './multidevice_setup_delegate.js';
 import {getTemplate} from './start_setup_page.html.js';
@@ -51,7 +53,7 @@ Polymer({
     /**
      * Array of objects representing all potential MultiDevice hosts.
      *
-     * @type {!Array<!ash.multideviceSetup.mojom.HostDevice>}
+     * @type {!Array<!HostDevice>}
      */
     devices: {
       type: Array,
@@ -155,7 +157,7 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!ash.multideviceSetup.mojom.HostDevice>} devices
+   * @param {!Array<!HostDevice>} devices
    * @return {string} Label for devices selection content.
    * @private
    */
@@ -171,7 +173,7 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!ash.multideviceSetup.mojom.HostDevice>} devices
+   * @param {!Array<!HostDevice>} devices
    * @return {boolean} True if there are more than one potential host devices.
    * @private
    */
@@ -180,7 +182,7 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!ash.multideviceSetup.mojom.HostDevice>} devices
+   * @param {!Array<!HostDevice>} devices
    * @return {boolean} True if there is exactly one potential host device.
    * @private
    */
@@ -189,7 +191,7 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!ash.multideviceSetup.mojom.HostDevice>} devices
+   * @param {!Array<!HostDevice>} devices
    * @return {string} Name of the first device in device list if there are any.
    *     Returns an empty string otherwise.
    * @private
@@ -199,25 +201,23 @@ Polymer({
   },
 
   /**
-   * @param {!ash.deviceSync.mojom.ConnectivityStatus} connectivityStatus
+   * @param {!ConnectivityStatus} connectivityStatus
    * @return {string} The classes to bind to the device name option.
    * @private
    */
   getDeviceOptionClass_(connectivityStatus) {
-    return connectivityStatus ===
-            ash.deviceSync.mojom.ConnectivityStatus.kOffline ?
+    return connectivityStatus === ConnectivityStatus.kOffline ?
         'offline-device-name' :
         '';
   },
 
   /**
-   * @param {!ash.multideviceSetup.mojom.HostDevice} device
+   * @param {!HostDevice} device
    * @return {string} Name of the device, with connectivity status information.
    * @private
    */
   getDeviceNameWithConnectivityStatus_(device) {
-    return device.connectivityStatus ===
-            ash.deviceSync.mojom.ConnectivityStatus.kOffline ?
+    return device.connectivityStatus === ConnectivityStatus.kOffline ?
         this.i18n(
             'startSetupPageOfflineDeviceOption',
             device.remoteDevice.deviceName) :
@@ -225,7 +225,7 @@ Polymer({
   },
 
   /**
-   * @param {!ash.multideviceSetup.mojom.HostDevice} device
+   * @param {!HostDevice} device
    * @return {string} Returns a unique identifier for the input device, using
    *     the device's Instance ID if it is available; otherwise, the device's
    *     legacy device ID is used.

@@ -87,7 +87,7 @@ js_type_check("closure_compile_local") {
 # own js_type_check in order not to conflict with chrome externs.
 js_type_check("closure_compile_multidevice_setup") {
   is_polymer3 = true
-  closure_flags = default_closure_args
+  closure_flags = default_closure_args + mojom_js_args
   deps = [ ":multidevice_setup.m" ]
 }
 
@@ -381,6 +381,7 @@ js_library("multidevice_setup.m") {
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button.m",
     "../../components/buttons:oobe_text_button.m",
+    "//ash/services/multidevice_setup/public/mojom:mojom_webui_js",
     "//ash/webui/common/resources/multidevice_setup:mojo_api",
     "//ash/webui/common/resources/multidevice_setup:multidevice_setup",
     "//ash/webui/common/resources/multidevice_setup:multidevice_setup_delegate",

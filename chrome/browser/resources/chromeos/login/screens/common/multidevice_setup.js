@@ -7,14 +7,14 @@
  */
 
 /* #js_imports_placeholder */
+import {PrivilegedHostDeviceSetter, PrivilegedHostDeviceSetterRemote} from 'chrome://resources/mojo/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js';
 
 /** @implements {MultiDeviceSetupDelegate} */
 class MultiDeviceSetupScreenDelegate {
 
   constructor() {
     /**
-     * @private {?ash.multideviceSetup.mojom.
-     *               PrivilegedHostDeviceSetterRemote}
+     * @private {?PrivilegedHostDeviceSetterRemote}
      */
     this.remote_ = null;
   }
@@ -31,8 +31,7 @@ class MultiDeviceSetupScreenDelegate {
     assert(!opt_authToken);
 
     if (!this.remote_) {
-      this.remote_ =
-          ash.multideviceSetup.mojom.PrivilegedHostDeviceSetter.getRemote();
+      this.remote_ = PrivilegedHostDeviceSetter.getRemote();
     }
 
     return /** @type {!Promise<{success: boolean}>} */ (

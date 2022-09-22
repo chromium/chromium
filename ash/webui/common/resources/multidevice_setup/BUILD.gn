@@ -8,6 +8,8 @@ assert(is_chromeos_ash, "MultiDevice UI is Chrome OS only.")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args
+
   deps = [
     ":button_bar",
     ":fake_mojo_service",
@@ -31,14 +33,14 @@ js_library("button_bar") {
 
 js_library("fake_mojo_service") {
   deps = [
-    "//ash/services/multidevice_setup/public/mojom:mojom_js_library_for_compile",
+    "//ash/services/multidevice_setup/public/mojom:mojom_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
 }
 
 js_library("mojo_api") {
   deps = [
-    "//ash/services/multidevice_setup/public/mojom:mojom_js_library_for_compile",
+    "//ash/services/multidevice_setup/public/mojom:mojom_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -52,6 +54,7 @@ js_library("multidevice_setup") {
     ":password_page",
     ":setup_succeeded_page",
     ":start_setup_page",
+    "//ash/services/multidevice_setup/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
     "//ui/webui/resources/js:cr.m",
   ]
@@ -84,6 +87,8 @@ js_library("start_setup_page") {
     ":mojo_api",
     ":multidevice_setup_delegate",
     ":ui_page_container_behavior",
+    "//ash/services/device_sync/public/mojom:mojom_webui_js",
+    "//ash/services/multidevice_setup/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
   ]
   externs_list =
