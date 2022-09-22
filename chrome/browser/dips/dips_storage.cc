@@ -4,9 +4,14 @@
 
 #include "chrome/browser/dips/dips_storage.h"
 
+#include <memory>
+
+#include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "sql/init_status.h"
 #include "url/gurl.h"
 
 namespace {
@@ -34,36 +39,56 @@ inline void UmaHistogramTimeToStorage(base::TimeDelta sample,
 }  // namespace
 
 DIPSStorage::DIPSStorage() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AssertLongCPUWorkAllowed();
 }
 
 DIPSStorage::~DIPSStorage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void DIPSStorage::Init(const absl::optional<base::FilePath>& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  db_ = std::make_unique<DIPSDatabase>(path);
+
+  if (db_->Init() != sql::INIT_OK) {
+    CHECK(!db_->in_memory()) << "In-memory db failed to initialize.";
+    // TODO: collect a UMA metric so we know if problems are widespread.
+
+    // Try making an in-memory database instead.
+    db_ = std::make_unique<DIPSDatabase>(absl::nullopt);
+    sql::InitStatus status = db_->Init();
+    CHECK_EQ(status, sql::INIT_OK);
+  }
+}
+
+// DIPSDatabase interaction functions ------------------------------------------
+
 DIPSState DIPSStorage::Read(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string site = GetDIPSSite(url);
-  auto iter = map_.find(site);
-  if (iter == map_.end()) {
-    return DIPSState(this, std::move(site));
+  absl::optional<StateValue> state = db_->Read(site);
+
+  if (state.has_value()) {
+    return DIPSState(this, std::move(site), state.value());
   }
-  const StateValue& value = iter->second;
-  DIPSState state(this, std::move(site), value);
-  return state;
+  return DIPSState(this, std::move(site));
 }
 
 void DIPSStorage::Write(const DIPSState& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StateValue& value = map_[state.site()];
-  value.site_storage_time = state.site_storage_time();
-  value.user_interaction_time = state.user_interaction_time();
+  db_->Write(state.site(), state.site_storage_time(),
+             state.user_interaction_time());
 }
+
+// DIPSTabHelper Function Impls ------------------------------------------------
 
 void DIPSStorage::RecordStorage(const GURL& url,
                                 base::Time time,
                                 DIPSCookieMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
+
   DIPSState state = Read(url);
   if (state.site_storage_time()) {
     // We want the time that storage was first written, so don't overwrite the
@@ -84,6 +109,8 @@ void DIPSStorage::RecordInteraction(const GURL& url,
                                     base::Time time,
                                     DIPSCookieMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
+
   DIPSState state = Read(url);
   if (!state.user_interaction_time()) {
     // First interaction on site.

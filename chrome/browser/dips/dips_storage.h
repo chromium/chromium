@@ -8,20 +8,21 @@
 #include <map>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chrome/browser/dips/dips_database.h"
 #include "chrome/browser/dips/dips_state.h"
 
 class GURL;
 
 // Manages the storage of DIPSState values.
-//
-// This is currently in-memory only. It will be replaced with a SQLite
-// implementation soon.
 class DIPSStorage {
  public:
   DIPSStorage();
   ~DIPSStorage();
+
+  void Init(const absl::optional<base::FilePath>& path);
 
   DIPSState Read(const GURL& url);
 
@@ -39,11 +40,7 @@ class DIPSStorage {
   friend class DIPSState;
   void Write(const DIPSState& state);
 
-  // We don't store DIPSState instances in the map, because we don't want
-  // mutations to be persisted until they are flushed, nor do we want to allow
-  // copying DIPSState values because that won't be possible once they are
-  // backed by SQLite transactions.
-  std::map<std::string, StateValue> map_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<DIPSDatabase> db_ GUARDED_BY_CONTEXT(sequence_checker_);
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

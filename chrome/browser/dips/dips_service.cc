@@ -14,7 +14,10 @@ DIPSService::DIPSService(content::BrowserContext* context)
     : browser_context_(context),
       cookie_settings_(CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context))),
-      storage_(base::SequenceBound<DIPSStorage>(CreateTaskRunner())) {}
+      storage_(base::SequenceBound<DIPSStorage>(CreateTaskRunner())) {
+  // TODO(crbug.com/1342228): Persist DB to disk for non-OTR profiles.
+  storage_.AsyncCall(&DIPSStorage::Init).WithArgs(absl::nullopt);
+}
 
 DIPSService::~DIPSService() = default;
 

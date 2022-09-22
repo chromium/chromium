@@ -60,6 +60,11 @@ struct StateValue {
   absl::optional<base::Time> user_interaction_time;
 };
 
+inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
+  return (lhs.site_storage_time == rhs.site_storage_time) &&
+         (lhs.user_interaction_time == rhs.user_interaction_time);
+}
+
 // Return the number of seconds in `td`, clamped to [0, 10].
 // i.e. 11 linearly-sized buckets.
 int64_t BucketizeBounceDelay(base::TimeDelta delta);

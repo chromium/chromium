@@ -8,6 +8,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "url/gurl.h"
 
 // CookieAccessType:
 base::StringPiece CookieAccessTypeToString(CookieAccessType type) {

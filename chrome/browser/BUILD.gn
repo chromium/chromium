@@ -414,6 +414,8 @@ static_library("browser") {
     "dips/cookie_access_filter.h",
     "dips/dips_bounce_detector.cc",
     "dips/dips_bounce_detector.h",
+    "dips/dips_database.cc",
+    "dips/dips_database.h",
     "dips/dips_helper.cc",
     "dips/dips_helper.h",
     "dips/dips_service.cc",

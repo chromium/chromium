@@ -8,6 +8,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+class DIPSStorageTest : public testing::Test {
+ public:
+  DIPSStorageTest() = default;
+
+ protected:
+  DIPSStorage storage_;
+
+ private:
+  // Test setup.
+  void SetUp() override { storage_.Init(absl::nullopt); }
+};
+
 TEST(DirtyBit, Constructor) {
   ASSERT_FALSE(DirtyBit());
   ASSERT_TRUE(DirtyBit(true));
@@ -43,65 +55,61 @@ TEST(DIPSUtilsTest, GetDIPSSite) {
   EXPECT_EQ("[::1]", GetDIPSSite(GURL("http://[::1]/")));
 }
 
-TEST(DIPSStateTest, NewURL) {
-  DIPSStorage storage;
-  DIPSState state = storage.Read(GURL("http://example.com/"));
+TEST_F(DIPSStorageTest, NewURL) {
+  DIPSState state = storage_.Read(GURL("http://example.com/"));
   EXPECT_FALSE(state.was_loaded());
   EXPECT_FALSE(state.site_storage_time().has_value());
   EXPECT_FALSE(state.user_interaction_time().has_value());
 }
 
-TEST(DIPSStateTest, SetValues) {
+TEST_F(DIPSStorageTest, SetValues) {
   GURL url("https://example.com");
   auto time1 = absl::make_optional(base::Time::FromDoubleT(1));
   auto time2 = absl::make_optional(base::Time::FromDoubleT(2));
-  DIPSStorage storage;
 
   {
-    DIPSState state = storage.Read(url);
+    DIPSState state = storage_.Read(url);
     state.set_site_storage_time(time1);
     state.set_user_interaction_time(time2);
 
     // Before flushing `state`, reads for the same URL won't include its
     // changes.
-    DIPSState state2 = storage.Read(url);
+    DIPSState state2 = storage_.Read(url);
     EXPECT_FALSE(state2.site_storage_time().has_value());
     EXPECT_FALSE(state2.user_interaction_time().has_value());
   }
 
-  DIPSState state = storage.Read(url);
+  DIPSState state = storage_.Read(url);
   EXPECT_TRUE(state.was_loaded());
   EXPECT_EQ(state.site_storage_time(), time1);
   EXPECT_EQ(state.user_interaction_time(), time2);
 }
 
-TEST(DIPSStateTest, SameSiteSameState) {
+TEST_F(DIPSStorageTest, SameSiteSameState) {
   // The two urls use different subdomains of example.com; and one is HTTPS
   // while the other is HTTP.
   GURL url1("https://subdomain1.example.com");
   GURL url2("http://subdomain2.example.com");
   auto time = absl::make_optional(base::Time::FromDoubleT(1));
-  DIPSStorage storage;
 
-  storage.Read(url1).set_site_storage_time(time);
+  storage_.Read(url1).set_site_storage_time(time);
 
-  DIPSState state = storage.Read(url2);
+  DIPSState state = storage_.Read(url2);
   // State was recorded for url1, but can be read for url2.
   EXPECT_EQ(time, state.site_storage_time());
   EXPECT_FALSE(state.user_interaction_time().has_value());
 }
 
-TEST(DIPSStateTest, DifferentSiteDifferentState) {
+TEST_F(DIPSStorageTest, DifferentSiteDifferentState) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
   auto time1 = absl::make_optional(base::Time::FromDoubleT(1));
   auto time2 = absl::make_optional(base::Time::FromDoubleT(2));
-  DIPSStorage storage;
 
-  storage.Read(url1).set_site_storage_time(time1);
-  storage.Read(url2).set_site_storage_time(time2);
+  storage_.Read(url1).set_site_storage_time(time1);
+  storage_.Read(url2).set_site_storage_time(time2);
 
   // Verify that url1 and url2 have independent state:
-  EXPECT_EQ(storage.Read(url1).site_storage_time(), time1);
-  EXPECT_EQ(storage.Read(url2).site_storage_time(), time2);
+  EXPECT_EQ(storage_.Read(url1).site_storage_time(), time1);
+  EXPECT_EQ(storage_.Read(url2).site_storage_time(), time2);
 }
