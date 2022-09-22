@@ -347,19 +347,26 @@ DEBIAN_PACKAGES="\
   libxcb-glx0-dev
   libxcb-icccm4
   libxcb-image0
+  libxcb-image0-dev
   libxcb-keysyms1
   libxcb-present-dev
   libxcb-present0
   libxcb-randr0
+  libxcb-randr0-dev
   libxcb-render-util0
+  libxcb-render-util0-dev
   libxcb-render0
   libxcb-render0-dev
   libxcb-shape0
+  libxcb-shape0-dev
   libxcb-shm0
   libxcb-shm0-dev
+  libxcb-sync-dev
   libxcb-sync1
+  libxcb-util-dev
   libxcb-util1
   libxcb-xfixes0
+  libxcb-xfixes0-dev
   libxcb-xinerama0
   libxcb-xinput0
   libxcb-xkb1
