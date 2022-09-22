@@ -23,7 +23,8 @@ namespace os.diagnostics {
     memory,
     nvme_wear_level,
     smartctl_check,
-    lan_connectivity
+    lan_connectivity,
+    signal_strength
   };
 
   enum RoutineStatus {
@@ -170,6 +171,8 @@ namespace os.diagnostics {
 
     [supportsPromises] static void runNvmeWearLevelRoutine(RunNvmeWearLevelRequest request,
                                                            RunRoutineCallback callback);
+
+    [supportsPromises] static void runSignalStrengthRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runSmartctlCheckRoutine(RunRoutineCallback callback);
   };

@@ -78,6 +78,9 @@ bool ConvertMojoRoutine(MojoRoutineType in, RoutineType* out) {
     case MojoRoutineType::kNvmeWearLevel:
       *out = RoutineType::ROUTINE_TYPE_NVME_WEAR_LEVEL;
       return true;
+    case MojoRoutineType::kSignalStrength:
+      *out = RoutineType::ROUTINE_TYPE_SIGNAL_STRENGTH;
+      return true;
     case MojoRoutineType::kSmartctlCheck:
       *out = RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK;
       return true;

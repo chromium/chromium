@@ -16,7 +16,7 @@ module crosapi.mojom;
 
 // Interface for exposing diagnostics service. Implemented in ash-chrome.
 //
-// Next ID: 18
+// Next ID: 19
 [Stable, Uuid="14bc6194-c059-4048-9bea-ca6823eeda82",
 RenamedFrom="ash.health.mojom.DiagnosticsService"]
 interface DiagnosticsService {
@@ -279,11 +279,21 @@ interface DiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunDnsResolutionRoutine@17() => (DiagnosticsRunRoutineResponse response);
+  
+  // Requests that the SignalStrength routine is created and started on the
+  // platform. This routine checks whether there is an acceptable signal
+  // strength on wireless networks. This routine is only available if
+  // GetAvailableRoutines returned kSignalStrength.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunSignalStrengthRoutine@18() => (DiagnosticsRunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// Next ID: 17
+// Next ID: 18
 [Stable, Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineEnum"]
 enum DiagnosticsRoutineEnum {
   [Default] kUnknown = 15,
@@ -303,6 +313,7 @@ enum DiagnosticsRoutineEnum {
   kMemory = 13,
   kLanConnectivity = 14,
   kDnsResolution = 16,
+  kSignalStrength = 17,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.

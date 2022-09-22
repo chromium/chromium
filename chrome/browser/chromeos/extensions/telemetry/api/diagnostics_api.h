@@ -365,6 +365,25 @@ class OsDiagnosticsRunNvmeWearLevelRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunSignalStrengthRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runSignalStrengthRoutine",
+                             OS_DIAGNOSTICS_RUNSIGNALSTRENGTHROUTINE)
+
+  OsDiagnosticsRunSignalStrengthRoutineFunction();
+  OsDiagnosticsRunSignalStrengthRoutineFunction(
+      const OsDiagnosticsRunSignalStrengthRoutineFunction&) = delete;
+  OsDiagnosticsRunSignalStrengthRoutineFunction& operator=(
+      const OsDiagnosticsRunSignalStrengthRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunSignalStrengthRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunSmartctlCheckRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:

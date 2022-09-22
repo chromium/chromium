@@ -97,6 +97,8 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
       RunLanConnectivityRoutineCallback callback) override;
   void RunDnsResolutionRoutine(
       RunDnsResolutionRoutineCallback callback) override;
+  void RunSignalStrengthRoutine(
+      RunSignalStrengthRoutineCallback callback) override;
 
   // Pointer to real implementation.
   mojo::Remote<cros_healthd::mojom::CrosHealthdDiagnosticsService> service_;

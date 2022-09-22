@@ -106,6 +106,11 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   }
   {
     RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kSignalStrength, &out));
+    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_SIGNAL_STRENGTH);
+  }
+  {
+    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kSmartctlCheck, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK);
   }

@@ -272,7 +272,16 @@ void FakeDiagnosticsService::RunDnsResolutionRoutine(
   actual_passed_parameters_.clear();
   actual_called_routine_ =
       crosapi::mojom::DiagnosticsRoutineEnum::kDnsResolution;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
+}
 
+void FakeDiagnosticsService::RunSignalStrengthRoutine(
+    RunSignalStrengthRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_called_routine_ =
+      crosapi::mojom::DiagnosticsRoutineEnum::kSignalStrength;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));

@@ -323,4 +323,16 @@ void DiagnosticsServiceAsh::RunDnsResolutionRoutine(
       std::move(callback)));
 }
 
+void DiagnosticsServiceAsh::RunSignalStrengthRoutine(
+    RunSignalStrengthRoutineCallback callback) {
+  GetService()->RunSignalStrengthRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::RunSignalStrengthRoutineCallback
+             callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
 }  // namespace ash

@@ -438,6 +438,20 @@ void OsDiagnosticsRunNvmeWearLevelRoutineFunction::RunIfAllowed() {
       params->request.wear_level_threshold, std::move(cb));
 }
 
+// OsDiagnosticsRunSignalStrengthRoutineFunction -------------------------------
+
+OsDiagnosticsRunSignalStrengthRoutineFunction::
+    OsDiagnosticsRunSignalStrengthRoutineFunction() = default;
+OsDiagnosticsRunSignalStrengthRoutineFunction::
+    ~OsDiagnosticsRunSignalStrengthRoutineFunction() = default;
+
+void OsDiagnosticsRunSignalStrengthRoutineFunction::RunIfAllowed() {
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  GetRemoteService()->RunSignalStrengthRoutine(std::move(cb));
+}
+
 // OsDiagnosticsRunSmartctlCheckRoutineFunction --------------------------------
 
 OsDiagnosticsRunSmartctlCheckRoutineFunction::

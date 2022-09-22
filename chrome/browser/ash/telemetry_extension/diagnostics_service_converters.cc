@@ -103,6 +103,8 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
       return crosapi::mojom::DiagnosticsRoutineEnum::kLanConnectivity;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolution:
       return crosapi::mojom::DiagnosticsRoutineEnum::kDnsResolution;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kSignalStrength:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kSignalStrength;
     default:
       return absl::nullopt;
   }
