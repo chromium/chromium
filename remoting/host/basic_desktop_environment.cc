@@ -17,6 +17,7 @@
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_capturer_proxy.h"
+#include "remoting/host/desktop_capturer_wrapper.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/file_transfer/local_file_operations.h"
 #include "remoting/host/input_injector.h"
@@ -175,12 +176,16 @@ std::unique_ptr<DesktopCapturer>
 BasicDesktopEnvironment::CreateVideoCapturer() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  // TODO(joedow): Detangle the threads involved in the mouse cursor composer
-  // classes so we can run the capturer and scheduler on a dedicated thread.
+  // TODO(joedow): Determine whether we can migrate additional platforms to
+  // using the DesktopCaptureWrapper instead of the DesktopCaptureProxy. Then
+  // clean up DesktopCapturerProxy::Core::CreateCapturer().
+#if BUILDFLAG(IS_LINUX) && !defined(REMOTING_USE_WAYLAND)
+  auto desktop_capturer = std::make_unique<DesktopCapturerWrapper>();
+#else
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   capture_task_runner = ui_task_runner_;
-#elif BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_WAYLAND)
   // Each capturer instance should get its own thread so the capturers don't
   // compete with each other in multistream mode.
   capture_task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
@@ -193,9 +198,9 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
   // thread on Windows, the cursor shape won't be captured when in GDI mode.
   capture_task_runner = video_capture_task_runner_;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_LINUX)
-
   auto desktop_capturer =
       std::make_unique<DesktopCapturerProxy>(std::move(capture_task_runner));
+#endif  // !BUILDFLAG(IS_LINUX) || defined(REMOTING_USE_WAYLAND)
 
 #if defined(REMOTING_USE_X11)
   // Workaround for http://crbug.com/1361502: Run each capturer (and
