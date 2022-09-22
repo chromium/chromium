@@ -33,7 +33,7 @@ export function inputListTestSuite() {
     setInputDataProviderForTesting(provider);
 
     diagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
-    DiagnosticsBrowserProxyImpl.instance_ = diagnosticsBrowserProxy;
+    DiagnosticsBrowserProxyImpl.setInstance(diagnosticsBrowserProxy);
   });
 
   setup(() => {

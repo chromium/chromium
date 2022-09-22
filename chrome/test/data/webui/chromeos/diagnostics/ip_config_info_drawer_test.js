@@ -24,7 +24,7 @@ export function ipConfigInfoDrawerTestSuite() {
 
   suiteSetup(() => {
     DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
-    DiagnosticsBrowserProxyImpl.instance_ = DiagnosticsBrowserProxy;
+    DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
   });
 
   setup(() => {

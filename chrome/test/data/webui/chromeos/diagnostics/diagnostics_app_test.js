@@ -47,7 +47,7 @@ export function appTestSuite() {
     setNetworkHealthProviderForTesting(networkHealthProvider);
 
     DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
-    DiagnosticsBrowserProxyImpl.instance_ = DiagnosticsBrowserProxy;
+    DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
 
     // Setup a fake routine controller.
     routineController = new FakeSystemRoutineController();
@@ -263,7 +263,7 @@ export function appTestSuiteForInputHiding() {
     setInputDataProviderForTesting(inputDataProvider);
 
     DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
-    DiagnosticsBrowserProxyImpl.instance_ = DiagnosticsBrowserProxy;
+    DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
   });
 
   setup(() => {

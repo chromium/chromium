@@ -77,7 +77,7 @@ export function systemPageTestSuite() {
     setNetworkHealthProviderForTesting(networkHealthProvider);
 
     DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
-    DiagnosticsBrowserProxyImpl.instance_ = DiagnosticsBrowserProxy;
+    DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
 
     // Setup a fake routine controller.
     routineController = new FakeSystemRoutineController();

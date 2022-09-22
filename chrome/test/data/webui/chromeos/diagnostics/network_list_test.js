@@ -47,7 +47,7 @@ export function networkListTestSuite() {
     setSystemRoutineControllerForTesting(routineController);
 
     DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
-    DiagnosticsBrowserProxyImpl.instance_ = DiagnosticsBrowserProxy;
+    DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
   });
 
   teardown(() => {
