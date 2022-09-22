@@ -1187,10 +1187,11 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     if (is_conditional_ui_request &&
         options->publicKey()->hasAllowCredentials() &&
         !options->publicKey()->allowCredentials().empty()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotAllowedError,
-          "allowCredentials is not supported for conditionalPublicKey"));
-      return promise;
+      // TODO(https://crbug.com/1365669): Right now this list is removed, but
+      // should be passed through when it can be applied as a filter to
+      // available passkeys.
+      options->publicKey()->setAllowCredentials(
+          HeapVector<Member<PublicKeyCredentialDescriptor>>());
     }
 
     if (is_conditional_ui_request) {
