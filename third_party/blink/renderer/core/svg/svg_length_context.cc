@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
@@ -485,13 +486,15 @@ float SVGLengthContext::ConvertValueFromICSToUserUnits(float value) const {
 }
 
 float SVGLengthContext::ConvertValueFromUserUnitsToLHS(float value) const {
-  // TODO(crbug.com/937104): Implement.
-  return 0;
+  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
+  return value / AdjustForAbsoluteZoom::AdjustFloat(style->ComputedLineHeight(),
+                                                    *style);
 }
 
 float SVGLengthContext::ConvertValueFromLHSToUserUnits(float value) const {
-  // TODO(crbug.com/937104): Implement.
-  return 0;
+  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
+  return value * AdjustForAbsoluteZoom::AdjustFloat(style->ComputedLineHeight(),
+                                                    *style);
 }
 
 float SVGLengthContext::ConvertValueFromUserUnitsToEXS(float value) const {
