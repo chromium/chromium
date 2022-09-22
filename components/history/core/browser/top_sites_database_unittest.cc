@@ -117,8 +117,7 @@ TEST_F(TopSitesDatabaseTest, Version4) {
   VerifyTablesAndColumns(db.db_for_testing());
 
   // Basic operational check.
-  MostVisitedURLList urls;
-  db.GetSites(&urls);
+  MostVisitedURLList urls = db.GetSites();
   ASSERT_EQ(3u, urls.size());
   EXPECT_EQ(kUrl0, urls[0].url);  // [0] because of url_rank.
 
@@ -127,7 +126,7 @@ TEST_F(TopSitesDatabaseTest, Version4) {
   ASSERT_TRUE(db.RemoveURLNoTransactionForTesting(urls[1]));
   transaction.Commit();
 
-  db.GetSites(&urls);
+  urls = db.GetSites();
   ASSERT_EQ(2u, urls.size());
 }
 
@@ -230,8 +229,7 @@ TEST_F(TopSitesDatabaseTest, Recovery4_CorruptHeader) {
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
 
-    MostVisitedURLList urls;
-    db.GetSites(&urls);
+    MostVisitedURLList urls = db.GetSites();
     ASSERT_EQ(3u, urls.size());
     EXPECT_EQ(kUrl0, urls[0].url);  // [0] because of url_rank.
   }
@@ -301,8 +299,7 @@ TEST_F(TopSitesDatabaseTest, Recovery4_CorruptIndex) {
     EXPECT_EQ(2,
               db.GetURLRankForTesting(MostVisitedURL(kUrl2, std::u16string())));
 
-    MostVisitedURLList urls;
-    db.GetSites(&urls);
+    MostVisitedURLList urls = db.GetSites();
     ASSERT_EQ(3u, urls.size());
     EXPECT_EQ(kUrl0, urls[0].url);  // [0] because of url_rank.
     EXPECT_EQ(kUrl1, urls[1].url);  // [1] because of url_rank.
@@ -375,8 +372,7 @@ TEST_F(TopSitesDatabaseTest, Recovery4_CorruptIndexAndLostRow) {
     EXPECT_EQ(TopSitesDatabase::kRankOfNonExistingURL,
               db.GetURLRankForTesting(MostVisitedURL(kUrl1, std::u16string())));
 
-    MostVisitedURLList urls;
-    db.GetSites(&urls);
+    MostVisitedURLList urls = db.GetSites();
     ASSERT_EQ(2u, urls.size());
     EXPECT_EQ(kUrl0, urls[0].url);  // [0] because of url_rank.
     EXPECT_EQ(kUrl2, urls[1].url);  // [1] because of url_rank.
@@ -398,8 +394,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_Delete) {
   db.ApplyDelta(delta);
 
   // Read db and verify.
-  MostVisitedURLList urls;
-  db.GetSites(&urls);
+  MostVisitedURLList urls = db.GetSites();
   VerifyURLsEqual(std::vector<GURL>({kUrl1, kUrl2}), urls);
 }
 
@@ -422,8 +417,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_Add) {
   db.ApplyDelta(delta);
 
   // Read db and verify.
-  MostVisitedURLList urls;
-  db.GetSites(&urls);
+  MostVisitedURLList urls = db.GetSites();
   VerifyURLsEqual(std::vector<GURL>({mapsUrl, kUrl0, kUrl1, kUrl2}), urls);
 }
 
@@ -445,8 +439,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_Move) {
   db.ApplyDelta(delta);
 
   // Read db and verify.
-  MostVisitedURLList urls;
-  db.GetSites(&urls);
+  MostVisitedURLList urls = db.GetSites();
   VerifyURLsEqual(std::vector<GURL>({kUrl0, kUrl2, kUrl1}), urls);
 }
 
@@ -480,8 +473,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_All) {
   db.ApplyDelta(delta);
 
   // Read db and verify.
-  MostVisitedURLList urls;
-  db.GetSites(&urls);
+  MostVisitedURLList urls = db.GetSites();
   VerifyURLsEqual(std::vector<GURL>({mapsUrl, kUrl2, kUrl1}), urls);
 }
 
@@ -505,9 +497,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_UpdatesAddedSiteTitle) {
 
     db.ApplyDelta(delta);
 
-    MostVisitedURLList urls;
-    db.GetSites(&urls);
-
+    MostVisitedURLList urls = db.GetSites();
     ASSERT_EQ(urls.size(), 2u);
 
     ASSERT_EQ(urls[0].url, url_a);
@@ -526,9 +516,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_UpdatesAddedSiteTitle) {
 
     db.ApplyDelta(delta);
 
-    MostVisitedURLList urls;
-    db.GetSites(&urls);
-
+    MostVisitedURLList urls = db.GetSites();
     ASSERT_EQ(urls.size(), 2u);
 
     ASSERT_EQ(urls[0].url, url_a);

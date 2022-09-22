@@ -356,8 +356,10 @@ void TopSitesDatabase::ApplyDelta(const TopSitesDelta& delta) {
   transaction.Commit();
 }
 
-void TopSitesDatabase::GetSites(MostVisitedURLList* urls) {
+MostVisitedURLList TopSitesDatabase::GetSites() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  MostVisitedURLList urls;
 
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE,
@@ -366,16 +368,16 @@ void TopSitesDatabase::GetSites(MostVisitedURLList* urls) {
 
   if (!statement.is_valid()) {
     LOG(WARNING) << db_->GetErrorMessage();
-    return;
+    return urls;
   }
-
-  urls->clear();
 
   while (statement.Step()) {
     // Results are sorted by url_rank.
-    urls->emplace_back(GURL(statement.ColumnString(0)),
-                       /*title=*/statement.ColumnString16(1));
+    urls.emplace_back(GURL(statement.ColumnString(0)),
+                      /*title=*/statement.ColumnString16(1));
   }
+
+  return urls;
 }
 
 void TopSitesDatabase::SetSiteNoTransaction(const MostVisitedURL& url,

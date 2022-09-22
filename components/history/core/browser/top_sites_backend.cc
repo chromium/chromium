@@ -88,10 +88,7 @@ void TopSitesBackend::ShutdownDBOnDBThread() {
 
 MostVisitedURLList TopSitesBackend::GetMostVisitedSitesOnDBThread() {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
-  MostVisitedURLList list;
-  if (db_)
-    db_->GetSites(&list);
-  return list;
+  return db_ ? db_->GetSites() : MostVisitedURLList();
 }
 
 void TopSitesBackend::UpdateTopSitesOnDBThread(

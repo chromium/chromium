@@ -42,8 +42,7 @@ class TopSitesDatabase {
   void ApplyDelta(const TopSitesDelta& delta);
 
   // Returns a list of all URLs currently in the table.
-  // WARNING: clears input argument.
-  void GetSites(MostVisitedURLList* urls);
+  MostVisitedURLList GetSites();
 
   sql::Database* db_for_testing();
 
