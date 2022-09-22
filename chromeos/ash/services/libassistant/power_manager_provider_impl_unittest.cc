@@ -11,8 +11,7 @@
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -54,7 +53,7 @@ class AssistantPowerManagerProviderImplTest : public testing::Test {
 
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
-    FakePowerManagerClient::Get()->set_tick_clock(
+    chromeos::FakePowerManagerClient::Get()->set_tick_clock(
         task_environment_.GetMockTickClock());
     power_manager_provider_impl_ = std::make_unique<PowerManagerProviderImpl>();
     power_manager_provider_impl_->set_tick_clock_for_testing(
@@ -166,5 +165,4 @@ TEST_F(AssistantPowerManagerProviderImplTest, CheckWakeAlarms) {
       CheckAddWakeAlarmAndExpiration(kAlarmRelativeTimeMs, kAlarmMaxDelayMs));
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

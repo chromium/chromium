@@ -11,8 +11,6 @@
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/services/assistant/public/cpp/conversation_observer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/ash/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
@@ -23,17 +21,18 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
-namespace assistant {
-namespace action {
+namespace chromeos::assistant::action {
 class CrosActionModule;
-}  // namespace action
-}  // namespace assistant
+}
+
+namespace ash {
+
+class AssistantClient;
 
 namespace libassistant {
 
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
-    : public mojom::ConversationController,
+    : public chromeos::libassistant::mojom::ConversationController,
       public AssistantClientObserver,
       public chromeos::assistant::action::AssistantActionObserver,
       public chromeos::assistant::ConversationObserver {
@@ -48,8 +47,10 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   ~ConversationController() override;
 
   void Bind(
-      mojo::PendingReceiver<mojom::ConversationController> receiver,
-      mojo::PendingRemote<mojom::NotificationDelegate> notification_delegate);
+      mojo::PendingReceiver<
+          chromeos::libassistant::mojom::ConversationController> receiver,
+      mojo::PendingRemote<chromeos::libassistant::mojom::NotificationDelegate>
+          notification_delegate);
 
   void AddActionObserver(
       chromeos::assistant::action::AssistantActionObserver* observer);
@@ -77,7 +78,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   void DismissNotification(AssistantNotification notification) override;
   void SendAssistantFeedback(const AssistantFeedback& feedback) override;
   void AddRemoteObserver(
-      mojo::PendingRemote<mojom::ConversationObserver> observer) override;
+      mojo::PendingRemote<chromeos::libassistant::mojom::ConversationObserver>
+          observer) override;
 
   // chromeos::assistant::action::AssistantActionObserver:
   void OnShowHtml(const std::string& html_content,
@@ -85,14 +87,15 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   void OnShowText(const std::string& text) override;
   void OnShowContextualQueryFallback() override;
   void OnShowSuggestions(
-      const std::vector<assistant::action::Suggestion>& suggestions) override;
+      const std::vector<chromeos::assistant::action::Suggestion>& suggestions)
+      override;
   void OnOpenUrl(const std::string& url, bool in_background) override;
   void OnOpenAndroidApp(
       const chromeos::assistant::AndroidAppInfo& app_info,
       const chromeos::assistant::InteractionInfo& interaction) override;
   void OnScheduleWait(int id, int time_ms) override;
   void OnShowNotification(
-      const assistant::action::Notification& notification) override;
+      const chromeos::assistant::action::Notification& notification) override;
 
   // chromeos::assistant::ConversationObserver:
   void OnInteractionStarted(
@@ -101,11 +104,12 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   void OnInteractionFinished(
       chromeos::assistant::AssistantInteractionResolution resolution) override;
 
-  const mojo::RemoteSet<mojom::ConversationObserver>* conversation_observers() {
+  const mojo::RemoteSet<chromeos::libassistant::mojom::ConversationObserver>*
+  conversation_observers() {
     return &observers_;
   }
 
-  assistant::action::CrosActionModule* action_module() {
+  chromeos::assistant::action::CrosActionModule* action_module() {
     return action_module_.get();
   }
 
@@ -114,11 +118,14 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
 
   void MaybeStopPreviousInteraction();
 
-  mojo::Receiver<mojom::ConversationController> receiver_;
-  mojo::RemoteSet<mojom::ConversationObserver> observers_;
-  mojo::RemoteSet<mojom::AuthenticationStateObserver>
+  mojo::Receiver<chromeos::libassistant::mojom::ConversationController>
+      receiver_;
+  mojo::RemoteSet<chromeos::libassistant::mojom::ConversationObserver>
+      observers_;
+  mojo::RemoteSet<chromeos::libassistant::mojom::AuthenticationStateObserver>
       authentication_state_observers_;
-  mojo::Remote<mojom::NotificationDelegate> notification_delegate_;
+  mojo::Remote<chromeos::libassistant::mojom::NotificationDelegate>
+      notification_delegate_;
 
   // Owned by ServiceController.
   // Set in `OnAssistantClientCreated()` and unset in
@@ -130,7 +137,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   bool requests_are_allowed_ = false;
 
   std::unique_ptr<GrpcEventsObserver> events_observer_;
-  std::unique_ptr<assistant::action::CrosActionModule> action_module_;
+  std::unique_ptr<chromeos::assistant::action::CrosActionModule> action_module_;
 
   std::unique_ptr<base::CancelableOnceClosure> stop_interaction_closure_;
   base::TimeDelta stop_interaction_delay_ = base::Milliseconds(500);
@@ -140,6 +147,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
 };
 
 }  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  //  CHROMEOS_ASH_SERVICES_LIBASSISTANT_CONVERSATION_CONTROLLER_H_

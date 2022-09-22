@@ -17,8 +17,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 namespace {
 
@@ -26,7 +28,7 @@ namespace {
 class CrosActionModuleHelper {
  public:
   explicit CrosActionModuleHelper(
-      assistant::action::CrosActionModule* action_module)
+      chromeos::assistant::action::CrosActionModule* action_module)
       : action_module_(*action_module) {}
   CrosActionModuleHelper(const CrosActionModuleHelper&) = delete;
   CrosActionModuleHelper& operator=(const CrosActionModuleHelper&) = delete;
@@ -43,7 +45,7 @@ class CrosActionModuleHelper {
   }
 
   void ShowSuggestions(
-      const std::vector<assistant::action::Suggestion>& suggestions) {
+      const std::vector<chromeos::assistant::action::Suggestion>& suggestions) {
     for (auto* observer : action_observers())
       observer->OnShowSuggestions(suggestions);
   }
@@ -54,7 +56,7 @@ class CrosActionModuleHelper {
   }
 
   void OpenAndroidApp(const assistant::AndroidAppInfo& app_info) {
-    assistant::InteractionInfo info{};
+    chromeos::assistant::InteractionInfo info{};
     for (auto* observer : action_observers())
       observer->OnOpenAndroidApp(app_info, info);
   }
@@ -65,12 +67,12 @@ class CrosActionModuleHelper {
   }
 
  private:
-  const std::vector<assistant::action::AssistantActionObserver*>&
+  const std::vector<chromeos::assistant::action::AssistantActionObserver*>&
   action_observers() {
     return action_module_.GetActionObserversForTesting();
   }
 
-  const assistant::action::CrosActionModule& action_module_;
+  const chromeos::assistant::action::CrosActionModule& action_module_;
 };
 
 class ConversationObserverMock : public mojom::ConversationObserver {
@@ -132,7 +134,7 @@ class AssistantConversationObserverTest : public ::testing::Test {
     controller().OnAssistantClientRunning(&service_tester_.assistant_client());
 
     action_module_helper_ = std::make_unique<CrosActionModuleHelper>(
-        static_cast<assistant::action::CrosActionModule*>(
+        static_cast<chromeos::assistant::action::CrosActionModule*>(
             service_tester_.assistant_manager_internal().action_module()));
   }
 
@@ -218,7 +220,7 @@ TEST_F(AssistantConversationObserverTest, ShouldReceiveOnSuggestionsResponse) {
   const std::string fake_text = "text";
   const std::string fake_icon_url = "https://icon-url/";
   const std::string fake_action_url = "https://action-url/";
-  std::vector<assistant::action::Suggestion> fake_suggestions{
+  std::vector<chromeos::assistant::action::Suggestion> fake_suggestions{
       {fake_text, fake_icon_url, fake_action_url}};
 
   EXPECT_CALL(observer_mock(), OnSuggestionsResponse)
@@ -271,5 +273,4 @@ TEST_F(AssistantConversationObserverTest, ShouldReceiveOnWaitStarted) {
   observer_mock().FlushForTesting();
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

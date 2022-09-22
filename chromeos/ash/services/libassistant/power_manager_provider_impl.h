@@ -18,8 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Implementation of power management features for libassistant.
 //
@@ -61,8 +60,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) PowerManagerProviderImpl
   }
 
  private:
-  using CallbackAndTimer =
-      std::pair<assistant_client::Callback0, std::unique_ptr<NativeTimer>>;
+  using CallbackAndTimer = std::pair<assistant_client::Callback0,
+                                     std::unique_ptr<chromeos::NativeTimer>>;
 
   // Returns time ticks from boot including time ticks during sleeping.
   base::TimeTicks GetCurrentBootTime();
@@ -117,7 +116,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) PowerManagerProviderImpl
   base::WeakPtrFactory<PowerManagerProviderImpl> weak_factory_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_POWER_MANAGER_PROVIDER_IMPL_H_

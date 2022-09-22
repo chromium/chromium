@@ -21,8 +21,7 @@ class SpeechRecognitionObserver;
 }  // namespace libassistant
 }  // namespace chromeos
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class AudioInputController;
 
@@ -31,9 +30,10 @@ class ConversationStateListenerImpl
       public AssistantClientObserver {
  public:
   ConversationStateListenerImpl(
-      mojo::RemoteSet<mojom::SpeechRecognitionObserver>*
+      mojo::RemoteSet<chromeos::libassistant::mojom::SpeechRecognitionObserver>*
           speech_recognition_observers,
-      const mojo::RemoteSet<mojom::ConversationObserver>*
+      const mojo::RemoteSet<
+          chromeos::libassistant::mojom::ConversationObserver>*
           conversation_observers,
       AudioInputController* audio_input_controller);
   ConversationStateListenerImpl(const ConversationStateListenerImpl&) = delete;
@@ -58,11 +58,12 @@ class ConversationStateListenerImpl
       assistant::AssistantInteractionResolution resolution);
 
   // Owned by |LibassistantService|.
-  mojo::RemoteSet<mojom::SpeechRecognitionObserver>&
+  mojo::RemoteSet<chromeos::libassistant::mojom::SpeechRecognitionObserver>&
       speech_recognition_observers_;
 
   // Owned by |ConversationController|.
-  const mojo::RemoteSet<mojom::ConversationObserver>& conversation_observers_;
+  const mojo::RemoteSet<chromeos::libassistant::mojom::ConversationObserver>&
+      conversation_observers_;
 
   AudioInputController* const audio_input_controller_ = nullptr;
 
@@ -75,7 +76,6 @@ class ConversationStateListenerImpl
   base::WeakPtrFactory<ConversationStateListenerImpl> weak_factory_{this};
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_CONVERSATION_STATE_LISTENER_IMPL_H_

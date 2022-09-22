@@ -6,8 +6,7 @@
 
 #include <algorithm>
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 AbortableTaskList::AbortableTaskList() = default;
 AbortableTaskList::~AbortableTaskList() {
@@ -38,5 +37,4 @@ void AbortableTaskList::RemoveFinishedTasks() {
                tasks_.end());
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

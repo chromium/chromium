@@ -13,10 +13,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
-class TimerController : public mojom::TimerController,
+class TimerController : public chromeos::libassistant::mojom::TimerController,
                         public AssistantClientObserver {
  public:
   TimerController();
@@ -24,8 +23,10 @@ class TimerController : public mojom::TimerController,
   TimerController& operator=(const TimerController&) = delete;
   ~TimerController() override;
 
-  void Bind(mojo::PendingReceiver<mojom::TimerController> receiver,
-            mojo::PendingRemote<mojom::TimerDelegate> delegate);
+  void Bind(mojo::PendingReceiver<
+                chromeos::libassistant::mojom::TimerController> receiver,
+            mojo::PendingRemote<chromeos::libassistant::mojom::TimerDelegate>
+                delegate);
 
   // mojom::TimerController implementation:
   void AddTimeToTimer(const std::string& id,
@@ -48,10 +49,11 @@ class TimerController : public mojom::TimerController,
   // in OnDestroyingAssistantClient().
   AssistantClient* assistant_client_ = nullptr;
 
-  mojo::Receiver<mojom::TimerController> receiver_{this};
-  mojo::Remote<mojom::TimerDelegate> delegate_;
+  mojo::Receiver<chromeos::libassistant::mojom::TimerController> receiver_{
+      this};
+  mojo::Remote<chromeos::libassistant::mojom::TimerDelegate> delegate_;
 };
-}  // namespace libassistant
-}  // namespace chromeos
+
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_TIMER_CONTROLLER_H_

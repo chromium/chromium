@@ -8,8 +8,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // A directory to save Assistant config files.
 COMPONENT_EXPORT(LIBASSISTANT_CONSTANTS)
@@ -27,7 +26,6 @@ extern const base::FilePath::CharType kLibAssistantV1DlcPath[];
 COMPONENT_EXPORT(LIBASSISTANT_CONSTANTS)
 extern const base::FilePath::CharType kLibAssistantV2DlcPath[];
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_CONSTANTS_H_

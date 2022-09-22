@@ -6,35 +6,37 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_SPEAKER_ID_ENROLLMENT_CONTROLLER_H_
 
 #include "chromeos/ash/services/libassistant/abortable_task_list.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom-forward.h"
 #include "chromeos/ash/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
+class AssistantClient;
 
 class SpeakerIdEnrollmentController
-    : public mojom::SpeakerIdEnrollmentController,
+    : public chromeos::libassistant::mojom::SpeakerIdEnrollmentController,
       public AssistantClientObserver {
  public:
   explicit SpeakerIdEnrollmentController(
-      mojom::AudioInputController* audio_input);
+      chromeos::libassistant::mojom::AudioInputController* audio_input);
   SpeakerIdEnrollmentController(const SpeakerIdEnrollmentController&) = delete;
   SpeakerIdEnrollmentController& operator=(
       const SpeakerIdEnrollmentController&) = delete;
   ~SpeakerIdEnrollmentController() override;
 
-  void Bind(mojo::PendingReceiver<mojom::SpeakerIdEnrollmentController>
+  void Bind(mojo::PendingReceiver<
+            chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
                 pending_receiver);
 
   // mojom::SpeakerIdEnrollmentController implementation:
   void StartSpeakerIdEnrollment(
       const std::string& user_gaia_id,
       bool skip_cloud_enrollment,
-      ::mojo::PendingRemote<mojom::SpeakerIdEnrollmentClient> client) override;
+      ::mojo::PendingRemote<
+          chromeos::libassistant::mojom::SpeakerIdEnrollmentClient> client)
+      override;
   void StopSpeakerIdEnrollment() override;
   void GetSpeakerIdEnrollmentStatus(
       const std::string& user_gaia_id,
@@ -48,8 +50,9 @@ class SpeakerIdEnrollmentController
   class EnrollmentSession;
   class GetStatusWaiter;
 
-  mojo::Receiver<mojom::SpeakerIdEnrollmentController> receiver_{this};
-  mojom::AudioInputController* const audio_input_;
+  mojo::Receiver<chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
+      receiver_{this};
+  chromeos::libassistant::mojom::AudioInputController* const audio_input_;
 
   std::unique_ptr<EnrollmentSession> active_enrollment_session_;
   // Contains all pending callbacks for GetSpeakerIdEnrollmentStatus requests.
@@ -58,7 +61,6 @@ class SpeakerIdEnrollmentController
   AssistantClient* assistant_client_ = nullptr;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_SPEAKER_ID_ENROLLMENT_CONTROLLER_H_

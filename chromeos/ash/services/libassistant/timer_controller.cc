@@ -13,8 +13,10 @@
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 ////////////////////////////////////////////////////////////////////////////////
 // TimerListener
@@ -141,5 +143,4 @@ void TimerController::OnDestroyingAssistantClient(
   }
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

@@ -14,8 +14,7 @@ namespace network {
 class PendingSharedURLLoaderFactory;
 }  // namespace network
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class ChromiumHttpConnectionFactory;
 
@@ -39,7 +38,6 @@ class ChromiumApiDelegate : public assistant_client::ChromeOSApiDelegate {
   ChromiumHttpConnectionFactory http_connection_factory_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_CHROMIUM_API_DELEGATE_H_

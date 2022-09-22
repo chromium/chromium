@@ -27,8 +27,7 @@ class SharedURLLoaderFactory;
 class PendingSharedURLLoaderFactory;
 }  // namespace network
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Implements libassistant's HttpConnection.
 class ChromiumHttpConnection
@@ -151,7 +150,6 @@ class ChromiumHttpConnectionFactory
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_CHROMIUM_HTTP_CONNECTION_H_

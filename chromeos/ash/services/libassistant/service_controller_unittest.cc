@@ -26,12 +26,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 namespace {
 
-using mojom::ServiceState;
+using ::chromeos::libassistant::mojom::ServiceState;
 using ::testing::StrictMock;
 
 #define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0)
@@ -233,8 +235,9 @@ class AssistantServiceControllerTest : public testing::Test {
 };
 
 }  // namespace
+}  // namespace ash::libassistant
 
-namespace mojom {
+namespace chromeos::libassistant::mojom {
 
 void PrintTo(const ServiceState state, std::ostream* stream) {
   switch (state) {
@@ -251,7 +254,9 @@ void PrintTo(const ServiceState state, std::ostream* stream) {
   *stream << "INVALID ServiceState (" << static_cast<int>(state) << ")";
 }
 
-}  // namespace mojom
+}  // namespace chromeos::libassistant::mojom
+
+namespace ash::libassistant {
 
 TEST_F(AssistantServiceControllerTest, StateShouldStartAsStopped) {
   Initialize();
@@ -663,5 +668,4 @@ TEST_F(AssistantServiceControllerTest,
   Initialize(std::move(bootup_config));
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

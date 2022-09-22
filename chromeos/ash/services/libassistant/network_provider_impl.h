@@ -13,12 +13,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) NetworkProviderImpl
     : public assistant_client::NetworkProvider,
-      public network_config::CrosNetworkConfigObserver {
+      public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   NetworkProviderImpl();
 
@@ -27,7 +26,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) NetworkProviderImpl
 
   ~NetworkProviderImpl() override;
 
-  void Initialize(mojom::PlatformDelegate* platform_delegate);
+  void Initialize(
+      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
 
   // assistant_client::NetworkProvider:
   ConnectionStatus GetConnectionStatus() override;
@@ -35,18 +35,17 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) NetworkProviderImpl
 
   // network_config::CrosNetworkConfigObserver:
   void OnActiveNetworksChanged(
-      std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks)
-      override;
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+          networks) override;
 
  private:
   ConnectionStatus connection_status_;
-  mojo::Receiver<network_config::mojom::CrosNetworkConfigObserver> receiver_{
-      this};
-  mojo::Remote<network_config::mojom::CrosNetworkConfig>
+  mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
+      receiver_{this};
+  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config_remote_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_NETWORK_PROVIDER_IMPL_H_

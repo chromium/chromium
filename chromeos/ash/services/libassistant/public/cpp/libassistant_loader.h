@@ -24,4 +24,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_LOADER) LibassistantLoader {
 
 }  // namespace chromeos::libassistant
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::libassistant {
+using ::chromeos::libassistant::LibassistantLoader;
+}
+
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_CPP_LIBASSISTANT_LOADER_H_

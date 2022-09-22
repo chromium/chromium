@@ -19,12 +19,13 @@
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
-using mojom::ServiceState;
+using ::chromeos::libassistant::mojom::ServiceState;
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 // A macro which ensures we are running on the mojom thread.
 #define ENSURE_MOJOM_THREAD(method, ...)                                    \
@@ -344,5 +345,4 @@ void ServiceController::CreateChromiumApiDelegate(
       CreatePendingURLLoaderFactory(std::move(url_loader_factory_remote)));
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

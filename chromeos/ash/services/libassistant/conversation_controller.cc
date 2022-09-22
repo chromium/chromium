@@ -22,12 +22,13 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 using assistant::AssistantInteractionMetadata;
 using assistant::AssistantInteractionType;
 using assistant::AssistantQuerySource;
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 namespace {
 
@@ -45,7 +46,7 @@ constexpr base::TimeDelta kStopInteractionDelayTime = base::Milliseconds(500);
 
 // Helper function to convert |action::Suggestion| to |AssistantSuggestion|.
 std::vector<assistant::AssistantSuggestion> ToAssistantSuggestion(
-    const std::vector<assistant::action::Suggestion>& suggestions) {
+    const std::vector<chromeos::assistant::action::Suggestion>& suggestions) {
   std::vector<assistant::AssistantSuggestion> result;
   for (const auto& suggestion : suggestions) {
     assistant::AssistantSuggestion assistant_suggestion;
@@ -61,7 +62,7 @@ std::vector<assistant::AssistantSuggestion> ToAssistantSuggestion(
 
 // Helper function to convert |action::Notification| to |AssistantNotification|.
 chromeos::assistant::AssistantNotification ToAssistantNotification(
-    const assistant::action::Notification& notification) {
+    const chromeos::assistant::action::Notification& notification) {
   chromeos::assistant::AssistantNotification assistant_notification;
   assistant_notification.title = notification.title;
   assistant_notification.message = notification.text;
@@ -201,9 +202,10 @@ class ConversationController::GrpcEventsObserver
 ConversationController::ConversationController()
     : receiver_(this),
       events_observer_(std::make_unique<GrpcEventsObserver>(this)),
-      action_module_(std::make_unique<assistant::action::CrosActionModule>(
-          assistant::features::IsAppSupportEnabled(),
-          assistant::features::IsWaitSchedulingEnabled())),
+      action_module_(
+          std::make_unique<chromeos::assistant::action::CrosActionModule>(
+              assistant::features::IsAppSupportEnabled(),
+              assistant::features::IsWaitSchedulingEnabled())),
       mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   action_module_->AddObserver(this);
 }
@@ -483,7 +485,7 @@ void ConversationController::OnShowContextualQueryFallback() {
 
 // Called from Libassistant thread.
 void ConversationController::OnShowSuggestions(
-    const std::vector<assistant::action::Suggestion>& suggestions) {
+    const std::vector<chromeos::assistant::action::Suggestion>& suggestions) {
   ENSURE_MOJOM_THREAD(&ConversationController::OnShowSuggestions, suggestions);
 
   for (auto& observer : observers_)
@@ -552,7 +554,7 @@ void ConversationController::OnScheduleWait(int id, int time_ms) {
 
 // Called from Libassistant thread.
 void ConversationController::OnShowNotification(
-    const assistant::action::Notification& notification) {
+    const chromeos::assistant::action::Notification& notification) {
   ENSURE_MOJOM_THREAD(&ConversationController::OnShowNotification,
                       notification);
 
@@ -580,5 +582,4 @@ void ConversationController::MaybeStopPreviousInteraction() {
   stop_interaction_closure_->callback().Run();
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

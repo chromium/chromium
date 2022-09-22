@@ -173,7 +173,7 @@ int UtilityMain(MainFunctionParams parameters) {
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
     case sandbox::mojom::Sandbox::kLibassistant:
       pre_sandbox_hook =
-          base::BindOnce(&chromeos::libassistant::LibassistantPreSandboxHook);
+          base::BindOnce(&ash::libassistant::LibassistantPreSandboxHook);
       break;
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

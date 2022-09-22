@@ -7,12 +7,10 @@
 
 #include "sandbox/policy/linux/sandbox_linux.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 bool LibassistantPreSandboxHook(sandbox::policy::SandboxLinux::Options options);
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_LIBASSISTANT_SANDBOX_HOOK_H_

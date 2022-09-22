@@ -11,8 +11,10 @@
 #include "chromeos/ash/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 namespace {
 
@@ -140,5 +142,4 @@ void ConversationStateListenerImpl::NotifyInteractionFinished(
     observer->OnInteractionFinished(resolution);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

@@ -12,13 +12,13 @@
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/assistant/libassistant_service_host.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace libassistant {
 class LibassistantService;
-}  // namespace libassistant
-}  // namespace chromeos
+}
 
-namespace ash::assistant {
+namespace assistant {
 
 // Host class controlling the lifetime of the Libassistant service.
 // The implementation will be stubbed out in the unbranded build.
@@ -38,11 +38,12 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
  private:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   SEQUENCE_CHECKER(sequence_checker_);
-  std::unique_ptr<chromeos::libassistant::LibassistantService>
-      libassistant_service_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<libassistant::LibassistantService> libassistant_service_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 #endif
 };
 
-}  // namespace ash::assistant
+}  // namespace assistant
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_LIBASSISTANT_SERVICE_HOST_IMPL_H_

@@ -33,8 +33,7 @@ using chromeos::assistant::shared::ResponseCode;
 using chromeos::assistant::shared::SettingInfo;
 using chromeos::assistant::shared::VerifyProviderClientOpResult;
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -181,16 +180,18 @@ std::string CreateLibAssistantConfig(
   absl::optional<std::string> version = chromeos::version_loader::GetVersion(
       chromeos::version_loader::VERSION_FULL);
   device.SetKey("embedder_build_info", Value(version.value_or("0.0.0.0")));
-  device.SetKey("model_id", Value(assistant::kModelId));
+  device.SetKey("model_id", Value(chromeos::assistant::kModelId));
   device.SetKey("model_revision", Value(1));
   config.SetKey("device", std::move(device));
 
   // Enables Libassistant gRPC server for V2.
-  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+  if (assistant::features::IsLibAssistantV2Enabled()) {
     const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
     const std::string server_addresses =
-        assistant::GetLibassistantServiceAddress(is_chromeos_device) + "," +
-        assistant::GetHttpConnectionServiceAddress(is_chromeos_device);
+        chromeos::assistant::GetLibassistantServiceAddress(is_chromeos_device) +
+        "," +
+        chromeos::assistant::GetHttpConnectionServiceAddress(
+            is_chromeos_device);
 
     Value libas_server(Type::DICTIONARY);
     libas_server.SetKey("libas_server_address", Value(server_addresses));
@@ -324,7 +325,7 @@ Interaction CreateVerifyProviderResponseInteraction(
   return V1InteractionBuilder()
       .SetInResponseTo(interaction_id)
       .SetStatusCodeFromEntityFound(any_provider_available)
-      .AddResult(assistant::kResultKeyVerifyProvider, result_proto)
+      .AddResult(chromeos::assistant::kResultKeyVerifyProvider, result_proto)
       .Proto();
 }
 
@@ -341,7 +342,8 @@ Interaction CreateGetDeviceSettingInteraction(
   return V1InteractionBuilder()
       .SetInResponseTo(interaction_id)
       .SetStatusCode(ResponseCode::OK)
-      .AddResult(/*key=*/assistant::kResultKeyGetDeviceSettings, result_proto)
+      .AddResult(/*key=*/chromeos::assistant::kResultKeyGetDeviceSettings,
+                 result_proto)
       .Proto();
 }
 
@@ -350,12 +352,12 @@ Interaction CreateNotificationRequestInteraction(
     const std::string& consistent_token,
     const std::string& opaque_token,
     const int action_index) {
-  auto request_param = assistant::CreateNotificationRequestParam(
+  auto request_param = chromeos::assistant::CreateNotificationRequestParam(
       notification_id, consistent_token, opaque_token, action_index);
 
   return V1InteractionBuilder()
-      .SetClientInputName(assistant::kClientInputRequestNotification)
-      .AddClientInputParams(assistant::kNotificationRequestParamsKey,
+      .SetClientInputName(chromeos::assistant::kClientInputRequestNotification)
+      .AddClientInputParams(chromeos::assistant::kNotificationRequestParamsKey,
                             request_param)
       .Proto();
 }
@@ -365,22 +367,23 @@ Interaction CreateNotificationDismissedInteraction(
     const std::string& consistent_token,
     const std::string& opaque_token,
     const std::vector<std::string>& grouping_keys) {
-  auto dismiss_param = assistant::CreateNotificationDismissedParam(
+  auto dismiss_param = chromeos::assistant::CreateNotificationDismissedParam(
       notification_id, consistent_token, opaque_token, grouping_keys);
 
   return V1InteractionBuilder()
-      .SetClientInputName(assistant::kClientInputDismissNotification)
-      .AddClientInputParams(assistant::kNotificationDismissParamsKey,
+      .SetClientInputName(chromeos::assistant::kClientInputDismissNotification)
+      .AddClientInputParams(chromeos::assistant::kNotificationDismissParamsKey,
                             dismiss_param)
       .Proto();
 }
 
 Interaction CreateEditReminderInteraction(const std::string& reminder_id) {
-  auto intent_input = assistant::CreateEditReminderParam(reminder_id);
+  auto intent_input = chromeos::assistant::CreateEditReminderParam(reminder_id);
 
   return V1InteractionBuilder()
-      .SetClientInputName(assistant::kClientInputEditReminder)
-      .AddClientInputParams(assistant::kEditReminderParamsKey, intent_input)
+      .SetClientInputName(chromeos::assistant::kClientInputEditReminder)
+      .AddClientInputParams(chromeos::assistant::kEditReminderParamsKey,
+                            intent_input)
       .Proto();
 }
 
@@ -396,25 +399,25 @@ Interaction CreateSendFeedbackInteraction(
     bool assistant_debug_info_allowed,
     const std::string& feedback_description,
     const std::string& screenshot_png) {
-  auto feedback_arg = assistant::CreateFeedbackParam(
+  auto feedback_arg = chromeos::assistant::CreateFeedbackParam(
       assistant_debug_info_allowed, feedback_description, screenshot_png);
 
   return V1InteractionBuilder()
-      .SetClientInputName(assistant::kClientInputText)
-      .AddClientInputParams(
-          assistant::kTextParamsKey,
-          assistant::CreateTextParam(assistant::kFeedbackText))
-      .AddClientInputParams(assistant::kFeedbackParamsKey, feedback_arg)
+      .SetClientInputName(chromeos::assistant::kClientInputText)
+      .AddClientInputParams(chromeos::assistant::kTextParamsKey,
+                            chromeos::assistant::CreateTextParam(
+                                chromeos::assistant::kFeedbackText))
+      .AddClientInputParams(chromeos::assistant::kFeedbackParamsKey,
+                            feedback_arg)
       .Proto();
 }
 
 Interaction CreateTextQueryInteraction(const std::string& query) {
   return V1InteractionBuilder()
-      .SetClientInputName(assistant::kClientInputText)
-      .AddClientInputParams(assistant::kTextParamsKey,
-                            assistant::CreateTextParam(query))
+      .SetClientInputName(chromeos::assistant::kClientInputText)
+      .AddClientInputParams(chromeos::assistant::kTextParamsKey,
+                            chromeos::assistant::CreateTextParam(query))
       .Proto();
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

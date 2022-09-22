@@ -9,8 +9,7 @@
 #include "chromeos/ash/services/libassistant/util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 namespace {
 
 constexpr int kReadFileSizeLimitInBytes = 10 * 1024 * 1024;
@@ -98,5 +97,4 @@ bool FileProviderImpl::GetResource(uint16_t resource_id, std::string* out) {
   return true;
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

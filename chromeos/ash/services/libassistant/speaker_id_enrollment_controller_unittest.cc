@@ -12,8 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 using assistant_client::SpeakerIdEnrollmentStatus;
@@ -23,6 +22,8 @@ using GetSpeakerIdEnrollmentStatusCallback =
     SpeakerIdEnrollmentController::GetSpeakerIdEnrollmentStatusCallback;
 using ::testing::NiceMock;
 using ::testing::StrictMock;
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 class SpeakerIdEnrollmentClientMock : public mojom::SpeakerIdEnrollmentClient {
  public:
@@ -66,7 +67,8 @@ class AssistantSpeakerIdEnrollmentControllerTest : public ::testing::Test {
 
   LibassistantServiceTester& service_tester() { return service_tester_; }
 
-  assistant::FakeAssistantManagerInternal& assistant_manager_internal() {
+  chromeos::assistant::FakeAssistantManagerInternal&
+  assistant_manager_internal() {
     return service_tester().assistant_manager_internal();
   }
 
@@ -240,5 +242,4 @@ TEST_F(AssistantSpeakerIdEnrollmentControllerTest,
   FlushForTesting();
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

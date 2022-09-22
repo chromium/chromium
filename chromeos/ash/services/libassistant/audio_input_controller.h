@@ -12,13 +12,12 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Implementation of |mojom::AudioInputController| that will forward all calls
 // to a Libassistant V1 |assistant_client::AudioInputProvider| implementation.
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputController
-    : public mojom::AudioInputController {
+    : public chromeos::libassistant::mojom::AudioInputController {
  public:
   using Resolution = assistant_client::ConversationStateListener::Resolution;
 
@@ -27,8 +26,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputController
   AudioInputController& operator=(AudioInputController&) = delete;
   ~AudioInputController() override;
 
-  void Bind(mojo::PendingReceiver<mojom::AudioInputController> receiver,
-            mojom::PlatformDelegate* platform_delegate);
+  void Bind(mojo::PendingReceiver<
+                chromeos::libassistant::mojom::AudioInputController> receiver,
+            chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
 
   // mojom::AudioInputController implementation:
   void SetMicOpen(bool mic_open) override;
@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputController
   void SetDeviceId(const absl::optional<std::string>& device_id) override;
   void SetHotwordDeviceId(
       const absl::optional<std::string>& device_id) override;
-  void SetLidState(mojom::LidState new_state) override;
+  void SetLidState(chromeos::libassistant::mojom::LidState new_state) override;
   void OnConversationTurnStarted() override;
 
   // Invoked when the current conversation turn has finished.
@@ -49,11 +49,11 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputController
  private:
   AudioInputImpl& audio_input();
 
-  mojo::Receiver<mojom::AudioInputController> receiver_{this};
+  mojo::Receiver<chromeos::libassistant::mojom::AudioInputController> receiver_{
+      this};
   AudioInputProviderImpl audio_input_provider_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_AUDIO_INPUT_CONTROLLER_H_

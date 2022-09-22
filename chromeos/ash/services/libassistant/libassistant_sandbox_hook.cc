@@ -17,8 +17,7 @@
 using sandbox::syscall_broker::BrokerFilePermission;
 using sandbox::syscall_broker::MakeBrokerCommandSet;
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -77,5 +76,4 @@ bool LibassistantPreSandboxHook(
   return true;
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

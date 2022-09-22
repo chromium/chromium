@@ -16,8 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -25,7 +24,10 @@ using LibassistantPlaybackState = assistant_client::MediaStatus::PlaybackState;
 using ProtoAndroidAppInfo = chromeos::assistant::shared::AndroidAppInfo;
 using AndroidAppInfo = chromeos::assistant::AndroidAppInfo;
 using chromeos::assistant::shared::PlayMediaArgs;
-using mojom::PlaybackState;
+using ::chromeos::libassistant::mojom::PlaybackState;
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 #define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0);
 
@@ -366,5 +368,4 @@ TEST_F(AssistantMediaControllerTest, ShouldIgnoreInvalidUrls) {
                            play_media_args.SerializeAsString());
   FlushMojomPipes();
 }
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

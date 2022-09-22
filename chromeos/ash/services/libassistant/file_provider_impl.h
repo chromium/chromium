@@ -10,8 +10,7 @@
 #include "base/files/file_path.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class FileProviderImpl : public assistant_client::FileProvider {
  public:
@@ -36,7 +35,6 @@ class FileProviderImpl : public assistant_client::FileProvider {
   const base::FilePath root_path_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_FILE_PROVIDER_IMPL_H_

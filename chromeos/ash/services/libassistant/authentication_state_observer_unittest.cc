@@ -12,8 +12,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 namespace {
 
@@ -22,12 +24,12 @@ namespace {
 // enum that defines these, and we don't want to hard code this list in the
 // test.
 std::vector<int> GetAuthenticationErrorCodes() {
-  const int kMinErrorCode = assistant::GetLowestErrorCode();
-  const int kMaxErrorCode = assistant::GetHighestErrorCode();
+  const int kMinErrorCode = chromeos::assistant::GetLowestErrorCode();
+  const int kMaxErrorCode = chromeos::assistant::GetHighestErrorCode();
 
   std::vector<int> result;
   for (int code = kMinErrorCode; code <= kMaxErrorCode; ++code) {
-    if (assistant::IsAuthError(code))
+    if (chromeos::assistant::IsAuthError(code))
       result.push_back(code);
   }
 
@@ -118,7 +120,7 @@ TEST_F(AuthenticationStateObserverTest, ShouldIgnoreNonAuthenticationErrors) {
 
   // check to ensure these are not authentication errors.
   for (int code : non_authentication_errors)
-    ASSERT_FALSE(assistant::IsAuthError(code));
+    ASSERT_FALSE(chromeos::assistant::IsAuthError(code));
 
   // Run the actual unittest
   for (int code : GetAuthenticationErrorCodes()) {
@@ -131,5 +133,4 @@ TEST_F(AuthenticationStateObserverTest, ShouldIgnoreNonAuthenticationErrors) {
   }
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

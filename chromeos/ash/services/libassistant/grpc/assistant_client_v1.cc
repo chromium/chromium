@@ -45,13 +45,6 @@ using ::assistant::api::UpdateAssistantSettingsResponse;
 using ::assistant::api::events::SpeakerIdEnrollmentEvent;
 using ::assistant::ui::SettingsUiUpdate;
 using assistant_client::SpeakerIdEnrollmentUpdate;
-using ::chromeos::libassistant::AdaptCallback;
-using ::chromeos::libassistant::BindToCurrentSequence;
-using ::chromeos::libassistant::BindToCurrentSequenceRepeating;
-using ::chromeos::libassistant::PopulateInternalOptionsFromProto;
-using ::chromeos::libassistant::PopulateVoicelessOptionsFromProto;
-using ::chromeos::libassistant::ToStdFunction;
-using ::chromeos::libassistant::ToStdFunctionRepeating;
 
 // A macro which ensures we are running on the calling sequence.
 #define ENSURE_CALLING_SEQUENCE(method, ...)                                \
@@ -111,7 +104,7 @@ OnSpeakerIdEnrollmentEventRequest ConvertToGrpcEventRequest(
   auto* options = assistant_manager_internal->CreateDefaultInternalOptions();
   auto proto = chromeos::assistant::CreateInternalOptionsProto(
       locale, spoken_feedback_enabled);
-  PopulateInternalOptionsFromProto(proto, options);
+  chromeos::libassistant::PopulateInternalOptionsFromProto(proto, options);
 
   chromeos::assistant::SetDarkModeEnabledForV1(options, dark_mode_enabled);
   chromeos::assistant::SetTimezoneOverrideForV1(options);
@@ -468,7 +461,8 @@ void AssistantClientV1::SendVoicelessInteraction(
     const ::assistant::api::VoicelessOptions& options,
     base::OnceCallback<void(bool)> on_done) {
   assistant_client::VoicelessOptions voiceless_options;
-  PopulateVoicelessOptionsFromProto(options, &voiceless_options);
+  chromeos::libassistant::PopulateVoicelessOptionsFromProto(options,
+                                                            &voiceless_options);
   assistant_manager_internal()->SendVoicelessInteraction(
       interaction.SerializeAsString(), description, voiceless_options,
       [callback = std::move(on_done)](bool result) mutable {

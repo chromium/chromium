@@ -35,8 +35,7 @@ void PrintTo(const DeviceSetting& settings, std::ostream* out) {
 }  // namespace assistant
 }  // namespace chromeos
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -53,6 +52,8 @@ using ::testing::ElementsAre;
 using ::testing::FloatNear;
 using ::testing::Return;
 using ::testing::StrictMock;
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 constexpr char kWiFi[] = "WIFI";
 constexpr char kBluetooth[] = "BLUETOOTH";
@@ -279,5 +280,4 @@ TEST_F(AssistantDeviceSettingsControllerTest,
   ModifySetting(args);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

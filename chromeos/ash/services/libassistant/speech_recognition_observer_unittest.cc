@@ -14,8 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -23,6 +22,8 @@ using RecognitionState =
     assistant_client::ConversationStateListener::RecognitionState;
 using RecognitionResult =
     assistant_client::ConversationStateListener::RecognitionResult;
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 std::string CreateDisplayAssistantEvent(float speech_level) {
   ::assistant::display::AssistantEvent result;
@@ -142,5 +143,4 @@ TEST_F(AssistantSpeechRecognitionObserverTest,
       RecognitionState::FINAL_RESULT, recognition_result);
   observer_mock().FlushForTesting();
 }
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

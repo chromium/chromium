@@ -12,8 +12,6 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/device_settings_delegate.mojom.h"
 #include "chromeos/assistant/internal/action/assistant_action_observer.h"
@@ -35,9 +33,9 @@ struct DeviceSetting;
 }  // namespace assistant
 }  // namespace chromeos
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
+class AssistantClient;
 class Setting;
 
 class DeviceSettingsController
@@ -49,7 +47,9 @@ class DeviceSettingsController
   DeviceSettingsController& operator=(DeviceSettingsController&) = delete;
   ~DeviceSettingsController() override;
 
-  void Bind(mojo::PendingRemote<mojom::DeviceSettingsDelegate> delegate);
+  void Bind(
+      mojo::PendingRemote<chromeos::libassistant::mojom::DeviceSettingsDelegate>
+          delegate);
 
   // chromeos::assistant::action::AssistantActionObserver implementation:
   void OnModifyDeviceSetting(
@@ -74,12 +74,11 @@ class DeviceSettingsController
 
   std::vector<std::unique_ptr<Setting>> settings_;
   AssistantClient* assistant_client_ = nullptr;
-  mojo::Remote<mojom::DeviceSettingsDelegate> remote_;
+  mojo::Remote<chromeos::libassistant::mojom::DeviceSettingsDelegate> remote_;
   scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
   base::WeakPtrFactory<DeviceSettingsController> weak_factory_{this};
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_DEVICE_SETTINGS_CONTROLLER_H_

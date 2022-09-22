@@ -22,7 +22,7 @@
 #include "chromeos/ash/services/libassistant/constants.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
-namespace chromeos::libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -211,6 +211,10 @@ LibassistantLoaderImpl* LibassistantLoaderImpl::GetInstance() {
   static base::NoDestructor<LibassistantLoaderImpl> instance;
   return instance.get();
 }
+
+}  // namespace ash::libassistant
+
+namespace chromeos::libassistant {
 
 // static
 void LibassistantLoader::Load(LoadCallback callback) {

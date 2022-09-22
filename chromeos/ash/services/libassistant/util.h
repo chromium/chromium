@@ -26,8 +26,7 @@ struct DeviceSetting;
 }  // namespace assistant
 }  // namespace chromeos
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Creates the configuration for libassistant.
 std::string CreateLibAssistantConfig(
@@ -74,7 +73,6 @@ base::FilePath GetBaseAssistantDir();
 ::assistant::api::Interaction CreateTextQueryInteraction(
     const std::string& query);
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_UTIL_H_

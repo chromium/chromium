@@ -15,8 +15,7 @@ class AssistantManager;
 class AssistantManagerInternal;
 }  // namespace assistant_client
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Factory class that creates the main actual Libassistant classes.
 // Can be replaced with a fake for unittests.
@@ -32,12 +31,6 @@ class LibassistantFactory {
       assistant_client::AssistantManager* assistant_manager) = 0;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::libassistant {
-using ::chromeos::libassistant::LibassistantFactory;
-}
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_LIBASSISTANT_FACTORY_H_

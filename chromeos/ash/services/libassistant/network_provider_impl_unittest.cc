@@ -13,11 +13,10 @@
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
-using network_config::mojom::ConnectionStateType;
-using network_config::mojom::NetworkStatePropertiesPtr;
+using ::chromeos::network_config::mojom::ConnectionStateType;
+using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ConnectionStatus = NetworkProviderImpl::ConnectionStatus;
 
 class AssistantNetworkProviderImplTest : public ::testing::Test {
@@ -43,7 +42,7 @@ class AssistantNetworkProviderImplTest : public ::testing::Test {
   NetworkStatePropertiesPtr CreateNetworkState(
       ConnectionStateType connection_type) const {
     NetworkStatePropertiesPtr network_state =
-        network_config::mojom::NetworkStateProperties::New();
+        chromeos::network_config::mojom::NetworkStateProperties::New();
     network_state->connection_state = connection_type;
     return network_state;
   }
@@ -109,5 +108,4 @@ TEST_F(AssistantNetworkProviderImplTest, IsOfflineIfThereAreNoNetworks) {
             network_provider_.GetConnectionStatus());
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

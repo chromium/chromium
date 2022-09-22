@@ -16,8 +16,10 @@
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/internal_options.pb.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 namespace {
 // A macro which ensures we are running on the main thread.
@@ -123,7 +125,7 @@ void DisplayController::OnVerifyAndroidApp(
   }
 
   auto interaction_proto =
-      chromeos::libassistant::CreateVerifyProviderResponseInteraction(
+      ash::libassistant::CreateVerifyProviderResponseInteraction(
           interaction.interaction_id, result_apps_info);
 
   ::assistant::api::VoicelessOptions options;
@@ -152,5 +154,4 @@ chromeos::assistant::AppStatus DisplayController::GetAndroidAppStatus(
   return assistant::AppStatus::kUnavailable;
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

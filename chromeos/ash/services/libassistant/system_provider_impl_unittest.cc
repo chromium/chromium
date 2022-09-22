@@ -14,8 +14,7 @@
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class FakeBatteryMonitor : device::mojom::BatteryMonitor {
  public:
@@ -106,5 +105,4 @@ TEST_F(AssistantSystemProviderImplTest, GetBatteryStateReturnsLastState) {
   EXPECT_EQ(state.charge_percentage, 100);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

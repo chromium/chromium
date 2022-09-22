@@ -13,8 +13,7 @@
 #define LIBASSISTANT_V1_NAME "libassistant.so"
 #define LIBASSISTANT_V2_NAME "libassistant_v2.so"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
 const base::FilePath::CharType kAssistantBaseDirPath[] =
@@ -42,5 +41,4 @@ const base::FilePath::CharType kLibAssistantV2DlcPath[] =
     FILE_PATH_LITERAL(LIBASSISTANT_V2_NAME);
 #endif
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

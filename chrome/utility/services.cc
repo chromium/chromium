@@ -411,7 +411,7 @@ auto RunAssistantAudioDecoder(
 auto RunLibassistantService(
     mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
         receiver) {
-  return std::make_unique<chromeos::libassistant::LibassistantService>(
+  return std::make_unique<ash::libassistant::LibassistantService>(
       std::move(receiver));
 }
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)

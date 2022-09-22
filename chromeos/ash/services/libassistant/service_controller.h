@@ -19,8 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class ChromiumApiDelegate;
 class LibassistantFactory;
@@ -28,7 +27,7 @@ class LibassistantFactory;
 // Component managing the lifecycle of Libassistant,
 // exposing methods to start/stop and configure Libassistant.
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
-    : public mojom::ServiceController,
+    : public chromeos::libassistant::mojom::ServiceController,
       public ServicesStatusObserver {
  public:
   explicit ServiceController(LibassistantFactory* factory);
@@ -36,18 +35,22 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   ServiceController& operator=(ServiceController&) = delete;
   ~ServiceController() override;
 
-  void Bind(mojo::PendingReceiver<mojom::ServiceController> receiver,
-            mojom::SettingsController* settings_controller);
+  void Bind(
+      mojo::PendingReceiver<chromeos::libassistant::mojom::ServiceController>
+          receiver,
+      chromeos::libassistant::mojom::SettingsController* settings_controller);
 
   // mojom::ServiceController implementation:
-  void Initialize(mojom::BootupConfigPtr libassistant_config,
-                  mojo::PendingRemote<network::mojom::URLLoaderFactory>
-                      url_loader_factory) override;
+  void Initialize(
+      chromeos::libassistant::mojom::BootupConfigPtr libassistant_config,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory)
+      override;
   void Start() override;
   void Stop() override;
   void ResetAllDataAndStop() override;
   void AddAndFireStateObserver(
-      mojo::PendingRemote<mojom::StateObserver> observer) override;
+      mojo::PendingRemote<chromeos::libassistant::mojom::StateObserver>
+          observer) override;
 
   // ServicesStatusObserver implementation:
   void OnServicesStatusChanged(ServicesStatus status) override;
@@ -71,25 +74,30 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   // Will be invoked when Libassistant services are started.
   void OnServicesBootingUp();
 
-  void SetStateAndInformObservers(mojom::ServiceState new_state);
+  void SetStateAndInformObservers(
+      chromeos::libassistant::mojom::ServiceState new_state);
 
   void CreateAndRegisterChromiumApiDelegate(
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory);
   void CreateChromiumApiDelegate(
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory);
 
-  mojom::ServiceState state_ = mojom::ServiceState::kStopped;
+  chromeos::libassistant::mojom::ServiceState state_ =
+      chromeos::libassistant::mojom::ServiceState::kStopped;
 
   // Called during |Initialize| to apply boot configuration.
-  mojom::SettingsController* settings_controller_ = nullptr;
+  chromeos::libassistant::mojom::SettingsController* settings_controller_ =
+      nullptr;
 
   LibassistantFactory& libassistant_factory_;
 
   std::unique_ptr<AssistantClient> assistant_client_;
   std::unique_ptr<ChromiumApiDelegate> chromium_api_delegate_;
 
-  mojo::Receiver<mojom::ServiceController> receiver_{this};
-  mojo::RemoteSet<mojom::StateObserver> state_observers_;
+  mojo::Receiver<chromeos::libassistant::mojom::ServiceController> receiver_{
+      this};
+  mojo::RemoteSet<chromeos::libassistant::mojom::StateObserver>
+      state_observers_;
   base::ObserverList<AssistantClientObserver> assistant_client_observers_;
 
   base::WeakPtrFactory<ServiceController> weak_factory_{this};
@@ -101,7 +109,6 @@ using ScopedAssistantClientObserver = base::ScopedObservation<
     &ServiceController::AddAndFireAssistantClientObserver,
     &ServiceController::RemoveAssistantClientObserver>;
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_SERVICE_CONTROLLER_H_

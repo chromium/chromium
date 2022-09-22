@@ -32,8 +32,7 @@ using network::SharedURLLoaderFactory;
     return;                                                              \
   }
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -412,5 +411,4 @@ HttpConnection* ChromiumHttpConnectionFactory::Create(
   return new ChromiumHttpConnection(url_loader_factory_->Clone(), delegate);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

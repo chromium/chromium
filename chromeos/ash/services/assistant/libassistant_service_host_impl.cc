@@ -35,9 +35,8 @@ void LibassistantServiceHostImpl::Launch(
         std::move(receiver));
   } else {
     DCHECK(!libassistant_service_);
-    libassistant_service_ =
-        std::make_unique<chromeos::libassistant::LibassistantService>(
-            std::move(receiver));
+    libassistant_service_ = std::make_unique<libassistant::LibassistantService>(
+        std::move(receiver));
   }
 }
 

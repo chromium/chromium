@@ -10,8 +10,7 @@
 #include <string>
 #include <vector>
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // ChromeOS does not use auth manager, so we don't yet need to implement a
 // real auth provider.
@@ -45,7 +44,6 @@ class FakeAuthProvider : public assistant_client::AuthProvider {
   void Reset() override;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_FAKE_AUTH_PROVIDER_H_

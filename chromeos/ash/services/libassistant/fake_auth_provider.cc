@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/fake_auth_provider.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 std::string FakeAuthProvider::GetAuthClientId() {
   return "kFakeClientId";
@@ -43,5 +42,4 @@ void FakeAuthProvider::RemoveCredentialKey(const std::string& key_identifier) {}
 
 void FakeAuthProvider::Reset() {}
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

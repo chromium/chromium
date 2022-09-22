@@ -15,8 +15,7 @@
 #include "chromeos/assistant/internal/util_headers.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -33,6 +32,8 @@ constexpr char kWebUrlPrefix[] = "http";
 
 using chromeos::assistant::AndroidAppInfo;
 using chromeos::assistant::shared::PlayMediaArgs;
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 // A macro which ensures we are running on the mojom thread.
 #define ENSURE_MOJOM_THREAD(method, ...)                                    \
@@ -255,5 +256,4 @@ void MediaController::OnAssistantClientRunning(
   assistant_client->AddMediaActionFallbackEventObserver(events_observer_.get());
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

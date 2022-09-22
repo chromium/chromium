@@ -28,23 +28,25 @@ class CrosActionModule;
 }  // namespace assistant
 }  // namespace chromeos
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class DisplayConnection;
 
 class DisplayController
-    : public mojom::DisplayController,
+    : public chromeos::libassistant::mojom::DisplayController,
       public AssistantClientObserver,
       public chromeos::assistant::action::AssistantActionObserver {
  public:
-  explicit DisplayController(mojo::RemoteSet<mojom::SpeechRecognitionObserver>*
-                                 speech_recognition_observers);
+  explicit DisplayController(
+      mojo::RemoteSet<chromeos::libassistant::mojom::SpeechRecognitionObserver>*
+          speech_recognition_observers);
   DisplayController(const DisplayController&) = delete;
   DisplayController& operator=(const DisplayController&) = delete;
   ~DisplayController() override;
 
-  void Bind(mojo::PendingReceiver<mojom::DisplayController> receiver);
+  void Bind(
+      mojo::PendingReceiver<chromeos::libassistant::mojom::DisplayController>
+          receiver);
 
   void SetActionModule(
       chromeos::assistant::action::CrosActionModule* action_module);
@@ -73,12 +75,13 @@ class DisplayController
   chromeos::assistant::AppStatus GetAndroidAppStatus(
       const std::string& package_name);
 
-  mojo::Receiver<mojom::DisplayController> receiver_{this};
+  mojo::Receiver<chromeos::libassistant::mojom::DisplayController> receiver_{
+      this};
   std::unique_ptr<EventObserver> event_observer_;
   std::unique_ptr<DisplayConnection> display_connection_;
 
   // Owned by |LibassistantService|.
-  mojo::RemoteSet<mojom::SpeechRecognitionObserver>&
+  mojo::RemoteSet<chromeos::libassistant::mojom::SpeechRecognitionObserver>&
       speech_recognition_observers_;
 
   AssistantClient* assistant_client_ = nullptr;
@@ -95,7 +98,6 @@ class DisplayController
   base::WeakPtrFactory<DisplayController> weak_factory_{this};
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_DISPLAY_CONTROLLER_H_

@@ -14,10 +14,11 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 using ::assistant::api::OnSpeakerIdEnrollmentEventRequest;
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 ////////////////////////////////////////////////////////////////////////////////
 // GetStatusWaiter
@@ -228,5 +229,4 @@ void SpeakerIdEnrollmentController::OnDestroyingAssistantClient(
   pending_response_waiters_.AbortAll();
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

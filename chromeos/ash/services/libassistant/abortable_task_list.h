@@ -8,8 +8,7 @@
 #include <memory>
 #include <vector>
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class AbortableTask {
  public:
@@ -49,7 +48,6 @@ class AbortableTaskList {
   std::vector<std::unique_ptr<AbortableTask>> tasks_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_ABORTABLE_TASK_LIST_H_

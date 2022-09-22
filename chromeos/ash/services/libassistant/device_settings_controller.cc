@@ -23,8 +23,10 @@ namespace client_op = ::assistant::api::client_op;
 using chromeos::libassistant::mojom::DeviceSettingsDelegate;
 using chromeos::libassistant::mojom::GetBrightnessResultPtr;
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 namespace {
 // A macro which ensures we are running on the main thread.
@@ -313,12 +315,11 @@ void DeviceSettingsController::OnGetDeviceSettings(
     return;
   }
 
-  std::vector<assistant::DeviceSetting> result =
+  std::vector<chromeos::assistant::DeviceSetting> result =
       GetSupportedDeviceSettings(args);
 
-  auto interaction_proto =
-      chromeos::libassistant::CreateGetDeviceSettingInteraction(interaction_id,
-                                                                result);
+  auto interaction_proto = ash::libassistant::CreateGetDeviceSettingInteraction(
+      interaction_id, result);
 
   ::assistant::api::VoicelessOptions options;
   options.set_is_user_initiated(true);
@@ -356,5 +357,4 @@ void DeviceSettingsController::AddSetting(std::unique_ptr<Setting> setting) {
   settings_.push_back(std::move(setting));
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

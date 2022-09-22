@@ -16,8 +16,7 @@
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/device/public/mojom/battery_status.mojom.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class PowerManagerProviderImpl;
 
@@ -56,7 +55,6 @@ class SystemProviderImpl : public assistant_client::SystemProvider {
   device::mojom::BatteryStatusPtr current_battery_status_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_SYSTEM_PROVIDER_IMPL_H_

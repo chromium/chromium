@@ -6,8 +6,10 @@
 
 #include "base/notreached.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 AudioInputController::AudioInputController() = default;
 
@@ -63,5 +65,4 @@ AudioInputImpl& AudioInputController::audio_input() {
   return audio_input_provider().GetAudioInput();
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

@@ -12,13 +12,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
 using chromeos::assistant::AndroidAppInfo;
 using chromeos::assistant::InteractionInfo;
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 constexpr int kSampleInteractionId = 123;
 constexpr char kSampleUserId[] = "user-id";
@@ -26,9 +27,10 @@ constexpr char kSamplePackageName[] = "app.test";
 
 class AssistantClientMock : public FakeAssistantClient {
  public:
-  AssistantClientMock(
-      std::unique_ptr<assistant::FakeAssistantManager> assistant_manager,
-      assistant::FakeAssistantManagerInternal* assistant_manager_internal)
+  AssistantClientMock(std::unique_ptr<chromeos::assistant::FakeAssistantManager>
+                          assistant_manager,
+                      chromeos::assistant::FakeAssistantManagerInternal*
+                          assistant_manager_internal)
       : FakeAssistantClient(std::move(assistant_manager),
                             assistant_manager_internal) {}
   ~AssistantClientMock() override = default;
@@ -96,5 +98,4 @@ TEST_F(DisplayControllerTest,
   controller()->OnVerifyAndroidApp({app_info}, interaction);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

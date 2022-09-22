@@ -13,8 +13,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class LibassistantLoaderImplTest : public ::testing::Test {
  public:
@@ -52,7 +51,7 @@ TEST_F(LibassistantLoaderImplTest, ShouldRunCallbackWithoutDlcFeature) {
 
 TEST_F(LibassistantLoaderImplTest, ShouldRunCallbackWithDlcFeature) {
   feature_list_.InitAndEnableFeature(
-      chromeos::assistant::features::kEnableLibAssistantDlc);
+      assistant::features::kEnableLibAssistantDlc);
 
   auto* loader = LibassistantLoaderImpl::GetInstance();
   EXPECT_TRUE(loader);
@@ -79,5 +78,4 @@ TEST_F(LibassistantLoaderImplTest, ShouldRunCallbackWithDlcFeature) {
   DlcserviceClient::Shutdown();
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

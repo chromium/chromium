@@ -12,8 +12,7 @@
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 DisplayConnection::DisplayConnection(DisplayConnectionObserver* observer,
                                      bool feedback_ui_enabled)
@@ -143,5 +142,4 @@ void DisplayConnection::FillDisplayRequest(
                     MEDIA_SESSION_DETECTION_DISABLED_SCREEN_CONTEXT);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

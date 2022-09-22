@@ -14,13 +14,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
 using ::chromeos::assistant::AssistantTimerState;
 using ::testing::Invoke;
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 // Adds an AlarmTimerEvent of the given |type| to |events|.
 void AddAlarmTimerEvent(std::vector<assistant_client::AlarmTimerEvent>* events,
@@ -77,7 +78,7 @@ class AssistantTimerControllerTest : public ::testing::Test {
 
   void Init() {
     auto assistant_manager =
-        std::make_unique<assistant::FakeAssistantManager>();
+        std::make_unique<chromeos::assistant::FakeAssistantManager>();
     auto* assistant_manager_internal =
         &assistant_manager->assistant_manager_internal();
     assistant_client_ = std::make_unique<FakeAssistantClient>(
@@ -102,8 +103,8 @@ class AssistantTimerControllerTest : public ::testing::Test {
 
   TimerController& controller() { return controller_; }
 
-  assistant::FakeAlarmTimerManager& fake_alarm_timer_manager() {
-    return *static_cast<assistant::FakeAlarmTimerManager*>(
+  chromeos::assistant::FakeAlarmTimerManager& fake_alarm_timer_manager() {
+    return *static_cast<chromeos::assistant::FakeAlarmTimerManager*>(
         assistant_client_->assistant_manager_internal()
             ->GetAlarmTimerManager());
   }
@@ -185,5 +186,4 @@ TEST_F(AssistantTimerControllerTest, ShouldNotCrashAfterStoppingLibassistant) {
   controller().ResumeTimer("timer-id");
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

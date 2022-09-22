@@ -7,8 +7,6 @@
 
 #include <memory>
 
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/services/libassistant/audio/audio_output_provider_impl.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/network_provider_impl.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
@@ -16,9 +14,9 @@
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
+class AudioOutputProviderImpl;
 class FakeAuthProvider;
 class FileProviderImpl;
 class NetworkProviderImpl;
@@ -36,8 +34,9 @@ class PlatformApi : public assistant_client::PlatformApi,
   ~PlatformApi() override;
 
   void Bind(
-      mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
-      mojom::PlatformDelegate* platform_delegate);
+      mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
+          audio_output_delegate,
+      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
 
   PlatformApi& SetAudioInputProvider(assistant_client::AudioInputProvider*);
 
@@ -64,7 +63,6 @@ class PlatformApi : public assistant_client::PlatformApi,
   std::unique_ptr<SystemProviderImpl> system_provider_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_PLATFORM_API_H_

@@ -9,8 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 ChromiumApiDelegate::ChromiumApiDelegate(
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -24,5 +23,4 @@ ChromiumApiDelegate::GetHttpConnectionFactory() {
   return &http_connection_factory_;
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
