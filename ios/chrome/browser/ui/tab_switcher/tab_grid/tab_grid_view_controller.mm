@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 
 #import "base/bind.h"
+#import "base/logging.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -1574,8 +1575,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   GridViewController* gridViewController =
       [self gridViewControllerForPage:page];
   if (!gridViewController) {
-    NOTREACHED() << "The done button should not be configured based on the "
-                    "contents of the recent tabs page.";
+    DLOG(ERROR) << "The done button should not be configured based on the "
+                   "contents of the recent tabs page.";
+    return;
   }
 
   if (!self.closeAllConfirmationDisplayed)
