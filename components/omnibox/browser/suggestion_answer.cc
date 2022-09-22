@@ -109,7 +109,7 @@ SuggestionAnswer::ImageLine& SuggestionAnswer::ImageLine::operator=(
 SuggestionAnswer::ImageLine& SuggestionAnswer::ImageLine::operator=(
     ImageLine&&) noexcept = default;
 
-SuggestionAnswer::ImageLine::~ImageLine() {}
+SuggestionAnswer::ImageLine::~ImageLine() = default;
 
 // static
 bool SuggestionAnswer::ImageLine::ParseImageLine(
@@ -177,8 +177,8 @@ bool SuggestionAnswer::ImageLine::ParseImageLine(
     // If necessary, concatenate scheme and host/path using only ':' as
     // separator. This is due to the results delivering strings of the form
     // "//host/path", which is web-speak for "use the enclosing page's scheme",
-    // but not a valid path of an URL.  The GWS frontend commonly (always?)
-    // redirects to HTTPS so we just default to that here.
+    // but not a valid path of a URL. The GWS frontend commonly (always?)
+    // redirects to HTTPS, so we just default to that here.
     image_line->image_url_ =
         GURL(base::StartsWith(*url_string, "//", base::CompareCase::SENSITIVE)
                  ? (std::string(url::kHttpsScheme) + ":" + *url_string)

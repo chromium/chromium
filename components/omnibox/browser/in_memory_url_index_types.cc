@@ -19,12 +19,12 @@
 
 namespace {
 
-// The maximum number of characters to consider from an URL and page title
-// while matching user-typed terms.
+// The maximum number of characters to consider from a URL and page title while
+// matching user-typed terms.
 const size_t kMaxSignificantChars = 200;
 
 void String16VectorFromString16Internal(std::u16string word,
-                                        size_t previous_postion,
+                                        size_t previous_position,
                                         String16Vector* words,
                                         WordStarts* word_starts) {
   size_t initial_whitespace = 0;
@@ -33,7 +33,7 @@ void String16VectorFromString16Internal(std::u16string word,
   words->push_back(word);
   if (!word_starts)
     return;
-  size_t word_start = previous_postion + initial_whitespace;
+  size_t word_start = previous_position + initial_whitespace;
   if (word_start < kMaxSignificantChars)
     word_starts->push_back(word_start);
 }

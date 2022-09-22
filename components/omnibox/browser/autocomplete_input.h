@@ -180,7 +180,7 @@ class AutocompleteInput {
   // URL.
   const std::u16string& scheme() const { return scheme_; }
 
-  // The input as an URL to navigate to, if possible.
+  // The input as a URL to navigate to, if possible.
   const GURL& canonicalized_url() const { return canonicalized_url_; }
 
   // The user's desired TLD.

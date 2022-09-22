@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, PasteAndGoDoesNotLeavePopupOpen) {
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &view));
   OmniboxViewViews* omnibox_view_views = static_cast<OmniboxViewViews*>(view);
 
-  // Put an URL on the clipboard.
+  // Put a URL on the clipboard.
   SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"http://www.example.com/");
 
   // Paste and go.
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_SelectAllOnClick) {
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, SelectionClipboard) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
   omnibox_view->SetUserText(u"http://www.google.com/");
   OmniboxViewViews* omnibox_view_views =
@@ -377,8 +377,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, SelectAllOnTap) {
       gfx::Vector2d(omnibox_bounds.width() / 4, omnibox_bounds.height() / 4);
   ASSERT_NO_FATAL_FAILURE(Tap(tap2_location, tap2_location));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-  // We don't test if the all text is selected because it depends on whether or
-  // not there was text under the tap, which appears to be flaky.
+  // We don't test if the all text is selected because it depends on whether
+  // there was text under the tap, which appears to be flaky.
 
   // Take the focus away and tap in the omnibox again, but drag a bit before
   // releasing. This shouldn't select text.
@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest,
   Tap(omnibox_center, omnibox_center);
   EXPECT_TRUE(textfield_test_api.touch_selection_controller());
 
-  // Execute a command and check if it deactivate touch editing. Paste & Go is
+  // Execute a command and check if it deactivates touch editing. Paste & Go is
   // chosen since it is specific to Omnibox and its execution wouldn't be
   // delegated to the base Textfield class.
   omnibox_view_views->ExecuteCommand(IDC_PASTE_AND_GO, ui::EF_NONE);
@@ -1019,7 +1019,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MAYBE_HandleExternalProtocolURLs) {
 #endif
 
 // Test that triggers a zero suggest autocomplete request by clicking on the
-// omnibox. These should never attempt an https upgrade or involve the typed
+// omnibox. These should never attempt an HTTPS upgrade or involve the typed
 // navigation upgrade throttle.
 // This is a regression test for https://crbug.com/1251065
 IN_PROC_BROWSER_TEST_F(

@@ -349,20 +349,19 @@ void InMemoryURLIndexTest::ExpectPrivateDataEqual(
   ExpectMapOfContainersIdentical(expected.history_id_word_map_,
                                  actual.history_id_word_map_);
 
-  for (auto expected_info = expected.history_info_map_.begin();
-       expected_info != expected.history_info_map_.end(); ++expected_info) {
-    auto actual_info = actual.history_info_map_.find(expected_info->first);
+  for (const auto& expected_info : expected.history_info_map_) {
+    auto actual_info = actual.history_info_map_.find(expected_info.first);
     // NOTE(yfriedman): ASSERT_NE can't be used due to incompatibility between
     // gtest and STLPort in the Android build. See
     // http://code.google.com/p/googletest/issues/detail?id=359
     ASSERT_TRUE(actual_info != actual.history_info_map_.end());
-    const history::URLRow& expected_row(expected_info->second.url_row);
+    const history::URLRow& expected_row(expected_info.second.url_row);
     const history::URLRow& actual_row(actual_info->second.url_row);
     EXPECT_EQ(expected_row.visit_count(), actual_row.visit_count());
     EXPECT_EQ(expected_row.typed_count(), actual_row.typed_count());
     EXPECT_EQ(expected_row.last_visit(), actual_row.last_visit());
     EXPECT_EQ(expected_row.url(), actual_row.url());
-    const VisitInfoVector& expected_visits(expected_info->second.visits);
+    const VisitInfoVector& expected_visits(expected_info.second.visits);
     const VisitInfoVector& actual_visits(actual_info->second.visits);
     EXPECT_EQ(expected_visits.size(), actual_visits.size());
     for (size_t i = 0;
@@ -373,14 +372,13 @@ void InMemoryURLIndexTest::ExpectPrivateDataEqual(
     }
   }
 
-  for (auto expected_starts = expected.word_starts_map_.begin();
-       expected_starts != expected.word_starts_map_.end(); ++expected_starts) {
-    auto actual_starts = actual.word_starts_map_.find(expected_starts->first);
+  for (const auto& expected_starts : expected.word_starts_map_) {
+    auto actual_starts = actual.word_starts_map_.find(expected_starts.first);
     // NOTE(yfriedman): ASSERT_NE can't be used due to incompatibility between
     // gtest and STLPort in the Android build. See
     // http://code.google.com/p/googletest/issues/detail?id=359
     ASSERT_TRUE(actual_starts != actual.word_starts_map_.end());
-    const RowWordStarts& expected_word_starts(expected_starts->second);
+    const RowWordStarts& expected_word_starts(expected_starts.second);
     const RowWordStarts& actual_word_starts(actual_starts->second);
     EXPECT_EQ(expected_word_starts.url_word_starts_.size(),
               actual_word_starts.url_word_starts_.size());
@@ -412,8 +410,8 @@ bool LimitedInMemoryURLIndexTest::InitializeInMemoryURLIndexInSetUp() const {
 }
 
 TEST_F(LimitedInMemoryURLIndexTest, Initialization) {
-  // Verify that the database contains the expected number of items, which
-  // is the pre-filtered count, i.e. all of the items.
+  // Verify that the database contains the expected number of items, which is
+  // the pre-filtered count, i.e. all the items.
   sql::Statement statement(GetDB().GetUniqueStatement("SELECT * FROM urls;"));
   ASSERT_TRUE(statement.is_valid());
   uint64_t row_count = 0;
@@ -510,7 +508,7 @@ TEST_F(InMemoryURLIndexTest, DISABLED_Retrieval) {
                                              kProviderMaxMatches);
   EXPECT_EQ(1U, matches.size());
 
-  // Search which will match at the end of an URL with encoded characters.
+  // Search which will match at the end of a URL with encoded characters.
   matches = url_index_->HistoryItemsForTerms(u"Mice", std::u16string::npos,
                                              kProviderMaxMatches);
   ASSERT_EQ(1U, matches.size());
@@ -936,7 +934,7 @@ TEST_F(InMemoryURLIndexTest, DISABLED_AddNewRows) {
                                        kProviderMaxMatches)
                 .size());
 
-  // Make up an URL that does not qualify and try to add it.
+  // Make up a URL that does not qualify and try to add it.
   history::URLRow unqualified_row(
       GURL("http://www.brokeandaloneinmanitoba.com/"), new_row_id++);
   EXPECT_FALSE(UpdateURL(new_row));
@@ -954,7 +952,7 @@ TEST_F(InMemoryURLIndexTest, DeleteRows) {
                                          kProviderMaxMatches)
                   .empty());
 
-  // Make up an URL that does not exist in the database and delete it.
+  // Make up a URL that does not exist in the database and delete it.
   GURL url("http://www.hokeypokey.com/putyourrightfootin.html");
   EXPECT_FALSE(DeleteURL(url));
 }
@@ -964,8 +962,8 @@ TEST_F(InMemoryURLIndexTest, ExpireRow) {
       u"DrudgeReport", std::u16string::npos, kProviderMaxMatches);
   ASSERT_EQ(1U, matches.size());
 
-  // Determine the row id for the result, remember that id, broadcast a
-  // delete notification, then ensure that the row has been deleted.
+  // Determine the row ID for the result, remember that ID, broadcast a delete
+  // notification, then ensure that the row has been deleted.
   history::URLRows deleted_rows;
   deleted_rows.push_back(matches[0].url_info);
   url_index_->OnURLsDeleted(
@@ -1053,9 +1051,9 @@ TEST_F(InMemoryURLIndexTest, AllowlistedURLs) {
   };
 
   const SchemeSet& allowlist(scheme_allowlist());
-  for (size_t i = 0; i < std::size(data); ++i) {
-    GURL url(data[i].url_spec);
-    EXPECT_EQ(data[i].expected_is_allowlisted,
+  for (const auto& d : data) {
+    GURL url(d.url_spec);
+    EXPECT_EQ(d.expected_is_allowlisted,
               URLIndexPrivateData::URLSchemeIsAllowlisted(url, allowlist));
   }
 }
@@ -1097,8 +1095,8 @@ TEST_F(InMemoryURLIndexTest, ReadVisitsFromHistory) {
   {
     const VisitInfoVector& visits = entry->second.visits;
     EXPECT_EQ(10u, visits.size());
-    for (size_t i = 0; i < visits.size(); ++i)
-      EXPECT_EQ(0, static_cast<int32_t>(visits[i].second));
+    for (const auto& visit : visits)
+      EXPECT_EQ(0, static_cast<int32_t>(visit.second));
   }
 }
 
@@ -1108,112 +1106,82 @@ TEST_F(InMemoryURLIndexTest, CalculateWordStartsOffsets) {
     size_t cursor_position;
     const size_t expected_word_starts_offsets_size;
     const size_t expected_word_starts_offsets[3];
-  } test_cases[] = {/* No punctuations, only cursor position change. */
-                    {"ABCD", kInvalid, 1, {0, kInvalid, kInvalid}},
-                    {"abcd", 0, 1, {0, kInvalid, kInvalid}},
-                    {"AbcD", 1, 2, {0, 0, kInvalid}},
-                    {"abcd", 4, 1, {0, kInvalid, kInvalid}},
+  } test_cases[] = {
+      /* No punctuations, only cursor position change. */
+      {"ABCD", kInvalid, 1, {0, kInvalid, kInvalid}},
+      {"abcd", 0, 1, {0, kInvalid, kInvalid}},
+      {"AbcD", 1, 2, {0, 0, kInvalid}},
+      {"abcd", 4, 1, {0, kInvalid, kInvalid}},
 
-                    /* Starting with punctuation. */
-                    {".abcd", kInvalid, 1, {1, kInvalid, kInvalid}},
-                    {".abcd", 0, 1, {1, kInvalid, kInvalid}},
-                    {"!abcd", 1, 2, {1, 0, kInvalid}},
-                    {"::abcd", 1, 2, {1, 1, kInvalid}},
-                    {":abcd", 5, 1, {1, kInvalid, kInvalid}},
+      /* Starting with punctuation. */
+      {".abcd", kInvalid, 1, {1, kInvalid, kInvalid}},
+      {".abcd", 0, 1, {1, kInvalid, kInvalid}},
+      {"!abcd", 1, 2, {1, 0, kInvalid}},
+      {"::abcd", 1, 2, {1, 1, kInvalid}},
+      {":abcd", 5, 1, {1, kInvalid, kInvalid}},
 
-                    /* Ending with punctuation. */
-                    {"abcd://", kInvalid, 1, {0, kInvalid, kInvalid}},
-                    {"ABCD://", 0, 1, {0, kInvalid, kInvalid}},
-                    {"abcd://", 1, 2, {0, 0, kInvalid}},
-                    {"abcd://", 4, 2, {0, 3, kInvalid}},
-                    {"abcd://", 7, 1, {0, kInvalid, kInvalid}},
+      /* Ending with punctuation. */
+      {"abcd://", kInvalid, 1, {0, kInvalid, kInvalid}},
+      {"ABCD://", 0, 1, {0, kInvalid, kInvalid}},
+      {"abcd://", 1, 2, {0, 0, kInvalid}},
+      {"abcd://", 4, 2, {0, 3, kInvalid}},
+      {"abcd://", 7, 1, {0, kInvalid, kInvalid}},
 
-                    /* Punctuation in the middle. */
-                    {"ab.cd", kInvalid, 1, {0, kInvalid, kInvalid}},
-                    {"ab.cd", 0, 1, {0, kInvalid, kInvalid}},
-                    {"ab!cd", 1, 2, {0, 0, kInvalid}},
-                    {"AB.cd", 2, 2, {0, 1, kInvalid}},
-                    {"AB.cd", 3, 2, {0, 0, kInvalid}},
-                    {"ab:cd", 5, 1, {0, kInvalid, kInvalid}},
+      /* Punctuation in the middle. */
+      {"ab.cd", kInvalid, 1, {0, kInvalid, kInvalid}},
+      {"ab.cd", 0, 1, {0, kInvalid, kInvalid}},
+      {"ab!cd", 1, 2, {0, 0, kInvalid}},
+      {"AB.cd", 2, 2, {0, 1, kInvalid}},
+      {"AB.cd", 3, 2, {0, 0, kInvalid}},
+      {"ab:cd", 5, 1, {0, kInvalid, kInvalid}},
 
-                    /* Hyphenation */
-                    {"Ab-cd", kInvalid, 1, {0, kInvalid, kInvalid}},
-                    {"ab-cd", 0, 1, {0, kInvalid, kInvalid}},
-                    {"-abcd", 0, 1, {1, kInvalid, kInvalid}},
-                    {"-abcd", 1, 2, {1, 0, kInvalid}},
-                    {"abcd-", 2, 2, {0, 0, kInvalid}},
-                    {"abcd-", 4, 2, {0, 1, kInvalid}},
-                    {"ab-cd", 5, 1, {0, kInvalid, kInvalid}},
+      /* Hyphenation */
+      {"Ab-cd", kInvalid, 1, {0, kInvalid, kInvalid}},
+      {"ab-cd", 0, 1, {0, kInvalid, kInvalid}},
+      {"-abcd", 0, 1, {1, kInvalid, kInvalid}},
+      {"-abcd", 1, 2, {1, 0, kInvalid}},
+      {"abcd-", 2, 2, {0, 0, kInvalid}},
+      {"abcd-", 4, 2, {0, 1, kInvalid}},
+      {"ab-cd", 5, 1, {0, kInvalid, kInvalid}},
 
-                    /* Whitespace */
-                    {"Ab cd", kInvalid, 2, {0, 0, kInvalid}},
-                    {"ab cd", 0, 2, {0, 0, kInvalid}},
-                    {" abcd", 0, 1, {0, kInvalid, kInvalid}},
-                    {" abcd", 1, 1, {0, kInvalid, kInvalid}},
-                    {"abcd ", 2, 2, {0, 0, kInvalid}},
-                    {"abcd :", 4, 2, {0, 1, kInvalid}},
-                    {"abcd :", 5, 2, {0, 1, kInvalid}},
-                    {"abcd :", 2, 3, {0, 0, 1}}};
+      /* Whitespace */
+      {"Ab cd", kInvalid, 2, {0, 0, kInvalid}},
+      {"ab cd", 0, 2, {0, 0, kInvalid}},
+      {" abcd", 0, 1, {0, kInvalid, kInvalid}},
+      {" abcd", 1, 1, {0, kInvalid, kInvalid}},
+      {"abcd ", 2, 2, {0, 0, kInvalid}},
+      {"abcd :", 4, 2, {0, 1, kInvalid}},
+      {"abcd :", 5, 2, {0, 1, kInvalid}},
+      {"abcd :", 2, 3, {0, 0, 1}},
 
-  for (size_t i = 0; i < std::size(test_cases); ++i) {
+      /* Underscore */
+      {"Ab_cd", kInvalid, 1, {0, kInvalid, kInvalid}},
+      {"ab_cd", 0, 1, {0, kInvalid, kInvalid}},
+      {"_abcd", 0, 1, {1, kInvalid, kInvalid}},
+      {"_abcd", 1, 2, {1, 0, kInvalid}},
+      {"abcd_", 2, 2, {0, 0, kInvalid}},
+      {"abcd_", 4, 2, {0, 1, kInvalid}},
+      {"ab_cd", 5, 1, {0, kInvalid, kInvalid}},
+  };
+
+  for (const auto& test_case : test_cases) {
     SCOPED_TRACE(testing::Message()
-                 << "search_string = " << test_cases[i].search_string
-                 << ", cursor_position = " << test_cases[i].cursor_position);
+                 << "search_string = " << test_case.search_string
+                 << ", cursor_position = " << test_case.cursor_position);
 
     std::u16string lower_string;
     String16Vector lower_terms;
-    StringToTerms(test_cases[i].search_string, test_cases[i].cursor_position,
+    StringToTerms(test_case.search_string, test_case.cursor_position,
                   &lower_string, &lower_terms);
     WordStarts lower_terms_to_word_starts_offsets;
     URLIndexPrivateData::CalculateWordStartsOffsets(
         lower_terms, &lower_terms_to_word_starts_offsets);
 
     // Verify against expectations.
-    EXPECT_EQ(test_cases[i].expected_word_starts_offsets_size,
+    EXPECT_EQ(test_case.expected_word_starts_offsets_size,
               lower_terms_to_word_starts_offsets.size());
-    for (size_t j = 0; j < test_cases[i].expected_word_starts_offsets_size;
-         ++j) {
-      EXPECT_EQ(test_cases[i].expected_word_starts_offsets[j],
-                lower_terms_to_word_starts_offsets[j]);
-    }
-  }
-}
-
-TEST_F(InMemoryURLIndexTest, CalculateWordStartsOffsetsUnderscore) {
-  const struct {
-    const char* search_string;
-    size_t cursor_position;
-    const size_t expected_word_starts_offsets_size;
-    const size_t expected_word_starts_offsets[3];
-  } test_cases[] = {/* No punctuations, only cursor position change. */
-                    /* Underscore */
-                    {"Ab_cd", kInvalid, 1, {0, kInvalid, kInvalid}},
-                    {"ab_cd", 0, 1, {0, kInvalid, kInvalid}},
-                    {"_abcd", 0, 1, {1, kInvalid, kInvalid}},
-                    {"_abcd", 1, 2, {1, 0, kInvalid}},
-                    {"abcd_", 2, 2, {0, 0, kInvalid}},
-                    {"abcd_", 4, 2, {0, 1, kInvalid}},
-                    {"ab_cd", 5, 1, {0, kInvalid, kInvalid}}};
-
-  for (size_t i = 0; i < std::size(test_cases); ++i) {
-    SCOPED_TRACE(testing::Message()
-                 << "search_string = " << test_cases[i].search_string
-                 << ", cursor_position = " << test_cases[i].cursor_position);
-
-    std::u16string lower_string;
-    String16Vector lower_terms;
-    StringToTerms(test_cases[i].search_string, test_cases[i].cursor_position,
-                  &lower_string, &lower_terms);
-    WordStarts lower_terms_to_word_starts_offsets;
-    URLIndexPrivateData::CalculateWordStartsOffsets(
-        lower_terms, &lower_terms_to_word_starts_offsets);
-
-    // Verify against expectations.
-    EXPECT_EQ(test_cases[i].expected_word_starts_offsets_size,
-              lower_terms_to_word_starts_offsets.size());
-    for (size_t j = 0; j < test_cases[i].expected_word_starts_offsets_size;
-         ++j) {
-      EXPECT_EQ(test_cases[i].expected_word_starts_offsets[j],
+    for (size_t j = 0; j < test_case.expected_word_starts_offsets_size; ++j) {
+      EXPECT_EQ(test_case.expected_word_starts_offsets[j],
                 lower_terms_to_word_starts_offsets[j]);
     }
   }
