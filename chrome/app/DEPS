@@ -8,6 +8,7 @@ include_rules = [
   "+chrome/installer/util",
   "+chrome/install_static",
   "+chrome/gpu/chrome_content_gpu_client.h",
+  "+chrome/grit/generated_resources.h",
   "+chrome/profiling/profiling_main.h",
   "+chrome/renderer/chrome_content_renderer_client.h",
   "+chrome/utility/chrome_content_utility_client.h",

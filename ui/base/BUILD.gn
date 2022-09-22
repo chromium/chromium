@@ -172,6 +172,8 @@ component("base") {
     "resource/allowlist.h",
     "resource/resource_bundle.cc",
     "resource/resource_bundle.h",
+    "resource/scoped_startup_resource_bundle.cc",
+    "resource/scoped_startup_resource_bundle.h",
     "scoped_visibility_tracker.cc",
     "scoped_visibility_tracker.h",
     "template_expressions.cc",

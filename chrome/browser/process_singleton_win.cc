@@ -38,6 +38,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "content/public/common/result_codes.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/scoped_startup_resource_bundle.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace {
@@ -164,6 +165,11 @@ bool ProcessLaunchNotification(
 
 bool DisplayShouldKillMessageBox() {
   TRACE_EVENT0("startup", "ProcessSingleton:DisplayShouldKillMessageBox");
+
+  // Ensure there is an instance of ResourceBundle that is initialized for
+  // localized string resource accesses.
+  ui::ScopedStartupResourceBundle startup_resource_bundle;
+
   return chrome::ShowQuestionMessageBoxSync(
              NULL, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
              l10n_util::GetStringUTF16(IDS_BROWSER_HUNGBROWSER_MESSAGE)) !=
