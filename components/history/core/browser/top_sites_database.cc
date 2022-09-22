@@ -339,8 +339,8 @@ void TopSitesDatabase::ApplyDelta(const TopSitesDelta& delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(db_.get());
-  // TODO: consider returning early if `Begin()` returns false.
-  std::ignore = transaction.Begin();
+  if (!transaction.Begin())
+    return;
 
   for (const auto& deleted : delta.deleted) {
     if (!RemoveURLNoTransaction(deleted))
@@ -380,6 +380,8 @@ void TopSitesDatabase::GetSites(MostVisitedURLList* urls) {
 
 void TopSitesDatabase::SetSiteNoTransaction(const MostVisitedURL& url,
                                             int new_rank) {
+  DCHECK(db_->HasActiveTransactions());
+
   int rank = GetURLRank(url);
   if (rank == kRankOfNonExistingURL) {
     AddSite(url, new_rank);
@@ -390,6 +392,8 @@ void TopSitesDatabase::SetSiteNoTransaction(const MostVisitedURL& url,
 }
 
 void TopSitesDatabase::AddSite(const MostVisitedURL& url, int new_rank) {
+  DCHECK(db_->HasActiveTransactions());
+
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE,
                               "INSERT OR REPLACE INTO top_sites "
@@ -432,7 +436,7 @@ int TopSitesDatabase::GetURLRank(const MostVisitedURL& url) {
 
 void TopSitesDatabase::UpdateSiteRankNoTransaction(const MostVisitedURL& url,
                                                    int new_rank) {
-  DCHECK_GT(db_->transaction_nesting(), 0);
+  DCHECK(db_->HasActiveTransactions());
 
   int prev_rank = GetURLRank(url);
   if (prev_rank == kRankOfNonExistingURL) {
@@ -492,6 +496,8 @@ void TopSitesDatabase::UpdateSiteRankNoTransaction(const MostVisitedURL& url,
 }
 
 bool TopSitesDatabase::RemoveURLNoTransaction(const MostVisitedURL& url) {
+  DCHECK(db_->HasActiveTransactions());
+
   int old_rank = GetURLRank(url);
   if (old_rank == kRankOfNonExistingURL)
     return true;
