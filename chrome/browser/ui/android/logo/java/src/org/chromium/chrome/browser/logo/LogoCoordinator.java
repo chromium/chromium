@@ -242,12 +242,10 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
     }
 
     private void updateVisibility() {
-        boolean shouldShowLogo = mIsParentSurfaceShown
+        mShouldShowLogo = mIsParentSurfaceShown
                 && (!mIsNativeInitialized
                         || TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo());
-        if (shouldShowLogo == mShouldShowLogo) return;
 
-        mShouldShowLogo = shouldShowLogo;
         mLogoView.setVisibility(mShouldShowLogo ? View.VISIBLE : View.GONE);
     }
 
