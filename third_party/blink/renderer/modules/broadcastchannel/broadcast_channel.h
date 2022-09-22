@@ -11,17 +11,20 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 
 namespace blink {
 
+class BroadcastChannelTester;
 class ScriptValue;
 
-class BroadcastChannel final : public EventTargetWithInlineData,
-                               public ActiveScriptWrappable<BroadcastChannel>,
-                               public ExecutionContextLifecycleObserver,
-                               public mojom::blink::BroadcastChannelClient {
+class MODULES_EXPORT BroadcastChannel final
+    : public EventTargetWithInlineData,
+      public ActiveScriptWrappable<BroadcastChannel>,
+      public ExecutionContextLifecycleObserver,
+      public mojom::blink::BroadcastChannelClient {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(BroadcastChannel, Dispose);
 
@@ -31,6 +34,14 @@ class BroadcastChannel final : public EventTargetWithInlineData,
                                   ExceptionState&);
 
   BroadcastChannel(ExecutionContext*, const String& name);
+  BroadcastChannel(
+      base::PassKey<BroadcastChannelTester>,
+      ExecutionContext*,
+      const String& name,
+      mojo::PendingAssociatedReceiver<mojom::blink::BroadcastChannelClient>
+          receiver,
+      mojo::PendingAssociatedRemote<mojom::blink::BroadcastChannelClient>
+          remote);
 
   BroadcastChannel(const BroadcastChannel&) = delete;
   BroadcastChannel& operator=(const BroadcastChannel&) = delete;
@@ -60,6 +71,14 @@ class BroadcastChannel final : public EventTargetWithInlineData,
   void Trace(Visitor*) const override;
 
  private:
+  BroadcastChannel(
+      ExecutionContext*,
+      const String& name,
+      mojo::PendingAssociatedReceiver<mojom::blink::BroadcastChannelClient>
+          receiver,
+      mojo::PendingAssociatedRemote<mojom::blink::BroadcastChannelClient>
+          remote);
+
   void PostMessageInternal(
       scoped_refptr<SerializedScriptValue> value,
       scoped_refptr<SecurityOrigin> sender_origin,

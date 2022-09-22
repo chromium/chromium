@@ -46,6 +46,9 @@ specific_include_rules = {
     ".*_fuzzer.cc": [
         "+testing/libfuzzer/proto/lpm_interface.h",
     ],
+    ".*_(unit)?test\.cc": [
+        "+base/run_loop.h",
+    ],
     "canvas_fuzzer.cc": [
         "+base/test/bind.h",
     ],

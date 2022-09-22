@@ -432,6 +432,7 @@ source_set("unit_tests") {
     "autofill_assistant/node_signals_test.cc",
     "background_fetch/background_fetch_icon_loader_test.cc",
     "background_fetch/background_fetch_manager_test.cc",
+    "broadcastchannel/broadcast_channel_unittest.cc",
     "cache_storage/cache_test.cc",
     "canvas/canvas2d/canvas_rendering_context_2d_api_test.cc",
     "canvas/canvas2d/canvas_rendering_context_2d_test.cc",

@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/broadcastchannel/broadcast_channel.h"
 
 #include "base/notreached.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -122,6 +124,7 @@ void BroadcastChannel::PostMessageInternal(
   msg.message = std::move(value);
   msg.sender_origin = std::move(sender_origin);
   msg.sender_agent_cluster_id = sender_agent_cluster_id;
+  msg.locked_to_sender_agent_cluster = msg.message->IsLockedToAgentCluster();
   remote_client_->OnMessage(std::move(msg));
 }
 
@@ -186,6 +189,29 @@ void BroadcastChannel::OnError() {
 
 BroadcastChannel::BroadcastChannel(ExecutionContext* execution_context,
                                    const String& name)
+    : BroadcastChannel(execution_context,
+                       name,
+                       mojo::NullAssociatedReceiver(),
+                       mojo::NullAssociatedRemote()) {}
+
+BroadcastChannel::BroadcastChannel(
+    base::PassKey<BroadcastChannelTester>,
+    ExecutionContext* execution_context,
+    const String& name,
+    mojo::PendingAssociatedReceiver<mojom::blink::BroadcastChannelClient>
+        receiver,
+    mojo::PendingAssociatedRemote<mojom::blink::BroadcastChannelClient> remote)
+    : BroadcastChannel(execution_context,
+                       name,
+                       std::move(receiver),
+                       std::move(remote)) {}
+
+BroadcastChannel::BroadcastChannel(
+    ExecutionContext* execution_context,
+    const String& name,
+    mojo::PendingAssociatedReceiver<mojom::blink::BroadcastChannelClient>
+        receiver,
+    mojo::PendingAssociatedRemote<mojom::blink::BroadcastChannelClient> remote)
     : ExecutionContextLifecycleObserver(execution_context),
       name_(name),
       feature_handle_for_scheduler_(
@@ -215,34 +241,26 @@ BroadcastChannel::BroadcastChannel(ExecutionContext* execution_context,
   //    shared remote for all BroadcastChannel objects created on that thread to
   //    ensure in-order delivery of messages to the appropriate *WorkerHost
   //    object.
-  if (execution_context->IsWindow()) {
-    LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
-    DCHECK(window);
-
+  if (receiver.is_valid() && remote.is_valid()) {
+    receiver_.Bind(std::move(receiver));
+    remote_client_.Bind(std::move(remote));
+  } else if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     LocalFrame* frame = window->GetFrame();
-    if (!frame) {
+    if (!frame)
       return;
-    }
 
     frame->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
         associated_remote_.BindNewEndpointAndPassReceiver());
-
     associated_remote_->ConnectToChannel(
         name_, receiver_.BindNewEndpointAndPassRemote(),
         remote_client_.BindNewEndpointAndPassReceiver());
-
-  } else if (execution_context->IsWorkerGlobalScope()) {
-    WorkerGlobalScope* worker_global_scope =
-        DynamicTo<WorkerGlobalScope>(execution_context);
-    DCHECK(worker_global_scope);
-
-    if (worker_global_scope->IsClosing()) {
+  } else if (auto* worker_global_scope =
+                 DynamicTo<WorkerGlobalScope>(execution_context)) {
+    if (worker_global_scope->IsClosing())
       return;
-    }
 
     mojo::Remote<mojom::blink::BroadcastChannelProvider>& provider =
         GetWorkerThreadSpecificProvider(*worker_global_scope);
-
     provider->ConnectToChannel(name_, receiver_.BindNewEndpointAndPassRemote(),
                                remote_client_.BindNewEndpointAndPassReceiver());
   } else {
