@@ -296,9 +296,8 @@ void PaymentAppProviderImpl::SetOpenedWindow(
 void PaymentAppProviderImpl::CloseOpenedWindow() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (payment_handler_window_) {
+  if (payment_handler_window_)
     payment_handler_window_->Close();
-  }
 
   payment_handler_window_.reset();
 }
