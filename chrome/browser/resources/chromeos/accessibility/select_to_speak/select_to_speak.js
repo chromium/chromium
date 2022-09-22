@@ -71,9 +71,6 @@ export class SelectToSpeak {
     /** @private {chrome.automation.AutomationNode} */
     this.desktop_;
 
-    /** @private {number|undefined} */
-    this.intervalRef_;
-
     chrome.automation.getDesktop(desktop => {
       this.desktop_ = desktop;
 
@@ -652,8 +649,10 @@ export class SelectToSpeak {
     // Clear the node and also stop the interval testing.
     this.resetNodes_();
     this.supportsNavigationPanel_ = true;
-    clearInterval(this.intervalId_);
-    this.intervalId_ = undefined;
+    if (this.intervalId_ !== undefined) {
+      clearInterval(this.intervalId_);
+      this.intervalId_ = undefined;
+    }
     this.scrollToSpokenNode_ = false;
   }
 
@@ -1326,10 +1325,10 @@ export class SelectToSpeak {
     this.cancelIfSpeaking_(clearFocusRing /* clear the focus ring */);
 
     // Update the UI on an interval, to adapt to automation tree changes.
-    if (this.intervalRef_ !== undefined) {
-      clearInterval(this.intervalRef_);
+    if (this.intervalId_ !== undefined) {
+      clearInterval(this.intervalId_);
     }
-    this.intervalRef_ = setInterval(
+    this.intervalId_ = setInterval(
         () => this.updateUi_(),
         SelectToSpeakConstants.NODE_STATE_TEST_INTERVAL_MS);
   }
