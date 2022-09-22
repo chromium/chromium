@@ -65,10 +65,8 @@ public class AssistantQrCodePermissionView {
 
         // Updating permission view image based on the permission type.
         ChromeImageView permissionImageView = mPermissionView.findViewById(R.id.permission_image);
-        int permissionImageResouce = mContext.getResources().getIdentifier(
-                permission.getAndroidPermissionImage(), "drawable", mContext.getPackageName());
         permissionImageView.setImageDrawable(
-                ContextCompat.getDrawable(mContext, permissionImageResouce));
+                ContextCompat.getDrawable(mContext, permission.getAndroidPermissionImage()));
 
         updatePermissionButtonBehaviour();
     }

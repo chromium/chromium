@@ -6,25 +6,28 @@ package org.chromium.components.autofill_assistant.guided_browsing.qr_code.permi
 
 import android.Manifest.permission;
 
+import androidx.annotation.DrawableRes;
+
+import org.chromium.components.autofill_assistant.guided_browsing.R;
 import org.chromium.ui.permissions.PermissionConstants;
 
 public enum AssistantQrCodePermissionType {
     // List of permissions should be mentioned here
-    CAMERA(permission.CAMERA, "videocam_img", new AssistantQrCodeCameraPermissionMetric()),
-    READ_MEDIA_IMAGES(PermissionConstants.READ_MEDIA_IMAGES, "folder_img",
+    CAMERA(permission.CAMERA, R.drawable.videocam_img, new AssistantQrCodeCameraPermissionMetric()),
+    READ_MEDIA_IMAGES(PermissionConstants.READ_MEDIA_IMAGES, R.drawable.folder_img,
             new AssistantQrCodeReadImagesPermissionMetric()),
-    READ_EXTERNAL_STORAGE(permission.READ_EXTERNAL_STORAGE, "folder_img",
+    READ_EXTERNAL_STORAGE(permission.READ_EXTERNAL_STORAGE, R.drawable.folder_img,
             new AssistantQrCodeReadImagesPermissionMetric());
 
     private String mAndroidPermission;
-    private String mAndroidPermissionImage;
+    private @DrawableRes int mAndroidPermissionImage;
     private AssistantQrCodePermissionMetric mAndroidPermissionMetric;
 
     public String getAndroidPermission() {
         return this.mAndroidPermission;
     }
 
-    public String getAndroidPermissionImage() {
+    public @DrawableRes int getAndroidPermissionImage() {
         return this.mAndroidPermissionImage;
     }
 
@@ -32,7 +35,7 @@ public enum AssistantQrCodePermissionType {
         return this.mAndroidPermissionMetric;
     }
 
-    private AssistantQrCodePermissionType(String permission, String permissionImage,
+    private AssistantQrCodePermissionType(String permission, @DrawableRes int permissionImage,
             AssistantQrCodePermissionMetric permissionMetric) {
         this.mAndroidPermission = permission;
         this.mAndroidPermissionImage = permissionImage;
