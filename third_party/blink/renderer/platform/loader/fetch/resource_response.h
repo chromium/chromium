@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/ssl/ssl_info.h"
+#include "services/network/public/mojom/alternate_protocol_usage.mojom-shared.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -326,6 +327,13 @@ class PLATFORM_EXPORT ResourceResponse final {
     alpn_negotiated_protocol_ = value;
   }
 
+  net::AlternateProtocolUsage AlternateProtocolUsage() const {
+    return alternate_protocol_usage_;
+  }
+  void SetAlternateProtocolUsage(net::AlternateProtocolUsage value) {
+    alternate_protocol_usage_ = value;
+  }
+
   net::HttpResponseInfo::ConnectionInfo ConnectionInfo() const {
     return connection_info_;
   }
@@ -595,6 +603,10 @@ class PLATFORM_EXPORT ResourceResponse final {
 
   // ALPN negotiated protocol of the socket which fetched this resource.
   AtomicString alpn_negotiated_protocol_;
+
+  // The reason why Chrome uses a specific transport protocol for HTTP
+  // semantics.
+  net::AlternateProtocolUsage alternate_protocol_usage_;
 
   // Information about the type of connection used to fetch this resource.
   net::HttpResponseInfo::ConnectionInfo connection_info_ =

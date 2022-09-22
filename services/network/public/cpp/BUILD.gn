@@ -187,6 +187,8 @@ component("ip_address_mojom_support") {
   sources = [
     "address_list_mojom_traits.cc",
     "address_list_mojom_traits.h",
+    "alternate_protocol_usage_mojom_traits.cc",
+    "alternate_protocol_usage_mojom_traits.h",
     "connection_endpoint_metadata_mojom_traits.cc",
     "connection_endpoint_metadata_mojom_traits.h",
     "host_resolver_endpoint_result_mojom_traits.cc",
