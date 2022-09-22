@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/search_engines/template_url_service.h"
@@ -456,10 +457,9 @@ const char kUmaSelectDefaultSearchEngine[] =
                     });
 
   // Keep the search engines visited within `kMaxVisitAge` and erase others.
-  const base::Time cutoff = base::Time::Now() - kMaxVisitAge;
-  auto cutBegin = std::find_if(begin, pivot, [cutoff](const TemplateURL* url) {
-    return url->last_visited() < cutoff;
-  });
+  auto cutBegin = base::ranges::lower_bound(
+      begin, pivot, base::Time::Now() - kMaxVisitAge,
+      base::ranges::greater_equal(), &TemplateURL::last_visited);
   _secondList.erase(cutBegin, end);
 }
 

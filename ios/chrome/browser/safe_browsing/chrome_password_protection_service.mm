@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
+#import "base/ranges/algorithm.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -396,14 +397,13 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfoForUsername(
     return AccountInfo();
   std::vector<CoreAccountInfo> signed_in_accounts =
       identity_manager->GetAccountsWithRefreshTokens();
-  auto account_iterator =
-      std::find_if(signed_in_accounts.begin(), signed_in_accounts.end(),
-                   [username](const auto& account) {
-                     return password_manager::AreUsernamesSame(
-                         account.email,
-                         /*is_username1_gaia_account=*/true, username,
-                         /*is_username2_gaia_account=*/true);
-                   });
+  auto account_iterator = base::ranges::find_if(
+      signed_in_accounts, [username](const auto& account) {
+        return password_manager::AreUsernamesSame(
+            account.email,
+            /*is_username1_gaia_account=*/true, username,
+            /*is_username2_gaia_account=*/true);
+      });
   if (account_iterator == signed_in_accounts.end())
     return AccountInfo();
 

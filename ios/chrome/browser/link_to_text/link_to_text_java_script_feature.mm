@@ -6,6 +6,7 @@
 
 #import "base/barrier_callback.h"
 #import "base/no_destructor.h"
+#import "base/ranges/algorithm.h"
 #import "base/timer/elapsed_timer.h"
 #import "components/shared_highlighting/core/common/disabled_sites.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -146,9 +147,9 @@ void LinkToTextJavaScriptFeature::HandleResponseFromSubframe(
   DCHECK(!parsed_responses.empty());
 
   // First, see if we succeeded in any frame.
-  auto success_response = std::find_if(
-      parsed_responses.begin(), parsed_responses.end(),
-      [](LinkToTextResponse* response) { return response.payload != nil; });
+  auto success_response = base::ranges::find_if_not(
+      parsed_responses,
+      [](LinkToTextResponse* response) { return response.payload == nil; });
   if (success_response != parsed_responses.end()) {
     std::move(final_callback).Run(*success_response);
     return;
@@ -157,10 +158,9 @@ void LinkToTextJavaScriptFeature::HandleResponseFromSubframe(
   // If not, look for a frame where we failed with an error other than Incorrect
   // Selector. There should be at most one of these (since every frame with no
   // user selection should return Incorrect Selector).
-  auto error_response = std::find_if(
-      parsed_responses.begin(), parsed_responses.end(),
-      [](LinkToTextResponse* response) {
-        return [response error].value() !=
+  auto error_response = base::ranges::find_if_not(
+      parsed_responses, [](LinkToTextResponse* response) {
+        return [response error].value() ==
                shared_highlighting::LinkGenerationError::kIncorrectSelector;
       });
   if (error_response != parsed_responses.end()) {

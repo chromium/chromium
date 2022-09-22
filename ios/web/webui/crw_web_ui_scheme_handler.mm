@@ -7,6 +7,7 @@
 #import <map>
 
 #import "base/files/file_path.h"
+#import "base/ranges/algorithm.h"
 #import "ios/web/webui/url_fetcher_block_adapter.h"
 #import "ios/web/webui/web_ui_ios_controller_factory_registry.h"
 #import "net/base/mac/url_conversions.h"
@@ -118,11 +119,12 @@ NSInteger GetErrorCodeForUrl(const GURL& URL) {
 
 // Removes `fetcher` from map of active fetchers.
 - (void)removeFetcher:(web::URLFetcherBlockAdapter*)fetcher {
-  _map.erase(std::find_if(
-      _map.begin(), _map.end(),
-      [fetcher](const std::pair<const id<WKURLSchemeTask>,
-                                std::unique_ptr<web::URLFetcherBlockAdapter>>&
-                    entry) { return entry.second.get() == fetcher; }));
+  _map.erase(base::ranges::find(
+      _map, fetcher,
+      [](const std::pair<const id<WKURLSchemeTask>,
+                         std::unique_ptr<web::URLFetcherBlockAdapter>>& entry) {
+        return entry.second.get();
+      }));
 }
 
 @end
