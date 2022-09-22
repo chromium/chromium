@@ -10,6 +10,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -24,6 +25,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -262,6 +265,65 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   bool status_changed_ = false;
 };
 
+class PageSpecificSiteDataSectionView : public views::BoxLayoutView {
+ public:
+  PageSpecificSiteDataSectionView(
+      std::vector<PageSpecificSiteDataDialogSite> sites,
+      PageSpecificSiteDataDialogModelDelegate* delegate) {
+    SetOrientation(views::BoxLayout::Orientation::kVertical);
+    SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch);
+
+    for (const PageSpecificSiteDataDialogSite& site : sites) {
+      // It is safe to use base::Unretained for the delegate here because both
+      // the row view and the delegate are owned by the dialog and will be
+      // destroyed when the dialog is destroyed.
+      auto* const row_view = AddChildView(std::make_unique<SiteDataRowView>(
+          site.origin, site.setting, delegate->favicon_cache(),
+          base::BindRepeating(
+              &PageSpecificSiteDataDialogModelDelegate::DeleteStoredObjects,
+              base::Unretained(delegate)),
+          base::BindRepeating(
+              &PageSpecificSiteDataDialogModelDelegate::SetContentException,
+              base::Unretained(delegate))));
+      row_view->SetProperty(views::kElementIdentifierKey,
+                            kPageSpecificSiteDataDialogRowForTesting);
+    }
+
+    empty_state_label_ = AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(
+            IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_EMPTY_STATE_LABEL),
+        views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+    empty_state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+    // Set insets to match with other views in the dialog.
+    auto dialog_insets = ChromeLayoutProvider::Get()->GetInsetsMetric(
+        views::InsetsMetric::INSETS_DIALOG);
+    dialog_insets.set_top(0);
+    dialog_insets.set_bottom(0);
+    empty_state_label_->SetProperty(views::kMarginsKey, dialog_insets);
+
+    UpdateEmptyStateLabelVisibility();
+  }
+
+  // views::View:
+  void ChildVisibilityChanged(views::View* child) override {
+    UpdateEmptyStateLabelVisibility();
+  }
+
+ private:
+  void UpdateEmptyStateLabelVisibility() {
+    // If none of the children (except the empty state label) are visible, show
+    // a label to explain the empty state.
+    bool none_children_visible =
+        base::ranges::none_of(children(), [=](views::View* v) {
+          return v != empty_state_label_ && v->GetVisible();
+        });
+    empty_state_label_->SetVisible(none_children_visible);
+  }
+
+  raw_ptr<views::Label> empty_state_label_ = nullptr;
+};
+
 }  // namespace
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogRowForTesting);
@@ -284,29 +346,32 @@ views::Widget* ShowPageSpecificSiteDataDialog(
           &PageSpecificSiteDataDialogModelDelegate::OnDialogExplicitlyClosed,
           base::Unretained(delegate)));
 
+  bool has_any_sections = false;
   auto sections =
       GetSections(delegate->GetAllSites(),
                   url::Origin::Create(web_contents->GetVisibleURL()));
   for (const auto& section : sections) {
+    // If section doesn't have any sites, don't show the section.
+    if (section.sites.size() == 0u)
+      continue;
+
+    has_any_sections = true;
     builder.AddParagraph(
         ui::DialogModelLabel(section.subtitle).set_is_secondary(),
         section.title);
-    for (const auto& site : section.sites) {
-      // It is safe to use base::Unretained for the delegate here because both
-      // the row view and the delegate are owned by the dialog and will be
-      // destroyed when the dialog is destroyed.
-      builder.AddCustomField(
-          CreateCustomField(std::make_unique<SiteDataRowView>(
-              site.origin, site.setting, delegate->favicon_cache(),
-              base::BindRepeating(
-                  &PageSpecificSiteDataDialogModelDelegate::DeleteStoredObjects,
-                  base::Unretained(delegate)),
-              base::BindRepeating(
-                  &PageSpecificSiteDataDialogModelDelegate::SetContentException,
-                  base::Unretained(delegate)))),
-          kPageSpecificSiteDataDialogRowForTesting);
-    }
+    builder.AddCustomField(
+        CreateCustomField(std::make_unique<PageSpecificSiteDataSectionView>(
+            section.sites, delegate)));
   }
-  // TODO(crbug.com/1344787): Build the rest of the dialog. Add action handling.
+
+  // If there were no sections shown, show a label that explains an empty state.
+  if (!has_any_sections) {
+    builder.AddParagraph(
+        ui::DialogModelLabel(
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_EMPTY_STATE_LABEL))
+            .set_is_secondary());
+  }
+
   return constrained_window::ShowWebModal(builder.Build(), web_contents);
 }

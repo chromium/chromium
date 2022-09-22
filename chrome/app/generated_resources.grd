@@ -9421,6 +9421,11 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Partitioned
       </message>
 
+      <!-- Page specific site data dialog (redesign of Collected cookies window) -->
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_EMPTY_STATE_LABEL" desc="The text used to explain to users that there are no cookies set and that this is the place where they will be shown. The label is shown in the `Cookies and site data` dialog.">
+        If a site uses cookies, it will appear here
+      </message>
+
       <!-- Accessiblility strings for Infobars in Views -->
       <if expr="toolkit_views">
         <message name="IDS_ACCNAME_INFOBAR_CONTAINER" desc="The accessible name for the infobar container.">
