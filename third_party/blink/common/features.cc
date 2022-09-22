@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
@@ -484,7 +485,9 @@ BASE_FEATURE(kServiceWorkerUpdateDelay,
 // "stop" is a legacy name.
 BASE_FEATURE(kStopInBackground,
              "stop-in-background",
-#if BUILDFLAG(IS_ANDROID)
+// b/248036988 - Disable this for Chromecast on Android builds to prevent apps
+// that play audio in the background from stopping.
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CAST_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT

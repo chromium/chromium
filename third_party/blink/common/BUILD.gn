@@ -273,6 +273,7 @@ source_set("common") {
 
   deps = [
     "//base",
+    "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//media/capture:capture_base",
     "//media/capture/mojom:video_capture_mojom_support",
