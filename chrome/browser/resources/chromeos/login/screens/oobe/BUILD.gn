@@ -237,6 +237,7 @@ polymer_modulizer("demo_setup") {
   html_file = "demo_setup.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -263,6 +264,7 @@ polymer_modulizer("quick_start") {
   html_file = "quick_start.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 

@@ -96,6 +96,7 @@ polymer_modulizer("oobe_loading_dialog") {
   html_file = "oobe_loading_dialog.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
 }
 
 polymer_modulizer("oobe_modal_dialog") {

@@ -4,6 +4,7 @@
 
 import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../oobe_auto_imports.gni")
@@ -39,7 +40,7 @@ group("closure_compile") {
     ":oobe_select.m",
     ":oobe_slide.m",
     ":oobe_types.m",
-    ":security_token_pin.m",
+    ":security_token_pin",
     ":test_util.m",
     ":throbber_notice.m",
     ":web_view_helper.m",
@@ -74,7 +75,6 @@ group("polymer3_elements") {
                   ":oobe_icons_module",
                   ":oobe_network_icons_module",
                   ":oobe_slide_module",
-                  ":security_token_pin_module",
                   ":throbber_notice_module",
                 ] + [ ":modulize" ]
 }
@@ -241,13 +241,13 @@ js_library("oobe_types.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("security_token_pin.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/security_token_pin.m.js" ]
+js_library("security_token_pin") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/security_token_pin.js" ]
   deps = [
     ":oobe_types.m",
     "./behaviors:oobe_i18n_behavior.m",
   ]
-  extra_deps = [ ":security_token_pin_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("throbber_notice.m") {
@@ -297,6 +297,7 @@ polymer_modulizer("gaia_header") {
   html_file = "gaia_header.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -305,6 +306,7 @@ polymer_modulizer("gaia_input_form") {
   html_file = "gaia_input_form.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -313,6 +315,7 @@ polymer_modulizer("hd_iron_icon") {
   html_file = "hd_iron_icon.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -330,6 +333,7 @@ polymer_modulizer("notification_card") {
   html_file = "notification_card.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -395,14 +399,6 @@ polymer_modulizer("oobe_slide") {
   html_file = "oobe_slide.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
-polymer_modulizer("security_token_pin") {
-  js_file = "security_token_pin.js"
-  html_file = "security_token_pin.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
   migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
@@ -427,4 +423,8 @@ js_modulizer("modulize") {
     "test_util.js",
   ]
   namespace_rewrites = []
+}
+
+html_to_js("web_components") {
+  js_files = [ "security_token_pin.js" ]
 }

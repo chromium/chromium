@@ -275,7 +275,7 @@ js_library("gaia_signin.m") {
     "../../components:gaia_dialog.m",
     "../../components:notification_card.m",
     "../../components:oobe_types.m",
-    "../../components:security_token_pin.m",
+    "../../components:security_token_pin",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
@@ -671,6 +671,7 @@ polymer_modulizer("app_launch_splash") {
   html_file = "app_launch_splash.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -679,6 +680,7 @@ polymer_modulizer("assistant_optin") {
   html_file = "assistant_optin.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -696,6 +698,7 @@ polymer_modulizer("device_disabled") {
   html_file = "device_disabled.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -713,6 +716,7 @@ polymer_modulizer("gaia_signin") {
   html_file = "gaia_signin.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -793,6 +797,7 @@ polymer_modulizer("signin_fatal_error") {
   html_file = "signin_fatal_error.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -801,6 +806,7 @@ polymer_modulizer("smart_privacy_protection") {
   html_file = "smart_privacy_protection.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 

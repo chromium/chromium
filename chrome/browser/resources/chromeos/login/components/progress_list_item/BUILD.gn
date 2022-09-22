@@ -31,4 +31,5 @@ polymer_modulizer("progress_list_item") {
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
+  migrated_imports = oobe_migrated_imports
 }

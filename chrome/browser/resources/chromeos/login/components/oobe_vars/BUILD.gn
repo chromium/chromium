@@ -59,4 +59,5 @@ polymer_modulizer("oobe_shared_vars_css") {
   js_file = "oobe_shared_vars_css.m.js"
   html_file = "oobe_shared_vars_css.html"
   html_type = "custom-style"
+  migrated_imports = oobe_migrated_imports
 }

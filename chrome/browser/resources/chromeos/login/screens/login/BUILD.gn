@@ -186,6 +186,7 @@ polymer_modulizer("checking_downloading_update") {
   html_file = "checking_downloading_update.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 

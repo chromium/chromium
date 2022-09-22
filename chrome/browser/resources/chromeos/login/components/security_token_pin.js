@@ -7,15 +7,30 @@
  * sign-in.
  */
 
-/* #js_imports_placeholder */
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/ash/common/quick_unlock/pin_keyboard.js';
+import '//resources/cr_elements/icons.html.js';
+import './oobe_icons.m.js';
+import './buttons/oobe_back_button.m.js';
+import './buttons/oobe_next_button.m.js';
+import './common_styles/common_styles.m.js';
+import './common_styles/oobe_dialog_host_styles.m.js';
+import './dialogs/oobe_adaptive_dialog.m.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {OobeDialogHostBehavior} from './behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.m.js';
+import {OobeTypes} from './oobe_types.m.js';
+
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {OobeI18nBehaviorInterface}
  */
-const SecurityTokenPinBase = Polymer.mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior], Polymer.Element);
+const SecurityTokenPinBase =
+    mixinBehaviors([OobeI18nBehavior, OobeDialogHostBehavior], PolymerElement);
 
 /**
  * @polymer
@@ -25,7 +40,9 @@ class SecurityTokenPin extends SecurityTokenPinBase {
     return 'security-token-pin';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
