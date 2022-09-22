@@ -4,12 +4,34 @@
 
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_split.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+
+namespace {
+
+base::flat_set<int> ParseErrorList(const std::string& serialised_list) {
+  base::flat_set<int> error_list;
+
+  for (base::StringPiece error_str :
+       base::SplitStringPiece(serialised_list, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    int error_code;
+    DCHECK(base::StringToInt(error_str, &error_code));
+    error_list.emplace(error_code);
+  }
+
+  return error_list;
+}
+
+}  // namespace
 
 namespace password_manager_upm_eviction {
 
@@ -71,6 +93,18 @@ void ReenrollCurrentUser(PrefService* prefs) {
                        kUnenrolledFromGoogleMobileServicesAfterApiErrorCode);
   prefs->ClearPref(password_manager::prefs::
                        kUnenrolledFromGoogleMobileServicesWithErrorListVersion);
+}
+
+bool ShouldIgnoreOnApiError(int api_error_code) {
+  base::flat_set<int> ignored_errors =
+      ParseErrorList(password_manager::features::kIgnoredGmsApiErrors.Get());
+  return ignored_errors.contains(api_error_code);
+}
+
+bool ShouldRetryOnApiError(int api_error_code) {
+  base::flat_set<int> ignored_errors =
+      ParseErrorList(password_manager::features::kRetriableGmsApiErrors.Get());
+  return ignored_errors.contains(api_error_code);
 }
 
 }  // namespace password_manager_upm_eviction
