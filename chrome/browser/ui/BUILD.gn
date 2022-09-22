@@ -4155,6 +4155,8 @@ static_library("ui") {
       "side_panel/customize_chrome/customize_chrome_side_panel_controller_utils.h",
       "side_panel/customize_chrome/customize_chrome_tab_helper.cc",
       "side_panel/customize_chrome/customize_chrome_tab_helper.h",
+      "side_panel/customize_chrome/customize_chrome_utils.cc",
+      "side_panel/customize_chrome/customize_chrome_utils.h",
       "views/send_tab_to_self/send_tab_to_self_bubble.cc",
       "views/send_tab_to_self/send_tab_to_self_bubble_controller.cc",
       "views/send_tab_to_self/send_tab_to_self_bubble_controller.h",

@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
+#include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -451,7 +452,7 @@ NewTabPageHandler::NewTabPageHandler(
       ntp_custom_background_service_.get());
   promo_service_observation_.Observe(promo_service_.get());
   OnThemeChanged();
-  if (base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel)) {
+  if (customize_chrome::IsSidePanelEnabled()) {
     auto* customize_chrome_tab_helper =
         CustomizeChromeTabHelper::FromWebContents(web_contents_);
     // Lifetime is tied to NewTabPageUI which owns the NewTabPageHandler.
