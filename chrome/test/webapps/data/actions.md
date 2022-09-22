@@ -86,7 +86,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_app_in_list_not_locally_installed | Site |  | 45 | Implemented | Find the app in the app list (chrome://apps) and check that the given app is in the app list and is not installed. This means the icon is grey, and right clicking on it provides an 'install' option. Win/Mac/Linux only. |  |
 | check_app_not_in_list | Site |  | 15 | Implemented | Check that the given app is NOT in the app list. On desktop, this is chrome://apps, and on ChromeOS, this is the app drawer. |  |
 | check_app_title | Site, Title |  | 79 | Implemented | Check that the app title is correct | finnur@ |
-| check_app_in_list_icon_correct | Site |  | 75 | Not Implemented | Find the app in the app list (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). Check that the icon for the given app in the app list is correct. | P2 (dmurph modified - should be easy to fetch icon using web request for chrome://app-icon/<app-id>/<dip> I believe) |
+| check_app_in_list_icon_correct | Site |  | 75 | Implemented | Find the app in the app list (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). Check that the icon for the given app in the app list is correct. | P2 (fetch icon using web request for chrome://app-icon/<app-id>/<icon-size>) |
 | check_theme_color | Site |  | 76 | Not Implemented | Asserts that the theme color of the given app window is correct. | P3 |
 | # Misc UX |
 | check_browser_navigation_is_app_settings | Site |  | 109 | Implemented | Check the current browser navigation is chrome://app-settings/<app-id> | phillis@ |
@@ -142,7 +142,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | switch_profile_clients | ProfileClient |  | 40 | Implemented | Switch to a different instance of chrome signed in to the same profile |  |
 | sync_turn_off |  |  | 41 | Implemented | Turn chrome sync off for "Apps": chrome://settings/syncSetup/advanced |  |
 | sync_turn_on |  |  | 42 | Implemented | Turn chrome sync on for "Apps": chrome://settings/syncSetup/advanced |  |
-| switch_incognito_profile |  |  | 73 | Not Implemented | Switch to using incognito mode | P2 |
+| switch_incognito_profile |  |  | 73 | Implemented | Switch to using incognito mode | P2 |
 | # File handling |
 | check_site_handles_file | Site, FileExtension |  | 118 | Not Implemented |  |  |
 | check_site_not_handles_file | Site, FileExtension |  | 122 | Not Implemented |  |  |

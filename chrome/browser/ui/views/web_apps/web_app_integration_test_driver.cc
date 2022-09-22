@@ -2595,7 +2595,8 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
     base::flat_map<Browser*, BrowserState> browser_state;
     auto* browser_list = BrowserList::GetInstance();
     for (Browser* browser : *browser_list) {
-      if (browser->profile() != profile) {
+      if (browser->profile() != profile &&
+          browser->profile()->GetOriginalProfile() != profile) {
         continue;
       }
 
