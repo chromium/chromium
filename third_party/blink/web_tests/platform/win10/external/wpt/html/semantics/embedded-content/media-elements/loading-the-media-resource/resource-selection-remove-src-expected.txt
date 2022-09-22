@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS invoking resource selection by setting src; await stable state
+Harness: the test ran to completion.
+
