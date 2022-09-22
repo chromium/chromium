@@ -30,8 +30,6 @@ source_set("public") {
     "service_proxy.cc",
     "service_proxy.h",
     "trigger.h",
-    "trigger_context.cc",
-    "trigger_context.h",
     "types/processed_value.cc",
     "types/processed_value.h",
   ]
@@ -69,11 +67,9 @@ source_set("unit_tests") {
 if (is_android) {
   android_library("public_java") {
     sources = [
-      "android/java/src/org/chromium/components/segmentation_platform/OnDemandSegmentSelectionResult.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentSelectionResult.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformService.java",
-      "android/java/src/org/chromium/components/segmentation_platform/TriggerContext.java",
     ]
 
     deps = [
@@ -90,9 +86,6 @@ if (is_android) {
   generate_jni("jni_headers") {
     visibility = [ ":*" ]
 
-    sources = [
-      "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
-      "android/java/src/org/chromium/components/segmentation_platform/TriggerContext.java",
-    ]
+    sources = [ "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java" ]
   }
 }

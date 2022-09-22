@@ -6,7 +6,6 @@
 
 #include "components/segmentation_platform/public/jni_headers/SegmentationPlatformConversionBridge_jni.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
-#include "components/segmentation_platform/public/trigger_context.h"
 
 namespace segmentation_platform {
 
@@ -21,17 +20,6 @@ SegmentationPlatformConversionBridge::CreateJavaSegmentSelectionResult(
   return Java_SegmentationPlatformConversionBridge_createSegmentSelectionResult(
       env, result.is_ready, selected_segment, result.rank.has_value(),
       result.rank.has_value() ? *result.rank : 0);
-}
-
-// static
-ScopedJavaLocalRef<jobject>
-SegmentationPlatformConversionBridge::CreateJavaOnDemandSegmentSelectionResult(
-    JNIEnv* env,
-    const SegmentSelectionResult& result,
-    const TriggerContext& trigger_context) {
-  return Java_SegmentationPlatformConversionBridge_createOnDemandSegmentSelectionResult(
-      env, CreateJavaSegmentSelectionResult(env, result),
-      trigger_context.CreateJavaObject());
 }
 
 }  // namespace segmentation_platform

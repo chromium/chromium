@@ -565,7 +565,6 @@ static_library("ui") {
     "//components/security_interstitials/core:unsafe_resource",
     "//components/security_state/content",
     "//components/security_state/core",
-    "//components/segmentation_platform/content",
     "//components/segmentation_platform/public",
     "//components/send_tab_to_self",
     "//components/sessions",

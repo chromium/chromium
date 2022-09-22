@@ -21,10 +21,4 @@ public class SegmentationPlatformConversionBridge {
         Float optionalRank = hasRank ? rank : null;
         return new SegmentSelectionResult(isReady, segment, optionalRank);
     }
-
-    @CalledByNative
-    private static OnDemandSegmentSelectionResult createOnDemandSegmentSelectionResult(
-            SegmentSelectionResult selectedSegment, TriggerContext triggerContext) {
-        return new OnDemandSegmentSelectionResult(selectedSegment, triggerContext);
-    }
 }

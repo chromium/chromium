@@ -8,7 +8,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/segmentation_platform/public/trigger_context.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 
 namespace segmentation_platform {
@@ -18,7 +17,6 @@ namespace segmentation_platform {
 struct InputContext : base::RefCounted<InputContext> {
  public:
   InputContext();
-  explicit InputContext(const TriggerContext& trigger_context);
 
   InputContext(InputContext&) = delete;
   InputContext& operator=(InputContext&) = delete;
