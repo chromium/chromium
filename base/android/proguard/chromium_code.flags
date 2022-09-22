@@ -5,9 +5,6 @@
 # Contains flags that can be safely shared with Cronet, and thus would be
 # appropriate for third-party apps to include.
 
-# Android support library annotations will get converted to androidx ones
-# which we want to keep.
--keep @interface androidx.annotation.Keep
 -keep @androidx.annotation.Keep class *
 -keepclasseswithmembers,allowaccessmodification class * {
   @androidx.annotation.Keep <fields>;
