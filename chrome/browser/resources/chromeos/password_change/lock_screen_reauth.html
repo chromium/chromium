@@ -284,7 +284,7 @@
   <div id="samlContainer"
       saml-notice-message$="[[showSamlNoticeMessage_]]">
     <span id="samlNoticeMessage" hidden="[[!showSamlNoticeMessage_]]">
-    [[i18n('samlNotice', authDomain]]
+      [[i18n('samlNotice', authDomain_)]]
     </span>
     <cr-icon-button id="saml-close-button" iron-icon="cr:close"
         on-click="onCloseTap_" aria-label="$i18n{lockScreenCloseButton}">
