@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
@@ -318,8 +319,15 @@ public class WebFeedMainMenuItem extends FrameLayout {
     }
 
     private void moveChipsToDedicatedRow() {
-        ViewGroup secondRow = (ViewGroup) findViewById(R.id.footer_second_chip_row);
-        ViewGroup chipGroup = (ViewGroup) findViewById(R.id.chip_container);
+        ViewGroup secondRow = findViewById(R.id.footer_second_chip_row);
+        ViewGroup chipGroup = findViewById(R.id.chip_container);
+        // Set the margin start to align with the icon if the chips are moved to a second row.
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        int marginStart = mContext.getResources().getDimensionPixelSize(
+                R.dimen.menu_footer_second_row_margin_start);
+        layoutParams.setMarginStart(marginStart);
+        chipGroup.setLayoutParams(layoutParams);
         UiUtils.removeViewFromParent(chipGroup);
         secondRow.addView(chipGroup);
         secondRow.setVisibility(View.VISIBLE);
