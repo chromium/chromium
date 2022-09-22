@@ -402,15 +402,26 @@ export function wrapupRepairCompletePageTest() {
 
     assertEquals(1, callCount);
 
-    // The save log button should be replaced by the done button.
+    // The save log button should be replaced by the done button and the retry
+    // button.
     assertFalse(
         isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
     assertTrue(isVisible(
         component.shadowRoot.querySelector('#logSaveDoneDialogButton')));
+    assertTrue(
+        isVisible(component.shadowRoot.querySelector('#logRetryDialogButton')));
     assertEquals(
         loadTimeData.getString('rmaLogsSaveFailText'),
         component.shadowRoot.querySelector('#logSavedStatusText')
             .textContent.trim());
+
+    // Click the retry button and verify that it retries saving the logs.
+    await clickButton('#logRetryDialogButton');
+    resolver.resolve(
+        {savePath: 'save/path', error: RmadErrorCode.kCannotSaveLog});
+    await flushTasks();
+
+    assertEquals(2, callCount);
   });
 
   test('BatteryCutButtonDisabledByDefault', async () => {

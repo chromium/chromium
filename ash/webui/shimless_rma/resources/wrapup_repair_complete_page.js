@@ -309,8 +309,8 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
     this.cutoffBattery_();
   }
 
-  /** @protected */
-  onSaveLogClick_() {
+  /** @private */
+  saveLog_() {
     this.shimlessRmaService_.saveLog().then(
         /*@type {!SaveLogResponse}*/ (result) => {
           if (result.error === RmadErrorCode.kOk) {
@@ -322,6 +322,16 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
             this.usbLogState_ = USBLogState.LOG_SAVE_FAIL;
           }
         });
+  }
+
+  /** @protected */
+  onSaveLogClick_() {
+    this.saveLog_();
+  }
+
+  /** @protected */
+  retrySaveLogs_() {
+    this.saveLog_();
   }
 
   /** @protected */
@@ -456,6 +466,14 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   shouldShowLogSaveAttemptContainer_() {
     return this.usbLogState_ === USBLogState.LOG_SAVE_SUCCESS ||
         this.usbLogState_ === USBLogState.LOG_SAVE_FAIL;
+  }
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
+  shouldShowRetryButton_() {
+    return this.usbLogState_ === USBLogState.LOG_SAVE_FAIL;
   }
 
   /**
