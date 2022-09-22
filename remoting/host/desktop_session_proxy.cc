@@ -147,6 +147,8 @@ std::unique_ptr<ScreenControls> DesktopSessionProxy::CreateScreenControls() {
 std::unique_ptr<DesktopCapturer> DesktopSessionProxy::CreateVideoCapturer() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
+  // Cursor compositing is done by the desktop process if necessary so just
+  // return a non-composing frame capturer.
   return std::make_unique<IpcVideoFrameCapturer>(this);
 }
 

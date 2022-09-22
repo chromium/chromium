@@ -88,10 +88,6 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               CreateUrlForwarderConfigurator,
               (),
               (override));
-  MOCK_METHOD(std::unique_ptr<DesktopAndCursorConditionalComposer>,
-              CreateComposingVideoCapturer,
-              (),
-              (override));
   MOCK_METHOD(std::unique_ptr<RemoteWebAuthnStateChangeNotifier>,
               CreateRemoteWebAuthnStateChangeNotifier,
               (),

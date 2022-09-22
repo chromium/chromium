@@ -15,6 +15,7 @@
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/client_session_control.h"
+#include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/file_transfer/local_file_operations.h"
@@ -165,17 +166,6 @@ uint32_t BasicDesktopEnvironment::GetDesktopSessionId() const {
   return UINT32_MAX;
 }
 
-std::unique_ptr<DesktopAndCursorConditionalComposer>
-BasicDesktopEnvironment::CreateComposingVideoCapturer() {
-#if BUILDFLAG(IS_APPLE)
-  // Mac includes the mouse cursor in the captured image in curtain mode.
-  if (options_.enable_curtaining())
-    return nullptr;
-#endif
-  return std::make_unique<DesktopAndCursorConditionalComposer>(
-      CreateVideoCapturer());
-}
-
 std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
 BasicDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return std::make_unique<RemoteWebAuthnExtensionNotifier>();
@@ -217,7 +207,14 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
 #endif  // REMOTING_USE_X11
 
   desktop_capturer->CreateCapturer(desktop_capture_options());
-  return std::move(desktop_capturer);
+
+#if BUILDFLAG(IS_APPLE)
+  // Mac includes the mouse cursor in the captured image in curtain mode.
+  if (options_.enable_curtaining())
+    return std::move(desktop_capturer);
+#endif
+  return std::make_unique<DesktopAndCursorConditionalComposer>(
+      std::move(desktop_capturer));
 }
 
 BasicDesktopEnvironment::BasicDesktopEnvironment(

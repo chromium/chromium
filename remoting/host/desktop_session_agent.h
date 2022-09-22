@@ -24,7 +24,6 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session_control.h"
-#include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/file_transfer/session_file_operations_handler.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
@@ -52,6 +51,7 @@ class ActionExecutor;
 class AudioCapturer;
 class AudioPacket;
 class AutoThreadTaskRunner;
+class DesktopCapturer;
 class DesktopEnvironment;
 class DesktopEnvironmentFactory;
 class InputInjector;
@@ -238,7 +238,7 @@ class DesktopSessionAgent
   bool started_ = false;
 
   // Captures the screen and composites with the mouse cursor if necessary.
-  std::unique_ptr<DesktopAndCursorConditionalComposer> video_capturer_;
+  std::unique_ptr<DesktopCapturer> video_capturer_;
 
   // Captures mouse shapes.
   std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor_;

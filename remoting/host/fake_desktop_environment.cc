@@ -134,11 +134,6 @@ uint32_t FakeDesktopEnvironment::GetDesktopSessionId() const {
   return desktop_session_id_;
 }
 
-std::unique_ptr<DesktopAndCursorConditionalComposer>
-FakeDesktopEnvironment::CreateComposingVideoCapturer() {
-  return nullptr;
-}
-
 std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
 FakeDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return nullptr;

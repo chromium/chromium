@@ -225,7 +225,10 @@ class ClientSession : public protocol::HostStub,
     ~VideoStreamWithComposer();
 
     std::unique_ptr<protocol::VideoStream> stream;
-    base::WeakPtr<DesktopAndCursorConditionalComposer> composer;
+    // |stream| owns |desktop_capturer|.
+    // TODO(joedow): Move the composer methods into protocol::VideoStream so we
+    // no longer need this class.
+    base::raw_ptr<DesktopCapturer> desktop_capturer = nullptr;
   };
 
   // Creates a proxy for sending clipboard events to the client.

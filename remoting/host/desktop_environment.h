@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/base/desktop_environment_options.h"
-#include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/protocol/desktop_capturer.h"
 
 namespace webrtc {
@@ -68,13 +67,6 @@ class DesktopEnvironment {
   CreateUrlForwarderConfigurator() = 0;
   virtual std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() = 0;
-
-  // For platforms that require the mouse cursor to be composited into the video
-  // stream when it is not rendered by the client, returns a composing capturer.
-  // If the platform already does this, this method return null, and the caller
-  // should use CreateVideoCapturer() instead.
-  virtual std::unique_ptr<DesktopAndCursorConditionalComposer>
-  CreateComposingVideoCapturer() = 0;
 
   // Returns the set of all capabilities supported by |this|.
   virtual std::string GetCapabilities() const = 0;

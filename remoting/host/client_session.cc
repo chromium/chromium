@@ -529,16 +529,12 @@ void ClientSession::CreateMediaStreams() {
 
   // Create a VideoStream to pump frames from the capturer to the client.
   DCHECK(video_streams_.empty());
-  auto composer = desktop_environment_->CreateComposingVideoCapturer();
+
   VideoStreamWithComposer video_stream;
-  if (composer) {
-    video_stream.composer = composer->GetWeakPtr();
-    video_stream.stream =
-        connection_->StartVideoStream(kStreamName, std::move(composer));
-  } else {
-    video_stream.stream = connection_->StartVideoStream(
-        kStreamName, desktop_environment_->CreateVideoCapturer());
-  }
+  auto desktop_capturer = desktop_environment_->CreateVideoCapturer();
+  video_stream.desktop_capturer = desktop_capturer.get();
+  video_stream.stream =
+      connection_->StartVideoStream(kStreamName, std::move(desktop_capturer));
 
   // Create an AudioStream to pump audio from the capturer to the client.
   std::unique_ptr<protocol::AudioSource> audio_capturer =
@@ -580,16 +576,11 @@ void ClientSession::CreatePerMonitorVideoStreams() {
 
     HOST_LOG << "Creating video stream: " << stream_name;
 
-    auto composer = desktop_environment_->CreateComposingVideoCapturer();
     VideoStreamWithComposer video_stream;
-    if (composer) {
-      video_stream.composer = composer->GetWeakPtr();
-      video_stream.stream =
-          connection_->StartVideoStream(stream_name, std::move(composer));
-    } else {
-      video_stream.stream = connection_->StartVideoStream(
-          stream_name, desktop_environment_->CreateVideoCapturer());
-    }
+    auto desktop_capturer = desktop_environment_->CreateVideoCapturer();
+    video_stream.desktop_capturer = desktop_capturer.get();
+    video_stream.stream =
+        connection_->StartVideoStream(kStreamName, std::move(desktop_capturer));
 
     video_stream.stream->SelectSource(id);
 
@@ -786,8 +777,8 @@ ClientSessionControl* ClientSession::session_control() {
 void ClientSession::SetComposeEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& [_, video_stream] : video_streams_) {
-    if (video_stream.composer)
-      video_stream.composer->SetComposeEnabled(enabled);
+    if (video_stream.desktop_capturer)
+      video_stream.desktop_capturer->SetComposeEnabled(enabled);
   }
 }
 
@@ -797,8 +788,8 @@ void ClientSession::OnMouseCursor(webrtc::MouseCursor* mouse_cursor) {
   std::unique_ptr<webrtc::MouseCursor> owned_cursor(mouse_cursor);
 
   for (const auto& [_, video_stream] : video_streams_) {
-    if (video_stream.composer) {
-      video_stream.composer->SetMouseCursor(
+    if (video_stream.desktop_capturer) {
+      video_stream.desktop_capturer->SetMouseCursor(
           base::WrapUnique(webrtc::MouseCursor::CopyOf(*owned_cursor)));
     }
   }
@@ -808,8 +799,8 @@ void ClientSession::OnMouseCursorPosition(
     const webrtc::DesktopVector& position) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& [_, video_stream] : video_streams_) {
-    if (video_stream.composer)
-      video_stream.composer->SetMouseCursorPosition(position);
+    if (video_stream.desktop_capturer)
+      video_stream.desktop_capturer->SetMouseCursorPosition(position);
   }
 }
 

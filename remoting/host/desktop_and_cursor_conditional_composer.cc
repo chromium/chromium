@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
+
 #include "base/bind.h"
 
 namespace remoting {
@@ -18,11 +19,6 @@ DesktopAndCursorConditionalComposer::DesktopAndCursorConditionalComposer(
 
 DesktopAndCursorConditionalComposer::~DesktopAndCursorConditionalComposer() =
     default;
-
-base::WeakPtr<DesktopAndCursorConditionalComposer>
-DesktopAndCursorConditionalComposer::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
 
 void DesktopAndCursorConditionalComposer::SetComposeEnabled(bool enabled) {
   if (enabled == compose_enabled_)
