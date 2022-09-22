@@ -757,13 +757,81 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'base::RepeatingCallback, which directly support Chromium\'s weak ',
         'pointers, ref counting and more.',
       ),
-      # TODO(https://crbug.com/1364577): Change this to an error and use the
-      # exceptions list below.
-      False,
+      True,
       [
           # Has tests that template trait helpers don't unintentionally match
           # std::function.
-          r"base[\\/]functional[\\/]callback_helpers_unittest\.cc",
+          r'base/functional/callback_helpers_unittest\.cc',
+          # Required to implement interfaces from the third-party perfetto
+          # library.
+          r'base/tracing/perfetto_task_runner\.cc',
+          r'base/tracing/perfetto_task_runner\.h',
+          # Needed for interop with the third-party nearby library type
+          # location::nearby::connections::ResultCallback.
+          'chrome/services/sharing/nearby/nearby_connections_conversions\.cc'
+          # Needed for interop with the internal libassistant library.
+          'chromeos/ash/services/libassistant/callback_utils\.h',
+          # Needed for interop with Fuchsia fidl APIs.
+          'fuchsia_web/webengine/browser/context_impl_browsertest\.cc',
+          'fuchsia_web/webengine/browser/cookie_manager_impl_unittest\.cc',
+          'fuchsia_web/webengine/browser/media_player_impl_unittest\.cc',
+          # Required to interop with interfaces from the third-party perfetto
+          # library.
+          'services/tracing/public/cpp/perfetto/custom_event_recorder\.cc',
+          'services/tracing/public/cpp/perfetto/perfetto_traced_process\.cc',
+          'services/tracing/public/cpp/perfetto/perfetto_traced_process\.h',
+          'services/tracing/public/cpp/perfetto/perfetto_tracing_backend\.cc',
+          'services/tracing/public/cpp/perfetto/producer_client\.cc',
+          'services/tracing/public/cpp/perfetto/producer_client\.h',
+          'services/tracing/public/cpp/perfetto/producer_test_utils\.cc',
+          'services/tracing/public/cpp/perfetto/producer_test_utils\.h',
+          # Required for interop with the third-party webrtc library.
+          'third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl\.cc',
+          'third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl\.h',
+
+          # TODO(https://crbug.com/1364577): Various uses that should be
+          # migrated to something else.
+          # Should use base::OnceCallback or base::RepeatingCallback.
+          'base/allocator/dispatcher/initializer_unittest\.cc',
+          'chrome/browser/ash/accessibility/speech_monitor\.cc',
+          'chrome/browser/ash/accessibility/speech_monitor\.h',
+          'chrome/browser/ash/login/ash_hud_login_browsertest\.cc',
+          'chromecast/base/observer_unittest\.cc',
+          'chromecast/browser/cast_web_view\.h',
+          'chromecast/public/cast_media_shlib\.h',
+          'device/bluetooth/floss/exported_callback_manager\.h',
+          'device/bluetooth/floss/floss_dbus_client\.h',
+          'device/fido/cable/v2_handshake_unittest\.cc',
+          'device/fido/pin\.cc',
+          'services/tracing/perfetto/test_utils\.h',
+          # Should use base::FunctionRef.
+          'chrome/browser/media/webrtc/test_stats_dictionary\.cc',
+          'chrome/browser/media/webrtc/test_stats_dictionary\.h',
+          'chromeos/ash/services/libassistant/device_settings_controller\.cc',
+          'components/browser_ui/client_certificate/android/ssl_client_certificate_request\.cc',
+          'components/gwp_asan/client/sampling_malloc_shims_unittest\.cc',
+          'content/browser/font_unique_name_lookup/font_unique_name_lookup_unittest\.cc',
+          # Does not need std::function at all.
+          'components/omnibox/browser/autocomplete_result\.cc',
+          'device/fido/win/webauthn_api\.cc',
+          'media/audio/alsa/alsa_util\.cc',
+          'media/remoting/stream_provider\.h',
+          'sql/vfs_wrapper\.cc',
+          # TODO(https://crbug.com/1364585): Remove usage and exception list
+          # entries.
+          'extensions/renderer/api/automation/automation_internal_custom_bindings\.cc',
+          'extensions/renderer/api/automation/automation_internal_custom_bindings\.h',
+          # TODO(https://crbug.com/1364579): Remove usage and exception list
+          # entry.
+          'ui/views/controls/focus_ring\.h',
+
+          # Various pre-existing uses in //tools that is low-priority to fix.
+          'tools/binary_size/libsupersize/viewer/caspian/diff\.cc',
+          'tools/binary_size/libsupersize/viewer/caspian/model\.cc',
+          'tools/binary_size/libsupersize/viewer/caspian/model\.h',
+          'tools/binary_size/libsupersize/viewer/caspian/tree_builder\.h',
+          'tools/clang/base_bind_rewriters/BaseBindRewriters\.cpp',
+
           # Not an error in third_party folders.
           _THIRD_PARTY_EXCEPT_BLINK
       ],
