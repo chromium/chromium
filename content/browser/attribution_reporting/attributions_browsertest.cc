@@ -203,7 +203,7 @@ struct ExpectedReportWaiter {
 
 class AttributionsBrowserTest : public ContentBrowserTest {
  public:
-  AttributionsBrowserTest() { AttributionManagerImpl::RunInMemoryForTesting(); }
+  AttributionsBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kAttributionReportingDebugMode);
@@ -346,6 +346,9 @@ class AttributionsBrowserTest : public ContentBrowserTest {
   ServiceWorkerContext* public_context() { return wrapper(); }
 
  private:
+  AttributionManagerImpl::ScopedUseInMemoryStorageForTesting
+      attribution_manager_in_memory_setting_;
+
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
   std::unique_ptr<network::TestNetworkConnectionTracker>

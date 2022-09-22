@@ -707,9 +707,6 @@ class StoragePartitionImplTest : public testing::Test {
     command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kAttributionReportingDebugMode);
 
-    // Configures the Conversion API to run in memory to speed up its
-    // initialization and avoid timeouts. See https://crbug.com/1080764.
-    AttributionManagerImpl::RunInMemoryForTesting();
     feature_list_.InitWithFeatures({blink::features::kInterestGroupStorage,
                                     blink::features::kSharedStorageAPI},
                                    {});
@@ -746,6 +743,10 @@ class StoragePartitionImplTest : public testing::Test {
  private:
   base::test::ScopedCommandLine command_line_;
   base::test::ScopedFeatureList feature_list_;
+  // Configures the Attribution Reporting API to run in memory to speed up its
+  // initialization and avoid timeouts. See https://crbug.com/1080764.
+  AttributionManagerImpl::ScopedUseInMemoryStorageForTesting
+      attribution_manager_in_memory_setting_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;

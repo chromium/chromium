@@ -62,6 +62,9 @@ namespace content {
 
 namespace {
 
+using ScopedUseInMemoryStorageForTesting =
+    ::content::AttributionManagerImpl::ScopedUseInMemoryStorageForTesting;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ConversionReportSendOutcome {
@@ -259,6 +262,8 @@ bool IsOperationAllowed(
       destination_origin, reporting_origin);
 }
 
+bool g_run_in_memory = false;
+
 }  // namespace
 
 absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
@@ -274,9 +279,13 @@ absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
   return kInitialReportDelay * std::pow(kDelayFactor, failed_send_attempts - 1);
 }
 
-// static
-void AttributionManagerImpl::RunInMemoryForTesting() {
-  AttributionStorageSql::RunInMemoryForTesting();
+ScopedUseInMemoryStorageForTesting::ScopedUseInMemoryStorageForTesting()
+    : previous_(g_run_in_memory) {
+  g_run_in_memory = true;
+}
+
+ScopedUseInMemoryStorageForTesting::~ScopedUseInMemoryStorageForTesting() {
+  g_run_in_memory = previous_;
 }
 
 // static
@@ -352,7 +361,7 @@ AttributionManagerImpl::AttributionManagerImpl(
       max_pending_events_(max_pending_events),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
           g_storage_task_runner.Get(),
-          user_data_directory,
+          g_run_in_memory ? base::FilePath() : user_data_directory,
           std::move(storage_delegate))),
       scheduler_timer_(std::make_unique<AttributionReportScheduler>(
           base::BindRepeating(&AttributionManagerImpl::GetReportsToSend,

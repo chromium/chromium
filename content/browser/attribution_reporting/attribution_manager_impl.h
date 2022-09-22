@@ -58,7 +58,25 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
  public:
   // Configures underlying storage to be setup in memory, rather than on
   // disk. This speeds up initialization to avoid timeouts in test environments.
-  static void RunInMemoryForTesting();
+  class CONTENT_EXPORT ScopedUseInMemoryStorageForTesting {
+   public:
+    ScopedUseInMemoryStorageForTesting();
+
+    ~ScopedUseInMemoryStorageForTesting();
+
+    ScopedUseInMemoryStorageForTesting(
+        const ScopedUseInMemoryStorageForTesting&) = delete;
+    ScopedUseInMemoryStorageForTesting& operator=(
+        const ScopedUseInMemoryStorageForTesting&) = delete;
+
+    ScopedUseInMemoryStorageForTesting(ScopedUseInMemoryStorageForTesting&&) =
+        delete;
+    ScopedUseInMemoryStorageForTesting& operator=(
+        ScopedUseInMemoryStorageForTesting&&) = delete;
+
+   private:
+    const bool previous_;
+  };
 
   static std::unique_ptr<AttributionManagerImpl> CreateForTesting(
       const base::FilePath& user_data_directory,

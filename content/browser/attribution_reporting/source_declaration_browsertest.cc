@@ -43,9 +43,7 @@ using ::testing::UnorderedElementsAre;
 
 class AttributionSourceDisabledBrowserTest : public ContentBrowserTest {
  public:
-  AttributionSourceDisabledBrowserTest() {
-    AttributionManagerImpl::RunInMemoryForTesting();
-  }
+  AttributionSourceDisabledBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -69,6 +67,8 @@ class AttributionSourceDisabledBrowserTest : public ContentBrowserTest {
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
  private:
+  AttributionManagerImpl::ScopedUseInMemoryStorageForTesting
+      attribution_manager_in_memory_setting_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 

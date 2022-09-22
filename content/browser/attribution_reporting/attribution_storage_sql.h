@@ -51,12 +51,12 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   static const int kCompatibleVersionNumber;
   static const int kDeprecatedVersionNumber;
 
-  static void RunInMemoryForTesting();
-
   [[nodiscard]] static bool DeleteStorageForTesting(
       const base::FilePath& user_data_directory);
 
-  AttributionStorageSql(const base::FilePath& path_to_database,
+  // If `user_data_directory` is empty, the DB is created in memory and no data
+  // is persisted to disk.
+  AttributionStorageSql(const base::FilePath& user_data_directory,
                         std::unique_ptr<AttributionStorageDelegate> delegate);
   AttributionStorageSql(const AttributionStorageSql&) = delete;
   AttributionStorageSql& operator=(const AttributionStorageSql&) = delete;

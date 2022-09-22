@@ -600,12 +600,6 @@ base::Value RunAttributionSimulation(
   base::ranges::stable_sort(*events, /*comp=*/{}, &GetEventTime);
   task_environment.FastForwardBy(GetEventTime(events->at(0)) - time_origin);
 
-  // Avoid creating an on-disk sqlite DB.
-  content::AttributionManagerImpl::RunInMemoryForTesting();
-
-  // This isn't needed because the DB is completely in memory for testing.
-  const base::FilePath user_data_directory;
-
   std::unique_ptr<AttributionRandomGenerator> rng;
   if (options.noise_seed.has_value()) {
     rng = std::make_unique<AttributionInsecureRandomGenerator>(
@@ -635,7 +629,8 @@ base::Value RunAttributionSimulation(
   }
 
   auto manager = AttributionManagerImpl::CreateForTesting(
-      user_data_directory,
+      // Avoid creating an on-disk sqlite DB.
+      /*user_data_directory=*/base::FilePath(),
       /*max_pending_events=*/std::numeric_limits<size_t>::max(),
       /*special_storage_policy=*/nullptr,
       std::make_unique<SimulatorStorageDelegate>(

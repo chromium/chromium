@@ -36,9 +36,7 @@ using ::testing::Pointee;
 
 class AttributionTriggerRegistrationBrowserTest : public ContentBrowserTest {
  public:
-  AttributionTriggerRegistrationBrowserTest() {
-    AttributionManagerImpl::RunInMemoryForTesting();
-  }
+  AttributionTriggerRegistrationBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Sets up the blink runtime feature for ConversionMeasurement.
@@ -72,6 +70,8 @@ class AttributionTriggerRegistrationBrowserTest : public ContentBrowserTest {
   }
 
  private:
+  AttributionManagerImpl::ScopedUseInMemoryStorageForTesting
+      attribution_manager_in_memory_setting_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::raw_ptr<MockAttributionHost, DanglingUntriaged> mock_attribution_host_;
 };

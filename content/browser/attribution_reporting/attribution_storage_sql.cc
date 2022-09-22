@@ -77,8 +77,6 @@ namespace {
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 
-const base::FilePath::CharType kInMemoryPath[] = FILE_PATH_LITERAL(":memory");
-
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("Conversions");
 
@@ -419,14 +417,7 @@ DestinationLimitResult GetDestinationLimitResult(
   }
 }
 
-bool g_run_in_memory = false;
-
 }  // namespace
-
-// static
-void AttributionStorageSql::RunInMemoryForTesting() {
-  g_run_in_memory = true;
-}
 
 // static
 bool AttributionStorageSql::DeleteStorageForTesting(
@@ -435,10 +426,11 @@ bool AttributionStorageSql::DeleteStorageForTesting(
 }
 
 AttributionStorageSql::AttributionStorageSql(
-    const base::FilePath& path_to_database,
+    const base::FilePath& user_data_directory,
     std::unique_ptr<AttributionStorageDelegate> delegate)
-    : path_to_database_(g_run_in_memory ? base::FilePath(kInMemoryPath)
-                                        : DatabasePath(path_to_database)),
+    : path_to_database_(user_data_directory.empty()
+                            ? base::FilePath()
+                            : DatabasePath(user_data_directory)),
       delegate_(std::move(delegate)),
       rate_limit_table_(delegate_.get()) {
   DCHECK(delegate_);
@@ -1910,7 +1902,7 @@ void AttributionStorageSql::HandleInitializationFailure(
 
 bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
   if (!db_init_status_) {
-    if (g_run_in_memory) {
+    if (path_to_database_.empty()) {
       db_init_status_ = DbStatus::kDeferringCreation;
     } else {
       db_init_status_ = base::PathExists(path_to_database_)
@@ -1944,7 +1936,7 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
   db_->set_error_callback(base::BindRepeating(
       &AttributionStorageSql::DatabaseErrorCallback, base::Unretained(this)));
 
-  if (path_to_database_.value() == kInMemoryPath) {
+  if (path_to_database_.empty()) {
     if (!db_->OpenInMemory()) {
       HandleInitializationFailure(InitStatus::kFailedToOpenDbInMemory);
       return false;
@@ -2266,7 +2258,7 @@ void AttributionStorageSql::DatabaseErrorCallback(int extended_error,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Attempt to recover a corrupt database, unless it is setup in memory.
   if (sql::Recovery::ShouldRecover(extended_error) &&
-      (path_to_database_.value() != kInMemoryPath)) {
+      !path_to_database_.empty()) {
     // Prevent reentrant calls.
     db_->reset_error_callback();
 

@@ -75,9 +75,7 @@ MATCHER_P(FilterValuesAre, matcher, "") {
 
 class AttributionSrcBrowserTest : public ContentBrowserTest {
  public:
-  AttributionSrcBrowserTest() {
-    AttributionManagerImpl::RunInMemoryForTesting();
-  }
+  AttributionSrcBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -109,6 +107,8 @@ class AttributionSrcBrowserTest : public ContentBrowserTest {
   }
 
  private:
+  AttributionManagerImpl::ScopedUseInMemoryStorageForTesting
+      attribution_manager_in_memory_setting_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::raw_ptr<MockAttributionHost, DanglingUntriaged> mock_attribution_host_;
 };
