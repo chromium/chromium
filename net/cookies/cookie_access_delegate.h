@@ -83,19 +83,6 @@ class NET_EXPORT CookieAccessDelegate {
       base::OnceCallback<
           void(base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>)>
           callback) const = 0;
-
-  // Converts the CookiePartitionKey's site to its First-Party Set owner if
-  // the site is in a nontrivial set.
-  //
-  // This may return a result synchronously, or asynchronously invoke `callback`
-  // with the result. The callback will be invoked iff the return value is
-  // nullopt; i.e. a result will be provided via return value or callback, but
-  // not both, and not neither.
-  [[nodiscard]] static absl::optional<CookiePartitionKey>
-  FirstPartySetifyPartitionKey(
-      const CookieAccessDelegate* delegate,
-      const CookiePartitionKey& cookie_partition_key,
-      base::OnceCallback<void(CookiePartitionKey)> callback);
 };
 
 }  // namespace net

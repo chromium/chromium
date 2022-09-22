@@ -1601,9 +1601,6 @@ virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html
 virtual/oopr-canvas2d/fast/canvas/image-object-in-canvas.html
 virtual/oopr-canvas2d/fast/canvas/quadraticCurveTo.xml
 virtual/overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html
-virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-browser-navigate.js
-virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-js-navigate.js
-virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-js-subresource.js
 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-cookie-same-site-strict-browser-navigate.js
 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-cookie-same-site-strict-js-navigate.js
 virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-cookie-same-site-strict-js-subresource.js

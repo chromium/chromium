@@ -836,13 +836,6 @@
     "args": ["--enable-features=PartitionedCookies,PartitionedCookiesBypassOriginTrial"]
   },
   {
-    "prefix": "partitioned-cookies-first-party-sets",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/inspector-protocol/network/"],
-    "args": ["--enable-features=PartitionedCookies,PartitionedCookiesBypassOriginTrial",
-             "--use-first-party-set={\"primary\":\"https://devtools.test\",\"associatedSites\":[\"https://example.test\"]}"]
-  },
-  {
     "prefix": "prerender",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/speculation-rules/prerender",

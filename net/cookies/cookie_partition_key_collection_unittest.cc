@@ -14,30 +14,6 @@ namespace net {
 
 using testing::UnorderedElementsAre;
 
-namespace {
-
-// Synchronous wrapper around CookiePartitionKeyCollection::FirstPartySetify.
-// Spins the event loop.
-CookiePartitionKeyCollection FirstPartySetifyAndWait(
-    const CookiePartitionKeyCollection& collection,
-    const CookieAccessDelegate* cookie_access_delegate) {
-  base::RunLoop run_loop;
-  CookiePartitionKeyCollection canonicalized_collection;
-  absl::optional<CookiePartitionKeyCollection> maybe_collection =
-      collection.FirstPartySetify(
-          cookie_access_delegate,
-          base::BindLambdaForTesting([&](CookiePartitionKeyCollection result) {
-            canonicalized_collection = result;
-            run_loop.Quit();
-          }));
-  if (maybe_collection.has_value())
-    return maybe_collection.value();
-  run_loop.Run();
-  return canonicalized_collection;
-}
-
-}  // namespace
-
 TEST(CookiePartitionKeyCollectionTest, EmptySet) {
   CookiePartitionKeyCollection key_collection;
 
@@ -93,94 +69,6 @@ TEST(CookiePartitionKeyCollectionTest, FromOptional) {
   EXPECT_THAT(key_collection.PartitionKeys(),
               UnorderedElementsAre(CookiePartitionKey::FromURLForTesting(
                   GURL("https://www.foo.com"))));
-}
-
-TEST(CookiePartitionKeyCollectionTest, FirstPartySetify) {
-  base::test::TaskEnvironment env;
-  const GURL kOwnerURL("https://owner.com");
-  const SchemefulSite kOwnerSite(kOwnerURL);
-  const CookiePartitionKey kOwnerPartitionKey =
-      CookiePartitionKey::FromURLForTesting(kOwnerURL);
-
-  const GURL kMemberURL("https://member.com");
-  const SchemefulSite kMemberSite(kMemberURL);
-  const CookiePartitionKey kMemberPartitionKey =
-      CookiePartitionKey::FromURLForTesting(kMemberURL);
-
-  const GURL kNonMemberURL("https://nonmember.com");
-  const CookiePartitionKey kNonMemberPartitionKey =
-      CookiePartitionKey::FromURLForTesting(kNonMemberURL);
-
-  TestCookieAccessDelegate delegate;
-  delegate.SetFirstPartySets({
-      {kOwnerSite, net::FirstPartySetEntry(kOwnerSite, net::SiteType::kPrimary,
-                                           absl::nullopt)},
-      {kMemberSite,
-       net::FirstPartySetEntry(kOwnerSite, net::SiteType::kAssociated, 0)},
-  });
-
-  CookiePartitionKeyCollection empty_key_collection;
-  EXPECT_TRUE(
-      FirstPartySetifyAndWait(empty_key_collection, &delegate).IsEmpty());
-  EXPECT_TRUE(FirstPartySetifyAndWait(empty_key_collection, nullptr).IsEmpty());
-
-  CookiePartitionKeyCollection contains_all_keys =
-      CookiePartitionKeyCollection::ContainsAll();
-  EXPECT_TRUE(
-      FirstPartySetifyAndWait(contains_all_keys, &delegate).ContainsAllKeys());
-  EXPECT_TRUE(
-      FirstPartySetifyAndWait(contains_all_keys, nullptr).ContainsAllKeys());
-
-  // An owner site of an FPS should not have its partition key changed.
-  EXPECT_THAT(FirstPartySetifyAndWait(
-                  CookiePartitionKeyCollection(kOwnerPartitionKey), &delegate)
-                  .PartitionKeys(),
-              UnorderedElementsAre(kOwnerPartitionKey));
-
-  // A member site should have its partition key changed to the owner site.
-  EXPECT_THAT(FirstPartySetifyAndWait(
-                  CookiePartitionKeyCollection(kMemberPartitionKey), &delegate)
-                  .PartitionKeys(),
-              UnorderedElementsAre(kOwnerPartitionKey));
-
-  // A member site's partition key should not change if the CookieAccessDelegate
-  // is null.
-  EXPECT_THAT(FirstPartySetifyAndWait(
-                  CookiePartitionKeyCollection(kMemberPartitionKey), nullptr)
-                  .PartitionKeys(),
-              UnorderedElementsAre(kMemberPartitionKey));
-
-  // A non-member site should not have its partition key changed.
-  EXPECT_THAT(
-      FirstPartySetifyAndWait(
-          CookiePartitionKeyCollection(kNonMemberPartitionKey), &delegate)
-          .PartitionKeys(),
-      UnorderedElementsAre(kNonMemberPartitionKey));
-
-  // A key collection that contains a member site and non-member site should be
-  // changed to include the owner site and the unmodified non-member site.
-  EXPECT_THAT(FirstPartySetifyAndWait(
-                  CookiePartitionKeyCollection(
-                      {kMemberPartitionKey, kNonMemberPartitionKey}),
-                  &delegate)
-                  .PartitionKeys(),
-              UnorderedElementsAre(kOwnerPartitionKey, kNonMemberPartitionKey));
-
-  // Test that FirstPartySetify does not modify partition keys with nonces.
-  const CookiePartitionKey kNoncedPartitionKey =
-      CookiePartitionKey::FromURLForTesting(kMemberURL,
-                                            base::UnguessableToken::Create());
-  EXPECT_THAT(
-      FirstPartySetifyAndWait(
-          CookiePartitionKeyCollection({kNoncedPartitionKey}), &delegate)
-          .PartitionKeys(),
-      UnorderedElementsAre(kNoncedPartitionKey));
-  EXPECT_THAT(
-      FirstPartySetifyAndWait(CookiePartitionKeyCollection(
-                                  {kNoncedPartitionKey, kMemberPartitionKey}),
-                              &delegate)
-          .PartitionKeys(),
-      UnorderedElementsAre(kNoncedPartitionKey, kOwnerPartitionKey));
 }
 
 TEST(CookiePartitionKeyCollectionTest, Contains) {
