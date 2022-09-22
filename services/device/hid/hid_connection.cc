@@ -4,10 +4,9 @@
 
 #include "services/device/hid/hid_connection.h"
 
-#include <algorithm>
-
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/ranges/algorithm.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/public/cpp/hid/hid_usage_and_page.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -16,17 +15,11 @@ namespace device {
 
 namespace {
 
-// Functor returning true if collection has a protected usage.
-struct CollectionIsAlwaysProtected {
-  bool operator()(const mojom::HidCollectionInfoPtr& info) const {
-    return IsAlwaysProtected(*info->usage);
-  }
-};
-
 bool HasAlwaysProtectedCollection(
     const std::vector<mojom::HidCollectionInfoPtr>& collections) {
-  return std::find_if(collections.begin(), collections.end(),
-                      CollectionIsAlwaysProtected()) != collections.end();
+  return base::ranges::any_of(
+      collections, &IsAlwaysProtected,
+      [](const mojom::HidCollectionInfoPtr& info) { return *info->usage; });
 }
 
 }  // namespace

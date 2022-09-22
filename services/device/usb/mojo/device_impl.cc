@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <utility>
@@ -17,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/ranges/algorithm.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device.h"
@@ -155,10 +155,8 @@ bool DeviceImpl::HasControlTransferPermission(
     interface = device_handle_->FindInterfaceByEndpoint(index & 0xff);
   } else {
     auto interface_it =
-        std::find_if(config->interfaces.begin(), config->interfaces.end(),
-                     [index](const mojom::UsbInterfaceInfoPtr& this_iface) {
-                       return this_iface->interface_number == (index & 0xff);
-                     });
+        base::ranges::find(config->interfaces, index & 0xff,
+                           &mojom::UsbInterfaceInfo::interface_number);
     if (interface_it != config->interfaces.end())
       interface = interface_it->get();
   }
@@ -244,11 +242,9 @@ void DeviceImpl::ClaimInterface(uint8_t interface_number,
     return;
   }
 
-  auto interface_it = std::find_if(
-      config->interfaces.begin(), config->interfaces.end(),
-      [interface_number](const mojom::UsbInterfaceInfoPtr& interface) {
-        return interface->interface_number == interface_number;
-      });
+  auto interface_it =
+      base::ranges::find(config->interfaces, interface_number,
+                         &mojom::UsbInterfaceInfo::interface_number);
   if (interface_it == config->interfaces.end()) {
     std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
     return;

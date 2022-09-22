@@ -10,6 +10,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -529,11 +530,8 @@ void BroadcastingReceiver::OnStopped() {
 void BroadcastingReceiver::OnClientFinishedConsumingFrame(
     int32_t buffer_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto buffer_context_iter =
-      std::find_if(buffer_contexts_.begin(), buffer_contexts_.end(),
-                   [buffer_context_id](const BufferContext& entry) {
-                     return entry.buffer_context_id() == buffer_context_id;
-                   });
+  auto buffer_context_iter = base::ranges::find(
+      buffer_contexts_, buffer_context_id, &BufferContext::buffer_context_id);
   CHECK(buffer_context_iter != buffer_contexts_.end());
   buffer_context_iter->DecreaseConsumerCount();
   if (buffer_context_iter->is_retired() &&
@@ -551,11 +549,10 @@ std::vector<BroadcastingReceiver::BufferContext>::iterator
 BroadcastingReceiver::FindUnretiredBufferContextFromBufferId(
     int32_t buffer_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::find_if(buffer_contexts_.begin(), buffer_contexts_.end(),
-                      [buffer_id](const BufferContext& entry) {
-                        return !entry.is_retired() &&
-                               entry.buffer_id() == buffer_id;
-                      });
+  return base::ranges::find_if(
+      buffer_contexts_, [buffer_id](const BufferContext& entry) {
+        return !entry.is_retired() && entry.buffer_id() == buffer_id;
+      });
 }
 
 }  // namespace video_capture

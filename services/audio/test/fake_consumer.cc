@@ -79,9 +79,9 @@ int FakeConsumer::FindEndOfSilence(int channel, int begin_frame) const {
     return begin_frame;
   }
   const float value = samples[begin_frame];
-  const float* at = std::find_if(samples.data() + begin_frame + 1,
-                                 samples.data() + GetRecordedFrameCount(),
-                                 [&value](float f) { return f != value; });
+  const float* at = std::find_if_not(samples.data() + begin_frame + 1,
+                                     samples.data() + GetRecordedFrameCount(),
+                                     [&value](float f) { return f == value; });
   return at - samples.data();
 }
 

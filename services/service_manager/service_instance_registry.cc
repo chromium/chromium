@@ -4,8 +4,7 @@
 
 #include "services/service_manager/service_instance_registry.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "services/service_manager/public/cpp/manifest.h"
 #include "services/service_manager/service_instance.h"
 
@@ -195,9 +194,7 @@ ServiceInstance* ServiceInstanceRegistry::FindMatchInEntries(
 
 bool ServiceInstanceRegistry::EraseEntry(const base::Token& guid,
                                          std::vector<Entry>* entries) {
-  auto it =
-      std::find_if(entries->begin(), entries->end(),
-                   [&guid](const Entry& entry) { return entry.guid == guid; });
+  auto it = base::ranges::find(*entries, guid, &Entry::guid);
   if (it == entries->end())
     return false;
 

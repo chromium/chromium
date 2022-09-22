@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/chromecast_buildflags.h"
@@ -177,10 +178,7 @@ void StreamFactory::BindMuter(
                                       group_id);
 
   // Find the existing LocalMuter for this group, or create one on-demand.
-  auto it = std::find_if(muters_.begin(), muters_.end(),
-                         [&group_id](const std::unique_ptr<LocalMuter>& muter) {
-                           return muter->group_id() == group_id;
-                         });
+  auto it = base::ranges::find(muters_, group_id, &LocalMuter::group_id);
   LocalMuter* muter;
   if (it == muters_.end()) {
     auto muter_ptr = std::make_unique<LocalMuter>(&coordinator_, group_id);
@@ -271,10 +269,8 @@ void StreamFactory::DestroyMuter(LocalMuter* muter) {
   auto do_destroy = [](base::WeakPtr<StreamFactory> weak_this,
                        LocalMuter* muter) {
     if (weak_this) {
-
-      const auto it =
-          std::find_if(weak_this->muters_.begin(), weak_this->muters_.end(),
-                       base::MatchesUniquePtr(muter));
+      const auto it = base::ranges::find_if(weak_this->muters_,
+                                            base::MatchesUniquePtr(muter));
       DCHECK(it != weak_this->muters_.end());
 
       // The LocalMuter can still have receivers if a receiver was bound after
@@ -295,8 +291,7 @@ void StreamFactory::DestroyLoopbackStream(LoopbackStream* stream) {
   DCHECK(stream);
 
   const auto it =
-      std::find_if(loopback_streams_.begin(), loopback_streams_.end(),
-                   base::MatchesUniquePtr(stream));
+      base::ranges::find_if(loopback_streams_, base::MatchesUniquePtr(stream));
   DCHECK(it != loopback_streams_.end());
   loopback_streams_.erase(it);
 

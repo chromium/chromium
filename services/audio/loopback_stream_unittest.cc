@@ -4,7 +4,6 @@
 
 #include "services/audio/loopback_stream.h"
 
-#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -13,6 +12,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -161,8 +161,8 @@ class LoopbackStreamTest : public testing::Test {
   }
 
   void RemoveSource(FakeLoopbackGroupMember* source) {
-    const auto it = std::find_if(sources_.begin(), sources_.end(),
-                                 base::MatchesUniquePtr(source));
+    const auto it =
+        base::ranges::find_if(sources_, base::MatchesUniquePtr(source));
     if (it != sources_.end()) {
       coordinator_.UnregisterMember(group_id_, source);
       sources_.erase(it);

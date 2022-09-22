@@ -11,7 +11,6 @@
 #include <winioctl.h>
 #include <winusb.h>
 
-#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -24,6 +23,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -1001,11 +1001,8 @@ UsbDeviceHandleWin::Request* UsbDeviceHandleWin::MakeRequest(
 
 std::unique_ptr<UsbDeviceHandleWin::Request> UsbDeviceHandleWin::UnlinkRequest(
     UsbDeviceHandleWin::Request* request_ptr) {
-  auto it = std::find_if(
-      requests_.begin(), requests_.end(),
-      [request_ptr](const std::unique_ptr<Request>& request) -> bool {
-        return request.get() == request_ptr;
-      });
+  auto it = base::ranges::find(requests_, request_ptr,
+                               &std::unique_ptr<Request>::get);
   DCHECK(it != requests_.end());
   std::unique_ptr<Request> request = std::move(*it);
   requests_.erase(it);

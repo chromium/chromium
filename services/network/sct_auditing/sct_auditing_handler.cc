@@ -4,8 +4,6 @@
 
 #include "services/network/sct_auditing/sct_auditing_handler.h"
 
-#include <algorithm>
-
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
@@ -17,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -156,9 +155,7 @@ void SCTAuditingHandler::MaybeEnqueueReport(
     // Find the corresponding log entry metadata.
     const std::vector<mojom::CTLogInfoPtr>& logs =
         owner_network_context_->network_service()->log_list();
-    auto log = std::find_if(logs.begin(), logs.end(), [&sct](const auto& log) {
-      return log->id == sct->log_id;
-    });
+    auto log = base::ranges::find(logs, sct->log_id, &mojom::CTLogInfo::id);
     // It's possible that log entry metadata may not exist for a few reasons:
     //
     // 1) The PKI Metadata component has not yet been loaded and no log list

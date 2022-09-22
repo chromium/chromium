@@ -4,7 +4,6 @@
 
 #include "services/network/trust_tokens/trust_token_request_signing_helper.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -158,9 +157,9 @@ void AssertHasSignaturesAndExtract(
     net::structured_headers::Item& issuer_item = issuer_and_params.item;
     ASSERT_TRUE(issuer_item.is_string());
 
-    auto signature_iterator = std::find_if(
-        issuer_and_params.params.begin(), issuer_and_params.params.end(),
-        [](auto& param) { return param.first == "sig"; });
+    auto signature_iterator = base::ranges::find(
+        issuer_and_params.params, "sig",
+        &net::structured_headers::Parameters::value_type::first);
 
     ASSERT_TRUE(signature_iterator != issuer_and_params.params.end())
         << "Missing signature";

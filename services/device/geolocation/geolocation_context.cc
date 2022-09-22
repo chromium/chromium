@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/geolocation/geolocation_impl.h"
 
@@ -35,10 +36,8 @@ void GeolocationContext::BindGeolocation(
 }
 
 void GeolocationContext::OnConnectionError(GeolocationImpl* impl) {
-  auto it = std::find_if(impls_.begin(), impls_.end(),
-                         [impl](const std::unique_ptr<GeolocationImpl>& gi) {
-                           return impl == gi.get();
-                         });
+  auto it =
+      base::ranges::find(impls_, impl, &std::unique_ptr<GeolocationImpl>::get);
   DCHECK(it != impls_.end());
   impls_.erase(it);
 }

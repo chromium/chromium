@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -65,9 +66,9 @@ bool ReconstructSigningDataAndVerifyForIndividualIssuer(
   std::string issuer = issuer_and_params.item.GetString();  // for debugging
 
   auto find_key = [&issuer_and_params](base::StringPiece key) {
-    return std::find_if(issuer_and_params.params.begin(),
-                        issuer_and_params.params.end(),
-                        [key](auto& param) { return param.first == key; });
+    return base::ranges::find(
+        issuer_and_params.params, key,
+        &net::structured_headers::Parameters::value_type::first);
   };
 
   auto sig_it = find_key("sig");

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -30,9 +31,8 @@ FakeP2PSocketDelegate::~FakeP2PSocketDelegate() {
 }
 
 void FakeP2PSocketDelegate::DestroySocket(P2PSocket* socket) {
-  auto it = std::find_if(
-      sockets_to_be_destroyed_.begin(), sockets_to_be_destroyed_.end(),
-      [&socket](const auto& x) { return socket == x.get(); });
+  auto it = base::ranges::find(sockets_to_be_destroyed_, socket,
+                               &std::unique_ptr<P2PSocket>::get);
   CHECK(it != sockets_to_be_destroyed_.end());
   sockets_to_be_destroyed_.erase(it);
 }
