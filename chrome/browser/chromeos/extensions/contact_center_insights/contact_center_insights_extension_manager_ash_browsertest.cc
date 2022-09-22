@@ -57,7 +57,6 @@ class ContactCenterInsightsExtensionManagerBrowserTest
   void SetPrefValue(bool value) {
     profile()->GetPrefs()->SetBoolean(::prefs::kInsightsExtensionEnabled,
                                       value);
-    content::RunAllTasksUntilIdle();
   }
 
   ::policy::DevicePolicyCrosTestHelper test_helper_;

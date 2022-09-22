@@ -51,7 +51,6 @@ class ContactCenterInsightsExtensionManagerBrowserTest
   void SetPrefValue(bool value) {
     profile()->GetPrefs()->SetBoolean(::prefs::kInsightsExtensionEnabled,
                                       value);
-    content::RunAllTasksUntilIdle();
   }
 };
 
@@ -68,9 +67,8 @@ IN_PROC_BROWSER_TEST_F(ContactCenterInsightsExtensionManagerBrowserTest,
       ::extension_misc::kContactCenterInsightsExtensionId));
 }
 
-// TODO(crbug.com/1362037): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(ContactCenterInsightsExtensionManagerBrowserTest,
-                       DISABLED_ExtensionUninstalledWhenPrefUnset) {
+                       ExtensionUninstalledWhenPrefUnset) {
   // Set pref to enable extension.
   SetPrefValue(true);
   EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(
