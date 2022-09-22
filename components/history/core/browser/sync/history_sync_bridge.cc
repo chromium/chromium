@@ -509,6 +509,8 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
 
   id_remapper.RemapIDs();
 
+  // `metadata_change_list` must have been created via
+  // CreateMetadataChangeList(), so downcasting is safe.
   absl::optional<syncer::ModelError> metadata_error =
       static_cast<syncer::SyncMetadataStoreChangeList*>(
           metadata_change_list.get())
@@ -645,6 +647,16 @@ void HistorySyncBridge::OnURLVisited(HistoryBackend* history_backend,
       CreateMetadataChangeList();
   change_processor()->Put(GetStorageKeyFromVisitRow(visit_row),
                           std::move(entity_data), metadata_change_list.get());
+
+  // `metadata_change_list` must have been created via
+  // CreateMetadataChangeList(), so downcasting is safe.
+  absl::optional<syncer::ModelError> metadata_error =
+      static_cast<syncer::SyncMetadataStoreChangeList*>(
+          metadata_change_list.get())
+          ->TakeError();
+  if (metadata_error) {
+    change_processor()->ReportError(metadata_error.value());
+  }
 }
 
 void HistorySyncBridge::OnURLsModified(HistoryBackend* history_backend,
@@ -731,6 +743,16 @@ void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row) {
       CreateMetadataChangeList();
   change_processor()->Put(GetStorageKeyFromVisitRow(visit_row),
                           std::move(entity_data), metadata_change_list.get());
+
+  // `metadata_change_list` must have been created via
+  // CreateMetadataChangeList(), so downcasting is safe.
+  absl::optional<syncer::ModelError> metadata_error =
+      static_cast<syncer::SyncMetadataStoreChangeList*>(
+          metadata_change_list.get())
+          ->TakeError();
+  if (metadata_error) {
+    change_processor()->ReportError(metadata_error.value());
+  }
 }
 
 void HistorySyncBridge::OnVisitDeleted(const VisitRow& visit_row) {
