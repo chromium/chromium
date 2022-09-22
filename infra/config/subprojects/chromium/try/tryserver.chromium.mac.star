@@ -150,6 +150,11 @@ try_.orchestrator_builder(
     tryjob = try_.job(
         experiment_percentage = 100,
     ),
+    experiments = {
+        "enable_weetbix_queries": 100,
+        "weetbix.retry_weak_exonerations": 100,
+        "weetbix.enable_weetbix_exonerations": 100,
+    },
 )
 
 try_.compilator_builder(
