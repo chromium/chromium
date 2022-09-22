@@ -73,6 +73,9 @@ bool InlineLengthUnresolvable(const NGConstraintSpace& constraint_space,
   if (length.IsFillAvailable())
     return constraint_space.AvailableSize().inline_size == kIndefiniteSize;
 
+  if (length.IsFitContent())
+    return constraint_space.AvailableSize().inline_size == kIndefiniteSize;
+
   return false;
 }
 
@@ -141,25 +144,19 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kMinIntrinsic:
     case Length::kFitContent: {
       DCHECK(min_max_sizes.has_value());
+      if (length.IsMinContent() || length.IsMinIntrinsic())
+        return min_max_sizes->min_size;
+      if (length.IsMaxContent())
+        return min_max_sizes->max_size;
+
       LayoutUnit available_size = constraint_space.AvailableSize().inline_size;
-      LayoutUnit value;
-      // TODO(ikilpatrick): The |IsFitContent()| might not be correct for a
-      // max-size, e.g. "max-width: fit-content".
-      if (length.IsMinContent() || length.IsMinIntrinsic() ||
-          (length.IsFitContent() && available_size == kIndefiniteSize)) {
-        value = min_max_sizes->min_size;
-      } else if (length.IsMaxContent()) {
-        value = min_max_sizes->max_size;
-      } else {
-        DCHECK_GE(available_size, LayoutUnit());
-        if (override_available_size != kIndefiniteSize)
-          available_size = override_available_size;
-        NGBoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
-        LayoutUnit fill_available =
-            (available_size - margins.InlineSum()).ClampNegativeToZero();
-        value = min_max_sizes->ShrinkToFit(fill_available);
-      }
-      return value;
+      DCHECK_GE(available_size, LayoutUnit());
+      if (override_available_size != kIndefiniteSize)
+        available_size = override_available_size;
+      NGBoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
+      LayoutUnit fill_available =
+          (available_size - margins.InlineSum()).ClampNegativeToZero();
+      return min_max_sizes->ShrinkToFit(fill_available);
     }
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
@@ -552,10 +549,12 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
 
   if (LIKELY(extent == kIndefiniteSize)) {
     if (logical_width.IsAuto()) {
-      logical_width = (space.IsInlineAutoBehaviorStretch() &&
-                       space.AvailableSize().inline_size != kIndefiniteSize)
-                          ? Length::FillAvailable()
-                          : Length::FitContent();
+      if (space.AvailableSize().inline_size == kIndefiniteSize)
+        logical_width = Length::MinContent();
+      else if (space.IsInlineAutoBehaviorStretch())
+        logical_width = Length::FillAvailable();
+      else
+        logical_width = Length::FitContent();
     }
     extent = ResolveMainInlineLength(space, style, border_padding,
                                      MinMaxSizesFunc, logical_width);
