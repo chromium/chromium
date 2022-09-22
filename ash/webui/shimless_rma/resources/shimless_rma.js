@@ -153,7 +153,7 @@ export const StateComponentMapping = {
   [State.kUpdateRoFirmware]: {
     componentIs: 'reimaging-firmware-update-page',
     requiresReloadWhenShown: false,
-    buttonNext: ButtonState.DISABLED,
+    buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },

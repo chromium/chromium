@@ -7,11 +7,20 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {UpdateRoFirmwarePage} from 'chrome://shimless-rma/reimaging_firmware_update_page.js';
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {UpdateRoFirmwareStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
+
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function reimagingFirmwareUpdatePageTest() {
+  /**
+   * ShimlessRma is needed to handle the 'transition-state' event used
+   * when handling calibration overall progress signals.
+   * @type {?ShimlessRma}
+   */
+  let shimless_rma_component = null;
+
   /** @type {?UpdateRoFirmwarePage} */
   let component = null;
 
@@ -25,6 +34,8 @@ export function reimagingFirmwareUpdatePageTest() {
   });
 
   teardown(() => {
+    shimless_rma_component.remove();
+    shimless_rma_component = null;
     component.remove();
     component = null;
     service.reset();
@@ -33,6 +44,11 @@ export function reimagingFirmwareUpdatePageTest() {
   /** @return {!Promise} */
   function initializeReimagingFirmwareUpdatePage() {
     assertFalse(!!component);
+
+    shimless_rma_component =
+        /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
+    assertTrue(!!shimless_rma_component);
+    document.body.appendChild(shimless_rma_component);
 
     component = /** @type {!UpdateRoFirmwarePage} */ (
         document.createElement('reimaging-firmware-update-page'));
@@ -51,67 +67,65 @@ export function reimagingFirmwareUpdatePageTest() {
     assertEquals('', updateStatus.textContent.trim());
   });
 
-  test('RoFirmwareUpdateStartingDisablesNext', async () => {
-    await initializeReimagingFirmwareUpdatePage();
+  test(
+      'UnpluggingUsbDoesntTriggerTransitionToNextPageIfUpdateIsNotComplete',
+      async () => {
+        const resolver = new PromiseResolver();
 
-    let savedResult;
-    let savedError;
-    component.onNextButtonClick()
-        .then((result) => savedResult = result)
-        .catch((error) => savedError = error);
-    await flushTasks();
+        let callCount = 0;
+        service.roFirmwareUpdateComplete = () => {
+          callCount++;
+          return resolver.promise;
+        };
 
-    assertTrue(savedError instanceof Error);
-    assertEquals(savedError.message, 'RO Firmware update is not complete.');
-    assertEquals(savedResult, undefined);
-  });
+        await initializeReimagingFirmwareUpdatePage();
+        service.triggerExternalDiskObserver(false, 0);
+        await flushTasks();
+        assertEquals(0, callCount);
 
-  test('RoFirmwareUpdateInProgressDisablesNext', async () => {
-    await initializeReimagingFirmwareUpdatePage();
-    service.triggerUpdateRoFirmwareObserver(
-        UpdateRoFirmwareStatus.kUpdating, 0);
-    await flushTasks();
+        service.triggerUpdateRoFirmwareObserver(
+            UpdateRoFirmwareStatus.kUpdating, 0);
+        await flushTasks();
 
-    let savedResult;
-    let savedError;
-    component.onNextButtonClick()
-        .then((result) => savedResult = result)
-        .catch((error) => savedError = error);
-    await flushTasks();
+        service.triggerExternalDiskObserver(false, 0);
+        await flushTasks();
+        assertEquals(0, callCount);
+      });
 
-    assertTrue(savedError instanceof Error);
-    assertEquals(savedError.message, 'RO Firmware update is not complete.');
-    assertEquals(savedResult, undefined);
-  });
+  test(
+      'UnpluggingUsbTriggersTransitionToNextPageIfUpdateIsComplete',
+      async () => {
+        const resolver = new PromiseResolver();
+        await initializeReimagingFirmwareUpdatePage();
 
-  test('RoFirmwareUpdateEnablesNext', async () => {
-    const resolver = new PromiseResolver();
-    await initializeReimagingFirmwareUpdatePage();
+        const firmwareTitle = component.shadowRoot.querySelector('#titleText');
+        assertEquals(
+            loadTimeData.getString('firmwareUpdateInstallImageTitleText'),
+            firmwareTitle.textContent.trim());
 
-    const firmwareTitle = component.shadowRoot.querySelector('#titleText');
-    assertEquals(
-        loadTimeData.getString('firmwareUpdateInstallImageTitleText'),
-        firmwareTitle.textContent.trim());
+        let callCount = 0;
+        service.roFirmwareUpdateComplete = () => {
+          callCount++;
+          return resolver.promise;
+        };
 
-    service.triggerUpdateRoFirmwareObserver(
-        UpdateRoFirmwareStatus.kComplete, 0);
-    await flushTasks();
-    service.roFirmwareUpdateComplete = () => {
-      return resolver.promise;
-    };
+        // Complete the update.
+        service.triggerUpdateRoFirmwareObserver(
+            UpdateRoFirmwareStatus.kComplete, 0);
+        await flushTasks();
 
-    // Confirm the page title changes after firmware install completes.
-    assertEquals(
-        loadTimeData.getString('firmwareUpdateInstallCompleteTitleText'),
-        firmwareTitle.textContent.trim());
+        // Make sure that the transition doesn't happen until the USB is
+        // unplugged.
+        assertEquals(0, callCount);
 
-    const expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
-    await flushTasks();
+        // Confirm the page title changes after firmware install completes.
+        assertEquals(
+            loadTimeData.getString('firmwareUpdateInstallCompleteTitleText'),
+            firmwareTitle.textContent.trim());
 
-    assertDeepEquals(savedResult, expectedResult);
-  });
+        // Unplug the USB and verify that the transition happened.
+        service.triggerExternalDiskObserver(false, 0);
+        await flushTasks();
+        assertEquals(1, callCount);
+      });
 }

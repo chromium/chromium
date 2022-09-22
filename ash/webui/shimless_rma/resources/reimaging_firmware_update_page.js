@@ -12,8 +12,8 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_element
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ShimlessRmaServiceInterface, StateResult, UpdateRoFirmwareObserverInterface, UpdateRoFirmwareObserverReceiver, UpdateRoFirmwareStatus} from './shimless_rma_types.js';
-import {disableNextButton, enableNextButton, focusPageTitle} from './shimless_rma_util.js';
+import {ExternalDiskStateObserverInterface, ExternalDiskStateObserverReceiver, ShimlessRmaServiceInterface, StateResult, UpdateRoFirmwareObserverInterface, UpdateRoFirmwareObserverReceiver, UpdateRoFirmwareStatus} from './shimless_rma_types.js';
+import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /** @type {!Object<!UpdateRoFirmwareStatus, string>} */
 const STATUS_TEXT_KEY_MAP = {
@@ -123,6 +123,13 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
 
     this.shimlessRmaService_.observeRoFirmwareUpdateProgress(
         this.updateRoFirmwareObserverReceiver_.$.bindNewPipeAndPassRemote());
+
+    /** @private {!ExternalDiskStateObserverReceiver} */
+    this.externalDiskStateReceiver_ = new ExternalDiskStateObserverReceiver(
+        /** @type {!ExternalDiskStateObserverInterface} */ (this));
+
+    this.shimlessRmaService_.observeExternalDiskState(
+        this.externalDiskStateReceiver_.$.bindNewPipeAndPassRemote());
   }
 
   /** @override */
@@ -146,21 +153,16 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
     this.shouldShowSpinner_ = this.status_ === UpdateRoFirmwareStatus.kUpdating;
     this.shouldShowWarning_ =
         this.status_ === UpdateRoFirmwareStatus.kFileNotFound;
-
-    const disabled = this.status_ != UpdateRoFirmwareStatus.kComplete;
-    if (disabled) {
-      disableNextButton(this);
-    } else {
-      enableNextButton(this);
-    }
   }
 
-  /** @return {!Promise<!{stateResult: !StateResult}>} */
-  onNextButtonClick() {
-    if (this.status_ == UpdateRoFirmwareStatus.kComplete) {
-      return this.shimlessRmaService_.roFirmwareUpdateComplete();
-    } else {
-      return Promise.reject(new Error('RO Firmware update is not complete.'));
+  /**
+   * Implements ExternalDiskStateObserver.onExternalDiskStateChanged()
+   * @param {boolean} detected
+   */
+  onExternalDiskStateChanged(detected) {
+    if (!detected && this.status_ === UpdateRoFirmwareStatus.kComplete) {
+      executeThenTransitionState(
+          this, () => this.shimlessRmaService_.roFirmwareUpdateComplete());
     }
   }
 
