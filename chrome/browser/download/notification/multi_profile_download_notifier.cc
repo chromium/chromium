@@ -91,10 +91,8 @@ void MultiProfileDownloadNotifier::OnManagerGoingDown(
     content::DownloadManager* manager) {
   client_->OnManagerGoingDown(manager);
 
-  auto it = std::find_if(download_notifiers_.begin(), download_notifiers_.end(),
-                         [manager](const auto& notifier) {
-                           return notifier->GetManager() == manager;
-                         });
+  auto it = base::ranges::find(download_notifiers_, manager,
+                               &download::AllDownloadItemNotifier::GetManager);
   DCHECK(it != download_notifiers_.end());
   download_notifiers_.erase(it);
 }

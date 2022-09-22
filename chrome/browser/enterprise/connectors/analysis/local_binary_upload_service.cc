@@ -4,10 +4,10 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
@@ -337,9 +337,9 @@ void LocalBinaryUploadService::FinishRequest(RequestKey key,
     DVLOG(1) << "FinishRequest key=" << key << " not active";
   }
 
-  auto it2 = std::find_if(
-      pending_requests_.begin(), pending_requests_.end(),
-      [key](const RequestInfo& info) { return key == info.request.get(); });
+  auto it2 = base::ranges::find(
+      pending_requests_, key,
+      [](const RequestInfo& info) { return info.request.get(); });
   if (it2 != pending_requests_.end())
     pending_requests_.erase(it2);
 }

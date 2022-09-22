@@ -149,9 +149,9 @@ void RemoveContainerFromPrefs(Profile* profile, const GuestId& container_id) {
   auto* pref_service = profile->GetPrefs();
   ScopedListPrefUpdate updater(pref_service, prefs::kGuestOsContainers);
   base::Value::List& update_list = updater.Get();
-  auto it = std::find_if(
-      update_list.begin(), update_list.end(),
-      [&](const auto& dict) { return MatchContainerDict(dict, container_id); });
+  auto it = base::ranges::find_if(update_list, [&](const auto& dict) {
+    return MatchContainerDict(dict, container_id);
+  });
   if (it != update_list.end())
     update_list.erase(it);
 }
@@ -160,9 +160,7 @@ void RemoveVmFromPrefs(Profile* profile, VmType vm_type) {
   auto* pref_service = profile->GetPrefs();
   ScopedListPrefUpdate updater(pref_service, prefs::kGuestOsContainers);
   base::Value::List& update_list = updater.Get();
-  auto it = std::find_if(
-      update_list.begin(), update_list.end(),
-      [&](const auto& dict) { return VmTypeFromPref(dict) == vm_type; });
+  auto it = base::ranges::find(update_list, vm_type, &VmTypeFromPref);
   if (it != update_list.end())
     update_list.erase(it);
 }
@@ -184,9 +182,9 @@ void UpdateContainerPref(Profile* profile,
                          const std::string& key,
                          base::Value value) {
   ScopedListPrefUpdate updater(profile->GetPrefs(), prefs::kGuestOsContainers);
-  auto it = std::find_if(
-      updater->begin(), updater->end(),
-      [&](const auto& dict) { return MatchContainerDict(dict, container_id); });
+  auto it = base::ranges::find_if(*updater, [&](const auto& dict) {
+    return MatchContainerDict(dict, container_id);
+  });
   if (it != updater->end()) {
     if (base::Contains(*kPropertiesAllowList, key)) {
       it->SetKey(key, std::move(value));
