@@ -26,16 +26,6 @@ bool ShouldInvalidateEviction(const PrefService* prefs);
 // Also clears the stored eviction reason and error list version.
 void ReenrollCurrentUser(PrefService* prefs);
 
-// Checks whether the occurred GMS Core API error should be ignored.
-// Returns true if the error is in the ignored error list, false otherwise.
-// Ignored errors are not handled by the backend and are returned to the caller.
-bool ShouldIgnoreOnApiError(int api_error_code);
-
-// Checks whether the occurred GMS Core API error should be retried.
-// Returns true if the error is in the retriable error list, false otherwise.
-// Certain backend operations may be retried if the returned error is retriable.
-bool ShouldRetryOnApiError(int api_error_code);
-
 }  // namespace password_manager_upm_eviction
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_EVICTION_UTIL_H_
