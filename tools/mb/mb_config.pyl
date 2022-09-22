@@ -64,7 +64,7 @@
       'linux-archive-rel': 'release_bot_reclient',
       'linux-official': 'official_optimize_reclient',
       'mac-archive-dbg': 'debug_bot',
-      'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols',
+      'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols_reclient',
       'mac-arm64-archive-dbg': 'debug_bot_arm64',
       'mac-arm64-archive-rel': 'release_bot_mac_strip_minimal_symbols_arm64',
       'mac-official': 'official_optimize_goma',
@@ -630,7 +630,7 @@
 
     'chromium.mac': {
       'Mac Builder': 'gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
-      'Mac Builder (dbg)': 'gpu_tests_debug_bot',
+      'Mac Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient',
       'ios-device': 'ios_device_release_compile_only_reclient',
       'ios-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
@@ -3489,6 +3489,10 @@
 
     'release_bot_mac_strip_minimal_symbols_no_nacl_reclient': [
       'release_bot_reclient', 'mac_strip', 'minimal_symbols', 'disable_nacl',
+    ],
+
+    'release_bot_mac_strip_minimal_symbols_reclient': [
+      'release_bot_reclient', 'mac_strip', 'minimal_symbols',
     ],
 
     'release_bot_minimal_symbols': [

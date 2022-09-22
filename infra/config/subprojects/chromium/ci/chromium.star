@@ -453,6 +453,9 @@ ci.builder(
         },
     },
     tree_closing = True,
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
