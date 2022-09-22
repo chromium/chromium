@@ -364,7 +364,7 @@ void BackForwardCachePageLoadMetricsObserver::
   ukm::builders::HistoryNavigation builder(
       GetLastUkmSourceIdForBackForwardCacheRestore());
   builder
-      .SetWorstUserInteractionLatencyAfterBackForwardCacheRestore_MaxEventDuration(
+      .SetWorstUserInteractionLatencyAfterBackForwardCacheRestore_MaxEventDuration2(
           max_event_durations.worst_latency.InMilliseconds());
   UmaHistogramCustomTimes(
       internal::
@@ -373,11 +373,11 @@ void BackForwardCachePageLoadMetricsObserver::
       base::Seconds(60), 50);
 
   builder
-      .SetSumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_MaxEventDuration(
+      .SetSumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_MaxEventDuration2(
           max_event_durations.sum_of_latency_over_budget.InMilliseconds());
 
   builder
-      .SetAverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_MaxEventDuration(
+      .SetAverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_MaxEventDuration2(
           max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
           normalized_responsiveness_metrics.num_user_interactions);
 
@@ -391,7 +391,7 @@ void BackForwardCachePageLoadMetricsObserver::
               normalized_responsiveness_metrics.num_user_interactions,
               max_event_durations.worst_ten_latencies_over_budget);
   builder
-      .SetSlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_HighPercentile2_MaxEventDuration(
+      .SetSlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore_HighPercentile2_MaxEventDuration2(
           high_percentile2_max_event_duration_over_budget.InMilliseconds());
   builder
       .SetUserInteractionLatencyAfterBackForwardCacheRestore_HighPercentile2_MaxEventDuration(

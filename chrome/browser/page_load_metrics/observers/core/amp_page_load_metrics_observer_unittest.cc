@@ -565,19 +565,19 @@ TEST_P(AMPPageLoadMetricsObserverTest,
 
   std::vector<std::pair<std::string, int64_t>> ukm_list = {
       std::make_pair("SubFrame.InteractiveTiming.WorstUserInteractionLatency."
-                     "MaxEventDuration",
+                     "MaxEventDuration2",
                      150),
       std::make_pair(
           "SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
-          "MaxEventDuration",
+          "MaxEventDuration2",
           16),
       std::make_pair(
           "SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
-          "MaxEventDuration",
+          "MaxEventDuration2",
           50),
       std::make_pair(
           "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
-          "HighPercentile2.MaxEventDuration",
+          "HighPercentile2.MaxEventDuration2",
           50),
       std::make_pair("SubFrame.InteractiveTiming.UserInteractionLatency."
                      "HighPercentile2.MaxEventDuration",
@@ -649,22 +649,22 @@ TEST_P(AMPPageLoadMetricsObserverTest,
 
   std::vector<std::pair<std::string, int64_t>> ukm_list = {
       std::make_pair("SubFrame.InteractiveTiming.WorstUserInteractionLatency."
-                     "MaxEventDuration",
+                     "MaxEventDuration2",
                      150),
       std::make_pair(
           "SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
-          "MaxEventDuration",
+          "MaxEventDuration2",
           16),
       std::make_pair(
           "SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
-          "MaxEventDuration",
+          "MaxEventDuration2",
           50),
       std::make_pair("SubFrame.InteractiveTiming.UserInteractionLatency."
                      "HighPercentile2.MaxEventDuration",
                      150),
       std::make_pair(
           "SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
-          "HighPercentile2.MaxEventDuration",
+          "HighPercentile2.MaxEventDuration2",
           50),
   };
 

@@ -726,13 +726,13 @@ IN_PROC_BROWSER_TEST_F(
 
   std::vector<std::string> ukm_list = {
       "WorstUserInteractionLatencyAfterBackForwardCacheRestore."
-      "MaxEventDuration",
+      "MaxEventDuration2",
       "SumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "MaxEventDuration",
+      "MaxEventDuration2",
       "SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "HighPercentile2.MaxEventDuration",
+      "HighPercentile2.MaxEventDuration2",
       "AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
-      "MaxEventDuration",
+      "MaxEventDuration2",
       "UserInteractionLatencyAfterBackForwardCacheRestore."
       "HighPercentile2.MaxEventDuration",
       "NumInteractionsAfterBackForwardCacheRestore"};

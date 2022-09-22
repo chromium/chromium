@@ -664,7 +664,7 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
       normalized_responsiveness_metrics.normalized_max_event_durations;
 
   builder
-      .SetSubFrame_InteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
+      .SetSubFrame_InteractiveTiming_WorstUserInteractionLatency_MaxEventDuration2(
           max_event_durations.worst_latency.InMilliseconds());
   base::UmaHistogramCustomTimes(
       std::string(kHistogramPrefix)
@@ -685,17 +685,17 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
               max_event_durations.worst_ten_latencies_over_budget);
 
   builder
-      .SetSubFrame_InteractiveTiming_SumOfUserInteractionLatencyOverBudget_MaxEventDuration(
+      .SetSubFrame_InteractiveTiming_SumOfUserInteractionLatencyOverBudget_MaxEventDuration2(
           max_event_durations.sum_of_latency_over_budget.InMilliseconds());
   builder
-      .SetSubFrame_InteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDuration(
+      .SetSubFrame_InteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDuration2(
           max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
           normalized_responsiveness_metrics.num_user_interactions);
   builder
       .SetSubFrame_InteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
           high_percentile2_max_event_duration.InMilliseconds());
   builder
-      .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventDuration(
+      .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventDuration2(
           high_percentile2_max_event_duration_over_budget.InMilliseconds());
 
   builder.SetSubFrame_InteractiveTiming_NumInteractions(

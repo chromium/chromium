@@ -539,7 +539,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget.MaxEventDuration">
+      name="SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget.MaxEventDuration2">
     <summary>
       The average value of user interaction latency above budget of a page load
       in AMP subframes, in ms. For this metric, we measure the latency of user
@@ -550,7 +550,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget.TotalEventDuration">
+      name="SubFrame.InteractiveTiming.AverageUserInteractionLatencyOverBudget.TotalEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
       SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
@@ -591,7 +591,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.MaxEventDuration">
+      name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.MaxEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
       SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
@@ -606,7 +606,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.TotalEventDuration">
+      name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile.TotalEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
       SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
@@ -621,7 +621,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventDuration">
+      name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile2.MaxEventDuration2">
     <summary>
       An approximation of high percentile of user interaction latency above
       budget of a page load in AMP subframes, in ms. For this metric, we measure
@@ -632,7 +632,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile2.TotalEventDuration">
+      name="SubFrame.InteractiveTiming.SlowUserInteractionLatencyOverBudget.HighPercentile2.TotalEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
       SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
@@ -647,7 +647,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget.MaxEventDuration">
+      name="SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget.MaxEventDuration2">
     <summary>
       The sum of user interaction latency above budget of a page load in AMP
       subframes, in ms. For this metric, we measure the latency of user
@@ -658,7 +658,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget.TotalEventDuration">
+      name="SubFrame.InteractiveTiming.SumOfUserInteractionLatencyOverBudget.TotalEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
       SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
@@ -681,7 +681,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SubFrame.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration">
+      name="SubFrame.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration2">
     <summary>
       The maximum value of high percentile of user interaction latency above
       budget of a page load in AMP subframes, in ms. For this metric, we measure
@@ -690,7 +690,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SubFrame.InteractiveTiming.WorstUserInteractionLatency.TotalEventDuration">
+      name="SubFrame.InteractiveTiming.WorstUserInteractionLatency.TotalEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
       SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
@@ -703,7 +703,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget.MaxEventDuration">
+      name="SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget.MaxEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
       SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
@@ -718,7 +718,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget.TotalEventDuration">
+      name="SubFrame.InteractiveTiming.WorstUserInteractionLatencyOverBudget.TotalEventDuration2">
     <obsolete>
       Removed March 2022 in favor of
       SlowUserInteractionLatency.HighPercentile2.MaxEventDuration
@@ -9490,7 +9490,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.MaxEventDuration">
+      name="AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.MaxEventDuration2">
     <summary>
       The average value of user interaction latency above budget of a page after
       it is restored from the back-forward, in ms. For this metric, we measure
@@ -9501,7 +9501,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.TotalEventDuration">
+      name="AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.TotalEventDuration2">
     <obsolete>
       Deprecated March 2022 in favor of
       SlowUserInteractionLatencyAfterBackForwardCacheRestore.HighPercentile2.MaxEventDuration
@@ -9730,7 +9730,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.HighPercentile.MaxEventDuration">
+      name="SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.HighPercentile.MaxEventDuration2">
     <obsolete>
       Deprecated March 2022 in favor of
       SlowUserInteractionLatencyAfterBackForwardCacheRestore.HighPercentile2.MaxEventDuration
@@ -9745,7 +9745,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.HighPercentile.TotalEventDuration">
+      name="SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.HighPercentile.TotalEventDuration2">
     <obsolete>
       Deprecated March 2022 in favor of
       SlowUserInteractionLatencyAfterBackForwardCacheRestore.HighPercentile2.MaxEventDuration
@@ -9760,7 +9760,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.HighPercentile2.MaxEventDuration">
+      name="SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.HighPercentile2.MaxEventDuration2">
     <summary>
       An approximation of high percentile of user interaction latency above
       budget of a page after it is restored from the back-forward, in ms. For
@@ -9771,7 +9771,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.HighPercentile2.TotalEventDuration">
+      name="SlowUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.HighPercentile2.TotalEventDuration2">
     <obsolete>
       Deprecated March 2022 in favor of
       SlowUserInteractionLatencyAfterBackForwardCacheRestore.HighPercentile2.MaxEventDuration
@@ -9786,7 +9786,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.MaxEventDuration">
+      name="SumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.MaxEventDuration2">
     <summary>
       The sum of user interaction latency above budget of a page after it is
       restored from the back-forward, in ms. For this metric, we measure the
@@ -9797,7 +9797,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="SumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.TotalEventDuration">
+      name="SumOfUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.TotalEventDuration2">
     <obsolete>
       Deprecated March 2022 in favor of
       SlowUserInteractionLatencyAfterBackForwardCacheRestore.HighPercentile2.MaxEventDuration
@@ -9837,7 +9837,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="WorstUserInteractionLatencyAfterBackForwardCacheRestore.MaxEventDuration">
+      name="WorstUserInteractionLatencyAfterBackForwardCacheRestore.MaxEventDuration2">
     <summary>
       The maximum value of user interaction latency of a page after it is
       restored from the back-forward, in ms. For this metric, we measure the
@@ -9846,7 +9846,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="WorstUserInteractionLatencyAfterBackForwardCacheRestore.TotalEventDuration">
+      name="WorstUserInteractionLatencyAfterBackForwardCacheRestore.TotalEventDuration2">
     <obsolete>
       Deprecated March 2022 in favor of
       SlowUserInteractionLatencyAfterBackForwardCacheRestore.HighPercentile2.MaxEventDuration
@@ -9859,7 +9859,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="WorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.MaxEventDuration">
+      name="WorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.MaxEventDuration2">
     <obsolete>
       Deprecated March 2022 in favor of
       SlowUserInteractionLatencyAfterBackForwardCacheRestore.HighPercentile2.MaxEventDuration
@@ -9874,7 +9874,7 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric
-      name="WorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.TotalEventDuration">
+      name="WorstUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore.TotalEventDuration2">
     <obsolete>
       Deprecated March 2022 in favor of
       SlowUserInteractionLatencyAfterBackForwardCacheRestore.HighPercentile2.MaxEventDuration
