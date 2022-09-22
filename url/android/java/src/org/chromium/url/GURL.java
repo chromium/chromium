@@ -22,6 +22,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.MainDex;
+import org.chromium.url.mojom.Url;
 
 import java.util.Random;
 
@@ -48,6 +49,9 @@ public class GURL {
     public interface ReportDebugThrowableCallback {
         void run(Throwable throwable);
     }
+
+    // See url::kMaxURLChars in url/url_constants.cc.
+    private static final int MAX_URL_CHARS = 2 * 1024 * 1024;
 
     // Right now this is only collecting reports on Canary which has a relatively small population.
     private static final int DEBUG_REPORT_PERCENTAGE = 10;
@@ -344,6 +348,17 @@ public class GURL {
     @VisibleForTesting
     /* package */ void initForTesting(GURL gurl) {
         init(gurl.mSpec, gurl.mIsValid, gurl.mParsed);
+    }
+
+    /** @return A Mojom representation of this URL. */
+    public Url toMojom() {
+        Url url = new Url();
+        // See url/mojom/url_gurl_mojom_traits.cc.
+        url.url = TextUtils.isEmpty(getPossiblyInvalidSpec())
+                        || getPossiblyInvalidSpec().length() > MAX_URL_CHARS || !isValid()
+                ? ""
+                : getPossiblyInvalidSpec();
+        return url;
     }
 
     @NativeMethods

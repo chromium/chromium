@@ -15,6 +15,7 @@
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
 #include "components/payments/content/android/byte_buffer_helper.h"
+#include "components/payments/content/android/csp_checker_android.h"
 #include "components/payments/content/android/jni_headers/PaymentAppServiceBridge_jni.h"
 #include "components/payments/content/android/jni_payment_app.h"
 #include "components/payments/content/android/payment_request_spec.h"
@@ -95,6 +96,7 @@ void JNI_PaymentAppServiceBridge_Create(
     // as it is no longer used.
     jboolean jmay_crawl_for_installable_payment_apps,
     jboolean jis_off_the_record,
+    jlong native_csp_checker_android,
     const JavaParamRef<jobject>& jcallback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -120,6 +122,7 @@ void JNI_PaymentAppServiceBridge_Create(
           env, jpayment_request_spec),
       jtwa_package_name ? ConvertJavaStringToUTF8(env, jtwa_package_name) : "",
       web_data_service, jis_off_the_record,
+      payments::CSPCheckerAndroid::GetWeakPtr(native_csp_checker_android),
       base::BindOnce(&OnCanMakePaymentCalculated,
                      ScopedJavaGlobalRef<jobject>(env, jcallback)),
       base::BindRepeating(&OnPaymentAppCreated,
@@ -177,6 +180,7 @@ PaymentAppServiceBridge* PaymentAppServiceBridge::Create(
     const std::string& twa_package_name,
     scoped_refptr<PaymentManifestWebDataService> web_data_service,
     bool is_off_the_record,
+    base::WeakPtr<CSPChecker> csp_checker,
     CanMakePaymentCalculatedCallback can_make_payment_calculated_callback,
     PaymentAppCreatedCallback payment_app_created_callback,
     PaymentAppCreationErrorCallback payment_app_creation_error_callback,
@@ -187,7 +191,7 @@ PaymentAppServiceBridge* PaymentAppServiceBridge::Create(
   std::unique_ptr<PaymentAppServiceBridge> bridge(new PaymentAppServiceBridge(
       number_of_factories, render_frame_host, top_origin, spec,
       twa_package_name, std::move(web_data_service), is_off_the_record,
-      std::move(can_make_payment_calculated_callback),
+      csp_checker, std::move(can_make_payment_calculated_callback),
       std::move(payment_app_created_callback),
       std::move(payment_app_creation_error_callback),
       std::move(done_creating_payment_apps_callback),
@@ -203,6 +207,7 @@ PaymentAppServiceBridge::PaymentAppServiceBridge(
     const std::string& twa_package_name,
     scoped_refptr<PaymentManifestWebDataService> web_data_service,
     bool is_off_the_record,
+    base::WeakPtr<CSPChecker> csp_checker,
     CanMakePaymentCalculatedCallback can_make_payment_calculated_callback,
     PaymentAppCreatedCallback payment_app_created_callback,
     PaymentAppCreationErrorCallback payment_app_creation_error_callback,
@@ -218,6 +223,7 @@ PaymentAppServiceBridge::PaymentAppServiceBridge(
       twa_package_name_(twa_package_name),
       payment_manifest_web_data_service_(web_data_service),
       is_off_the_record_(is_off_the_record),
+      csp_checker_(csp_checker),
       can_make_payment_calculated_callback_(
           std::move(can_make_payment_calculated_callback)),
       payment_app_created_callback_(std::move(payment_app_created_callback)),
@@ -364,7 +370,7 @@ void PaymentAppServiceBridge::SetCanMakePaymentEvenWithoutApps() {
 }
 
 base::WeakPtr<CSPChecker> PaymentAppServiceBridge::GetCSPChecker() {
-  return const_csp_checker_.GetWeakPtr();
+  return csp_checker_;
 }
 
 }  // namespace payments

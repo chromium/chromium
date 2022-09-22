@@ -12,6 +12,8 @@ static_library("android") {
     "byte_buffer_helper.cc",
     "byte_buffer_helper.h",
     "can_make_payment_query_android.cc",
+    "csp_checker_android.cc",
+    "csp_checker_android.h",
     "currency_formatter_android.cc",
     "currency_formatter_android.h",
     "error_message_util.cc",
@@ -64,6 +66,7 @@ static_library("android") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/components/payments/CSPCheckerBridge.java",
     "java/src/org/chromium/components/payments/CanMakePaymentQuery.java",
     "java/src/org/chromium/components/payments/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/ErrorMessageUtil.java",
@@ -155,6 +158,7 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/AndroidPaymentAppFinder.java",
     "java/src/org/chromium/components/payments/BasicCardUtils.java",
     "java/src/org/chromium/components/payments/BrowserPaymentRequest.java",
+    "java/src/org/chromium/components/payments/CSPCheckerBridge.java",
     "java/src/org/chromium/components/payments/CanMakePaymentQuery.java",
     "java/src/org/chromium/components/payments/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/ErrorMessageUtil.java",
@@ -239,6 +243,7 @@ android_library("pre_purchase_query_enum_java") {
 android_library("minimal_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
+    "java/src/org/chromium/components/payments/CSPChecker.java",
     "java/src/org/chromium/components/payments/MojoStructCollection.java",
     "java/src/org/chromium/components/payments/PaymentApp.java",
     "java/src/org/chromium/components/payments/PaymentAppFactoryDelegate.java",
@@ -261,6 +266,7 @@ android_library("minimal_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//url:gurl_java",
     "//url:origin_java",
   ]
   srcjar_deps = [

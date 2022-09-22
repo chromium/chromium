@@ -10,7 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/memory/ref_counted.h"
-#include "components/payments/core/const_csp_checker.h"
+#include "base/memory/weak_ptr.h"
 #include "components/payments/core/payment_manifest_downloader.h"
 
 namespace network {
@@ -19,6 +19,7 @@ class SharedURLLoaderFactory;
 
 namespace payments {
 
+class CSPChecker;
 class ErrorLogger;
 
 // Android wrapper for the payment manifest downloader.
@@ -26,6 +27,7 @@ class PaymentManifestDownloaderAndroid {
  public:
   PaymentManifestDownloaderAndroid(
       std::unique_ptr<ErrorLogger> log,
+      base::WeakPtr<CSPChecker> csp_checker,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   PaymentManifestDownloaderAndroid(const PaymentManifestDownloaderAndroid&) =
@@ -55,9 +57,6 @@ class PaymentManifestDownloaderAndroid {
                const base::android::JavaParamRef<jobject>& jcaller);
 
  private:
-  // TODO(https://crbug.com/1349091): Check the CSP in the renderer instead.
-  ConstCSPChecker const_csp_checker_{/*allow=*/true};
-
   PaymentManifestDownloader downloader_;
 };
 

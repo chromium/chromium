@@ -415,7 +415,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             // Initialize the native side of the downloader, once we know that a manifest file needs
             // to be downloaded.
             if (!mDownloader.isInitialized()) {
-                mDownloader.initialize(mFactoryDelegate.getParams().getWebContents());
+                mDownloader.initialize(mFactoryDelegate.getParams().getWebContents(),
+                        mFactoryDelegate.getCSPChecker());
             }
 
             manifestVerifiers.add(new PaymentManifestVerifier(

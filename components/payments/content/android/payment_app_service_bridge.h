@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_app_factory.h"
-#include "components/payments/core/const_csp_checker.h"
 #include "content/public/browser/global_routing_id.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -50,6 +49,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       const std::string& twa_package_name,
       scoped_refptr<PaymentManifestWebDataService> web_data_service,
       bool is_off_the_record,
+      base::WeakPtr<CSPChecker> csp_checker,
       CanMakePaymentCalculatedCallback can_make_payment_calculated_callback,
       PaymentAppCreatedCallback payment_app_created_callback,
       PaymentAppCreationErrorCallback payment_app_creation_error_callback,
@@ -106,6 +106,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       const std::string& twa_package_name,
       scoped_refptr<PaymentManifestWebDataService> web_data_service,
       bool is_off_the_record,
+      base::WeakPtr<CSPChecker> csp_checker,
       CanMakePaymentCalculatedCallback can_make_payment_calculated_callback,
       PaymentAppCreatedCallback payment_app_created_callback,
       PaymentAppCreationErrorCallback payment_app_creation_error_callback,
@@ -123,15 +124,13 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       payment_manifest_web_data_service_;
   bool is_off_the_record_;
   std::vector<autofill::AutofillProfile*> dummy_profiles_;
+  base::WeakPtr<CSPChecker> csp_checker_;
 
   CanMakePaymentCalculatedCallback can_make_payment_calculated_callback_;
   PaymentAppCreatedCallback payment_app_created_callback_;
   PaymentAppCreationErrorCallback payment_app_creation_error_callback_;
   base::OnceClosure done_creating_payment_apps_callback_;
   base::RepeatingClosure set_can_make_payment_even_without_apps_callback_;
-
-  // TODO(https://crbug.com/1349091): Check the CSP in the renderer instead.
-  ConstCSPChecker const_csp_checker_{/*allow=*/true};
 
   base::WeakPtrFactory<PaymentAppServiceBridge> weak_ptr_factory_{this};
 };

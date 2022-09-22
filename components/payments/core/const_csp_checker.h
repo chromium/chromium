@@ -10,10 +10,8 @@
 
 namespace payments {
 
-// A stub class for either always allowing or always denying connections,
+// A test-only class for either always allowing or always denying connections,
 // depending on the input parameter for the constructor.
-// TODO(crbug.com/1349091): Make this class test-only after production code
-// stops using it.
 class ConstCSPChecker : public CSPChecker {
  public:
   explicit ConstCSPChecker(bool allow);

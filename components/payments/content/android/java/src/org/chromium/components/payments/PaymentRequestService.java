@@ -69,7 +69,7 @@ public class PaymentRequestService
         implements PaymentAppFactoryDelegate, PaymentAppFactoryParams,
                    PaymentRequestUpdateEventListener, PaymentApp.AbortCallback,
                    PaymentApp.InstrumentDetailsCallback, PaymentDetailsConverter.MethodChecker,
-                   PaymentResponseHelperInterface.PaymentResponseResultCallback {
+                   PaymentResponseHelperInterface.PaymentResponseResultCallback, CSPChecker {
     private static final String TAG = "PaymentRequestServ";
     /**
      * Hold the currently showing PaymentRequest. Used to prevent showing more than one
@@ -726,6 +726,15 @@ public class PaymentRequestService
         }
     }
 
+    // Implements CSPChecker:
+    @Override
+    public void allowConnectToSource(GURL url, GURL urlBeforeRedirects, boolean didFollowRedirect,
+            Callback<Boolean> resultCallback) {
+        if (mClient == null) return;
+        mClient.allowConnectToSource(url.toMojom(), urlBeforeRedirects.toMojom(), didFollowRedirect,
+                (allow) -> { resultCallback.onResult(allow); });
+    }
+
     /**
      * Invokes the given payment app.
      * @param paymentApp The payment app to be invoked.
@@ -1157,6 +1166,12 @@ public class PaymentRequestService
             mRejectShowErrorMessage = errorMessage;
             mRejectShowErrorReason = errorReason;
         }
+    }
+
+    // Implements PaymentAppFactoryDelegate:
+    @Override
+    public CSPChecker getCSPChecker() {
+        return this;
     }
 
     /**

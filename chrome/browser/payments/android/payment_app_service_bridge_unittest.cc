@@ -12,6 +12,7 @@
 #include "components/payments/content/android/payment_app_service_bridge.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
+#include "components/payments/core/const_csp_checker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -97,13 +98,14 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
                           mojom::PaymentDetails::New(), std::move(method_data),
                           /*observer=*/nullptr, /*app_locale=*/"en-US");
 
+  ConstCSPChecker const_csp_checker(/*allow=*/true);
   MockCallback mock_callback;
   base::WeakPtr<PaymentAppServiceBridge> bridge =
       PaymentAppServiceBridge::Create(
           /*number_of_factories=*/3, web_contents_->GetPrimaryMainFrame(),
           top_origin_, spec.AsWeakPtr(), /*twa_package_name=*/GetParam(),
-          web_data_service_,
-          /*is_off_the_record=*/false,
+          web_data_service_, /*is_off_the_record=*/false,
+          const_csp_checker.GetWeakPtr(),
           base::BindRepeating(&MockCallback::NotifyCanMakePaymentCalculated,
                               base::Unretained(&mock_callback)),
           base::BindRepeating(&MockCallback::NotifyPaymentAppCreated,

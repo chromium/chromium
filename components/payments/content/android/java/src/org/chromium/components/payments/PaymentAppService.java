@@ -140,6 +140,11 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
 
             mDelegate.onDoneCreatingPaymentApps(PaymentAppService.this);
         }
+
+        @Override
+        public CSPChecker getCSPChecker() {
+            return mDelegate.getCSPChecker();
+        }
     }
 
     private static Set<PaymentApp> deduplicatePaymentApps(List<PaymentApp> apps) {

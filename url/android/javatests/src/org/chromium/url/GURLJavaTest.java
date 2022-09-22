@@ -287,4 +287,28 @@ public class GURLJavaTest {
         Assert.assertTrue(url1.domainIs("www.google.com"));
         Assert.assertFalse(url1.domainIs("images.google.com"));
     }
+
+    // Tests Mojom conversion.
+    @SmallTest
+    @Test
+    public void testMojomConvertion() {
+        // Valid:
+        Assert.assertEquals(
+                "https://www.google.com/", new GURL("https://www.google.com/").toMojom().url);
+
+        // Null:
+        Assert.assertEquals("", new GURL(null).toMojom().url);
+
+        // Empty:
+        Assert.assertEquals("", new GURL("").toMojom().url);
+
+        // Invalid:
+        Assert.assertEquals("", new GURL(new String(new byte[] {1, 1, 1})).toMojom().url);
+
+        // Too long.
+        Assert.assertEquals("",
+                new GURL("https://www.google.com/".concat("a".repeat(2 * 1024 * 1024)))
+                        .toMojom()
+                        .url);
+    }
 }

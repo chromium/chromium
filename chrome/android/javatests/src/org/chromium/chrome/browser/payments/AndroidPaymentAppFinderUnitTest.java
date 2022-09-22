@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.payments.AndroidPaymentAppFinder;
 import org.chromium.components.payments.AppCreationFailureReason;
+import org.chromium.components.payments.CSPChecker;
 import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
@@ -463,7 +464,7 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
 
         PaymentManifestDownloader downloader = new PaymentManifestDownloader() {
             @Override
-            public void initialize(WebContents webContents) {}
+            public void initialize(WebContents webContents, CSPChecker cspChecker) {}
 
             @Override
             public void downloadPaymentMethodManifest(

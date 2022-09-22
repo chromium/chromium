@@ -46,20 +46,27 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
                         delegate.getParams().getRenderFrameHost().getLastCommittedURL(),
                         SchemeDisplay.SHOW));
 
-        PaymentAppServiceCallback callback = new PaymentAppServiceCallback(delegate);
+        CSPCheckerBridge cspCheckerBridge = new CSPCheckerBridge(delegate.getCSPChecker());
+
+        PaymentAppServiceCallback callback =
+                new PaymentAppServiceCallback(delegate, cspCheckerBridge);
 
         PaymentAppServiceBridgeJni.get().create(delegate.getParams().getRenderFrameHost(),
                 delegate.getParams().getTopLevelOrigin(), delegate.getParams().getSpec(),
                 delegate.getParams().getTwaPackageName(), delegate.getParams().getMayCrawl(),
-                delegate.getParams().isOffTheRecord(), callback);
+                delegate.getParams().isOffTheRecord(), cspCheckerBridge.getNativeCSPChecker(),
+                callback);
     }
 
     /** Handles callbacks from native PaymentAppService. */
     public class PaymentAppServiceCallback {
         private final PaymentAppFactoryDelegate mDelegate;
+        private final CSPCheckerBridge mCSPCheckerBridge;
 
-        private PaymentAppServiceCallback(PaymentAppFactoryDelegate delegate) {
+        private PaymentAppServiceCallback(
+                PaymentAppFactoryDelegate delegate, CSPCheckerBridge cspCheckerBridge) {
             mDelegate = delegate;
+            mCSPCheckerBridge = cspCheckerBridge;
         }
 
         @CalledByNative("PaymentAppServiceCallback")
@@ -93,6 +100,7 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
         @CalledByNative("PaymentAppServiceCallback")
         private void onDoneCreatingPaymentApps() {
             ThreadUtils.assertOnUiThread();
+            mCSPCheckerBridge.destroy();
             mDelegate.onDoneCreatingPaymentApps(PaymentAppServiceBridge.this);
         }
 
@@ -122,11 +130,12 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
          * payment apps is allowed.
          * @param isOffTheRecord Whether the merchant WebContent's profile is in off-the-record
          * mode.
+         * @param nativeCSPCheckerAndroid A C++ native CSPCheckerAndroid* pointer.
          * @param callback The callback that receives the discovered payment apps.
          */
         void create(RenderFrameHost initiatorRenderFrameHost, String topOrigin,
                 PaymentRequestSpec spec, String twaPackageName,
                 boolean mayCrawlForInstallablePaymentApps, boolean isOffTheRecord,
-                PaymentAppServiceCallback callback);
+                long nativeCSPCheckerAndroid, PaymentAppServiceCallback callback);
     }
 }

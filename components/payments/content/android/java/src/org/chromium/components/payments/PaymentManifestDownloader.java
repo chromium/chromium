@@ -55,17 +55,21 @@ public class PaymentManifestDownloader {
     }
 
     private long mNativeObject;
+    private CSPCheckerBridge mCSPCheckerBridge;
 
     /**
      * Initializes the native downloader.
      *
      * @param webContents The web contents to use as the context for the downloads. If this goes
      *                    away, pending downloads are cancelled.
+     * @param cspChecker The Content-Security-Policy (CSP) checker.
      */
-    public void initialize(WebContents webContents) {
+    public void initialize(WebContents webContents, CSPChecker cspChecker) {
         ThreadUtils.assertOnUiThread();
         assert mNativeObject == 0;
-        mNativeObject = PaymentManifestDownloaderJni.get().init(webContents);
+        mCSPCheckerBridge = new CSPCheckerBridge(cspChecker);
+        mNativeObject = PaymentManifestDownloaderJni.get().init(
+                webContents, mCSPCheckerBridge.getNativeCSPChecker());
     }
 
     /** @return Whether the native downloader is initialized. */
@@ -114,6 +118,7 @@ public class PaymentManifestDownloader {
         assert mNativeObject != 0;
         PaymentManifestDownloaderJni.get().destroy(mNativeObject, PaymentManifestDownloader.this);
         mNativeObject = 0;
+        if (mCSPCheckerBridge != null) mCSPCheckerBridge.destroy();
     }
 
     /** @return An opaque origin to be used in tests. */
@@ -124,7 +129,7 @@ public class PaymentManifestDownloader {
 
     @NativeMethods
     interface Natives {
-        long init(WebContents webContents);
+        long init(WebContents webContents, long nativeCSPCheckerAndroid);
         void downloadPaymentMethodManifest(long nativePaymentManifestDownloaderAndroid,
                 PaymentManifestDownloader caller, Origin merchantOrigin, GURL methodName,
                 ManifestDownloadCallback callback);

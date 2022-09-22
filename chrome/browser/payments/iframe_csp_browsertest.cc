@@ -4,7 +4,6 @@
 
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -124,13 +123,6 @@ IN_PROC_BROWSER_TEST_P(IframeCspTest, PageCSPDeniesRedirectedPaymentDownloads) {
       {{domain, https_server()}, {subdomain, https_server()}});
   std::string payment_method = "https://" + domain + "/redirect/pay";
 
-// CSP is not being enforced on Android.
-// TODO(crbug.com/1349091): Enforce CSP on Android.
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents(),
-                                  content::JsReplace("checkCanMakePayment($1)",
-                                                     payment_method)));
-#else
   if (WebPaymentAPICSPEnabled()) {
     // The test page's CSP denies connections to the redirect destination.
     EXPECT_EQ(false,
@@ -146,7 +138,6 @@ IN_PROC_BROWSER_TEST_P(IframeCspTest, PageCSPDeniesRedirectedPaymentDownloads) {
                               content::JsReplace("checkCanMakePayment($1)",
                                                  payment_method)));
   }
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 INSTANTIATE_TEST_SUITE_P(All, IframeCspTest, ::testing::Bool());
