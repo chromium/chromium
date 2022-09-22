@@ -86,8 +86,8 @@ class PasswordManagerSettingsServiceAndroidImplTest : public testing::Test {
   void RegisterPrefs();
 
   CoreAccountInfo sync_account_info_;
-  std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl> settings_service_;
   TestingPrefServiceSimple test_pref_service_;
+  std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl> settings_service_;
   syncer::TestSyncService test_sync_service_;
   raw_ptr<MockPasswordSettingsUpdaterBridge> mock_bridge_ = nullptr;
   raw_ptr<FakePasswordManagerLifecycleHelper> fake_lifecycle_helper_ = nullptr;
@@ -1154,4 +1154,38 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kSavePasswordsSuspendedByError, true);
   EXPECT_TRUE(settings_service()->IsSettingEnabled(
       PasswordManagerSetting::kOfferToSavePasswords));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       TestMigrateSettingsOnReenrollingIntoUPM) {
+  SetPasswordsSync(true);
+
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      true);
+
+  // Reset the migration pref.
+  pref_service()->SetBoolean(password_manager::prefs::kSettingsMigratedToUPM,
+                             false);
+  // Set an explicit value on the "Offer to save passwords" pref.
+  pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
+                             false);
+
+  InitializeSettingsService(/*password_sync_enabled=*/true,
+                            /*setting_sync_enabled=*/false);
+
+  // Imitate reenrolment into UPM and triggering settings migration.
+  ExpectSettingsRetrievalFromBackend(/*times=*/1);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      false);
+
+  // Check that Chrome prefs are dumped into GMS prefs.
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.MigratedSettingsUPMAndroid", true, 1);
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
+  EXPECT_EQ(pref_service()->GetUserPrefValue(
+                password_manager::prefs::kAutoSignInEnabledGMS),
+            nullptr);
 }

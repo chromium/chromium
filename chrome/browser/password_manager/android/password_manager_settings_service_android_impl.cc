@@ -101,16 +101,9 @@ PasswordManagerSettingsServiceAndroidImpl::
   DCHECK(password_manager::features::UsesUnifiedPasswordManagerUi());
   if (!PasswordSettingsUpdaterAndroidBridge::CanCreateAccessor())
     return;
-  MigratePrefsIfNeeded();
   bridge_ = PasswordSettingsUpdaterAndroidBridge::Create();
-  bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
   lifecycle_helper_ = std::make_unique<PasswordManagerLifecycleHelperImpl>();
-  lifecycle_helper_->RegisterObserver(base::BindRepeating(
-      &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
-      weak_ptr_factory_.GetWeakPtr()));
-  is_password_sync_enabled_ = IsPasswordSyncEnabled(sync_service);
-  sync_service->AddObserver(this);
-  RequestSettingsFromBackend();
+  Init();
 }
 
 // Constructor for tests
@@ -129,14 +122,7 @@ PasswordManagerSettingsServiceAndroidImpl::
   DCHECK(sync_service_);
   if (!bridge_)
     return;
-  MigratePrefsIfNeeded();
-  bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
-  lifecycle_helper_->RegisterObserver(base::BindRepeating(
-      &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
-      weak_ptr_factory_.GetWeakPtr()));
-  is_password_sync_enabled_ = IsPasswordSyncEnabled(sync_service);
-  sync_service->AddObserver(this);
-  RequestSettingsFromBackend();
+  Init();
 }
 
 PasswordManagerSettingsServiceAndroidImpl::
@@ -204,6 +190,26 @@ void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
       PasswordSettingsUpdaterAndroidBridge::SyncingAccount(
           sync_service_->GetAccountInfo().email),
       PasswordManagerSetting::kAutoSignIn, false);
+}
+
+void PasswordManagerSettingsServiceAndroidImpl::Init() {
+  MigratePrefsIfNeeded();
+  bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
+
+  lifecycle_helper_->RegisterObserver(base::BindRepeating(
+      &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
+      weak_ptr_factory_.GetWeakPtr()));
+  is_password_sync_enabled_ = IsPasswordSyncEnabled(sync_service_);
+  sync_service_->AddObserver(this);
+
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      base::BindRepeating(&PasswordManagerSettingsServiceAndroidImpl::
+                              OnUnenrollmentPreferenceChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  RequestSettingsFromBackend();
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded() {
@@ -340,5 +346,15 @@ void PasswordManagerSettingsServiceAndroidImpl::DumpChromePrefsIntoGMSPrefs() {
     pref_service_->SetBoolean(
         gms_pref->name(),
         pref_service_->GetUserPrefValue(regular_pref->name())->GetBool());
+  }
+}
+
+void PasswordManagerSettingsServiceAndroidImpl::
+    OnUnenrollmentPreferenceChanged() {
+  if (!IsUnenrolledFromUPM(pref_service_)) {
+    // Perform actions that are usually done on startup, but were skipped
+    // for the evicted users.
+    MigratePrefsIfNeeded();
+    RequestSettingsFromBackend();
   }
 }
