@@ -2047,8 +2047,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLocalProfileCreationDialogBrowserTest,
   EXPECT_FALSE(new_browser->signin_view_controller()->ShowsModalDialog());
 }
 
+// TODO(crbug.com/1367031): Test is flaky on Linux and macOS
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_CancelLocalProfileCreation DISABLED_CancelLocalProfileCreation
+#else
+#define MAYBE_CancelLocalProfileCreation CancelLocalProfileCreation
+#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerLocalProfileCreationDialogBrowserTest,
-                       CancelLocalProfileCreation) {
+                       MAYBE_CancelLocalProfileCreation) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   ASSERT_EQ(1u, g_browser_process->profile_manager()
                     ->GetProfileAttributesStorage()
