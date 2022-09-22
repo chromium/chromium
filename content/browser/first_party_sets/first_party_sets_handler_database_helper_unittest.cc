@@ -28,50 +28,38 @@ using ::testing::UnorderedElementsAre;
 namespace content {
 namespace {
 
-MATCHER_P(SerializesTo, want, "") {
-  const std::string got = arg.Serialize();
-  return testing::ExplainMatchResult(testing::Eq(want), got, result_listener);
-}
-
 }  // namespace
 
 TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_SitesJoined) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+  net::SchemefulSite member3(GURL("https://member3.test"));
+
   net::PublicSets old_sets(
-      /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://member1.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 0)},
-                   {net::SchemefulSite(GURL("https://member3.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 1)}},
+      /*entries=*/{{example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)},
+                   {member1, net::FirstPartySetEntry(
+                                 example, net::SiteType::kAssociated, 0)},
+                   {member3, net::FirstPartySetEntry(
+                                 example, net::SiteType::kAssociated, 1)}},
       /*aliases=*/{});
 
   net::PublicSets current_sets(
       /*entries=*/
       {
-          {net::SchemefulSite(GURL("https://example.test")),
-           net::FirstPartySetEntry(
-               net::SchemefulSite(GURL("https://example.test")),
-               net::SiteType::kPrimary, absl::nullopt)},
-          {net::SchemefulSite(GURL("https://member1.test")),
-           net::FirstPartySetEntry(
-               net::SchemefulSite(GURL("https://example.test")),
-               net::SiteType::kAssociated, 0)},
-          {net::SchemefulSite(GURL("https://member3.test")),
-           net::FirstPartySetEntry(
-               net::SchemefulSite(GURL("https://example.test")),
-               net::SiteType::kAssociated, 1)},
-          {net::SchemefulSite(GURL("https://foo.test")),
-           net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                   net::SiteType::kPrimary, absl::nullopt)},
-          {net::SchemefulSite(GURL("https://member2.test")),
-           net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                   net::SiteType::kAssociated, 0)},
+          {example, net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)},
+          {member1,
+           net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)},
+          {member3,
+           net::FirstPartySetEntry(example, net::SiteType::kAssociated, 1)},
+          {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
+                                        absl::nullopt)},
+          {member2,
+           net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)},
       },
       /*aliases=*/{});
 
@@ -85,38 +73,32 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_SitesJoined) {
 }
 
 TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_SitesLeft) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+  net::SchemefulSite member3(GURL("https://member3.test"));
+
   net::PublicSets old_sets(
-      /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://member1.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 0)},
-                   {net::SchemefulSite(GURL("https://member3.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 1)},
-                   {net::SchemefulSite(GURL("https://foo.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://foo.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://member2.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://foo.test")),
-                        net::SiteType::kAssociated, 0)}},
+      /*entries=*/{{example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)},
+                   {member1, net::FirstPartySetEntry(
+                                 example, net::SiteType::kAssociated, 0)},
+                   {member3, net::FirstPartySetEntry(
+                                 example, net::SiteType::kAssociated, 1)},
+                   {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
+                                                 absl::nullopt)},
+                   {member2, net::FirstPartySetEntry(
+                                 foo, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
   net::PublicSets current_sets(
-      /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://member1.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 0)}},
+      /*entries=*/{{example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)},
+                   {member1, net::FirstPartySetEntry(
+                                 example, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
   // Expected diff: "https://foo.test", "https://member2.test" and
@@ -125,56 +107,42 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_SitesLeft) {
       FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
           old_sets, /*old_config=*/net::FirstPartySetsContextConfig(),
           current_sets, /*current_config=*/net::FirstPartySetsContextConfig()),
-      UnorderedElementsAre(SerializesTo("https://foo.test"),
-                           SerializesTo("https://member2.test"),
-                           SerializesTo("https://member3.test")));
+      UnorderedElementsAre(foo, member2, member3));
 }
 
 TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerChanged) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+  net::SchemefulSite member3(GURL("https://member3.test"));
+
   net::PublicSets old_sets(
-      /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://member1.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 0)},
-                   {net::SchemefulSite(GURL("https://foo.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://foo.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://member2.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://foo.test")),
-                        net::SiteType::kAssociated, 0)},
-                   {net::SchemefulSite(GURL("https://member3.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://foo.test")),
-                        net::SiteType::kAssociated, 1)}},
+      /*entries=*/{{example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)},
+                   {member1, net::FirstPartySetEntry(
+                                 example, net::SiteType::kAssociated, 0)},
+                   {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
+                                                 absl::nullopt)},
+                   {member2, net::FirstPartySetEntry(
+                                 foo, net::SiteType::kAssociated, 0)},
+                   {member3, net::FirstPartySetEntry(
+                                 foo, net::SiteType::kAssociated, 1)}},
       /*aliases=*/{});
 
   net::PublicSets current_sets(
-      /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://member1.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 0)},
-                   {net::SchemefulSite(GURL("https://member3.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 1)},
-                   {net::SchemefulSite(GURL("https://foo.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://foo.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://member2.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://foo.test")),
-                        net::SiteType::kAssociated, 0)}},
+      /*entries=*/{{example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)},
+                   {member1, net::FirstPartySetEntry(
+                                 example, net::SiteType::kAssociated, 0)},
+                   {member3, net::FirstPartySetEntry(
+                                 example, net::SiteType::kAssociated, 1)},
+                   {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
+                                                 absl::nullopt)},
+                   {member2, net::FirstPartySetEntry(
+                                 foo, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
   // Expected diff: "https://member3.test" changed owner.
@@ -182,34 +150,29 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerChanged) {
       FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
           old_sets, /*old_config=*/net::FirstPartySetsContextConfig(),
           current_sets, /*current_config=*/net::FirstPartySetsContextConfig()),
-      UnorderedElementsAre(SerializesTo("https://member3.test")));
+      UnorderedElementsAre(member3));
 }
 
 TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerLeft) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite bar(GURL("https://bar.test"));
+
   net::PublicSets old_sets(
-      /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://foo.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 0)},
-                   {net::SchemefulSite(GURL("https://bar.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 1)}},
+      /*entries=*/{{example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)},
+                   {foo, net::FirstPartySetEntry(
+                             example, net::SiteType::kAssociated, 0)},
+                   {bar, net::FirstPartySetEntry(
+                             example, net::SiteType::kAssociated, 1)}},
       /*aliases=*/{});
 
   net::PublicSets current_sets(
-      /*entries=*/{{net::SchemefulSite(GURL("https://foo.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://foo.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://bar.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://foo.test")),
-                        net::SiteType::kAssociated, 0)}},
+      /*entries=*/{{foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
+                                                 absl::nullopt)},
+                   {bar, net::FirstPartySetEntry(
+                             foo, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
   // Expected diff: "https://example.test" left FPSs, "https://foo.test" and
@@ -221,32 +184,26 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerLeft) {
       FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
           old_sets, /*old_config=*/net::FirstPartySetsContextConfig(),
           current_sets, /*current_config=*/net::FirstPartySetsContextConfig()),
-      UnorderedElementsAre(SerializesTo("https://example.test"),
-                           SerializesTo("https://foo.test"),
-                           SerializesTo("https://bar.test")));
+      UnorderedElementsAre(example, foo, bar));
 }
 
 TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerMemberRotate) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite foo(GURL("https://foo.test"));
+
   net::PublicSets old_sets(
-      /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://foo.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 0)}},
+      /*entries=*/{{example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)},
+                   {foo, net::FirstPartySetEntry(
+                             example, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
   net::PublicSets current_sets(
-      /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://foo.test")),
-                        net::SiteType::kAssociated, 0)},
-                   {net::SchemefulSite(GURL("https://foo.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://foo.test")),
-                        net::SiteType::kPrimary, absl::nullopt)}},
+      /*entries=*/{{example, net::FirstPartySetEntry(
+                                 foo, net::SiteType::kAssociated, 0)},
+                   {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
+                                                 absl::nullopt)}},
       /*aliases=*/{});
 
   // Expected diff: "https://example.test" and "https://foo.test" changed owner.
@@ -256,21 +213,20 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerMemberRotate) {
       FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
           old_sets, /*old_config=*/net::FirstPartySetsContextConfig(),
           current_sets, /*current_config=*/net::FirstPartySetsContextConfig()),
-      UnorderedElementsAre(SerializesTo("https://example.test"),
-                           SerializesTo("https://foo.test")));
+      UnorderedElementsAre(example, foo));
 }
 
 TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_EmptyOldSets) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+
   // Empty old_sets.
   net::PublicSets current_sets(
-      /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://member1.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 0)}},
+      /*entries=*/{{example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)},
+                   {member1, net::FirstPartySetEntry(
+                                 example, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
   EXPECT_THAT(
@@ -282,16 +238,16 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_EmptyOldSets) {
 }
 
 TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_EmptyCurrentSets) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+
   // Empty current sets.
   net::PublicSets old_sets(
-      /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://member1.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 0)}},
+      /*entries=*/{{example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)},
+                   {member1, net::FirstPartySetEntry(
+                                 example, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
   EXPECT_THAT(FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
@@ -302,13 +258,13 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_EmptyCurrentSets) {
 }
 
 TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicySitesJoined) {
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+
   net::FirstPartySetsContextConfig current_config({
-      {net::SchemefulSite(GURL("https://foo.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary, absl::nullopt)}},
-      {net::SchemefulSite(GURL("https://member2.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated, 0)}},
+      {foo,
+       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
+      {member2, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
   });
 
   // "https://example.test" and "https://member2.test" joined FPSs via
@@ -322,39 +278,32 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicySitesJoined) {
 
 TEST(FirstPartySetsHandlerDatabaseHelper,
      ComputeSetsDiff_PolicyRemovedSitesJoined) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+
   net::PublicSets sets(
-      /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://member1.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 0)}},
+      /*entries=*/{{example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)},
+                   {member1, net::FirstPartySetEntry(
+                                 example, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
   // "https://example.test" was removed from FPSs by policy modifications.
   net::FirstPartySetsContextConfig old_config({
-      {net::SchemefulSite(GURL("https://foo.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary, absl::nullopt)}},
-      {net::SchemefulSite(GURL("https://member1.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated, 0)}},
-      {net::SchemefulSite(GURL("https://example.test")), absl::nullopt},
+      {foo,
+       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
+      {member1, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
+      {example, absl::nullopt},
   });
 
   // "https://example.test" added back to FPSs.
   net::FirstPartySetsContextConfig current_config({
-      {net::SchemefulSite(GURL("https://foo.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary, absl::nullopt)}},
-      {net::SchemefulSite(GURL("https://member1.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated, 0)}},
-      {net::SchemefulSite(GURL("https://example.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated, 0)}},
+      {foo,
+       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
+      {member1, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
+      {example, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
   });
 
   // We don't clear site data upon joining, so the computed diff should be
@@ -366,59 +315,51 @@ TEST(FirstPartySetsHandlerDatabaseHelper,
 }
 
 TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicyMemberLeft) {
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+
   net::FirstPartySetsContextConfig old_config({
-      {net::SchemefulSite(GURL("https://foo.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary, absl::nullopt)}},
-      {net::SchemefulSite(GURL("https://member1.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated, 0)}},
-      {net::SchemefulSite(GURL("https://member2.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated, 0)}},
+      {foo,
+       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
+      {member1, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
+      {member2, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
   });
 
   // "https://member2.test" left FPSs via enterprise policy.
   net::FirstPartySetsContextConfig current_config({
-      {net::SchemefulSite(GURL("https://foo.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary, absl::nullopt)}},
-      {net::SchemefulSite(GURL("https://member1.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated, 0)}},
+      {foo,
+       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
+      {member1, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
   });
 
   EXPECT_THAT(FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
                   /*old_sets=*/net::PublicSets(), old_config,
                   /*current_sets=*/net::PublicSets(), current_config),
-              UnorderedElementsAre(SerializesTo("https://member2.test")));
+              UnorderedElementsAre(member2));
 }
 
 TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicyOwnerLeft) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+
   net::FirstPartySetsContextConfig old_config({
-      {net::SchemefulSite(GURL("https://example.test")),
-       {net::FirstPartySetEntry(
-           net::SchemefulSite(GURL("https://example.test")),
-           net::SiteType::kPrimary, absl::nullopt)}},
-      {net::SchemefulSite(GURL("https://member1.test")),
-       {net::FirstPartySetEntry(
-           net::SchemefulSite(GURL("https://example.test")),
-           net::SiteType::kAssociated, 0)}},
-      {net::SchemefulSite(GURL("https://member2.test")),
-       {net::FirstPartySetEntry(
-           net::SchemefulSite(GURL("https://example.test")),
-           net::SiteType::kAssociated, 0)}},
+      {example,
+       {net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                absl::nullopt)}},
+      {member1,
+       {net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)}},
+      {member2,
+       {net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)}},
   });
 
   net::FirstPartySetsContextConfig current_config({
-      {net::SchemefulSite(GURL("https://member1.test")),
-       {net::FirstPartySetEntry(
-           net::SchemefulSite(GURL("https://member1.test")),
-           net::SiteType::kPrimary, absl::nullopt)}},
-      {net::SchemefulSite(GURL("https://member2.test")),
-       {net::FirstPartySetEntry(
-           net::SchemefulSite(GURL("https://member1.test")),
-           net::SiteType::kAssociated, 0)}},
+      {member1,
+       {net::FirstPartySetEntry(member1, net::SiteType::kPrimary,
+                                absl::nullopt)}},
+      {member2,
+       {net::FirstPartySetEntry(member1, net::SiteType::kAssociated, 0)}},
   });
 
   // Expected diff: "https://example.test" left FPSs, "https://member1.test" and
@@ -429,48 +370,38 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicyOwnerLeft) {
   EXPECT_THAT(FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
                   /*old_sets=*/net::PublicSets(), /*old_config=*/old_config,
                   /*current_sets=*/net::PublicSets(), current_config),
-              UnorderedElementsAre(SerializesTo("https://example.test"),
-                                   SerializesTo("https://member1.test"),
-                                   SerializesTo("https://member2.test")));
+              UnorderedElementsAre(example, member1, member2));
 }
 
 TEST(FirstPartySetsHandlerDatabaseHelper,
      ComputeSetsDiff_PolicyMembersChangeSet) {
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite bar(GURL("https://bar.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+
   net::FirstPartySetsContextConfig old_config({
-      {net::SchemefulSite(GURL("https://foo.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary, absl::nullopt)}},
-      {net::SchemefulSite(GURL("https://member1.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated, 0)}},
-      {net::SchemefulSite(GURL("https://bar.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://bar.test")),
-                                net::SiteType::kPrimary, absl::nullopt)}},
-      {net::SchemefulSite(GURL("https://member2.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://bar.test")),
-                                net::SiteType::kAssociated, 0)}},
+      {foo,
+       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
+      {member1, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
+      {bar,
+       {net::FirstPartySetEntry(bar, net::SiteType::kPrimary, absl::nullopt)}},
+      {member2, {net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)}},
   });
 
   net::FirstPartySetsContextConfig current_config({
-      {net::SchemefulSite(GURL("https://foo.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary, absl::nullopt)}},
-      {net::SchemefulSite(GURL("https://member2.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated, 0)}},
-      {net::SchemefulSite(GURL("https://bar.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://bar.test")),
-                                net::SiteType::kPrimary, absl::nullopt)}},
-      {net::SchemefulSite(GURL("https://member1.test")),
-       {net::FirstPartySetEntry(net::SchemefulSite(GURL("https://bar.test")),
-                                net::SiteType::kAssociated, 0)}},
+      {foo,
+       {net::FirstPartySetEntry(foo, net::SiteType::kPrimary, absl::nullopt)}},
+      {member2, {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
+      {bar,
+       {net::FirstPartySetEntry(bar, net::SiteType::kPrimary, absl::nullopt)}},
+      {member1, {net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)}},
   });
 
   EXPECT_THAT(FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
                   /*old_sets=*/net::PublicSets(), old_config,
                   /*current_sets=*/net::PublicSets(), current_config),
-              UnorderedElementsAre(SerializesTo("https://member1.test"),
-                                   SerializesTo("https://member2.test")));
+              UnorderedElementsAre(member1, member2));
 }
 
 class FirstPartySetsHandlerDatabaseHelperTest : public testing::Test {
@@ -490,42 +421,35 @@ class FirstPartySetsHandlerDatabaseHelperTest : public testing::Test {
 
 TEST_F(FirstPartySetsHandlerDatabaseHelperTest,
        UpdateAndGetSitesToClearForContext) {
-  const std::string& browser_context_id = "b";
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+  net::SchemefulSite member3(GURL("https://member3.test"));
+  const std::string browser_context_id("b");
 
   db_helper_->PersistPublicSets(
       browser_context_id, base::Version("0.0.1"),
       net::PublicSets(
-          /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
+          /*entries=*/{{example,
                         net::FirstPartySetEntry(
-                            net::SchemefulSite(GURL("https://example.test")),
-                            net::SiteType::kPrimary, absl::nullopt)},
-                       {net::SchemefulSite(GURL("https://member1.test")),
-                        net::FirstPartySetEntry(
-                            net::SchemefulSite(GURL("https://example.test")),
-                            net::SiteType::kAssociated, 0)},
-                       {net::SchemefulSite(GURL("https://member3.test")),
-                        net::FirstPartySetEntry(
-                            net::SchemefulSite(GURL("https://example.test")),
-                            net::SiteType::kAssociated, 1)},
-                       {net::SchemefulSite(GURL("https://foo.test")),
-                        net::FirstPartySetEntry(
-                            net::SchemefulSite(GURL("https://foo.test")),
-                            net::SiteType::kPrimary, absl::nullopt)},
-                       {net::SchemefulSite(GURL("https://member2.test")),
-                        net::FirstPartySetEntry(
-                            net::SchemefulSite(GURL("https://foo.test")),
-                            net::SiteType::kAssociated, 0)}},
+                            example, net::SiteType::kPrimary, absl::nullopt)},
+                       {member1, net::FirstPartySetEntry(
+                                     example, net::SiteType::kAssociated, 0)},
+                       {member3, net::FirstPartySetEntry(
+                                     example, net::SiteType::kAssociated, 1)},
+                       {foo, net::FirstPartySetEntry(
+                                 foo, net::SiteType::kPrimary, absl::nullopt)},
+                       {member2, net::FirstPartySetEntry(
+                                     foo, net::SiteType::kAssociated, 0)}},
           /*aliases=*/{}));
 
   net::PublicSets current_sets = net::PublicSets(
-      /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kPrimary, absl::nullopt)},
-                   {net::SchemefulSite(GURL("https://member1.test")),
-                    net::FirstPartySetEntry(
-                        net::SchemefulSite(GURL("https://example.test")),
-                        net::SiteType::kAssociated, 0)}},
+      /*entries=*/{{example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)},
+                   {member1, net::FirstPartySetEntry(
+                                 example, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
   std::vector<net::SchemefulSite> res =
@@ -535,9 +459,7 @@ TEST_F(FirstPartySetsHandlerDatabaseHelperTest,
 
   // Expected diff: "https://foo.test", "https://member2.test" and
   // "https://member3.test" left FPSs.
-  EXPECT_THAT(res, UnorderedElementsAre(SerializesTo("https://foo.test"),
-                                        SerializesTo("https://member2.test"),
-                                        SerializesTo("https://member3.test")));
+  EXPECT_THAT(res, UnorderedElementsAre(foo, member2, member3));
 }
 
 }  // namespace content
