@@ -7,6 +7,7 @@
 #include <queue>
 #include <utility>
 
+#include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/power_monitor/sampling_event_source.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -139,8 +140,15 @@ bool operator!=(const BatteryLevelProvider::BatteryState& lhs,
 }
 
 TEST(BatteryStateSamplerTest, GlobalInstance) {
-  // Can't get an non-existent sampler.
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
+  // Get() DCHECKs on platforms with a battery level provider if it's called
+  // without being initialized
   EXPECT_DCHECK_DEATH(BatteryStateSampler::Get());
+#else
+  // Get() returns null if the sampler doesn't exist on platforms without a
+  // battery level provider.
+  EXPECT_FALSE(BatteryStateSampler::Get());
+#endif
 
   auto battery_level_provider = std::make_unique<TestBatteryLevelProvider>();
   battery_level_provider->PushBatteryState(kTestBatteryState1);
@@ -163,7 +171,11 @@ TEST(BatteryStateSamplerTest, GlobalInstance) {
   battery_state_sampler.reset();
 
   // The sampler no longer exists.
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
   EXPECT_DCHECK_DEATH(BatteryStateSampler::Get());
+#else
+  EXPECT_FALSE(BatteryStateSampler::Get());
+#endif
 }
 
 TEST(BatteryStateSamplerTest, InitialSample) {

@@ -42,7 +42,8 @@ class BASE_EXPORT BatteryStateSampler {
           BatteryLevelProvider::Create());
   ~BatteryStateSampler();
 
-  // Returns the unique instance.
+  // Returns the unique instance, or nullptr on platforms without a
+  // `BatteryLevelProvider` implementation.
   static BatteryStateSampler* Get();
 
   // Adds/removes an observer. `OnBatteryStateSampled` will be immediately

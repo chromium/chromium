@@ -4,9 +4,16 @@
 
 #include "base/power_monitor/battery_level_provider.h"
 
+#include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/ranges/algorithm.h"
 
 namespace base {
+
+#if !BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
+std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
+  return nullptr;
+}
+#endif
 
 BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
     const std::vector<BatteryDetails>& battery_details) {

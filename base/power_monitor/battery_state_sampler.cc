@@ -4,6 +4,8 @@
 
 #include "base/power_monitor/battery_state_sampler.h"
 
+#include "base/power_monitor/power_monitor_buildflags.h"
+
 #if !BUILDFLAG(IS_MAC)
 #include "base/power_monitor/timer_sampling_event_source.h"
 #endif
@@ -46,7 +48,11 @@ BatteryStateSampler::~BatteryStateSampler() {
 
 // static
 BatteryStateSampler* BatteryStateSampler::Get() {
+  // On a platform with a BatteryLevelProvider implementation, the global
+  // instance must be created before accessing it.
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
   DCHECK(g_battery_state_sampler);
+#endif
   return g_battery_state_sampler;
 }
 

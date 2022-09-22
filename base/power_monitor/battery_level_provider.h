@@ -10,15 +10,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if !BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
-#error battery_level_provider.h can only be included on platforms with a \
-       working implementation.
-#endif
 
 namespace base {
 
