@@ -63,6 +63,9 @@ void InterestGroupKAnonymityManager::QueryKAnonymityForInterestGroup(
     }
   }
 
+  if (unhashed_ids_to_query.empty())
+    return;
+
   std::vector<std::string> hashed_ids_to_query;
   for (const auto& input : unhashed_ids_to_query) {
     hashed_ids_to_query.push_back(KAnonHash(input));

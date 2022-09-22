@@ -251,10 +251,7 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetNotSignedIn) {
                 run_loop.Quit();
               })));
   run_loop.Run();
-  CheckHistogramActions(
-      hist, {
-                KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey,
-            });
+  hist.ExpectTotalCount("Chrome.KAnonymityService.TrustTokenGetter.Action", 0);
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest, TryGetAuthTokenFailed) {

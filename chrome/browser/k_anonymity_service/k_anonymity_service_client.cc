@@ -116,7 +116,7 @@ void KAnonymityServiceClient::QuerySets(
     base::OnceCallback<void(std::vector<bool>)> callback) {
   RecordQuerySetAction(KAnonymityServiceQuerySetAction::kQuerySet);
   RecordQuerySetSize(set_ids.size());
-  if (!enable_ohttp_requests_) {
+  if (!enable_ohttp_requests_ || set_ids.empty()) {
     // Trigger a "successful" callback.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
