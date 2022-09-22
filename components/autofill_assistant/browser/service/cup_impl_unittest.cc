@@ -87,13 +87,6 @@ TEST(CUPImplTest, PacksAndSignsGetNoRoundTripByHashRequest) {
   EXPECT_FALSE(actual_user_request.has_cup_data());
 }
 
-TEST(CUPImplTest, IgnoresUnsupportedRequest) {
-  cup::CUPImpl cup{cup::CUPImpl::CreateQuerySigner(),
-                   RpcType::GET_TRIGGER_SCRIPTS};
-
-  EXPECT_EQ(cup.PackAndSignRequest("a request"), "a request");
-}
-
 TEST(CUPImplTest, VerifiesTrustedGetActionsResponse) {
   base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -316,15 +309,6 @@ TEST(CUPImplTest, FailsToParseInvalidProtoResponse) {
   histogram_tester.ExpectUniqueSample(
       "Android.AutofillAssistant.CupRpcVerificationEvent",
       Metrics::CupRpcVerificationEvent::PARSING_FAILED, 1);
-}
-
-TEST(CUPImplTest, IgnoresUnsupportedResponse) {
-  cup::CUPImpl cup{cup::CUPImpl::CreateQuerySigner(),
-                   RpcType::GET_TRIGGER_SCRIPTS};
-
-  absl::optional<std::string> unpacked_response =
-      cup.UnpackResponse("a response");
-  EXPECT_EQ(*unpacked_response, "a response");
 }
 
 TEST(CUPImplTest, OverridesEcdsaPublicKeyWithCLIValue) {

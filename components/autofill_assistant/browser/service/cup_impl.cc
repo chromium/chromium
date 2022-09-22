@@ -79,16 +79,24 @@ std::string CUPImpl::GetPublicKey() {
 }
 
 std::unique_ptr<client_update_protocol::Ecdsa> CUPImpl::CreateQuerySigner() {
-  return client_update_protocol::Ecdsa::Create(GetKeyVersion(), GetPublicKey());
+  const int public_key_version = GetKeyVersion();
+
+  VLOG(1) << "Resolved CUP public key version: '" << public_key_version << "'";
+
+  return client_update_protocol::Ecdsa::Create(public_key_version,
+                                               GetPublicKey());
 }
 
 CUPImpl::CUPImpl(std::unique_ptr<client_update_protocol::Ecdsa> query_signer,
                  RpcType rpc_type)
     : query_signer_{std::move(query_signer)}, rpc_type_{rpc_type} {
   DCHECK(query_signer_);
+  VLOG(2) << "CUPImpl instance created";
 }
 
-CUPImpl::~CUPImpl() = default;
+CUPImpl::~CUPImpl() {
+  VLOG(2) << "CUPImpl instance destroyed";
+}
 
 std::string CUPImpl::PackAndSignRequest(const std::string& original_request) {
   switch (rpc_type_) {
@@ -98,7 +106,9 @@ std::string CUPImpl::PackAndSignRequest(const std::string& original_request) {
     case RpcType::GET_NO_ROUNDTRIP_SCRIPTS_BY_HASH_PREFIX:
       return InternalPackAndSignRequest<
           GetNoRoundTripScriptsByHashPrefixRequestProto>(original_request);
-    default:  // Safety Net for unsupported RPC types
+    default:
+      LOG(DFATAL) << "CUPImpl::PackAndSignRequest was called for "
+                     "unsupported type. No packing was performed.";
       return original_request;
   }
 }
@@ -111,7 +121,9 @@ absl::optional<std::string> CUPImpl::UnpackResponse(
     case RpcType::GET_NO_ROUNDTRIP_SCRIPTS_BY_HASH_PREFIX:
       return InternalUnpackResponse<
           GetNoRoundTripScriptsByHashPrefixResponseProto>(original_response);
-    default:  // Safety Net for unsupported RPC types
+    default:
+      LOG(DFATAL) << "CUPImpl::UnpackResponse was called for "
+                     "unsupported type. No unpacking was performed.";
       return original_response;
   }
 }
@@ -160,6 +172,7 @@ absl::optional<std::string> CUPImpl::InternalUnpackResponse(
     return absl::nullopt;
   }
 
+  VLOG(1) << "CUP RPC response verification succeeded";
   Metrics::RecordCupRpcVerificationEvent(
       Metrics::CupRpcVerificationEvent::VERIFICATION_SUCCEEDED);
   return serialized_response;
