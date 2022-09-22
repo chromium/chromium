@@ -693,7 +693,19 @@ void CertBuilder::SetSignatureAlgorithm(
 
 void CertBuilder::SetSignatureAlgorithmTLV(
     base::StringPiece signature_algorithm_tlv) {
-  signature_algorithm_tlv_ = std::string(signature_algorithm_tlv);
+  SetOuterSignatureAlgorithmTLV(signature_algorithm_tlv);
+  SetTBSSignatureAlgorithmTLV(signature_algorithm_tlv);
+}
+
+void CertBuilder::SetOuterSignatureAlgorithmTLV(
+    base::StringPiece signature_algorithm_tlv) {
+  outer_signature_algorithm_tlv_ = std::string(signature_algorithm_tlv);
+  Invalidate();
+}
+
+void CertBuilder::SetTBSSignatureAlgorithmTLV(
+    base::StringPiece signature_algorithm_tlv) {
+  tbs_signature_algorithm_tlv_ = std::string(signature_algorithm_tlv);
   Invalidate();
 }
 
@@ -989,14 +1001,20 @@ void CertBuilder::GenerateCertificate() {
     signature_algorithm = DefaultSignatureAlgorithmForKey(issuer_->GetKey());
   ASSERT_TRUE(signature_algorithm.has_value());
 
-  std::string signature_algorithm_tlv = signature_algorithm_tlv_;
-  if (signature_algorithm_tlv.empty()) {
-    signature_algorithm_tlv = SignatureAlgorithmToDer(*signature_algorithm);
-  }
+  std::string signature_algorithm_tlv =
+      !outer_signature_algorithm_tlv_.empty()
+          ? outer_signature_algorithm_tlv_
+          : SignatureAlgorithmToDer(*signature_algorithm);
   ASSERT_FALSE(signature_algorithm_tlv.empty());
 
+  std::string tbs_signature_algorithm_tlv =
+      !tbs_signature_algorithm_tlv_.empty()
+          ? tbs_signature_algorithm_tlv_
+          : SignatureAlgorithmToDer(*signature_algorithm);
+  ASSERT_FALSE(tbs_signature_algorithm_tlv.empty());
+
   std::string tbs_cert;
-  BuildTBSCertificate(signature_algorithm_tlv, &tbs_cert);
+  BuildTBSCertificate(tbs_signature_algorithm_tlv, &tbs_cert);
 
   // Sign the TBSCertificate and write the entire certificate.
   bssl::ScopedCBB cbb;

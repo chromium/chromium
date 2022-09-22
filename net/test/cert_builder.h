@@ -188,7 +188,8 @@ class CertBuilder {
   // algorithm will be used base on the signing key type.
   void SetSignatureAlgorithm(SignatureAlgorithm signature_algorithm);
 
-  // Sets the signature algorithm TLV to encode in the generated certificate.
+  // Sets both signature AlgorithmIdentifier TLVs to encode in the generated
+  // certificate.
   // This only affects the bytes written to the output - it does not affect what
   // algorithm is actually used to perform the signature. To set the signature
   // algorithm used to generate the certificate's signature, use
@@ -196,6 +197,14 @@ class CertBuilder {
   // algorithm written to the output will be chosen to match the signature
   // algorithm used to sign the certificate.
   void SetSignatureAlgorithmTLV(base::StringPiece signature_algorithm_tlv);
+
+  // Set only the outer Certificate signatureAlgorithm TLV. See
+  // SetSignatureAlgorithmTLV comment for general notes.
+  void SetOuterSignatureAlgorithmTLV(base::StringPiece signature_algorithm_tlv);
+
+  // Set only the tbsCertificate signature TLV. See SetSignatureAlgorithmTLV
+  // comment for general notes.
+  void SetTBSSignatureAlgorithmTLV(base::StringPiece signature_algorithm_tlv);
 
   void SetRandomSerialNumber();
 
@@ -299,7 +308,8 @@ class CertBuilder {
   std::string validity_tlv_;
   std::string subject_tlv_;
   absl::optional<SignatureAlgorithm> signature_algorithm_;
-  std::string signature_algorithm_tlv_;
+  std::string outer_signature_algorithm_tlv_;
+  std::string tbs_signature_algorithm_tlv_;
   uint64_t serial_number_ = 0;
   int default_pkey_id_ = EVP_PKEY_EC;
 

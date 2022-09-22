@@ -147,12 +147,16 @@ bool VerifySignatureAlgorithmsMatch(const ParsedCertificate& cert,
   // TODO(eroman): Add a unit-test that exercises this case.
   absl::optional<SignatureAlgorithm> alg1 =
       ParseSignatureAlgorithm(alg1_tlv, errors);
-  if (!alg1)
+  if (!alg1) {
+    errors->AddError(cert_errors::kUnacceptableSignatureAlgorithm);
     return false;
+  }
   absl::optional<SignatureAlgorithm> alg2 =
       ParseSignatureAlgorithm(alg2_tlv, errors);
-  if (!alg2)
+  if (!alg2) {
+    errors->AddError(cert_errors::kUnacceptableSignatureAlgorithm);
     return false;
+  }
 
   if (*alg1 == *alg2) {
     errors->AddWarning(
@@ -802,8 +806,10 @@ void PathVerifier::BasicCertificateProcessing(
   // Check that the signature algorithms in Certificate vs TBSCertificate
   // match. This isn't part of RFC 5280 section 6.1.3, but is mandated by
   // sections 4.1.1.2 and 4.1.2.3.
-  if (!VerifySignatureAlgorithmsMatch(cert, errors))
+  if (!VerifySignatureAlgorithmsMatch(cert, errors)) {
+    CHECK(errors->ContainsAnyErrorWithSeverity(CertError::SEVERITY_HIGH));
     *shortcircuit_chain_validation = true;
+  }
 
   // Check whether this signature algorithm is allowed.
   if (!cert.signature_algorithm().has_value() ||
@@ -1283,7 +1289,7 @@ void PathVerifier::Run(
         // Chains that don't start from a trusted root should short-circuit the
         // rest of the verification, as accumulating more errors from untrusted
         // certificates would not be meaningful.
-        DCHECK(cert_errors->ContainsAnyErrorWithSeverity(
+        CHECK(cert_errors->ContainsAnyErrorWithSeverity(
             CertError::SEVERITY_HIGH));
         return;
       }
@@ -1304,7 +1310,7 @@ void PathVerifier::Run(
       // Signature errors should short-circuit the rest of the verification, as
       // accumulating more errors from untrusted certificates would not be
       // meaningful.
-      DCHECK(
+      CHECK(
           cert_errors->ContainsAnyErrorWithSeverity(CertError::SEVERITY_HIGH));
       return;
     }
