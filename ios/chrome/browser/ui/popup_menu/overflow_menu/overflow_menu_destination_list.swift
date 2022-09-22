@@ -79,7 +79,9 @@ struct OverflowMenuDestinationList: View {
       }
     }
     .animation(nil)
-    .background(uiConfiguration.highlightDestinationsRow ? Color.blueHalo : Color.clear)
+    .background(
+      uiConfiguration.highlightDestinationsRow ? Color("destination_highlight_color") : Color.clear
+    )
     .animation(.linear(duration: kMaterialDuration3))
     .onPreferenceChange(ScrollViewLeadingOffset.self) { newOffset in
       // Only alert the handler if scroll tracking has started.

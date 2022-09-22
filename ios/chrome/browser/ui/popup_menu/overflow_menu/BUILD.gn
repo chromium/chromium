@@ -22,6 +22,7 @@ source_set("overflow_menu") {
     ":feature_flags",
     ":overflow_menu_constants",
     ":overflow_menu_swift",
+    "resources:destination_highlight_color",
     "resources:overflow_menu_action_bookmark",
     "resources:overflow_menu_action_clear_browsing_data",
     "resources:overflow_menu_action_edit_bookmark",

@@ -4,6 +4,10 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+colorset("destination_highlight_color") {
+  sources = [ "destination_highlight_color.colorset/Contents.json" ]
+}
+
 imageset("overflow_menu_action_bookmark") {
   sources = [
     "overflow_menu_action_bookmark.imageset/Contents.json",
