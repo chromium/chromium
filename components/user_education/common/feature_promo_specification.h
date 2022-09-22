@@ -220,6 +220,11 @@ class FeaturePromoSpecification {
   CustomActionCallback custom_action_callback() const {
     return custom_action_callback_;
   }
+  FeaturePromoSpecification& SetCustomActionDismissText(
+      int custom_action_dismiss_string_id);
+  int custom_action_dismiss_string_id() const {
+    return custom_action_dismiss_string_id_;
+  }
 
  private:
   static constexpr HelpBubbleArrow kDefaultBubbleArrow =
@@ -283,6 +288,9 @@ class FeaturePromoSpecification {
 
   // Whether the custom action is the default button.
   bool custom_action_is_default_ = false;
+
+  // Dismiss string ID for the custom action promo.
+  int custom_action_dismiss_string_id_;
 };
 
 }  // namespace user_education

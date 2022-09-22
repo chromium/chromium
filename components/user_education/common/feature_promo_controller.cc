@@ -391,7 +391,8 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
       CHECK(spec.feature());
       create_params.buttons = CreateCustomActionButtons(
           *spec.feature(), spec.custom_action_caption(),
-          spec.custom_action_callback(), spec.custom_action_is_default());
+          spec.custom_action_callback(), spec.custom_action_is_default(),
+          spec.custom_action_dismiss_string_id());
       break;
     case FeaturePromoSpecification::PromoType::kUnspecifiied:
     case FeaturePromoSpecification::PromoType::kToast:
@@ -562,7 +563,8 @@ FeaturePromoControllerCommon::CreateCustomActionButtons(
     const base::Feature& feature,
     const std::u16string& custom_action_caption,
     FeaturePromoSpecification::CustomActionCallback custom_action_callback,
-    bool custom_action_is_default) {
+    bool custom_action_is_default,
+    int custom_action_dismiss_string_id) {
   std::vector<HelpBubbleButtonParams> buttons;
   CHECK(!custom_action_callback.is_null());
 
@@ -576,7 +578,8 @@ FeaturePromoControllerCommon::CreateCustomActionButtons(
   buttons.push_back(std::move(action_button));
 
   HelpBubbleButtonParams dismiss_button;
-  dismiss_button.text = l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
+  dismiss_button.text =
+      l10n_util::GetStringUTF16(custom_action_dismiss_string_id);
   dismiss_button.is_default = !custom_action_is_default;
   dismiss_button.callback = base::BindOnce(
       &FeaturePromoControllerCommon::OnHelpBubbleDismissed,

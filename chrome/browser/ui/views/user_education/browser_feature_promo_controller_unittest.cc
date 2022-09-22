@@ -28,6 +28,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo_registry.h"
@@ -155,6 +156,7 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
             base::Unretained(this),
             base::Unretained(&kDefaultCustomActionIPHFeature)));
     default_custom.SetCustomActionIsDefault(true);
+    default_custom.SetCustomActionDismissText(IDS_NOT_NOW);
     registry()->RegisterFeature(std::move(default_custom));
 
     // Make sure the browser view is visible for the tests.
@@ -1006,6 +1008,13 @@ TEST_F(BrowserFeaturePromoControllerTest, PerformsCustomActionAsDefault) {
   // Simulate clicking the custom action button.
   auto* const bubble = GetPromoBubble();
   ASSERT_TRUE(bubble);
+
+  auto* const button = bubble->GetNonDefaultButtonForTesting(0);
+  ASSERT_TRUE(button);
+
+  const std::u16string& text = button->GetText();
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NOT_NOW), text);
+
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
   views::test::InteractionTestUtilSimulatorViews::PressButton(
       bubble->GetDefaultButtonForTesting());

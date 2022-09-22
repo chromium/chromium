@@ -330,6 +330,7 @@ void MaybeRegisterChromeFeaturePromos(
                                   true);
               }))
           .SetCustomActionIsDefault(true)
+          .SetCustomActionDismissText(IDS_NOT_NOW)
           .SetBubbleTitleText(IDS_HIGH_EFFICIENCY_MODE_PROMO_TITLE)));
 }
 

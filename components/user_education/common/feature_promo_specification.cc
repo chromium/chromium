@@ -8,6 +8,7 @@
 
 #include "base/callback_forward.h"
 #include "base/feature_list.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -83,7 +84,8 @@ FeaturePromoSpecification::FeaturePromoSpecification(
       promo_type_(promo_type),
       anchor_element_id_(anchor_element_id),
       bubble_body_string_id_(bubble_body_string_id),
-      demo_page_info_(DemoPageInfo(feature ? feature->name : std::string())) {
+      demo_page_info_(DemoPageInfo(feature ? feature->name : std::string())),
+      custom_action_dismiss_string_id_(IDS_PROMO_DISMISS_BUTTON) {
   DCHECK_NE(promo_type, PromoType::kUnspecifiied);
   DCHECK(bubble_body_string_id_);
 }
@@ -195,6 +197,14 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetCustomActionIsDefault(
     bool custom_action_is_default) {
   DCHECK(!custom_action_callback_.is_null());
   custom_action_is_default_ = custom_action_is_default;
+  return *this;
+}
+
+FeaturePromoSpecification&
+FeaturePromoSpecification::SetCustomActionDismissText(
+    int custom_action_dismiss_string_id) {
+  DCHECK(promo_type_ == PromoType::kCustomAction);
+  custom_action_dismiss_string_id_ = custom_action_dismiss_string_id;
   return *this;
 }
 

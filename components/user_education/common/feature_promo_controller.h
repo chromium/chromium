@@ -382,7 +382,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       const base::Feature& feature,
       const std::u16string& custom_action_caption,
       FeaturePromoSpecification::CustomActionCallback custom_action_callback,
-      bool custom_action_is_default);
+      bool custom_action_is_default,
+      int custom_action_dismiss_string_id);
 
   // The feature promo registry to use.
   const raw_ptr<FeaturePromoRegistry> registry_;
