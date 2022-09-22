@@ -152,6 +152,8 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
     mojo::Remote<mojom::MediaStatusObserver> media_status_observer_;
   };
 
+  using Presentations = std::map<std::string, Presentation>;
+
   // Sends the current list of routes to each query in |route_queries_|.
   void NotifyRouteObservers() const;
 
@@ -193,7 +195,7 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
   raw_ptr<Profile> profile_;
 
   // Map from presentation IDs to active presentations managed by this provider.
-  std::map<std::string, Presentation> presentations_;
+  Presentations presentations_;
 
   // A set of MediaSource IDs associated with queries for MediaSink updates.
   base::flat_set<std::string> sink_queries_;

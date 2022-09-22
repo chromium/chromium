@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -130,14 +131,13 @@ std::list<CaptureAccessHandlerBase::Session>::iterator
 CaptureAccessHandlerBase::FindSession(int render_process_id,
                                       int render_frame_id,
                                       int page_request_id) {
-  return std::find_if(sessions_.begin(), sessions_.end(),
-                      [render_process_id, render_frame_id,
-                       page_request_id](const Session& session) {
-                        return session.request_process_id ==
-                                   render_process_id &&
-                               session.request_frame_id == render_frame_id &&
-                               session.page_request_id == page_request_id;
-                      });
+  return base::ranges::find_if(
+      sessions_, [render_process_id, render_frame_id,
+                  page_request_id](const Session& session) {
+        return session.request_process_id == render_process_id &&
+               session.request_frame_id == render_frame_id &&
+               session.page_request_id == page_request_id;
+      });
 }
 
 void CaptureAccessHandlerBase::UpdateMediaRequestState(

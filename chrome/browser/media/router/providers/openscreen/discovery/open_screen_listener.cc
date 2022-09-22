@@ -4,8 +4,9 @@
 
 #include "chrome/browser/media/router/providers/openscreen/discovery/open_screen_listener.h"
 
-#include <algorithm>
 #include <utility>
+
+#include "base/ranges/algorithm.h"
 
 using openscreen::osp::ServiceInfo;
 
@@ -130,10 +131,8 @@ void OpenScreenListener::OnDeviceChanged(
       observer->OnReceiverAdded(ref);
     }
   } else {
-    auto it = std::find_if(receivers_.begin(), receivers_.end(),
-                           [&service_info](const ServiceInfo& info) {
-                             return info.service_id == service_info.service_id;
-                           });
+    auto it = base::ranges::find(receivers_, service_info.service_id,
+                                 &ServiceInfo::service_id);
 
     *it = std::move(service_info);
 
@@ -150,10 +149,8 @@ void OpenScreenListener::OnDeviceRemoved(const std::string& service_type,
     return;
   }
 
-  const auto& removed_it = std::find_if(
-      receivers_.begin(), receivers_.end(), [&service_name](ServiceInfo& info) {
-        return info.service_id == service_name;
-      });
+  const auto& removed_it =
+      base::ranges::find(receivers_, service_name, &ServiceInfo::service_id);
 
   // Move the receiver we want to remove to the end, so we don't have to shift.
   DCHECK(removed_it != receivers_.end());

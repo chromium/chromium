@@ -4,7 +4,6 @@
 
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/i18n/number_formatting.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver_factory.h"
@@ -254,12 +254,11 @@ void WiredDisplayMediaRouteProvider::OnDisplayRemoved(
     const Display& old_display) {
   const std::string sink_id =
       WiredDisplayMediaRouteProvider::GetSinkIdForDisplay(old_display);
-  auto it = std::find_if(
-      presentations_.begin(), presentations_.end(),
-      [&sink_id](
-          const std::pair<const std::string, Presentation>& presentation) {
-        return presentation.second.route().media_sink_id() == sink_id;
-      });
+  auto it =
+      base::ranges::find(presentations_, sink_id,
+                         [](const Presentations::value_type& presentation) {
+                           return presentation.second.route().media_sink_id();
+                         });
   if (it != presentations_.end())
     it->second.receiver()->ExitFullscreen();
   NotifySinkObservers();
@@ -414,10 +413,7 @@ void WiredDisplayMediaRouteProvider::TerminatePresentationsOnDisplay(
 absl::optional<Display> WiredDisplayMediaRouteProvider::GetDisplayBySinkId(
     const std::string& sink_id) const {
   std::vector<Display> displays = GetAllDisplays();
-  auto it = std::find_if(displays.begin(), displays.end(),
-                         [&sink_id](const Display& display) {
-                           return GetSinkIdForDisplay(display) == sink_id;
-                         });
+  auto it = base::ranges::find(displays, sink_id, &GetSinkIdForDisplay);
   return it == displays.end() ? absl::nullopt
                               : absl::make_optional<Display>(std::move(*it));
 }

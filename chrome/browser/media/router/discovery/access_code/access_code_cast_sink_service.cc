@@ -4,9 +4,8 @@
 
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 
-#include <algorithm>
-
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -393,10 +392,8 @@ absl::optional<const MediaRoute> AccessCodeCastSinkService::GetActiveRoute(
   if (!media_router_)
     return absl::nullopt;
   auto routes = media_router_->GetCurrentRoutes();
-  auto route_it = std::find_if(routes.begin(), routes.end(),
-                               [&sink_id](const MediaRoute& route) {
-                                 return route.media_sink_id() == sink_id;
-                               });
+  auto route_it =
+      base::ranges::find(routes, sink_id, &MediaRoute::media_sink_id);
   if (route_it == routes.end())
     return absl::nullopt;
   return *route_it;

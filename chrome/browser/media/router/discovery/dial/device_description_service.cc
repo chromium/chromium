@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/discovery/dial/device_description_service.h"
-#include "base/bind.h"
-#include "base/containers/cxx20_erase.h"
 
 #include <map>
 #include <memory>
@@ -15,7 +13,10 @@
 #include <sstream>
 #endif
 
+#include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/discovery/dial/device_description_fetcher.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_device_description_parser.h"
 #include "net/base/ip_address.h"
@@ -81,10 +82,7 @@ void DeviceDescriptionService::GetDeviceDescriptions(
   for (auto& fetcher_it : device_description_fetcher_map_) {
     std::string device_label = fetcher_it.first;
     const auto& device_it =
-        std::find_if(devices.begin(), devices.end(),
-                     [&device_label](const DialDeviceData& device_data) {
-                       return device_data.label() == device_label;
-                     });
+        base::ranges::find(devices, device_label, &DialDeviceData::label);
     if (device_it == devices.end() ||
         device_it->device_description_url() ==
             fetcher_it.second->device_description_url()) {

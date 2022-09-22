@@ -9,25 +9,12 @@
 
 #include "base/check.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"  // nogncheck
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_device_lister.h"
 #include "chrome/common/buildflags.h"
 
 namespace media_router {
-
-namespace {
-// Predicate to test if two discovered services have the same service_name.
-class IsSameServiceName {
- public:
-  explicit IsSameServiceName(const DnsSdService& service) : service_(service) {}
-  bool operator()(const DnsSdService& other) const {
-    return service_.service_name == other.service_name;
-  }
-
- private:
-  const DnsSdService& service_;
-};
-}  // namespace
 
 DnsSdRegistry::ServiceTypeData::ServiceTypeData(
     std::unique_ptr<DnsSdDeviceLister> lister)
@@ -51,8 +38,8 @@ int DnsSdRegistry::ServiceTypeData::GetListenerCount() {
 bool DnsSdRegistry::ServiceTypeData::UpdateService(
     bool added,
     const DnsSdService& service) {
-  auto it = std::find_if(service_list_.begin(), service_list_.end(),
-                         IsSameServiceName(service));
+  auto it = base::ranges::find(service_list_, service.service_name,
+                               &DnsSdService::service_name);
   // Set to true when a service is updated in or added to the registry.
   bool updated_or_added = added;
   bool known = (it != service_list_.end());

@@ -10,6 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1184,10 +1185,9 @@ TEST_P(CastMediaSinkServiceImplTest, CacheDialDiscoveredSinks) {
 
   // CastMediaSinkServiceImpl generates a Cast sink based on |sink2_dial|.
   const auto& sinks = media_sink_service_impl_.GetSinks();
-  auto sink2_it = std::find_if(
-      sinks.begin(), sinks.end(), [&ip_endpoint2](const auto& entry) {
-        return entry.second.cast_data().ip_endpoint == ip_endpoint2;
-      });
+  auto sink2_it = base::ranges::find(
+      sinks, ip_endpoint2,
+      [](const auto& entry) { return entry.second.cast_data().ip_endpoint; });
   ASSERT_TRUE(sink2_it != sinks.end());
   MediaSinkInternal sink2_cast_from_dial = sink2_it->second;
 
