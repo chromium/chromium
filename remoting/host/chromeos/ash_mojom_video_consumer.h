@@ -9,10 +9,11 @@
 
 #include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
-
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace remoting {
+using gfx::Point;
 using viz::mojom::FrameSinkVideoConsumerFrameCallbacks;
 
 // This class implements the FrameSinkVideoConsumer interface, binds with a
@@ -27,7 +28,7 @@ class AshMojomVideoConsumer : public viz::mojom::FrameSinkVideoConsumer {
 
   mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumer> Bind();
 
-  std::unique_ptr<webrtc::DesktopFrame> GetLatestFrame();
+  std::unique_ptr<webrtc::DesktopFrame> GetLatestFrame(Point origin);
 
  private:
   // A single frame received from the FrameSinkVideoCapturer.

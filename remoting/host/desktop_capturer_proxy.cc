@@ -90,7 +90,8 @@ void DesktopCapturerProxy::Core::CreateCapturer(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(
           remoting::features::kEnableFrameSinkDesktopCapturerInCrd)) {
-    capturer_ = std::make_unique<FrameSinkDesktopCapturer>();
+    capturer_ = std::make_unique<webrtc::DesktopCapturerDifferWrapper>(
+        std::make_unique<FrameSinkDesktopCapturer>());
   } else {
     capturer_ = std::make_unique<webrtc::DesktopCapturerDifferWrapper>(
         std::make_unique<AuraDesktopCapturer>());

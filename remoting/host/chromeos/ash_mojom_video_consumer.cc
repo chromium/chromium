@@ -28,7 +28,7 @@ class AshMojomVideoConsumer::Frame {
   Frame& operator=(Frame&&);
   ~Frame();
 
-  std::unique_ptr<webrtc::DesktopFrame> ToDesktopFrame() const;
+  std::unique_ptr<webrtc::DesktopFrame> ToDesktopFrame(gfx::Point origin) const;
 
  private:
   std::unique_ptr<SkBitmap> CreateSkBitmap() const;
@@ -74,26 +74,30 @@ std::unique_ptr<SkBitmap> AshMojomVideoConsumer::Frame::CreateSkBitmap() const {
 }
 
 std::unique_ptr<webrtc::DesktopFrame>
-AshMojomVideoConsumer::Frame::ToDesktopFrame() const {
+AshMojomVideoConsumer::Frame::ToDesktopFrame(gfx::Point origin) const {
   if (!IsValidFrame()) {
     return nullptr;
   }
-  int dpi = GetDpi();
+
   std::unique_ptr<webrtc::DesktopFrame> frame(
       SkiaBitmapDesktopFrame::Create(CreateSkBitmap()));
-
-  frame->set_dpi(webrtc::DesktopVector(dpi, dpi));
+  frame->set_top_left(webrtc::DesktopVector(origin.x(), origin.y()));
+  frame->set_dpi(webrtc::DesktopVector(GetDpi(), GetDpi()));
   frame->mutable_updated_region()->SetRect(GetUpdatedRect());
 
   return frame;
 }
 
 webrtc::DesktopRect AshMojomVideoConsumer::Frame::GetUpdatedRect() const {
-  auto updated_rect =
-      info_->metadata.capture_update_rect.value_or(content_rect_);
-  return webrtc::DesktopRect::MakeLTRB(updated_rect.x(), updated_rect.y(),
-                                       updated_rect.right(),
-                                       updated_rect.bottom());
+  // We must always pretend the entire frame was updated, even though the
+  // metadata has a |capture_update_rect| field. This is because the field
+  // stores the changes from the previous frame, but we can't make sure if the
+  // previous frame was delivered to webrtc. Hence we must mark the entire frame
+  // as updated, as otherwise WebRTC might not know about the areas updated in
+  // the previous frame.
+  return webrtc::DesktopRect::MakeLTRB(content_rect_.x(), content_rect_.y(),
+                                       content_rect_.right(),
+                                       content_rect_.bottom());
 }
 
 int AshMojomVideoConsumer::Frame::GetDpi() const {
@@ -135,12 +139,13 @@ AshMojomVideoConsumer::Bind() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
-std::unique_ptr<webrtc::DesktopFrame> AshMojomVideoConsumer::GetLatestFrame() {
+std::unique_ptr<webrtc::DesktopFrame> AshMojomVideoConsumer::GetLatestFrame(
+    gfx::Point origin) {
   if (!latest_frame_) {
     return nullptr;
   }
 
-  return latest_frame_->ToDesktopFrame();
+  return latest_frame_->ToDesktopFrame(origin);
 }
 
 void AshMojomVideoConsumer::OnFrameCaptured(

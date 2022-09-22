@@ -71,8 +71,9 @@ void ScopedFakeAshProxy::RemoveDisplay(DisplayId id) {
       displays_.erase(it);
       return;
     }
-    NOTREACHED();
   }
+
+  NOTREACHED();
 }
 
 ScreenshotRequest ScopedFakeAshProxy::WaitForScreenshotRequest() {

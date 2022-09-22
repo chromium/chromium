@@ -74,8 +74,14 @@ void FrameSinkDesktopCapturer::BindRemote(
 }
 
 void FrameSinkDesktopCapturer::CaptureFrame() {
+  const display::Display* source = ash_.GetDisplayForId(source_display_id_);
+  if (!source) {
+    callback_->OnCaptureResult(Result::ERROR_TEMPORARY, nullptr);
+    return;
+  }
+
   std::unique_ptr<webrtc::DesktopFrame> frame =
-      video_consumer_.GetLatestFrame();
+      video_consumer_.GetLatestFrame(source->bounds().origin());
 
   if (!frame) {
     callback_->OnCaptureResult(Result::ERROR_TEMPORARY, nullptr);
@@ -86,12 +92,21 @@ void FrameSinkDesktopCapturer::CaptureFrame() {
 }
 
 bool FrameSinkDesktopCapturer::GetSourceList(SourceList* sources) {
+  NOTREACHED();
   return false;
 }
 
 bool FrameSinkDesktopCapturer::SelectSource(SourceId id) {
-  // TODO(http://b/244435174): Add multimonitor Support
-  return false;
+  if (!ash_.GetDisplayForId(id)) {
+    return false;
+  }
+
+  source_display_id_ = id;
+
+  viz::FrameSinkId frame_sink_id = ash_.GetFrameSinkId(source_display_id_);
+  video_capturer_->ChangeTarget(viz::VideoCaptureTarget(frame_sink_id),
+                                /*crop_version=*/0);
+  return true;
 }
 
 const display::Display* FrameSinkDesktopCapturer::GetSourceDisplay() {

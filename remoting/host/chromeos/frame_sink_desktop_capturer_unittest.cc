@@ -44,6 +44,7 @@ using media::VideoCaptureFeedback;
 using media::VideoFrame;
 using media::VideoPixelFormat;
 using testing::Eq;
+using testing::IsNull;
 using webrtc::DesktopCapturer;
 using webrtc::DesktopFrame;
 using webrtc::DesktopRect;
@@ -53,6 +54,8 @@ using webrtc::DesktopSize;
 namespace {
 constexpr int kAnyWidth = 800;
 constexpr int kAnyHeight = 600;
+
+const DisplayId kPrimarySourceId = 12345678;
 constexpr int kDesignLimitMaxFrames = 20;
 constexpr int kFramePoolCapacity = kDesignLimitMaxFrames + 1;
 
@@ -253,7 +256,7 @@ class FrameSinkDesktopCapturerTest : public testing::Test {
 
   void SetUp() override {
     ash_proxy().SetVideoCapturerReceiver(&video_capturer_.receiver_);
-    ash_proxy().AddPrimaryDisplay();
+    ash_proxy().AddPrimaryDisplay(kPrimarySourceId);
   }
 
   void StartCapturerForTesting() {
@@ -379,21 +382,18 @@ TEST_F(FrameSinkDesktopCapturerTest, ShouldSetDpiOfFrame) {
   EXPECT_THAT(result.frame->dpi().y(), Eq(dpi));
 }
 
-TEST_F(FrameSinkDesktopCapturerTest, ShouldSetUpdatedRegionOfFrame) {
+TEST_F(FrameSinkDesktopCapturerTest, ShouldSetUpdatedRegionToWholeFrame) {
   StartCapturerForTesting();
 
-  int left = 50, top = 50, width = 250, height = 150;
-
-  auto updated_rect = Rect(left, top, height, width);
-  video_capturer_.SendFrame(params().WithUpdatedRegion(updated_rect));
+  Rect updated_rect{50, 50, 250, 150};
+  video_capturer_.SendFrame(
+      params().WithSize(Size(800, 600)).WithUpdatedRegion(updated_rect));
   CaptureResult result = CaptureFrame();
 
-  auto updated_region = result.frame->updated_region();
-  DesktopRegion desktop_region{
-      DesktopRect::MakeLTRB(updated_rect.x(), updated_rect.y(),
-                            updated_rect.right(), updated_rect.bottom())};
+  auto expected_updated_region = result.frame->updated_region();
+  DesktopRegion desktop_region{DesktopRect::MakeLTRB(0, 0, 800, 600)};
   // No method to get the dimensions of updated region.
-  EXPECT_TRUE(updated_region.Equals(desktop_region));
+  EXPECT_TRUE(expected_updated_region.Equals(desktop_region));
 }
 
 TEST_F(FrameSinkDesktopCapturerTest, ShouldSetDisplayBounds) {
@@ -407,6 +407,48 @@ TEST_F(FrameSinkDesktopCapturerTest, ShouldSetDisplayBounds) {
   auto frame_rect = result.frame->rect();
   EXPECT_EQ(frame_rect.width(), width);
   EXPECT_EQ(frame_rect.height(), height);
+}
+
+TEST_F(FrameSinkDesktopCapturerTest, ShouldUpdateSourceOnDisplayChange) {
+  DisplayId new_display_id = 2222;
+  ash_proxy().AddDisplayWithId(new_display_id);
+
+  StartCapturerForTesting();
+  const absl::optional<viz::VideoCaptureTarget> expected_target(
+      ash_proxy().GetFrameSinkId(new_display_id));
+
+  EXPECT_CALL(video_capturer_, ChangeTarget(expected_target, 0));
+  bool source_updated = capturer_.SelectSource(2222);
+  EXPECT_TRUE(source_updated);
+  FlushForTesting();
+  EXPECT_EQ(capturer_.GetSourceDisplay()->id(), new_display_id);
+}
+
+TEST_F(FrameSinkDesktopCapturerTest, ShouldFailToSwitchToAnInvalidDisplay) {
+  StartCapturerForTesting();
+  const DisplayId previous_source_id = capturer_.GetSourceDisplay()->id();
+
+  bool source_updated = capturer_.SelectSource(222);
+
+  EXPECT_FALSE(source_updated);
+  EXPECT_EQ(capturer_.GetSourceDisplay()->id(), previous_source_id);
+}
+
+TEST_F(FrameSinkDesktopCapturerTest,
+       ShouldReturnTemporaryErrorIfDisplayNotAvailable) {
+  StartCapturerForTesting();
+  ash_proxy().AddDisplayWithId(222);
+  bool source_updated = capturer_.SelectSource(222);
+
+  ash_proxy().RemoveDisplay(222);
+
+  video_capturer_.SendFrame();
+  CaptureResult result = CaptureFrame();
+
+  EXPECT_TRUE(source_updated);
+  EXPECT_THAT(result.result,
+              Eq(webrtc::DesktopCapturer::Result::ERROR_TEMPORARY));
+  EXPECT_THAT(result.frame, IsNull());
 }
 
 }  // namespace remoting
