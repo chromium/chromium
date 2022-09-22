@@ -272,19 +272,27 @@ suite('SidePanelBookmarksListTest', () => {
         window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY]);
   });
 
-  test('ShoppingListVisibility', () => {
+  test('ShoppingListVisibility', async () => {
     checkShoppingListVisibility(bookmarksList, true);
     assertEquals(
         1,
         metrics.count('Commerce.PriceTracking.SidePanel.TrackedProductsShown'));
 
     shoppingListApi.setProducts([]);
-    const bookmarksListNoShopping = document.createElement('bookmarks-list');
-    document.body.appendChild(bookmarksListNoShopping);
+    const newbookmarksList = document.createElement('bookmarks-list');
+    document.body.appendChild(newbookmarksList);
 
-    checkShoppingListVisibility(bookmarksListNoShopping, false);
+    checkShoppingListVisibility(newbookmarksList, false);
     assertEquals(
         1,
+        metrics.count('Commerce.PriceTracking.SidePanel.TrackedProductsShown'));
+
+    shoppingListApi.getCallbackRouterRemote().priceTrackedForBookmark(
+        products[0]!);
+    await flushTasks();
+    checkShoppingListVisibility(newbookmarksList, true);
+    assertEquals(
+        2,
         metrics.count('Commerce.PriceTracking.SidePanel.TrackedProductsShown'));
   });
 });
