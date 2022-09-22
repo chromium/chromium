@@ -35,12 +35,6 @@ NSTimeInterval GetTimeSinceMostRecentTabWasOpenForSceneState(
 }
 
 bool ShouldShowStartSurfaceForSceneState(SceneState* sceneState) {
-  if (sceneState.appState.initStage <= InitStageFirstRun) {
-    // NO if the app is not yet ready to present normal UI that is required by
-    // Start Surface.
-    return NO;
-  }
-
   NSDate* timestamp = (NSDate*)[sceneState
       sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime];
   if (timestamp == nil || [[NSDate date] timeIntervalSinceDate:timestamp] <
