@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_section.h"
 #include "ash/system/holding_space/holding_space_ash_test_base.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
@@ -26,16 +27,9 @@ namespace {
 
 class TestHoldingSpaceItemViewsSection : public HoldingSpaceItemViewsSection {
  public:
-  struct Params {
-    std::set<HoldingSpaceItem::Type> supported_types;
-    absl::optional<size_t> max_count;
-  };
-
   TestHoldingSpaceItemViewsSection(HoldingSpaceViewDelegate* view_delegate,
-                                   Params params)
-      : HoldingSpaceItemViewsSection(view_delegate,
-                                     std::move(params.supported_types),
-                                     params.max_count) {}
+                                   HoldingSpaceSectionId section_id)
+      : HoldingSpaceItemViewsSection(view_delegate, section_id) {}
 
  private:
   // HoldingSpaceItemViewsSection:
@@ -180,11 +174,7 @@ class HoldingSpaceTrayChildBubblePlaceholderTest
   std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>> CreateSections(
       HoldingSpaceViewDelegate* view_delegate) {
     auto section = std::make_unique<TestHoldingSpaceItemViewsSection>(
-        view_delegate,
-        TestHoldingSpaceItemViewsSection::Params{
-            .supported_types = {HoldingSpaceItem::Type::kPinnedFile},
-            .max_count = 1u,
-        });
+        view_delegate, HoldingSpaceSectionId::kPinnedFiles);
     section_ = section.get();
     std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>> sections;
     sections.push_back(std::move(section));

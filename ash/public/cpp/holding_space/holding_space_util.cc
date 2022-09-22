@@ -101,28 +101,4 @@ std::string ToString(HoldingSpaceItem::Type type) {
   }
 }
 
-std::set<HoldingSpaceItem::Type> DownloadSupportedTypes() {
-  return {HoldingSpaceItem::Type::kArcDownload,
-          HoldingSpaceItem::Type::kDiagnosticsLog,
-          HoldingSpaceItem::Type::kDownload,
-          HoldingSpaceItem::Type::kLacrosDownload,
-          HoldingSpaceItem::Type::kNearbyShare,
-          HoldingSpaceItem::Type::kPrintedPdf,
-          HoldingSpaceItem::Type::kScan,
-          HoldingSpaceItem::Type::kPhoneHubCameraRoll};
-}
-
-std::set<HoldingSpaceItem::Type> ScreenCaptureSupportedTypes() {
-  return {HoldingSpaceItem::Type::kScreenshot,
-          HoldingSpaceItem::Type::kScreenRecording};
-}
-
-bool IsDownloadType(HoldingSpaceItem::Type item_type) {
-  return base::Contains(DownloadSupportedTypes(), item_type);
-}
-
-bool IsScreenCaptureType(HoldingSpaceItem::Type item_type) {
-  return base::Contains(ScreenCaptureSupportedTypes(), item_type);
-}
-
 }  // namespace ash::holding_space_util

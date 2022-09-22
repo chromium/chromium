@@ -13,6 +13,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
+#include "ash/public/cpp/holding_space/holding_space_section.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -171,9 +172,7 @@ class FilesAppChip : public views::Button {
 
 PinnedFilesSection::PinnedFilesSection(HoldingSpaceViewDelegate* delegate)
     : HoldingSpaceItemViewsSection(delegate,
-                                   /*supported_types=*/
-                                   {HoldingSpaceItem::Type::kPinnedFile},
-                                   /*max_count=*/absl::nullopt) {
+                                   HoldingSpaceSectionId::kPinnedFiles) {
   SetID(kHoldingSpacePinnedFilesSectionId);
 }
 
