@@ -295,15 +295,11 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   request.SetFrameType(mojom::RequestContextFrameType::kAuxiliary);
 
   const KURL& url = request.GetResourceRequest().Url();
-  auto* csp_for_world = opener_window.GetContentSecurityPolicyForCurrentWorld();
-  if (url.ProtocolIsJavaScript() && csp_for_world) {
-    String script_source = DecodeURLEscapeSequences(
-        url.GetString(), DecodeURLMode::kUTF8OrIsomorphic);
-
-    if (!csp_for_world->AllowInline(
-            ContentSecurityPolicy::InlineType::kNavigation,
-            nullptr /* element */, script_source, String() /* nonce */,
-            opener_window.Url(), OrdinalNumber::First())) {
+  if (url.ProtocolIsJavaScript()) {
+    if (opener_window
+            .CheckAndGetJavascriptUrl(request.JavascriptWorld().get(), url,
+                                      nullptr /* element */)
+            .IsEmpty()) {
       return nullptr;
     }
   }

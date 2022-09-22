@@ -537,19 +537,12 @@ bool FrameLoader::AllowRequestForThisFrame(const FrameLoadRequest& request) {
 
   const KURL& url = request.GetResourceRequest().Url();
   if (url.ProtocolIsJavaScript()) {
-    // Check the CSP of the caller (the "source browsing context") if required,
-    // as per https://html.spec.whatwg.org/C/#javascript-protocol.
-    bool javascript_url_is_allowed =
-        request.GetOriginWindow()
-            ->GetContentSecurityPolicyForWorld(request.JavascriptWorld().get())
-            ->AllowInline(ContentSecurityPolicy::InlineType::kNavigation,
-                          frame_->DeprecatedLocalOwner(), url.GetString(),
-                          String() /* nonce */,
-                          request.GetOriginWindow()->Url(),
-                          OrdinalNumber::First());
-
-    if (!javascript_url_is_allowed)
+    if (request.GetOriginWindow()
+            ->CheckAndGetJavascriptUrl(request.JavascriptWorld().get(), url,
+                                       frame_->DeprecatedLocalOwner())
+            .IsEmpty()) {
       return false;
+    }
 
     if (frame_->Owner() && ((frame_->Owner()->GetFramePolicy().sandbox_flags &
                              network::mojom::blink::WebSandboxFlags::kOrigin) !=

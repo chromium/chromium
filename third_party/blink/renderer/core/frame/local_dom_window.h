@@ -31,6 +31,7 @@
 
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/public/common/frame/fullscreen_request_token.h"
 #include "third_party/blink/public/common/frame/payment_request_token.h"
 #include "third_party/blink/public/common/metrics/post_message_counter.h"
@@ -214,6 +215,16 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void CountPermissionsPolicyUsage(
       mojom::blink::PermissionsPolicyFeature feature,
       UseCounterImpl::PermissionsPolicyUsageType type);
+
+  // Checks if navigation to Javascript URL is allowed. This check should run
+  // before any action is taken (e.g. creating new window) for all
+  // same-origin navigations.
+  String CheckAndGetJavascriptUrl(
+      const DOMWrapperWorld* world,
+      const KURL& url,
+      Element* element,
+      network::mojom::CSPDisposition csp_disposition =
+          network::mojom::CSPDisposition::CHECK);
 
   Document* InstallNewDocument(const DocumentInit&);
 
