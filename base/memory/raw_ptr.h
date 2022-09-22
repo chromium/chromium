@@ -287,9 +287,25 @@ struct MTECheckedPtrImpl {
     //
     // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this
     // class is responsible for handling the software MTE tag.
-    CHECK(ExtractTag(partition_alloc::UntagPtr(wrapped_ptr1)) ==
-          ExtractTag(partition_alloc::UntagPtr(wrapped_ptr2)));
-    return wrapped_ptr1 - wrapped_ptr2;
+    //
+    // MTECheckedPtr doesn't use 0 as a valid tag; depending on which
+    // subtraction operator is called, we may be getting the actual
+    // untagged T* or the wrapped pointer (passed as a T*) in one or
+    // both args. We can only check slot cohabitation when both args
+    // come with tags.
+    const uintptr_t tag1 = ExtractTag(partition_alloc::UntagPtr(wrapped_ptr1));
+    const uintptr_t tag2 = ExtractTag(partition_alloc::UntagPtr(wrapped_ptr2));
+    if (tag1 && tag2) {
+      CHECK(tag1 == tag2);
+      return wrapped_ptr1 - wrapped_ptr2;
+    }
+
+    // If one or the other arg come untagged, we have to perform the
+    // subtraction entirely without tags.
+    return reinterpret_cast<T*>(
+               ExtractAddress(partition_alloc::UntagPtr(wrapped_ptr1))) -
+           reinterpret_cast<T*>(
+               ExtractAddress(partition_alloc::UntagPtr(wrapped_ptr2)));
   }
 
   // Returns a copy of a wrapped pointer, without making an assertion
