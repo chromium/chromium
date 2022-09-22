@@ -2267,6 +2267,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         final Tab currentTab = getActivityTab();
         if (currentTab == null) {
+            BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
+            MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
             moveTaskToBack(true);
             return true;
         }

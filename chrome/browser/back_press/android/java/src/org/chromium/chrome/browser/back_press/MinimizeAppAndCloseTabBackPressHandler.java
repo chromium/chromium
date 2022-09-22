@@ -137,4 +137,8 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
     static void setVersionForTesting(Integer version) {
         sVersionForTesting = version;
     }
+
+    public static String getHistogramNameForTesting() {
+        return HISTOGRAM;
+    }
 }

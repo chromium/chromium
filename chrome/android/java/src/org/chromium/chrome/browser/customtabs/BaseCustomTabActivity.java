@@ -421,10 +421,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected boolean handleBackPressed() {
-        if (mRootUiCoordinator.getBottomSheetController().handleBackPress()) {
-            return true;
-        }
-
         return mNavigationController.navigateOnBack();
     }
 
