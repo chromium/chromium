@@ -330,7 +330,7 @@ class PropertyTreePrinter {
     const auto* node = nodes_.back();
     while (!node->IsRoot())
       node = node->Parent();
-    if (node->DebugName().IsEmpty())
+    if (node->DebugName().empty())
       const_cast<NodeType*>(node)->SetDebugName("root");
     nodes_.insert(node);
     return *node;

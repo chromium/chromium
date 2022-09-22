@@ -87,7 +87,7 @@ void IDBParseKeyPath(const String& key_path,
                      IDBKeyPathParseError& error) {
   // IDBKeyPath ::= EMPTY_STRING | identifier ('.' identifier)*
 
-  if (key_path.IsEmpty()) {
+  if (key_path.empty()) {
     error = kIDBKeyPathParseErrorNone;
     return;
   }

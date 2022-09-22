@@ -142,7 +142,7 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
   // handed the generic font family name.
   AtomicString settings_family_name =
       FamilyNameFromSettings(request_description, font_family);
-  if (settings_family_name.IsEmpty())
+  if (settings_family_name.empty())
     return nullptr;
 
   ReportFontFamilyLookupByGenericFamily(

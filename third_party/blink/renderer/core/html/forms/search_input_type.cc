@@ -151,7 +151,7 @@ void SearchInputType::UpdateCancelButtonVisibility() {
       shadow_element_names::kIdSearchClearButton);
   if (!button)
     return;
-  if (GetElement().Value().IsEmpty()) {
+  if (GetElement().Value().empty()) {
     button->SetInlineStyleProperty(CSSPropertyID::kOpacity, 0.0,
                                    CSSPrimitiveValue::UnitType::kNumber);
     button->SetInlineStyleProperty(CSSPropertyID::kPointerEvents,

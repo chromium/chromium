@@ -314,7 +314,7 @@ void ImageDocument::UpdateTitle() {
   // back on the (decoded) hostname if there is no path.
   String file_name = DecodeURLEscapeSequences(Url().LastPathComponent(),
                                               DecodeURLMode::kUTF8OrIsomorphic);
-  if (file_name.IsEmpty())
+  if (file_name.empty())
     file_name = Url().Host();
   setTitle(ImageTitle(file_name, size));
 }

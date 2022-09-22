@@ -666,7 +666,7 @@ class DataLoader final : public ExecutableWithDatabase<RequestDataCallback> {
     }
 
     IDBRequest* idb_request;
-    if (!index_name_.IsEmpty()) {
+    if (!index_name_.empty()) {
       IDBIndex* idb_index = IndexForObjectStore(idb_object_store, index_name_);
       if (!idb_index) {
         request_callback_->sendFailure(

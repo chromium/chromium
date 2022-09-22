@@ -51,7 +51,7 @@ const base::Feature kCropTopPromiseWaitsForFirstFrame{
 // If crop_id is a valid UUID, returns a base::Token representing the ID.
 // Otherwise, returns nullopt.
 absl::optional<base::Token> CropIdStringToToken(const String& crop_id) {
-  if (crop_id.IsEmpty()) {
+  if (crop_id.empty()) {
     return base::Token();
   }
   if (!crop_id.ContainsOnlyASCIIOrEmpty()) {

@@ -126,7 +126,7 @@ unsigned ThreadDebuggerCommonImpl::PromiseRejected(
     std::unique_ptr<SourceLocation> location) {
   const String default_message = "Uncaught (in promise)";
   String message = error_message;
-  if (message.IsEmpty())
+  if (message.empty())
     message = default_message;
   else if (message.StartsWith("Uncaught "))
     message = message.Substring(0, 8) + " (in promise)" + message.Substring(8);
@@ -364,7 +364,7 @@ ThreadDebuggerCommonImpl::descriptionForValueSubtype(
         description.Append(element->TagQName().ToString());
 
         const AtomicString& id = element->GetIdAttribute();
-        if (!id.IsEmpty()) {
+        if (!id.empty()) {
           description.Append('#');
           description.Append(id);
         }

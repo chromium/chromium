@@ -1586,7 +1586,7 @@ bool CSSParserImpl::RemoveImportantAnnotationIfPresent(
       tokenized_value.range = tokenized_value.range.MakeSubRange(first, last);
 
       // Truncate the text to remove the delimiter and everything after it.
-      if (!tokenized_value.text.IsEmpty()) {
+      if (!tokenized_value.text.empty()) {
         DCHECK_NE(tokenized_value.text.ToString().find('!'), kNotFound);
         unsigned truncated_length = tokenized_value.text.length() - 1;
         while (tokenized_value.text[truncated_length] != '!')

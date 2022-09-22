@@ -1790,18 +1790,18 @@ void DocumentLoader::DidInstallNewDocument(Document* document) {
 
   const AtomicString& dns_prefetch_control =
       response_.HttpHeaderField(http_names::kXDNSPrefetchControl);
-  if (!dns_prefetch_control.IsEmpty())
+  if (!dns_prefetch_control.empty())
     document->ParseDNSPrefetchControlHeader(dns_prefetch_control);
 
   String header_content_language =
       response_.HttpHeaderField(http_names::kContentLanguage);
-  if (!header_content_language.IsEmpty()) {
+  if (!header_content_language.empty()) {
     wtf_size_t comma_index = header_content_language.find(',');
     // kNotFound == -1 == don't truncate
     header_content_language.Truncate(comma_index);
     header_content_language =
         header_content_language.StripWhiteSpace(IsHTMLSpace<UChar>);
-    if (!header_content_language.IsEmpty())
+    if (!header_content_language.empty())
       document->SetContentLanguage(AtomicString(header_content_language));
   }
 
@@ -2335,9 +2335,9 @@ void DocumentLoader::CommitNavigation() {
   // even if there is header on xml document.
   if (commit_reason_ == CommitReason::kXSLT ||
       commit_reason_ == CommitReason::kJavascriptUrl) {
-    DCHECK(response_.HttpHeaderField(http_names::kFeaturePolicy).IsEmpty());
-    DCHECK(response_.HttpHeaderField(http_names::kPermissionsPolicy).IsEmpty());
-    DCHECK(response_.HttpHeaderField(http_names::kDocumentPolicy).IsEmpty());
+    DCHECK(response_.HttpHeaderField(http_names::kFeaturePolicy).empty());
+    DCHECK(response_.HttpHeaderField(http_names::kPermissionsPolicy).empty());
+    DCHECK(response_.HttpHeaderField(http_names::kDocumentPolicy).empty());
     security_init.InitPermissionsPolicyFrom(
         previous_window->GetSecurityContext());
     security_init.InitDocumentPolicyFrom(previous_window->GetSecurityContext());
@@ -2382,7 +2382,7 @@ void DocumentLoader::CommitNavigation() {
 
   RecordUseCountersForCommit();
   RecordConsoleMessagesForCommit();
-  if (!response_.HttpHeaderField(http_names::kExpectCT).IsEmpty()) {
+  if (!response_.HttpHeaderField(http_names::kExpectCT).empty()) {
     Deprecation::CountDeprecation(frame_->DomWindow(),
                                   mojom::blink::WebFeature::kExpectCTHeader);
   }

@@ -176,7 +176,7 @@ FontFaceCache::CapabilitiesSet* FontFaceCache::SegmentedFacesByFamily::Find(
 CSSSegmentedFontFace* FontFaceCache::Get(
     const FontDescription& font_description,
     const AtomicString& family) {
-  if (family.IsEmpty())
+  if (family.empty())
     return nullptr;
 
   CapabilitiesSet* family_faces = segmented_faces_.Find(family);

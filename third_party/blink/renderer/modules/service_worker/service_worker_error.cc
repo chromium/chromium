@@ -47,7 +47,7 @@ struct ExceptionParams {
   ExceptionParams(DOMExceptionCode code,
                   const String& default_message = String(),
                   const String& message = String())
-      : code(code), message(message.IsEmpty() ? default_message : message) {}
+      : code(code), message(message.empty() ? default_message : message) {}
 
   DOMExceptionCode code;
   String message;

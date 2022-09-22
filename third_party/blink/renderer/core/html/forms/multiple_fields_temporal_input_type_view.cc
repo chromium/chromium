@@ -210,7 +210,7 @@ void MultipleFieldsTemporalInputTypeView::EditControlValueChanged() {
       input_type_->SanitizeValue(GetDateTimeEditElement()->Value());
   // Even if oldValue is null and newValue is "", we should assume they are
   // same.
-  if ((old_value.IsEmpty() && new_value.IsEmpty()) || old_value == new_value) {
+  if ((old_value.empty() && new_value.empty()) || old_value == new_value) {
     GetElement().SetNeedsValidityCheck();
   } else {
     GetElement().SetNonAttributeValueByUserEdit(new_value);
@@ -284,7 +284,7 @@ void MultipleFieldsTemporalInputTypeView::PickerIndicatorChooseValue(
     const String& value) {
   if (will_be_destroyed_)
     return;
-  if (value.IsEmpty() || GetElement().IsValidValue(value)) {
+  if (value.empty() || GetElement().IsValidValue(value)) {
     GetElement().SetValue(value, TextFieldEventBehavior::kDispatchInputEvent);
     return;
   }
@@ -494,7 +494,7 @@ void MultipleFieldsTemporalInputTypeView::HandleKeydownEvent(
 
 bool MultipleFieldsTemporalInputTypeView::HasBadInput() const {
   DateTimeEditElement* edit = GetDateTimeEditElement();
-  return GetElement().Value().IsEmpty() && edit &&
+  return GetElement().Value().empty() && edit &&
          edit->AnyEditableFieldsHaveValues();
 }
 
@@ -542,7 +542,7 @@ void MultipleFieldsTemporalInputTypeView::DidSetValue(
     const String& sanitized_value,
     bool value_changed) {
   DateTimeEditElement* edit = GetDateTimeEditElement();
-  if (value_changed || (sanitized_value.IsEmpty() && edit &&
+  if (value_changed || (sanitized_value.empty() && edit &&
                         edit->AnyEditableFieldsHaveValues())) {
     GetElement().UpdateView();
     GetElement().SetNeedsValidityCheck();
@@ -580,7 +580,7 @@ void MultipleFieldsTemporalInputTypeView::UpdateView() {
                      AtomicString(layout_parameters.date_time_format),
                      ASSERT_NO_EXCEPTION);
   const AtomicString pattern = edit->FastGetAttribute(html_names::kPatternAttr);
-  if (!pattern.IsEmpty())
+  if (!pattern.empty())
     layout_parameters.date_time_format = pattern;
 
   if (!DateTimeFormatValidator().ValidateFormat(

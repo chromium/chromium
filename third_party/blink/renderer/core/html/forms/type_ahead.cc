@@ -64,7 +64,7 @@ int TypeAhead::HandleEvent(const KeyboardEvent& event,
     // If |last_type_time_| is null, there should be no type ahead session in
     // progress. Thus, |buffer_|, which represents a partial match, should be
     // empty.
-    DCHECK(buffer_.IsEmpty());
+    DCHECK(buffer_.empty());
   }
   last_type_time_ = event.PlatformTimeStamp();
 
@@ -92,7 +92,7 @@ int TypeAhead::HandleEvent(const KeyboardEvent& event,
     }
   }
 
-  if (!prefix.IsEmpty()) {
+  if (!prefix.empty()) {
     int selected = data_source_->IndexOfSelectedOption();
     int index = (selected < 0 ? 0 : selected) + search_start_offset;
     index %= option_count;

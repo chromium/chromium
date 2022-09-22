@@ -2746,10 +2746,10 @@ void Animation::commitStyles(ExceptionState& exception_state) {
   //    format for which style attributes are not defined) throw a
   //    "NoModificationAllowedError" DOMException and abort these steps.
   if (!target || !target->IsStyledElement() ||
-      !To<KeyframeEffect>(effect())->pseudoElement().IsEmpty()) {
+      !To<KeyframeEffect>(effect())->pseudoElement().empty()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNoModificationAllowedError,
-        "Animation not associated with a styled target element");
+        "Animation not associated with a styled taemptyement");
     return;
   }
   // 2. If, after applying any pending style changes, target is not being

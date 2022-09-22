@@ -54,7 +54,7 @@ void SplitTextNodeCommand::DoApply(EditingState*) {
 
   String prefix_text =
       text2_->substringData(0, offset_, IGNORE_EXCEPTION_FOR_TESTING);
-  if (prefix_text.IsEmpty())
+  if (prefix_text.empty())
     return;
 
   text1_ = Text::Create(GetDocument(), prefix_text);

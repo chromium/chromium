@@ -44,7 +44,7 @@ void SharedWorkerClient::OnConnected(
 
 void SharedWorkerClient::OnScriptLoadFailed(const String& error_message) {
   worker_->SetIsBeingConnected(false);
-  if (!error_message.IsEmpty()) {
+  if (!error_message.empty()) {
     worker_->GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kWorker,

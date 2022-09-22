@@ -31,7 +31,7 @@ void BeaconString::Serialize(ResourceRequest& request) const {
 
 BeaconBlob::BeaconBlob(Blob* data) : data_(data) {
   const String& blob_type = data_->type();
-  if (!blob_type.IsEmpty() && ParsedContentType(blob_type).IsValid())
+  if (!blob_type.empty() && ParsedContentType(blob_type).IsValid())
     content_type_ = AtomicString(blob_type);
 }
 
@@ -56,7 +56,7 @@ scoped_refptr<EncodedFormData> BeaconBlob::GetEncodedFormData() const {
 void BeaconBlob::Serialize(ResourceRequest& request) const {
   request.SetHttpBody(GetEncodedFormData());
 
-  if (!GetContentType().IsEmpty()) {
+  if (!GetContentType().empty()) {
     if (!cors::IsCorsSafelistedContentType(GetContentType())) {
       request.SetMode(network::mojom::blink::RequestMode::kCors);
     }

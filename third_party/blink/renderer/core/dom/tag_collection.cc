@@ -49,7 +49,7 @@ TagCollectionNS::TagCollectionNS(ContainerNode& root_node,
     : HTMLCollection(root_node, type, kDoesNotOverrideItemAfter),
       namespace_uri_(namespace_uri),
       local_name_(local_name) {
-  DCHECK(namespace_uri_.IsNull() || !namespace_uri_.IsEmpty());
+  DCHECK(namespace_uri_.IsNull() || !namespace_uri_.empty());
 }
 
 TagCollectionNS::~TagCollectionNS() = default;

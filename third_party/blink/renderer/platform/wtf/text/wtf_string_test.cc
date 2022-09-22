@@ -47,13 +47,13 @@ TEST(StringTest, CreationFromLiteral) {
 TEST(StringTest, CreationFromHashTraits) {
   String zero;
   EXPECT_TRUE(zero.IsNull());
-  EXPECT_TRUE(zero.IsEmpty());
+  EXPECT_TRUE(zero.empty());
   EXPECT_TRUE(HashTraits<String>::IsEmptyValue(zero));
   EXPECT_EQ(zero, HashTraits<String>::EmptyValue());
 
   String empty = "";
   EXPECT_FALSE(empty.IsNull());
-  EXPECT_TRUE(empty.IsEmpty());
+  EXPECT_TRUE(empty.empty());
   EXPECT_FALSE(HashTraits<String>::IsEmptyValue(empty));
   EXPECT_NE(empty, HashTraits<String>::EmptyValue());
 }
@@ -296,14 +296,14 @@ TEST(StringTest, Ensure16Bit) {
   EXPECT_TRUE(empty8.Is8Bit());
   empty8.Ensure16Bit();
   EXPECT_FALSE(empty8.Is8Bit());
-  EXPECT_TRUE(empty8.IsEmpty());
+  EXPECT_TRUE(empty8.empty());
   EXPECT_FALSE(empty8.IsNull());
 
   String empty16(StringImpl::empty16_bit_);
   EXPECT_FALSE(empty16.Is8Bit());
   empty16.Ensure16Bit();
   EXPECT_FALSE(empty16.Is8Bit());
-  EXPECT_TRUE(empty16.IsEmpty());
+  EXPECT_TRUE(empty16.empty());
   EXPECT_FALSE(empty16.IsNull());
 
   String null_string;

@@ -98,7 +98,7 @@ bool InsertCommands::ExecuteInsertHorizontalRule(LocalFrame& frame,
                                                  const String& value) {
   DCHECK(frame.GetDocument());
   auto* const rule = MakeGarbageCollected<HTMLHRElement>(*frame.GetDocument());
-  if (!value.IsEmpty())
+  if (!value.empty())
     rule->SetIdAttribute(AtomicString(value));
   return ExecuteInsertElement(frame, rule);
 }
@@ -150,7 +150,7 @@ bool InsertCommands::ExecuteInsertImage(LocalFrame& frame,
   DCHECK(frame.GetDocument());
   auto* const image =
       MakeGarbageCollected<HTMLImageElement>(*frame.GetDocument());
-  if (!value.IsEmpty())
+  if (!value.empty())
     image->setAttribute(html_names::kSrcAttr, AtomicString(value));
   return ExecuteInsertElement(frame, image);
 }

@@ -72,7 +72,7 @@ bool CSSFontSelectorBase::IsPlatformFamilyMatchAvailable(
     const FontDescription& font_description,
     const FontFamily& passed_family) {
   AtomicString family = FamilyNameFromSettings(font_description, passed_family);
-  if (family.IsEmpty())
+  if (family.empty())
     family = passed_family.FamilyName();
   return FontCache::Get().IsPlatformFamilyMatchAvailable(font_description,
                                                          family);
@@ -313,7 +313,7 @@ void CSSFontSelectorBase::WillUseFontData(
     const FontFamily& family,
     const String& text) {
   if (family.FamilyIsGeneric()) {
-    if (family.IsPrewarmed() || UNLIKELY(family.FamilyName().IsEmpty()))
+    if (family.IsPrewarmed() || UNLIKELY(family.FamilyName().empty()))
       return;
     family.SetIsPrewarmed();
     // |FamilyNameFromSettings| has a visible impact on the load performance.
@@ -330,7 +330,7 @@ void CSSFontSelectorBase::WillUseFontData(
     }
     const AtomicString& family_name =
         FamilyNameFromSettings(font_description, family);
-    if (!family_name.IsEmpty())
+    if (!family_name.empty())
       FontCache::PrewarmFamily(family_name);
     return;
   }
@@ -341,7 +341,7 @@ void CSSFontSelectorBase::WillUseFontData(
     return;
   }
 
-  if (family.IsPrewarmed() || UNLIKELY(family.FamilyName().IsEmpty()))
+  if (family.IsPrewarmed() || UNLIKELY(family.FamilyName().empty()))
     return;
   family.SetIsPrewarmed();
   FontCache::PrewarmFamily(family.FamilyName());

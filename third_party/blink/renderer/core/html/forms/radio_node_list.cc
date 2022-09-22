@@ -57,7 +57,7 @@ static inline HTMLInputElement* ToRadioButtonInputElement(Element& element) {
   if (!input_element)
     return nullptr;
   if (input_element->type() != input_type_names::kRadio ||
-      input_element->Value().IsEmpty())
+      input_element->Value().empty())
     return nullptr;
   return input_element;
 }

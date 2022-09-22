@@ -177,7 +177,7 @@ void TextFragmentFinder::FindPrefix() {
     return;
   }
 
-  if (selector_.Prefix().IsEmpty()) {
+  if (selector_.Prefix().empty()) {
     GoToStep(kMatchTextStart);
     return;
   }
@@ -209,7 +209,7 @@ void TextFragmentFinder::OnPrefixMatchComplete(
 }
 
 void TextFragmentFinder::FindTextStart() {
-  DCHECK(!selector_.Start().IsEmpty());
+  DCHECK(!selector_.Start().empty());
 
   // The match text need not be bounded at the end. If this is an exact
   // match (i.e. no |end_text|) and we have a suffix then the suffix will
@@ -218,7 +218,7 @@ void TextFragmentFinder::FindTextStart() {
   // https://github.com/WICG/scroll-to-text-fragment/issues/137 for
   // details.
   const bool end_at_word_boundary =
-      !selector_.End().IsEmpty() || selector_.Suffix().IsEmpty();
+      !selector_.End().empty() || selector_.Suffix().empty();
   if (prefix_match_) {
     search_range_->SetStart(NextTextPosition(prefix_match_->EndPosition(),
                                              match_range_->EndPosition()));
@@ -268,10 +268,10 @@ void TextFragmentFinder::FindTextEnd() {
   // If we've gotten here, we've found a |prefix| (if one was specified)
   // that's followed by the |start_text|. We'll now try to expand that into
   // a range match if |end_text| is specified.
-  if (!selector_.End().IsEmpty()) {
+  if (!selector_.End().empty()) {
     search_range_->SetStart(
         ToPositionInFlatTree(range_end_search_start_->GetPosition()));
-    const bool end_at_word_boundary = selector_.Suffix().IsEmpty();
+    const bool end_at_word_boundary = selector_.Suffix().empty();
 
     FindMatchInRange(selector_.End(), search_range_,
                      /*word_start_bounded=*/true, end_at_word_boundary);
@@ -295,7 +295,7 @@ void TextFragmentFinder::OnTextEndMatchComplete(
 void TextFragmentFinder::FindSuffix() {
   DCHECK(!potential_match_->IsNull());
 
-  if (selector_.Suffix().IsEmpty()) {
+  if (selector_.Suffix().empty()) {
     OnMatchComplete();
     return;
   }
@@ -327,7 +327,7 @@ void TextFragmentFinder::OnSuffixMatchComplete(
   // If this is an exact match(e.g. |end_text| is not specified), and we
   // didn't match on suffix, continue searching for a new potential_match
   // from it's start.
-  if (selector_.End().IsEmpty()) {
+  if (selector_.End().empty()) {
     potential_match_.Clear();
     GoToStep(kMatchPrefix);
     return;
@@ -375,7 +375,7 @@ TextFragmentFinder::TextFragmentFinder(Client& client,
                                        Document* document,
                                        FindBufferRunnerType runner_type)
     : client_(client), selector_(selector), document_(document) {
-  DCHECK(!selector_.Start().IsEmpty());
+  DCHECK(!selector_.Start().empty());
   DCHECK(selector_.Type() != TextFragmentSelector::SelectorType::kInvalid);
   if (runner_type == TextFragmentFinder::FindBufferRunnerType::kAsynchronous) {
     find_buffer_runner_ = MakeGarbageCollected<AsyncFindBuffer>();

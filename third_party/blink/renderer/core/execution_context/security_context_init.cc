@@ -121,7 +121,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
       response.HttpHeaderField(http_names::kPermissionsPolicy);
   const String& report_only_permissions_policy_header =
       response.HttpHeaderField(http_names::kPermissionsPolicyReportOnly);
-  if (!permissions_policy_header.IsEmpty())
+  if (!permissions_policy_header.empty())
     UseCounter::Count(execution_context_, WebFeature::kPermissionsPolicyHeader);
 
   PolicyParserMessageBuffer feature_policy_logger(
@@ -137,7 +137,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   WTF::StringBuilder policy_builder;
   policy_builder.Append(response.HttpHeaderField(http_names::kFeaturePolicy));
   String feature_policy_header = policy_builder.ToString();
-  if (!feature_policy_header.IsEmpty())
+  if (!feature_policy_header.empty())
     UseCounter::Count(execution_context_, WebFeature::kFeaturePolicyHeader);
 
   permissions_policy_header_ = PermissionsPolicyParser::ParseHeader(
@@ -153,8 +153,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
           report_only_feature_policy_logger,
           report_only_permissions_policy_logger, execution_context_);
 
-  if (!response.HttpHeaderField(http_names::kFeaturePolicyReportOnly)
-           .IsEmpty()) {
+  if (!response.HttpHeaderField(http_names::kFeaturePolicyReportOnly).empty()) {
     UseCounter::Count(execution_context_,
                       WebFeature::kFeaturePolicyReportOnlyHeader);
   }

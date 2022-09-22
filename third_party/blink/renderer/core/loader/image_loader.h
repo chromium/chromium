@@ -134,7 +134,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
 
   bool HasPendingError() const { return pending_error_event_.IsActive(); }
 
-  bool HadError() const { return !failed_load_url_.IsEmpty(); }
+  bool HadError() const { return !failed_load_url_.empty(); }
 
   bool GetImageAnimationPolicy(mojom::blink::ImageAnimationPolicy&) final;
 

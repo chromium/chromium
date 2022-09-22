@@ -824,7 +824,7 @@ XMLDocumentParser::XMLDocumentParser(DocumentFragment* fragment,
     }
     if (element->namespaceURI().IsNull())
       continue;
-    if (element->prefix().IsEmpty())
+    if (element->prefix().empty())
       default_namespace_uri_ = element->namespaceURI();
     else
       prefix_to_namespace_map_.Set(element->prefix(), element->namespaceURI());
@@ -935,7 +935,7 @@ static inline void HandleElementAttributes(
     AtomicString attr_value = ToAtomicString(attributes[i].value, value_length);
     AtomicString attr_prefix = ToAtomicString(attributes[i].prefix);
     AtomicString attr_uri;
-    if (!attr_prefix.IsEmpty()) {
+    if (!attr_prefix.empty()) {
       // If provided, use the namespace URI from libxml2 because libxml2
       // updates its namespace table as it parses whereas the
       // initialPrefixToNamespaceMap is the initial map from namespace
@@ -953,7 +953,7 @@ static inline void HandleElementAttributes(
       }
     }
     AtomicString attr_q_name =
-        attr_prefix.IsEmpty()
+        attr_prefix.empty()
             ? ToAtomicString(attributes[i].localname)
             : attr_prefix + ":" + ToString(attributes[i].localname);
 
@@ -1024,7 +1024,7 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
   }
 
   QualifiedName q_name(prefix, local_name, adjusted_uri);
-  if (!prefix.IsEmpty() && adjusted_uri.IsEmpty())
+  if (!prefix.empty() && adjusted_uri.empty())
     q_name = QualifiedName(g_null_atom, prefix + ":" + local_name, g_null_atom);
   Element* new_element = current_node_->GetDocument().CreateElement(
       q_name,
@@ -1616,7 +1616,7 @@ void XMLDocumentParser::DoEnd() {
 xmlDocPtr XmlDocPtrForString(Document* document,
                              const String& source,
                              const String& url) {
-  if (source.IsEmpty())
+  if (source.empty())
     return nullptr;
   // Parse in a single chunk into an xmlDocPtr
   // FIXME: Hook up error handlers so that a failure to parse the main
@@ -1782,7 +1782,7 @@ static void AttributesStartElementNsHandler(void* closure,
     int value_length = (int)(attributes[i].end - attributes[i].value);
     String attr_value = ToString(attributes[i].value, value_length);
     String attr_prefix = ToString(attributes[i].prefix);
-    String attr_q_name = attr_prefix.IsEmpty()
+    String attr_q_name = attr_prefix.empty()
                              ? attr_local_name
                              : attr_prefix + ":" + attr_local_name;
 

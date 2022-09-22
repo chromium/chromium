@@ -108,7 +108,7 @@ void ExecutionContextCSPDelegate::AddInsecureRequestPolicy(
     // WorkerGlobalScope::Url() before it's ready. https://crbug.com/861564
     // This should be safe, because the insecure navigations set is not used
     // in non-Document contexts.
-    if (window && !Url().Host().IsEmpty()) {
+    if (window && !Url().Host().empty()) {
       uint32_t hash = Url().Host().Impl()->GetHash();
       security_context.AddInsecureNavigationUpgrade(hash);
       if (auto* frame = window->GetFrame()) {

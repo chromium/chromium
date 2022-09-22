@@ -77,7 +77,7 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
     } else if (lowercase_token == "col-flow") {
       has_col_flow = true;
     } else {
-      if (!invalid_tokens.IsEmpty())
+      if (!invalid_tokens.empty())
         invalid_tokens.Append(", ");
 
       // We don't use |lowercase_token| here since that string value will be
@@ -86,7 +86,7 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
     }
   }
 
-  if (!invalid_tokens.IsEmpty()) {
+  if (!invalid_tokens.empty()) {
     element->GetDocument().AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,

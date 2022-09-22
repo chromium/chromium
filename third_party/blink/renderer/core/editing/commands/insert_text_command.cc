@@ -96,7 +96,7 @@ bool InsertTextCommand::PerformTrivialReplace(const String& text) {
   // We may need to manipulate neighboring whitespace if we're deleting text.
   // This case is tested in
   // InsertTextCommandTest_InsertEmptyTextAfterWhitespaceThatNeedsFixup.
-  if (text.IsEmpty())
+  if (text.empty())
     return false;
 
   if (!EndingSelection().IsRange())

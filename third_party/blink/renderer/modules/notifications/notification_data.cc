@@ -60,7 +60,7 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
   }
 
   // If renotify is true, the notification must have a tag.
-  if (options->renotify() && options->tag().IsEmpty()) {
+  if (options->renotify() && options->tag().empty()) {
     RecordPersistentNotificationDisplayResult(
         PersistentNotificationDisplayResult::kRenotifyWithoutTag);
     exception_state.ThrowTypeError(
@@ -77,13 +77,13 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
   notification_data->body = options->body();
   notification_data->tag = options->tag();
 
-  if (options->hasImage() && !options->image().IsEmpty())
+  if (options->hasImage() && !options->image().empty())
     notification_data->image = CompleteURL(context, options->image());
 
-  if (options->hasIcon() && !options->icon().IsEmpty())
+  if (options->hasIcon() && !options->icon().empty())
     notification_data->icon = CompleteURL(context, options->icon());
 
-  if (options->hasBadge() && !options->badge().IsEmpty())
+  if (options->hasBadge() && !options->badge().empty())
     notification_data->badge = CompleteURL(context, options->badge());
 
   VibrationController::VibrationPattern vibration_pattern;
@@ -158,7 +158,7 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
 
     notification_action->placeholder = action->placeholder();
 
-    if (action->hasIcon() && !action->icon().IsEmpty())
+    if (action->hasIcon() && !action->icon().empty())
       notification_action->icon = CompleteURL(context, action->icon());
 
     actions.push_back(std::move(notification_action));

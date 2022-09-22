@@ -557,7 +557,7 @@ void HTMLMetaElement::RemovedFrom(ContainerNode& insertion_point) {
   if (!insertion_point.IsInDocumentTree())
     return;
   const AtomicString& name_value = FastGetAttribute(html_names::kNameAttr);
-  if (!name_value.IsEmpty())
+  if (!name_value.empty())
     NameRemoved(name_value);
 }
 
@@ -577,7 +577,7 @@ void HTMLMetaElement::ProcessHttpEquiv() {
     return;
   const AtomicString& http_equiv_value =
       FastGetAttribute(html_names::kHttpEquivAttr);
-  if (http_equiv_value.IsEmpty())
+  if (http_equiv_value.empty())
     return;
   HttpEquiv::Process(GetDocument(), http_equiv_value, content_value,
                      InDocumentHead(this), is_sync_parser_, this);
@@ -588,7 +588,7 @@ void HTMLMetaElement::ProcessContent() {
     return;
 
   const AtomicString& name_value = FastGetAttribute(html_names::kNameAttr);
-  if (name_value.IsEmpty())
+  if (name_value.empty())
     return;
 
   const AtomicString& content_value =

@@ -129,7 +129,7 @@ void AbstractPropertySetCSSStyleDeclaration::setProperty(
     return;
 
   bool important = EqualIgnoringASCIICase(priority, "important");
-  if (!important && !priority.IsEmpty())
+  if (!important && !priority.empty())
     return;
 
   const SecureContextMode mode = execution_context

@@ -173,7 +173,7 @@ bool IsActive(Document& document) {
 bool HasAriaCellRole(Element* elem) {
   DCHECK(elem);
   const AtomicString& role_str = elem->FastGetAttribute(html_names::kRoleAttr);
-  if (role_str.IsEmpty())
+  if (role_str.empty())
     return false;
 
   return ui::IsCellOrTableHeader(AXObject::AriaRoleStringToRoleEnum(role_str));
@@ -4242,7 +4242,7 @@ void AXObjectCacheImpl::AddPermissionStatusListener() {
   //
   // http://crbug.com/759528 and http://crbug.com/762716
   if (document_->Url().Protocol() != "file" &&
-      document_->Url().Host().IsEmpty()) {
+      document_->Url().Host().empty()) {
     return;
   }
 

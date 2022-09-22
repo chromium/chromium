@@ -158,7 +158,7 @@ bool WorkerFetchContext::ShouldBlockFetchByMixedContentCheck(
 bool WorkerFetchContext::ShouldBlockFetchAsCredentialedSubresource(
     const ResourceRequest& resource_request,
     const KURL& url) const {
-  if ((!url.User().IsEmpty() || !url.Pass().IsEmpty()) &&
+  if ((!url.User().empty() || !url.Pass().empty()) &&
       resource_request.GetRequestContext() !=
           mojom::blink::RequestContextType::XML_HTTP_REQUEST) {
     if (Url().User() != url.User() || Url().Pass() != url.Pass()) {

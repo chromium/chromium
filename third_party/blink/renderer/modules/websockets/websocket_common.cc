@@ -157,7 +157,7 @@ void WebSocketCommon::CloseInternal(int code,
               String::Number(kMaxReasonSizeInBytes) + " bytes.");
       return;
     }
-    if (!reason.IsEmpty() && !reason.Is8Bit()) {
+    if (!reason.empty() && !reason.Is8Bit()) {
       DCHECK_GT(utf8.size(), 0u);
       // reason might contain unpaired surrogates. Reconstruct it from
       // utf8.
@@ -199,7 +199,7 @@ inline bool WebSocketCommon::IsValidSubprotocolCharacter(UChar character) {
 }
 
 bool WebSocketCommon::IsValidSubprotocolString(const String& protocol) {
-  if (protocol.IsEmpty())
+  if (protocol.empty())
     return false;
   for (wtf_size_t i = 0; i < protocol.length(); ++i) {
     if (!IsValidSubprotocolCharacter(protocol[i]))

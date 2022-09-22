@@ -104,7 +104,7 @@ namespace {
 // Generate the default base tag declaration.
 String GenerateBaseTagDeclaration(const String& base_target) {
   // TODO(yosin) We should call |FrameSerializer::baseTagDeclarationOf()|.
-  if (base_target.IsEmpty())
+  if (base_target.empty())
     return String("<base href=\".\">");
   String base_string = "<base href=\".\" target=\"" + base_target + "\">";
   return base_string;
@@ -171,9 +171,9 @@ String WebFrameSerializerImpl::PreActionBeforeSerializeOpenTag(
       param->have_added_xml_processing_directive = true;
       // Get encoding info.
       String xml_encoding = param->document->xmlEncoding();
-      if (xml_encoding.IsEmpty())
+      if (xml_encoding.empty())
         xml_encoding = param->document->EncodingName();
-      if (xml_encoding.IsEmpty())
+      if (xml_encoding.empty())
         xml_encoding = UTF8Encoding().GetName();
       result.Append("<?xml version=\"");
       result.Append(param->document->xmlVersion());
@@ -470,7 +470,7 @@ WebFrameSerializerImpl::WebFrameSerializerImpl(
   DCHECK(client);
   DCHECK(delegate);
 
-  DCHECK(data_buffer_.IsEmpty());
+  DCHECK(data_buffer_.empty());
 }
 
 bool WebFrameSerializerImpl::Serialize() {
@@ -505,7 +505,7 @@ bool WebFrameSerializerImpl::Serialize() {
         WebVector<char>(), WebFrameSerializerClient::kCurrentFrameIsFinished);
   }
 
-  DCHECK(data_buffer_.IsEmpty());
+  DCHECK(data_buffer_.empty());
   return did_serialization;
 }
 

@@ -146,7 +146,7 @@ void FileInputType::AppendToFormData(FormData& form_data) const {
 }
 
 bool FileInputType::ValueMissing(const String& value) const {
-  return GetElement().IsRequired() && value.IsEmpty();
+  return GetElement().IsRequired() && value.empty();
 }
 
 String FileInputType::ValueMissingText() const {
@@ -241,7 +241,7 @@ bool FileInputType::CanSetValue(const String& value) {
   // the value attribute isn't applicable to the file upload control at all, but
   // for now we are keeping this behavior to avoid breaking existing websites
   // that may be relying on this.
-  return value.IsEmpty();
+  return value.empty();
 }
 
 String FileInputType::ValueInFilenameValueMode() const {
@@ -430,7 +430,7 @@ void FileInputType::FilesChosen(FileChooserFileInfoList files,
     // Drop files of which names can not be converted to WTF String. We
     // can't expose such files via File API.
     if (files[i]->is_native_file() &&
-        FilePathToString(files[i]->get_native_file()->file_path).IsEmpty()) {
+        FilePathToString(files[i]->get_native_file()->file_path).empty()) {
       files.EraseAt(i);
       // Do not increment |i|.
       continue;

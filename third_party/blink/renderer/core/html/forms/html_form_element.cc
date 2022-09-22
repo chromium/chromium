@@ -587,7 +587,7 @@ FormData* HTMLFormElement::ConstructEntryList(
       control->AppendToFormData(form_data);
     if (auto* input = DynamicTo<HTMLInputElement>(element)) {
       if (input->type() == input_type_names::kPassword &&
-          !input->Value().IsEmpty())
+          !input->Value().empty())
         form_data.SetContainsPasswordData(true);
     }
   }
@@ -645,8 +645,8 @@ void HTMLFormElement::ParseAttribute(
             mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone)
       return;
     KURL action_url = GetDocument().CompleteURL(
-        attributes_.Action().IsEmpty() ? GetDocument().Url().GetString()
-                                       : attributes_.Action());
+        attributes_.Action().empty() ? GetDocument().Url().GetString()
+                                     : attributes_.Action());
     if (MixedContentChecker::IsMixedFormAction(GetDocument().GetFrame(),
                                                action_url)) {
       UseCounter::Count(GetDocument(), WebFeature::kMixedContentFormPresent);
@@ -823,7 +823,7 @@ bool HTMLFormElement::NoValidate() const {
 
 String HTMLFormElement::action() const {
   Document& document = GetDocument();
-  KURL action_url = document.CompleteURL(attributes_.Action().IsEmpty()
+  KURL action_url = document.CompleteURL(attributes_.Action().empty()
                                              ? document.Url().GetString()
                                              : attributes_.Action());
   return action_url.GetString();
@@ -895,7 +895,7 @@ bool HTMLFormElement::reportValidity() {
 
 Element* HTMLFormElement::ElementFromPastNamesMap(
     const AtomicString& past_name) {
-  if (past_name.IsEmpty() || !past_names_map_)
+  if (past_name.empty() || !past_names_map_)
     return nullptr;
   auto it = past_names_map_->find(past_name);
   Element* element = it != past_names_map_->end() ? it->value : nullptr;
@@ -916,7 +916,7 @@ Element* HTMLFormElement::ElementFromPastNamesMap(
 
 void HTMLFormElement::AddToPastNamesMap(Element* element,
                                         const AtomicString& past_name) {
-  if (past_name.IsEmpty())
+  if (past_name.empty())
     return;
   if (!past_names_map_)
     past_names_map_ = MakeGarbageCollected<PastNamesMap>();

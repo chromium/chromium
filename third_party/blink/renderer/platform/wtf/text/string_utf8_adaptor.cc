@@ -8,7 +8,7 @@ namespace WTF {
 
 StringUTF8Adaptor::StringUTF8Adaptor(StringView string,
                                      UTF8ConversionMode mode) {
-  if (string.IsEmpty())
+  if (string.empty())
     return;
   // Unfortunately, 8 bit WTFStrings are encoded in Latin-1 and GURL uses
   // UTF-8 when processing 8 bit strings. If |relative| is entirely ASCII, we

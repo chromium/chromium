@@ -178,7 +178,7 @@ bool HasAnimationsOrTransitions(const StyleResolverState& state) {
 }
 
 bool HasTimelines(const StyleResolverState& state) {
-  if (!state.Style()->ScrollTimelineName().IsEmpty())
+  if (!state.Style()->ScrollTimelineName().empty())
     return true;
   if (!state.Style()->ViewTimelineName().empty())
     return true;
@@ -247,7 +247,7 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
     builder.Append(" ");
   }
 
-  if (builder.IsEmpty())
+  if (builder.empty())
     return g_null_atom;
 
   return String("Field diff: ") + builder.ReleaseString();
@@ -402,7 +402,7 @@ static inline ScopedStyleResolver* ScopedResolverFor(const Element& element) {
   if (ScopedStyleResolver* resolver = tree_scope->GetScopedStyleResolver()) {
 #if DCHECK_IS_ON()
     if (!element.HasMediaControlAncestor())
-      DCHECK(element.ShadowPseudoId().IsEmpty());
+      DCHECK(element.ShadowPseudoId().empty());
 #endif
     DCHECK(!element.IsVTTElement());
     return resolver;
@@ -411,7 +411,7 @@ static inline ScopedStyleResolver* ScopedResolverFor(const Element& element) {
   tree_scope = tree_scope->ParentTreeScope();
   if (!tree_scope)
     return nullptr;
-  if (element.ShadowPseudoId().IsEmpty() && !element.IsVTTElement())
+  if (element.ShadowPseudoId().empty() && !element.IsVTTElement())
     return nullptr;
   return tree_scope->GetScopedStyleResolver();
 }

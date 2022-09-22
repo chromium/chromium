@@ -1369,7 +1369,7 @@ EphemeralRange FrameSelection::GetSelectionRangeAroundCaret(
     }
 
     String text = PlainText(EphemeralRange(start, end));
-    if (text.IsEmpty() || IsSeparator(text.CharacterStartingAt(0))) {
+    if (text.empty() || IsSeparator(text.CharacterStartingAt(0))) {
       continue;
     }
 

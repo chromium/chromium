@@ -305,7 +305,7 @@ void AppendStyleInfo(Node* node,
   }
   element_info->setValue("style", std::move(computed_style));
 
-  if (!node_contrast.font_size.IsEmpty()) {
+  if (!node_contrast.font_size.empty()) {
     std::unique_ptr<protocol::DictionaryValue> contrast =
         protocol::DictionaryValue::create();
     contrast->setString("fontSize", node_contrast.font_size);
@@ -353,7 +353,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
     else if (pseudo_element->GetPseudoId() == kPseudoIdMarker)
       class_names.Append("::marker");
   }
-  if (!class_names.IsEmpty())
+  if (!class_names.empty())
     element_info->setString("className", class_names.ToString());
 
   LayoutObject* layout_object = element->GetLayoutObject();
@@ -1678,7 +1678,7 @@ void InspectorHighlightBase::AppendPath(
   object->setString("fillColor", fill_color.SerializeAsCSSColor());
   if (outline_color != Color::kTransparent)
     object->setString("outlineColor", outline_color.SerializeAsCSSColor());
-  if (!name.IsEmpty())
+  if (!name.empty())
     object->setString("name", name);
   highlight_paths_->pushValue(std::move(object));
 }

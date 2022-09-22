@@ -30,7 +30,7 @@ class TrackGroup {
 };
 
 static int TextTrackLanguageSelectionScore(const TextTrack& track) {
-  if (track.language().IsEmpty())
+  if (track.language().empty())
     return 0;
 
   Vector<AtomicString> languages = UserPreferredLanguages();

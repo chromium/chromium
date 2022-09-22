@@ -86,7 +86,7 @@ class WTF_EXPORT StringBuilder {
   }
 
   void Append(const StringView& string) {
-    if (string.IsEmpty())
+    if (string.empty())
       return;
 
     // If we're appending to an empty builder, and there is not a buffer
@@ -177,7 +177,7 @@ class WTF_EXPORT StringBuilder {
   }
 
   unsigned length() const { return length_; }
-  bool IsEmpty() const { return !length_; }
+  bool empty() const { return !length_; }
 
   unsigned Capacity() const;
   // Increase the capacity of the backing buffer to at least |new_capacity|. The

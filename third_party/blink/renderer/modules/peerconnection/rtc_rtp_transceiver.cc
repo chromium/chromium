@@ -322,7 +322,7 @@ void RTCRtpTransceiver::setOfferedRtpHeaderExtensions(
     // Handle invalid requests for mandatory extensions as per
     // https://w3c.github.io/webrtc-extensions/#rtcrtptransceiver-interface
     // Step 2.1 (not handled on the WebRTC level).
-    if (hdr_ext->uri().IsEmpty()) {
+    if (hdr_ext->uri().empty()) {
       exception_state.ThrowTypeError("The extension URL cannot be empty.");
       return;
     }

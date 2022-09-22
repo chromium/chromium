@@ -65,7 +65,7 @@ bool CSPSourceListAllows(
   if (source_list.allow_star) {
     if (url.ProtocolIsInHTTPFamily() || url.ProtocolIs("ftp") ||
         url.ProtocolIs("ws") || url.ProtocolIs("wss") ||
-        (!url.Protocol().IsEmpty() &&
+        (!url.Protocol().empty() &&
          EqualIgnoringASCIICase(url.Protocol(), self_source.scheme)))
       return true;
 

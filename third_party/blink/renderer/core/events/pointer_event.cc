@@ -181,7 +181,7 @@ void PointerEvent::Trace(Visitor* visitor) const {
 }
 
 DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
-  if (type().IsEmpty())
+  if (type().empty())
     return DispatchEventResult::kNotCanceled;  // Shouldn't happen.
 
   if (type() == event_type_names::kClick) {

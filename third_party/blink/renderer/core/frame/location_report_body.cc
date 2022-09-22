@@ -13,8 +13,8 @@ LocationReportBody::ReportLocation LocationReportBody::CreateReportLocation(
     const String& file,
     absl::optional<uint32_t> line_number,
     absl::optional<uint32_t> column_number) {
-  return file.IsEmpty() ? CreateReportLocation(CaptureSourceLocation())
-                        : ReportLocation{file, line_number, column_number};
+  return file.empty() ? CreateReportLocation(CaptureSourceLocation())
+                      : ReportLocation{file, line_number, column_number};
 }
 
 // static

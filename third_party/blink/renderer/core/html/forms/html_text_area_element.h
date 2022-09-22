@@ -96,7 +96,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   bool SupportsPlaceholder() const override { return true; }
   String GetPlaceholderValue() const final;
   void UpdatePlaceholderText() override;
-  bool IsEmptyValue() const override { return Value().IsEmpty(); }
+  bool IsEmptyValue() const override { return Value().empty(); }
 
   bool IsOptionalFormControl() const override {
     return !IsRequiredFormControl();

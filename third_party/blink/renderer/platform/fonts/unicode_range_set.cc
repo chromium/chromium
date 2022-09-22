@@ -64,7 +64,7 @@ bool UnicodeRangeSet::Contains(UChar32 c) const {
 }
 
 bool UnicodeRangeSet::IntersectsWith(const String& text) const {
-  if (text.IsEmpty())
+  if (text.empty())
     return false;
   if (IsEntireRange())
     return true;

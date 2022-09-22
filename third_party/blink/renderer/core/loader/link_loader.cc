@@ -185,7 +185,7 @@ void LinkLoader::LoadStylesheet(
   }
 
   String integrity_attr = params.integrity;
-  if (!integrity_attr.IsEmpty()) {
+  if (!integrity_attr.empty()) {
     IntegrityMetadataSet metadata_set;
     SubresourceIntegrity::ParseIntegrityAttribute(
         integrity_attr, SubresourceIntegrityHelper::GetFeatures(context),

@@ -125,7 +125,7 @@ class ImageCandidate {
 
   bool SrcOrigin() const { return (origin_attribute_ == kSrcOrigin); }
 
-  inline bool IsEmpty() const { return string_.IsEmpty(); }
+  inline bool IsEmpty() const { return string_.empty(); }
 
  private:
   String source_;  // Keep the StringView buffer alive.

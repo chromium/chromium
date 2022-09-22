@@ -66,7 +66,7 @@ V8DOMActivityLogger* V8DOMActivityLogger::ActivityLogger(
     return it == loggers.end() ? nullptr : it->value.get();
   }
 
-  if (extension_id.IsEmpty())
+  if (extension_id.empty())
     return nullptr;
 
   DOMActivityLoggerMapForMainWorld& loggers = DomActivityLoggersForMainWorld();

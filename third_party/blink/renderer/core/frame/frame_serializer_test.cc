@@ -134,7 +134,7 @@ class FrameSerializerTest : public testing::Test,
                                         const char* mime_type) {
     String mime(mime_type);
     for (const SerializedResource& resource : resources_) {
-      if (resource.url == url && !resource.data->IsEmpty() &&
+      if (resource.url == url && !resource.data->empty() &&
           (mime.IsNull() || EqualIgnoringASCIICase(resource.mime_type, mime)))
         return &resource;
     }

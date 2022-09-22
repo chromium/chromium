@@ -184,7 +184,7 @@ void NGTextPainter::Paint(const NGTextFragmentPaintInfo& fragment_paint_info,
   PaintInternal<kPaintText>(fragment_paint_info, length, node_id,
                             auto_dark_mode);
 
-  if (!emphasis_mark_.IsEmpty()) {
+  if (!emphasis_mark_.empty()) {
     if (text_style.emphasis_mark_color != text_style.fill_color)
       graphics_context_.SetFillColor(text_style.emphasis_mark_color);
     PaintInternal<kPaintEmphasisMark>(fragment_paint_info, length, node_id,

@@ -255,8 +255,8 @@ void WorkerClassicScriptLoader::DidReceiveData(const char* data, unsigned len) {
   if (!decoder_) {
     decoder_ = std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
         TextResourceDecoderOptions::kPlainTextContent,
-        response_encoding_.IsEmpty() ? UTF8Encoding()
-                                     : WTF::TextEncoding(response_encoding_)));
+        response_encoding_.empty() ? UTF8Encoding()
+                                   : WTF::TextEncoding(response_encoding_)));
   }
 
   if (!len)

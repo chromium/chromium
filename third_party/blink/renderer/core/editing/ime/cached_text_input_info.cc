@@ -156,7 +156,7 @@ void CachedTextInputInfo::EnsureCached(const ContainerNode& container) const {
     length += it.GetTextState().length();
   }
 
-  if (!builder.IsEmpty())
+  if (!builder.empty())
     text_ = builder.ToString();
 }
 

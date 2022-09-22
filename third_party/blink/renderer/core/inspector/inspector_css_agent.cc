@@ -1391,7 +1391,7 @@ Response InspectorCSSAgent::setStyleSheetText(
   response = InspectorDOMAgent::ToResponse(exception_state);
   if (!response.IsSuccess())
     return response;
-  if (!inspector_style_sheet->SourceMapURL().IsEmpty())
+  if (!inspector_style_sheet->SourceMapURL().empty())
     *source_map_url = inspector_style_sheet->SourceMapURL();
   return Response::Success();
 }
@@ -1651,7 +1651,7 @@ Response InspectorCSSAgent::setMediaText(
   if (success) {
     CSSMediaRule* rule = InspectorCSSAgent::AsCSSMediaRule(action->TakeRule());
     String source_url = rule->parentStyleSheet()->Contents()->BaseURL();
-    if (source_url.IsEmpty())
+    if (source_url.empty())
       source_url = InspectorDOMAgent::DocumentURLString(
           rule->parentStyleSheet()->OwnerDocument());
     *result = BuildMediaObject(rule->media(), kMediaListSourceMediaRule,
@@ -1992,7 +1992,7 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
   if (inspector_style_sheet && media_list_source != kMediaListSourceLinkedSheet)
     media_object->setStyleSheetId(inspector_style_sheet->Id());
 
-  if (!source_url.IsEmpty()) {
+  if (!source_url.empty()) {
     media_object->setSourceURL(source_url);
 
     CSSRule* parent_rule = media->ParentRule();
@@ -2046,7 +2046,7 @@ void InspectorCSSAgent::CollectMediaQueriesFromRule(
 
   if (parent_style_sheet) {
     source_url = parent_style_sheet->Contents()->BaseURL();
-    if (source_url.IsEmpty())
+    if (source_url.empty())
       source_url = InspectorDOMAgent::DocumentURLString(
           parent_style_sheet->OwnerDocument());
   } else {
@@ -2079,7 +2079,7 @@ InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
   container_query_object->setRange(
       inspector_style_sheet->RuleHeaderSourceRange(rule));
 
-  if (!rule->Name().IsEmpty())
+  if (!rule->Name().empty())
     container_query_object->setName(rule->Name());
 
   return container_query_object;
@@ -2390,7 +2390,7 @@ protocol::CSS::StyleSheetOrigin InspectorCSSAgent::DetectOrigin(
     Document* owner_document) {
   DCHECK(page_style_sheet);
 
-  if (!page_style_sheet->ownerNode() && page_style_sheet->href().IsEmpty() &&
+  if (!page_style_sheet->ownerNode() && page_style_sheet->href().empty() &&
       !page_style_sheet->IsConstructed())
     return protocol::CSS::StyleSheetOriginEnum::UserAgent;
 
@@ -2625,7 +2625,7 @@ CSSStyleDeclaration* InspectorCSSAgent::FindEffectiveDeclaration(
 
   for (unsigned i = 0; i < styles.size(); ++i) {
     CSSStyleDeclaration* style = styles.at(i).Get();
-    if (style->getPropertyValue(longhand).IsEmpty())
+    if (style->getPropertyValue(longhand).empty())
       continue;
     if (style->getPropertyPriority(longhand) == "important")
       return style;
@@ -2717,7 +2717,7 @@ Response InspectorCSSAgent::setEffectivePropertyValueForNode(
   if (found_index == -1) {
     String new_property_text = "\n" + longhand + ": " + value +
                                (force_important ? " !important" : "") + ";";
-    if (!style_text.IsEmpty() && !style_text.StripWhiteSpace().EndsWith(';'))
+    if (!style_text.empty() && !style_text.StripWhiteSpace().EndsWith(';'))
       new_property_text = ";" + new_property_text;
     style_text = style_text + new_property_text;
     change_range.start = body_range.end;
@@ -2769,9 +2769,9 @@ Response InspectorCSSAgent::getBackgroundColors(
           cssvalue::CSSColor::SerializeAsCSSComponentValue(color));
     }
   }
-  if (!fs.IsEmpty())
+  if (!fs.empty())
     *computed_font_size = fs;
-  if (!fw.IsEmpty())
+  if (!fw.empty())
     *computed_font_weight = fw;
   return Response::Success();
 }

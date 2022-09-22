@@ -43,11 +43,11 @@ void MockClipboardHost::GetSequenceNumber(
 
 Vector<String> MockClipboardHost::ReadStandardFormatNames() {
   Vector<String> types;
-  if (!plain_text_.IsEmpty())
+  if (!plain_text_.empty())
     types.push_back("text/plain");
-  if (!html_text_.IsEmpty())
+  if (!html_text_.empty())
     types.push_back("text/html");
-  if (!svg_text_.IsEmpty())
+  if (!svg_text_.empty())
     types.push_back("image/svg+xml");
   if (!png_.empty())
     types.push_back("image/png");
@@ -72,10 +72,10 @@ void MockClipboardHost::IsFormatAvailable(
   bool result = false;
   switch (format) {
     case mojom::ClipboardFormat::kPlaintext:
-      result = !plain_text_.IsEmpty();
+      result = !plain_text_.empty();
       break;
     case mojom::ClipboardFormat::kHtml:
-      result = !html_text_.IsEmpty();
+      result = !html_text_.empty();
       break;
     case mojom::ClipboardFormat::kSmartPaste:
       result = write_smart_paste_;

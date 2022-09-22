@@ -206,7 +206,7 @@ TEST_F(WebFrameSerializerSanitizationTest, FromBrokenImageDocument) {
   // is simpler to not generate only that instead of the full MHTML.
   String mhtml =
       GenerateMHTMLPartsFromPng("http://www.test.com", "broken-image.png");
-  EXPECT_TRUE(mhtml.IsEmpty());
+  EXPECT_TRUE(mhtml.empty());
 }
 
 TEST_F(WebFrameSerializerSanitizationTest, ImageLoadedFromSrcsetForHiDPI) {

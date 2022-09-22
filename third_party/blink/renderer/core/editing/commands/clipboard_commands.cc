@@ -395,7 +395,7 @@ ClipboardCommands::GetFragmentFromClipboard(LocalFrame& frame) {
   }
 
   const String text = frame.GetSystemClipboard()->ReadPlainText();
-  if (text.IsEmpty())
+  if (text.empty())
     return std::make_pair(fragment, false);
 
   // TODO(editing-dev): Use of UpdateStyleAndLayout

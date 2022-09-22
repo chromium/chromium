@@ -256,7 +256,7 @@ std::unique_ptr<SavedFormState> SavedFormState::Deserialize(
     String name = state_vector[index++];
     String type = state_vector[index++];
     FormControlState state = FormControlState::Deserialize(state_vector, index);
-    if (type.IsEmpty() ||
+    if (type.empty() ||
         (type.Find(IsNotFormControlTypeCharacter) != kNotFound &&
          !CustomElement::IsValidName(AtomicString(type))) ||
         state.IsFailure())
@@ -367,7 +367,7 @@ static inline void RecordFormStructure(const HTMLFormElement& form,
     if (!OwnerFormForState(control))
       continue;
     AtomicString name = control.GetName();
-    if (name.IsEmpty())
+    if (name.empty())
       continue;
     named_controls++;
     builder.Append(name);

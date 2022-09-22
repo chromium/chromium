@@ -47,7 +47,7 @@ SVGParsingError SVGNumberList::Parse(const CharType*& ptr,
 SVGParsingError SVGNumberList::SetValueAsString(const String& value) {
   Clear();
 
-  if (value.IsEmpty())
+  if (value.empty())
     return SVGParseStatus::kNoError;
 
   // Don't call |clear()| if an error is encountered. SVG policy is to use

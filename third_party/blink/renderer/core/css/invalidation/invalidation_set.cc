@@ -300,28 +300,28 @@ StringImpl* InvalidationSet::FindAnyAttribute(Element& element) const {
 void InvalidationSet::AddClass(const AtomicString& class_name) {
   if (WholeSubtreeInvalid())
     return;
-  CHECK(!class_name.IsEmpty());
+  CHECK(!class_name.empty());
   classes_.Add(backing_flags_, class_name);
 }
 
 void InvalidationSet::AddId(const AtomicString& id) {
   if (WholeSubtreeInvalid())
     return;
-  CHECK(!id.IsEmpty());
+  CHECK(!id.empty());
   ids_.Add(backing_flags_, id);
 }
 
 void InvalidationSet::AddTagName(const AtomicString& tag_name) {
   if (WholeSubtreeInvalid())
     return;
-  CHECK(!tag_name.IsEmpty());
+  CHECK(!tag_name.empty());
   tag_names_.Add(backing_flags_, tag_name);
 }
 
 void InvalidationSet::AddAttribute(const AtomicString& attribute) {
   if (WholeSubtreeInvalid())
     return;
-  CHECK(!attribute.IsEmpty());
+  CHECK(!attribute.empty());
   attributes_.Add(backing_flags_, attribute);
 }
 
@@ -410,7 +410,7 @@ String InvalidationSet::ToString() const {
     std::sort(names.begin(), names.end(), WTF::CodeUnitCompareLessThan);
 
     for (const auto& name : names) {
-      if (!builder.IsEmpty())
+      if (!builder.empty())
         builder.Append(" ");
       builder.Append(prefix);
       builder.Append(name);
@@ -425,15 +425,15 @@ String InvalidationSet::ToString() const {
   if (HasIds())
     features.Append(format_backing(Ids(), "#", ""));
   if (HasClasses()) {
-    features.Append(!features.IsEmpty() ? " " : "");
+    features.Append(!features.empty() ? " " : "");
     features.Append(format_backing(Classes(), ".", ""));
   }
   if (HasTagNames()) {
-    features.Append(!features.IsEmpty() ? " " : "");
+    features.Append(!features.empty() ? " " : "");
     features.Append(format_backing(TagNames(), "", ""));
   }
   if (HasAttributes()) {
-    features.Append(!features.IsEmpty() ? " " : "");
+    features.Append(!features.empty() ? " " : "");
     features.Append(format_backing(Attributes(), "[", "]"));
   }
 
@@ -461,11 +461,11 @@ String InvalidationSet::ToString() const {
 
   StringBuilder main;
   main.Append("{");
-  if (!features.IsEmpty()) {
+  if (!features.empty()) {
     main.Append(" ");
     main.Append(features);
   }
-  if (!metadata.IsEmpty()) {
+  if (!metadata.empty()) {
     main.Append(" ");
     main.Append(metadata);
   }

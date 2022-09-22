@@ -63,7 +63,7 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
   }
 
   // Check payment response validity.
-  if (!response->hasMethodName() || response->methodName().IsEmpty() ||
+  if (!response->hasMethodName() || response->methodName().empty() ||
       !response->hasDetails() || response->details().IsNull() ||
       !response->details().IsObject()) {
     GetExecutionContext()->AddConsoleMessage(
@@ -75,7 +75,7 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
             "be empty in payment response."));
   }
 
-  if (!response->hasMethodName() || response->methodName().IsEmpty()) {
+  if (!response->hasMethodName() || response->methodName().empty()) {
     BlankResponseWithError(PaymentEventResponseType::PAYMENT_METHOD_NAME_EMPTY);
     return;
   }
@@ -108,22 +108,22 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
   }
 
   String details = ToCoreString(details_value);
-  DCHECK(!details.IsEmpty());
+  DCHECK(!details.empty());
 
   String payer_name = response->hasPayerName() ? response->payerName() : "";
-  if (should_have_payer_name_ && payer_name.IsEmpty()) {
+  if (should_have_payer_name_ && payer_name.empty()) {
     BlankResponseWithError(PaymentEventResponseType::PAYER_NAME_EMPTY);
     return;
   }
 
   String payer_email = response->hasPayerEmail() ? response->payerEmail() : "";
-  if (should_have_payer_email_ && payer_email.IsEmpty()) {
+  if (should_have_payer_email_ && payer_email.empty()) {
     BlankResponseWithError(PaymentEventResponseType::PAYER_EMAIL_EMPTY);
     return;
   }
 
   String payer_phone = response->hasPayerPhone() ? response->payerPhone() : "";
-  if (should_have_payer_phone_ && payer_phone.IsEmpty()) {
+  if (should_have_payer_phone_ && payer_phone.empty()) {
     BlankResponseWithError(PaymentEventResponseType::PAYER_PHONE_EMPTY);
     return;
   }
@@ -148,7 +148,7 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
 
   String selected_shipping_option_id =
       response->hasShippingOption() ? response->shippingOption() : "";
-  if (should_have_shipping_info_ && selected_shipping_option_id.IsEmpty()) {
+  if (should_have_shipping_info_ && selected_shipping_option_id.empty()) {
     BlankResponseWithError(PaymentEventResponseType::SHIPPING_OPTION_EMPTY);
     return;
   }

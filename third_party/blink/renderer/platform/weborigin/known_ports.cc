@@ -46,7 +46,7 @@ base::Lock& ExplicitlyAllowedPortsLock() {
 }  // namespace
 
 bool IsDefaultPortForProtocol(uint16_t port, const WTF::String& protocol) {
-  if (protocol.IsEmpty())
+  if (protocol.empty())
     return false;
 
   switch (port) {

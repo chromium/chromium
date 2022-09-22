@@ -36,7 +36,7 @@ CssSelectorFragmentAnchor* CssSelectorFragmentAnchor::TryCreate(
 
   Element* anchor_node = nullptr;
   for (CssSelectorDirective* directive : css_selector_directives) {
-    if (!directive->value().IsEmpty() && !directive->IsConsumed()) {
+    if (!directive->value().empty() && !directive->IsConsumed()) {
       anchor_node = doc.RootNode().QuerySelector(directive->value());
 
       // TODO(crbug.com/1265721): this will ignore directives after the first

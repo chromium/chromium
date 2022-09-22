@@ -68,7 +68,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
                            info.allow_negative_values,
                            cross_origin_isolated_capability),
                        PerformanceEntry::GetNavigationId(context)),
-      initiator_type_(initiator_type.IsEmpty()
+      initiator_type_(initiator_type.empty()
                           ? fetch_initiator_type_names::kOther
                           : initiator_type),
       alpn_negotiated_protocol_(

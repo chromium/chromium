@@ -64,7 +64,7 @@ MediaQuerySet::MediaQuerySet(HeapVector<Member<const MediaQuery>> queries)
 MediaQuerySet* MediaQuerySet::Create(
     const String& media_string,
     const ExecutionContext* execution_context) {
-  if (media_string.IsEmpty())
+  if (media_string.empty())
     return MediaQuerySet::Create();
 
   return MediaQueryParser::ParseMediaQuerySet(media_string, execution_context);

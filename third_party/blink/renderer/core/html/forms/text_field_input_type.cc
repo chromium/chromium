@@ -144,7 +144,7 @@ bool TextFieldInputType::IsTextField() const {
 bool TextFieldInputType::ValueMissing(const String& value) const {
   // For text-mode input elements, the value is missing only if it is mutable.
   // https://html.spec.whatwg.org/multipage/input.html#the-required-attribute
-  return GetElement().IsRequired() && value.IsEmpty() &&
+  return GetElement().IsRequired() && value.empty() &&
          !GetElement().IsDisabledOrReadOnly();
 }
 
@@ -509,7 +509,7 @@ void TextFieldInputType::UpdatePlaceholderText(bool is_suggested_value) {
     return;
   HTMLElement* placeholder = GetElement().PlaceholderElement();
   String placeholder_text = GetElement().GetPlaceholderValue();
-  if (placeholder_text.IsEmpty()) {
+  if (placeholder_text.empty()) {
     if (placeholder)
       placeholder->remove(ASSERT_NO_EXCEPTION);
     return;
@@ -591,7 +591,7 @@ void TextFieldInputType::SpinButtonStepUp() {
 }
 
 void TextFieldInputType::UpdateView() {
-  if (GetElement().SuggestedValue().IsEmpty() &&
+  if (GetElement().SuggestedValue().empty() &&
       GetElement().NeedsToUpdateViewValue()) {
     // Update the view only if needsToUpdateViewValue is true. It protects
     // an unacceptable view value from being overwritten with the DOM value.

@@ -53,7 +53,7 @@ String BlobURL::GetOrigin(const KURL& url) {
 }
 
 KURL BlobURL::CreateBlobURL(const String& origin_string) {
-  DCHECK(!origin_string.IsEmpty());
+  DCHECK(!origin_string.empty());
   String url_string =
       "blob:" + origin_string + '/' + WTF::CreateCanonicalUUIDString();
   return KURL(url_string);

@@ -804,7 +804,7 @@ CSSStyleSheet* StyleEngine::CreateSheet(
   DCHECK(style_sheet);
   if (!element.IsInShadowTree()) {
     String title = element.title();
-    if (!title.IsEmpty()) {
+    if (!title.empty()) {
       style_sheet->SetTitle(title);
       SetPreferredStylesheetSetNameIfNotSet(title);
     }
@@ -1324,8 +1324,8 @@ void StyleEngine::IdChangedForElement(const AtomicString& old_id,
   if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
       features.NeedsHasInvalidationForIdChange() &&
       PossiblyAffectingHasState(element)) {
-    if ((!old_id.IsEmpty() && features.NeedsHasInvalidationForId(old_id)) ||
-        (!new_id.IsEmpty() && features.NeedsHasInvalidationForId(new_id))) {
+    if ((!old_id.empty() && features.NeedsHasInvalidationForId(old_id)) ||
+        (!new_id.empty() && features.NeedsHasInvalidationForId(new_id))) {
       InvalidateChangedElementAffectedByLogicalCombinationsInHas(
           element, /* for_pseudo_change */ false);
       InvalidateAncestorsOrSiblingsAffectedByHas(element);
@@ -1336,9 +1336,9 @@ void StyleEngine::IdChangedForElement(const AtomicString& old_id,
     return;
 
   InvalidationLists invalidation_lists;
-  if (!old_id.IsEmpty())
+  if (!old_id.empty())
     features.CollectInvalidationSetsForId(invalidation_lists, element, old_id);
-  if (!new_id.IsEmpty())
+  if (!new_id.empty())
     features.CollectInvalidationSetsForId(invalidation_lists, element, new_id);
   pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
                                                          element);
@@ -1787,15 +1787,15 @@ void StyleEngine::SetStatsEnabled(bool enabled) {
 }
 
 void StyleEngine::SetPreferredStylesheetSetNameIfNotSet(const String& name) {
-  DCHECK(!name.IsEmpty());
-  if (!preferred_stylesheet_set_name_.IsEmpty())
+  DCHECK(!name.empty());
+  if (!preferred_stylesheet_set_name_.empty())
     return;
   preferred_stylesheet_set_name_ = name;
   MarkDocumentDirty();
 }
 
 void StyleEngine::SetHttpDefaultStyle(const String& content) {
-  if (!content.IsEmpty())
+  if (!content.empty())
     SetPreferredStylesheetSetNameIfNotSet(content);
 }
 
@@ -2546,7 +2546,7 @@ StyleRuleKeyframes* StyleEngine::KeyframeStylesForAnimation(
 StyleRuleFontPaletteValues* StyleEngine::FontPaletteValuesForNameAndFamily(
     AtomicString palette_name,
     AtomicString family_name) {
-  if (font_palette_values_rule_map_.empty() || palette_name.IsEmpty()) {
+  if (font_palette_values_rule_map_.empty() || palette_name.empty()) {
     return nullptr;
   }
 

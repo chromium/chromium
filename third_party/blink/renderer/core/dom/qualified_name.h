@@ -99,7 +99,7 @@ class CORE_EXPORT QualifiedName {
           namespace_(namespace_uri)
 
     {
-      DCHECK(!namespace_.IsEmpty() || namespace_.IsNull());
+      DCHECK(!namespace_.empty() || namespace_.IsNull());
     }
   };
 

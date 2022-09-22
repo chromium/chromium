@@ -156,7 +156,7 @@ void WebLanguageDetectionDetails::RecordAcceptLanguageAndXmlHtmlLangMetric(
   // Spec: xml:lang takes precedence -- http://www.w3.org/TR/xhtml1/#C_7
   const AtomicString& xml_language = DocumentXmlLanguage(*document);
   if (xml_language) {
-    if (xml_language.IsEmpty()) {
+    if (xml_language.empty()) {
       base::UmaHistogramEnumeration(
           language_histogram_name,
           AcceptLanguageAndXmlHtmlLangUsage::kXmlLangEmpty);
@@ -177,7 +177,7 @@ void WebLanguageDetectionDetails::RecordAcceptLanguageAndXmlHtmlLangMetric(
 
   // We only record html language metric if xml:lang not exists.
   const AtomicString& html_language = DocumentLanguage(*document);
-  if (!html_language || html_language.IsEmpty()) {
+  if (!html_language || html_language.empty()) {
     base::UmaHistogramEnumeration(
         language_histogram_name,
         AcceptLanguageAndXmlHtmlLangUsage::kHtmlLangEmpty);

@@ -937,7 +937,7 @@ static void FillStaticResponseIfNeeded(WebNavigationParams* params,
     return;
 
   PluginData* plugin_data = frame->GetPluginData();
-  if (!mime_type.IsEmpty() && plugin_data &&
+  if (!mime_type.empty() && plugin_data &&
       plugin_data->SupportsMimeType(mime_type)) {
     return;
   }
@@ -1403,12 +1403,11 @@ String FrameLoader::ApplyUserAgentOverrideAndLog(
   probe::ApplyUserAgentOverride(probe::ToCoreProbeSink(frame_->GetDocument()),
                                 &user_agent_override);
 
-  if (Client()->UserAgentOverride().IsEmpty() &&
-      user_agent_override.IsEmpty()) {
+  if (Client()->UserAgentOverride().empty() && user_agent_override.empty()) {
     return user_agent;
   }
 
-  if (user_agent_override.IsEmpty()) {
+  if (user_agent_override.empty()) {
     user_agent_override = user_agent;
   }
 

@@ -46,7 +46,7 @@ bool IsValidNativeIONameCharacter(int name_char) {
 const int kMaximumFilenameLength = 100;
 
 bool IsValidNativeIOName(const String& name) {
-  if (name.IsEmpty())
+  if (name.empty())
     return false;
 
   if (name.length() > kMaximumFilenameLength)

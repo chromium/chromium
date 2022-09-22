@@ -275,7 +275,7 @@ void TextFragmentHandler::OpenedContextMenuOverSelection(LocalFrame* frame) {
     return;
   }
 
-  if (frame->Selection().SelectedText().IsEmpty())
+  if (frame->Selection().SelectedText().empty())
     return;
 
   if (!frame->GetTextFragmentHandler())

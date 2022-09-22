@@ -47,7 +47,7 @@ class ImageDecoderTest : public testing::Test {
     init->setType(mime_type);
 
     auto data = ReadFile(file_name);
-    DCHECK(!data->IsEmpty()) << "Missing file: " << file_name;
+    DCHECK(!data->empty()) << "Missing file: " << file_name;
     init->setData(MakeGarbageCollected<V8ImageBufferSource>(
         DOMArrayBuffer::Create(std::move(data))));
     return ImageDecoderExternal::Create(v8_scope->GetScriptState(), init,
@@ -166,7 +166,7 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtDecodeTime) {
 
   constexpr char kTestFile[] = "images/resources/animated.gif";
   auto data = ReadFile(kTestFile);
-  DCHECK(!data->IsEmpty()) << "Missing file: " << kTestFile;
+  DCHECK(!data->empty()) << "Missing file: " << kTestFile;
 
   auto* buffer = DOMArrayBuffer::Create(std::move(data));
 

@@ -232,7 +232,7 @@ FontFace* FontFace::Create(Document* document,
       font_face->SetPropertyFromStyle(properties,
                                       AtRuleDescriptorID::SizeAdjust) &&
       font_face->GetFontSelectionCapabilities().IsValid() &&
-      !font_face->family().IsEmpty()) {
+      !font_face->family().empty()) {
     font_face->InitCSSFontFace(document->GetExecutionContext(), *src);
     return font_face;
   }
@@ -896,7 +896,7 @@ void FontFace::InitCSSFontFace(ExecutionContext* context,
   if (source->IsValid()) {
     SetLoadStatus(kLoaded);
   } else {
-    if (!ots_parse_message_.IsEmpty()) {
+    if (!ots_parse_message_.empty()) {
       context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kWarning,

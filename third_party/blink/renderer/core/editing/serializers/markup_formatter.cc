@@ -199,7 +199,7 @@ void MarkupFormatter::AppendEndMarkup(StringBuilder& result,
     return;
 
   result.Append("</");
-  if (!prefix.IsEmpty()) {
+  if (!prefix.empty()) {
     result.Append(prefix);
     result.Append(":");
   }
@@ -222,7 +222,7 @@ void MarkupFormatter::AppendAttribute(StringBuilder& result,
                                       const String& value,
                                       bool document_is_html) {
   result.Append(' ');
-  if (!prefix.IsEmpty()) {
+  if (!prefix.empty()) {
     result.Append(prefix);
     result.Append(':');
   }
@@ -254,7 +254,7 @@ void MarkupFormatter::AppendXMLDeclaration(StringBuilder& result,
   result.Append("<?xml version=\"");
   result.Append(document.xmlVersion());
   const String& encoding = document.xmlEncoding();
-  if (!encoding.IsEmpty()) {
+  if (!encoding.empty()) {
     result.Append("\" encoding=\"");
     result.Append(encoding);
   }
@@ -271,21 +271,21 @@ void MarkupFormatter::AppendXMLDeclaration(StringBuilder& result,
 
 void MarkupFormatter::AppendDocumentType(StringBuilder& result,
                                          const DocumentType& n) {
-  if (n.name().IsEmpty())
+  if (n.name().empty())
     return;
 
   result.Append("<!DOCTYPE ");
   result.Append(n.name());
-  if (!n.publicId().IsEmpty()) {
+  if (!n.publicId().empty()) {
     result.Append(" PUBLIC \"");
     result.Append(n.publicId());
     result.Append('"');
-    if (!n.systemId().IsEmpty()) {
+    if (!n.systemId().empty()) {
       result.Append(" \"");
       result.Append(n.systemId());
       result.Append('"');
     }
-  } else if (!n.systemId().IsEmpty()) {
+  } else if (!n.systemId().empty()) {
     result.Append(" SYSTEM \"");
     result.Append(n.systemId());
     result.Append('"');
@@ -314,7 +314,7 @@ void MarkupFormatter::AppendStartTagOpen(StringBuilder& result,
                                          const AtomicString& prefix,
                                          const AtomicString& local_name) {
   result.Append('<');
-  if (!prefix.IsEmpty()) {
+  if (!prefix.empty()) {
     result.Append(prefix);
     result.Append(":");
   }

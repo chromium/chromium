@@ -23,7 +23,7 @@ std::unique_ptr<ImageDecoder> CreateJXLDecoderWithArguments(
       alpha_option, high_bit_depth_decoding_option, color_behavior,
       ImageDecoder::kNoDecodedImageByteLimit);
   scoped_refptr<SharedBuffer> data = ReadFile(jxl_file);
-  EXPECT_FALSE(data->IsEmpty());
+  EXPECT_FALSE(data->empty());
   decoder->SetData(data.get(), true);
   return decoder;
 }
@@ -37,7 +37,7 @@ std::unique_ptr<ImageDecoder> CreateJXLDecoder() {
 std::unique_ptr<ImageDecoder> CreateJXLDecoderWithData(const char* jxl_file) {
   auto decoder = CreateJXLDecoder();
   scoped_refptr<SharedBuffer> data = ReadFile(jxl_file);
-  EXPECT_FALSE(data->IsEmpty());
+  EXPECT_FALSE(data->empty());
   decoder->SetData(data.get(), true);
   return decoder;
 }
@@ -214,7 +214,7 @@ void TestSegmented(const char* jxl_file, gfx::Size expected_size) {
       ImageDecoder::kAlphaNotPremultiplied, ImageDecoder::kDefaultBitDepth,
       ColorBehavior::Tag(), ImageDecoder::kNoDecodedImageByteLimit);
   scoped_refptr<SharedBuffer> data = ReadFile(jxl_file);
-  EXPECT_FALSE(data->IsEmpty());
+  EXPECT_FALSE(data->empty());
 
   scoped_refptr<SegmentReader> reader =
       base::AdoptRef(new PerByteSegmentReader(*data.get()));

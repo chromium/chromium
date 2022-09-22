@@ -147,7 +147,7 @@ void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
   // src) by IDs instead. We also check the stack as they are executed
   // immediately and should be tagged based on the script inserting them.
   bool should_track_with_id =
-      script_url.IsEmpty() && script_id != v8::Message::kNoScriptIdInfo;
+      script_url.empty() && script_id != v8::Message::kNoScriptIdInfo;
   if (should_track_with_id) {
     // This primarily checks if |execution_context| is a known ad context as we
     // don't need to keep track of scripts in ad contexts. However, two scripts
@@ -357,7 +357,7 @@ bool AdTracker::IsKnownAdScriptForCheckedContext(
 
   // Delay calling ScriptAtTopOfStack() as much as possible due to its cost.
   String script_url = url.IsNull() ? ScriptAtTopOfStack() : url;
-  if (script_url.IsEmpty())
+  if (script_url.empty())
     return false;
   return it->value.Contains(script_url);
 }
@@ -365,7 +365,7 @@ bool AdTracker::IsKnownAdScriptForCheckedContext(
 // This is a separate function for testing purposes.
 void AdTracker::AppendToKnownAdScripts(ExecutionContext& execution_context,
                                        const String& url) {
-  DCHECK(!url.IsEmpty());
+  DCHECK(!url.empty());
   auto add_result =
       known_ad_scripts_.insert(&execution_context, HashSet<String>());
   add_result.stored_value->value.insert(url);

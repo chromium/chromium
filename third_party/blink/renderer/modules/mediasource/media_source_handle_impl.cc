@@ -18,7 +18,7 @@ MediaSourceHandleImpl::MediaSourceHandleImpl(
     : attachment_provider_(std::move(attachment_provider)),
       internal_blob_url_(internal_blob_url) {
   DCHECK(attachment_provider_);
-  DCHECK(!internal_blob_url.IsEmpty());
+  DCHECK(!internal_blob_url.empty());
 
   DVLOG(1) << __func__ << " this=" << this
            << ", attachment_provider_=" << attachment_provider_

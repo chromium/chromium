@@ -65,7 +65,7 @@ SVGParsingError SVGRect::SetValueAsString(const String& string) {
   if (string.IsNull())
     return SVGParseStatus::kNoError;
 
-  if (string.IsEmpty())
+  if (string.empty())
     return SVGParsingError(SVGParseStatus::kExpectedNumber, 0);
 
   return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {

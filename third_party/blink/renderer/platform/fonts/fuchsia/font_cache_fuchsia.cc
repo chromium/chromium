@@ -40,7 +40,7 @@ const AtomicString& FontCache::SystemFontFamily() {
 
 // static
 void FontCache::SetSystemFontFamily(const AtomicString& family_name) {
-  DCHECK(!family_name.IsEmpty());
+  DCHECK(!family_name.empty());
   MutableSystemFontFamily() = family_name;
 }
 

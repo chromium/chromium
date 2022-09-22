@@ -194,7 +194,7 @@ std::unique_ptr<ImageDecoder> ImageDecoder::Create(
     const SkISize& desired_size,
     AnimationOption animation_option) {
   auto type = SniffMimeTypeInternal(data);
-  if (type.IsEmpty())
+  if (type.empty())
     return nullptr;
 
   return CreateByMimeType(type, std::move(data), data_complete, alpha_option,

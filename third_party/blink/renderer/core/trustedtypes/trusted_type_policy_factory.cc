@@ -309,7 +309,7 @@ ScriptValue TrustedTypePolicyFactory::getTypeMapping(ScriptState* script_state,
   // Create three-deep dictionary of properties, like so:
   // {tagname: { ["attributes"|"properties"]: { attribute: type }}}
 
-  if (!ns.IsEmpty())
+  if (!ns.empty())
     return ScriptValue::CreateNull(script_state->GetIsolate());
 
   v8::HandleScope handle_scope(script_state->GetIsolate());

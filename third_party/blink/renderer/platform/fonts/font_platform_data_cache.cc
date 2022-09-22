@@ -117,7 +117,7 @@ FontPlatformData* FontPlatformDataCache::GetOrCreateFontPlatformData(
   // looking up the font under the aliased name.
   const AtomicString& alternate_name =
       AlternateFamilyName(creation_params.Family());
-  if (alternate_name.IsEmpty())
+  if (alternate_name.empty())
     return nullptr;
 
   FontFaceCreationParams create_by_alternate_family(alternate_name);

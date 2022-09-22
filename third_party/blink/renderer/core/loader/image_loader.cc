@@ -316,7 +316,7 @@ bool ImageLoader::ImageIsPotentiallyAvailable() const {
                           !image_content_->ErrorOccurred();
   bool image_still_loading = !image_has_loaded && HasPendingActivity() &&
                              !HasPendingError() &&
-                             !element_->ImageSourceURL().IsEmpty();
+                             !element_->ImageSourceURL().empty();
   bool image_has_image = image_content_ && image_content_->HasImage();
   bool image_is_document = element_->GetDocument().IsImageDocument() &&
                            image_content_ && !image_content_->ErrorOccurred();
@@ -343,7 +343,7 @@ void ImageLoader::ClearImage() {
 
 void ImageLoader::SetImageWithoutConsideringPendingLoadEvent(
     ImageResourceContent* new_image_content) {
-  DCHECK(failed_load_url_.IsEmpty());
+  DCHECK(failed_load_url_.empty());
   ImageResourceContent* old_image_content = image_content_.Get();
   if (new_image_content != old_image_content) {
     if (pending_load_event_.IsActive())
@@ -646,7 +646,7 @@ void ImageLoader::UpdateFromElement(
   if (update_behavior == kUpdateIgnorePreviousError)
     ClearFailedLoadURL();
 
-  if (!failed_load_url_.IsEmpty() && image_source_url == failed_load_url_)
+  if (!failed_load_url_.empty() && image_source_url == failed_load_url_)
     return;
 
   // Prevent the creation of a ResourceLoader (and therefore a network request)
@@ -680,7 +680,7 @@ void ImageLoader::UpdateFromElement(
   }
   // Allow the idiom "img.src=''; img.src='.." to clear down the image before an
   // asynchronous load completes.
-  if (image_source_url.IsEmpty()) {
+  if (image_source_url.empty()) {
     ImageResourceContent* image = image_content_.Get();
     if (image) {
       image->RemoveObserver(this);
@@ -715,7 +715,7 @@ KURL ImageLoader::ImageSourceToKURL(AtomicString image_source_url) const {
   if (!image_source_url.IsNull()) {
     String stripped_image_source_url =
         StripLeadingAndTrailingHTMLSpaces(image_source_url);
-    if (!stripped_image_source_url.IsEmpty())
+    if (!stripped_image_source_url.empty())
       url = document.CompleteURL(stripped_image_source_url);
   }
   return url;
@@ -763,7 +763,7 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
       << "ImageLoader::imageNotifyFinished " << this
       << "; has pending load event=" << pending_load_event_.IsActive();
 
-  DCHECK(failed_load_url_.IsEmpty());
+  DCHECK(failed_load_url_.empty());
   DCHECK_EQ(content, image_content_.Get());
 
   CHECK(!image_complete_);

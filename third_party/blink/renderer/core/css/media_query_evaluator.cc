@@ -119,7 +119,7 @@ void MediaQueryEvaluator::Trace(Visitor* visitor) const {
 
 const String MediaQueryEvaluator::MediaType() const {
   // If a static mediaType was given by the constructor, we use it here.
-  if (!media_type_.IsEmpty())
+  if (!media_type_.empty())
     return media_type_;
   // Otherwise, we get one from mediaValues (which may be dynamic or cached).
   if (media_values_)
@@ -129,7 +129,7 @@ const String MediaQueryEvaluator::MediaType() const {
 
 bool MediaQueryEvaluator::MediaTypeMatch(
     const String& media_type_to_match) const {
-  return media_type_to_match.IsEmpty() ||
+  return media_type_to_match.empty() ||
          EqualIgnoringASCIICase(media_type_to_match, media_type_names::kAll) ||
          EqualIgnoringASCIICase(media_type_to_match, MediaType());
 }

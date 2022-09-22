@@ -86,7 +86,7 @@ struct FontCacheKey {
       options_,
       device_scale_factor_hash,
 #if BUILDFLAG(IS_ANDROID)
-      (locale_.IsEmpty() ? 0 : AtomicStringHash::GetHash(locale_)) ^
+      (locale_.empty() ? 0 : AtomicStringHash::GetHash(locale_)) ^
 #endif  // BUILDFLAG(IS_ANDROID)
           (variation_settings_ ? variation_settings_->GetHash() : 0),
       palette_ ? palette_->GetHash() : 0,

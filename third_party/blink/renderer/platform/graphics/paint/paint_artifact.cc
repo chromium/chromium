@@ -52,7 +52,7 @@ DOMNodeId PaintArtifact::ClientOwnerNodeId(
 String PaintArtifact::IdAsString(const DisplayItem::Id& id) const {
 #if DCHECK_IS_ON()
   String debug_name = ClientDebugName(id.client_id);
-  if (!debug_name.IsEmpty()) {
+  if (!debug_name.empty()) {
     return String::Format(
         "%p:%s:%s:%d", reinterpret_cast<void*>(id.client_id),
         ClientDebugName(id.client_id).Utf8().c_str(),

@@ -65,7 +65,7 @@ SVGParsingError SVGPointList::Parse(const CharType* ptr, const CharType* end) {
 SVGParsingError SVGPointList::SetValueAsString(const String& value) {
   Clear();
 
-  if (value.IsEmpty())
+  if (value.empty())
     return SVGParseStatus::kNoError;
 
   return WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {

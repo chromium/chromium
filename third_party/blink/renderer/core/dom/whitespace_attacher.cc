@@ -40,7 +40,7 @@ void WhitespaceAttacher::DidReattach(Node* node, LayoutObject* prev_in_flow) {
 
 void WhitespaceAttacher::DidReattachText(Text* text) {
   DCHECK(text);
-  if (text->data().IsEmpty())
+  if (text->data().empty())
     return;
   DidReattach(text, text->GetLayoutObject());
   SetLastTextNode(text);
@@ -56,7 +56,7 @@ void WhitespaceAttacher::DidReattachElement(Element* element,
 
 void WhitespaceAttacher::DidVisitText(Text* text) {
   DCHECK(text);
-  if (text->data().IsEmpty())
+  if (text->data().empty())
     return;
   if (!last_text_node_ || !last_text_node_needs_reattach_) {
     SetLastTextNode(text);

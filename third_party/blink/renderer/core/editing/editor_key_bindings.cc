@@ -53,7 +53,7 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
     // so we leave it upon WebCore to either handle them immediately
     // (e.g. Tab that changes focus) or let a keypress event be generated
     // (e.g. Tab that inserts a Tab character, or Enter).
-    if (command.IsTextInsertion() || command_name.IsEmpty())
+    if (command.IsTextInsertion() || command_name.empty())
       return false;
     return command.Execute(evt);
   }

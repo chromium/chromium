@@ -646,7 +646,7 @@ TEST(KURLTest, Empty) {
   EXPECT_FALSE(kurl.IsValid());
   EXPECT_TRUE(kurl.IsNull());
   EXPECT_TRUE(kurl.GetString().IsNull());
-  EXPECT_TRUE(kurl.GetString().IsEmpty());
+  EXPECT_TRUE(kurl.GetString().empty());
 
   // Test resolving a null URL on an empty string.
   const KURL kurl2(kurl, "");
@@ -654,9 +654,9 @@ TEST(KURLTest, Empty) {
   EXPECT_TRUE(kurl2.IsEmpty());
   EXPECT_FALSE(kurl2.IsValid());
   EXPECT_FALSE(kurl2.GetString().IsNull());
-  EXPECT_TRUE(kurl2.GetString().IsEmpty());
+  EXPECT_TRUE(kurl2.GetString().empty());
   EXPECT_FALSE(kurl2.GetString().IsNull());
-  EXPECT_TRUE(kurl2.GetString().IsEmpty());
+  EXPECT_TRUE(kurl2.GetString().empty());
 
   // Resolve the null URL on a null string.
   const KURL kurl22(kurl, String());
@@ -664,9 +664,9 @@ TEST(KURLTest, Empty) {
   EXPECT_TRUE(kurl22.IsEmpty());
   EXPECT_FALSE(kurl22.IsValid());
   EXPECT_FALSE(kurl22.GetString().IsNull());
-  EXPECT_TRUE(kurl22.GetString().IsEmpty());
+  EXPECT_TRUE(kurl22.GetString().empty());
   EXPECT_FALSE(kurl22.GetString().IsNull());
-  EXPECT_TRUE(kurl22.GetString().IsEmpty());
+  EXPECT_TRUE(kurl22.GetString().empty());
 
   // Test non-hierarchical schemes resolving. The actual URLs will be different.
   // WebKit's one will set the string to "something.gif" and we'll set it to an
@@ -681,7 +681,7 @@ TEST(KURLTest, Empty) {
   EXPECT_TRUE(kurl4.IsEmpty());
   EXPECT_FALSE(kurl4.IsValid());
   EXPECT_TRUE(kurl4.GetString().IsNull());
-  EXPECT_TRUE(kurl4.GetString().IsEmpty());
+  EXPECT_TRUE(kurl4.GetString().empty());
 
   // Resolving an empty URL on an invalid string.
   const KURL kurl5("foo.js");
@@ -696,7 +696,7 @@ TEST(KURLTest, Empty) {
   EXPECT_TRUE(kurl6.IsEmpty());
   EXPECT_FALSE(kurl6.IsValid());
   EXPECT_FALSE(kurl6.GetString().IsNull());
-  EXPECT_TRUE(kurl6.GetString().IsEmpty());
+  EXPECT_TRUE(kurl6.GetString().empty());
 
   // Non-empty but invalid C string as input.
   const KURL kurl7("foo.js");

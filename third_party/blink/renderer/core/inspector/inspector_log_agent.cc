@@ -123,7 +123,7 @@ void InspectorLogAgent::ConsoleMessageAdded(ConsoleMessage* message) {
           .setText(message->Message())
           .setTimestamp(message->Timestamp())
           .build();
-  if (!message->Location()->Url().IsEmpty())
+  if (!message->Location()->Url().empty())
     entry->setUrl(message->Location()->Url());
   std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>
       stack_trace = message->Location()->BuildInspectorObject();
@@ -132,7 +132,7 @@ void InspectorLogAgent::ConsoleMessageAdded(ConsoleMessage* message) {
   if (message->Location()->LineNumber())
     entry->setLineNumber(message->Location()->LineNumber() - 1);
   if (message->Source() == mojom::blink::ConsoleMessageSource::kWorker &&
-      !message->WorkerId().IsEmpty())
+      !message->WorkerId().empty())
     entry->setWorkerId(message->WorkerId());
   if (message->Source() == mojom::blink::ConsoleMessageSource::kNetwork &&
       !message->RequestIdentifier().IsNull()) {

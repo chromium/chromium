@@ -847,7 +847,7 @@ Range* Editor::FindRangeOfString(
     const EphemeralRangeInFlatTree& reference_range,
     FindOptions options,
     bool* wrapped_around) {
-  if (target.IsEmpty())
+  if (target.empty())
     return nullptr;
 
   // Start from an edge of the reference range. Which edge is used depends on

@@ -22,11 +22,11 @@ constexpr char kFederatedCredentialType[] = "federated";
 FederatedCredential* FederatedCredential::Create(
     const FederatedCredentialInit* data,
     ExceptionState& exception_state) {
-  if (data->id().IsEmpty()) {
+  if (data->id().empty()) {
     exception_state.ThrowTypeError("'id' must not be empty.");
     return nullptr;
   }
-  if (data->provider().IsEmpty()) {
+  if (data->provider().empty()) {
     exception_state.ThrowTypeError("'provider' must not be empty.");
     return nullptr;
   }

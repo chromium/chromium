@@ -605,10 +605,10 @@ void HTMLConstructionSite::SetCompatibilityModeFromDoctype(
       EqualIgnoringASCIICase(
           system_id,
           "http://www.ibm.com/data/dtd/v11/ibmxhtml1-transitional.dtd") ||
-      (system_id.IsEmpty() && public_id.StartsWithIgnoringASCIICase(
-                                  "-//W3C//DTD HTML 4.01 Frameset//")) ||
-      (system_id.IsEmpty() && public_id.StartsWithIgnoringASCIICase(
-                                  "-//W3C//DTD HTML 4.01 Transitional//"))) {
+      (system_id.empty() && public_id.StartsWithIgnoringASCIICase(
+                                "-//W3C//DTD HTML 4.01 Frameset//")) ||
+      (system_id.empty() && public_id.StartsWithIgnoringASCIICase(
+                                "-//W3C//DTD HTML 4.01 Transitional//"))) {
     SetCompatibilityMode(Document::kQuirksMode);
     return;
   }
@@ -618,10 +618,10 @@ void HTMLConstructionSite::SetCompatibilityModeFromDoctype(
           "-//W3C//DTD XHTML 1.0 Frameset//") ||
       public_id.StartsWithIgnoringASCIICase(
           "-//W3C//DTD XHTML 1.0 Transitional//") ||
-      (!system_id.IsEmpty() && public_id.StartsWithIgnoringASCIICase(
-                                   "-//W3C//DTD HTML 4.01 Frameset//")) ||
-      (!system_id.IsEmpty() && public_id.StartsWithIgnoringASCIICase(
-                                   "-//W3C//DTD HTML 4.01 Transitional//"))) {
+      (!system_id.empty() && public_id.StartsWithIgnoringASCIICase(
+                                 "-//W3C//DTD HTML 4.01 Frameset//")) ||
+      (!system_id.empty() && public_id.StartsWithIgnoringASCIICase(
+                                 "-//W3C//DTD HTML 4.01 Transitional//"))) {
     SetCompatibilityMode(Document::kLimitedQuirksMode);
     return;
   }

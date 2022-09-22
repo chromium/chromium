@@ -90,7 +90,7 @@ void ImeOnFocusTest::RunImeOnFocusTest(
   if (tap_point.x() >= 0 && tap_point.y() >= 0)
     SendGestureTap(web_view, tap_point);
 
-  if (!frame.IsEmpty()) {
+  if (!frame.empty()) {
     RegisterMockedURLLoadFromBase(WebString(base_url_),
                                   test::CoreTestDataPath(), WebString(frame));
     WebLocalFrame* child_frame =

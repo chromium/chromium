@@ -168,7 +168,7 @@ void VTTParser::Parse() {
       case kId:
         // Steps 17 - 20 - Allow any number of line terminators, then initialize
         // new cue values.
-        if (line.IsEmpty())
+        if (line.empty())
           break;
 
         // Step 21 - Cue creation (start a new cue).
@@ -181,7 +181,7 @@ void VTTParser::Parse() {
 
       case kTimingsAndSettings:
         // Steps 26 - 27 - Discard current cue if the line is empty.
-        if (line.IsEmpty()) {
+        if (line.empty()) {
           state_ = kId;
           break;
         }
@@ -242,7 +242,7 @@ VTTParser::ParseState VTTParser::CollectRegionSettings(const String& line) {
 }
 
 VTTParser::ParseState VTTParser::CollectStyleSheet(const String& line) {
-  if (line.IsEmpty() || line.Contains("-->")) {
+  if (line.empty() || line.Contains("-->")) {
     auto* parser_context = MakeGarbageCollected<CSSParserContext>(
         *document_, NullURL(), true /* origin_clean */, Referrer(),
         UTF8Encoding(), CSSParserContext::kLiveProfile,
@@ -261,7 +261,7 @@ VTTParser::ParseState VTTParser::CollectStyleSheet(const String& line) {
     return CheckAndRecoverCue(line);
   }
 
-  if (!current_content_.IsEmpty())
+  if (!current_content_.empty())
     current_content_.Append('\n');
   current_content_.Append(line);
 
@@ -291,7 +291,7 @@ VTTParser::ParseState VTTParser::CollectWebVTTBlock(const String& line) {
   // Handle cue block.
   ParseState state = CheckAndRecoverCue(line);
   if (state != kHeader) {
-    if (!previous_line_.IsEmpty() && !previous_line_.Contains("-->"))
+    if (!previous_line_.empty() && !previous_line_.Contains("-->"))
       current_id_ = AtomicString(previous_line_);
 
     return state;
@@ -299,7 +299,7 @@ VTTParser::ParseState VTTParser::CollectWebVTTBlock(const String& line) {
 
   // store previous line for cue id.
   // length is more than 1 line clear previous_line_ and ignore line.
-  if (previous_line_.IsEmpty())
+  if (previous_line_.empty())
     previous_line_ = line;
   else
     previous_line_ = g_empty_string;
@@ -330,10 +330,10 @@ bool VTTParser::CheckAndCreateRegion(const String& line) {
 }
 
 bool VTTParser::CheckAndStoreRegion(const String& line) {
-  if (!line.IsEmpty() && !line.Contains("-->"))
+  if (!line.empty() && !line.Contains("-->"))
     return false;
 
-  if (!current_region_->id().IsEmpty())
+  if (!current_region_->id().empty())
     region_map_.Set(current_region_->id(), current_region_);
   current_region_ = nullptr;
   return true;
@@ -383,7 +383,7 @@ VTTParser::ParseState VTTParser::CollectTimingsAndSettings(const String& line) {
 
 VTTParser::ParseState VTTParser::CollectCueText(const String& line) {
   // Step 34.
-  if (line.IsEmpty()) {
+  if (line.empty()) {
     CreateNewCue();
     return kId;
   }
@@ -395,7 +395,7 @@ VTTParser::ParseState VTTParser::CollectCueText(const String& line) {
     // Step 41 - New iteration of the cue loop.
     return RecoverCue(line);
   }
-  if (!current_content_.IsEmpty())
+  if (!current_content_.empty())
     current_content_.Append('\n');
   current_content_.Append(line);
 
@@ -411,7 +411,7 @@ VTTParser::ParseState VTTParser::RecoverCue(const String& line) {
 }
 
 VTTParser::ParseState VTTParser::IgnoreBadCue(const String& line) {
-  if (line.IsEmpty())
+  if (line.empty())
     return kId;
   if (line.Contains("-->"))
     return RecoverCue(line);
@@ -446,7 +446,7 @@ DocumentFragment* VTTTreeBuilder::BuildFromString(const String& cue_text) {
 
   DocumentFragment* fragment = DocumentFragment::Create(GetDocument());
 
-  if (cue_text.IsEmpty()) {
+  if (cue_text.empty()) {
     fragment->ParserAppendChild(Text::Create(GetDocument(), ""));
     return fragment;
   }
@@ -607,7 +607,7 @@ void VTTTreeBuilder::ConstructTreeFromToken(Document& document) {
       auto* child = MakeGarbageCollected<VTTElement>(node_type, &document);
       child->SetTrack(track_);
 
-      if (!token_.Classes().IsEmpty())
+      if (!token_.Classes().empty())
         child->setAttribute(html_names::kClassAttr, token_.Classes());
 
       if (node_type == kVTTNodeTypeVoice) {

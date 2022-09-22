@@ -4469,7 +4469,7 @@ String ConcatenateFamilyName(CSSParserTokenRange& range) {
   bool added_space = false;
   const CSSParserToken& first_token = range.Peek();
   while (range.Peek().GetType() == kIdentToken) {
-    if (!builder.IsEmpty()) {
+    if (!builder.empty()) {
       builder.Append(' ');
       added_space = true;
     }
@@ -4743,7 +4743,7 @@ bool IsSupportedKeywordFormat(CSSValueID keyword) {
 }
 
 Vector<String> ParseGridTemplateAreasColumnNames(const String& grid_row_names) {
-  DCHECK(!grid_row_names.IsEmpty());
+  DCHECK(!grid_row_names.empty());
 
   // Using StringImpl to avoid checks and indirection in every call to
   // String::operator[].
@@ -4752,14 +4752,14 @@ Vector<String> ParseGridTemplateAreasColumnNames(const String& grid_row_names) {
   Vector<String> column_names;
   for (unsigned i = 0; i < text.length(); ++i) {
     if (IsCSSSpace(text[i])) {
-      if (!area_name.IsEmpty())
+      if (!area_name.empty())
         column_names.push_back(area_name.ReleaseString());
       continue;
     }
     if (text[i] == '.') {
       if (area_name == ".")
         continue;
-      if (!area_name.IsEmpty())
+      if (!area_name.empty())
         column_names.push_back(area_name.ReleaseString());
     } else {
       if (!IsNameCodePoint(text[i]))
@@ -4770,7 +4770,7 @@ Vector<String> ParseGridTemplateAreasColumnNames(const String& grid_row_names) {
     area_name.Append(text[i]);
   }
 
-  if (!area_name.IsEmpty())
+  if (!area_name.empty())
     column_names.push_back(area_name.ReleaseString());
 
   return column_names;

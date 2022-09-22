@@ -146,7 +146,7 @@ static bool IsInvalidDomainCharacter(UChar ch) {
 }
 
 static bool CheckValidDotUsage(const String& domain) {
-  if (domain.IsEmpty())
+  if (domain.empty())
     return true;
   if (domain[0] == '.' || domain[domain.length() - 1] == '.')
     return false;
@@ -190,7 +190,7 @@ const AtomicString& EmailInputType::FormControlType() const {
 // If an empty string is returned, it means empty address is specified.
 // e.g. "foo@example.com,,bar@example.com" for multiple case.
 String EmailInputType::FindInvalidAddress(const String& value) const {
-  if (value.IsEmpty())
+  if (value.empty())
     return String();
   if (!GetElement().Multiple()) {
     return IsValidEmailAddress(GetElement().GetDocument().EnsureEmailRegexp(),
@@ -219,7 +219,7 @@ bool EmailInputType::TypeMismatch() const {
 String EmailInputType::TypeMismatchText() const {
   String invalid_address = FindInvalidAddress(GetElement().Value());
   DCHECK(!invalid_address.IsNull());
-  if (invalid_address.IsEmpty()) {
+  if (invalid_address.empty()) {
     return GetLocale().QueryString(
         IDS_FORM_VALIDATION_TYPE_MISMATCH_EMAIL_EMPTY);
   }
@@ -234,11 +234,11 @@ String EmailInputType::TypeMismatchText() const {
   String unicode_address = ConvertEmailAddressToUnicode(invalid_address);
   String local_part = invalid_address.Left(at_index);
   String domain = invalid_address.Substring(at_index + 1);
-  if (local_part.IsEmpty())
+  if (local_part.empty())
     return GetLocale().QueryString(
         IDS_FORM_VALIDATION_TYPE_MISMATCH_EMAIL_EMPTY_LOCAL, at_sign,
         unicode_address);
-  if (domain.IsEmpty())
+  if (domain.empty())
     return GetLocale().QueryString(
         IDS_FORM_VALIDATION_TYPE_MISMATCH_EMAIL_EMPTY_DOMAIN, at_sign,
         unicode_address);

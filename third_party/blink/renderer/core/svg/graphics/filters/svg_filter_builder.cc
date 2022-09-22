@@ -197,7 +197,7 @@ void SVGFilterBuilder::BuildGraph(Filter* filter,
 
 void SVGFilterBuilder::Add(const AtomicString& id, FilterEffect* effect) {
   DCHECK(effect);
-  if (id.IsEmpty()) {
+  if (id.empty()) {
     last_effect_ = effect;
     return;
   }
@@ -210,7 +210,7 @@ void SVGFilterBuilder::Add(const AtomicString& id, FilterEffect* effect) {
 }
 
 FilterEffect* SVGFilterBuilder::GetEffectById(const AtomicString& id) const {
-  if (!id.IsEmpty()) {
+  if (!id.empty()) {
     auto builtin_it = builtin_effects_.find(id);
     if (builtin_it != builtin_effects_.end())
       return builtin_it->value;

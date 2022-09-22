@@ -88,7 +88,7 @@ TEST(ICOImageDecoderTests, NullData) {
 
   scoped_refptr<SharedBuffer> ico_file_data =
       ReadFile("/images/resources/png-in-ico.ico");
-  ASSERT_FALSE(ico_file_data->IsEmpty());
+  ASSERT_FALSE(ico_file_data->empty());
   ASSERT_LT(kSizeOfBadBlock, ico_file_data->size());
 
   scoped_refptr<SharedBuffer> truncated_data =

@@ -155,7 +155,7 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
                                               const String& web_codecs) {
   DCHECK(IsMainThread());
   // An empty |type| means MediaRecorderHandler can choose its preferred codecs.
-  if (type.IsEmpty())
+  if (type.empty())
     return true;
 
   const bool video = EqualIgnoringASCIICase(type, "video/webm") ||
@@ -217,7 +217,7 @@ bool MediaRecorderHandler::Initialize(
     return false;
   }
 
-  passthrough_enabled_ = type.IsEmpty();
+  passthrough_enabled_ = type.empty();
 
   // Once established that we support the codec(s), hunt then individually.
   video_codec_profile_ = VideoStringToCodecProfile(codecs);

@@ -1262,7 +1262,7 @@ void ResourceFetcher::InitializeRevalidation(
       resource->GetResponse().HttpHeaderField(http_names::kLastModified);
   const AtomicString& e_tag =
       resource->GetResponse().HttpHeaderField(http_names::kETag);
-  if (!last_modified.IsEmpty() || !e_tag.IsEmpty()) {
+  if (!last_modified.empty() || !e_tag.empty()) {
     DCHECK_NE(mojom::blink::FetchCacheMode::kBypassCache,
               revalidating_request.GetCacheMode());
     if (revalidating_request.GetCacheMode() ==
@@ -1271,11 +1271,11 @@ void ResourceFetcher::InitializeRevalidation(
                                               "max-age=0");
     }
   }
-  if (!last_modified.IsEmpty()) {
+  if (!last_modified.empty()) {
     revalidating_request.SetHttpHeaderField(http_names::kIfModifiedSince,
                                             last_modified);
   }
-  if (!e_tag.IsEmpty())
+  if (!e_tag.empty())
     revalidating_request.SetHttpHeaderField(http_names::kIfNoneMatch, e_tag);
 
   resource->SetRevalidatingRequest(revalidating_request);

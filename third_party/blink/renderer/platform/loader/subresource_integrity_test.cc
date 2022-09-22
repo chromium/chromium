@@ -125,7 +125,7 @@ class SubresourceIntegrityTest : public testing::Test {
     String digest;
 
     EXPECT_FALSE(SubresourceIntegrity::ParseDigest(position, end, digest));
-    EXPECT_TRUE(digest.IsEmpty());
+    EXPECT_TRUE(digest.empty());
   }
 
   void ExpectParse(const char* integrity_attribute,

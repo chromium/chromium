@@ -294,7 +294,7 @@ bool IsRootEditableElementWithCounting(const Element& element) {
       UseCounter::Count(doc, WebFeature::kWebKitUserModifyReadWriteEffective);
       UseCounter::Count(doc, WebFeature::kWebKitUserModifyEffective);
     }
-  } else if (ce_value.IsEmpty() || EqualIgnoringASCIICase(ce_value, "true")) {
+  } else if (ce_value.empty() || EqualIgnoringASCIICase(ce_value, "true")) {
     if (user_modify == EUserModify::kReadWritePlaintextOnly) {
       UseCounter::Count(doc, WebFeature::kPlainTextEditingEffective);
       UseCounter::Count(doc, WebFeature::kWebKitUserModifyPlainTextEffective);
@@ -2454,7 +2454,7 @@ void Element::UpdatePopupAttribute(String value) {
   }
   PopupValueType type = PopupValueType::kNone;
   if (EqualIgnoringASCIICase(value, kPopupTypeValueAuto) ||
-      (!value.IsNull() && value.IsEmpty())) {
+      (!value.IsNull() && value.empty())) {
     type = PopupValueType::kAuto;
   } else if (EqualIgnoringASCIICase(value, kPopupTypeValueHint)) {
     type = PopupValueType::kHint;
@@ -5199,7 +5199,7 @@ bool HasSiblingsForNonEmpty(const Node* sibling,
     if (sibling->IsElementNode())
       return true;
     auto* text_node = DynamicTo<Text>(sibling);
-    if (text_node && !text_node->data().IsEmpty())
+    if (text_node && !text_node->data().empty())
       return true;
   }
   return false;
@@ -5305,7 +5305,7 @@ Attr* Element::removeAttributeNode(Attr* attr,
 void Element::ParseAttribute(const AttributeModificationParams& params) {
   if (params.name == html_names::kTabindexAttr) {
     int tabindex = 0;
-    if (params.new_value.IsEmpty() ||
+    if (params.new_value.empty() ||
         !ParseHTMLInteger(params.new_value, tabindex)) {
       ClearTabIndexExplicitlyIfNeeded();
     } else {
@@ -6277,7 +6277,7 @@ String Element::outerHTML() const {
 void Element::SetInnerHTMLInternal(const String& html,
                                    bool include_shadow_roots,
                                    ExceptionState& exception_state) {
-  if (html.IsEmpty() && !HasNonInBodyInsertionMode()) {
+  if (html.empty() && !HasNonInBodyInsertionMode()) {
     setTextContent(html);
   } else {
     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
@@ -6409,7 +6409,7 @@ Node* Element::InsertAdjacent(const String& where,
 
 void Element::HideNonce() {
   const AtomicString& nonce_value = FastGetAttribute(html_names::kNonceAttr);
-  if (nonce_value.IsEmpty())
+  if (nonce_value.empty())
     return;
   if (!InActiveDocument())
     return;
@@ -7366,7 +7366,7 @@ KURL Element::GetNonEmptyURLAttribute(const QualifiedName& name) const {
   }
 #endif
   String value = StripLeadingAndTrailingHTMLSpaces(getAttribute(name));
-  if (value.IsEmpty())
+  if (value.empty())
     return KURL();
   return GetDocument().CompleteURL(value);
 }
@@ -7607,9 +7607,9 @@ inline void Element::UpdateId(TreeScope& scope,
   DCHECK(IsInTreeScope());
   DCHECK_NE(old_id, new_id);
 
-  if (!old_id.IsEmpty())
+  if (!old_id.empty())
     scope.RemoveElementById(old_id, *this);
-  if (!new_id.IsEmpty())
+  if (!new_id.empty())
     scope.AddElementById(new_id, *this);
 
   NamedItemType type = GetNamedItemType();
@@ -7814,18 +7814,18 @@ void Element::UpdateNamedItemRegistration(NamedItemType type,
   if (!doc)
     return;
 
-  if (!old_name.IsEmpty())
+  if (!old_name.empty())
     doc->RemoveNamedItem(old_name);
 
-  if (!new_name.IsEmpty())
+  if (!new_name.empty())
     doc->AddNamedItem(new_name);
 
   if (type == NamedItemType::kNameOrIdWithName) {
     const AtomicString id = GetIdAttribute();
-    if (!id.IsEmpty()) {
-      if (!old_name.IsEmpty() && new_name.IsEmpty())
+    if (!id.empty()) {
+      if (!old_name.empty() && new_name.empty())
         doc->RemoveNamedItem(id);
-      else if (old_name.IsEmpty() && !new_name.IsEmpty())
+      else if (old_name.empty() && !new_name.empty())
         doc->AddNamedItem(id);
     }
   }
@@ -7838,13 +7838,13 @@ void Element::UpdateIdNamedItemRegistration(NamedItemType type,
   if (!doc)
     return;
 
-  if (type == NamedItemType::kNameOrIdWithName && GetNameAttribute().IsEmpty())
+  if (type == NamedItemType::kNameOrIdWithName && GetNameAttribute().empty())
     return;
 
-  if (!old_id.IsEmpty())
+  if (!old_id.empty())
     doc->RemoveNamedItem(old_id);
 
-  if (!new_id.IsEmpty())
+  if (!new_id.empty())
     doc->AddNamedItem(new_id);
 }
 
@@ -8604,7 +8604,7 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
 WTF::AtomicStringTable::WeakResult Element::WeakLowercaseIfNecessary(
     const AtomicString& name) const {
   if (LIKELY(IsHTMLElement() && IsA<HTMLDocument>(GetDocument()))) {
-    if (name.IsEmpty() || name.IsLowerASCII())
+    if (name.empty() || name.IsLowerASCII())
       return WTF::AtomicStringTable::WeakResult(name);
     return WTF::AtomicStringTable::Instance().WeakFindLowercase(name);
   }

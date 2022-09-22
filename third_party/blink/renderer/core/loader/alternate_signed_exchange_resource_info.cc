@@ -54,8 +54,8 @@ AlternateSignedExchangeMachingKey MakeKey(const String& anchor,
 void AddAlternateUrlIfValid(
     const LinkHeader& header,
     HashMap<AlternateSignedExchangeMachingKey, KURL>* alternate_urls) {
-  if (!header.Valid() || header.Url().IsEmpty() ||
-      !header.Anchor().has_value() || header.Anchor()->IsEmpty() ||
+  if (!header.Valid() || header.Url().empty() || !header.Anchor().has_value() ||
+      header.Anchor()->empty() ||
       !EqualIgnoringASCIICase(header.Rel(), kAlternate) ||
       header.MimeType() != kSignedExchangeMimeType) {
     return;
@@ -73,8 +73,8 @@ std::unique_ptr<AlternateSignedExchangeResourceInfo::Entry>
 CreateEntryForLinkHeaderIfValid(
     const LinkHeader& header,
     const HashMap<AlternateSignedExchangeMachingKey, KURL>& alternate_urls) {
-  if (!header.Valid() || header.Url().IsEmpty() ||
-      header.HeaderIntegrity().IsEmpty() ||
+  if (!header.Valid() || header.Url().empty() ||
+      header.HeaderIntegrity().empty() ||
       !EqualIgnoringASCIICase(header.Rel(), kAllowedAltSxg)) {
     return nullptr;
   }

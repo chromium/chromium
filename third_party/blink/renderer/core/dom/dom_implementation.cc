@@ -86,7 +86,7 @@ XMLDocument* DOMImplementation::createDocument(
   doc->SetContextFeatures(document_->GetContextFeatures());
 
   Node* document_element = nullptr;
-  if (!qualified_name.IsEmpty()) {
+  if (!qualified_name.empty()) {
     document_element =
         doc->createElementNS(namespace_uri, qualified_name, exception_state);
     if (exception_state.HadException())

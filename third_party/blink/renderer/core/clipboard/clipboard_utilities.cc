@@ -57,7 +57,7 @@ String ConvertURIListToURL(const String& uri_list) {
   // be found, return an empty string. This is in line with the HTML5 spec.
   for (String& line : items) {
     line = line.StripWhiteSpace();
-    if (line.IsEmpty())
+    if (line.empty())
       continue;
     if (line[0] == '#')
       continue;
@@ -85,7 +85,7 @@ String URLToImageMarkup(const KURL& url, const String& title) {
   builder.Append("<img src=\"");
   builder.Append(EscapeForHTML(url.GetString()));
   builder.Append("\"");
-  if (!title.IsEmpty()) {
+  if (!title.empty()) {
     builder.Append(" alt=\"");
     builder.Append(EscapeForHTML(title));
     builder.Append("\"");

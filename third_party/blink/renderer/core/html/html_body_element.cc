@@ -66,7 +66,7 @@ void HTMLBodyElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   if (name == html_names::kBackgroundAttr) {
     AtomicString url(StripLeadingAndTrailingHTMLSpaces(value));
-    if (!url.IsEmpty()) {
+    if (!url.empty()) {
       CSSImageValue* image_value = MakeGarbageCollected<CSSImageValue>(
           url, GetDocument().CompleteURL(url),
           Referrer(GetExecutionContext()->OutgoingReferrer(),

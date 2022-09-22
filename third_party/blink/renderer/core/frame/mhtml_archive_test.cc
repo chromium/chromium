@@ -229,7 +229,7 @@ TEST_F(MHTMLArchiveTest,
   HashMap<String, String> mhtml_headers = ExtractMHTMLHeaders();
 
   EXPECT_EQ("<Saved by Blink>", mhtml_headers.find("From")->value);
-  EXPECT_FALSE(mhtml_headers.find("Date")->value.IsEmpty());
+  EXPECT_FALSE(mhtml_headers.find("Date")->value.empty());
   EXPECT_EQ(
       "multipart/related;type=\"text/html\";boundary=\"boundary-example\"",
       mhtml_headers.find("Content-Type")->value);
@@ -248,7 +248,7 @@ TEST_F(MHTMLArchiveTest,
   HashMap<String, String> mhtml_headers = ExtractMHTMLHeaders();
 
   EXPECT_EQ("<Saved by Blink>", mhtml_headers.find("From")->value);
-  EXPECT_FALSE(mhtml_headers.find("Date")->value.IsEmpty());
+  EXPECT_FALSE(mhtml_headers.find("Date")->value.empty());
   EXPECT_EQ(
       "multipart/related;type=\"text/html\";boundary=\"boundary-example\"",
       mhtml_headers.find("Content-Type")->value);
@@ -271,7 +271,7 @@ TEST_F(MHTMLArchiveTest,
   HashMap<String, String> mhtml_headers = ExtractMHTMLHeaders();
 
   EXPECT_EQ("<Saved by Blink>", mhtml_headers.find("From")->value);
-  EXPECT_FALSE(mhtml_headers.find("Date")->value.IsEmpty());
+  EXPECT_FALSE(mhtml_headers.find("Date")->value.empty());
   EXPECT_EQ(
       "multipart/related;type=\"text/html\";boundary=\"boundary-example\"",
       mhtml_headers.find("Content-Type")->value);
@@ -303,9 +303,9 @@ TEST_F(MHTMLArchiveTest, TestMHTMLPartsWithBinaryEncoding) {
     part_count++;
 
     HashMap<String, String> part_headers = ExtractHeaders(line_reader);
-    EXPECT_FALSE(part_headers.find("Content-Type")->value.IsEmpty());
+    EXPECT_FALSE(part_headers.find("Content-Type")->value.empty());
     EXPECT_EQ("binary", part_headers.find("Content-Transfer-Encoding")->value);
-    EXPECT_FALSE(part_headers.find("Content-Location")->value.IsEmpty());
+    EXPECT_FALSE(part_headers.find("Content-Location")->value.empty());
   }
   EXPECT_EQ(12, part_count);
 
@@ -333,10 +333,10 @@ TEST_F(MHTMLArchiveTest, TestMHTMLPartsWithDefaultEncoding) {
     HashMap<String, String> part_headers = ExtractHeaders(line_reader);
 
     String content_type = part_headers.find("Content-Type")->value;
-    EXPECT_FALSE(content_type.IsEmpty());
+    EXPECT_FALSE(content_type.empty());
 
     String encoding = part_headers.find("Content-Transfer-Encoding")->value;
-    EXPECT_FALSE(encoding.IsEmpty());
+    EXPECT_FALSE(encoding.empty());
 
     if (content_type.StartsWith("text/"))
       EXPECT_EQ("quoted-printable", encoding);

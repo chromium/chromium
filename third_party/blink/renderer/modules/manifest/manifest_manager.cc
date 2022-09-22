@@ -167,7 +167,7 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
                                               const ResourceResponse& response,
                                               const String& data) {
   fetcher_ = nullptr;
-  if (response.IsNull() && data.IsEmpty()) {
+  if (response.IsNull() && data.empty()) {
     manifest_debug_info_ = nullptr;
     ManifestUmaUtil::FetchFailed(ManifestUmaUtil::FETCH_UNSPECIFIED_REASON);
     ResolveCallbacks(ResolveState::kFailure);

@@ -1827,7 +1827,7 @@ void ApplyStyleCommand::AddBlockStyle(const StyleChange& style_change,
   StringBuilder css_text;
   css_text.Append(css_style);
   if (const CSSPropertyValueSet* decl = block->InlineStyle()) {
-    if (!css_style.IsEmpty())
+    if (!css_style.empty())
       css_text.Append(' ');
     css_text.Append(decl->AsText());
   }
@@ -1948,7 +1948,7 @@ void ApplyStyleCommand::ApplyInlineStyleChange(
         String existing_text = existing_style->AsText();
         StringBuilder css_text;
         css_text.Append(existing_text);
-        if (!existing_text.IsEmpty())
+        if (!existing_text.empty())
           css_text.Append(' ');
         css_text.Append(style_change.CssStyle());
         SetNodeAttribute(style_container, html_names::kStyleAttr,

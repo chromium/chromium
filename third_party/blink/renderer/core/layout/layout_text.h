@@ -166,7 +166,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   }
   bool HasEmptyText() const {
     NOT_DESTROYED();
-    return text_.IsEmpty();
+    return text_.empty();
   }
   UChar CharacterAt(unsigned) const;
   UChar UncheckedCharacterAt(unsigned) const;

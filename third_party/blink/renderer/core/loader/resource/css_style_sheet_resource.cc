@@ -349,7 +349,7 @@ const String CSSStyleSheetResource::SheetText(
     return decoded_sheet_text_;
   }
 
-  if (!Data() || Data()->IsEmpty())
+  if (!Data() || Data()->empty())
     return String();
 
   return DecodedText();
@@ -452,7 +452,7 @@ bool CSSStyleSheetResource::CanUseSheet(const CSSParserContext* parser_context,
   if (mime_type_check == MIMETypeCheck::kLax)
     return true;
   AtomicString content_type = HttpContentType();
-  return content_type.IsEmpty() ||
+  return content_type.empty() ||
          EqualIgnoringASCIICase(content_type, "text/css") ||
          EqualIgnoringASCIICase(content_type,
                                 "application/x-unknown-content-type");

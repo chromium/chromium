@@ -186,7 +186,7 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetHttpMethod(new_method);
   request->SetSiteForCookies(new_site_for_cookies);
   String referrer =
-      new_referrer.IsEmpty() ? Referrer::NoReferrer() : String(new_referrer);
+      new_referrer.empty() ? Referrer::NoReferrer() : String(new_referrer);
   request->SetReferrerString(referrer);
   request->SetReferrerPolicy(new_referrer_policy);
   request->SetSkipServiceWorker(skip_service_worker);
@@ -234,7 +234,7 @@ void ResourceRequestHead::SetUrl(const KURL& url) {
 }
 
 void ResourceRequestHead::RemoveUserAndPassFromURL() {
-  if (url_.User().IsEmpty() && url_.Pass().IsEmpty())
+  if (url_.User().empty() && url_.Pass().empty())
     return;
 
   url_.SetUser(String());
@@ -432,12 +432,12 @@ bool ResourceRequestHead::CacheControlContainsNoStore() const {
 }
 
 bool ResourceRequestHead::HasCacheValidatorFields() const {
-  return !http_header_fields_.Get(http_names::kLastModified).IsEmpty() ||
-         !http_header_fields_.Get(http_names::kETag).IsEmpty();
+  return !http_header_fields_.Get(http_names::kLastModified).empty() ||
+         !http_header_fields_.Get(http_names::kETag).empty();
 }
 
 bool ResourceRequestHead::NeedsHTTPOrigin() const {
-  if (!HttpOrigin().IsEmpty())
+  if (!HttpOrigin().empty())
     return false;  // Request already has an Origin header.
 
   // Don't send an Origin header for GET or HEAD to avoid privacy issues.

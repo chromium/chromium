@@ -395,7 +395,7 @@ void MainThreadDebugger::QuerySelectorCallback(
   if (info.Length() < 1)
     return;
   String selector = ToCoreStringWithUndefinedOrNullCheck(info[0]);
-  if (selector.IsEmpty())
+  if (selector.empty())
     return;
   auto* container_node = DynamicTo<ContainerNode>(SecondArgumentAsNode(info));
   if (!container_node)
@@ -418,7 +418,7 @@ void MainThreadDebugger::QuerySelectorAllCallback(
   if (info.Length() < 1)
     return;
   String selector = ToCoreStringWithUndefinedOrNullCheck(info[0]);
-  if (selector.IsEmpty())
+  if (selector.empty())
     return;
   auto* container_node = DynamicTo<ContainerNode>(SecondArgumentAsNode(info));
   if (!container_node)
@@ -450,7 +450,7 @@ void MainThreadDebugger::XpathSelectorCallback(
   if (info.Length() < 1)
     return;
   String selector = ToCoreStringWithUndefinedOrNullCheck(info[0]);
-  if (selector.IsEmpty())
+  if (selector.empty())
     return;
   Node* node = SecondArgumentAsNode(info);
   if (!node || !node->IsContainerNode())

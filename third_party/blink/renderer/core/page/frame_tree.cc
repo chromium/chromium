@@ -58,7 +58,7 @@ const AtomicString& FrameTree::GetName() const {
     if (frame) {
       UseCounter::Count(frame->GetDocument(),
                         WebFeature::kCrossOriginMainFrameNulledNameAccessed);
-      if (!name_.IsEmpty()) {
+      if (!name_.empty()) {
         UseCounter::Count(
             frame->GetDocument(),
             WebFeature::kCrossOriginMainFrameNulledNonEmptyNameAccessed);
@@ -68,7 +68,7 @@ const AtomicString& FrameTree::GetName() const {
 
   if (cross_site_cross_browsing_context_group_set_nulled_name_) {
     auto* frame = DynamicTo<LocalFrame>(this_frame_.Get());
-    if (frame && frame->IsOutermostMainFrame() && !name_.IsEmpty()) {
+    if (frame && frame->IsOutermostMainFrame() && !name_.empty()) {
       UseCounter::Count(
           frame->GetDocument(),
           WebFeature::
@@ -109,7 +109,7 @@ void FrameTree::SetName(const AtomicString& name,
   experimental_set_nulled_name_ = false;
 
   auto* frame = DynamicTo<LocalFrame>(this_frame_.Get());
-  if (frame && frame->IsOutermostMainFrame() && !name.IsEmpty()) {
+  if (frame && frame->IsOutermostMainFrame() && !name.empty()) {
     // TODO(shuuran): remove this once we have gathered the data
     cross_site_cross_browsing_context_group_set_nulled_name_ = false;
   }
@@ -148,7 +148,7 @@ Frame* FrameTree::ScopedChild(unsigned index) const {
 }
 
 Frame* FrameTree::ScopedChild(const AtomicString& name) const {
-  if (name.IsEmpty())
+  if (name.empty())
     return nullptr;
 
   for (Frame* child = FirstChild(); child;
@@ -245,7 +245,7 @@ Frame* FrameTree::FindFrameForNavigationInternal(
   }
 
   if (EqualIgnoringASCIICase(name, "_self") ||
-      EqualIgnoringASCIICase(name, "_current") || name.IsEmpty()) {
+      EqualIgnoringASCIICase(name, "_current") || name.empty()) {
     return this_frame_;
   }
 

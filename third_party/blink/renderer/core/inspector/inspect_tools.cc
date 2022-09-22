@@ -401,7 +401,7 @@ void NodeHighlightTool::DrawNode() {
 }
 
 void NodeHighlightTool::DrawMatchingSelector() {
-  if (selector_list_.IsEmpty() || !node_)
+  if (selector_list_.empty() || !node_)
     return;
   DummyExceptionStateForTesting exception_state;
   ContainerNode* query_base = node_->ContainingShadowRoot();

@@ -1182,7 +1182,7 @@ void LocalFrameView::SetMediaType(const AtomicString& media_type) {
 AtomicString LocalFrameView::MediaType() const {
   // See if we have an override type.
   if (frame_->GetSettings() &&
-      !frame_->GetSettings()->GetMediaTypeOverride().IsEmpty())
+      !frame_->GetSettings()->GetMediaTypeOverride().empty())
     return AtomicString(frame_->GetSettings()->GetMediaTypeOverride());
   return media_type_;
 }

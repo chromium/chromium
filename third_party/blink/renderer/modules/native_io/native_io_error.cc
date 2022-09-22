@@ -89,10 +89,10 @@ NativeIOErrorPtr FileErrorToNativeIOError(base::File::Error file_error,
   NativeIOErrorType native_io_error_type =
       blink::native_io::FileErrorToNativeIOErrorType(file_error);
   String final_message =
-      message.IsEmpty() ? String::FromUTF8(blink::native_io::GetDefaultMessage(
-                                               native_io_error_type)
-                                               .c_str())
-                        : message;
+      message.empty() ? String::FromUTF8(blink::native_io::GetDefaultMessage(
+                                             native_io_error_type)
+                                             .c_str())
+                      : message;
   return mojom::blink::NativeIOError::New(native_io_error_type, final_message);
 }
 }  // namespace blink

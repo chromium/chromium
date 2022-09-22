@@ -909,7 +909,7 @@ BuildObjectForResourceRequest(const ResourceRequest& request,
           .build();
   if (url.FragmentIdentifier())
     result->setUrlFragment("#" + url.FragmentIdentifier());
-  if (!data_string.IsEmpty())
+  if (!data_string.empty())
     result->setPostData(data_string);
   if (data_entries->size())
     result->setPostDataEntries(std::move(data_entries));
@@ -958,11 +958,11 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
   // or the response is a 304 Not Modified.
   String mime_type = response.MimeType();
   if (cached_resource &&
-      (mime_type.IsEmpty() || response.HttpStatusCode() == 304))
+      (mime_type.empty() || response.HttpStatusCode() == 304))
     mime_type = cached_resource->GetResponse().MimeType();
 
   if (is_empty)
-    *is_empty = !status && mime_type.IsEmpty() && !headers_map.size();
+    *is_empty = !status && mime_type.empty() && !headers_map.size();
 
   std::unique_ptr<protocol::Network::Response> response_object =
       protocol::Network::Response::create()
@@ -987,7 +987,7 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
     response_object->setResponseTime(
         response.ResponseTime().ToJsTimeIgnoringNull());
   }
-  if (!response.CacheStorageCacheName().IsEmpty()) {
+  if (!response.CacheStorageCacheName().empty()) {
     response_object->setCacheStorageCacheName(response.CacheStorageCacheName());
   }
 
@@ -1004,7 +1004,7 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
   }
 
   String protocol = response.AlpnNegotiatedProtocol();
-  if (protocol.IsEmpty() || protocol == "unknown") {
+  if (protocol.empty() || protocol == "unknown") {
     if (response.WasFetchedViaSPDY()) {
       protocol = "h2";
     } else if (response.IsHTTP()) {
@@ -1189,7 +1189,7 @@ void InspectorNetworkAgent::WillSendRequestInternal(
                            ? UrlWithoutFragment(loader->Url()).GetString()
                            : UrlWithoutFragment(fetch_context_url).GetString();
   Maybe<String> maybe_frame_id;
-  if (!frame_id.IsEmpty())
+  if (!frame_id.empty())
     maybe_frame_id = frame_id;
   if (loader && loader->GetFrame() && loader->GetFrame()->GetDocument()) {
     request_info->setIsSameSite(
@@ -1408,7 +1408,7 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
     return;
   if (resource_response && !resource_is_empty) {
     Maybe<String> maybe_frame_id;
-    if (!frame_id.IsEmpty())
+    if (!frame_id.empty())
       maybe_frame_id = frame_id;
     GetFrontend()->responseReceived(
         request_id, loader_id,
@@ -1610,7 +1610,7 @@ InspectorNetworkAgent::BuildInitiatorObject(
     Document* document,
     const FetchInitiatorInfo& initiator_info,
     int max_async_depth) {
-  if (initiator_info.is_imported_module && !initiator_info.referrer.IsEmpty()) {
+  if (initiator_info.is_imported_module && !initiator_info.referrer.empty()) {
     std::unique_ptr<protocol::Network::Initiator> initiator_object =
         protocol::Network::Initiator::create()
             .setType(protocol::Network::Initiator::TypeEnum::Script)
@@ -1626,7 +1626,7 @@ InspectorNetworkAgent::BuildInitiatorObject(
   bool was_requested_by_stylesheet =
       initiator_info.name == fetch_initiator_type_names::kCSS ||
       initiator_info.name == fetch_initiator_type_names::kUacss;
-  if (was_requested_by_stylesheet && !initiator_info.referrer.IsEmpty()) {
+  if (was_requested_by_stylesheet && !initiator_info.referrer.empty()) {
     std::unique_ptr<protocol::Network::Initiator> initiator_object =
         protocol::Network::Initiator::create()
             .setType(protocol::Network::Initiator::TypeEnum::Parser)
@@ -1753,7 +1753,7 @@ void InspectorNetworkAgent::DidReceiveWebSocketHandshakeResponse(
           .setStatusText(response->status_text)
           .setHeaders(BuildObjectForHeaders(response_headers))
           .build();
-  if (!response->headers_text.IsEmpty())
+  if (!response->headers_text.empty())
     response_object->setHeadersText(response->headers_text);
 
   if (request) {
@@ -1763,7 +1763,7 @@ void InspectorNetworkAgent::DidReceiveWebSocketHandshakeResponse(
                           AtomicString(header->value));
     }
     response_object->setRequestHeaders(BuildObjectForHeaders(request_headers));
-    if (!request->headers_text.IsEmpty())
+    if (!request->headers_text.empty())
       response_object->setRequestHeadersText(request->headers_text);
   }
 

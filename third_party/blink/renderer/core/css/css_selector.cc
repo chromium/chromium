@@ -827,7 +827,7 @@ static void SerializeNamespacePrefixIfNeeded(const AtomicString& prefix,
                                              const AtomicString& any,
                                              StringBuilder& builder,
                                              bool is_attribute_selector) {
-  if (prefix.IsNull() || (prefix.IsEmpty() && is_attribute_selector))
+  if (prefix.IsNull() || (prefix.empty() && is_attribute_selector))
     return;
   SerializeIdentifierOrAny(prefix, any, builder);
   builder.Append('|');

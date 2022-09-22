@@ -15,7 +15,7 @@ SVGTreeScopeResources::SVGTreeScopeResources(TreeScope* tree_scope)
     : tree_scope_(tree_scope) {}
 
 LocalSVGResource* SVGTreeScopeResources::ResourceForId(const AtomicString& id) {
-  if (id.IsEmpty())
+  if (id.empty())
     return nullptr;
   auto& entry = resources_.insert(id, nullptr).stored_value->value;
   if (!entry)
@@ -25,7 +25,7 @@ LocalSVGResource* SVGTreeScopeResources::ResourceForId(const AtomicString& id) {
 
 LocalSVGResource* SVGTreeScopeResources::ExistingResourceForId(
     const AtomicString& id) const {
-  if (id.IsEmpty())
+  if (id.empty())
     return nullptr;
   auto it = resources_.find(id);
   if (it == resources_.end())

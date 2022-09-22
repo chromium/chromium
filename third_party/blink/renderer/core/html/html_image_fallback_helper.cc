@@ -28,8 +28,8 @@ static bool ElementRepresentsNothing(const Element& element) {
   // attribute, so consider the element to represent text in those cases as
   // well.
   bool alt_is_set = !html_element.AltText().IsNull();
-  bool alt_is_empty = alt_is_set && html_element.AltText().IsEmpty();
-  bool src_is_set = !element.getAttribute(html_names::kSrcAttr).IsEmpty();
+  bool alt_is_empty = alt_is_set && html_element.AltText().empty();
+  bool src_is_set = !element.getAttribute(html_names::kSrcAttr).empty();
   if (src_is_set && alt_is_empty)
     return true;
   return !src_is_set && (!alt_is_set || alt_is_empty);
@@ -180,7 +180,7 @@ void HTMLImageFallbackHelper::CustomStyleForAltText(Element& element,
       !new_style.AspectRatio().IsAuto() &&
       (!new_style.Width().IsAuto() || !new_style.Height().IsAuto());
   bool has_no_alt_attribute =
-      element.getAttribute(html_names::kAltAttr).IsEmpty();
+      element.getAttribute(html_names::kAltAttr).empty();
   bool treat_as_replaced =
       (has_intrinsic_dimensions || has_dimensions_from_ar) &&
       (element.GetDocument().InQuirksMode() || has_no_alt_attribute);

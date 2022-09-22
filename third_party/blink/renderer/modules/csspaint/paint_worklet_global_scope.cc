@@ -163,7 +163,7 @@ void PaintWorkletGlobalScope::registerPaint(const ScriptState* script_state,
 
   RegisterWithProxyClientIfNeeded();
 
-  if (name.IsEmpty()) {
+  if (name.empty()) {
     exception_state.ThrowTypeError("The empty string is not a valid name.");
     return;
   }

@@ -77,7 +77,7 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
 
   // This code follows the HTML spec, specifically
   // https://html.spec.whatwg.org/C/#concept-window-open-features-tokenize
-  if (feature_string.IsEmpty())
+  if (feature_string.empty())
     return window_features;
 
   bool ui_features_were_disabled = false;
@@ -148,7 +148,7 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
     // Listing a key with no value is shorthand for key=yes
     int value;
     constexpr auto kLoose = WTF::NumberParsingOptions::Loose();
-    if (value_string.IsEmpty() || value_string == "yes" ||
+    if (value_string.empty() || value_string == "yes" ||
         value_string == "true") {
       value = 1;
     } else if (value_string.Is8Bit()) {
@@ -218,7 +218,7 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       const String decoded = DecodeURLEscapeSequences(
           original_case_value_string.ToString(), DecodeURLMode::kUTF8);
 
-      if (!decoded.IsEmpty()) {
+      if (!decoded.empty()) {
         window_features.impression =
             dom_window->GetFrame()
                 ->GetAttributionSrcLoader()

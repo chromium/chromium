@@ -45,7 +45,7 @@ ParserTokenRangeToTokens(CSSParserTokenRange range) {
   while (!range.AtEnd()) {
     if (range.Peek().FunctionId() == CSSValueID::kVar ||
         range.Peek().FunctionId() == CSSValueID::kEnv) {
-      if (!builder.IsEmpty()) {
+      if (!builder.empty()) {
         tokens.push_back(MakeGarbageCollected<V8CSSUnparsedSegment>(
             builder.ReleaseString()));
       }
@@ -60,7 +60,7 @@ ParserTokenRangeToTokens(CSSParserTokenRange range) {
       range.Consume().Serialize(builder);
     }
   }
-  if (!builder.IsEmpty()) {
+  if (!builder.empty()) {
     tokens.push_back(
         MakeGarbageCollected<V8CSSUnparsedSegment>(builder.ReleaseString()));
   }

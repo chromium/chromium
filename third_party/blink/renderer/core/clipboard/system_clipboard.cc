@@ -146,7 +146,7 @@ String SystemClipboard::ReadHTML(KURL& url,
                          static_cast<uint32_t*>(&fragment_start),
                          static_cast<uint32_t*>(&fragment_end));
   }
-  if (html.IsEmpty()) {
+  if (html.empty()) {
     url = KURL();
     fragment_start = 0;
     fragment_end = 0;

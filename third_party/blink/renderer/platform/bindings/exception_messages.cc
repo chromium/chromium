@@ -43,20 +43,20 @@ String ExceptionMessages::FailedToConvertJSValue(const char* type) {
 String ExceptionMessages::FailedToConstruct(const char* type,
                                             const String& detail) {
   return "Failed to construct '" + String(type) +
-         (!detail.IsEmpty() ? String("': " + detail) : String("'"));
+         (!detail.empty() ? String("': " + detail) : String("'"));
 }
 
 String ExceptionMessages::FailedToEnumerate(const char* type,
                                             const String& detail) {
   return "Failed to enumerate the properties of '" + String(type) +
-         (!detail.IsEmpty() ? String("': " + detail) : String("'"));
+         (!detail.empty() ? String("': " + detail) : String("'"));
 }
 
 String ExceptionMessages::FailedToExecute(const char* method,
                                           const char* type,
                                           const String& detail) {
   return "Failed to execute '" + String(method) + "' on '" + String(type) +
-         (!detail.IsEmpty() ? String("': " + detail) : String("'"));
+         (!detail.empty() ? String("': " + detail) : String("'"));
 }
 
 String ExceptionMessages::FailedToGet(const char* property,

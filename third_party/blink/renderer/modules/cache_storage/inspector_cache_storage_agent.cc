@@ -237,7 +237,7 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
                            TRACE_EVENT_FLAG_FLOW_OUT);
 
     Vector<mojom::blink::FetchAPIRequestPtr> requests;
-    if (params_.path_filter.IsEmpty()) {
+    if (params_.path_filter.empty()) {
       requests = std::move(old_requests);
     } else {
       for (auto& request : old_requests) {

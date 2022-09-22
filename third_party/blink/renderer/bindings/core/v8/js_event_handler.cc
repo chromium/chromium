@@ -192,7 +192,7 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
   if (is_beforeunload_event) {
     if (result_for_beforeunload) {
       event.preventDefault();
-      if (before_unload_event->returnValue().IsEmpty())
+      if (before_unload_event->returnValue().empty())
         before_unload_event->setReturnValue(result_for_beforeunload);
     }
   } else if (!IsOnBeforeUnloadEventHandler()) {

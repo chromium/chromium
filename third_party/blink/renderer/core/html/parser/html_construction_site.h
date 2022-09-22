@@ -326,11 +326,11 @@ class HTMLConstructionSite final {
     bool IsEmpty() {
       // When the stringbuilder is empty, the parent and whitespace should also
       // be "empty".
-      DCHECK_EQ(string_builder.IsEmpty(), !parent);
-      DCHECK(!string_builder.IsEmpty() || !next_child);
-      DCHECK(!string_builder.IsEmpty() ||
+      DCHECK_EQ(string_builder.empty(), !parent);
+      DCHECK(!string_builder.empty() || !next_child);
+      DCHECK(!string_builder.empty() ||
              (whitespace_mode == kWhitespaceUnknown));
-      return string_builder.IsEmpty();
+      return string_builder.empty();
     }
 
     void Trace(Visitor*) const;

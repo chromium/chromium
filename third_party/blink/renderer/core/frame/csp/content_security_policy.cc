@@ -997,16 +997,16 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
   // must not depend on user data and where we will apply the sample limit
   // separately.
   StringBuilder sample;
-  if (!sample_prefix.IsEmpty()) {
+  if (!sample_prefix.empty()) {
     sample.Append(sample_prefix.StripWhiteSpace().Left(
         ContentSecurityPolicy::kMaxSampleLength));
     sample.Append("|");
   }
-  if (!script_source.IsEmpty()) {
+  if (!script_source.empty()) {
     sample.Append(script_source.StripWhiteSpace().Left(
         ContentSecurityPolicy::kMaxSampleLength));
   }
-  if (!sample.IsEmpty())
+  if (!sample.empty())
     init->setSample(sample.ToString());
 
   return source_location;
@@ -1066,7 +1066,7 @@ void ContentSecurityPolicy::ReportViolation(
   // resources should be allowed regardless. We apparently do, however, so
   // we should at least stop spamming reporting endpoints. See
   // https://crbug.com/524356 for detail.
-  if (!violation_data->sourceFile().IsEmpty() &&
+  if (!violation_data->sourceFile().empty() &&
       ShouldBypassContentSecurityPolicy(KURL(violation_data->sourceFile()))) {
     return;
   }
@@ -1122,7 +1122,7 @@ void ContentSecurityPolicy::PostViolationReport(
     csp_report->SetInteger("line-number", violation_data->lineNumber());
   if (violation_data->columnNumber())
     csp_report->SetInteger("column-number", violation_data->columnNumber());
-  if (!violation_data->sourceFile().IsEmpty())
+  if (!violation_data->sourceFile().empty())
     csp_report->SetString("source-file", violation_data->sourceFile());
   csp_report->SetInteger("status-code", violation_data->statusCode());
 

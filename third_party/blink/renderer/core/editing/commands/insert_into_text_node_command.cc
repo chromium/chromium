@@ -43,7 +43,7 @@ InsertIntoTextNodeCommand::InsertIntoTextNodeCommand(Text* node,
       text_(text) {
   DCHECK(node_);
   DCHECK_LE(offset_, node_->length());
-  DCHECK(!text_.IsEmpty());
+  DCHECK(!text_.empty());
 }
 
 void InsertIntoTextNodeCommand::DoApply(EditingState*) {

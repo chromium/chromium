@@ -306,7 +306,7 @@ ServiceWorkerInstalledScriptsManager::GetScriptData(const KURL& script_url) {
   std::unique_ptr<TextResourceDecoder> decoder =
       std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent,
-          raw_script_data->Encoding().IsEmpty()
+          raw_script_data->Encoding().empty()
               ? UTF8Encoding()
               : WTF::TextEncoding(raw_script_data->Encoding())));
 

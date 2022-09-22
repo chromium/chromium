@@ -367,7 +367,7 @@ const QualifiedName& HTMLLinkElement::SubResourceAttributeName() const {
 
 KURL HTMLLinkElement::Href() const {
   const String& url = FastGetAttribute(html_names::kHrefAttr);
-  if (url.IsEmpty())
+  if (url.empty())
     return KURL();
   return GetDocument().CompleteURL(url);
 }

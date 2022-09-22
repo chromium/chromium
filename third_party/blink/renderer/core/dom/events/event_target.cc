@@ -799,7 +799,7 @@ DispatchEventResult EventTarget::FireEventListeners(Event& event) {
 
   EventListenerVector* legacy_listeners_vector = nullptr;
   AtomicString legacy_type_name = LegacyType(event);
-  if (!legacy_type_name.IsEmpty())
+  if (!legacy_type_name.empty())
     legacy_listeners_vector = d->event_listener_map.Find(legacy_type_name);
 
   EventListenerVector* listeners_vector =

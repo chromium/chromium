@@ -141,7 +141,7 @@ class WTF_EXPORT StringView {
 #endif
 
   bool IsNull() const { return !bytes_; }
-  bool IsEmpty() const { return !length_; }
+  bool empty() const { return !length_; }
 
   unsigned length() const { return length_; }
 

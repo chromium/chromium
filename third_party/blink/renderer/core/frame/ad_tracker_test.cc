@@ -145,7 +145,7 @@ class TestAdTracker : public AdTracker {
                                 ResourceType resource_type,
                                 const FetchInitiatorInfo& initiator_info,
                                 bool ad_request) override {
-    if (!ad_suffix_.IsEmpty() && request_url.GetString().EndsWith(ad_suffix_)) {
+    if (!ad_suffix_.empty() && request_url.GetString().EndsWith(ad_suffix_)) {
       ad_request = true;
     }
 

@@ -41,7 +41,7 @@ LocaleController::LocaleController()
 String LocaleController::SetLocaleOverride(const String& locale) {
   if (locale_override_ == locale)
     return String();
-  if (locale.IsEmpty()) {
+  if (locale.empty()) {
     UpdateLocale(embedder_locale_);
   } else {
     icu::Locale locale_object(locale.Ascii().data());
@@ -55,7 +55,7 @@ String LocaleController::SetLocaleOverride(const String& locale) {
 }
 
 bool LocaleController::has_locale_override() const {
-  return !locale_override_.IsEmpty();
+  return !locale_override_.empty();
 }
 
 // static

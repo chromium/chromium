@@ -1381,7 +1381,7 @@ void ServiceWorkerGlobalScope::DispatchExtendableMessageEventInternal(
   if (event->source_info_for_client) {
     mojom::blink::ServiceWorkerClientInfoPtr client_info =
         std::move(event->source_info_for_client);
-    DCHECK(!client_info->client_uuid.IsEmpty());
+    DCHECK(!client_info->client_uuid.empty());
     ServiceWorkerClient* source = nullptr;
     if (client_info->client_type == mojom::ServiceWorkerClientType::kWindow)
       source = MakeGarbageCollected<ServiceWorkerWindowClient>(*client_info);
@@ -2422,7 +2422,7 @@ void ServiceWorkerGlobalScope::StartCookieChangeEvent(
       observer);
 
   // TODO(pwnall): Handle handle the case when
-  //               (changed.IsEmpty() && deleted.IsEmpty()).
+  //               (changed.empty() && deleted.empty()).
 
   // TODO(pwnall): Investigate dispatching this on cookieStore.
   DispatchExtendableEvent(event, observer);

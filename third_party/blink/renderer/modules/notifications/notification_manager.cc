@@ -140,7 +140,7 @@ void NotificationManager::DisplayNonPersistentNotification(
     mojom::blink::NotificationResourcesPtr notification_resources,
     mojo::PendingRemote<mojom::blink::NonPersistentNotificationListener>
         event_listener) {
-  DCHECK(!token.IsEmpty());
+  DCHECK(!token.empty());
   DCHECK(notification_resources);
   GetNotificationService()->DisplayNonPersistentNotification(
       token, std::move(notification_data), std::move(notification_resources),
@@ -148,7 +148,7 @@ void NotificationManager::DisplayNonPersistentNotification(
 }
 
 void NotificationManager::CloseNonPersistentNotification(const String& token) {
-  DCHECK(!token.IsEmpty());
+  DCHECK(!token.empty());
   GetNotificationService()->CloseNonPersistentNotification(token);
 }
 

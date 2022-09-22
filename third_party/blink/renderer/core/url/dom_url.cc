@@ -82,7 +82,7 @@ void DOMURL::setHref(const String& value, ExceptionState& exception_state) {
 
 void DOMURL::setSearch(const String& value) {
   DOMURLUtils::setSearch(value);
-  if (!value.IsEmpty() && value[0] == '?')
+  if (!value.empty() && value[0] == '?')
     UpdateSearchParams(value.Substring(1));
   else
     UpdateSearchParams(value);

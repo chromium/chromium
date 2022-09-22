@@ -319,13 +319,13 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
         style, CSSPropertyID::kBorderWidth, ParseBorderWidthAttribute(value),
         CSSPrimitiveValue::UnitType::kPixels);
   } else if (name == html_names::kBordercolorAttr) {
-    if (!value.IsEmpty())
+    if (!value.empty())
       AddHTMLColorToStyle(style, CSSPropertyID::kBorderColor, value);
   } else if (name == html_names::kBgcolorAttr) {
     AddHTMLColorToStyle(style, CSSPropertyID::kBackgroundColor, value);
   } else if (name == html_names::kBackgroundAttr) {
     String url = StripLeadingAndTrailingHTMLSpaces(value);
-    if (!url.IsEmpty()) {
+    if (!url.empty()) {
       CSSImageValue* image_value = MakeGarbageCollected<CSSImageValue>(
           AtomicString(url), GetDocument().CompleteURL(url),
           Referrer(GetExecutionContext()->OutgoingReferrer(),
@@ -335,17 +335,17 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
           CSSPropertyName(CSSPropertyID::kBackgroundImage), *image_value));
     }
   } else if (name == html_names::kValignAttr) {
-    if (!value.IsEmpty()) {
+    if (!value.empty()) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kVerticalAlign, value);
     }
   } else if (name == html_names::kCellspacingAttr) {
-    if (!value.IsEmpty()) {
+    if (!value.empty()) {
       AddHTMLLengthToStyle(style, CSSPropertyID::kBorderSpacing, value,
                            kDontAllowPercentageValues);
     }
   } else if (name == html_names::kAlignAttr) {
-    if (!value.IsEmpty()) {
+    if (!value.empty()) {
       if (EqualIgnoringASCIICase(value, "center")) {
         AddPropertyToPresentationAttributeStyle(
             style, CSSPropertyID::kMarginInlineStart, CSSValueID::kAuto);
@@ -413,7 +413,7 @@ void HTMLTableElement::ParseAttribute(
     // FIXME: This attribute is a mess.
     border_attr_ = ParseBorderWidthAttribute(params.new_value);
   } else if (name == html_names::kBordercolorAttr) {
-    border_color_attr_ = !params.new_value.IsEmpty();
+    border_color_attr_ = !params.new_value.empty();
   } else if (name == html_names::kFrameAttr) {
     // FIXME: This attribute is a mess.
     bool border_top;
@@ -435,7 +435,7 @@ void HTMLTableElement::ParseAttribute(
     else if (EqualIgnoringASCIICase(params.new_value, "all"))
       rules_attr_ = kAllRules;
   } else if (params.name == html_names::kCellpaddingAttr) {
-    if (!params.new_value.IsEmpty()) {
+    if (!params.new_value.empty()) {
       padding_ =
           std::max(0, std::min((int32_t)std::numeric_limits<uint16_t>::max(),
                                params.new_value.ToInt()));

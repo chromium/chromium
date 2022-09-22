@@ -961,7 +961,7 @@ void SourceBuffer::changeType(const String& type,
   // https://rawgit.com/WICG/media-source/3b3742ea788999bb7ae4a4553ac7d574b0547dbe/index.html#dom-sourcebuffer-changetype
   // 1. If type is an empty string then throw a TypeError exception and abort
   //    these steps.
-  if (type.IsEmpty()) {
+  if (type.empty()) {
     MediaSource::LogAndThrowTypeError(exception_state,
                                       "The type provided is empty");
     return;

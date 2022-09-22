@@ -150,7 +150,7 @@ static KeyValueMap RetrieveKeyValuePairs(SharedBufferChunkReader* buffer) {
   String key;
   StringBuilder value;
   while (!(line = buffer->NextChunkAsUTF8StringWithLatin1Fallback()).IsNull()) {
-    if (line.IsEmpty())
+    if (line.empty())
       break;  // Empty line means end of key/value section.
     // RFC822 continuation: A line that starts with LWSP is a continuation of
     // the prior line.
@@ -159,7 +159,7 @@ static KeyValueMap RetrieveKeyValuePairs(SharedBufferChunkReader* buffer) {
       continue;
     }
     // New key/value, store the previous one if any.
-    if (!key.IsEmpty()) {
+    if (!key.empty()) {
       if (key_value_pairs.find(key) != key_value_pairs.end())
         DVLOG(1) << "Key duplicate found in MIME header. Key is '" << key
                  << "', previous value replaced.";
@@ -177,7 +177,7 @@ static KeyValueMap RetrieveKeyValuePairs(SharedBufferChunkReader* buffer) {
     value.Append(line.Substring(semi_colon_index + 1));
   }
   // Store the last property if there is one.
-  if (!key.IsEmpty())
+  if (!key.empty())
     key_value_pairs.Set(key, value.ToString().StripWhiteSpace());
   return key_value_pairs;
 }
@@ -341,7 +341,7 @@ ArchiveResource* MHTMLParser::ParseNextPart(
     const String& end_of_part_boundary,
     const String& end_of_document_boundary,
     bool& end_of_archive_reached) {
-  DCHECK_EQ(end_of_part_boundary.IsEmpty(), end_of_document_boundary.IsEmpty());
+  DCHECK_EQ(end_of_part_boundary.empty(), end_of_document_boundary.empty());
 
   // Per the spec, the bondary to separate parts should start with CRLF.
   // |end_of_part_boundary| passed here does not contain CRLF at the beginning.
@@ -354,7 +354,7 @@ ArchiveResource* MHTMLParser::ParseNextPart(
     content_transfer_encoding = MIMEHeader::Encoding::kBinary;
 
   Vector<char> content;
-  const bool check_boundary = !end_of_part_boundary.IsEmpty();
+  const bool check_boundary = !end_of_part_boundary.empty();
   bool end_of_part_reached = false;
   if (content_transfer_encoding == MIMEHeader::Encoding::kBinary) {
     if (!check_boundary) {
@@ -399,7 +399,7 @@ ArchiveResource* MHTMLParser::ParseNextPart(
     end_of_archive_reached = (next_chars[0] == '-' && next_chars[1] == '-');
     if (!end_of_archive_reached) {
       String line = line_reader_.NextChunkAsUTF8StringWithLatin1Fallback();
-      if (!line.IsEmpty()) {
+      if (!line.empty()) {
         DVLOG(1) << "No CRLF at end of binary section.";
         return nullptr;
       }

@@ -97,7 +97,7 @@ bool HasNonEmptyLocationHeader(const FetchHeaderList* headers) {
   String value;
   if (!headers->Get(http_names::kLocation, value))
     return false;
-  return !value.IsEmpty();
+  return !value.empty();
 }
 
 const char* SerializeTrustTokenOperationType(
@@ -458,7 +458,7 @@ void FetchManager::Loader::DidReceiveResponse(
   Response* r =
       Response::Create(resolver_->GetExecutionContext(), tainted_response);
   r->headers()->SetGuard(Headers::kImmutableGuard);
-  if (fetch_request_data_->Integrity().IsEmpty()) {
+  if (fetch_request_data_->Integrity().empty()) {
     resolver_->Resolve(r);
     resolver_.Clear();
   } else {
@@ -481,7 +481,7 @@ void FetchManager::Loader::DidReceiveCachedMetadata(mojo_base::BigBuffer data) {
 }
 
 void FetchManager::Loader::DidStartLoadingResponseBody(BytesConsumer& body) {
-  if (fetch_request_data_->Integrity().IsEmpty() &&
+  if (fetch_request_data_->Integrity().empty() &&
       !response_has_no_store_header_) {
     // BufferingBytesConsumer reads chunks from |bytes_consumer| as soon as
     // they get available to relieve backpressure.  Buffering starts after
@@ -886,7 +886,7 @@ void FetchManager::Loader::Failed(
   bool issue_only =
       base::FeatureList::IsEnabled(blink::features::kCORSErrorsIssueOnly) &&
       issue_id;
-  if (!message.IsEmpty() && !issue_only) {
+  if (!message.empty() && !issue_only) {
     // CORS issues are reported via network service instrumentation, with the
     // exception of early errors reported in FileIssueAndPerformNetworkError.
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(

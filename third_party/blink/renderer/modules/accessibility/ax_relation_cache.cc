@@ -22,7 +22,7 @@ void AXRelationCache::DoInitialDocumentScan() {
   for (Element& element :
        ElementTraversal::DescendantsOf(*document.documentElement())) {
     const auto& id = element.FastGetAttribute(html_names::kForAttr);
-    if (!id.IsEmpty())
+    if (!id.empty())
       all_previously_seen_label_target_ids_.insert(id);
 
     // Ensure correct ancestor chains even when not all AXObject's in the
@@ -498,7 +498,7 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
 bool AXRelationCache::MayHaveHTMLLabelViaForAttribute(
     const HTMLElement& labelable) {
   const AtomicString& id = labelable.GetIdAttribute();
-  if (id.IsEmpty())
+  if (id.empty())
     return false;
   return all_previously_seen_label_target_ids_.Contains(id);
 }
@@ -667,7 +667,7 @@ void AXRelationCache::ChildrenChanged(AXObject* object) {
 void AXRelationCache::LabelChanged(Node* node) {
   const auto& id =
       To<HTMLElement>(node)->FastGetAttribute(html_names::kForAttr);
-  if (!id.IsEmpty()) {
+  if (!id.empty()) {
     all_previously_seen_label_target_ids_.insert(id);
     if (AXObject* obj = Get(To<HTMLLabelElement>(node)->control())) {
       if (obj->AccessibilityIsIncludedInTree())

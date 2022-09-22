@@ -71,12 +71,12 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
     net::CookieInclusionStatus& status_out) {
   const String& name = options->name();
   const String& value = options->value();
-  if (name.IsEmpty() && value.Contains('=')) {
+  if (name.empty() && value.Contains('=')) {
     exception_state.ThrowTypeError(
         "Cookie value cannot contain '=' if the name is empty");
     return nullptr;
   }
-  if (name.IsEmpty() && value.IsEmpty()) {
+  if (name.empty() && value.empty()) {
     exception_state.ThrowTypeError(
         "Cookie name and value both cannot be empty");
     return nullptr;
@@ -112,7 +112,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
   }
 
   String path = options->path();
-  if (!path.IsEmpty()) {
+  if (!path.empty()) {
     if (name.StartsWith("__Host-") && path != "/") {
       exception_state.ThrowTypeError(
           "Cookies with \"__Host-\" prefix cannot have a non-\"/\" path");

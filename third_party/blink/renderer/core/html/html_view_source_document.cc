@@ -272,7 +272,7 @@ void HTMLViewSourceDocument::AddLine(const AtomicString& class_name) {
   current_ = td_ = td;
 
   // Open up the needed spans.
-  if (!class_name.IsEmpty()) {
+  if (!class_name.empty()) {
     if (class_name == "html-attribute-name" ||
         class_name == "html-attribute-value")
       current_ = AddSpanWithClassName("html-tag");
@@ -290,7 +290,7 @@ void HTMLViewSourceDocument::FinishLine() {
 
 void HTMLViewSourceDocument::AddText(const String& text,
                                      const AtomicString& class_name) {
-  if (text.IsEmpty())
+  if (text.empty())
     return;
 
   // Add in the content, splitting on newlines.
@@ -301,7 +301,7 @@ void HTMLViewSourceDocument::AddText(const String& text,
     String substring = lines[i];
     if (current_ == tbody_)
       AddLine(class_name);
-    if (substring.IsEmpty()) {
+    if (substring.empty()) {
       if (i == size - 1)
         break;
       FinishLine();
@@ -327,14 +327,14 @@ int HTMLViewSourceDocument::AddRange(const String& source,
     return start;
 
   String text = source.Substring(start, end - start);
-  if (!class_name.IsEmpty()) {
+  if (!class_name.empty()) {
     if (is_link)
       current_ = AddLink(link, is_anchor);
     else
       current_ = AddSpanWithClassName(class_name);
   }
   AddText(text, class_name);
-  if (!class_name.IsEmpty() && current_ != tbody_)
+  if (!class_name.empty() && current_ != tbody_)
     current_ = To<Element>(current_->parentNode());
   return end;
 }

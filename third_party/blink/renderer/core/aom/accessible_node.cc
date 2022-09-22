@@ -321,7 +321,7 @@ absl::optional<float> AccessibleNode::GetProperty(Element* element,
 }
 
 bool AccessibleNode::IsUndefinedAttrValue(const AtomicString& value) {
-  return value.IsEmpty() || EqualIgnoringASCIICase(value, "undefined");
+  return value.empty() || EqualIgnoringASCIICase(value, "undefined");
 }
 
 // static
@@ -382,12 +382,12 @@ bool AccessibleNode::GetPropertyOrARIAAttribute(
   QualifiedName attribute = GetCorrespondingARIAAttribute(property);
   String value =
       GetElementOrInternalsARIAAttribute(*element, attribute).GetString();
-  if (value.IsEmpty() && property == AOMRelationListProperty::kLabeledBy) {
+  if (value.empty() && property == AOMRelationListProperty::kLabeledBy) {
     value = GetElementOrInternalsARIAAttribute(*element,
                                                html_names::kAriaLabeledbyAttr)
                 .GetString();
   }
-  if (value.IsEmpty())
+  if (value.empty())
     return false;
 
   Vector<String> ids;

@@ -4233,7 +4233,7 @@ const AtomicString LayoutBlockFlow::PropagatedStartPageName() const {
 
 void LayoutBlockFlow::SetPropagatedStartPageName(const AtomicString& name) {
   NOT_DESTROYED();
-  if (name.IsEmpty() && !rare_data_)
+  if (name.empty() && !rare_data_)
     return;
   LayoutBlockFlowRareData& rare_data = EnsureRareData();
   rare_data.propagated_start_page_name_ = name;
@@ -4248,7 +4248,7 @@ const AtomicString LayoutBlockFlow::PropagatedEndPageName() const {
 
 void LayoutBlockFlow::SetPropagatedEndPageName(const AtomicString& name) {
   NOT_DESTROYED();
-  if (name.IsEmpty() && !rare_data_)
+  if (name.empty() && !rare_data_)
     return;
   LayoutBlockFlowRareData& rare_data = EnsureRareData();
   rare_data.propagated_end_page_name_ = name;

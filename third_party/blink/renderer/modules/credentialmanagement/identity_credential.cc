@@ -136,7 +136,7 @@ ScriptPromise IdentityCredential::logoutRPs(
     }
     if (IsRejectingPromiseDueToCSP(policy, resolver, logout_request->url))
       return promise;
-    if (logout_request->account_id.IsEmpty()) {
+    if (logout_request->account_id.empty()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSyntaxError, "Account ID cannot be empty."));
       return promise;

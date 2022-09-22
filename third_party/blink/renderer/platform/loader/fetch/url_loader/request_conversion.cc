@@ -297,13 +297,13 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   }
   // Set X-Requested-With header to cors_exempt_headers rather than headers to
   // be exempted from CORS checks.
-  if (!src.GetRequestedWithHeader().IsEmpty()) {
+  if (!src.GetRequestedWithHeader().empty()) {
     dest->cors_exempt_headers.SetHeader(kCorsExemptRequestedWithHeaderName,
                                         src.GetRequestedWithHeader().Utf8());
   }
   // Set Purpose header to cors_exempt_headers rather than headers to be
   // exempted from CORS checks.
-  if (!src.GetPurposeHeader().IsEmpty()) {
+  if (!src.GetPurposeHeader().empty()) {
     dest->cors_exempt_headers.SetHeader(kCorsExemptPurposeHeaderName,
                                         src.GetPurposeHeader().Utf8());
   }

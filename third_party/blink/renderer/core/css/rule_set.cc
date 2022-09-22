@@ -288,17 +288,17 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
       custom_pseudo_element_name, tag_name, part_name, pseudo_type);
 
   // Prefer rule sets in order of most likely to apply infrequently.
-  if (!id.IsEmpty()) {
+  if (!id.empty()) {
     AddToRuleSet(id, id_rules_, rule_data);
     return true;
   }
 
-  if (!class_name.IsEmpty()) {
+  if (!class_name.empty()) {
     AddToRuleSet(class_name, class_rules_, rule_data);
     return true;
   }
 
-  if (!attr_name.IsEmpty()) {
+  if (!attr_name.empty()) {
     AddToRuleSet(attr_name, attr_rules_, rule_data);
     if (attr_name == html_names::kStyleAttr) {
       has_bucket_for_style_attr_ = true;
@@ -306,19 +306,19 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
     return true;
   }
 
-  if (!custom_pseudo_element_name.IsEmpty()) {
+  if (!custom_pseudo_element_name.empty()) {
     // Custom pseudos come before ids and classes in the order of tagHistory,
     // and have a relation of ShadowPseudo between them. Therefore we should
     // never be a situation where ExtractSelectorValues finds id and
     // className in addition to custom pseudo.
-    DCHECK(id.IsEmpty());
-    DCHECK(class_name.IsEmpty());
+    DCHECK(id.empty());
+    DCHECK(class_name.empty());
     AddToRuleSet(custom_pseudo_element_name, ua_shadow_pseudo_element_rules_,
                  rule_data);
     return true;
   }
 
-  if (!part_name.IsEmpty()) {
+  if (!part_name.empty()) {
     AddToRuleSet(part_pseudo_rules_, rule_data);
     return true;
   }
@@ -369,7 +369,7 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
       break;
   }
 
-  if (!tag_name.IsEmpty()) {
+  if (!tag_name.empty()) {
     AddToRuleSet(tag_name, tag_rules_, rule_data);
     return true;
   }
@@ -752,7 +752,7 @@ bool RuleSet::CanIgnoreEntireList(base::span<const RuleData> list,
   }
 
   // See CreateSubstringMatchers().
-  if (value.IsEmpty()) {
+  if (value.empty()) {
     return false;
   }
 
@@ -787,9 +787,9 @@ void RuleSet::CreateSubstringMatchers(
       ExtractBestSelectorValues(
           rule.Selector(), id, class_name, attr_name, attr_value, is_exact_attr,
           custom_pseudo_element_name, tag_name, part_name, pseudo_type);
-      DCHECK(!attr_name.IsEmpty());
+      DCHECK(!attr_name.empty());
 
-      if (attr_value.IsEmpty()) {
+      if (attr_value.empty()) {
         if (is_exact_attr) {
           // The empty string would make the entire tree useless
           // (it is a substring of every possible value),

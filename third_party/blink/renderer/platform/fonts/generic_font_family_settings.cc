@@ -64,7 +64,7 @@ void GenericFontFamilySettings::SetGenericFontFamilyMap(
     const AtomicString& family,
     UScriptCode script) {
   ScriptFontFamilyMap::iterator it = font_map.find(static_cast<int>(script));
-  if (family.IsEmpty()) {
+  if (family.empty()) {
     if (it == font_map.end())
       return;
     font_map.erase(it);
@@ -82,7 +82,7 @@ const AtomicString& GenericFontFamilySettings::GenericFontFamilyForScript(
       const_cast<ScriptFontFamilyMap&>(font_map).find(static_cast<int>(script));
   if (it != font_map.end()) {
     // Replace with the first available font if it starts with ",".
-    if (!it->value.IsEmpty() && it->value[0] == ',')
+    if (!it->value.empty() && it->value[0] == ',')
       it->value = AtomicString(FontCache::FirstAvailableOrFirst(it->value));
     return it->value;
   }

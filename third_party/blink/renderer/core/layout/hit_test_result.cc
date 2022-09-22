@@ -424,7 +424,7 @@ KURL HitTestResult::AbsoluteImageURL(const Node* node) {
            (IsA<HTMLEmbedElement>(*node) || IsA<HTMLObjectElement>(*node) ||
             IsA<SVGImageElement>(*node)))
     url_string = To<Element>(*node).ImageSourceURL();
-  if (url_string.IsEmpty())
+  if (url_string.empty())
     return KURL();
 
   return node->GetDocument().CompleteURL(

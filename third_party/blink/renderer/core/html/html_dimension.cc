@@ -129,7 +129,7 @@ Vector<HTMLDimension> ParseListOfDimensions(const String& input) {
 
   // HTML5's split doesn't return a token for an empty string so
   // we need to match them here.
-  if (trimmed_string.IsEmpty())
+  if (trimmed_string.empty())
     return Vector<HTMLDimension>();
 
   // Step 3. To avoid String copies, we just look for commas instead of
@@ -191,7 +191,7 @@ static bool ParseDimensionValue(const CharacterType* current,
 
 // https://html.spec.whatwg.org/C/#rules-for-parsing-dimension-values
 bool ParseDimensionValue(const String& input, HTMLDimension& dimension) {
-  if (input.IsEmpty())
+  if (input.empty())
     return false;
   if (input.Is8Bit()) {
     return ParseDimensionValue(input.Characters8(),

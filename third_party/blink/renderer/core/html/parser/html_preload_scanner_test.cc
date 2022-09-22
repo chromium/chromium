@@ -218,7 +218,7 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
     if (strlen(nonce))
       EXPECT_EQ(nonce, preload_request_->Nonce());
     else
-      EXPECT_TRUE(preload_request_->Nonce().IsEmpty());
+      EXPECT_TRUE(preload_request_->Nonce().empty());
   }
 
   void ContextVerification(bool is_image_set) {

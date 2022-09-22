@@ -438,7 +438,7 @@ int LegacyDOMSnapshotAgent::GetStyleIndexForNode(Node* node) {
   bool all_properties_empty = true;
   for (const auto& pair : *css_property_filter_) {
     String value = computed_style_info->GetPropertyValue(pair.second);
-    if (!value.IsEmpty())
+    if (!value.empty())
       all_properties_empty = false;
     style.push_back(value);
   }
@@ -456,7 +456,7 @@ int LegacyDOMSnapshotAgent::GetStyleIndexForNode(Node* node) {
       std::make_unique<protocol::Array<protocol::DOMSnapshot::NameValue>>();
 
   for (wtf_size_t i = 0; i < style.size(); i++) {
-    if (style[i].IsEmpty())
+    if (style[i].empty())
       continue;
     style_properties->emplace_back(
         protocol::DOMSnapshot::NameValue::create()

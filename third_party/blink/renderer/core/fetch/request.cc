@@ -305,7 +305,7 @@ Request* Request::CreateRequestWithRequestOrString(
       return nullptr;
     }
     //   "If |parsedURL| includes credentials, throw a TypeError."
-    if (!parsed_url.User().IsEmpty() || !parsed_url.Pass().IsEmpty()) {
+    if (!parsed_url.User().empty() || !parsed_url.Pass().empty()) {
       exception_state.ThrowTypeError(
           "Request cannot be constructed from a URL that includes "
           "credentials: " +
@@ -362,7 +362,7 @@ Request* Request::CreateRequestWithRequestOrString(
     // Nothing to do for the step "Let |referrer| be |init|'s referrer
     // member."
 
-    if (init->referrer().IsEmpty()) {
+    if (init->referrer().empty()) {
       // "If |referrer| is the empty string, set |request|'s referrer to
       // "no-referrer" and terminate these substeps."
       request->SetReferrerString(AtomicString(Referrer::NoReferrer()));
@@ -377,7 +377,7 @@ Request* Request::CreateRequestWithRequestOrString(
         return nullptr;
       }
       if ((parsed_referrer.ProtocolIsAbout() &&
-           parsed_referrer.Host().IsEmpty() &&
+           parsed_referrer.Host().empty() &&
            parsed_referrer.GetPath() == "client") ||
           !origin->IsSameOriginWith(
               SecurityOrigin::Create(parsed_referrer).get())) {
@@ -688,7 +688,7 @@ Request* Request::CreateRequestWithRequestOrString(
     // "If |Content-Type| is non-null and |this|'s header's header list
     //  does not contain `Content-Type`, then append
     //   `Content-Type`/|Content-Type| to |this|'s headers object.
-    if (!content_type.IsEmpty() &&
+    if (!content_type.empty() &&
         !r->getHeaders()->has(http_names::kContentType, exception_state)) {
       r->getHeaders()->append(script_state, http_names::kContentType,
                               content_type, exception_state);
@@ -1064,7 +1064,7 @@ mojom::blink::FetchAPIRequestPtr Request::CreateFetchAPIRequest() const {
   for (const auto& pair : headers)
     fetch_api_request->headers.insert(pair.key, pair.value);
 
-  if (!request_->ReferrerString().IsEmpty()) {
+  if (!request_->ReferrerString().empty()) {
     fetch_api_request->referrer =
         mojom::blink::Referrer::New(KURL(NullURL(), request_->ReferrerString()),
                                     request_->GetReferrerPolicy());

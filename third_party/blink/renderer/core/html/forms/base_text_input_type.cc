@@ -99,7 +99,7 @@ bool BaseTextInputType::PatternMismatchPerValue(const String& value) const {
   const AtomicString& raw_pattern =
       GetElement().FastGetAttribute(html_names::kPatternAttr);
   // Empty values can't be mismatched
-  if (raw_pattern.IsNull() || value.IsEmpty())
+  if (raw_pattern.IsNull() || value.empty())
     return false;
   if (!regexp_ || pattern_for_regexp_ != raw_pattern) {
     ScriptRegexp* raw_regexp = MakeGarbageCollected<ScriptRegexp>(

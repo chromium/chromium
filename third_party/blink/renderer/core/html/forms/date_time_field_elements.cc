@@ -86,7 +86,7 @@ DateTimeDayFieldElement::DateTimeDayFieldElement(Document& document,
                                   DateTimeField::kDay,
                                   range,
                                   Range(1, 31),
-                                  placeholder.IsEmpty() ? "--" : placeholder) {
+                                  placeholder.empty() ? "--" : placeholder) {
   DEFINE_STATIC_LOCAL(AtomicString, day_pseudo_id,
                       ("-webkit-datetime-edit-day-field"));
   Initialize(day_pseudo_id, QueryString(IDS_AX_DAY_OF_MONTH_FIELD_TEXT));
@@ -502,7 +502,7 @@ DateTimeMonthFieldElement::DateTimeMonthFieldElement(Document& document,
                                   DateTimeField::kMonth,
                                   range,
                                   Range(1, 12),
-                                  placeholder.IsEmpty() ? "--" : placeholder) {
+                                  placeholder.empty() ? "--" : placeholder) {
   DEFINE_STATIC_LOCAL(AtomicString, month_pseudo_id,
                       ("-webkit-datetime-edit-month-field"));
   Initialize(month_pseudo_id, QueryString(IDS_AX_MONTH_FIELD_TEXT));
@@ -681,7 +681,7 @@ DateTimeYearFieldElement::DateTimeYearFieldElement(
           DateTimeField::kYear,
           Range(parameters.minimum_year, parameters.maximum_year),
           Range(DateComponents::MinimumYear(), DateComponents::MaximumYear()),
-          parameters.placeholder.IsEmpty() ? "----" : parameters.placeholder),
+          parameters.placeholder.empty() ? "----" : parameters.placeholder),
       min_is_specified_(parameters.min_is_specified),
       max_is_specified_(parameters.max_is_specified) {
   DCHECK_GE(parameters.minimum_year, DateComponents::MinimumYear());

@@ -80,7 +80,7 @@ MediaTrackCapabilities* InputDeviceInfo::getCapabilities() const {
 
   // If label is null, permissions have not been given and no capabilities
   // should be returned.
-  if (label().IsEmpty())
+  if (label().empty())
     return capabilities;
 
   capabilities->setDeviceId(deviceId());
