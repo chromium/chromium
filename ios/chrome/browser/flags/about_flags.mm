@@ -1020,6 +1020,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnhancedProtectionPhase2Name,
      flag_descriptions::kEnhancedProtectionPhase2Description, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(safe_browsing::kEnhancedProtectionPhase2IOS)},
+    {"enable-tailored-security-integration",
+     flag_descriptions::kTailoredSecurityIntegrationName,
+     flag_descriptions::kTailoredSecurityIntegrationDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(safe_browsing::kTailoredSecurityIntegration)},
     {"autofill-enable-unmask-card-request-set-instrument-id",
      flag_descriptions::kAutofillEnableUnmaskCardRequestSetInstrumentIdName,
      flag_descriptions::

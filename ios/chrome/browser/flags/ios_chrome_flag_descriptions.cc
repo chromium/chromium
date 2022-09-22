@@ -339,6 +339,12 @@ const char kEnhancedProtectionPhase2Name[] =
 const char kEnhancedProtectionPhase2Description[] =
     "Enable additional improvements related to Enhanced Safe Browsing";
 
+const char kTailoredSecurityIntegrationName[] =
+    "Enable Tailored Security Integration";
+const char kTailoredSecurityIntegrationDescription[] =
+    "Enable integration between account level enhanced safe browsing and "
+    "chrome enhanced safe browsing";
+
 const char kExpandedTabStripName[] = "Enable expanded tabstrip";
 const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"
