@@ -1053,12 +1053,14 @@ struct VectorNeedsDestructor<T, 0, true> {
 // destruction based on whether the element type itself requires destruction.
 template <typename T, wtf_size_t inlineCapacity>
 struct VectorNeedsDestructor<T, inlineCapacity, true> {
-  // T cannot be forward declared in the case with inline capacity. We still
-  // hide the trait usage behind instantiation to allow forward declarations in
-  // other cases. We cannot use VectorTraits<T>::kNeedsDestruction because
-  // there's use cases that use inner classes and only specify the trait
-  // specialization after the first use of Vector.
-  static constexpr bool value = !std::is_trivially_destructible_v<T>;
+  // Always return true here as currently there's many uses of on-stack
+  // HeapVector with inline capacity that require eager clearing for
+  // performance.
+  //
+  // Ideally, there's a different representation for on-stack usages which would
+  // allow eager clearing for all uses of Vector from stack and avoid
+  // destructors on heap.
+  static constexpr bool value = true;
 };
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
