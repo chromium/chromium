@@ -92,8 +92,10 @@ void VersionHandlerChromeOS::HandleCrosUrlVersionRedirect(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void VersionHandlerChromeOS::OnVersion(const std::string& version) {
-  FireWebUIListener("return-os-version", base::Value(version));
+void VersionHandlerChromeOS::OnVersion(
+    const absl::optional<std::string>& version) {
+  FireWebUIListener("return-os-version",
+                    base::Value(version.value_or("0.0.0.0")));
 }
 
 void VersionHandlerChromeOS::OnOSFirmware(const std::string& version) {

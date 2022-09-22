@@ -248,8 +248,13 @@ bool ShouldCheckUserTypeBeforeAllowing() {
   return family_link_allowed;
 }
 
+// TODO(https://crbug.com/1364455)
+// Make this function fallible when version_loader::GetVersion()
+// returns an optional that is empty
 void GetVersionAndConsent(std::string* out_version, bool* out_consent) {
-  *out_version = version_loader::GetVersion(version_loader::VERSION_SHORT);
+  absl::optional<std::string> version =
+      version_loader::GetVersion(version_loader::VERSION_SHORT);
+  *out_version = version.value_or("0.0.0.0");
   *out_consent = GoogleUpdateSettings::GetCollectStatsConsent();
 }
 

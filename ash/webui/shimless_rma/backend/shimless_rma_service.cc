@@ -365,8 +365,9 @@ void ShimlessRmaService::GetCurrentOsVersion(
     GetCurrentOsVersionCallback callback) {
   DCHECK(features::IsShimlessRMAOsUpdateEnabled());
   // TODO(gavindodd): Decide whether to use full or short Chrome version.
-  std::move(callback).Run(chromeos::version_loader::GetVersion(
-      chromeos::version_loader::VERSION_FULL));
+  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+      chromeos::version_loader::VERSION_FULL);
+  std::move(callback).Run(version);
 }
 
 void ShimlessRmaService::CheckForOsUpdates(CheckForOsUpdatesCallback callback) {

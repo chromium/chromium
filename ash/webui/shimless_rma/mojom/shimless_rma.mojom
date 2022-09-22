@@ -539,7 +539,7 @@ interface ShimlessRmaService {
   // Methods for kUpdateOs state.
   //
   // Returns a string representation of the OS version.
-  GetCurrentOsVersion() => (string version);
+  GetCurrentOsVersion() => (string? version);
   // Returns true if there is an OS update available, false otherwise.
   CheckForOsUpdates() => (bool update_available, string version);
   // Attempts to start a Chrome OS update.

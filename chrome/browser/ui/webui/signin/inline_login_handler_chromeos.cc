@@ -272,8 +272,9 @@ void InlineLoginHandlerChromeOS::SetExtraInitParams(base::Value::Dict& params) {
   const GURL& url = gaia_urls->embedded_setup_chromeos_url(2U);
   params.Set("gaiaPath", url.path().substr(1));
 
-  params.Set("platformVersion",
-             version_loader::GetVersion(version_loader::VERSION_SHORT));
+  absl::optional<std::string> version =
+      version_loader::GetVersion(version_loader::VERSION_SHORT);
+  params.Set("platformVersion", version.value_or("0.0.0.0"));
   params.Set("constrained", "1");
   params.Set("flow", GetInlineLoginFlowName(Profile::FromWebUI(web_ui()),
                                             params.FindString("email")));

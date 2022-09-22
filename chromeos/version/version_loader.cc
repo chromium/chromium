@@ -49,13 +49,13 @@ const char kPathFirmware[] = "/var/log/bios_info.txt";
 
 }  // namespace
 
-std::string GetVersion(VersionFormat format) {
+absl::optional<std::string> GetVersion(VersionFormat format) {
   std::string version;
   std::string key = (format == VERSION_FULL ? kFullVersionKey : kVersionKey);
   if (!base::SysInfo::GetLsbReleaseValue(key, &version)) {
     LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
         << "No LSB version key: " << key;
-    version = "0.0.0.0";
+    return absl::nullopt;
   }
   if (format == VERSION_SHORT_WITH_DATE) {
     base::Time::Exploded ctime;

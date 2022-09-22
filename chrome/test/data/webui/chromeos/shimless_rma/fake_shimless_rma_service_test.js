@@ -104,8 +104,9 @@ export function fakeShimlessRmaServiceTestSuite() {
   });
 
   test('GetCurrentOsVersionDefaultUndefined', () => {
+    service.setGetCurrentOsVersionResult(null);
     return service.getCurrentOsVersion().then((version) => {
-      assertEquals(version, undefined);
+      assertEquals(version.version, null);
     });
   });
 

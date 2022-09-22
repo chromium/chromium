@@ -215,7 +215,7 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @param {string} version
+   * @param {null|string} version
    */
   setGetCurrentOsVersionResult(version) {
     this.methods_.setResult('getCurrentOsVersion', {version: version});

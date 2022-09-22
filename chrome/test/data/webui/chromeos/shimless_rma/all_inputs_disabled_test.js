@@ -51,7 +51,7 @@ export function allInputsDisabledTest() {
   // load.
   function setupFakeService() {
     // kUpdateOs
-    service.setGetCurrentOsVersionResult('');
+    service.setGetCurrentOsVersionResult(null);
 
     // kEnterRSUWPDisableCode
     service.setGetRsuDisableWriteProtectChallengeResult('');

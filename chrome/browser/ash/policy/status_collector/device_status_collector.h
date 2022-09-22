@@ -229,7 +229,7 @@ class DeviceStatusCollector : public StatusCollector,
   void ClearCachedMemoryUsage();
 
   // Callbacks from chromeos::VersionLoader.
-  void OnOSVersion(const std::string& version);
+  void OnOSVersion(const absl::optional<std::string>& version);
   void OnOSFirmware(std::pair<const std::string&, const std::string&> version);
 
   // Callbacks from `chromeos::TpmManagerClient`.

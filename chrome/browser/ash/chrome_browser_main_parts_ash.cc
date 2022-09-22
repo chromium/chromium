@@ -274,8 +274,8 @@
 namespace ash {
 namespace {
 
-void ChromeOSVersionCallback(const std::string& version) {
-  base::SetLinuxDistro(std::string("CrOS ") + version);
+void ChromeOSVersionCallback(const absl::optional<std::string>& version) {
+  base::SetLinuxDistro("CrOS " + version.value_or("0.0.0.0"));
 }
 
 // Creates an instance of the NetworkPortalDetector implementation or a stub.

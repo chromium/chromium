@@ -90,7 +90,7 @@ class ChildStatusCollector : public StatusCollector,
 
  private:
   // Callbacks from chromeos::VersionLoader.
-  void OnOSVersion(const std::string& version);
+  void OnOSVersion(const absl::optional<std::string>& version);
 
   // Fetches all child data that is necessary to fill ChildStatusReportRequest.
   void FillChildStatusReportRequest(

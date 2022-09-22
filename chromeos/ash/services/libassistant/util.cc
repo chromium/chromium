@@ -178,9 +178,9 @@ std::string CreateLibAssistantConfig(
   Value device(Type::DICTIONARY);
   device.SetKey("board_name", Value(base::SysInfo::GetLsbReleaseBoard()));
   device.SetKey("board_revision", Value("1"));
-  device.SetKey("embedder_build_info",
-                Value(chromeos::version_loader::GetVersion(
-                    chromeos::version_loader::VERSION_FULL)));
+  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+      chromeos::version_loader::VERSION_FULL);
+  device.SetKey("embedder_build_info", Value(version.value_or("0.0.0.0")));
   device.SetKey("model_id", Value(assistant::kModelId));
   device.SetKey("model_revision", Value(1));
   config.SetKey("device", std::move(device));

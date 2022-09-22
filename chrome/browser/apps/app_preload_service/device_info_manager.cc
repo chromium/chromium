@@ -24,8 +24,9 @@ std::string DeviceInfoManager::GetChromeVersion() const {
 }
 
 std::string DeviceInfoManager::GetChromeOsPlatformVersion() const {
-  return chromeos::version_loader::GetVersion(
+  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
       chromeos::version_loader::VERSION_SHORT);
+  return version.value_or("0.0.0.0");
 }
 
 std::string DeviceInfoManager::GetUserType() const {

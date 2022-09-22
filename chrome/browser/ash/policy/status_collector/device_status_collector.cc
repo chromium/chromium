@@ -2990,8 +2990,11 @@ bool DeviceStatusCollector::IsReportingAppInfoAndActivity() const {
   return report_app_info_;
 }
 
-void DeviceStatusCollector::OnOSVersion(const std::string& version) {
-  os_version_ = version;
+// TODO(https://crbug.com/1364428)
+// Make this function fallible when the optional received is empty
+void DeviceStatusCollector::OnOSVersion(
+    const absl::optional<std::string>& version) {
+  os_version_ = version.value_or("0.0.0.0");
 }
 
 void DeviceStatusCollector::OnOSFirmware(

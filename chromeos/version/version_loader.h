@@ -22,9 +22,10 @@ enum VersionFormat {
 // Gets the version.
 // If |full_version| is true version string with extra info is extracted,
 // otherwise it's in short format x.x.xx.x.
+// If not found returns absl::nullopt.
 // May block.
 COMPONENT_EXPORT(CHROMEOS_VERSION)
-std::string GetVersion(VersionFormat format);
+absl::optional<std::string> GetVersion(VersionFormat format);
 
 // Gets the ARC version.
 // May block.

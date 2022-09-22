@@ -123,14 +123,15 @@ absl::optional<bool> VersionInfoUpdater::IsSystemInfoEnforced() const {
 }
 
 void VersionInfoUpdater::UpdateVersionLabel() {
-  if (version_text_.empty())
+  if (!version_text_.has_value())
     return;
 
   std::string label_text = l10n_util::GetStringFUTF8(
       IDS_LOGIN_VERSION_LABEL_FORMAT,
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
       base::UTF8ToUTF16(version_info::GetVersionNumber()),
-      base::UTF8ToUTF16(version_text_), base::UTF8ToUTF16(GetDeviceIdsLabel()));
+      base::UTF8ToUTF16(version_text_.value()),
+      base::UTF8ToUTF16(GetDeviceIdsLabel()));
 
   if (delegate_)
     delegate_->OnOSVersionLabelTextUpdated(label_text);
@@ -185,7 +186,7 @@ std::string VersionInfoUpdater::GetDeviceIdsLabel() {
 
   return device_ids_text;
 }
-void VersionInfoUpdater::OnVersion(const std::string& version) {
+void VersionInfoUpdater::OnVersion(const absl::optional<std::string>& version) {
   version_text_ = version;
   UpdateVersionLabel();
 }

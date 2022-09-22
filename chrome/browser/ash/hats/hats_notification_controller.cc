@@ -340,9 +340,10 @@ std::string HatsNotificationController::GetFormattedSiteContext(
   context[KeyEnumToString(DeviceInfoKey::BROWSER)] =
       version_info::GetVersionNumber();
 
+  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+      chromeos::version_loader::VERSION_FULL);
   context[KeyEnumToString(DeviceInfoKey::PLATFORM)] =
-      chromeos::version_loader::GetVersion(
-          chromeos::version_loader::VERSION_FULL);
+      version.value_or("0.0.0.0");
 
   context[KeyEnumToString(DeviceInfoKey::FIRMWARE)] =
       chromeos::version_loader::GetFirmware();

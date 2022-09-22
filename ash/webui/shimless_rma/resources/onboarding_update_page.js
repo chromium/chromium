@@ -165,7 +165,11 @@ export class OnboardingUpdatePageElement extends
       return;
     }
     this.shimlessRmaService_.getCurrentOsVersion().then((res) => {
-      this.currentVersion_ = res.version;
+      if (res.version != null) {
+        this.currentVersion_ = res.version;
+      } else {
+        this.currentVersion_ = '0.0.0.0';
+      }
       this.currentVersionText_ =
           this.i18n('currentVersionOutOfDateText', this.currentVersion_);
     });

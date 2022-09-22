@@ -202,8 +202,9 @@ std::string ReadRegulatoryLabelText(const base::FilePath& label_dir_path) {
 
 base::Value::Dict GetVersionInfo() {
   base::Value::Dict version_info;
-  version_info.Set("osVersion", chromeos::version_loader::GetVersion(
-                                    chromeos::version_loader::VERSION_FULL));
+  absl::optional<std::string> version = chromeos::version_loader::GetVersion(
+      chromeos::version_loader::VERSION_FULL);
+  version_info.Set("osVersion", version.value_or("0.0.0.0"));
   version_info.Set("arcVersion", chromeos::version_loader::GetArcVersion());
   version_info.Set("osFirmware", chromeos::version_loader::GetFirmware());
   return version_info;

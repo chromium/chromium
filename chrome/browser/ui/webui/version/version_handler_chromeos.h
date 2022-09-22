@@ -28,7 +28,7 @@ class VersionHandlerChromeOS : public VersionHandler {
   void RegisterMessages() override;
 
   // Callbacks from chromeos::VersionLoader.
-  void OnVersion(const std::string& version);
+  void OnVersion(const absl::optional<std::string>& version);
   void OnOSFirmware(const std::string& version);
   void OnArcAndArcAndroidSdkVersions(const std::string& version);
 

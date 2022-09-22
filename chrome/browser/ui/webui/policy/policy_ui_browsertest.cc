@@ -177,9 +177,7 @@ void SetChromeMetaData(base::DictionaryValue* expected) {
   expected->SetPath({prefix, "application"}, base::Value(""));
   expected->SetPath({prefix, "version"}, base::Value(""));
   expected->SetPath({prefix, "revision"}, base::Value(""));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  expected->SetPath({prefix, "platform"}, base::Value(""));
-#else
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   expected->SetPath({prefix, "OS"}, base::Value(""));
 #endif
 }
