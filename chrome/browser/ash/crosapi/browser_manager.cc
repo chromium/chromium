@@ -462,6 +462,10 @@ void BrowserManager::NewTab(bool should_trigger_session_restore) {
   PerformOrEnqueue(BrowserAction::NewTab(should_trigger_session_restore));
 }
 
+void BrowserManager::Launch() {
+  PerformOrEnqueue(BrowserAction::Launch());
+}
+
 void BrowserManager::OpenUrl(
     const GURL& url,
     crosapi::mojom::OpenUrlFrom from,

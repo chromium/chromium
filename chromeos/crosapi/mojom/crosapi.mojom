@@ -824,7 +824,7 @@ enum InitialBrowserAction {
   // Opens a new window with a new tab, regardless of users' preference.
   [MinVersion=2] kOpenNewTabPageWindow = 4,
 
-  // Opens a new window with specified URLs with the primary profile.
+  // Opens a new window with specified URLs with the main profile.
   // The URLs should be set with BrowserInitParams::startup_urls.
   // Added in M96.
   [MinVersion=3] kOpenWindowWithUrls = 5,
@@ -1403,8 +1403,8 @@ struct OpenUrlParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 70.
-// Next ID: 19
+// Next MinVersion: 71.
+// Next ID: 20
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -1413,7 +1413,7 @@ interface BrowserService {
   REMOVED_0@0() => (pending_receiver<Crosapi> receiver);
   REMOVED_2@2(BrowserInitParams params);
 
-  // Opens a new window in the browser with, currently, the last used profile.
+  // Opens a new window in the browser with, currently, the main profile.
   // The callback is called on the command execution.
   // If `should_trigger_session_restore` is true, a new window opening should be
   // treated like the start of a new session (with potential session restore,
@@ -1423,17 +1423,16 @@ interface BrowserService {
     [MinVersion=10] bool incognito,
     [MinVersion=61] bool should_trigger_session_restore) => ();
 
-  // Opens a new fullscreen window in the browser with, currently, the last
-  // used profile. The only tab will be navigated to the given `url` once the
-  // window is launched. The callback is called on the command execution.
-  // NOTE: This method is used by Chrome OS web Kiosk session only. The behavior
-  // may change and it shouldn't be used by anybody else.
+  // Opens a new fullscreen window in the browser with, currently, the main
+  // profile. The only tab will be navigated to the given `url` once the window
+  // is launched. The callback is called on the command execution. NOTE: This
+  // method is used by Chrome OS web Kiosk session only. The behavior may change
+  // and it shouldn't be used by anybody else.
   // Added in M96.
   [MinVersion=11]
   NewFullscreenWindow@9(url.mojom.Url url) => (CreationResult result);
 
-  // Opens a new window in the browser and transfers the given tab (or group)
-  // to it.
+  // Transfers the given tab (or group) to a new window with the same profile.
   // NOTE: This method is used by Chrome OS WebUI in tablet mode as a response
   // to a drag'n drop operation from the user.
   [MinVersion=13]
@@ -1447,12 +1446,12 @@ interface BrowserService {
   [MinVersion=63]
   NewGuestWindow@14() => ();
 
-  // Opens a new tab in the browser with, currently, the last used profile.
-  // This may open a new window, if there's no window. If a new browser is
-  // opened and `should_trigger_session_restore` is set, the new browser will
-  // open with the profile's session startup pref. If this is not set the
-  // browser will open without considering the user's session startup pref.
-  // Please see also the Chrome's NewTab command for details.
+  // Opens a new tab in the browser with, currently, the main profile. This may
+  // open a new window, if there's no window. If a new browser is opened and
+  // `should_trigger_session_restore` is set, the new browser will open with the
+  // profile's session startup pref. If this is not set the browser will open
+  // without considering the user's session startup pref. Please see also the
+  // Chrome's NewTab command for details.
   // The callback is called on the command execution.
   // This is designed to be equivalent of CTRL+T behavior. By default, this
   // opens a new-tab-page, but extensions may override the behavior.
@@ -1460,8 +1459,8 @@ interface BrowserService {
   [MinVersion=10]
   NewTab@7([MinVersion=68] bool should_trigger_session_restore) => ();
 
-  // Opens the specified URL in the browser. This opens a new tab and loads
-  // the page at specified URL.
+  // Opens the specified URL in the browser with, currently, the main profile.
+  // This opens a new tab and loads the page at specified URL.
   // This is designed to handle opening URL requests from other OS parts,
   // such as web-page opening request from ash features, or Crostini/ARC apps.
   // Added in M96.
@@ -1470,8 +1469,7 @@ interface BrowserService {
              [MinVersion=62] OpenUrlParams? params) => ();
 
   // Restores a tab (or a window) recently closed in the browser with,
-  // currently, the last used profile. Please see also RestoreTab command
-  // for details.
+  // currently, main profile. Please see also RestoreTab command for details.
   // The callback is called on the command execution.
   // Added in M91.
   [MinVersion=10]
@@ -1521,7 +1519,7 @@ interface BrowserService {
 
   // Opens lacros with a full restore (all previously open windows from the
   // previous lacros session). This must be called before a browser has been
-  // created as this will update the state of the last opened profiles.
+  // created as this will update the state of the main profile.
   // If `skip_crash_restore` is true full restore will restore the previous
   // session, bypassing the typical crash restore flow (i.e. the crash restore
   // bubble anchored to the browser's app menu button).
@@ -1538,6 +1536,12 @@ interface BrowserService {
   // for that extension.
   [MinVersion=67]
   UpdateComponentPolicy@18(map<crosapi.mojom.PolicyNamespace, mojo_base.mojom.Value> component_policy);
+
+  // Opens a new tab in the browser with, currently, the main profile.
+  // If a new window needs to be created, it will open with the profile's
+  // session startup pref and no new tab will be added.
+  [MinVersion=70]
+  Launch@19() => ();
 };
 
 // TODO(crbug.com/1180712): move to its own file. Currently due to circular

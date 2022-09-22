@@ -47,6 +47,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
       NewWindowForDetachingTabCallback callback) override;
   void NewTab(bool should_trigger_session_restore,
               NewTabCallback callback) override;
+  void Launch(LaunchCallback callback) override;
   void OpenUrl(const GURL& url,
                crosapi::mojom::OpenUrlParamsPtr params,
                OpenUrlCallback callback) override;
@@ -89,9 +90,10 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
       const std::u16string& group_id,
       NewWindowForDetachingTabCallback callback,
       Profile* profile);
-  void NewTabWithProfile(bool should_trigger_session_restore,
-                         NewTabCallback callback,
-                         Profile* profile);
+  void LaunchOrNewTabWithProfile(bool should_trigger_session_restore,
+                                 NewTabCallback callback,
+                                 bool is_new_tab,
+                                 Profile* profile);
   void OpenUrlWithProfile(const GURL& url,
                           crosapi::mojom::OpenUrlParamsPtr params,
                           OpenUrlCallback callback,

@@ -386,11 +386,11 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
   auto* new_tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(3, new_tab_strip->count());
 
-  EXPECT_EQ("",  // The new tab.
-            new_tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
   EXPECT_EQ("/title1.html",
-            new_tab_strip->GetWebContentsAt(1)->GetLastCommittedURL().path());
+            new_tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
   EXPECT_EQ("/title2.html",
+            new_tab_strip->GetWebContentsAt(1)->GetLastCommittedURL().path());
+  EXPECT_EQ("",  // The new tab.
             new_tab_strip->GetWebContentsAt(2)->GetLastCommittedURL().path());
 
   // A second call to NewTab() ignores session restore and adds yet another new

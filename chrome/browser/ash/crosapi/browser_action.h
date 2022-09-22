@@ -37,6 +37,7 @@ class BrowserAction {
       bool should_trigger_session_restore);
   static std::unique_ptr<BrowserAction> NewTab(
       bool should_trigger_session_restore);
+  static std::unique_ptr<BrowserAction> Launch();
   static std::unique_ptr<BrowserAction> NewWindowForDetachingTab(
       base::StringPiece16 tab_id_str,
       base::StringPiece16 group_id_str,

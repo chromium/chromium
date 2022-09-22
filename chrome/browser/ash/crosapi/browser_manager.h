@@ -173,6 +173,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // window. See crosapi::mojom::BrowserService::NewTab for more details.
   void NewTab(bool should_trigger_session_restore);
 
+  // Similar to NewWindow and NewTab. If a suitable window exists, a new tab is
+  // added. Otherwise a new window is created with session restore (no new tab
+  // is added to that).
+  void Launch();
+
   // Opens the specified URL in lacros-chrome. If it is not running,
   // it launches lacros-chrome with the given URL.
   // See crosapi::mojom::BrowserService::OpenUrl for more details.

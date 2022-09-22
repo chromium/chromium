@@ -87,6 +87,22 @@ class NewTabAction final : public BrowserAction {
   const bool should_trigger_session_restore_;
 };
 
+class LaunchAction final : public BrowserAction {
+ public:
+  LaunchAction() : BrowserAction(true) {}
+
+  void Perform(const VersionedBrowserService& service) override {
+    if (service.interface_version < mojom::BrowserService::kLaunchMinVersion) {
+      LOG(WARNING)
+          << "Lacros too old for Launch action - falling back to NewTab";
+      service.service->NewTab(/*should_trigger_session_restore=*/true,
+                              base::DoNothing());
+      return;
+    }
+    service.service->Launch(base::DoNothing());
+  }
+};
+
 namespace {
 crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior ConvertPathBehavior(
     NavigateParams::PathBehavior path_behavior) {
@@ -278,6 +294,11 @@ std::unique_ptr<BrowserAction> BrowserAction::NewWindow(
 std::unique_ptr<BrowserAction> BrowserAction::NewTab(
     bool should_trigger_session_restore) {
   return std::make_unique<NewTabAction>(should_trigger_session_restore);
+}
+
+// static
+std::unique_ptr<BrowserAction> BrowserAction::Launch() {
+  return std::make_unique<LaunchAction>();
 }
 
 // static
