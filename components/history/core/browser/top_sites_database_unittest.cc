@@ -485,4 +485,58 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_All) {
   VerifyURLsEqual(std::vector<GURL>({mapsUrl, kUrl2, kUrl1}), urls);
 }
 
+TEST_F(TopSitesDatabaseTest, ApplyDelta_UpdatesAddedSiteTitle) {
+  TopSitesDatabase db;
+  ASSERT_TRUE(db.Init(file_name_));
+
+  const GURL url_a("https://a.example");
+  const GURL url_b("https://b.example");
+
+  {
+    TopSitesDelta delta;
+    delta.added.push_back(MostVisitedURLWithRank{
+        .url = {MostVisitedURL(url_a, u"A1")},
+        .rank = 0,
+    });
+    delta.added.push_back(MostVisitedURLWithRank{
+        .url = {MostVisitedURL(url_b, u"B")},
+        .rank = 1,
+    });
+
+    db.ApplyDelta(delta);
+
+    MostVisitedURLList urls;
+    db.GetSites(&urls);
+
+    ASSERT_EQ(urls.size(), 2u);
+
+    ASSERT_EQ(urls[0].url, url_a);
+    ASSERT_EQ(urls[0].title, u"A1");
+
+    ASSERT_EQ(urls[1].url, url_b);
+    ASSERT_EQ(urls[1].title, u"B");
+  }
+
+  {
+    TopSitesDelta delta;
+    delta.added.push_back(MostVisitedURLWithRank{
+        .url = {MostVisitedURL(url_a, u"A2")},
+        .rank = 0,
+    });
+
+    db.ApplyDelta(delta);
+
+    MostVisitedURLList urls;
+    db.GetSites(&urls);
+
+    ASSERT_EQ(urls.size(), 2u);
+
+    ASSERT_EQ(urls[0].url, url_a);
+    ASSERT_EQ(urls[0].title, u"A2");
+
+    ASSERT_EQ(urls[1].url, url_b);
+    ASSERT_EQ(urls[1].title, u"B");
+  }
+}
+
 }  // namespace history

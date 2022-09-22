@@ -415,10 +415,7 @@ bool TopSitesDatabase::UpdateSite(const MostVisitedURL& url) {
                                                    "title=? "
                                                    "WHERE url=?"));
   statement.BindString16(0, url.title);
-  // TODO: is it intentional that only one of the parameters is bound here?
-  // Per https://www.sqlite.org/c3ref/bind_blob.html unbounded parameters are
-  // interpreted as NULL.
-
+  statement.BindString(1, url.url.spec());
   return statement.Run();
 }
 
