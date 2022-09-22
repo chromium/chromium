@@ -1004,7 +1004,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DarkTheme.AutoDarkMode.SettingsChangeSource{NewState}"
-    enum="AndroidAutoDarkModeSettingsChangeSource" expires_after="2022-10-01">
+    enum="AndroidAutoDarkModeSettingsChangeSource" expires_after="2023-04-01">
   <owner>nemco@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
