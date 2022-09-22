@@ -447,6 +447,10 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHatsCameraAppDeviceIsSelected, false);
 
+  registry->RegisterInt64Pref(::prefs::kHatsGeneralCameraSurveyCycleEndTs, 0);
+
+  registry->RegisterBooleanPref(::prefs::kHatsGeneralCameraIsSelected, false);
+
   // Personalization HaTS survey prefs for avatar, screensaver, and wallpaper
   // features.
   registry->RegisterInt64Pref(

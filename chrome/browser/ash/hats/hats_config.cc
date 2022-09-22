@@ -177,4 +177,14 @@ const HatsConfig kHatsPhotosExperienceSurvey = {
     prefs::kHatsPhotosExperienceCycleEndTs,  // hatsCycleEndTimestampPrefName
 };
 
+// General Camera Survey -- shown after camera is closed after being open for
+// at least 3 minutes by using any app (e.g. Chrome or Android app).
+const HatsConfig kHatsGeneralCameraSurvey = {
+    ::features::kHappinessTrackingGeneralCamera,        // feature
+    "Browser.ChromeOS.HatsSatisfaction.GeneralCamera",  // histogram_name
+    base::Days(90),                                     // new_device_threshold
+    prefs::kHatsGeneralCameraIsSelected,                // is_selected_pref_name
+    prefs::kHatsGeneralCameraSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
 }  // namespace ash

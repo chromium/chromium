@@ -904,6 +904,15 @@ const char kHatsPhotosExperienceCycleEndTs[] =
 const char kHatsPhotosExperienceIsSelected[] =
     "hats_photos_experience_is_selected";
 
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicated the end of the most recent general camera survey cycle.
+const char kHatsGeneralCameraSurveyCycleEndTs[] =
+    "hats_general_camera_cycle_end_timestamp";
+
+// A boolean pref. Indicated if the device is selected for the general camera
+// survey.
+const char kHatsGeneralCameraIsSelected[] = "hats_general_camera_is_selected";
+
 // A boolean pref. Indicates if we've already shown a notification to inform the
 // current user about the quick unlock feature.
 const char kPinUnlockFeatureNotificationShown[] =

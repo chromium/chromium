@@ -625,6 +625,10 @@ BASE_FEATURE(kHappinessTrackingSystemCameraApp,
 BASE_FEATURE(kHappinessTrackingPhotosExperience,
              "HappinessTrackingPhotosExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the Happiness Tracking System for General Camera survey.
+BASE_FEATURE(kHappinessTrackingGeneralCamera,
+             "HappinessTrackingGeneralCamera",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Hides the origin text from showing up briefly in WebApp windows.

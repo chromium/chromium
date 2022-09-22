@@ -372,6 +372,9 @@ BASE_DECLARE_FEATURE(kHappinessTrackingSystemCameraApp);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kHappinessTrackingPhotosExperience);
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHappinessTrackingGeneralCamera;
+
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kHideWebAppOriginText);

@@ -104,6 +104,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".CameraApp"/>
     <variant name=".Ent"/>
     <variant name=".General"/>
+    <variant name=".GeneralCamera"/>
     <variant name=".MediaAppPdf"/>
     <variant name=".OnboardingExperience"/>
     <variant name=".Performance"/>
