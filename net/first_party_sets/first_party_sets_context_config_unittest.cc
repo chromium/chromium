@@ -60,4 +60,48 @@ TEST(FirstPartySetsContextConfigTest, IngestAliases) {
   EXPECT_THAT(config.FindOverride(example_cctld), Optional(Optional(entry)));
 }
 
+TEST(FirstPartySetsContextConfigTest, Contains) {
+  SchemefulSite example(GURL("https://example.test"));
+  SchemefulSite decoy(GURL("https://decoy.test"));
+
+  FirstPartySetsContextConfig config({{example, absl::nullopt}});
+
+  EXPECT_TRUE(config.Contains(example));
+  EXPECT_FALSE(config.Contains(decoy));
+}
+
+TEST(FirstPartySetsContextConfigTest, ForEachCustomizationEntry_FullIteration) {
+  SchemefulSite example(GURL("https://example.test"));
+  SchemefulSite foo(GURL("https://foo.test"));
+
+  FirstPartySetsContextConfig config(
+      {{example, absl::nullopt}, {foo, absl::nullopt}});
+
+  int count = 0;
+  EXPECT_TRUE(config.ForEachCustomizationEntry(
+      [&](const SchemefulSite& site,
+          const absl::optional<FirstPartySetEntry>& entry) {
+        ++count;
+        return true;
+      }));
+  EXPECT_EQ(count, 2);
+}
+
+TEST(FirstPartySetsContextConfigTest, ForEachCustomizationEntry_EarlyReturn) {
+  SchemefulSite example(GURL("https://example.test"));
+  SchemefulSite foo(GURL("https://foo.test"));
+
+  FirstPartySetsContextConfig config(
+      {{example, absl::nullopt}, {foo, absl::nullopt}});
+
+  int count = 0;
+  EXPECT_FALSE(config.ForEachCustomizationEntry(
+      [&](const SchemefulSite& site,
+          const absl::optional<FirstPartySetEntry>& entry) {
+        ++count;
+        return count < 1;
+      }));
+  EXPECT_EQ(count, 1);
+}
+
 }  // namespace net

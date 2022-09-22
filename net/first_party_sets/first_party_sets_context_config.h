@@ -6,6 +6,7 @@
 #define NET_FIRST_PARTY_SETS_FIRST_PARTY_SETS_CONTEXT_CONFIG_H_
 
 #include "base/containers/flat_map.h"
+#include "base/functional/function_ref.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -55,6 +56,23 @@ class NET_EXPORT FirstPartySetsContextConfig {
   // `aliases`; and that an override exists in this config for every value in
   // `aliases`.
   void IngestAliases(base::flat_map<SchemefulSite, SchemefulSite> aliases);
+
+  // Returns whether an override can be found for the given site in this
+  // context.
+  bool Contains(const SchemefulSite& site) const;
+
+  // Synchronously iterate over all the override entries. Each iteration will be
+  // invoked with the relevant site and the override that applies to it. The
+  // override will be `nullopt` if it is a deletion, or `optional(entry)` if it
+  // is a modification of an existing entry, or an addition.
+  //
+  // Returns early if any of the iterations returns false. Returns false if
+  // iteration was incomplete; true if all iterations returned true. No
+  // guarantees are made re: iteration order.
+  bool ForEachCustomizationEntry(
+      base::FunctionRef<bool(const SchemefulSite&,
+                             const absl::optional<FirstPartySetEntry>&)> f)
+      const;
 
  private:
   // mojo (de)serialization needs access to private details.
