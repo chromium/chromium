@@ -635,6 +635,7 @@ source_set("unit_tests") {
     "shortcuts_database_unittest.cc",
     "shortcuts_provider_unittest.cc",
     "suggestion_answer_unittest.cc",
+    "suggestion_group_unittest.cc",
     "tailored_word_break_iterator_unittest.cc",
     "titled_url_match_utils_unittest.cc",
     "url_prefix_unittest.cc",
