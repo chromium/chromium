@@ -284,6 +284,9 @@ class SelectControlWaiter : public aura::WindowObserver,
   SelectControlWaiter& operator=(const SelectControlWaiter&) = delete;
   ~SelectControlWaiter() override {
     aura::Env::GetInstance()->RemoveObserver(this);
+    for (auto* window : observed_windows_) {
+      window->RemoveObserver(this);
+    }
   }
 
   void Wait(bool wait_for_widget_shown) {
