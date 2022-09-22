@@ -430,7 +430,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
   info.start_url = GURL("https://foo.example");
   info.title = u"Foo Title";
 
-  const IsolationData isolation_data{IsolationData::DevModeBundle{.path = "p"}};
+  const IsolationData isolation_data{IsolationData::DevModeBundle{
+      .path = base::FilePath(FILE_PATH_LITERAL("p"))}};
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::EXTERNAL_POLICY);
   options.isolation_data = isolation_data;

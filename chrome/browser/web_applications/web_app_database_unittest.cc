@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -46,6 +47,8 @@ namespace web_app {
 
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::IsNull;
+using ::testing::NotNull;
 using ::testing::Property;
 using ::testing::VariantWith;
 
@@ -622,27 +625,71 @@ TEST_F(WebAppDatabaseIsolationDataTest, DoesNotSetIsolationDataIfNotIsolated) {
 }
 
 TEST_F(WebAppDatabaseIsolationDataTest, SavesInstalledBundleIsolationData) {
+  base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData(IsolationData::InstalledBundle{.path = "bundle_path"}));
+      IsolationData(IsolationData::InstalledBundle{.path = path}));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
-  EXPECT_THAT(
-      web_app->isolation_data()->content,
-      VariantWith<IsolationData::InstalledBundle>(Field(
-          "path", &IsolationData::InstalledBundle::path, Eq("bundle_path"))));
+  EXPECT_THAT(web_app->isolation_data()->content,
+              VariantWith<IsolationData::InstalledBundle>(Field(
+                  "path", &IsolationData::InstalledBundle::path, Eq(path))));
+}
+
+TEST_F(WebAppDatabaseIsolationDataTest,
+       HandlesCorruptedInstalledBundleIsolationData) {
+  base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
+      IsolationData(IsolationData::InstalledBundle{.path = path}));
+
+  std::unique_ptr<WebAppProto> web_app_proto =
+      WebAppDatabase::CreateWebAppProto(*web_app);
+  ASSERT_THAT(web_app_proto, NotNull());
+
+  // The path is encoded with Pickle, thus setting some non-pickle data here
+  // should break deserialization.
+  web_app_proto->mutable_isolation_data()
+      ->mutable_installed_bundle()
+      ->mutable_path()
+      ->assign("foo");
+
+  std::unique_ptr<WebApp> protoed_web_app =
+      WebAppDatabase::CreateWebApp(*web_app_proto);
+  EXPECT_THAT(protoed_web_app, IsNull());
 }
 
 TEST_F(WebAppDatabaseIsolationDataTest, SavesDevModeBundleIsolationData) {
+  base::FilePath path(FILE_PATH_LITERAL("dev_bundle_path"));
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData(IsolationData::DevModeBundle{.path = "dev_bundle_path"}));
+      IsolationData(IsolationData::DevModeBundle{.path = path}));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
-  EXPECT_THAT(
-      web_app->isolation_data()->content,
-      VariantWith<IsolationData::DevModeBundle>(Field(
-          "path", &IsolationData::DevModeBundle::path, Eq("dev_bundle_path"))));
+  EXPECT_THAT(web_app->isolation_data()->content,
+              VariantWith<IsolationData::DevModeBundle>(Field(
+                  "path", &IsolationData::DevModeBundle::path, Eq(path))));
+}
+
+TEST_F(WebAppDatabaseIsolationDataTest,
+       HandlesCorruptedDevModeBundleIsolationData) {
+  base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
+      IsolationData(IsolationData::DevModeBundle{.path = path}));
+
+  std::unique_ptr<WebAppProto> web_app_proto =
+      WebAppDatabase::CreateWebAppProto(*web_app);
+  ASSERT_THAT(web_app_proto, NotNull());
+
+  // The path is encoded with Pickle, thus setting some non-pickle data here
+  // should break deserialization.
+  web_app_proto->mutable_isolation_data()
+      ->mutable_dev_mode_bundle()
+      ->mutable_path()
+      ->assign("foo");
+
+  std::unique_ptr<WebApp> protoed_web_app =
+      WebAppDatabase::CreateWebApp(*web_app_proto);
+  EXPECT_THAT(protoed_web_app, IsNull());
 }
 
 TEST_F(WebAppDatabaseIsolationDataTest, SavesDevModeProxyIsolationData) {

@@ -312,8 +312,8 @@ TEST(WebAppTest, IsolationDataStartsEmpty) {
 TEST(WebAppTest, IsolationDataDebugValue) {
   WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
                            GURL("https://example.com"))};
-  app.SetIsolationData(
-      IsolationData(IsolationData::InstalledBundle{.path = "random_path"}));
+  app.SetIsolationData(IsolationData(IsolationData::InstalledBundle{
+      .path = base::FilePath(FILE_PATH_LITERAL("random_path"))}));
 
   EXPECT_TRUE(app.isolation_data().has_value());
 

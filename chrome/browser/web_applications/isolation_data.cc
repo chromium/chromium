@@ -53,20 +53,21 @@ bool IsolationData::DevModeProxy::operator!=(
 
 base::Value IsolationData::AsDebugValue() const {
   base::Value::Dict value;
-  absl::visit(
-      base::Overloaded{
-          [&value](const IsolationData::InstalledBundle& bundle) {
-            value.SetByDottedPath("content.installed_bundle.path", bundle.path);
-          },
-          [&value](const IsolationData::DevModeBundle& bundle) {
-            value.SetByDottedPath("content.dev_mode_bundle.path", bundle.path);
-          },
-          [&value](const IsolationData::DevModeProxy& proxy) {
-            value.SetByDottedPath("content.dev_mode_proxy.proxy_url",
-                                  proxy.proxy_url);
-          },
-      },
-      content);
+  absl::visit(base::Overloaded{
+                  [&value](const IsolationData::InstalledBundle& bundle) {
+                    value.SetByDottedPath("content.installed_bundle.path",
+                                          bundle.path.LossyDisplayName());
+                  },
+                  [&value](const IsolationData::DevModeBundle& bundle) {
+                    value.SetByDottedPath("content.dev_mode_bundle.path",
+                                          bundle.path.LossyDisplayName());
+                  },
+                  [&value](const IsolationData::DevModeProxy& proxy) {
+                    value.SetByDottedPath("content.dev_mode_proxy.proxy_url",
+                                          proxy.proxy_url);
+                  },
+              },
+              content);
   return base::Value(std::move(value));
 }
 

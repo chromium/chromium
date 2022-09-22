@@ -323,12 +323,9 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
               return;
             }
 
-            const base::FilePath web_bundle_path =
-                base::FilePath::FromUTF8Unsafe(content.path);
-
             auto loader = std::make_unique<IsolatedWebAppURLLoader>(
-                isolated_web_app_reader_registry, web_bundle_path,
-                *web_bundle_id, std::move(loader_client), resource_request,
+                isolated_web_app_reader_registry, content.path, *web_bundle_id,
+                std::move(loader_client), resource_request,
                 frame_tree_node_id_);
             mojo::MakeSelfOwnedReceiver(
                 std::move(std::move(loader)),

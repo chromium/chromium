@@ -11,7 +11,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/functional/overloaded.h"
+#include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -293,6 +295,23 @@ TabStrip::Visibility ProtoToTabStripVisibility(
     case proto::TabStrip_Visibility_ABSENT:
       return TabStrip::Visibility::kAbsent;
   }
+}
+
+std::string FilePathToProto(const base::FilePath& path) {
+  base::Pickle pickle;
+  path.WriteToPickle(&pickle);
+  return std::string(static_cast<const char*>(pickle.data()), pickle.size());
+}
+
+absl::optional<base::FilePath> ProtoToFilePath(const std::string& bytes) {
+  const base::Pickle pickle(bytes.data(), bytes.size());
+  base::PickleIterator pickle_iterator(pickle);
+
+  base::FilePath path;
+  if (!path.ReadFromPickle(&pickle_iterator)) {
+    return absl::nullopt;
+  }
+  return path;
 }
 
 }  // anonymous namespace
@@ -739,10 +758,12 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     absl::visit(
         base::Overloaded{
             [&mutable_data](const IsolationData::InstalledBundle& bundle) {
-              mutable_data->mutable_installed_bundle()->set_path(bundle.path);
+              mutable_data->mutable_installed_bundle()->set_path(
+                  FilePathToProto(bundle.path));
             },
             [&mutable_data](const IsolationData::DevModeBundle& bundle) {
-              mutable_data->mutable_dev_mode_bundle()->set_path(bundle.path);
+              mutable_data->mutable_dev_mode_bundle()->set_path(
+                  FilePathToProto(bundle.path));
             },
             [&mutable_data](const IsolationData::DevModeProxy& proxy) {
               mutable_data->mutable_dev_mode_proxy()->set_proxy_url(
@@ -1368,15 +1389,31 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
   if (local_data.has_isolation_data()) {
     switch (local_data.isolation_data().content_case()) {
-      case IsolationDataProto::ContentCase::kInstalledBundle:
-        web_app->SetIsolationData(IsolationData(IsolationData::InstalledBundle{
-            .path = local_data.isolation_data().installed_bundle().path()}));
+      case IsolationDataProto::ContentCase::kInstalledBundle: {
+        absl::optional<base::FilePath> path = ProtoToFilePath(
+            local_data.isolation_data().installed_bundle().path());
+        if (!path.has_value()) {
+          DLOG(ERROR) << "WebApp proto isolation_data.installed_bundle.path "
+                         "parse error: cannot deserialize file path";
+          return nullptr;
+        }
+        web_app->SetIsolationData(
+            IsolationData(IsolationData::InstalledBundle{.path = *path}));
         break;
+      }
 
-      case IsolationDataProto::ContentCase::kDevModeBundle:
-        web_app->SetIsolationData(IsolationData(IsolationData::DevModeBundle{
-            .path = local_data.isolation_data().dev_mode_bundle().path()}));
+      case IsolationDataProto::ContentCase::kDevModeBundle: {
+        absl::optional<base::FilePath> path = ProtoToFilePath(
+            local_data.isolation_data().dev_mode_bundle().path());
+        if (!path.has_value()) {
+          DLOG(ERROR) << "WebApp proto isolation_data.dev_mode_bundle.path "
+                         "parse error: cannot deserialize file path";
+          return nullptr;
+        }
+        web_app->SetIsolationData(
+            IsolationData(IsolationData::DevModeBundle{.path = *path}));
         break;
+      }
 
       case IsolationDataProto::ContentCase::kDevModeProxy:
         web_app->SetIsolationData(IsolationData(IsolationData::DevModeProxy{

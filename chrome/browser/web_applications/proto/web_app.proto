@@ -127,14 +127,24 @@ message ManagementToExternalConfigInfo {
 }
 
 // Contains information specific to Isolated Web Apps.
+//
+// File paths are (de)serialized using Pickle to and from `base::FilePath` via
+// its (de)serialization methods `base::FilePath::WriteToPickle` and
+// `base::FilePath::ReadFromPickle`. Depending on the OS, file paths may either
+// use `std::string` or `std::wstring` internally. The Pickle format includes a
+// header representing the original data type of the file path, which means that
+// it is impossible to ever accidentally deserialize a `std::wstring` into a
+// `std::string` and vice versa. The (de)serialization code is also easier to
+// read than manually written code that converts bytes to and from
+// `std::wstring` / `std::string`.
 message IsolationDataProto {
   // Information needed to load data from an installed web bundle.
   message InstalledBundle {
-    optional string path = 1;
+    optional bytes path = 1;
   }
   // Information needed to load data from an installed dev mode web bundle.
   message DevModeBundle {
-    optional string path = 1;
+    optional bytes path = 1;
   }
   // Information needed to load data for an app using a dev mode proxy.
   message DevModeProxy {

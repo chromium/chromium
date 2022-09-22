@@ -231,8 +231,8 @@ class IsolatedWebAppURLLoaderFactoryInstalledBundleTest
 
     auto bundle_path = CreateSignedBundleAndWriteToDisk();
     std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-        kPrimaryUrl, IsolationData{IsolationData::InstalledBundle{
-                         .path = bundle_path.MaybeAsASCII()}});
+        kPrimaryUrl,
+        IsolationData{IsolationData::InstalledBundle{.path = bundle_path}});
     RegisterWebApp(std::move(iwa));
   }
 

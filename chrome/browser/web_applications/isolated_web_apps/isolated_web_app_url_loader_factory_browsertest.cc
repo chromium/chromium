@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -179,8 +180,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest, LoadsBundle) {
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      GURL(kPrimaryUrl), IsolationData{IsolationData::InstalledBundle{
-                             .path = bundle_path.MaybeAsASCII()}});
+      GURL(kPrimaryUrl),
+      IsolationData{IsolationData::InstalledBundle{.path = bundle_path}});
   RegisterWebApp(std::move(iwa));
 
   NavigateAndWaitForTitle(GURL(kPrimaryUrl), u"Hello Isolated Apps");
@@ -200,8 +201,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      GURL(kPrimaryUrl), IsolationData{IsolationData::InstalledBundle{
-                             .path = bundle_path.MaybeAsASCII()}});
+      GURL(kPrimaryUrl),
+      IsolationData{IsolationData::InstalledBundle{.path = bundle_path}});
   RegisterWebApp(std::move(iwa));
 
   NavigateAndWaitForTitle(GURL(kPrimaryUrl), u"title from js");
@@ -217,8 +218,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      GURL(kPrimaryUrl), IsolationData{IsolationData::InstalledBundle{
-                             .path = bundle_path.MaybeAsASCII()}});
+      GURL(kPrimaryUrl),
+      IsolationData{IsolationData::InstalledBundle{.path = bundle_path}});
   RegisterWebApp(std::move(iwa));
 
   NavigateAndWaitForError(
@@ -237,8 +238,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      GURL(kPrimaryUrl), IsolationData{IsolationData::InstalledBundle{
-                             .path = bundle_path.MaybeAsASCII()}});
+      GURL(kPrimaryUrl),
+      IsolationData{IsolationData::InstalledBundle{.path = bundle_path}});
   RegisterWebApp(std::move(iwa));
 
   NavigateAndWaitForError(
@@ -266,8 +267,10 @@ IN_PROC_BROWSER_TEST_P(
     IsolatedWebAppURLLoaderFactoryNonExistingBundlesBrowserTest,
     NonExistingBundle) {
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      GURL(kPrimaryUrl), IsolationData{IsolationData::InstalledBundle{
-                             .path = "/this/path/does/not/exist"}});
+      GURL(kPrimaryUrl),
+      IsolationData{IsolationData::InstalledBundle{
+          .path =
+              base::FilePath(FILE_PATH_LITERAL("/this/path/does/not/exist"))}});
   RegisterWebApp(std::move(iwa));
 
   NavigateAndWaitForError(url_, error_message_);

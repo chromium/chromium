@@ -615,9 +615,10 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     using IsolationDataContent = decltype(IsolationData::content);
     constexpr size_t kNumContentTypes =
         absl::variant_size<IsolationDataContent>::value;
+    auto path = base::FilePath::FromUTF8Unsafe(seed_str);
     IsolationDataContent content_types[] = {
-        IsolationData::InstalledBundle{.path = seed_str},
-        IsolationData::DevModeBundle{.path = seed_str},
+        IsolationData::InstalledBundle{.path = path},
+        IsolationData::DevModeBundle{.path = path},
         IsolationData::DevModeProxy{.proxy_url = seed_str},
     };
     static_assert(std::size(content_types) == kNumContentTypes);

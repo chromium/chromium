@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -19,14 +20,14 @@ struct IsolationData {
     bool operator==(const InstalledBundle& other) const;
     bool operator!=(const InstalledBundle& other) const;
 
-    std::string path;
+    base::FilePath path;
   };
 
   struct DevModeBundle {
     bool operator==(const DevModeBundle& other) const;
     bool operator!=(const DevModeBundle& other) const;
 
-    std::string path;
+    base::FilePath path;
   };
 
   struct DevModeProxy {
