@@ -88,35 +88,6 @@ TEST_F(BookmarkIOSUtilsUnitTest, MoveNodes) {
   EXPECT_EQ(0u, child1->children().size());
 }
 
-TEST_F(BookmarkIOSUtilsUnitTest, TestDefaultMoveFolder) {
-  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
-  const BookmarkNode* f1 = AddFolder(mobileNode, @"f1");
-  const BookmarkNode* a = AddBookmark(mobileNode, @"a");
-  AddBookmark(mobileNode, @"b");
-  const BookmarkNode* f2 = AddFolder(mobileNode, @"f2");
-
-  AddBookmark(f1, @"f1a");
-  AddBookmark(f1, @"f1b");
-  AddBookmark(f1, @"f1c");
-  const BookmarkNode* f2a = AddBookmark(f2, @"f2a");
-  const BookmarkNode* f2b = AddBookmark(f2, @"f2b");
-
-  std::set<const BookmarkNode*> toMove;
-  toMove.insert(a);
-  toMove.insert(f2b);
-  toMove.insert(f2);
-
-  const BookmarkNode* folder =
-      bookmark_utils_ios::defaultMoveFolder(toMove, bookmark_model_);
-  EXPECT_EQ(folder, mobileNode);
-
-  toMove.clear();
-  toMove.insert(f2a);
-  toMove.insert(f2b);
-  folder = bookmark_utils_ios::defaultMoveFolder(toMove, bookmark_model_);
-  EXPECT_EQ(folder, f2);
-}
-
 TEST_F(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
   const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, @"f1");

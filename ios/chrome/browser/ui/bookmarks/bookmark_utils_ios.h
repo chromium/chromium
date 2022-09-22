@@ -114,12 +114,6 @@ bool MoveBookmarks(const std::set<const bookmarks::BookmarkNode*>& bookmarks,
 // Category name for all bookmarks related snackbars.
 extern NSString* const kBookmarksSnackbarCategory;
 
-// Returns the parent, if all the bookmarks are siblings.
-// Otherwise returns the mobile_node.
-const bookmarks::BookmarkNode* defaultMoveFolder(
-    const std::set<const bookmarks::BookmarkNode*>& bookmarks,
-    bookmarks::BookmarkModel* model);
-
 #pragma mark - Useful bookmark manipulation.
 
 // Sorts a vector full of folders by title.

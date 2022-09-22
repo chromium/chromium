@@ -343,20 +343,6 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
   return CreateUndoToastWithWrapper(wrapper, text);
 }
 
-const BookmarkNode* defaultMoveFolder(
-    const std::set<const BookmarkNode*>& bookmarks,
-    bookmarks::BookmarkModel* model) {
-  if (bookmarks.size() == 0)
-    return model->mobile_node();
-  const BookmarkNode* firstParent = (*(bookmarks.begin()))->parent();
-  for (const BookmarkNode* node : bookmarks) {
-    if (node->parent() != firstParent)
-      return model->mobile_node();
-  }
-
-  return firstParent;
-}
-
 #pragma mark - Useful bookmark manipulation.
 
 namespace {
