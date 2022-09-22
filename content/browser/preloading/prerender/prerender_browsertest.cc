@@ -4209,6 +4209,134 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   EXPECT_TRUE(embedder_observer.was_activated());
 }
 
+// Tests that if the running prerender is cancelled by
+// PrerenderHostRegistry::CancelHost(), the next pending prerender starts its
+// navigation.
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+                       RunningHostCancellationStartPendingPrerender) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/empty.html?prerender1");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kPrerender1 =
+      embedded_test_server()->GetURL("/empty.html?prerender1");
+  const GURL kPrerender2 =
+      embedded_test_server()->GetURL("/empty.html?prerender2");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+
+  // Insert 2 URLs into the speculation rules at the same time.
+  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+                     JsReplace(
+                         R"(
+                  const sc = document.createElement('script');
+                  sc.type = 'speculationrules';
+                  sc.textContent = JSON.stringify({
+                    prerender: [
+                      {source: "list", urls: [$1, $2]}
+                    ]
+                  });
+                  document.head.appendChild(sc);
+                  )",
+                         kPrerender1, kPrerender2)));
+
+  registry_observer.WaitForTrigger(kPrerender2);
+  test::PrerenderHostObserver prerender2_observer(*web_contents(),
+                                                  GetHostForUrl(kPrerender2));
+
+  // Stop the first prerendering initial navigation.
+  response.WaitForRequest();
+
+  // Cancel the running prerender. The next pending prerender should start upon
+  // this cancellation.
+  web_contents_impl()->GetPrerenderHostRegistry()->CancelHost(
+      GetHostForUrl(kPrerender1), PrerenderHost::FinalStatus::kDestroyed);
+  WaitForPrerenderLoadCompletion(kPrerender2);
+
+  // Activate the page with the prerender that was pending.
+  NavigatePrimaryPage(kPrerender2);
+  prerender2_observer.WaitForActivation();
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerender2);
+  EXPECT_TRUE(prerender2_observer.was_activated());
+
+  // The first prerender should be manually destroyed.
+  histogram_tester().ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderHost::FinalStatus::kDestroyed, 1);
+  // The second prerender should be successfully activated.
+  histogram_tester().ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderHost::FinalStatus::kActivated, 1);
+}
+
+// Tests that if the running prerender is cancelled by
+// PrerenderHostRegistry::OnTriggerDestroyed(), the next pending prerender
+// starts its navigation.
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+                       SpeculationRulesUpdateStartPendingPrerender) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/empty.html?prerender1");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kPrerender1 =
+      embedded_test_server()->GetURL("/empty.html?prerender1");
+  const GURL kPrerender2 =
+      embedded_test_server()->GetURL("/empty.html?prerender2");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+
+  // Insert 2 URLs into the speculation rules in order. The prerender for
+  // `kPrerender1` should start first.
+  std::string script = R"(
+                        let sc = document.createElement('script');
+                        sc.type = 'speculationrules';
+                        sc.id = $1;
+                        sc.textContent = JSON.stringify({
+                          prerender: [
+                            {source: "list", urls: [$2]}
+                          ]
+                        });
+                        document.head.appendChild(sc);
+                        )";
+  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+                     JsReplace(script, "prerender1", kPrerender1)));
+  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+                     JsReplace(script, "prerender2", kPrerender2)));
+
+  registry_observer.WaitForTrigger(kPrerender2);
+  test::PrerenderHostObserver prerender2_observer(*web_contents(),
+                                                  GetHostForUrl(kPrerender2));
+
+  // Stop the first prerendering initial navigation.
+  response.WaitForRequest();
+
+  // Delete the first speculation rule. This speculation rules removal invokes
+  // the PrerenderHostRegistry::OnTriggerDestroyed(), and the next pending
+  // prerender should start upon the cancellation.
+  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+                     "document.querySelector('#prerender1').remove()"));
+  WaitForPrerenderLoadCompletion(kPrerender2);
+
+  // Activate the page with the prerender that was pending.
+  NavigatePrimaryPage(kPrerender2);
+  prerender2_observer.WaitForActivation();
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerender2);
+  EXPECT_TRUE(prerender2_observer.was_activated());
+
+  // The first prerender should be cancelled by the trigger.
+  histogram_tester().ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderHost::FinalStatus::kTriggerDestroyed, 1);
+  // The second prerender should be successfully activated.
+  histogram_tester().ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderHost::FinalStatus::kActivated, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        IsInactiveAndDisallowActivationCancelsPrerendering) {
   const GURL kInitialUrl = GetUrl("/empty.html");

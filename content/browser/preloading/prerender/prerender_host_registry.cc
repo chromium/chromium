@@ -245,13 +245,19 @@ int PrerenderHostRegistry::CreateAndStartHost(
     switch (attributes.trigger_type) {
       case PrerenderTriggerType::kSpeculationRule:
         pending_prerenders_.push_back(frame_tree_node_id);
-        // Start only the first PrerenderHost execution if there's no running
-        // prerendering.
+        // Start the initial prerendering navigation of the pending request in
+        // the head of the queue if there's no running prerender.
         if (running_prerender_host_id_ == RenderFrameHost::kNoFrameTreeNodeId) {
-          // TODO(crbug.com/1355151): Returns the starting host's id once
-          // starting another prerender on running prerender cancellation is
-          // implemented.
-          StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
+          // No running prerender means that no other prerender is waiting in
+          // the pending queue, because the prerender sequence only stops when
+          // all the pending prerenders are started.
+          DCHECK_EQ(pending_prerenders_.size(), 1u);
+          int started_frame_tree_node_id =
+              StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
+          DCHECK(started_frame_tree_node_id == frame_tree_node_id ||
+                 started_frame_tree_node_id ==
+                     RenderFrameHost::kNoFrameTreeNodeId);
+          frame_tree_node_id = started_frame_tree_node_id;
         }
         break;
       case PrerenderTriggerType::kEmbedder:
@@ -356,12 +362,18 @@ bool PrerenderHostRegistry::CancelHost(
   // Remove the prerender host from the host map so that it's not used for
   // activation during asynchronous deletion.
 
-  // TODO(crbug.com/1355151): Start another pending prerender.
   std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
   prerender_host_by_frame_tree_node_id_.erase(iter);
 
   // Asynchronously delete the prerender host.
   ScheduleToDeleteAbandonedHost(std::move(prerender_host), final_status);
+
+  // Start another prerender if the running prerender is cancelled.
+  if (running_prerender_host_id_ == frame_tree_node_id) {
+    running_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+    StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
+  }
+
   return true;
 }
 
@@ -456,9 +468,6 @@ void PrerenderHostRegistry::OnTriggerDestroyed(int frame_tree_node_id) {
 
   // Look up the id in the non-reserved host map and remove it from the map if
   // it's found.
-  //
-  // TODO(crbug.com/1355151): Start another pending prerender if the deleted one
-  // is the running prerender.
   auto found = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
   if (found != prerender_host_by_frame_tree_node_id_.end()) {
     DCHECK(!base::Contains(reserved_prerender_host_by_frame_tree_node_id_,
@@ -473,6 +482,12 @@ void PrerenderHostRegistry::OnTriggerDestroyed(int frame_tree_node_id) {
     ScheduleToDeleteAbandonedHost(
         std::move(prerender_host),
         PrerenderHost::FinalStatus::kTriggerDestroyed);
+
+    // Start another prerender if the running prerender is destroyed.
+    if (running_prerender_host_id_ == frame_tree_node_id) {
+      running_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+      StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
+    }
   }
 
   // Don't remove the host from the reserved host map. Unlike use of the
