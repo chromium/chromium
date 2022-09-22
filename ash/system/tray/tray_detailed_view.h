@@ -168,11 +168,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // separator.
   bool has_separator_ = true;
 
-  // True once the destructor is called. Used to prevent `OnThemeChanged` from
-  // being called at the same time when this view is being removed. See
-  // https://crbug.com/1353195 for more details.
-  bool is_destroying_ = false;
-
   // The accessible name for the `progress_bar_`.
   absl::optional<std::u16string> progress_bar_accessible_name_;
 };

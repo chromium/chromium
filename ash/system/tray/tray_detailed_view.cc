@@ -280,9 +280,7 @@ TrayDetailedView::TrayDetailedView(DetailedViewDelegate* delegate)
       delegate_->GetBackgroundColor().value_or(SK_ColorTRANSPARENT)));
 }
 
-TrayDetailedView::~TrayDetailedView() {
-  is_destroying_ = true;
-}
+TrayDetailedView::~TrayDetailedView() = default;
 
 void TrayDetailedView::OnViewClicked(views::View* sender) {
   HandleViewClicked(sender);
@@ -489,9 +487,6 @@ const char* TrayDetailedView::GetClassName() const {
 
 void TrayDetailedView::OnThemeChanged() {
   views::View::OnThemeChanged();
-
-  if (is_destroying_)
-    return;
 
   delegate_->UpdateColors();
 

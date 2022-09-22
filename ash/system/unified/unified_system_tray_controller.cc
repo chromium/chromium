@@ -513,7 +513,12 @@ void UnifiedSystemTrayController::TransitionToMainView(bool restore_focus) {
   }
 
   showing_audio_detailed_view_ = false;
-  detailed_view_controller_.reset();
+
+  // Transfer `detailed_view_controller_` to a scoped object, which will be
+  // destroyed once it's out of this method's scope (after resetting
+  // `quick_settings_view_`'s `detailed_view_`). Because the detailed view has a
+  // reference to its `detailed_view_controller_` which is used in shutdown.
+  auto scoped_detailed_view_controller = std::move(detailed_view_controller_);
 
   if (features::IsQsRevampEnabled()) {
     quick_settings_view_->ResetDetailedView();
@@ -549,11 +554,15 @@ void UnifiedSystemTrayController::EnsureCollapsed() {
 void UnifiedSystemTrayController::EnsureExpanded() {
   if (detailed_view_controller_) {
     showing_audio_detailed_view_ = false;
-    detailed_view_controller_.reset();
     if (features::IsQsRevampEnabled())
       quick_settings_view_->ResetDetailedView();
     else
       unified_view_->ResetDetailedView();
+
+    // Destroy `detailed_view_controller_` after resetting
+    // `quick_settings_view_`'s `detailed_view_` because the detailed view has a
+    // reference to its `detailed_view_controller_` which is used in shutdown.
+    detailed_view_controller_.reset();
   }
   StartAnimation(true /*expand*/);
 
