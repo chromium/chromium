@@ -4752,7 +4752,6 @@ crbug.com/1050754 external/wpt/web-animations/animation-model/keyframe-effects/e
 crbug.com/1050754 external/wpt/web-animations/animation-model/keyframe-effects/effect-value-context.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/web-animations/animation-model/keyframe-effects/effect-value-iteration-composite-operation.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/web-animations/animation-model/keyframe-effects/effect-value-replaced-animations.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/web-animations/idlharness.window.html [ Failure ]
 crbug.com/1050754 external/wpt/web-animations/interfaces/Animatable/animate-no-browsing-context.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/web-animations/interfaces/Animatable/animate.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/web-animations/interfaces/Animatable/getAnimations.html [ Failure Pass ]

@@ -12,15 +12,10 @@ dictionary RTCConfiguration {
   [EnforceRange] octet iceCandidatePoolSize = 0;
 };
 
-enum RTCIceCredentialType {
-  "password"
-};
-
 dictionary RTCIceServer {
   required (DOMString or sequence<DOMString>) urls;
   DOMString username;
   DOMString credential;
-  RTCIceCredentialType credentialType = "password";
 };
 
 enum RTCIceTransportPolicy {

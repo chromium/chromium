@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 388 tests; 155 PASS, 233 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 389 tests; 156 PASS, 233 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -78,6 +78,7 @@ PASS Partial interface MLCommandEncoder[2]: original interface defined
 PASS Partial interface MLCommandEncoder[2]: member names are unique
 PASS Partial interface MLCommandEncoder[3]: original interface defined
 PASS Partial interface MLCommandEncoder[3]: member names are unique
+PASS Partial interface Navigator: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Navigator includes NavigatorML: member names are unique
 PASS WorkerNavigator includes NavigatorML: member names are unique

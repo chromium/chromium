@@ -309,7 +309,7 @@ interface VideoFrame {
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
   readonly attribute unsigned long long? duration;  // microseconds
-  readonly attribute long long? timestamp;          // microseconds
+  readonly attribute long long timestamp;           // microseconds
   readonly attribute VideoColorSpace colorSpace;
 
   unsigned long allocationSize(
@@ -445,7 +445,6 @@ typedef (BufferSource or ReadableStream) ImageBufferSource;
 dictionary ImageDecoderInit {
   required DOMString type;
   required ImageBufferSource data;
-  PremultiplyAlpha premultiplyAlpha = "default";
   ColorSpaceConversion colorSpaceConversion = "default";
   [EnforceRange] unsigned long desiredWidth;
   [EnforceRange] unsigned long desiredHeight;

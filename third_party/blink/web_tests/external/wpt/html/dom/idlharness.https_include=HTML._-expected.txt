@@ -1,11 +1,13 @@
 This is a testharness.js-based test.
-Found 3808 tests; 3795 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 3810 tests; 3797 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
 PASS Partial interface Document: member names are unique
 PASS Partial interface mixin DocumentOrShadowRoot: original interface mixin defined
 PASS Partial interface mixin DocumentOrShadowRoot: member names are unique
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: member names are unique
 PASS Partial interface mixin NavigatorID: original interface mixin defined
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Partial interface HTMLAnchorElement: original interface defined

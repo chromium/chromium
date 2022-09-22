@@ -3,6 +3,7 @@ PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
 PASS Partial interface Navigator: member names are unique
+PASS Partial interface Navigator[2]: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Navigator includes NavigatorID: member names are unique
 PASS Navigator includes NavigatorLanguage: member names are unique

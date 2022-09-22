@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 95 tests; 94 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 96 tests; 95 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -12,6 +12,7 @@ PASS Partial dictionary CredentialRequestOptions[2]: original dictionary defined
 PASS Partial dictionary CredentialRequestOptions[2]: member names are unique
 PASS Partial dictionary CredentialCreationOptions[2]: original dictionary defined
 PASS Partial dictionary CredentialCreationOptions[2]: member names are unique
+PASS Partial interface Navigator[2]: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS PasswordCredential includes CredentialUserData: member names are unique
 PASS FederatedCredential includes CredentialUserData: member names are unique

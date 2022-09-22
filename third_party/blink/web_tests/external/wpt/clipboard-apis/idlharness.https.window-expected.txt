@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-Found 51 tests; 50 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 52 tests; 51 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
 PASS Partial interface Navigator: member names are unique
+PASS Partial interface Navigator[2]: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Navigator includes NavigatorID: member names are unique
 PASS Navigator includes NavigatorLanguage: member names are unique

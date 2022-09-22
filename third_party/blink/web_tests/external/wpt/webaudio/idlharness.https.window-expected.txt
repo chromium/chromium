@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1146 tests; 1115 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1148 tests; 1115 PASS, 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
@@ -1106,8 +1106,10 @@ PASS AudioWorklet interface object name
 PASS AudioWorklet interface: existence and properties of interface prototype object
 PASS AudioWorklet interface: existence and properties of interface prototype object's "constructor" property
 PASS AudioWorklet interface: existence and properties of interface prototype object's @@unscopables property
+FAIL AudioWorklet interface: attribute port assert_true: The prototype object must have a property "port" expected true got false
 PASS AudioWorklet must be primary interface of context.audioWorklet
 PASS Stringification of context.audioWorklet
+FAIL AudioWorklet interface: context.audioWorklet must inherit property "port" with the proper type assert_inherits: property "port" not found in prototype chain
 PASS AudioWorkletGlobalScope interface: existence and properties of interface object
 PASS AudioParamMap interface: existence and properties of interface object
 PASS AudioParamMap interface object length

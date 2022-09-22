@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 277 tests; 196 PASS, 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 278 tests; 197 PASS, 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 FAIL USB device setup promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'configurations')"
@@ -11,6 +11,7 @@ PASS Partial interface WorkerNavigator: valid exposure set
 PASS Partial interface WorkerNavigator: member names are unique
 PASS Partial interface Navigator[2]: member names are unique
 PASS Partial interface WorkerNavigator[2]: member names are unique
+PASS Partial interface Navigator[3]: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Navigator includes NavigatorID: member names are unique
 PASS Navigator includes NavigatorLanguage: member names are unique

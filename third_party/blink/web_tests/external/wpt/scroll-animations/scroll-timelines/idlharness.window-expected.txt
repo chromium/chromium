@@ -19,6 +19,9 @@ PASS ScrollTimeline must be primary interface of new ScrollTimeline()
 PASS Stringification of new ScrollTimeline()
 PASS ScrollTimeline interface: new ScrollTimeline() must inherit property "source" with the proper type
 FAIL ScrollTimeline interface: new ScrollTimeline() must inherit property "axis" with the proper type assert_inherits: property "axis" not found in prototype chain
+FAIL AnimationTimeline interface: new ScrollTimeline() must inherit property "currentTime" with the proper type Right-hand side of 'instanceof' is not an object
+FAIL AnimationTimeline interface: new ScrollTimeline() must inherit property "getCurrentTime(optional CSSOMString)" with the proper type assert_inherits: property "getCurrentTime" not found in prototype chain
+FAIL AnimationTimeline interface: calling getCurrentTime(optional CSSOMString) on new ScrollTimeline() with too few arguments must throw TypeError assert_inherits: property "getCurrentTime" not found in prototype chain
 PASS ViewTimeline interface: existence and properties of interface object
 PASS ViewTimeline interface object length
 PASS ViewTimeline interface object name
@@ -28,5 +31,13 @@ PASS ViewTimeline interface: existence and properties of interface prototype obj
 PASS ViewTimeline interface: attribute subject
 FAIL ViewTimeline interface: attribute startOffset assert_true: The prototype object must have a property "startOffset" expected true got false
 FAIL ViewTimeline interface: attribute endOffset assert_true: The prototype object must have a property "endOffset" expected true got false
+PASS AnimationTimeline interface: existence and properties of interface object
+PASS AnimationTimeline interface object length
+PASS AnimationTimeline interface object name
+PASS AnimationTimeline interface: existence and properties of interface prototype object
+PASS AnimationTimeline interface: existence and properties of interface prototype object's "constructor" property
+PASS AnimationTimeline interface: existence and properties of interface prototype object's @@unscopables property
+PASS AnimationTimeline interface: attribute currentTime
+FAIL AnimationTimeline interface: operation getCurrentTime(optional CSSOMString) assert_own_property: interface prototype object missing non-static operation expected property "getCurrentTime" missing
 Harness: the test ran to completion.
 

@@ -1,11 +1,13 @@
 This is a testharness.js-based test.
-Found 1390 tests; 1360 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1402 tests; 1372 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
 PASS Partial interface Document: member names are unique
 PASS Partial interface mixin DocumentOrShadowRoot: original interface mixin defined
 PASS Partial interface mixin DocumentOrShadowRoot: member names are unique
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: member names are unique
 PASS Partial interface mixin NavigatorID: original interface mixin defined
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Partial interface HTMLAnchorElement: original interface defined
@@ -844,6 +846,14 @@ PASS ElementInternals interface: attribute validationMessage
 PASS ElementInternals interface: operation checkValidity()
 PASS ElementInternals interface: operation reportValidity()
 PASS ElementInternals interface: attribute labels
+PASS UserActivation interface: existence and properties of interface object
+PASS UserActivation interface object length
+PASS UserActivation interface object name
+PASS UserActivation interface: existence and properties of interface prototype object
+PASS UserActivation interface: existence and properties of interface prototype object's "constructor" property
+PASS UserActivation interface: existence and properties of interface prototype object's @@unscopables property
+PASS UserActivation interface: attribute hasBeenActive
+PASS UserActivation interface: attribute isActive
 PASS DataTransfer interface: existence and properties of interface object
 PASS DataTransfer interface object length
 PASS DataTransfer interface object name
@@ -1013,6 +1023,7 @@ PASS Navigator interface object name
 PASS Navigator interface: existence and properties of interface prototype object
 PASS Navigator interface: existence and properties of interface prototype object's "constructor" property
 PASS Navigator interface: existence and properties of interface prototype object's @@unscopables property
+PASS Navigator interface: attribute userActivation
 PASS Navigator interface: attribute appCodeName
 PASS Navigator interface: attribute appName
 PASS Navigator interface: attribute appVersion
@@ -1037,6 +1048,7 @@ PASS Navigator interface: attribute pdfViewerEnabled
 PASS Navigator interface: attribute hardwareConcurrency
 PASS Navigator must be primary interface of window.navigator
 PASS Stringification of window.navigator
+PASS Navigator interface: window.navigator must inherit property "userActivation" with the proper type
 PASS Navigator interface: window.navigator must inherit property "appCodeName" with the proper type
 PASS Navigator interface: window.navigator must inherit property "appName" with the proper type
 PASS Navigator interface: window.navigator must inherit property "appVersion" with the proper type

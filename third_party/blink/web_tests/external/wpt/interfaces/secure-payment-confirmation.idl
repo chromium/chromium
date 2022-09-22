@@ -9,9 +9,10 @@ dictionary SecurePaymentConfirmationRequest {
     required sequence<BufferSource> credentialIds;
     required PaymentCredentialInstrument instrument;
     unsigned long timeout;
-    DOMString payeeName;
+    USVString payeeName;
     USVString payeeOrigin;
     AuthenticationExtensionsClientInputs extensions;
+    sequence<USVString> locale;
 };
 
 partial dictionary AuthenticationExtensionsClientInputs {
@@ -24,7 +25,7 @@ dictionary AuthenticationExtensionsPaymentInputs {
   // Only used for authentication.
   USVString rpId;
   USVString topOrigin;
-  DOMString payeeName;
+  USVString payeeName;
   USVString payeeOrigin;
   PaymentCurrencyAmount total;
   PaymentCredentialInstrument instrument;
@@ -37,14 +38,14 @@ dictionary CollectedClientPaymentData : CollectedClientData {
 dictionary CollectedClientAdditionalPaymentData {
     required USVString rpId;
     required USVString topOrigin;
-    DOMString payeeName;
+    USVString payeeName;
     USVString payeeOrigin;
     required PaymentCurrencyAmount total;
     required PaymentCredentialInstrument instrument;
 };
 
 dictionary PaymentCredentialInstrument {
-    required DOMString displayName;
+    required USVString displayName;
     required USVString icon;
     boolean iconMustBeShown = true;
 };

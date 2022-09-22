@@ -899,7 +899,7 @@ dictionary GPUImageCopyTextureTagged : GPUImageCopyTexture {
 };
 
 dictionary GPUImageCopyExternalImage {
-    required (ImageBitmap or HTMLCanvasElement or OffscreenCanvas) source;
+    required (ImageBitmap or HTMLVideoElement or HTMLCanvasElement or OffscreenCanvas) source;
     GPUOrigin2D origin = {};
     boolean flipY = false;
 };

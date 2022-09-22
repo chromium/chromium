@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 230 tests; 215 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 234 tests; 215 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -50,6 +50,7 @@ PASS inbound-rtp's totalAudioEnergy
 PASS inbound-rtp's totalSamplesDuration
 PASS inbound-rtp's framesReceived
 PASS inbound-rtp's decoderImplementation
+FAIL inbound-rtp's playoutId assert_true: Is playoutId present expected true got false
 PASS inbound-rtp's packetsReceived
 PASS inbound-rtp's packetsLost
 PASS inbound-rtp's jitter
@@ -148,6 +149,9 @@ PASS media-source's totalAudioEnergy
 PASS media-source's totalSamplesDuration
 FAIL media-source's echoReturnLoss assert_true: Is echoReturnLoss present expected true got false
 FAIL media-source's echoReturnLossEnhancement assert_true: Is echoReturnLossEnhancement present expected true got false
+FAIL media-source's droppedSamplesDuration assert_true: Is droppedSamplesDuration present expected true got false
+FAIL media-source's totalCaptureDelay assert_true: Is totalCaptureDelay present expected true got false
+FAIL media-source's totalSamplesCaptured assert_true: Is totalSamplesCaptured present expected true got false
 PASS media-source's width
 PASS media-source's height
 PASS media-source's frames

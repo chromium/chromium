@@ -34,3 +34,9 @@ interface ViewTimeline : ScrollTimeline {
   readonly attribute CSSNumericValue startOffset;
   readonly attribute CSSNumericValue endOffset;
 };
+
+[Exposed=Window]
+interface AnimationTimeline {
+  readonly attribute CSSNumberish? currentTime;
+  CSSNumericValue? getCurrentTime(optional CSSOMString rangeName);
+};

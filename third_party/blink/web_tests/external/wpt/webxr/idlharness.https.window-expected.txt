@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 296 tests; 272 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 297 tests; 273 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -9,6 +9,7 @@ PASS Partial dictionary WebGLContextAttributes: member names are unique
 PASS Partial interface mixin WebGLRenderingContextBase: original interface mixin defined
 PASS Partial interface mixin WebGLRenderingContextBase: member names are unique
 PASS Partial interface Navigator[2]: member names are unique
+PASS Partial interface Navigator[3]: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS WebGLRenderingContext includes WebGLRenderingContextBase: member names are unique
 FAIL WebGLRenderingContext includes WebGLRenderingContextOverloads: member names are unique assert_true: member bufferData is unique expected true got false

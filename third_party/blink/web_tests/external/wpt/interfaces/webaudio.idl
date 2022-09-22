@@ -600,6 +600,7 @@ dictionary WaveShaperOptions : AudioNodeOptions {
 
 [Exposed=Window, SecureContext]
 interface AudioWorklet : Worklet {
+  readonly attribute MessagePort port;
 };
 
 callback AudioWorkletProcessorConstructor = AudioWorkletProcessor (object options);
@@ -611,6 +612,7 @@ interface AudioWorkletGlobalScope : WorkletGlobalScope {
   readonly attribute unsigned long long currentFrame;
   readonly attribute double currentTime;
   readonly attribute float sampleRate;
+  readonly attribute MessagePort port;
 };
 
 [Exposed=Window]

@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
 PASS idl_test setup
 PASS idl_test validation
+PASS Partial interface Navigator: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Navigator includes NavigatorStorage: member names are unique
 PASS WorkerNavigator includes NavigatorStorage: member names are unique

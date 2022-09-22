@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-Found 208 tests; 155 PASS, 53 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 209 tests; 156 PASS, 53 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
 PASS Partial interface Navigator: member names are unique
+PASS Partial interface Navigator[2]: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Bluetooth includes BluetoothDeviceEventHandlers: member names are unique
 PASS Bluetooth includes CharacteristicEventHandlers: member names are unique

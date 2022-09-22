@@ -10,6 +10,7 @@ enum RTCStatsType {
 "remote-inbound-rtp",
 "remote-outbound-rtp",
 "media-source",
+"media-playout",
 "peer-connection",
 "data-channel",
 "stream",
@@ -84,6 +85,7 @@ dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
  double               totalSamplesDuration;
  unsigned long        framesReceived;
  DOMString            decoderImplementation;
+ DOMString            playoutId;
 };
 
 dictionary RTCRemoteInboundRtpStreamStats : RTCReceivedRtpStreamStats {
@@ -156,6 +158,9 @@ dictionary RTCAudioSourceStats : RTCMediaSourceStats {
               double              totalSamplesDuration;
               double              echoReturnLoss;
               double              echoReturnLossEnhancement;
+              double              droppedSamplesDuration;
+              double              totalCaptureDelay;
+              unsigned long long  totalSamplesCaptured;
 };
 
 dictionary RTCVideoSourceStats : RTCMediaSourceStats {
@@ -163,6 +168,13 @@ dictionary RTCVideoSourceStats : RTCMediaSourceStats {
              unsigned long   height;
              unsigned long   frames;
              double          framesPerSecond;
+};
+
+dictionary RTCAudioPlayoutStats : RTCStats {
+             double synthesizedSamplesDuration;
+             double totalSamplesDuration;
+             double totalPlayoutDelay;
+             double totalSamplesCount;
 };
 
 dictionary RTCPeerConnectionStats : RTCStats {
