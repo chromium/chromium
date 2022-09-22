@@ -34,10 +34,13 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -112,6 +115,24 @@ void LogUsingPossibleUsername(PasswordManagerClient* client,
                            : Logger::STRING_POSSIBLE_USERNAME_NOT_USED,
                    message);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool IsCurrentUserEvicted(PasswordManagerClient* client) {
+  return client->GetPrefs()->GetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
+}
+
+bool ShouldShowErrorMessage(
+    absl::optional<PasswordStoreBackendError> backend_error,
+    PasswordManagerClient* client) {
+  return backend_error.has_value() &&
+         backend_error.value().type ==
+             PasswordStoreBackendErrorType::kAuthErrorResolvable &&
+         !IsCurrentUserEvicted(client) &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kUnifiedPasswordManagerErrorMessages);
+}
+#endif
 
 }  // namespace
 
@@ -656,6 +677,25 @@ void PasswordFormManager::OnFetchCompleted() {
 
   newly_blocklisted_ = false;
   autofills_left_ = kMaxTimesAutofill;
+
+#if BUILDFLAG(IS_ANDROID)
+  absl::optional<PasswordStoreBackendError> backend_error =
+      form_fetcher_->GetProfileStoreBackendError();
+  if (ShouldShowErrorMessage(backend_error, client_)) {
+    // If there is no FormData, this is an http authentication form. We don't
+    // show the message for it because it would be hidden behind a sign in
+    // dialog and the user could miss it.
+    if (observed_form() != nullptr) {
+      std::unique_ptr<PasswordForm> password_form =
+          parser_.Parse(*observed_form(), FormDataParser::Mode::kFilling);
+      client_->ShowPasswordManagerErrorMessage(
+          password_form->IsLikelySignupForm() ||
+                  password_form->IsLikelyChangePasswordForm()
+              ? password_manager::ErrorMessageFlowType::kSaveFlow
+              : password_manager::ErrorMessageFlowType::kFillFlow);
+    }
+  }
+#endif
 
   if (IsCredentialAPISave()) {
     // This is saving with credential API, there is no form to fill, so no

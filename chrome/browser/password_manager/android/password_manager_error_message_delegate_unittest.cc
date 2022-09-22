@@ -5,11 +5,13 @@
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
 
 #include "base/android/jni_android.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/password_manager/android/mock_password_manager_error_message_helper_bridge.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -29,7 +31,10 @@ class PasswordManagerErrorMessageDelegateTest
   void SetUp() override;
   void TearDown() override;
 
-  void DisplayMessageAndExpectEnqueued(bool save_password);
+  void DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType flow_type);
+
+  void ExpectDismissed(messages::DismissReason dismiss_reason);
 
   void DismissMessageAndExpectDismissed(messages::DismissReason dismiss_reason);
 
@@ -73,13 +78,14 @@ void PasswordManagerErrorMessageDelegateTest::TearDown() {
 }
 
 void PasswordManagerErrorMessageDelegateTest::DisplayMessageAndExpectEnqueued(
-    bool save_password) {
+    password_manager::ErrorMessageFlowType flow_type) {
   EXPECT_CALL(*helper_bridge_, ShouldShowErrorUI()).WillOnce(Return(true));
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
-  delegate_->MaybeDisplayErrorMessage(web_contents(), save_password);
+  delegate_->MaybeDisplayErrorMessage(web_contents(), flow_type,
+                                      base::DoNothing());
 }
 
-void PasswordManagerErrorMessageDelegateTest::DismissMessageAndExpectDismissed(
+void PasswordManagerErrorMessageDelegateTest::ExpectDismissed(
     messages::DismissReason dismiss_reason) {
   EXPECT_CALL(message_dispatcher_bridge_, DismissMessage)
       .WillOnce([](messages::MessageWrapper* message,
@@ -87,6 +93,11 @@ void PasswordManagerErrorMessageDelegateTest::DismissMessageAndExpectDismissed(
         message->HandleDismissCallback(base::android::AttachCurrentThread(),
                                        static_cast<int>(dismiss_reason));
       });
+}
+
+void PasswordManagerErrorMessageDelegateTest::DismissMessageAndExpectDismissed(
+    messages::DismissReason dismiss_reason) {
+  ExpectDismissed(dismiss_reason);
   delegate_->DismissPasswordManagerErrorMessage(dismiss_reason);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
@@ -100,7 +111,8 @@ PasswordManagerErrorMessageDelegateTest::GetMessageWrapper() {
 // set correctly for "sign in to save password" message.
 TEST_F(PasswordManagerErrorMessageDelegateTest,
        MessagePropertyValuesSignInToSavePassword) {
-  DisplayMessageAndExpectEnqueued(/*save_password=*/true);
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kSaveFlow);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SIGN_IN_TO_SAVE_PASSWORDS),
             GetMessageWrapper()->GetTitle());
@@ -116,7 +128,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
 // set correctly for "sign in to use password" message.
 TEST_F(PasswordManagerErrorMessageDelegateTest,
        MessagePropertyValuesSignInToUsePassword) {
-  DisplayMessageAndExpectEnqueued(/*save_password=*/false);
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kFillFlow);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SIGN_IN_TO_USE_PASSWORDS),
             GetMessageWrapper()->GetTitle());
@@ -133,14 +146,15 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
 TEST_F(PasswordManagerErrorMessageDelegateTest, SignInOnActionClick) {
   base::HistogramTester histogram_tester;
 
-  DisplayMessageAndExpectEnqueued(/*save_password=*/true);
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kSaveFlow);
   EXPECT_NE(nullptr, GetMessageWrapper());
 
   EXPECT_CALL(*helper_bridge(),
               StartUpdateAccountCredentialsFlow(web_contents()));
+  ExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
   // Trigger the click action on the "Sign in" button and dismiss the message.
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
-  DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
 
   histogram_tester.ExpectUniqueSample(kErrorMessageDismissalReasonHistogramName,
                                       messages::DismissReason::PRIMARY_ACTION,
@@ -152,7 +166,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest, SignInOnActionClick) {
 TEST_F(PasswordManagerErrorMessageDelegateTest, MetricOnAutodismissTimer) {
   base::HistogramTester histogram_tester;
 
-  DisplayMessageAndExpectEnqueued(/*save_password=*/true);
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kSaveFlow);
   EXPECT_NE(nullptr, GetMessageWrapper());
 
   DismissMessageAndExpectDismissed(messages::DismissReason::TIMER);
@@ -165,10 +180,13 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
        NotDisplayedWhenCondiditonNotMet) {
   EXPECT_CALL(*helper_bridge(), ShouldShowErrorUI()).WillOnce(Return(false));
   EXPECT_CALL(message_dispatcher_bridge(), EnqueueMessage).Times(0);
-  delegate()->MaybeDisplayErrorMessage(web_contents(), /*save_password=*/true);
+  delegate()->MaybeDisplayErrorMessage(
+      web_contents(), password_manager::ErrorMessageFlowType::kSaveFlow,
+      base::DoNothing());
 }
 
 TEST_F(PasswordManagerErrorMessageDelegateTest, DisplayeSavesTimestamp) {
   EXPECT_CALL(*helper_bridge(), SaveErrorUIShownTimestamp());
-  DisplayMessageAndExpectEnqueued(/*save_password=*/true);
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kSaveFlow);
 }

@@ -449,6 +449,19 @@ bool ChromePasswordManagerClient::PromptUserToChooseCredentials(
 }
 
 #if BUILDFLAG(IS_ANDROID)
+void ChromePasswordManagerClient::ShowPasswordManagerErrorMessage(
+    password_manager::ErrorMessageFlowType flow_type) {
+  if (!password_manager_error_message_delegate_) {
+    password_manager_error_message_delegate_ =
+        std::make_unique<PasswordManagerErrorMessageDelegate>(
+            std::make_unique<PasswordManagerErrorMessageHelperBridgeImpl>());
+    password_manager_error_message_delegate_->MaybeDisplayErrorMessage(
+        web_contents(), flow_type,
+        base::BindOnce(&ChromePasswordManagerClient::ResetErrorMessageDelegate,
+                       base::Unretained(this)));
+  }
+}
+
 void ChromePasswordManagerClient::ShowTouchToFill(
     PasswordManagerDriver* driver,
     autofill::mojom::SubmissionReadinessState submission_readiness) {
@@ -1686,5 +1699,11 @@ void ChromePasswordManagerClient::OnStateChanged(
   if (state == autofill_assistant::UIState::kNotShown)
     password_manager_.ResetPendingCredentials();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromePasswordManagerClient::ResetErrorMessageDelegate() {
+  password_manager_error_message_delegate_.reset();
+}
+#endif
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromePasswordManagerClient);

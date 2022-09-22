@@ -32,10 +32,12 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
@@ -184,6 +186,12 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetWebAuthnCredentialsDelegateForDriver,
               (PasswordManagerDriver*),
               (override));
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void,
+              ShowPasswordManagerErrorMessage,
+              (password_manager::ErrorMessageFlowType),
+              (override));
+#endif
 };
 
 void CheckPendingCredentials(const PasswordForm& expected,
@@ -338,6 +346,11 @@ class PasswordFormManagerTest : public testing::Test,
         true);
     pref_service_.registry()->RegisterStringPref(
         autofill::prefs::kAutofillUploadEncodingSeed, "seed");
+#if BUILDFLAG(IS_ANDROID)
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+        false);
+#endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
@@ -2757,6 +2770,72 @@ TEST_P(PasswordFormManagerTest, ReportSubmittedFormFrameCrossOriginIframe) {
           IFRAME_WITH_DIFFERENT_AND_NOT_PSL_MATCHED_SIGNON_REALM,
       1);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_P(PasswordFormManagerTest, ClientShouldShowErrorMessage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kUnifiedPasswordManagerErrorMessages);
+  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kAuthErrorResolvable,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable));
+
+  EXPECT_CALL(client_, ShowPasswordManagerErrorMessage);
+  fetcher_->NotifyFetchCompleted();
+}
+
+TEST_P(PasswordFormManagerTest,
+       ClientShouldNotShowErrorMessageWhenFeatureIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kUnifiedPasswordManagerErrorMessages);
+  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kAuthErrorResolvable,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable));
+
+  EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
+  fetcher_->NotifyFetchCompleted();
+}
+
+TEST_P(PasswordFormManagerTest,
+       ClientShouldNotShowErrorMessageWhenThereIsNoError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kUnifiedPasswordManagerErrorMessages);
+  fetcher_->SetProfileStoreBackendError(absl::nullopt);
+
+  EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
+  fetcher_->NotifyFetchCompleted();
+}
+
+TEST_P(PasswordFormManagerTest,
+       ClientShouldNotShowErrorMessageWhenErrorIsNotAuthError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kUnifiedPasswordManagerErrorMessages);
+  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kUnspecified));
+
+  EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
+  fetcher_->NotifyFetchCompleted();
+}
+
+TEST_P(PasswordFormManagerTest, ClientShouldNotShowErrorMessageWhenUnenrolled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kUnifiedPasswordManagerErrorMessages);
+  client_.GetPrefs()->SetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+      true);
+  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kAuthErrorResolvable,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable));
+
+  EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
+  fetcher_->NotifyFetchCompleted();
+}
+#endif
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PasswordFormManagerTest,

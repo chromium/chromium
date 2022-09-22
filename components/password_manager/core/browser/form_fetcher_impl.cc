@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
@@ -21,6 +22,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/statistics_table.h"
@@ -233,8 +235,14 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
   result->insecure_credentials_ = MakeCopies(insecure_credentials_);
   result->state_ = state_;
   result->need_to_refetch_ = need_to_refetch_;
+  result->profile_store_backend_error_ = profile_store_backend_error_;
 
   return result;
+}
+
+absl::optional<PasswordStoreBackendError>
+FormFetcherImpl::GetProfileStoreBackendError() const {
+  return profile_store_backend_error_;
 }
 
 void FormFetcherImpl::FindMatchesAndNotifyConsumers(
@@ -292,6 +300,25 @@ void FormFetcherImpl::OnGetPasswordStoreResults(
 void FormFetcherImpl::OnGetPasswordStoreResultsFrom(
     PasswordStoreInterface* store,
     std::vector<std::unique_ptr<PasswordForm>> results) {
+  NOTIMPLEMENTED();
+}
+
+void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
+    PasswordStoreInterface* store,
+    FormFetcherImpl::FormsOrError results_or_error) {
+  // TODO(https://crbug.com/1365324): Handle errors coming from the account
+  // store.
+  if (store == client_->GetProfilePasswordStore()) {
+    profile_store_backend_error_.reset();
+    if (absl::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+      profile_store_backend_error_ =
+          absl::get<PasswordStoreBackendError>(results_or_error);
+    }
+  }
+
+  std::vector<std::unique_ptr<PasswordForm>> results =
+      GetLoginsOrEmptyListOnFailure(std::move(results_or_error));
+
   DCHECK_EQ(State::WAITING, state_);
   DCHECK_GT(wait_counter_, 0);
 

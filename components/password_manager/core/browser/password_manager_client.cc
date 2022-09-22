@@ -33,6 +33,9 @@ bool PasswordManagerClient::IsAutoSignInEnabled() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+void PasswordManagerClient::ShowPasswordManagerErrorMessage(
+    ErrorMessageFlowType flow_type) {}
+
 void PasswordManagerClient::ShowTouchToFill(
     PasswordManagerDriver* driver,
     autofill::mojom::SubmissionReadinessState submission_readiness) {}
