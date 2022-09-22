@@ -285,6 +285,61 @@ void FillCdefParams(struct v4l2_av1_cdef& v4l2_cdef,
   SafeArrayMemcpy(v4l2_cdef.uv_sec_strength, cdef.uv_secondary_strength);
 }
 
+// 5.9.20. Loop restoration params syntax
+void FillLoopRestorationParams(v4l2_av1_loop_restoration& v4l2_lr,
+                               const libgav1::LoopRestoration& lr) {
+  for (size_t i = 0; i < V4L2_AV1_NUM_PLANES_MAX; i++) {
+    switch (lr.type[i]) {
+      case libgav1::LoopRestorationType::kLoopRestorationTypeNone:
+        v4l2_lr.frame_restoration_type[i] = V4L2_AV1_FRAME_RESTORE_NONE;
+        break;
+      case libgav1::LoopRestorationType::kLoopRestorationTypeWiener:
+        v4l2_lr.frame_restoration_type[i] = V4L2_AV1_FRAME_RESTORE_WIENER;
+        break;
+      case libgav1::LoopRestorationType::kLoopRestorationTypeSgrProj:
+        v4l2_lr.frame_restoration_type[i] = V4L2_AV1_FRAME_RESTORE_SGRPROJ;
+        break;
+      case libgav1::LoopRestorationType::kLoopRestorationTypeSwitchable:
+        v4l2_lr.frame_restoration_type[i] = V4L2_AV1_FRAME_RESTORE_SWITCHABLE;
+        break;
+      default:
+        NOTREACHED() << "Invalid loop restoration type";
+    }
+
+    if (v4l2_lr.frame_restoration_type[i] != V4L2_AV1_FRAME_RESTORE_NONE) {
+      if (true)
+        v4l2_lr.flags |= V4L2_AV1_LOOP_RESTORATION_FLAG_USES_LR;
+
+      if (i > 0)
+        v4l2_lr.flags |= V4L2_AV1_LOOP_RESTORATION_FLAG_USES_CHROMA_LR;
+    }
+  }
+
+  const bool use_loop_restoration =
+      std::find_if(std::begin(lr.type),
+                   std::begin(lr.type) + libgav1::kMaxPlanes,
+                   [](const auto type) {
+                     return type != libgav1::kLoopRestorationTypeNone;
+                   }) != (lr.type + libgav1::kMaxPlanes);
+
+  if (!use_loop_restoration)
+    return;
+
+  DCHECK_GE(lr.unit_size_log2[0], lr.unit_size_log2[1]);
+  DCHECK_LE(lr.unit_size_log2[0] - lr.unit_size_log2[1], 1);
+  v4l2_lr.lr_unit_shift = lr.unit_size_log2[0] - 6;
+  v4l2_lr.lr_uv_shift = lr.unit_size_log2[0] - lr.unit_size_log2[1];
+
+  // AV1 spec (p.52) uses this formula with hard coded value 2.
+  // https://aomediacodec.github.io/av1-spec/#loop-restoration-params-syntax
+  v4l2_lr.loop_restoration_size[0] =
+      V4L2_AV1_RESTORATION_TILESIZE_MAX >> (2 - v4l2_lr.lr_unit_shift);
+  v4l2_lr.loop_restoration_size[1] =
+      v4l2_lr.loop_restoration_size[0] >> v4l2_lr.lr_uv_shift;
+  v4l2_lr.loop_restoration_size[2] =
+      v4l2_lr.loop_restoration_size[0] >> v4l2_lr.lr_uv_shift;
+}
+
 V4L2VideoDecoderDelegateAV1::V4L2VideoDecoderDelegateAV1(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
@@ -334,6 +389,9 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
   struct v4l2_av1_cdef v4l2_cdef = {};
   FillCdefParams(v4l2_cdef, frame_header.cdef,
                  base::strict_cast<int8_t>(color_bitdepth));
+
+  struct v4l2_av1_loop_restoration v4l2_lr = {};
+  FillLoopRestorationParams(v4l2_lr, frame_header.loop_restoration);
 
   NOTIMPLEMENTED();
 

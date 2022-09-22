@@ -7,6 +7,10 @@
 
 #include "media/gpu/av1_decoder.h"
 
+#ifndef V4L2_AV1_RESTORATION_TILESIZE_MAX
+#define V4L2_AV1_RESTORATION_TILESIZE_MAX 256
+#endif
+
 namespace media {
 
 class V4L2DecodeSurfaceHandler;
