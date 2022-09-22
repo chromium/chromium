@@ -46,6 +46,14 @@ bool WaylandDesktopCapturer::SelectSource(SourceId id) {
   return base_capturer_pipewire_.SelectSource(id);
 }
 
+void WaylandDesktopCapturer::SetScreenResolution(ScreenResolution resolution,
+                                                 webrtc::ScreenId screen_id) {
+  // TODO(salmanmalik): For multi-mon, we will need to verify that screen id
+  // is managed by this capturer.
+  base_capturer_pipewire_.UpdateResolution(resolution.dimensions().width(),
+                                           resolution.dimensions().height());
+}
+
 #if defined(WEBRTC_USE_GIO)
 webrtc::DesktopCaptureMetadata WaylandDesktopCapturer::GetMetadata() {
   SessionDetails session_details = base_capturer_pipewire_.GetSessionDetails();
@@ -63,6 +71,9 @@ void WaylandDesktopCapturer::OnScreenCastRequestResult(RequestResponse result,
   base_capturer_pipewire_.OnScreenCastRequestResult(result, stream_node_id, fd);
   if (result == RequestResponse::kSuccess) {
     WaylandManager::Get()->OnDesktopCapturerMetadata(GetMetadata());
+    WaylandManager::Get()->AddUpdateScreenResolutionCallback(
+        base::BindRepeating(&WaylandDesktopCapturer::SetScreenResolution,
+                            weak_factory_.GetWeakPtr()));
   } else {
     LOG(WARNING) << "Screen cast request didn't succeed, injector won't be "
                     "enabled";

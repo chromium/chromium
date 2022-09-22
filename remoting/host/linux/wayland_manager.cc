@@ -54,6 +54,34 @@ void WaylandManager::OnDesktopCapturerMetadata(
   capturer_metadata_callbacks_.Notify(std::move(metadata));
 }
 
+void WaylandManager::AddUpdateScreenResolutionCallback(
+    UpdateScreenResolutionCallback callback) {
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandManager::AddUpdateScreenResolutionCallback,
+                       base::Unretained(this),
+                       base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+                                          std::move(callback))));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  screen_resolution_callbacks_.AddUnsafe(std::move(callback));
+}
+
+void WaylandManager::OnUpdateScreenResolution(ScreenResolution resolution,
+                                              webrtc::ScreenId screen_id) {
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&WaylandManager::OnUpdateScreenResolution,
+                                  base::Unretained(this), std::move(resolution),
+                                  screen_id));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  screen_resolution_callbacks_.Notify(std::move(resolution), screen_id);
+}
+
 DesktopDisplayInfo WaylandManager::GetCurrentDisplayInfo() {
   return wayland_connection_->GetCurrentDisplayInfo();
 }

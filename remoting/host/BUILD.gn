@@ -507,6 +507,7 @@ static_library("common") {
     sources += [
       "input_injector_constants_linux.h",
       "linux/desktop_display_info_loader_wayland.cc",
+      "linux/desktop_resizer_wayland.cc",
       "linux/input_injector_wayland.cc",
       "linux/remote_desktop_portal.cc",
       "linux/remote_desktop_portal.h",
@@ -529,7 +530,8 @@ static_library("common") {
     ]
   }
 
-  if (is_linux && (!remoting_use_x11 || is_chromeos)) {
+  if (is_linux &&
+      ((!remoting_use_x11 && !remoting_use_wayland) || is_chromeos)) {
     # On Linux, exactly one of desktop_resizer_{linux,x11}.cc should be
     # compiled in. The _linux version is a no-op and should be used on
     # platforms without X11.
