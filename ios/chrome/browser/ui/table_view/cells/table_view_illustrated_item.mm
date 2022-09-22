@@ -69,7 +69,11 @@ const CGFloat kButtonCornerRadius = 8.0;
   } else {
     cell.button.hidden = YES;
   }
+  // Disable animations when setting the background color to prevent flash on
+  // rotation.
+  [UIView setAnimationsEnabled:NO];
   cell.backgroundColor = nil;
+  [UIView setAnimationsEnabled:YES];
 
   if (styler.cellTitleColor) {
     cell.titleLabel.textColor = styler.cellTitleColor;

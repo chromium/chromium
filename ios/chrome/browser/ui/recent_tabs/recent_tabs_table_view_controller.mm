@@ -1157,7 +1157,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
         base::mac::ObjCCastStrict<TableViewSigninPromoCell>(cell);
     signinPromoCell.signinPromoView.imageView.hidden = YES;
     signinPromoCell.signinPromoView.textLabel.hidden = YES;
+    // Disable animations when setting the background color to prevent flash on
+    // rotation.
+    [UIView setAnimationsEnabled:NO];
     signinPromoCell.backgroundColor = nil;
+    [UIView setAnimationsEnabled:YES];
   }
   // Retrieve favicons for closed tabs and remote sessions.
   if (itemTypeSelected == ItemTypeRecentlyClosed ||
