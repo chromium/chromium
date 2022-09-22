@@ -61,17 +61,6 @@ export class ChromeVoxBackground {
     ChromeVox.tts = this.tts;
     ChromeVox.braille = this.backgroundBraille_;
 
-    // Set up a message passing system for goog.provide() calls from
-    // within the content scripts.
-    chrome.extension.onMessage.addListener((request, sender, callback) => {
-      if (request['srcFile']) {
-        const srcFile = request['srcFile'];
-        InjectedScriptLoader.fetchCode(
-            [srcFile], code => callback({'code': code[srcFile]}));
-      }
-      return true;
-    });
-
     // Build a regexp to match all allowed urls.
     let matches = [];
     try {
@@ -164,46 +153,19 @@ export class ChromeVoxBackground {
    * @param {Object} msg The TTS message.
    */
   onTtsMessage(msg) {
-    if (msg['action'] === 'speak') {
-      // The only caller sending this message is a ChromeVox Classic api client.
-      // Deny empty strings.
-      if (msg['text'] === '') {
-        return;
-      }
-
-      this.tts.speak(
-          msg['text'],
-          /** QueueMode */ msg['queueMode'],
-          new TtsSpeechProperties(msg['properties']));
-    } else if (msg['action'] === 'stop') {
-      this.tts.stop();
-    } else if (msg['action'] === 'increaseOrDecrease') {
-      this.tts.increaseOrDecreaseProperty(msg['property'], msg['increase']);
-      const property = msg['property'];
-      const engine = this.backgroundTts_;
-      const valueAsPercent =
-          Math.round(this.backgroundTts_.propertyToPercentage(property) * 100);
-      let announcement;
-      switch (msg['property']) {
-        case AbstractTts.RATE:
-          announcement = Msgs.getMsg('announce_rate', [valueAsPercent]);
-          break;
-        case AbstractTts.PITCH:
-          announcement = Msgs.getMsg('announce_pitch', [valueAsPercent]);
-          break;
-        case AbstractTts.VOLUME:
-          announcement = Msgs.getMsg('announce_volume', [valueAsPercent]);
-          break;
-      }
-      if (announcement) {
-        this.tts.speak(
-            announcement, QueueMode.FLUSH, AbstractTts.PERSONALITY_ANNOTATION);
-      }
-    } else if (msg['action'] === 'cyclePunctuationEcho') {
-      this.tts.speak(
-          Msgs.getMsg(this.backgroundTts_.cyclePunctuationEcho()),
-          QueueMode.FLUSH);
+    if (msg['action'] !== 'speak') {
+      return;
     }
+    // The only caller sending this message is a ChromeVox Classic api client.
+    // Deny empty strings.
+    if (msg['text'] === '') {
+      return;
+    }
+
+    this.tts.speak(
+        msg['text'],
+        /** @type {QueueMode} */ (msg['queueMode']),
+        new TtsSpeechProperties(msg['properties']));
   }
 
   /**
@@ -212,17 +174,14 @@ export class ChromeVoxBackground {
    */
   addBridgeListener() {
     ExtensionBridge.addMessageListener((msg, port) => {
-      const target = msg['target'];
-      const action = msg['action'];
+      if (msg['target'] !== 'TTS') {
+        return;
+      }
 
-      switch (target) {
-        case 'TTS':
-          try {
-            this.onTtsMessage(msg);
-          } catch (err) {
-            console.log(err);
-          }
-          break;
+      try {
+        this.onTtsMessage(msg);
+      } catch (err) {
+        console.log(err);
       }
     });
   }
