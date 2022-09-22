@@ -18,6 +18,7 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/curtain/security_curtain_widget_controller.h"
 #include "ash/focus_cycler.h"
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/keyboard/arc/arc_virtual_keyboard_container_layout_manager.h"
@@ -906,6 +907,21 @@ bool RootWindowController::HasAmbientWidget() const {
 AccessibilityPanelLayoutManager*
 RootWindowController::GetAccessibilityPanelLayoutManagerForTest() {
   return GetAccessibilityPanelLayoutManager();
+}
+
+void RootWindowController::SetSecurityCurtainWidgetController(
+    std::unique_ptr<curtain::SecurityCurtainWidgetController> controller) {
+  DCHECK(!security_curtain_widget_controller_);
+  security_curtain_widget_controller_ = std::move(controller);
+}
+
+void RootWindowController::ClearSecurityCurtainWidgetController() {
+  security_curtain_widget_controller_ = nullptr;
+}
+
+curtain::SecurityCurtainWidgetController*
+RootWindowController::security_curtain_widget_controller() {
+  return security_curtain_widget_controller_.get();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
