@@ -172785,7 +172785,6 @@
     { "name": "asso.com.ua", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "astrophena.name", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "asuntospropios.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "asus.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "atomic.radio", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "aupapa.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "aurac.org.nz", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
