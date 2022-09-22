@@ -504,9 +504,17 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {
   ExpectUKMCount(XHREntry::kEntryName, "IsAddToCart", 1);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug/1310497): This test is flaky on ChromeOS.
-IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
+// TODO(https://crbug/1310497, https://crbug.com/1362442): This test is flaky
+// on ChromeOS and Linux Asan.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_VisitCart DISABLED_VisitCart
+#elif BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_VisitCart DISABLED_VisitCart
+#else
+#define MAYBE_VisitCart VisitCart
+#endif
+
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MAYBE_VisitCart) {
   // Cannot use dummy page with zero products, or the cart would be deleted.
   NavigateToURL("https://www.guitarcenter.com/cart.html");
 
@@ -515,7 +523,6 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
   WaitForCartCount(kExpectedExample);
 #endif
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Flaky on Windows: https://crbug.com/1300332.
 #if BUILDFLAG(IS_WIN)
@@ -547,8 +554,16 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest,
   WaitForUmaCount("Commerce.Carts.VisitCart", 2);
 }
 
+// TODO(https://crbug.com/1362442): This test is flaky on Linux Asan.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_VisitCart_PerDomain_FromComponent \
+  DISABLED_VisitCart_PerDomain_FromComponent
+#else
+#define MAYBE_VisitCart_PerDomain_FromComponent \
+  VisitCart_PerDomain_FromComponent
+#endif
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest,
-                       VisitCart_PerDomain_FromComponent) {
+                       MAYBE_VisitCart_PerDomain_FromComponent) {
   bool is_populated =
       commerce_hint_service_->InitializeCommerceHeuristicsForTesting(
           base::Version("0.0.0.1"), R"###(
@@ -1300,7 +1315,8 @@ class CommerceHintCartPatternTest : public CommerceHintAgentTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CommerceHintCartPatternTest, VisitCart) {
+// TODO(https://crbug.com/1362442): Deflake this test.
+IN_PROC_BROWSER_TEST_F(CommerceHintCartPatternTest, DISABLED_VisitCart) {
   // The test is flaky with same-site back/forward cache, presumably because it
   // doesn't expect a RenderView change on same-site navigations.
   // TODO(https://crbug.com/1302902): Investigate and fix this.
