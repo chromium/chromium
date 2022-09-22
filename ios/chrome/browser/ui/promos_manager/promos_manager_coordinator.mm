@@ -13,6 +13,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ui/app_store_rating/app_store_rating_display_handler.h"
+#import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
@@ -328,7 +330,10 @@
 
 - (void)registerPromos {
   // Add StandardPromoDisplayHandler promos here. For example:
-  // TODO(crbug.com/1360880): Create first StandardPromoDisplayHandler promo.
+  if (IsAppStoreRatingEnabled()) {
+    _displayHandlerPromos[promos_manager::Promo::AppStoreRating] =
+        [[AppStoreRatingDisplayHandler alloc] init];
+  }
 
   // Add StandardPromoViewProvider promos here. For example:
   // TODO(crbug.com/1360880): Create first StandardPromoViewProvider promo.

@@ -63,6 +63,8 @@ source_set("promos_manager") {
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/ui/app_store_rating",
+    "//ios/chrome/browser/ui/app_store_rating:features",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/post_restore_signin",
     "//ios/chrome/browser/ui/post_restore_signin:features",
