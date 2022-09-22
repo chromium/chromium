@@ -6496,21 +6496,6 @@
             ]
         }
     ],
-    "MetrickitCrashReport": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MetrickitCrashReport"
-                    ]
-                }
-            ]
-        }
-    ],
     "MigrateAlwaysTranslateLanguagesFix": [
         {
             "platforms": [
