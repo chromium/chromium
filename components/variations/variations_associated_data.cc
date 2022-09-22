@@ -25,7 +25,8 @@ class GroupMapAccessor {
 
   // Retrieve the singleton.
   static GroupMapAccessor* GetInstance() {
-    return base::Singleton<GroupMapAccessor>::get();
+    return base::Singleton<GroupMapAccessor,
+                           base::LeakySingletonTraits<GroupMapAccessor>>::get();
   }
 
   GroupMapAccessor(const GroupMapAccessor&) = delete;
