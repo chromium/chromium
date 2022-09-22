@@ -87,12 +87,17 @@ class DragWindowFromShelfController::WindowsHider
     for (auto* window : windows) {
       if (window == dragged_window_)
         continue;
-      if (::wm::HasTransientAncestor(window, dragged_window_))
+      if (wm::HasTransientAncestor(window, dragged_window_))
         continue;
       if (!window->IsVisible())
         continue;
       if (SplitViewController::Get(window)->IsWindowInSplitView(window))
         continue;
+      auto* overview_controller = Shell::Get()->overview_controller();
+      if (overview_controller->InOverviewSession() &&
+          overview_controller->overview_session()->IsWindowInOverview(window)) {
+        continue;
+      }
 
       hidden_windows_.push_back(window);
       window->AddObserver(this);

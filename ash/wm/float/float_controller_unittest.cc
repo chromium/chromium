@@ -521,6 +521,18 @@ TEST_F(TabletWindowFloatTest, ImmersiveMode) {
   EXPECT_FALSE(immersive_controller->IsEnabled());
 }
 
+// Tests that if we minimize a floated window, it is floated upon unminimizing.
+TEST_F(TabletWindowFloatTest, UnminimizeFloatWindow) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  auto* window_state = WindowState::Get(window.get());
+
+  window_state->Minimize();
+  window_state->Unminimize();
+  EXPECT_TRUE(window_state->IsFloated());
+}
+
 TEST_F(TabletWindowFloatTest, Rotation) {
   // Use a display where the width and height are quite different, otherwise it
   // would be hard to tell if portrait mode is using landscape bounds to

@@ -28,6 +28,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/wm/features.h"
 #include "chromeos/ui/wm/window_util.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/compositor/layer.h"
@@ -314,26 +315,25 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
     case WM_EVENT_TOGGLE_HORIZONTAL_MAXIMIZE:
     case WM_EVENT_TOGGLE_MAXIMIZE:
     case WM_EVENT_CENTER:
-    case WM_EVENT_NORMAL:
     case WM_EVENT_MAXIMIZE:
       UpdateWindow(window_state,
                    window_state->GetMaximizedOrCenteredWindowType(),
                    true /* animated */);
       return;
-    case WM_EVENT_RESTORE: {
-      // We special handle WM_EVENT_RESTORE event here.
-      WindowStateType restore_state = window_state->GetRestoreWindowState();
-      if (restore_state == WindowStateType::kPrimarySnapped) {
-        window_state->set_snap_action_source(
-            WindowSnapActionSource::kSnapByWindowStateRestore);
-        DoTabletSnap(window_state, WM_EVENT_SNAP_PRIMARY);
-      } else if (restore_state == WindowStateType::kSecondarySnapped) {
-        window_state->set_snap_action_source(
-            WindowSnapActionSource::kSnapByWindowStateRestore);
-        DoTabletSnap(window_state, WM_EVENT_SNAP_SECONDARY);
+    case WM_EVENT_NORMAL: {
+      // `WM_EVENT_NORMAL` may be restoring state from minimized.
+      if (window_state->window()->GetProperty(aura::client::kIsRestoringKey)) {
+        DoRestore(window_state);
       } else {
-        UpdateWindow(window_state, restore_state, /*animate=*/true);
+        UpdateWindow(window_state,
+                     window_state->GetMaximizedOrCenteredWindowType(),
+                     /*animate=*/true);
       }
+      return;
+    }
+    case WM_EVENT_RESTORE: {
+      // We special handle `WM_EVENT_RESTORE` event here.
+      DoRestore(window_state);
       break;
     }
     case WM_EVENT_FLOAT:
@@ -342,7 +342,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
         return;
 
       UpdateWindow(window_state, WindowStateType::kFloated,
-                   /*=animated=*/true);
+                   /*=animate=*/true);
       break;
     case WM_EVENT_SNAP_PRIMARY:
     case WM_EVENT_SNAP_SECONDARY:
@@ -621,6 +621,20 @@ void TabletModeWindowState::DoTabletSnap(WindowState* window_state,
 
   // Change window state and bounds to the snapped window state and bounds.
   UpdateWindow(window_state, new_state_type, /*animated=*/false);
+}
+
+void TabletModeWindowState::DoRestore(WindowState* window_state) {
+  WindowStateType restore_state = window_state->GetRestoreWindowState();
+  if (chromeos::IsSnappedWindowStateType(restore_state)) {
+    window_state->set_snap_action_source(
+        WindowSnapActionSource::kSnapByWindowStateRestore);
+    DoTabletSnap(window_state, restore_state == WindowStateType::kPrimarySnapped
+                                   ? WM_EVENT_SNAP_PRIMARY
+                                   : WM_EVENT_SNAP_SECONDARY);
+    return;
+  }
+
+  UpdateWindow(window_state, restore_state, /*animate=*/true);
 }
 
 }  // namespace ash

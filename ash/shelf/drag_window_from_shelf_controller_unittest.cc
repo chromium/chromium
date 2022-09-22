@@ -1307,8 +1307,10 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_EQ(split_view_controller()->GetPositionOfSnappedWindow(window1.get()),
             SplitViewController::SnapPosition::kPrimary);
-  // Ensure that the right window is still in the overview.
+  // Ensure that the right window is still in the overview, and doesn't get
+  // minimized.
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window2.get()));
+  EXPECT_FALSE(WindowState::Get(window2.get())->IsMinimized());
   EXPECT_TRUE(overview_session->IsWindowInOverview(window2.get()));
 }
 

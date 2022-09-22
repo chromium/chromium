@@ -914,7 +914,7 @@ TEST_F(TabletModeWindowManagerTest, PersistPreMinimizedShowState) {
   EXPECT_TRUE(window_state->IsMaximized());
 }
 
-// Tests unminimizing in tablet mode and then existing tablet mode should have
+// Tests unminimizing in tablet mode and then exiting tablet mode should have
 // pre-minimized window show state.
 TEST_F(TabletModeWindowManagerTest, UnminimizeInTabletMode) {
   // Tests restoring to maximized show state.
@@ -937,6 +937,20 @@ TEST_F(TabletModeWindowManagerTest, UnminimizeInTabletMode) {
   window_state->Unminimize();
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   EXPECT_EQ(gfx::Rect(10, 10, 100, 100), window->GetBoundsInScreen());
+}
+
+// Tests that if we minimize a snapped window, it is snapped upon unminimizing.
+TEST_F(TabletModeWindowManagerTest, UnminimizeSnapInTabletMode) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  auto* window_state = WindowState::Get(window.get());
+  WindowSnapWMEvent event(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&event);
+  ASSERT_TRUE(window_state->IsSnapped());
+
+  window_state->Minimize();
+  window_state->Unminimize();
+  EXPECT_TRUE(window_state->IsSnapped());
 }
 
 // Check that a full screen window remains full screen upon entering maximize
