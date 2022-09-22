@@ -9,13 +9,12 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "content/browser/compute_pressure/pressure_quantizer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
-#include "services/device/public/mojom/pressure_state.mojom.h"
+#include "services/device/public/mojom/pressure_update.mojom.h"
 #include "third_party/blink/public/mojom/compute_pressure/pressure_service.mojom.h"
 
 namespace content {
@@ -50,12 +49,9 @@ class CONTENT_EXPORT PressureServiceImpl
   void BindObserver(
       mojo::PendingRemote<blink::mojom::PressureObserver> observer,
       BindObserverCallback callback) override;
-  void SetQuantization(blink::mojom::PressureQuantizationPtr quantization,
-                       SetQuantizationCallback callback) override;
 
   // device::mojom::PressureClient implementation.
-  void PressureStateChanged(device::mojom::PressureStatePtr state,
-                            base::Time timestamp) override;
+  void PressureStateChanged(device::mojom::PressureUpdatePtr update) override;
 
  private:
   PressureServiceImpl(RenderFrameHost* render_frame_host,
@@ -70,30 +66,19 @@ class CONTENT_EXPORT PressureServiceImpl
   // Resets the state used to dispatch updates to observer.
   void ResetObserverState();
 
-  // Called when the quantizing scheme changes.
-  void ResetTimestampAndState();
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The minimum delay between two Update() calls for observers belonging to
   // the frame.
   const base::TimeDelta visible_observer_rate_limit_;
 
-  // Implements the quantizing scheme used for all the frame's observers.
-  PressureQuantizer quantizer_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The (quantized) sample that was last reported to this frame's observers.
+  // The update that was last reported to this frame's observers.
   //
   // Stored to avoid sending updates when the underlying compute pressure state
   // changes, but quantization produces the same values that were reported in
   // the last update.
-  device::mojom::PressureState last_reported_state_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The last time the frame's observers received an update.
-  //
-  // Stored to implement rate-limiting.
-  base::Time last_reported_timestamp_ GUARDED_BY_CONTEXT(sequence_checker_);
+  device::mojom::PressureUpdatePtr last_reported_update_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // Callback from |receiver_| is passed to |remote_| and the Receiver
   // should be destroyed first so that the callback is invalidated before

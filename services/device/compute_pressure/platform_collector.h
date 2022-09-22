@@ -15,6 +15,7 @@
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "services/device/compute_pressure/pressure_sample.h"
+#include "services/device/public/mojom/pressure_update.mojom-shared.h"
 
 namespace device {
 
@@ -42,7 +43,7 @@ class PlatformCollector {
   PlatformCollector(
       std::unique_ptr<CpuProbe> cpu_probe,
       base::TimeDelta sampling_interval,
-      base::RepeatingCallback<void(PressureSample)> sampling_callback);
+      base::RepeatingCallback<void(mojom::PressureState)> sampling_callback);
   ~PlatformCollector();
 
   bool has_probe() const {
@@ -69,7 +70,10 @@ class PlatformCollector {
   // Called periodically while the collector is running.
   void UpdateProbe();
   // Called after the CpuProbe is updated.
-  void DidUpdateProbe(PressureSample sample);
+  void DidUpdateProbe(PressureSample);
+
+  // Calculate PressureState based on PressureSample.
+  mojom::PressureState CalculateState(PressureSample) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -87,7 +91,7 @@ class PlatformCollector {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Called with each sample reading.
-  base::RepeatingCallback<void(PressureSample)> sampling_callback_
+  base::RepeatingCallback<void(mojom::PressureState)> sampling_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // True if the CpuProbe state will be reported after the next update.

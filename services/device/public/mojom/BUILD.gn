@@ -25,7 +25,7 @@ mojom("mojom") {
     "nfc_provider.mojom",
     "power_monitor.mojom",
     "pressure_manager.mojom",
-    "pressure_state.mojom",
+    "pressure_update.mojom",
     "public_ip_address_geolocation_provider.mojom",
     "screen_orientation.mojom",
     "screen_orientation_lock_types.mojom",

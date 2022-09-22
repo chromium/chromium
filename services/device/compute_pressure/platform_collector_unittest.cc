@@ -19,7 +19,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "services/device/compute_pressure/cpu_probe.h"
-#include "services/device/compute_pressure/pressure_sample.h"
 #include "services/device/compute_pressure/pressure_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +51,7 @@ class PlatformCollectorTest : public testing::Test {
     return *cpu_probe;
   }
 
-  void CollectorCallback(PressureSample sample) {
+  void CollectorCallback(mojom::PressureState sample) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     samples_.push_back(sample);
     if (update_callback_) {
@@ -71,7 +70,8 @@ class PlatformCollectorTest : public testing::Test {
   std::unique_ptr<PlatformCollector> collector_;
 
   // The samples reported by the callback.
-  std::vector<PressureSample> samples_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<mojom::PressureState> samples_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
  private:
   void SetNextUpdateCallback(base::OnceClosure callback) {
@@ -88,11 +88,12 @@ class PlatformCollectorTest : public testing::Test {
 TEST_F(PlatformCollectorTest, EnsureStarted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  cpu_probe().SetLastSample(PressureSample{0.9});
   collector_->EnsureStarted();
   WaitForUpdate();
 
-  EXPECT_GE(samples_.size(), 1u);
-  EXPECT_THAT(samples_, testing::Contains(PressureSample{0.42}));
+  EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
+                            mojom::PressureState::kCritical)));
 }
 
 namespace {
@@ -150,9 +151,9 @@ TEST_F(PlatformCollectorTest, EnsureStarted_SkipsFirstSample) {
 
   std::vector<PressureSample> samples = {
       // Value right after construction.
-      PressureSample{0.1},
+      PressureSample{0.6},
       // Value after first Update(), should be discarded.
-      PressureSample{0.2},
+      PressureSample{0.9},
       // Value after second Update(), should be reported.
       PressureSample{0.4},
   };
@@ -166,9 +167,43 @@ TEST_F(PlatformCollectorTest, EnsureStarted_SkipsFirstSample) {
   collector_->EnsureStarted();
   run_loop.Run();
 
-  EXPECT_GE(samples_.size(), 1u);
-  EXPECT_THAT(samples_, testing::Not(testing::Contains(PressureSample{0.2})));
-  EXPECT_THAT(samples_, testing::Contains(PressureSample{0.4}));
+  EXPECT_THAT(samples_, testing::ElementsAre(
+                            mojom::PressureState{mojom::PressureState::kFair}));
+}
+
+TEST_F(PlatformCollectorTest, EnsureStarted_CheckCalculateState) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<PressureSample> samples = {
+      // Value right after construction.
+      PressureSample{0.6},
+      // Value after first Update(), should be discarded.
+      PressureSample{0.9},
+      // kNominal value after should be reported.
+      PressureSample{0.1},
+      // kFair value should be reported.
+      PressureSample{0.4},
+      // kSerious value should be reported.
+      PressureSample{0.7},
+      // kCritical value should be reported.
+      PressureSample{0.9},
+  };
+
+  base::RunLoop run_loop;
+  collector_ = std::make_unique<PlatformCollector>(
+      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+      base::Milliseconds(1),
+      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
+                          base::Unretained(this)));
+  collector_->EnsureStarted();
+  run_loop.Run();
+
+  EXPECT_THAT(samples_,
+              testing::ElementsAre(
+                  mojom::PressureState{mojom::PressureState::kNominal},
+                  mojom::PressureState{mojom::PressureState::kFair},
+                  mojom::PressureState{mojom::PressureState::kSerious},
+                  mojom::PressureState{mojom::PressureState::kCritical}));
 }
 
 TEST_F(PlatformCollectorTest, Stop_Delayed_EnsureStarted_Immediate) {
@@ -179,12 +214,12 @@ TEST_F(PlatformCollectorTest, Stop_Delayed_EnsureStarted_Immediate) {
   collector_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample(PressureSample{0.25});
+  cpu_probe().SetLastSample(PressureSample{0.9});
 
   collector_->EnsureStarted();
   WaitForUpdate();
-  EXPECT_GE(samples_.size(), 1u);
-  EXPECT_THAT(samples_, testing::Contains(PressureSample{0.25}));
+  EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
+                            mojom::PressureState::kCritical)));
 }
 
 TEST_F(PlatformCollectorTest, Stop_Delayed_EnsureStarted_Delayed) {
@@ -193,16 +228,15 @@ TEST_F(PlatformCollectorTest, Stop_Delayed_EnsureStarted_Delayed) {
   collector_->EnsureStarted();
   WaitForUpdate();
   collector_->Stop();
-
   samples_.clear();
-  cpu_probe().SetLastSample(PressureSample{0.25});
+  cpu_probe().SetLastSample(PressureSample{0.9});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
   base::PlatformThread::Sleep(base::Milliseconds(10));
 
   collector_->EnsureStarted();
   WaitForUpdate();
-  EXPECT_GE(samples_.size(), 1u);
-  EXPECT_THAT(samples_, testing::Contains(PressureSample{0.25}));
+  EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
+                            mojom::PressureState::kCritical)));
 }
 
 TEST_F(PlatformCollectorTest, Stop_Immediate_EnsureStarted_Immediate) {
@@ -212,12 +246,12 @@ TEST_F(PlatformCollectorTest, Stop_Immediate_EnsureStarted_Immediate) {
   collector_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample(PressureSample{0.25});
+  cpu_probe().SetLastSample(PressureSample{0.9});
 
   collector_->EnsureStarted();
   WaitForUpdate();
-  EXPECT_GE(samples_.size(), 1u);
-  EXPECT_THAT(samples_, testing::Contains(PressureSample{0.25}));
+  EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
+                            mojom::PressureState::kCritical)));
 }
 
 TEST_F(PlatformCollectorTest, Stop_Immediate_EnsureStarted_Delayed) {
@@ -227,14 +261,14 @@ TEST_F(PlatformCollectorTest, Stop_Immediate_EnsureStarted_Delayed) {
   collector_->Stop();
 
   samples_.clear();
-  cpu_probe().SetLastSample(PressureSample{0.25});
+  cpu_probe().SetLastSample(PressureSample{0.9});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
   base::PlatformThread::Sleep(base::Milliseconds(10));
 
   collector_->EnsureStarted();
   WaitForUpdate();
-  EXPECT_GE(samples_.size(), 1u);
-  EXPECT_THAT(samples_, testing::Contains(PressureSample{0.25}));
+  EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
+                            mojom::PressureState::kCritical)));
 }
 
 }  // namespace device

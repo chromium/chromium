@@ -15,11 +15,6 @@
 
 namespace device {
 
-// googletest integration with PressureSample.
-bool operator==(const PressureSample& lhs, const PressureSample& rhs) noexcept;
-
-std::ostream& operator<<(std::ostream& os, const PressureSample& sample);
-
 // Test double for CpuProbe that always returns a predetermined value.
 class FakeCpuProbe : public CpuProbe {
  public:
@@ -37,7 +32,7 @@ class FakeCpuProbe : public CpuProbe {
   void SetLastSample(PressureSample sample);
 
  private:
-  // Bound to the sequence for Update() and LastSample().
+  // Bound to the sequence for State() and LastSample().
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::Lock lock_;

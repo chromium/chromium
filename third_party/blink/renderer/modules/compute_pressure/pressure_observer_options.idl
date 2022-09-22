@@ -7,5 +7,5 @@
     Exposed=Window,
     SecureContext
 ] dictionary PressureObserverOptions {
-  sequence<double> cpuUtilizationThresholds = [];
+  double sampleRate;
 };

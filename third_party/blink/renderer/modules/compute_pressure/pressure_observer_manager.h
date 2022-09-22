@@ -52,7 +52,7 @@ class MODULES_EXPORT PressureObserverManager final
   void ContextLifecycleStateChanged(mojom::blink::FrameLifecycleState) override;
 
   // mojom::blink::PressureObserver implementation.
-  void OnUpdate(device::mojom::blink::PressureStatePtr) override;
+  void OnUpdate(device::mojom::blink::PressureUpdatePtr) override;
 
   // GarbageCollected implementation.
   void Trace(Visitor*) const override;
@@ -75,15 +75,10 @@ class MODULES_EXPORT PressureObserverManager final
                        ScriptPromiseResolver*,
                        mojom::blink::PressureStatus);
 
-  void DidSetQuantization(V8PressureSource,
-                          blink::PressureObserver*,
-                          ScriptPromiseResolver*,
-                          mojom::blink::SetQuantizationStatus);
-
   constexpr static size_t kPressureSourceSize = V8PressureSource::kEnumSize;
 
-  // Copy of the last reported state from the platform collector.
-  device::mojom::blink::PressureStatePtr last_reported_state_ = nullptr;
+  // Copy of the last reported update from the platform collector.
+  device::mojom::blink::PressureUpdatePtr last_reported_update_ = nullptr;
 
   // Connection to the browser-side implementation.
   HeapMojoRemote<mojom::blink::PressureService> pressure_service_;

@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
-#include "services/device/public/mojom/pressure_state.mojom.h"
+#include "services/device/public/mojom/pressure_update.mojom.h"
 
 namespace device {
 
@@ -30,7 +30,7 @@ class FakePressureManager : public mojom::PressureManager {
   void AddClient(mojo::PendingRemote<mojom::PressureClient> client,
                  AddClientCallback callback) override;
 
-  void UpdateClients(const mojom::PressureState& state, base::Time timestamp);
+  void UpdateClients(const mojom::PressureUpdate& update);
 
   void set_is_supported(bool is_supported);
 
@@ -50,7 +50,7 @@ class ScopedPressureManagerOverrider {
   ScopedPressureManagerOverrider& operator=(
       const ScopedPressureManagerOverrider&) = delete;
 
-  void UpdateClients(const mojom::PressureState& state, base::Time timestamp);
+  void UpdateClients(const mojom::PressureUpdate& update);
 
   void set_is_supported(bool is_supported);
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "services/device/compute_pressure/pressure_sample.h"
+#include "services/device/public/mojom/pressure_update.mojom-shared.h"
 
 namespace device {
 

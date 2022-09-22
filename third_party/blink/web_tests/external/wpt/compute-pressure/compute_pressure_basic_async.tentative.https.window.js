@@ -26,11 +26,13 @@ pressure_test(async (t, mockPressureService) => {
   const update = await new Promise(async resolve => {
     const observer = new PressureObserver(resolve);
     await observer.observe('cpu');
-
-    mockPressureService.setPressureState({cpuUtilization: 0.5});
+    mockPressureService.setPressureUpdate('critical');
     mockPressureService.sendUpdate();
   });
-  assert_equals(update.cpuUtilization, 0.5);
+  assert_equals(update.state, 'critical');
+  assert_equals(update.source, 'cpu');
+  assert_equals(typeof update.time, 'number');
+
 }, 'Basic functionality test');
 
 pressure_test((t, mockPressureService) => {
@@ -40,7 +42,7 @@ pressure_test((t, mockPressureService) => {
 
   observer.observe('cpu');
   observer.unobserve('cpu');
-  mockPressureService.setPressureState({cpuUtilization: 0.5});
+  mockPressureService.setPressureUpdate('critical');
   mockPressureService.sendUpdate();
 
   return new Promise(resolve => t.step_timeout(resolve, 1000));
@@ -59,41 +61,8 @@ pressure_test(async (t, mockPressureService) => {
 
   await Promise.all(observePromises);
 
-  mockPressureService.setPressureState({cpuUtilization: 0.5});
+  mockPressureService.setPressureUpdate('critical');
   mockPressureService.sendUpdate();
 
   return Promise.all(callbackPromises);
 }, 'Calling observe() multiple times works');
-
-pressure_test(async (t, mockPressureService) => {
-  const update = await new Promise(async resolve => {
-    const observer1 =
-        new PressureObserver(resolve, {cpuUtilizationThresholds: [0.5]});
-    await observer1.observe('cpu');
-
-    const observer2 =
-        new PressureObserver(() => {}, {cpuUtilizationThresholds: [0.5]});
-    await observer2.observe('cpu');
-
-    mockPressureService.setPressureState({cpuUtilization: 0.5});
-    mockPressureService.sendUpdate();
-  });
-
-  assert_equals(update.cpuUtilization, 0.5);
-}, 'Same quantization should not stop other observers');
-
-pressure_test(async (t, mockPressureService) => {
-  const observer1 = new PressureObserver(() => {
-    assert_unreached('The observer callback should not be called');
-  }, {cpuUtilizationThresholds: [0.5]});
-  await observer1.observe('cpu');
-
-  const observer2 =
-      new PressureObserver(() => {}, {cpuUtilizationThresholds: [0.3]});
-  await observer2.observe('cpu');
-
-  mockPressureService.setPressureState({cpuUtilization: 0.5});
-  mockPressureService.sendUpdate();
-
-  await new Promise(resolve => t.step_timeout(resolve, 1000));
-}, 'Different quantization should stop other observers');

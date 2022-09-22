@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_COMPUTE_PRESSURE_PRESSURE_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_COMPUTE_PRESSURE_PRESSURE_OBSERVER_H_
 
-#include "services/device/public/mojom/pressure_state.mojom-blink.h"
+#include "services/device/public/mojom/pressure_manager.mojom-blink.h"
+#include "services/device/public/mojom/pressure_update.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_record.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_update_callback.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -33,13 +35,11 @@ class PressureObserver final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  PressureObserver(V8PressureUpdateCallback* observer_callback,
-                   PressureObserverOptions* normalized_options);
+  PressureObserver(V8PressureUpdateCallback*, PressureObserverOptions*);
   ~PressureObserver() override;
 
   static PressureObserver* Create(V8PressureUpdateCallback*,
-                                  PressureObserverOptions*,
-                                  ExceptionState&);
+                                  PressureObserverOptions*);
 
   // PressureObserver IDL implementation.
   ScriptPromise observe(ScriptState*, V8PressureSource, ExceptionState&);
@@ -55,11 +55,9 @@ class PressureObserver final : public ScriptWrappable {
   void Trace(blink::Visitor*) const override;
 
   // Called by PressureObserverManager.
-  void OnUpdate(device::mojom::blink::PressureStatePtr state);
-
-  const PressureObserverOptions* normalized_options() const {
-    return normalized_options_;
-  }
+  void OnUpdate(V8PressureSource::Enum,
+                V8PressureState::Enum,
+                DOMHighResTimeStamp);
 
  private:
   // Manages registered observer list for each source.
@@ -68,8 +66,8 @@ class PressureObserver final : public ScriptWrappable {
   // The callback that receives pressure state updates.
   Member<V8PressureUpdateCallback> observer_callback_;
 
-  // The quantization scheme for this observer.
-  Member<PressureObserverOptions> normalized_options_;
+  // Options for the observer.
+  Member<PressureObserverOptions> options_;
 
   // Last received records from the platform collector.
   // The records are only collected when there is a change in the status.

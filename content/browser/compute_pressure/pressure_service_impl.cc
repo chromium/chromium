@@ -106,47 +106,20 @@ void PressureServiceImpl::BindObserver(
       &PressureServiceImpl::ResetObserverState, base::Unretained(this)));
 }
 
-void PressureServiceImpl::SetQuantization(
-    blink::mojom::PressureQuantizationPtr quantization,
-    SetQuantizationCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!remote_.is_bound() || !client_.is_bound()) {
-    receiver_.ReportBadMessage("Not connected to pressure service");
-    return;
-  }
-
-  if (!PressureQuantizer::IsValid(*quantization)) {
-    receiver_.ReportBadMessage("Invalid quantization");
-    return;
-  }
-
-  const bool quantization_changed = !quantizer_.IsSame(*quantization);
-  if (quantization_changed) {
-    ResetTimestampAndState();
-    quantizer_.Assign(std::move(quantization));
-  }
-  auto status = quantization_changed
-                    ? blink::mojom::SetQuantizationStatus::kChanged
-                    : blink::mojom::SetQuantizationStatus::kUnchanged;
-  std::move(callback).Run(status);
-}
-
 void PressureServiceImpl::PressureStateChanged(
-    device::mojom::PressureStatePtr state,
-    base::Time timestamp) {
+    device::mojom::PressureUpdatePtr update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  device::mojom::PressureState quantized_state =
-      quantizer_.Quantize(std::move(state));
 
   // TODO(jsbell): Rate-limit observers in non-visible frames instead of
   //               cutting off their updates completely.
-  if (timestamp - last_reported_timestamp_ < visible_observer_rate_limit_)
+  if (last_reported_update_ &&
+      update->timestamp - last_reported_update_->timestamp <
+          visible_observer_rate_limit_) {
     return;
+  }
 
   // No need to send an update if previous value is similar.
-  if (last_reported_state_ == quantized_state)
+  if (last_reported_update_ && update->state == last_reported_update_->state)
     return;
 
   if (!render_frame_host().IsActive()) {
@@ -161,10 +134,8 @@ void PressureServiceImpl::PressureStateChanged(
     return;
   }
 
-  last_reported_timestamp_ = timestamp;
-  last_reported_state_ = quantized_state;
-
-  observer_->OnUpdate(quantized_state.Clone());
+  last_reported_update_ = update.Clone();
+  observer_->OnUpdate(update.Clone());
 }
 
 void PressureServiceImpl::OnObserverRemoteDisconnected() {
@@ -199,18 +170,9 @@ void PressureServiceImpl::ResetObserverState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   observer_.reset();
-  ResetTimestampAndState();
-}
-
-void PressureServiceImpl::ResetTimestampAndState() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Makes sure that rate-limiting can't be bypassed by changing the
-  // quantization scheme often.
-  last_reported_timestamp_ = base::Time::Now();
 
   // Setting to an invalid value, so any state is considered an update.
-  last_reported_state_ = device::mojom::PressureState(-1);
+  last_reported_update_ = nullptr;
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PressureServiceImpl);

@@ -23,7 +23,7 @@ promise_test(async t => {
 
   const observer = new frame_window.PressureObserver(
       () => {},
-      {cpuUtilizationThresholds: [0.5]});
+      {sampleRate: 1});
   const iframe_DOMException = frame_window.DOMException;
 
   iframe.remove();
@@ -40,7 +40,7 @@ promise_test(async t => {
 
   const observer = new frame_window.PressureObserver(
       () => {},
-      {cpuUtilizationThresholds: [0.5]});
+      {sampleRate: 1});
 
   await observer.observe('cpu');
 
@@ -57,7 +57,7 @@ promise_test(async t => {
 
   const observer = new frame_window.PressureObserver(
       () => {},
-      {cpuUtilizationThresholds: [0.5]});
+      {sampleRate: 1});
   const iframe_DOMException = frame_window.DOMException;
 
   // await is intentionally not used here. We want to remove the iframe while
@@ -70,12 +70,12 @@ promise_test(async t => {
   // call in the removed iframe's PressureObserver.
   const update = await new Promise((resolve, reject) => {
     const observer = new PressureObserver(
-        resolve, {cpuUtilizationThresholds: [0.5]});
+        resolve, {sampleRate: 1});
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
   });
-  assert_in_array(update.cpuUtilization, [0.25, 0.75],
-                  'cpuUtilization quantization');
+  assert_in_array(update.state, ['nominal', 'fair', 'serious', 'critical'],
+                  'cpu pressure state');
 }, 'Detaching frame while PressureObserver.observe() settles');
 
 </script>

@@ -15,7 +15,7 @@
 #include "services/device/compute_pressure/pressure_test_support.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
-#include "services/device/public/mojom/pressure_state.mojom.h"
+#include "services/device/public/mojom/pressure_update.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,19 +59,15 @@ class FakePressureClient : public mojom::PressureClient {
   FakePressureClient& operator=(const FakePressureClient&) = delete;
 
   // device::mojom::PressureClient implementation.
-  void PressureStateChanged(device::mojom::PressureStatePtr state,
-                            base::Time timestamp) override {
-    updates_.emplace_back(*state, timestamp);
+  void PressureStateChanged(device::mojom::PressureUpdatePtr update) override {
+    updates_.emplace_back(*update);
     if (update_callback_) {
       std::move(update_callback_).Run();
       update_callback_.Reset();
     }
   }
 
-  const std::vector<std::pair<mojom::PressureState, base::Time>>& updates()
-      const {
-    return updates_;
-  }
+  const std::vector<mojom::PressureUpdate>& updates() const { return updates_; }
 
   void SetNextUpdateCallback(base::OnceClosure callback) {
     DCHECK(!update_callback_) << " already called before update received";
@@ -99,8 +95,8 @@ class FakePressureClient : public mojom::PressureClient {
   }
 
  private:
-  // Used to save pairs of PressureState and its timestamp.
-  std::vector<std::pair<mojom::PressureState, base::Time>> updates_;
+  // Used to save PressureState.
+  std::vector<mojom::PressureUpdate> updates_;
 
   // Used to implement WaitForUpdate().
   base::OnceClosure update_callback_;
@@ -146,7 +142,7 @@ TEST_F(PressureManagerImplTest, OneClient) {
 
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
-  EXPECT_EQ(client.updates()[0].first, mojom::PressureState{0.42});
+  EXPECT_EQ(client.updates()[0].state, mojom::PressureState::kFair);
 }
 
 TEST_F(PressureManagerImplTest, ThreeClients) {
@@ -162,11 +158,11 @@ TEST_F(PressureManagerImplTest, ThreeClients) {
 
   FakePressureClient::WaitForUpdates({&client1, &client2, &client3});
   ASSERT_EQ(client1.updates().size(), 1u);
-  EXPECT_EQ(client1.updates()[0].first, mojom::PressureState{0.42});
+  EXPECT_EQ(client1.updates()[0].state, mojom::PressureState::kFair);
   ASSERT_EQ(client2.updates().size(), 1u);
-  EXPECT_EQ(client2.updates()[0].first, mojom::PressureState{0.42});
+  EXPECT_EQ(client2.updates()[0].state, mojom::PressureState::kFair);
   ASSERT_EQ(client3.updates().size(), 1u);
-  EXPECT_EQ(client3.updates()[0].first, mojom::PressureState{0.42});
+  EXPECT_EQ(client3.updates()[0].state, mojom::PressureState::kFair);
 }
 
 TEST_F(PressureManagerImplTest, AddClient_NoProbe) {

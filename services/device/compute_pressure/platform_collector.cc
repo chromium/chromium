@@ -36,7 +36,7 @@ scoped_refptr<base::SequencedTaskRunner> CreateProbeTaskRunner() {
 PlatformCollector::PlatformCollector(
     std::unique_ptr<CpuProbe> probe,
     base::TimeDelta sampling_interval,
-    base::RepeatingCallback<void(PressureSample)> sampling_callback)
+    base::RepeatingCallback<void(mojom::PressureState)> sampling_callback)
     : probe_task_runner_(CreateProbeTaskRunner()),
       probe_(std::move(probe)),
       sampling_interval_(sampling_interval),
@@ -109,7 +109,28 @@ void PlatformCollector::DidUpdateProbe(PressureSample sample) {
     return;
   }
 
-  sampling_callback_.Run(sample);
+  sampling_callback_.Run(CalculateState(sample));
+}
+
+mojom::PressureState PlatformCollector::CalculateState(
+    PressureSample sample) const {
+  // TODO(crbug.com/1342528): A more advanced algorithm that calculates
+  // PressureState using PressureSample needs to be determined.
+  // At this moment the algorithm is the simplest possible
+  // with thresholds defining the state.
+  mojom::PressureState state = mojom::PressureState::kNominal;
+  if (sample.cpu_utilization < 0.3)
+    state = mojom::PressureState::kNominal;
+  else if (sample.cpu_utilization < 0.6)
+    state = mojom::PressureState::kFair;
+  else if (sample.cpu_utilization < 0.9)
+    state = mojom::PressureState::kSerious;
+  else if (sample.cpu_utilization <= 1.00)
+    state = mojom::PressureState::kCritical;
+  else
+    NOTREACHED() << "unexpected value: " << sample.cpu_utilization;
+
+  return state;
 }
 
 }  // namespace device

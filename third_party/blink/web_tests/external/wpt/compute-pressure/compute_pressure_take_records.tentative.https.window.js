@@ -1,9 +1,12 @@
+// META: script=/resources/test-only-api.js
+// META: script=resources/pressure-helpers.js
+
 'use strict';
 
 test(t => {
   const observer = new PressureObserver(
       t.unreached_func('This callback should not have been called.'),
-      {cpuUtilizationThresholds: [0.25]});
+      {sampleRate: 1.0});
 
   const records = observer.takeRecords();
   assert_equals(records.length, 0, 'No record before observe');
@@ -11,16 +14,15 @@ test(t => {
 
 promise_test(async t => {
   let observer;
-  const record = await new Promise((resolve, reject) => {
-    observer = new PressureObserver(
-        resolve,
-        {cpuUtilizationThresholds: [0.25]});
+  const update = await new Promise(async resolve => {
+    observer = new PressureObserver(resolve, {sampleRate: 1.0});
     t.add_cleanup(() => observer.disconnect());
-    observer.observe('cpu').catch(reject);
-  });
 
+    await observer.observe('cpu');
+  });
   assert_in_array(
-      record.cpuUtilization, [0.125, 0.625], 'cpuUtilization quantization');
+      update.state, ['nominal', 'fair', 'serious', 'critical'],
+      'cpu presure state');
 
   const records = observer.takeRecords();
   assert_equals(records.length, 0, 'No record available');

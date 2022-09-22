@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "services/device/device_service.h"
+#include "services/device/public/mojom/pressure_update.mojom.h"
 
 namespace device {
 
@@ -33,10 +34,9 @@ void FakePressureManager::AddClient(
   }
 }
 
-void FakePressureManager::UpdateClients(const mojom::PressureState& state,
-                                        base::Time timestamp) {
+void FakePressureManager::UpdateClients(const mojom::PressureUpdate& update) {
   for (auto& client : clients_)
-    client->PressureStateChanged(state.Clone(), timestamp);
+    client->PressureStateChanged(update.Clone());
 }
 
 void FakePressureManager::set_is_supported(bool is_supported) {
@@ -54,9 +54,8 @@ ScopedPressureManagerOverrider::~ScopedPressureManagerOverrider() {
 }
 
 void ScopedPressureManagerOverrider::UpdateClients(
-    const mojom::PressureState& state,
-    base::Time timestamp) {
-  pressure_manager_->UpdateClients(state, timestamp);
+    const mojom::PressureUpdate& update) {
+  pressure_manager_->UpdateClients(update);
 }
 
 void ScopedPressureManagerOverrider::set_is_supported(bool is_supported) {

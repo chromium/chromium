@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/compute_pressure/platform_collector.h"
-#include "services/device/compute_pressure/pressure_sample.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 
 namespace device {
@@ -62,7 +61,7 @@ class PressureManagerImpl : public mojom::PressureManager {
                       base::TimeDelta sampling_interval);
 
   // Called periodically by PlatformCollector.
-  void UpdateClients(PressureSample sample);
+  void UpdateClients(mojom::PressureState state);
 
   // Stop `collector_` once there is no client.
   void OnClientRemoteDisconnected(mojo::RemoteSetElementId /*id*/);

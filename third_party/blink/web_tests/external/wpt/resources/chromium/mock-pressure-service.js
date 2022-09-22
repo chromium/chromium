@@ -1,4 +1,5 @@
-import {PressureService, PressureServiceReceiver, PressureStatus, SetQuantizationStatus} from '/gen/third_party/blink/public/mojom/compute_pressure/pressure_service.mojom.m.js'
+import {PressureState} from '/gen/services/device/public/mojom/pressure_update.mojom.m.js'
+import {PressureService, PressureServiceReceiver, PressureStatus} from '/gen/third_party/blink/public/mojom/compute_pressure/pressure_service.mojom.m.js'
 
 class MockPressureService {
   constructor() {
@@ -9,6 +10,10 @@ class MockPressureService {
       this.receiver_.$.bindHandle(e.handle);
     };
     this.reset();
+    this.mojomStateType_ = new Map([
+      ['nominal', PressureState.kNominal], ['fair', PressureState.kFair],
+      ['serious', PressureState.kSerious], ['critical', PressureState.kCritical]
+    ]);
   }
 
   start() {
@@ -26,8 +31,7 @@ class MockPressureService {
 
   reset() {
     this.observer_ = null;
-    this.pressureState_ = null;
-    this.quantization_ = null;
+    this.pressureUpdate_ = null;
     this.pressureStatus_ = PressureStatus.kOk;
   }
 
@@ -40,42 +44,20 @@ class MockPressureService {
     return {status: this.pressureStatus_};
   }
 
-  isSameQuantization(quantization) {
-    if (this.quantization_ === null)
-      return false;
-
-    if (quantization.cpuUtilizationThresholds.length !=
-        this.quantization_.cpuUtilizationThresholds.length) {
-      return false;
-    }
-
-    for (let i = 0; i < quantization.cpuUtilizationThresholds.length; i++) {
-      if (quantization.cpuUtilizationThresholds[i] !=
-          this.quantization_.cpuUtilizationThresholds[i]) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  async setQuantization(quantization) {
-    if (this.isSameQuantization(quantization)) {
-      return {status: SetQuantizationStatus.kUnchanged};
-    } else {
-      this.quantization_ = quantization;
-      return {status: SetQuantizationStatus.kChanged};
-    }
-  }
-
   sendUpdate() {
-    if (this.pressureState_ === null || this.observer_ === null)
+    if (this.pressureUpdate_ === null || this.observer_ === null)
       return;
-    this.observer_.onUpdate(this.pressureState_);
+    this.observer_.onUpdate(this.pressureUpdate_);
   }
 
-  setPressureState(value) {
-    this.pressureState_ = value;
+  setPressureUpdate(state) {
+    if (!this.mojomStateType_.has(state))
+      throw new Error(`PressureState '${state}' is invalid`);
+
+    this.pressureUpdate_ = {
+      state: this.mojomStateType_.get(state),
+      timestamp: window.performance.timeOrigin
+    };
   }
 
   setExpectedFailure(expectedException) {

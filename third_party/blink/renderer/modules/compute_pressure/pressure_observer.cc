@@ -19,76 +19,17 @@
 namespace blink {
 
 PressureObserver::PressureObserver(V8PressureUpdateCallback* observer_callback,
-                                   PressureObserverOptions* normalized_options)
-    : observer_callback_(observer_callback),
-      normalized_options_(normalized_options) {}
+                                   PressureObserverOptions* options)
+    // TODO(crbug.com/1356529): sampleRate in PressureObserverOptions needs to
+    // be processed and passed to lower stacks for compute pressure
+    // implementation.
+    : observer_callback_(observer_callback), options_(options) {}
 
 PressureObserver::~PressureObserver() = default;
 
-namespace {
-
-// Validates a sorted array that specifies a quantization scheme.
-//
-// Returns false if the array is not a valid quantization scheme.
-// `exception_state` is populated in this case.
-bool ValidateThresholds(const Vector<double>& thresholds,
-                        ExceptionState& exception_state) {
-  double previous_threshold = 0.0;
-
-  for (double threshold : thresholds) {
-    if (threshold <= 0.0) {
-      exception_state.ThrowTypeError("Thresholds must be greater than 0.0");
-      return false;
-    }
-
-    if (threshold >= 1.0) {
-      exception_state.ThrowTypeError("Thresholds must be less than 1.0");
-      return false;
-    }
-
-    DCHECK_GE(threshold, previous_threshold) << "the thresholds are not sorted";
-    if (threshold == previous_threshold) {
-      exception_state.ThrowTypeError("Thresholds must be different");
-      return false;
-    }
-    previous_threshold = threshold;
-  }
-  return true;
-}
-
-bool NormalizeObserverOptions(PressureObserverOptions& options,
-                              ExceptionState& exception_state) {
-  Vector<double> cpu_utilization_thresholds =
-      options.cpuUtilizationThresholds();
-  if (cpu_utilization_thresholds.size() >
-      mojom::blink::kMaxPressureCpuUtilizationThresholds) {
-    cpu_utilization_thresholds.resize(
-        mojom::blink::kMaxPressureCpuUtilizationThresholds);
-  }
-  std::sort(cpu_utilization_thresholds.begin(),
-            cpu_utilization_thresholds.end());
-  if (!ValidateThresholds(cpu_utilization_thresholds, exception_state)) {
-    DCHECK(exception_state.HadException());
-    return false;
-  }
-  options.setCpuUtilizationThresholds(cpu_utilization_thresholds);
-
-  return true;
-}
-
-}  // namespace
-
 // static
 PressureObserver* PressureObserver::Create(V8PressureUpdateCallback* callback,
-                                           PressureObserverOptions* options,
-                                           ExceptionState& exception_state) {
-  // TODO(crbug.com/1306803): Remove this check whenever bucketing is not
-  // anymore in use.
-  if (!NormalizeObserverOptions(*options, exception_state)) {
-    DCHECK(exception_state.HadException());
-    return nullptr;
-  }
-
+                                           PressureObserverOptions* options) {
   return MakeGarbageCollected<PressureObserver>(callback, options);
 }
 
@@ -151,15 +92,19 @@ void PressureObserver::disconnect() {
 
 void PressureObserver::Trace(blink::Visitor* visitor) const {
   visitor->Trace(manager_);
-  visitor->Trace(normalized_options_);
+  visitor->Trace(options_);
   visitor->Trace(observer_callback_);
   visitor->Trace(records_);
   ScriptWrappable::Trace(visitor);
 }
 
-void PressureObserver::OnUpdate(device::mojom::blink::PressureStatePtr state) {
+void PressureObserver::OnUpdate(V8PressureSource::Enum source,
+                                V8PressureState::Enum state,
+                                DOMHighResTimeStamp timestamp) {
   auto* record = PressureRecord::Create();
-  record->setCpuUtilization(state->cpu_utilization);
+  record->setSource(V8PressureSource(source));
+  record->setState(V8PressureState(state));
+  record->setTime(timestamp);
 
   // This should happen infrequently since `records_` is supposed
   // to be emptied at every callback invoking or takeRecords().
@@ -168,7 +113,6 @@ void PressureObserver::OnUpdate(device::mojom::blink::PressureStatePtr state) {
 
   records_.push_back(record);
   DCHECK_LE(records_.size(), kMaxQueuedRecords);
-
   observer_callback_->InvokeAndReportException(this, record, this);
 }
 

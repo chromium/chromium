@@ -2,12 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://wicg.github.io/compute-pressure/#dom-pressurestate
+enum PressureState {
+  "nominal",
+  "fair",
+  "serious",
+  "critical"
+};
+
 // https://wicg.github.io/compute-pressure/#dom-pressurerecord
 [
     Exposed=Window,
     SecureContext
 ] dictionary PressureRecord {
-   // TODO(crbug.com/1308316): Remove cpuUtilization when switching
-   // to new API.
-   double cpuUtilization;
+  PressureSource source;
+  PressureState state;
+  DOMHighResTimeStamp time;
+  // TODO(crbug.com/1356191): Implement factors.
 };

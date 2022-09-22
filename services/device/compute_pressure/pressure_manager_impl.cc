@@ -13,8 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/compute_pressure/cpu_probe.h"
 #include "services/device/compute_pressure/platform_collector.h"
-#include "services/device/compute_pressure/pressure_sample.h"
-#include "services/device/public/mojom/pressure_state.mojom.h"
+#include "services/device/public/mojom/pressure_update.mojom.h"
 
 namespace device {
 
@@ -75,13 +74,13 @@ void PressureManagerImpl::AddClient(
   std::move(callback).Run(true);
 }
 
-void PressureManagerImpl::UpdateClients(PressureSample sample) {
+void PressureManagerImpl::UpdateClients(mojom::PressureState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const mojom::PressureState state{sample.cpu_utilization};
   const base::Time timestamp = base::Time::Now();
-  for (auto& client : clients_)
-    client->PressureStateChanged(state.Clone(), timestamp);
+  mojom::PressureUpdate update(state, timestamp);
+  for (auto& client : clients_) {
+    client->PressureStateChanged(update.Clone());
+  }
 }
 
 void PressureManagerImpl::OnClientRemoteDisconnected(

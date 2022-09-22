@@ -4,42 +4,20 @@
 
 module blink.mojom;
 
-import "services/device/public/mojom/pressure_state.mojom";
-
-// Specifies a quantization scheme for the data in a PressureState.
-//
-// Each array of thresholds subdivides the interval [0.0, 1.0]. The array must
-// not contain the 0.0 and 1.0 values, as they are implied. For example, the
-// array {0.2, 0.5, 0.8} specifies the sub-intervals [0.0, 0.2], [0.2, 0.5],
-// [0.5, 0.8], and [0.8, 1.0]. The thresholds in an array must be sorted.
-//
-// A value is quantized by replacing it with the center of the interval that it
-// falls in. For example, a CPU utilization quantizing scheme that matches the
-// example above would report a CPU utilization value of 0.51 as 0.65. This is
-// because 0.51 falls in the sub-interval [0.5, 0.8], and the center of that
-// interval is 0.65, the average of 0.5 and 0.8.
-struct PressureQuantization {
-  array<double> cpu_utilization_thresholds;
-};
-
-// The maximum size of PressureQuantization.cpu_utilization_thresholds.
-const int32 kMaxPressureCpuUtilizationThresholds = 3;
+import "services/device/public/mojom/pressure_update.mojom";
 
 // Implemented by renderers to receive compute pressure info from the browser.
 //
-// The values in the PressureState reported to the renderer are always
-// quantized according to a PressureQuantization scheme.
 interface PressureObserver {
   // Called in the following circumstances.
   //
   // 1. Once after an observer is created.
-  // 2. When the (quantized) PressureState differs from the previously
-  //    reported state.
+  // 2. When the PressureState differs from the previously reported state.
   //
   // Updates to an observer are rate-limited. Observers that belong to visible
   // pages receive updates at most once a second, while other observers are
   // limited to at most one update in 10 seconds.
-  OnUpdate(device.mojom.PressureState state);
+  OnUpdate(device.mojom.PressureUpdate update);
 };
 
 // Result of PressureService.BindObserver().
@@ -59,39 +37,15 @@ enum PressureStatus {
   kSecurityError,
 };
 
-// Result of PressureService.SetQuantization().
-enum SetQuantizationStatus {
-  // A valid but same PressureQuantization is used.
-  kUnchanged,
-
-  // A valid but different PressureQuantization is used.
-  kChanged,
-};
-
 // The interface is implemented in the browser and consumed by renderers. The
 // interface is only accessible to frames (and not workers).  Each frame that
 // accesses the API creates a separate connection.
 interface PressureService {
   // Subscribes to updates on the device's PressureState.
   //
-  // If `status` is kOk, SetQuantization() should be called to set
-  // quantization scheme and the reported state will be quantized
-  // according to the quantization scheme.
-  //
   // `observer` is active (eligible for notifications) as soon as
-  // SetQuantization() completes. Observation is stopped by
+  // binding completes. Observation is stopped by
   // disconnecting the mojo pipe.
   BindObserver(pending_remote<PressureObserver> observer)
       => (PressureStatus status);
-
-  // All active observers belonging to a frame use the same `quantization`
-  // scheme. If `quantization` differs from the scheme used by active observers
-  // belonging to the same frame, the conflict is resolved by stopping all the
-  // frame's pre-existing active observers and call SetQuantization() to set
-  // the new `quantization`. In other words, after SetQuantization() completes,
-  // the newly created observer will be the only active observer.
-  //
-  // `quantization` must be a valid quantization scheme.
-  SetQuantization(PressureQuantization quantization)
-      => (SetQuantizationStatus status);
 };

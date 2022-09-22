@@ -5,7 +5,7 @@
 module device.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-import "services/device/public/mojom/pressure_state.mojom";
+import "services/device/public/mojom/pressure_update.mojom";
 
 // This interface is used to get the PressureState.
 //
@@ -25,5 +25,5 @@ interface PressureManager {
 // PressureStateChanged.
 interface PressureClient {
   // Interface used to notify PressureState changes.
-  PressureStateChanged(PressureState state, mojo_base.mojom.Time timestamp);
+  PressureStateChanged(PressureUpdate update);
 };
