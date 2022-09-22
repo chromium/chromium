@@ -4,6 +4,8 @@
 
   await dp.Page.enable();
 
+  testRunner.startDumpingProtocolMessages();
+
   const frameId = (await dp.Page.getResourceTree()).result.frameTree.frame.id;
   const storageKey = (await dp.Storage.getStorageKeyForFrame({
                        frameId: frameId
