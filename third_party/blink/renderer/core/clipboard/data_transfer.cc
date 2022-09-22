@@ -318,6 +318,7 @@ bool DataTransfer::hasDataStoreItemListChanged() const {
 
 void DataTransfer::OnItemListChanged() {
   data_store_item_list_changed_ = true;
+  files_->clear();
 }
 
 Vector<String> DataTransfer::types() {
@@ -329,19 +330,23 @@ Vector<String> DataTransfer::types() {
 }
 
 FileList* DataTransfer::files() const {
-  auto* files = MakeGarbageCollected<FileList>();
-  if (!CanReadData())
-    return files;
+  if (!CanReadData()) {
+    files_->clear();
+    return files_;
+  }
+
+  if (!files_->IsEmpty())
+    return files_;
 
   for (uint32_t i = 0; i < data_object_->length(); ++i) {
     if (data_object_->Item(i)->Kind() == DataObjectItem::kFileKind) {
       Blob* blob = data_object_->Item(i)->GetAsFile();
       if (auto* file = DynamicTo<File>(blob))
-        files->Append(file);
+        files_->Append(file);
     }
   }
 
-  return files;
+  return files_;
 }
 
 void DataTransfer::setDragImage(Element* image, int x, int y) {
@@ -602,7 +607,8 @@ DataTransfer::DataTransfer(DataTransferType type,
       effect_allowed_("uninitialized"),
       transfer_type_(type),
       data_object_(data_object),
-      data_store_item_list_changed_(true) {
+      data_store_item_list_changed_(true),
+      files_(MakeGarbageCollected<FileList>()) {
   data_object_->AddObserver(this);
 }
 
@@ -643,6 +649,7 @@ void DataTransfer::Trace(Visitor* visitor) const {
   visitor->Trace(data_object_);
   visitor->Trace(drag_image_);
   visitor->Trace(drag_image_element_);
+  visitor->Trace(files_);
   ScriptWrappable::Trace(visitor);
 }
 

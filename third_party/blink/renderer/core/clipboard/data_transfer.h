@@ -177,6 +177,7 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   gfx::Point drag_loc_;
   Member<ImageResourceContent> drag_image_;
   Member<Node> drag_image_element_;
+  Member<FileList> files_;
 };
 
 }  // namespace blink
