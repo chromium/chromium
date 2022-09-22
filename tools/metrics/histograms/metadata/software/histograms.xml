@@ -205,7 +205,7 @@ separator. The leading _ keeps the generated histogram names the same.
 
 <histogram name="SoftwareReporter.LogsUploadResultRegistryError{Engine}"
     enum="SoftwareReporterLogsUploadResultRegistryError"
-    expires_after="2022-10-30">
+    expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -219,7 +219,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.LogsUploadResult{Engine}"
-    enum="SoftwareReporterLogsUploadResult" expires_after="2022-10-30">
+    enum="SoftwareReporterLogsUploadResult" expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -232,7 +232,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.MajorVersion{Engine}" units="units"
-    expires_after="2022-10-23">
+    expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -316,7 +316,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.ReporterSequenceType"
-    enum="SoftwareReporterSequenceType" expires_after="2022-10-30">
+    enum="SoftwareReporterSequenceType" expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
