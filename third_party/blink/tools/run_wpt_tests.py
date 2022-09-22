@@ -274,7 +274,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             '-p',
             '--product',
             dest='product_name',
-            default='chrome',
+            default='content_shell',
             # The parser converts the value before checking if it is in choices,
             # so we avoid looking up the class right away.
             choices=sorted(_product_registry, key=len),
