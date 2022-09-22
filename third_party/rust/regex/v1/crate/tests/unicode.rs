@@ -232,3 +232,20 @@ mat!(uni_class_sb2, r"\p{sb=lower}", "\u{0469}", Some((0, 2)));
 mat!(uni_class_sb3, r"\p{sb=Close}", "\u{FF60}", Some((0, 3)));
 mat!(uni_class_sb4, r"\p{sb=Close}", "\u{1F677}", Some((0, 4)));
 mat!(uni_class_sb5, r"\p{sb=SContinue}", "\u{FF64}", Some((0, 3)));
+
+// Test 'Vithkuqi' support, which was added in Unicode 14.
+// See: https://github.com/rust-lang/regex/issues/877
+mat!(
+    uni_vithkuqi_literal_upper,
+    r"(?i)^\u{10570}$",
+    "\u{10570}",
+    Some((0, 4))
+);
+mat!(
+    uni_vithkuqi_literal_lower,
+    r"(?i)^\u{10570}$",
+    "\u{10597}",
+    Some((0, 4))
+);
+mat!(uni_vithkuqi_word_upper, r"^\w$", "\u{10570}", Some((0, 4)));
+mat!(uni_vithkuqi_word_lower, r"^\w$", "\u{10597}", Some((0, 4)));

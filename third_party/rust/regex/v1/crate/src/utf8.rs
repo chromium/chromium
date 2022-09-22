@@ -108,7 +108,7 @@ pub fn decode_utf8(src: &[u8]) -> Option<(char, usize)> {
                 | ((b2 & !TAG_CONT) as u32) << 6
                 | ((b3 & !TAG_CONT) as u32);
             match cp {
-                0x10000..=0x10FFFF => char::from_u32(cp).map(|cp| (cp, 4)),
+                0x10000..=0x0010_FFFF => char::from_u32(cp).map(|cp| (cp, 4)),
                 _ => None,
             }
         }

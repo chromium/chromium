@@ -114,8 +114,8 @@ impl<I: Interval> IntervalSet<I> {
         // we're done.
         let drain_end = self.ranges.len();
 
-        let mut ita = (0..drain_end).into_iter();
-        let mut itb = (0..other.ranges.len()).into_iter();
+        let mut ita = 0..drain_end;
+        let mut itb = 0..other.ranges.len();
         let mut a = ita.next().unwrap();
         let mut b = itb.next().unwrap();
         loop {

@@ -1,6 +1,6 @@
 [package]
 name = "regex"
-version = "1.5.4"  #:version
+version = "1.6.0"  #:version
 authors = ["The Rust Project Developers"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
@@ -117,7 +117,7 @@ optional = true
 # For parsing regular expressions.
 [dependencies.regex-syntax]
 path = "regex-syntax"
-version = "0.6.25"
+version = "0.6.27"
 default-features = false
 
 [dev-dependencies]

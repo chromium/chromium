@@ -598,7 +598,7 @@ dependencies = [
 
 [[package]]
 name = "regex"
-version = "1.5.4"
+version = "1.6.0"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -607,7 +607,7 @@ dependencies = [
 
 [[package]]
 name = "regex-syntax"
-version = "0.6.25"
+version = "0.6.27"
 
 [[package]]
 name = "remove_dir_all"

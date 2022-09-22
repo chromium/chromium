@@ -1,3 +1,51 @@
+1.6.0 (2022-07-05)
+==================
+This release principally includes an upgrade to Unicode 14.
+
+New features:
+
+* [FEATURE #832](https://github.com/rust-lang/regex/pull/832):
+  Clarify that `Captures::len` includes all groups, not just matching groups.
+* [FEATURE #857](https://github.com/rust-lang/regex/pull/857):
+  Add an `ExactSizeIterator` impl for `SubCaptureMatches`.
+* [FEATURE #861](https://github.com/rust-lang/regex/pull/861):
+  Improve `RegexSet` documentation examples.
+* [FEATURE #877](https://github.com/rust-lang/regex/issues/877):
+  Upgrade to Unicode 14.
+
+Bug fixes:
+
+* [BUG #792](https://github.com/rust-lang/regex/issues/792):
+  Fix error message rendering bug.
+
+
+1.5.6 (2022-05-20)
+==================
+This release includes a few bug fixes, including a bug that produced incorrect
+matches when a non-greedy `?` operator was used.
+
+* [BUG #680](https://github.com/rust-lang/regex/issues/680):
+  Fixes a bug where `[[:alnum:][:^ascii:]]` dropped `[:alnum:]` from the class.
+* [BUG #859](https://github.com/rust-lang/regex/issues/859):
+  Fixes a bug where `Hir::is_match_empty` returned `false` for `\b`.
+* [BUG #862](https://github.com/rust-lang/regex/issues/862):
+  Fixes a bug where 'ab??' matches 'ab' instead of 'a' in 'ab'.
+
+
+1.5.5 (2022-03-08)
+==================
+This releases fixes a security bug in the regex compiler. This bug permits a
+vector for a denial-of-service attack in cases where the regex being compiled
+is untrusted. There are no known problems where the regex is itself trusted,
+including in cases of untrusted haystacks.
+
+* [SECURITY #GHSA-m5pq-gvj9-9vr8](https://github.com/rust-lang/regex/security/advisories/GHSA-m5pq-gvj9-9vr8):
+  Fixes a bug in the regex compiler where empty sub-expressions subverted the
+  existing mitigations in place to enforce a size limit on compiled regexes.
+  The Rust Security Response WG published an advisory about this:
+  https://groups.google.com/g/rustlang-security-announcements/c/NcNNL1Jq7Yw
+
+
 1.5.4 (2021-05-06)
 ==================
 This release fixes another compilation failure when building regex. This time,
@@ -669,7 +717,7 @@ New features:
 * Empty sub-expressions are now permitted in most places. That is, `()+` is
   now a valid regex.
 * Almost everything in regex-syntax now uses constant stack space, even when
-  performing anaylsis that requires structural induction. This reduces the risk
+  performing analysis that requires structural induction. This reduces the risk
   of a user provided regular expression causing a stack overflow.
 * [FEATURE #174](https://github.com/rust-lang/regex/issues/174):
   The `Ast` type in `regex-syntax` now contains span information.

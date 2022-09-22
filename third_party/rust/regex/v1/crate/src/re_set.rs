@@ -59,13 +59,45 @@ $(#[$doc_regexset_example])*
 /// 1. Does any regex in the set match?
 /// 2. If so, which regexes in the set match?
 ///
-/// As with the main `Regex` type, it is cheaper to ask (1) instead of (2)
-/// since the matching engines can stop after the first match is found.
+/// As with the main [`Regex`][crate::Regex] type, it is cheaper to ask (1)
+/// instead of (2) since the matching engines can stop after the first match
+/// is found.
 ///
-/// Other features like finding the location of successive matches or their
-/// sub-captures aren't supported. If you need this functionality, the
-/// recommended approach is to compile each regex in the set independently and
-/// selectively match them based on which regexes in the set matched.
+/// You cannot directly extract [`Match`][crate::Match] or
+/// [`Captures`][crate::Captures] objects from a regex set. If you need these
+/// operations, the recommended approach is to compile each pattern in the set
+/// independently and scan the exact same input a second time with those
+/// independently compiled patterns:
+///
+/// ```rust
+/// use regex::{Regex, RegexSet};
+///
+/// let patterns = ["foo", "bar"];
+/// // Both patterns will match different ranges of this string.
+/// let text = "barfoo";
+///
+/// // Compile a set matching any of our patterns.
+/// let set = RegexSet::new(&patterns).unwrap();
+/// // Compile each pattern independently.
+/// let regexes: Vec<_> = set.patterns().iter()
+///     .map(|pat| Regex::new(pat).unwrap())
+///     .collect();
+///
+/// // Match against the whole set first and identify the individual
+/// // matching patterns.
+/// let matches: Vec<&str> = set.matches(text).into_iter()
+///     // Dereference the match index to get the corresponding
+///     // compiled pattern.
+///     .map(|match_idx| &regexes[match_idx])
+///     // To get match locations or any other info, we then have to search
+///     // the exact same text again, using our separately-compiled pattern.
+///     .map(|pat| pat.find(text).unwrap().as_str())
+///     .collect();
+///
+/// // Matches arrive in the order the constituent patterns were declared,
+/// // not the order they appear in the input.
+/// assert_eq!(vec!["foo", "bar"], matches);
+/// ```
 ///
 /// # Performance
 ///

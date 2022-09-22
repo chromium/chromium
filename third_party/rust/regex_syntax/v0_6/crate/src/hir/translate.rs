@@ -434,20 +434,14 @@ impl<'t, 'p> Visitor for TranslatorI<'t, 'p> {
             }
             ast::ClassSetItem::Ascii(ref x) => {
                 if self.flags().unicode() {
+                    let xcls = self.hir_ascii_unicode_class(x)?;
                     let mut cls = self.pop().unwrap().unwrap_class_unicode();
-                    for &(s, e) in ascii_class(&x.kind) {
-                        cls.push(hir::ClassUnicodeRange::new(s, e));
-                    }
-                    self.unicode_fold_and_negate(
-                        &x.span, x.negated, &mut cls,
-                    )?;
+                    cls.union(&xcls);
                     self.push(HirFrame::ClassUnicode(cls));
                 } else {
+                    let xcls = self.hir_ascii_byte_class(x)?;
                     let mut cls = self.pop().unwrap().unwrap_class_bytes();
-                    for &(s, e) in ascii_class(&x.kind) {
-                        cls.push(hir::ClassBytesRange::new(s as u8, e as u8));
-                    }
-                    self.bytes_fold_and_negate(&x.span, x.negated, &mut cls)?;
+                    cls.union(&xcls);
                     self.push(HirFrame::ClassBytes(cls));
                 }
             }
@@ -595,7 +589,7 @@ struct TranslatorI<'t, 'p> {
 impl<'t, 'p> TranslatorI<'t, 'p> {
     /// Build a new internal translator.
     fn new(trans: &'t Translator, pattern: &'p str) -> TranslatorI<'t, 'p> {
-        TranslatorI { trans: trans, pattern: pattern }
+        TranslatorI { trans, pattern }
     }
 
     /// Return a reference to the underlying translator.
@@ -615,7 +609,7 @@ impl<'t, 'p> TranslatorI<'t, 'p> {
 
     /// Create a new error with the given span and error type.
     fn error(&self, span: Span, kind: ErrorKind) -> Error {
-        Error { kind: kind, pattern: self.pattern.to_string(), span: span }
+        Error { kind, pattern: self.pattern.to_string(), span }
     }
 
     /// Return a copy of the active flags.
@@ -785,7 +779,7 @@ impl<'t, 'p> TranslatorI<'t, 'p> {
             }
             ast::GroupKind::NonCapturing(_) => hir::GroupKind::NonCapturing,
         };
-        Hir::group(hir::Group { kind: kind, hir: Box::new(expr) })
+        Hir::group(hir::Group { kind, hir: Box::new(expr) })
     }
 
     fn hir_repetition(&self, rep: &ast::Repetition, expr: Hir) -> Hir {
@@ -808,11 +802,7 @@ impl<'t, 'p> TranslatorI<'t, 'p> {
         };
         let greedy =
             if self.flags().swap_greed() { !rep.greedy } else { rep.greedy };
-        Hir::repetition(hir::Repetition {
-            kind: kind,
-            greedy: greedy,
-            hir: Box::new(expr),
-        })
+        Hir::repetition(hir::Repetition { kind, greedy, hir: Box::new(expr) })
     }
 
     fn hir_unicode_class(
@@ -851,6 +841,32 @@ impl<'t, 'p> TranslatorI<'t, 'p> {
             }
         }
         result
+    }
+
+    fn hir_ascii_unicode_class(
+        &self,
+        ast: &ast::ClassAscii,
+    ) -> Result<hir::ClassUnicode> {
+        let mut cls = hir::ClassUnicode::new(
+            ascii_class(&ast.kind)
+                .iter()
+                .map(|&(s, e)| hir::ClassUnicodeRange::new(s, e)),
+        );
+        self.unicode_fold_and_negate(&ast.span, ast.negated, &mut cls)?;
+        Ok(cls)
+    }
+
+    fn hir_ascii_byte_class(
+        &self,
+        ast: &ast::ClassAscii,
+    ) -> Result<hir::ClassBytes> {
+        let mut cls = hir::ClassBytes::new(
+            ascii_class(&ast.kind)
+                .iter()
+                .map(|&(s, e)| hir::ClassBytesRange::new(s as u8, e as u8)),
+        );
+        self.bytes_fold_and_negate(&ast.span, ast.negated, &mut cls)?;
+        Ok(cls)
     }
 
     fn hir_perl_unicode_class(
@@ -948,7 +964,7 @@ impl<'t, 'p> TranslatorI<'t, 'p> {
         class: &mut hir::ClassBytes,
     ) -> Result<()> {
         // Note that we must apply case folding before negation!
-        // Consider `(?i)[^x]`. If we applied negation field, then
+        // Consider `(?i)[^x]`. If we applied negation first, then
         // the result would be the character class that matched any
         // Unicode scalar value.
         if self.flags().case_insensitive() {
@@ -1218,7 +1234,7 @@ mod tests {
     fn hir_quest(greedy: bool, expr: Hir) -> Hir {
         Hir::repetition(hir::Repetition {
             kind: hir::RepetitionKind::ZeroOrOne,
-            greedy: greedy,
+            greedy,
             hir: Box::new(expr),
         })
     }
@@ -1226,7 +1242,7 @@ mod tests {
     fn hir_star(greedy: bool, expr: Hir) -> Hir {
         Hir::repetition(hir::Repetition {
             kind: hir::RepetitionKind::ZeroOrMore,
-            greedy: greedy,
+            greedy,
             hir: Box::new(expr),
         })
     }
@@ -1234,7 +1250,7 @@ mod tests {
     fn hir_plus(greedy: bool, expr: Hir) -> Hir {
         Hir::repetition(hir::Repetition {
             kind: hir::RepetitionKind::OneOrMore,
-            greedy: greedy,
+            greedy,
             hir: Box::new(expr),
         })
     }
@@ -1242,7 +1258,7 @@ mod tests {
     fn hir_range(greedy: bool, range: hir::RepetitionRange, expr: Hir) -> Hir {
         Hir::repetition(hir::Repetition {
             kind: hir::RepetitionKind::Range(range),
-            greedy: greedy,
+            greedy,
             hir: Box::new(expr),
         })
     }
@@ -1940,6 +1956,25 @@ mod tests {
                     Position::new(17, 1, 18)
                 ),
             }
+        );
+    }
+
+    #[test]
+    fn class_ascii_multiple() {
+        // See: https://github.com/rust-lang/regex/issues/680
+        assert_eq!(
+            t("[[:alnum:][:^ascii:]]"),
+            hir_union(
+                hir_uclass(ascii_class(&ast::ClassAsciiKind::Alnum)),
+                hir_uclass(&[('\u{80}', '\u{10FFFF}')]),
+            ),
+        );
+        assert_eq!(
+            t_bytes("(?-u)[[:alnum:][:^ascii:]]"),
+            hir_union(
+                hir_bclass_from_char(ascii_class(&ast::ClassAsciiKind::Alnum)),
+                hir_bclass(&[(0x80, 0xFF)]),
+            ),
         );
     }
 
@@ -3100,6 +3135,9 @@ mod tests {
         assert!(t(r"\pL*").is_match_empty());
         assert!(t(r"a*|b").is_match_empty());
         assert!(t(r"b|a*").is_match_empty());
+        assert!(t(r"a|").is_match_empty());
+        assert!(t(r"|a").is_match_empty());
+        assert!(t(r"a||b").is_match_empty());
         assert!(t(r"a*a?(abcd)*").is_match_empty());
         assert!(t(r"^").is_match_empty());
         assert!(t(r"$").is_match_empty());
@@ -3109,6 +3147,8 @@ mod tests {
         assert!(t(r"\z").is_match_empty());
         assert!(t(r"\B").is_match_empty());
         assert!(t_bytes(r"(?-u)\B").is_match_empty());
+        assert!(t(r"\b").is_match_empty());
+        assert!(t(r"(?-u)\b").is_match_empty());
 
         // Negative examples.
         assert!(!t(r"a+").is_match_empty());
@@ -3118,8 +3158,6 @@ mod tests {
         assert!(!t(r"a{1,10}").is_match_empty());
         assert!(!t(r"b|a").is_match_empty());
         assert!(!t(r"a*a+(abcd)*").is_match_empty());
-        assert!(!t(r"\b").is_match_empty());
-        assert!(!t(r"(?-u)\b").is_match_empty());
     }
 
     #[test]

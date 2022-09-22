@@ -243,7 +243,7 @@ impl Hir {
         info.set_match_empty(true);
         info.set_literal(false);
         info.set_alternation_literal(false);
-        Hir { kind: HirKind::Empty, info: info }
+        Hir { kind: HirKind::Empty, info }
     }
 
     /// Creates a literal HIR expression.
@@ -268,7 +268,7 @@ impl Hir {
         info.set_match_empty(false);
         info.set_literal(true);
         info.set_alternation_literal(true);
-        Hir { kind: HirKind::Literal(lit), info: info }
+        Hir { kind: HirKind::Literal(lit), info }
     }
 
     /// Creates a class HIR expression.
@@ -285,7 +285,7 @@ impl Hir {
         info.set_match_empty(false);
         info.set_literal(false);
         info.set_alternation_literal(false);
-        Hir { kind: HirKind::Class(class), info: info }
+        Hir { kind: HirKind::Class(class), info }
     }
 
     /// Creates an anchor assertion HIR expression.
@@ -318,7 +318,7 @@ impl Hir {
         if let Anchor::EndLine = anchor {
             info.set_line_anchored_end(true);
         }
-        Hir { kind: HirKind::Anchor(anchor), info: info }
+        Hir { kind: HirKind::Anchor(anchor), info }
     }
 
     /// Creates a word boundary assertion HIR expression.
@@ -334,14 +334,18 @@ impl Hir {
         info.set_any_anchored_end(false);
         info.set_literal(false);
         info.set_alternation_literal(false);
-        // A negated word boundary matches the empty string, but a normal
-        // word boundary does not!
-        info.set_match_empty(word_boundary.is_negated());
+        // A negated word boundary matches '', so that's fine. But \b does not
+        // match \b, so why do we say it can match the empty string? Well,
+        // because, if you search for \b against 'a', it will report [0, 0) and
+        // [1, 1) as matches, and both of those matches correspond to the empty
+        // string. Thus, only *certain* empty strings match \b, which similarly
+        // applies to \B.
+        info.set_match_empty(true);
         // Negated ASCII word boundaries can match invalid UTF-8.
         if let WordBoundary::AsciiNegate = word_boundary {
             info.set_always_utf8(false);
         }
-        Hir { kind: HirKind::WordBoundary(word_boundary), info: info }
+        Hir { kind: HirKind::WordBoundary(word_boundary), info }
     }
 
     /// Creates a repetition HIR expression.
@@ -368,7 +372,7 @@ impl Hir {
         info.set_match_empty(rep.is_match_empty() || rep.hir.is_match_empty());
         info.set_literal(false);
         info.set_alternation_literal(false);
-        Hir { kind: HirKind::Repetition(rep), info: info }
+        Hir { kind: HirKind::Repetition(rep), info }
     }
 
     /// Creates a group HIR expression.
@@ -385,7 +389,7 @@ impl Hir {
         info.set_match_empty(group.hir.is_match_empty());
         info.set_literal(false);
         info.set_alternation_literal(false);
-        Hir { kind: HirKind::Group(group), info: info }
+        Hir { kind: HirKind::Group(group), info }
     }
 
     /// Returns the concatenation of the given expressions.
@@ -476,7 +480,7 @@ impl Hir {
                         })
                         .any(|e| e.is_line_anchored_end()),
                 );
-                Hir { kind: HirKind::Concat(exprs), info: info }
+                Hir { kind: HirKind::Concat(exprs), info }
             }
         }
     }
@@ -538,7 +542,7 @@ impl Hir {
                     let x = info.is_alternation_literal() && e.is_literal();
                     info.set_alternation_literal(x);
                 }
-                Hir { kind: HirKind::Alternation(exprs), info: info }
+                Hir { kind: HirKind::Alternation(exprs), info }
             }
         }
     }
@@ -661,8 +665,8 @@ impl Hir {
     /// Return true if and only if the empty string is part of the language
     /// matched by this regular expression.
     ///
-    /// This includes `a*`, `a?b*`, `a{0}`, `()`, `()+`, `^$`, `a|b?`, `\B`,
-    /// but not `a`, `a+` or `\b`.
+    /// This includes `a*`, `a?b*`, `a{0}`, `()`, `()+`, `^$`, `a|b?`, `\b`
+    /// and `\B`, but not `a` or `a+`.
     pub fn is_match_empty(&self) -> bool {
         self.info.is_match_empty()
     }

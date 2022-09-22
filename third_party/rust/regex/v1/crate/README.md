@@ -8,7 +8,7 @@ Much of the syntax and implementation is inspired
 by [RE2](https://github.com/google/re2).
 
 [![Build status](https://github.com/rust-lang/regex/workflows/ci/badge.svg)](https://github.com/rust-lang/regex/actions)
-[![](https://meritbadge.herokuapp.com/regex)](https://crates.io/crates/regex)
+[![Crates.io](https://img.shields.io/crates/v/regex.svg)](https://crates.io/crates/regex)
 [![Rust](https://img.shields.io/badge/rust-1.41.1%2B-blue.svg?maxAge=3600)](https://github.com/rust-lang/regex)
 
 ### Documentation

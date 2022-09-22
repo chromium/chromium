@@ -53,7 +53,7 @@ impl<'t> Match<'t> {
     /// Creates a new match from the given haystack and byte offsets.
     #[inline]
     fn new(haystack: &'t [u8], start: usize, end: usize) -> Match<'t> {
-        Match { text: haystack, start: start, end: end }
+        Match { text: haystack, start, end }
     }
 }
 
@@ -255,7 +255,7 @@ impl Regex {
     pub fn captures<'t>(&self, text: &'t [u8]) -> Option<Captures<'t>> {
         let mut locs = self.capture_locations();
         self.captures_read_at(&mut locs, text, 0).map(move |_| Captures {
-            text: text,
+            text,
             locs: locs.0,
             named_groups: self.0.capture_name_idx().clone(),
         })
@@ -578,7 +578,7 @@ impl Regex {
     /// context into consideration. For example, the `\A` anchor can only
     /// match when `start == 0`.
     pub fn is_match_at(&self, text: &[u8], start: usize) -> bool {
-        self.shortest_match_at(text, start).is_some()
+        self.0.searcher().is_match_at(text, start)
     }
 
     /// Returns the same as find, but starts the search at the given
@@ -723,7 +723,7 @@ impl<'r, 't> Iterator for CaptureMatches<'r, 't> {
     fn next(&mut self) -> Option<Captures<'t>> {
         self.0.next().map(|locs| Captures {
             text: self.0.text(),
-            locs: locs,
+            locs,
             named_groups: self.0.regex().capture_name_idx().clone(),
         })
     }
@@ -877,7 +877,7 @@ impl CaptureLocations {
         self.0.pos(i)
     }
 
-    /// Returns the total number of capturing groups.
+    /// Returns the total number of capture groups (even if they didn't match).
     ///
     /// This is always at least `1` since every regex has at least `1`
     /// capturing group that corresponds to the entire match.
@@ -979,7 +979,7 @@ impl<'t> Captures<'t> {
         expand_bytes(self, replacement, dst)
     }
 
-    /// Returns the number of captured groups.
+    /// Returns the total number of capture groups (even if they didn't match).
     ///
     /// This is always at least `1`, since every regex has at least one capture
     /// group that corresponds to the full match.

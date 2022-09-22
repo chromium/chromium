@@ -233,7 +233,7 @@ impl fmt::Debug for Program {
             if pc == self.start {
                 write!(f, " (start)")?;
             }
-            write!(f, "\n")?;
+            writeln!(f)?;
         }
         Ok(())
     }

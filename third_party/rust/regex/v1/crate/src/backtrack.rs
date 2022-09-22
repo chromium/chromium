@@ -93,13 +93,7 @@ impl<'a, 'm, 'r, 's, I: Input> Bounded<'a, 'm, 'r, 's, I> {
         let mut cache = cache.borrow_mut();
         let cache = &mut cache.backtrack;
         let start = input.at(start);
-        let mut b = Bounded {
-            prog: prog,
-            input: input,
-            matches: matches,
-            slots: slots,
-            m: cache,
-        };
+        let mut b = Bounded { prog, input, matches, slots, m: cache };
         b.exec_(start, end)
     }
 
@@ -220,14 +214,14 @@ impl<'a, 'm, 'r, 's, I: Input> Bounded<'a, 'm, 'r, 's, I> {
                         // job is popped and the old capture index is restored.
                         self.m.jobs.push(Job::SaveRestore {
                             slot: inst.slot,
-                            old_pos: old_pos,
+                            old_pos,
                         });
                         self.slots[inst.slot] = Some(at.pos());
                     }
                     ip = inst.goto;
                 }
                 Split(ref inst) => {
-                    self.m.jobs.push(Job::Inst { ip: inst.goto2, at: at });
+                    self.m.jobs.push(Job::Inst { ip: inst.goto2, at });
                     ip = inst.goto1;
                 }
                 EmptyLook(ref inst) => {

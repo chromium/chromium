@@ -18,7 +18,7 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "1.5.4"
+  cargo_pkg_version = "1.6.0"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "regex"
   cargo_pkg_description = "An implementation of regular expressions for Rust. This implementation usesfinite automata and guarantees linear time matching on all inputs."
@@ -60,7 +60,7 @@ cargo_crate("buildrs_support") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "1.5.4"
+  cargo_pkg_version = "1.6.0"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "regex"
   cargo_pkg_description = "An implementation of regular expressions for Rust. This implementation usesfinite automata and guarantees linear time matching on all inputs."

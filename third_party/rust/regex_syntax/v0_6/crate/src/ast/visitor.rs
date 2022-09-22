@@ -388,7 +388,7 @@ impl<'a> HeapVisitor<'a> {
                         Some(ClassFrame::Union { head: item, tail: &[] })
                     }
                     ast::ClassSet::BinaryOp(ref op) => {
-                        Some(ClassFrame::Binary { op: op })
+                        Some(ClassFrame::Binary { op })
                     }
                 }
             }
@@ -402,11 +402,9 @@ impl<'a> HeapVisitor<'a> {
                     })
                 }
             }
-            ClassInduct::BinaryOp(op) => Some(ClassFrame::BinaryLHS {
-                op: op,
-                lhs: &op.lhs,
-                rhs: &op.rhs,
-            }),
+            ClassInduct::BinaryOp(op) => {
+                Some(ClassFrame::BinaryLHS { op, lhs: &op.lhs, rhs: &op.rhs })
+            }
             _ => None,
         }
     }
@@ -427,7 +425,7 @@ impl<'a> HeapVisitor<'a> {
             }
             ClassFrame::Binary { .. } => None,
             ClassFrame::BinaryLHS { op, rhs, .. } => {
-                Some(ClassFrame::BinaryRHS { op: op, rhs: rhs })
+                Some(ClassFrame::BinaryRHS { op, rhs })
             }
             ClassFrame::BinaryRHS { .. } => None,
         }

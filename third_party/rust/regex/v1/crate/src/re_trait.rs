@@ -74,7 +74,18 @@ impl<'c> Iterator for SubCapturesPosIter<'c> {
         self.idx += 1;
         x
     }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let len = self.locs.len() - self.idx;
+        (len, Some(len))
+    }
+
+    fn count(self) -> usize {
+        self.len()
+    }
 }
+
+impl<'c> ExactSizeIterator for SubCapturesPosIter<'c> {}
 
 impl<'c> FusedIterator for SubCapturesPosIter<'c> {}
 
@@ -139,7 +150,7 @@ pub trait RegularExpression: Sized + fmt::Debug {
     /// Returns an iterator over all non-overlapping successive leftmost-first
     /// matches.
     fn find_iter(self, text: &Self::Text) -> Matches<'_, Self> {
-        Matches { re: self, text: text, last_end: 0, last_match: None }
+        Matches { re: self, text, last_end: 0, last_match: None }
     }
 
     /// Returns an iterator over all non-overlapping successive leftmost-first

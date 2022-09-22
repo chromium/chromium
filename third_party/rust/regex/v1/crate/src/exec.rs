@@ -288,10 +288,10 @@ impl ExecBuilder {
             exprs.push(expr);
         }
         Ok(Parsed {
-            exprs: exprs,
+            exprs,
             prefixes: prefixes.unwrap_or_else(Literals::empty),
             suffixes: suffixes.unwrap_or_else(Literals::empty),
-            bytes: bytes,
+            bytes,
         })
     }
 
@@ -311,7 +311,7 @@ impl ExecBuilder {
                 match_type: MatchType::Nothing,
             });
             let pool = ExecReadOnly::new_pool(&ro);
-            return Ok(Exec { ro: ro, pool });
+            return Ok(Exec { ro, pool });
         }
         let parsed = self.parse()?;
         let mut nfa = Compiler::new()
@@ -340,12 +340,12 @@ impl ExecBuilder {
 
         let mut ro = ExecReadOnly {
             res: self.options.pats,
-            nfa: nfa,
-            dfa: dfa,
-            dfa_reverse: dfa_reverse,
+            nfa,
+            dfa,
+            dfa_reverse,
             suffixes: LiteralSearcher::suffixes(parsed.suffixes),
             #[cfg(feature = "perf-literal")]
-            ac: ac,
+            ac,
             match_type: MatchType::Nothing,
         };
         ro.match_type = ro.choose_match_type(self.match_type);

@@ -195,7 +195,7 @@ pub fn escape_into(text: &str, buf: &mut String) {
     }
 }
 
-/// Returns true if the give character has significance in a regex.
+/// Returns true if the given character has significance in a regex.
 ///
 /// These are the only characters that are allowed to be escaped, with one
 /// exception: an ASCII space character may be escaped when extended mode (with

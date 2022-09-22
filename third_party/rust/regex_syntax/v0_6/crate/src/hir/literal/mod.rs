@@ -225,7 +225,7 @@ impl Literals {
         if self.lits.is_empty() {
             return self.to_empty();
         }
-        let mut old: Vec<Literal> = self.lits.iter().cloned().collect();
+        let mut old = self.lits.to_vec();
         let mut new = self.to_empty();
         'OUTER: while let Some(mut candidate) = old.pop() {
             if candidate.is_empty() {
@@ -256,15 +256,13 @@ impl Literals {
                         old.push(lit3);
                         lit2.clear();
                     }
-                } else {
-                    if let Some(i) = position(&lit2, &candidate) {
-                        lit2.cut();
-                        let mut new_candidate = candidate.clone();
-                        new_candidate.truncate(i);
-                        new_candidate.cut();
-                        old.push(new_candidate);
-                        candidate.clear();
-                    }
+                } else if let Some(i) = position(&lit2, &candidate) {
+                    lit2.cut();
+                    let mut new_candidate = candidate.clone();
+                    new_candidate.truncate(i);
+                    new_candidate.cut();
+                    old.push(new_candidate);
+                    candidate.clear();
                 }
                 // Oops, the candidate is already represented in the set.
                 if candidate.is_empty() {
@@ -735,18 +733,18 @@ fn repeat_zero_or_one_literals<F: FnMut(&Hir, &mut Literals)>(
     lits: &mut Literals,
     mut f: F,
 ) {
-    let (mut lits2, mut lits3) = (lits.clone(), lits.to_empty());
-    lits3.set_limit_size(lits.limit_size() / 2);
-    f(e, &mut lits3);
-
-    if lits3.is_empty() || !lits2.cross_product(&lits3) {
-        lits.cut();
-        return;
-    }
-    lits2.add(Literal::empty());
-    if !lits.union(lits2) {
-        lits.cut();
-    }
+    f(
+        &Hir::repetition(hir::Repetition {
+            kind: hir::RepetitionKind::ZeroOrMore,
+            // FIXME: Our literal extraction doesn't care about greediness.
+            // Which is partially why we're treating 'e?' as 'e*'. Namely,
+            // 'ab??' yields [Complete(ab), Complete(a)], but it should yield
+            // [Complete(a), Complete(ab)] because of the non-greediness.
+            greedy: true,
+            hir: Box::new(e.clone()),
+        }),
+        lits,
+    );
 }
 
 fn repeat_zero_or_more_literals<F: FnMut(&Hir, &mut Literals)>(
@@ -793,7 +791,7 @@ fn repeat_range_literals<F: FnMut(&Hir, &mut Literals)>(
         f(
             &Hir::repetition(hir::Repetition {
                 kind: hir::RepetitionKind::ZeroOrMore,
-                greedy: greedy,
+                greedy,
                 hir: Box::new(e.clone()),
             }),
             lits,
@@ -932,12 +930,10 @@ fn escape_unicode(bytes: &[u8]) -> String {
         if c.is_whitespace() {
             let escaped = if c as u32 <= 0x7F {
                 escape_byte(c as u8)
+            } else if c as u32 <= 0xFFFF {
+                format!(r"\u{{{:04x}}}", c as u32)
             } else {
-                if c as u32 <= 0xFFFF {
-                    format!(r"\u{{{:04x}}}", c as u32)
-                } else {
-                    format!(r"\U{{{:08x}}}", c as u32)
-                }
+                format!(r"\U{{{:08x}}}", c as u32)
             };
             space_escaped.push_str(&escaped);
         } else {
@@ -1141,6 +1137,11 @@ mod tests {
     test_lit!(pfx_group1, prefixes, "(a)", M("a"));
     test_lit!(pfx_rep_zero_or_one1, prefixes, "a?");
     test_lit!(pfx_rep_zero_or_one2, prefixes, "(?:abc)?");
+    test_lit!(pfx_rep_zero_or_one_cat1, prefixes, "ab?", C("ab"), M("a"));
+    // FIXME: This should return [M("a"), M("ab")] because of the non-greedy
+    // repetition. As a work-around, we rewrite ab?? as ab*?, and thus we get
+    // a cut literal.
+    test_lit!(pfx_rep_zero_or_one_cat2, prefixes, "ab??", C("ab"), M("a"));
     test_lit!(pfx_rep_zero_or_more1, prefixes, "a*");
     test_lit!(pfx_rep_zero_or_more2, prefixes, "(?:abc)*");
     test_lit!(pfx_rep_one_or_more1, prefixes, "a+", C("a"));
@@ -1249,8 +1250,8 @@ mod tests {
         pfx_crazy1,
         prefixes,
         r"M[ou]'?am+[ae]r .*([AEae]l[- ])?[GKQ]h?[aeu]+([dtz][dhz]?)+af[iy]",
-        C("Mo\\'am"),
-        C("Mu\\'am"),
+        C("Mo\\'"),
+        C("Mu\\'"),
         C("Moam"),
         C("Muam")
     );

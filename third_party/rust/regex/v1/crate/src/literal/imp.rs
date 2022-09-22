@@ -57,10 +57,10 @@ impl LiteralSearcher {
     fn new(lits: Literals, matcher: Matcher) -> Self {
         let complete = lits.all_complete();
         LiteralSearcher {
-            complete: complete,
+            complete,
             lcp: Memmem::new(lits.longest_common_prefix()),
             lcs: Memmem::new(lits.longest_common_suffix()),
-            matcher: matcher,
+            matcher,
         }
     }
 

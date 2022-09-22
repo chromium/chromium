@@ -167,7 +167,7 @@ impl ParserBuilder {
     /// they should impose a limit on the length, in bytes, of the concrete
     /// pattern string. In particular, this is viable since this parser
     /// implementation will limit itself to heap space proportional to the
-    /// lenth of the pattern string.
+    /// length of the pattern string.
     ///
     /// Note that a nest limit of `0` will return a nest limit error for most
     /// patterns but not all. For example, a nest limit of `0` permits `a` but
@@ -202,7 +202,7 @@ impl ParserBuilder {
 
     /// Enable verbose mode in the regular expression.
     ///
-    /// When enabled, verbose mode permits insigificant whitespace in many
+    /// When enabled, verbose mode permits insignificant whitespace in many
     /// places in the regular expression, as well as comments. Comments are
     /// started using `#` and continue until the end of the line.
     ///
@@ -236,7 +236,7 @@ pub struct Parser {
     /// supported.
     octal: bool,
     /// The initial setting for `ignore_whitespace` as provided by
-    /// Th`ParserBuilder`. is is used when reseting the parser's state.
+    /// `ParserBuilder`. It is used when resetting the parser's state.
     initial_ignore_whitespace: bool,
     /// Whether whitespace should be ignored. When enabled, comments are
     /// also permitted.
@@ -366,7 +366,7 @@ impl Parser {
 impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
     /// Build an internal parser from a parser configuration and a pattern.
     fn new(parser: P, pattern: &'s str) -> ParserI<'s, P> {
-        ParserI { parser: parser, pattern: pattern }
+        ParserI { parser, pattern }
     }
 
     /// Return a reference to the parser state.
@@ -381,11 +381,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
 
     /// Create a new error with the given span and error type.
     fn error(&self, span: Span, kind: ast::ErrorKind) -> ast::Error {
-        ast::Error {
-            kind: kind,
-            pattern: self.pattern().to_string(),
-            span: span,
-        }
+        ast::Error { kind, pattern: self.pattern().to_string(), span }
     }
 
     /// Return the current offset of the parser.
@@ -481,11 +477,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
             column = column.checked_add(1).unwrap();
         }
         offset += self.char().len_utf8();
-        self.parser().pos.set(Position {
-            offset: offset,
-            line: line,
-            column: column,
-        });
+        self.parser().pos.set(Position { offset, line, column });
         self.pattern()[self.offset()..].chars().next().is_some()
     }
 
@@ -703,8 +695,8 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
                     .unwrap_or(old_ignore_whitespace);
                 self.parser().stack_group.borrow_mut().push(
                     GroupState::Group {
-                        concat: concat,
-                        group: group,
+                        concat,
+                        group,
                         ignore_whitespace: old_ignore_whitespace,
                     },
                 );
@@ -899,12 +891,8 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
     #[inline(never)]
     fn unclosed_class_error(&self) -> ast::Error {
         for state in self.parser().stack_class.borrow().iter().rev() {
-            match *state {
-                ClassState::Open { ref set, .. } => {
-                    return self
-                        .error(set.span, ast::ErrorKind::ClassUnclosed);
-                }
-                _ => {}
+            if let ClassState::Open { ref set, .. } = *state {
+                return self.error(set.span, ast::ErrorKind::ClassUnclosed);
             }
         }
         // We are guaranteed to have a non-empty stack with at least
@@ -950,8 +938,8 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
         };
         let span = Span::new(lhs.span().start, rhs.span().end);
         ast::ClassSet::BinaryOp(ast::ClassSetBinaryOp {
-            span: span,
-            kind: kind,
+            span,
+            kind,
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
         })
@@ -1010,7 +998,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
         let ast = self.pop_group_end(concat)?;
         NestLimiter::new(self).check(&ast)?;
         Ok(ast::WithComments {
-            ast: ast,
+            ast,
             comments: mem::replace(
                 &mut *self.parser().comments.borrow_mut(),
                 vec![],
@@ -1023,7 +1011,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
     /// The given `kind` should correspond to the operator observed by the
     /// caller.
     ///
-    /// This assumes that the paser is currently positioned at the repetition
+    /// This assumes that the parser is currently positioned at the repetition
     /// operator and advances the parser to the first character after the
     /// operator. (Note that the operator may include a single additional `?`,
     /// which makes the operator ungreedy.)
@@ -1066,9 +1054,9 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
             span: ast.span().with_end(self.pos()),
             op: ast::RepetitionOp {
                 span: Span::new(op_start, self.pos()),
-                kind: kind,
+                kind,
             },
-            greedy: greedy,
+            greedy,
             ast: Box::new(ast),
         }));
         Ok(concat)
@@ -1078,7 +1066,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
     /// corresponds to the {m,n} syntax, and does not include the ?, * or +
     /// operators.
     ///
-    /// This assumes that the paser is currently positioned at the opening `{`
+    /// This assumes that the parser is currently positioned at the opening `{`
     /// and advances the parser to the first character after the operator.
     /// (Note that the operator may include a single additional `?`, which
     /// makes the operator ungreedy.)
@@ -1170,7 +1158,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
                 span: op_span,
                 kind: ast::RepetitionKind::Range(range),
             },
-            greedy: greedy,
+            greedy,
             ast: Box::new(ast),
         }));
         Ok(concat)
@@ -1235,7 +1223,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
                 }
                 Ok(Either::Left(ast::SetFlags {
                     span: Span { end: self.pos(), ..open_span },
-                    flags: flags,
+                    flags,
                 }))
             } else {
                 assert_eq!(char_end, ':');
@@ -1428,7 +1416,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
                 let ast = Primitive::Literal(ast::Literal {
                     span: self.span_char(),
                     kind: ast::LiteralKind::Verbatim,
-                    c: c,
+                    c,
                 });
                 self.bump();
                 Ok(ast)
@@ -1494,16 +1482,16 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
         let span = Span::new(start, self.pos());
         if is_meta_character(c) {
             return Ok(Primitive::Literal(ast::Literal {
-                span: span,
+                span,
                 kind: ast::LiteralKind::Punctuation,
-                c: c,
+                c,
             }));
         }
         let special = |kind, c| {
             Ok(Primitive::Literal(ast::Literal {
-                span: span,
+                span,
                 kind: ast::LiteralKind::Special(kind),
-                c: c,
+                c,
             }))
         };
         match c {
@@ -1517,19 +1505,19 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
                 special(ast::SpecialLiteralKind::Space, ' ')
             }
             'A' => Ok(Primitive::Assertion(ast::Assertion {
-                span: span,
+                span,
                 kind: ast::AssertionKind::StartText,
             })),
             'z' => Ok(Primitive::Assertion(ast::Assertion {
-                span: span,
+                span,
                 kind: ast::AssertionKind::EndText,
             })),
             'b' => Ok(Primitive::Assertion(ast::Assertion {
-                span: span,
+                span,
                 kind: ast::AssertionKind::WordBoundary,
             })),
             'B' => Ok(Primitive::Assertion(ast::Assertion {
-                span: span,
+                span,
                 kind: ast::AssertionKind::NotWordBoundary,
             })),
             _ => Err(self.error(span, ast::ErrorKind::EscapeUnrecognized)),
@@ -1569,7 +1557,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
         ast::Literal {
             span: Span::new(start, end),
             kind: ast::LiteralKind::Octal,
-            c: c,
+            c,
         }
     }
 
@@ -1645,7 +1633,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
             Some(c) => Ok(ast::Literal {
                 span: Span::new(start, end),
                 kind: ast::LiteralKind::HexFixed(kind),
-                c: c,
+                c,
             }),
         }
     }
@@ -1700,7 +1688,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
             Some(c) => Ok(ast::Literal {
                 span: Span::new(start, self.pos()),
                 kind: ast::LiteralKind::HexBrace(kind),
-                c: c,
+                c,
             }),
         }
     }
@@ -1927,7 +1915,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
             }));
             if !self.bump_and_bump_space() {
                 return Err(self.error(
-                    Span::new(start, self.pos()),
+                    Span::new(start, start),
                     ast::ErrorKind::ClassUnclosed,
                 ));
             }
@@ -1949,7 +1937,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
         }
         let set = ast::ClassBracketed {
             span: Span::new(start, self.pos()),
-            negated: negated,
+            negated,
             kind: ast::ClassSet::union(ast::ClassSetUnion {
                 span: Span::new(union.span.start, union.span.start),
                 items: vec![],
@@ -2026,8 +2014,8 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
         };
         Some(ast::ClassAscii {
             span: Span::new(start, self.pos()),
-            kind: kind,
-            negated: negated,
+            kind,
+            negated,
         })
     }
 
@@ -2108,8 +2096,8 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
         };
         Ok(ast::ClassUnicode {
             span: Span::new(start, self.pos()),
-            negated: negated,
-            kind: kind,
+            negated,
+            kind,
         })
     }
 
@@ -2130,7 +2118,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
             'W' => (true, ast::ClassPerlKind::Word),
             c => panic!("expected valid Perl class but got '{}'", c),
         };
-        ast::ClassPerl { span: span, kind: kind, negated: negated }
+        ast::ClassPerl { span, kind, negated }
     }
 }
 
@@ -2146,7 +2134,7 @@ struct NestLimiter<'p, 's, P> {
 
 impl<'p, 's, P: Borrow<Parser>> NestLimiter<'p, 's, P> {
     fn new(p: &'p ParserI<'s, P>) -> NestLimiter<'p, 's, P> {
-        NestLimiter { p: p, depth: 0 }
+        NestLimiter { p, depth: 0 }
     }
 
     #[inline(never)]
@@ -2429,18 +2417,18 @@ mod tests {
     /// Create a punctuation literal starting at the given position.
     fn punct_lit(c: char, span: Span) -> Ast {
         Ast::Literal(ast::Literal {
-            span: span,
+            span,
             kind: ast::LiteralKind::Punctuation,
-            c: c,
+            c,
         })
     }
 
     /// Create a verbatim literal with the given span.
     fn lit_with(c: char, span: Span) -> Ast {
         Ast::Literal(ast::Literal {
-            span: span,
+            span,
             kind: ast::LiteralKind::Verbatim,
-            c: c,
+            c,
         })
     }
 
@@ -2451,12 +2439,12 @@ mod tests {
 
     /// Create a concatenation with the given span.
     fn concat_with(span: Span, asts: Vec<Ast>) -> Ast {
-        Ast::Concat(ast::Concat { span: span, asts: asts })
+        Ast::Concat(ast::Concat { span, asts })
     }
 
     /// Create an alternation with the given span.
     fn alt(range: Range<usize>, asts: Vec<Ast>) -> Ast {
-        Ast::Alternation(ast::Alternation { span: span(range), asts: asts })
+        Ast::Alternation(ast::Alternation { span: span(range), asts })
     }
 
     /// Create a capturing group with the given span.
@@ -2498,7 +2486,7 @@ mod tests {
             span: span_range(pat, range.clone()),
             flags: ast::Flags {
                 span: span_range(pat, (range.start + 2)..(range.end - 1)),
-                items: items,
+                items,
             },
         })
     }
@@ -4208,7 +4196,7 @@ bar
                 Ok(Primitive::Literal(ast::Literal {
                     span: span(0..2),
                     kind: ast::LiteralKind::Special(kind.clone()),
-                    c: c,
+                    c,
                 }))
             );
         }
@@ -4402,7 +4390,7 @@ bar
                     kind: ast::LiteralKind::HexFixed(
                         ast::HexLiteralKind::UnicodeShort
                     ),
-                    c: c,
+                    c,
                 }))
             );
         }
@@ -4466,7 +4454,7 @@ bar
                     kind: ast::LiteralKind::HexFixed(
                         ast::HexLiteralKind::UnicodeLong
                     ),
-                    c: c,
+                    c,
                 }))
             );
         }
@@ -4667,10 +4655,7 @@ bar
     #[test]
     fn parse_set_class() {
         fn union(span: Span, items: Vec<ast::ClassSetItem>) -> ast::ClassSet {
-            ast::ClassSet::union(ast::ClassSetUnion {
-                span: span,
-                items: items,
-            })
+            ast::ClassSet::union(ast::ClassSetUnion { span, items })
         }
 
         fn intersection(
@@ -4679,7 +4664,7 @@ bar
             rhs: ast::ClassSet,
         ) -> ast::ClassSet {
             ast::ClassSet::BinaryOp(ast::ClassSetBinaryOp {
-                span: span,
+                span,
                 kind: ast::ClassSetBinaryOpKind::Intersection,
                 lhs: Box::new(lhs),
                 rhs: Box::new(rhs),
@@ -4692,7 +4677,7 @@ bar
             rhs: ast::ClassSet,
         ) -> ast::ClassSet {
             ast::ClassSet::BinaryOp(ast::ClassSetBinaryOp {
-                span: span,
+                span,
                 kind: ast::ClassSetBinaryOpKind::Difference,
                 lhs: Box::new(lhs),
                 rhs: Box::new(rhs),
@@ -4705,7 +4690,7 @@ bar
             rhs: ast::ClassSet,
         ) -> ast::ClassSet {
             ast::ClassSet::BinaryOp(ast::ClassSetBinaryOp {
-                span: span,
+                span,
                 kind: ast::ClassSetBinaryOpKind::SymmetricDifference,
                 lhs: Box::new(lhs),
                 rhs: Box::new(rhs),
@@ -4734,9 +4719,9 @@ bar
 
         fn lit(span: Span, c: char) -> ast::ClassSetItem {
             ast::ClassSetItem::Literal(ast::Literal {
-                span: span,
+                span,
                 kind: ast::LiteralKind::Verbatim,
-                c: c,
+                c,
             })
         }
 
@@ -4756,7 +4741,7 @@ bar
                 ..span.end
             };
             ast::ClassSetItem::Range(ast::ClassSetRange {
-                span: span,
+                span,
                 start: ast::Literal {
                     span: Span { end: pos1, ..span },
                     kind: ast::LiteralKind::Verbatim,
@@ -4771,19 +4756,11 @@ bar
         }
 
         fn alnum(span: Span, negated: bool) -> ast::ClassAscii {
-            ast::ClassAscii {
-                span: span,
-                kind: ast::ClassAsciiKind::Alnum,
-                negated: negated,
-            }
+            ast::ClassAscii { span, kind: ast::ClassAsciiKind::Alnum, negated }
         }
 
         fn lower(span: Span, negated: bool) -> ast::ClassAscii {
-            ast::ClassAscii {
-                span: span,
-                kind: ast::ClassAsciiKind::Lower,
-                negated: negated,
-            }
+            ast::ClassAscii { span, kind: ast::ClassAsciiKind::Lower, negated }
         }
 
         assert_eq!(
@@ -5515,14 +5492,23 @@ bar
         assert_eq!(
             parser("[-").parse_set_class_open().unwrap_err(),
             TestError {
-                span: span(0..2),
+                span: span(0..0),
                 kind: ast::ErrorKind::ClassUnclosed,
             }
         );
         assert_eq!(
             parser("[--").parse_set_class_open().unwrap_err(),
             TestError {
-                span: span(0..3),
+                span: span(0..0),
+                kind: ast::ErrorKind::ClassUnclosed,
+            }
+        );
+
+        // See: https://github.com/rust-lang/regex/issues/792
+        assert_eq!(
+            parser("(?x)[-#]").parse_with_comments().unwrap_err(),
+            TestError {
+                span: span(4..4),
                 kind: ast::ErrorKind::ClassUnclosed,
             }
         );

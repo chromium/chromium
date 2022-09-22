@@ -127,7 +127,7 @@ impl From<usize> for Ref<'static> {
 /// If no such valid reference could be found, None is returned.
 fn find_cap_ref(replacement: &[u8]) -> Option<CaptureRef<'_>> {
     let mut i = 0;
-    let rep: &[u8] = replacement.as_ref();
+    let rep: &[u8] = replacement;
     if rep.len() <= 1 || rep[0] != b'$' {
         return None;
     }
@@ -136,7 +136,7 @@ fn find_cap_ref(replacement: &[u8]) -> Option<CaptureRef<'_>> {
         return find_cap_ref_braced(rep, i + 1);
     }
     let mut cap_end = i;
-    while rep.get(cap_end).map_or(false, is_valid_cap_letter) {
+    while rep.get(cap_end).copied().map_or(false, is_valid_cap_letter) {
         cap_end += 1;
     }
     if cap_end == i {
@@ -183,8 +183,8 @@ fn find_cap_ref_braced(rep: &[u8], mut i: usize) -> Option<CaptureRef<'_>> {
 }
 
 /// Returns true if and only if the given byte is allowed in a capture name.
-fn is_valid_cap_letter(b: &u8) -> bool {
-    match *b {
+fn is_valid_cap_letter(b: u8) -> bool {
+    match b {
         b'0'..=b'9' | b'a'..=b'z' | b'A'..=b'Z' | b'_' => true,
         _ => false,
     }

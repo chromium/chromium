@@ -57,17 +57,16 @@ impl Printer {
     /// here are a `fmt::Formatter` (which is available in `fmt::Display`
     /// implementations) or a `&mut String`.
     pub fn print<W: fmt::Write>(&mut self, ast: &Ast, wtr: W) -> fmt::Result {
-        visitor::visit(ast, Writer { printer: self, wtr: wtr })
+        visitor::visit(ast, Writer { wtr })
     }
 }
 
 #[derive(Debug)]
-struct Writer<'p, W> {
-    printer: &'p mut Printer,
+struct Writer<W> {
     wtr: W,
 }
 
-impl<'p, W: fmt::Write> Visitor for Writer<'p, W> {
+impl<W: fmt::Write> Visitor for Writer<W> {
     type Output = ();
     type Err = fmt::Error;
 
@@ -153,7 +152,7 @@ impl<'p, W: fmt::Write> Visitor for Writer<'p, W> {
     }
 }
 
-impl<'p, W: fmt::Write> Writer<'p, W> {
+impl<W: fmt::Write> Writer<W> {
     fn fmt_group_pre(&mut self, ast: &ast::Group) -> fmt::Result {
         use crate::ast::GroupKind::*;
         match ast.kind {

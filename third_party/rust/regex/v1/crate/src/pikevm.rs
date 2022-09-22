@@ -100,7 +100,7 @@ impl<'r, I: Input> Fsm<'r, I> {
         cache.clist.resize(prog.len(), prog.captures.len());
         cache.nlist.resize(prog.len(), prog.captures.len());
         let at = input.at(start);
-        Fsm { prog: prog, stack: &mut cache.stack, input: input }.exec_(
+        Fsm { prog, stack: &mut cache.stack, input }.exec_(
             &mut cache.clist,
             &mut cache.nlist,
             matches,

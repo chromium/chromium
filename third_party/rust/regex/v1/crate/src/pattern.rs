@@ -15,7 +15,7 @@ impl<'r, 't> Pattern<'t> for &'r Regex {
 
     fn into_searcher(self, haystack: &'t str) -> RegexSearcher<'r, 't> {
         RegexSearcher {
-            haystack: haystack,
+            haystack,
             it: self.find_iter(haystack),
             last_step_end: 0,
             next_match: None,

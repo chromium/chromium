@@ -198,7 +198,7 @@ impl<'a> IntoIterator for &'a Utf8Sequence {
     type Item = &'a Utf8Range;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.as_slice().into_iter()
+        self.as_slice().iter()
     }
 }
 
@@ -448,7 +448,7 @@ fn max_scalar_value(nbytes: usize) -> u32 {
         1 => 0x007F,
         2 => 0x07FF,
         3 => 0xFFFF,
-        4 => 0x10FFFF,
+        4 => 0x0010_FFFF,
         _ => unreachable!("invalid UTF-8 byte sequence size"),
     }
 }
@@ -492,7 +492,7 @@ mod tests {
     fn single_codepoint_one_sequence() {
         // Tests that every range of scalar values that contains a single
         // scalar value is recognized by one sequence of byte ranges.
-        for i in 0x0..(0x10FFFF + 1) {
+        for i in 0x0..=0x0010_FFFF {
             let c = match char::from_u32(i) {
                 None => continue,
                 Some(c) => c,

@@ -160,7 +160,7 @@ impl<'t> Input for CharInput<'t> {
             InputAt { pos: self.len(), c: None.into(), byte: None, len: 0 }
         } else {
             let c = decode_utf8(&self[i..]).map(|(c, _)| c).into();
-            InputAt { pos: i, c: c, byte: None, len: c.len_utf8() }
+            InputAt { pos: i, c, byte: None, len: c.len_utf8() }
         }
     }
 
@@ -231,7 +231,7 @@ pub struct ByteInput<'t> {
 impl<'t> ByteInput<'t> {
     /// Return a new byte-based input reader for the given string.
     pub fn new(text: &'t [u8], only_utf8: bool) -> ByteInput<'t> {
-        ByteInput { text: text, only_utf8: only_utf8 }
+        ByteInput { text, only_utf8 }
     }
 }
 

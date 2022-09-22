@@ -15,7 +15,7 @@ mod visitor;
 /// An error that occurred while parsing a regular expression into an abstract
 /// syntax tree.
 ///
-/// Note that note all ASTs represents a valid regular expression. For example,
+/// Note that not all ASTs represents a valid regular expression. For example,
 /// an AST is constructed without error for `\p{Quux}`, but `Quux` is not a
 /// valid Unicode property name. That particular error is reported when
 /// translating an AST to the high-level intermediate representation (`HIR`).
@@ -385,7 +385,7 @@ impl PartialOrd for Position {
 impl Span {
     /// Create a new span with the given positions.
     pub fn new(start: Position, end: Position) -> Span {
-        Span { start: start, end: end }
+        Span { start, end }
     }
 
     /// Create a new span using the given position as the start and end.
@@ -427,7 +427,7 @@ impl Position {
     ///
     /// `column` is the approximate column number, starting at `1`.
     pub fn new(offset: usize, line: usize, column: usize) -> Position {
-        Position { offset: offset, line: line, column: column }
+        Position { offset, line, column }
     }
 }
 
