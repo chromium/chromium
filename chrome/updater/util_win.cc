@@ -23,47 +23,51 @@
 
 namespace updater {
 
-std::string GetSwitchValueInLegacyFormat(const std::wstring& command_line,
-                                         const std::wstring& switch_name) {
+absl::optional<base::CommandLine> CommandLineForLegacyFormat(
+    const std::wstring& cmd_string) {
   wchar_t** args = nullptr;
   int num_args = 0;
-  args = ::CommandLineToArgvW(command_line.c_str(), &num_args);
+  args = ::CommandLineToArgvW(cmd_string.c_str(), &num_args);
 
-  auto is_switch = [](const std::wstring& arg) {
-    return !arg.empty() && arg.at(0) == u'/';
+  auto is_switch = [](const std::wstring& arg) { return arg[0] == L'-'; };
+
+  auto is_legacy_switch = [](const std::wstring& arg) {
+    return arg[0] == L'/';
   };
-  // For switch to have a value in legacy format, the switch name cannot be
-  // the last argument.
-  const int last_arg_to_check = num_args - 1;
-  for (int i = 0; i < last_arg_to_check; ++i) {
-    const std::wstring current_switch(args[i]);
-    if (base::EqualsCaseInsensitiveASCII(current_switch,
-                                         base::StrCat({L"/", switch_name})) &&
-        !is_switch(args[i + 1])) {
-      return base::WideToASCII(args[i + 1]);
+
+  // First argument is the program.
+  base::CommandLine command_line(base::FilePath{args[0]});
+
+  for (int i = 1; i < num_args; ++i) {
+    const std::wstring next_arg = i < num_args - 1 ? args[i + 1] : L"";
+
+    if (is_switch(args[i]) || is_switch(next_arg)) {
+      // Won't parse Chromium-style command line.
+      return absl::nullopt;
+    }
+
+    if (!is_legacy_switch(args[i])) {
+      // This is a bare argument.
+      command_line.AppendArg(base::WideToASCII(args[i]));
+      continue;
+    }
+
+    const std::string switch_name = base::WideToASCII(&args[i][1]);
+    if (switch_name.empty()) {
+      VLOG(1) << "Empty switch in command line: [" << cmd_string << "]";
+      return absl::nullopt;
+    }
+
+    if (is_legacy_switch(next_arg) || next_arg.empty()) {
+      command_line.AppendSwitch(switch_name);
+    } else {
+      // Next argument is the value for this switch.
+      command_line.AppendSwitchNative(switch_name, next_arg);
+      ++i;
     }
   }
 
-  return std::string();
-}
-
-TagParsingResult GetTagArgsFromLegacyCommandLine(
-    const std::wstring& command_line) {
-  std::string tag = GetSwitchValueInLegacyFormat(
-      command_line, base::ASCIIToWide(kHandoffSwitch));
-
-  if (tag.empty())
-    return {};
-
-  tagging::TagArgs tag_args;
-  const tagging::ErrorCode error =
-      tagging::Parse(tag,
-                     GetSwitchValueInLegacyFormat(
-                         command_line, base::ASCIIToWide(kAppArgsSwitch)),
-                     &tag_args);
-  VLOG_IF(1, error != tagging::ErrorCode::kSuccess)
-      << "Legacy tag parsing returned " << error << ".";
-  return {tag_args, error};
+  return command_line;
 }
 
 absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {

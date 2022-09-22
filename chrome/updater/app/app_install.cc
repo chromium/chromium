@@ -66,8 +66,6 @@ class AppInstallControllerImpl : public AppInstallController {
 
   void InstallAppOffline(const std::string& app_id,
                          const std::string& app_name,
-                         const base::FilePath& offline_dir,
-                         bool enterprise,
                          base::OnceCallback<void(int)> callback) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), 0));
@@ -115,7 +113,8 @@ void AppInstall::FirstTaskRun() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::ThreadTaskRunnerHandle::IsSet());
 
-  const TagParsingResult tag_parsing_result = GetTagArgs();
+  const TagParsingResult tag_parsing_result =
+      GetTagArgsForCommandLine(GetCommandLineLegacyCompatible());
 
   // A tag parsing error is handled as an fatal error.
   if (tag_parsing_result.error != tagging::ErrorCode::kSuccess) {
@@ -280,11 +279,11 @@ void AppInstall::MaybeInstallApp() {
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (cmd_line->HasSwitch(kOfflineDirSwitch)) {
     // Presence of "offlinedir" in command line indicates this is an offline
-    // install.
+    // install. Note the check here is compatible with legacy command line
+    // because `base::CommandLine::HasSwitch()` recognizes switches that
+    // begin with '/' on Windows.
     app_install_controller_->InstallAppOffline(
-        app_id_, app_name_, cmd_line->GetSwitchValuePath(kOfflineDirSwitch),
-        cmd_line->HasSwitch(kEnterpriseSwitch),
-        base::BindOnce(&AppInstall::Shutdown, this));
+        app_id_, app_name_, base::BindOnce(&AppInstall::Shutdown, this));
 
   } else {
     app_install_controller_->InstallApp(

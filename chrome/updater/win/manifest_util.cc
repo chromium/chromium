@@ -80,6 +80,11 @@ void ReadInstallCommandFromManifest(const base::FilePath& offline_dir,
                                     base::FilePath& installer_path,
                                     std::string& install_args,
                                     std::string& install_data) {
+  if (offline_dir.empty()) {
+    VLOG(1) << "Unexpected: offline install without an offline directory.";
+    return;
+  }
+
   std::unique_ptr<ProtocolParserXML> manifest_parser =
       ParseOfflineManifest(offline_dir, app_id);
   if (!manifest_parser) {

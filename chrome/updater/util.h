@@ -109,23 +109,25 @@ struct TagParsingResult {
   absl::optional<tagging::TagArgs> tag_args;
   tagging::ErrorCode error = tagging::ErrorCode::kSuccess;
 };
+
 TagParsingResult GetTagArgsForCommandLine(
     const base::CommandLine& command_line);
-
-#if BUILDFLAG(IS_WIN)
-// Gets tag value from command line in legacy format. This is for handoff
-// requests from legacy updaters.
-// The function must take a raw command line string because `base::CommandLine`
-// re-orders the switches and loses the positional information.
-TagParsingResult GetTagArgsFromLegacyCommandLine(const std::wstring& cmd_line);
-#endif
-
 TagParsingResult GetTagArgs();
 
 // Returns the arguments corresponding to `app_id` from the command line tag.
+absl::optional<tagging::AppArgs> GetAppArgsForCommandLine(
+    const base::CommandLine& command_line,
+    const std::string& app_id);
 absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id);
 
+std::string GetDecodedInstallDataFromAppArgsForCommandLine(
+    const base::CommandLine& command_line,
+    const std::string& app_id);
 std::string GetDecodedInstallDataFromAppArgs(const std::string& app_id);
+
+std::string GetInstallDataIndexFromAppArgsForCommandLine(
+    const base::CommandLine& command_line,
+    const std::string& app_id);
 std::string GetInstallDataIndexFromAppArgs(const std::string& app_id);
 
 // Returns true if the user running the updater also owns the `path`.
@@ -191,15 +193,18 @@ std::wstring GetTaskNamePrefix(UpdaterScope scope);
 // For instance: "ChromiumUpdater Task System 92.0.0.1".
 std::wstring GetTaskDisplayName(UpdaterScope scope);
 
-// Returns the value associated with the given switch when they are specified in
-// the legacy updater command line format. Example:
+// Parses the command line string in legacy format into `base::CommandLine`.
+// The string must be in format like:
 //   program.exe /switch1 value1 /switch2 /switch3 value3
-// The equivalent Chromium format is:
-//   program.exe --switch1=value1 --switch2 --switch3=value3
-std::string GetSwitchValueInLegacyFormat(const std::wstring& command_line,
-                                         const std::wstring& switch_name);
+// Returns empty if a Chromium style switch is found.
+absl::optional<base::CommandLine> CommandLineForLegacyFormat(
+    const std::wstring& cmd_string);
 
 #endif  // BUILDFLAG(IS_WIN)
+
+// Returns the command line for current process, either in legacy style, or
+// in Chromium style.
+base::CommandLine GetCommandLineLegacyCompatible();
 
 // Writes the provided string prefixed with the UTF8 byte order mark to a
 // temporary file. The temporary file is created in the specified `directory`.
