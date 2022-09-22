@@ -268,11 +268,12 @@ IN_PROC_BROWSER_TEST_F(
       "testEstablishVideoOnlyCallAndVerifyGetSynchronizationSourcesWorks();");
 }
 
+// Flaky on Android: https://crbug.com/1366910.
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 // This test is to make sure HW H264 work normally on supported devices, since
 // there is no SW H264 fallback available on Android.
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
-                       CanSetupH264VideoCallOnSupportedDevice) {
+                       DISABLED_CanSetupH264VideoCallOnSupportedDevice) {
   MakeTypicalPeerConnectionCall("CanSetupH264VideoCallOnSupportedDevice();");
 }
 #endif
