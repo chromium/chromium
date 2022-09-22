@@ -39,9 +39,6 @@ constexpr char kHeadlessConfigKey[] = "headless";
 // Config-data key to enable the fuchsia.web.FrameHost provider component.
 constexpr char kFrameHostConfigKey[] = "enable-frame-host-component";
 
-// Config-data key to run the CFv1 runner as a shim to the CFv2 runner.
-constexpr char kRunCfv1ShimConfigKey[] = "enable-cfv1-shim";
-
 // Returns the value of |config_key| or false if it is not set.
 bool GetConfigBool(base::StringPiece config_key) {
   const absl::optional<base::Value>& config =
@@ -111,9 +108,7 @@ int main(int argc, char** argv) {
 
   LogComponentStartWithVersion("cast_runner");
 
-  if (!enable_cfv2 && (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                           kRunCfv1ShimConfigKey) ||
-                       GetConfigBool(kRunCfv1ShimConfigKey))) {
+  if (!enable_cfv2) {
     return Cfv1ToCfv2RunnerProxyMain();
   }
 
@@ -136,11 +131,8 @@ int main(int argc, char** argv) {
       data_reset_binding(outgoing_directory, &runner);
 
   // Allow web containers to be debugged, by end-to-end tests.
-  // Only allow this under CFv2, which requires explicit capability routing.
-  absl::optional<base::ScopedServiceBinding<fuchsia::web::Debug>> debug_binding;
-  if (enable_cfv2) {
-    debug_binding.emplace(outgoing_directory, web_instance_host.debug_api());
-  }
+  base::ScopedServiceBinding<fuchsia::web::Debug> debug_binding(
+      outgoing_directory, web_instance_host.debug_api());
 
   if (command_line->HasSwitch(kDisableVulkanForTestsSwitch)) {
     runner.set_disable_vulkan_for_test();  // IN-TEST
@@ -162,11 +154,7 @@ int main(int argc, char** argv) {
   outgoing_directory->ServeFromStartupInfo();
 
   base::RunLoop run_loop;
-  absl::optional<base::ProcessLifecycle> process_lifecycle;
-
-  if (enable_cfv2) {
-    process_lifecycle.emplace(run_loop.QuitClosure());
-  }
+  base::ProcessLifecycle process_lifecycle(run_loop.QuitClosure());
 
   run_loop.Run();
 

@@ -216,6 +216,7 @@ test("cast_runner_unittests") {
 
 test("cast_runner_integration_tests") {
   sources = [
+    "cast/cast_runner_cfv1_shim_integration_test.cc",
     "cast/cast_runner_integration_test.cc",
     "cast/cast_runner_integration_test_base.cc",
     "cast/cast_runner_integration_test_base.h",
@@ -242,49 +243,6 @@ test("cast_runner_integration_tests") {
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]
-  package_deps = [ [
-        "//fuchsia_web/webengine:web_engine",
-        "web_engine",
-      ] ]
-  additional_manifest_fragments = [
-    "//build/config/fuchsia/test/fonts.shard.test-cml",
-    "//build/config/fuchsia/test/network.shard.test-cml",
-    "//fuchsia_web/runners/cast/cast_runner_integration_test.shard.test-cml",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys/component/realm_builder_absolute.shard.cml",
-    "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
-  ]
-}
-
-test("cast_runner_integration_tests_cfv1") {
-  sources = [
-    "cast/cast_runner_integration_test.cc",
-    "cast/cast_runner_integration_test_base.cc",
-    "cast/cast_runner_integration_test_base.h",
-    "cast/cast_runner_integration_test_cfv1.cc",
-    "common/modular/fake_component_context.cc",
-    "common/modular/fake_component_context.h",
-  ]
-  data = [ "cast/testdata" ]
-  deps = [
-    ":cast_runner_core",
-    ":cast_runner_test_core",
-    "//base/test:test_support",
-    "//components/cast/message_port",
-    "//fuchsia_web/common",
-    "//fuchsia_web/common/test:run_all_integration_tests",
-    "//fuchsia_web/common/test:test_support",
-    "//fuchsia_web/runners/cast/test:cfv1_integration",
-    "//fuchsia_web/runners/common/modular",
-    "//net:test_support",
-    "//testing/gtest",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
-    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-  ]
-  data_deps = [ ":cast_runner_core" ]
   package_deps = [
     [
       ":cast_runner_pkg",
@@ -295,12 +253,13 @@ test("cast_runner_integration_tests_cfv1") {
       "web_engine",
     ],
   ]
-  use_cfv1 = true
-  use_cfv2 = false
   additional_manifest_fragments = [
-    "//build/config/fuchsia/test/network_capabilities.test-cmx",
-    "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
-    "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
+    "//build/config/fuchsia/test/cfv1_launcher.shard.test-cml",
+    "//build/config/fuchsia/test/fonts.shard.test-cml",
+    "//build/config/fuchsia/test/network.shard.test-cml",
+    "//fuchsia_web/runners/cast/cast_runner_integration_test.shard.test-cml",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys/component/realm_builder_absolute.shard.cml",
+    "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
   ]
 }
 

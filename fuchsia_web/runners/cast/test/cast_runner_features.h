@@ -23,9 +23,6 @@ enum : uint32_t {
   kCastRunnerFeaturesVulkan = 1U << 1,
   kCastRunnerFeaturesFrameHost = 1U << 2,
   kCastRunnerFeaturesFakeAudioDeviceEnumerator = 1U << 3,
-#if defined(USE_CFV1_LAUNCHER)
-  kCastRunnerFeaturesCfv1Shim = 1U << 4,
-#endif
 };
 
 // Returns a command line for launching cast_runner with the given `features`.

@@ -19,14 +19,9 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "fuchsia_web/runners/cast/test/cast_runner_features.h"
+#include "fuchsia_web/runners/cast/test/cast_runner_launcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if defined(USE_CFV1_LAUNCHER)
-#include "fuchsia_web/runners/cast/test/cast_runner_launcher_v1.h"  // nogncheck
-#else
-#include "fuchsia_web/runners/cast/test/cast_runner_launcher_v2.h"  // nogncheck
-#endif
 
 // The base class for cast runner integration tests; templated on the type of
 // launcher used to start the component. This allows the same tests to be used
@@ -34,12 +29,6 @@
 // (using component_testing::RealmBuilder).
 class CastRunnerIntegrationTest : public testing::Test {
  public:
-#if defined(USE_CFV1_LAUNCHER)
-  using Launcher = test::CastRunnerLauncherV1;
-#else
-  using Launcher = test::CastRunnerLauncherV2;
-#endif
-
   CastRunnerIntegrationTest(const CastRunnerIntegrationTest&) = delete;
   CastRunnerIntegrationTest& operator=(const CastRunnerIntegrationTest&) =
       delete;
@@ -54,7 +43,9 @@ class CastRunnerIntegrationTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  Launcher& cast_runner_launcher() { return cast_runner_launcher_; }
+  test::CastRunnerLauncher& cast_runner_launcher() {
+    return cast_runner_launcher_;
+  }
   net::EmbeddedTestServer& test_server() { return test_server_; }
   fuchsia::sys::RunnerPtr& cast_runner() { return cast_runner_; }
   const sys::ServiceDirectory& cast_runner_services() const {
@@ -72,7 +63,7 @@ class CastRunnerIntegrationTest : public testing::Test {
   const base::test::ScopedRunLoopTimeout scoped_timeout_{
       FROM_HERE, TestTimeouts::action_max_timeout()};
 
-  Launcher cast_runner_launcher_;
+  test::CastRunnerLauncher cast_runner_launcher_;
 
   fuchsia::sys::RunnerPtr cast_runner_;
 

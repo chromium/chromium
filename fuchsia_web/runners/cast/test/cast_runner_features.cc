@@ -18,11 +18,6 @@ base::CommandLine CommandLineFromFeatures(CastRunnerFeatures features) {
     command_line.AppendSwitch(kDisableVulkanForTestsSwitch);
   if (features & kCastRunnerFeaturesFrameHost)
     command_line.AppendSwitch(kEnableFrameHostComponentForTestsSwitch);
-#if defined(USE_CFV1_LAUNCHER)
-  static constexpr char kEnableCfv1Shim[] = "enable-cfv1-shim";
-  if (features & kCastRunnerFeaturesCfv1Shim)
-    command_line.AppendSwitch(kEnableCfv1Shim);
-#endif
 
   return command_line;
 }

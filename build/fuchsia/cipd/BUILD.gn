@@ -280,7 +280,6 @@ cipd_test_archive("tests") {
 
   deps = [
     "//base:base_unittests_pkg",
-    "//fuchsia_web/runners:cast_runner_integration_tests_cfv1_pkg",
     "//fuchsia_web/runners:cast_runner_integration_tests_pkg",
     "//fuchsia_web/runners:web_runner_integration_tests_pkg",
     "//fuchsia_web/webengine:web_engine_integration_tests_cfv1_pkg",
@@ -306,7 +305,6 @@ cipd_test_archive("tests") {
         "${root_gen_dir}/third_party/blink/common/blink_common_unittests/blink_common_unittests.far",
       ]
       cfv1_far_sources = [
-        "${root_gen_dir}/fuchsia_web/runners/cast_runner_integration_tests_cfv1/cast_runner_integration_tests_cfv1.far",
         "${root_gen_dir}/fuchsia_web/runners/web_runner_integration_tests/web_runner_integration_tests.far",
         "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests_cfv1/web_engine_integration_tests_cfv1.far",
       ]
@@ -333,7 +331,6 @@ cipd_test_archive("tests") {
     {
       manifest_path = "${target_gen_dir}/cast_runner_tests_manifest.json"
       far_sources = [ "${root_gen_dir}/fuchsia_web/runners/cast_runner_integration_tests/cast_runner_integration_tests.far" ]
-      cfv1_far_sources = [ "${root_gen_dir}/fuchsia_web/runners/cast_runner_integration_tests_cfv1/cast_runner_integration_tests_cfv1.far" ]
     },
   ]
 }

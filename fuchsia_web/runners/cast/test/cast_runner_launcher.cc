@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia_web/runners/cast/test/cast_runner_launcher_v2.h"
+#include "fuchsia_web/runners/cast/test/cast_runner_launcher.h"
 
 #include <fuchsia/buildinfo/cpp/fidl.h>
 #include <fuchsia/fonts/cpp/fidl.h>
@@ -34,12 +34,12 @@ using ::component_testing::Storage;
 
 namespace test {
 
-CastRunnerLauncherV2::CastRunnerLauncherV2(CastRunnerFeatures runner_features)
+CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features)
     : runner_features_(runner_features) {}
 
-CastRunnerLauncherV2::~CastRunnerLauncherV2() = default;
+CastRunnerLauncher::~CastRunnerLauncher() = default;
 
-std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncherV2::StartCastRunner() {
+std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
   auto realm_builder = RealmBuilder::Create();
 
   static constexpr char kCastRunnerService[] = "cast_runner";

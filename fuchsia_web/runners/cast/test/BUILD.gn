@@ -4,19 +4,15 @@
 
 assert(is_fuchsia)
 
-config("cfv1_config") {
-  defines = [ "USE_CFV1_LAUNCHER" ]
-}
-
 source_set("integration") {
   testonly = true
   public = [
     "cast_runner_features.h",
-    "cast_runner_launcher_v2.h",
+    "cast_runner_launcher.h",
   ]
   sources = [
     "cast_runner_features.cc",
-    "cast_runner_launcher_v2.cc",
+    "cast_runner_launcher.cc",
   ]
   public_deps = [
     "//fuchsia_web/common/test:test_support",
@@ -43,31 +39,6 @@ source_set("integration") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
-    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
-  ]
-}
-
-source_set("cfv1_integration") {
-  testonly = true
-  public = [
-    "cast_runner_features.h",
-    "cast_runner_launcher_v1.h",
-  ]
-  sources = [
-    "cast_runner_features.cc",
-    "cast_runner_launcher_v1.cc",
-  ]
-  public_deps = [
-    "//base/test:test_support",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-  ]
-  public_configs = [ ":cfv1_config" ]
-  deps = [
-    "//base",
-    "//fuchsia_web/runners:cast_runner_core",
-    "//media/fuchsia/audio:test_support",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
     "//third_party/fuchsia-sdk/sdk/pkg/fdio",
   ]
 }
