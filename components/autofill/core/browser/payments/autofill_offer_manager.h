@@ -35,8 +35,10 @@ class CouponServiceDelegate {
   virtual std::vector<AutofillOfferData*> GetFreeListingCouponsForUrl(
       const GURL& url) = 0;
 
-  // Check if CouponService has eligible coupons for |last_committed_url|.
-  virtual bool IsUrlEligible(const GURL& last_committed_url) = 0;
+  // Check if CouponService has eligible coupons for
+  // |last_committed_primary_main_frame_url|.
+  virtual bool IsUrlEligible(
+      const GURL& last_committed_primary_main_frame_url) = 0;
 
  protected:
   virtual ~CouponServiceDelegate() = default;
@@ -63,14 +65,18 @@ class AutofillOfferManager : public KeyedService,
   void OnDidNavigateFrame(AutofillClient* client);
 
   // Modifies any suggestion in |suggestions| if it has related offer data.
-  void UpdateSuggestionsWithOffers(const GURL& last_committed_url,
-                                   std::vector<Suggestion>& suggestions);
+  void UpdateSuggestionsWithOffers(
+      const GURL& last_committed_primary_main_frame_url,
+      std::vector<Suggestion>& suggestions);
 
-  // Returns true only if the domain of |last_committed_url| has an offer.
-  bool IsUrlEligible(const GURL& last_committed_url);
+  // Returns true only if the domain of |last_committed_primary_main_frame_url|
+  // has an offer.
+  bool IsUrlEligible(const GURL& last_committed_primary_main_frame_url);
 
-  // Returns the offer that contains the domain of |last_committed_url|.
-  AutofillOfferData* GetOfferForUrl(const GURL& last_committed_url);
+  // Returns the offer that contains the domain of
+  // |last_committed_primary_main_frame_url|.
+  AutofillOfferData* GetOfferForUrl(
+      const GURL& last_committed_primary_main_frame_url);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -87,7 +93,7 @@ class AutofillOfferManager : public KeyedService,
   // Creates a mapping from Suggestion Backend ID's to eligible card-linked
   // offers.
   OffersMap CreateCardLinkedOffersMap(
-      const GURL& last_committed_url_origin) const;
+      const GURL& last_committed_primary_main_frame_origin) const;
 
   raw_ptr<PersonalDataManager> personal_data_;
   raw_ptr<CouponServiceDelegate> coupon_service_delegate_;

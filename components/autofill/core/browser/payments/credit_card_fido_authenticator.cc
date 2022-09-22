@@ -433,11 +433,12 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
         autofill_client_, autofill_client_->GetPaymentsClient(),
         autofill_client_->GetPersonalDataManager());
 
-    absl::optional<GURL> last_committed_url_origin;
+    absl::optional<GURL> last_committed_primary_main_frame_origin;
     if (card_->record_type() == CreditCard::VIRTUAL_CARD &&
-        autofill_client_->GetLastCommittedURL().is_valid()) {
-      last_committed_url_origin =
-          autofill_client_->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+        autofill_client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {
+      last_committed_primary_main_frame_origin =
+          autofill_client_->GetLastCommittedPrimaryMainFrameURL()
+              .DeprecatedGetOriginAsURL();
     }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -455,7 +456,7 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
     full_card_request_->GetFullCardViaFIDO(
         *card_, AutofillClient::UnmaskCardReason::kAutofill,
         weak_ptr_factory_.GetWeakPtr(), std::move(response),
-        last_committed_url_origin, context_token_);
+        last_committed_primary_main_frame_origin, context_token_);
   } else {
     DCHECK(current_flow_ == FOLLOWUP_AFTER_CVC_AUTH_FLOW ||
            current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW);

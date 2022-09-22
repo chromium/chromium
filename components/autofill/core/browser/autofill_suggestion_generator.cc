@@ -167,7 +167,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
       autofill_client_->GetAutofillOfferManager();
   if (offer_manager) {
     offer_manager->UpdateSuggestionsWithOffers(
-        autofill_client_->GetLastCommittedURL(), suggestions);
+        autofill_client_->GetLastCommittedPrimaryMainFrameURL(), suggestions);
   }
 
   for (Suggestion& suggestion : suggestions) {

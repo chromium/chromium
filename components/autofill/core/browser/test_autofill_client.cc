@@ -24,7 +24,7 @@ TestAutofillClient::TestAutofillClient(
     : test_personal_data_manager_(
           pdm ? std::move(pdm) : std::make_unique<TestPersonalDataManager>()),
       form_origin_(GURL("https://example.test")),
-      last_committed_url_(GURL("https://example.test")),
+      last_committed_primary_main_frame_url_(GURL("https://example.test")),
       log_manager_(LogManager::Create(&log_router_, base::NullCallback())) {
   mock_iban_manager_ = std::make_unique<testing::NiceMock<MockIBANManager>>(
       test_personal_data_manager_.get());
@@ -116,8 +116,12 @@ AutofillOfferManager* TestAutofillClient::GetAutofillOfferManager() {
   return autofill_offer_manager_.get();
 }
 
-const GURL& TestAutofillClient::GetLastCommittedURL() const {
-  return last_committed_url_;
+const GURL& TestAutofillClient::GetLastCommittedPrimaryMainFrameURL() const {
+  return last_committed_primary_main_frame_url_;
+}
+
+url::Origin TestAutofillClient::GetLastCommittedPrimaryMainFrameOrigin() const {
+  return url::Origin::Create(last_committed_primary_main_frame_url_);
 }
 
 security_state::SecurityLevel
@@ -402,8 +406,9 @@ void TestAutofillClient::set_form_origin(const GURL& url) {
   test_ukm_recorder_.UpdateSourceURL(source_id_, form_origin_);
 }
 
-void TestAutofillClient::set_last_committed_url(const GURL& url) {
-  last_committed_url_ = url;
+void TestAutofillClient::set_last_committed_primary_main_frame_url(
+    const GURL& url) {
+  last_committed_primary_main_frame_url_ = url;
 }
 
 ukm::TestUkmRecorder* TestAutofillClient::GetTestUkmRecorder() {

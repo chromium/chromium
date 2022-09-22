@@ -33,12 +33,14 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
   unmask_request_->otp = otp_;
 
   if (card_->record_type() == CreditCard::VIRTUAL_CARD) {
-    absl::optional<GURL> last_committed_url_origin;
-    if (autofill_client_->GetLastCommittedURL().is_valid()) {
-      last_committed_url_origin =
-          autofill_client_->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+    absl::optional<GURL> last_committed_primary_main_frame_origin;
+    if (autofill_client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {
+      last_committed_primary_main_frame_origin =
+          autofill_client_->GetLastCommittedPrimaryMainFrameURL()
+              .DeprecatedGetOriginAsURL();
     }
-    unmask_request_->last_committed_url_origin = last_committed_url_origin;
+    unmask_request_->last_committed_primary_main_frame_origin =
+        last_committed_primary_main_frame_origin;
   }
 
   // Populating risk data and showing OTP dialog may occur asynchronously.

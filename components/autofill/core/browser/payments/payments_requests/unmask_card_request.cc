@@ -156,11 +156,13 @@ std::string UnmaskCardRequest::GetRequestContent() {
         std::move(request_details_.fido_assertion_info.value()));
   }
 
-  if (request_details_.last_committed_url_origin.has_value()) {
+  if (request_details_.last_committed_primary_main_frame_origin.has_value()) {
     base::Value virtual_card_request_info(base::Value::Type::DICTIONARY);
     virtual_card_request_info.SetKey(
         "merchant_domain",
-        base::Value(request_details_.last_committed_url_origin.value().spec()));
+        base::Value(
+            request_details_.last_committed_primary_main_frame_origin.value()
+                .spec()));
     request_dict.SetKey("virtual_card_request_info",
                         std::move(virtual_card_request_info));
   }

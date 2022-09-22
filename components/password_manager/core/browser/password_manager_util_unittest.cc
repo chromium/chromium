@@ -100,7 +100,14 @@ class MockAutofillClient : public autofill::AutofillClient {
               GetAddressNormalizer,
               (),
               (override));
-  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
+  MOCK_METHOD(const GURL&,
+              GetLastCommittedPrimaryMainFrameURL,
+              (),
+              (const, override));
+  MOCK_METHOD(url::Origin,
+              GetLastCommittedPrimaryMainFrameOrigin,
+              (),
+              (const, override));
   MOCK_METHOD(security_state::SecurityLevel,
               GetSecurityLevelForUmaHistograms,
               (),

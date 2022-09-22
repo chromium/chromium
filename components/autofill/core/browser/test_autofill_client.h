@@ -78,7 +78,8 @@ class TestAutofillClient : public AutofillClient {
   ukm::SourceId GetUkmSourceId() override;
   AddressNormalizer* GetAddressNormalizer() override;
   AutofillOfferManager* GetAutofillOfferManager() override;
-  const GURL& GetLastCommittedURL() const override;
+  const GURL& GetLastCommittedPrimaryMainFrameURL() const override;
+  url::Origin GetLastCommittedPrimaryMainFrameOrigin() const override;
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
@@ -253,7 +254,7 @@ class TestAutofillClient : public AutofillClient {
     security_level_ = security_level;
   }
 
-  void set_last_committed_url(const GURL& url);
+  void set_last_committed_primary_main_frame_url(const GURL& url);
 
   void SetVariationConfigCountryCode(
       const std::string& variation_config_country_code) {
@@ -402,8 +403,9 @@ class TestAutofillClient : public AutofillClient {
   // A mock translate driver which provides the language state.
   translate::testing::MockTranslateDriver mock_translate_driver_;
 
-  // The last URL submitted by the user in the URL bar. Set in the constructor.
-  GURL last_committed_url_;
+  // The last URL submitted in the primary main frame by the user. Set in the
+  // constructor.
+  GURL last_committed_primary_main_frame_url_;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   std::vector<std::string> allowed_merchants_;

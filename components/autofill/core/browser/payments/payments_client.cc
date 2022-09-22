@@ -113,7 +113,8 @@ PaymentsClient::UnmaskRequestDetails::operator=(
   }
   context_token = other.context_token;
   otp = other.otp;
-  last_committed_url_origin = other.last_committed_url_origin;
+  last_committed_primary_main_frame_origin =
+      other.last_committed_primary_main_frame_origin;
   return *this;
 }
 PaymentsClient::UnmaskRequestDetails::~UnmaskRequestDetails() = default;

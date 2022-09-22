@@ -458,7 +458,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     EXPECT_TRUE(payments_client_->unmask_request()->context_token.empty());
     EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
     EXPECT_TRUE(payments_client_->unmask_request()
-                    ->last_committed_url_origin.has_value());
+                    ->last_committed_primary_main_frame_origin.has_value());
 
     // Mock server response with information regarding OTP auth.
     payments::PaymentsClient::UnmaskResponseDetails response;
@@ -2112,7 +2112,7 @@ TEST_F(CreditCardAccessManagerTest, RiskBasedVirtualCardUnmasking_Success) {
   EXPECT_TRUE(payments_client_->unmask_request()->context_token.empty());
   EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
   EXPECT_TRUE(payments_client_->unmask_request()
-                  ->last_committed_url_origin.has_value());
+                  ->last_committed_primary_main_frame_origin.has_value());
 
   // Mock server response with valid card information.
   payments::PaymentsClient::UnmaskResponseDetails response;
@@ -2191,7 +2191,7 @@ TEST_F(CreditCardAccessManagerTest,
   EXPECT_TRUE(payments_client_->unmask_request()->context_token.empty());
   EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
   EXPECT_TRUE(payments_client_->unmask_request()
-                  ->last_committed_url_origin.has_value());
+                  ->last_committed_primary_main_frame_origin.has_value());
 
   // Mock server response with information regarding FIDO auth.
   payments::PaymentsClient::UnmaskResponseDetails response;
@@ -2251,7 +2251,7 @@ TEST_F(
   EXPECT_TRUE(payments_client_->unmask_request()->context_token.empty());
   EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
   EXPECT_TRUE(payments_client_->unmask_request()
-                  ->last_committed_url_origin.has_value());
+                  ->last_committed_primary_main_frame_origin.has_value());
 
   // Mock server response with information regarding both FIDO and OTP auth.
   payments::PaymentsClient::UnmaskResponseDetails response;
@@ -2373,7 +2373,7 @@ TEST_F(
   EXPECT_TRUE(payments_client_->unmask_request()->context_token.empty());
   EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
   EXPECT_TRUE(payments_client_->unmask_request()
-                  ->last_committed_url_origin.has_value());
+                  ->last_committed_primary_main_frame_origin.has_value());
 
   // Mock server response with information regarding FIDO auth.
   payments::PaymentsClient::UnmaskResponseDetails response;
@@ -2424,7 +2424,7 @@ TEST_F(CreditCardAccessManagerTest,
   EXPECT_TRUE(payments_client_->unmask_request()->context_token.empty());
   EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
   EXPECT_TRUE(payments_client_->unmask_request()
-                  ->last_committed_url_origin.has_value());
+                  ->last_committed_primary_main_frame_origin.has_value());
 
   // Mock server response with no challenge options.
   payments::PaymentsClient::UnmaskResponseDetails response;
@@ -2473,7 +2473,7 @@ TEST_F(CreditCardAccessManagerTest,
   EXPECT_TRUE(payments_client_->unmask_request()->context_token.empty());
   EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
   EXPECT_TRUE(payments_client_->unmask_request()
-                  ->last_committed_url_origin.has_value());
+                  ->last_committed_primary_main_frame_origin.has_value());
 
   // Mock server response with no challenge options.
   payments::PaymentsClient::UnmaskResponseDetails response;
@@ -2555,7 +2555,7 @@ TEST_F(CreditCardAccessManagerTest,
   EXPECT_TRUE(payments_client_->unmask_request()->context_token.empty());
   EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
   EXPECT_TRUE(payments_client_->unmask_request()
-                  ->last_committed_url_origin.has_value());
+                  ->last_committed_primary_main_frame_origin.has_value());
 
   // Mock that the flow was cancelled by the user.
   credit_card_access_manager_->OnVirtualCardUnmaskCancelled();

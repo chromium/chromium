@@ -40,16 +40,17 @@ void AutofillOfferManager::OnDidNavigateFrame(AutofillClient* client) {
 }
 
 void AutofillOfferManager::UpdateSuggestionsWithOffers(
-    const GURL& last_committed_url,
+    const GURL& last_committed_primary_main_frame_url,
     std::vector<Suggestion>& suggestions) {
-  GURL last_committed_url_origin =
-      last_committed_url.DeprecatedGetOriginAsURL();
-  if (eligible_merchant_domains_.count(last_committed_url_origin) == 0) {
+  GURL last_committed_primary_main_frame_origin =
+      last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL();
+  if (eligible_merchant_domains_.count(
+          last_committed_primary_main_frame_origin) == 0) {
     return;
   }
 
   AutofillOfferManager::OffersMap eligible_offers_map =
-      CreateCardLinkedOffersMap(last_committed_url_origin);
+      CreateCardLinkedOffersMap(last_committed_primary_main_frame_origin);
 
   // Update |offer_label| for each suggestion.
   for (auto& suggestion : suggestions) {
@@ -70,23 +71,26 @@ void AutofillOfferManager::UpdateSuggestionsWithOffers(
             });
 }
 
-bool AutofillOfferManager::IsUrlEligible(const GURL& last_committed_url) {
-  if (coupon_service_delegate_ &&
-      coupon_service_delegate_->IsUrlEligible(last_committed_url)) {
+bool AutofillOfferManager::IsUrlEligible(
+    const GURL& last_committed_primary_main_frame_url) {
+  if (coupon_service_delegate_ && coupon_service_delegate_->IsUrlEligible(
+                                      last_committed_primary_main_frame_url)) {
     return true;
   }
-  return base::Contains(eligible_merchant_domains_,
-                        last_committed_url.DeprecatedGetOriginAsURL());
+  return base::Contains(
+      eligible_merchant_domains_,
+      last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL());
 }
 
 AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
-    const GURL& last_committed_url) {
+    const GURL& last_committed_primary_main_frame_url) {
   if (coupon_service_delegate_) {
     for (AutofillOfferData* offer :
          coupon_service_delegate_->GetFreeListingCouponsForUrl(
-             last_committed_url)) {
+             last_committed_primary_main_frame_url)) {
       if (offer->IsActiveAndEligibleForOrigin(
-              last_committed_url.DeprecatedGetOriginAsURL())) {
+              last_committed_primary_main_frame_url
+                  .DeprecatedGetOriginAsURL())) {
         return offer;
       }
     }
@@ -94,7 +98,7 @@ AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
 
   for (AutofillOfferData* offer : personal_data_->GetAutofillOffers()) {
     if (offer->IsActiveAndEligibleForOrigin(
-            last_committed_url.DeprecatedGetOriginAsURL())) {
+            last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL())) {
       return offer;
     }
   }
@@ -112,7 +116,7 @@ void AutofillOfferManager::UpdateEligibleMerchantDomains() {
 }
 
 AutofillOfferManager::OffersMap AutofillOfferManager::CreateCardLinkedOffersMap(
-    const GURL& last_committed_url_origin) const {
+    const GURL& last_committed_primary_main_frame_origin) const {
   AutofillOfferManager::OffersMap offers_map;
 
   std::vector<AutofillOfferData*> offers = personal_data_->GetAutofillOffers();
@@ -120,7 +124,8 @@ AutofillOfferManager::OffersMap AutofillOfferManager::CreateCardLinkedOffersMap(
 
   for (auto* offer : offers) {
     // Ensure the offer is valid.
-    if (!offer->IsActiveAndEligibleForOrigin(last_committed_url_origin)) {
+    if (!offer->IsActiveAndEligibleForOrigin(
+            last_committed_primary_main_frame_origin)) {
       continue;
     }
     // Ensure the offer is a card-linked offer.

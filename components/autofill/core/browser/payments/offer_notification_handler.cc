@@ -43,7 +43,7 @@ OfferNotificationHandler::~OfferNotificationHandler() = default;
 
 void OfferNotificationHandler::UpdateOfferNotificationVisibility(
     AutofillClient* client) {
-  GURL url = client->GetLastCommittedURL();
+  GURL url = client->GetLastCommittedPrimaryMainFrameURL();
   if (!offer_manager_->IsUrlEligible(url)) {
     client->DismissOfferNotification();
     return;

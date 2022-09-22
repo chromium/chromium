@@ -110,9 +110,9 @@ class PaymentsClient {
     std::u16string otp;
     // An opaque token used to chain consecutive payments requests together.
     std::string context_token;
-    // The url origin of the website where the unmasking happened. Should be
-    // populated when the unmasking is for a virtual-card.
-    absl::optional<GURL> last_committed_url_origin;
+    // The origin of the primary main frame where the unmasking happened.
+    // Should be populated when the unmasking is for a virtual-card.
+    absl::optional<GURL> last_committed_primary_main_frame_origin;
   };
 
   // Information retrieved from an UnmaskRequest.

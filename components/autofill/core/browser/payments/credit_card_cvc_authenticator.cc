@@ -36,17 +36,18 @@ void CreditCardCVCAuthenticator::Authenticate(
   full_card_request_ = std::make_unique<payments::FullCardRequest>(
       client_, client_->GetPaymentsClient(), personal_data_manager);
 
-  absl::optional<GURL> last_committed_url_origin;
+  absl::optional<GURL> last_committed_primary_main_frame_origin;
   if (card->record_type() == CreditCard::VIRTUAL_CARD &&
-      client_->GetLastCommittedURL().is_valid()) {
-    last_committed_url_origin =
-        client_->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+      client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {
+    last_committed_primary_main_frame_origin =
+        client_->GetLastCommittedPrimaryMainFrameURL()
+            .DeprecatedGetOriginAsURL();
   }
 
   full_card_request_->GetFullCard(
       *card, AutofillClient::UnmaskCardReason::kAutofill,
       weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
-      last_committed_url_origin);
+      last_committed_primary_main_frame_origin);
 }
 
 void CreditCardCVCAuthenticator::OnFullCardRequestSucceeded(

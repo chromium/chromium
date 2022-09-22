@@ -286,7 +286,7 @@ class PaymentsClientTest : public testing::Test {
       request_details.user_response.cvc = base::ASCIIToUTF16(options.cvc);
     if (options.virtual_card) {
       request_details.card.set_record_type(CreditCard::VIRTUAL_CARD);
-      request_details.last_committed_url_origin =
+      request_details.last_committed_primary_main_frame_origin =
           GURL("https://www.example.com");
     }
     if (options.set_context_token)
@@ -948,7 +948,7 @@ TEST_F(PaymentsClientTest, UnmaskIncludesMerchantDomain) {
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
 
-  // last_committed_url_origin was set.
+  // last_committed_primary_main_frame_origin was set.
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
 }
 

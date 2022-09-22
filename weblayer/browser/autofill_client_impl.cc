@@ -77,9 +77,14 @@ autofill::AddressNormalizer* AutofillClientImpl::GetAddressNormalizer() {
   return nullptr;
 }
 
-const GURL& AutofillClientImpl::GetLastCommittedURL() const {
+const GURL& AutofillClientImpl::GetLastCommittedPrimaryMainFrameURL() const {
   NOTREACHED();
   return GURL::EmptyGURL();
+}
+
+url::Origin AutofillClientImpl::GetLastCommittedPrimaryMainFrameOrigin() const {
+  NOTREACHED();
+  return url::Origin();
 }
 
 security_state::SecurityLevel
