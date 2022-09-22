@@ -34,7 +34,7 @@ TtsVoices::TtsVoices() = default;
 TtsVoices::~TtsVoices() = default;
 
 //  static
-bool TtsVoices::Parse(base::Value::ConstListView tts_voices,
+bool TtsVoices::Parse(const base::Value::List& tts_voices,
                       TtsVoices* out_voices,
                       std::u16string* error,
                       Extension* extension) {
@@ -90,8 +90,7 @@ bool TtsVoices::Parse(base::Value::ConstListView tts_voices,
         *error = errors::kInvalidTtsVoicesEventTypes;
         return false;
       }
-      for (const base::Value& event_type_val :
-           event_types->GetListDeprecated()) {
+      for (const base::Value& event_type_val : event_types->GetList()) {
         if (!event_type_val.is_string()) {
           *error = errors::kInvalidTtsVoicesEventTypes;
           return false;
@@ -155,8 +154,7 @@ bool TtsEngineManifestHandler::Parse(Extension* extension,
     return false;
   }
 
-  if (!TtsVoices::Parse(tts_voices->GetListDeprecated(), info.get(), error,
-                        extension))
+  if (!TtsVoices::Parse(tts_voices->GetList(), info.get(), error, extension))
     return false;
 
   const base::Value* tts_engine_sample_rate =

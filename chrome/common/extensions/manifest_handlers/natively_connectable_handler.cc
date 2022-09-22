@@ -50,7 +50,7 @@ bool NativelyConnectableHandler::Parse(Extension* extension,
   }
 
   auto hosts = std::make_unique<NativelyConnectableHosts>();
-  for (const auto& host : natively_connectable_hosts->GetListDeprecated()) {
+  for (const auto& host : natively_connectable_hosts->GetList()) {
     if (!host.is_string() || host.GetString().empty()) {
       *error = manifest_errors::kInvalidNativelyConnectableValue16;
       return false;

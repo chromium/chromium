@@ -248,7 +248,7 @@ void ExternalLoader::Load() {
       ReadExternalOrdinalFile(ordinals_file);
   if (ordinals_value) {
     std::string locale = g_browser_process->GetApplicationLocale();
-    for (const base::Value& i : ordinals_value->GetListDeprecated()) {
+    for (const base::Value& i : ordinals_value->GetList()) {
       if (i.is_string()) {
         std::string app_id = i.GetString();
         app_ids_.push_back(app_id);

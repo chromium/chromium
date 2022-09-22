@@ -55,8 +55,8 @@ bool InputComponentsHandler::Parse(Extension* extension,
   }
 
   auto info = std::make_unique<InputComponents>();
-  for (size_t i = 0; i < list_value->GetListDeprecated().size(); ++i) {
-    const base::Value& module_value = list_value->GetListDeprecated()[i];
+  for (size_t i = 0; i < list_value->GetList().size(); ++i) {
+    const base::Value& module_value = list_value->GetList()[i];
     if (!module_value.is_dict()) {
       *error = errors::kInvalidInputComponents16;
       return false;
@@ -85,7 +85,7 @@ bool InputComponentsHandler::Parse(Extension* extension,
       if (language_value->is_string()) {
         languages.insert(language_value->GetString());
       } else if (language_value->is_list()) {
-        for (const auto& language : language_value->GetListDeprecated()) {
+        for (const auto& language : language_value->GetList()) {
           if (language.is_string())
             languages.insert(language.GetString());
         }
@@ -96,8 +96,8 @@ bool InputComponentsHandler::Parse(Extension* extension,
     std::set<std::string> layouts;
     const base::Value* layouts_value = module_value.FindListKey(keys::kLayouts);
     if (layouts_value) {
-      for (size_t j = 0; j < layouts_value->GetListDeprecated().size(); ++j) {
-        const auto& layout = layouts_value->GetListDeprecated()[j];
+      for (size_t j = 0; j < layouts_value->GetList().size(); ++j) {
+        const auto& layout = layouts_value->GetList()[j];
         if (!layout.is_string()) {
           *error = ErrorUtils::FormatErrorMessageUTF16(
               errors::kInvalidInputComponentLayoutName, base::NumberToString(i),
