@@ -7,6 +7,7 @@
 #include "android_webview/browser/gfx/child_frame.h"
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
@@ -433,12 +434,10 @@ void RootFrameSink::EvictChildSurface(const viz::SurfaceId& surface_id) {
 }
 
 void RootFrameSink::OnCaptureStarted(const viz::FrameSinkId& frame_sink_id) {
-  auto it = std::find_if(contained_surfaces_.begin(), contained_surfaces_.end(),
-                         [frame_sink_id](const viz::SurfaceId& surface_id) {
-                           return surface_id.frame_sink_id() == frame_sink_id;
-                         });
-  if (it == contained_surfaces_.end())
+  if (!base::Contains(contained_surfaces_, frame_sink_id,
+                      &viz::SurfaceId::frame_sink_id)) {
     return;
+  }
   // When a capture is started we need to force an invalidate.
   if (client_)
     client_->Invalidate();
