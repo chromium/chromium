@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/one_drive_upload_handler.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_util.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
@@ -21,7 +21,7 @@ using ash::file_system_provider::ProviderId;
 using ash::file_system_provider::Service;
 using storage::FileSystemURL;
 
-namespace chromeos::cloud_upload {
+namespace ash::cloud_upload {
 namespace {
 
 const char kODFSExtensionId[] = "ajdgmkbkgifbokednjgbmieaemeighkg";
@@ -207,4 +207,4 @@ void OneDriveUploadHandler::OnShowItemInFolder(
   OnEndUpload(uploaded_file_url);
 }
 
-}  // namespace chromeos::cloud_upload
+}  // namespace ash::cloud_upload

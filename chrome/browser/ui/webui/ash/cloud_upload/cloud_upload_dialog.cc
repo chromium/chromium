@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -13,11 +13,11 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/drive_upload_handler.h"
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/one_drive_upload_handler.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 #include "chrome/common/webui_url_constants.h"
 
-namespace chromeos::cloud_upload {
+namespace ash::cloud_upload {
 namespace {
 
 using file_manager::file_tasks::kDriveTaskResultMetricName;
@@ -162,4 +162,4 @@ bool CloudUploadDialog::ShouldShowCloseButton() const {
   return false;
 }
 
-}  // namespace chromeos::cloud_upload
+}  // namespace ash::cloud_upload

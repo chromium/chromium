@@ -256,9 +256,9 @@
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 #include "chrome/browser/ui/webui/ash/audio/audio.mojom.h"
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload.mojom.h"
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
@@ -1270,8 +1270,8 @@ void PopulateChromeWebUIFrameBinders(
 
   if (ash::features::IsUploadOfficeToCloudEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
-        chromeos::cloud_upload::mojom::PageHandlerFactory,
-        chromeos::cloud_upload::CloudUploadUI>(map);
+        ash::cloud_upload::mojom::PageHandlerFactory,
+        ash::cloud_upload::CloudUploadUI>(map);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

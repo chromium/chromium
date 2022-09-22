@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_DIALOG_H_
 
 #include <vector>
 
@@ -12,7 +12,7 @@
 
 class Profile;
 
-namespace chromeos::cloud_upload {
+namespace ash::cloud_upload {
 
 // Either OneDrive for the Office PWA or Drive for Web Drive editing.
 enum class UploadType {
@@ -20,7 +20,7 @@ enum class UploadType {
   kDrive,
 };
 
-// The string conversions of chromeos::cloud_upload::mojom::UserAction.
+// The string conversions of ash::cloud_upload::mojom::UserAction.
 const char kUserActionCancel[] = "cancel";
 const char kUserActionUpload[] = "upload";
 
@@ -61,6 +61,6 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   UploadRequestCallback callback_;
 };
 
-}  // namespace chromeos::cloud_upload
+}  // namespace ash::cloud_upload
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_DIALOG_H_

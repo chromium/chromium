@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_UTIL_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_UTIL_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_UTIL_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_UTIL_H_
 
 #include "base/callback.h"
 #include "base/files/file.h"
@@ -14,7 +14,7 @@
 
 class Profile;
 
-namespace chromeos::cloud_upload {
+namespace ash::cloud_upload {
 
 // Converts an absolute FilePath into a filesystem URL.
 storage::FileSystemURL FilePathToFileSystemURL(
@@ -33,6 +33,6 @@ void CreateDirectoryOnIOThread(
 // to log any encountered error.
 void LogErrorOnShowItemInFolder(platform_util::OpenOperationResult result);
 
-}  // namespace chromeos::cloud_upload
+}  // namespace ash::cloud_upload
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_UTIL_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_UTIL_H_

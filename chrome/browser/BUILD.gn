@@ -5233,7 +5233,7 @@ static_library("browser") {
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/ash/audio:mojo_bindings",
-      "//chrome/browser/ui/webui/chromeos/cloud_upload:mojo_bindings",
+      "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings",

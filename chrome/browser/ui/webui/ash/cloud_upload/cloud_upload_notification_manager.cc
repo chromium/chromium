@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_notification_manager.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/memory/scoped_refptr.h"
@@ -11,7 +11,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-namespace chromeos::cloud_upload {
+namespace ash::cloud_upload {
 namespace {
 
 constexpr char kCloudUploadProgressNotificationId[] = "cloud-upload-progress";
@@ -106,4 +106,4 @@ void CloudUploadNotificationManager::Completed() {
   }
 }
 
-}  // namespace chromeos::cloud_upload
+}  // namespace ash::cloud_upload

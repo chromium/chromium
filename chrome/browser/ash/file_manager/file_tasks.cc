@@ -53,7 +53,7 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -473,8 +473,8 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
       // open the file in the browser, too.
       // TODO(b/247038054) Add user preference to decide whether or not the
       // dialog should be shown.
-      return chromeos::cloud_upload::UploadAndOpen(
-          profile, file_urls, chromeos::cloud_upload::UploadType::kDrive,
+      return ash::cloud_upload::UploadAndOpen(
+          profile, file_urls, ash::cloud_upload::UploadType::kDrive,
           /*show_dialog=*/false);
     }
   } else {
@@ -563,8 +563,8 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
       // TODO(b/247038054) Add user preference to decide whether or not the
       // dialog should be shown.
       LOG(ERROR) << "File can be moved to ODFS";
-      return chromeos::cloud_upload::UploadAndOpen(
-          profile, file_urls, chromeos::cloud_upload::UploadType::kOneDrive,
+      return ash::cloud_upload::UploadAndOpen(
+          profile, file_urls, ash::cloud_upload::UploadType::kOneDrive,
           /*show_dialog=*/false);
     }
   } else {

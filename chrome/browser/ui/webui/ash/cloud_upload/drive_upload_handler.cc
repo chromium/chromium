@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/drive_upload_handler.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
@@ -10,14 +10,14 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_util.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
 
 using storage::FileSystemURL;
 
-namespace chromeos::cloud_upload {
+namespace ash::cloud_upload {
 namespace {
 
 // The default folder where the file should be uploaded.
@@ -350,4 +350,4 @@ void DriveUploadHandler::OnAlternateUrlTimeout() {
                      weak_ptr_factory_.GetWeakPtr(), /*timed_out=*/true));
 }
 
-}  // namespace chromeos::cloud_upload
+}  // namespace ash::cloud_upload

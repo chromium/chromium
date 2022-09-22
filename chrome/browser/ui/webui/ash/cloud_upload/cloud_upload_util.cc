@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_util.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos::cloud_upload {
+namespace ash::cloud_upload {
 
 storage::FileSystemURL FilePathToFileSystemURL(
     Profile* profile,
@@ -59,4 +59,4 @@ void LogErrorOnShowItemInFolder(platform_util::OpenOperationResult result) {
              << error_string;
 }
 
-}  // namespace chromeos::cloud_upload
+}  // namespace ash::cloud_upload

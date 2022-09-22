@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_DRIVE_UPLOAD_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_DRIVE_UPLOAD_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_DRIVE_UPLOAD_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_DRIVE_UPLOAD_HANDLER_H_
 
 #include <memory>
 
@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/chromeos/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_notification_manager.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -23,7 +23,7 @@
 
 class Profile;
 
-namespace chromeos::cloud_upload {
+namespace ash::cloud_upload {
 
 // Manages the "upload to Drive" workflow after user confirmation on the upload
 // dialog. Instantiated by the static `Upload` method. Starts with moving the
@@ -101,6 +101,6 @@ class DriveUploadHandler
   base::WeakPtrFactory<DriveUploadHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos::cloud_upload
+}  // namespace ash::cloud_upload
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_DRIVE_UPLOAD_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_DRIVE_UPLOAD_HANDLER_H_

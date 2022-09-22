@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_ONE_DRIVE_UPLOAD_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_ONE_DRIVE_UPLOAD_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_ONE_DRIVE_UPLOAD_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_ONE_DRIVE_UPLOAD_HANDLER_H_
 
 #include <memory>
 
@@ -13,14 +13,14 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_notification_manager.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
 
 class Profile;
 
-namespace chromeos::cloud_upload {
+namespace ash::cloud_upload {
 
 // Manages the "upload to OneDrive" workflow after user confirmation on the
 // upload dialog. Instantiated by the static `Upload` method. Starts with moving
@@ -78,6 +78,6 @@ class OneDriveUploadHandler
   base::WeakPtrFactory<OneDriveUploadHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos::cloud_upload
+}  // namespace ash::cloud_upload
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_ONE_DRIVE_UPLOAD_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_ONE_DRIVE_UPLOAD_HANDLER_H_
