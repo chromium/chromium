@@ -100,4 +100,6 @@ void MockShoppingService::SetUnsubscribeCallbackValue(
   unsubscribe_callback_value_ = unsubscribe_should_succeed;
 }
 
+void MockShoppingService::ScheduleSavedProductUpdate() {}
+
 }  // namespace commerce

@@ -651,6 +651,10 @@ void ShoppingService::FetchPriceEmailPref() {
   }
 }
 
+void ShoppingService::ScheduleSavedProductUpdate() {
+  bookmark_update_manager_->ScheduleUpdate();
+}
+
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
