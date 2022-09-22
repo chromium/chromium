@@ -5,10 +5,10 @@
 import {ConnectionType, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 import {TopRightKey as DiagramTopRightKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {MockController} from '../../mock_controller.js';
-import {flushTasks} from '../../test_util.js';
 
 export function keyboardTesterTestSuite() {
   /** @type {?KeyboardTesterElement} */

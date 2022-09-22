@@ -8,9 +8,9 @@ import {HardwareErrorPage} from 'chrome://shimless-rma/hardware_error_page.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {ShutdownMethod} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 export function hardwareErrorPageTest() {
   /**

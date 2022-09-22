@@ -12,6 +12,8 @@ js_type_check("closure_compile") {
             rebase_path(
                 "//chrome/browser/resources/chromeos/bluetooth_pairing_dialog/",
                 root_build_dir) + "\"",
+        "browser_resolver_prefix_replacements=\"chrome://webui-test/=" +
+            "./gen/chrome/test/data/webui/\"",
         "js_module_root=" +
             rebase_path("//chrome/test/data/webui/", root_build_dir),
         "js_module_root=./gen/chrome/test/data/webui/",

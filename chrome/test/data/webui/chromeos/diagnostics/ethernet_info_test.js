@@ -6,9 +6,9 @@ import 'chrome://diagnostics/ethernet_info.js';
 
 import {fakeEthernetNetwork} from 'chrome://diagnostics/fake_data.js';
 import {AuthenticationType, EthernetStateProperties, Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 import {assertDataPointHasExpectedHeaderAndValue, assertTextContains, getDataPointValue} from './diagnostics_test_utils.js';
 

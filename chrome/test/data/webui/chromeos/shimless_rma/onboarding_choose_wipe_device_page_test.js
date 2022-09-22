@@ -7,9 +7,9 @@ import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_se
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingChooseWipeDevicePage} from 'chrome://shimless-rma/onboarding_choose_wipe_device_page.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 export function onboardingChooseWipeDevicePageTest() {
   /** @type {?OnboardingChooseWipeDevicePage} */

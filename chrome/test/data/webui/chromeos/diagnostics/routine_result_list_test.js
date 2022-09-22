@@ -8,9 +8,9 @@ import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_
 import {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
 import {RoutineResultListElement} from 'chrome://diagnostics/routine_result_list.js';
 import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 

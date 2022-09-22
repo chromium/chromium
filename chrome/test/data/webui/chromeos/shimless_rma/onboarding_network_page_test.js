@@ -8,9 +8,9 @@ import {fakeNetworks} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setNetworkConfigServiceForTesting, setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingNetworkPage} from 'chrome://shimless-rma/onboarding_network_page.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 import {FakeNetworkConfig} from '../fake_network_config_mojom.js';
 
 export function onboardingNetworkPageTest() {

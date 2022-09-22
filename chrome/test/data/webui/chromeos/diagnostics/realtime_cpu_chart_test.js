@@ -5,9 +5,9 @@
 import 'chrome://diagnostics/realtime_cpu_chart.js';
 
 import {RealtimeCpuChartElement} from 'chrome://diagnostics/realtime_cpu_chart.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertGT, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 import * as diagnostics_test_utils from './diagnostics_test_utils.js';
 

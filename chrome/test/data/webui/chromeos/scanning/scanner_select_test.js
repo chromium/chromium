@@ -8,9 +8,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ScannerArr, ScannerInfo} from 'chrome://scanning/scanning_app_types.js';
 import {getScannerDisplayName, tokenToString} from 'chrome://scanning/scanning_app_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {waitAfterNextRender} from '../../test_util.js';
 
 import {assertOrderedAlphabetically, createScanner} from './scanning_app_test_utils.js';
 

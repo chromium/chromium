@@ -10,9 +10,9 @@ import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 import {createCupsPrinterInfo, createPrinterListEntry} from './cups_printer_test_utils.js';
 import {TestCupsPrintersBrowserProxy} from './test_cups_printers_browser_proxy.js';

@@ -6,7 +6,7 @@
 
 import 'chrome://os-settings/chromeos/os_settings.js';
 
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {setupFakeHandler, replaceBody, isHidden} from './test_util.js';
 
 

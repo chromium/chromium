@@ -5,8 +5,8 @@
 import 'chrome://crostini-installer/app.js';
 
 import {BrowserProxy} from 'chrome://crostini-installer/browser_proxy.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 const InstallerState = crostini.mojom.InstallerState;
 const InstallerError = crostini.mojom.InstallerError;

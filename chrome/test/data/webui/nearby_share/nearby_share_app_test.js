@@ -9,9 +9,9 @@ import 'chrome://nearby/app.js';
 import {NearbyShareAppElement} from 'chrome://nearby/app.js';
 import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.js';
 import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {waitAfterNextRender} from '../test_util.js';
 
 import {FakeContactManager} from './shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from './shared/fake_nearby_share_settings.js';

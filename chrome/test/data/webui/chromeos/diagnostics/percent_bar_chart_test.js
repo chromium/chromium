@@ -5,9 +5,9 @@
 import 'chrome://diagnostics/percent_bar_chart.js';
 
 import {PercentBarChartElement} from 'chrome://diagnostics/percent_bar_chart.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 

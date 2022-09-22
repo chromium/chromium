@@ -6,9 +6,9 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {RebootPage} from 'chrome://shimless-rma/reboot_page.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 export function rebootPageTest() {
   /** @type {?RebootPage} */

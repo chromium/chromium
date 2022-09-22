@@ -5,9 +5,9 @@
 import {MechanicalLayout, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertNotEquals, assertThrows, assertTrue} from '../../chai_assert.js';
-import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 
 export function keyboardDiagramTestSuite() {
   /** @type {?KeyboardDiagramElement} */

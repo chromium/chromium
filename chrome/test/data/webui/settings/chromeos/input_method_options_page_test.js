@@ -6,8 +6,7 @@ import 'chrome://os-settings/chromeos/lazy_load.js';
 
 import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {waitAfterNextRender} from '../../test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeSettingsPrivate} from './fake_settings_private.js';
 

@@ -6,9 +6,9 @@ import 'chrome://diagnostics/cellular_info.js';
 
 import {getLockType, getSignalStrength} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeCellularNetwork} from 'chrome://diagnostics/fake_data.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 import {assertDataPointHasExpectedHeaderAndValue} from './diagnostics_test_utils.js';
 

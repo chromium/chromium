@@ -4,8 +4,9 @@
 
 import 'chrome://scanning/action_toolbar.js';
 
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
 import {assertEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 export function actionToolbarTest() {
   /** @type {?ActionToolbarElement} */

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {alphabeticalCompare} from 'chrome://scanning/scanning_app_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 /**
  * @param {!Array} arr

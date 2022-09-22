@@ -4,9 +4,9 @@
 
 import {InputCardElement, InputCardType} from 'chrome://diagnostics/input_card.js';
 import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
 
 /** @type {!Array<!KeyboardInfo>} */
 const keyboards = [
