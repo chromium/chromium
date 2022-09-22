@@ -600,6 +600,8 @@ void ProfileManager::NukeDeletedProfilesFromDisk() {
 // static
 Profile* ProfileManager::GetLastUsedProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+#if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Use default login profile if user has not logged in yet.
   if (!IsLoggedIn())
@@ -607,15 +609,20 @@ Profile* ProfileManager::GetLastUsedProfile() {
 
   // CrOS multi-profiles implementation is different so GetLastUsedProfile()
   // has custom implementation too.
-  base::FilePath profile_dir;
   // In case of multi-profiles we ignore "last used profile" preference
   // since it may refer to profile that has been in use in previous session.
   // That profile dir may not be mounted in this session so instead return
   // active profile from current session.
-  profile_dir = ash::ProfileHelper::Get()->GetActiveUserProfileDir();
-
+  base::FilePath profile_dir =
+      ash::ProfileHelper::Get()->GetActiveUserProfileDir();
   Profile* profile = profile_manager->GetProfileByPath(
       profile_manager->user_data_dir().Append(profile_dir));
+#else
+  // TODO(crbug.com/1363933): Once Lacros is launched pre-login, we should
+  // probably do something analogous to the !IsLoggedIn() check above.
+  Profile* profile =
+      profile_manager->GetProfile(profile_manager->GetLastUsedProfileDir());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Accessing a user profile before it is loaded may lead to policy exploit.
   // See http://crbug.com/689206.
@@ -627,7 +634,7 @@ Profile* ProfileManager::GetLastUsedProfile() {
              : profile;
 #else
   return profile_manager->GetProfile(profile_manager->GetLastUsedProfileDir());
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // static
