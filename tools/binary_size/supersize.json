@@ -12,6 +12,9 @@
     "assets/unwind_cfi_32": {
       "source_path": "../../base/trace_event/cfi_backtrace_android.cc"
     },
+    "assets/unwind_cfi_32_v2": {
+      "source_path": "../../base/trace_event/cfi_backtrace_android.cc"
+    },
     "assets/webapk_dex_version.txt": {
       "source_path": "../../chrome/android/webapk/libs/runtime_library_version.gni"
     }
