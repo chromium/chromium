@@ -250,9 +250,12 @@ interface PrintPreviewUI {
 
   // Tell the browser print preview found the selected printer has invalid
   // settings (which typically caused by disconnected network printer or
-  // printer driver is bogus).
+  // printer driver is bogus).  Extra information about the error provided in
+  // `details` can assist with debugging.
   [EnableIf=enable_print_preview]
-  PrinterSettingsInvalid(int32 document_cookie, int32 request_id);
+  PrinterSettingsInvalid(int32 document_cookie,
+                         int32 request_id,
+                         string details);
 
   // Notifies the browser of the default page layout according to the currently
   // selected printer and page size.

@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
@@ -47,6 +48,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/print_preview_resources.h"
 #include "chrome/grit/print_preview_resources_map.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/browser/print_composite_client.h"
 #include "components/printing/browser/print_manager_utils.h"
@@ -102,6 +104,8 @@ constexpr char kInvalidPageNumberForDidPreviewPage[] =
     "Invalid page number for DidPreviewPage";
 constexpr char kInvalidPageCountForMetafileReadyForPrinting[] =
     "Invalid page count for MetafileReadyForPrinting";
+constexpr char kInvalidArgsForPrinterSettingsInvalid[] =
+    "Invalid details for PrinterSettingsInvalid";
 
 PrintPreviewUI::TestDelegate* g_test_delegate = nullptr;
 
@@ -1077,7 +1081,14 @@ void PrintPreviewUI::PrintPreviewCancelled(int32_t document_cookie,
 }
 
 void PrintPreviewUI::PrinterSettingsInvalid(int32_t document_cookie,
-                                            int32_t request_id) {
+                                            int32_t request_id,
+                                            const std::string& details) {
+  if (!base::IsStringASCII(details)) {
+    receiver_.ReportBadMessage(kInvalidArgsForPrinterSettingsInvalid);
+    return;
+  }
+  if (!details.empty())
+    PRINTER_LOG(ERROR) << "Printer settings invalid: " << details;
   StopWorker(document_cookie);
   if (ShouldCancelRequest(id_, request_id))
     return;

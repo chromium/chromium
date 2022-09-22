@@ -70,7 +70,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   void PrintPreviewCancelled(int32_t document_cookie,
                              int32_t request_id) override;
   void PrinterSettingsInvalid(int32_t document_cookie,
-                              int32_t request_id) override;
+                              int32_t request_id,
+                              const std::string& details) override;
   void DidGetDefaultPageLayout(mojom::PageSizeMarginsPtr page_layout_in_points,
                                const gfx::Rect& printable_area_in_points,
                                bool has_custom_page_size_style,

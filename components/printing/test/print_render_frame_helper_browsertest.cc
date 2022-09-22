@@ -234,7 +234,8 @@ class FakePrintPreviewUI : public mojom::PrintPreviewUI {
     RunQuitClosure();
   }
   void PrinterSettingsInvalid(int32_t document_cookie,
-                              int32_t request_id) override {
+                              int32_t request_id,
+                              const std::string& details) override {
     DCHECK_EQ(preview_status_, PreviewStatus::kNone);
     preview_status_ = PreviewStatus::kInvalidSetting;
     RunQuitClosure();
