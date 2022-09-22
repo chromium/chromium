@@ -1,4 +1,4 @@
-var All_Pointer_Events = [
+const All_Pointer_Events = [
         "pointerdown",
         "pointerup",
         "pointercancel",
@@ -9,6 +9,37 @@ var All_Pointer_Events = [
         "pointerleave",
         "gotpointercapture",
         "lostpointercapture"];
+
+// https://w3c.github.io/pointerevents/#the-button-property
+// Values for the button property, which indicates the device button whose state
+// change fired the event.
+const ButtonChange = {
+  NONE: -1,
+  PEN_CONTACT: 0,
+  TOUCH_CONTACT: 0,
+  LEFT_MOUSE: 0,
+  MIDDLE_MOUSE: 1,
+  RIGHT_MOUSE: 2,
+  X1_MOUSE: 3,
+  X2_MOUSE: 4,
+  PEN_ERASER_BUTTON: 5
+};
+
+// https://w3c.github.io/pointerevents/#the-buttons-property
+// The buttons property gives the current state of the device buttons as a
+// bitmask.
+const ButtonsBitfield = {
+  NONE: 0,
+  PEN_CONTACT: 1,
+  TOUCH_CONTACT: 1,
+  LEFT_MOUSE: 1,
+  RIGHT_MOUSE: 2,
+  PEN_BARREL_BUTTON: 2,
+  MIDDLE_MOUSE: 4,
+  X1_MOUSE: 8,
+  X2_MOUSE: 16,
+  PEN_ERASER_BUTTON: 32
+};
 
 // Check for conformance to PointerEvent interface
 // TA: 1.1, 1.2, 1.6, 1.7, 1.8, 1.9, 1.10, 1.11, 1.12, 1.13
