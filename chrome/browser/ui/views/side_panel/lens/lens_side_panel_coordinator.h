@@ -69,6 +69,7 @@ class LensSidePanelCoordinator
 
   raw_ptr<TemplateURLService> template_url_service_;
   base::WeakPtr<lens::LensUnifiedSidePanelView> lens_side_panel_view_;
+  raw_ptr<const TemplateURL> current_default_search_provider_;
 
   BROWSER_USER_DATA_KEY_DECL();
 };
