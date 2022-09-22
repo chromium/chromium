@@ -127,7 +127,6 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentFactory;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
@@ -1002,27 +1001,16 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         maybeRemoveWindowBackground();
 
         Tab tab = getActivityTab();
-
-        if (mLayoutManagerSupplier.get() != null) {
-            @LayoutType
-            int activeLayoutType = mLayoutManagerSupplier.get().getActiveLayoutType();
-
-            // Only show the tab when overview (start surface and tab switcher layout) is not shown.
-            if (activeLayoutType != LayoutType.START_SURFACE
-                    && activeLayoutType != LayoutType.TAB_SWITCHER) {
-                if (tab != null) {
-                    if (tab.isHidden()) {
-                        tab.show(TabSelectionType.FROM_USER,
-                                LoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW);
-                    } else {
-                        // The visible Tab's renderer process may have died after the activity was
-                        // paused. Ensure that it's restored appropriately.
-                        tab.loadIfNeeded(LoadIfNeededCaller.ON_ACTIVITY_SHOWN);
-                    }
-                }
+        if (tab != null) {
+            if (tab.isHidden()) {
+                tab.show(
+                        TabSelectionType.FROM_USER, LoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW);
+            } else {
+                // The visible Tab's renderer process may have died after the activity was
+                // paused. Ensure that it's restored appropriately.
+                tab.loadIfNeeded(LoadIfNeededCaller.ON_ACTIVITY_SHOWN);
             }
         }
-
         VrModuleProvider.getDelegate().onActivityShown(this);
 
         MultiWindowUtils.getInstance().recordMultiWindowStateUkm(this, tab);
