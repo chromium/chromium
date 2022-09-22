@@ -109,9 +109,9 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   const Extension* extension = InstallExtension(extension_dir, 1);
   ASSERT_TRUE(extension);
 
-  DictionaryPrefUpdate updater(browser()->profile()->GetPrefs(),
+  ScopedDictPrefUpdate updater(browser()->profile()->GetPrefs(),
                                prefs::kExtensionCommands);
-  base::Value* bindings = updater.Get();
+  base::Value::Dict& bindings = updater.Get();
 
   // Simulate command |toggle-feature| has been assigned with a shortcut on
   // another platform.
@@ -121,14 +121,14 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   keybinding.SetStringKey("extension", extension->id());
   keybinding.SetStringKey("command_name", kNamedCommandName);
   keybinding.SetBoolKey("global", false);
-  bindings->SetKey(anotherPlatformKey, std::move(keybinding));
+  bindings.Set(anotherPlatformKey, std::move(keybinding));
 
   CommandService* command_service = CommandService::Get(browser()->profile());
   command_service->RemoveKeybindingPrefs(extension->id(), kNamedCommandName);
 
   // Removal of keybinding preference should be platform-specific, so the key on
   // another platform should always remained.
-  EXPECT_TRUE(bindings->FindKey(anotherPlatformKey));
+  EXPECT_TRUE(bindings.Find(anotherPlatformKey));
 }
 
 IN_PROC_BROWSER_TEST_F(CommandServiceTest,

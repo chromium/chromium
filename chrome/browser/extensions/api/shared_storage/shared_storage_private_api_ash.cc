@@ -44,8 +44,8 @@ ExtensionFunction::ResponseAction SharedStoragePrivateSetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   PrefService* prefs =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
-  DictionaryPrefUpdate update(prefs, prefs::kSharedStorage);
-  update.Get()->GetDict().Merge(std::move(params->items.additional_properties));
+  ScopedDictPrefUpdate update(prefs, prefs::kSharedStorage);
+  update->Merge(std::move(params->items.additional_properties));
   return RespondNow(NoArguments());
 }
 
@@ -60,10 +60,10 @@ ExtensionFunction::ResponseAction SharedStoragePrivateRemoveFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   PrefService* prefs =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
-  DictionaryPrefUpdate update(prefs, prefs::kSharedStorage);
-  base::Value* items = update.Get();
+  ScopedDictPrefUpdate update(prefs, prefs::kSharedStorage);
+  base::Value::Dict& items = update.Get();
   for (const auto& key : params->keys) {
-    items->RemoveKey(key);
+    items.Remove(key);
   }
   return RespondNow(NoArguments());
 }

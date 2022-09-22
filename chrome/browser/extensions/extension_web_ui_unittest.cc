@@ -184,8 +184,8 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
   PrefService* prefs = profile_->GetPrefs();
   {
     // Add multiple entries for the same extension.
-    DictionaryPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
-    base::Value* all_overrides = update.Get();
+    ScopedDictPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
+    base::Value::Dict& all_overrides = update.Get();
     base::Value newtab_list(base::Value::Type::LIST);
     {
       base::Value newtab(base::Value::Type::DICTIONARY);
@@ -202,7 +202,7 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
       newtab_list.Append(std::move(newtab));
     }
 
-    all_overrides->SetKey("newtab", std::move(newtab_list));
+    all_overrides.Set("newtab", std::move(newtab_list));
   }
 
   extension_service_->AddExtension(extension.get());

@@ -339,9 +339,9 @@ ExtensionInstallStatus AddExtensionToPendingList(
     return status;
   }
 
-  DictionaryPrefUpdate pending_requests_update(
+  ScopedDictPrefUpdate pending_requests_update(
       profile->GetPrefs(), prefs::kCloudExtensionRequestIds);
-  DCHECK(!pending_requests_update->FindKey(id));
+  DCHECK(!pending_requests_update->Find(id));
   base::Value request_data(base::Value::Type::DICTIONARY);
   request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
                       ::base::TimeToValue(base::Time::Now()));
@@ -349,7 +349,7 @@ ExtensionInstallStatus AddExtensionToPendingList(
     request_data.SetKey(extension_misc::kExtensionWorkflowJustification,
                         base::Value(justification));
   }
-  pending_requests_update->SetKey(id, std::move(request_data));
+  pending_requests_update->Set(id, std::move(request_data));
   // Query the new extension install status again. It should be changed from
   // |kCanRequest| to |kRequestPending| if the id has been added into pending
   // list successfully. Otherwise, it shouldn't be changed.

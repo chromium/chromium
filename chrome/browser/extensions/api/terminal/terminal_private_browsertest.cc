@@ -16,7 +16,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,9 +87,8 @@ IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest, OpenCroshProcessChecks) {
   // 'crosh not allowed' when crosh is not allowed.
   ExpectJsResult(script, "crosh not allowed");
 
-  ListPrefUpdate update(g_browser_process->local_state(),
-                        policy::policy_prefs::kSystemFeaturesDisableList);
-  update->ClearList();
+  g_browser_process->local_state()->SetList(
+      policy::policy_prefs::kSystemFeaturesDisableList, base::Value::List());
   ExpectJsResult(script, "success");
 }
 

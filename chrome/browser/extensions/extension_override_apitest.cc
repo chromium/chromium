@@ -357,9 +357,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, ShouldCleanUpDuplicateEntries) {
   }
 
   {
-    DictionaryPrefUpdate update(browser()->profile()->GetPrefs(),
+    ScopedDictPrefUpdate update(browser()->profile()->GetPrefs(),
                                 ExtensionWebUI::kExtensionURLOverrides);
-    update.Get()->SetKey("history", std::move(list));
+    update->Set("history", std::move(list));
   }
 
   ASSERT_FALSE(CheckHistoryOverridesContainsNoDupes());

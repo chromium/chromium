@@ -215,8 +215,8 @@ bool ExtensionAssetsManagerChromeOS::CleanUpSharedExtensions(
   if (!local_state)
     return false;
 
-  DictionaryPrefUpdate shared_extensions(local_state, kSharedExtensions);
-  base::Value::Dict& shared_extension_dict = shared_extensions->GetDict();
+  ScopedDictPrefUpdate shared_extensions(local_state, kSharedExtensions);
+  base::Value::Dict& shared_extension_dict = shared_extensions.Get();
 
   std::vector<std::string> extensions;
   extensions.reserve(shared_extension_dict.size());
@@ -299,20 +299,20 @@ void ExtensionAssetsManagerChromeOS::CheckSharedExtension(
   }
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate shared_extensions(local_state, kSharedExtensions);
+  ScopedDictPrefUpdate shared_extensions(local_state, kSharedExtensions);
   std::string* shared_path = nullptr;
-  base::Value* users = nullptr;
-  if (base::Value* extension_info = shared_extensions->FindDictPath(id)) {
-    if (base::Value* version_info = extension_info->FindDictKey(version)) {
-      shared_path = version_info->FindStringKey(kSharedExtensionPath);
-      users = version_info->FindListKey(kSharedExtensionUsers);
+  base::Value::List* users = nullptr;
+  if (base::Value::Dict* extension_info = shared_extensions->FindDict(id)) {
+    if (base::Value::Dict* version_info = extension_info->FindDict(version)) {
+      shared_path = version_info->FindString(kSharedExtensionPath);
+      users = version_info->FindList(kSharedExtensionUsers);
     }
   }
 
   if (shared_path && users) {
     // This extension version already in shared location.
     bool user_found = false;
-    for (const base::Value& user : users->GetList()) {
+    for (const base::Value& user : *users) {
       const std::string* temp = user.GetIfString();
       if (temp && *temp == user_id) {
         // Re-installation for the same user.
@@ -387,14 +387,10 @@ void ExtensionAssetsManagerChromeOS::InstallSharedExtensionDone(
   }
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate shared_extensions(local_state, kSharedExtensions);
-  base::Value* extension_info_weak = shared_extensions->FindDictKey(id);
-  if (!extension_info_weak) {
-    extension_info_weak = shared_extensions->SetKey(
-        id, base::Value(base::Value::Type::DICTIONARY));
-  }
+  ScopedDictPrefUpdate shared_extensions(local_state, kSharedExtensions);
+  base::Value::Dict* extension_info_weak = shared_extensions->EnsureDict(id);
 
-  CHECK(!shared_extensions->FindKey(version));
+  CHECK(!shared_extensions->Find(version));
   base::Value version_info(base::Value::Type::DICTIONARY);
   version_info.SetStringKey(kSharedExtensionPath, shared_version_dir.value());
 
@@ -409,7 +405,7 @@ void ExtensionAssetsManagerChromeOS::InstallSharedExtensionDone(
         base::BindOnce(std::move(info.callback), shared_version_dir));
   }
   version_info.SetKey(kSharedExtensionUsers, std::move(users));
-  extension_info_weak->SetKey(version, std::move(version_info));
+  extension_info_weak->Set(version, std::move(version_info));
 }
 
 // static
@@ -430,8 +426,8 @@ void ExtensionAssetsManagerChromeOS::MarkSharedExtensionUnused(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate shared_extensions(local_state, kSharedExtensions);
-  base::Value::Dict& shared_extensions_dict = shared_extensions->GetDict();
+  ScopedDictPrefUpdate shared_extensions(local_state, kSharedExtensions);
+  base::Value::Dict& shared_extensions_dict = shared_extensions.Get();
   base::Value::Dict* extension_info = shared_extensions_dict.FindDict(id);
   if (!extension_info) {
     NOTREACHED();

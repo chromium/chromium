@@ -714,12 +714,12 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
                const std::string& pref_path,
                std::unique_ptr<base::Value> value,
                const std::string& msg) {
-    DictionaryPrefUpdate update(profile()->GetPrefs(), pref_names::kExtensions);
-    base::Value* dict = update.Get();
-    ASSERT_TRUE(dict) << msg;
-    base::Value* pref = dict->FindDictKey(extension_id);
+    ScopedDictPrefUpdate update(profile()->GetPrefs(), pref_names::kExtensions);
+    base::Value::Dict& dict = update.Get();
+    base::Value::Dict* pref = dict.FindDict(extension_id);
     ASSERT_TRUE(pref) << msg;
-    pref->SetPath(pref_path, base::Value::FromUniquePtrValue(std::move(value)));
+    pref->SetByDottedPath(pref_path,
+                          base::Value::FromUniquePtrValue(std::move(value)));
   }
 
   void SetPrefInteg(const std::string& extension_id,
@@ -751,12 +751,11 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     std::string msg = " while clearing: ";
     msg += extension_id + " " + pref_path;
 
-    DictionaryPrefUpdate update(profile()->GetPrefs(), pref_names::kExtensions);
-    base::Value* dict = update.Get();
-    ASSERT_TRUE(dict) << msg;
-    base::Value* pref = dict->FindDictKey(extension_id);
+    ScopedDictPrefUpdate update(profile()->GetPrefs(), pref_names::kExtensions);
+    base::Value::Dict& dict = update.Get();
+    base::Value::Dict* pref = dict.FindDict(extension_id);
     ASSERT_TRUE(pref) << msg;
-    pref->RemovePath(pref_path);
+    pref->RemoveByDottedPath(pref_path);
   }
 
   void SetPrefStringSet(const std::string& extension_id,
