@@ -1689,19 +1689,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Maintains region search test state. In particular, note that |menu_observer_|
-// must live until the right-click completes asynchronously.
-class SearchByRegionBrowserTest : public InProcessBrowserTest {
+// must live until the right-click completes asynchronously. Used as a base
+// class for common logic shared by the side panel and unified side panel tests
+// for the region search feature.
+class SearchByRegionBrowserBaseTest : public InProcessBrowserTest {
  protected:
-  void SetUp() override {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        lens::features::kLensStandalone,
-        std::map<std::string, std::string>{
-            {lens::features::kEnableSidePanelForLens.name, "false"}});
-
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     gfx::NativeWindow window = browser()->window()->GetNativeWindow();
@@ -1724,40 +1716,19 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
   }
 
   void SetupAndLoadPage(const std::string& page_path) {
-    // The test server must start first, so that we know the port that the test
-    // server is using.
-    ASSERT_TRUE(embedded_test_server()->Start());
     // Load a simple initial page.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GURL(embedded_test_server()->GetURL(page_path))));
-  }
-
-  void AttemptLensRegionSearch() {
-    // |menu_observer_| will cause the search lens for image menu item to be
-    // clicked. Sets a callback to simulate dragging a region on the screen once
-    // the region search UI has been set up.
-    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
-        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, ui::EF_MOUSE_BUTTON,
-        base::BindOnce(&SearchByRegionBrowserTest::SimulateDrag,
-                       base::Unretained(this)));
-    RightClickToOpenContextMenu();
   }
 
   void AttemptFullscreenLensRegionSearch() {
     // |menu_observer_| will cause the search lens for image menu item to be
     // clicked. Omit event flags to simulate entering through the keyboard.
     menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
-        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH);
-    RightClickToOpenContextMenu();
-  }
-
-  // This attempts region search on the menu item designated for non-Google
-  // DSEs as if entering the menu item via keyboard.
-  void AttemptFullscreenNonGoogleRegionSearch() {
-    // |menu_observer_| will cause the search lens for image menu item to be
-    // clicked.
-    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
-        IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH);
+        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, /*event_flags=*/0,
+        base::BindOnce(
+            &SearchByRegionBrowserBaseTest::SimulateDragAndVerifyOverlayUI,
+            base::Unretained(this)));
     RightClickToOpenContextMenu();
   }
 
@@ -1768,8 +1739,9 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
     // clicked.
     menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
         IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, ui::EF_MOUSE_BUTTON,
-        base::BindOnce(&SearchByRegionBrowserTest::SimulateDrag,
-                       base::Unretained(this)));
+        base::BindOnce(
+            &SearchByRegionBrowserBaseTest::SimulateDragAndVerifyOverlayUI,
+            base::Unretained(this)));
     RightClickToOpenContextMenu();
   }
 
@@ -1800,16 +1772,52 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
     event_generator_->DragMouseBy(100, 100);
   }
 
+  void SimulateDragAndVerifyOverlayUI(RenderViewContextMenu* menu) {
+    // Verify Lens Region Search Controller was created after using the menu
+    // item.
+    lens::LensRegionSearchController* controller =
+        menu->GetLensRegionSearchControllerForTesting();
+    ASSERT_NE(controller, nullptr);
+    ASSERT_TRUE(controller->IsOverlayUIVisibleForTesting());
+    SimulateDrag();
+    // The UI should be closed after the drag.
+    ASSERT_FALSE(controller->IsOverlayUIVisibleForTesting());
+  }
+
+  // Asserts that the Lens region search controller overlay UI was not visible.
+  void AssertOverlayUIHidden(RenderViewContextMenu* menu) {
+    // Verify Lens Region Search Controller was created after using the menu
+    // item.
+    lens::LensRegionSearchController* controller =
+        menu->GetLensRegionSearchControllerForTesting();
+    ASSERT_NE(controller, nullptr);
+    ASSERT_FALSE(controller->IsOverlayUIVisibleForTesting());
+  }
+
+  void VerifyLensUrl(std::string content, std::string expected_content) {
+    // Match strings up to the query.
+    std::size_t query_start_pos = content.find("?");
+    // Match the query parameters, without the value of start_time.
+    EXPECT_THAT(content,
+                testing::MatchesRegex(
+                    expected_content.substr(0, query_start_pos) +
+                    ".*ep=crs&re=dcsp&s=csp&st=\\d+&sideimagesearch=1"));
+    if (quit_closure_)
+      quit_closure_.Run();
+  }
+
   // Sets up a custom test default search engine in order to test region search
-  // for non-Google DSEs.
-  void SetupNonGoogleRegionSearchEngine() {
+  // for non-Google DSEs. Parameter to choose whether this test search engine
+  // supports side image search.
+  void SetupNonGoogleRegionSearchEngine(
+      bool with_side_image_search_param = true) {
     static const char16_t kShortName[] = u"test";
     static const char kRegionSearchPostParams[] =
         "thumb={google:imageThumbnail}";
 
     TemplateURLService* model =
         TemplateURLServiceFactory::GetForProfile(browser()->profile());
-    ASSERT_TRUE(model);
+    ASSERT_NE(model, nullptr);
     search_test_utils::WaitForTemplateURLServiceToLoad(model);
     ASSERT_TRUE(model->loaded());
 
@@ -1819,7 +1827,8 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
     data.SetURL(GetNonGoogleRegionSearchURL().spec());
     data.image_url = GetNonGoogleRegionSearchURL().spec();
     data.image_url_post_params = kRegionSearchPostParams;
-    data.side_image_search_param = "sideimagesearch";
+    if (with_side_image_search_param)
+      data.side_image_search_param = "sideimagesearch";
 
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     ASSERT_TRUE(template_url);
@@ -1828,113 +1837,41 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
 
   void TearDownInProcessBrowserTestFixture() override {
     menu_observer_.reset();
+    event_generator_.reset();
   }
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   std::unique_ptr<ContextMenuNotificationObserver> menu_observer_;
+  base::RepeatingClosure quit_closure_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1356504): Failing on Chrome OS.
-#define MAYBE_LensRegionSearchWithValidRegionNewTab \
-  DISABLED_LensRegionSearchWithValidRegionNewTab
-#else
-#define MAYBE_LensRegionSearchWithValidRegionNewTab \
-  LensRegionSearchWithValidRegionNewTab
-#endif
-IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
-                       MAYBE_LensRegionSearchWithValidRegionNewTab) {
-  SetupAndLoadPage("/empty.html");
-  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
-
-  // The browser should open a draggable UI for a region search.
-  AttemptLensRegionSearch();
-  content::WebContents* new_tab = add_tab.Wait();
-  content::WaitForLoadStop(new_tab);
-
-  std::string expected_content = GetLensRegionSearchURL().GetContent();
-  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
-  // Match strings up to the query.
-  std::size_t query_start_pos = new_tab_content.find("?");
-  // Match the query parameters, without the value of start_time.
-  EXPECT_THAT(new_tab_content, testing::MatchesRegex(
-                                   expected_content.substr(0, query_start_pos) +
-                                   ".*ep=crs&re=df&s=&st=\\d+"));
-}
-
-IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
-                       LensRegionSearchWithFullscreenRegionNewTab) {
-  SetupAndLoadPage("/empty.html");
-  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
-
-  // The browser should open a new tab for a region search.
-  AttemptFullscreenLensRegionSearch();
-  content::WebContents* new_tab = add_tab.Wait();
-  content::WaitForLoadStop(new_tab);
-
-  std::string expected_content = GetLensRegionSearchURL().GetContent();
-  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
-  // Match strings up to the query.
-  std::size_t query_start_pos = new_tab_content.find("?");
-  // Match the query parameters, without the value of start_time.
-  EXPECT_THAT(new_tab_content, testing::MatchesRegex(
-                                   expected_content.substr(0, query_start_pos) +
-                                   ".*ep=crs&re=df&s=&st=\\d+"));
-}
-
-IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
-                       NonGoogleRegionSearchWithValidRegionNewTab) {
-  SetupAndLoadPage("/empty.html");
-  SetupNonGoogleRegionSearchEngine();
-  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
-
-  // The browser should open a new tab for a region search.
-  AttemptNonGoogleRegionSearch();
-  content::WebContents* new_tab = add_tab.Wait();
-  content::WaitForLoadStop(new_tab);
-
-  std::string expected_content = GetNonGoogleRegionSearchURL().GetContent();
-  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
-  EXPECT_EQ(expected_content, new_tab_content);
-}
-
-IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
-                       NonGoogleRegionSearchWithFullscreenRegionNewTab) {
-  SetupAndLoadPage("/empty.html");
-  SetupNonGoogleRegionSearchEngine();
-  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
-
-  // The browser should open a new tab for a region search.
-  AttemptFullscreenNonGoogleRegionSearch();
-  content::WebContents* new_tab = add_tab.Wait();
-  content::WaitForLoadStop(new_tab);
-
-  std::string expected_content = GetNonGoogleRegionSearchURL().GetContent();
-  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
-  EXPECT_EQ(expected_content, new_tab_content);
-}
-
 class SearchByRegionWithSidePanelBrowserTest
-    : public SearchByRegionBrowserTest {
+    : public SearchByRegionBrowserBaseTest {
  protected:
   void SetUp() override {
+    // The test server must start first, so that we know the port that the test
+    // server is using.
+    ASSERT_TRUE(embedded_test_server()->Start());
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        lens::features::kLensStandalone,
-        std::map<std::string, std::string>{
-            {lens::features::kEnableSidePanelForLens.name, "true"}});
+    // This test is for the Lens V1 side panel, so we explicitly disable the
+    // unified side panel.
+    feature_list.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{lens::features::kLensStandalone,
+                               {{lens::features::kEnableSidePanelForLens.name,
+                                 "true"}}}},
+        /*disabled_features=*/{features::kUnifiedSidePanel});
 
     // This does not use SearchByRegionBrowserTest::SetUp because that function
     // does its own conflicting initialization of a FeatureList.
     InProcessBrowserTest::SetUp();
   }
 
-  void SimulateDragAndVerifyLensUrl() {
+  void SimulateDragAndVerifyLensUrl(RenderViewContextMenu* menu) {
     // Create the Lens side panel controller if it does not exist. This allows
     // us to get the side panel web contents without waiting for it to be
     // created post-drag on a first time start up.
     lens::CreateLensSidePanelControllerForTesting(browser());
-    SearchByRegionBrowserTest::SimulateDrag();
+    SearchByRegionBrowserBaseTest::SimulateDragAndVerifyOverlayUI(menu);
 
     // We need to verify the contents after the drag is finished.
     content::WebContents* contents =
@@ -1949,15 +1886,7 @@ class SearchByRegionWithSidePanelBrowserTest
     std::string expected_content = GetLensRegionSearchURL().GetContent();
     std::string side_panel_content =
         contents->GetLastCommittedURL().GetContent();
-
-    // Match strings up to the query.
-    std::size_t query_start_pos = side_panel_content.find("?");
-    // Match the query parameters, without the value of start_time.
-    EXPECT_THAT(side_panel_content,
-                testing::MatchesRegex(
-                    expected_content.substr(0, query_start_pos) +
-                    ".*ep=crs&re=dcsp&s=csp&st=\\d+&sideimagesearch=1"));
-    quit_closure_.Run();
+    VerifyLensUrl(side_panel_content, expected_content);
   }
 
   void AttemptLensRegionSearchWithSidePanel() {
@@ -1971,19 +1900,10 @@ class SearchByRegionWithSidePanelBrowserTest
                        base::Unretained(this)));
     RightClickToOpenContextMenu();
   }
-
-  base::RepeatingClosure quit_closure_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_LensRegionSearchWithValidRegionSidePanel \
-  DISABLED_LensRegionSearchWithValidRegionSidePanel
-#else
-#define MAYBE_LensRegionSearchWithValidRegionSidePanel \
-  LensRegionSearchWithValidRegionSidePanel
-#endif
 IN_PROC_BROWSER_TEST_F(SearchByRegionWithSidePanelBrowserTest,
-                       MAYBE_LensRegionSearchWithValidRegionSidePanel) {
+                       LensRegionSearchWithValidRegionSidePanel) {
   SetupAndLoadPage("/empty.html");
   // We need a base::RunLoop to ensure that our test does not finish until the
   // side panel has opened and we have verified the URL.
@@ -1994,50 +1914,102 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionWithSidePanelBrowserTest,
   loop.Run();
 }
 
+// While this test is under the SearchByRegionWithSidePanelBrowserTest, this is
+// only to confirm that when the UnifiedSidePanel is disabled and the Lens side
+// panel is enabled, that non Google region searches still are redirected to a
+// new tab.
+IN_PROC_BROWSER_TEST_F(SearchByRegionWithSidePanelBrowserTest,
+                       NonGoogleRegionSearchWithValidRegionAndSideImageSearch) {
+  SetupAndLoadPage("/empty.html");
+  SetupNonGoogleRegionSearchEngine();
+  // The browser should open a draggable UI for a region search. The result
+  // should open in a new tab.
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  AttemptNonGoogleRegionSearch();
+
+  // Get the result URL in the new tab and verify.
+  content::WebContents* new_tab = add_tab.Wait();
+  content::WaitForLoadStop(new_tab);
+  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
+  std::string expected_content = GetNonGoogleRegionSearchURL().GetContent();
+  EXPECT_EQ(new_tab_content, expected_content);
+}
+
 class SearchByRegionWithUnifiedSidePanelBrowserTest
-    : public SearchByRegionBrowserTest {
+    : public SearchByRegionBrowserBaseTest {
  protected:
   void SetUp() override {
+    // The test server must start first, so that we know the port that the test
+    // server is using.
+    ASSERT_TRUE(embedded_test_server()->Start());
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
         {{lens::features::kLensStandalone,
-          {{lens::features::kEnableSidePanelForLens.name, "true"}}},
+          {{lens::features::kEnableSidePanelForLens.name, "true"},
+           {lens::features::kHomepageURLForLens.name,
+            GetLensRegionSearchURL().spec()}}},
          {features::kUnifiedSidePanel, {{}}}},
         {});
 
-    // This does not use SearchByRegionBrowserTest::SetUp because that function
-    // does its own conflicting initialization of a FeatureList.
+    // This does not use SearchByRegionBrowserBaseTest::SetUp because that
+    // function does its own conflicting initialization of a FeatureList.
     InProcessBrowserTest::SetUp();
   }
 
-  void SimulateDragAndVerifyLensUrl() {
-    SearchByRegionBrowserTest::SimulateDrag();
-
-    // We need to verify the contents after the drag is finished.
+  void SimulateFullscreenSearchAndVerifyLensUrl(RenderViewContextMenu* menu) {
+    AssertOverlayUIHidden(menu);
     content::WebContents* contents =
-        lens::GetLensUnifiedSidePanelWebContentsForTesting(browser());
-    EXPECT_TRUE(contents);
-
-    // Wait for the drag to commence a navigation upon the side panel web
-    // contents.
-    content::TestNavigationObserver nav_observer(contents);
-    nav_observer.Wait();
+        GetLensUnifiedSidePanelWebContentsAfterNavigation();
 
     std::string expected_content = GetLensRegionSearchURL().GetContent();
     std::string side_panel_content =
         contents->GetLastCommittedURL().GetContent();
+    VerifyLensUrl(side_panel_content, expected_content);
+  }
 
+  void SimulateDragAndVerifyLensUrl(RenderViewContextMenu* menu) {
+    SearchByRegionBrowserBaseTest::SimulateDragAndVerifyOverlayUI(menu);
+    content::WebContents* contents =
+        GetLensUnifiedSidePanelWebContentsAfterNavigation();
+
+    std::string expected_content = GetLensRegionSearchURL().GetContent();
+    std::string side_panel_content =
+        contents->GetLastCommittedURL().GetContent();
+    VerifyLensUrl(side_panel_content, expected_content);
+  }
+
+  void SimulateDragAndVerifyNonGoogleUrl(RenderViewContextMenu* menu) {
+    SearchByRegionBrowserBaseTest::SimulateDragAndVerifyOverlayUI(menu);
+    content::WebContents* contents =
+        GetLensUnifiedSidePanelWebContentsAfterNavigation();
+
+    std::string side_panel_content =
+        contents->GetLastCommittedURL().GetContent();
+    std::string expected_content = GetNonGoogleRegionSearchURL().GetContent();
     // Match strings up to the query.
     std::size_t query_start_pos = side_panel_content.find("?");
     // Match the query parameters, without the value of start_time.
     EXPECT_THAT(
         side_panel_content,
         testing::MatchesRegex(expected_content.substr(0, query_start_pos) +
-                              ".*ep=crs&re=dcsp&s=csp&st=\\d+"));
+                              ".*sideimagesearch=1"));
     quit_closure_.Run();
   }
 
-  void AttemptLensRegionSearchWithSidePanel() {
+  void AttemptFullscreenLensRegionSearchWithUnifiedSidePanel() {
+    // |menu_observer_| will cause the search lens for image menu item to be
+    // clicked. Sets a callback to simulate dragging a region on the screen once
+    // the region search UI has been set up. This function simulates entering
+    // the menu item via keyboard.
+    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
+        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, /*event_flags=*/0,
+        base::BindOnce(&SearchByRegionWithUnifiedSidePanelBrowserTest::
+                           SimulateFullscreenSearchAndVerifyLensUrl,
+                       base::Unretained(this)));
+    RightClickToOpenContextMenu();
+  }
+
+  void AttemptLensRegionSearchWithUnifiedSidePanel() {
     // |menu_observer_| will cause the search lens for image menu item to be
     // clicked. Sets a callback to simulate dragging a region on the screen once
     // the region search UI has been set up.
@@ -2049,28 +2021,104 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
     RightClickToOpenContextMenu();
   }
 
-  base::RepeatingClosure quit_closure_;
+  void AttemptNonGoogleRegionSearchWithUnifiedSidePanel() {
+    // |menu_observer_| will cause the search lens for image menu item to be
+    // clicked. Sets a callback to simulate dragging a region on the screen once
+    // the region search UI has been set up.
+    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
+        IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, ui::EF_MOUSE_BUTTON,
+        base::BindOnce(&SearchByRegionWithUnifiedSidePanelBrowserTest::
+                           SimulateDragAndVerifyNonGoogleUrl,
+                       base::Unretained(this)));
+    RightClickToOpenContextMenu();
+  }
+
+  content::WebContents* GetLensUnifiedSidePanelWebContentsAfterNavigation() {
+    // We need to verify the contents after the drag is finished.
+    content::WebContents* contents =
+        lens::GetLensUnifiedSidePanelWebContentsForTesting(browser());
+    EXPECT_TRUE(contents);
+
+    // Wait for the drag to commence a navigation upon the side panel web
+    // contents. This takes two navigations because the unified side panel is
+    // initially created with a dummy entry URL.
+    content::TestNavigationObserver nav_observer(contents);
+    nav_observer.WaitForNavigationFinished();
+    return contents;
+  }
+
+  // Override Lens Region Search URL to use embedded test server as base domain.
+  GURL GetLensRegionSearchURL() {
+    static const char kLensRegionSearchURL[] = "/imagesearch";
+    return embedded_test_server()->GetURL(kLensRegionSearchURL);
+  }
+
+  void SetupUnifiedSidePanel() {
+    SetupAndLoadPage("/empty.html");
+    lens::CreateLensUnifiedSidePanelEntryForTesting(browser());
+    // We need to verify the contents before opening the side panel.
+    content::WebContents* contents =
+        lens::GetLensUnifiedSidePanelWebContentsForTesting(browser());
+    // Wait for the side panel to open and finish loading web contents.
+    content::TestNavigationObserver nav_observer(contents);
+    nav_observer.WaitForNavigationFinished();
+  }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1356584): Failing on Chrome OS.
-#define MAYBE_LensRegionSearchWithValidRegionUnifiedSidePanel \
-  DISABLED_LensRegionSearchWithValidRegionUnifiedSidePanel
-#else
-#define MAYBE_LensRegionSearchWithValidRegionUnifiedSidePanel \
-  LensRegionSearchWithValidRegionUnifiedSidePanel
-#endif
 IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
-                       MAYBE_LensRegionSearchWithValidRegionUnifiedSidePanel) {
-  SetupAndLoadPage("/empty.html");
-  lens::CreateLensUnifiedSidePanelEntryForTesting(browser());
+                       ValidLensRegionSearchWithUnifiedSidePanel) {
+  SetupUnifiedSidePanel();
   // We need a base::RunLoop to ensure that our test does not finish until the
   // side panel has opened and we have verified the URL.
   base::RunLoop loop;
   quit_closure_ = base::BindRepeating(loop.QuitClosure());
   // The browser should open a draggable UI for a region search.
-  AttemptLensRegionSearchWithSidePanel();
+  AttemptLensRegionSearchWithUnifiedSidePanel();
   loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
+                       ValidFullscreenLensRegionSearchWithUnifiedSidePanel) {
+  SetupUnifiedSidePanel();
+  // We need a base::RunLoop to ensure that our test does not finish until the
+  // side panel has opened and we have verified the URL.
+  base::RunLoop loop;
+  quit_closure_ = base::BindRepeating(loop.QuitClosure());
+  // The browser should open a draggable UI for a region search.
+  AttemptFullscreenLensRegionSearchWithUnifiedSidePanel();
+  loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SearchByRegionWithUnifiedSidePanelBrowserTest,
+    ValidNonGoogleRegionSearchWithUnifiedSidePanelAndSideImageSearch) {
+  SetupNonGoogleRegionSearchEngine();
+  SetupUnifiedSidePanel();
+  // We need a base::RunLoop to ensure that our test does not finish until the
+  // side panel has opened and we have verified the URL.
+  base::RunLoop loop;
+  quit_closure_ = base::BindRepeating(loop.QuitClosure());
+  // The browser should open a draggable UI for a region search.
+  AttemptNonGoogleRegionSearchWithUnifiedSidePanel();
+  loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SearchByRegionWithUnifiedSidePanelBrowserTest,
+    ValidNonGoogleRegionSearchWithUnifiedSidePanelAndNoSideImageSearch) {
+  SetupAndLoadPage("/empty.html");
+  SetupNonGoogleRegionSearchEngine(/*with_side_image_search_param=*/false);
+  // The browser should open a draggable UI for a region search. The result
+  // should open in a new tab.
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  AttemptNonGoogleRegionSearch();
+
+  // Get the result URL in the new tab and verify.
+  content::WebContents* new_tab = add_tab.Wait();
+  content::WaitForLoadStop(new_tab);
+  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
+  std::string expected_content = GetNonGoogleRegionSearchURL().GetContent();
+  EXPECT_EQ(new_tab_content, expected_content);
 }
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

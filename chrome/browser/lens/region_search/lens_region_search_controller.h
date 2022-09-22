@@ -68,6 +68,10 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // the capture has been completed.
   void OnCaptureCompleted(const image_editor::ScreenshotCaptureResult& result);
 
+  // Returns whether the overlay and instruction bubble are both visible. If
+  // either of the UI elements is not visible, returns false.
+  bool IsOverlayUIVisibleForTesting();
+
  private:
   void RecordCaptureResult(lens::LensRegionSearchCaptureResult result);
 

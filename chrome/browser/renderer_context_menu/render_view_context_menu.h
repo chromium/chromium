@@ -127,6 +127,12 @@ class RenderViewContextMenu
       base::OnceCallback<void(content::RenderFrameHost*,
                               blink::mojom::PluginActionType)> cb);
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  lens::LensRegionSearchController* GetLensRegionSearchControllerForTesting() {
+    return lens_region_search_controller_.get();
+  }
+#endif
+
  protected:
   Profile* GetProfile() const;
 

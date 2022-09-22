@@ -20,7 +20,8 @@ class ContextMenuNotificationObserver {
   explicit ContextMenuNotificationObserver(
       int command_to_execute,
       int event_flags = 0,
-      base::OnceClosure callback = base::NullCallback());
+      base::OnceCallback<void(RenderViewContextMenu*)> callback =
+          base::NullCallbackAs<void(RenderViewContextMenu*)>());
 
   ContextMenuNotificationObserver(const ContextMenuNotificationObserver&) =
       delete;
@@ -36,7 +37,7 @@ class ContextMenuNotificationObserver {
 
   int command_to_execute_;
   int event_flags_;
-  base::OnceClosure callback_;
+  base::OnceCallback<void(RenderViewContextMenu*)> callback_;
 };
 
 class ContextMenuWaiter {

@@ -247,4 +247,10 @@ void LensRegionSearchController::CloseWithReason(
     screenshot_flow_->CancelCapture();
 }
 
+bool LensRegionSearchController::IsOverlayUIVisibleForTesting() {
+  if (!bubble_widget_ || !screenshot_flow_)
+    return false;
+  return bubble_widget_->IsVisible() && screenshot_flow_->IsCaptureModeActive();
+}
+
 }  // namespace lens

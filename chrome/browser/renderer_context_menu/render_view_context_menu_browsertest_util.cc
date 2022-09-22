@@ -17,7 +17,7 @@
 ContextMenuNotificationObserver::ContextMenuNotificationObserver(
     int command_to_execute,
     int event_flags,
-    base::OnceClosure callback)
+    base::OnceCallback<void(RenderViewContextMenu*)> callback)
     : command_to_execute_(command_to_execute),
       event_flags_(event_flags),
       callback_(std::move(callback)) {
@@ -41,7 +41,7 @@ void ContextMenuNotificationObserver::ExecuteCommand(
   context_menu->ExecuteCommand(command_to_execute_, event_flags_);
   context_menu->Cancel();
   if (!callback_.is_null())
-    std::move(callback_).Run();
+    std::move(callback_).Run(std::move(context_menu));
 }
 
 ContextMenuWaiter::ContextMenuWaiter() {
