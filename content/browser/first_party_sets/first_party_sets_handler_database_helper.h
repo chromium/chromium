@@ -21,7 +21,7 @@ class Version;
 }  // namespace base
 
 namespace net {
-class FirstPartySetEntry;
+class FirstPartySetsContextConfig;
 class PublicSets;
 class SchemefulSite;
 }  // namespace net
@@ -36,12 +36,6 @@ class FirstPartySetsDatabase;
 // these methods should be called directly on the main thread.
 class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
  public:
-  using FlattenedSets =
-      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
-  using PolicyCustomization =
-      base::flat_map<net::SchemefulSite,
-                     absl::optional<net::FirstPartySetEntry>>;
-
   explicit FirstPartySetsHandlerDatabaseHelper(
       const base::FilePath& user_data_directory);
 
@@ -57,18 +51,18 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
   ~FirstPartySetsHandlerDatabaseHelper();
 
   // Gets the difference between the previously used FPSs info with the current
-  // FPSs info by comparing the combined `old_sets` and `old_policy` with the
-  // combined `current_sets` and `current_policy`. Returns the set of sites
+  // FPSs info by comparing the combined `old_sets` and `old_config` with the
+  // combined `current_sets` and `current_config`. Returns the set of sites
   // that: 1) were in old FPSs but are no longer in current FPSs i.e. leave the
   // FPSs; or, 2) mapped to a different owner site.
   //
   // This method assumes that the sites were normalized properly when the maps
   // were created. Made public only for testing,
   static base::flat_set<net::SchemefulSite> ComputeSetsDiff(
-      const FlattenedSets& old_sets,
-      const PolicyCustomization& old_policy,
-      const FlattenedSets& current_sets,
-      const PolicyCustomization& current_policy);
+      const net::PublicSets& old_sets,
+      const net::FirstPartySetsContextConfig& old_config,
+      const net::PublicSets& current_sets,
+      const net::FirstPartySetsContextConfig& current_config);
 
   // Gets the list of sites to clear for the `browser_context_id`. This method
   // wraps a few DB operations: reads the old public sets and policy
@@ -78,8 +72,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
   // stored during previous browser runs that did not have state cleared.
   std::vector<net::SchemefulSite> UpdateAndGetSitesToClearForContext(
       const std::string& browser_context_id,
-      const FlattenedSets& current_sets,
-      const PolicyCustomization& current_policy);
+      const net::PublicSets& current_sets,
+      const net::FirstPartySetsContextConfig& current_config);
 
   // Wraps FirstPartySetsDatabase::InsertBrowserContextCleared.
   // Update DB whether site data clearing has been performed for the
@@ -92,7 +86,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
                          const net::PublicSets& sets);
 
   // Wraps FirstPartySetsDatabase::GetPublicSets.
-  FlattenedSets GetPersistedPublicSets(const std::string& browser_context_id);
+  net::PublicSets GetPersistedPublicSets(const std::string& browser_context_id);
 
  private:
   std::unique_ptr<FirstPartySetsDatabase> db_

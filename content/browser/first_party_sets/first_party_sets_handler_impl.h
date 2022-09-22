@@ -111,8 +111,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
 
   void GetPersistedPublicSetsForTesting(
       const std::string& browser_context_id,
-      base::OnceCallback<void(
-          absl::optional<FirstPartySetsHandlerImpl::FlattenedSets>)> callback);
+      base::OnceCallback<void(absl::optional<net::PublicSets>)> callback);
 
   // Computes information needed by the FirstPartySetsAccessDelegate in order
   // to update the browser's list of First-Party Sets to respect a profile's

@@ -39,8 +39,6 @@ namespace content {
 // singleton only and is already sequence-safe.
 class CONTENT_EXPORT FirstPartySetsDatabase {
  public:
-  using FlattenedSets = FirstPartySetParser::SetsMap;
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class InitStatus {
@@ -98,7 +96,7 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // fetching methods when having query errors
 
   // Gets the public First-Party Sets used by `browser_context_id`.
-  [[nodiscard]] FlattenedSets GetPublicSets(
+  [[nodiscard]] net::PublicSets GetPublicSets(
       const std::string& browser_context_id);
 
   // Gets the list of sites to clear for the `browser_context_id`.

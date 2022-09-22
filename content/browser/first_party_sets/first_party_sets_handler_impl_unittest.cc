@@ -30,7 +30,6 @@
 
 using ::testing::Eq;
 using ::testing::IsEmpty;
-using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
@@ -61,15 +60,12 @@ net::PublicSets GetSetsAndWait() {
   return result.has_value() ? std::move(result).value() : future.Take();
 }
 
-// TODO(shuuran): Return `net::PublicSets` type instead.
-absl::optional<FirstPartySetsHandlerImpl::FlattenedSets>
-GetPersistedPublicSetsAndWait(const std::string& browser_context_id) {
-  base::test::TestFuture<
-      absl::optional<FirstPartySetsHandlerImpl::FlattenedSets>>
-      future;
+absl::optional<net::PublicSets> GetPersistedPublicSetsAndWait(
+    const std::string& browser_context_id) {
+  base::test::TestFuture<absl::optional<net::PublicSets>> future;
   FirstPartySetsHandlerImpl::GetInstance()->GetPersistedPublicSetsForTesting(
       browser_context_id, future.GetCallback());
-  return future.Get();
+  return future.Take();
 }
 
 }  // namespace
@@ -253,13 +249,14 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           /*context_config=*/nullptr, run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_THAT(GetPersistedPublicSetsAndWait(browser_context_id),
-              Optional(UnorderedElementsAre(
+  EXPECT_THAT(GetPersistedPublicSetsAndWait(browser_context_id)
+                  ->FindEntries({foo, associated}, /*config=*/nullptr),
+              UnorderedElementsAre(
                   Pair(foo, net::FirstPartySetEntry(
                                 foo, net::SiteType::kPrimary, absl::nullopt)),
                   Pair(associated,
                        net::FirstPartySetEntry(foo, net::SiteType::kAssociated,
-                                               absl::nullopt)))));
+                                               absl::nullopt))));
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
@@ -294,18 +291,22 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           /*context_config=*/nullptr, run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_THAT(GetPersistedPublicSetsAndWait(browser_context_id), absl::nullopt);
+  EXPECT_EQ(GetPersistedPublicSetsAndWait(browser_context_id), absl::nullopt);
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
        ClearSiteDataOnChangedSetsForContext_InvalidPublicSetsVersion) {
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite associated(GURL("https://associatedsite.test"));
   FirstPartySetsHandlerImpl::GetInstance()
       ->SetEmbedderWillProvidePublicSetsForTesting(true);
   const std::string browser_context_id = "profile";
   const base::Version invalid_version = base::Version();
   DCHECK(!invalid_version.IsValid());
 
-  const std::string input = "";
+  const std::string input =
+      R"({"primary": "https://foo.test", )"
+      R"("associatedSites": ["https://associatedsite.test"]})";
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
       invalid_version, WritePublicSetsFile(input));
 
@@ -320,8 +321,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   run_loop.Run();
 
   // Public sets with invalid version was not persisted.
-  EXPECT_THAT(GetPersistedPublicSetsAndWait(browser_context_id),
-              Optional(IsEmpty()));
+  EXPECT_TRUE(
+      GetPersistedPublicSetsAndWait(browser_context_id).value().empty());
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,

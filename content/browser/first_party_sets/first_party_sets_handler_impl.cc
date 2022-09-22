@@ -31,7 +31,6 @@
 namespace content {
 
 namespace {
-using FlattenedSets = FirstPartySetsHandlerImpl::FlattenedSets;
 using SingleSet = FirstPartySetParser::SingleSet;
 
 constexpr base::FilePath::CharType kFirstPartySetsDatabase[] =
@@ -183,8 +182,7 @@ void FirstPartySetsHandlerImpl::ResetForTesting() {
 
 void FirstPartySetsHandlerImpl::GetPersistedPublicSetsForTesting(
     const std::string& browser_context_id,
-    base::OnceCallback<void(
-        absl::optional<FirstPartySetsHandlerImpl::FlattenedSets>)> callback) {
+    base::OnceCallback<void(absl::optional<net::PublicSets>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
   if (db_helper_.is_null()) {
@@ -288,8 +286,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
     // clearing is complete.
     db_helper_
         .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistPublicSets)
-        .WithArgs(browser_context_id, version_.value(),
-                  public_sets_.value().Clone());
+        .WithArgs(browser_context_id, version_.value(), public_sets_->Clone());
   }
   std::move(callback).Run();
 }

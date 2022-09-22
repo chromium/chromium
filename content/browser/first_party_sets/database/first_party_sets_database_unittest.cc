@@ -21,6 +21,8 @@
 #include "url/gurl.h"
 
 using ::testing::IsEmpty;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 namespace content {
 
@@ -810,7 +812,10 @@ TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications) {
 
 TEST_F(FirstPartySetsDatabaseTest, GetPublicSets_NoPreExistingDB) {
   OpenDatabase();
-  EXPECT_THAT(db()->GetPublicSets("b"), IsEmpty());
+  EXPECT_THAT(db()->GetPublicSets("b").FindEntries(
+                  {net::SchemefulSite(GURL("https://example.test"))},
+                  /*config=*/nullptr),
+              IsEmpty());
 }
 
 TEST_F(FirstPartySetsDatabaseTest, GetPublicSets) {
@@ -824,16 +829,17 @@ TEST_F(FirstPartySetsDatabaseTest, GetPublicSets) {
     EXPECT_EQ(2u, CountPublicSetsEntries(&db));
     EXPECT_EQ(1u, CountBrowserContextSetsVersionEntries(&db));
   }
-  FirstPartySetsDatabase::FlattenedSets res = {
-      {net::SchemefulSite(GURL("https://aaa.test")),
-       net::FirstPartySetEntry({net::SchemefulSite(GURL("https://bbb.test"))},
-                               net::SiteType::kAssociated, absl::nullopt)},
-      {net::SchemefulSite(GURL("https://bbb.test")),
-       net::FirstPartySetEntry({net::SchemefulSite(GURL("https://bbb.test"))},
-                               net::SiteType::kPrimary, absl::nullopt)},
-  };
+  const net::SchemefulSite aaa(GURL("https://aaa.test"));
+  const net::SchemefulSite bbb(GURL("https://bbb.test"));
   OpenDatabase();
-  EXPECT_THAT(db()->GetPublicSets("b0"), res);
+  EXPECT_THAT(
+      db()->GetPublicSets("b0").FindEntries({aaa, bbb},
+                                            /*config=*/nullptr),
+      UnorderedElementsAre(
+          Pair(aaa, net::FirstPartySetEntry(bbb, net::SiteType::kAssociated,
+                                            absl::nullopt)),
+          Pair(bbb, net::FirstPartySetEntry(bbb, net::SiteType::kPrimary,
+                                            absl::nullopt))));
 }
 
 }  // namespace content

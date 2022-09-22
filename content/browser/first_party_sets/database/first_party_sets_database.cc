@@ -271,7 +271,7 @@ bool FirstPartySetsDatabase::InsertPolicyModifications(
   return transaction.Commit();
 }
 
-FirstPartySetsDatabase::FlattenedSets FirstPartySetsDatabase::GetPublicSets(
+net::PublicSets FirstPartySetsDatabase::GetPublicSets(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -290,7 +290,7 @@ FirstPartySetsDatabase::FlattenedSets FirstPartySetsDatabase::GetPublicSets(
 
   const std::string version = version_statement.ColumnString(0);
 
-  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> results;
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> entries;
   static constexpr char kSelectSql[] =
       "SELECT site,primary_site,site_type FROM public_sets WHERE version=?";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
@@ -311,7 +311,7 @@ FirstPartySetsDatabase::FlattenedSets FirstPartySetsDatabase::GetPublicSets(
     // TODO(crbug.com/1314039): Invalid entries should be rare case but
     // possible. Consider deleting them from DB.
     if (site.has_value() && primary.has_value() && site_type.has_value()) {
-      results.emplace_back(
+      entries.emplace_back(
           std::move(site.value()),
           net::FirstPartySetEntry(primary.value(), site_type.value(),
                                   /*site_index=*/absl::nullopt));
@@ -320,7 +320,9 @@ FirstPartySetsDatabase::FlattenedSets FirstPartySetsDatabase::GetPublicSets(
   if (!statement.Succeeded())
     return {};
 
-  return results;
+  // TODO(crbug.com/1363628): query aliases.
+  // TODO(crbug.com/1363707): query & apply manual set.
+  return net::PublicSets(entries, /*aliases=*/{});
 }
 
 std::vector<net::SchemefulSite> FirstPartySetsDatabase::FetchSitesToClear(
