@@ -59,7 +59,7 @@ class GURL;
 // devices.
 - (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title;
 
-// Hides the dialog shown by showSendTabToSelfUI().
+// Hides the dialog shown by -showSendTabToSelfUI:.
 - (void)hideSendTabToSelfUI;
 
 // Shows the online help page in a tab.
