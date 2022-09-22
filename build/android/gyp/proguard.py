@@ -312,8 +312,10 @@ def _OptimizeWithR8(options,
     if options.disable_checks:
       # Info level priority logs are not printed by default.
       cmd += ['--map-diagnostics:CheckDiscardDiagnostic', 'error', 'info']
-    elif not options.warnings_as_errors:
-      cmd += ['--map-diagnostics:CheckDiscardDiagnostic', 'error', 'warning']
+    else:
+      cmd += ['--map-diagnostics', 'info', 'warning']
+      if not options.warnings_as_errors:
+        cmd += ['--map-diagnostics', 'error', 'warning']
 
     if options.desugar_jdk_libs_json:
       cmd += [

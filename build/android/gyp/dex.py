@@ -23,30 +23,25 @@ from util import zipalign
 _DEX_XMX = '2G'  # Increase this when __final_dex OOMs.
 
 _IGNORE_WARNINGS = (
-    # Caused by Play Services:
-    r'Type `libcore.io.Memory` was not found',
-    # Caused by flogger supporting these as fallbacks. Not needed at runtime.
-    r'Type `dalvik.system.VMStack` was not found',
-    r'Type `sun.misc.JavaLangAccess` was not found',
-    r'Type `sun.misc.SharedSecrets` was not found',
-    # Caused by jacoco code coverage:
-    r'Type `java.lang.management.ManagementFactory` was not found',
-    # Caused when the test apk and the apk under test do not having native libs.
+    # E.g. Triggers for weblayer_instrumentation_test_apk since both it and its
+    # apk_under_test have no shared_libraries.
+    # https://crbug.com/1364192 << To fix this in a better way.
     r'Missing class org.chromium.build.NativeLibraries',
-    # Caused by internal annotation: https://crbug.com/1180222
-    r'Missing class com.google.errorprone.annotations.RestrictedInheritance',
     # Caused by internal protobuf package: https://crbug.com/1183971
     r'referenced from: com.google.protobuf.GeneratedMessageLite$GeneratedExtension',  # pylint: disable=line-too-long
-    # Caused by using Bazel desugar instead of D8 for desugar, since Bazel
-    # desugar doesn't preserve interfaces in the same way. This should be
-    # removed when D8 is used for desugaring.
-    r'Warning: Cannot emulate interface ',
     # Desugaring configs may occasionally not match types in our program. This
     # may happen temporarily until we move over to the new desugared library
     # json flags. See crbug.com/1302088 - this should be removed when this bug
     # is fixed.
-    r'Warning: Specification conversion: The following prefixes do not match any type:',  # pylint: disable=line-too-long
-    # Only relevant for R8 when optimizing an app that doesn't use proto.
+    r'Warning: Specification conversion: The following',
+    # Caused by protobuf runtime using -identifiernamestring in a way that
+    # doesn't work with R8. Looks like:
+    # Rule matches the static final field `...`, which may have been inlined...
+    # com.google.protobuf.*GeneratedExtensionRegistryLite {
+    #   static java.lang.String CONTAINING_TYPE_*;
+    # }
+    r'GeneratedExtensionRegistryLite.CONTAINING_TYPE_',
+    # Relevant for R8 when optimizing an app that doesn't use protobuf.
     r'Ignoring -shrinkunusedprotofields since the protobuf-lite runtime is',
 )
 
@@ -156,40 +151,27 @@ def _ParseArgs(args):
 
 def CreateStderrFilter(show_desugar_default_interface_warnings):
   def filter_stderr(output):
+    # Set this when debugging R8 output.
+    if os.environ.get('R8_SHOW_ALL_OUTPUT', '0') != '0':
+      return output
+
+    warnings = re.split(r'^(?=Warning)', output, flags=re.MULTILINE)
+    preamble, *warnings = warnings
+
     patterns = list(_IGNORE_WARNINGS)
 
-    # When using Bazel's Desugar tool to desugar lambdas and interface methods,
-    # we do not provide D8 with a classpath, which causes a lot of warnings from
-    # D8's default interface desugaring pass. Not having a classpath makes
-    # incremental dexing much more effective. D8 still does backported method
-    # desugaring.
-    # These warnings are also turned off when bytecode checks are turned off.
+    # Missing deps can happen for prebuilts that are missing transitive deps
+    # and have set enable_bytecode_checks=false.
     if not show_desugar_default_interface_warnings:
       patterns += ['default or static interface methods']
 
     combined_pattern = '|'.join(re.escape(p) for p in patterns)
-    output = build_utils.FilterLines(output, combined_pattern)
+    preamble = build_utils.FilterLines(preamble, combined_pattern)
 
-    # Each warning has a prefix line of the file it's from. If we've filtered
-    # out the warning, then also filter out the file header.
-    # E.g.:
-    # Warning in path/to/Foo.class:
-    #   Error message #1 indented here.
-    #   Error message #2 indented here.
-    output = re.sub(r'^Warning in .*?:\n(?!  )', '', output, flags=re.MULTILINE)
+    compiled_re = re.compile(combined_pattern)
+    warnings = [w for w in warnings if not compiled_re.search(w)]
 
-    # Caused by protobuf runtime using -identifiernamestring in a way that
-    # doesn't work with R8. Looks like:
-    # Rule matches ... (very long line) {
-    #   static java.lang.String CONTAINING_TYPE_*;
-    # }
-    output = re.sub(
-        r'Rule matches the static final field `java\.lang\.String '
-        r'com\.google\.protobuf.*\{\n.*?\n\}\n?',
-        '',
-        output,
-        flags=re.DOTALL)
-    return output
+    return preamble + ''.join(warnings)
 
   return filter_stderr
 
