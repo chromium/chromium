@@ -3,6 +3,7 @@ apk_path=lib/arm64-v8a/libmonochrome.so, compress=False, alignment=4096
 apk_path=lib/armeabi-v7a/libarcore_sdk_c.so, compress=False, alignment=4096
 apk_path=lib/armeabi-v7a/libcrashpad_handler_trampoline.so, compress=False, alignment=4096
 apk_path=lib/armeabi-v7a/libmonochrome.so, compress=False, alignment=4096
+apk_path=lib/armeabi-v7a/liboptimization_guide_internal.so, compress=False, alignment=4096
 apk_path=assets/chrome_100_percent.pak, compress=False, alignment=4
 apk_path=assets/icudtl.dat, compress=False, alignment=4
 apk_path=assets/locales/af.pak, compress=False, alignment=4
@@ -174,5 +175,5 @@ apk_path=assets/stored-locales/zh-CN.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/zh-HK.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/zh-TW.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/zu.pak, compress=False, alignment=4
-apk_path=assets/webapk7.dex, compress=True, alignment=0
+apk_path=assets/webapk8.dex, compress=True, alignment=0
 apk_path=assets/webapk_dex_version.txt, compress=True, alignment=0
