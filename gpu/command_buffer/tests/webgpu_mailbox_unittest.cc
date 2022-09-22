@@ -23,6 +23,10 @@
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
+#define SKIP_TEST_IF(condition) \
+  if (condition)                \
+  GTEST_SKIP() << #condition
+
 namespace gpu {
 namespace {
 
@@ -140,11 +144,11 @@ class WebGPUMailboxTest
     gl_manager.Destroy();
 #endif
 
+    SKIP_TEST_IF(!WebGPUSupported());
+    SKIP_TEST_IF(!WebGPUSharedImageSupported());
     WebGPUTest::SetUp();
-    if (!Initialize(GetParam())) {
-      GTEST_SKIP() << "Test failed to initialize.";
-    }
-    initialized_ = true;
+    Initialize(GetParam());
+
     device_ = GetNewDevice();
 
     mock_buffer_map_callback =
@@ -242,7 +246,6 @@ class WebGPUMailboxTest
     queue.Submit(1, &commands);
   }
 
-  bool initialized_ = false;
 #if BUILDFLAG(IS_MAC)
   bool mac_m1_ = false;
 #endif
@@ -250,14 +253,6 @@ class WebGPUMailboxTest
 };
 
 TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
-
   // Create the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox = sii->CreateSharedImage(
@@ -370,14 +365,6 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
 }
 
 TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
-
   // Create the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox = sii->CreateSharedImage(
@@ -437,16 +424,8 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
 // Test that Associate and Dissociate mailbox may be used after the device is
 // destroyed. The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest, AssociateDissociateMailboxAfterDeviceDestroy) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
   if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
-    LOG(ERROR) << "Test skipped due to crbug.com/1359106.";
-    return;
+    GTEST_SKIP() << "Test skipped due to crbug.com/1359106.";
   }
 
   SharedImageInterface* sii = GetSharedImageInterface();
@@ -473,17 +452,8 @@ TEST_P(WebGPUMailboxTest, AssociateDissociateMailboxAfterDeviceDestroy) {
 // Test that ReserveTexture may be used after the device is destroyed.
 // The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest, ReserveTextureAfterDeviceDestroy) {
-  if (!WebGPUSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
   if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
-    LOG(ERROR) << "Test skipped due to crbug.com/1359106.";
-    return;
+    GTEST_SKIP() << "Test skipped due to crbug.com/1359106.";
   }
 
   SharedImageInterface* sii = GetSharedImageInterface();
@@ -510,16 +480,8 @@ TEST_P(WebGPUMailboxTest, ReserveTextureAfterDeviceDestroy) {
 // Test that DissociateMailbox may be used after the device is destroyed.
 // The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest, DissociateMailboxAfterDeviceDestroy) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
   if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
-    LOG(ERROR) << "Test skipped due to crbug.com/1359106.";
-    return;
+    GTEST_SKIP() << "Test skipped due to crbug.com/1359106.";
   }
 
   SharedImageInterface* sii = GetSharedImageInterface();
@@ -547,16 +509,8 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxAfterDeviceDestroy) {
 // device is destroyed. The test should not crash or produce unexpected
 // validation errors.
 TEST_P(WebGPUMailboxTest, DissociateMailboxForPresentAfterDeviceDestroy) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
   if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
-    LOG(ERROR) << "Test skipped due to crbug.com/1359106.";
-    return;
+    GTEST_SKIP() << "Test skipped due to crbug.com/1359106.";
   }
 
   SharedImageInterface* sii = GetSharedImageInterface();
@@ -585,16 +539,8 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxForPresentAfterDeviceDestroy) {
 // Test that DissociateMailbox may be used after the texture is destroyed.
 // The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest, DissociateMailboxAfterTextureDestroy) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
   if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
-    LOG(ERROR) << "Test skipped due to crbug.com/1359106.";
-    return;
+    GTEST_SKIP() << "Test skipped due to crbug.com/1359106.";
   }
 
   SharedImageInterface* sii = GetSharedImageInterface();
@@ -621,16 +567,8 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxAfterTextureDestroy) {
 // Test that DissociateMailboxForPresent may be used after the texture is
 // destroyed. The test should not crash or produce unexpected validation errors.
 TEST_P(WebGPUMailboxTest, DissociateMailboxForPresentAfterTextureDestroy) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
   if (!GPUTestBotConfig::CurrentConfigMatches("Mac")) {
-    LOG(ERROR) << "Test skipped due to crbug.com/1359106.";
-    return;
+    GTEST_SKIP() << "Test skipped due to crbug.com/1359106.";
   }
 
   SharedImageInterface* sii = GetSharedImageInterface();
@@ -659,17 +597,8 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxForPresentAfterTextureDestroy) {
 // itself: we render to it using the Dawn device, then re-associate it to a
 // Dawn texture and read back the values that were written.
 TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
-  if (GetParam().format == viz::ResourceFormat::RGBA_F16) {
-    LOG(ERROR) << "Test skipped because RGBA_F16 isn't supported.";
-    return;
-  }
+  SKIP_TEST_IF(GetParam().format == viz::ResourceFormat::RGBA_F16);
+
   // Create the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox = sii->CreateSharedImage(
@@ -747,14 +676,6 @@ TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
 // Test that an uninitialized shared image is lazily cleared by Dawn when it is
 // read.
 TEST_P(WebGPUMailboxTest, ReadUninitializedSharedImage) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
-
   // Create the shared image.
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox = sii->CreateSharedImage(
@@ -827,14 +748,6 @@ TEST_P(WebGPUMailboxTest, ReadUninitializedSharedImage) {
 // Test that an uninitialized shared image is lazily cleared by Dawn when it is
 // read.
 TEST_P(WebGPUMailboxTest, ReadWritableUninitializedSharedImage) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
-
   // Create the shared image.
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox = sii->CreateSharedImage(
@@ -921,14 +834,6 @@ TEST_P(WebGPUMailboxTest, ReadWritableUninitializedSharedImage) {
 
 // Tests that using a shared image aftr it is dissociated produces an error.
 TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
-
   // Create a the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox = sii->CreateSharedImage(
@@ -1011,14 +916,6 @@ TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
 // move-assignment would first move `representation` then `access`. Causing
 // incorrect member destruction order for the move-to object.
 TEST_P(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
-
   // Create a the shared images.
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox_a = sii->CreateSharedImage(
@@ -1058,18 +955,9 @@ TEST_P(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
 // devices tried to create shared images with the same (id, generation) (which
 // is possible because they can be on different Dawn wires) they would conflict.
 TEST_P(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
-
 #if BUILDFLAG(IS_MAC)
   // Crashing on Mac M1. Currently missing stack trace. crbug.com/1271926
-  if (mac_m1_)
-    return;
+  SKIP_TEST_IF(mac_m1_);
 #endif
 
   // Create a the shared images.
@@ -1114,10 +1002,6 @@ TEST_P(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
 // Test that passing a descriptor to ReserveTexture produces a client-side
 // WGPUTexture that correctly reflects said descriptor.
 TEST_P(WebGPUMailboxTest, ReflectionOfDescriptor) {
-  if (!initialized_) {
-    return;
-  }
-
   // Check that reserving a texture with a full descriptor give the same data
   // back through reflection.
   wgpu::TextureDescriptor desc1 = {};
@@ -1191,14 +1075,6 @@ TEST_P(WebGPUMailboxTest, ReflectionOfDescriptor) {
 // shared image backings rely on GL and need to be responsible for making the
 // context current.
 TEST_P(WebGPUMailboxTest, AssociateDissociateMailboxWhenNotCurrent) {
-  if (!initialized_) {
-    return;
-  }
-  if (!WebGPUSharedImageSupported()) {
-    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
-    return;
-  }
-
   // Create the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox = sii->CreateSharedImage(

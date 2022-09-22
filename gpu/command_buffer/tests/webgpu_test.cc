@@ -41,17 +41,18 @@ void CountCallback(int* count) {
 
 }  // anonymous namespace
 
+#define SKIP_TEST_IF(condition) \
+  if (condition)                \
+  GTEST_SKIP() << #condition
+
 WebGPUTest::Options::Options() = default;
 
 WebGPUTest::WebGPUTest() = default;
 WebGPUTest::~WebGPUTest() = default;
 
 bool WebGPUTest::WebGPUSupported() const {
-  // TODO(crbug.com/1172447): Re-enable on AMD when the RX 5500 XT issues are
-  // resolved.
   // Win7 does not support WebGPU
-  if (GPUTestBotConfig::CurrentConfigMatches("Linux AMD") ||
-      GPUTestBotConfig::CurrentConfigMatches("Win7")) {
+  if (GPUTestBotConfig::CurrentConfigMatches("Win7")) {
     return false;
   }
 
@@ -64,16 +65,16 @@ bool WebGPUTest::WebGPUSharedImageSupported() const {
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
      BUILDFLAG(IS_WIN)) &&                                                 \
     BUILDFLAG(USE_DAWN)
-  return true;
+  // TODO(crbug.com/1172447): Re-enable on AMD when the RX 5500 XT issues are
+  // resolved.
+  return !GPUTestBotConfig::CurrentConfigMatches("Linux AMD");
 #else
   return false;
 #endif
 }
 
 void WebGPUTest::SetUp() {
-  if (!WebGPUSupported()) {
-    return;
-  }
+  SKIP_TEST_IF(!WebGPUSupported());
 }
 
 void WebGPUTest::TearDown() {
@@ -82,15 +83,7 @@ void WebGPUTest::TearDown() {
   context_ = nullptr;
 }
 
-bool WebGPUTest::Initialize(const Options& options) {
-  if (!WebGPUSupported()) {
-    []() {
-      // Wrap in lambda to avoid early return.
-      GTEST_SKIP() << "WebGPU not supported.";
-    }();
-    return false;
-  }
-
+void WebGPUTest::Initialize(const Options& options) {
   gpu::GpuPreferences gpu_preferences;
   gpu_preferences.enable_webgpu = true;
   gpu_preferences.use_passthrough_cmd_decoder =
@@ -121,10 +114,7 @@ bool WebGPUTest::Initialize(const Options& options) {
   ContextResult result =
       context_->Initialize(gpu_service_holder_->task_executor(), attributes,
                            options.shared_memory_limits, image_factory);
-  if (result != ContextResult::kSuccess) {
-    ADD_FAILURE() << "Context failed to initialize";
-    return false;
-  }
+  ASSERT_EQ(result, ContextResult::kSuccess) << "Context failed to initialize";
 
   cmd_helper_ = std::make_unique<webgpu::WebGPUCmdHelper>(
       context_->GetCommandBufferForTest());
@@ -158,7 +148,6 @@ bool WebGPUTest::Initialize(const Options& options) {
   while (!done) {
     RunPendingTasks();
   }
-  return true;
 }
 
 webgpu::WebGPUImplementation* WebGPUTest::webgpu() const {
@@ -269,18 +258,14 @@ wgpu::Device WebGPUTest::GetNewDevice() {
 }
 
 TEST_F(WebGPUTest, FlushNoCommands) {
-  if (!Initialize(WebGPUTest::Options())) {
-    return;
-  }
+  Initialize(WebGPUTest::Options());
 
   webgpu()->FlushCommands();
 }
 
 // Referred from GLES2ImplementationTest/ReportLoss
 TEST_F(WebGPUTest, ReportLoss) {
-  if (!Initialize(WebGPUTest::Options())) {
-    return;
-  }
+  Initialize(WebGPUTest::Options());
 
   GpuControlClient* webgpu_as_client = webgpu();
   int lost_count = 0;
@@ -295,9 +280,7 @@ TEST_F(WebGPUTest, ReportLoss) {
 
 // Referred from GLES2ImplementationTest/ReportLossReentrant
 TEST_F(WebGPUTest, ReportLossReentrant) {
-  if (!Initialize(WebGPUTest::Options())) {
-    return;
-  }
+  Initialize(WebGPUTest::Options());
 
   GpuControlClient* webgpu_as_client = webgpu();
   int lost_count = 0;
@@ -311,9 +294,7 @@ TEST_F(WebGPUTest, ReportLossReentrant) {
 }
 
 TEST_F(WebGPUTest, RequestAdapterAfterContextLost) {
-  if (!Initialize(WebGPUTest::Options())) {
-    return;
-  }
+  Initialize(WebGPUTest::Options());
 
   webgpu()->OnGpuControlLostContext();
 
@@ -333,9 +314,7 @@ TEST_F(WebGPUTest, RequestAdapterAfterContextLost) {
 }
 
 TEST_F(WebGPUTest, RequestDeviceAfterContextLost) {
-  if (!Initialize(WebGPUTest::Options())) {
-    return;
-  }
+  Initialize(WebGPUTest::Options());
 
   webgpu()->OnGpuControlLostContext();
 
@@ -366,14 +345,12 @@ TEST_F(WebGPUTest, RequestDeviceWitUnsupportedFeature) {
   std::string renderer(gl_manager.context()->GetGLRenderer());
   if (renderer.find("Apple M1") != std::string::npos) {
     gl_manager.Destroy();
-    return;
+    GTEST_SKIP() << "Skipped due to crbug.com/1271926.";
   }
   gl_manager.Destroy();
 #endif
 
-  if (!Initialize(WebGPUTest::Options())) {
-    return;
-  }
+  Initialize(WebGPUTest::Options());
 
   // Create device with unsupported features, expect to fail to create and
   // return nullptr
@@ -421,9 +398,8 @@ TEST_F(WebGPUTest, SPIRVIsDisallowed) {
 
   auto options = WebGPUTest::Options();
   options.enable_unsafe_webgpu = false;
-  if (!Initialize(options)) {
-    return;
-  }
+  Initialize(options);
+
   wgpu::Device device = GetNewDevice();
 
   // Make a invalid ShaderModuleDescriptor because it contains SPIR-V.
@@ -449,9 +425,7 @@ TEST_F(WebGPUTest, ExplicitFallbackAdapterIsDisallowed) {
   options.force_fallback_adapter = true;
   options.enable_unsafe_webgpu = false;
   // Initialize attempts to create an adapter.
-  if (!Initialize(options)) {
-    return;
-  }
+  Initialize(options);
 
   // No fallback adapter should be available.
   EXPECT_EQ(adapter_, nullptr);
@@ -461,9 +435,7 @@ TEST_F(WebGPUTest, ImplicitFallbackAdapterIsDisallowed) {
   auto options = WebGPUTest::Options();
   options.enable_unsafe_webgpu = false;
   // Initialize attempts to create an adapter.
-  if (!Initialize(options)) {
-    return;
-  }
+  Initialize(options);
 
   if (adapter_) {
     wgpu::AdapterProperties properties;
