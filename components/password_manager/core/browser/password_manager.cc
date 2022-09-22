@@ -289,6 +289,8 @@ void PasswordManager::RegisterProfilePrefs(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
   registry->RegisterIntegerPref(
       prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
+  registry->RegisterIntegerPref(
+      prefs::kUnenrolledFromGoogleMobileServicesWithErrorListVersion, 0);
   registry->RegisterStringPref(prefs::kUPMErrorUIShownTimestamp, "0");
 #endif
   // Preferences for |PasswordChangeSuccessTracker|.

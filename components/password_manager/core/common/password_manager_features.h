@@ -101,6 +101,7 @@ constexpr base::FeatureParam<bool> kPasswordChangeLiveExperimentParam = {
 
 #if BUILDFLAG(IS_ANDROID)
 extern const base::FeatureParam<int> kMigrationVersion;
+extern const base::FeatureParam<int> kGmsApiErrorListVersion;
 constexpr base::FeatureParam<UpmExperimentVariation>::Option
     kUpmExperimentVariationOption[] = {
         {UpmExperimentVariation::kEnableForSyncingUsers, "0"},

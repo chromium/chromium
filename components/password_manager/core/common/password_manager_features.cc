@@ -301,6 +301,12 @@ BASE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing,
 // is lower than 'kMigrationVersion' passwords will be re-uploaded.
 extern const base::FeatureParam<int> kMigrationVersion = {
     &kUnifiedPasswordManagerAndroid, "migration_version", 1};
+
+// Current version of the GMS Core API errors lists. Users save this value on
+// eviction due to error and will only be re-enrolled to the experiment if the
+// configured version is greater than the saved one.
+extern const base::FeatureParam<int> kGmsApiErrorListVersion = {
+    &kUnifiedPasswordManagerAndroid, "api_error_list_version", 0};
 #endif
 
 // Field trial identifier for password generation requirements.
