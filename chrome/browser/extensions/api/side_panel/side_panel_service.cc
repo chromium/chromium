@@ -41,7 +41,11 @@ api::side_panel::PanelOptions CloneOptions(
 SidePanelService::~SidePanelService() = default;
 
 SidePanelService::SidePanelService(content::BrowserContext* context)
-    : browser_context_(context) {}
+    : browser_context_(context) {
+  extensions::ExtensionRegistry* extension_registry =
+      extensions::ExtensionRegistry::Get(context);
+  extension_registry_observation_.Observe(extension_registry);
+}
 
 api::side_panel::PanelOptions SidePanelService::GetOptions(
     const Extension& extension,
@@ -96,6 +100,10 @@ void SidePanelService::SetOptions(const Extension& extension,
   }
 }
 
+bool SidePanelService::HasExtensionPanelOptionsForTest(const ExtensionId& id) {
+  return panels_.count(id) != 0;
+}
+
 // static
 BrowserContextKeyedAPIFactory<SidePanelService>*
 SidePanelService::GetFactoryInstance() {
@@ -107,6 +115,24 @@ SidePanelService::GetFactoryInstance() {
 // static
 SidePanelService* SidePanelService::Get(content::BrowserContext* context) {
   return BrowserContextKeyedAPIFactory<SidePanelService>::Get(context);
+}
+
+void SidePanelService::RemoveExtensionOptions(const ExtensionId& id) {
+  panels_.erase(id);
+}
+
+void SidePanelService::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    UnloadedExtensionReason reason) {
+  RemoveExtensionOptions(extension->id());
+}
+
+void SidePanelService::OnExtensionUninstalled(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    UninstallReason reason) {
+  RemoveExtensionOptions(extension->id());
 }
 
 }  // namespace extensions
