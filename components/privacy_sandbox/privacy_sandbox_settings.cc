@@ -131,8 +131,8 @@ bool PrivacySandboxSettings::IsTopicAllowed(const CanonicalTopic& topic) {
 
 void PrivacySandboxSettings::SetTopicAllowed(const CanonicalTopic& topic,
                                              bool allowed) {
-  ListPrefUpdate scoped_pref_update(pref_service_,
-                                    prefs::kPrivacySandboxBlockedTopics);
+  ScopedListPrefUpdate scoped_pref_update(pref_service_,
+                                          prefs::kPrivacySandboxBlockedTopics);
 
   // Presence in the preference list indicates that a topic is blocked, as
   // there is no concept of explicitly allowed topics. Thus, allowing a topic
@@ -141,7 +141,7 @@ void PrivacySandboxSettings::SetTopicAllowed(const CanonicalTopic& topic,
   // are undesireable, removing any existing reference first is desireable.
   // Thus, regardless of |allowed|, removing any existing reference is the
   // first step.
-  scoped_pref_update->GetList().EraseIf([&](const base::Value& value) {
+  scoped_pref_update->EraseIf([&](const base::Value& value) {
     auto* blocked_topic_value = value.GetDict().Find(kBlockedTopicsTopicKey);
     auto converted_topic = CanonicalTopic::FromValue(*blocked_topic_value);
     return converted_topic && *converted_topic == topic;
@@ -158,16 +158,16 @@ void PrivacySandboxSettings::SetTopicAllowed(const CanonicalTopic& topic,
 
 void PrivacySandboxSettings::ClearTopicSettings(base::Time start_time,
                                                 base::Time end_time) {
-  ListPrefUpdate scoped_pref_update(pref_service_,
-                                    prefs::kPrivacySandboxBlockedTopics);
+  ScopedListPrefUpdate scoped_pref_update(pref_service_,
+                                          prefs::kPrivacySandboxBlockedTopics);
 
   // Shortcut for maximum time range deletion.
   if (start_time == base::Time() && end_time == base::Time::Max()) {
-    scoped_pref_update->GetList().clear();
+    scoped_pref_update->clear();
     return;
   }
 
-  scoped_pref_update->GetList().EraseIf([&](const base::Value& value) {
+  scoped_pref_update->EraseIf([&](const base::Value& value) {
     auto blocked_time =
         base::ValueToTime(value.GetDict().Find(kBlockedTopicsBlockTimeKey));
     return start_time <= blocked_time && blocked_time <= end_time;
@@ -203,11 +203,8 @@ bool PrivacySandboxSettings::MaySendAttributionReport(
 void PrivacySandboxSettings::SetFledgeJoiningAllowed(
     const std::string& top_frame_etld_plus1,
     bool allowed) {
-  DictionaryPrefUpdate scoped_pref_update(
+  ScopedDictPrefUpdate scoped_pref_update(
       pref_service_, prefs::kPrivacySandboxFledgeJoinBlocked);
-  auto* pref_data = scoped_pref_update.Get();
-  DCHECK(pref_data);
-  DCHECK(pref_data->is_dict());
 
   // Ensure that the provided etld_plus1 actually is an etld+1.
   auto effective_top_frame_etld_plus1 =
@@ -237,34 +234,32 @@ void PrivacySandboxSettings::SetFledgeJoiningAllowed(
   if (allowed) {
     // Existence of the key implies blocking, so simply removing the key is
     // sufficient. If the key wasn't already present, the following is a no-op.
-    pref_data->RemoveKey(effective_top_frame_etld_plus1);
+    scoped_pref_update->Remove(effective_top_frame_etld_plus1);
   } else {
     // Overriding the creation date for keys which already exist is acceptable.
     // Time range based deletions are typically started from the current time,
     // and so this will be more aggressively removed. This decreases the chance
     // a potentially sensitive website remains in preferences.
-    pref_data->SetKey(effective_top_frame_etld_plus1,
-                      base::TimeToValue(base::Time::Now()));
+    scoped_pref_update->Set(effective_top_frame_etld_plus1,
+                            base::TimeToValue(base::Time::Now()));
   }
 }
 
 void PrivacySandboxSettings::ClearFledgeJoiningAllowedSettings(
     base::Time start_time,
     base::Time end_time) {
-  DictionaryPrefUpdate scoped_pref_update(
+  ScopedDictPrefUpdate scoped_pref_update(
       pref_service_, prefs::kPrivacySandboxFledgeJoinBlocked);
-  auto* pref_data = scoped_pref_update.Get();
-  DCHECK(pref_data);
-  DCHECK(pref_data->is_dict());
+  auto& pref_data = scoped_pref_update.Get();
 
   // Shortcut for maximum time range deletion
   if (start_time == base::Time() && end_time == base::Time::Max()) {
-    pref_data->DictClear();
+    pref_data.clear();
     return;
   }
 
   std::vector<std::string> keys_to_remove;
-  for (auto entry : pref_data->DictItems()) {
+  for (auto entry : pref_data) {
     absl::optional<base::Time> created_time = base::ValueToTime(entry.second);
     if (created_time.has_value() && start_time <= created_time &&
         created_time <= end_time) {
@@ -273,17 +268,15 @@ void PrivacySandboxSettings::ClearFledgeJoiningAllowedSettings(
   }
 
   for (const auto& key : keys_to_remove)
-    pref_data->RemoveKey(key);
+    pref_data.Remove(key);
 }
 
 bool PrivacySandboxSettings::IsFledgeJoiningAllowed(
     const url::Origin& top_frame_origin) const {
-  DictionaryPrefUpdate scoped_pref_update(
+  ScopedDictPrefUpdate scoped_pref_update(
       pref_service_, prefs::kPrivacySandboxFledgeJoinBlocked);
-  auto* pref_data = scoped_pref_update.Get();
-  DCHECK(pref_data);
-  DCHECK(pref_data->is_dict());
-  for (auto entry : pref_data->DictItems()) {
+  auto& pref_data = scoped_pref_update.Get();
+  for (auto entry : pref_data) {
     if (base::ranges::any_of(FledgeBlockToContentSettingsPatterns(entry.first),
                              [&](const auto& pattern) {
                                return pattern.Matches(
