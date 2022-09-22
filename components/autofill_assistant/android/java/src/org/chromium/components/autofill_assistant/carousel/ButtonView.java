@@ -16,10 +16,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -80,6 +82,8 @@ public class ButtonView extends LinearLayout {
                 R.styleable.ButtonView_primaryTextAppearance, R.style.TextAppearance_ChipText);
         mSecondaryTextAppearanceId = a.getResourceId(
                 R.styleable.ButtonView_secondaryTextAppearance, R.style.TextAppearance_ChipText);
+        @ColorRes
+        int textColorRes = a.getResourceId(R.styleable.ButtonView_buttonTextColor, -1);
         int borderWidth =
                 a.getResourceId(R.styleable.ButtonView_chipBorderWidth, R.dimen.chip_border_width);
         int verticalInset = a.getDimensionPixelSize(R.styleable.ButtonView_verticalInset,
@@ -99,6 +103,9 @@ public class ButtonView extends LinearLayout {
                 R.layout.autofill_assistant_button_text_view, /* root= */ null);
 
         ApiCompatibilityUtils.setTextAppearance(mPrimaryText, primaryTextAppearance);
+        if (textColorRes != -1) {
+            mPrimaryText.setTextColor(ContextCompat.getColorStateList(getContext(), textColorRes));
+        }
         ViewCompat.setPaddingRelative(mPrimaryText, ViewUtils.dpToPx(context, 4), 0, 0, 0);
         addView(mPrimaryText);
         setPrimaryTextMargins(4);

@@ -41,7 +41,7 @@ public class AssistantStepProgressBar {
     // animation starts scaling and after a while the alpha changes.
     private static final int PULSING_ALPHA_CHANGE_DELAY_MS = 300;
     private static final int PULSING_RESTART_DELAY_MS = 2_000;
-    private static final int COLOR_LIST = R.color.blue_when_enabled_list;
+    private static final int COLOR_LIST = R.color.default_text_color_accent1_tint_list;
     private static final int ERROR_COLOR_LIST = R.color.default_red;
 
     private static class IconViewHolder {
@@ -302,6 +302,7 @@ public class AssistantStepProgressBar {
 
             line.setBackground(ApiCompatibilityUtils.getDrawable(context.getResources(),
                     R.drawable.autofill_assistant_rounded_corner_background));
+            line.setBackgroundTintList(ContextCompat.getColorStateList(context, COLOR_LIST));
             line.setEnabled(false);
         }
 
@@ -313,6 +314,7 @@ public class AssistantStepProgressBar {
                     R.drawable.autofill_assistant_rounded_corner_background));
 
             line.setTag(AssistantTagsForTesting.PROGRESSBAR_LINE_FOREGROUND_TAG);
+            line.setBackgroundTintList(ContextCompat.getColorStateList(context, COLOR_LIST));
             line.setEnabled(true);
 
             line.setScaleX(0f);
