@@ -782,7 +782,6 @@ static_library("extensions") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
-    "//chrome/browser/first_party_sets",
     "//chrome/browser/google",
     "//chrome/browser/image_decoder",
     "//chrome/browser/media/router",

@@ -775,6 +775,9 @@ constexpr char kUsersLastInputMethod[] = "UsersLRUInputMethod";
 const char kPrivacySandboxFirstPartySetsDataAccessAllowed[] =
     "privacy_sandbox.first_party_sets_data_access_allowed";
 
+// Deprecated 09/2022.
+const char kFirstPartySetsEnabled[] = "first_party_sets.enabled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1026,6 +1029,9 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kClipboardHistoryNewFeatureBadgeCount, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 09/2022.
+  registry->RegisterBooleanPref(kFirstPartySetsEnabled, true);
 }
 
 }  // namespace
@@ -2022,6 +2028,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
         shared_pref.value());
   }
 #endif
+
+  // Added 09/2022.
+  profile_prefs->ClearPref(kFirstPartySetsEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

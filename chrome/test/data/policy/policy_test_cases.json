@@ -18966,7 +18966,7 @@
       {
         "note": "Check default values (no policies set)",
         "prefs": {
-          "first_party_sets.enabled": {
+          "privacy_sandbox.first_party_sets_enabled": {
             "location": "user_profile",
             "default_value": true
           }
@@ -18978,7 +18978,7 @@
           "FirstPartySetsEnabled": true
         },
         "prefs": {
-          "first_party_sets.enabled": {
+          "privacy_sandbox.first_party_sets_enabled": {
             "location": "user_profile",
             "value": true
           }
@@ -18990,7 +18990,7 @@
           "FirstPartySetsEnabled": false
         },
         "prefs": {
-          "first_party_sets.enabled": {
+          "privacy_sandbox.first_party_sets_enabled": {
             "location": "user_profile",
             "value": false
           }

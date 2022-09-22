@@ -8,7 +8,6 @@
 namespace first_party_sets {
 
 // Add Profile prefs below.
-extern const char kFirstPartySetsEnabled[];
 extern const char kFirstPartySetsOverrides[];
 
 }  // namespace first_party_sets

@@ -17,7 +17,6 @@
 #include "chrome/browser/extensions/api/settings_private/generated_prefs.h"
 #include "chrome/browser/extensions/api/settings_private/generated_prefs_factory.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
-#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/password_manager/generated_password_leak_detection_pref.h"
@@ -328,7 +327,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kCookieControlsMode] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[::first_party_sets::kFirstPartySetsEnabled] =
+  (*s_allowlist)[::prefs::kPrivacySandboxFirstPartySetsEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Sync and personalization page.

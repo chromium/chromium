@@ -13,6 +13,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
 
@@ -50,7 +51,7 @@ const base::Value::Dict* FirstPartySetsPolicyServiceFactory::GetPolicyIfEnabled(
     return nullptr;
 
   if (!profile.GetPrefs()->GetBoolean(
-          first_party_sets::kFirstPartySetsEnabled) ||
+          prefs::kPrivacySandboxFirstPartySetsEnabled) ||
       !base::FeatureList::IsEnabled(features::kFirstPartySets)) {
     return nullptr;
   }
@@ -98,11 +99,8 @@ bool FirstPartySetsPolicyServiceFactory::ServiceIsCreatedWithBrowserContext()
 
 void FirstPartySetsPolicyServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(
-      kFirstPartySetsEnabled, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(kFirstPartySetsOverrides,
-                                   base::DictionaryValue());
+                                   base::Value::Dict());
 }
 
 }  // namespace first_party_sets

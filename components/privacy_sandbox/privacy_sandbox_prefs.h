@@ -90,6 +90,10 @@ extern const char kPrivacySandboxDisabledInsufficientConfirmation[];
 // this init is applied to the first_party_sets.enabled pref.
 extern const char kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized[];
 
+// Boolean that indicates whether First-Party Sets is enabled. Exposed to the
+// user via Chrome UI, and to enterprises via enterprise policy.
+extern const char kPrivacySandboxFirstPartySetsEnabled[];
+
 }  // namespace prefs
 
 namespace privacy_sandbox {

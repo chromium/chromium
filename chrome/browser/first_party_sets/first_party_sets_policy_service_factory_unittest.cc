@@ -10,6 +10,7 @@
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +48,7 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest, DisabledByPolicy) {
   features.InitAndEnableFeature(features::kFirstPartySets);
   TestingProfile profile;
 
-  profile.GetPrefs()->SetBoolean(first_party_sets::kFirstPartySetsEnabled,
+  profile.GetPrefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
                                  false);
   EXPECT_EQ(FirstPartySetsPolicyServiceFactory::GetPolicyIfEnabled(profile),
             nullptr);
@@ -66,7 +67,7 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest, EnabledWithPolicy) {
             )")
                                 .value();
   base::Value expected_policy = empty_lists.Clone();
-  profile.GetPrefs()->SetBoolean(first_party_sets::kFirstPartySetsEnabled,
+  profile.GetPrefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
                                  true);
   profile.GetPrefs()->SetDict(first_party_sets::kFirstPartySetsOverrides,
                               std::move(empty_lists.GetDict()));
