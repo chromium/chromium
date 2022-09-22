@@ -57,6 +57,9 @@ class ShoppingBookmarkModelObserver
                            const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override;
 
+  void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* model,
+                               const bookmarks::BookmarkNode* node) override;
+
  private:
   base::raw_ptr<ShoppingService> shopping_service_;
 
