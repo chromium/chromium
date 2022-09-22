@@ -87,59 +87,57 @@ void PluginPrefs::SetPrefs(PrefService* prefs) {
   }
 
   {  // Scoped update of prefs::kPluginsPluginsList.
-    ListPrefUpdate update(prefs_, prefs::kPluginsPluginsList);
-    base::Value* saved_plugins_list = update.Get();
-    if (saved_plugins_list) {
-      for (auto& plugin_value : saved_plugins_list->GetList()) {
-        if (!plugin_value.is_dict()) {
-          LOG(WARNING) << "Invalid entry in " << prefs::kPluginsPluginsList;
-          continue;  // Oops, don't know what to do with this item.
-        }
-        base::Value::Dict& plugin = plugin_value.GetDict();
+    ScopedListPrefUpdate update(prefs_, prefs::kPluginsPluginsList);
+    base::Value::List& saved_plugins_list = update.Get();
+    for (auto& plugin_value : saved_plugins_list) {
+      if (!plugin_value.is_dict()) {
+        LOG(WARNING) << "Invalid entry in " << prefs::kPluginsPluginsList;
+        continue;  // Oops, don't know what to do with this item.
+      }
+      base::Value::Dict& plugin = plugin_value.GetDict();
 
-        // The plugin list contains all the plugin files in addition to the
-        // plugin groups.
-        if (const std::string* path = plugin.FindString("path")) {
-          // Files have a path attribute, groups don't.
-          base::FilePath plugin_path = base::FilePath::FromUTF8Unsafe(*path);
+      // The plugin list contains all the plugin files in addition to the
+      // plugin groups.
+      if (const std::string* path = plugin.FindString("path")) {
+        // Files have a path attribute, groups don't.
+        base::FilePath plugin_path = base::FilePath::FromUTF8Unsafe(*path);
 
-          // The path to the internal plugin directory changes everytime Chrome
-          // is auto-updated, since it contains the current version number. For
-          // example, it changes from foobar\Chrome\Application\21.0.1180.83 to
-          // foobar\Chrome\Application\21.0.1180.89.
-          // However, we would like the settings of internal plugins to persist
-          // across Chrome updates. Therefore, we need to recognize those paths
-          // that are within the previous internal plugin directory, and update
-          // them in the prefs accordingly.
-          if (update_internal_dir) {
-            base::FilePath relative_path;
+        // The path to the internal plugin directory changes every time Chrome
+        // is auto-updated, since it contains the current version number. For
+        // example, it changes from foobar\Chrome\Application\21.0.1180.83 to
+        // foobar\Chrome\Application\21.0.1180.89.
+        // However, we would like the settings of internal plugins to persist
+        // across Chrome updates. Therefore, we need to recognize those paths
+        // that are within the previous internal plugin directory, and update
+        // them in the prefs accordingly.
+        if (update_internal_dir) {
+          base::FilePath relative_path;
 
-            // Extract the part of |plugin_path| that is relative to
-            // |last_internal_dir|. For example, |relative_path| will be
-            // foo\bar.dll if |plugin_path| is <last_internal_dir>\foo\bar.dll.
-            //
-            // Every iteration the last path component from |plugin_path| is
-            // removed and prepended to |relative_path| until we get up to
-            // |last_internal_dir|.
-            while (last_internal_dir.IsParent(plugin_path)) {
-              relative_path = plugin_path.BaseName().Append(relative_path);
+          // Extract the part of |plugin_path| that is relative to
+          // |last_internal_dir|. For example, |relative_path| will be
+          // foo\bar.dll if |plugin_path| is <last_internal_dir>\foo\bar.dll.
+          //
+          // Every iteration the last path component from |plugin_path| is
+          // removed and prepended to |relative_path| until we get up to
+          // |last_internal_dir|.
+          while (last_internal_dir.IsParent(plugin_path)) {
+            relative_path = plugin_path.BaseName().Append(relative_path);
 
-              base::FilePath old_path = plugin_path;
-              plugin_path = plugin_path.DirName();
-              // To be extra sure that we won't end up in an infinite loop.
-              if (old_path == plugin_path) {
-                NOTREACHED();
-                break;
-              }
+            base::FilePath old_path = plugin_path;
+            plugin_path = plugin_path.DirName();
+            // To be extra sure that we won't end up in an infinite loop.
+            if (old_path == plugin_path) {
+              NOTREACHED();
+              break;
             }
+          }
 
-            // If |relative_path| is empty, |plugin_path| is not within
-            // |last_internal_dir|. We don't need to update it.
-            if (!relative_path.empty()) {
-              plugin_path = cur_internal_dir.Append(relative_path);
-              std::string updated_path = plugin_path.AsUTF8Unsafe();
-              plugin.Set("path", updated_path);
-            }
+          // If |relative_path| is empty, |plugin_path| is not within
+          // |last_internal_dir|. We don't need to update it.
+          if (!relative_path.empty()) {
+            plugin_path = cur_internal_dir.Append(relative_path);
+            std::string updated_path = plugin_path.AsUTF8Unsafe();
+            plugin.Set("path", updated_path);
           }
         }
       }
