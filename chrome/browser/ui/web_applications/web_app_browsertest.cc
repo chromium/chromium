@@ -2037,6 +2037,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
                        MAYBE_RegKeysFileExtension) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
+  base::HistogramTester tester;
 
   std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
       registration =
@@ -2054,8 +2055,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
   base::RunLoop run_loop_install;
   WebAppInstallManagerObserverAdapter observer(profile());
-  observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
-      [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
+  observer.SetWebAppInstalledWithOsHooksDelegate(
+      base::BindLambdaForTesting([&](const AppId& installed_app_id) {
+        EXPECT_THAT(
+            tester.GetAllSamples("WebApp.FileHandlersRegistration.Result"),
+            BucketsAre(base::Bucket(true, 1)));
+        run_loop_install.Quit();
+      }));
   const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   run_loop_install.Run();
   content::RunAllTasksUntilIdle();
@@ -2111,6 +2117,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   WebAppProvider::GetForTest(profile())->install_finalizer().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppsPage,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+        EXPECT_THAT(
+            tester.GetAllSamples("WebApp.FileHandlersUnregistration.Result"),
+            BucketsAre(base::Bucket(true, 1)));
         EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
         run_loop_uninstall.Quit();
       }));

@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
+
 #include "base/containers/contains.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 
 namespace web_app {
 
@@ -45,8 +49,15 @@ void FakeWebAppFileHandlerManager::InstallFileHandler(
 
   file_handlers_[app_id].push_back(file_handler);
 
-  if (enable)
-    EnableAndRegisterOsFileHandlers(app_id);
+  if (enable) {
+    base::RunLoop run_loop;
+    EnableAndRegisterOsFileHandlers(
+        app_id, base::BindLambdaForTesting([&](Result result) {
+          DCHECK_EQ(result, Result::kOk);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
 }
 
 }  // namespace web_app

@@ -24,9 +24,11 @@ bool FileHandlingIconsSupportedByOs() {
 void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const std::string& app_name,
                                 Profile* profile,
-                                const apps::FileHandlers& file_handlers) {
+                                const apps::FileHandlers& file_handlers,
+                                ResultCallback callback) {
   DCHECK(ShouldRegisterFileHandlersWithOs());
   // Stub function for OS's which don't register file handlers with the OS.
+  std::move(callback).Run(Result::kOk);
 }
 
 void UnregisterFileHandlersWithOs(const AppId& app_id,

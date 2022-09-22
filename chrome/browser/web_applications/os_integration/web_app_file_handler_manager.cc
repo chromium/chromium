@@ -81,21 +81,29 @@ void WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(bool value) {
 }
 
 void WebAppFileHandlerManager::EnableAndRegisterOsFileHandlers(
-    const AppId& app_id) {
-  if (!IsFileHandlingAPIAvailable(app_id))
+    const AppId& app_id,
+    ResultCallback callback) {
+  if (!IsFileHandlingAPIAvailable(app_id)) {
+    std::move(callback).Run(Result::kOk);
     return;
+  }
 
   SetOsIntegrationState(app_id, OsIntegrationState::kEnabled);
 
   if (GetOsIntegrationCallback()) {
     GetOsIntegrationCallback().Run(true);
+    std::move(callback).Run(Result::kOk);
     return;
   }
 
-  if (!ShouldRegisterFileHandlersWithOs())
+  if (!ShouldRegisterFileHandlersWithOs()) {
+    std::move(callback).Run(Result::kOk);
     return;
+  }
 
-#if !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
+  std::move(callback).Run(Result::kOk);
+#else
   // File handler registration is done via shortcuts creation on MacOS,
   // WebAppShortcutManager::BuildShortcutInfoForWebApp collects file handler
   // information to shortcut_info->file_handler_extensions, then used by MacOS
@@ -104,7 +112,10 @@ void WebAppFileHandlerManager::EnableAndRegisterOsFileHandlers(
   const apps::FileHandlers* file_handlers = GetEnabledFileHandlers(app_id);
   if (file_handlers) {
     RegisterFileHandlersWithOs(app_id, GetRegistrar()->GetAppShortName(app_id),
-                               profile_, *file_handlers);
+                               profile_, *file_handlers, std::move(callback));
+  } else {
+    // No file handlers registered.
+    std::move(callback).Run(Result::kOk);
   }
 #endif
 }

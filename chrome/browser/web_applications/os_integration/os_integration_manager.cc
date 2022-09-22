@@ -427,11 +427,15 @@ void OsIntegrationManager::CreateShortcuts(const AppId& app_id,
 void OsIntegrationManager::RegisterFileHandlers(const AppId& app_id,
                                                 ResultCallback callback) {
   DCHECK(file_handler_manager_);
-  file_handler_manager_->EnableAndRegisterOsFileHandlers(app_id);
+  ResultCallback metrics_callback =
+      base::BindOnce([](Result result) {
+        base::UmaHistogramBoolean("WebApp.FileHandlersRegistration.Result",
+                                  (result == Result::kOk));
+        return result;
+      }).Then(std::move(callback));
 
-  // TODO(crbug.com/1087219): callback should be run after all hooks are
-  // deployed, need to refactor filehandler to allow this.
-  std::move(callback).Run(Result::kOk);
+  file_handler_manager_->EnableAndRegisterOsFileHandlers(
+      app_id, std::move(metrics_callback));
 }
 
 void OsIntegrationManager::RegisterProtocolHandlers(const AppId& app_id,
@@ -586,9 +590,14 @@ void OsIntegrationManager::DeleteShortcuts(
 void OsIntegrationManager::UnregisterFileHandlers(const AppId& app_id,
                                                   ResultCallback callback) {
   DCHECK(file_handler_manager_);
-
+  ResultCallback metrics_callback =
+      base::BindOnce([](Result result) {
+        base::UmaHistogramBoolean("WebApp.FileHandlersUnregistration.Result",
+                                  (result == Result::kOk));
+        return result;
+      }).Then(std::move(callback));
   file_handler_manager_->DisableAndUnregisterOsFileHandlers(
-      app_id, std::move(callback));
+      app_id, std::move(metrics_callback));
 }
 
 void OsIntegrationManager::UnregisterProtocolHandlers(const AppId& app_id,
@@ -675,9 +684,6 @@ void OsIntegrationManager::UpdateFileHandlers(
         [](base::WeakPtr<OsIntegrationManager> os_integration_manager,
            const AppId& app_id, ResultCallback finished_callback,
            Result result) {
-          // Re-register file handlers regardless of `result`.
-          // TODO(https://crbug.com/1124047): Report `result` in
-          // an UMA metric.
           if (!os_integration_manager) {
             std::move(finished_callback).Run(Result::kError);
             return;

@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -229,18 +232,32 @@ TEST_F(WebAppFileHandlerManagerTest, FileHandlersAreNotAvailableUnlessEnabled) {
   }
 
   // Ensure they can be enabled.
-  file_handler_manager().EnableAndRegisterOsFileHandlers(app_id());
+  base::RunLoop run_loop;
+  Result file_handling_enabled;
+  file_handler_manager().EnableAndRegisterOsFileHandlers(
+      app_id(), base::BindLambdaForTesting([&](Result result) {
+        file_handling_enabled = result;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
   {
+    EXPECT_EQ(file_handling_enabled, Result::kOk);
     const auto* handlers =
         file_handler_manager().GetEnabledFileHandlers(app_id());
     EXPECT_EQ(2u, handlers->size());
   }
 
   // Ensure they can be disabled.
-  file_handler_manager().DisableAndUnregisterOsFileHandlers(app_id(),
-                                                            base::DoNothing());
-
+  base::RunLoop run_loop_disabled;
+  Result file_handling_disabled;
+  file_handler_manager().DisableAndUnregisterOsFileHandlers(
+      app_id(), base::BindLambdaForTesting([&](Result result) {
+        file_handling_disabled = result;
+        run_loop_disabled.Quit();
+      }));
+  run_loop_disabled.Run();
   {
+    EXPECT_EQ(file_handling_disabled, Result::kOk);
     const auto* handlers =
         file_handler_manager().GetEnabledFileHandlers(app_id());
     EXPECT_EQ(nullptr, handlers);

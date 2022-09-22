@@ -206,16 +206,6 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
     }
   }
 
-  void UninstallWebApp(const AppId& app_id) {
-    base::RunLoop run_loop;
-    UninstallWebAppWithCallback(
-        profile(), app_id, base::BindLambdaForTesting([&](bool uninstalled) {
-          EXPECT_TRUE(uninstalled);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
-
   AppId InstallFileHandlingWebApp(const std::u16string& title,
                                   const GURL& handler_url) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
@@ -611,7 +601,13 @@ class WebAppFileHandlingBrowserTest_FeatureSwitchesState
     // `InstallFileHandlingPWA()` doesn't perform OS integration, so explicitly
     // call it here to simulate a user install. Note: does nothing if the
     // feature is disabled.
-    file_handler_manager().EnableAndRegisterOsFileHandlers(app_id());
+    base::RunLoop run_loop;
+    file_handler_manager().EnableAndRegisterOsFileHandlers(
+        app_id(), base::BindLambdaForTesting([&](Result result) {
+          EXPECT_EQ(result, Result::kOk);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
   }
 
   void IntegrationWasSet(bool enabled) {

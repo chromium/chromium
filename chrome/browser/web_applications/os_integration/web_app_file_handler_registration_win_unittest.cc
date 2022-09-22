@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/windows_version.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/web_applications/chrome_pwa_launcher/chrome_pwa_launcher_util.h"
 #include "chrome/browser/web_applications/os_integration/web_app_handler_registration_utils_win.h"
 #include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/installer/util/shell_util.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -125,11 +127,13 @@ class WebAppFileHandlerRegistrationWinTest : public testing::Test {
     const std::wstring file_handler2_prog_id =
         GetProgIdForAppFileHandler(profile->GetPath(), app_id(), {".doc"});
 
-    RegisterFileHandlersWithOs(app_id(), app_name, profile, file_handlers);
-
-    base::ThreadPoolInstance::Get()->FlushForTesting();
-    base::RunLoop().RunUntilIdle();
-    base::ThreadPoolInstance::Get()->FlushForTesting();
+    base::RunLoop run_loop;
+    RegisterFileHandlersWithOs(app_id(), app_name, profile, file_handlers,
+                               base::BindLambdaForTesting([&](Result result) {
+                                 EXPECT_EQ(result, Result::kOk);
+                                 run_loop.Quit();
+                               }));
+    run_loop.Run();
 
     base::FilePath registered_app_path =
         ShellUtil::GetApplicationPathForProgId(file_handler1_prog_id);
@@ -258,10 +262,13 @@ TEST_F(WebAppFileHandlerRegistrationWinTest,
   const std::wstring profile2_file_handler2_prog_id =
       GetProgIdForAppFileHandler(profile2->GetPath(), app_id(), {".doc"});
 
-  UnregisterFileHandlersWithOs(app_id(), profile(), base::DoNothing());
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  base::RunLoop().RunUntilIdle();
-  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::RunLoop run_loop;
+  UnregisterFileHandlersWithOs(app_id(), profile(),
+                               base::BindLambdaForTesting([&](Result result) {
+                                 EXPECT_EQ(result, Result::kOk);
+                                 run_loop.Quit();
+                               }));
+  run_loop.Run();
   EXPECT_FALSE(base::PathExists(app_specific_launcher_path));
   // Verify that "(Profile 2)" was removed from the web app launcher and
   // file association registry entries.
@@ -304,10 +311,13 @@ TEST_F(WebAppFileHandlerRegistrationWinTest,
   ASSERT_EQ(3u, storage.GetNumberOfProfiles());
   AddAndVerifyFileAssociations(profile3, kAppName, " (Profile 3)");
 
-  UnregisterFileHandlersWithOs(app_id(), profile(), base::DoNothing());
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  base::RunLoop().RunUntilIdle();
-  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::RunLoop run_loop;
+  UnregisterFileHandlersWithOs(app_id(), profile(),
+                               base::BindLambdaForTesting([&](Result result) {
+                                 EXPECT_EQ(result, Result::kOk);
+                                 run_loop.Quit();
+                               }));
+  run_loop.Run();
   EXPECT_FALSE(base::PathExists(app_specific_launcher_path));
   // Verify that "(Profile 2)" was not removed from the web app launcher and
   // file association registry entries.
@@ -334,9 +344,13 @@ TEST_F(WebAppFileHandlerRegistrationWinTest, UnregisterFileHandlersForWebApp) {
   const base::FilePath app_specific_launcher_path =
       ShellUtil::GetApplicationPathForProgId(file_handler1_prog_id());
 
-  UnregisterFileHandlersWithOs(app_id(), profile(), base::DoNothing());
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  UnregisterFileHandlersWithOs(app_id(), profile(),
+                               base::BindLambdaForTesting([&](Result result) {
+                                 EXPECT_EQ(result, Result::kOk);
+                                 run_loop.Quit();
+                               }));
+  run_loop.Run();
   EXPECT_FALSE(base::PathExists(app_specific_launcher_path));
   EXPECT_FALSE(
       ProgIdRegisteredForFileExtension(".txt", file_handler1_prog_id()));

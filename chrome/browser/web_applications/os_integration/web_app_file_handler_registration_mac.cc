@@ -20,11 +20,13 @@ bool FileHandlingIconsSupportedByOs() {
 void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const std::string& app_name,
                                 Profile* profile,
-                                const apps::FileHandlers& file_handlers) {
+                                const apps::FileHandlers& file_handlers,
+                                ResultCallback callback) {
   // On MacOS, file associations are managed through app shims in the
   // Applications directory. File handler registration is handled via shortcuts
   // creation.
   NOTREACHED();
+  std::move(callback).Run(Result::kOk);
 }
 
 void UnregisterFileHandlersWithOs(const AppId& app_id,

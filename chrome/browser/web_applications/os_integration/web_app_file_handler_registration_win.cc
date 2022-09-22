@@ -97,7 +97,8 @@ void RegisterFileHandlersWithOsTask(const AppId& app_id,
 void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const std::string& app_name,
                                 Profile* profile,
-                                const apps::FileHandlers& file_handlers) {
+                                const apps::FileHandlers& file_handlers,
+                                ResultCallback callback) {
   DCHECK(!file_handlers.empty());
 
   const std::wstring app_name_extension =
@@ -110,7 +111,7 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
                      base::UTF8ToWide(app_name), profile->GetPath(),
                      file_handlers, app_name_extension),
       base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
-                     app_id, base::DoNothing()));
+                     app_id, std::move(callback)));
 }
 
 void DeleteAppLauncher(const base::FilePath& launcher_path) {

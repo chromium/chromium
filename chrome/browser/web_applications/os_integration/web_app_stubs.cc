@@ -30,8 +30,10 @@ bool FileHandlingIconsSupportedByOs() {
 void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const std::string& app_name,
                                 Profile* profile,
-                                const apps::FileHandlers& file_handlers) {
+                                const apps::FileHandlers& file_handlers,
+                                ResultCallback callback) {
   NOTIMPLEMENTED();
+  std::move(callback).Run(Result::kError);
 }
 
 void UnregisterFileHandlersWithOs(const AppId& app_id,

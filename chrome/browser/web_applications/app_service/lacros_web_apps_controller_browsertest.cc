@@ -991,10 +991,16 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
 
   // Have to call it explicitly due to usage of
   // OsIntegrationManager::ScopedSuppressForTesting
+  base::RunLoop run_loop;
   provider()
       .os_integration_manager()
       .file_handler_manager()
-      .EnableAndRegisterOsFileHandlers(app_id);
+      .EnableAndRegisterOsFileHandlers(
+          app_id, base::BindLambdaForTesting([&](Result result) {
+            EXPECT_EQ(result, Result::kOk);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   MockAppPublisher mock_app_publisher;
   LacrosWebAppsController lacros_web_apps_controller(profile());

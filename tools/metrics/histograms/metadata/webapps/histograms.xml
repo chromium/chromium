@@ -435,6 +435,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.FileHandlersRegistration.Result" enum="BooleanSuccess"
+    expires_after="2023-10-10">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of file handler registration for PWAs. This is triggered
+    during installations or updates, when set by policy changes in the web app
+    settings policy or when an user modifies the file handling settings from the
+    chrome://app-settings/ page per app.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.FileHandlersUnregistration.Result"
+    enum="BooleanSuccess" expires_after="2023-10-10">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of file handler unregistration for PWAs. This is
+    triggered during uninstalls or updates, when set by policy changes in the
+    web app settings policy or when an user modifies the file handling settings
+    from the chrome://app-settings page per app.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Icon.DownloadedHttpStatusCodeOnCreate"
     enum="HttpResponseCode" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
