@@ -41,12 +41,16 @@ class ApcScrimManagerImpl : public ApcScrimManager,
 
  private:
   // views::ViewObserver:
+  // Updates the bounds of the `WebContents` overlay.
   void OnViewBoundsChanged(views::View* observed_view) override;
 
   // Whether the scrim was visible before a webcontents visibility change.
   // This dictates if the scrim should be shown again or not.
   bool scrim_visible_on_webcontents_hide_ = false;
+
+  // Returns the view of the `WebContents`.
   raw_ptr<views::View> GetContentsWebView();
+  // Creates the `WebContents` overlay, so the user cannot click on the `WebContents`.
   std::unique_ptr<views::View> CreateOverlayView();
 
   base::ScopedObservation<views::View, ViewObserver> observation_{this};
