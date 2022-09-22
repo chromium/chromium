@@ -97,7 +97,7 @@ ClientDownloadRequest::DownloadType GetDownloadType(
            base::EqualsCaseInsensitiveASCII(ext, FILE_PATH_LITERAL(".rtf")) ||
            base::EqualsCaseInsensitiveASCII(ext, FILE_PATH_LITERAL(".wll")))
     return ClientDownloadRequest::DOCUMENT;
-  else if (file.MatchesExtension(FILE_PATH_LITERAL(".7z")))
+  else if (base::EqualsCaseInsensitiveASCII(ext, FILE_PATH_LITERAL(".7z")))
     return ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_EXECUTABLE;
 
   return ClientDownloadRequest::WIN_EXECUTABLE;
