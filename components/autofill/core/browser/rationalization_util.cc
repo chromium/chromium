@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 namespace rationalization_util {
@@ -42,8 +43,14 @@ void RationalizePhoneNumberFields(
   // of a phone number or a whole number). The |found_*| pointers will be set to
   // that set of fields when iteration finishes.
   for (AutofillField* field : fields_in_section) {
-    if (!field->is_focusable)
-      continue;
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillUseParameterizedSectioning)) {
+      if (!field->is_visible)
+        continue;
+    } else {
+      if (!field->is_focusable)
+        continue;
+    }
     ServerFieldType current_field_type = field->Type().GetStorableType();
     switch (current_field_type) {
       case PHONE_HOME_NUMBER:

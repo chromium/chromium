@@ -125,6 +125,9 @@ TEST(AutofillRationalizationUtilTest, PhoneNumber_SkipHiddenPhoneNumberFields) {
                   // filled for that reason.
                   {PHONE_HOME_CITY_AND_NUMBER, true},
                   {PHONE_HOME_WHOLE_NUMBER, false}});
+  // With the `kAutofillUseParameterizedSectioning` `!FormFieldData::is_visible`
+  // fields are skipped.
+  fields[2]->is_visible = false;
   fields[2]->is_focusable = false;
   rationalization_util::RationalizePhoneNumberFields(ToPointers(fields));
   EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
