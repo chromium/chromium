@@ -414,7 +414,7 @@ class TestWidget : public Widget {
 // leads to noticable flashes.
 TEST_F(NativeWidgetAuraTest, ShowMaximizedDoesntBounceAround) {
   root_window()->SetBounds(gfx::Rect(0, 0, 640, 480));
-  root_window()->SetLayoutManager(new MaximizeLayoutManager);
+  root_window()->SetLayoutManager(std::make_unique<MaximizeLayoutManager>());
   UniqueWidgetPtr widget = std::make_unique<TestWidget>();
   Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
   params.parent = nullptr;
@@ -454,8 +454,8 @@ class PropertyTestLayoutManager : public TestLayoutManagerBase {
 // Verifies the resize behavior when added to the layout manager.
 TEST_F(NativeWidgetAuraTest, TestPropertiesWhenAddedToLayout) {
   root_window()->SetBounds(gfx::Rect(0, 0, 640, 480));
-  PropertyTestLayoutManager* layout_manager = new PropertyTestLayoutManager();
-  root_window()->SetLayoutManager(layout_manager);
+  PropertyTestLayoutManager* layout_manager = root_window()->SetLayoutManager(
+      std::make_unique<PropertyTestLayoutManager>());
   UniqueWidgetPtr widget = std::make_unique<TestWidget>();
   Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
   params.delegate = new WidgetDelegate();

@@ -1099,8 +1099,8 @@ void FrameImpl::InitWindowTreeHost() {
 
   wm::SetActivationClient(root_window(), focus_controller_.get());
 
-  layout_manager_ = new FrameLayoutManager;
-  root_window()->SetLayoutManager(layout_manager_);  // Transfers ownership.
+  layout_manager_ =
+      root_window()->SetLayoutManager(std::make_unique<FrameLayoutManager>());
   if (!render_size_override_.IsEmpty())
     layout_manager_->ForceContentDimensions(render_size_override_);
 

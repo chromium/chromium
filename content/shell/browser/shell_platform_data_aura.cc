@@ -100,7 +100,8 @@ ShellPlatformDataAura::ShellPlatformDataAura(const gfx::Size& initial_size) {
   host_ = aura::WindowTreeHost::Create(std::move(properties));
   host_->InitHost();
   host_->window()->Show();
-  host_->window()->SetLayoutManager(new FillLayout(host_->window()));
+  host_->window()->SetLayoutManager(
+      std::make_unique<FillLayout>(host_->window()));
 
   focus_client_ =
       std::make_unique<aura::test::TestFocusClient>(host_->window());

@@ -115,7 +115,8 @@ RootWindowController::RootWindowController(
       std::make_unique<ScreenPositionClient>(host_->window());
 
   // Ensure the window fills the display.
-  host_->window()->SetLayoutManager(new FillLayout(host_->window()));
+  host_->window()->SetLayoutManager(
+      std::make_unique<FillLayout>(host_->window()));
 
   host_->AddObserver(this);
   host_->Show();
