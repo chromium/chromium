@@ -1,0 +1,10 @@
+team_email: "cros-status-area-eng@google.com"
+buganizer: {
+  component_id:1246070
+}
+buganizer_public: {
+  component_id:1246071
+}
+monorail {
+  component: "UI>Shell>StatusArea"
+}
