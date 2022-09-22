@@ -10911,6 +10911,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Bad"/>
 </enum>
 
+<enum name="BatterySaverBubbleActionType">
+  <int value="0" label="Turn off mode for current session"/>
+  <int value="1" label="Dismissed bubble"/>
+</enum>
+
 <enum name="BatteryStatusNumberBatteries">
   <obsolete>
     Removed 2021-08-11. https://crbug.com/1165237

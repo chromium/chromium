@@ -20,15 +20,12 @@ BatterySaverBubbleDelegate::BatterySaverBubbleDelegate(
 
 void BatterySaverBubbleDelegate::OnWindowClosing() {
   observer_->OnBubbleHidden();
+  RecordBatterySaverBubbleAction(action_type_);
 }
 
 void BatterySaverBubbleDelegate::OnSessionOffClicked(const ui::Event& event) {
+  action_type_ = BatterySaverBubbleActionType::kTurnOffNow;
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
   manager->SetTemporaryBatterySaverDisabledForSession(true);
-}
-
-void BatterySaverBubbleDelegate::OnSettingsClicked() {
-  chrome::ShowSettingsSubPage(browser_, chrome::kPerformanceSubPage);
-  dialog_model()->host()->Close();
 }

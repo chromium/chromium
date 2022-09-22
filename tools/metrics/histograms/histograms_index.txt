@@ -88,6 +88,7 @@ tools/metrics/histograms/metadata/password/histograms.xml
 tools/metrics/histograms/metadata/payment/histograms.xml
 tools/metrics/histograms/metadata/pcscan/histograms.xml
 tools/metrics/histograms/metadata/pdf/histograms.xml
+tools/metrics/histograms/metadata/performance_controls/histograms.xml
 tools/metrics/histograms/metadata/performance_manager/histograms.xml
 tools/metrics/histograms/metadata/permissions/histograms.xml
 tools/metrics/histograms/metadata/phonehub/histograms.xml

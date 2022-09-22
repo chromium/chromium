@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -49,9 +51,12 @@ class BatterySaverButtonTest : public TestWithBrowserView {
         static_cast<int>(mode));
   }
 
+  base::HistogramTester* GetHistogramTester() { return &histogram_tester_; }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple local_state_;
+  base::HistogramTester histogram_tester_;
   performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
       environment_;
 };
@@ -145,6 +150,51 @@ TEST_F(BatterySaverButtonTest, ElementIdentifierTest) {
           kBatterySaverButtonElementId, browser_view()->GetElementContext());
 
   EXPECT_EQ(battery_saver_button_view, matched_view);
+}
+
+TEST_F(BatterySaverButtonTest, LogMetricsOnDialogDismissTest) {
+  BatterySaverButton* battery_saver_button =
+      browser_view()->toolbar()->battery_saver_button();
+  EXPECT_NE(battery_saver_button, nullptr);
+
+  SetBatterySaverModeEnabled(true);
+  EXPECT_TRUE(battery_saver_button->GetVisible());
+
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(battery_saver_button);
+  test_api.NotifyClick(e);
+  EXPECT_TRUE(battery_saver_button->IsBubbleShowing());
+
+  test_api.NotifyClick(e);
+  EXPECT_FALSE(battery_saver_button->IsBubbleShowing());
+
+  GetHistogramTester()->ExpectUniqueSample(
+      "PerformanceControls.BatterySaver.BubbleAction",
+      BatterySaverBubbleActionType::kDismiss, 1);
+}
+
+TEST_F(BatterySaverButtonTest, LogMetricsOnTurnOffNowTest) {
+  BatterySaverButton* battery_saver_button =
+      browser_view()->toolbar()->battery_saver_button();
+  EXPECT_NE(battery_saver_button, nullptr);
+
+  SetBatterySaverModeEnabled(true);
+  EXPECT_TRUE(battery_saver_button->GetVisible());
+
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(battery_saver_button);
+  test_api.NotifyClick(e);
+  EXPECT_TRUE(battery_saver_button->IsBubbleShowing());
+
+  views::test::ButtonTestApi turn_off_api(static_cast<views::Button*>(
+      battery_saver_button->GetBubble()->GetExtraView()));
+  turn_off_api.NotifyClick(e);
+  EXPECT_FALSE(battery_saver_button->IsBubbleShowing());
+  GetHistogramTester()->ExpectUniqueSample(
+      "PerformanceControls.BatterySaver.BubbleAction",
+      BatterySaverBubbleActionType::kTurnOffNow, 1);
 }
 
 class BatterySaverButtonNoExperimentsAvailableTest

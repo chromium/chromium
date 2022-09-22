@@ -1,0 +1,32 @@
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!--
+This file is used to generate a comprehensive list of histograms owned
+by the Performance Controls team along with a detailed description for
+each histogram. Maybe add here or add a new performance controls one
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="PerformanceControls.BatterySaver.BubbleAction"
+    enum="BatterySaverBubbleActionType" expires_after="2023-03-01">
+  <owner>agale@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logged on each battery saver mode bubble close indicating whether the bubble
+    is dismissed (either by the user or by the system e.g. closed at shutdown)
+    or used it to turn off battery saver mode for current session. This will be
+    used to measure the efficacy of the bubble message and the number of users
+    that interact with the battery saver toolbar button.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
