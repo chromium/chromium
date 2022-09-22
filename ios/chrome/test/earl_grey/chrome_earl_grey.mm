@@ -303,7 +303,8 @@ UIWindow* GetAnyKeyWindow() {
                   block:^{
                     return openedGURL == [ChromeEarlGrey webStateVisibleURL];
                   }];
-  bool pageLoaded = [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout];
+  bool pageLoaded =
+      [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(pageLoaded, kWaitForPageToStartLoadingError);
   // Wait until the page is loaded.
   [self waitForPageToFinishLoading];
@@ -358,7 +359,8 @@ UIWindow* GetAnyKeyWindow() {
                     return ![ChromeEarlGreyAppInterface isLoading];
                   }];
 
-  BOOL pageLoaded = [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout];
+  BOOL pageLoaded =
+      [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(pageLoaded, kWaitForPageToFinishLoadingError);
 }
 
@@ -404,13 +406,14 @@ UIWindow* GetAnyKeyWindow() {
                   }];
 
   bool matchedElement =
-      [waitForElement waitWithTimeout:kWaitForUIElementTimeout];
+      [waitForElement waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(matchedElement, errorDescription);
 }
 
 - (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher {
   [self waitForUIElementToAppearWithMatcher:matcher
-                                    timeout:kWaitForUIElementTimeout];
+                                    timeout:kWaitForUIElementTimeout
+                                                .InSecondsF()];
 }
 
 - (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher
@@ -432,7 +435,8 @@ UIWindow* GetAnyKeyWindow() {
 
 - (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher {
   [self waitForUIElementToDisappearWithMatcher:matcher
-                                       timeout:kWaitForUIElementTimeout];
+                                       timeout:kWaitForUIElementTimeout
+                                                   .InSecondsF()];
 }
 
 - (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher
@@ -485,7 +489,8 @@ UIWindow* GetAnyKeyWindow() {
                                    return error == nil;
                                  }];
   // Wait for the tap.
-  BOOL hasClicked = [tapButton waitWithTimeout:kWaitForUIElementTimeout];
+  BOOL hasClicked =
+      [tapButton waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(hasClicked, errorDescription);
 }
 
@@ -561,7 +566,8 @@ UIWindow* GetAnyKeyWindow() {
                     actualCount = [ChromeEarlGreyAppInterface mainTabCount];
                     return actualCount == count;
                   }];
-  bool tabCountEqual = [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout];
+  bool tabCountEqual =
+      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
 
   NSString* errorString = [NSString
       stringWithFormat:@"Failed waiting for main tab count to become %" PRIuNS
@@ -584,7 +590,8 @@ UIWindow* GetAnyKeyWindow() {
                     return
                         [ChromeEarlGreyAppInterface incognitoTabCount] == count;
                   }];
-  bool tabCountEqual = [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout];
+  bool tabCountEqual =
+      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(tabCountEqual, errorString);
 }
 
@@ -599,8 +606,8 @@ UIWindow* GetAnyKeyWindow() {
                     return !
                         [ChromeEarlGreyAppInterface isRestoreSessionInProgress];
                   }];
-  bool restoreSessionCompleted =
-      [finishedRestoreSession waitWithTimeout:kWaitForPageLoadTimeout];
+  bool restoreSessionCompleted = [finishedRestoreSession
+      waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(restoreSessionCompleted,
                              kWaitForRestoreSessionToFinishError);
 }
@@ -625,12 +632,13 @@ UIWindow* GetAnyKeyWindow() {
                     return error == nil;
                   }];
   bool containsWebState =
-      [waitForWebState waitWithTimeout:kWaitForUIElementTimeout];
+      [waitForWebState waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(containsWebState, errorString);
 }
 
 - (void)waitForWebStateContainingText:(const std::string&)UTF8Text {
-  [self waitForWebStateContainingText:UTF8Text timeout:kWaitForPageLoadTimeout];
+  [self waitForWebStateContainingText:UTF8Text
+                              timeout:kWaitForPageLoadTimeout.InSecondsF()];
 }
 
 - (void)waitForWebStateFrameContainingText:(const std::string&)UTF8Text {
@@ -666,7 +674,8 @@ UIWindow* GetAnyKeyWindow() {
                     return !
                         [ChromeEarlGreyAppInterface webStateContainsText:text];
                   }];
-  bool containsText = [waitForText waitWithTimeout:kWaitForUIElementTimeout];
+  bool containsText =
+      [waitForText waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(containsText, errorString);
 }
 
@@ -972,7 +981,7 @@ UIWindow* GetAnyKeyWindow() {
                     return actualCount == count;
                   }];
   bool browserCountEqual =
-      [browserCountCheck waitWithTimeout:kWaitForUIElementTimeout];
+      [browserCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
 
   NSString* errorString = [NSString
       stringWithFormat:@"Failed waiting for window count to become %" PRIuNS
@@ -1009,7 +1018,8 @@ UIWindow* GetAnyKeyWindow() {
                         isLoadingInWindowWithNumber:windowNumber];
                   }];
 
-  BOOL pageLoaded = [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout];
+  BOOL pageLoaded =
+      [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(pageLoaded, kWaitForPageToFinishLoadingError);
 }
 
@@ -1041,7 +1051,7 @@ UIWindow* GetAnyKeyWindow() {
 - (void)waitForWebStateContainingText:(const std::string&)UTF8Text
                    inWindowWithNumber:(int)windowNumber {
   [self waitForWebStateContainingText:UTF8Text
-                              timeout:kWaitForPageLoadTimeout
+                              timeout:kWaitForPageLoadTimeout.InSecondsF()
                    inWindowWithNumber:windowNumber];
 }
 
@@ -1084,7 +1094,8 @@ UIWindow* GetAnyKeyWindow() {
                         mainTabCountInWindowWithNumber:windowNumber];
                     return actualCount == count;
                   }];
-  bool tabCountEqual = [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout];
+  bool tabCountEqual =
+      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
 
   NSString* errorString = [NSString
       stringWithFormat:@"Failed waiting for main tab count to become %" PRIuNS
@@ -1114,7 +1125,8 @@ UIWindow* GetAnyKeyWindow() {
                         incognitoTabCountInWindowWithNumber:windowNumber];
                     return actualCount == count;
                   }];
-  bool tabCountEqual = [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout];
+  bool tabCountEqual =
+      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
 
   NSString* errorString =
       [NSString stringWithFormat:
@@ -1131,7 +1143,7 @@ UIWindow* GetAnyKeyWindow() {
     DCHECK(value.is_bool());
     return value.GetBool();
   };
-  NSTimeInterval timeout = base::test::ios::kWaitForActionTimeout;
+  NSTimeInterval timeout = base::test::ios::kWaitForActionTimeout.InSecondsF();
   NSString* conditionName = [NSString
       stringWithFormat:@"Wait for JS condition: %@", javaScriptCondition];
   GREYCondition* condition = [GREYCondition conditionWithName:conditionName
@@ -1159,7 +1171,8 @@ UIWindow* GetAnyKeyWindow() {
                   block:^{
                     return ![ChromeEarlGreyAppInterface hasIdentities];
                   }];
-  bool success = [allIdentitiesCleared waitWithTimeout:kWaitForActionTimeout];
+  bool success =
+      [allIdentitiesCleared waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(success,
                              @"Failed waiting for identities to be cleared");
 }

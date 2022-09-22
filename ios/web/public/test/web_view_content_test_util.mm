@@ -139,7 +139,7 @@ bool IsWebViewContainingTextInFrame(web::WebState* web_state,
 
 bool WaitForWebViewContainingText(web::WebState* web_state,
                                   std::string text,
-                                  NSTimeInterval timeout) {
+                                  base::TimeDelta timeout) {
   return WaitUntilConditionOrTimeout(timeout, ^{
     base::RunLoop().RunUntilIdle();
     return IsWebViewContainingText(web_state, text);
@@ -148,7 +148,7 @@ bool WaitForWebViewContainingText(web::WebState* web_state,
 
 bool WaitForWebViewNotContainingText(web::WebState* web_state,
                                      std::string text,
-                                     NSTimeInterval timeout) {
+                                     base::TimeDelta timeout) {
   return WaitUntilConditionOrTimeout(timeout, ^{
     base::RunLoop().RunUntilIdle();
     return !IsWebViewContainingText(web_state, text);
@@ -157,7 +157,7 @@ bool WaitForWebViewNotContainingText(web::WebState* web_state,
 
 bool WaitForWebViewContainingTextInFrame(web::WebState* web_state,
                                          std::string text,
-                                         NSTimeInterval timeout) {
+                                         base::TimeDelta timeout) {
   return WaitUntilConditionOrTimeout(timeout, ^{
     base::RunLoop().RunUntilIdle();
     return IsWebViewContainingTextInFrame(web_state, text);

@@ -30,7 +30,7 @@ const char kDestinationPage[] = "You've arrived!";
 const char kRefreshMetaPageTemplate[] =
     "<!DOCTYPE html>"
     "<html>"
-    "  <head><meta HTTP-EQUIV='REFRESH' content='%d;url=%s'></head>"
+    "  <head><meta HTTP-EQUIV='REFRESH' content='%lld;url=%s'></head>"
     "  <body></body>"
     "</html>";
 
@@ -46,12 +46,13 @@ namespace web {
 // Test fixture for integration tests involving page navigation triggered by
 // meta-tag.
 class MetaTagTest : public WebTestWithWebState,
-                    public ::testing::WithParamInterface<int> {
+                    public ::testing::WithParamInterface<base::TimeDelta> {
  protected:
   void SetUp() override {
     WebTestWithWebState::SetUp();
-    std::string refresh_meta_page = base::StringPrintf(
-        kRefreshMetaPageTemplate, GetParam(), kDestinationRelativeUrl);
+    std::string refresh_meta_page =
+        base::StringPrintf(kRefreshMetaPageTemplate, GetParam().InSeconds(),
+                           kDestinationRelativeUrl);
     server_.RegisterRequestHandler(base::BindRepeating(
         net::test_server::HandlePrefixedRequest, kOriginRelativeUrl,
         base::BindRepeating(::testing::HandlePageWithHtml, refresh_meta_page)));
@@ -77,6 +78,6 @@ TEST_P(MetaTagTest, HttpEquivRefresh) {
 
 INSTANTIATE_TEST_SUITE_P(/* No InstantiationName */,
                          MetaTagTest,
-                         ::testing::Values(1, 3));
+                         ::testing::Values(base::Seconds(1), base::Seconds(3)));
 
 }  // namespace web

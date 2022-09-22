@@ -84,7 +84,8 @@ constexpr char kEnrollmentToken[] = "enrollment_token";
   // Waits for enterprise loading screen to be dismissed or timeout after
   // kWaitForUIElementTimeout.
   GREYAssertTrue([loadingScreenDismissed
-                     waitWithTimeout:base::test::ios::kWaitForUIElementTimeout],
+                     waitWithTimeout:base::test::ios::kWaitForUIElementTimeout
+                                         .InSecondsF()],
                  @"Enterprise loading screen still visible.");
 }
 

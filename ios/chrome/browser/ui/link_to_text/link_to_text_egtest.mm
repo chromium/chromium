@@ -209,7 +209,8 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
                   }];
 
   GREYAssert([scrolledToText
-                 waitWithTimeout:base::test::ios::kWaitForJSCompletionTimeout],
+                 waitWithTimeout:base::test::ios::kWaitForJSCompletionTimeout
+                                     .InSecondsF()],
              @"Could not find visible marked element.");
 
   GREYAssertEqual(kFirstFragmentText, base::SysNSStringToUTF8(firstVisibleMark),
@@ -281,9 +282,10 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
                     return expectedGURL == [ChromeEarlGrey pasteboardURL];
                   }];
 
-  GREYAssert([getPasteboardValue
-                 waitWithTimeout:base::test::ios::kWaitForActionTimeout],
-             @"Could not get expected URL from pasteboard.");
+  GREYAssert(
+      [getPasteboardValue
+          waitWithTimeout:base::test::ios::kWaitForActionTimeout.InSecondsF()],
+      @"Could not get expected URL from pasteboard.");
 }
 
 - (void)testBadSelectionDisablesGenerateLink {

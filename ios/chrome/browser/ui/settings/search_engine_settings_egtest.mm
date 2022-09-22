@@ -196,7 +196,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                   }];
 
   bool matchedElement = [waitForDeleteToDisappear
-      waitWithTimeout:base::test::ios::kWaitForUIElementTimeout];
+      waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()];
 
   if (!matchedElement) {
     // Delete button is still on screen, tap it
@@ -274,9 +274,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                    return [weakSelf wasOpenSearchCalled];
                                  }];
   // Wait for the
-  GREYAssertTrue([openSearchQuery
-                     waitWithTimeout:base::test::ios::kWaitForPageLoadTimeout],
-                 @"The open search XML hasn't been queried.");
+  GREYAssertTrue(
+      [openSearchQuery waitWithTimeout:base::test::ios::kWaitForPageLoadTimeout
+                                           .InSecondsF()],
+      @"The open search XML hasn't been queried.");
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL(GetSearchExample())];
 

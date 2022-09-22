@@ -152,7 +152,7 @@ BOOL WaitForKeyboardToAppear() {
                   block:^BOOL {
                     return [EarlGrey isKeyboardShownWithError:nil];
                   }];
-  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout];
+  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
 }
 
 }  // namespace
@@ -188,7 +188,8 @@ id<GREYMatcher> ResendPostButtonMatcher() {
                     return error == nil;
                   }];
   GREYAssert(
-      [condition waitWithTimeout:base::test::ios::kWaitForUIElementTimeout],
+      [condition waitWithTimeout:base::test::ios::kWaitForUIElementTimeout
+                                     .InSecondsF()],
       @"Tab History View not displayed.");
 }
 
@@ -578,7 +579,8 @@ id<GREYMatcher> ResendPostButtonMatcher() {
                       return !error;
                     }];
     GREYAssert([interactableCondition
-                   waitWithTimeout:base::test::ios::kWaitForUIElementTimeout],
+                   waitWithTimeout:base::test::ios::kWaitForUIElementTimeout
+                                       .InSecondsF()],
                @"Web view did not become interactable.");
 
     [[EarlGrey selectElementWithMatcher:WebViewMatcher()]

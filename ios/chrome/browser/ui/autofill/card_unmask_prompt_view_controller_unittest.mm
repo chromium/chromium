@@ -382,7 +382,7 @@ TEST_F(CardUnmaskPromptViewControllerTest, ShowErrorPresentsAlert) {
 
   // Spin the run loop to trigger the alert presentation animation.
   base::test::ios::SpinRunLoopWithMaxDelay(
-      base::Seconds(base::test::ios::kWaitForUIElementTimeout));
+      base::test::ios::kWaitForUIElementTimeout);
   ASSERT_TRUE([prompt_controller.presentedViewController
       isKindOfClass:[UIAlertController class]]);
   auto* alertController = static_cast<UIAlertController*>(

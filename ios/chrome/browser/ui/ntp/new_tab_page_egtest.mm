@@ -64,7 +64,8 @@ BOOL WaitForHistoryToDisappear() {
                         assertWithMatcher:grey_notVisible()
                                     error:&error];
                     return error == nil;
-                  }] waitWithTimeout:base::test::ios::kWaitForUIElementTimeout];
+                  }]
+      waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()];
 }
 
 }  // namespace

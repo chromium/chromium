@@ -64,8 +64,10 @@ BOOL HandleSystemAlertsIfVisible() {
   // Limit attempt times. If attempt limit is exceeded it means something wrong
   // at tapping the dismiss button.
   int attempt = 0;
-  while (attempt < 5 &&
-         [alert waitForExistenceWithTimeout:kWaitForUIElementTimeout]) {
+  while (
+      attempt < 5 &&
+      [alert
+          waitForExistenceWithTimeout:kWaitForUIElementTimeout.InSecondsF()]) {
     NSLog(@"Alert on screen: %@", alert.label);
     if (!HandleSingleAlert(alert)) {
       return NO;
@@ -94,9 +96,10 @@ BOOL HandleSystemAlertsIfVisible() {
 
   [app.buttons[ntp_home::FakeOmniboxAccessibilityID()].firstMatch tap];
 
-  XCTAssert([app.keyboards.firstMatch
-                waitForExistenceWithTimeout:kWaitForUIElementTimeout],
-            @"Keyboard didn't appear!");
+  XCTAssert(
+      [app.keyboards.firstMatch
+          waitForExistenceWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
+      @"Keyboard didn't appear!");
   [app typeText:@"http://google.com"];
   [app typeText:XCUIKeyboardKeyReturn];
 
@@ -104,7 +107,8 @@ BOOL HandleSystemAlertsIfVisible() {
       // verify chrome is not showing offline dino page
       ![[[app.webViews.firstMatch descendantsMatchingType:XCUIElementTypeAny]
             matchingIdentifier:@"Dino game, play"]
-              .firstMatch waitForExistenceWithTimeout:kWaitForPageLoadTimeout],
+              .firstMatch
+          waitForExistenceWithTimeout:kWaitForPageLoadTimeout.InSecondsF()],
       @"Showing chrome dino page!");
 }
 

@@ -345,7 +345,8 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:SettingsDoneButton()
                                   timeout:base::test::ios::
-                                              kWaitForClearBrowsingDataTimeout];
+                                              kWaitForClearBrowsingDataTimeout
+                                                  .InSecondsF()];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];

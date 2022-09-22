@@ -156,7 +156,7 @@ TEST_F(UIDelegateTest, DidLoadFavicons) {
   OCMExpect([mock_delegate_ webView:web_view_ didLoadFavicons:favicons_arg]);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, page_url));
-  [(id)mock_delegate_ verifyWithDelay:kWaitForUIElementTimeout];
+  [(id)mock_delegate_ verifyWithDelay:kWaitForUIElementTimeout.InSecondsF()];
 
   ASSERT_EQ(1u, favicons.count);
   EXPECT_EQ(CWVFaviconTypeFavicon, favicons[0].type);

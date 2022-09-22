@@ -164,9 +164,8 @@ void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager) {
   ConditionBlock conditionBlock = ^bool {
     return profileCount < personalDataManager->GetProfiles().size();
   };
-  base::test::ios::TimeUntilCondition(
-      nil, conditionBlock, false,
-      base::Seconds(base::test::ios::kWaitForActionTimeout));
+  base::test::ios::TimeUntilCondition(nil, conditionBlock, false,
+                                      base::test::ios::kWaitForActionTimeout);
 }
 
 }  // namespace
@@ -370,9 +369,8 @@ class SaveCardInfobarEGTestHelper
   ConditionBlock conditionBlock = ^bool {
     return 0 == personalDataManager->GetProfiles().size();
   };
-  base::test::ios::TimeUntilCondition(
-      nil, conditionBlock, false,
-      base::Seconds(base::test::ios::kWaitForActionTimeout));
+  base::test::ios::TimeUntilCondition(nil, conditionBlock, false,
+                                      base::test::ios::kWaitForActionTimeout);
 
   autofill::prefs::SetAutofillProfileEnabled(browserState->GetPrefs(), YES);
 }
@@ -412,7 +410,7 @@ class SaveCardInfobarEGTestHelper
   };
   base::test::ios::TimeUntilCondition(
       nil, conditionBlock, false,
-      base::Seconds(base::test::ios::kWaitForFileOperationTimeout));
+      base::test::ios::kWaitForFileOperationTimeout);
   personalDataManager->NotifyPersonalDataObserver();
   return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());
 }

@@ -31,7 +31,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                     return !
                         [ShellEarlGreyAppInterface isCurrentWebStateLoading];
                   }];
-  BOOL pageLoaded = [condition waitWithTimeout:kWaitForPageLoadTimeout];
+  BOOL pageLoaded =
+      [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(pageLoaded, loadingErrorDescription);
 
   EG_TEST_HELPER_ASSERT_NO_ERROR(
@@ -52,7 +53,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                                        currentWebStateContainsText:text];
                                  }];
 
-  BOOL containsText = [condition waitWithTimeout:kWaitForPageLoadTimeout];
+  BOOL containsText =
+      [condition waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
   EG_TEST_HELPER_ASSERT_TRUE(containsText, description);
 }
 

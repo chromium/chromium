@@ -835,9 +835,9 @@ void FocusFakebox() {
                     return error == nil;
                   }];
   // Verify that system text selection callout is not displayed.
-  GREYAssertFalse(
-      [CopyButtonIsDisplayed waitWithTimeout:kWaitForUIElementTimeout],
-      @"Copy button should not be displayed");
+  GREYAssertFalse([CopyButtonIsDisplayed
+                      waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
+                  @"Copy button should not be displayed");
 
   // Pressing should not allow select or selectAll when omnibox is empty.
   // Verify that system text selection callout is not displayed.
@@ -873,9 +873,9 @@ void FocusFakebox() {
                                 error:&error];
                     return error == nil;
                   }];
-  GREYAssertTrue(
-      [SelectAllButtonIsDisplayed waitWithTimeout:kWaitForUIElementTimeout],
-      @"SelectAll button display failed");
+  GREYAssertTrue([SelectAllButtonIsDisplayed
+                     waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
+                 @"SelectAll button display failed");
 
   // Cut the text.
   [[EarlGrey selectElementWithMatcher:CutButton()] performAction:grey_tap()];
@@ -896,7 +896,7 @@ void FocusFakebox() {
                     return error == nil;
                   }];
   GREYAssertTrue([searchCopiedTextButtonIsDisplayed
-                     waitWithTimeout:kWaitForUIElementTimeout],
+                     waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
                  @"Search Copied Text button display failed");
   // Verify that system text selection callout is displayed (Paste).
   [[EarlGrey selectElementWithMatcher:PasteButton()]
@@ -938,9 +938,9 @@ void FocusFakebox() {
                     return error == nil;
                   }];
   // Verify that system text selection callout is displayed.
-  GREYAssertTrue(
-      [SelectButtonIsDisplayed waitWithTimeout:kWaitForUIElementTimeout],
-      @"Select button display failed");
+  GREYAssertTrue([SelectButtonIsDisplayed
+                     waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
+                 @"Select button display failed");
   [[EarlGrey selectElementWithMatcher:SelectAllButton()]
       assertWithMatcher:grey_notNil()];
 

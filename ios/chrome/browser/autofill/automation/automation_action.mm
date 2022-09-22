@@ -301,8 +301,8 @@
                         [self checkForJsAssertionFailures:state_assertions] ==
                         nil;
                   }];
-  bool waitForCompleted =
-      [waitForElement waitWithTimeout:base::test::ios::kWaitForActionTimeout];
+  bool waitForCompleted = [waitForElement
+      waitWithTimeout:base::test::ios::kWaitForActionTimeout.InSecondsF()];
   GREYAssertTrue(waitForCompleted, conditionDescription);
 }
 

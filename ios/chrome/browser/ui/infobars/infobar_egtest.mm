@@ -36,8 +36,9 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
   // After `kInfobarBannerDefaultPresentationDurationInSeconds` seconds the
   // banner should disappear. Includes `kWaitForUIElementTimeout` for EG
   // synchronization.
-  NSTimeInterval delay = kInfobarBannerDefaultPresentationDurationInSeconds +
-                         base::test::ios::kWaitForUIElementTimeout;
+  base::TimeDelta delay =
+      base::Seconds(kInfobarBannerDefaultPresentationDurationInSeconds) +
+      base::test::ios::kWaitForUIElementTimeout;
   BOOL bannerShown =
       WaitUntilConditionOrTimeout(delay, ^{
         NSError* error = nil;

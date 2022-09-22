@@ -121,7 +121,7 @@ std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
           result = value->CreateDeepCopy();
         did_finish = true;
       }),
-      base::Seconds(kWaitForJSCompletionTimeout));
+      kWaitForJSCompletionTimeout);
 
   if (!function_call_successful) {
     DLOG(ERROR) << "JavaScript failed to be called on WebFrame.";

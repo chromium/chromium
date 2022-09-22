@@ -110,8 +110,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* title = nil;
   title = app.staticTexts[@"Toy Town"];
-  GREYAssert([title waitForExistenceWithTimeout:kWaitForDownloadTimeout],
-             @"PassKit dialog UI was not presented");
+  GREYAssert(
+      [title waitForExistenceWithTimeout:kWaitForDownloadTimeout.InSecondsF()],
+      @"PassKit dialog UI was not presented");
 }
 
 @end

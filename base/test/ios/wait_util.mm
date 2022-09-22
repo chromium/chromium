@@ -16,25 +16,19 @@ namespace base {
 namespace test {
 namespace ios {
 
-const NSTimeInterval kSpinDelaySeconds = 0.01;
-const NSTimeInterval kWaitForJSCompletionTimeout = 6.0;
-const NSTimeInterval kWaitForUIElementTimeout = 4.0;
-const NSTimeInterval kWaitForDownloadTimeout = 10.0;
-const NSTimeInterval kWaitForPageLoadTimeout = 10.0;
-const NSTimeInterval kWaitForActionTimeout = 10.0;
-const NSTimeInterval kWaitForClearBrowsingDataTimeout = 45.0;
-const NSTimeInterval kWaitForCookiesTimeout = 4.0;
-const NSTimeInterval kWaitForFileOperationTimeout = 2.0;
-
-bool WaitUntilConditionOrTimeout(NSTimeInterval timeout,
-                                 ConditionBlock condition) {
-  NSDate* deadline = [NSDate dateWithTimeIntervalSinceNow:timeout];
+bool WaitUntilConditionOrTimeout(TimeDelta timeout, ConditionBlock condition) {
+  NSDate* deadline = [NSDate dateWithTimeIntervalSinceNow:timeout.InSecondsF()];
   bool success = condition();
   while (!success && [[NSDate date] compare:deadline] != NSOrderedDescending) {
-    base::test::ios::SpinRunLoopWithMaxDelay(base::Seconds(kSpinDelaySeconds));
+    base::test::ios::SpinRunLoopWithMaxDelay(kSpinDelaySeconds);
     success = condition();
   }
   return success;
+}
+
+bool WaitUntilConditionOrTimeout(NSTimeInterval timeout,
+                                 ConditionBlock condition) {
+  return WaitUntilConditionOrTimeout(base::Seconds(timeout), condition);
 }
 
 TimeDelta TimeUntilCondition(ProceduralBlock action,
@@ -46,11 +40,11 @@ TimeDelta TimeUntilCondition(ProceduralBlock action,
     action();
   if (timeout.is_zero())
     timeout = TestTimeouts::action_timeout();
-  const TimeDelta spin_delay(Milliseconds(10));
+  constexpr TimeDelta kSpinDelay(Milliseconds(10));
   bool condition_evaluation_result = false;
   while (timer.Elapsed() < timeout &&
          (!condition || !(condition_evaluation_result = condition()))) {
-    SpinRunLoopWithMaxDelay(spin_delay);
+    SpinRunLoopWithMaxDelay(kSpinDelay);
     if (run_message_loop)
       RunLoop().RunUntilIdle();
   }

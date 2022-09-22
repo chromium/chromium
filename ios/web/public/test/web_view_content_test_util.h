@@ -37,14 +37,14 @@ bool IsWebViewContainingTextInFrame(web::WebState* web_state,
 [[nodiscard]] bool WaitForWebViewContainingText(
     web::WebState* web_state,
     std::string text,
-    NSTimeInterval timeout = base::test::ios::kWaitForPageLoadTimeout);
+    base::TimeDelta timeout = base::test::ios::kWaitForPageLoadTimeout);
 
 // Waits for the given web state to not contain `text`. If the condition is not
 // met within `timeout` false is returned.
 [[nodiscard]] bool WaitForWebViewNotContainingText(
     web::WebState* web_state,
     std::string text,
-    NSTimeInterval timeout = base::test::ios::kWaitForPageLoadTimeout);
+    base::TimeDelta timeout = base::test::ios::kWaitForPageLoadTimeout);
 
 // Waits for the given web state to have a frame that contains `text`. If the
 // condition is not met within `timeout` false is returned.
@@ -53,7 +53,7 @@ bool IsWebViewContainingTextInFrame(web::WebState* web_state,
 [[nodiscard]] bool WaitForWebViewContainingTextInFrame(
     web::WebState* web_state,
     std::string text,
-    NSTimeInterval timeout = base::test::ios::kWaitForPageLoadTimeout);
+    base::TimeDelta timeout = base::test::ios::kWaitForPageLoadTimeout);
 
 // Waits for a web view with the corresponding `image_id` and `image_state`, in
 // the given `web_state`.

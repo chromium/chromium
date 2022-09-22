@@ -188,7 +188,7 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
   NSError* focus_error = nil;
   test::EvaluateJavaScript(web_view_, focus_script, &focus_error);
   ASSERT_FALSE(focus_error);
-  [delegate verifyWithDelay:kWaitForActionTimeout];
+  [delegate verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 
   [[delegate expect] autofillController:autofill_controller_
            didBlurOnFieldWithIdentifier:kTestAddressFieldID
@@ -205,7 +205,7 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
   NSError* blur_error = nil;
   test::EvaluateJavaScript(web_view_, blur_script, &blur_error);
   ASSERT_FALSE(blur_error);
-  [delegate verifyWithDelay:kWaitForActionTimeout];
+  [delegate verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 
   [[delegate expect] autofillController:autofill_controller_
           didInputInFieldWithIdentifier:kTestAddressFieldID
@@ -224,7 +224,7 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
   NSError* input_error = nil;
   test::EvaluateJavaScript(web_view_, input_script, &input_error);
   ASSERT_FALSE(input_error);
-  [delegate verifyWithDelay:kWaitForActionTimeout];
+  [delegate verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 
   [[delegate expect] autofillController:autofill_controller_
                   didSubmitFormWithName:kTestFormName
@@ -240,7 +240,7 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
   NSError* submit_error = nil;
   test::EvaluateJavaScript(web_view_, submit_script, &submit_error);
   ASSERT_FALSE(submit_error);
-  [delegate verifyWithDelay:kWaitForActionTimeout];
+  [delegate verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 }
 
 // Tests that CWVAutofillController can fetch, fill, and clear suggestions.

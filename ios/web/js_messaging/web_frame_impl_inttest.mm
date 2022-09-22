@@ -56,8 +56,6 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnMainFrame) {
   WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
   ASSERT_TRUE(main_frame);
 
-  NSTimeInterval js_timeout = kWaitForJSCompletionTimeout;
-
   __block bool called = false;
   std::vector<base::Value> params;
   main_frame->CallJavaScriptFunction(
@@ -67,9 +65,9 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnMainFrame) {
         called = true;
       }),
       // Increase feature timeout in order to fail on test specific timeout.
-      base::Seconds(2 * js_timeout));
+      2 * kWaitForJSCompletionTimeout);
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(js_timeout, ^bool {
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return called;
   }));
 }
@@ -83,7 +81,6 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnIframe) {
         return manager->GetAllWebFrames().size() == 2;
       }));
 
-  NSTimeInterval js_timeout = kWaitForJSCompletionTimeout;
   WebFrame* iframe = GetChildWebFrameForWebState(web_state());
   ASSERT_TRUE(iframe);
 
@@ -96,9 +93,9 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnIframe) {
         called = true;
       }),
       // Increase feature timeout in order to fail on test specific timeout.
-      base::Seconds(2 * js_timeout));
+      2 * kWaitForJSCompletionTimeout);
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(js_timeout, ^bool {
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return called;
   }));
 }
@@ -210,7 +207,6 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
       web_state()->GetWebFramesManager()->GetMainWebFrame());
   ASSERT_TRUE(main_frame_impl);
 
-  NSTimeInterval js_timeout = kWaitForJSCompletionTimeout;
   JavaScriptContentWorld world(GetBrowserState(), WKContentWorld.pageWorld);
   __block bool called = false;
 
@@ -223,9 +219,9 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
   EXPECT_TRUE(main_frame_impl->CallJavaScriptFunctionInContentWorld(
       "fakeFunction", function_params, &world, base::BindOnce(block),
       // Increase feature timeout in order to fail on test specific timeout.
-      base::Seconds(2 * js_timeout)));
+      2 * kWaitForJSCompletionTimeout));
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(js_timeout, ^bool {
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return called;
   }));
 }
@@ -247,7 +243,6 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFrameIsolatedWorld) {
       web_state()->GetWebFramesManager()->GetMainWebFrame());
   ASSERT_TRUE(main_frame_impl);
 
-  NSTimeInterval js_timeout = kWaitForJSCompletionTimeout;
   JavaScriptContentWorld world(GetBrowserState(),
                                WKContentWorld.defaultClientWorld);
   __block bool called = false;
@@ -260,9 +255,9 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFrameIsolatedWorld) {
   EXPECT_TRUE(main_frame_impl->CallJavaScriptFunctionInContentWorld(
       "fakeFunction", function_params, &world, base::BindOnce(block),
       // Increase feature timeout in order to fail on test specific timeout.
-      base::Seconds(2 * js_timeout)));
+      2 * kWaitForJSCompletionTimeout));
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(js_timeout, ^bool {
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return called;
   }));
 }

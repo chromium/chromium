@@ -158,8 +158,8 @@ void TapDoneButtonOnInfobarModal() {
                     return error == nil;
                   }];
   // Wait for infobar to be shown or timeout after kWaitForUIElementTimeout.
-  BOOL success =
-      [infobarShown waitWithTimeout:base::test::ios::kWaitForUIElementTimeout];
+  BOOL success = [infobarShown
+      waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()];
   if (shouldShow) {
     GREYAssertTrue(success, @"Infobar does not appear.");
   } else {
@@ -442,7 +442,7 @@ void TapDoneButtonOnInfobarModal() {
                     }];
     // Wait for infobar to be shown or timeout after kWaitForUIElementTimeout.
     BOOL success = [microphoneAcceptedBadgeShown
-        waitWithTimeout:base::test::ios::kWaitForUIElementTimeout];
+        waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()];
     GREYAssertTrue(success, @"Did not find accepted microphone badge.");
     [self checkStatesForPermissions:@{
       @(web::PermissionCamera) : @(web::PermissionStateBlocked),
@@ -477,7 +477,7 @@ void TapDoneButtonOnInfobarModal() {
                           isEqualToNumber:@(web::PermissionStateNotAccessible)];
                     }];
     BOOL success = [permissionReset
-        waitWithTimeout:base::test::ios::kWaitForPageLoadTimeout];
+        waitWithTimeout:base::test::ios::kWaitForPageLoadTimeout.InSecondsF()];
     GREYAssertTrue(success,
                    @"Camera permission state is not reset after reload.");
     [self checkAndDismissPermissionAlerts:YES];

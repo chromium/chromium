@@ -168,8 +168,8 @@ void WaitUntilPageLoadedWithURL(NSURL* openedURL) {
                   block:^{
                     return openedGURL == [ChromeEarlGrey webStateVisibleURL];
                   }];
-  BOOL pageStartedLoading =
-      [startedLoadingCondition waitWithTimeout:kWaitForPageLoadTimeout];
+  BOOL pageStartedLoading = [startedLoadingCondition
+      waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];
   GREYAssertTrue(pageStartedLoading, @"Page did not start loading");
   // Wait until the page has finished loading.
   [ChromeEarlGrey waitForPageToFinishLoading];

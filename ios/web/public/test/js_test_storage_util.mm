@@ -59,7 +59,7 @@ bool ExecuteJavaScriptInFrame(WebFrame* web_frame,
   return ExecuteJavaScriptInFrame(web_frame, name, parameters,
                                   base::BindOnce(^(const base::Value*){
                                   }),
-                                  base::Seconds(kWaitForJSCompletionTimeout));
+                                  kWaitForJSCompletionTimeout);
 }
 
 // Saves `key`, `value` to a Javascript storage type in `web_frame` using the
@@ -86,7 +86,7 @@ bool SetStorage(WebFrame* web_frame,
           set_success = true;
         }
       }),
-      base::Seconds(kWaitForJSCompletionTimeout));
+      kWaitForJSCompletionTimeout);
   if (error_message) {
     *error_message = block_error_message;
   }
@@ -121,7 +121,7 @@ bool GetStorage(WebFrame* web_frame,
           lookup_success = false;
         }
       }),
-      base::Seconds(kWaitForJSCompletionTimeout));
+      kWaitForJSCompletionTimeout);
 
   if (error_message) {
     *error_message = block_error_message;
@@ -270,7 +270,7 @@ bool GetCookies(WebFrame* web_frame, NSString** cookies) {
         ASSERT_TRUE(value->is_string());
         result = base::SysUTF8ToNSString(value->GetString());
       }),
-      base::Seconds(kWaitForJSCompletionTimeout));
+      kWaitForJSCompletionTimeout);
   if (cookies) {
     *cookies = result;
   }
