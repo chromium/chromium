@@ -69,9 +69,6 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
   }
 #endif  // IS_MAC
 
-  view->GetWidget()->non_client_view()->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
-
   if (view->GetIsPictureInPictureType() && view->GetLockAspectRatio()) {
     gfx::SizeF aspect_ratio(view->GetInitialAspectRatio(), 1.0f);
     view->GetWidget()->SetAspectRatio(aspect_ratio);

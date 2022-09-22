@@ -209,9 +209,6 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   // Get/Set client_view property.
   ClientView* client_view() const { return client_view_; }
 
-  // Set the accessible name of this view.
-  void SetAccessibleName(const std::u16string& name);
-
   // NonClientView, View overrides:
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
@@ -242,9 +239,6 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   // The overlay view, when non-NULL and visible, takes up the entire widget and
   // is placed on top of the ClientView and NonClientFrameView.
   raw_ptr<View> overlay_view_ = nullptr;
-
-  // The accessible name of this view.
-  std::u16string accessible_name_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, NonClientFrameView, View)

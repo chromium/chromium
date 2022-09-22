@@ -242,10 +242,6 @@ void NonClientView::SizeConstraintsChanged() {
   frame_view_->SizeConstraintsChanged();
 }
 
-void NonClientView::SetAccessibleName(const std::u16string& name) {
-  accessible_name_ = name;
-}
-
 gfx::Size NonClientView::CalculatePreferredSize() const {
   // TODO(pkasting): This should probably be made to look similar to
   // GetMinimumSize() below.  This will require implementing GetPreferredSize()
@@ -278,8 +274,8 @@ void NonClientView::Layout() {
 }
 
 void NonClientView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // TODO(crbug.com/1366294): Should this be pruned from the accessibility tree?
   node_data->role = ax::mojom::Role::kClient;
-  node_data->SetName(accessible_name_);
 }
 
 View* NonClientView::GetTooltipHandlerForPoint(const gfx::Point& point) {
