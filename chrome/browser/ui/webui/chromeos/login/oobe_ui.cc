@@ -297,6 +297,8 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   const bool is_oobe_flow = display_type == OobeUI::kOobeDisplay;
   source->AddBoolean("isOsInstallAllowed", switches::IsOsInstallAllowed());
   source->AddBoolean("isOobeFlow", is_oobe_flow);
+  source->AddBoolean("isMaterialNext",
+                     ash::features::IsOobeMaterialNextEnabled());
 
   // Configure shared resources
   AddProductLogoResources(source);

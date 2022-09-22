@@ -60666,12 +60666,14 @@ from previous Chrome versions.
   <int value="453017472"
       label="IntentBlockExternalFormRedirectsNoGesture:disabled"/>
   <int value="453102772" label="OfflinePagesLoadSignalCollecting:disabled"/>
+  <int value="453308897" label="OobeMaterialNext:enabled"/>
   <int value="454106312" label="UsernameFirstFlowFilling:enabled"/>
   <int value="455140116" label="CCTIncognitoAvailableToThirdParty:disabled"/>
   <int value="455698038"
       label="disable-gesture-requirement-for-media-playback"/>
   <int value="455754036" label="MirroringService:disabled"/>
   <int value="457301531" label="SiteIsolationForGuests:disabled"/>
+  <int value="457686085" label="OobeMaterialNext:disabled"/>
   <int value="457881889" label="enable-autoplay-muted-videos"/>
   <int value="458410433" label="disable-views-rect-based-targeting"/>
   <int value="460136092" label="MidiManagerAndroid:disabled"/>

@@ -1397,6 +1397,11 @@ BASE_FEATURE(kOobeQuickStart,
              "OobeQuickStart",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables OOBE Material Next features.
+BASE_FEATURE(kOobeMaterialNext,
+             "OobeMaterialNext",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the new recommend apps screen is shown.
 BASE_FEATURE(kOobeNewRecommendApps,
              "OobeNewRecommendApps",
@@ -2607,6 +2612,10 @@ bool IsKioskEnrollmentInOobeEnabled() {
 
 bool IsKioskLoginScreenEnabled() {
   return base::FeatureList::IsEnabled(kEnableKioskLoginScreen);
+}
+
+bool IsOobeMaterialNextEnabled() {
+  return IsJellyEnabled() && base::FeatureList::IsEnabled(kOobeMaterialNext);
 }
 
 bool IsOobeNetworkScreenSkipEnabled() {

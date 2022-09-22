@@ -6186,6 +6186,10 @@ const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
     "networks.";
 
+const char kOobeMaterialNextName[] = "Material Next design for OOBE";
+const char kOobeMaterialNextDescription[] =
+    "Feature to enable the Material Next design in out of box experience.";
+
 // Prefer keeping this section sorted to adding new definitions down here.
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
