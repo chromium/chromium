@@ -75,6 +75,7 @@ source_set("unit_tests") {
 
   sources = [
     "cpu_usage_data_unittest.cc",
+    "input_data_provider_keyboard_unittest.cc",
     "input_data_provider_unittest.cc",
     "network_health_provider_unittest.cc",
     "power_manager_client_conversions_unittest.cc",

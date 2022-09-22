@@ -12,14 +12,13 @@
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/shell.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/run_loop.h"
 #include "chromeos/system/statistics_provider.h"
 #include "ui/events/devices/input_device.h"
-#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace ash {
@@ -64,6 +63,16 @@ constexpr auto kFKeyOrder =
                                                     {KEY_F14, kFKey14},
                                                     {KEY_F15, kFKey15}});
 
+// `kCustomMaxFKey` represents the max FKey defined in `EventRewriterChromeOS`.
+// This is the highest FKey allowed on vivaldi keyboard devices.
+constexpr ui::KeyboardCode kCustomMaxFKey = ui::VKEY_F15;
+constexpr size_t kCustomMaxNumberOfFKeys = (kCustomMaxFKey - ui::VKEY_F1) + 1;
+
+// Represents scancode value seen in scan code mapping received from
+// `EventRewriterChromeOS` which denotes that the FKey is missing on the
+// physical device.
+constexpr uint32_t kCustomScanCodeFKeyMissing = 0x00;
+
 // Mapping from keyboard scancodes to TopRowKeys (must be in scancode-sorted
 // order) for keyboards with custom top row layouts (vivaldi). This replicates
 // and should be identical to the mapping behaviour of ChromeOS: changes will
@@ -73,6 +82,10 @@ constexpr auto kFKeyOrder =
 // Note that there are currently no dedicated scancodes for kScreenMirror.
 constexpr auto kCustomScancodeMapping =
     base::MakeFixedFlatMap<uint32_t, mojom::TopRowKey>({
+        // Scan code is only `kCustomScanCodeFKeyMissing` when the FKey is
+        // absent on the keyboard.
+        {kCustomScanCodeFKeyMissing, mojom::TopRowKey::kNone},
+
         // Vivaldi-specific extended Set-1 AT-style scancodes.
         {0x90, mojom::TopRowKey::kPreviousTrack},
         {0x91, mojom::TopRowKey::kFullscreen},
@@ -240,10 +253,8 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
         scan_code_map,
     std::vector<mojom::TopRowKey>* out_top_row_keys,
     AuxData* out_aux_data) {
-  ui::InputDevice input_device = device_info->input_device;
-
   // Simple array in physical order from left to right
-  std::vector<mojom::TopRowKey> top_row_keys = {};
+  std::vector<mojom::TopRowKey> top_row_keys;
 
   // Map of scan-code -> index within tow_row_keys: 0 is first key to the
   // right of Escape, 1 is next key to the right of it, etc.
@@ -281,29 +292,53 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
 
       break;
 
-    case ui::EventRewriterChromeOS::kKbdTopRowLayoutCustom:
-
+    case ui::EventRewriterChromeOS::kKbdTopRowLayoutCustom: {
       // Process scan-code map generated from custom top-row key layout: it maps
       // from physical scan codes to several things, including VKEY key-codes,
       // which we will use to derive a linear index.
 
-      for (auto iter = scan_code_map.begin(); iter != scan_code_map.end();
-           iter++) {
-        size_t fn_key_number = iter->second.key_code - ui::VKEY_F1;
-        uint32_t scancode = iter->first;
+      size_t scan_code_array_size = 0;
+      for (const auto& [_, fkey] : scan_code_map) {
+        // `EventRewriterChromeOS::ParseCustomTopRowLayoutMap` should have
+        // already prevented out of bounds keycodes.
+        DCHECK_LE(ui::VKEY_F1, fkey.key_code);
+        DCHECK_GE(kCustomMaxFKey, fkey.key_code);
 
-        if (top_row_keys.size() < fn_key_number + 1)
-          top_row_keys.resize(fn_key_number + 1, mojom::TopRowKey::kNone);
+        // Calculate new size needed based on distance from the given key_code
+        // to `ui::VKEY_F1`.
+        const size_t new_size = (fkey.key_code - ui::VKEY_F1) + 1u;
+        scan_code_array_size = std::max(scan_code_array_size, new_size);
+      }
+      DCHECK_GE(kCustomMaxNumberOfFKeys, scan_code_array_size);
 
-        if (kCustomScancodeMapping.contains(scancode))
-          top_row_keys[fn_key_number] = kCustomScancodeMapping.at(scancode);
-        else
-          top_row_keys[fn_key_number] = mojom::TopRowKey::kUnknown;
+      // Create array where index is the FKey value and the value is the
+      // expected scan code.
+      std::vector<uint32_t> scan_code_array(scan_code_array_size,
+                                            kCustomScanCodeFKeyMissing);
+      for (const auto& [scancode, fkey] : scan_code_map) {
+        const size_t index = fkey.key_code - ui::VKEY_F1;
+        scan_code_array[index] = scancode;
+      }
 
-        top_row_key_scancode_indexes[scancode] = fn_key_number;
+      top_row_keys.reserve(scan_code_array.size());
+      size_t index = 0;
+      for (const auto& scancode : scan_code_array) {
+        // Skip all scancodes which map to kNone keys. This is most likely a
+        // result of an absent FKey (ex: Skipped FKeys on top row).
+        if (kCustomScancodeMapping.contains(scancode)) {
+          const auto& top_row_key = kCustomScancodeMapping.at(scancode);
+          if (top_row_key == mojom::TopRowKey::kNone) {
+            continue;
+          }
+          top_row_keys.push_back(top_row_key);
+        } else {
+          top_row_keys.push_back(mojom::TopRowKey::kUnknown);
+        }
+
+        top_row_key_scancode_indexes[scancode] = index++;
       }
       break;
-
+    }
     case ui::EventRewriterChromeOS::kKbdTopRowLayout2:
       top_row_keys.assign(std::begin(kSystemKeys2), std::end(kSystemKeys2));
       // No specific top_row_key_scancode_indexes are needed
