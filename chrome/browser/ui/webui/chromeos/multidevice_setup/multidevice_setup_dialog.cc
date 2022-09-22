@@ -33,6 +33,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/wm/core/shadow_types.h"
 
 namespace chromeos {
 
@@ -107,6 +108,8 @@ void MultiDeviceSetupDialog::OnDialogClosed(const std::string& json_retval) {
 void MultiDeviceSetupDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
   params->type = views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS;
+  params->shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params->shadow_elevation = wm::kShadowElevationActiveWindow;
 }
 
 MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
