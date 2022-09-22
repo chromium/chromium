@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill_assistant/password_change/password_change_animated_icon.h"
 
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/autofill_assistant/password_change/vector_icons/vector_icons.h"
@@ -53,6 +54,11 @@ class PasswordChangeAnimatedIconTest : public views::ViewsTestBase {
     CreateIcon();
   }
 
+  void TearDown() override {
+    widget_.reset();
+    views::ViewsTestBase::TearDown();
+  }
+
   void CreateIcon(autofill_assistant::password_change::ProgressStep
                       progress_step = autofill_assistant::password_change::
                           ProgressStep::PROGRESS_STEP_CHANGE_PASSWORD) {
@@ -64,9 +70,8 @@ class PasswordChangeAnimatedIconTest : public views::ViewsTestBase {
     return animated_icon_.get();
   }
 
-  void TearDown() override {
-    widget_.reset();
-    views::ViewsTestBase::TearDown();
+  void AdvanceTime(base::TimeDelta time) {
+    animated_icon()->test_api()->IncrementTime(time);
   }
 
  private:
@@ -115,15 +120,12 @@ TEST_F(PasswordChangeAnimatedIconTest, PausePulsingAnimation) {
   animated_icon()->StopPulsingAnimation();
   EXPECT_TRUE(animated_icon()->IsPulsing());
 
-  animated_icon()->test_api()->IncrementTime(
-      PasswordChangeAnimatedIcon::kAnimationDuration / 2);
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
   EXPECT_TRUE(animated_icon()->IsPulsing());
 
   // But after at most 2 cycle durations, it stops.
-  animated_icon()->test_api()->IncrementTime(
-      PasswordChangeAnimatedIcon::kAnimationDuration);
-  animated_icon()->test_api()->IncrementTime(
-      PasswordChangeAnimatedIcon::kAnimationDuration);
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_FALSE(animated_icon()->IsPulsing());
 }
 
@@ -132,12 +134,8 @@ TEST_F(PasswordChangeAnimatedIconTest, ResumePulsingAnimation) {
   EXPECT_TRUE(animated_icon()->IsPulsing());
 
   animated_icon()->StopPulsingAnimation();
-  animated_icon()->test_api()->IncrementTime(
-      PasswordChangeAnimatedIcon::kAnimationDuration);
-  animated_icon()->test_api()->IncrementTime(
-      PasswordChangeAnimatedIcon::kAnimationDuration);
-  animated_icon()->test_api()->IncrementTime(
-      PasswordChangeAnimatedIcon::kAnimationDuration);
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_FALSE(animated_icon()->IsPulsing());
 
   animated_icon()->StartPulsingAnimation();
@@ -153,20 +151,54 @@ TEST_F(PasswordChangeAnimatedIconTest, StartPulsingAnimationTwice) {
   EXPECT_TRUE(animated_icon()->IsPulsing());
 
   animated_icon()->StopPulsingAnimation();
-  animated_icon()->test_api()->IncrementTime(
-      PasswordChangeAnimatedIcon::kAnimationDuration / 2);
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
 
   // Restarting it now avoids it from ever stopping.
   animated_icon()->StartPulsingAnimation();
   EXPECT_TRUE(animated_icon()->IsPulsing());
 
-  animated_icon()->test_api()->IncrementTime(
-      PasswordChangeAnimatedIcon::kAnimationDuration);
-  animated_icon()->test_api()->IncrementTime(
-      PasswordChangeAnimatedIcon::kAnimationDuration);
-  animated_icon()->test_api()->IncrementTime(
-      PasswordChangeAnimatedIcon::kAnimationDuration);
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
   EXPECT_TRUE(animated_icon()->IsPulsing());
+}
+
+TEST_F(PasswordChangeAnimatedIconTest, PulseOnce) {
+  animated_icon()->StartPulsingAnimation(/*pulse_once=*/true);
+  EXPECT_TRUE(animated_icon()->IsPulsing());
+
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
+  EXPECT_TRUE(animated_icon()->IsPulsing());
+
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  EXPECT_FALSE(animated_icon()->IsPulsing());
+}
+
+TEST_F(PasswordChangeAnimatedIconTest, CallbackSetDuringPulsing) {
+  animated_icon()->StartPulsingAnimation();
+
+  base::MockOnceClosure closure;
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
+  animated_icon()->SetAnimationEndedCallback(closure.Get());
+  animated_icon()->StopPulsingAnimation();
+
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  EXPECT_CALL(closure, Run);
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  EXPECT_FALSE(animated_icon()->IsPulsing());
+}
+
+TEST_F(PasswordChangeAnimatedIconTest, CallbackSetBeforeStartingPulsing) {
+  base::MockOnceClosure closure;
+  animated_icon()->SetAnimationEndedCallback(closure.Get());
+
+  animated_icon()->StartPulsingAnimation();
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration / 2);
+  animated_icon()->StopPulsingAnimation();
+
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  EXPECT_CALL(closure, Run);
+  AdvanceTime(PasswordChangeAnimatedIcon::kAnimationDuration);
+  EXPECT_FALSE(animated_icon()->IsPulsing());
 }
 
 }  // namespace

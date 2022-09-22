@@ -298,8 +298,14 @@ void PasswordChangeRunView::ShowCompletionScreen(
   show_completion_screen_done_button_callback_ =
       std::move(done_button_callback);
 
-  password_change_run_progress_->SetAnimationEndedCallback(base::BindOnce(
-      &PasswordChangeRunView::OnShowCompletionScreen, base::Unretained(this)));
+  // If the progress bar has finished its animation, run immediately.
+  if (password_change_run_progress_->IsCompleted()) {
+    OnShowCompletionScreen();
+  } else {
+    password_change_run_progress_->SetAnimationEndedCallback(
+        base::BindOnce(&PasswordChangeRunView::OnShowCompletionScreen,
+                       base::Unretained(this)));
+  }
 }
 
 void PasswordChangeRunView::OnShowCompletionScreen() {

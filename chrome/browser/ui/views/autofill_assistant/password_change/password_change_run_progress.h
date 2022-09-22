@@ -18,6 +18,8 @@ class PasswordChangeRunProgress : public views::View {
  public:
   METADATA_HEADER(PasswordChangeRunProgress);
 
+  using ProgressStep = autofill_assistant::password_change::ProgressStep;
+
   // IDs that identify a view within the dialog that was used in browsertests.
   // The offset is used to ensure that the IDs do not overlap with the parent
   // dialog.
@@ -31,7 +33,7 @@ class PasswordChangeRunProgress : public views::View {
     kEndStepBar = 106,
   };
 
-  // `childrendsIDsOffset` can be used by parent views to make sure that the
+  // `childrenIDsOffset` can be used by parent views to make sure that the
   // `PasswordChangeRunProgress` children view ids do not collide with the
   // parent's.
   explicit PasswordChangeRunProgress(int childrenIDsOffset = 0);
@@ -44,11 +46,10 @@ class PasswordChangeRunProgress : public views::View {
 
   // Sets the current progress. Does nothing if `next_progress_step` is
   // logically before or equal to `current_progress_step`.
-  void SetProgressBarStep(
-      autofill_assistant::password_change::ProgressStep next_progress_step);
+  void SetProgressBarStep(ProgressStep next_progress_step);
 
   // Returns the current progress bar step.
-  autofill_assistant::password_change::ProgressStep GetCurrentProgressBarStep();
+  ProgressStep GetCurrentProgressBarStep();
 
   // Adds a callback for when the progress bar is complete.
   // The completion happens after the last step animation is done.
@@ -60,24 +61,23 @@ class PasswordChangeRunProgress : public views::View {
   // Resumes the animation of the icon of the current step.
   void ResumeIconAnimation();
 
- private:
-  // Method run once the last progress bar animation is completed that is used
-  // to trigger the last item animation.
-  void OnLastProgressBarAnimationCompleted();
+  // Returns whether the progress bar state corresponds to a completed flow,
+  // i.e. whether the progress step is `ProgressStep::PROGRESS_STEP_END`
+  // and no more icons are blinking.
+  bool IsCompleted() const;
 
+ private:
   // A progress step is made out of an icon, a progress bar, or both.
-  struct ProgressStepUIElements {
+  struct ProgressStepUiElements {
     raw_ptr<PasswordChangeAnimatedProgressBar> progress_bar = nullptr;
     raw_ptr<PasswordChangeAnimatedIcon> icon = nullptr;
   };
 
   // Maps a progress step to the UI elements that represent it.
-  base::flat_map<autofill_assistant::password_change::ProgressStep,
-                 ProgressStepUIElements>
+  base::flat_map<ProgressStep, ProgressStepUiElements>
       progress_step_ui_elements_;
 
-  autofill_assistant::password_change::ProgressStep current_progress_step_ =
-      autofill_assistant::password_change::ProgressStep::PROGRESS_STEP_START;
+  ProgressStep current_progress_step_ = ProgressStep::PROGRESS_STEP_START;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_PASSWORD_CHANGE_RUN_PROGRESS_H_

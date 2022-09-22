@@ -54,25 +54,19 @@ PasswordChangeAnimatedIcon::~PasswordChangeAnimatedIcon() = default;
 void PasswordChangeAnimatedIcon::SetAnimationEndedCallback(
     base::OnceClosure callback) {
   animation_ended_callback_ = std::move(callback);
-  // If the animation is already finished, run callback right away.
-  if (animation_ended_) {
-    std::move(animation_ended_callback_).Run();
-  }
 }
 
-void PasswordChangeAnimatedIcon::StartPulsingAnimation() {
-  // Do not start a new cycle if the icon is already pulsing.
-  if (IsPulsing()) {
-    // Always set this variable in case it was the last pulse cycle.
-    pulsing_animation_ = true;
-    return;
-  }
-
-  pulsing_animation_ = true;
+void PasswordChangeAnimatedIcon::StartPulsingAnimation(bool pulse_once) {
+  bool is_already_pulsing = IsPulsing();
+  pulsing_animation_ = !pulse_once;
+  last_animation_cycle_ = !pulse_once;
   animation_ended_ = false;
 
-  SetDuration(kAnimationDuration);
-  Start();
+  // Only start a new cycle if the icon is not already pulsing.
+  if (!is_already_pulsing) {
+    SetDuration(kAnimationDuration);
+    Start();
+  }
 }
 
 void PasswordChangeAnimatedIcon::StopPulsingAnimation() {

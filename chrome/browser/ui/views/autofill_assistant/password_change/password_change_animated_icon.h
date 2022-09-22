@@ -28,14 +28,17 @@ class PasswordChangeAnimatedIcon : public gfx::LinearAnimation,
       delete;
   ~PasswordChangeAnimatedIcon() override;
 
-  // Sets a `callback` to be triggered when the icon stops pulsing. Executes
-  // `callback` immediately if the icon is not currently pulsing.
+  // Sets a `callback` to be triggered when the icon stops pulsing. If the icon
+  // is not pulsing, it executes `callback` only after icon has started and
+  // stopped pulsing again.
   void SetAnimationEndedCallback(base::OnceClosure callback);
 
   // Starts the pulsing of the icon. If the icon is already pulsing and not
   // in its last cycle, it does nothing. If the icon is in its last pulse cycle,
   // it sets it to keep pulsing.
-  void StartPulsingAnimation();
+  // If `pulse_once` is `true`, it ensures that it will pulse at most once (less
+  // if is currently pulsing).
+  void StartPulsingAnimation(bool pulse_once = false);
 
   // Signals to stop pulsing the animation after completing at least one more
   // full cycle.
@@ -57,7 +60,7 @@ class PasswordChangeAnimatedIcon : public gfx::LinearAnimation,
   bool pulsing_animation_ = false;
 
   // Describes whether the current animation cycle is the last intended one.
-  bool last_animation_cycle_ = true;
+  bool last_animation_cycle_ = false;
 
   // Is `true` when the animation is currently not pulsing, `false` otherwise.
   bool animation_ended_ = true;
