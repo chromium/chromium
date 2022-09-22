@@ -68,6 +68,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -386,6 +387,7 @@ public class PartialCustomTabHeightStrategyTest {
         // Wait animation to finish.
         shadowOf(Looper.getMainLooper()).idle();
 
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         int length = mAttributeResults.size();
         assertTrue(length > 1);
         return mAttributeResults.get(length - 1);
@@ -771,6 +773,7 @@ public class PartialCustomTabHeightStrategyTest {
 
         strategy.onShowSoftInput();
         shadowOf(Looper.getMainLooper()).idle();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         final int length = mAttributeResults.size();
         assertTrue(length > 1);

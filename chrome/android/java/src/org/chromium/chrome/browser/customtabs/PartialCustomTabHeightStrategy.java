@@ -86,6 +86,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private static final int NAVBAR_FADE_DURATION_MS = 16;
     private static final int SPINNER_FADEIN_DURATION_MS = 100;
     private static final int SPINNER_FADEOUT_DURATION_MS = 400;
+    private static final int NAVBAR_BUTTON_RESTORE_DELAY_MS = 400;
 
     @IntDef({HeightStatus.TOP, HeightStatus.INITIAL_HEIGHT, HeightStatus.TRANSITION})
     @Retention(RetentionPolicy.SOURCE)
@@ -183,6 +184,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     // Class used to control show / hide nav bar.
     private NavBarTransitionController mNavbarTransitionController =
             new NavBarTransitionController();
+
+    // Used to initialize the coordinator view (R.id.coordinator) to full-height at the beginning.
+    // This is a workaround to an issue of the host app briefly flashing when the tab is resized.
+    private boolean mInitFirstHeight;
 
     public PartialCustomTabHeightStrategy(Activity activity, @Px int initialHeight,
             Integer navigationBarColor, Integer navigationBarDividerColor, boolean isFixedHeight,
@@ -479,6 +484,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             // while dragging 2) host app's navigation bar when at rest.
             positionAtHeight(height);
             mHeight = attrs.height;
+            if (!mInitFirstHeight) {
+                setCoordinatorLayoutHeight(mDisplayHeight);
+                mInitFirstHeight = true;
+                new Handler().post(() -> setCoordinatorLayoutHeight(MATCH_PARENT));
+            }
         } else {
             // We do not resize Window but just translate its vertical offset, and resize
             // CoordinatorLayoutForPointer instead. This helps us work around the round-corner bug
@@ -501,6 +511,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             attrs.gravity = Gravity.BOTTOM;
         }
         mActivity.getWindow().setAttributes(attrs);
+    }
+
+    private void setCoordinatorLayoutHeight(int height) {
+        ViewGroup.LayoutParams p = mCoordinatorLayout.getLayoutParams();
+        p.height = height;
+        mCoordinatorLayout.setLayoutParams(p);
     }
 
     private void updateDragBarVisibility() {
@@ -646,11 +662,20 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         hideSpinnerView();
         if (mWindowAboveNavbar) {
-            Window window = mActivity.getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-            positionAtHeight(mDisplayHeight - window.getAttributes().y);
             showNavbarButtons(true);
-            maybeInvokeResizeCallback();
+            new Handler().postDelayed(() -> {
+                // Give a small delay in restoring the window to avoid the flashing artifact
+                // at the navigation bar area.
+                Window window = mActivity.getWindow();
+                window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+                positionAtHeight(mDisplayHeight - window.getAttributes().y);
+                maybeInvokeResizeCallback();
+                mStatus = mTargetStatus;
+            }, NAVBAR_BUTTON_RESTORE_DELAY_MS);
+
+            // Temporarily disables user input until the window is restored.
+            mTargetStatus = mStatus;
+            mStatus = HeightStatus.TRANSITION;
         } else {
             updateNavbarVisibility(true);
         }
