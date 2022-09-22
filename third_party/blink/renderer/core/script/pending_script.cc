@@ -247,6 +247,9 @@ void PendingScript::ExecuteScriptBlockInternal(
     IgnoreDestructiveWriteCountIncrementer incrementer(
         needs_increment ? context_document : nullptr);
 
+    if (script->GetScriptType() == mojom::blink::ScriptType::kModule)
+      context_document->IncrementIgnoreDestructiveWriteModuleScriptCount();
+
     // <spec step="4.A.1">Let old script element be the value to which the
     // script element's node document's currentScript object was most recently
     // set.</spec>

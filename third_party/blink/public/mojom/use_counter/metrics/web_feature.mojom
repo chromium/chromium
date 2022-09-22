@@ -3678,6 +3678,7 @@ enum WebFeature {
   kWebAuthnConditionalUiGet = 4357,
   kWebAuthnConditionalUiGetSuccess = 4358,
   kWebAuthnRkRequiredCreationSuccess = 4359,
+  kDestructiveDocumentWriteAfterModuleScript = 4360,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

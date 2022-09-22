@@ -41408,6 +41408,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4357" label="WebAuthnConditionalUiGet"/>
   <int value="4358" label="WebAuthnConditionalUiGetSuccess"/>
   <int value="4359" label="WebAuthnRkRequiredCreationSuccess"/>
+  <int value="4360" label="kDestructiveDocumentWriteAfterModuleScript"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
