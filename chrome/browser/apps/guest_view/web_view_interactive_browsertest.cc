@@ -1026,15 +1026,18 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusRestored) {
   TestHelper("testFocusRestored", "web_view/focus", NO_TEST_SERVER);
   content::WebContents* embedder_web_contents = GetFirstAppWindowWebContents();
   ASSERT_TRUE(embedder_web_contents);
-  ASSERT_TRUE(DeprecatedGuestWebContents());
+  content::RenderFrameHost* guest_rfh = GetGuestRenderFrameHost();
+  ASSERT_TRUE(guest_rfh);
 
   // 1) We click on the guest so that we get a focus event.
   ExtensionTestMessageListener next_step_listener("TEST_STEP_PASSED");
   next_step_listener.set_failure_message("TEST_STEP_FAILED");
   {
-    content::SimulateMouseClickAt(DeprecatedGuestWebContents(), 0,
-                                  blink::WebMouseEvent::Button::kLeft,
-                                  gfx::Point(10, 10));
+    WaitForHitTestData(guest_rfh);
+    content::SimulateMouseClickAt(
+        embedder_web_contents, 0, blink::WebMouseEvent::Button::kLeft,
+        guest_rfh->GetView()->TransformPointToRootCoordSpace(
+            gfx::Point(10, 10)));
     EXPECT_TRUE(content::ExecuteScript(
                     embedder_web_contents,
                     "window.runCommand('testFocusRestoredRunNextStep', 1);"));
@@ -1060,9 +1063,11 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusRestored) {
   // input element, then we ensure text_input_type is properly set.
   next_step_listener.Reset();
   {
-    content::SimulateMouseClickAt(DeprecatedGuestWebContents(), 0,
-                                  blink::WebMouseEvent::Button::kLeft,
-                                  gfx::Point(10, 10));
+    WaitForHitTestData(guest_rfh);
+    content::SimulateMouseClickAt(
+        embedder_web_contents, 0, blink::WebMouseEvent::Button::kLeft,
+        guest_rfh->GetView()->TransformPointToRootCoordSpace(
+            gfx::Point(10, 10)));
     EXPECT_TRUE(content::ExecuteScript(
                     embedder_web_contents,
                     "window.runCommand('testFocusRestoredRunNextStep', 3)"));
