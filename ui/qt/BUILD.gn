@@ -73,11 +73,8 @@ shared_library("qt5_shim") {
     "qt_shim.cc",
     "qt_shim.h",
 
-    # This file is generated to avoid a dependency on `moc` during the build.
-    # 1. $ build/linux/debian_bullseye_amd64-sysroot/usr/lib/qt5/bin/moc \
-    #      ui/qt/qt_shim.h > ui/qt/qt_shim_moc.cc
-    # 2. $ git cl format
-    # 3. Manually add copyright header.
+    # This file is generated with gen_qt_shim_moc.sh on an amd64 system to
+    # avoid a build-time dependency on `moc`.
     "qt_shim_moc.cc",
   ]
 }
