@@ -213,6 +213,65 @@ void FillSegmentationParams(struct v4l2_av1_segmentation& v4l2_seg,
   v4l2_seg.last_active_seg_id = seg.last_active_segment_id;
 }
 
+// Section 5.9.15. Tile info syntax
+void FillTileInfo(v4l2_av1_tile_info& v4l2_ti, const libgav1::TileInfo& ti) {
+  if (ti.uniform_spacing)
+    v4l2_ti.flags |= V4L2_AV1_TILE_INFO_FLAG_UNIFORM_TILE_SPACING;
+
+  static_assert(std::size(decltype(v4l2_ti.mi_col_starts){}) ==
+                    (libgav1::kMaxTileColumns + 1),
+                "Size of |mi_col_starts| array in |v4l2_av1_tile_info| struct "
+                "does not match libgav1 expectation");
+
+  for (size_t i = 0; i < libgav1::kMaxTileColumns + 1; i++) {
+    v4l2_ti.mi_col_starts[i] =
+        base::checked_cast<uint32_t>(ti.tile_column_start[i]);
+  }
+  static_assert(std::size(decltype(v4l2_ti.mi_row_starts){}) ==
+                    (libgav1::kMaxTileRows + 1),
+                "Size of |mi_row_starts| array in |v4l2_av1_tile_info| struct "
+                "does not match libgav1 expectation");
+  for (size_t i = 0; i < libgav1::kMaxTileRows + 1; i++) {
+    v4l2_ti.mi_row_starts[i] =
+        base::checked_cast<uint32_t>(ti.tile_row_start[i]);
+  }
+
+  if (!ti.uniform_spacing) {
+    // Confirmed that |kMaxTileColumns| is enough size for
+    // |width_in_sbs_minus_1| and |kMaxTileRows| is enough size for
+    // |height_in_sbs_minus_1|
+    // https://b.corp.google.com/issues/187828854#comment19
+    static_assert(
+        std::size(decltype(v4l2_ti.width_in_sbs_minus_1){}) ==
+            libgav1::kMaxTileColumns,
+        "Size of |width_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
+        "does not match libgav1 expectation");
+    for (size_t i = 0; i < libgav1::kMaxTileColumns; i++) {
+      if (ti.tile_column_width_in_superblocks[i] >= 1) {
+        v4l2_ti.width_in_sbs_minus_1[i] = base::checked_cast<uint32_t>(
+            ti.tile_column_width_in_superblocks[i] - 1);
+      }
+    }
+
+    static_assert(
+        std::size(decltype(v4l2_ti.height_in_sbs_minus_1){}) ==
+            libgav1::kMaxTileRows,
+        "Size of |height_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
+        "does not match libgav1 expectation");
+    for (size_t i = 0; i < libgav1::kMaxTileRows; i++) {
+      if (ti.tile_row_height_in_superblocks[i] >= 1) {
+        v4l2_ti.height_in_sbs_minus_1[i] = base::checked_cast<uint32_t>(
+            ti.tile_row_height_in_superblocks[i] - 1);
+      }
+    }
+  }
+
+  v4l2_ti.tile_size_bytes = ti.tile_size_bytes;
+  v4l2_ti.context_update_tile_id = ti.context_update_id;
+  v4l2_ti.tile_cols = ti.tile_columns;
+  v4l2_ti.tile_rows = ti.tile_rows;
+}
+
 // Section 5.9.17. Quantizer index delta parameters syntax
 void FillQuantizerIndexDeltaParams(struct v4l2_av1_quantization& v4l2_quant,
                                    const libgav1::ObuSequenceHeader& seq_header,
@@ -392,6 +451,9 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
 
   struct v4l2_av1_loop_restoration v4l2_lr = {};
   FillLoopRestorationParams(v4l2_lr, frame_header.loop_restoration);
+
+  struct v4l2_av1_tile_info v4l2_ti = {};
+  FillTileInfo(v4l2_ti, frame_header.tile_info);
 
   NOTIMPLEMENTED();
 
