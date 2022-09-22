@@ -37,6 +37,7 @@ import com.google.android.material.tabs.TabLayout;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -48,7 +49,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -544,7 +544,7 @@ public class HistoryUITest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1358628")
+    @Ignore // See https://crbug.com/1358628
     public void testCopyLink() {
         final ClipboardManager clipboardManager =
                 (ClipboardManager) mActivity.getSystemService(Context.CLIPBOARD_SERVICE);
