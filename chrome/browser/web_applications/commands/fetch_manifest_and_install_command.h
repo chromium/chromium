@@ -13,9 +13,14 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_logging.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/arc.mojom.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -23,6 +28,7 @@ class WebContents;
 
 namespace web_app {
 
+class AppLock;
 class NoopLock;
 class WebAppDataRetriever;
 class WebAppInstallFinalizer;
@@ -58,6 +64,21 @@ class FetchManifestAndInstallCommand : public WebAppCommand {
                                  bool use_fallback,
                                  WebAppInstallFlow flow);
 
+  // TODO(https://crbug.com/1364390): Remove the constructors above and fix the
+  // param orders here after replacing callsites to use provider()->scheduler()
+  // interface.
+  FetchManifestAndInstallCommand(
+      WebAppInstallFinalizer* install_finalizer,
+      WebAppRegistrar* registrar,
+      webapps::WebappInstallSource install_surface,
+      base::WeakPtr<content::WebContents> contents,
+      bool bypass_service_worker_check,
+      WebAppInstallDialogCallback dialog_callback,
+      OnceInstallCallback callback,
+      bool use_fallback,
+      WebAppInstallFlow flow,
+      std::unique_ptr<WebAppDataRetriever> data_retriever);
+
   ~FetchManifestAndInstallCommand() override;
 
   Lock& lock() const override;
@@ -82,9 +103,48 @@ class FetchManifestAndInstallCommand : public WebAppCommand {
                                     const GURL& manifest_url,
                                     bool valid_manifest_for_web_app,
                                     bool is_installable);
+
+  // Either dispatches an asynchronous check for whether this installation
+  // should be stopped and an intent to the Play Store should be made, or
+  // synchronously calls OnDidCheckForIntentToPlayStore() implicitly failing the
+  // check if it cannot be made.
+  void CheckForPlayStoreIntentOrGetIcons(base::flat_set<GURL> icon_urls,
+                                         bool skip_page_favicons);
+
+  // Called when the asynchronous check for whether an intent to the Play Store
+  // should be made returns.
+  void OnDidCheckForIntentToPlayStore(base::flat_set<GURL> icon_urls,
+                                      bool skip_page_favicons,
+                                      const std::string& intent,
+                                      bool should_intent_to_store);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Called when the asynchronous check for whether an intent to the Play Store
+  // should be made returns (Lacros adapter that calls
+  // |OnDidCheckForIntentToPlayStore| based on |result|).
+  void OnDidCheckForIntentToPlayStoreLacros(
+      base::flat_set<GURL> icon_urls,
+      bool skip_page_favicons,
+      const std::string& intent,
+      crosapi::mojom::IsInstallableResult result);
+#endif
+
+  void OnIconsRetrievedShowDialog(
+      IconsDownloadedResult result,
+      IconsMap icons_map,
+      DownloadedIconsHttpResults icons_http_results);
+  void OnDialogCompleted(bool user_accepted,
+                         std::unique_ptr<WebAppInstallInfo> web_app_info);
+  void OnInstallFinalizedMaybeReparentTab(const AppId& app_id,
+                                          webapps::InstallResultCode code,
+                                          OsHooksErrors os_hooks_errors);
+
+  void OnInstallCompleted(const AppId& app_id, webapps::InstallResultCode code);
+
   void LogInstallInfo();
 
-  std::unique_ptr<NoopLock> lock_;
+  std::unique_ptr<NoopLock> noop_lock_;
+  std::unique_ptr<AppLock> app_lock_;
 
   raw_ptr<WebAppInstallFinalizer> install_finalizer_;
   raw_ptr<WebAppRegistrar> registrar_;
@@ -96,7 +156,10 @@ class FetchManifestAndInstallCommand : public WebAppCommand {
   OnceInstallCallback install_callback_;
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
-  std::unique_ptr<WebAppInstallInfo> install_info_;
+
+  AppId app_id_;
+  std::unique_ptr<WebAppInstallInfo> web_app_info_;
+  blink::mojom::ManifestPtr opt_manifest_;
 
   base::Value::Dict debug_log_;
 
@@ -104,9 +167,9 @@ class FetchManifestAndInstallCommand : public WebAppCommand {
   bool use_fallback_ = false;
   WebAppInstallFlow flow_{};
 
-  AppId app_id_{};
+  InstallErrorLogEntry install_error_log_entry_;
 
-  base::WeakPtrFactory<FetchManifestAndInstallCommand> weak_factory_{this};
+  base::WeakPtrFactory<FetchManifestAndInstallCommand> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
