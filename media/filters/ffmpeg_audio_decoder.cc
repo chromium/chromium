@@ -175,6 +175,8 @@ bool FFmpegAudioDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
   } else {
     packet->data = const_cast<uint8_t*>(buffer.data());
     packet->size = buffer.data_size();
+    packet->pts =
+        ConvertToTimeBase(codec_context_->time_base, buffer.timestamp());
 
     DCHECK(packet->data);
     DCHECK_GT(packet->size, 0);
