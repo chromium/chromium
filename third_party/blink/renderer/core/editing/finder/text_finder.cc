@@ -93,8 +93,7 @@ static void AutoExpandSearchableHiddenElementsUpFrameTree(Range* range) {
 
   // If the active match is hidden inside a <details> element, then we should
   // expand it so find-in-page can scroll to it.
-  if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
-      HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
+  if (HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
     needs_layout_shift_allowance = true;
     UseCounter::Count(first_node.GetDocument(),
                       WebFeature::kAutoExpandedDetailsForFindInPage);
@@ -136,7 +135,6 @@ static void AutoExpandSearchableHiddenElementsUpFrameTree(Range* range) {
       DCHECK(frame_element);
       bool frame_needs_style_and_layout = false;
       frame_needs_style_and_layout |=
-          RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
           HTMLDetailsElement::ExpandDetailsAncestors(*frame_element);
       frame_needs_style_and_layout |=
           RuntimeEnabledFeatures::BeforeMatchEventEnabled(

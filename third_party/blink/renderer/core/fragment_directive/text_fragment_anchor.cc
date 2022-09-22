@@ -492,8 +492,7 @@ void TextFragmentAnchor::FireBeforeMatchEvent(const RangeInFlatTree* range) {
 
     // If the active match is hidden inside a <details> element, then we should
     // expand it so we can scroll to it.
-    if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
-        HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
+    if (HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
       UseCounter::Count(
           first_node.GetDocument(),
           WebFeature::kAutoExpandedDetailsForScrollToTextFragment);

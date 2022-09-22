@@ -101,16 +101,11 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   content_slot_ = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
   content_slot_->SetIdAttribute(shadow_element_names::kIdDetailsContent);
-  if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled()) {
-    content_slot_->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
-                                          CSSValueID::kHidden);
-    content_slot_->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);
-    content_slot_->SetInlineStyleProperty(CSSPropertyID::kDisplay,
-                                          CSSValueID::kBlock);
-  } else {
-    content_slot_->SetInlineStyleProperty(CSSPropertyID::kDisplay,
-                                          CSSValueID::kNone);
-  }
+  content_slot_->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                        CSSValueID::kHidden);
+  content_slot_->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);
+  content_slot_->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                        CSSValueID::kBlock);
   root.AppendChild(content_slot_);
 
   auto* default_summary_style = MakeGarbageCollected<HTMLStyleElement>(
@@ -183,24 +178,15 @@ void HTMLDetailsElement::ParseAttribute(
         shadow_element_names::kIdDetailsContent);
     DCHECK(content);
 
-    if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled()) {
-      if (is_open_) {
-        content->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
-        content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
-      } else {
-        content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
-                                        CSSValueID::kBlock);
-        content->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
-                                        CSSValueID::kHidden);
-        content->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);
-      }
+    if (is_open_) {
+      content->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
+      content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
     } else {
-      if (is_open_) {
-        content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
-      } else {
-        content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
-                                        CSSValueID::kNone);
-      }
+      content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                      CSSValueID::kBlock);
+      content->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                      CSSValueID::kHidden);
+      content->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);
     }
 
     return;

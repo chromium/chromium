@@ -78,9 +78,7 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
   if (!should_scroll)
     return nullptr;
 
-  if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled()) {
-    HTMLDetailsElement::ExpandDetailsAncestors(*anchor_node);
-  }
+  HTMLDetailsElement::ExpandDetailsAncestors(*anchor_node);
 
   if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
           frame.GetDocument()->GetExecutionContext())) {

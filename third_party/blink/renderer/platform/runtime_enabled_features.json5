@@ -301,13 +301,6 @@
       public: true,
     },
     {
-      // TODO(crbug.com/1185950): Remove this flag when the feature is fully
-      // launched and released to stable with no issues.
-      name: "AutoExpandDetailsElement",
-      status: "stable",
-      base_feature: "AutoExpandDetailsElement",
-    },
-    {
       // Makes autofill look across shadow boundaries when collecting form
       // controls to fill.
       name: "AutofillShadowDOM",
