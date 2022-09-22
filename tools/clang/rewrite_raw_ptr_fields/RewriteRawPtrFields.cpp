@@ -1221,7 +1221,7 @@ int main(int argc, const char* argv[]) {
                           &filtered_in_out_ref_arg_writer);
 
   // See the doc comment for the overlapsOtherDeclsWithinRecordDecl matcher
-  // and the testcases in tests/gen-overlaps-test.cc.
+  // and the testcases in tests/gen-overlapping-test.cc.
   auto overlapping_field_decl_matcher = fieldDecl(
       allOf(field_decl_matcher, overlapsOtherDeclsWithinRecordDecl()));
   FilteredExprWriter overlapping_field_decl_writer(&output_helper,
@@ -1257,7 +1257,7 @@ int main(int argc, const char* argv[]) {
                           &constexpr_var_initializer_writer);
 
   // See the doc comment for the isInMacroLocation matcher
-  // and the testcases in tests/gen-macro-test.cc.
+  // and the testcases in tests/gen-macros-test.cc.
   auto macro_field_decl_matcher =
       fieldDecl(allOf(field_decl_matcher, isInMacroLocation()));
   FilteredExprWriter macro_field_decl_writer(&output_helper, "macro");
@@ -1273,12 +1273,12 @@ int main(int argc, const char* argv[]) {
   match_finder.addMatcher(char_ptr_field_decl_matcher,
                           &char_ptr_field_decl_writer);
 
-  // See the testcases in tests/gen-global-destructor-test.cc.
-  auto global_destructor_matcher =
+  // See the testcases in tests/gen-global-scope-test.cc.
+  auto global_scope_matcher =
       varDecl(allOf(hasGlobalStorage(),
                     hasType(typeWithEmbeddedFieldDecl(field_decl_matcher))));
-  FilteredExprWriter global_destructor_writer(&output_helper, "global-scope");
-  match_finder.addMatcher(global_destructor_matcher, &global_destructor_writer);
+  FilteredExprWriter global_scope_rewriter(&output_helper, "global-scope");
+  match_finder.addMatcher(global_scope_matcher, &global_scope_rewriter);
 
   // Matches fields in unions (both directly rewritable fields as well as union
   // fields that embed a struct that contains a rewritable field).  See also the

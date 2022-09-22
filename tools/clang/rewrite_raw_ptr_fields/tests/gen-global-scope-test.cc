@@ -4,7 +4,7 @@
 
 // This file (and other gen-*-test.cc files) tests generation of output for
 // --field-filter-file and therefore the expectations file
-// (gen-global-destructor-expected.txt) needs to be compared against the raw
+// (gen-global-scope-expected.txt) needs to be compared against the raw
 // output of the rewriter (rather than against the actual edits result).  This
 // makes the test incompatible with other tests, which require passing
 // --apply-edits switch to test_tool.py and so to disable the test it is named
