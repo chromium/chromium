@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -92,12 +91,8 @@ class OzoneImageBacking::OverlayOzoneImageRepresentation
     auto* ozone_backing = static_cast<OzoneImageBacking*>(backing());
     std::vector<gfx::GpuFenceHandle> fences;
     bool need_end_fence;
-    if (!ozone_backing->BeginAccess(/*readonly=*/true, AccessStream::kOverlay,
-                                    &fences, need_end_fence)) {
-      // Ideally we should return early (false) here, but that breaks and leads
-      // to context loss so adding a temporary dump for debugging.
-      base::debug::DumpWithoutCrashing();
-    }
+    ozone_backing->BeginAccess(/*readonly=*/true, AccessStream::kOverlay,
+                               &fences, need_end_fence);
     // Always need an end fence when finish reading from overlays.
     DCHECK(need_end_fence);
     if (!fences.empty()) {
