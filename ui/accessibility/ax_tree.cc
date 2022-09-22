@@ -5,7 +5,6 @@
 #include "ui/accessibility/ax_tree.h"
 
 #include <stddef.h>
-#include <algorithm>
 #include <numeric>
 #include <utility>
 
@@ -1475,11 +1474,8 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
           GetFromId(update_state->old_tree_data->focus_id);
       if (old_focus &&
           update_state->ShouldPendingNodeExistInTree(old_focus->id()) &&
-          std::find_if(update_state->updated_nodes.begin(),
-                       update_state->updated_nodes.end(),
-                       [old_focus](const AXNodeData& data) {
-                         return data.id == old_focus->id();
-                       }) == update_state->updated_nodes.end()) {
+          !base::Contains(update_state->updated_nodes, old_focus->id(),
+                          &AXNodeData::id)) {
         update_state->updated_nodes.push_back(old_focus->data());
       }
     }
@@ -1489,11 +1485,8 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
           GetFromId(update_state->new_tree_data->focus_id);
       if (new_focus &&
           update_state->ShouldPendingNodeExistInTree(new_focus->id()) &&
-          std::find_if(update_state->updated_nodes.begin(),
-                       update_state->updated_nodes.end(),
-                       [new_focus](const AXNodeData& data) {
-                         return data.id == new_focus->id();
-                       }) == update_state->updated_nodes.end()) {
+          !base::Contains(update_state->updated_nodes, new_focus->id(),
+                          &AXNodeData::id)) {
         update_state->updated_nodes.push_back(new_focus->data());
       }
     }

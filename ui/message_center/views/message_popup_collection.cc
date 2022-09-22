@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
@@ -147,16 +148,14 @@ void MessagePopupCollection::AnimateResize() {
 
 MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
     const std::string& notification_id) {
-  auto it = std::find_if(
-      popup_items_.begin(), popup_items_.end(), [&](const auto& child) {
-        auto* widget = child.popup->GetWidget();
-        // Do not return popups that are in the process of closing, but have not
-        // yet been removed from `popup_items_`.
-        if (!widget || widget->IsClosed())
-          return false;
-        return child.popup->message_view()->notification_id() ==
-               notification_id;
-      });
+  auto it = base::ranges::find_if(popup_items_, [&](const auto& child) {
+    auto* widget = child.popup->GetWidget();
+    // Do not return popups that are in the process of closing, but have not
+    // yet been removed from `popup_items_`.
+    if (!widget || widget->IsClosed())
+      return false;
+    return child.popup->message_view()->notification_id() == notification_id;
+  });
 
   if (it == popup_items_.end())
     return nullptr;
@@ -167,9 +166,8 @@ MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
 void MessagePopupCollection::ConvertNotificationViewToGroupedNotificationView(
     const std::string& ungrouped_notification_id,
     const std::string& new_grouped_notification_id) {
-  auto it = std::find_if(
-      popup_items_.begin(), popup_items_.end(),
-      [&](const auto& popup) { return popup.id == ungrouped_notification_id; });
+  auto it = base::ranges::find(popup_items_, ungrouped_notification_id,
+                               &PopupItem::id);
   if (it == popup_items_.end())
     return;
 
@@ -180,9 +178,8 @@ void MessagePopupCollection::ConvertNotificationViewToGroupedNotificationView(
 void MessagePopupCollection::ConvertGroupedNotificationViewToNotificationView(
     const std::string& grouped_notification_id,
     const std::string& new_single_notification_id) {
-  auto it = std::find_if(
-      popup_items_.begin(), popup_items_.end(),
-      [&](const auto& popup) { return popup.id == grouped_notification_id; });
+  auto it =
+      base::ranges::find(popup_items_, grouped_notification_id, &PopupItem::id);
   if (it == popup_items_.end())
     return;
 

@@ -13,6 +13,7 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1822,8 +1823,8 @@ EventDispatchDetails EventRewriterChromeOS::RewriteKeyEventInContext(
         rewritten_event ? static_cast<const KeyEvent*>(rewritten_event.get())
                         : &key_event);
     MutableKeyState original_key_state(&key_event);
-    auto iter = std::find_if(pressed_key_states_.begin(),
-                             pressed_key_states_.end(), key_state_comparator);
+    auto iter =
+        base::ranges::find_if(pressed_key_states_, key_state_comparator);
 
     // When a key is pressed, store |current_key_state| if it is not stored
     // before.
@@ -1898,8 +1899,7 @@ EventDispatchDetails EventRewriterChromeOS::RewriteKeyEventInContext(
   current_key_state = MutableKeyState(
       rewritten_event ? static_cast<const KeyEvent*>(rewritten_event.get())
                       : &key_event);
-  auto iter = std::find_if(pressed_key_states_.begin(),
-                           pressed_key_states_.end(), key_state_comparator);
+  auto iter = base::ranges::find_if(pressed_key_states_, key_state_comparator);
   if (iter != pressed_key_states_.end()) {
     pressed_key_states_.erase(iter);
 

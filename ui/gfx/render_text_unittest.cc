@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <numeric>
 
@@ -17,6 +16,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -187,10 +187,10 @@ DecoratedText::RangedAttribute CreateRangedAttribute(
     int font_index,
     Font::Weight weight,
     int style_mask) {
-  const auto iter = std::find_if(font_spans.cbegin(), font_spans.cend(),
-                                 [font_index](const FontSpan& span) {
-                                   return IndexInRange(span.second, font_index);
-                                 });
+  const auto iter =
+      base::ranges::find_if(font_spans, [font_index](const FontSpan& span) {
+        return IndexInRange(span.second, font_index);
+      });
   DCHECK(font_spans.end() != iter);
   const Font& font = iter->first;
 
@@ -223,11 +223,9 @@ void VerifyDecoratedWordsAreEqual(const DecoratedText& expected,
       return IndexInRange(attr.range, i);
     };
     const auto expected_attr =
-        std::find_if(expected.attributes.begin(), expected.attributes.end(),
-                     find_attribute_func);
+        base::ranges::find_if(expected.attributes, find_attribute_func);
     const auto actual_attr =
-        std::find_if(actual.attributes.begin(), actual.attributes.end(),
-                     find_attribute_func);
+        base::ranges::find_if(actual.attributes, find_attribute_func);
     ASSERT_NE(expected.attributes.end(), expected_attr);
     ASSERT_NE(actual.attributes.end(), actual_attr);
 

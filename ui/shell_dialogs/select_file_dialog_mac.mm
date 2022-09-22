@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/remote_cocoa/app_shim/select_file_dialog_bridge.h"
 #include "components/remote_cocoa/browser/window.h"
@@ -46,9 +47,8 @@ void SelectFileDialogImpl::FileWasSelected(
     bool was_cancelled,
     const std::vector<base::FilePath>& files,
     int index) {
-  auto it = std::find_if(
-      dialog_data_list_.begin(), dialog_data_list_.end(),
-      [dialog_data](const DialogData& d) { return &d == dialog_data; });
+  auto it = base::ranges::find(dialog_data_list_, dialog_data,
+                               [](const DialogData& d) { return &d; });
   DCHECK(it != dialog_data_list_.end());
   void* params = dialog_data->params;
   dialog_data_list_.erase(it);

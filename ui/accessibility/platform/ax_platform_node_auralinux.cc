@@ -8,7 +8,6 @@
 #include <dlfcn.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -20,6 +19,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -4242,17 +4242,14 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
 
 absl::optional<std::pair<int, int>>
 AXPlatformNodeAuraLinux::GetEmbeddedObjectIndicesForId(int id) {
-  auto iterator =
-      std::find(hypertext_.hyperlinks.begin(), hypertext_.hyperlinks.end(), id);
+  auto iterator = base::ranges::find(hypertext_.hyperlinks, id);
   if (iterator == hypertext_.hyperlinks.end())
     return absl::nullopt;
   int hyperlink_index = std::distance(hypertext_.hyperlinks.begin(), iterator);
 
-  auto offset = std::find_if(hypertext_.hyperlink_offset_to_index.begin(),
-                             hypertext_.hyperlink_offset_to_index.end(),
-                             [&](const std::pair<int32_t, int32_t>& pair) {
-                               return pair.second == hyperlink_index;
-                             });
+  auto offset =
+      base::ranges::find(hypertext_.hyperlink_offset_to_index, hyperlink_index,
+                         &AXLegacyHypertext::OffsetToIndex::value_type::second);
   if (offset == hypertext_.hyperlink_offset_to_index.end())
     return absl::nullopt;
 

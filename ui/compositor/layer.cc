@@ -4,7 +4,6 @@
 
 #include "ui/compositor/layer.h"
 
-#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <utility>
@@ -13,10 +12,12 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/mirror_layer.h"
 #include "cc/layers/nine_patch_layer.h"
@@ -419,7 +420,7 @@ void Layer::Remove(Layer* child) {
   if (compositor && compositor->animations_are_enabled())
     child->ResetCompositorForAnimatorsInTree(compositor);
 
-  auto i = std::find(children_.begin(), children_.end(), child);
+  auto i = base::ranges::find(children_, child);
   DCHECK(i != children_.end());
   children_.erase(i);
   child->parent_ = nullptr;
@@ -975,12 +976,7 @@ void Layer::SetSurfaceSize(gfx::Size surface_size_in_dip) {
 }
 
 bool Layer::ContainsMirrorForTest(Layer* mirror) const {
-  const auto it =
-      std::find_if(mirrors_.begin(), mirrors_.end(),
-                   [mirror](const std::unique_ptr<LayerMirror>& mirror_ptr) {
-                     return mirror_ptr.get()->dest() == mirror;
-                   });
-  return it != mirrors_.end();
+  return base::Contains(mirrors_, mirror, &LayerMirror::dest);
 }
 
 void Layer::SetTransferableResource(const viz::TransferableResource& resource,
@@ -1421,9 +1417,9 @@ void Layer::StackRelativeTo(Layer* child, Layer* other, bool above) {
   DCHECK_EQ(this, other->parent());
 
   const size_t child_i =
-      std::find(children_.begin(), children_.end(), child) - children_.begin();
+      base::ranges::find(children_, child) - children_.begin();
   const size_t other_i =
-      std::find(children_.begin(), children_.end(), other) - children_.begin();
+      base::ranges::find(children_, other) - children_.begin();
   if ((above && child_i == other_i + 1) || (!above && child_i + 1 == other_i))
     return;
 
@@ -1748,10 +1744,8 @@ void Layer::ResetCompositorForAnimatorsInTree(Compositor* compositor) {
 }
 
 void Layer::OnMirrorDestroyed(LayerMirror* mirror) {
-  const auto it = std::find_if(mirrors_.begin(), mirrors_.end(),
-      [mirror](const std::unique_ptr<LayerMirror>& mirror_ptr) {
-        return mirror_ptr.get() == mirror;
-      });
+  const auto it =
+      base::ranges::find(mirrors_, mirror, &std::unique_ptr<LayerMirror>::get);
 
   DCHECK(it != mirrors_.end());
   mirrors_.erase(it);

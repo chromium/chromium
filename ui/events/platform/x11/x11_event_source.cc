@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <type_traits>
 
@@ -11,6 +10,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
@@ -189,7 +189,7 @@ x11::Time X11EventSource::GetCurrentServerTime() {
   };
 
   auto& events = connection_->events();
-  auto it = std::find_if(events.begin(), events.end(), pred);
+  auto it = base::ranges::find_if(events, pred);
   if (it != events.end())
     *it = x11::Event();
   return time;
