@@ -8,12 +8,12 @@
 #include <lib/sys/inspect/cpp/component.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 
-#include <algorithm>
-
 #include "base/callback.h"
+#include "base/containers/adapters.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "fuchsia_web/webengine/browser/frame_window_tree_host.h"
@@ -756,11 +756,8 @@ AccessibilityBridge::GetNodeIfChangingInUpdate(const ui::AXTreeID& tree_id,
 
   for (auto& update_batch : to_update_) {
     auto result =
-        std::find_if(update_batch.rbegin(), update_batch.rend(),
-                     [&fuchsia_node_id](
-                         const fuchsia::accessibility::semantics::Node& node) {
-                       return node.node_id() == fuchsia_node_id;
-                     });
+        base::ranges::find(base::Reversed(update_batch), fuchsia_node_id,
+                           &fuchsia::accessibility::semantics::Node::node_id);
     if (result != update_batch.rend())
       return &(*result);
   }
