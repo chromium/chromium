@@ -8,8 +8,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/task_environment.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,6 +81,19 @@ TEST(Util, GetTagArgsForCommandLine) {
   EXPECT_EQ(result.tag_args->apps[0].app_name, "Chrome");
   EXPECT_EQ(result.tag_args->apps[0].encoded_installer_data,
             "%7B%22homepage%22%3A%22http%3A%2F%2Fwww.google.com%");
+}
+
+TEST(Util, OnCurrentSequence) {
+  SEQUENCE_CHECKER(sequence_checker);
+  base::test::TaskEnvironment task_environment;
+  base::RunLoop run_loop;
+  base::ThreadPool::PostTask(
+      FROM_HERE, OnCurrentSequence(base::BindLambdaForTesting(
+                     [&run_loop, &sequence_checker]() {
+                       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+                       run_loop.Quit();
+                     })));
+  run_loop.Run();
 }
 
 }  // namespace updater
