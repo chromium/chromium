@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <cstring>
 #include <map>
 #include <memory>
 #include <set>
