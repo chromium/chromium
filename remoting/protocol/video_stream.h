@@ -11,6 +11,7 @@
 namespace webrtc {
 class DesktopSize;
 class DesktopVector;
+class MouseCursor;
 }  // namespace webrtc
 
 namespace remoting::protocol {
@@ -41,6 +42,13 @@ class VideoStream {
   // or to use a lossless color space (typically requiring higher bandwidth).
   virtual void SetLosslessEncode(bool want_lossless) = 0;
   virtual void SetLosslessColor(bool want_lossless) = 0;
+
+  // Control mouse cursor compositing in the video stream.
+  virtual void SetComposeEnabled(bool enabled) = 0;
+  virtual void SetMouseCursor(
+      std::unique_ptr<webrtc::MouseCursor> mouse_cursor) = 0;
+  virtual void SetMouseCursorPosition(
+      const webrtc::DesktopVector& position) = 0;
 
   // Sets stream observer.
   virtual void SetObserver(Observer* observer) = 0;

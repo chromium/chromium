@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/protocol/connection_to_client.h"
+#include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/video_feedback_stub.h"
 #include "remoting/protocol/video_stream.h"
 #include "remoting/protocol/video_stub.h"
@@ -36,6 +37,10 @@ class FakeVideoStream : public protocol::VideoStream {
   void SetLosslessColor(bool want_lossless) override;
   void SetObserver(Observer* observer) override;
   void SelectSource(webrtc::ScreenId id) override;
+  void SetComposeEnabled(bool enabled) override;
+  void SetMouseCursor(
+      std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
+  void SetMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
   webrtc::ScreenId selected_source() const;
 
@@ -64,7 +69,7 @@ class FakeConnectionToClient : public ConnectionToClient {
 
   std::unique_ptr<VideoStream> StartVideoStream(
       const std::string& stream_name,
-      std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer) override;
+      std::unique_ptr<DesktopCapturer> desktop_capturer) override;
   std::unique_ptr<AudioStream> StartAudioStream(
       std::unique_ptr<AudioSource> audio_source) override;
 
@@ -105,7 +110,7 @@ class FakeConnectionToClient : public ConnectionToClient {
   // TODO(crbug.com/1043325): Remove the requirement that ConnectionToClient
   // retains a pointer to the capturer if the relative pointer experiment is
   // a success.
-  std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer_;
+  std::unique_ptr<DesktopCapturer> desktop_capturer_;
   std::unique_ptr<Session> session_;
   raw_ptr<EventHandler> event_handler_ = nullptr;
 

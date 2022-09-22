@@ -48,7 +48,7 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   void Disconnect(ErrorCode error) override;
   std::unique_ptr<VideoStream> StartVideoStream(
       const std::string& stream_name,
-      std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer) override;
+      std::unique_ptr<DesktopCapturer> desktop_capturer) override;
   std::unique_ptr<AudioStream> StartAudioStream(
       std::unique_ptr<AudioSource> audio_source) override;
   ClientStub* client_stub() override;

@@ -35,6 +35,14 @@ void FakeVideoStream::SelectSource(webrtc::ScreenId id) {
   selected_source_ = id;
 }
 
+void FakeVideoStream::SetComposeEnabled(bool enabled) {}
+
+void FakeVideoStream::SetMouseCursor(
+    std::unique_ptr<webrtc::MouseCursor> mouse_cursor) {}
+
+void FakeVideoStream::SetMouseCursorPosition(
+    const webrtc::DesktopVector& position) {}
+
 webrtc::ScreenId FakeVideoStream::selected_source() const {
   return selected_source_;
 }
@@ -54,7 +62,7 @@ void FakeConnectionToClient::SetEventHandler(EventHandler* event_handler) {
 
 std::unique_ptr<VideoStream> FakeConnectionToClient::StartVideoStream(
     const std::string& stream_name,
-    std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer) {
+    std::unique_ptr<DesktopCapturer> desktop_capturer) {
   desktop_capturer_ = std::move(desktop_capturer);
   if (video_stub_ && video_encode_task_runner_) {
     std::unique_ptr<VideoEncoder> video_encoder =

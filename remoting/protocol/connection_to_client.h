@@ -13,9 +13,9 @@
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/transport.h"
 
-namespace webrtc {
+namespace remoting {
 class DesktopCapturer;
-}  // namespace webrtc
+}  // namespace remoting
 
 namespace remoting::protocol {
 
@@ -88,7 +88,7 @@ class ConnectionToClient {
   // client.
   virtual std::unique_ptr<VideoStream> StartVideoStream(
       const std::string& stream_name,
-      std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer) = 0;
+      std::unique_ptr<DesktopCapturer> desktop_capturer) = 0;
 
   // Starts an audio stream. Returns nullptr if audio is not supported by the
   // client.

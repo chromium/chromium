@@ -19,6 +19,7 @@
 #include "remoting/codec/video_encoder_verbatim.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/video.pb.h"
+#include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -95,7 +96,7 @@ class ThreadCheckVideoEncoder : public VideoEncoderVerbatim {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
-class ThreadCheckDesktopCapturer : public webrtc::DesktopCapturer {
+class ThreadCheckDesktopCapturer : public DesktopCapturer {
  public:
   ThreadCheckDesktopCapturer(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)

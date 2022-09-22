@@ -18,6 +18,7 @@
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_writer.h"
 #include "remoting/protocol/clipboard_stub.h"
+#include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/host_control_dispatcher.h"
 #include "remoting/protocol/host_event_dispatcher.h"
 #include "remoting/protocol/host_stub.h"
@@ -92,7 +93,7 @@ void IceConnectionToClient::Disconnect(ErrorCode error) {
 
 std::unique_ptr<VideoStream> IceConnectionToClient::StartVideoStream(
     const std::string& stream_name,
-    std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer) {
+    std::unique_ptr<DesktopCapturer> desktop_capturer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::unique_ptr<VideoEncoder> video_encoder =

@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/base/session_options.h"
+#include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/video_stream.h"
 #include "remoting/protocol/webrtc_video_track_source.h"
@@ -52,7 +53,7 @@ class WebrtcVideoStream : public VideoStream, public VideoChannelStateObserver {
     video_stats_dispatcher_ = video_stats_dispatcher;
   }
 
-  void Start(std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer,
+  void Start(std::unique_ptr<DesktopCapturer> desktop_capturer,
              WebrtcTransport* webrtc_transport,
              WebrtcVideoEncoderFactory* video_encoder_factory);
 
@@ -64,6 +65,10 @@ class WebrtcVideoStream : public VideoStream, public VideoChannelStateObserver {
   void SetLosslessColor(bool want_lossless) override;
   void SetObserver(Observer* observer) override;
   void SelectSource(webrtc::ScreenId id) override;
+  void SetComposeEnabled(bool enabled) override;
+  void SetMouseCursor(
+      std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
+  void SetMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
   // VideoChannelStateObserver interface.
   void OnKeyFrameRequested() override;

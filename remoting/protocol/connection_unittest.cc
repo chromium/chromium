@@ -21,6 +21,7 @@
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_stream.h"
 #include "remoting/protocol/audio_stub.h"
+#include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/fake_session.h"
 #include "remoting/protocol/fake_video_renderer.h"
 #include "remoting/protocol/ice_connection_to_client.h"
@@ -32,7 +33,6 @@
 #include "remoting/protocol/webrtc_connection_to_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
 using ::testing::_;
@@ -71,7 +71,7 @@ class MockConnectionToHostEventCallback
                     const TransportRoute& route));
 };
 
-class TestScreenCapturer : public webrtc::DesktopCapturer {
+class TestScreenCapturer : public DesktopCapturer {
  public:
   TestScreenCapturer() = default;
   ~TestScreenCapturer() override = default;

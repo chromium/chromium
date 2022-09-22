@@ -216,21 +216,6 @@ class ClientSession : public protocol::HostStub,
   void UpdateMouseClampingFilterOffset();
 
  private:
-  // Struct for associating an optional DesktopAndCursorConditionalComposer
-  // with each VideoStream.
-  struct VideoStreamWithComposer {
-    VideoStreamWithComposer();
-    VideoStreamWithComposer(VideoStreamWithComposer&&);
-    VideoStreamWithComposer& operator=(VideoStreamWithComposer&&);
-    ~VideoStreamWithComposer();
-
-    std::unique_ptr<protocol::VideoStream> stream;
-    // |stream| owns |desktop_capturer|.
-    // TODO(joedow): Move the composer methods into protocol::VideoStream so we
-    // no longer need this class.
-    base::raw_ptr<DesktopCapturer> desktop_capturer = nullptr;
-  };
-
   // Creates a proxy for sending clipboard events to the client.
   std::unique_ptr<protocol::ClipboardStub> CreateClipboardProxy();
 
@@ -326,7 +311,8 @@ class ClientSession : public protocol::HostStub,
   base::OneShotTimer max_duration_timer_;
 
   // Objects responsible for sending video, audio.
-  std::map<webrtc::ScreenId, VideoStreamWithComposer> video_streams_;
+  std::map<webrtc::ScreenId, std::unique_ptr<protocol::VideoStream>>
+      video_streams_;
   std::unique_ptr<protocol::AudioStream> audio_stream_;
 
   // The set of all capabilities supported by the client.

@@ -17,6 +17,7 @@
 #include "remoting/base/constants.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/video.pb.h"
+#include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/video_stub.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
@@ -40,7 +41,7 @@ VideoFramePump::PacketWithTimestamps::~PacketWithTimestamps() = default;
 
 VideoFramePump::VideoFramePump(
     scoped_refptr<base::SingleThreadTaskRunner> encode_task_runner,
-    std::unique_ptr<webrtc::DesktopCapturer> capturer,
+    std::unique_ptr<DesktopCapturer> capturer,
     std::unique_ptr<VideoEncoder> encoder,
     protocol::VideoStub* video_stub)
     : encode_task_runner_(encode_task_runner),
@@ -103,6 +104,22 @@ void VideoFramePump::SetObserver(Observer* observer) {
 }
 
 void VideoFramePump::SelectSource(webrtc::ScreenId id) {}
+
+void VideoFramePump::SetComposeEnabled(bool enabled) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  capturer_->SetComposeEnabled(enabled);
+}
+void VideoFramePump::SetMouseCursor(
+    std::unique_ptr<webrtc::MouseCursor> mouse_cursor) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  capturer_->SetMouseCursor(std::move(mouse_cursor));
+}
+
+void VideoFramePump::SetMouseCursorPosition(
+    const webrtc::DesktopVector& position) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  capturer_->SetMouseCursorPosition(position);
+}
 
 void VideoFramePump::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
