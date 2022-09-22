@@ -97,10 +97,6 @@ def main():
         test_runner = _get_test_runner(runner_args, test_args)
         package_paths = test_runner.get_package_paths()
 
-        # Start system logging.
-        start_system_log(log_manager, False, package_paths, ('--since', 'now'),
-                         runner_args.target_id)
-
         if not runner_args.repo:
             # Create a directory that serves as a temporary repository.
             runner_args.repo = stack.enter_context(
@@ -110,6 +106,12 @@ def main():
                          not runner_args.no_repo_init)
 
         stack.enter_context(serve_repository(runner_args))
+
+        # Start system logging, after all possible restarts of the ffx daemon
+        # so that logging will not be interrupted.
+        start_system_log(log_manager, False, package_paths, ('--since', 'now'),
+                         runner_args.target_id)
+
         if test_runner.is_cfv2():
             resolve_packages(test_runner.packages, runner_args.target_id)
         else:
