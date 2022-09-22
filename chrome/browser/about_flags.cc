@@ -8243,10 +8243,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(optimization_guide::features::kPushNotifications)},
 #endif
 
-    {"media-session-webrtc", flag_descriptions::kMediaSessionWebRTCName,
-     flag_descriptions::kMediaSessionWebRTCDescription, kOsAll,
-     FEATURE_VALUE_TYPE(media::kMediaSessionWebRTC)},
-
     {"fedcm", flag_descriptions::kFedCmName,
      flag_descriptions::kFedCmDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kFedCm,

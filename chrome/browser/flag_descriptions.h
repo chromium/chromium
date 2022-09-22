@@ -1023,9 +1023,6 @@ extern const char kUnthrottledNestedTimeoutDescription[];
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
 
-extern const char kMediaSessionWebRTCName[];
-extern const char kMediaSessionWebRTCDescription[];
-
 extern const char kMetricsSettingsAndroidName[];
 extern const char kMetricsSettingsAndroidDescription[];
 
