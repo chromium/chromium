@@ -128,6 +128,16 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   [self loadModel];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+
+  // Provide context for users with Voice Over enabled.
+  NSString* initialMessage =
+      [NSString stringWithFormat:@"%@\n%@", self.title, [self instructions]];
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  initialMessage);
+}
+
 - (void)loadModel {
   [super loadModel];
 
@@ -247,6 +257,14 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   [self reloadAllSections];
 
   [self updateConfirmButtonState];
+
+  // For Voice Over users, focus on the instructions to provide context about
+  // what to do next.
+  UIAccessibilityPostNotification(
+      UIAccessibilityLayoutChangedNotification,
+      [self.tableView headerViewForSection:[self.tableViewModel
+                                               sectionForSectionIdentifier:
+                                                   SectionIdentifierHeader]]);
 }
 
 // Displays a footer with a link to update the expiration date of the card.
@@ -368,10 +386,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
 // Updates the instructions in the header.
 - (void)updateInstructions {
-  autofill::CardUnmaskPromptController* controller = _bridge->GetController();
-  NSString* instructions =
-      base::SysUTF16ToNSString(controller->GetInstructionsMessage());
-  _headerItem.instructionsText = instructions;
+  _headerItem.instructionsText = [self instructions];
 }
 
 // Reloads all sections of the table view using automatic row animations.
@@ -434,6 +449,12 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   }
 }
 
+// Helper method that fetches the instructions from the Controller.
+- (NSString*)instructions {
+  autofill::CardUnmaskPromptController* controller = _bridge->GetController();
+  return base::SysUTF16ToNSString(controller->GetInstructionsMessage());
+}
+
 #pragma mark - TableViewTextEditItemDelegate
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
@@ -481,7 +502,9 @@ const char kFooterDummyLinkTarget[] = "about:blank";
     forRowAtIndexPath:(NSIndexPath*)indexPath {
   // Only update focus for cells with input fields and when update focus is
   // needed.
-  if (!_shouldUpdateFocus ||
+  // Don't update focus when Voice Over is running. Instead, the instructions
+  // will be read, providing more context for users with Voice Over enabled.
+  if (UIAccessibilityIsVoiceOverRunning() || !_shouldUpdateFocus ||
       ![cell isKindOfClass:TableViewTextEditCell.class]) {
     return;
   }
@@ -518,6 +541,23 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   }
 
   return view;
+}
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
+
+  NSInteger rowItemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+
+  if (rowItemType == ItemTypeCVCInput) {
+    TableViewTextEditCell* rowCell =
+        base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+    // Hide the icon from Voice Over.
+    rowCell.identifyingIconButton.isAccessibilityElement = NO;
+  }
+
+  return cell;
 }
 
 #pragma mark - TableViewLinkHeaderFooterDelegate
