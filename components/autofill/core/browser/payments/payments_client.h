@@ -365,14 +365,11 @@ class PaymentsClient {
     LOCAL_CARD_MIGRATION_SETTINGS_PAGE,
   };
 
-  // TODO(crbug.com/1285086): Remove the |server_id| field from
-  //  UploadCardResponseDetails since it is never used.
   // A collection of information received in the response for an
   // UploadCardRequest.
   struct UploadCardResponseDetails {
     UploadCardResponseDetails();
     ~UploadCardResponseDetails();
-    std::string server_id;
     // |instrument_id| is used by the server as an identifier for the card that
     // was uploaded. Currently, we have it in the UploadCardResponseDetails so
     // that we can send it in the GetDetailsForEnrollRequest in the virtual card

@@ -1301,7 +1301,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NotSavedLocally) {
 
   payments::PaymentsClient::UploadCardResponseDetails
       upload_card_response_details;
-  upload_card_response_details.server_id = "InstrumentData:1234";
   payments_client_->SetUploadCardResponseDetailsForUploadCard(
       upload_card_response_details);
 
@@ -5235,7 +5234,6 @@ TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_NumStrikesLoggedOnUploadNotSuccess) {
   payments::PaymentsClient::UploadCardResponseDetails
       upload_card_response_details;
-  upload_card_response_details.server_id = "InstrumentData:1234";
   payments_client_->SetUploadCardResponseDetailsForUploadCard(
       upload_card_response_details);
   TestCreditCardSaveStrikeDatabase credit_card_save_strike_database =

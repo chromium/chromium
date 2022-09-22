@@ -124,10 +124,6 @@ std::string UploadCardRequest::GetRequestContent() {
 }
 
 void UploadCardRequest::ParseResponse(const base::Value& response) {
-  const std::string* credit_card_id = response.FindStringKey("credit_card_id");
-  upload_card_response_details_.server_id =
-      credit_card_id ? *credit_card_id : std::string();
-
   const std::string* response_instrument_id =
       response.FindStringKey("instrument_id");
   if (response_instrument_id) {

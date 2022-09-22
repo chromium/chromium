@@ -143,7 +143,6 @@ class PaymentsClientTest : public testing::Test {
         switches::kWalletServiceUseSandbox, "0");
 
     result_ = AutofillClient::PaymentsRpcResult::kNone;
-    upload_card_response_details_.server_id.clear();
     unmask_response_details_ = nullptr;
     legal_message_.reset();
     has_variations_header_ = false;
@@ -1372,19 +1371,10 @@ TEST_F(PaymentsClientTest, UploadSuccessEmptyResponse) {
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
-  EXPECT_TRUE(upload_card_response_details_.server_id.empty());
   EXPECT_FALSE(upload_card_response_details_.instrument_id.has_value());
   EXPECT_TRUE(upload_card_response_details_.virtual_card_enrollment_state ==
               CreditCard::VirtualCardEnrollmentState::UNSPECIFIED);
   EXPECT_TRUE(upload_card_response_details_.card_art_url.is_empty());
-}
-
-TEST_F(PaymentsClientTest, UploadSuccessServerIdPresent) {
-  StartUploading(/*include_cvc=*/true);
-  IssueOAuthToken();
-  ReturnResponse(net::HTTP_OK, "{ \"credit_card_id\": \"InstrumentData:1\" }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
-  EXPECT_EQ(upload_card_response_details_.server_id, "InstrumentData:1");
 }
 
 TEST_F(PaymentsClientTest, UploadSuccessInstrumentIdPresent) {
