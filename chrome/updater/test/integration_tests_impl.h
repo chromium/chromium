@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_TEST_INTEGRATION_TESTS_IMPL_H_
 #define CHROME_UPDATER_TEST_INTEGRATION_TESTS_IMPL_H_
 
+#include <set>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -39,7 +40,7 @@ class ScopedServer;
 base::FilePath GetSetupExecutablePath();
 
 // Returns the names for processes which may be running during unit tests.
-std::vector<base::FilePath::StringType> GetTestProcessNames();
+std::set<base::FilePath::StringType> GetTestProcessNames();
 
 // Ensures test processes are not running after the function is called.
 void CleanProcesses();

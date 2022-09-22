@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -665,20 +666,20 @@ void ExpectLastStarted(UpdaterScope updater_scope) {
                    .is_null());
 }
 
-std::vector<base::FilePath::StringType> GetTestProcessNames() {
+std::set<base::FilePath::StringType> GetTestProcessNames() {
 #if BUILDFLAG(IS_MAC)
   return {
-      GetExecutableRelativePath().value(),
-      GetSetupExecutablePath().value(),
+      GetExecutableRelativePath().BaseName().value(),
+      GetSetupExecutablePath().BaseName().value(),
   };
 #elif BUILDFLAG(IS_WIN)
   return {
-      GetExecutableRelativePath().value(),
-      GetSetupExecutablePath().value(),
+      GetExecutableRelativePath().BaseName().value(),
+      GetSetupExecutablePath().BaseName().value(),
       kTestProcessExecutableName,
       []() {
         const base::FilePath test_executable =
-            base::FilePath::FromASCII(kExecutableName);
+            base::FilePath::FromASCII(kExecutableName).BaseName();
         return base::StrCat({test_executable.RemoveExtension().value(),
                              base::ASCIIToWide(kExecutableSuffix),
                              test_executable.Extension()});
