@@ -10,22 +10,27 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_presentationsource_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 namespace {
 
-HeapVector<Member<V8UnionPresentationSourceOrUSVString>>
-CreatePresentationSources(const WTF::Vector<String>& urls) {
-  HeapVector<Member<V8UnionPresentationSourceOrUSVString>> sources;
-  for (const String& url : urls) {
-    PresentationSource* source = PresentationSource::Create();
-    source->setUrl(url);
-    sources.push_back(
-        MakeGarbageCollected<V8UnionPresentationSourceOrUSVString>(source));
-  }
-  return sources;
+Member<V8UnionPresentationSourceOrUSVString> CreatePresentationSource(
+    const String& url) {
+  PresentationSource* source = PresentationSource::Create();
+  source->setType(V8PresentationSourceType::Enum::kUrl);
+  source->setUrl(url);
+  return MakeGarbageCollected<V8UnionPresentationSourceOrUSVString>(source);
+}
+
+Member<V8UnionPresentationSourceOrUSVString> CreateMirroringSource() {
+  PresentationSource* source = PresentationSource::Create();
+  source->setType(V8PresentationSourceType::Enum::kMirroring);
+  source->setAudioPlayback(V8AudioPlaybackDestination::Enum::kReceiver);
+  source->setLatencyHint(V8CaptureLatency::Enum::kDefault);
+  return MakeGarbageCollected<V8UnionPresentationSourceOrUSVString>(source);
 }
 
 HeapVector<Member<V8UnionPresentationSourceOrUSVString>> CreateUrlSources(
@@ -167,15 +172,48 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorAllUnknownSchemes) {
             scope.GetExceptionState().CodeAs<DOMExceptionCode>());
 }
 
+// If the site-initiated mirroring feature is disabled, then we do not allow
+// the PresentationSource specialization of V8UnionPresentationSourceOrUSVString
+// to be used to create a PresentationRequest.
 TEST(PresentationRequestTest, TestPresentationSourceNotAllowed) {
+  ScopedSiteInitiatedMirroringForTest site_initiated_mirroring_enabled{false};
   V8TestingScope scope;
-  PresentationRequest::Create(
+  PresentationRequest::Create(scope.GetExecutionContext(),
+                              {CreatePresentationSource("https://example.com")},
+                              scope.GetExceptionState());
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+}
+
+TEST(PresentationRequestTest, TestPresentationSourcesInConstructor) {
+  ScopedSiteInitiatedMirroringForTest site_initiated_mirroring_enabled{true};
+  V8TestingScope scope;
+  PresentationRequest* request = PresentationRequest::Create(
       scope.GetExecutionContext(),
-      CreatePresentationSources({"https://example.com"}),
+      {CreatePresentationSource("https://example.com"),
+       CreateMirroringSource()},
       scope.GetExceptionState());
-  // Currently we do not allow the PresentationSource specialization of
-  // V8UnionPresentationSourceOrUSVString to be used to create a
-  // PresentationRequest.
+  CHECK(request);
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(static_cast<size_t>(2), request->Urls().size());
+  EXPECT_TRUE(request->Urls()[0].IsValid());
+  EXPECT_EQ("https://example.com/", request->Urls()[0].GetString());
+  EXPECT_TRUE(request->Urls()[1].IsValid());
+  // TODO(crbug.com/1267372): This makes a lot of assumptions about the
+  // hardcoded URL in presentation_request.cc that should be removed.
+  EXPECT_EQ(
+      "cast:0F5096E8?streamingCaptureAudio=1&streamingTargetPlayoutDelayMillis="
+      "400",
+      request->Urls()[1].GetString());
+}
+
+TEST(PresentationRequestTest, TestInvalidPresentationSource) {
+  ScopedSiteInitiatedMirroringForTest site_initiated_mirroring_enabled{true};
+  V8TestingScope scope;
+  PresentationRequest::Create(scope.GetExecutionContext(),
+                              {CreatePresentationSource("invalid_url")},
+                              scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
             scope.GetExceptionState().CodeAs<DOMExceptionCode>());

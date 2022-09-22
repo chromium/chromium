@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_capture_latency.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_presentation_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_presentationsource_usvstring.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -34,6 +35,50 @@ namespace {
 bool IsKnownProtocolForPresentationUrl(const KURL& url) {
   return url.ProtocolIsInHTTPFamily() || url.ProtocolIs("cast") ||
          url.ProtocolIs("cast-dial");
+}
+
+int GetPlayoutDelay(const PresentationSource& source) {
+  if (!source.hasLatencyHint()) {
+    return 400;
+  }
+  switch (source.latencyHint()->AsEnum()) {
+    case V8CaptureLatency::Enum::kLow:
+      return 200;
+    case V8CaptureLatency::Enum::kDefault:
+      return 400;
+    case V8CaptureLatency::Enum::kHigh:
+      return 800;
+  }
+}
+
+KURL CreateMirroringUrl(const PresentationSource& source) {
+  int capture_audio = !source.hasAudioPlayback() ||
+                              (source.audioPlayback()->AsEnum() ==
+                               V8AudioPlaybackDestination::Enum::kReceiver)
+                          ? 1
+                          : 0;
+  int playout_delay = GetPlayoutDelay(source);
+  // TODO(crbug.com/1267372): Instead of converting a mirroring source into a
+  // URL with a hardcoded Cast receiver app ID, pass the source object directly
+  // to the embedder.
+  return KURL(
+      String::Format("cast:0F5096E8?streamingCaptureAudio=%d&"
+                     "streamingTargetPlayoutDelayMillis=%d",
+                     capture_audio, playout_delay));
+}
+
+KURL CreateUrlFromSource(const ExecutionContext& execution_context,
+                         const PresentationSource& source) {
+  if (!source.hasType()) {
+    return KURL();
+  }
+  switch (source.type().AsEnum()) {
+    case V8PresentationSourceType::Enum::kUrl:
+      return source.hasUrl() ? KURL(execution_context.Url(), source.url())
+                             : KURL();
+    case V8PresentationSourceType::Enum::kMirroring:
+      return CreateMirroringUrl(source);
+  }
 }
 
 }  // anonymous namespace
@@ -68,9 +113,22 @@ PresentationRequest* PresentationRequest::Create(
   Vector<KURL> parsed_urls;
   for (const auto& source : sources) {
     if (source->IsPresentationSource()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                        "You must pass in valid URL strings.");
-      return nullptr;
+      if (!RuntimeEnabledFeatures::SiteInitiatedMirroringEnabled()) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            "You must pass in valid URL strings.");
+        return nullptr;
+      }
+      const KURL source_url = CreateUrlFromSource(
+          *execution_context, *source->GetAsPresentationSource());
+      if (!source_url.IsValid()) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            "You must pass in valid presentation sources.");
+        return nullptr;
+      }
+      parsed_urls.push_back(source_url);
+      continue;
     }
     DCHECK(source->IsUSVString());
     const String& url = source->GetAsUSVString();

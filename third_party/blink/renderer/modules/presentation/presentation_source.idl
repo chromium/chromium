@@ -27,9 +27,21 @@ enum AudioPlaybackDestination {
   "controller",
 };
 
+// TODO(crbug.com/600726): Set RuntimeEnabled here if support is ever added for
+// enums (currently it is a no-op).
+enum PresentationSourceType {
+  "url",
+  "mirroring",
+};
+
 [RuntimeEnabled=SiteInitiatedMirroring]
 dictionary PresentationSource {
-  required USVString url;
-  CaptureLatency latencyHint;
-  AudioPlaybackDestination audioPlayback;
+  required PresentationSourceType type;
+
+  // Used if `type` is "url".
+  USVString? url;
+
+  // Used if `type` is "mirroring".
+  CaptureLatency? latencyHint;
+  AudioPlaybackDestination? audioPlayback;
 };
