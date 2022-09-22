@@ -14,9 +14,13 @@ import("//third_party/inspector_protocol/inspector_protocol.gni")
 source_set("resource_format") {
   sources = [
     "resources/resource_format.h",
+    "resources/shared_image_format.cc",
     "resources/shared_image_format.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+  ]
 }
 
 always_enable_blending_for_primary = is_castos || is_cast_android

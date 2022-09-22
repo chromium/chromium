@@ -49,6 +49,7 @@ mojom("mojom") {
   ]
   public_deps = [
     ":resource_format",
+    ":shared_image_format",
     "//gpu/ipc/common:interfaces",
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",
@@ -627,4 +628,22 @@ mojom("resource_format") {
       traits_public_deps = [ "//components/viz/common:resource_format" ]
     },
   ]
+}
+
+mojom("shared_image_format") {
+  generate_java = true
+  sources = [ "compositing/shared_image_format.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "viz.mojom.SharedImageFormat"
+          cpp = "::viz::SharedImageFormat"
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h" ]
+      traits_sources = [ "//services/viz/public/cpp/compositing/shared_image_format_mojom_traits.cc" ]
+    },
+  ]
+  public_deps = [ ":resource_format" ]
 }

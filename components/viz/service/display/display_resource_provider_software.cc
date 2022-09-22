@@ -34,8 +34,8 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
         resource->transferable.mailbox_holder.mailbox;
     std::unique_ptr<SharedBitmap> bitmap =
         shared_bitmap_manager_->GetSharedBitmapFromId(
-            resource->transferable.size, resource->transferable.format,
-            shared_bitmap_id);
+            resource->transferable.size,
+            resource->transferable.format.resource_format(), shared_bitmap_id);
     if (bitmap) {
       resource->shared_bitmap = std::move(bitmap);
       resource->shared_bitmap_tracing_guid =
@@ -107,7 +107,7 @@ void DisplayResourceProviderSoftware::PopulateSkBitmapWithResource(
     SkBitmap* sk_bitmap,
     const ChildResource* resource,
     SkAlphaType alpha_type) {
-  DCHECK(IsBitmapFormatSupported(resource->transferable.format));
+  DCHECK(resource->transferable.format.IsBitmapFormatSupported());
   SkImageInfo info =
       SkImageInfo::MakeN32(resource->transferable.size.width(),
                            resource->transferable.size.height(), alpha_type);

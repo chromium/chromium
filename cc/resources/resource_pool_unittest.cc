@@ -721,7 +721,7 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   EXPECT_EQ(transfer[0].mailbox_holder.mailbox, mailbox);
   EXPECT_EQ(transfer[0].mailbox_holder.sync_token, sync_token);
   EXPECT_EQ(transfer[0].mailbox_holder.texture_target, target);
-  EXPECT_EQ(transfer[0].format, format);
+  EXPECT_EQ(transfer[0].format.resource_format(), format);
   EXPECT_EQ(
       transfer[0].synchronization_type,
       viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);

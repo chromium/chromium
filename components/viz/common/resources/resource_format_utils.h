@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/viz_resource_format_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
@@ -24,6 +25,10 @@ namespace viz {
 
 VIZ_RESOURCE_FORMAT_EXPORT SkColorType
 ResourceFormatToClosestSkColorType(bool gpu_compositing, ResourceFormat format);
+VIZ_RESOURCE_FORMAT_EXPORT SkColorType
+ResourceFormatToClosestSkColorType(bool gpu_compositing,
+                                   SharedImageFormat format);
+
 VIZ_RESOURCE_FORMAT_EXPORT int BitsPerPixel(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT bool HasAlpha(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT ResourceFormat

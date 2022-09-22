@@ -9,6 +9,7 @@
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/resource_id_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"

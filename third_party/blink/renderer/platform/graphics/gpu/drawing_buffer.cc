@@ -783,7 +783,7 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
 
   SkImageInfo resource_info = SkImageInfo::MakeN32Premul(
       out_resource.size.width(), out_resource.size.height());
-  switch (out_resource.format) {
+  switch (out_resource.format.resource_format()) {
     case viz::RGBA_8888:
       resource_info = resource_info.makeColorType(kRGBA_8888_SkColorType);
       break;

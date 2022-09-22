@@ -82,6 +82,13 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
   return kN32_SkColorType;
 }
 
+// TODO (hitawala): Add support for multiplanar formats.
+SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
+                                               SharedImageFormat format) {
+  return ResourceFormatToClosestSkColorType(gpu_compositing,
+                                            format.resource_format());
+}
+
 ResourceFormat SkColorTypeToResourceFormat(SkColorType color_type) {
   switch (color_type) {
     case kARGB_4444_SkColorType:

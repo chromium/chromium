@@ -6,7 +6,7 @@ module viz.mojom;
 
 import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
-import "services/viz/public/mojom/compositing/resource_format.mojom";
+import "services/viz/public/mojom/compositing/shared_image_format.mojom";
 import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
@@ -24,7 +24,7 @@ enum SynchronizationType {
 // See components/viz/common/resources/transferable_resource.h.
 struct TransferableResource {
   ResourceId id;
-  ResourceFormat format;
+  SharedImageFormat format;
   uint32 filter;
   gfx.mojom.Size size;
   gpu.mojom.MailboxHolder mailbox_holder;

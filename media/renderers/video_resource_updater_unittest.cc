@@ -726,7 +726,8 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleNV12) {
   EXPECT_EQ(1u, resources.resources.size());
   EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
             resources.resources[0].mailbox_holder.texture_target);
-  EXPECT_EQ(viz::YUV_420_BIPLANAR, resources.resources[0].format);
+  EXPECT_EQ(viz::YUV_420_BIPLANAR,
+            resources.resources[0].format.resource_format());
 
   video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_NV12, 1,
                                                 GL_TEXTURE_RECTANGLE_ARB);
@@ -735,7 +736,8 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleNV12) {
   EXPECT_EQ(1u, resources.resources.size());
   EXPECT_EQ((GLenum)GL_TEXTURE_RECTANGLE_ARB,
             resources.resources[0].mailbox_holder.texture_target);
-  EXPECT_EQ(viz::YUV_420_BIPLANAR, resources.resources[0].format);
+  EXPECT_EQ(viz::YUV_420_BIPLANAR,
+            resources.resources[0].format.resource_format());
 
   EXPECT_EQ(0u, GetSharedImageCount());
 }
@@ -754,8 +756,8 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DualNV12) {
   EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
             resources.resources[0].mailbox_holder.texture_target);
   // |updater| doesn't set |buffer_format| in this case.
-  EXPECT_EQ(viz::RED_8, resources.resources[0].format);
-  EXPECT_EQ(viz::RG_88, resources.resources[1].format);
+  EXPECT_EQ(viz::RED_8, resources.resources[0].format.resource_format());
+  EXPECT_EQ(viz::RG_88, resources.resources[1].format.resource_format());
 
   video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_NV12, 2,
                                                 GL_TEXTURE_RECTANGLE_ARB);
@@ -764,8 +766,8 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DualNV12) {
   EXPECT_EQ(2u, resources.resources.size());
   EXPECT_EQ((GLenum)GL_TEXTURE_RECTANGLE_ARB,
             resources.resources[0].mailbox_holder.texture_target);
-  EXPECT_EQ(viz::RED_8, resources.resources[0].format);
-  EXPECT_EQ(viz::RG_88, resources.resources[1].format);
+  EXPECT_EQ(viz::RED_8, resources.resources[0].format.resource_format());
+  EXPECT_EQ(viz::RG_88, resources.resources[1].format.resource_format());
   EXPECT_EQ(0u, GetSharedImageCount());
 }
 
@@ -786,7 +788,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP016HDR) {
   EXPECT_EQ(1u, resources.resources.size());
   EXPECT_EQ(static_cast<GLenum>(GL_TEXTURE_EXTERNAL_OES),
             resources.resources[0].mailbox_holder.texture_target);
-  EXPECT_EQ(viz::P010, resources.resources[0].format);
+  EXPECT_EQ(viz::P010, resources.resources[0].format.resource_format());
   EXPECT_EQ(kHDR10ColorSpace, resources.resources[0].color_space);
   EXPECT_EQ(hdr_metadata, resources.resources[0].hdr_metadata);
 
@@ -799,7 +801,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP016HDR) {
   EXPECT_EQ(1u, resources.resources.size());
   EXPECT_EQ(static_cast<GLenum>(GL_TEXTURE_RECTANGLE_ARB),
             resources.resources[0].mailbox_holder.texture_target);
-  EXPECT_EQ(viz::P010, resources.resources[0].format);
+  EXPECT_EQ(viz::P010, resources.resources[0].format.resource_format());
   EXPECT_EQ(kHDR10ColorSpace, resources.resources[0].color_space);
   EXPECT_EQ(hdr_metadata, resources.resources[0].hdr_metadata);
 

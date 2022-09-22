@@ -25,6 +25,7 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -456,7 +457,7 @@ bool Buffer::ProduceTransferableResource(
         next_commit_id_, std::move(per_commit_explicit_release_callback));
 
   resource->id = resource_manager->AllocateResourceId();
-  resource->format = viz::RGBA_8888;
+  resource->format = viz::SharedImageFormat::SinglePlane(viz::RGBA_8888);
   resource->filter = GL_LINEAR;
   resource->size = gpu_memory_buffer_->GetSize();
 
@@ -509,7 +510,8 @@ bool Buffer::ProduceTransferableResource(
     resource->mailbox_holder = gpu::MailboxHolder(contents_texture->mailbox(),
                                                   sync_token, texture_target_);
     resource->is_overlay_candidate = is_overlay_candidate_;
-    resource->format = viz::GetResourceFormat(gpu_memory_buffer_->GetFormat());
+    resource->format = viz::SharedImageFormat::SinglePlane(
+        viz::GetResourceFormat(gpu_memory_buffer_->GetFormat()));
     if (context_provider->ContextCapabilities().chromium_gpu_fence &&
         request_release_fence) {
       resource->synchronization_type =

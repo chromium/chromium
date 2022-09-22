@@ -84,8 +84,11 @@ bool DisplayResourceProvider::OnMemoryDump(
     // Texture resources may not come with a size, in which case don't report
     // one.
     if (!resource.transferable.size.IsEmpty()) {
+      // TODO (hitawala): Update size check to use multiplanar
+      // SharedImageFormat.
       uint64_t total_bytes = ResourceSizes::UncheckedSizeInBytesAligned<size_t>(
-          resource.transferable.size, resource.transferable.format);
+          resource.transferable.size,
+          resource.transferable.format.resource_format());
       dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                       base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                       static_cast<uint64_t>(total_bytes));
@@ -165,7 +168,7 @@ gfx::BufferFormat DisplayResourceProvider::GetBufferFormat(ResourceId id) {
 
 ResourceFormat DisplayResourceProvider::GetResourceFormat(ResourceId id) {
   ChildResource* resource = GetResource(id);
-  return resource->transferable.format;
+  return resource->transferable.format.resource_format();
 }
 
 const gfx::ColorSpace& DisplayResourceProvider::GetOverlayColorSpace(
@@ -237,7 +240,7 @@ void DisplayResourceProvider::ReceiveFromChild(
 
     ResourceId local_id = resource_id_generator_.GenerateNextId();
     DCHECK(!transferable_resource.is_software ||
-           IsBitmapFormatSupported(transferable_resource.format));
+           transferable_resource.format.IsBitmapFormatSupported());
     resources_.emplace(local_id,
                        ChildResource(child_id, transferable_resource));
     child_info.child_to_parent_map[transferable_resource.id] = local_id;

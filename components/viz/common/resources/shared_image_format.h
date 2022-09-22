@@ -9,8 +9,15 @@
 
 #include "base/check.h"
 #include "components/viz/common/resources/resource_format.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
+#include "mojo/public/cpp/bindings/union_traits.h"
 
 namespace viz {
+
+namespace mojom {
+class SharedImageFormatDataView;
+class MultiplanarFormatDataView;
+}  // namespace mojom
 
 // This class represents the image format used by SharedImages for single plane
 // images (eg. RGBA) or multiplanar images (eg. NV12). This format can be
@@ -60,6 +67,8 @@ class SharedImageFormat {
    */
   enum class ChannelFormat : uint8_t { k8, k10, k16, k16F };
 
+  SharedImageFormat() : format_(RGBA_8888) {}
+
   static constexpr SharedImageFormat SinglePlane(
       ResourceFormat resource_format) {
     return SharedImageFormat(resource_format);
@@ -88,6 +97,17 @@ class SharedImageFormat {
     return format_.multiplanar_format.channel_format;
   }
 
+  // Returns whether the resource format can be used as a software bitmap for
+  // export to the display compositor.
+  bool IsBitmapFormatSupported() const;
+
+  bool operator==(const SharedImageFormat& o) const {
+    return is_single_plane_ == o.is_single_plane() &&
+           (is_single_plane_ ? resource_format() == o.resource_format()
+                             : multiplanar_format() == o.multiplanar_format());
+  }
+  bool operator!=(const SharedImageFormat& o) const { return !operator==(o); }
+
  private:
   union SharedImageFormatUnion {
     // A struct for multiplanar format that is defined by the PlaneConfig,
@@ -96,6 +116,11 @@ class SharedImageFormat {
       PlaneConfig plane_config;
       Subsampling subsampling;
       ChannelFormat channel_format;
+
+      bool operator==(const MultiplanarFormat& o) const {
+        return plane_config == o.plane_config && subsampling == o.subsampling &&
+               channel_format == o.channel_format;
+      }
     };
 
     explicit constexpr SharedImageFormatUnion(ResourceFormat resource_format)
@@ -109,6 +134,11 @@ class SharedImageFormat {
     MultiplanarFormat multiplanar_format;
   };
 
+  friend struct mojo::UnionTraits<mojom::SharedImageFormatDataView,
+                                  SharedImageFormat>;
+  friend struct mojo::StructTraits<mojom::MultiplanarFormatDataView,
+                                   SharedImageFormatUnion::MultiplanarFormat>;
+
   explicit constexpr SharedImageFormat(ResourceFormat resource_format)
       : format_(resource_format) {}
   constexpr SharedImageFormat(PlaneConfig plane_config,
@@ -116,6 +146,11 @@ class SharedImageFormat {
                               ChannelFormat channel_format)
       : is_single_plane_(false),
         format_(plane_config, subsampling, channel_format) {}
+
+  SharedImageFormatUnion::MultiplanarFormat multiplanar_format() const {
+    DCHECK(!is_single_plane());
+    return format_.multiplanar_format;
+  }
 
   bool is_single_plane_ = true;
   // `format_` can only be ResourceFormat (for single plane, eg. RGBA) or

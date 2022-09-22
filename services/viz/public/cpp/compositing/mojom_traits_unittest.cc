@@ -16,6 +16,7 @@
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_settings.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
@@ -516,7 +517,7 @@ TEST_F(StructTraitsTest, CompositorFrame) {
 
   // TransferableResource constants.
   const ResourceId tr_id(1337);
-  const ResourceFormat tr_format = ALPHA_8;
+  const SharedImageFormat tr_format = SharedImageFormat::SinglePlane(ALPHA_8);
   const uint32_t tr_filter = 1234;
   const gfx::Size tr_size(1234, 5678);
   TransferableResource resource;
@@ -1130,7 +1131,7 @@ TEST_F(StructTraitsTest, SurfaceId) {
 
 TEST_F(StructTraitsTest, TransferableResource) {
   const ResourceId id(1337);
-  const ResourceFormat format = ALPHA_8;
+  const SharedImageFormat format = SharedImageFormat::SinglePlane(ALPHA_8);
   const uint32_t filter = 1234;
   const gfx::Size size(1234, 5678);
   const int8_t mailbox_name[GL_MAILBOX_SIZE_CHROMIUM] = {
