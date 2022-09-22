@@ -26,6 +26,8 @@
 #include "chrome/grit/gaia_auth_host_resources.h"
 #include "chrome/grit/gaia_auth_host_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/inline_login_resources.h"
+#include "chrome/grit/inline_login_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_switches.h"
@@ -108,10 +110,13 @@ void AddEduStrings(content::WebUIDataSource* source,
 content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIChromeSigninHost);
+
+  source->AddResourcePaths(
+      base::make_span(kInlineLoginResources, kInlineLoginResourcesSize));
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize),
-      IDR_INLINE_LOGIN_HTML);
+      IDR_INLINE_LOGIN_INLINE_LOGIN_HTML);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddResourcePaths(base::make_span(kArcAccountPickerResources,
@@ -130,19 +135,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   }
 
   static constexpr webui::ResourcePath kResources[] = {
-    {"inline_login_app.js", IDR_INLINE_LOGIN_APP_JS},
-    {"inline_login_app.html.js", IDR_INLINE_LOGIN_APP_HTML_JS},
-    {"inline_login_browser_proxy.js", IDR_INLINE_LOGIN_BROWSER_PROXY_JS},
     {"webview_saml_injected.js", IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"welcome_page_app.js", IDR_INLINE_LOGIN_WELCOME_PAGE_APP_JS},
-    {"welcome_page_app.html.js", IDR_INLINE_LOGIN_WELCOME_PAGE_APP_HTML_JS},
-    {"signin_blocked_by_policy_page.js",
-     IDR_INLINE_LOGIN_SIGNIN_BLOCKED_BY_POLICY_PAGE_JS},
-    {"signin_blocked_by_policy_page.html.js",
-     IDR_INLINE_LOGIN_SIGNIN_BLOCKED_BY_POLICY_PAGE_HTML_JS},
-    {"signin_error_page.js", IDR_INLINE_LOGIN_SIGNIN_ERROR_PAGE_JS},
-    {"signin_error_page.html.js", IDR_INLINE_LOGIN_SIGNIN_ERROR_PAGE_HTML_JS},
     {"account_manager_shared_css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
     {"error_screen.js", IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS},
     // Resources for the server-based edu coexistence flow.
