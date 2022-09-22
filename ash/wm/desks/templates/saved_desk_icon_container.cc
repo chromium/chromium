@@ -38,29 +38,23 @@ bool IsBrowserAppId(const std::string& app_id) {
 // same key, value pair ordered by icons' activation index.
 std::vector<SavedDeskIconContainer::IconIdentifierAndIconInfo>
 SortIconIdentifierToIconInfo(
-    std::map<std::string, SavedDeskIconContainer::IconInfo>&
+    std::map<std::string, SavedDeskIconContainer::IconInfo>&&
         icon_identifier_to_icon_info) {
   // Create a vector using `sorted_icon_identifier_to_icon_info` that contains
   // pairs of identifiers and counts. This will initially be unsorted.
   std::vector<SavedDeskIconContainer::IconIdentifierAndIconInfo>
       sorted_icon_identifier_to_icon_info;
 
-  for (const auto& entry : icon_identifier_to_icon_info) {
+  for (auto& entry : icon_identifier_to_icon_info) {
     sorted_icon_identifier_to_icon_info.emplace_back(entry.first,
                                                      std::move(entry.second));
   }
 
-  // Sort `sorted_icon_identifier_to_icon_info` using the activation indices
-  // stored in `icon_identifier_to_icon_info`. `data_n.first` points to the icon
-  // identifier.
-  std::sort(
-      sorted_icon_identifier_to_icon_info.begin(),
-      sorted_icon_identifier_to_icon_info.end(),
-      [&icon_identifier_to_icon_info](
-          const SavedDeskIconContainer::IconIdentifierAndIconInfo& data_1,
-          const SavedDeskIconContainer::IconIdentifierAndIconInfo& data_2) {
-        return icon_identifier_to_icon_info.at(data_1.first).activation_index <
-               icon_identifier_to_icon_info.at(data_2.first).activation_index;
+  // Sort by activation index.
+  base::ranges::sort(
+      sorted_icon_identifier_to_icon_info, {},
+      [](const SavedDeskIconContainer::IconIdentifierAndIconInfo& a) {
+        return a.second.activation_index;
       });
 
   return sorted_icon_identifier_to_icon_info;
@@ -74,19 +68,18 @@ void InsertIconIdentifierToIconInfo(
     const std::u16string& app_title,
     const std::string& identifier,
     int activation_index,
-    std::map<std::string, SavedDeskIconContainer::IconInfo>*
+    std::map<std::string, SavedDeskIconContainer::IconInfo>&
         out_icon_identifier_to_icon_info) {
   // A single app/site can have multiple windows so count their occurrences and
   // use the smallest activation index for sorting purposes.
-  if (!base::Contains(*out_icon_identifier_to_icon_info, identifier)) {
-    (*out_icon_identifier_to_icon_info)[identifier] = {
+  if (!base::Contains(out_icon_identifier_to_icon_info, identifier)) {
+    out_icon_identifier_to_icon_info[identifier] = {
         app_id, base::UTF16ToUTF8(app_title), activation_index,
         /*count=*/1};
   } else {
-    ++(*out_icon_identifier_to_icon_info)[identifier].count;
-    (*out_icon_identifier_to_icon_info)[identifier].activation_index = std::min(
-        (*out_icon_identifier_to_icon_info)[identifier].activation_index,
-        activation_index);
+    auto& entry = out_icon_identifier_to_icon_info[identifier];
+    ++entry.count;
+    entry.activation_index = std::min(entry.activation_index, activation_index);
   }
 }
 
@@ -95,7 +88,7 @@ void InsertIconIdentifierToIconInfo(
 void InsertIconIdentifierToIconInfoFromLaunchList(
     const std::string& app_id,
     const app_restore::RestoreData::LaunchList& launch_list,
-    std::map<std::string, SavedDeskIconContainer::IconInfo>*
+    std::map<std::string, SavedDeskIconContainer::IconInfo>&
         out_icon_identifier_to_icon_info) {
   // We want to group active tabs and apps ahead of inactive tabs so offsets
   // inactive tabs activation index by `kInactiveTabOffset`. In almost every use
@@ -119,16 +112,16 @@ void InsertIconIdentifierToIconInfoFromLaunchList(
     if (restore_data.second->urls.has_value() && is_browser) {
       const auto& urls = restore_data.second->urls.value();
       // Make all urls that have the same domain identical.
-      std::map<GURL, GURL> seen_urls_by_domain;
+      std::map<GURL, size_t> domain_to_url_index;
       for (int i = 0; i < static_cast<int>(urls.size()); ++i) {
-        // For each domain, if we have seen the domain before in another url,
-        // use that url instead. If we haven't, register this url as the url to
-        // use for this domain.
-        GURL url = seen_urls_by_domain[urls[i].GetWithEmptyPath()];
-        if (!url.is_valid()) {
-          url = urls[i];
-          seen_urls_by_domain[url.GetWithEmptyPath()] = url;
-        }
+        // The first URL that we see for a domain is the one we will use for all
+        // entries with the same domain. If this is the first URL for a domain,
+        // then `it` will point to the newly inserted entry, otherwise it will
+        // point to an already existing entry.
+        auto [it, found] =
+            domain_to_url_index.emplace(urls[i].GetWithEmptyPath(), i);
+        const GURL& url = urls[it->second];
+
         InsertIconIdentifierToIconInfo(
             app_id, app_title, url.spec(),
             active_tab_index == i ? activation_index
@@ -139,7 +132,8 @@ void InsertIconIdentifierToIconInfoFromLaunchList(
       // PWAs will have the same app id as chrome. For these apps, retrieve
       // their app id from their app name if possible.
       std::string new_app_id = app_id;
-      absl::optional<std::string> app_name = restore_data.second->app_name;
+      const absl::optional<std::string>& app_name =
+          restore_data.second->app_name;
       if (IsBrowserAppId(app_id) && app_name.has_value())
         new_app_id = app_restore::GetAppIdFromAppName(app_name.value());
 
@@ -175,11 +169,11 @@ void SavedDeskIconContainer::PopulateIconContainerFromTemplate(
   for (auto& app_id_to_launch_list_entry : launch_list) {
     InsertIconIdentifierToIconInfoFromLaunchList(
         app_id_to_launch_list_entry.first, app_id_to_launch_list_entry.second,
-        &icon_identifier_to_icon_info);
+        icon_identifier_to_icon_info);
   }
 
   CreateIconViewsFromIconIdentifiers(
-      SortIconIdentifierToIconInfo(icon_identifier_to_icon_info));
+      SortIconIdentifierToIconInfo(std::move(icon_identifier_to_icon_info)));
 }
 
 void SavedDeskIconContainer::PopulateIconContainerFromWindows(
@@ -210,11 +204,11 @@ void SavedDeskIconContainer::PopulateIconContainerFromWindows(
     // are both `app_id`.
     InsertIconIdentifierToIconInfo(
         /*app_id=*/app_id, /*app_title=*/window->GetTitle(),
-        /*identifier=*/app_id, i, &icon_identifier_to_icon_info);
+        /*identifier=*/app_id, i, icon_identifier_to_icon_info);
   }
 
   CreateIconViewsFromIconIdentifiers(
-      SortIconIdentifierToIconInfo(icon_identifier_to_icon_info));
+      SortIconIdentifierToIconInfo(std::move(icon_identifier_to_icon_info)));
 }
 
 void SavedDeskIconContainer::Layout() {
@@ -330,9 +324,8 @@ void SavedDeskIconContainer::CreateIconViewsFromIconIdentifiers(
 
   auto* delegate = Shell::Get()->desks_templates_delegate();
   uncreated_app_count_ = 0;
-  for (auto info : icon_identifier_to_icon_info) {
-    auto icon_identifier = info.first;
-    auto icon_info = info.second;
+  for (const auto& [icon_identifier, icon_info] :
+       icon_identifier_to_icon_info) {
     // Don't create new icons if the app is unavailable (uninstalled or
     // unsupported). Count the amount of skipped apps so we know what to display
     // on the overflow. In addition, dialog popups may show incognito window
