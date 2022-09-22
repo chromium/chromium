@@ -586,10 +586,10 @@ TEST_P(MetricReportingManagerTelemetryTest, Default) {
               EventType::kDevice, Destination::TELEMETRY_METRIC,
               Priority::MANUAL_BATCH, _, ::ash::kReportUploadFrequency, _, 1))
       .WillByDefault(Return(ByMove(std::move(telemetry_queue_))));
-  ON_CALL(*mock_delegate_ptr,
-          CreatePeriodicUploadReportQueue(
-              EventType::kUser, Destination::TELEMETRY_METRIC,
-              Priority::MANUAL_BATCH, _, ::ash::kReportUploadFrequency, _, 1))
+  ON_CALL(
+      *mock_delegate_ptr,
+      CreateMetricReportQueue(EventType::kUser, Destination::TELEMETRY_METRIC,
+                              Priority::SLOW_BATCH))
       .WillByDefault(Return(ByMove(std::move(user_telemetry_queue_))));
   ON_CALL(
       *mock_delegate_ptr,

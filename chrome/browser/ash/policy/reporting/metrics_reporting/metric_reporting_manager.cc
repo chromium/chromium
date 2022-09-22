@@ -88,10 +88,8 @@ void MetricReportingManager::OnLogin(Profile* profile) {
 
   // Create user metric report queues here since they depend on the user
   // profile only available after login.
-  user_telemetry_report_queue_ = delegate_->CreatePeriodicUploadReportQueue(
-      EventType::kUser, Destination::TELEMETRY_METRIC, Priority::MANUAL_BATCH,
-      &reporting_settings_, ::ash::kReportUploadFrequency,
-      metrics::GetDefaultReportUploadFrequency());
+  user_telemetry_report_queue_ = delegate_->CreateMetricReportQueue(
+      EventType::kUser, Destination::TELEMETRY_METRIC, Priority::SLOW_BATCH);
 
   InitOnAffiliatedLogin();
   delayed_init_on_login_timer_.Start(
