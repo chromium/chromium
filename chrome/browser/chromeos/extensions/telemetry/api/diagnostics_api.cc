@@ -373,6 +373,20 @@ void OsDiagnosticsRunDiskReadRoutineFunction::RunIfAllowed() {
       std::move(cb));
 }
 
+// OsDiagnosticsRunDnsResolutionRoutineFunction --------------------------------
+
+OsDiagnosticsRunDnsResolutionRoutineFunction::
+    OsDiagnosticsRunDnsResolutionRoutineFunction() = default;
+OsDiagnosticsRunDnsResolutionRoutineFunction::
+    ~OsDiagnosticsRunDnsResolutionRoutineFunction() = default;
+
+void OsDiagnosticsRunDnsResolutionRoutineFunction::RunIfAllowed() {
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  GetRemoteService()->RunDnsResolutionRoutine(std::move(cb));
+}
+
 // OsDiagnosticsRunLanConnectivityRoutineFunction ------------------------------
 
 OsDiagnosticsRunLanConnectivityRoutineFunction::

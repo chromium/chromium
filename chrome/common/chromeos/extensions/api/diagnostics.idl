@@ -19,6 +19,7 @@ namespace os.diagnostics {
     cpu_prime_search,
     cpu_stress,
     disk_read,
+    dns_resolution,
     memory,
     nvme_wear_level,
     smartctl_check,
@@ -160,6 +161,8 @@ namespace os.diagnostics {
 
     [supportsPromises] static void runDiskReadRoutine(RunDiskReadRequest request,
                                                       RunRoutineCallback callback);
+
+    [supportsPromises] static void runDnsResolutionRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runLanConnectivityRoutine(RunRoutineCallback callback);
 

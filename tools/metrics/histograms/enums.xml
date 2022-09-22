@@ -35622,6 +35622,7 @@ Called by update_extension_histograms.py.-->
   <int value="1707" label="FILEMANAGERPRIVATE_GETDLPBLOCKEDCOMPONENTS"/>
   <int value="1708" label="FILEMANAGERPRIVATE_GETDIALOGCALLER"/>
   <int value="1709" label="OS_TELEMETRY_GETNONREMOVABLEBLOCKDEVICESINFO"/>
+  <int value="1710" label="OS_DIAGNOSTICS_RUNDNSRESOLUTIONROUTINE"/>
 </enum>
 
 <enum name="ExtensionIconState">

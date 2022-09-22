@@ -16,7 +16,7 @@ module crosapi.mojom;
 
 // Interface for exposing diagnostics service. Implemented in ash-chrome.
 //
-// Next ID: 17
+// Next ID: 18
 [Stable, Uuid="14bc6194-c059-4048-9bea-ca6823eeda82",
 RenamedFrom="ash.health.mojom.DiagnosticsService"]
 interface DiagnosticsService {
@@ -268,11 +268,22 @@ interface DiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunLanConnectivityRoutine@16() => (DiagnosticsRunRoutineResponse response);
+
+  // TODO(b/245293243): Rephrase to express sufficiency instead of necessity.
+  // Requests that the DnsResolution routine is created and started on the
+  // platform. This routine checks whether a DNS resolution can be completed
+  // successfully. This routine is only available if GetAvailableRoutines
+  // returned kDnsResolution.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunDnsResolutionRoutine@17() => (DiagnosticsRunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// Next ID: 16
+// Next ID: 17
 [Stable, Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineEnum"]
 enum DiagnosticsRoutineEnum {
   [Default] kUnknown = 15,
@@ -291,6 +302,7 @@ enum DiagnosticsRoutineEnum {
   kBatteryCharge = 12,
   kMemory = 13,
   kLanConnectivity = 14,
+  kDnsResolution = 16,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.

@@ -289,6 +289,25 @@ class OsDiagnosticsRunDiskReadRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunDnsResolutionRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runDnsResolutionRoutine",
+                             OS_DIAGNOSTICS_RUNDNSRESOLUTIONROUTINE)
+
+  OsDiagnosticsRunDnsResolutionRoutineFunction();
+  OsDiagnosticsRunDnsResolutionRoutineFunction(
+      const OsDiagnosticsRunDnsResolutionRoutineFunction&) = delete;
+  OsDiagnosticsRunDnsResolutionRoutineFunction& operator=(
+      const OsDiagnosticsRunDnsResolutionRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunDnsResolutionRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunLanConnectivityRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:

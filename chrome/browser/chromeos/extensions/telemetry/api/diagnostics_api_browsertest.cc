@@ -232,6 +232,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         );
         chrome.test.succeed();
       },
+      async function runDnsResolutionRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runDnsResolutionRoutine(),
+            'Error: API chrome.os.diagnostics.runDnsResolutionRoutine ' +
+            'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
       async function runLanConnectivityRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runLanConnectivityRoutine(),
@@ -316,6 +324,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineEnum::kPrimeSearch,
         crosapi::mojom::DiagnosticsRoutineEnum::kCpuStress,
         crosapi::mojom::DiagnosticsRoutineEnum::kDiskRead,
+        crosapi::mojom::DiagnosticsRoutineEnum::kDnsResolution,
         crosapi::mojom::DiagnosticsRoutineEnum::kLanConnectivity,
         crosapi::mojom::DiagnosticsRoutineEnum::kMemory,
         crosapi::mojom::DiagnosticsRoutineEnum::kNvmeWearLevel,
@@ -343,6 +352,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "cpu_prime_search",
               "cpu_stress",
               "disk_read",
+              "dns_resolution",
               "lan_connectivity",
               "memory",
               "nvme_wear_level",
@@ -982,6 +992,46 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                 file_size_mb: 1000
             }
           );
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunDnsResolutionRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response =
+        crosapi::mojom::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status =
+        crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunDiskReadRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::mojom::DiagnosticsRoutineEnum::kDnsResolution);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runDnsResolutionRoutine() {
+        const response =
+          await chrome.os.diagnostics.runDnsResolutionRoutine();
         chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }

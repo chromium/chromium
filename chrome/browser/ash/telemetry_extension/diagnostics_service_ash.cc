@@ -311,4 +311,16 @@ void DiagnosticsServiceAsh::RunLanConnectivityRoutine(
       std::move(callback)));
 }
 
+void DiagnosticsServiceAsh::RunDnsResolutionRoutine(
+    RunDnsResolutionRoutineCallback callback) {
+  GetService()->RunDnsResolutionRoutine(base::BindOnce(
+      [](crosapi::mojom::DiagnosticsService::RunDnsResolutionRoutineCallback
+             callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(
+            converters::ConvertDiagnosticsPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
 }  // namespace ash
