@@ -66,6 +66,11 @@ void TextTrackLoader::CueLoadTimerFired(TimerBase* timer) {
     client_->CueLoadingCompleted(this, state_ == kFailed);
 }
 
+void TextTrackLoader::Detach() {
+  CancelLoad();
+  cue_load_timer_.Stop();
+}
+
 void TextTrackLoader::CancelLoad() {
   ClearResource();
 }
