@@ -34,7 +34,7 @@ promise_test(async t => {
 
   for (const update of [update1, update2, update3]) {
     assert_in_array(
-        update.state, ['nominal', 'fair', 'serious', 'critical'],
+        update[0].state, ['nominal', 'fair', 'serious', 'critical'],
         'cpu pressure state');
   }
 }, 'Three PressureObserver instances, in different iframes, receive updates');

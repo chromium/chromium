@@ -74,9 +74,24 @@ promise_test(async t => {
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu').catch(reject);
   });
-  assert_in_array(update.state, ['nominal', 'fair', 'serious', 'critical'],
+  assert_in_array(update[0].state, ['nominal', 'fair', 'serious', 'critical'],
                   'cpu pressure state');
 }, 'Detaching frame while PressureObserver.observe() settles');
+
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  const frame_window = iframe.contentWindow;
+  const observer = new frame_window.PressureObserver(() => {
+    assert_unreached('The observer callback should not be called');
+  }, {sampleRate: 1});
+
+  await observer.observe('cpu');
+
+  iframe.remove();
+
+  return new Promise(resolve => t.step_timeout(resolve, 1000));
+}, 'PressureObserver on detached frame returns with no callback');
 
 </script>
 </body>

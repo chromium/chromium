@@ -29,10 +29,10 @@ pressure_test(async (t, mockPressureService) => {
     mockPressureService.setPressureUpdate('critical');
     mockPressureService.sendUpdate();
   });
-  assert_equals(update.state, 'critical');
-  assert_equals(update.source, 'cpu');
-  assert_equals(typeof update.time, 'number');
-
+  assert_true(update.length === 1);
+  assert_equals(update[0].state, 'critical');
+  assert_equals(update[0].source, 'cpu');
+  assert_equals(typeof update[0].time, 'number');
 }, 'Basic functionality test');
 
 pressure_test((t, mockPressureService) => {

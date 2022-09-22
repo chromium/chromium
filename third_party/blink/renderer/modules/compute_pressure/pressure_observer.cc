@@ -100,7 +100,8 @@ void PressureObserver::Trace(blink::Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-void PressureObserver::OnUpdate(V8PressureSource::Enum source,
+void PressureObserver::OnUpdate(ExecutionContext* execution_context,
+                                V8PressureSource::Enum source,
                                 V8PressureState::Enum state,
                                 DOMHighResTimeStamp timestamp) {
   if (!HasChangeInData(source, state))
@@ -120,7 +121,29 @@ void PressureObserver::OnUpdate(V8PressureSource::Enum source,
 
   records_.push_back(record);
   DCHECK_LE(records_.size(), kMaxQueuedRecords);
-  observer_callback_->InvokeAndReportException(this, record, this);
+
+  if (pending_report_to_callback_.IsActive())
+    return;
+
+  pending_report_to_callback_ = PostCancellableTask(
+      *execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI), FROM_HERE,
+      WTF::BindOnce(&PressureObserver::ReportToCallback,
+                    WrapWeakPersistent(this),
+                    WrapWeakPersistent(execution_context)));
+}
+
+void PressureObserver::ReportToCallback(ExecutionContext* execution_context) {
+  DCHECK(observer_callback_);
+  if (!execution_context || execution_context->IsContextDestroyed())
+    return;
+
+  // Cleared by takeRecords, for example.
+  if (records_.IsEmpty())
+    return;
+
+  HeapVector<Member<PressureRecord>, kMaxQueuedRecords> records;
+  records_.swap(records);
+  observer_callback_->InvokeAndReportException(this, records, this);
 }
 
 HeapVector<Member<PressureRecord>> PressureObserver::takeRecords() {

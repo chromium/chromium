@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
@@ -55,13 +56,17 @@ class PressureObserver final : public ScriptWrappable {
   void Trace(blink::Visitor*) const override;
 
   // Called by PressureObserverManager.
-  void OnUpdate(V8PressureSource::Enum,
+  void OnUpdate(ExecutionContext*,
+                V8PressureSource::Enum,
                 V8PressureState::Enum,
                 DOMHighResTimeStamp);
 
  private:
   // Verifies if there is data change in between last update and new one.
   bool HasChangeInData(V8PressureSource::Enum, V8PressureState::Enum) const;
+
+  // Scheduled method to invoke callback.
+  void ReportToCallback(ExecutionContext*);
 
   // Manages registered observer list for each source.
   WeakMember<PressureObserverManager> manager_;
@@ -79,6 +84,9 @@ class PressureObserver final : public ScriptWrappable {
   // Last received records from the platform collector.
   // The records are only collected when there is a change in the status.
   HeapVector<Member<PressureRecord>, kMaxQueuedRecords> records_;
+
+  // Task handle to check if the posted task is still pending.
+  TaskHandle pending_report_to_callback_;
 };
 
 }  // namespace blink

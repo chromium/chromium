@@ -22,6 +22,6 @@ pressure_test(async (t, mockPressureService) => {
     mockPressureService.sendUpdate();
   });
   assert_equals(pressureUpdates.length, 2);
-  assert_equals(pressureUpdates[0].state, 'critical');
-  assert_equals(pressureUpdates[1].state, 'nominal');
+  assert_equals(pressureUpdates[0][0].state, 'critical');
+  assert_equals(pressureUpdates[1][0].state, 'nominal');
 }, 'Updates that fail the "has change in data" test are discarded.');

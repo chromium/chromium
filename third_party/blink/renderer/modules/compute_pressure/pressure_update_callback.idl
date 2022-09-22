@@ -8,6 +8,6 @@
     RuntimeEnabled=ComputePressure,
     SecureContext
 ] callback PressureUpdateCallback = void (
-    PressureRecord changes,
+    sequence<PressureRecord> changes,
     PressureObserver observer
   );

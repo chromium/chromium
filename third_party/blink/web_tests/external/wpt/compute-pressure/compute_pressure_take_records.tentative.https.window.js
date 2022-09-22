@@ -21,7 +21,7 @@ promise_test(async t => {
     await observer.observe('cpu');
   });
   assert_in_array(
-      update.state, ['nominal', 'fair', 'serious', 'critical'],
+      update[0].state, ['nominal', 'fair', 'serious', 'critical'],
       'cpu presure state');
 
   const records = observer.takeRecords();

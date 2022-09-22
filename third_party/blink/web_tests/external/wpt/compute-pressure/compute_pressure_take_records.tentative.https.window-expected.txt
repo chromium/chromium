@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Calling takeRecords() before observe()
-FAIL takeRecords() returns empty record after callback invoke assert_equals: No record available expected 0 but got 1
-Harness: the test ran to completion.
-

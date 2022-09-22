@@ -26,6 +26,6 @@ promise_test(async t => {
 
   assert_equals(observer2_updates.length, 1);
   assert_in_array(
-      observer2_updates[0].state, ['nominal', 'fair', 'serious', 'critical'],
+      observer2_updates[0][0].state, ['nominal', 'fair', 'serious', 'critical'],
       'cpu pressure state');
 }, 'Stopped PressureObserver do not receive updates');

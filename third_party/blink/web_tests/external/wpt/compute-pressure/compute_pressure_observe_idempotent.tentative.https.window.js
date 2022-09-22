@@ -9,8 +9,8 @@ promise_test(async t => {
     observer.observe('cpu').catch(reject);
   });
 
-  assert_equals(typeof update.state, 'string');
+  assert_equals(typeof update[0].state, 'string');
   assert_in_array(
-      update.state, ['nominal', 'fair', 'serious', 'critical'],
+      update[0].state, ['nominal', 'fair', 'serious', 'critical'],
       'cpu pressure state');
 }, 'PressureObserver.observe() is idempotent');
