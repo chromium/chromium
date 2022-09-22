@@ -172,6 +172,7 @@ void NetworkPortalNotificationController::PortalStateChanged(
        portal_state != NetworkState::PortalState::kPortalSuspected &&
        portal_state != NetworkState::PortalState::kProxyAuthRequired)) {
     last_network_guid_.clear();
+    last_portal_state_ = portal_state;
 
     // In browser tests we initiate fake network portal detection, but network
     // state usually stays connected. This way, after dialog is shown, it is
@@ -191,10 +192,13 @@ void NetworkPortalNotificationController::PortalStateChanged(
     return;
 
   // Don't do anything if notification for |network| already was
-  // displayed.
-  if (network->guid() == last_network_guid_)
-    return;
+  // displayed with the same portal_state.
+  if (network->guid() == last_network_guid_ &&
+      portal_state == last_portal_state_) {
+        return;
+  }
   last_network_guid_ = network->guid();
+  last_portal_state_ = portal_state;
 
   std::unique_ptr<message_center::Notification> notification =
       CreateDefaultCaptivePortalNotification(network, portal_state);

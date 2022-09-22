@@ -76,6 +76,10 @@ class NetworkPortalNotificationController
   // signin UI.
   std::unique_ptr<NetworkPortalSigninController> signin_controller_;
 
+  // Last portal state for which notification was displayed.
+  NetworkState::PortalState last_portal_state_ =
+      NetworkState::PortalState::kUnknown;
+
   // Do not close Portal Login dialog on "No network" error in browser tests.
   bool ignore_no_network_for_testing_ = false;
 };

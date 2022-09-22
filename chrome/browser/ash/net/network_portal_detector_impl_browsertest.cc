@@ -68,6 +68,13 @@ void SetConnected(const std::string& service_path) {
   base::RunLoop().RunUntilIdle();
 }
 
+void SetDisconnected(const std::string& service_path) {
+  ShillServiceClient::Get()->Disconnect(dbus::ObjectPath(service_path),
+                                        base::DoNothing(),
+                                        base::BindOnce(&ErrorCallbackFunction));
+  base::RunLoop().RunUntilIdle();
+}
+
 void SetShillProxyAuthRequired() {
   ShillServiceClient::Get()->SetProperty(
       dbus::ObjectPath(kWifiServicePath),
@@ -140,20 +147,14 @@ class NetworkPortalDetectorImplBrowserTest
     ASSERT_TRUE(default_network);
     EXPECT_EQ(default_network->GetPortalState(), portal_state);
     EXPECT_TRUE(display_service_->GetNotification(kNotificationId));
-    EXPECT_EQ(display_service_->GetNotification(kNotificationId)->title(),
-              expected_title);
-    EXPECT_EQ(display_service_->GetNotification(kNotificationId)->message(),
-              expected_message);
+    EXPECT_EQ(GetNotificationTitle(), expected_title);
+    EXPECT_EQ(GetNotificationMessage(), expected_message);
     if (expected_button_title.empty()) {
       EXPECT_EQ(
           display_service_->GetNotification(kNotificationId)->buttons().size(),
           0);
     } else {
-      EXPECT_EQ(display_service_->GetNotification(kNotificationId)
-                    ->buttons()
-                    .front()
-                    .title,
-                expected_button_title);
+      EXPECT_EQ(GetNotificationButtonTitle(), expected_button_title);
     }
     EXPECT_EQ(portal_detector_status,
               network_portal_detector::GetInstance()->GetCaptivePortalStatus());
@@ -193,6 +194,21 @@ class NetworkPortalDetectorImplBrowserTest
 
   void SetIgnoreNoNetworkForTesting() {
     network_portal_notification_controller_->SetIgnoreNoNetworkForTesting();
+  }
+
+  const std::u16string GetNotificationTitle() {
+    return display_service_->GetNotification(kNotificationId)->title();
+  }
+
+  const std::u16string GetNotificationMessage() {
+    return display_service_->GetNotification(kNotificationId)->message();
+  }
+
+  const std::u16string GetNotificationButtonTitle() {
+    return display_service_->GetNotification(kNotificationId)
+        ->buttons()
+        .front()
+        .title;
   }
 
  protected:
@@ -340,6 +356,94 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,
       // ONLINE from DetectionCompleted(). This results in the
       // NetworkStateHandler using the shill state.
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+}
+
+IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,
+                       PortalStateChangedBetweenPortalStates) {
+  LoginUser(test_account_id_);
+  content::RunAllPendingInMessageLoop();
+
+  // User connects to portalled wifi.
+  SetConnected(kWifiServicePath);
+  SetState(shill::kStateRedirectFound);
+
+  // Verify notification properties.
+  chromeos::NetworkStateHandler* network_state_handler =
+      chromeos::NetworkHandler::Get()->network_state_handler();
+  const chromeos::NetworkState* default_network =
+      network_state_handler->DefaultNetwork();
+  ASSERT_TRUE(default_network);
+  EXPECT_EQ(default_network->GetPortalState(),
+            chromeos::NetworkState::PortalState::kPortal);
+  EXPECT_TRUE(display_service_->GetNotification(kNotificationId));
+  EXPECT_EQ(GetNotificationTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI));
+  EXPECT_EQ(GetNotificationMessage(),
+            l10n_util::GetStringFUTF16(
+                IDS_NEW_PORTAL_DETECTION_NOTIFICATION_MESSAGE, u"wifi"));
+  EXPECT_EQ(
+      GetNotificationButtonTitle(),
+      l10n_util::GetStringUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON));
+
+  // State changes to portal-suspected and check if notification properties
+  // change.
+  SetState(shill::kStatePortalSuspected);
+  ASSERT_TRUE(default_network);
+  EXPECT_TRUE(display_service_->GetNotification(kNotificationId));
+  EXPECT_EQ(GetNotificationTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI));
+  EXPECT_EQ(
+      GetNotificationMessage(),
+      l10n_util::GetStringFUTF16(
+          IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_MESSAGE, u"wifi"));
+  EXPECT_EQ(GetNotificationButtonTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_BUTTON));
+
+  // Explicitly close the notification.
+  display_service_->RemoveNotification(NotificationHandler::Type::TRANSIENT,
+                                       kNotificationId, /*by_user=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,
+                       ReconnectionNewNotification) {
+  LoginUser(test_account_id_);
+  content::RunAllPendingInMessageLoop();
+
+  // User connects to portalled wifi.
+  SetConnected(kWifiServicePath);
+  SetState(shill::kStateRedirectFound);
+  EXPECT_TRUE(display_service_->GetNotification(kNotificationId));
+
+  // Disconnect from portalled wifi.
+  SetDisconnected(kWifiServicePath);
+  EXPECT_FALSE(display_service_->GetNotification(kNotificationId));
+
+  // Verify notification when reconnecting to same portalled wifi.
+  SetConnected(kWifiServicePath);
+  SetState(shill::kStateRedirectFound);
+  EXPECT_TRUE(display_service_->GetNotification(kNotificationId));
+}
+
+IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,
+                       UserDismissedNotificationNoNewNotification) {
+  LoginUser(test_account_id_);
+  content::RunAllPendingInMessageLoop();
+
+  // User connects to portalled wifi.
+  SetConnected(kWifiServicePath);
+  SetState(shill::kStateRedirectFound);
+  EXPECT_TRUE(display_service_->GetNotification(kNotificationId));
+
+  // Close Notification.
+  display_service_->RemoveNotification(NotificationHandler::Type::TRANSIENT,
+                                       kNotificationId, /*by_user=*/true);
+  // Change state to redirect-found.
+  SetState(shill::kStateRedirectFound);
+  // Verify notification does not exist after user closed.
+  EXPECT_FALSE(display_service_->GetNotification(kNotificationId));
 }
 
 }  // namespace ash
