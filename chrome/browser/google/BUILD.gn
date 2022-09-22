@@ -26,6 +26,10 @@ source_set("google") {
     "//content/public/browser",
   ]
 
+  if (is_mac) {
+    deps += [ "//chrome/browser/mac:keystone_glue" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "google_brand_chromeos.cc",

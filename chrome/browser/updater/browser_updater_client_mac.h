@@ -35,6 +35,7 @@ class BrowserUpdaterClientMac : public BrowserUpdaterClient {
   // BrowserUpdaterClient.
   void BeginRegister(const std::string& version,
                      updater::UpdateService::Callback callback) override;
+  void BeginRunPeriodicTasks(base::OnceClosure callback) override;
   void BeginUpdateCheck(
       updater::UpdateService::StateChangeCallback state_change,
       updater::UpdateService::Callback callback) override;

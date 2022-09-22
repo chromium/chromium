@@ -28,6 +28,7 @@
 #import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/mac/mac_startup_profiler.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
+#include "chrome/browser/updater/scheduler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -88,6 +89,7 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   // The framework is only distributed with branded Google Chrome builds.
   [[KeystoneGlue defaultKeystoneGlue] registerWithKeystone];
 #endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+  updater::SchedulePeriodicTasks();
 
   // Disk image installation is sort of a first-run task, so it shares the
   // no first run switches.

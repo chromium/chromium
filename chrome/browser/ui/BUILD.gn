@@ -3844,6 +3844,8 @@ static_library("ui") {
 
     deps += [
       "//chrome/browser/apps/app_shim",
+      "//chrome/browser/mac:keystone_glue",
+      "//chrome/browser/updater:browser_updater_client",
       "//chrome/updater:browser_sources",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/browser",

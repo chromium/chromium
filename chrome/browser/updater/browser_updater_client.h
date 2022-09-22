@@ -37,6 +37,10 @@ class BrowserUpdaterClient
   void CheckForUpdate(
       updater::UpdateService::StateChangeCallback version_updater_callback);
 
+  // Launches the updater to run its periodic background tasks. This is a
+  // mechanism to act as a backup periodic scheduler for the updater.
+  void RunPeriodicTasks(base::OnceClosure callback);
+
   // Gets the current updater version. Can also be used to check for the
   // existence of the updater. A ref to the BrowserUpdaterClient is held until
   // the callback is invoked. Must be called on the sequence on which the
@@ -57,6 +61,10 @@ class BrowserUpdaterClient
   virtual void BeginRegister(const std::string& version,
                              updater::UpdateService::Callback callback) = 0;
 
+  // Helper method for RunPeriodicTasks() to be implemented by each platform.
+  // Runs in the thread pool.
+  virtual void BeginRunPeriodicTasks(base::OnceClosure callback) = 0;
+
   // Helper method for CheckForUpdate() to be implemented by each platform to
   // initiate on-demand updates. Runs in the thread pool.
   virtual void BeginUpdateCheck(
@@ -69,6 +77,9 @@ class BrowserUpdaterClient
 
   // Handles status update from Chromium updater when registration is completed.
   void RegistrationCompleted(updater::UpdateService::Result result);
+
+  // Handles the completion of RunPeriodicTasks.
+  void RunPeriodicTasksCompleted(base::OnceClosure callback);
 
   // Handles status update from Chromium updater when updates are completed.
   void UpdateCompleted(updater::UpdateService::StateChangeCallback callback,

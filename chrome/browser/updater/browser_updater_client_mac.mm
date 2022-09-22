@@ -162,9 +162,14 @@ std::string GetTag() {
 // Runs periodic updater tasks like checking for uninstalls and background
 // update checks.
 - (void)runPeriodicTasksWithReply:(void (^_Nullable)(void))reply {
-  // This method does not need to be implemented in the RPC on-demand update
-  // call from the browser to the updater.
-  NOTIMPLEMENTED();
+  auto errorHandler = ^(NSError* xpcError) {
+    VLOG(1) << "XPC Connection failed: "
+            << base::SysNSStringToUTF8([xpcError description]);
+    reply();
+  };
+
+  [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
+      runPeriodicTasksWithReply:reply];
 }
 
 // Gets states of all registered apps.
@@ -252,6 +257,17 @@ void BrowserUpdaterClientMac::BeginRegister(
                   existenceCheckerPath:base::mac::FilePathToNSString(
                                            base::mac::OuterBundlePath())
                                  reply:reply];
+}
+
+void BrowserUpdaterClientMac::BeginRunPeriodicTasks(
+    base::OnceClosure callback) {
+  __block base::OnceClosure block_callback = std::move(callback);
+
+  auto reply = ^() {
+    std::move(block_callback).Run();
+  };
+
+  [client_ runPeriodicTasksWithReply:reply];
 }
 
 void BrowserUpdaterClientMac::BeginUpdateCheck(

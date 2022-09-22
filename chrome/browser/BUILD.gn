@@ -6203,10 +6203,6 @@ static_library("browser") {
       "mac/install_from_dmg.mm",
       "mac/key_window_notifier.cc",
       "mac/key_window_notifier.h",
-      "mac/keystone_glue.h",
-      "mac/keystone_glue.mm",
-      "mac/keystone_registration.h",
-      "mac/keystone_registration.mm",
       "mac/mac_startup_profiler.cc",
       "mac/mac_startup_profiler.h",
       "mac/nsprocessinfo_additions.h",
@@ -6257,6 +6253,8 @@ static_library("browser") {
       "//chrome/app_shim",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/renderer_host:history_swiper",
+      "//chrome/browser/updater:browser_updater_client",
+      "//chrome/browser/updater:scheduler",
       "//chrome/browser/webshare:storage",
       "//chrome/services/mac_notifications",
       "//chrome/services/mac_notifications/public/cpp",
@@ -6290,6 +6288,7 @@ static_library("browser") {
       "AuthenticationServices.framework",  # macOS 10.15
       "UserNotifications.framework",  # macOS 10.14
     ]
+    public_deps += [ "//chrome/browser/mac:keystone_glue" ]
 
     if (enable_chromium_updater) {
       sources += [

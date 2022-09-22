@@ -81,6 +81,25 @@ void BrowserUpdaterClient::CheckForUpdate(
                                         this, version_updater_callback))));
 }
 
+void BrowserUpdaterClient::RunPeriodicTasks(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          &BrowserUpdaterClient::BeginRunPeriodicTasks, this,
+          base::BindPostTask(
+              base::SequencedTaskRunnerHandle::Get(),
+              base::BindOnce(&BrowserUpdaterClient::RunPeriodicTasksCompleted,
+                             this, std::move(callback)))));
+}
+
+void BrowserUpdaterClient::RunPeriodicTasksCompleted(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run();
+}
+
 void BrowserUpdaterClient::UpdateCompleted(
     updater::UpdateService::StateChangeCallback callback,
     updater::UpdateService::Result result) {
