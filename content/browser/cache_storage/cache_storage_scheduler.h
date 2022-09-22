@@ -19,7 +19,7 @@ namespace content {
 
 class CacheStorageOperation;
 
-CONTENT_EXPORT extern const base::Feature kCacheStorageParallelOps;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kCacheStorageParallelOps);
 
 // TODO(jkarlin): Support operation identification so that ops can be checked in
 // DCHECKs.

@@ -13,7 +13,7 @@ namespace content {
 // Enables the Private Aggregation API. Note that this API also requires the
 // `kPrivacySandboxAggregationService` to be enabled to successfully send
 // reports.
-CONTENT_EXPORT extern const base::Feature kPrivateAggregationApi;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApi);
 
 }  // namespace content
 

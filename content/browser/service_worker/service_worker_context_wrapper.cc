@@ -74,8 +74,9 @@ namespace {
 #if BUILDFLAG(IS_ANDROID)
 // Enables running ServiceWorkerStorageControl on IO thread instead of UI thread
 // on Android.
-const base::Feature kServiceWorkerStorageControlOnIOThread{
-    "ServiceWorkerStorageControlOnIOThread", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kServiceWorkerStorageControlOnIOThread,
+             "ServiceWorkerStorageControlOnIOThread",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 void DidFindRegistrationForStartActiveWorker(

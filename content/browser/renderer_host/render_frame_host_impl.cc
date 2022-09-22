@@ -287,22 +287,22 @@
 #endif
 
 namespace features {
-const base::Feature kDisableFrameNameUpdateOnNonCurrentRenderFrameHost{
-    "DisableFrameNameUpdateOnNonCurrentRenderFrameHost",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDisableFrameNameUpdateOnNonCurrentRenderFrameHost,
+             "DisableFrameNameUpdateOnNonCurrentRenderFrameHost",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Evict when accessibility events occur while in back/forward cache. Remove
 // once the https://crbug.com/1341507 is resolved. This crash started to happen
 // on Android with bfcache experiments, so we're enabling this flag only on
 // Android.
-const base::Feature kEvictOnAXEvents {
-  "EvictOnAXEvents",
+BASE_FEATURE(kEvictOnAXEvents,
+             "EvictOnAXEvents",
 #if BUILDFLAG(IS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 }  // namespace features
 
 namespace content {
@@ -390,8 +390,9 @@ const void* const kRenderFrameHostAndroidKey = &kRenderFrameHostAndroidKey;
 //
 // TODO(nuskos): Once we've conducted a retroactive study of chrometto
 // improvements clean up this feature.
-const base::Feature kRenderAccessibilityHostAvoidCopying{
-    "RenderAccessibilityHostAvoidCopying", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kRenderAccessibilityHostAvoidCopying,
+             "RenderAccessibilityHostAvoidCopying",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The next value to use for the accessibility reset token.
 int g_next_accessibility_reset_token = 1;

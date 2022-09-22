@@ -24,7 +24,7 @@ namespace features {
 // avoiding activating the BackForwardCache experiment, and won’t include
 // devices that do have enough memory but have the BackForwardCache flag
 // disabled.
-CONTENT_EXPORT extern const base::Feature kBackForwardCache_NoMemoryLimit_Trial;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCache_NoMemoryLimit_Trial);
 }  // namespace features
 
 namespace content {

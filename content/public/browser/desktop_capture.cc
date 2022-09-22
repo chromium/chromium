@@ -25,9 +25,8 @@ webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
   // Leave desktop effects enabled during WebRTC captures.
   options.set_disable_effects(false);
 #if BUILDFLAG(IS_WIN)
-  static constexpr base::Feature kDirectXCapturer{
-      "DirectXCapturer",
-      base::FEATURE_ENABLED_BY_DEFAULT};
+  static BASE_FEATURE(kDirectXCapturer, "DirectXCapturer",
+                      base::FEATURE_ENABLED_BY_DEFAULT);
   if (base::FeatureList::IsEnabled(kDirectXCapturer)) {
     options.set_allow_directx_capturer(true);
     options.set_allow_use_magnification_api(false);

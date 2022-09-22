@@ -15,7 +15,7 @@ namespace content {
 // When enabled, queues navigations instead of cancelling the previous
 // navigation if the previous navigation is already waiting for commit.
 // See https://crbug.com/838348 and https://crbug.com/1220337.
-extern CONSTINIT base::Feature kQueueNavigationsWhileWaitingForCommit;
+BASE_DECLARE_FEATURE(kQueueNavigationsWhileWaitingForCommit);
 
 // Please keep features in alphabetical order.
 

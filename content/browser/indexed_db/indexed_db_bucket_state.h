@@ -36,7 +36,7 @@ constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
 
 // This is an emergency kill switch to use with Finch if the feature needs to be
 // shut off.
-CONTENT_EXPORT extern const base::Feature kCompactIDBOnClose;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kCompactIDBOnClose);
 
 // IndexedDBBucketState manages the per-bucket IndexedDB state, and
 // contains the backing store for the bucket.

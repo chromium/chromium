@@ -18,9 +18,9 @@ namespace content {
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-const base::Feature kNetworkServiceOutOfProcessMemoryThreshold{
-    "NetworkServiceOutOfProcessMemoryThreshold",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kNetworkServiceOutOfProcessMemoryThreshold,
+             "NetworkServiceOutOfProcessMemoryThreshold",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Using 1077 rather than 1024 because 1) it helps ensure that devices with
 // exactly 1GB of RAM won't get included because of inaccuracies or off-by-one

@@ -44,8 +44,9 @@ namespace features {
 // a first input event is received. Checking for native messages more frequently
 // incurs some overhead, but allows the browser to handle input more
 // consistently.
-constexpr base::Feature kBrowserPrioritizeNativeWork{
-    "BrowserPrioritizeNativeWork", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBrowserPrioritizeNativeWork,
+             "BrowserPrioritizeNativeWork",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<base::TimeDelta>
     kBrowserPrioritizeNativeWorkAfterInputForNMsParam{
         &kBrowserPrioritizeNativeWork, "prioritize_for_next_ms",

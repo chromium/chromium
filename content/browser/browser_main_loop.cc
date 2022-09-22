@@ -392,8 +392,9 @@ mojo::PendingRemote<data_decoder::mojom::BleScanParser> GetBleScanParser() {
 // dynamic code or modifying executable code. See comments in
 // sandbox/win/src/security_level.h. Only available on Windows 10 RS1 (1607,
 // Build 14393) onwards.
-const base::Feature kBrowserDynamicCodeDisabled{
-    "BrowserDynamicCodeDisabled", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBrowserDynamicCodeDisabled,
+             "BrowserDynamicCodeDisabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 class OopDataDecoder : public data_decoder::ServiceProvider {

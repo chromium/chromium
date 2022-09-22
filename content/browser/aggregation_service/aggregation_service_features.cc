@@ -7,8 +7,9 @@
 namespace content {
 
 // Enables the Aggregation Service. See crbug.com/1207974.
-const base::Feature kPrivacySandboxAggregationService = {
-    "PrivacySandboxAggregationService", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kPrivacySandboxAggregationService,
+             "PrivacySandboxAggregationService",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string>
     kPrivacySandboxAggregationServiceTrustedServerUrlParam{

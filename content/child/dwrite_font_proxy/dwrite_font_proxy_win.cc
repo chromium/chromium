@@ -36,8 +36,9 @@ namespace {
 // TODO(https://crbug.com/1089390): Remove this feature when the experiment is
 // complete. If the experiment shows a significant input delay improvement,
 // replace with a more refined mitigation for pages that access many fonts.
-const base::Feature kLimitFontFamilyNamesPerRenderer{
-    "LimitFontFamilyNamesPerRenderer", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLimitFontFamilyNamesPerRenderer,
+             "LimitFontFamilyNamesPerRenderer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr size_t kFamilyNamesLimit = 20;
 
 // Family names that opted-out from the limit enforced by

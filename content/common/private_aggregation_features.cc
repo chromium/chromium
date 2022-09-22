@@ -8,7 +8,8 @@
 
 namespace content {
 
-const base::Feature kPrivateAggregationApi = {
-    "PrivateAggregationApi", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPrivateAggregationApi,
+             "PrivateAggregationApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace content

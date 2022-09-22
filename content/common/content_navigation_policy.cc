@@ -14,8 +14,9 @@
 #include "content/public/common/content_switches.h"
 
 namespace features {
-const base::Feature kBackForwardCache_NoMemoryLimit_Trial{
-    "BackForwardCache_NoMemoryLimit_Trial", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kBackForwardCache_NoMemoryLimit_Trial,
+             "BackForwardCache_NoMemoryLimit_Trial",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }
 
 namespace content {

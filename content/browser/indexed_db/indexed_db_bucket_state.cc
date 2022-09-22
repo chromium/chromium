@@ -105,8 +105,9 @@ base::Time GenerateNextGlobalCompactionTime(base::Time now) {
 
 }  // namespace
 
-const base::Feature kCompactIDBOnClose{"CompactIndexedDBOnClose",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCompactIDBOnClose,
+             "CompactIndexedDBOnClose",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr const base::TimeDelta
     IndexedDBBucketState::kMaxEarliestGlobalSweepFromNow;

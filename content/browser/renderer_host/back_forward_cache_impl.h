@@ -46,33 +46,36 @@ class SiteInstance;
 // without enabling it. To control the URLs list by using this feature by
 // generating the metrics only for "allowed_websites" param. Mainly, to ensure
 // that metrics from the control and experiment groups are consistent.
-constexpr base::Feature kRecordBackForwardCacheMetricsWithoutEnabling{
-    "RecordBackForwardCacheMetricsWithoutEnabling",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRecordBackForwardCacheMetricsWithoutEnabling,
+             "RecordBackForwardCacheMetricsWithoutEnabling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Removes the time limit for cached content. This is used on bots to identify
 // accidentally passing tests.
-constexpr base::Feature kBackForwardCacheNoTimeEviction{
-    "BackForwardCacheNoTimeEviction", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBackForwardCacheNoTimeEviction,
+             "BackForwardCacheNoTimeEviction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows pages with cache-control:no-store to enter the back/forward cache.
 // Feature params can specify whether pages with cache-control:no-store can be
 // restored if cookies change / if HTTPOnly cookies change.
 // TODO(crbug.com/1228611): Enable this feature.
-const base::Feature kCacheControlNoStoreEnterBackForwardCache{
-    "CacheControlNoStoreEnterBackForwardCache",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kCacheControlNoStoreEnterBackForwardCache,
+             "CacheControlNoStoreEnterBackForwardCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables controlling the time to live for pages in the backforward cache.
 // The time to live is defined by the param 'time_to_live_seconds'; if this
 // param is not specified then this feature is ignored and the default is used.
-const base::Feature kBackForwardCacheTimeToLiveControl{
-    "BackForwardCacheTimeToLiveControl", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBackForwardCacheTimeToLiveControl,
+             "BackForwardCacheTimeToLiveControl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows overriding the sizes of back/forward cache.
 // Sizes set via this feature's parameters take precedence over others.
-const base::Feature kBackForwardCacheSize{"BackForwardCacheSize",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kBackForwardCacheSize,
+             "BackForwardCacheSize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Combines a flattened list and a tree of the reasons why each document cannot
 // enter the back/forward cache (might be empty if it can). The tree saves the

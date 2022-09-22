@@ -29,15 +29,17 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 
-const base::Feature kForegroundRadioStateCountWakeups{
-    "ForegroundRadioStateCountWakeups", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kForegroundRadioStateCountWakeups,
+             "ForegroundRadioStateCountWakeups",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Keeps reporting of the battery metrics on the UI thread, where it may cause
 // jank. This is used for a holdback experiment to estimate the jank reduction
 // won by moving reporting to the thread pool.
 // TODO(eseckler): Remove once holdback experiment is complete.
-const base::Feature kAndroidBatteryMetricsReportOnUIThread{
-    "AndroidBatteryMetricsReportOnUIThread", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAndroidBatteryMetricsReportOnUIThread,
+             "AndroidBatteryMetricsReportOnUIThread",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace content {
 namespace {

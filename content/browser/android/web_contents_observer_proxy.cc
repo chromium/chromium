@@ -32,8 +32,9 @@ using base::android::ConvertUTF16ToJavaString;
 
 namespace features {
 
-const base::Feature kNotifyJavaSpuriouslyToMeasurePerf{
-    "NotifyJavaSpuriouslyToMeasurePerf", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNotifyJavaSpuriouslyToMeasurePerf,
+             "NotifyJavaSpuriouslyToMeasurePerf",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 

@@ -41,9 +41,9 @@ namespace {
 // When this is enabled, the browser will schedule
 // ServiceWorkerStorageControl's response in a kHighest priority
 // queue during startup. After startup, it has a normal priority.
-const base::Feature kServiceWorkerStorageControlResponseQueue{
-    "ServiceWorkerStorageControlResponseQueue",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kServiceWorkerStorageControlResponseQueue,
+             "ServiceWorkerStorageControlResponseQueue",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 blink::ServiceWorkerStatusCode DatabaseStatusToStatusCode(
     storage::mojom::ServiceWorkerDatabaseStatus status) {

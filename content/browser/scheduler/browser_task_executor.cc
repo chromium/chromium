@@ -37,8 +37,9 @@ namespace features {
 //
 // TODO(nuskos): Remove this feature flag after we've done our retroactive study
 // of all chrometto performance improvements.
-constexpr base::Feature kBrowserPrioritizeInputQueue{
-    "BrowserPrioritizeInputQueue", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kBrowserPrioritizeInputQueue,
+             "BrowserPrioritizeInputQueue",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 

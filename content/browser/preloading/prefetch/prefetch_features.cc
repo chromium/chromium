@@ -6,7 +6,8 @@
 
 namespace content::features {
 
-const base::Feature kPrefetchUseContentRefactor{
-    "PrefetchUseContentRefactor", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPrefetchUseContentRefactor,
+             "PrefetchUseContentRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace content::features

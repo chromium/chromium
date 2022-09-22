@@ -8,9 +8,9 @@ namespace content {
 
 // Please keep features in alphabetical order.
 
-CONSTINIT base::Feature kQueueNavigationsWhileWaitingForCommit(
-    "QueueNavigationsWhileWaitingForPendingCommit",
-    base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
+             "QueueNavigationsWhileWaitingForPendingCommit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Please keep features in alphabetical order.
 
