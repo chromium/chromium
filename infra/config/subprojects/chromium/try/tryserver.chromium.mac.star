@@ -358,6 +358,11 @@ ios_builder(
             ".+/[+]/components/cronet/android/.+",
         ],
     ),
+    experiments = {
+        "enable_weetbix_queries": 100,
+        "weetbix.retry_weak_exonerations": 100,
+        "weetbix.enable_weetbix_exonerations": 100,
+    },
 )
 
 ios_builder(
@@ -377,6 +382,11 @@ ios_builder(
             ".+/[+]/testing/variations/fieldtrial_testing_config.json",
         ],
     ),
+    experiments = {
+        "enable_weetbix_queries": 100,
+        "weetbix.retry_weak_exonerations": 100,
+        "weetbix.enable_weetbix_exonerations": 100,
+    },
 )
 
 ios_builder(
@@ -398,6 +408,12 @@ ios_builder(
             ".+/[+]/third_party/crashpad/crashpad/.+",
         ],
     ),
+    experiments = {
+        "remove_src_checkout_experiment": 100,
+        "enable_weetbix_queries": 100,
+        "weetbix.retry_weak_exonerations": 100,
+        "weetbix.enable_weetbix_exonerations": 100,
+    },
 )
 
 ios_builder(
