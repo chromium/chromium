@@ -81,6 +81,9 @@ bool ConvertMojoRoutine(MojoRoutineType in, RoutineType* out) {
     case MojoRoutineType::kSignalStrength:
       *out = RoutineType::ROUTINE_TYPE_SIGNAL_STRENGTH;
       return true;
+    case MojoRoutineType::kGatewayCanBePinged:
+      *out = RoutineType::ROUTINE_TYPE_GATEWAY_CAN_BE_PINGED;
+      return true;
     case MojoRoutineType::kSmartctlCheck:
       *out = RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK;
       return true;

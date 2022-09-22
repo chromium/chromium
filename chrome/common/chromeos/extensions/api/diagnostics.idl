@@ -24,7 +24,8 @@ namespace os.diagnostics {
     nvme_wear_level,
     smartctl_check,
     lan_connectivity,
-    signal_strength
+    signal_strength,
+    gateway_can_be_pinged
   };
 
   enum RoutineStatus {
@@ -164,6 +165,8 @@ namespace os.diagnostics {
                                                       RunRoutineCallback callback);
 
     [supportsPromises] static void runDnsResolutionRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runGatewayCanBePingedRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runLanConnectivityRoutine(RunRoutineCallback callback);
 

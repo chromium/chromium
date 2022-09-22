@@ -287,6 +287,17 @@ void FakeDiagnosticsService::RunSignalStrengthRoutine(
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
 }
 
+void FakeDiagnosticsService::RunGatewayCanBePingedRoutine(
+    RunGatewayCanBePingedRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_called_routine_ =
+      crosapi::mojom::DiagnosticsRoutineEnum::kGatewayCanBePinged;
+
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_.Clone()));
+}
+
 void FakeDiagnosticsService::SetRunRoutineResponse(
     crosapi::mojom::DiagnosticsRunRoutineResponsePtr response) {
   run_routine_response_ = std::move(response);

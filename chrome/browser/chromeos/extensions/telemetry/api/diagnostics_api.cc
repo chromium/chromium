@@ -387,6 +387,20 @@ void OsDiagnosticsRunDnsResolutionRoutineFunction::RunIfAllowed() {
   GetRemoteService()->RunDnsResolutionRoutine(std::move(cb));
 }
 
+// OsDiagnosticsRunGatewayCanBePingedRoutineFunction ---------------------------
+
+OsDiagnosticsRunGatewayCanBePingedRoutineFunction::
+    OsDiagnosticsRunGatewayCanBePingedRoutineFunction() = default;
+OsDiagnosticsRunGatewayCanBePingedRoutineFunction::
+    ~OsDiagnosticsRunGatewayCanBePingedRoutineFunction() = default;
+
+void OsDiagnosticsRunGatewayCanBePingedRoutineFunction::RunIfAllowed() {
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  GetRemoteService()->RunGatewayCanBePingedRoutine(std::move(cb));
+}
+
 // OsDiagnosticsRunLanConnectivityRoutineFunction ------------------------------
 
 OsDiagnosticsRunLanConnectivityRoutineFunction::

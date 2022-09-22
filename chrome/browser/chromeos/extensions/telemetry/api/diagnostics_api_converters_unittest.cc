@@ -111,6 +111,11 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   }
   {
     RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kGatewayCanBePinged, &out));
+    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_GATEWAY_CAN_BE_PINGED);
+  }
+  {
+    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kSmartctlCheck, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK);
   }

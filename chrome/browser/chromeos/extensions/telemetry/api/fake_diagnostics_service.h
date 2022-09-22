@@ -77,6 +77,8 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
       RunDnsResolutionRoutineCallback callback) override;
   void RunSignalStrengthRoutine(
       RunSignalStrengthRoutineCallback callback) override;
+  void RunGatewayCanBePingedRoutine(
+      RunGatewayCanBePingedRoutineCallback callback) override;
 
   // Sets the return value for |Run*Routine|.
   void SetRunRoutineResponse(

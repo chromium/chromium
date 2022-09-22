@@ -35624,6 +35624,7 @@ Called by update_extension_histograms.py.-->
   <int value="1709" label="OS_TELEMETRY_GETNONREMOVABLEBLOCKDEVICESINFO"/>
   <int value="1710" label="OS_DIAGNOSTICS_RUNDNSRESOLUTIONROUTINE"/>
   <int value="1711" label="OS_DIAGNOSTICS_RUNSIGNALSTRENGTHROUTINE"/>
+  <int value="1712" label="OS_DIAGNOSTICS_RUNGATEWAYCANBEPINGEDROUTINE"/>
 </enum>
 
 <enum name="ExtensionIconState">

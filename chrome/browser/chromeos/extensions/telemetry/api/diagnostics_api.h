@@ -308,6 +308,25 @@ class OsDiagnosticsRunDnsResolutionRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunGatewayCanBePingedRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runGatewayCanBePingedRoutine",
+                             OS_DIAGNOSTICS_RUNGATEWAYCANBEPINGEDROUTINE)
+
+  OsDiagnosticsRunGatewayCanBePingedRoutineFunction();
+  OsDiagnosticsRunGatewayCanBePingedRoutineFunction(
+      const OsDiagnosticsRunGatewayCanBePingedRoutineFunction&) = delete;
+  OsDiagnosticsRunGatewayCanBePingedRoutineFunction& operator=(
+      const OsDiagnosticsRunGatewayCanBePingedRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunGatewayCanBePingedRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunLanConnectivityRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:
