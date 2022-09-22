@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
@@ -19,6 +20,7 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/ble_adapter_manager.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 
@@ -401,13 +403,20 @@ void FidoRequestHandlerBase::OnHavePlatformCredentialStatus(
     bool have_credential) {
   DCHECK_EQ(transport_availability_info_.has_platform_authenticator_credential,
             RecognizedCredential::kUnknown);
-
-  transport_availability_info_.has_platform_authenticator_credential =
-      have_credential ? RecognizedCredential::kHasRecognizedCredential
-                      : RecognizedCredential::kNoRecognizedCredential;
-  transport_availability_info_.recognized_platform_authenticator_credentials =
-      std::move(creds);
-
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi) &&
+      !have_credential) {
+    transport_availability_info_.has_platform_authenticator_credential =
+        RecognizedCredential::kNoRecognizedCredential;
+    transport_availability_info_.available_transports.erase(
+        FidoTransportProtocol::kInternal);
+  } else {
+    transport_availability_info_.has_platform_authenticator_credential =
+        have_credential ? RecognizedCredential::kHasRecognizedCredential
+                        : RecognizedCredential::kNoRecognizedCredential;
+    transport_availability_info_.recognized_platform_authenticator_credentials =
+        std::move(creds);
+  }
   transport_availability_callback_readiness_
       ->platform_credential_check_pending = false;
   MaybeSignalTransportsEnumerated();
