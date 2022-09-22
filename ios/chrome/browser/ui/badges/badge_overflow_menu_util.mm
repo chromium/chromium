@@ -23,6 +23,23 @@
 #endif
 
 namespace {
+
+// The image used for password related badges.
+UIImage* GetPasswordImage() {
+  if (UseSymbols()) {
+    return CustomSymbolTemplateWithPointSize(kPasswordSymbol,
+                                             kSymbolImagePointSize);
+  } else {
+    NSString* passwordImageName =
+        base::FeatureList::IsEnabled(
+            password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
+            ? @"password_key"
+            : @"legacy_password_key";
+    return [[UIImage imageNamed:passwordImageName]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
+}
+
 // The menu element for `badgeType` shown in the overflow menu when the overflow
 // badge is tapped.
 UIAction* GetOverflowMenuElementForBadgeType(
@@ -33,26 +50,19 @@ UIAction* GetOverflowMenuElementForBadgeType(
   UIImage* image;
   MobileMessagesInfobarType histogram_type = MobileMessagesInfobarType::Confirm;
 
-  NSString* passwordImageName =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
-          ? @"password_key"
-          : @"legacy_password_key";
   switch (badge_type) {
     case kBadgeTypePasswordSave:
       action_identifier = kBadgeButtonSavePasswordActionIdentifier;
       title =
           l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_TITLE);
-      image = [[UIImage imageNamed:passwordImageName]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      image = GetPasswordImage();
       histogram_type = MobileMessagesInfobarType::SavePassword;
       break;
     case kBadgeTypePasswordUpdate:
       action_identifier = kBadgeButtonUpdatePasswordActionIdentifier;
       title = l10n_util::GetNSString(
           IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD_TITLE);
-      image = [[UIImage imageNamed:passwordImageName]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      image = GetPasswordImage();
       histogram_type = MobileMessagesInfobarType::UpdatePassword;
       break;
     case kBadgeTypeSaveAddressProfile:
@@ -129,6 +139,7 @@ UIAction* GetOverflowMenuElementForBadgeType(
                         identifier:action_identifier
                            handler:handler];
 }
+
 }  // namespace
 
 UIMenu* GetOverflowMenuFromBadgeTypes(NSArray<NSNumber*>* badge_types,

@@ -6,6 +6,8 @@
 
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -38,6 +40,20 @@
   return SavePasswordInfobarBannerOverlayRequestConfig::RequestSupport();
 }
 
+#pragma mark - Private
+
+// The icon image, can be from the config or not from it.
+- (UIImage*)iconImageWithConfig:
+    (SavePasswordInfobarBannerOverlayRequestConfig*)config {
+  UIImage* image;
+  if (UseSymbols()) {
+    image = CustomSymbolWithPointSize(kPasswordSymbol, kSymbolImagePointSize);
+  } else {
+    image = [UIImage imageNamed:config->icon_image_name()];
+  }
+  return image;
+}
+
 @end
 
 @implementation SavePasswordInfobarBannerOverlayMediator (ConsumerSupport)
@@ -58,7 +74,7 @@
                                      IDS_IOS_SETTINGS_PASSWORD_HIDDEN_LABEL)];
   [self.consumer setBannerAccessibilityLabel:bannerAccessibilityLabel];
   [self.consumer setButtonText:config->button_text()];
-  [self.consumer setIconImage:[UIImage imageNamed:config->icon_image_name()]];
+  [self.consumer setIconImage:[self iconImageWithConfig:config]];
   [self.consumer setPresentsModal:YES];
   [self.consumer setTitleText:title];
   [self.consumer

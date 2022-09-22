@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
@@ -72,9 +74,13 @@ TEST_F(SavePasswordInfobarBannerOverlayMediatorTest, SetUpConsumer) {
               consumer.buttonText);
   EXPECT_NSEQ(title, consumer.titleText);
   EXPECT_NSEQ(subtitle, consumer.subtitleText);
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kIOSEnablePasswordManagerBrandingUpdate)) {
+  if (UseSymbols()) {
+    EXPECT_NSEQ(
+        CustomSymbolWithPointSize(kPasswordSymbol, kSymbolImagePointSize),
+        consumer.iconImage);
+  } else if (base::FeatureList::IsEnabled(
+                 password_manager::features::
+                     kIOSEnablePasswordManagerBrandingUpdate)) {
     EXPECT_NSEQ([UIImage imageNamed:@"password_key"], consumer.iconImage);
   } else {
     EXPECT_NSEQ([UIImage imageNamed:@"legacy_password_key"],
