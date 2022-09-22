@@ -16,11 +16,11 @@
 // Delegate protocol for the KeyboardAccessoryView.
 @protocol OmniboxAssistiveKeyboardDelegate
 
-// Notifies the delegate that a touch up occurred in the Voice Search button.
-- (void)keyboardAccessoryVoiceSearchTouchUpInside:(UIView*)view;
+// Notifies the delegate that the Voice Search button was tapped.
+- (void)keyboardAccessoryVoiceSearchTapped:(id)sender;
 
-// Notifies the delegate that a touch up occurred in the Camera Search button.
-- (void)keyboardAccessoryCameraSearchTouchUp;
+// Notifies the delegate that the Camera Search button was tapped.
+- (void)keyboardAccessoryCameraSearchTapped;
 
 // Notifies the delegate that a key with the title `title` was pressed.
 - (void)keyPressed:(NSString*)title;

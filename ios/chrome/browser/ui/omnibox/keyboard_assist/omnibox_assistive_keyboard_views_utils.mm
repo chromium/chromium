@@ -56,16 +56,15 @@ NSArray<UIControl*>* OmniboxAssistiveKeyboardLeadingControls(
       l10n_util::GetNSString(IDS_IOS_KEYBOARD_ACCESSORY_VIEW_VOICE_SEARCH);
   voiceSearchButton.accessibilityLabel = accessibilityLabel;
   voiceSearchButton.accessibilityIdentifier = kVoiceSearchInputAccessoryViewID;
-  [voiceSearchButton
-             addTarget:delegate
-                action:@selector(keyboardAccessoryVoiceSearchTouchUpInside:)
-      forControlEvents:UIControlEventTouchUpInside];
+  [voiceSearchButton addTarget:delegate
+                        action:@selector(keyboardAccessoryVoiceSearchTapped:)
+              forControlEvents:UIControlEventTouchUpInside];
   [controls addObject:voiceSearchButton];
 
   UIButton* cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
   SetUpButtonWithIcon(cameraButton, @"keyboard_accessory_qr_scanner");
   [cameraButton addTarget:delegate
-                   action:@selector(keyboardAccessoryCameraSearchTouchUp)
+                   action:@selector(keyboardAccessoryCameraSearchTapped)
          forControlEvents:UIControlEventTouchUpInside];
   SetA11yLabelAndUiAutomationName(
       cameraButton, IDS_IOS_KEYBOARD_ACCESSORY_VIEW_QR_CODE_SEARCH,

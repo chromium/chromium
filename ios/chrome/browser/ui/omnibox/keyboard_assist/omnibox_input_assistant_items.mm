@@ -34,8 +34,7 @@ NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
                 initWithImage:voiceSearchIcon
                         style:UIBarButtonItemStylePlain
                        target:delegate
-                       action:@selector
-                       (keyboardAccessoryVoiceSearchTouchUpInside:)
+                       action:@selector(keyboardAccessoryVoiceSearchTapped:)
       voiceSearchAvailability:std::make_unique<VoiceSearchAvailability>()];
   NSString* accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_KEYBOARD_ACCESSORY_VIEW_VOICE_SEARCH);
@@ -49,7 +48,7 @@ NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
       initWithImage:cameraIcon
               style:UIBarButtonItemStylePlain
              target:delegate
-             action:@selector(keyboardAccessoryCameraSearchTouchUp)];
+             action:@selector(keyboardAccessoryCameraSearchTapped)];
   SetA11yLabelAndUiAutomationName(
       cameraItem, IDS_IOS_KEYBOARD_ACCESSORY_VIEW_QR_CODE_SEARCH,
       @"QR code Search");

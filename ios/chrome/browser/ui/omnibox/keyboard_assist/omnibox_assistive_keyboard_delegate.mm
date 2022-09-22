@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 
+#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -28,10 +29,18 @@
 
 #pragma mark - Public
 
-- (void)keyboardAccessoryVoiceSearchTouchUpInside:(UIView*)view {
+- (void)keyboardAccessoryVoiceSearchTapped:(id)sender {
   if (ios::provider::IsVoiceSearchEnabled()) {
     [self.browserCommandsHandler preloadVoiceSearch];
     base::RecordAction(base::UserMetricsAction("MobileCustomRowVoiceSearch"));
+    // The sender can be a regular view or a bar button item. Handle both cases.
+    UIView* view;
+    if ([sender isKindOfClass:[UIView class]]) {
+      view = base::mac::ObjCCastStrict<UIView>(sender);
+    } else if ([sender isKindOfClass:[UIBarButtonItem class]]) {
+      view = [sender valueForKey:@"view"];
+    }
+    DCHECK(view);
     // Since the keyboard accessory view is in a different window than the main
     // UIViewController upon which Voice Search will be presented, the guide
     // must be constrained to a frame instead of the view itself.  The keyboard
@@ -51,7 +60,7 @@
   }
 }
 
-- (void)keyboardAccessoryCameraSearchTouchUp {
+- (void)keyboardAccessoryCameraSearchTapped {
   base::RecordAction(base::UserMetricsAction("MobileCustomRowCameraSearch"));
   [self.qrScannerCommandsHandler showQRScanner];
 }
