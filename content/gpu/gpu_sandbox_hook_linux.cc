@@ -113,8 +113,13 @@ constexpr int dlopen_flag = RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE;
 
 void AddStandardChromeOsPermissions(
     std::vector<BrokerFilePermission>* permissions) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  static const char kAngleEglPath[] = "/usr/local/lacros-chrome/libEGL.so";
+  static const char kAngleGlesPath[] = "/usr/local/lacros-chrome/libGLESv2.so";
+#else
   static const char kAngleEglPath[] = "/opt/google/chrome/libEGL.so";
   static const char kAngleGlesPath[] = "/opt/google/chrome/libGLESv2.so";
+#endif
 
   // For the ANGLE passthrough command decoder.
   permissions->push_back(BrokerFilePermission::ReadOnly(kAngleEglPath));
