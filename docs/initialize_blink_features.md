@@ -80,11 +80,7 @@ If your Blink feature has a custom enabler function, add a new entry to
 will call `wf::EnableNewFeatureX` to disable it only if that
 `switches::kNewFeatureX` exists on the command line.
 
-### 4) Controlled by parameters from a field trial:
-Add your code to the function
-[SetRuntimeFeaturesFromFieldTrialParams()][SetRuntimeFeaturesFromFieldTrialParams].
-
-### 5) Combination of the previous options or not covered:
+### 4) Combination of the previous options or not covered:
 For example, you Blink feature could be controlled by both a base::Feature and a
 command line switch. In this case, your custom logic should live here in
 [`SetCustomizedRuntimeFeaturesFromCombinedArgs()`][SetCustomizedRuntimeFeaturesFromCombinedArgs].

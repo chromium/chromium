@@ -5,6 +5,8 @@ and discusses appropriate uses and standard patterns for each of them. Some of
 these are intended for use by users, some by developers, and some by system
 administrators.
 
+[TOC]
+
 ## Prefs
 
 Example: prefs::kAllowDinosaurEasterEgg aka "allow_dinosaur_easter_egg"
@@ -134,6 +136,14 @@ Settings:
 You should add a setting if end-users might want to change this behavior. A
 decent litmus test for whether something should be a flag or a setting is: "will
 someone who can't read or write code want to change this?"
+
+## Related Documents
+
+* [Chromium Feature API & Finch (Googler-only)](http://go/finch-feature-api)
+* [Adding a new feature flag in chrome://flags](how_to_add_your_feature_flag.md)
+* [Runtime Enabled Features](../third_party/blink/renderer/platform/RuntimeEnabledFeatures.md)
+* [Initialization of Blink runtime features in content layer](initialize_blink_features.md)
+* [Integrating a feature with the origin trials framework](origin_trials_integration.md)
 
 [base-commandline]: https://cs.chromium.org/chromium/src/base/command_line.h?type=cs&l=98
 [base-feature]: https://cs.chromium.org/chromium/src/base/feature_list.h?sq=package:chromium&g=0&l=53
