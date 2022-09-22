@@ -45,6 +45,8 @@ source_set("browser") {
     "aw_contents_client_bridge.h",
     "aw_contents_io_thread_client.cc",
     "aw_contents_io_thread_client.h",
+    "aw_contents_origin_matcher.cc",
+    "aw_contents_origin_matcher.h",
     "aw_contents_statics.cc",
     "aw_cookie_access_policy.cc",
     "aw_cookie_access_policy.h",

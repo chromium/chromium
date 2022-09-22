@@ -6,16 +6,17 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.settings.ForceDarkBehavior;
-import org.chromium.android_webview.settings.RequestedWithHeaderMode;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
 import java.lang.ref.WeakReference;
+import java.util.Set;
 
 /**
  * This class records WebView settings usage.
@@ -102,11 +103,10 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
     private void recordRequestedWithHeaderMetrics() {
         AwSettings awSettings = mAwSettings.get();
         if (awSettings == null) return;
-
-        int requestedWithHeaderMode = awSettings.getRequestedWithHeaderMode();
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.RequestedWithHeader.OnNavigationHeaderMode",
-                requestedWithHeaderMode, AwSettings.REQUESTED_WITH_MODES_COUNT);
+        Set<String> allowList = awSettings.getRequestedWithHeaderOriginAllowList();
+        RecordHistogram.recordCount1000Histogram(
+                "Android.WebView.RequestedWithHeader.OnNavigationRequestedWithHeaderAllowListSize",
+                allowList.size());
     }
 
     public static void recordForceDarkModeAPIUsage(Context context, int forceDarkMode) {
@@ -122,17 +122,16 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
                 forceDarkBehavior, AwSettings.FORCE_DARK_STRATEGY_COUNT);
     }
 
-    public static void recordRequestedWithHeaderModeAPIUsage(
-            @RequestedWithHeaderMode int requestedWithHeaderMode) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.RequestedWithHeader.SetRequestedWithHeaderMode",
-                requestedWithHeaderMode, AwSettings.REQUESTED_WITH_MODES_COUNT);
+    public static void recordRequestedWithHeaderModeAPIUsage(@NonNull Set<String> originAllowList) {
+        RecordHistogram.recordCount1000Histogram(
+                "Android.WebView.RequestedWithHeader.SetRequestedWithHeaderModeAllowListSize",
+                originAllowList.size());
     }
 
     public static void recordRequestedWithHeaderModeServiceWorkerAPIUsage(
-            @RequestedWithHeaderMode int requestedWithHeaderMode) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.RequestedWithHeader.SetServiceWorkerRequestedWithHeaderMode",
-                requestedWithHeaderMode, AwSettings.REQUESTED_WITH_MODES_COUNT);
+            @NonNull Set<String> originAllowList) {
+        RecordHistogram.recordCount1000Histogram("Android.WebView.RequestedWithHeader."
+                        + "SetServiceWorkerRequestedWithHeaderModeAllowListSize",
+                originAllowList.size());
     }
 }

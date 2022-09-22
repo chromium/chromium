@@ -647,11 +647,6 @@ public class AwContents implements SmartClipProvider {
         public boolean getSafeBrowsingEnabled() {
             return mSettings.getSafeBrowsingEnabled();
         }
-
-        @Override
-        public int getRequestedWithHeaderMode() {
-            return mSettings.getRequestedWithHeaderMode();
-        }
     }
 
     private class BackgroundThreadClientImpl extends AwContentsBackgroundThreadClient {

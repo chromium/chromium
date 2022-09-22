@@ -9,12 +9,14 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_contents.h"
+#include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_dark_mode.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/browser_jni_headers/AwSettings_jni.h"
 #include "android_webview/common/aw_content_client.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
@@ -29,6 +31,8 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF8ToJavaString;
@@ -81,6 +85,7 @@ AwSettings::AwSettings(JNIEnv* env,
       enterprise_authentication_app_link_policy_enabled_(
           true),  // TODO(b/222053757,ayushsha): Change this policy to be by
                   // default false from next Android version(Maybe Android U).
+      xrw_allowlist_matcher_(base::MakeRefCounted<AwContentsOriginMatcher>()),
       aw_settings_(env, obj) {
   web_contents->SetUserData(kAwSettingsUserDataKey,
                             std::make_unique<AwSettingsUserData>(this));
@@ -122,20 +127,22 @@ bool AwSettings::GetAllowSniffingFileUrls() {
 
 AwSettings::RequestedWithHeaderMode
 AwSettings::GetDefaultRequestedWithHeaderMode() {
-  if (base::FeatureList::IsEnabled(features::kWebViewXRequestedWithHeader)) {
-    int configuredValue = features::kWebViewXRequestedWithHeaderMode.Get();
-    switch (configuredValue) {
-      case AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW:
-        return AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW;
-      case AwSettings::RequestedWithHeaderMode::NO_HEADER:
-        return AwSettings::RequestedWithHeaderMode::NO_HEADER;
-      default:
-        // If the field trial config is broken for some reason, use the
-        // package name, since the feature is still enabled.
-        return AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME;
-    }
-  } else {
-    return AwSettings::RequestedWithHeaderMode::NO_HEADER;
+  // If the control feature is not enabled, the default is the old behavior,
+  // which is to send the app package name.
+  if (!base::FeatureList::IsEnabled(
+          features::kWebViewXRequestedWithHeaderControl))
+    return AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME;
+
+  int configuredValue = features::kWebViewXRequestedWithHeaderMode.Get();
+  switch (configuredValue) {
+    case AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW:
+      return AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW;
+    case AwSettings::RequestedWithHeaderMode::NO_HEADER:
+      return AwSettings::RequestedWithHeaderMode::NO_HEADER;
+    default:
+      // If the field trial config is broken for some reason, use the
+      // package name.
+      return AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME;
   }
 }
 
@@ -562,6 +569,21 @@ bool AwSettings::GetEnterpriseAuthenticationAppLinkPolicyEnabled(
 
 bool AwSettings::GetAllowFileAccess() {
   return allow_file_access_;
+}
+
+base::android::ScopedJavaLocalRef<jobjectArray>
+AwSettings::UpdateXRequestedWithAllowListOriginMatcher(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobjectArray>& jrules) {
+  std::vector<std::string> rules;
+  base::android::AppendJavaStringArrayToStringVector(env, jrules, &rules);
+  std::vector<std::string> bad_rules =
+      xrw_allowlist_matcher_->UpdateRuleList(rules);
+  return base::android::ToJavaArrayOfStrings(env, bad_rules);
+}
+
+scoped_refptr<AwContentsOriginMatcher> AwSettings::xrw_allowlist_matcher() {
+  return xrw_allowlist_matcher_;
 }
 
 static jlong JNI_AwSettings_Init(JNIEnv* env,

@@ -17,6 +17,7 @@ struct WebPreferences;
 
 namespace android_webview {
 
+class AwContentsOriginMatcher;
 class AwRenderViewHostExt;
 
 class AwSettings : public content::WebContentsObserver {
@@ -35,7 +36,6 @@ class AwSettings : public content::WebContentsObserver {
     PREFER_MEDIA_QUERY_OVER_FORCE_DARK = 2,
   };
 
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview.settings
   enum RequestedWithHeaderMode {
     NO_HEADER = 0,
     APP_PACKAGE_NAME = 1,
@@ -110,6 +110,12 @@ class AwSettings : public content::WebContentsObserver {
     return enterprise_authentication_app_link_policy_enabled_;
   }
 
+  base::android::ScopedJavaLocalRef<jobjectArray>
+  UpdateXRequestedWithAllowListOriginMatcher(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& rules);
+  scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher();
+
  private:
   AwRenderViewHostExt* GetAwRenderViewHostExt();
   void UpdateEverything();
@@ -124,6 +130,8 @@ class AwSettings : public content::WebContentsObserver {
   bool allow_third_party_cookies_;
   bool allow_file_access_;
   bool enterprise_authentication_app_link_policy_enabled_;
+
+  scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
 
   JavaObjectWeakGlobalRef aw_settings_;
 };

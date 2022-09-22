@@ -18,9 +18,13 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwServiceWorkerSettings;
 import org.chromium.base.Log;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.net.test.util.TestWebServer;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Test service worker settings APIs.
@@ -30,6 +34,7 @@ import org.chromium.net.test.util.TestWebServer;
  * {@link android.webkit.ServiceWorkerClient} is supplied.
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class AwServiceWorkerSettingsTest {
     public static final String TAG = "AwSWSettingsTest";
     @Rule
@@ -201,6 +206,21 @@ public class AwServiceWorkerSettingsTest {
                 mWebServer.getRequestCount(SW_URL));
         Assert.assertEquals("No requests should be made in cache-only mode", 0,
                 mWebServer.getRequestCount(FETCH_URL));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences", "ServiceWorker"})
+    public void testGetUpdatedXRWAllowList() throws Throwable {
+        final Set<String> allowList = Set.of("https://*.example.com", "https://*.google.com");
+
+        Assert.assertEquals(Collections.emptySet(),
+                mAwServiceWorkerSettings.getRequestedWithHeaderOriginAllowList());
+
+        mAwServiceWorkerSettings.setRequestedWithHeaderOriginAllowList(allowList);
+
+        Assert.assertEquals(
+                allowList, mAwServiceWorkerSettings.getRequestedWithHeaderOriginAllowList());
     }
 
     private String indexHtml(int fetches) {

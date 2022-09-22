@@ -63,6 +63,8 @@ import org.chromium.ui.display.DisplayUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -3556,6 +3558,26 @@ public class AwSettingsTest {
     @Feature({"AndroidWebView", "Selection"})
     public void testUpdateSelectionOnMutatingSelectionRange() throws Throwable {
         selectionUpdateOnMutatingSelectionRangeTest(false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testGetUpdatedXRWAllowList() throws Throwable {
+        TestAwContentsClient contentClient = new TestAwContentsClient();
+        AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
+        AwContents awContents = testContainerView.getAwContents();
+        AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
+
+        final Set<String> allowList = Set.of("https://*.example.com", "https://*.google.com");
+
+        Assert.assertEquals(
+                Collections.emptySet(), awSettings.getRequestedWithHeaderOriginAllowList());
+
+        awSettings.setRequestedWithHeaderOriginAllowList(allowList);
+
+        Assert.assertEquals(allowList, awSettings.getRequestedWithHeaderOriginAllowList());
     }
 
     static class ViewPair {

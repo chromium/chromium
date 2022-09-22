@@ -452,14 +452,4 @@ bool AwContentsIoThreadClient::ShouldBlockNetworkLoads() const {
                                                                java_object_);
 }
 
-AwSettings::RequestedWithHeaderMode
-AwContentsIoThreadClient::GetRequestedWithHeaderMode() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  JNIEnv* env = AttachCurrentThread();
-  return static_cast<AwSettings::RequestedWithHeaderMode>(
-      Java_AwContentsIoThreadClient_getRequestedWithHeaderMode(env,
-                                                               java_object_));
-}
-
 }  // namespace android_webview

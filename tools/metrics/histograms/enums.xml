@@ -2943,18 +2943,18 @@ Unknown properties are collapsed to zero. -->
     ProxyController#setProxyOverride(String[][],String[],Runnable,Executor,boolean);
   </int>
   <int value="56" label="WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE">
-    WebSettingsCompat#setRequestedWithHeaderMode(int)
+    WebSettingsCompat#setRequestedWithHeaderMode(int) (deprecated)
   </int>
   <int value="57" label="WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE">
-    WebViewCompat#WebSettingsCompat#getRequestedWithHeaderMode()
+    WebViewCompat#WebSettingsCompat#getRequestedWithHeaderMode() (deprecated)
   </int>
   <int value="58"
       label="SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE">
-    ServiceWorkerWebSettingsCompat#setRequestedWithHeaderMode(int)
+    ServiceWorkerWebSettingsCompat#setRequestedWithHeaderMode(int) (deprecated)
   </int>
   <int value="59"
       label="SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE">
-    ServiceWorkerWebSettingsCompat#getRequestedWithHeaderMode()
+    ServiceWorkerWebSettingsCompat#getRequestedWithHeaderMode() (deprecated)
   </int>
   <int value="60" label="GET_VARIATIONS_HEADER">
     WebViewCompat#getVariationsHeader()
@@ -2981,6 +2981,24 @@ Unknown properties are collapsed to zero. -->
   </int>
   <int value="67" label="WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER">
     WebMessagePayload#getAsArrayBuffer();
+  </int>
+  <int value="68"
+      label="WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST">
+    WebSettingsCompat#setRequestedWithHeaderOriginAllowList(Set(String)
+    allowedOriginRules)
+  </int>
+  <int value="69"
+      label="WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST">
+    WebViewCompat#WebSettingsCompat#getRequestedWithHeaderOriginAllowList()
+  </int>
+  <int value="70"
+      label="SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST">
+    ServiceWorkerWebSettingsCompat#setRequestedWithHeaderOriginAllowList(Set(String)
+    allowedOriginRules)
+  </int>
+  <int value="71"
+      label="SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST">
+    ServiceWorkerWebSettingsCompat#getRequestedWithHeaderOriginAllowList()
   </int>
 </enum>
 
@@ -58277,6 +58295,7 @@ from previous Chrome versions.
   <int value="-1000695123"
       label="AccessibilitySelectToSpeakPageMigration:disabled"/>
   <int value="-1000671573" label="TemporaryUnexpireFlagsM80:enabled"/>
+  <int value="-1000279941" label="WebViewXRequestedWithHeaderControl:enabled"/>
   <int value="-998970149" label="BookmarksRefresh:disabled"/>
   <int value="-998731974" label="WinUseBrowserSpellChecker:enabled"/>
   <int value="-998310305" label="OmniboxContextMenuShowFullUrls:disabled"/>
@@ -58867,6 +58886,7 @@ from previous Chrome versions.
   <int value="-649956990" label="enable-harfbuzz-rendertext"/>
   <int value="-648925189" label="ExploreSites:enabled"/>
   <int value="-648593261" label="Memories:enabled"/>
+  <int value="-648383814" label="WebViewXRequestedWithHeaderControl:disabled"/>
   <int value="-645772961" label="EnableFakeKeyboardHeuristic:enabled"/>
   <int value="-645455405" label="MacViewsNativeDialogs:enabled"/>
   <int value="-644550997"

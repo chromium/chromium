@@ -11,6 +11,7 @@ package org.chromium.support_lib_boundary;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Set;
 
 /**
  * Boundary interface for WebSettingsCompat.
@@ -56,14 +57,20 @@ public interface WebSettingsBoundaryInterface {
     @WebAuthnSupport
     int getWebAuthnSupport();
 
+    @Deprecated
     @Retention(RetentionPolicy.SOURCE)
     @interface RequestedWithHeaderMode {
         int NO_HEADER = 0;
         int APP_PACKAGE_NAME = 1;
     }
+    @Deprecated
     void setRequestedWithHeaderMode(@RequestedWithHeaderMode int mode);
+    @Deprecated
     @RequestedWithHeaderMode
     int getRequestedWithHeaderMode();
+
+    void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules);
+    Set<String> getRequestedWithHeaderOriginAllowList();
 
     void setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean enabled);
     boolean getEnterpriseAuthenticationAppLinkPolicyEnabled();

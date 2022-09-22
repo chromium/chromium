@@ -21,7 +21,6 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.settings.ForceDarkBehavior;
 import org.chromium.android_webview.settings.ForceDarkMode;
-import org.chromium.android_webview.settings.RequestedWithHeaderMode;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -33,6 +32,9 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Stores Android WebView specific settings that does not need to be synced to WebKit.
@@ -80,20 +82,7 @@ public class AwSettings {
     @ForceDarkBehavior
     private int mForceDarkBehavior = ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
 
-    public static final int REQUESTED_WITH_NO_HEADER = RequestedWithHeaderMode.NO_HEADER;
-    public static final int REQUESTED_WITH_APP_PACKAGE_NAME =
-            RequestedWithHeaderMode.APP_PACKAGE_NAME;
-    public static final int REQUESTED_WITH_CONSTANT_WEBVIEW =
-            RequestedWithHeaderMode.CONSTANT_WEBVIEW;
-    public static final int REQUESTED_WITH_MODES_COUNT = 3;
-
-    @RequestedWithHeaderMode
-    private int mRequestedWithHeaderMode;
-
-    // Must match name of |kWebViewXRequestedWithHeaderMode| in
-    // android_webview/common/aw_features.cc
-    private static final String REQUESTED_WITH_HEADER_MODE_PARAM_NAME =
-            "WebViewXRequestedWithHeaderMode";
+    private Set<String> mRequestedWithHeaderAllowedOriginRules = Collections.emptySet();
 
     private Context mContext;
 
@@ -313,34 +302,8 @@ public class AwSettings {
             mAllowFileUrlAccess =
                     ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
                     < Build.VERSION_CODES.R;
-
-            mRequestedWithHeaderMode = getDefaultXRequestedWithHeaderMode();
         }
         // Defer initializing the native side until a native WebContents instance is set.
-    }
-
-    /**
-     * Compute the default value to use for XRequestedWithHeaderMode.
-     *
-     * Implemented as package-local static to share with |AwServiceWorkerSettings.java|
-     * @return Default mode for XRequestedWith header.
-     */
-    @RequestedWithHeaderMode
-    static int getDefaultXRequestedWithHeaderMode() {
-        int defaultMode = REQUESTED_WITH_APP_PACKAGE_NAME;
-        if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER)) {
-            int headerMode = AwFeatureList.getFeatureParamValueAsInt(
-                    AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER,
-                    REQUESTED_WITH_HEADER_MODE_PARAM_NAME, defaultMode);
-            // Verify that the value is valid
-            if (headerMode >= 0 && headerMode < REQUESTED_WITH_MODES_COUNT) {
-                defaultMode = headerMode;
-            }
-        } else {
-            // If the feature is disabled, that's equivalent of setting the NO_HEADER behaviour
-            defaultMode = REQUESTED_WITH_NO_HEADER;
-        }
-        return defaultMode;
     }
 
     public int getUiModeNight() {
@@ -393,6 +356,7 @@ public class AwSettings {
         AwSettingsJni.get().updateEverythingLocked(mNativeAwSettings, AwSettings.this);
         onGestureZoomSupportChanged(
                 supportsDoubleTapZoomLocked(), supportsMultiTouchZoomLocked());
+        setRequestedWithHeaderOriginAllowListLocked(mRequestedWithHeaderAllowedOriginRules);
     }
 
     /**
@@ -1273,17 +1237,40 @@ public class AwSettings {
         }
     }
 
-    public void setRequestedWithHeaderMode(@RequestedWithHeaderMode int mode) {
-        AwWebContentsMetricsRecorder.recordRequestedWithHeaderModeAPIUsage(mode);
+    public void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules) {
+        // Even though clients shouldn't pass in null, it's better to guard against it
+        allowedOriginRules =
+                allowedOriginRules != null ? allowedOriginRules : Collections.emptySet();
+        AwWebContentsMetricsRecorder.recordRequestedWithHeaderModeAPIUsage(allowedOriginRules);
         synchronized (mAwSettingsLock) {
-            mRequestedWithHeaderMode = mode;
+            setRequestedWithHeaderOriginAllowListLocked(allowedOriginRules);
         }
     }
 
-    @RequestedWithHeaderMode
-    public int getRequestedWithHeaderMode() {
+    private void setRequestedWithHeaderOriginAllowListLocked(final Set<String> allowedOriginRules) {
+        assert Thread.holdsLock(mAwSettingsLock);
+        if (mNativeAwSettings == 0) {
+            return;
+        }
+
+        // Final set to be updated by the Runnable on the UI thread.
+        final Set<String> rejectedRules = new HashSet<>();
+
+        mEventHandler.runOnUiThreadBlockingAndLocked(() -> {
+            String[] rejected = AwSettingsJni.get().updateXRequestedWithAllowListOriginMatcher(
+                    mNativeAwSettings, allowedOriginRules.toArray(new String[0]));
+            rejectedRules.addAll(java.util.Arrays.asList(rejected));
+        });
+
+        if (!rejectedRules.isEmpty()) {
+            throw new IllegalArgumentException("Malformed origin match rules: " + rejectedRules);
+        }
+        mRequestedWithHeaderAllowedOriginRules = allowedOriginRules;
+    }
+
+    public Set<String> getRequestedWithHeaderOriginAllowList() {
         synchronized (mAwSettingsLock) {
-            return mRequestedWithHeaderMode;
+            return mRequestedWithHeaderAllowedOriginRules;
         }
     }
 
@@ -2007,5 +1994,6 @@ public class AwSettings {
                 long nativeAwSettings, AwSettings caller, boolean enabled);
         boolean getEnterpriseAuthenticationAppLinkPolicyEnabled(
                 long nativeAwSettings, AwSettings caller);
+        String[] updateXRequestedWithAllowListOriginMatcher(long nativeAwSettings, String[] rules);
     }
 }

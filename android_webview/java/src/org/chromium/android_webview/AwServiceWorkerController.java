@@ -37,7 +37,7 @@ public class AwServiceWorkerController {
     public AwServiceWorkerController(
             @NonNull Context applicationContext, @NonNull AwBrowserContext browserContext) {
         mBrowserContext = browserContext;
-        mServiceWorkerSettings = new AwServiceWorkerSettings(applicationContext);
+        mServiceWorkerSettings = new AwServiceWorkerSettings(applicationContext, mBrowserContext);
         mServiceWorkerBackgroundThreadClient = new ServiceWorkerBackgroundThreadClientImpl();
         mServiceWorkerIoThreadClient = new ServiceWorkerIoThreadClientImpl();
         AwContentsStatics.setServiceWorkerIoThreadClient(
@@ -100,11 +100,6 @@ public class AwServiceWorkerController {
         @Override
         public boolean getSafeBrowsingEnabled() {
             return AwSafeBrowsingConfigHelper.getSafeBrowsingEnabledByManifest();
-        }
-
-        @Override
-        public int getRequestedWithHeaderMode() {
-            return mServiceWorkerSettings.getRequestedWithHeaderMode();
         }
     }
 

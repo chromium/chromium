@@ -33,7 +33,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewMeasureScreenCoverage,
     &features::kWebViewJavaJsBridgeMojo,
     &features::kWebViewUseMetricsUploadService,
-    &features::kWebViewXRequestedWithHeader,
+    &features::kWebViewXRequestedWithHeaderControl,
     &features::kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess,
 };
 

@@ -9,9 +9,11 @@ import android.content.pm.PackageManager;
 import android.os.Process;
 import android.webkit.WebSettings;
 
-import org.chromium.android_webview.settings.RequestedWithHeaderMode;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Stores Android WebView Service Worker specific settings.
@@ -25,22 +27,23 @@ public class AwServiceWorkerSettings {
     private static final String TAG = "AwSWSettings";
     private static final boolean TRACE = false;
 
+    private final AwBrowserContext mBrowserContext;
     private int mCacheMode = WebSettings.LOAD_DEFAULT;
     private boolean mAllowContentUrlAccess = true;
     private boolean mAllowFileUrlAccess = true;
     private boolean mBlockNetworkLoads;  // Default depends on permission of the embedding APK
     private boolean mAcceptThirdPartyCookies;
 
-    @RequestedWithHeaderMode
-    private int mRequestedWithHeaderMode;
+    private Set<String> mRequestedWithHeaderAllowedOriginRules = Collections.emptySet();
 
     // Lock to protect all settings.
     private final Object mAwServiceWorkerSettingsLock = new Object();
 
-    // Computed on construction.
+    // Computed on construction.AwServiceWorkerSettingsTest
     private final boolean mHasInternetPermission;
 
-    public AwServiceWorkerSettings(Context context) {
+    public AwServiceWorkerSettings(Context context, AwBrowserContext browserContext) {
+        mBrowserContext = browserContext;
         boolean hasInternetPermission = context.checkPermission(
                 android.Manifest.permission.INTERNET,
                 Process.myPid(),
@@ -48,7 +51,6 @@ public class AwServiceWorkerSettings {
         synchronized (mAwServiceWorkerSettingsLock) {
             mHasInternetPermission = hasInternetPermission;
             mBlockNetworkLoads = !hasInternetPermission;
-            mRequestedWithHeaderMode = AwSettings.getDefaultXRequestedWithHeaderMode();
         }
     }
 
@@ -139,22 +141,34 @@ public class AwServiceWorkerSettings {
     }
 
     /**
-     * See {@link androidx.webkit.ServiceWorkerWebSettingsCompat#setRequestedWithHeaderMode}
+     * See {@link
+     * androidx.webkit.ServiceWorkerWebSettingsCompat#setRequestedWithHeaderOriginAllowList}
      */
-    public void setRequestedWithHeaderMode(@RequestedWithHeaderMode int mode) {
-        AwWebContentsMetricsRecorder.recordRequestedWithHeaderModeServiceWorkerAPIUsage(mode);
+    public void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules) {
+        // Even though clients shouldn't pass in null, it's better to guard against it
+        allowedOriginRules =
+                allowedOriginRules != null ? allowedOriginRules : Collections.emptySet();
         synchronized (mAwServiceWorkerSettingsLock) {
-            mRequestedWithHeaderMode = mode;
+            AwWebContentsMetricsRecorder.recordRequestedWithHeaderModeServiceWorkerAPIUsage(
+                    allowedOriginRules);
+            Set<String> rejectedRules =
+                    mBrowserContext.updateServiceWorkerXRequestedWithAllowListOriginMatcher(
+                            allowedOriginRules);
+            if (!rejectedRules.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Malformed origin match rules: " + rejectedRules);
+            }
+            mRequestedWithHeaderAllowedOriginRules = allowedOriginRules;
         }
     }
 
     /**
-     * See {@link androidx.webkit.ServiceWorkerWebSettingsCompat#getRequestedWithHeaderMode}
+     * See {@link
+     * androidx.webkit.ServiceWorkerWebSettingsCompat#getRequestedWithHeaderOriginAllowList}
      */
-    @RequestedWithHeaderMode
-    public int getRequestedWithHeaderMode() {
+    public Set<String> getRequestedWithHeaderOriginAllowList() {
         synchronized (mAwServiceWorkerSettingsLock) {
-            return mRequestedWithHeaderMode;
+            return mRequestedWithHeaderAllowedOriginRules;
         }
     }
 }

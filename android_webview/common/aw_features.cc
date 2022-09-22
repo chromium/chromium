@@ -97,13 +97,15 @@ const base::Feature kWebViewWideColorGamutSupport{
     "WebViewWideColorGamutSupport", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Control the default behaviour for the XRequestedWith header
-const base::Feature kWebViewXRequestedWithHeader{
-    "WebViewXRequestedWithHeader", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kWebViewXRequestedWithHeaderControl{
+    "WebViewXRequestedWithHeaderControl", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Default value of the XRequestedWith header mode.
-// Must be value declared in in |AwSettings::RequestedWithHeaderMode|
+// Default value of the XRequestedWith header mode when
+// WebViewXRequestedWithHeaderControl is enabled. Defaults to
+// |AwSettings::RequestedWithHeaderMode::NO_HEADER| Must be value declared in in
+// |AwSettings::RequestedWithHeaderMode|
 const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode{
-    &kWebViewXRequestedWithHeader, "WebViewXRequestedWithHeaderMode", 1};
+    &kWebViewXRequestedWithHeaderControl, "WebViewXRequestedWithHeaderMode", 0};
 
 // Only synthesize page load for URL spoof prevention at most once, on initial
 // main document access (instead on every NavigationStateChanged call that

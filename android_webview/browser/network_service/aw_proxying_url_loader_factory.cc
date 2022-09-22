@@ -12,6 +12,7 @@
 #include "android_webview/browser/android_protocol_handler.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
 #include "android_webview/browser/aw_contents_io_thread_client.h"
+#include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/network_service/aw_web_resource_intercept_response.h"
@@ -69,7 +70,8 @@ class InterceptedRequest : public network::mojom::URLLoader,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
       bool intercept_only,
       absl::optional<AwProxyingURLLoaderFactory::SecurityOptions>
-          security_options);
+          security_options,
+      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher);
 
   InterceptedRequest(const InterceptedRequest&) = delete;
   InterceptedRequest& operator=(const InterceptedRequest&) = delete;
@@ -180,6 +182,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
       this};
   mojo::Remote<network::mojom::URLLoader> target_loader_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
+  scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
 
   base::WeakPtrFactory<InterceptedRequest> weak_factory_{this};
 };
@@ -274,7 +277,8 @@ InterceptedRequest::InterceptedRequest(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
     bool intercept_only,
     absl::optional<AwProxyingURLLoaderFactory::SecurityOptions>
-        security_options)
+        security_options,
+    scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher)
     : frame_tree_node_id_(frame_tree_node_id),
       request_id_(request_id),
       options_(options),
@@ -286,7 +290,8 @@ InterceptedRequest::InterceptedRequest(
       traffic_annotation_(traffic_annotation),
       proxied_loader_receiver_(this, std::move(loader_receiver)),
       target_client_(std::move(client)),
-      target_factory_(std::move(target_factory)) {
+      target_factory_(std::move(target_factory)),
+      xrw_allowlist_matcher_(std::move(xrw_allowlist_matcher)) {
   // If there is a client error, clean up the request.
   target_client_.set_disconnect_handler(base::BindOnce(
       &InterceptedRequest::OnURLLoaderClientError, base::Unretained(this)));
@@ -308,8 +313,11 @@ void InterceptedRequest::Restart() {
     return;
   }
 
-  if (io_thread_client) {
-    requested_with_header_mode = io_thread_client->GetRequestedWithHeaderMode();
+  if (requested_with_header_mode != AwSettings::APP_PACKAGE_NAME &&
+      xrw_allowlist_matcher_ &&
+      xrw_allowlist_matcher_->MatchesOrigin(
+          url::Origin::Create(request_.url))) {
+    requested_with_header_mode = AwSettings::APP_PACKAGE_NAME;
   }
 
   request_.load_flags =
@@ -756,10 +764,12 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     bool intercept_only,
-    absl::optional<SecurityOptions> security_options)
+    absl::optional<SecurityOptions> security_options,
+    scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher)
     : frame_tree_node_id_(frame_tree_node_id),
       intercept_only_(intercept_only),
-      security_options_(security_options) {
+      security_options_(security_options),
+      xrw_allowlist_matcher_(std::move(xrw_allowlist_matcher)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!(intercept_only_ && target_factory_remote));
   if (target_factory_remote) {
@@ -781,13 +791,15 @@ void AwProxyingURLLoaderFactory::CreateProxy(
     int frame_tree_node_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
-    absl::optional<SecurityOptions> security_options) {
+    absl::optional<SecurityOptions> security_options,
+    scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   // will manage its own lifetime
   new AwProxyingURLLoaderFactory(frame_tree_node_id, std::move(loader_receiver),
                                  std::move(target_factory_remote), false,
-                                 security_options);
+                                 security_options,
+                                 std::move(xrw_allowlist_matcher));
 }
 
 void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
@@ -825,7 +837,7 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
   InterceptedRequest* req = new InterceptedRequest(
       frame_tree_node_id_, request_id, options, request, traffic_annotation,
       std::move(loader), std::move(client), std::move(target_factory_clone),
-      intercept_only_, security_options_);
+      intercept_only_, security_options_, xrw_allowlist_matcher_);
   req->Restart();
 }
 

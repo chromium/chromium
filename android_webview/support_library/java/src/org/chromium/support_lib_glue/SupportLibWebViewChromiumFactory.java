@@ -84,12 +84,12 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.SET_SUPPORT_LIBRARY_VERSION + Features.DEV_SUFFIX,
                     Features.DOCUMENT_START_SCRIPT,
                     Features.PROXY_OVERRIDE_REVERSE_BYPASS,
-                    Features.REQUESTED_WITH_HEADER_CONTROL + Features.DEV_SUFFIX,
                     Features.GET_VARIATIONS_HEADER,
                     Features.ALGORITHMIC_DARKENING,
                     Features.ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY,
                     Features.GET_COOKIE_INFO,
                     Features.WEB_MESSAGE_GET_MESSAGE_PAYLOAD + Features.DEV_SUFFIX,
+                    Features.REQUESTED_WITH_HEADER_ALLOW_LIST + Features.DEV_SUFFIX,
                     // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                     // when they're initially added (this can be removed in a future CL). The final
                     // feature should have a trailing comma for cleaner diffs.
@@ -165,8 +165,13 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             ApiCall.WEB_MESSAGE_PAYLOAD_GET_TYPE,
             ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_STRING,
             ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER,
+            ApiCall.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
+            ApiCall.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
+            ApiCall.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
+            ApiCall.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
             // Add new constants above. The final constant should have a trailing comma for cleaner
             // diffs.
+            ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
     })
     public @interface ApiCall {
         int ADD_WEB_MESSAGE_LISTENER = 0;
@@ -225,9 +230,13 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int REMOVE_DOCUMENT_START_SCRIPT = 53;
         int SET_SAFE_BROWSING_ALLOWLIST = 54;
         int SET_PROXY_OVERRIDE_REVERSE_BYPASS = 55;
+        @Deprecated
         int WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE = 56;
+        @Deprecated
         int WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE = 57;
+        @Deprecated
         int SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE = 58;
+        @Deprecated
         int SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE = 59;
         int GET_VARIATIONS_HEADER = 60;
         int WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED = 61;
@@ -237,8 +246,12 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int WEB_MESSAGE_PAYLOAD_GET_TYPE = 65;
         int WEB_MESSAGE_PAYLOAD_GET_AS_STRING = 66;
         int WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER = 67;
+        int WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 68;
+        int WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 69;
+        int SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 70;
+        int SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 71;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 68;
+        int COUNT = 72;
     }
     // clang-format on
 

@@ -204,7 +204,18 @@ public class Features {
     // WebSettingsCompat.getRequestedWithHeaderMode
     // ServiceWorkerWebSettingsCompat.setRequestedWithHeaderMode
     // ServiceWorkerWebSettingsCompat.getRequestedWithHeaderMode
+    /**
+     * @deprecated Feature was never launched. Do not reuse feature name.
+     */
+    @Deprecated()
     public static final String REQUESTED_WITH_HEADER_CONTROL = "REQUESTED_WITH_HEADER_CONTROL";
+
+    // WebSettingsCompat.setRequestedWithHeaderAllowList
+    // WebSettingsCompat.getRequestedWithHeaderAllowList
+    // ServiceWorkerWebSettingsCompat.setRequestedWithHeaderAllowList
+    // ServiceWorkerWebSettingsCompat.getRequestedWithHeaderAllowList
+    public static final String REQUESTED_WITH_HEADER_ALLOW_LIST =
+            "REQUESTED_WITH_HEADER_ALLOW_LIST";
 
     // WebViewCompat.getVariationsHeader
     public static final String GET_VARIATIONS_HEADER = "GET_VARIATIONS_HEADER";

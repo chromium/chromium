@@ -14,6 +14,7 @@ import androidx.test.filters.SmallTest;
 
 import com.google.common.util.concurrent.SettableFuture;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,15 +23,21 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
+import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedSslErrorHelper;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.url.GURL;
 
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,6 +45,7 @@ import java.util.concurrent.TimeUnit;
  * which are configured by either AwURLRequestContextGetter or NetworkContext.
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class AwNetworkConfigurationTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
@@ -53,6 +61,13 @@ public class AwNetworkConfigurationTest {
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mTestContainerView.getAwContents();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        // Clean up any X-Requested-With allow-lists that test may have set.
+        AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
+        awSettings.setRequestedWithHeaderOriginAllowList(Collections.emptySet());
     }
 
     @Test
@@ -86,9 +101,45 @@ public class AwNetworkConfigurationTest {
         }
     }
 
+    private static String getPackageName() {
+        return InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName();
+    }
+
+    private String getXRequestedWithFromResultBody() throws Exception {
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        return mActivityTestRule.getJavaScriptResultBodyTextContent(mAwContents, mContentsClient);
+    }
+
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
+    @CommandLineFlags.Add({"disable-features=WebViewXRequestedWithHeaderControl"})
+    public void testRequestedWithHeaderMainFrameLegacy() throws Throwable {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), echoHeaderUrl);
+
+            Assert.assertEquals("X-Requested-With header should be the app package name",
+                    getPackageName(), getXRequestedWithFromResultBody());
+        } finally {
+            mTestServer.stopAndDestroyServer();
+        }
+    }
+
+    private void allowRequestOrigin(String echoHeaderUrl) throws Exception {
+        AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
+        GURL gurl = new GURL(echoHeaderUrl);
+        String origin = gurl.getScheme() + "://" + gurl.getHost() + ":" + gurl.getPort();
+        awSettings.setRequestedWithHeaderOriginAllowList(Set.of(origin));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Network"})
+    @CommandLineFlags.Add({"enable-features=WebViewXRequestedWithHeaderControl"})
     public void testRequestedWithHeaderMainFrame() throws Throwable {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
@@ -96,14 +147,30 @@ public class AwNetworkConfigurationTest {
             final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), echoHeaderUrl);
-            AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-            final String xRequestedWith = mActivityTestRule.getJavaScriptResultBodyTextContent(
-                    mAwContents, mContentsClient);
-            final String packageName = InstrumentationRegistry.getInstrumentation()
-                                               .getTargetContext()
-                                               .getPackageName();
+
+            Assert.assertEquals("No X-Requested-With header should be set", "None",
+                    getXRequestedWithFromResultBody());
+        } finally {
+            mTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Network"})
+    @CommandLineFlags.Add({"enable-features=WebViewXRequestedWithHeaderControl"})
+    public void testRequestedWithHeaderMainFrameOriginAllowed() throws Throwable {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
+            allowRequestOrigin(echoHeaderUrl);
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), echoHeaderUrl);
+
             Assert.assertEquals("X-Requested-With header should be the app package name",
-                    packageName, xRequestedWith);
+                    getPackageName(), getXRequestedWithFromResultBody());
+
         } finally {
             mTestServer.stopAndDestroyServer();
         }
@@ -112,24 +179,19 @@ public class AwNetworkConfigurationTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
-    public void testRequestedWithHeaderMainFrameAppPackageName() throws Throwable {
+    @CommandLineFlags.Add({"enable-features=WebViewXRequestedWithHeaderControl"})
+    public void testRequestedWithHeaderMainFrameUnrelatedOriginAllowed() throws Throwable {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        mAwContents.getSettings().setRequestedWithHeaderMode(
-                org.chromium.android_webview.AwSettings.REQUESTED_WITH_APP_PACKAGE_NAME);
         try {
+            AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
+            awSettings.setRequestedWithHeaderOriginAllowList(Set.of("https://google.com"));
             final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), echoHeaderUrl);
-            AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-            final String xRequestedWith = mActivityTestRule.getJavaScriptResultBodyTextContent(
-                    mAwContents, mContentsClient);
-            final String packageName = InstrumentationRegistry.getInstrumentation()
-                                               .getTargetContext()
-                                               .getPackageName();
-            Assert.assertEquals(
-                    "X-Requested-With header should be the app package name if specified",
-                    packageName, xRequestedWith);
+
+            Assert.assertEquals("No X-Requested-With header should be set", "None",
+                    getXRequestedWithFromResultBody());
         } finally {
             mTestServer.stopAndDestroyServer();
         }
@@ -138,46 +200,58 @@ public class AwNetworkConfigurationTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
-    public void testRequestedWithHeaderMainFrameNoHeader() throws Throwable {
+    @CommandLineFlags.Add({"enable-features=WebViewXRequestedWithHeaderControl"})
+    public void testRequestedWithHeaderMainFrameInvalidOriginPattern() throws Throwable {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        mAwContents.getSettings().setRequestedWithHeaderMode(
-                org.chromium.android_webview.AwSettings.REQUESTED_WITH_NO_HEADER);
         try {
-            final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), echoHeaderUrl);
-            AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-            final String xRequestedWith = mActivityTestRule.getJavaScriptResultBodyTextContent(
-                    mAwContents, mContentsClient);
-            // Server responds with "None" when there's no header
-            final String expectNoHeader = "None";
-            Assert.assertEquals("X-Requested-With header should not be set if specified",
-                    expectNoHeader, xRequestedWith);
+            AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
+            try {
+                // An origin pattern must have a scheme, so this is expected to fail
+                awSettings.setRequestedWithHeaderOriginAllowList(Set.of("google.com"));
+                Assert.fail("An IllegalArgumentException was expected");
+            } catch (IllegalArgumentException expected) {
+                // Expected
+            }
         } finally {
             mTestServer.stopAndDestroyServer();
         }
     }
 
+    private String getXRequestedWithFromIframe() throws Exception {
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        final String xRequestedWith =
+                getJavaScriptResultIframeTextContent(mAwContents, mContentsClient);
+        return xRequestedWith;
+    }
+
+    private void loadPageInIframe(String echoHeaderUrl) throws Throwable {
+        // Use the test server's root path as the baseUrl to satisfy same-origin restrictions.
+        final String baseUrl = mTestServer.getURL("/");
+        final String pageWithIframeHtml =
+                "<html><body><p>Main frame</p><iframe src='" + echoHeaderUrl + "'/></body></html>";
+        // We use loadDataWithBaseUrlSync because we need to dynamically control the HTML
+        // content, which EmbeddedTestServer doesn't support. We don't need to encode content
+        // because loadDataWithBaseUrl() encodes content itself.
+        mActivityTestRule.loadDataWithBaseUrlSync(mAwContents,
+                mContentsClient.getOnPageFinishedHelper(), pageWithIframeHtml,
+                /* mimeType */ null, /* isBase64Encoded */ false, baseUrl, /* historyUrl */
+                null);
+    }
+
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
-    public void testRequestedWithHeaderMainFrameStringConstant() throws Throwable {
+    @CommandLineFlags.Add({"disable-features=WebViewXRequestedWithHeaderControl"})
+    public void testRequestedWithHeaderSubResourceLegacy() throws Throwable {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
-        mAwContents.getSettings().setRequestedWithHeaderMode(
-                org.chromium.android_webview.AwSettings.REQUESTED_WITH_CONSTANT_WEBVIEW);
         try {
             final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), echoHeaderUrl);
-            AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-            final String xRequestedWith = mActivityTestRule.getJavaScriptResultBodyTextContent(
-                    mAwContents, mContentsClient);
-            final String expectedHeaderValue = "WebView";
-            Assert.assertEquals(
-                    "X-Requested-With header should be the a constant string if specified",
-                    expectedHeaderValue, xRequestedWith);
+            loadPageInIframe(echoHeaderUrl);
+
+            Assert.assertEquals("X-Requested-With header should be the app package name",
+                    getPackageName(), getXRequestedWithFromIframe());
         } finally {
             mTestServer.stopAndDestroyServer();
         }
@@ -186,30 +260,16 @@ public class AwNetworkConfigurationTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
+    @CommandLineFlags.Add({"enable-features=WebViewXRequestedWithHeaderControl"})
     public void testRequestedWithHeaderSubResource() throws Throwable {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
         try {
-            // Use the test server's root path as the baseUrl to satisfy same-origin restrictions.
-            final String baseUrl = mTestServer.getURL("/");
             final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
-            final String pageWithIframeHtml = "<html><body><p>Main frame</p><iframe src='"
-                    + echoHeaderUrl + "'/></body></html>";
-            // We use loadDataWithBaseUrlSync because we need to dynamically control the HTML
-            // content, which EmbeddedTestServer doesn't support. We don't need to encode content
-            // because loadDataWithBaseUrl() encodes content itself.
-            mActivityTestRule.loadDataWithBaseUrlSync(mAwContents,
-                    mContentsClient.getOnPageFinishedHelper(), pageWithIframeHtml,
-                    /* mimeType */ null, /* isBase64Encoded */ false, baseUrl, /* historyUrl */
-                    null);
-            AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-            final String xRequestedWith =
-                    getJavaScriptResultIframeTextContent(mAwContents, mContentsClient);
-            final String packageName = InstrumentationRegistry.getInstrumentation()
-                                               .getTargetContext()
-                                               .getPackageName();
-            Assert.assertEquals("X-Requested-With header should be the app package name",
-                    packageName, xRequestedWith);
+            loadPageInIframe(echoHeaderUrl);
+
+            Assert.assertEquals("X-Requested-With header should not be set", "None",
+                    getXRequestedWithFromIframe());
         } finally {
             mTestServer.stopAndDestroyServer();
         }
@@ -218,25 +278,62 @@ public class AwNetworkConfigurationTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
+    @CommandLineFlags.Add({"enable-features=WebViewXRequestedWithHeaderControl"})
+    public void testRequestedWithHeaderSubResourceOriginAllowed() throws Throwable {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
+            allowRequestOrigin(echoHeaderUrl);
+            loadPageInIframe(echoHeaderUrl);
+
+            Assert.assertEquals("X-Requested-With header should be the app package name",
+                    getPackageName(), getXRequestedWithFromIframe());
+        } finally {
+            mTestServer.stopAndDestroyServer();
+        }
+    }
+
+    private void requestRedirectToUrl(String echoHeaderUrl) throws Exception {
+        final String encodedEchoHeaderUrl = URLEncoder.encode(echoHeaderUrl, "UTF-8");
+        // Returns a server-redirect (301) to echoHeaderUrl.
+        final String redirectToEchoHeaderUrl =
+                mTestServer.getURL("/server-redirect?" + encodedEchoHeaderUrl);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), redirectToEchoHeaderUrl);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Network"})
+    @CommandLineFlags.Add({"disable-features=WebViewXRequestedWithHeaderControl"})
+    public void testRequestedWithHeaderHttpRedirectLegacy() throws Throwable {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
+            requestRedirectToUrl(echoHeaderUrl);
+
+            Assert.assertEquals("X-Requested-With header should be the app package name",
+                    getPackageName(), getXRequestedWithFromResultBody());
+        } finally {
+            mTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Network"})
+    @CommandLineFlags.Add({"enable-features=WebViewXRequestedWithHeaderControl"})
     public void testRequestedWithHeaderHttpRedirect() throws Throwable {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
         try {
             final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
-            final String encodedEchoHeaderUrl = URLEncoder.encode(echoHeaderUrl, "UTF-8");
-            // Returns a server-redirect (301) to echoHeaderUrl.
-            final String redirectToEchoHeaderUrl =
-                    mTestServer.getURL("/server-redirect?" + encodedEchoHeaderUrl);
-            mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
-                    redirectToEchoHeaderUrl);
-            AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-            final String xRequestedWith = mActivityTestRule.getJavaScriptResultBodyTextContent(
-                    mAwContents, mContentsClient);
-            final String packageName = InstrumentationRegistry.getInstrumentation()
-                                               .getTargetContext()
-                                               .getPackageName();
-            Assert.assertEquals("X-Requested-With header should be the app package name",
-                    packageName, xRequestedWith);
+            requestRedirectToUrl(echoHeaderUrl);
+
+            Assert.assertEquals("X-Requested-With header should be None", "None",
+                    getXRequestedWithFromResultBody());
         } finally {
             mTestServer.stopAndDestroyServer();
         }
@@ -245,7 +342,24 @@ public class AwNetworkConfigurationTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
-    public void testRequestedWithApplicationValuePreferred() throws Throwable {
+    @CommandLineFlags.Add({"enable-features=WebViewXRequestedWithHeaderControl"})
+    public void testRequestedWithHeaderHttpRedirectAllowOrigin() throws Throwable {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
+            allowRequestOrigin(echoHeaderUrl);
+
+            requestRedirectToUrl(echoHeaderUrl);
+
+            Assert.assertEquals("X-Requested-With header should be the app package name",
+                    getPackageName(), getXRequestedWithFromResultBody());
+        } finally {
+            mTestServer.stopAndDestroyServer();
+        }
+    }
+
+    private void testRequestedWithApplicationValuePreferredBase() throws Throwable {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
         try {
@@ -255,14 +369,32 @@ public class AwNetworkConfigurationTest {
             extraHeaders.put("X-Requested-With", applicationRequestedWithValue);
             mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
                     echoHeaderUrl, extraHeaders);
-            AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-            final String xRequestedWith = mActivityTestRule.getJavaScriptResultBodyTextContent(
-                    mAwContents, mContentsClient);
+
             Assert.assertEquals("Should prefer app's provided X-Requested-With header",
-                    applicationRequestedWithValue, xRequestedWith);
+                    applicationRequestedWithValue, getXRequestedWithFromResultBody());
         } finally {
             mTestServer.stopAndDestroyServer();
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Network"})
+    @CommandLineFlags.Add({"disable-features=WebViewXRequestedWithHeaderControl"})
+    public void testRequestedWithApplicationValuePreferredLegacy() throws Throwable {
+        // Application preference should override the header and allow it to be set whether the
+        // feature is enabled or not.
+        testRequestedWithApplicationValuePreferredBase();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Network"})
+    @CommandLineFlags.Add({"enable-features=WebViewXRequestedWithHeaderControl"})
+    public void testRequestedWithApplicationValuePreferred() throws Throwable {
+        // Application preference should override the header and allow it to be set whether the
+        // feature is enabled or not.
+        testRequestedWithApplicationValuePreferredBase();
     }
 
     @Test

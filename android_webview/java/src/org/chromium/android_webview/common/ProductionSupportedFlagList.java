@@ -276,9 +276,10 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.AVOID_UNNECESSARY_BEFORE_UNLOAD_CHECK_POST_TASK,
                     "Avoids an unnecessary renderer ipc during navigation for before-unload "
                             + "handlers."),
-            Flag.baseFeature(AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER,
-                    "Enables automatic insertion of XRequestedWith header "
-                            + "on all outgoing requests."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_CONTROL,
+                    "Restricts insertion of XRequestedWith header on outgoing requests "
+                            + "to those that have been allow-listed through the appropriate "
+                            + "developer API."),
             Flag.baseFeature(
                     AwFeatures.WEBVIEW_SYNTHESIZE_PAGE_LOAD_ONLY_ON_INITIAL_MAIN_DOCUMENT_ACCESS,
                     "Only synthesize page load for URL spoof prevention at most once,"
