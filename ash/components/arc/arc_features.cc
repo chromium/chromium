@@ -60,7 +60,7 @@ BASE_FEATURE(kEnableTTSCaching,
 // also whether or not TTS cache is used.
 BASE_FEATURE(kEnableTTSCacheSetup,
              "ArcEnableTTSCacheSetup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether we should delegate audio focus requests from ARC to Chrome.
 BASE_FEATURE(kEnableUnifiedAudioFocusFeature,
