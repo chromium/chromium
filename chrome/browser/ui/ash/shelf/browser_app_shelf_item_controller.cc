@@ -14,12 +14,38 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
+#include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/widget/native_widget_aura.h"
+
+namespace {
+
+// Returns true if we are trying to launch a lacros window if there isn't
+// already one on the active desk.
+bool ShouldLaunchNewLacrosWindow(
+    std::string app_id,
+    const std::vector<std::pair<int, base::UnguessableToken>>& instances,
+    const apps::BrowserAppInstanceRegistry& registry) {
+  if (app_id != app_constants::kLacrosAppId) {
+    return false;
+  }
+
+  for (auto [cmd_id, instance_id] : instances) {
+    aura::Window* window = registry.GetWindowByInstanceId(instance_id);
+    if (window &&
+        chromeos::DesksHelper::Get(window)->BelongsToActiveDesk(window)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+}  // namespace
 
 BrowserAppShelfItemController::BrowserAppShelfItemController(
     const ash::ShelfID& shelf_id,
@@ -46,36 +72,33 @@ void BrowserAppShelfItemController::ItemSelected(
     ItemSelectedCallback callback,
     const ItemFilterPredicate& filter_predicate) {
   auto instances = GetMatchingInstances(filter_predicate);
-  switch (instances.size()) {
-    case 0:
-      // Nothing is running, launch.
-      std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
-      ChromeShelfController::instance()->LaunchApp(
-          ash::ShelfID(shelf_id()), source, ui::EF_NONE, display_id);
-      break;
-    case 1: {
-      // One instance is running, activate it.
-      base::UnguessableToken id = instances[0].second;
-      const bool can_minimize = source != ash::LAUNCH_FROM_APP_LIST &&
-                                source != ash::LAUNCH_FROM_APP_LIST_SEARCH;
-      ash::ShelfAction action;
-      if (registry_.IsInstanceActive(id) && can_minimize) {
-        registry_.MinimizeInstance(id);
-        action = ash::SHELF_ACTION_WINDOW_MINIMIZED;
-      } else {
-        registry_.ActivateInstance(id);
-        action = ash::SHELF_ACTION_WINDOW_ACTIVATED;
-      }
-      std::move(callback).Run(action, {});
-      break;
+  if (instances.size() == 0 ||
+      ShouldLaunchNewLacrosWindow(app_id(), instances, registry_)) {
+    // No instances or if this is a lacros window and there isn't already one on
+    // the current workspace, launch.
+    std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
+    ChromeShelfController::instance()->LaunchApp(
+        ash::ShelfID(shelf_id()), source, ui::EF_NONE, display_id);
+  } else if (instances.size() == 1) {
+    // One instance is running, activate it.
+    const base::UnguessableToken id = instances[0].second;
+    const bool can_minimize = source != ash::LAUNCH_FROM_APP_LIST &&
+                              source != ash::LAUNCH_FROM_APP_LIST_SEARCH;
+    ash::ShelfAction action;
+    if (registry_.IsInstanceActive(id) && can_minimize) {
+      registry_.MinimizeInstance(id);
+      action = ash::SHELF_ACTION_WINDOW_MINIMIZED;
+    } else {
+      registry_.ActivateInstance(id);
+      action = ash::SHELF_ACTION_WINDOW_ACTIVATED;
     }
-    default:
-      // Multiple instances activated, show the list of running instances.
-      std::move(callback).Run(
-          ash::SHELF_ACTION_NONE,
-          GetAppMenuItems(event ? event->flags() : ui::EF_NONE,
-                          filter_predicate));
-      break;
+    std::move(callback).Run(action, {});
+  } else {
+    // Multiple instances activated, show the list of running instances.
+    std::move(callback).Run(
+        ash::SHELF_ACTION_NONE,
+        GetAppMenuItems(event ? event->flags() : ui::EF_NONE,
+                        filter_predicate));
   }
 }
 

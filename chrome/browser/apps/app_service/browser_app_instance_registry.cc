@@ -59,6 +59,20 @@ BrowserAppInstanceRegistry::GetBrowserWindowInstanceById(
   });
 }
 
+aura::Window* BrowserAppInstanceRegistry::GetWindowByInstanceId(
+    const base::UnguessableToken& id) const {
+  if (const BrowserAppInstance* instance = GetAppInstanceById(id)) {
+    return instance->window;
+  }
+
+  if (const BrowserWindowInstance* instance =
+          GetBrowserWindowInstanceById(id)) {
+    return instance->window;
+  }
+
+  return nullptr;
+}
+
 std::set<const BrowserWindowInstance*>
 BrowserAppInstanceRegistry::GetLacrosBrowserWindowInstances() const {
   std::set<const BrowserWindowInstance*> result;
@@ -109,14 +123,8 @@ void BrowserAppInstanceRegistry::ActivateInstance(
 
 void BrowserAppInstanceRegistry::MinimizeInstance(
     const base::UnguessableToken& id) {
-  if (const BrowserAppInstance* instance = GetAppInstanceById(id)) {
-    MinimizeWindow(instance->window);
-    return;
-  }
-
-  if (const BrowserWindowInstance* instance =
-          GetBrowserWindowInstanceById(id)) {
-    MinimizeWindow(instance->window);
+  if (aura::Window* window = GetWindowByInstanceId(id)) {
+    MinimizeWindow(window);
   }
 }
 
