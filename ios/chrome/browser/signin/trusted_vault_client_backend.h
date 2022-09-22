@@ -14,7 +14,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/driver/trusted_vault_client.h"
 
-@class ChromeIdentity;
 @protocol SystemIdentity;
 
 // Abstract class to manage shared keys.
@@ -45,40 +44,30 @@ class TrustedVaultClientBackend : public KeyedService {
 
   // Asynchronously fetches the shared keys for `identity` and invokes
   // `callback` with the fetched keys.
-  virtual void FetchKeys(ChromeIdentity* chrome_identity,
-                         KeyFetchedCallback callback);
   virtual void FetchKeys(id<SystemIdentity> identity,
-                         KeyFetchedCallback callback);
+                         KeyFetchedCallback callback) = 0;
 
   // Invoked when the result of FetchKeys() contains keys that are not
   // up-to-date. During the execution, before `callback` is invoked, the
   // behavior is unspecified if FetchKeys() is invoked, that is, FetchKeys()
   // may or may not treat existing keys as stale (only guaranteed upon
   // completion of MarkLocalKeysAsStale()).
-  virtual void MarkLocalKeysAsStale(ChromeIdentity* chrome_identity,
-                                    base::OnceClosure callback);
   virtual void MarkLocalKeysAsStale(id<SystemIdentity> identity,
-                                    base::OnceClosure callback);
+                                    base::OnceClosure callback) = 0;
 
   // Returns whether recoverability of the keys is degraded and user action is
   // required to add a new method.
   virtual void GetDegradedRecoverabilityStatus(
-      ChromeIdentity* chrome_identity,
-      base::OnceCallback<void(bool)> callback);
-  virtual void GetDegradedRecoverabilityStatus(
       id<SystemIdentity> identity,
-      base::OnceCallback<void(bool)> callback);
+      base::OnceCallback<void(bool)> callback) = 0;
 
   // Presents the trusted vault key reauthentication UI for `identity` for the
   // purpose of extending the set of keys returned via FetchKeys(). Once the
   // reauth is done and the UI is dismissed, `callback` is called. `callback` is
   // not called if the reauthentication is canceled.
-  virtual void Reauthentication(ChromeIdentity* chrome_identity,
-                                UIViewController* presenting_view_controller,
-                                CompletionBlock callback);
   virtual void Reauthentication(id<SystemIdentity> identity,
                                 UIViewController* presenting_view_controller,
-                                CompletionBlock callback);
+                                CompletionBlock callback) = 0;
 
   // Presents the trusted vault key reauthentication UI for `identity` for the
   // purpose of improving recoverability as returned via
@@ -86,13 +75,9 @@ class TrustedVaultClientBackend : public KeyedService {
   // dismissed, `callback` is called. `callback` is not called if the
   // reauthentication is canceled.
   virtual void FixDegradedRecoverability(
-      ChromeIdentity* chrome_identity,
-      UIViewController* presenting_view_controller,
-      CompletionBlock callback);
-  virtual void FixDegradedRecoverability(
       id<SystemIdentity> identity,
       UIViewController* presenting_view_controller,
-      CompletionBlock callback);
+      CompletionBlock callback) = 0;
 
   // Cancels the presented trusted vault reauthentication UI, triggered via
   // either Reauthentication() or via

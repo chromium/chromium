@@ -72,25 +72,25 @@ void FakeTrustedVaultClientBackend::RemoveObserver(Observer* observer) {
   // Do nothing.
 }
 
-void FakeTrustedVaultClientBackend::FetchKeys(ChromeIdentity* chrome_identity,
+void FakeTrustedVaultClientBackend::FetchKeys(id<SystemIdentity> identity,
                                               KeyFetchedCallback callback) {
   // Do nothing.
 }
 
 void FakeTrustedVaultClientBackend::MarkLocalKeysAsStale(
-    ChromeIdentity* chrome_identity,
+    id<SystemIdentity> identity,
     base::OnceClosure callback) {
   // Do nothing.
 }
 
 void FakeTrustedVaultClientBackend::GetDegradedRecoverabilityStatus(
-    ChromeIdentity* chrome_identity,
+    id<SystemIdentity> identity,
     base::OnceCallback<void(bool)> callback) {
   // Do nothing.
 }
 
 void FakeTrustedVaultClientBackend::Reauthentication(
-    ChromeIdentity* chrome_identity,
+    id<SystemIdentity> identity,
     UIViewController* presenting_view_controller,
     CompletionBlock callback) {
   DCHECK(!view_controller_);
@@ -102,7 +102,7 @@ void FakeTrustedVaultClientBackend::Reauthentication(
 }
 
 void FakeTrustedVaultClientBackend::FixDegradedRecoverability(
-    ChromeIdentity* chrome_identity,
+    id<SystemIdentity> identity,
     UIViewController* presenting_view_controller,
     CompletionBlock callback) {
   // Do nothing.

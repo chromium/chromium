@@ -18,17 +18,17 @@ class FakeTrustedVaultClientBackend final : public TrustedVaultClientBackend {
   // TrustedVaultClientBackend implementation.
   void AddObserver(Observer* observer) final;
   void RemoveObserver(Observer* observer) final;
-  void FetchKeys(ChromeIdentity* chrome_identity,
+  void FetchKeys(id<SystemIdentity> identity,
                  KeyFetchedCallback callback) final;
-  void MarkLocalKeysAsStale(ChromeIdentity* chrome_identity,
+  void MarkLocalKeysAsStale(id<SystemIdentity> identity,
                             base::OnceClosure callback) final;
   void GetDegradedRecoverabilityStatus(
-      ChromeIdentity* chrome_identity,
+      id<SystemIdentity> identity,
       base::OnceCallback<void(bool)> callback) final;
-  void Reauthentication(ChromeIdentity* chrome_identity,
+  void Reauthentication(id<SystemIdentity> identity,
                         UIViewController* presenting_view_controller,
                         CompletionBlock callback) final;
-  void FixDegradedRecoverability(ChromeIdentity* chrome_identity,
+  void FixDegradedRecoverability(id<SystemIdentity> identity,
                                  UIViewController* presenting_view_controller,
                                  CompletionBlock callback) final;
   void CancelDialog(BOOL animated, ProceduralBlock callback) final;
