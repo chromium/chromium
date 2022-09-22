@@ -175,7 +175,7 @@ class TranslateFrameBinderFencedFrameBrowserTest
 };
 
 // TODO(crbug.com/1312008): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NotBindingInFencedFrame DISABLED_NotBindingInFencedFrame
 #else
 #define MAYBE_NotBindingInFencedFrame NotBindingInFencedFrame
