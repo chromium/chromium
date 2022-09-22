@@ -2952,15 +2952,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    @Override
-    protected void applyThemeOverlays() {
-        super.applyThemeOverlays();
-
-        if (TabManagementModuleProvider.getDelegate() != null) {
-            TabManagementModuleProvider.getDelegate().applyThemeOverlays(this);
-        }
-    }
-
     /**
      * Reports that a new tab launcher shortcut was selected or an action equivalent to a shortcut
      * was performed.

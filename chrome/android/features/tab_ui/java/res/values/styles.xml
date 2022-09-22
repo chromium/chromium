@@ -48,9 +48,6 @@ found in the LICENSE file.
         <item name="android:src">@drawable/toolbar_hairline</item>
     </style>
 
-    <!-- TODO(https://crbug.com/1251194): Remove this empty theme. -->
-    <style name="ThemeRefactorOverlay.Enabled.TabUi" parent="" />
-
     <style name="TabThumbnailPlaceHolderStyle">
         <item name="colorTileBase">?attr/colorSurface</item>
         <item name="elevationTileBase">@dimen/default_elevation_1</item>

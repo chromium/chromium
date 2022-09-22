@@ -143,9 +143,4 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
         return new TabSuggestionsOrchestrator(
                 context, tabModelSelector, activityLifecycleDispatcher);
     }
-
-    @Override
-    public void applyThemeOverlays(Activity activity) {
-        activity.setTheme(TabUiThemeProvider.getThemeOverlayStyleResourceId());
-    }
 }

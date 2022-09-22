@@ -86,15 +86,6 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class TabUiTestHelper {
     /**
-     * Apply the necessary theme overlay for activity.
-     * TODO(https://crbug.com/1227875): Move this into a test rule.
-     * @param activity The test activity that will be used to create tab components.
-     */
-    public static void applyThemeOverlays(Activity activity) {
-        activity.setTheme(TabUiThemeProvider.getThemeOverlayStyleResourceId());
-    }
-
-    /**
      * Create {@code tabsCount} tabs for {@code cta} in certain tab model based on {@code
      * isIncognito}.
      * @param cta            A current running activity to create tabs.

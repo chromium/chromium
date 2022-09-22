@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -220,7 +219,6 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         mActivity = spy(Robolectric.buildActivity(Activity.class).setup().get());
         mActivity.setTheme(org.chromium.chrome.tab_ui.R.style.Theme_BrowserUI_DayNight);
         mActivity.setTheme(R.style.ColorOverlay_ChromiumAndroid);
-        mActivity.setTheme(TabUiThemeProvider.getThemeOverlayStyleResourceId());
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
 
         when(mContainerView.getContext()).thenReturn(mActivity);

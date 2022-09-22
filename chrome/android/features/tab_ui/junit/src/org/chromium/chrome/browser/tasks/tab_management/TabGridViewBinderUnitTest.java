@@ -8,7 +8,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -81,8 +80,6 @@ public final class TabGridViewBinderUnitTest {
         when(mViewGroup.fastFindViewById(R.id.tab_thumbnail)).thenReturn(mThumbnailView);
         when(mViewGroup.getContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
-        when(mContext.obtainStyledAttributes(eq(R.style.ThemeRefactorOverlay_Enabled_TabUi), any()))
-                .thenReturn(mTypedArray);
         when(mTypedArray.getResourceId(anyInt(), anyInt())).thenReturn(RESOURCE_ID);
         when(mResources.getDimension(anyInt())).thenReturn(RESOURCE_DIMEN);
         // Mock tablet.

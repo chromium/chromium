@@ -192,11 +192,4 @@ public interface TabManagementDelegate {
     TabSuggestions createTabSuggestions(@NonNull Context context,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher);
-
-    /**
-     * Apply the theme overlay for the target activity used for Tab management components. This
-     * theme needs to be applied once before creating any of the tab related component.
-     * @param activity The target {@link Activity} that used Tab theme.
-     */
-    void applyThemeOverlays(@NonNull Activity activity);
 }

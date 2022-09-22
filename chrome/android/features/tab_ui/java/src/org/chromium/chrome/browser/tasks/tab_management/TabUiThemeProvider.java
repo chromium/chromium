@@ -630,16 +630,6 @@ public class TabUiThemeProvider {
     }
 
     /**
-     * Returns the style resource Id that requires for Tab UI.
-     *
-     * @return The resource Id for the theme overlay used for tab UI.
-     */
-    @StyleRes
-    public static int getThemeOverlayStyleResourceId() {
-        return R.style.ThemeRefactorOverlay_Enabled_TabUi;
-    }
-
-    /**
      * Return the size represented by dimension for margin around message cards.
      * @param context {@link Context} to retrieve dimension.
      * @return The margin around message cards in float number.
