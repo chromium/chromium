@@ -73,3 +73,27 @@ source_set("promos_manager") {
     "//ui/base",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "promos_manager_coordinator_unittest.h",
+    "promos_manager_coordinator_unittest.mm",
+  ]
+  deps = [
+    ":promos_manager",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/promos_manager:features",
+    "//ios/chrome/browser/promos_manager:promos_manager",
+    "//ios/chrome/browser/ui/post_restore_signin:features",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
+  ]
+}

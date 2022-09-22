@@ -25,8 +25,9 @@
             promoImpressionLimits {
   if (self = [super init]) {
     _promosManager = promosManager;
-    _promosManager->InitializePromoImpressionLimits(
-        std::move(promoImpressionLimits));
+    if (promoImpressionLimits.size())
+      _promosManager->InitializePromoImpressionLimits(
+          std::move(promoImpressionLimits));
   }
 
   return self;

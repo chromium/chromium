@@ -74,15 +74,34 @@
 
 @implementation PromosManagerCoordinator
 
+#pragma mark - Initialization
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  if (self = [super initWithBaseViewController:viewController
+                                       browser:browser]) {
+    [self registerPromos];
+
+    BOOL promosExist = _displayHandlerPromos.size() > 0 ||
+                       _viewProviderPromos.size() > 0 ||
+                       _banneredViewProviderPromos.size() > 0 ||
+                       _alertProviderPromos.size() > 0;
+
+    if (promosExist) {
+      // Don't create PromosManagerMediator unless promos exist that are
+      // registered with PromosManagerCoordinator via `registerPromos`.
+      _mediator = [[PromosManagerMediator alloc]
+          initWithPromosManager:GetApplicationContext()->GetPromosManager()
+          promoImpressionLimits:[self promoImpressionLimits]];
+    }
+  }
+
+  return self;
+}
+
 #pragma mark - Public
 
 - (void)start {
-  [self registerPromos];
-
-  self.mediator = [[PromosManagerMediator alloc]
-      initWithPromosManager:GetApplicationContext()->GetPromosManager()
-      promoImpressionLimits:[self promoImpressionLimits]];
-
   absl::optional<promos_manager::Promo> nextPromoForDisplay =
       [self.mediator nextPromoForDisplay];
 
