@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_FACTORS_DATA_H_
-#define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_FACTORS_DATA_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_SESSION_AUTH_FACTORS_H_
+#define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_SESSION_AUTH_FACTORS_H_
 
 #include <string>
 
@@ -14,26 +14,26 @@
 
 namespace ash {
 
-// Public information about authentication keys configured for particular user.
+// Public information about authentication keys available for authentication.
 // This class partially encapsulates implementation details of key definition
 // (cryptohome::KeyData vs cryptohome::AuthFactor).
 // Note that this information does not contain any key secrets.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
-    AuthFactorsData {
+    SessionAuthFactors final {
  public:
-  explicit AuthFactorsData(std::vector<cryptohome::KeyDefinition> keys);
-  explicit AuthFactorsData(
-      std::vector<cryptohome::AuthFactor> configured_factors);
+  explicit SessionAuthFactors(std::vector<cryptohome::KeyDefinition> keys);
+  explicit SessionAuthFactors(
+      std::vector<cryptohome::AuthFactor> session_factors);
 
   // Empty constructor is needed so that UserContext can be created.
-  AuthFactorsData();
+  SessionAuthFactors();
   // Copy constructor (and operator) are needed because UserContext is copyable.
-  AuthFactorsData(const AuthFactorsData&);
-  AuthFactorsData(AuthFactorsData&&);
+  SessionAuthFactors(const SessionAuthFactors&);
+  SessionAuthFactors(SessionAuthFactors&&);
 
-  ~AuthFactorsData();
+  ~SessionAuthFactors();
 
-  AuthFactorsData& operator=(const AuthFactorsData&);
+  SessionAuthFactors& operator=(const SessionAuthFactors&);
 
   // Legacy Key-based API:
 
@@ -63,11 +63,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
   const cryptohome::AuthFactor* FindFactorByType(
       cryptohome::AuthFactorType type) const;
 
+  // Depending on the state of eatures::IsUseAuthFactorsEnabled() only
+  // one of these two vectors would be filled.
   std::vector<cryptohome::KeyDefinition> keys_;
-  std::vector<cryptohome::AuthFactor> configured_factors_;
-  cryptohome::AuthFactorsSet supported_factors_;
+  std::vector<cryptohome::AuthFactor> session_factors_;
 };
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_FACTORS_DATA_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_SESSION_AUTH_FACTORS_H_

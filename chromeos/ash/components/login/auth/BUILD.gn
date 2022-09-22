@@ -122,6 +122,7 @@ source_set("unit_tests") {
   deps = [
     ":auth",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base:i18n",
     "//chromeos/ash/components/cryptohome",

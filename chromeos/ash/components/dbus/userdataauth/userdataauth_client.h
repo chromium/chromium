@@ -298,6 +298,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       const ::user_data_auth::RemoveAuthFactorRequest& request,
       RemoveAuthFactorCallback callback) = 0;
 
+  // This is called to determine all configured AuthFactors as well as supported
+  // AuthFactors whenever AuthFactors-based API is used.
   virtual void ListAuthFactors(
       const ::user_data_auth::ListAuthFactorsRequest& request,
       ListAuthFactorsCallback callback) = 0;

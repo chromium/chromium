@@ -176,14 +176,14 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
                UpdateAuthFactorCallback callback),
               (override));
   MOCK_METHOD(void,
-              RemoveAuthFactor,
-              (const ::user_data_auth::RemoveAuthFactorRequest& request,
-               RemoveAuthFactorCallback callback),
-              (override));
-  MOCK_METHOD(void,
               ListAuthFactors,
               (const ::user_data_auth::ListAuthFactorsRequest& request,
                ListAuthFactorsCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              RemoveAuthFactor,
+              (const ::user_data_auth::RemoveAuthFactorRequest& request,
+               RemoveAuthFactorCallback callback),
               (override));
   MOCK_METHOD(void,
               GetRecoveryRequest,

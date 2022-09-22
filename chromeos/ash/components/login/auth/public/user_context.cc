@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
-#include "chromeos/ash/components/login/auth/public/auth_factors_data.h"
+#include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -300,12 +300,22 @@ void UserContext::ResetAuthSessionId() {
   authsession_id_.clear();
 }
 
-void UserContext::SetAuthFactorsData(AuthFactorsData data) {
-  auth_factors_data_ = std::move(data);
+void UserContext::SetSessionAuthFactors(SessionAuthFactors data) {
+  session_auth_factors_ = std::move(data);
 }
 
-const AuthFactorsData& UserContext::GetAuthFactorsData() const {
-  return auth_factors_data_;
+const SessionAuthFactors& UserContext::GetAuthFactorsData() const {
+  return session_auth_factors_;
+}
+
+void UserContext::SetAuthFactorsConfiguration(
+    AuthFactorsConfiguration auth_factors) {
+  auth_factors_configuration_ = std::move(auth_factors);
+}
+
+const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration()
+    const {
+  return auth_factors_configuration_;
 }
 
 const std::string& UserContext::GetAuthSessionId() const {

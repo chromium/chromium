@@ -261,6 +261,13 @@ void AuthSessionAuthenticator::DoCompleteLogin(
       steps.push_back(base::BindOnce(&AuthFactorEditor::AddContextKnowledgeKey,
                                      auth_factor_editor_->AsWeakPtr()));
     }
+    if (features::IsUseAuthFactorsEnabled()) {
+      // In addition to factors suitable for authentication, fetch a set of
+      // supported factor types for new users.
+      steps.push_back(
+          base::BindOnce(&AuthFactorEditor::GetAuthFactorsConfiguration,
+                         auth_factor_editor_->AsWeakPtr()));
+    }
     steps.push_back(
         base::BindOnce(&AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
                        weak_factory_.GetWeakPtr()));

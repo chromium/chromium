@@ -8,10 +8,11 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "chromeos/ash/components/login/auth/public/auth_factors_data.h"
+#include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
+#include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "chromeos/ash/components/login/auth/public/sync_trusted_vault_keys.h"
 #include "components/account_id/account_id.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
@@ -76,7 +77,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   const std::vector<ChallengeResponseKey>& GetChallengeResponseKeys() const;
   std::vector<ChallengeResponseKey>* GetMutableChallengeResponseKeys();
 
-  const AuthFactorsData& GetAuthFactorsData() const;
+  // TODO(b/241259026): rename this method.
+  const SessionAuthFactors& GetAuthFactorsData() const;
+  const AuthFactorsConfiguration& GetAuthFactorsConfiguration() const;
 
   const std::string& GetAuthCode() const;
   const std::string& GetRefreshToken() const;
@@ -157,7 +160,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
       const SyncTrustedVaultKeys& sync_trusted_vault_keys);
   void SetIsUnderAdvancedProtection(bool is_under_advanced_protection);
   void SetCanLockManagedGuestSession(bool can_lock_managed_guest_session);
-  void SetAuthFactorsData(AuthFactorsData keys);
+  void SetSessionAuthFactors(SessionAuthFactors keys);
+  void SetAuthFactorsConfiguration(AuthFactorsConfiguration auth_factors);
   // We need to pull input method used to log in into the user session to make
   // it consistent. This method will remember given input method to be used
   // when session starts.
@@ -174,7 +178,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   Key key_;
   Key password_key_;
   absl::optional<Key> replacement_key_ = absl::nullopt;
-  AuthFactorsData auth_factors_data_;
+  SessionAuthFactors session_auth_factors_;
+  AuthFactorsConfiguration auth_factors_configuration_;
   std::vector<ChallengeResponseKey> challenge_response_keys_;
   std::string auth_code_;
   std::string refresh_token_;

@@ -35,6 +35,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
 
   base::WeakPtr<AuthFactorEditor> AsWeakPtr();
 
+  // Retrieves information about all configured and possible AuthFactors,
+  // and stores it in `context`.
+  // Should only be used with AuthFactors feature enabled.
+  // Session should be authenticated.
+  void GetAuthFactorsConfiguration(std::unique_ptr<UserContext> context,
+                                   AuthOperationCallback callback);
+
   // Attempts to add Kiosk-specific key to user identified by `context`.
   // Session should be authenticated.
   void AddKioskKey(std::unique_ptr<UserContext> context,
@@ -71,6 +78,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
                             AuthOperationCallback callback);
 
  private:
+  void OnListAuthFactors(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::ListAuthFactorsReply> reply);
+
   void HashContextKeyAndAdd(std::unique_ptr<UserContext> context,
                             AuthOperationCallback callback,
                             const std::string& system_salt);

@@ -22,6 +22,12 @@ AuthFactorRef::AuthFactorRef(const AuthFactorRef&) = default;
 AuthFactorRef& AuthFactorRef::operator=(const AuthFactorRef&) = default;
 AuthFactorRef::~AuthFactorRef() = default;
 
+bool AuthFactorRef::operator==(const AuthFactorRef& other) const {
+  const bool equal = label_.value() == other.label_.value();
+  CHECK(!equal || type_ == other.type_);
+  return equal;
+}
+
 // =============== `AuthFactorCommonMetadata` ===============
 AuthFactorCommonMetadata::AuthFactorCommonMetadata() = default;
 AuthFactorCommonMetadata::AuthFactorCommonMetadata(
@@ -33,6 +39,12 @@ AuthFactorCommonMetadata::AuthFactorCommonMetadata(
 AuthFactorCommonMetadata& AuthFactorCommonMetadata::operator=(
     const AuthFactorCommonMetadata&) = default;
 AuthFactorCommonMetadata::~AuthFactorCommonMetadata() = default;
+
+bool AuthFactorCommonMetadata::operator==(
+    const AuthFactorCommonMetadata& other) const {
+  // TODO (b/241259026): update when we get actual metadata.
+  return true;
+}
 
 // =============== `AuthFactor` ===============
 
@@ -63,6 +75,10 @@ AuthFactor::AuthFactor(const AuthFactor&) = default;
 AuthFactor& AuthFactor::operator=(const AuthFactor&) = default;
 
 AuthFactor::~AuthFactor() = default;
+
+bool AuthFactor::operator==(const AuthFactor& other) const {
+  return ref_ == other.ref_ && common_metadata_ == other.common_metadata_;
+}
 
 const AuthFactorRef& AuthFactor::ref() const {
   return ref_;

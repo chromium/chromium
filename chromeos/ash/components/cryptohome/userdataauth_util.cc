@@ -104,6 +104,9 @@ template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
         const absl::optional<PrepareVaultForMigrationReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     CryptohomeErrorCode
+    ReplyToCryptohomeError(const absl::optional<ListAuthFactorsReply>&);
+template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
+    CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<RemoveAuthFactorReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     CryptohomeErrorCode

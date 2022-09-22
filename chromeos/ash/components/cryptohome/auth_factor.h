@@ -54,6 +54,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorRef {
 
   ~AuthFactorRef();
 
+  bool operator==(const AuthFactorRef& other) const;
+
   AuthFactorType type() const { return type_; }
 
   const KeyLabel& label() const { return label_; }
@@ -86,6 +88,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 
   AuthFactorCommonMetadata(const AuthFactorCommonMetadata&);
   AuthFactorCommonMetadata& operator=(const AuthFactorCommonMetadata&);
+
+  // Should only be used for testing purposes.
+  bool operator==(const AuthFactorCommonMetadata& other) const;
 };
 
 // Per-factor statuses (read-only properties set by cryptohomed):
@@ -119,6 +124,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactor {
   AuthFactor& operator=(const AuthFactor&);
 
   ~AuthFactor();
+
+  // Should only be used for testing purposes.
+  bool operator==(const AuthFactor& other) const;
 
   const AuthFactorRef& ref() const;
   const AuthFactorCommonMetadata& GetCommonMetadata() const;

@@ -255,7 +255,7 @@ void AuthPerformer::AuthenticateWithPassword(
   if (context->GetAuthSessionId().empty())
     NOTREACHED() << "Auth session should exist";
 
-  const AuthFactorsData& auth_factors = context->GetAuthFactorsData();
+  const SessionAuthFactors& auth_factors = context->GetAuthFactorsData();
   if (features::IsUseAuthFactorsEnabled()) {
     if (auth_factors.FindPasswordFactor(cryptohome::KeyLabel{key_label}) ==
         nullptr) {
@@ -434,8 +434,8 @@ void AuthPerformer::OnStartAuthSession(
           cryptohome::DeserializeAuthFactor(factor_proto, fallback_type));
     }
 
-    AuthFactorsData auth_factors_data(std::move(next_factors));
-    context->SetAuthFactorsData(std::move(auth_factors_data));
+    SessionAuthFactors auth_factors_data(std::move(next_factors));
+    context->SetSessionAuthFactors(std::move(auth_factors_data));
   } else {
     // Remember key metadata
     std::vector<cryptohome::KeyDefinition> key_definitions;
@@ -459,8 +459,8 @@ void AuthPerformer::OnStartAuthSession(
       }
       key_definitions.push_back(KeyDataToKeyDefinition(data));
     }
-    AuthFactorsData auth_factors_data(std::move(key_definitions));
-    context->SetAuthFactorsData(std::move(auth_factors_data));
+    SessionAuthFactors auth_factors_data(std::move(key_definitions));
+    context->SetSessionAuthFactors(std::move(auth_factors_data));
   }
 
   std::move(callback).Run(reply->user_exists(), std::move(context),

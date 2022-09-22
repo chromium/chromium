@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/login/auth/public/auth_factors_data.h"
+#include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 
 #include <algorithm>
 
@@ -16,7 +16,8 @@
 
 namespace ash {
 
-AuthFactorsData::AuthFactorsData(std::vector<cryptohome::KeyDefinition> keys)
+SessionAuthFactors::SessionAuthFactors(
+    std::vector<cryptohome::KeyDefinition> keys)
     : keys_(std::move(keys)) {
   // Sort the keys by label, so that in case of ties (e.g., when choosing among
   // multiple legacy keys in `FindOnlinePasswordKey()`) we're not affected by
@@ -26,17 +27,26 @@ AuthFactorsData::AuthFactorsData(std::vector<cryptohome::KeyDefinition> keys)
   });
 }
 
-AuthFactorsData::AuthFactorsData(
-    std::vector<cryptohome::AuthFactor> configured_factors)
-    : configured_factors_(std::move(configured_factors)) {}
+SessionAuthFactors::SessionAuthFactors(
+    std::vector<cryptohome::AuthFactor> session_factors)
+    : session_factors_(std::move(session_factors)) {
+  // Sort the keys by label, so that in case of ties (e.g., when choosing among
+  // multiple legacy keys in `FindOnlinePasswordKey()`) we're not affected by
+  // random factors that affect the input ordering of `keys`.
+  std::sort(session_factors_.begin(), session_factors_.end(),
+            [](const auto& lhs, const auto& rhs) {
+              return lhs.ref().label().value() < rhs.ref().label().value();
+            });
+}
 
-AuthFactorsData::AuthFactorsData() = default;
-AuthFactorsData::AuthFactorsData(const AuthFactorsData&) = default;
-AuthFactorsData::AuthFactorsData(AuthFactorsData&&) = default;
-AuthFactorsData::~AuthFactorsData() = default;
-AuthFactorsData& AuthFactorsData::operator=(const AuthFactorsData&) = default;
+SessionAuthFactors::SessionAuthFactors() = default;
+SessionAuthFactors::SessionAuthFactors(const SessionAuthFactors&) = default;
+SessionAuthFactors::SessionAuthFactors(SessionAuthFactors&&) = default;
+SessionAuthFactors::~SessionAuthFactors() = default;
+SessionAuthFactors& SessionAuthFactors::operator=(const SessionAuthFactors&) =
+    default;
 
-const cryptohome::KeyDefinition* AuthFactorsData::FindOnlinePasswordKey()
+const cryptohome::KeyDefinition* SessionAuthFactors::FindOnlinePasswordKey()
     const {
   for (const cryptohome::KeyDefinition& key_def : keys_) {
     if (key_def.label.value() == kCryptohomeGaiaKeyLabel)
@@ -52,7 +62,7 @@ const cryptohome::KeyDefinition* AuthFactorsData::FindOnlinePasswordKey()
   return nullptr;
 }
 
-const cryptohome::KeyDefinition* AuthFactorsData::FindKioskKey() const {
+const cryptohome::KeyDefinition* SessionAuthFactors::FindKioskKey() const {
   for (const cryptohome::KeyDefinition& key_def : keys_) {
     if (key_def.type == cryptohome::KeyDefinition::TYPE_PUBLIC_MOUNT)
       return &key_def;
@@ -60,7 +70,7 @@ const cryptohome::KeyDefinition* AuthFactorsData::FindKioskKey() const {
   return nullptr;
 }
 
-bool AuthFactorsData::HasPasswordKey(const std::string& label) const {
+bool SessionAuthFactors::HasPasswordKey(const std::string& label) const {
   DCHECK_NE(label, kCryptohomePinLabel);
 
   for (const cryptohome::KeyDefinition& key_def : keys_) {
@@ -71,7 +81,7 @@ bool AuthFactorsData::HasPasswordKey(const std::string& label) const {
   return false;
 }
 
-const cryptohome::KeyDefinition* AuthFactorsData::FindPinKey() const {
+const cryptohome::KeyDefinition* SessionAuthFactors::FindPinKey() const {
   for (const cryptohome::KeyDefinition& key_def : keys_) {
     if (key_def.type == cryptohome::KeyDefinition::TYPE_PASSWORD &&
         key_def.policy.low_entropy_credential) {
@@ -82,52 +92,53 @@ const cryptohome::KeyDefinition* AuthFactorsData::FindPinKey() const {
   return nullptr;
 }
 
-const cryptohome::AuthFactor* AuthFactorsData::FindFactorByType(
+const cryptohome::AuthFactor* SessionAuthFactors::FindFactorByType(
     cryptohome::AuthFactorType type) const {
-  auto result = base::ranges::find(
-      configured_factors_, type, [](const auto& f) { return f.ref().type(); });
-  if (result == configured_factors_.end())
+  const auto& result = base::ranges::find(
+      session_factors_, type, [](const auto& f) { return f.ref().type(); });
+  if (result == session_factors_.end())
     return nullptr;
   return &(*result);
 }
 
-const cryptohome::AuthFactor* AuthFactorsData::FindOnlinePasswordFactor()
+const cryptohome::AuthFactor* SessionAuthFactors::FindOnlinePasswordFactor()
     const {
-  auto result = base::ranges::find_if(configured_factors_, [](auto& f) {
+  const auto& result = base::ranges::find_if(session_factors_, [](auto& f) {
     if (f.ref().type() != cryptohome::AuthFactorType::kPassword)
       return false;
     auto label = f.ref().label().value();
     return label == kCryptohomeGaiaKeyLabel ||
            (label.find(kCryptohomeGaiaKeyLegacyLabelPrefix) == 0);
   });
-  if (result == configured_factors_.end())
+  if (result == session_factors_.end())
     return nullptr;
   return &(*result);
 }
 
-const cryptohome::AuthFactor* AuthFactorsData::FindPasswordFactor(
+const cryptohome::AuthFactor* SessionAuthFactors::FindPasswordFactor(
     const cryptohome::KeyLabel& label) const {
   DCHECK_NE(label.value(), kCryptohomePinLabel);
 
-  auto result = base::ranges::find_if(configured_factors_, [&label](auto& f) {
-    if (f.ref().type() != cryptohome::AuthFactorType::kPassword)
-      return false;
-    return f.ref().label() == label;
-  });
-  if (result == configured_factors_.end())
+  const auto& result =
+      base::ranges::find_if(session_factors_, [&label](auto& f) {
+        if (f.ref().type() != cryptohome::AuthFactorType::kPassword)
+          return false;
+        return f.ref().label() == label;
+      });
+  if (result == session_factors_.end())
     return nullptr;
   return &(*result);
 }
 
-const cryptohome::AuthFactor* AuthFactorsData::FindKioskFactor() const {
+const cryptohome::AuthFactor* SessionAuthFactors::FindKioskFactor() const {
   return FindFactorByType(cryptohome::AuthFactorType::kKiosk);
 }
 
-const cryptohome::AuthFactor* AuthFactorsData::FindPinFactor() const {
+const cryptohome::AuthFactor* SessionAuthFactors::FindPinFactor() const {
   return FindFactorByType(cryptohome::AuthFactorType::kPin);
 }
 
-const cryptohome::AuthFactor* AuthFactorsData::FindRecoveryFactor() const {
+const cryptohome::AuthFactor* SessionAuthFactors::FindRecoveryFactor() const {
   return FindFactorByType(cryptohome::AuthFactorType::kRecovery);
 }
 

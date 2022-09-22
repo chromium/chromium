@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/user_manager/user.h"
 
 namespace ash {
 
@@ -35,10 +36,28 @@ base::WeakPtr<AuthFactorEditor> AuthFactorEditor::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+void AuthFactorEditor::GetAuthFactorsConfiguration(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  if (context->GetAuthSessionId().empty())
+    NOTREACHED() << "Auth session should exist";
+
+  LOGIN_LOG(EVENT) << "Listing AuthFactors";
+  user_data_auth::ListAuthFactorsRequest request;
+
+  *request.mutable_account_id() =
+      cryptohome::CreateAccountIdentifierFromAccountId(context->GetAccountId());
+
+  UserDataAuthClient::Get()->ListAuthFactors(
+      request, base::BindOnce(&AuthFactorEditor::OnListAuthFactors,
+                              weak_factory_.GetWeakPtr(), std::move(context),
+                              std::move(callback)));
+}
+
 void AuthFactorEditor::AddKioskKey(std::unique_ptr<UserContext> context,
                                    AuthOperationCallback callback) {
   if (features::IsUseAuthFactorsEnabled()) {
-    const AuthFactorsData& auth_factors = context->GetAuthFactorsData();
+    const SessionAuthFactors& auth_factors = context->GetAuthFactorsData();
     auto* existing_factor = auth_factors.FindKioskFactor();
     if (existing_factor != nullptr) {
       LOGIN_LOG(ERROR) << "Adding Kiosk key while one already exists";
@@ -68,7 +87,7 @@ void AuthFactorEditor::AddKioskKey(std::unique_ptr<UserContext> context,
                                 std::move(callback)));
     return;
   }
-  const AuthFactorsData& auth_factors = context->GetAuthFactorsData();
+  const SessionAuthFactors& auth_factors = context->GetAuthFactorsData();
   if (auto* key_def = auth_factors.FindKioskKey()) {
     LOGIN_LOG(ERROR) << "Adding Kiosk key while one already exists";
     std::move(callback).Run(
@@ -304,6 +323,48 @@ void AuthFactorEditor::RemoveRecoveryFactor(
 
 /// ---- private callbacks ----
 
+void AuthFactorEditor::OnListAuthFactors(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback,
+    absl::optional<user_data_auth::ListAuthFactorsReply> reply) {
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    LOGIN_LOG(ERROR) << "Could not list auth factors " << error;
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
+    return;
+  }
+  CHECK(reply.has_value());
+  LOGIN_LOG(EVENT) << "Got list of configured auth factors";
+  DCHECK(features::IsUseAuthFactorsEnabled());
+
+  std::vector<cryptohome::AuthFactor> factor_list;
+  cryptohome::AuthFactorType fallback_type =
+      cryptohome::AuthFactorType::kPassword;
+  if (user_manager::User::TypeIsKiosk(context->GetUserType()))
+    fallback_type = cryptohome::AuthFactorType::kKiosk;
+  for (const auto& factor_proto : reply->configured_auth_factors()) {
+    auto f = cryptohome::DeserializeAuthFactor(factor_proto, fallback_type);
+    factor_list.emplace_back(
+        cryptohome::DeserializeAuthFactor(factor_proto, fallback_type));
+  }
+  cryptohome::AuthFactorsSet supported_factors;
+  for (const auto proto_type : reply->supported_auth_factors()) {
+    cryptohome::AuthFactorType type = cryptohome::ConvertFactorTypeFromProto(
+        static_cast<user_data_auth::AuthFactorType>(proto_type));
+    if (type == cryptohome::AuthFactorType::kUnknownLegacy) {
+      NOTREACHED();
+      continue;
+    }
+    LOG(ERROR) << "Supported " << static_cast<int>(type);
+    supported_factors.Put(type);
+  }
+
+  AuthFactorsConfiguration configured_factors(std::move(factor_list),
+                                              supported_factors);
+  context->SetAuthFactorsConfiguration(std::move(configured_factors));
+  std::move(callback).Run(std::move(context), absl::nullopt);
+}
+
 void AuthFactorEditor::OnAddCredentials(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
@@ -317,7 +378,7 @@ void AuthFactorEditor::OnAddCredentials(
   CHECK(reply.has_value());
   LOGIN_LOG(EVENT) << "Successfully added credentials";
   std::move(callback).Run(std::move(context), absl::nullopt);
-  // TODO(crbug.com/1310312): Think if we should update AuthFactorsData in
+  // TODO(crbug.com/1310312): Think if we should update SessionAuthFactors in
   // context after such operation.
 }
 
@@ -334,7 +395,7 @@ void AuthFactorEditor::OnAddAuthFactor(
   CHECK(reply.has_value());
   LOGIN_LOG(EVENT) << "Successfully added auth factor";
   std::move(callback).Run(std::move(context), absl::nullopt);
-  // TODO(crbug.com/1310312): Think if we should update AuthFactorsData in
+  // TODO(crbug.com/1310312): Think if we should update SessionAuthFactors in
   // context after such operation.
 }
 

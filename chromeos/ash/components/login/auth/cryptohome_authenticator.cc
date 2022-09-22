@@ -36,6 +36,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -182,12 +183,8 @@ void OnReplyMethod(const base::WeakPtr<AuthAttemptState>& attempt,
 void OnMount(const base::WeakPtr<AuthAttemptState>& attempt,
              scoped_refptr<CryptohomeAuthenticator> resolver,
              absl::optional<user_data_auth::MountReply> reply) {
-  const bool public_mount = attempt->user_context->GetUserType() ==
-                                user_manager::USER_TYPE_KIOSK_APP ||
-                            attempt->user_context->GetUserType() ==
-                                user_manager::USER_TYPE_ARC_KIOSK_APP ||
-                            attempt->user_context->GetUserType() ==
-                                user_manager::USER_TYPE_WEB_KIOSK_APP;
+  const bool public_mount =
+      user_manager::User::TypeIsKiosk(attempt->user_context->GetUserType());
 
   chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
       public_mount ? "CryptohomeMountPublic-End" : "CryptohomeMount-End",

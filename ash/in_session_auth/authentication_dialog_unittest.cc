@@ -17,9 +17,9 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/mock_auth_performer.h"
-#include "chromeos/ash/components/login/auth/public/auth_factors_data.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -51,8 +51,8 @@ class AuthenticationDialogTest : public AshTestBase {
                         bool /*ephemeral*/,
                         AuthSessionIntent /*intent*/,
                         AuthPerformer::StartSessionCallback callback) {
-    user_context->SetAuthFactorsData(
-        AuthFactorsData{{cryptohome::KeyDefinition::CreateForPassword(
+    user_context->SetSessionAuthFactors(
+        SessionAuthFactors{{cryptohome::KeyDefinition::CreateForPassword(
             "secret", KeyLabel(kCryptohomeGaiaKeyLabel), 0)}});
 
     std::move(callback).Run(true, std::move(user_context), absl::nullopt);

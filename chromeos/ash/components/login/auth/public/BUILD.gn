@@ -27,8 +27,8 @@ component("authpublic") {
   ]
   sources = [
     "auth_callbacks.h",
-    "auth_factors_data.cc",
-    "auth_factors_data.h",
+    "auth_factors_configuration.cc",
+    "auth_factors_configuration.h",
     "auth_failure.cc",
     "auth_failure.h",
     "auth_session_intent.h",
@@ -43,6 +43,8 @@ component("authpublic") {
     "operation_chain_runner.h",
     "saml_password_attributes.cc",
     "saml_password_attributes.h",
+    "session_auth_factors.cc",
+    "session_auth_factors.h",
     "sync_trusted_vault_keys.cc",
     "sync_trusted_vault_keys.h",
     "user_context.cc",

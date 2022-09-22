@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/login/auth/public/auth_factors_data.h"
+#include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
@@ -47,29 +48,48 @@ AuthFactor MakeRecoveryFactor() {
   return factor;
 }
 
+AuthFactor MakeGaiaAuthFactor() {
+  AuthFactorRef ref(cryptohome::AuthFactorType::kPassword,
+                    KeyLabel(kCryptohomeGaiaKeyLabel));
+  return AuthFactor(std::move(ref), AuthFactorCommonMetadata());
+}
+
+AuthFactor MakePinAuthFactor() {
+  AuthFactorRef ref(cryptohome::AuthFactorType::kPin,
+                    KeyLabel(kCryptohomePinLabel));
+  return AuthFactor(std::move(ref), AuthFactorCommonMetadata());
+}
+
+AuthFactor MakeLegacyAuthFactor(int legacy_key_index) {
+  AuthFactorRef ref(
+      cryptohome::AuthFactorType::kPassword,
+      KeyLabel(base::StringPrintf("legacy-%d", legacy_key_index)));
+  return AuthFactor(std::move(ref), AuthFactorCommonMetadata());
+}
+
 }  // namespace
 
 TEST(AuthFactorsDataTest, FindOnlinePasswordWithNothing) {
-  AuthFactorsData data;
+  SessionAuthFactors data;
   EXPECT_FALSE(data.FindOnlinePasswordKey());
 }
 
 TEST(AuthFactorsDataTest, FindOnlinePasswordWithGaia) {
-  AuthFactorsData data({MakeGaiaKeyDef()});
+  SessionAuthFactors data({MakeGaiaKeyDef()});
   const KeyDefinition* found = data.FindOnlinePasswordKey();
   ASSERT_TRUE(found);
   EXPECT_EQ(*found, MakeGaiaKeyDef());
 }
 
 TEST(AuthFactorsDataTest, FindOnlinePasswordWithGaiaAndPin) {
-  AuthFactorsData data({MakePinKeyDef(), MakeGaiaKeyDef()});
+  SessionAuthFactors data({MakeGaiaKeyDef(), MakePinKeyDef()});
   const KeyDefinition* found = data.FindOnlinePasswordKey();
   ASSERT_TRUE(found);
   EXPECT_EQ(*found, MakeGaiaKeyDef());
 }
 
 TEST(AuthFactorsDataTest, FindOnlinePasswordWithPinAndGaia) {
-  AuthFactorsData data({MakePinKeyDef(), MakeGaiaKeyDef()});
+  SessionAuthFactors data({MakePinKeyDef(), MakeGaiaKeyDef()});
   const KeyDefinition* found = data.FindOnlinePasswordKey();
   ASSERT_TRUE(found);
   EXPECT_EQ(*found, MakeGaiaKeyDef());
@@ -78,7 +98,7 @@ TEST(AuthFactorsDataTest, FindOnlinePasswordWithPinAndGaia) {
 // Check "gaia" is preferred to "legacy-..." keys when searching online password
 // key.
 TEST(AuthFactorsDataTest, FindOnlinePasswordWithGaiaAndLegacy) {
-  AuthFactorsData data({MakeGaiaKeyDef(), MakeLegacyKeyDef(0)});
+  SessionAuthFactors data({MakeGaiaKeyDef(), MakeLegacyKeyDef(0)});
   const KeyDefinition* found = data.FindOnlinePasswordKey();
   ASSERT_TRUE(found);
   EXPECT_EQ(*found, MakeGaiaKeyDef());
@@ -87,28 +107,28 @@ TEST(AuthFactorsDataTest, FindOnlinePasswordWithGaiaAndLegacy) {
 // Check "gaia" is preferred to "legacy-..." keys when searching online password
 // key, regardless of the order of input keys.
 TEST(AuthFactorsDataTest, FindOnlinePasswordWithLegacyAndGaia) {
-  AuthFactorsData data({MakeLegacyKeyDef(0), MakeGaiaKeyDef()});
+  SessionAuthFactors data({MakeLegacyKeyDef(0), MakeGaiaKeyDef()});
   const KeyDefinition* found = data.FindOnlinePasswordKey();
   ASSERT_TRUE(found);
   EXPECT_EQ(*found, MakeGaiaKeyDef());
 }
 
 TEST(AuthFactorsDataTest, FindOnlinePasswordWithLegacy) {
-  AuthFactorsData data({MakeLegacyKeyDef(0)});
+  SessionAuthFactors data({MakeLegacyKeyDef(0)});
   const KeyDefinition* found = data.FindOnlinePasswordKey();
   ASSERT_TRUE(found);
   EXPECT_EQ(*found, MakeLegacyKeyDef(0));
 }
 
 TEST(AuthFactorsDataTest, FindOnlinePasswordWithLegacyAndPin) {
-  AuthFactorsData data({MakeLegacyKeyDef(0), MakePinKeyDef()});
+  SessionAuthFactors data({MakeLegacyKeyDef(0), MakePinKeyDef()});
   const KeyDefinition* found = data.FindOnlinePasswordKey();
   ASSERT_TRUE(found);
   EXPECT_EQ(*found, MakeLegacyKeyDef(0));
 }
 
 TEST(AuthFactorsDataTest, FindOnlinePasswordWithPinAndLegacy) {
-  AuthFactorsData data({MakePinKeyDef(), MakeLegacyKeyDef(0)});
+  SessionAuthFactors data({MakePinKeyDef(), MakeLegacyKeyDef(0)});
   const KeyDefinition* found = data.FindOnlinePasswordKey();
   ASSERT_TRUE(found);
   EXPECT_EQ(*found, MakeLegacyKeyDef(0));
@@ -117,7 +137,7 @@ TEST(AuthFactorsDataTest, FindOnlinePasswordWithPinAndLegacy) {
 // Check "legacy-0" is preferred among all legacy keys when searching online
 // password key.
 TEST(AuthFactorsDataTest, FindOnlinePasswordWithLegacy012) {
-  AuthFactorsData data(
+  SessionAuthFactors data(
       {MakeLegacyKeyDef(0), MakeLegacyKeyDef(1), MakeLegacyKeyDef(2)});
   const KeyDefinition* found = data.FindOnlinePasswordKey();
   ASSERT_TRUE(found);
@@ -127,24 +147,119 @@ TEST(AuthFactorsDataTest, FindOnlinePasswordWithLegacy012) {
 // Check "legacy-0" is preferred among all legacy keys when searching online
 // password key, regardless of the order of input keys.
 TEST(AuthFactorsDataTest, FindOnlinePasswordWithLegacy210) {
-  AuthFactorsData data(
+  SessionAuthFactors data(
       {MakeLegacyKeyDef(2), MakeLegacyKeyDef(1), MakeLegacyKeyDef(0)});
   const KeyDefinition* found = data.FindOnlinePasswordKey();
   ASSERT_TRUE(found);
   EXPECT_EQ(*found, MakeLegacyKeyDef(0));
 }
 
+// --- Repeat same tests for AuthFactors instead of KeyData ---
+
+TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithNothing) {
+  SessionAuthFactors data;
+  EXPECT_FALSE(data.FindOnlinePasswordFactor());
+}
+
+TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithGaia) {
+  SessionAuthFactors data({MakeGaiaAuthFactor()});
+  const AuthFactor* found = data.FindOnlinePasswordFactor();
+  ASSERT_TRUE(found);
+  EXPECT_EQ(*found, MakeGaiaAuthFactor());
+}
+
+TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithGaiaAndPin) {
+  SessionAuthFactors data({MakeGaiaAuthFactor(), MakePinAuthFactor()});
+  const AuthFactor* found = data.FindOnlinePasswordFactor();
+  ASSERT_TRUE(found);
+  EXPECT_EQ(*found, MakeGaiaAuthFactor());
+}
+
+TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithPinAndGaia) {
+  SessionAuthFactors data({MakePinAuthFactor(), MakeGaiaAuthFactor()});
+  const AuthFactor* found = data.FindOnlinePasswordFactor();
+  ASSERT_TRUE(found);
+  EXPECT_EQ(*found, MakeGaiaAuthFactor());
+}
+
+// Check "gaia" is preferred to "legacy-..." keys when searching online password
+// key.
+TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithGaiaAndLegacy) {
+  SessionAuthFactors data({MakeGaiaAuthFactor(), MakeLegacyAuthFactor(0)});
+  const AuthFactor* found = data.FindOnlinePasswordFactor();
+  ASSERT_TRUE(found);
+  EXPECT_EQ(*found, MakeGaiaAuthFactor());
+}
+
+// Check "gaia" is preferred to "legacy-..." keys when searching online password
+// key, regardless of the order of input keys.
+TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithLegacyAndGaia) {
+  SessionAuthFactors data({MakeLegacyAuthFactor(0), MakeGaiaAuthFactor()});
+  const AuthFactor* found = data.FindOnlinePasswordFactor();
+  ASSERT_TRUE(found);
+  EXPECT_EQ(*found, MakeGaiaAuthFactor());
+}
+
+TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithLegacy) {
+  SessionAuthFactors data({MakeLegacyAuthFactor(0)});
+  const AuthFactor* found = data.FindOnlinePasswordFactor();
+  ASSERT_TRUE(found);
+  EXPECT_EQ(*found, MakeLegacyAuthFactor(0));
+}
+
+TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithLegacyAndPin) {
+  SessionAuthFactors data({MakeLegacyAuthFactor(0), MakePinAuthFactor()});
+  const AuthFactor* found = data.FindOnlinePasswordFactor();
+  ASSERT_TRUE(found);
+  EXPECT_EQ(*found, MakeLegacyAuthFactor(0));
+}
+
+TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithPinAndLegacy) {
+  SessionAuthFactors data({MakePinAuthFactor(), MakeLegacyAuthFactor(0)});
+  const AuthFactor* found = data.FindOnlinePasswordFactor();
+  ASSERT_TRUE(found);
+  EXPECT_EQ(*found, MakeLegacyAuthFactor(0));
+}
+
+// Check "legacy-0" is preferred among all legacy keys when searching online
+// password key.
+TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithLegacy012) {
+  SessionAuthFactors data({MakeLegacyAuthFactor(0), MakeLegacyAuthFactor(1),
+                           MakeLegacyAuthFactor(2)});
+  const AuthFactor* found = data.FindOnlinePasswordFactor();
+  ASSERT_TRUE(found);
+  EXPECT_EQ(*found, MakeLegacyAuthFactor(0));
+}
+
+// Check "legacy-0" is preferred among all legacy keys when searching online
+// password key, regardless of the order of input keys.
+TEST(AuthFactorsDataTest, FindOnlinePasswordFactorWithLegacy210) {
+  SessionAuthFactors data({MakeLegacyAuthFactor(2), MakeLegacyAuthFactor(1),
+                           MakeLegacyAuthFactor(0)});
+  const AuthFactor* found = data.FindOnlinePasswordFactor();
+  ASSERT_TRUE(found);
+  EXPECT_EQ(*found, MakeLegacyAuthFactor(0));
+}
+
 TEST(AuthFactorsDataTest, FindRecoveryFactorWithNothing) {
-  AuthFactorsData data;
+  SessionAuthFactors data;
   EXPECT_FALSE(data.FindRecoveryFactor());
 }
 
-TEST(AuthFactorsDataTest, FindRecoveryFactorWithSomething) {
-  AuthFactorsData data({MakeRecoveryFactor()});
+TEST(AuthFactorsDataTest, FindRecoveryFactorWithRecovery) {
+  SessionAuthFactors data({MakeRecoveryFactor()});
+  const AuthFactor* factor = data.FindRecoveryFactor();
+  ASSERT_TRUE(factor);
+  EXPECT_EQ(*factor, MakeRecoveryFactor());
+}
+
+TEST(AuthFactorsDataTest, FindRecoveryFactorWithMutlipleFactors) {
+  SessionAuthFactors data(
+      {MakePinAuthFactor(), MakeRecoveryFactor(), MakeGaiaAuthFactor()});
   const AuthFactor* factor = data.FindRecoveryFactor();
   EXPECT_TRUE(factor);
-  EXPECT_EQ(factor->ref().type(), AuthFactorType::kRecovery);
-  EXPECT_EQ(factor->ref().label(), KeyLabel(kCryptohomeRecoveryKeyLabel));
+  ASSERT_TRUE(factor);
+  EXPECT_EQ(*factor, MakeRecoveryFactor());
 }
 
 }  // namespace ash

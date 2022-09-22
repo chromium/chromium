@@ -52,6 +52,12 @@ bool User::TypeHasGaiaAccount(UserType user_type) {
          user_type == USER_TYPE_CHILD;
 }
 
+// static
+bool User::TypeIsKiosk(UserType type) {
+  return type == USER_TYPE_KIOSK_APP || type == USER_TYPE_ARC_KIOSK_APP ||
+         type == USER_TYPE_WEB_KIOSK_APP;
+}
+
 // Also used for regular supervised users.
 class RegularUser : public User {
  public:
@@ -300,9 +306,7 @@ bool User::IsDeviceLocalAccount() const {
 }
 
 bool User::IsKioskType() const {
-  UserType type = GetType();
-  return type == USER_TYPE_KIOSK_APP || type == USER_TYPE_ARC_KIOSK_APP ||
-         type == USER_TYPE_WEB_KIOSK_APP;
+  return TypeIsKiosk(GetType());
 }
 
 User* User::CreateRegularUser(const AccountId& account_id,
