@@ -293,7 +293,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorLocationBarBorderOpaque] =
       ui::GetResultingPaintColor(kColorLocationBarBorder, kColorToolbar);
   mixer[kColorMediaRouterIconActive] = {ui::kColorAccent};
-  mixer[kColorMediaRouterIconError] = {ui::kColorAlertHighSeverity};
   mixer[kColorMediaRouterIconWarning] = {ui::kColorAlertMediumSeverity};
   {
     int result = 0;

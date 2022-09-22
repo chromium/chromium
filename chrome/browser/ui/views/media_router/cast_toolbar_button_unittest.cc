@@ -109,9 +109,6 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     warning_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterWarningIcon,
         color_provider->GetColor(kColorMediaRouterIconWarning)));
-    error_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        vector_icons::kMediaRouterErrorIcon,
-        color_provider->GetColor(kColorMediaRouterIconError)));
     active_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterActiveIcon,
         color_provider->GetColor(kColorMediaRouterIconActive)));
@@ -140,7 +137,6 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
 
   gfx::Image idle_icon_;
   gfx::Image warning_icon_;
-  gfx::Image error_icon_;
   gfx::Image active_icon_;
 
   const std::vector<MediaRoute> local_display_route_list_ = {
@@ -170,10 +166,6 @@ TEST_F(CastToolbarButtonTest, UpdateIssues) {
       Issue(IssueInfo("title warning", IssueInfo::Action::LEARN_MORE,
                       IssueInfo::Severity::WARNING)));
   EXPECT_TRUE(gfx::test::AreImagesEqual(warning_icon_, GetIcon()));
-
-  button_->OnIssue(Issue(IssueInfo("title fatal", IssueInfo::Action::DISMISS,
-                                   IssueInfo::Severity::FATAL)));
-  EXPECT_TRUE(gfx::test::AreImagesEqual(error_icon_, GetIcon()));
 
   button_->OnIssuesCleared();
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));

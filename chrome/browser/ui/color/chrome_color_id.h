@@ -123,7 +123,6 @@
   E_CPONLY(kColorLocationBarClearAllButtonIconDisabled) \
   /* Media router colors. */ \
   E_CPONLY(kColorMediaRouterIconActive) \
-  E_CPONLY(kColorMediaRouterIconError) \
   E_CPONLY(kColorMediaRouterIconWarning) \
   /* New tab button colors. */ \
   E_CPONLY(kColorNewTabButtonBackgroundFrameActive) \

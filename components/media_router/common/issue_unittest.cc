@@ -17,18 +17,19 @@ IssueInfo CreateWarningIssueInfo(IssueInfo::Action action_type) {
   return issue;
 }
 
-IssueInfo CreateFatalRouteIssueInfoWithMessage(IssueInfo::Action action_type) {
-  IssueInfo issue("title", action_type, IssueInfo::Severity::FATAL);
+IssueInfo CreateNotificationRouteIssueInfoWithMessage(
+    IssueInfo::Action action_type) {
+  IssueInfo issue("title", action_type, IssueInfo::Severity::NOTIFICATION);
   issue.message = "message";
-  issue.route_id = "routeid";
   issue.help_page_id = 12345;
+  issue.route_id = "routeid";
   return issue;
 }
 
-IssueInfo CreateFatalRouteIssueInfo(IssueInfo::Action action_type) {
-  IssueInfo issue("title", action_type, IssueInfo::Severity::FATAL);
-  issue.route_id = "routeid";
+IssueInfo CreateNotificationRouteIssueInfo(IssueInfo::Action action_type) {
+  IssueInfo issue("title", action_type, IssueInfo::Severity::NOTIFICATION);
   issue.help_page_id = 12345;
+  issue.route_id = "routeid";
   return issue;
 }
 
@@ -44,30 +45,28 @@ TEST(IssueInfoUnitTest, CustomIssueConstructionWithNoSecondaryActions) {
   EXPECT_TRUE(issue1.secondary_actions.empty());
   EXPECT_EQ(IssueInfo::Severity::WARNING, issue1.severity);
   EXPECT_EQ("", issue1.route_id);
-  EXPECT_FALSE(issue1.is_blocking);
   EXPECT_EQ(12345, issue1.help_page_id);
 
   IssueInfo issue2 =
-      CreateFatalRouteIssueInfoWithMessage(IssueInfo::Action::DISMISS);
+      CreateNotificationRouteIssueInfoWithMessage(IssueInfo::Action::DISMISS);
 
   EXPECT_EQ("title", issue2.title);
   EXPECT_EQ("message", issue2.message);
   EXPECT_EQ(IssueInfo::Action::DISMISS, issue1.default_action);
   EXPECT_TRUE(issue2.secondary_actions.empty());
-  EXPECT_EQ(IssueInfo::Severity::FATAL, issue2.severity);
+  EXPECT_EQ(IssueInfo::Severity::NOTIFICATION, issue2.severity);
   EXPECT_EQ("routeid", issue2.route_id);
-  EXPECT_TRUE(issue2.is_blocking);
   EXPECT_EQ(12345, issue2.help_page_id);
 
-  IssueInfo issue3 = CreateFatalRouteIssueInfo(IssueInfo::Action::DISMISS);
+  IssueInfo issue3 =
+      CreateNotificationRouteIssueInfo(IssueInfo::Action::DISMISS);
 
   EXPECT_EQ("title", issue3.title);
   EXPECT_EQ("", issue3.message);
   EXPECT_EQ(IssueInfo::Action::DISMISS, issue1.default_action);
   EXPECT_TRUE(issue3.secondary_actions.empty());
-  EXPECT_EQ(IssueInfo::Severity::FATAL, issue3.severity);
+  EXPECT_EQ(IssueInfo::Severity::NOTIFICATION, issue3.severity);
   EXPECT_EQ("routeid", issue3.route_id);
-  EXPECT_TRUE(issue3.is_blocking);
   EXPECT_EQ(12345, issue3.help_page_id);
 }
 
@@ -86,10 +85,9 @@ TEST(IssueInfoUnitTest, CustomIssueConstructionWithSecondaryActions) {
   EXPECT_EQ(1u, issue1.secondary_actions.size());
   EXPECT_EQ(IssueInfo::Severity::WARNING, issue1.severity);
   EXPECT_EQ("", issue1.route_id);
-  EXPECT_FALSE(issue1.is_blocking);
 
-  IssueInfo issue2 =
-      CreateFatalRouteIssueInfoWithMessage(IssueInfo::Action::LEARN_MORE);
+  IssueInfo issue2 = CreateNotificationRouteIssueInfoWithMessage(
+      IssueInfo::Action::LEARN_MORE);
   issue2.secondary_actions = secondary_actions;
 
   EXPECT_EQ("title", issue2.title);
@@ -97,11 +95,11 @@ TEST(IssueInfoUnitTest, CustomIssueConstructionWithSecondaryActions) {
   EXPECT_EQ(IssueInfo::Action::LEARN_MORE, issue2.default_action);
   EXPECT_FALSE(issue2.secondary_actions.empty());
   EXPECT_EQ(1u, issue2.secondary_actions.size());
-  EXPECT_EQ(IssueInfo::Severity::FATAL, issue2.severity);
+  EXPECT_EQ(IssueInfo::Severity::NOTIFICATION, issue2.severity);
   EXPECT_EQ("routeid", issue2.route_id);
-  EXPECT_TRUE(issue2.is_blocking);
 
-  IssueInfo issue3 = CreateFatalRouteIssueInfo(IssueInfo::Action::LEARN_MORE);
+  IssueInfo issue3 =
+      CreateNotificationRouteIssueInfo(IssueInfo::Action::LEARN_MORE);
   issue3.secondary_actions = secondary_actions;
 
   EXPECT_EQ("title", issue3.title);
@@ -109,9 +107,8 @@ TEST(IssueInfoUnitTest, CustomIssueConstructionWithSecondaryActions) {
   EXPECT_EQ(IssueInfo::Action::LEARN_MORE, issue3.default_action);
   EXPECT_FALSE(issue3.secondary_actions.empty());
   EXPECT_EQ(1u, issue3.secondary_actions.size());
-  EXPECT_EQ(IssueInfo::Severity::FATAL, issue3.severity);
+  EXPECT_EQ(IssueInfo::Severity::NOTIFICATION, issue3.severity);
   EXPECT_EQ("routeid", issue3.route_id);
-  EXPECT_TRUE(issue3.is_blocking);
 }
 
 }  // namespace media_router

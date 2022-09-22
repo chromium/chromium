@@ -128,22 +128,8 @@ struct MediaRoute {
   bool is_connecting;
 };
 
-// Notifications or an actionable events to be shown to the user.
-// When is_blocking is true, media router UI shows issue only:
-//
-//       Title
-//       Message
-//       default_action_button secondary_action_button
-//
-// When is_blocking is false, media router UI uses banner:
-//
-//       Title default_action_link secondary_action_link
-//
-// above receiver list if route_id is not provided; otherwise it is
-// above route detail and controls.
 struct Issue {
   enum Severity {
-    FATAL,
     WARNING,
     NOTIFICATION
   };
@@ -163,10 +149,6 @@ struct Issue {
   string sink_id;
 
   Severity severity;
-
-  // When true, the issue must be presented to the user and resolved
-  // before other actions are allowed.
-  bool is_blocking;
 
   // Short description about the issue.
   string title;

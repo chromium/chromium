@@ -54,8 +54,6 @@ struct EnumTraits<media_router::mojom::Issue_Severity,
   static media_router::mojom::Issue_Severity ToMojom(
       media_router::IssueInfo::Severity severity) {
     switch (severity) {
-      case media_router::IssueInfo::Severity::FATAL:
-        return media_router::mojom::Issue_Severity::FATAL;
       case media_router::IssueInfo::Severity::WARNING:
         return media_router::mojom::Issue_Severity::WARNING;
       case media_router::IssueInfo::Severity::NOTIFICATION:
@@ -68,9 +66,6 @@ struct EnumTraits<media_router::mojom::Issue_Severity,
   static bool FromMojom(media_router::mojom::Issue_Severity input,
                         media_router::IssueInfo::Severity* output) {
     switch (input) {
-      case media_router::mojom::Issue_Severity::FATAL:
-        *output = media_router::IssueInfo::Severity::FATAL;
-        return true;
       case media_router::mojom::Issue_Severity::WARNING:
         *output = media_router::IssueInfo::Severity::WARNING;
         return true;
@@ -174,10 +169,6 @@ struct StructTraits<media_router::mojom::IssueDataView,
   static media_router::IssueInfo::Severity severity(
       const media_router::IssueInfo& issue) {
     return issue.severity;
-  }
-
-  static bool is_blocking(const media_router::IssueInfo& issue) {
-    return issue.is_blocking;
   }
 
   static const std::string& title(const media_router::IssueInfo& issue) {

@@ -51,11 +51,8 @@ TEST_F(IssueManagerTest, AddAndClearIssue) {
   observer.Init();
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&observer));
   EXPECT_EQ(issue_info1, issue1.info());
-  EXPECT_FALSE(issue1.info().is_blocking);
 
   IssueInfo issue_info2 = CreateTestIssue(IssueInfo::Severity::NOTIFICATION);
-  EXPECT_FALSE(issue_info2.is_blocking);
-
   Issue issue2((IssueInfo()));
   manager_.AddIssue(issue_info2);
 

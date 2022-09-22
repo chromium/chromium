@@ -170,9 +170,6 @@ void CastToolbarButton::UpdateIcon() {
   if (severity == Severity::NOTIFICATION && !has_local_route_) {
     new_icon = &vector_icons::kMediaRouterIdleIcon;
     icon_color = gfx::kPlaceholderColor;
-  } else if (severity == Severity::FATAL) {
-    new_icon = &vector_icons::kMediaRouterErrorIcon;
-    icon_color = color_provider->GetColor(kColorMediaRouterIconError);
   } else if (severity == Severity::WARNING) {
     new_icon = &vector_icons::kMediaRouterWarningIcon;
     icon_color = color_provider->GetColor(kColorMediaRouterIconWarning);

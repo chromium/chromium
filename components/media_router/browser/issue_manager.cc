@@ -29,16 +29,11 @@ constexpr int kWarningAutoDismissMins = 5;
 // static
 base::TimeDelta IssueManager::GetAutoDismissTimeout(
     const IssueInfo& issue_info) {
-  DCHECK(!issue_info.is_blocking);
-
   switch (issue_info.severity) {
     case IssueInfo::Severity::NOTIFICATION:
       return base::Minutes(kNotificationAutoDismissMins);
     case IssueInfo::Severity::WARNING:
       return base::Minutes(kWarningAutoDismissMins);
-    case IssueInfo::Severity::FATAL:
-      NOTREACHED() << "FATAL issues should be blocking";
-      return base::TimeDelta();
   }
   NOTREACHED();
   return base::TimeDelta();

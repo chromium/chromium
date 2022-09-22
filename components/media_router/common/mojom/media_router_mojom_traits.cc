@@ -40,7 +40,6 @@ bool StructTraits<media_router::mojom::IssueDataView, media_router::IssueInfo>::
   if (!data.ReadSinkId(&out->sink_id))
     return false;
 
-  out->is_blocking = data.is_blocking();
   out->help_page_id = data.help_page_id();
 
   return true;

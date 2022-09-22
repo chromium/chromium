@@ -16,6 +16,8 @@ namespace media_router {
 // Contains the information relevant to an issue.
 struct IssueInfo {
  public:
+  // TODO(crbug.com/1366822): Secondary actions are no longer used and can be
+  // removed.
   // Possible actions for an issue.
   enum class Action {
     DISMISS,
@@ -27,9 +29,8 @@ struct IssueInfo {
     NUM_VALUES = LEARN_MORE
   };
 
-  // Severity type of an issue. A FATAL issue is considered blocking. Although
-  // issues of other severity levels may also be blocking.
-  enum class Severity { FATAL, WARNING, NOTIFICATION };
+  // Severity type of an issue.
+  enum class Severity { WARNING, NOTIFICATION };
 
   static const int kUnknownHelpPageId = 0;
 
@@ -38,8 +39,7 @@ struct IssueInfo {
 
   // |title|: The title for the issue.
   // |default_action|: Default action user can take to resolve the issue.
-  // |severity|: The severity of the issue. If FATAL, then |is_blocking| is set
-  // to |true|.
+  // |severity|: The severity of the issue.
   IssueInfo(const std::string& title, Action default_action, Severity severity);
   IssueInfo(const IssueInfo& other);
   ~IssueInfo();
@@ -67,10 +67,6 @@ struct IssueInfo {
   // ID of the sink associated with this issue, or empty if no sink is
   // associated with it.
   MediaSink::Id sink_id;
-
-  // |true| if the issue needs to be resolved before continuing. Note that a
-  // Issue of severity FATAL is considered blocking by default.
-  bool is_blocking;
 
   // ID of help page to link to, if one of the actions is LEARN_MORE.
   // Defaults to |kUnknownHelpPageId|.
