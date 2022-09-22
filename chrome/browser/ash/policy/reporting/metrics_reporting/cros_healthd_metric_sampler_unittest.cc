@@ -979,6 +979,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestDisplayTelemetryOnlyInternalDisplay) {
   EXPECT_EQ(internal_display.resolution_horizontal(), kResolutionHorizontal);
   EXPECT_EQ(internal_display.resolution_vertical(), kResolutionVertical);
   EXPECT_EQ(internal_display.refresh_rate(), kRefreshRate);
+  EXPECT_TRUE(internal_display.is_internal());
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestDisplayTelemetryMultipleDisplays) {
@@ -1030,6 +1031,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestDisplayTelemetryMultipleDisplays) {
   EXPECT_EQ(internal_display.resolution_horizontal(), kResolutionHorizontal);
   EXPECT_EQ(internal_display.resolution_vertical(), kResolutionVertical);
   EXPECT_EQ(internal_display.refresh_rate(), kRefreshRate);
+  EXPECT_TRUE(internal_display.is_internal());
 
   auto external_display_1 =
       result.telemetry_data().displays_telemetry().display_status(1);
@@ -1037,6 +1039,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestDisplayTelemetryMultipleDisplays) {
   EXPECT_EQ(external_display_1.resolution_horizontal(), kResolutionHorizontal);
   EXPECT_EQ(external_display_1.resolution_vertical(), kResolutionVertical);
   EXPECT_EQ(external_display_1.refresh_rate(), kRefreshRate);
+  EXPECT_FALSE(external_display_1.is_internal());
 
   auto external_display_2 =
       result.telemetry_data().displays_telemetry().display_status(2);
@@ -1044,6 +1047,7 @@ TEST_F(CrosHealthdMetricSamplerTest, TestDisplayTelemetryMultipleDisplays) {
   EXPECT_EQ(external_display_2.resolution_horizontal(), kResolutionHorizontal);
   EXPECT_EQ(external_display_2.resolution_vertical(), kResolutionVertical);
   EXPECT_EQ(external_display_2.refresh_rate(), kRefreshRate);
+  EXPECT_FALSE(external_display_2.is_internal());
 }
 
 INSTANTIATE_TEST_SUITE_P(

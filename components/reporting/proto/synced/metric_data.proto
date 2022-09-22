@@ -388,6 +388,8 @@ message DisplayStatus {
   optional int32 resolution_vertical = 3;
   // Refresh rate.
   optional int64 refresh_rate = 4;
+  // Internal or external display.
+  optional bool is_internal = 5;
 }
 
 // Data that can change over time, collected and reported every specific period

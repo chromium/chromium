@@ -474,6 +474,7 @@ void HandleDisplayResult(OptionalMetricCallback callback,
           auto* const internal_dp_out = metric_data->mutable_telemetry_data()
                                             ->mutable_displays_telemetry()
                                             ->add_display_status();
+          internal_dp_out->set_is_internal(true);
           if (embedded_display_info->display_name.has_value()) {
             internal_dp_out->set_display_name(
                 embedded_display_info->display_name.value());
@@ -497,6 +498,7 @@ void HandleDisplayResult(OptionalMetricCallback callback,
                   metric_data->mutable_telemetry_data()
                       ->mutable_displays_telemetry()
                       ->add_display_status();
+              external_dp_out->set_is_internal(false);
               if (current_external_display->display_name.has_value()) {
                 external_dp_out->set_display_name(
                     current_external_display->display_name.value());
