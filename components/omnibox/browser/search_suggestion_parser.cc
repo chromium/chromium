@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
@@ -557,6 +558,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
   int prefetch_index = -1;
   int prerender_index = -1;
   omnibox::GroupsInfo groups_info;
+  bool groups_info_parsed_from_proto = false;
 
   if (root_list.size() > 4u && root_list[4].is_dict()) {
     const base::Value& extras = root_list[4];
@@ -610,8 +612,17 @@ bool SearchSuggestionParser::ParseSuggestResults(
       }
     }
 
+    const auto* groups_info_string = extras.FindStringKey("google:groupsinfo");
+    std::string groups_info_decoded;
+    if (groups_info_string && !groups_info_string->empty() &&
+        base::Base64Decode(*groups_info_string, &groups_info_decoded) &&
+        !groups_info_decoded.empty()) {
+      groups_info_parsed_from_proto =
+          groups_info.ParseFromString(groups_info_decoded);
+    }
+
     const base::Value* header_texts = extras.FindDictKey("google:headertexts");
-    if (header_texts) {
+    if (!groups_info_parsed_from_proto && header_texts) {
       const base::Value* headers = header_texts->FindDictKey("a");
       if (headers) {
         for (auto it : headers->DictItems()) {
@@ -848,9 +859,15 @@ bool SearchSuggestionParser::ParseSuggestResults(
     // Assign a 0-based index to the group based on the number of groups so far.
     const int group_index = chrome_group_ids_map.size();
 
-    // Convert the server-provided group ID to one known to Chrome.
-    const auto chrome_group_id =
-        ChromeGroupIdForRemoteGroupIdAndIndex(suggestion_group_id, group_index);
+    // Convert the server-provided group ID to one known to Chrome; unless
+    // |groups_info| is parsed from a serialized proto in "google:groupsinfo",
+    // in which case server-provided group IDs are present in omnibox::GroupId.
+    // TODO(crbug.com/1343512): Simplify this logic once the server response has
+    // migrated to a serialized omnibox::GroupsInfo in "google:groupsinfo".
+    const auto chrome_group_id = groups_info_parsed_from_proto
+                                     ? suggestion_group_id
+                                     : ChromeGroupIdForRemoteGroupIdAndIndex(
+                                           suggestion_group_id, group_index);
 
     // Do not propagate the server-provided group IDs if Chrome ran out of
     // group IDs to assign or if the group ID was invalid to begin with.
