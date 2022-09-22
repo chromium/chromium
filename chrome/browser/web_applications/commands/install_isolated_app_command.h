@@ -44,6 +44,8 @@ struct InstallIsolatedAppCommandError {
   }
 };
 
+struct InstallIsolatedAppCommandCreateError {};
+
 class InstallIsolatedAppCommand : public WebAppCommand {
  public:
   // TODO(kuragin): Consider to create an instance of |GURL| instead of passing
@@ -55,13 +57,23 @@ class InstallIsolatedAppCommand : public WebAppCommand {
   // |callback| must be not null.
   //
   // The `id` in the application's manifest must equal "/".
-  explicit InstallIsolatedAppCommand(
+  static base::expected<std::unique_ptr<InstallIsolatedAppCommand>,
+                        InstallIsolatedAppCommandCreateError>
+  Create(
       const GURL& application_url,
       WebAppUrlLoader& url_loader,
       WebAppInstallFinalizer& install_finalizer,
       base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
                                              InstallIsolatedAppCommandError>)>
           callback);
+
+  InstallIsolatedAppCommand(const InstallIsolatedAppCommand&) = delete;
+  InstallIsolatedAppCommand& operator=(const InstallIsolatedAppCommand&) =
+      delete;
+
+  InstallIsolatedAppCommand(InstallIsolatedAppCommand&&) = delete;
+  InstallIsolatedAppCommand& operator=(InstallIsolatedAppCommand&&) = delete;
+
   ~InstallIsolatedAppCommand() override;
 
   Lock& lock() const override;
@@ -76,6 +88,14 @@ class InstallIsolatedAppCommand : public WebAppCommand {
       std::unique_ptr<WebAppDataRetriever> data_retriever);
 
  private:
+  explicit InstallIsolatedAppCommand(
+      const GURL& application_url,
+      WebAppUrlLoader& url_loader,
+      WebAppInstallFinalizer& install_finalizer,
+      base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
+                                             InstallIsolatedAppCommandError>)>
+          callback);
+
   void ReportFailure(base::StringPiece message);
   void ReportSuccess();
 

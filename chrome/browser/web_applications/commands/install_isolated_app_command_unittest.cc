@@ -19,6 +19,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -156,8 +157,15 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
       base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
                                              InstallIsolatedAppCommandError>)>
           callback) {
-    return std::make_unique<InstallIsolatedAppCommand>(
-        GURL(url), *url_loader_, *install_finalizer_, std::move(callback));
+    const GURL application_url{url};
+    DCHECK(application_url.is_valid());
+    base::expected<std::unique_ptr<InstallIsolatedAppCommand>,
+                   InstallIsolatedAppCommandCreateError>
+        command = InstallIsolatedAppCommand::Create(
+            application_url, *url_loader_, *install_finalizer_,
+            std::move(callback));
+    DCHECK(command.has_value());
+    return *std::move(command);
   }
 
   void ScheduleCommand(std::unique_ptr<WebAppCommand> command) {
@@ -355,14 +363,20 @@ TEST_F(InstallIsolatedAppCommandTest,
               IsInstallationOk());
 }
 
-// It is impossible to pass invalid url to |GenerateAppId| since it DCHECKs.
-// TODO(kuragin): Replace constructor with factory function to make the
-// validation testable.
-TEST_F(InstallIsolatedAppCommandTest, DISABLED_ReportsErrorWhenURLIsInvalid) {
-  SetPrepareForLoadResultLoaded();
+TEST_F(InstallIsolatedAppCommandTest, ReportsErrorWhenURLIsInvalid) {
+  base::test::TestFuture<base::expected<InstallIsolatedAppCommandSuccess,
+                                        InstallIsolatedAppCommandError>>
+      test_future;
 
-  EXPECT_THAT(ExecuteCommand("some definetely invalid url"),
-              IsInstallationError(HasSubstr("Invalid application URL")));
+  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
+
+  base::expected<std::unique_ptr<InstallIsolatedAppCommand>,
+                 InstallIsolatedAppCommandCreateError>
+      maybe_command = InstallIsolatedAppCommand::Create(
+          GURL{"some definetely invalid url"}, *url_loader, install_finalizer(),
+          test_future.GetCallback());
+
+  ASSERT_THAT(maybe_command.has_value(), IsFalse());
 }
 
 TEST_F(InstallIsolatedAppCommandTest, URLLoaderIgnoresQueryParameters) {

@@ -69,11 +69,21 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
                           },
                           std::move(url_loader));
 
-                  provider.command_manager().ScheduleCommand(
-                      std::make_unique<InstallIsolatedAppCommand>(
+                  auto [command_callback, immediate_callback] =
+                      base::SplitOnceCallback(std::move(callback));
+
+                  base::expected<std::unique_ptr<InstallIsolatedAppCommand>,
+                                 InstallIsolatedAppCommandCreateError>
+                      command = InstallIsolatedAppCommand::Create(
                           url, url_loader_ref, provider.install_finalizer(),
                           std::move(install_isolated_app_callback)
-                              .Then(std::move(callback))));
+                              .Then(std::move(command_callback)));
+                  if (command.has_value()) {
+                    provider.command_manager().ScheduleCommand(
+                        *std::move(command));
+                  } else {
+                    std::move(immediate_callback).Run();
+                  }
                 },
                 std::ref(provider), url, std::move(callback)));
       },
