@@ -13,7 +13,7 @@ DisplayInfoProviderMac::DisplayInfoProviderMac() = default;
 
 void DisplayInfoProviderMac::UpdateDisplayUnitInfoForPlatform(
     const display::Display& display,
-    extensions::api::system_display::DisplayUnitInfo* unit) {
+    extensions::api::system_display::DisplayUnitInfo* unit) const {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

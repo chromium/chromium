@@ -125,6 +125,12 @@ class DisplayInfoProvider : public display::DisplayObserver {
   // Trigger OnDisplayChangedEvent
   void DispatchOnDisplayChangedEvent();
 
+  // Convert a vector of Displays into a DisplayUnitInfoList. This function
+  // needs to be thread-safe since it is called via PostTask.
+  DisplayUnitInfoList GetAllDisplaysInfoList(
+      const std::vector<display::Display>& displays,
+      int64_t primary_id) const;
+
   // Create a DisplayUnitInfo from a display::Display for implementations of
   // GetAllDisplaysInfo()
   static api::system_display::DisplayUnitInfo CreateDisplayUnitInfo(
@@ -132,11 +138,11 @@ class DisplayInfoProvider : public display::DisplayObserver {
       int64_t primary_display_id);
 
  private:
-  // Update the content of the |unit| obtained for |display| using
-  // platform specific method.
+  // Update the content of the `unit` obtained for `display` using
+  // platform specific method. This must be safe to call off the ui thread.
   virtual void UpdateDisplayUnitInfoForPlatform(
       const display::Display& display,
-      api::system_display::DisplayUnitInfo* unit);
+      api::system_display::DisplayUnitInfo* unit) const;
 
   // DisplayObserver
   void OnDisplayAdded(const display::Display& new_display) override;

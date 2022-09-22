@@ -76,7 +76,7 @@ class MockDisplayInfoProvider : public DisplayInfoProvider {
   // platform specific method.
   void UpdateDisplayUnitInfoForPlatform(
       const display::Display& display,
-      extensions::api::system_display::DisplayUnitInfo* unit) override;
+      extensions::api::system_display::DisplayUnitInfo* unit) const override;
 
   std::unique_ptr<base::DictionaryValue> set_info_value_;
   std::string set_info_display_id_;

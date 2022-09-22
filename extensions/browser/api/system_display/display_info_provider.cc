@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -112,20 +113,33 @@ void DisplayInfoProvider::SetDisplayLayout(const DisplayLayoutList& layouts,
 
 void DisplayInfoProvider::EnableUnifiedDesktop(bool enable) {}
 
-void DisplayInfoProvider::GetAllDisplaysInfo(
-    bool /* single_unified*/,
-    base::OnceCallback<void(DisplayUnitInfoList result)> callback) {
-  int64_t primary_id = screen_->GetPrimaryDisplay().id();
-  std::vector<display::Display> displays = screen_->GetAllDisplays();
+DisplayInfoProvider::DisplayUnitInfoList
+DisplayInfoProvider::GetAllDisplaysInfoList(
+    const std::vector<display::Display>& displays,
+    int64_t primary_id) const {
   DisplayUnitInfoList all_displays;
+
   for (const display::Display& display : displays) {
     api::system_display::DisplayUnitInfo unit =
         CreateDisplayUnitInfo(display, primary_id);
     UpdateDisplayUnitInfoForPlatform(display, &unit);
     all_displays.push_back(std::move(unit));
   }
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(all_displays)));
+  return all_displays;
+}
+
+void DisplayInfoProvider::GetAllDisplaysInfo(
+    bool /* single_unified*/,
+    base::OnceCallback<void(DisplayUnitInfoList result)> callback) {
+  int64_t primary_id = screen_->GetPrimaryDisplay().id();
+  std::vector<display::Display> displays = screen_->GetAllDisplays();
+  DisplayUnitInfoList all_displays;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&DisplayInfoProvider::GetAllDisplaysInfoList,
+                     base::Unretained(this),  // `this` is a global singleton.
+                     displays, primary_id),
+      std::move(callback));
 }
 
 void DisplayInfoProvider::GetDisplayLayout(
@@ -206,7 +220,7 @@ void DisplayInfoProvider::DispatchOnDisplayChangedEvent() {
 
 void DisplayInfoProvider::UpdateDisplayUnitInfoForPlatform(
     const display::Display& display,
-    extensions::api::system_display::DisplayUnitInfo* unit) {
+    extensions::api::system_display::DisplayUnitInfo* unit) const {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/extensions/system_display/display_info_provider_win.h"
 
+#include <memory>
+#include <utility>
+
 #include <stddef.h>
 #include <windows.h>
 
@@ -56,9 +59,9 @@ DisplayInfoProviderWin::DisplayInfoProviderWin() = default;
 
 void DisplayInfoProviderWin::UpdateDisplayUnitInfoForPlatform(
     const display::Display& display,
-    extensions::api::system_display::DisplayUnitInfo* unit) {
+    extensions::api::system_display::DisplayUnitInfo* unit) const {
   DisplayUnitInfoList all_displays;
-  EnumDisplayMonitors(NULL, NULL, EnumMonitorCallback,
+  EnumDisplayMonitors(nullptr, nullptr, EnumMonitorCallback,
                       reinterpret_cast<LPARAM>(&all_displays));
   for (size_t i = 0; i < all_displays.size(); ++i) {
     if (unit->id == all_displays[i].id) {

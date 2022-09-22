@@ -97,7 +97,7 @@ void MockDisplayInfoProvider::SetMirrorMode(
 
 void MockDisplayInfoProvider::UpdateDisplayUnitInfoForPlatform(
     const display::Display& display,
-    extensions::api::system_display::DisplayUnitInfo* unit) {
+    extensions::api::system_display::DisplayUnitInfo* unit) const {
   int64_t id = display.id();
   unit->name = "DISPLAY NAME FOR " + base::NumberToString(id);
   if (id == 1)

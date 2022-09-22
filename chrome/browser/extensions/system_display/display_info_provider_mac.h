@@ -19,7 +19,7 @@ class DisplayInfoProviderMac : public DisplayInfoProvider {
   // DisplayInfoProvider implementation.
   void UpdateDisplayUnitInfoForPlatform(
       const display::Display& display,
-      api::system_display::DisplayUnitInfo* unit) override;
+      api::system_display::DisplayUnitInfo* unit) const override;
 };
 
 }  // namespace extensions
