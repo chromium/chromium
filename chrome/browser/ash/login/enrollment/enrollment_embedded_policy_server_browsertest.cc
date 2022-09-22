@@ -882,8 +882,6 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentEmbeddedPolicyServer, DeviceDisabled) {
 
 // Attestation enrollment.
 IN_PROC_BROWSER_TEST_F(AutoEnrollmentEmbeddedPolicyServer, Attestation) {
-  // Even though the server would allow device attributes update, Chrome OS will
-  // not attempt that for attestation enrollment.
   policy_server_.SetUpdateDeviceAttributesPermission(true);
 
   AllowlistSimpleChallengeSigningKey();
@@ -895,6 +893,9 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentEmbeddedPolicyServer, Attestation) {
       test::kTestDomain));
 
   host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepDeviceAttributes);
+  enrollment_ui_.SubmitDeviceAttributes(test::values::kAssetId,
+                                        test::values::kLocation);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());

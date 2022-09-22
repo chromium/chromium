@@ -832,11 +832,7 @@ void CloudPolicyClient::GetDeviceAttributeUpdatePermission(
     CloudPolicyClient::StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
-  // This request only works with an OAuth token identifying a user, because
-  // DMServer will resolve that user and check if they have permissions to
-  // update the device's attributes.
-  DCHECK(auth.has_oauth_token());
-
+  DCHECK(auth.has_oauth_token() || auth.has_dm_token());
   const bool has_oauth_token = auth.has_oauth_token();
   const std::string oauth_token =
       has_oauth_token ? auth.oauth_token() : std::string();
@@ -846,7 +842,7 @@ void CloudPolicyClient::GetDeviceAttributeUpdatePermission(
               TYPE_ATTRIBUTE_UPDATE_PERMISSION,
           this,
           /*critical=*/false,
-          !has_oauth_token ? std::move(auth) : DMAuth::NoAuth(), oauth_token,
+          !has_oauth_token ? auth.Clone() : DMAuth::NoAuth(), oauth_token,
           base::BindOnce(
               &CloudPolicyClient::OnDeviceAttributeUpdatePermissionCompleted,
               weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -863,7 +859,7 @@ void CloudPolicyClient::UpdateDeviceAttributes(
     CloudPolicyClient::StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
-  DCHECK(auth.has_oauth_token() || auth.has_enrollment_token());
+  DCHECK(auth.has_oauth_token() || auth.has_dm_token());
 
   const bool has_oauth_token = auth.has_oauth_token();
   const std::string oauth_token =
@@ -873,7 +869,8 @@ void CloudPolicyClient::UpdateDeviceAttributes(
           DeviceManagementService::JobConfiguration::TYPE_ATTRIBUTE_UPDATE,
           this,
           /*critical=*/false,
-          !has_oauth_token ? std::move(auth) : DMAuth::NoAuth(), oauth_token,
+          !has_oauth_token ? auth.Clone() : DMAuth::NoAuth(),
+          oauth_token,
           base::BindOnce(&CloudPolicyClient::OnDeviceAttributeUpdated,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
@@ -1354,7 +1351,6 @@ void CloudPolicyClient::OnDeviceAttributeUpdatePermissionCompleted(
               ATTRIBUTE_UPDATE_ALLOWED) {
     success = true;
   }
-
   std::move(callback).Run(success);
   RemoveJob(result.job);
 }

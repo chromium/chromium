@@ -15,7 +15,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_client_factory_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/policy_oauth2_token_fetcher.h"
@@ -219,19 +218,6 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
 }
 
 void EnterpriseEnrollmentHelperImpl::GetDeviceAttributeUpdatePermission() {
-  if (!auth_data_.has_oauth_token()) {
-    // Checking whether the device attributes can be updated requires knowning
-    // which user is performing enterprise enrollment, because the permission is
-    // tied to a user.
-    // For enterprise enrollment authorized by attestation or an enrollment
-    // token, the current user is unknown.
-    // A possible follow-up (tracked in https://crbug.com/942013) will be to
-    // allow the first affiliated user that signs in and has the permission to
-    // edit device attributes.
-    OnDeviceAttributeUpdatePermission(/*granted=*/false);
-    return;
-  }
-
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   // Don't update device attributes for Active Directory management.
@@ -243,25 +229,54 @@ void EnterpriseEnrollmentHelperImpl::GetDeviceAttributeUpdatePermission() {
       connector->GetDeviceCloudPolicyManager();
   policy::CloudPolicyClient* client = policy_manager->core()->client();
 
+  absl::optional<policy::DMAuth> auth =
+      GetDMAuthForDeviceAttributeUpdate(client);
+  if (!auth.has_value()) {
+    // There's no information about the enrolling user or device identity so
+    // device attributes update permission can't be fetched. Assume "no
+    // permission".
+    OnDeviceAttributeUpdatePermission(/*granted=*/false);
+    return;
+  }
   client->GetDeviceAttributeUpdatePermission(
-      auth_data_.Clone(),
+      std::move(auth.value()),
       base::BindOnce(
           &EnterpriseEnrollmentHelperImpl::OnDeviceAttributeUpdatePermission,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
+absl::optional<policy::DMAuth>
+EnterpriseEnrollmentHelperImpl::GetDMAuthForDeviceAttributeUpdate(
+    policy::CloudPolicyClient* device_cloud_policy_client) {
+  // Checking whether the device attributes can be updated requires either
+  // knowing which user is performing enterprise enrollment, or which device
+  // is performing the attestation-based enrollment.
+  if (auth_data_.has_oauth_token()) {
+    return auth_data_.Clone();
+  } else if (enrollment_config_.is_mode_attestation()) {
+    return policy::DMAuth::FromDMToken(device_cloud_policy_client->dm_token());
+  } else {
+    return {};
+  }
+}
+
 void EnterpriseEnrollmentHelperImpl::UpdateDeviceAttributes(
     const std::string& asset_id,
     const std::string& location) {
-  DCHECK(!auth_data_.empty());
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
   policy::CloudPolicyClient* client = policy_manager->core()->client();
 
+  absl::optional<policy::DMAuth> auth =
+      GetDMAuthForDeviceAttributeUpdate(client);
+
+  // If we got here, we must have successfully run GetDeviceAttributeUpdatePermission, which required a non-empty GetDMAuthForDeviceAttributeUpdate result.
+  DCHECK(auth.has_value());
+
   client->UpdateDeviceAttributes(
-      auth_data_.Clone(), asset_id, location,
+      std::move(auth.value()), asset_id, location,
       base::BindOnce(
           &EnterpriseEnrollmentHelperImpl::OnDeviceAttributeUploadCompleted,
           weak_ptr_factory_.GetWeakPtr()));

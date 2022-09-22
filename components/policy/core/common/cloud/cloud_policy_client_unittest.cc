@@ -2354,7 +2354,7 @@ TEST_F(CloudPolicyClientTest, FetchSecureRemoteCommands) {
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
 
-TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdatePermission) {
+TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdatePermissionWithOAuthToken) {
   RegisterClient();
 
   em::DeviceManagementRequest attribute_update_permission_request;
@@ -2384,6 +2384,65 @@ TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdatePermission) {
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             attribute_update_permission_request.SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+}
+
+TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdatePermissionWithDMToken) {
+  RegisterClient();
+
+  em::DeviceManagementRequest attribute_update_permission_request;
+  attribute_update_permission_request
+      .mutable_device_attribute_update_permission_request();
+
+  em::DeviceManagementResponse attribute_update_permission_response;
+  attribute_update_permission_response
+      .mutable_device_attribute_update_permission_response()
+      ->set_result(
+          em::DeviceAttributeUpdatePermissionResponse_ResultType_ATTRIBUTE_UPDATE_ALLOWED);
+
+  ExpectAndCaptureJob(attribute_update_permission_response);
+  EXPECT_CALL(callback_observer_, OnCallbackComplete(true)).Times(1);
+
+  CloudPolicyClient::StatusCallback callback =
+      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&callback_observer_));
+  client_->GetDeviceAttributeUpdatePermission(
+      DMAuth::FromDMToken(kDMToken), std::move(callback));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::
+                TYPE_ATTRIBUTE_UPDATE_PERMISSION,
+            job_type_);
+  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            attribute_update_permission_request.SerializePartialAsString());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+}
+
+TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdatePermissionMissingResponse) {
+  RegisterClient();
+
+  em::DeviceManagementRequest attribute_update_permission_request;
+  attribute_update_permission_request
+      .mutable_device_attribute_update_permission_request();
+
+  em::DeviceManagementResponse attribute_update_permission_response;
+
+  ExpectAndCaptureJob(attribute_update_permission_response);
+  EXPECT_CALL(callback_observer_, OnCallbackComplete(false)).Times(1);
+
+  CloudPolicyClient::StatusCallback callback =
+      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&callback_observer_));
+  client_->GetDeviceAttributeUpdatePermission(
+      DMAuth::FromOAuthToken(kOAuthToken), std::move(callback));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::
+                TYPE_ATTRIBUTE_UPDATE_PERMISSION,
+            job_type_);
+  EXPECT_EQ(auth_data_, DMAuth::NoAuth());
+  VerifyQueryParameter();
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            attribute_update_permission_request.SerializePartialAsString());
+  EXPECT_EQ(DM_STATUS_RESPONSE_DECODING_ERROR, client_->status());
 }
 
 TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdate) {
