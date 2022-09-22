@@ -680,6 +680,13 @@
       },
     },
 
+    'chromeos_chrome_all_tast_tests': {
+      'chrome_all_tast_tests': {
+        'tast_expr': '("group:mainline" && "dep:chrome" && !informational)',
+        'timeout_sec': 21600,
+      },
+    },
+
     # GTests to run on Chrome OS devices, but not Chrome OS VMs. Any differences
     # between this and chromeos_system_friendly_gtests below should only be due
     # to resource constraints (ie: not enough devices).
@@ -6403,6 +6410,14 @@
           'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_FOUR_MILESTONE',
         ]
       }
+    },
+
+    'chromeos_trogdor64_skylab_tests': {
+      'chromeos_chrome_all_tast_tests': {
+        'variants': [
+          'CROS_TROGDOR64_RELEASE_LKGM',
+        ]
+      },
     },
 
     'fieldtrial_ios_simulator_tests': {

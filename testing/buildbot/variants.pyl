@@ -1088,6 +1088,16 @@
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_STABLE',
   },
+  'CROS_TROGDOR64_RELEASE_LKGM': {
+    'skylab': {
+      'cros_board': 'trogdor',
+      'cros_chrome_version': '107.0.5301.0',
+      'cros_img': 'trogdor64-release/R108-15130.0.0',
+      'autotest_name': 'tast.chrome-from-tls',
+    },
+    'enabled': True,
+    'identifier': 'TROGDOR64_RELEASE_LKGM',
+  },
   'LACROS_AMD64_GENERIC': {
     'args': [
       '--board=amd64-generic',

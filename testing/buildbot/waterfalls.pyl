@@ -177,6 +177,17 @@
           'gtest_tests': 'chromeos_browser_integration_tests',
         },
       },
+      'chromeos-trogdor64-chrome-skylab': {
+        'additional_compile_targets': [
+          "chrome",
+          "linux_symbols",
+          "symupload",
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_trogdor64_skylab_tests',
+        },
+        'os_type': 'chromeos',
+      },
       'lacros-amd64-generic-chrome': {
         'additional_compile_targets': [
           'chrome',

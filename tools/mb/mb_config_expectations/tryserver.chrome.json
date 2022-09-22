@@ -205,6 +205,19 @@
       "use_goma": true
     }
   },
+  "chromeos-trogdor64-chrome-skylab": {
+    "args_file": "//build/args/chromeos/trogdor64.gni",
+    "gn_args": {
+      "dcheck_always_on": true,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "is_skylab": true,
+      "ozone_platform_headless": true,
+      "use_goma": true
+    }
+  },
   "lacros-amd64-generic-chrome": {
     "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
     "gn_args": {
