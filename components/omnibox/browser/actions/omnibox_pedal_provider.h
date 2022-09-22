@@ -59,6 +59,7 @@ class OmniboxPedalProvider {
   // Befriending this test base class prevents duplication of a long exhaustive
   // unit test (specifically the TestLiteralConceptExpressions method).
   friend class OmniboxPedalImplementationsTest;
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPedalProviderTest, QueriesTriggerPedals);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalImplementationsTest,
                            ProviderFiltersPedalUpdateChrome);
   FRIEND_TEST_ALL_PREFIXES(
@@ -80,11 +81,9 @@ class OmniboxPedalProvider {
   void TokenizeAndExpandDictionary(OmniboxPedal::TokenSequence& out_tokens,
                                    const std::u16string& token_sequence_string);
 
+  // Loads all pedals groups, building the dictionary as needed from
+  // translation strings.
   void LoadPedalConcepts();
-
-  // Load a synonym group from a JSON sourced Value.
-  OmniboxPedal::SynonymGroup LoadSynonymGroupValue(
-      const base::Value& group_value) const;
 
   // Load a synonym group from a localization sourced string with comma
   // separated synonyms.

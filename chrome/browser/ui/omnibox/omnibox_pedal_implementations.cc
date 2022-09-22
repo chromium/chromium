@@ -53,7 +53,6 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
     // phrase trigger lists, and this string is translated.
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_OPTIONAL_GOOGLE_CHROME
           {
               false,
               true,
@@ -69,17 +68,14 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_REQUIRED_INFORMATION,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_REQUIRED_CLEAR_BROWSER_CACHE
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_REQUIRED_CLEAR_BROWSER_CACHE,
           },
-#endif
       };
     }
   }
@@ -120,7 +116,6 @@ class OmniboxPedalManagePasswords : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_PASSWORDS_ONE_OPTIONAL_GOOGLE_CHROME
           {
               false,
               true,
@@ -136,17 +131,14 @@ class OmniboxPedalManagePasswords : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_PASSWORDS_ONE_REQUIRED_PASSWORDS,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_PASSWORDS_ONE_REQUIRED_MANAGE_CHROME_PASSWORDS
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_PASSWORDS_ONE_REQUIRED_MANAGE_CHROME_PASSWORDS,
           },
-#endif
       };
     }
   }
@@ -173,7 +165,6 @@ class OmniboxPedalUpdateCreditCard : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CREDIT_CARD_ONE_OPTIONAL_GOOGLE_CHROME
           {
               false,
               true,
@@ -189,17 +180,14 @@ class OmniboxPedalUpdateCreditCard : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CREDIT_CARD_ONE_REQUIRED_CREDIT_CARD_INFORMATION,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CREDIT_CARD_ONE_REQUIRED_MANAGE_PAYMENT_METHODS
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CREDIT_CARD_ONE_REQUIRED_MANAGE_PAYMENT_METHODS,
           },
-#endif
       };
     }
   }
@@ -235,7 +223,6 @@ class OmniboxPedalLaunchIncognito : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_LAUNCH_INCOGNITO_ONE_OPTIONAL_GOOGLE_CHROME
           {
               false,
               true,
@@ -251,17 +238,14 @@ class OmniboxPedalLaunchIncognito : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_LAUNCH_INCOGNITO_ONE_REQUIRED_INCOGNITO_WINDOW,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_LAUNCH_INCOGNITO_ONE_REQUIRED_ENTER_INCOGNITO_MODE
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_LAUNCH_INCOGNITO_ONE_REQUIRED_ENTER_INCOGNITO_MODE,
           },
-#endif
       };
     }
   }
@@ -298,7 +282,6 @@ class OmniboxPedalTranslate : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_TRANSLATE_ONE_OPTIONAL_GOOGLE_CHROME
           {
               false,
               true,
@@ -314,17 +297,14 @@ class OmniboxPedalTranslate : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_TRANSLATE_ONE_REQUIRED_THIS_PAGE,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_TRANSLATE_ONE_REQUIRED_TRANSLATE_THIS_PAGE
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_TRANSLATE_ONE_REQUIRED_TRANSLATE_THIS_PAGE,
           },
-#endif
       };
     }
   }
@@ -368,7 +348,6 @@ class OmniboxPedalUpdateChrome : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CHROME_ONE_REQUIRED_GOOGLE_CHROME
           {
               true,
               true,
@@ -379,17 +358,14 @@ class OmniboxPedalUpdateChrome : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CHROME_ONE_REQUIRED_INSTALL,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CHROME_ONE_REQUIRED_UPDATE_CHROME
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_UPDATE_CHROME_ONE_REQUIRED_UPDATE_CHROME,
           },
-#endif
       };
     }
   }
@@ -426,7 +402,6 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_RUN_CHROME_SAFETY_CHECK_ONE_OPTIONAL_ACTIVATE
           {
               false,
               true,
@@ -447,17 +422,14 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_RUN_CHROME_SAFETY_CHECK_ONE_REQUIRED_PASSWORDS,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_RUN_CHROME_SAFETY_CHECK_ONE_REQUIRED_RUN_CHROME_SAFETY_CHECK
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_RUN_CHROME_SAFETY_CHECK_ONE_REQUIRED_RUN_CHROME_SAFETY_CHECK,
           },
-#endif
       };
     }
   }
@@ -485,7 +457,6 @@ class OmniboxPedalManageSecuritySettings : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SECURITY_SETTINGS_ANY_OPTIONAL_GOOGLE_CHROME
           {
               false,
               false,
@@ -501,17 +472,14 @@ class OmniboxPedalManageSecuritySettings : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SECURITY_SETTINGS_ONE_OPTIONAL_ALTER,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SECURITY_SETTINGS_ONE_REQUIRED_MANAGE_SECURITY_SETTINGS
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SECURITY_SETTINGS_ONE_REQUIRED_MANAGE_SECURITY_SETTINGS,
           },
-#endif
       };
     }
   }
@@ -539,7 +507,6 @@ class OmniboxPedalManageCookies : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_COOKIES_ONE_REQUIRED_COOKIE_SETTINGS
           {
               true,
               true,
@@ -555,17 +522,14 @@ class OmniboxPedalManageCookies : public OmniboxPedal {
               false,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_COOKIES_ANY_OPTIONAL_THIRD_PARTY,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_COOKIES_ONE_REQUIRED_CHROME_COOKIE_SETTINGS
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_COOKIES_ONE_REQUIRED_CHROME_COOKIE_SETTINGS,
           },
-#endif
       };
     }
   }
@@ -593,7 +557,6 @@ class OmniboxPedalManageAddresses : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_ADDRESSES_ONE_REQUIRED_CONTROL
           {
               true,
               true,
@@ -609,17 +572,14 @@ class OmniboxPedalManageAddresses : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_ADDRESSES_ONE_OPTIONAL_GOOGLE_CHROME,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_ADDRESSES_ONE_REQUIRED_ADD_ADDRESS
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_ADDRESSES_ONE_REQUIRED_ADD_ADDRESS,
           },
-#endif
       };
     }
   }
@@ -647,7 +607,6 @@ class OmniboxPedalManageSync : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SYNC_ONE_REQUIRED_SYNC_SETTINGS
           {
               true,
               true,
@@ -658,17 +617,14 @@ class OmniboxPedalManageSync : public OmniboxPedal {
               false,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SYNC_ANY_REQUIRED_GOOGLE_CHROME,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SYNC_ONE_REQUIRED_CHANGE_CHROME_BROWSER_SYNC_SETTINGS
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SYNC_ONE_REQUIRED_CHANGE_CHROME_BROWSER_SYNC_SETTINGS,
           },
-#endif
       };
     }
   }
@@ -696,7 +652,6 @@ class OmniboxPedalManageSiteSettings : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SITE_SETTINGS_ONE_REQUIRED_SITE_PERMISSIONS
           {
               true,
               true,
@@ -707,17 +662,14 @@ class OmniboxPedalManageSiteSettings : public OmniboxPedal {
               false,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SITE_SETTINGS_ANY_REQUIRED_GOOGLE_CHROME,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SITE_SETTINGS_ONE_REQUIRED_ADJUST_SITE_PERMISSIONS
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_SITE_SETTINGS_ONE_REQUIRED_ADJUST_SITE_PERMISSIONS,
           },
-#endif
       };
     }
   }
@@ -770,7 +722,6 @@ class OmniboxPedalCreateGoogleDoc : public OmniboxPedalAuthRequired {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_DOC_ONE_REQUIRED_GOOGLE_WORKSPACE
           {
               true,
               true,
@@ -786,17 +737,14 @@ class OmniboxPedalCreateGoogleDoc : public OmniboxPedalAuthRequired {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_DOC_ONE_REQUIRED_DOCUMENT,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_DOC_ONE_REQUIRED_CREATE_GOOGLE_DOC
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_DOC_ONE_REQUIRED_CREATE_GOOGLE_DOC,
           },
-#endif
       };
     }
   }
@@ -830,7 +778,6 @@ class OmniboxPedalCreateGoogleSheet : public OmniboxPedalAuthRequired {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SHEET_ANY_REQUIRED_CREATE
           {
               true,
               false,
@@ -846,17 +793,14 @@ class OmniboxPedalCreateGoogleSheet : public OmniboxPedalAuthRequired {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SHEET_ONE_REQUIRED_SPREADSHEET,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SHEET_ONE_REQUIRED_CREATE_GOOGLE_SHEET
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SHEET_ONE_REQUIRED_CREATE_GOOGLE_SHEET,
           },
-#endif
       };
     }
   }
@@ -890,7 +834,6 @@ class OmniboxPedalCreateGoogleSlide : public OmniboxPedalAuthRequired {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SLIDE_ONE_REQUIRED_CREATE
           {
               true,
               true,
@@ -906,17 +849,14 @@ class OmniboxPedalCreateGoogleSlide : public OmniboxPedalAuthRequired {
               false,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SLIDE_ANY_REQUIRED_WORKSPACE,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SLIDE_ONE_REQUIRED_CREATE_GOOGLE_SLIDE
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SLIDE_ONE_REQUIRED_CREATE_GOOGLE_SLIDE,
           },
-#endif
       };
     }
   }
@@ -952,7 +892,6 @@ class OmniboxPedalCreateGoogleCalendarEvent : public OmniboxPedalAuthRequired {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_CALENDAR_EVENT_ANY_REQUIRED_SCHEDULE
           {
               true,
               false,
@@ -968,17 +907,14 @@ class OmniboxPedalCreateGoogleCalendarEvent : public OmniboxPedalAuthRequired {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_CALENDAR_EVENT_ONE_REQUIRED_MEETING,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_CALENDAR_EVENT_ONE_REQUIRED_CREATE_GOOGLE_CAL_INVITE
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_CALENDAR_EVENT_ONE_REQUIRED_CREATE_GOOGLE_CAL_INVITE,
           },
-#endif
       };
     }
   }
@@ -1012,7 +948,6 @@ class OmniboxPedalCreateGoogleSite : public OmniboxPedalAuthRequired {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SITE_ANY_REQUIRED_CREATE
           {
               true,
               false,
@@ -1028,17 +963,14 @@ class OmniboxPedalCreateGoogleSite : public OmniboxPedalAuthRequired {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SITE_ONE_REQUIRED_WEBSITE,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SITE_ONE_REQUIRED_CREATE_GOOGLE_SITE
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_SITE_ONE_REQUIRED_CREATE_GOOGLE_SITE,
           },
-#endif
       };
     }
   }
@@ -1073,7 +1005,6 @@ class OmniboxPedalCreateGoogleKeepNote : public OmniboxPedalAuthRequired {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_KEEP_NOTE_ANY_REQUIRED_CREATE
           {
               true,
               false,
@@ -1089,17 +1020,14 @@ class OmniboxPedalCreateGoogleKeepNote : public OmniboxPedalAuthRequired {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_KEEP_NOTE_ONE_REQUIRED_NOTES,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_KEEP_NOTE_ONE_REQUIRED_CREATE_GOOGLE_KEEP_NOTE
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_KEEP_NOTE_ONE_REQUIRED_CREATE_GOOGLE_KEEP_NOTE,
           },
-#endif
       };
     }
   }
@@ -1133,7 +1061,6 @@ class OmniboxPedalCreateGoogleForm : public OmniboxPedalAuthRequired {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_FORM_ANY_REQUIRED_CREATE
           {
               true,
               false,
@@ -1149,17 +1076,14 @@ class OmniboxPedalCreateGoogleForm : public OmniboxPedalAuthRequired {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_FORM_ONE_REQUIRED_SURVEY,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_FORM_ONE_REQUIRED_CREATE_GOOGLE_FORM
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CREATE_GOOGLE_FORM_ONE_REQUIRED_CREATE_GOOGLE_FORM,
           },
-#endif
       };
     }
   }
@@ -1187,7 +1111,6 @@ class OmniboxPedalSeeChromeTips : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_SEE_CHROME_TIPS_ONE_OPTIONAL_MAKE_THE_MOST_OF
           {
               false,
               true,
@@ -1203,17 +1126,14 @@ class OmniboxPedalSeeChromeTips : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_SEE_CHROME_TIPS_ONE_REQUIRED_NEW_CHROME_FEATURES,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_SEE_CHROME_TIPS_ONE_REQUIRED_CHROME_FEATURES
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_SEE_CHROME_TIPS_ONE_REQUIRED_CHROME_FEATURES,
           },
-#endif
       };
     }
   }
@@ -1249,7 +1169,6 @@ class OmniboxPedalManageGoogleAccount : public OmniboxPedalAuthRequired {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_ACCOUNT_ONE_REQUIRED_GOOGLE_ACCOUNT
           {
               true,
               true,
@@ -1265,17 +1184,14 @@ class OmniboxPedalManageGoogleAccount : public OmniboxPedalAuthRequired {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_ACCOUNT_ONE_REQUIRED_CONTROL,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_ACCOUNT_ONE_REQUIRED_CONTROL_MY_GOOGLE_ACCOUNT
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_ACCOUNT_ONE_REQUIRED_CONTROL_MY_GOOGLE_ACCOUNT,
           },
-#endif
       };
     }
   }
@@ -1312,7 +1228,6 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CHANGE_GOOGLE_PASSWORD_ONE_REQUIRED_GOOGLE_ACCOUNT_PASSWORD
           {
               true,
               true,
@@ -1328,17 +1243,14 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CHANGE_GOOGLE_PASSWORD_ONE_REQUIRED_CHANGE,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CHANGE_GOOGLE_PASSWORD_ONE_REQUIRED_CHANGE_GMAIL_PASSWORD
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CHANGE_GOOGLE_PASSWORD_ONE_REQUIRED_CHANGE_GMAIL_PASSWORD,
           },
-#endif
       };
     }
   }
@@ -1371,7 +1283,6 @@ class OmniboxPedalCloseIncognitoWindows : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CLOSE_INCOGNITO_WINDOWS_ONE_REQUIRED_DELETE
           {
               true,
               true,
@@ -1382,17 +1293,14 @@ class OmniboxPedalCloseIncognitoWindows : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CLOSE_INCOGNITO_WINDOWS_ONE_REQUIRED_INCOGNITO_WINDOW,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CLOSE_INCOGNITO_WINDOWS_ONE_REQUIRED_CLOSE_INCOGNITO_WINDOW
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CLOSE_INCOGNITO_WINDOWS_ONE_REQUIRED_CLOSE_INCOGNITO_WINDOW,
           },
-#endif
       };
     }
   }
@@ -1430,23 +1338,19 @@ class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_PLAY_CHROME_DINO_GAME
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_PLAY_CHROME_DINO_GAME,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_CHROME_DINO
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_PLAY_CHROME_DINO_GAME_ONE_REQUIRED_CHROME_DINO,
           },
-#endif
       };
     }
   }
@@ -1481,7 +1385,6 @@ class OmniboxPedalFindMyPhone : public OmniboxPedalAuthRequired {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_FIND_MY_PHONE_ONE_REQUIRED_HELP_ME_LOCATE
           {
               true,
               true,
@@ -1492,17 +1395,14 @@ class OmniboxPedalFindMyPhone : public OmniboxPedalAuthRequired {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_FIND_MY_PHONE_ONE_REQUIRED_LOST_DEVICE,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_FIND_MY_PHONE_ONE_REQUIRED_FIND_LOST_PHONE
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_FIND_MY_PHONE_ONE_REQUIRED_FIND_LOST_PHONE,
           },
-#endif
       };
     }
   }
@@ -1539,23 +1439,19 @@ class OmniboxPedalManageGooglePrivacy : public OmniboxPedalAuthRequired {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_PRIVACY_ONE_REQUIRED_MANAGE_GOOGLE_PRIVACY_SETTINGS
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_PRIVACY_ONE_REQUIRED_MANAGE_GOOGLE_PRIVACY_SETTINGS,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_PRIVACY_ONE_REQUIRED_CHANGE_GOOGLE_PRIVACY_SETTINGS
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_GOOGLE_PRIVACY_ONE_REQUIRED_CHANGE_GOOGLE_PRIVACY_SETTINGS,
           },
-#endif
       };
     }
   }
@@ -1589,7 +1485,6 @@ class OmniboxPedalManageChromeSettings : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_SETTINGS_ONE_OPTIONAL_CONTROL
           {
               false,
               true,
@@ -1597,17 +1492,14 @@ class OmniboxPedalManageChromeSettings : public OmniboxPedal {
           },
           {true, true,
            IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_SETTINGS_ONE_REQUIRED_CHROME_BROWSER_SETTINGS},
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_SETTINGS_ONE_REQUIRED_CHANGE_CHROME_SETTINGS
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_SETTINGS_ONE_REQUIRED_CHANGE_CHROME_SETTINGS,
           },
-#endif
       };
     }
   }
@@ -1635,7 +1527,6 @@ class OmniboxPedalManageChromeDownloads : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_DOWNLOADS_ONE_REQUIRED_CONTROL
           {
               true,
               true,
@@ -1646,17 +1537,14 @@ class OmniboxPedalManageChromeDownloads : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_DOWNLOADS_ONE_REQUIRED_CHROME_BROWSER_DOWNLOADS,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_DOWNLOADS_ONE_REQUIRED_MANAGE_CHROME_DOWNLOADS
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_DOWNLOADS_ONE_REQUIRED_MANAGE_CHROME_DOWNLOADS,
           },
-#endif
       };
     }
   }
@@ -1684,7 +1572,6 @@ class OmniboxPedalViewChromeHistory : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_VIEW_CHROME_HISTORY_ONE_REQUIRED_REVISIT
           {
               true,
               true,
@@ -1695,17 +1582,14 @@ class OmniboxPedalViewChromeHistory : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_VIEW_CHROME_HISTORY_ONE_REQUIRED_GOOGLE_CHROME_BROWSING_HISTORY,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_VIEW_CHROME_HISTORY_ONE_REQUIRED_SEE_CHROME_HISTORY
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_VIEW_CHROME_HISTORY_ONE_REQUIRED_SEE_CHROME_HISTORY,
           },
-#endif
       };
     }
   }
@@ -1732,23 +1616,19 @@ class OmniboxPedalShareThisPage : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_SHARE_THIS_PAGE_ONE_REQUIRED_SHARE_LINK_WITH_QR_CODE
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_SHARE_THIS_PAGE_ONE_REQUIRED_SHARE_LINK_WITH_QR_CODE,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_SHARE_THIS_PAGE_ONE_REQUIRED_SHARE_THIS_PAGE
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_SHARE_THIS_PAGE_ONE_REQUIRED_SHARE_THIS_PAGE,
           },
-#endif
       };
     }
   }
@@ -1790,7 +1670,6 @@ class OmniboxPedalManageChromeAccessibility : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_ACCESSIBILITY_ONE_OPTIONAL_CUSTOMIZE
           {
               false,
               true,
@@ -1801,17 +1680,14 @@ class OmniboxPedalManageChromeAccessibility : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_ACCESSIBILITY_ONE_REQUIRED_ACCESSIBILITY_SETTINGS,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_ACCESSIBILITY_ONE_REQUIRED_CUSTOMIZE_CHROME_ACCESSIBILITY
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_ACCESSIBILITY_ONE_REQUIRED_CUSTOMIZE_CHROME_ACCESSIBILITY,
           },
-#endif
       };
     }
   }
@@ -1848,7 +1724,6 @@ class OmniboxPedalManageChromeOSAccessibility : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROMEOS_ACCESSIBILITY_ONE_OPTIONAL_CUSTOMIZE
           {
               false,
               true,
@@ -1859,17 +1734,14 @@ class OmniboxPedalManageChromeOSAccessibility : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROMEOS_ACCESSIBILITY_ONE_REQUIRED_ACCESSIBILITY_SETTINGS,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROMEOS_ACCESSIBILITY_ONE_REQUIRED_CUSTOMIZE_CHROMEOS_ACCESSIBILITY
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROMEOS_ACCESSIBILITY_ONE_REQUIRED_CUSTOMIZE_CHROMEOS_ACCESSIBILITY,
           },
-#endif
       };
     }
   }
@@ -1902,7 +1774,6 @@ class OmniboxPedalCustomizeChromeFonts : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CUSTOMIZE_CHROME_FONTS_ONE_OPTIONAL_CUSTOMIZE
           {
               false,
               true,
@@ -1918,17 +1789,14 @@ class OmniboxPedalCustomizeChromeFonts : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CUSTOMIZE_CHROME_FONTS_ONE_REQUIRED_FONT_SIZING,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CUSTOMIZE_CHROME_FONTS_ONE_REQUIRED_CHANGE_BROWSER_FONT
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CUSTOMIZE_CHROME_FONTS_ONE_REQUIRED_CHANGE_BROWSER_FONT,
           },
-#endif
       };
     }
   }
@@ -1957,7 +1825,6 @@ class OmniboxPedalManageChromeThemes : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_THEMES_ONE_OPTIONAL_CUSTOMIZE
           {
               false,
               true,
@@ -1968,17 +1835,14 @@ class OmniboxPedalManageChromeThemes : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_THEMES_ONE_REQUIRED_CHROME_BACKGROUNDS,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_THEMES_ONE_REQUIRED_CUSTOMIZE_CHROME_APPEARANCE
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_CHROME_THEMES_ONE_REQUIRED_CUSTOMIZE_CHROME_APPEARANCE,
           },
-#endif
       };
     }
   }
@@ -2007,7 +1871,6 @@ class OmniboxPedalCustomizeSearchEngines : public OmniboxPedal {
       bool locale_is_english) const override {
     if (locale_is_english) {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CUSTOMIZE_SEARCH_ENGINES_ONE_OPTIONAL_CUSTOMIZE
           {
               false,
               true,
@@ -2023,17 +1886,14 @@ class OmniboxPedalCustomizeSearchEngines : public OmniboxPedal {
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CUSTOMIZE_SEARCH_ENGINES_ONE_OPTIONAL_GOOGLE_CHROME,
           },
-#endif
       };
     } else {
       return {
-#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CUSTOMIZE_SEARCH_ENGINES_ONE_REQUIRED_ADD_CUSTOM_SEARCH
           {
               true,
               true,
               IDS_OMNIBOX_PEDAL_SYNONYMS_CUSTOMIZE_SEARCH_ENGINES_ONE_REQUIRED_ADD_CUSTOM_SEARCH,
           },
-#endif
       };
     }
   }

@@ -331,11 +331,6 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
       continue;
     }
     OmniboxPedal* pedal = pedal_iter->second.get();
-    const base::Value* ui_strings =
-        pedal_value.FindDictKey("omnibox_ui_strings");
-    if (ui_strings && pedal->GetLabelStrings().hint.empty()) {
-      pedal->SetLabelStrings(*ui_strings);
-    }
 
     OmniboxPedal::TokenSequence verbatim_sequence(0);
     TokenizeAndExpandDictionary(verbatim_sequence,
@@ -345,30 +340,21 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
 
     std::vector<OmniboxPedal::SynonymGroupSpec> specs =
         pedal->SpecifySynonymGroups(language_code == "en");
-    // `specs` will be empty for any pedals not yet processed by l10n because
-    // the appropriate string names won't be defined. In such cases, we fall
-    // back to loading from JSON to robustly handle partial presence of data.
-    if (specs.empty()) {
-      for (const auto& group_value : pedal_value.FindKey("groups")->GetList()) {
-        // Note, group JSON values are preprocessed by the data generation tool.
-        pedal->AddSynonymGroup(LoadSynonymGroupValue(group_value));
-      }
-    } else {
-      for (const auto& spec : specs) {
-        // Note, group strings are not preprocessed; they are the raw outputs
-        // from translators in the localization pipeline, so we need to remove
-        // ignore group sequences and validate remaining data. The groups
-        // are sorted *after* erasing the ignore group to ensure no synonym
-        // token sequences are made shorter than sequences later in the order,
-        // which would break an invariant expected by the matching algorithm.
-        OmniboxPedal::SynonymGroup group =
-            LoadSynonymGroupString(spec.required, spec.match_once,
-                                   l10n_util::GetStringUTF16(spec.message_id));
-        group.EraseIgnoreGroup(ignore_group_);
-        group.SortSynonyms();
-        if (group.IsValid()) {
-          pedal->AddSynonymGroup(std::move(group));
-        }
+    DCHECK(!specs.empty());
+    for (const auto& spec : specs) {
+      // Note, group strings are not preprocessed; they are the raw outputs
+      // from translators in the localization pipeline, so we need to remove
+      // ignore group sequences and validate remaining data. The groups
+      // are sorted *after* erasing the ignore group to ensure no synonym
+      // token sequences are made shorter than sequences later in the order,
+      // which would break an invariant expected by the matching algorithm.
+      OmniboxPedal::SynonymGroup group =
+          LoadSynonymGroupString(spec.required, spec.match_once,
+                                 l10n_util::GetStringUTF16(spec.message_id));
+      group.EraseIgnoreGroup(ignore_group_);
+      group.SortSynonyms();
+      if (group.IsValid()) {
+        pedal->AddSynonymGroup(std::move(group));
       }
     }
   }
@@ -377,25 +363,6 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   for (auto& entry : pedals_) {
     entry.second->OnLoaded();
   }
-}
-
-OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupValue(
-    const base::Value& group_value) const {
-  DCHECK(group_value.is_dict());
-  const bool required = group_value.FindKey("required")->GetBool();
-  const bool single = group_value.FindKey("single")->GetBool();
-  const auto& synonyms = group_value.FindKey("synonyms")->GetList();
-  OmniboxPedal::SynonymGroup synonym_group(required, single, synonyms.size());
-  for (const auto& synonyms_value : synonyms) {
-    DCHECK(synonyms_value.is_list());
-    const auto& synonyms_value_list = synonyms_value.GetList();
-    OmniboxPedal::TokenSequence synonym_all_tokens(synonyms_value_list.size());
-    for (const auto& token_index_value : synonyms_value_list) {
-      synonym_all_tokens.Add(token_index_value.GetInt());
-    }
-    synonym_group.AddSynonym(std::move(synonym_all_tokens));
-  }
-  return synonym_group;
 }
 
 OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupString(

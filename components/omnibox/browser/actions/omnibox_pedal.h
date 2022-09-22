@@ -14,7 +14,6 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/buildflags.h"
-#include "components/strings/grit/components_strings.h"
 #include "url/gurl.h"
 
 // Conceptually, a Pedal is a fixed action that can be taken by the user
@@ -181,10 +180,6 @@ class OmniboxPedal : public OmniboxAction {
   // This can be used to override implementation bits based on flags, etc.
   virtual void OnLoaded();
 
-  // Writes labels associated with this Pedal by taking named
-  //  values from provided dictionary value |ui_strings|.
-  void SetLabelStrings(const base::Value& ui_strings);
-
   // Sets the destination URL for the Pedal.
   void SetNavigationUrl(const GURL& url);
 
@@ -209,7 +204,7 @@ class OmniboxPedal : public OmniboxAction {
 
   // Specify synonym groups to load from localization strings.
   // `locale_is_english` provides a hint about which locale is being loaded,
-  // used by batch3 pedals to pilot simplified whole-phrase translations.
+  // used to support both synonym-groups and whole-phrase localization.
   virtual std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const;
 
@@ -266,15 +261,10 @@ class OmniboxPedal : public OmniboxAction {
 // This is a simple pedal suitable only for use by tests.
 class TestOmniboxPedalClearBrowsingData : public OmniboxPedal {
  public:
-  explicit TestOmniboxPedalClearBrowsingData()
-      : OmniboxPedal(
-            OmniboxPedalId::CLEAR_BROWSING_DATA,
-            LabelStrings(
-                IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT,
-                IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS,
-                IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),
-            GURL("chrome://settings/clearBrowserData")) {}
+  explicit TestOmniboxPedalClearBrowsingData();
+
+  std::vector<SynonymGroupSpec> SpecifySynonymGroups(
+      bool locale_is_english) const override;
 
  protected:
   ~TestOmniboxPedalClearBrowsingData() override = default;
