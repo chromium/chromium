@@ -37,7 +37,6 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
         mock => BrowserCommandProxy.setInstance({handler: mock}));
   });
 
-  // TODO(crbug.com/1357816): Cast returned data as |Promo|.
   function createPromo() {
     return {
       id: '7',
@@ -78,8 +77,9 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     };
   }
 
-  async function createMiddleSlotPromo(canShowPromo: boolean):
-      Promise<MiddleSlotPromoElement> {
+  async function createMiddleSlotPromo(
+      canShowPromo: boolean,
+      hasPromoId: boolean = true): Promise<MiddleSlotPromoElement> {
     promoBrowserCommandHandler.setResultFor(
         'canExecuteCommand', Promise.resolve({canExecute: canShowPromo}));
 
@@ -88,8 +88,11 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     const loaded =
         eventToPromise('ntp-middle-slot-promo-loaded', document.body);
 
-    // TODO(crbug.com/1357816): Move casting to createPromo() declaration.
-    callbackRouterRemote.setPromo(createPromo() as Promo);
+    const promo = createPromo() as Promo;
+    if (!hasPromoId) {
+      promo.id = '';
+    }
+    callbackRouterRemote.setPromo(promo);
     await callbackRouterRemote.$.flushForTesting();
 
     if (canShowPromo) {
@@ -194,6 +197,19 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       });
     });
 
+    test(`dismiss button doesn't show if there is no promo id`, async () => {
+      const canShowPromo = true;
+      const hasPromoId = false;
+      const middleSlotPromo =
+          await createMiddleSlotPromo(canShowPromo, hasPromoId);
+      assertHasContent(canShowPromo, middleSlotPromo);
+      const parts = middleSlotPromo.$.promoAndDismissContainer.children;
+      assertEquals(2, parts.length);
+
+      const promoContainer = parts[0] as HTMLElement;
+      assertEquals(6, promoContainer.children.length);
+    });
+
     test(`clicking dismiss button dismisses promo`, async () => {
       const canShowPromo = true;
       const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
@@ -245,7 +261,6 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       assertEquals(true, middleSlotPromo.$.promoAndDismissContainer.hidden);
 
       const promo = createPromo();
-      // TODO(crbug.com/1357816): Move casting to createPromo() declaration.
       callbackRouterRemote.setPromo(promo as Promo);
       await callbackRouterRemote.$.flushForTesting();
       assertEquals(false, middleSlotPromo.$.promoAndDismissContainer.hidden);

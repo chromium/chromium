@@ -20,7 +20,7 @@
     padding-inline-start: 8px;
   }
 
-  :host([middle-slot-promo-id_]) #promoAndDismissContainer {
+  :host([shown-middle-slot-promo-id_]) #promoAndDismissContainer {
     padding-inline-end: 12px;
   }
 
@@ -77,7 +77,7 @@
 <!-- Visibility is toggled in TS -->
 <div id="promoAndDismissContainer" hidden>
   <!-- Promo parts are added by TS. -->
-  <template is="dom-if" if="[[middleSlotPromoId_]]">
+  <template is="dom-if" if="[[shownMiddleSlotPromoId_]]">
     <cr-icon-button id="dismissPromoButton"
         class="icon-clear"
         aria-label="$i18n{close}"
