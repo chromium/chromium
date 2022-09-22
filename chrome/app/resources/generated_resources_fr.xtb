@@ -2175,6 +2175,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2977480621796371840">Retirer du groupe</translation>
 <translation id="2979639724566107830">Ouvrir dans une nouvelle fenêtre</translation>
 <translation id="2981113813906970160">Afficher le grand curseur</translation>
+<translation id="2981293774053328982">Ce fichier contient un logiciel malveillant qui peut compromettre vos comptes personnels ou de réseaux sociaux</translation>
 <translation id="2983373101216420412">Niveau de batterie de l'étui (<ph name="PERCENTAGE" /> %).</translation>
 <translation id="2985348301114641460">Envoyer une requête à votre administrateur pour installer "<ph name="EXTENSION_NAME" />" ?</translation>
 <translation id="2987620471460279764">Texte partagé depuis un autre appareil</translation>
@@ -3759,6 +3760,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4514610446763173167">Activer/Désactiver la lecture ou la mise en pause de la vidéo</translation>
 <translation id="451515744433878153">Supprimer</translation>
 <translation id="4515872537870654449">Contactez Dell pour faire réparer votre équipement. La station d'accueil ne peut pas fonctionner si le ventilateur n'est pas en état de marche.</translation>
+<translation id="4518840066030486079">Style du mode de la touche Maj</translation>
 <translation id="4519331665958994620">Les sites peuvent demander à utiliser votre caméra</translation>
 <translation id="4519935350946509010">Erreur de connexion.</translation>
 <translation id="4520385623207007473">Cookies utilisés</translation>
@@ -3854,6 +3856,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4598345735110653698">Gérer les clés d'accès</translation>
 <translation id="4598556348158889687">Gestion du stockage</translation>
 <translation id="4598776695426288251">Wi-Fi disponible via plusieurs appareils</translation>
+<translation id="4600071396330666617">Nombre de suggestions</translation>
 <translation id="4601426376352205922">Marquer comme non lu</translation>
 <translation id="4602466770786743961">Toujours autoriser <ph name="HOST" /> à accéder à votre caméra et à votre micro</translation>
 <translation id="4606551464649945562">Interdire aux sites de créer un plan 3D de votre environnement ou de suivre la position de la caméra</translation>
@@ -4300,6 +4303,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5043913660911154449">Vous pouvez également préciser le fichier PPD correspondant à votre imprimante <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
 <translation id="504561833207953641">Ouverture dans une session de navigateur existante.</translation>
+<translation id="5049614114599109018">Utiliser l'historique de saisie</translation>
 <translation id="5051836348807686060">La vérification orthographique n'est pas disponible pour les langues que vous avez sélectionnées</translation>
 <translation id="5052499409147950210">Modifier le site</translation>
 <translation id="505347685865235222">Groupe sans nom – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -6727,6 +6731,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7404065585741198296">Votre téléphone avec un câble USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Contrôle de sécurité effectué il y a 1 heure}one{Contrôle de sécurité effectué il y a {NUM_HOURS} heure}other{Contrôle de sécurité effectué il y a {NUM_HOURS} heures}}</translation>
 <translation id="740624631517654988">Fenêtre pop-up bloquée</translation>
+<translation id="7406912950279255498">Mode d'inversion des couleurs</translation>
 <translation id="7407430846095439694">Importer et lier</translation>
 <translation id="7407504355934009739">La plupart des internautes bloquent les notifications provenant de ce site</translation>
 <translation id="740810853557944681">Ajouter un serveur d'impression</translation>
@@ -7677,6 +7682,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
     <ph name="BEGIN_PARAGRAPH3" />Le propriétaire de l'appareil peut contrôler cette fonctionnalité dans Paramètres &gt; Avancés &gt; Envoyer automatiquement des données de diagnostic et d'utilisation à Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Si vous activez l'enregistrement de l'activité additionnelle de votre enfant sur le Web et les applications, ces données peuvent être enregistrées dans son compte Google. Découvrez plus en détail ces paramètres et comment les régler sur le site families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificat client non valide</translation>
+<translation id="8270162672241199380">Programme d'installation de Steam</translation>
 <translation id="827097179112817503">Afficher le bouton Accueil</translation>
 <translation id="8271268254812352141">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous effectuez un clic droit ou appuyez de manière prolongée sur du texte. Personnalisez les langues de traduction dans <ph name="LINK_BEGIN" />Langues des sites Web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Les étapes suivantes sont réservées aux parents. Vous pourrez redonner l'appareil <ph name="DEVICE_TYPE" /> à votre enfant après la configuration du compte.</translation>

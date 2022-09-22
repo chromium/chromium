@@ -2305,6 +2305,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3090819949319990166">Kunne ikke kopiere den eksterne crx-filen til <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» er tilkoblet</translation>
 <translation id="3093714882666365141">Ikke la nettsteder installere betalingsbehandlere</translation>
+<translation id="3093958632721393232">Slå på kun når jeg har lite batteri</translation>
 <translation id="3094141017404513551">Surfingen din blir atskilt fra <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Bokmerker, passord og andre nettlesingsdata synkroniseres med primærkontoen.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potensielt skadelig utvidelse er slått av. Du kan også fjerne den.}other{{NUM_EXTENSIONS} potensielt skadelige utvidelser er slått av. Du kan også fjerne dem.}}</translation>
@@ -5023,6 +5024,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5747552184818312860">Utløper</translation>
 <translation id="5747785204778348146">Utvikler – ustabil</translation>
 <translation id="5747809636523347288">&amp;Lim inn og gå til <ph name="URL" /></translation>
+<translation id="5748137879145720682">Slå på når datamaskinen kobles fra strøm</translation>
 <translation id="5751345516399502412">Sjekk tilgjengelighet for internettdeling</translation>
 <translation id="5755022574660047665">minner fra Google Foto</translation>
 <translation id="5756163054456765343">&amp;Brukerstøtte</translation>
@@ -7656,6 +7658,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8248381369318572865">Få tilgang til mikrofonen din og analyser talen din</translation>
 <translation id="8248887045858762645">Chrome-tips</translation>
 <translation id="8249048954461686687">OEM-mappe</translation>
+<translation id="8249239468199142122">Batterisparing</translation>
 <translation id="8249615410597138718">Send til enhetene dine</translation>
 <translation id="8250210000648910632">Tom for lagringsplass</translation>
 <translation id="8251441930213048644">Last inn på nytt nå</translation>

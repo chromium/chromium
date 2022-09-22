@@ -2186,6 +2186,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2977480621796371840">Ondoa kwenye kikundi</translation>
 <translation id="2979639724566107830">Fungua katika dirisha jipya</translation>
 <translation id="2981113813906970160">Onyesha kiteuzi kikubwa cha kipanya</translation>
+<translation id="2981293774053328982">Faili hii ina programu hasidi inayoweza kuathiri akaunti zako binafsi na za mitandao ya kijamii</translation>
 <translation id="2983373101216420412">Kiwango cha betri cha kifuniko <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Ungependa kutuma ombi kwa msimamizi wako ili asakinishe "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Maandishi yaliyoshirikiwa kutoka kifaa kingine</translation>
@@ -3769,6 +3770,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4514610446763173167">Geuza video ili ucheze au usimamishe</translation>
 <translation id="451515744433878153">Ondoa</translation>
 <translation id="4515872537870654449">Wasiliana na Dell ili upate huduma. Kituo kitajifunga ikiwa feni haifanyi kazi.</translation>
+<translation id="4518840066030486079">Mtindo wa Hali ya Kitufe cha Shift</translation>
 <translation id="4519331665958994620">Tovuti zinaweza kuomba ruhusa ya kutumia kamera yako</translation>
 <translation id="4519935350946509010">Kosa la muunganisho.</translation>
 <translation id="4520385623207007473">Vidakuzi vinavyotumika</translation>
@@ -3864,6 +3866,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4598345735110653698">Dhibiti manenosiri</translation>
 <translation id="4598556348158889687">Udhibiti wa hifadhi</translation>
 <translation id="4598776695426288251">Wi-Fi inapatikana kupitia vifaa vingi</translation>
+<translation id="4600071396330666617">Idadi ya mapendekezo</translation>
 <translation id="4601426376352205922">Tia alama kuwa Hujasoma</translation>
 <translation id="4602466770786743961">Ruhusu <ph name="HOST" /> ifikie kamera na maikrofoni yako kila wakati</translation>
 <translation id="4606551464649945562">Usiruhusu tovuti zibuni ramani ya 3D ya mazingira yako wala kufuatilia mkao wa kamera</translation>
@@ -4310,6 +4313,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5043913660911154449">Au ubainishe PPD ya printa yako <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Nenosiri lisilo sahihi</translation>
 <translation id="504561833207953641">Inafungua katika kipindi cha kuvinjari kilichopo.</translation>
+<translation id="5049614114599109018">Tumia Historia ya Kuingiza data</translation>
 <translation id="5051836348807686060">Kikagua tahajia hakitumiki kwa lugha uliyochagua</translation>
 <translation id="5052499409147950210">Badilisha tovuti</translation>
 <translation id="505347685865235222">Kikundi kisicho na jina - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -6734,6 +6738,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7404065585741198296">Simu yako kwa kutumia kebo ya USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Angalizo la usalama lilitekelezwa saa moja iliyopita}other{Angalizo la usalama lilitekelezwa saa {NUM_HOURS} zilizopita}}</translation>
 <translation id="740624631517654988">Kidirisha ibukizi kimezuiwa</translation>
+<translation id="7406912950279255498">Hali ya ugeuzaji rangi</translation>
 <translation id="7407430846095439694">Leta na Ufunge</translation>
 <translation id="7407504355934009739">Watu wengi huzuia arifa kutoka tovuti hii</translation>
 <translation id="740810853557944681">Weka seva ya kuchapisha</translation>
@@ -7685,6 +7690,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
     <ph name="BEGIN_PARAGRAPH3" />Mmiliki anaweza kudhibiti kipengele hiki katika Mipangilio &gt; Mipangilio ya Kina &gt; Tuma kiotomatiki data ya uchunguzi na matumizi kwa Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Ikiwa umewasha mipangilio ya ziada ya Historia ya Shughuli kwenye Wavuti na Programu kwa ajili ya mtoto wako, data hii inaweza kuhifadhiwa katika Akaunti yake ya Google. Pata maelezo zaidi kuhusu mipangilio hii na jinsi ya kuirekebisha katika families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Cheti cha kiteja si sahihi</translation>
+<translation id="8270162672241199380">Kisakinishaji cha Programu ya Steam</translation>
 <translation id="827097179112817503">Onyesha kitufe cha mwanzo</translation>
 <translation id="8271268254812352141">Pata ufafanuzi, tafsiri au ubadilishaji wa vipimo unapobofya kulia au unapogusa na kushikilia maandishi. Weka mapendeleo ya lugha za tafsiri katika sehemu ya <ph name="LINK_BEGIN" />Lugha zinazotumika kwenye tovuti<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Mzazi, hatua chache zinazofuata ni zako. Ukishaweka mipangilio ya akaunti, unaweza kumrudishia mtoto <ph name="DEVICE_TYPE" />.</translation>

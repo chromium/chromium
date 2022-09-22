@@ -1616,6 +1616,7 @@
 <translation id="2468178265280335214">การเร่งความเร็วในการเลื่อนทัชแพด</translation>
 <translation id="2468205691404969808">ใช้คุกกี้เพื่อให้จดจำค่ากำหนดของคุณ แม้ว่าคุณไม่ได้เข้าชมหน้าเว็บเหล่านั้น</translation>
 <translation id="2468402215065996499">ทามาก็อตจิ</translation>
+<translation id="2468470085922875120">คุณใช้รหัสผ่านที่คาดเดาได้ยาก</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 แท็บ}other{<ph name="GROUP_TITLE" /> - # แท็บ}}</translation>
 <translation id="2469141124738294431">สถานะ VM</translation>
 <translation id="2469259292033957819">คุณไม่มีเครื่องพิมพ์ที่บันทึกไว้</translation>
@@ -1953,6 +1954,7 @@
 <translation id="2783321960289401138">สร้างทางลัด...</translation>
 <translation id="2783829359200813069">เลือกประเภทการเข้ารหัส</translation>
 <translation id="2783952358106015700">ใช้คีย์ความปลอดภัยกับ <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">การตรวจสอบรหัสผ่าน</translation>
 <translation id="2785873697295365461">ตัวอธิบายไฟล์</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">เก็บข้อมูลการท่องเว็บในเครื่อง (บุ๊กมาร์ก รหัสผ่าน ประวัติการเข้าชม ฯลฯ)</translation>
@@ -2028,6 +2030,7 @@
 <translation id="2844169650293029770">อุปกรณ์ USB-C (พอร์ตด้านหน้าซ้าย)</translation>
 <translation id="2844809857160214557">ดูและจัดการงานพิมพ์</translation>
 <translation id="2845382757467349449">แสดงแถบบุ๊กมาร์กเสมอ</translation>
+<translation id="284581348330507117">สร้างรหัสผ่านที่ไม่ซ้ำกัน</translation>
 <translation id="284805635805850872">นำซอฟต์แวร์อันตรายออกไหม</translation>
 <translation id="2849035674501872372">ค้นหา</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2179,6 +2182,7 @@
 <translation id="2985348301114641460">ส่งคำขอให้ผู้ดูแลระบบติดตั้ง "<ph name="EXTENSION_NAME" />" ไหม</translation>
 <translation id="2987620471460279764">ข้อความแชร์มาจากอุปกรณ์อื่น</translation>
 <translation id="2988018669686457659">โปรแกรมแสดงภาพสำรอง</translation>
+<translation id="2988328607561082373">คุณไม่ได้ใช้รหัสผ่านซ้ำ</translation>
 <translation id="2989123969927553766">การเร่งความเร็วในการเลื่อนเมาส์</translation>
 <translation id="2989474696604907455">ไม่ได้แนบ</translation>
 <translation id="2989786307324390836">DER-encoded binary, ใบรับรองแบบเดี่ยว</translation>
@@ -2207,6 +2211,7 @@
 <translation id="3009178788565917040">เอาต์พุต</translation>
 <translation id="3009300415590184725">คุณแน่ใจหรือไม่ว่าต้องการยกเลิกขั้นตอนการตั้งค่าบริการข้อมูลโทรศัพท์มือถือ</translation>
 <translation id="3009779501245596802">ฐานข้อมูลที่มีการจัดทำดัชนี</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{คุณใช้รหัสผ่านที่รัดกุม}=1{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}other{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}}</translation>
 <translation id="3010279545267083280">ลบรหัสผ่านแล้ว</translation>
 <translation id="3010389206479238935">บังคับเปิดใน</translation>
 <translation id="3011384993885886186">สีเทาโทนอุ่น</translation>
@@ -4408,6 +4413,7 @@
 <translation id="5153234146675181447">เลิกจำโทรศัพท์</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">การตั้งค่าขั้นสูงสำหรับ <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{ไม่มีรหัสผ่านที่บันทึกไว้}=1{ตรวจสอบรหัสผ่านสำหรับเว็บไซต์ {COUNT} รายการแล้ว}other{ตรวจสอบรหัสผ่านสำหรับเว็บไซต์และแอป {COUNT} รายการแล้ว}}</translation>
 <translation id="5154702632169343078">เรื่อง</translation>
 <translation id="5155327081870541046">ป้อนทางลัดของเว็บไซต์ที่ต้องการค้นหาในแถบที่อยู่ เช่น @bookmarks จากนั้นกดแป้นพิมพ์ลัดที่ต้องการ แล้วป้อนข้อความค้นหา</translation>
 <translation id="5156638757840305347">ระบบจะไฮไลต์เคอร์เซอร์เมื่อปรากฏขึ้นหรือเคลื่อนที่</translation>
@@ -4986,6 +4992,7 @@
 <translation id="5713158217420111469">เชื่อมต่อกับ <ph name="DEVICE" /> แล้ว</translation>
 <translation id="5713960379473463904">รูปแบบการป้อนช่องว่าง</translation>
 <translation id="5715711091495208045">โบรกเกอร์ปลั๊กอิน: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">คุณควรเปลี่ยนรหัสผ่านดังกล่าวตอนนี้เลย</translation>
 <translation id="5719603411793408026">เครื่องมือค้นหาเริ่มต้น</translation>
 <translation id="5719854774000914513">เว็บไซต์สามารถขอเชื่อมต่อกับอุปกรณ์ HID ได้</translation>
 <translation id="572155275267014074">การตั้งค่า Android</translation>
@@ -6440,6 +6447,7 @@
 <translation id="7098447629416471489">เครื่องมือค้นหาอื่นๆ ที่บันทึกไว้จะแสดงที่นี่</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{นำแอปออก}other{นำแอปออก}}</translation>
 <translation id="7099337801055912064">โหลด PPD ขนาดใหญ่ไม่ได้ ขนาดต้องไม่เกิน 250 KB</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{ไม่มีรหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}other{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}}</translation>
 <translation id="7102687220333134671">การอัปเดตอัตโนมัติเปิดอยู่</translation>
 <translation id="7102832101143475489">คำขอหมดเวลาแล้ว</translation>
 <translation id="710640343305609397">เปิดการตั้งค่าเครือข่าย</translation>
@@ -7384,6 +7392,7 @@
 รักษาไฟล์กุญแจของคุณไว้ในที่ปลอดภัย คุณจะต้องใช้ไฟล์นี้ในการสร้างส่วนขยายรุ่นใหม่</translation>
 <translation id="8002274832045662704">การกำหนดค่าขั้นสูงของเครื่องพิมพ์</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ไม่มีให้ใช้งานแล้ว</translation>
+<translation id="8004092996156083991">หากรหัสผ่านถูกละเมิด เราจะแจ้งให้คุณทราบ</translation>
 <translation id="8004582292198964060">เบราว์เซอร์</translation>
 <translation id="8005600846065423578">อนุญาตให้ <ph name="HOST" /> ดูคลิปบอร์ดได้เสมอ</translation>
 <translation id="8006630792898017994">Space หรือ Tab</translation>
@@ -7881,6 +7890,7 @@
 <translation id="8470513973197838199">รหัสผ่านที่บันทึกไว้สำหรับ <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">โดยปกติแล้วเว็บไซต์จะเชื่อมต่อกับอุปกรณ์ USB เพื่อดำเนินการตามฟีเจอร์ต่างๆ เช่น พิมพ์เอกสาร หรือบันทึกลงในอุปกรณ์จัดเก็บข้อมูล</translation>
 <translation id="8471959340398751476">ส่วนลดปิดอยู่ คุณเปิดส่วนลดได้ในเมนูการปรับแต่ง</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{รหัสผ่านของคุณไม่ซ้ำกันเลย}=1{มีรหัสผ่านที่ใช้ซ้ำ {COUNT} รายการ}other{มีรหัสผ่านที่ใช้ซ้ำ {COUNT} รายการ}}</translation>
 <translation id="8472623782143987204">การสนับสนุนฮาร์ดแวร์</translation>
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>
 <translation id="8475313423285172237">โปรแกรมอื่นในคอมพิวเตอร์ของคุณเพิ่มส่วนขยายที่อาจเปลี่ยนวิธีการทำงานของ Chrome</translation>
@@ -8359,6 +8369,7 @@
 <translation id="8940081510938872932">คอมพิวเตอร์ของคุณทำงานหลายอย่างเกินไปในขณะนี้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="8940381019874223173">จาก Google Photos</translation>
 <translation id="8941173171815156065">เพิกถอนสิทธิ์ "<ph name="PERMISSION" />"</translation>
+<translation id="894191600409472540">สร้างรหัสผ่านที่รัดกุม</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">ใช้แบตเตอรี่หมดเร็วขึ้น (ขณะนี้อยู่ที่ <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">ขนาดไอคอน</translation>
@@ -8582,6 +8593,7 @@
 <translation id="9140067245205650184">คุณใช้แฟล็กฟีเจอร์ที่ระบบไม่สนับสนุน: <ph name="BAD_FLAG" /> ซึ่งจะส่งผลต่อความเสถียรและความปลอดภัย</translation>
 <translation id="9142637293078737510">ชื่อแทนอิมเมจ</translation>
 <translation id="9143298529634201539">นำคำแนะนำออกไหม</translation>
+<translation id="9143922477019434797">ปกป้องรหัสผ่านของคุณ</translation>
 <translation id="9147392381910171771">&amp;ตัวเลือก</translation>
 <translation id="9148058034647219655">ออก</translation>
 <translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>

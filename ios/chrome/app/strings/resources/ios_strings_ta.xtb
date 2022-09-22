@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">ஏற்று தொடரவும்</translation>
 <translation id="110724200315609752">திறந்திருக்கும் சாளரத்திற்குச் செல்</translation>
 <translation id="1112015203684611006">அச்சிட முடியவில்லை.</translation>
+<translation id="1118569444314402022">மீண்டும் வரவேற்கிறோம், <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">புதிய தாவலை உருவாக்கு</translation>
 <translation id="1126809382673880764">ஆபத்தான இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றிலிருந்து உங்களைப் பாதுகாக்காது. எனினும் Gmail, Search போன்ற பிற Google சேவைகளில் ’பாதுகாப்பு உலாவல்’ அம்சத்தின் (கிடைத்தால்) மூலம் பாதுகாப்பைப் பெறுவீர்கள்.</translation>
 <translation id="1135212215217513471">iOSக்கான Chromeமைப் பெறுங்கள்</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">ஒத்திசைவு நிறுத்தப்பட்டது.</translation>
 <translation id="1377321085342047638">கார்டு எண்</translation>
 <translation id="1383876407941801731">Search</translation>
+<translation id="138618066238211776"><ph name="USER_NAME" /> ஆகத் தொடர்க</translation>
 <translation id="1400642268715879018">கடந்த 4 வாரங்கள்</translation>
 <translation id="1404330357948037222">வெளியேறிவிட்டீர்கள்</translation>
 <translation id="1407135791313364759">எல்லாவற்றையும் திற</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">தொடர்ந்து திருத்து</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> இணையதளத்தில் "<ph name="USERNAME" />" கணக்கிற்கான கடவுச்சொல்லை ஏற்கெனவே சேமித்துள்ளீர்கள்</translation>
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
+<translation id="2461070143328828326">கடவுச்சொல் அமைப்புகள்</translation>
 <translation id="2469960372084740698">'பாதுகாப்பு உலாவல்' அம்சத்தை முடக்கவா?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> தளத்திற்கான கடவுச்சொல்லை ஏற்கெனவே சேமித்துள்ளீர்கள்</translation>
 <translation id="2476359652512522418">தேர்ந்தெடுக்கப்படவில்லை</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">படிக்காததாகக் குறி</translation>
 <translation id="371230970611282515">ஆபத்தான நிகழ்வுகள் ஏற்படுவதற்கு முன்பு அவற்றைக் கணித்து உங்களுக்கு எச்சரிக்கை அனுப்பும்.</translation>
 <translation id="37207012422556617">பிரபலமான தேடல்</translation>
+<translation id="3726360487031500941">உங்கள் <ph name="USER_NAME" /> கணக்கில் மீண்டும் உள்நுழையுங்கள்</translation>
 <translation id="3740397331642243698">Google Chrome உலாவியில் உள்ளிட்ட URLகளை மறைநிலையில் திறக்கும்.</translation>
 <translation id="3762232513783804601">iPadக்காக உருவாக்கப்பட்டது</translation>
 <translation id="3771033907050503522">மறைநிலைத் தாவல்கள்</translation>

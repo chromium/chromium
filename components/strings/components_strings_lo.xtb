@@ -261,6 +261,7 @@
 <translation id="156703335097561114">ຂໍ້ມູນດ້ານເຄືອຂ່າຍ ເຊັ່ນ: ທີ່ຢູ່, ການຕັ້ງຄ່າສ່ວນຕິດຕໍ່ ແລະ ຄຸນນະພາບການເຊື່ອມຕໍ່</translation>
 <translation id="1567040042588613346">ນະໂຍບາຍນີ້ກຳລັງເຮັດວຽກຕາມທີ່ກຳນົດໄວ້ ແຕ່ມີການຕັ້ງຄ່າດຽວກັນຢູ່ບ່ອນອື່ນ ແລະ ນະໂຍບາຍນີ້ກຳລັງແທນທີ່ມັນ.</translation>
 <translation id="1569487616857761740">ປ້ອນວັນທີໝົດອາຍຸ</translation>
+<translation id="1569694109004336106">Google Chrome ກຳລັງພະຍາຍາມເປີດໃຊ້ Windows Hello ສຳລັບການຕື່ມລະຫັດຜ່ານ.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">ມີບາງອັນຜິດພາດ ໃນຂະນະທີ່ກໍາລັງສະແດງໜ້າ​ເວັບນີ້.</translation>
 <translation id="1586541204584340881">ສ່ວນຂະຫຍາຍທີ່ທ່ານຕິດຕັ້ງ</translation>
@@ -399,6 +400,7 @@
 <translation id="1958218078413065209">ຄະແນນສູງສຸດຂອງທ່ານແມ່ນ <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">ຊ່ວຍປັບປຸງຄວາມປອດໄພຂອງເວັບໄຊສຳລັບທຸກຄົນໂດຍການສົ່ງ <ph name="BEGIN_WHITEPAPER_LINK" />URL ຂອງບາງໜ້າເວັບທີ່ທ່ານເຂົ້າເບິ່ງ, ຂໍ້ມູນລະບົບແບບຈຳກັດ ແລະ ບາງເນື້ອຫາໃນໜ້າເວັບ<ph name="END_WHITEPAPER_LINK" /> ໄປໃຫ້ Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">ບຸກມາກສ໌ ່<ph name="DOMAIN" /></translation>
+<translation id="1971033026002113380">ປົກປ້ອງລະຫັດຜ່ານດ້ວຍ TouchID</translation>
 <translation id="1973335181906896915">ຄວາມ​ຜິດ​ພາດການສ້າງລໍາດັບ</translation>
 <translation id="1974060860693918893">ຂັ້ນສູງ</translation>
 <translation id="1975457531113383421">ຖາດປ້ອນເຂົ້າ</translation>
@@ -726,6 +728,7 @@
 <translation id="2881276955470682203">ບັນທຶກບັດບໍ?</translation>
 <translation id="2882949212241984732">ພົບທົບສີ່ຕອນ</translation>
 <translation id="2893773853358652045">ມ້ວນທີສີ່</translation>
+<translation id="289834758818479772">ຫາກທ່ານແບ່ງປັນອຸປະກອນນີ້ກັບຄົນອື່ນ, ທ່ານສາມາດເປີດໃຊ້ TouchID ເພື່ອຢັ້ງຢືນວ່າແມ່ນທ່ານໃນຕອນທີ່ທ່ານໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໄດ້</translation>
 <translation id="2900528713135656174">ສ້າງເຫດການ</translation>
 <translation id="2903493209154104877">ທີ່​ຢູ່</translation>
 <translation id="290376772003165898">ໜ້າບໍ່ຢູ່ໃນ <ph name="LANGUAGE" /> ບໍ?</translation>
@@ -802,6 +805,8 @@
 <translation id="3108943290502734357">ຖາດກາງ</translation>
 <translation id="3109728660330352905">ທ່ານບໍ່ມີສິດອະນຸຍາດໃນການເບິ່ງໜ້ານີ້.</translation>
 <translation id="3113284927548439113">ຜຽນສາມ</translation>
+<translation id="3114040155724590991">ກຳລັງອັບເດດລະບົບ Android
+    ການເລີ່ມແອັບຂອງທ່ານອາດໃຊ້ເວລາດົນກວ່າປົກກະຕິ.</translation>
 <translation id="3115363211799416195">{0,plural, =1{ດາວໂຫຼດໄຟລ໌ທີ່ເປັນຄວາມລັບບໍ?}other{ດາວໂຫຼດໄຟລ໌ທີ່ເປັນຄວາມລັບບໍ?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> ກຳນົດໃຫ້ທ່ານສຳຮອງຂໍ້ມູນຂອງທ່ານໄວ້ ແລະ ສົ່ງ <ph name="DEVICE_TYPE" /> ນີ້ຄືນ.</translation>
 <translation id="3116158981186517402">ແຍກອອກເປັນຊັ້ນໆ</translation>
@@ -1256,6 +1261,7 @@
 <translation id="4306812610847412719">ຄລິບບອດ</translation>
 <translation id="4308567447483056043">ນະໂຍບາຍນີ້ຖືກລະເລີຍເນື່ອງຈາກຜູ້ໃຊ້ບໍ່ກ່ຽວຂ້ອງ. ຖ້າຕ້ອງການໃຊ້ນະໂຍບາຍນີ້, ອົງກອນດຽວກັນຈະຕ້ອງຈັດການໂປຣແກຣມທ່ອງເວັບ Chrome ແລະ ໂປຣໄຟລ໌ຜ່ານຄອນໂຊຜູ້ເບິ່ງແຍງລະບົບ.</translation>
 <translation id="4310070645992025887">ຊອກຫາບັນທຶກຂອງທ່ານ</translation>
+<translation id="4310496734563057511">ຫາກທ່ານແບ່ງປັນອຸປະກອນນີ້ກັບຄົນອື່ນ, ທ່ານສາມາດເປີດໃຊ້ Windows Hello ເພື່ອຢັ້ງຢືນວ່າແມ່ນທ່ານໃນຕອນທີ່ທ່ານໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໄດ້</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ບລັອກ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="4314815835985389558">ຈັດການການຊິ້ງຂໍ້ມູນ</translation>
@@ -1470,6 +1476,7 @@
 <translation id="4880827082731008257">ຄົ້ນຫາປະຫວັດ</translation>
 <translation id="4881695831933465202">ເປີດ</translation>
 <translation id="4885256590493466218">ຈ່າຍດ້ວຍ <ph name="CARD_DETAIL" /> ຢູ່ຈຸດຈ່າຍເງິນ</translation>
+<translation id="4887406273302438710">ປົກປ້ອງລະຫັດຜ່ານດ້ວຍ Windows Hello</translation>
 <translation id="4888600795924685526">ການຮຽນພາສາຕ່າງປະເທດ</translation>
 <translation id="4889420713887366944">ປຸ່ມເປີດໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ, ກົດ Enter ເພື່ອເປີດໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່ເພື່ອທ່ອງເວັບແບບເປັນສ່ວນຕົວ</translation>
 <translation id="4892518386797173871">ຫຼັງ</translation>
@@ -1689,6 +1696,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> ຕ້ອງການສົ່ງການແຈ້ງເຕືອນໃຫ້ທ່ານ</translation>
 <translation id="5428105026674456456">ພາສາສະເປນ</translation>
 <translation id="5430298929874300616">ເອົາບຸກມາກຄ໌ອອກໄປ</translation>
+<translation id="5434423669266814150">ເປີດໃຊ້ TouchID ສຳລັບການຕື່ມລະຫັດຜ່ານ</translation>
 <translation id="5443468954631487277">ລຳດັບຍ້ອນກັບປີ້ນໜ້າຂຶ້ນ</translation>
 <translation id="5447765697759493033">ເວັບໄຊນີ້ຈະບໍ່ຖືກແປ</translation>
 <translation id="5452270690849572955">ບໍ່ສາມາດຊອກພົບໜ້າ <ph name="HOST_NAME" /> ນີ້ໄດ້</translation>
@@ -2466,6 +2474,7 @@
 <translation id="7564049878696755256">ທ່ານສາມາດສູນເສຍການເຂົ້າເຖິງບັນຊີ <ph name="ORG_NAME" /> ຂອງທ່ານ ຫຼື ປະສົບກັບການຖືກລັກໃຊ້ຕົວຕົນ. Chrome ຂໍແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານຂອງທ່ານດຽວນີ້.</translation>
 <translation id="7564680668369175887">ສະເຕຊັນວາກອນ</translation>
 <translation id="7567204685887185387">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນອາດຈະໄດ້ຮັບການອອກໃຫ້ແບບຫຼອກລວງ. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
+<translation id="7568616151991626879">Google Chrome ຍັງຄົງກຳລັງພະຍາຍາມຕື່ມລະຫັດຜ່ານຂອງທ່ານຢູ່ <ph name="APP_NAME" /> ຢູ່.</translation>
 <translation id="7569490014721427265">ກັອບ</translation>
 <translation id="7569761772822664555">ປຸ່ມຈັດການໂປຣແກຣມຊອກຫາ, ກົດ Enter ເພື່ອຈັດການໂປຣແກຣມຊອກຫາ ແລະ ການຊອກຫາເວັບໄຊເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="7569952961197462199">ເອົາ​ບັດ​ເຄ​ຣ​ດິດ​ອອກ​ໄປ​ຈາກ Chrome ບໍ?</translation>
@@ -2496,6 +2505,7 @@
 <translation id="7637586430889951925">{COUNT,plural, =0{ບໍ່ມີ}=1{ລະຫັດຜ່ານ 1 ລາຍການໃນບັນຊີຂອງທ່ານ (ສຳລັບ <ph name="DOMAIN_LIST" />)}other{ລະຫັດຜ່ານ # ລາຍການໃນບັນຊີຂອງທ່ານ (ສຳລັບ <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">ຜອດອະນຸກຳ</translation>
 <translation id="7639968568612851608">ສີເທົາເຂັ້ມ</translation>
+<translation id="7646681339175747202">ພົບລະຫັດຜ່ານທີ່ທ່ານຫາກໍໃຊ້ນັ້ນໃນການຮົ່ວໄຫຼຂໍ້ມູນ. ຕົວຈັດການລະຫັດຜ່ານ Google ແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານຂອງທ່ານດຽວນີ້.</translation>
 <translation id="7647206758853451655">ຄຸນນະພາບການພິມ</translation>
 <translation id="7648992873808071793">ເກັ​ບ​ຮັກ​ສາ​ໄຟ​ລ໌​ໄວ້​ຢູ່​ໃນ​ອຸ​ປະ​ກອນ​ນີ້</translation>
 <translation id="7653957176542370971">ແຜ່ນວຽກຂອງເຄື່ອງຈັດການການຈ່າຍເງິນປິດຢູ່</translation>

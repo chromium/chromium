@@ -228,6 +228,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5386244825306882791">Lisaks juhib Chrome'i käivitamisel kuvatavat lehte või omnikastikese otsingut.</translation>
 <translation id="5394833366792865639">Chrome’i vahelehe jagamine</translation>
 <translation id="5412485296464121825">Saidid võivad talletada Chrome'i teavet teie huvide kohta. Näiteks kui külastate saiti, et osta maratoni jooksmiseks jalatseid, võib sait määratleda teie huviks maratonijooksu. Kui külastate hiljem jooksule registreerumiseks muud saiti, võib see sait näidata teile teie huvide alusel jooksujalatsite reklaami.</translation>
+<translation id="5416870378730196769">Chrome lülitas mälusäästja sisse</translation>
 <translation id="5430073640787465221">Teie eelistuste fail on rikutud või kehtetu. Google Chrome ei saa teie seadeid taastada.</translation>
 <translation id="5524761631371622910">Kui katsed on sisse lülitatud ja Chrome on teid juhuslikkuse alusel lisanud aktiivsesse katsesse, mõjutab teie sirvimisajalugu teile esitatavaid reklaame ja allolevaid prognoositud huvisid. Teie privaatsuse kaitsmiseks kustutab Chrome teie huvisid jooksvalt iga kuu.</translation>
 <translation id="556024056938947818">Google Chrome püüab näidata paroole.</translation>
@@ -324,6 +325,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7651907282515937834">Chrome Enterprise'i logo</translation>
 <translation id="7655455401911432608">Teie sirvimisajalugu, selles seadmes Chrome'iga külastatud saitide andmed.</translation>
+<translation id="7726773885101561560">Selleks et brauser kiiremaks muuta, võtab Chrome mälu tagasi vahelehtedelt, mida te ei kasuta.</translation>
 <translation id="7747138024166251722">Installija ei suutnud luua ajutist kataloogi. Palun kontrollige vaba kettaruumi ja tarkvara installimise loa olemasolu.</translation>
 <translation id="7761834446675418963">Chrome'i avamiseks ja sirvimise alustamiseks klõpsake oma nimel.</translation>
 <translation id="7777080907402804672">Kui pildil puudub kasulik kirjeldus, üritab Chrome selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile. Võite selle seadetes igal ajal välja lülitada.</translation>
@@ -396,6 +398,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8986207147630327271">Lisate sellesse brauserisse tööprofiili ja annate administraatorile kontrolli vaid oma tööprofiili üle.</translation>
 <translation id="8989968390305463310">Teie sirvimisajalugu mõjutab kuvatavaid reklaame ja huvisid vastavalt allolevatele prognoosidele. Teie privaatsuse kaitsmiseks kustutab Chrome automaatselt teie huvisid jooksvalt iga kuu. Huvisid võidakse värskendada, kui te neid ei eemalda.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome'i värskendus on saadaval}=1{Chrome'i värskendus on saadaval}other{Chrome'i värskendus on # päeva saadaval olnud}}</translation>
+<translation id="9003498785844995646">Kui see on sisse lülitatud, säästab Chrome akutoidet, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine ja video kaadrisagedus. <ph name="BEGIN_LINK" />Lugege lisateavet<ph name="END_LINK" /> või <ph name="BEGIN_LINK_2" />saatke tagasisidet<ph name="END_LINK_2" />.</translation>
 <translation id="9053892488859122171">Chrome OS Flexi süsteem</translation>
 <translation id="9067395829937117663">Google Chrome vajab operatsioonisüsteemi Windows 7 või uuemat versiooni.</translation>
 <translation id="911206726377975832">Kas kustutada ka teie sirvimisandmed?</translation>

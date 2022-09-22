@@ -897,6 +897,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6064463340679478396">Selle faili kasutamine on lõpetatud</translation>
 <translation id="6073451960410192870">Peata salvestamine</translation>
 <translation id="6074087755403037157">Beetakanal</translation>
+<translation id="6095008505822982596">Kõne kiirus</translation>
 <translation id="6099678161144790572">Muudetud viimase kuu jooksul</translation>
 <translation id="6103838137565245112">süsteem</translation>
 <translation id="6114505516289286752">Kõnefailid <ph name="LANGUAGE" /> keeles laaditi alla</translation>
@@ -1157,6 +1158,7 @@ Uus installimine</translation>
 <translation id="7633755430369750696">Läheduses jagamise seadete kuvamine.</translation>
 <translation id="7634648064048557203">Kaamera kinnitati paremasse alanurka</translation>
 <translation id="7641938616688887143">Salvesta</translation>
+<translation id="7642106959537987271">värvide ümberpööramise režiim</translation>
 <translation id="7642647758716480637">Ava võrgu <ph name="NETWORK_NAME" /> seaded, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (omanik)</translation>
 <translation id="7647488630410863958">Märguannete vaatamiseks avage seade</translation>
@@ -1262,6 +1264,7 @@ Uus installimine</translation>
 <translation id="8209010265547628927">Taaskäivita</translation>
 <translation id="8214996719228530800">Canary kanal</translation>
 <translation id="8219451629189078428">Teie Chromebook peab sel ajal olema sisse lülitatud ja toiteallikaga ühendatud. Veenduge, et laadija või adapteri kaabel oleks korralikult ühendatud nii Chromebooki kui ka pistikupesaga. Ärge lülitage oma Chromebooki välja.</translation>
+<translation id="8230305195727960608">Värvide ümberpööramise režiim</translation>
 <translation id="8236042855478648955">Aeg pausi pidada</translation>
 <translation id="8246282815785366524">Tere tulemast tagasi, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, telefoni aku: <ph name="BATTERY_STATUS" /></translation>
@@ -1388,6 +1391,7 @@ Uus installimine</translation>
 <translation id="8982906748181120328">Nähtavus läheduses</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Kasutusel: <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Värvide ümberpööramise režiim on lubatud. Vajutage selle väljalülitamiseks uuesti klahvikombinatsiooni Ctrl + Otsinguklahv + H.</translation>
 <translation id="899350903320462459">Märguandetoimingu tegemiseks avage seade kontoga <ph name="LOGIN_ID" /></translation>
 <translation id="9000771174482730261">HALLAKE SALVESTUSRUUMI</translation>
 <translation id="9017320285115481645">Sisestage Family Linki vanema pääsukood.</translation>
@@ -1436,6 +1440,7 @@ Uus installimine</translation>
 <translation id="921989828232331238">Vanem lukustas sinu seadme päevaks</translation>
 <translation id="9220525904950070496">Konto eemaldamine</translation>
 <translation id="923686485342484400">Väljalogimiseks vajutage kaks korda klahvikombinatsiooni Ctrl + tõstuklahv + Q.</translation>
+<translation id="92580429198593979">Vajutasite värvide ümberpööramise klaviatuuri otseteed. Kas soovite selle sisse lülitada?</translation>
 <translation id="925832987464884575">Peida eelvaated</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> nõuab, et värskendaksite seadme <ph name="DEVICE_TYPE" /> operatsioonisüsteemi kohe</translation>
 <translation id="938963181863597773">Mis on minu kalendris?</translation>

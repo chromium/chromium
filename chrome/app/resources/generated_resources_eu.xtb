@@ -2174,6 +2174,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="2977480621796371840">Kendu taldetik</translation>
 <translation id="2979639724566107830">Ireki beste leiho batean</translation>
 <translation id="2981113813906970160">Erakutsi saguaren erakusle handia</translation>
+<translation id="2981293774053328982">Kontu pertsonalak edo sare sozialetako kontuak arriskuan jar ditzakeen malwarea du fitxategiak</translation>
 <translation id="2983373101216420412">Kutxaren bateria-maila: % <ph name="PERCENTAGE" />.</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" instalatzeko eskaera bidali nahi diozu administratzaileari?</translation>
 <translation id="2987620471460279764">Beste gailu batetik partekatutako testua</translation>
@@ -2295,6 +2296,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3090819949319990166">Ezin da kanpoko crx fitxategia <ph name="TEMP_CRX_FILE" /> fitxategian kopiatu.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" parekatu da</translation>
 <translation id="3093714882666365141">Ez eman ordainketa-kudeatzaileak instalatzeko baimena webguneei</translation>
+<translation id="3093958632721393232">Aktibatu bateria gutxi geratzen denean soilik</translation>
 <translation id="3094141017404513551">Zure arakatze-datuak <ph name="EXISTING_USER" /> erabiltzailearenetatik bereiziko dira</translation>
 <translation id="3095871294753148861">Kontu nagusiarekin sinkronizatzen dira laster-markak, pasahitzak eta bestelako arakatze-datuak.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Luzapen kaltegarri bat desaktibatu da. Kendu ere egin dezakezu.}other{{NUM_EXTENSIONS} luzapen kaltegarri desaktibatu dira. Kendu ere egin ditzakezu.}}</translation>
@@ -3758,6 +3760,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4514610446763173167">Erreproduzitu edo pausatu bideoa</translation>
 <translation id="451515744433878153">Kendu</translation>
 <translation id="4515872537870654449">Jarri Dell-ekin harremanetan laguntza teknikoa lortzeko. Oinarria itzali egingo da haizagailuak funtzionatzen ez badu.</translation>
+<translation id="4518840066030486079">Aldatu tekla moduaren estiloa</translation>
 <translation id="4519331665958994620">Webguneek kamera erabiltzea eska dezakete</translation>
 <translation id="4519935350946509010">Konexio-errorea.</translation>
 <translation id="4520385623207007473">Erabiltzen diren cookieak</translation>
@@ -3853,6 +3856,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4598345735110653698">Kudeatu sarbide-gakoak</translation>
 <translation id="4598556348158889687">Memoriaren kudeaketa</translation>
 <translation id="4598776695426288251">Gailu bat baino gehiagoren bidez erabil dezakezu wifi-konexioa</translation>
+<translation id="4600071396330666617">Iradokizun kopurua</translation>
 <translation id="4601426376352205922">Markatu irakurri gabeko gisa</translation>
 <translation id="4602466770786743961">Eman beti kamera eta mikrofonoa erabiltzeko baimena <ph name="HOST" /> webguneari</translation>
 <translation id="4606551464649945562">Ez utzi inongo webguneri inguruaren 3D-ko mapa bat sortzen edo kameraren posizioaren jarraipena egiten</translation>
@@ -4299,6 +4303,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5043913660911154449">Edo zehaztu inprimagailuaren PPD fitxategia <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Pasahitz okerra</translation>
 <translation id="504561833207953641">Dagoen arakatze-saioan irekitzen.</translation>
+<translation id="5049614114599109018">Erabili idazketa-historia</translation>
 <translation id="5051836348807686060">Ortografia-zuzentzailea ez dago erabilgarri hautatu dituzun hizkuntzetan</translation>
 <translation id="5052499409147950210">Editatu webgunea</translation>
 <translation id="505347685865235222">Talde izengabea: <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5011,6 +5016,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5747552184818312860">Iraungitze-data</translation>
 <translation id="5747785204778348146">Garatzailea; egoera ezegonkorra</translation>
 <translation id="5747809636523347288">It&amp;satsi eta joan "<ph name="URL" />" helbidera</translation>
+<translation id="5748137879145720682">Aktibatu ordenagailua deskonektatuta dagoenean</translation>
 <translation id="5751345516399502412">Egiaztatu konexioa partekatzeko aukeraren erabilgarritasuna</translation>
 <translation id="5755022574660047665">Google Argazkiak zerbitzuko oroitzapenak</translation>
 <translation id="5756163054456765343">&amp;Laguntza-zentroa</translation>
@@ -7642,6 +7648,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8248381369318572865">Atzitu mikrofonoa eta aztertu zure ahotsa</translation>
 <translation id="8248887045858762645">Chrome-ri buruzko aholkua</translation>
 <translation id="8249048954461686687">OEM karpeta</translation>
+<translation id="8249239468199142122">Bateria-aurreztailea</translation>
 <translation id="8249615410597138718">Bidali zure gailuetara</translation>
 <translation id="8250210000648910632">Ez dago biltegiratzeko tokirik</translation>
 <translation id="8251441930213048644">Freskatu</translation>

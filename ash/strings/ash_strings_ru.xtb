@@ -235,6 +235,7 @@
 <translation id="2298170939937364391">Полноэкранная лупа включена. Чтобы отключить ее, ещё раз нажмите Ctrl + Поиск + M.</translation>
 <translation id="2302092602801625023">Аккаунт находится под управлением Family Link</translation>
 <translation id="2303600792989757991">Переключить режим обзора</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: недавние записи экрана, а также скачанные и закрепленные файлы</translation>
 <translation id="2318576281648121272">Сегодня, <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060">Категория результата поиска: <ph name="CATEGORY" /></translation>
 <translation id="2322173485024759474">Назад на одну букву</translation>
@@ -1155,6 +1156,7 @@
 <translation id="7633755430369750696">Показать настройки Обмена с окружением</translation>
 <translation id="7634648064048557203">Окно предварительного просмотра камеры привязано к правому нижнему углу</translation>
 <translation id="7641938616688887143">Запись</translation>
+<translation id="7642106959537987271">режим инверсии цветов</translation>
 <translation id="7642647758716480637">Открыть настройки сети "<ph name="NETWORK_NAME" />", статус: <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (владелец)</translation>
 <translation id="7647488630410863958">Чтобы просмотреть уведомления, разблокируйте устройство</translation>
@@ -1260,6 +1262,7 @@
 <translation id="8209010265547628927">Сбросить настройки</translation>
 <translation id="8214996719228530800">Версия Canary</translation>
 <translation id="8219451629189078428">В течение этого времени устройство Chromebook должно быть включено, а кабели зарядного устройства или адаптера – надежно подсоединены к нему и подключены к сети электропитания. Не выключайте устройство Chromebook.</translation>
+<translation id="8230305195727960608">Режим инверсии цветов</translation>
 <translation id="8236042855478648955">Пора сделать перерыв</translation>
 <translation id="8246282815785366524">С возвращением, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8247060538831475781">Статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, заряд батареи – <ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1389,7 @@
 <translation id="8982906748181120328">Широкий доступ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Используется <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Режим инверсии цветов включен. Чтобы отключить его, снова нажмите Ctrl + Поиск + H.</translation>
 <translation id="899350903320462459">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство с помощью аккаунта <ph name="LOGIN_ID" />.</translation>
 <translation id="9000771174482730261">ОЧИСТИТЬ ХРАНИЛИЩЕ</translation>
 <translation id="9017320285115481645">Введите родительский код доступа Family Link.</translation>
@@ -1434,6 +1438,7 @@
 <translation id="921989828232331238">Ваш родитель заблокировал это устройство на целый день.</translation>
 <translation id="9220525904950070496">Удалить аккаунт</translation>
 <translation id="923686485342484400">Чтобы выйти, дважды нажмите Control+Shift+Q.</translation>
+<translation id="92580429198593979">Вы нажали сочетание клавиш для инверсии цветов. Выполнить это действие?</translation>
 <translation id="925832987464884575">Отключить предпросмотр</translation>
 <translation id="937214777182567951">Согласно требованиям <ph name="MANAGER" /> вам нужно немедленно обновить устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="938963181863597773">Что у меня запланировано?</translation>

@@ -2192,6 +2192,7 @@
 <translation id="2977480621796371840">Вилучити з групи</translation>
 <translation id="2979639724566107830">Відкрити в новому вікні</translation>
 <translation id="2981113813906970160">Показувати великий курсор миші</translation>
+<translation id="2981293774053328982">Цей файл містить зловмисне програмне забезпечення, яке може загрожувати особистим обліковим записам чи обліковим записам у соціальних мережах</translation>
 <translation id="2983373101216420412">Рівень заряду акумулятора футляра – <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Надіслати адміністратору запит на встановлення розширення "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Текст, яким поділилися з іншого пристрою</translation>
@@ -3777,6 +3778,7 @@
 <translation id="4514610446763173167">Відтворити або призупинити відео</translation>
 <translation id="451515744433878153">Видалити</translation>
 <translation id="4515872537870654449">Зверніться в Dell за обслуговуванням. Док-станція припинить роботу, якщо вентилятор не працює.</translation>
+<translation id="4518840066030486079">Стиль режиму клавіші Shift</translation>
 <translation id="4519331665958994620">Сайти можуть просити доступ до камери</translation>
 <translation id="4519935350946509010">Помилка підключення.</translation>
 <translation id="4520385623207007473">Активні файли cookie</translation>
@@ -3872,6 +3874,7 @@
 <translation id="4598345735110653698">Керувати ключами доступу</translation>
 <translation id="4598556348158889687">Керування пам’яттю</translation>
 <translation id="4598776695426288251">Доступне з’єднання Wi-Fi через кілька пристроїв</translation>
+<translation id="4600071396330666617">Кількість пропозицій</translation>
 <translation id="4601426376352205922">Позначити як непрочитане</translation>
 <translation id="4602466770786743961">Завжди дозволяти хосту <ph name="HOST" /> доступ до ваших камери та мікрофона</translation>
 <translation id="4606551464649945562">Заборонити сайтам створювати 3D-карту вашого оточення або відстежувати положення камери</translation>
@@ -4318,6 +4321,7 @@
 <translation id="5043913660911154449">Або виберіть файл PPD принтера <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Неправильний пароль</translation>
 <translation id="504561833207953641">Відкривається в наявному сеансі веб-переглядача.</translation>
+<translation id="5049614114599109018">Використовувати історію введень</translation>
 <translation id="5051836348807686060">Перевірка орфографії не підтримується для вибраних мов</translation>
 <translation id="5052499409147950210">Редагувати сайт</translation>
 <translation id="505347685865235222">Група без назви – <ph name="GROUP_CONTENT_STRING" /></translation>

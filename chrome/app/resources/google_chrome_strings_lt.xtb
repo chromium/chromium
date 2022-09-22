@@ -231,6 +231,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="5386244825306882791">Ji taip pat kontroliuoja, koks puslapis rodomas, kai paleidžiate „Chrome“ ar ieškote „omnibox“.</translation>
 <translation id="5394833366792865639">„Chrome“ skirtuko bendrinimas</translation>
 <translation id="5412485296464121825">Svetainėse gali būti renkama su „Chrome“ susijusi informacija apie jūsų pomėgius. Pavyzdžiui, jei apsilankote svetainėje norėdami įsigyti batelius maratonui, svetainė gali prie jūsų pomėgių prisikirti maratonų bėgimą. Vėliau, apsilankius kitoje svetainėje norint užsiregistruoti į lenktynes, atsižvelgiant į jūsų pomėgius joje galės būti rodomas bėgimo batelių skelbimas.</translation>
+<translation id="5416870378730196769">„Chrome“ įjungė atminties taupymo priemonę</translation>
 <translation id="5430073640787465221">Nuostatų failas sugadintas ar netinkamas.
 
 „Google Chrome“ negali atkurti nustatymų.</translation>
@@ -329,6 +330,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="7649070708921625228">Pagalba</translation>
 <translation id="7651907282515937834">„Chrome Enterprise“ logotipas</translation>
 <translation id="7655455401911432608">Jūsų naršymo istorija, svetainių, kuriose lankėtės naudodami „Chrome“ šiame įrenginyje, įrašas.</translation>
+<translation id="7726773885101561560">Kad naršymas būtų spartesnis, „Chrome“ iš naujo įtraukia atmintį iš skirtukų, kurių nenaudojate.</translation>
 <translation id="7747138024166251722">Diegimo programai nepavyko sukurti laikino katalogo. Patikrinkite, ar yra laisvos vietos diske ir, ar leidžiama įdiegti programinę įrangą.</translation>
 <translation id="7761834446675418963">Spustelėkite savo vardą, kad atidarytumėte „Chrome“ ir pradėtumėte naršyti.</translation>
 <translation id="7777080907402804672">Jei nebus naudingo vaizdo aprašo, „Chrome“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“. Šią parinktį galite bet kada išjungti skiltyje „Nustatymai“.</translation>
@@ -401,6 +403,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8986207147630327271">Pridedate darbo profilį prie šios naršyklės ir suteikiate administratoriui teisę valdyti tik darbo profilį.</translation>
 <translation id="8989968390305463310">Naršymo istorija lemia, kokius skelbimus matysite ir kokie jūsų pomėgiai bus numatomi toliau. Siekiant apsaugoti privatumą, „Chrome“ reguliariai kiekvieną mėnesį automatiškai ištrina jūsų pomėgius. Pomėgiai gali būti atnaujinami, kol jų nepašalinate.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Pasiekiamas „Chrome“ naujinys}=1{Pasiekiamas „Chrome“ naujinys}one{„Chrome“ naujinys pasiekiamas # dieną}few{„Chrome“ naujinys pasiekiamas # dienas}many{„Chrome“ naujinys pasiekiamas # dienos}other{„Chrome“ naujinys pasiekiamas # dienų}}</translation>
+<translation id="9003498785844995646">Kai įjungta, „Chrome“ taupo akumuliatoriaus energiją, apribodama veiklą fone ir vaizdo efektus, pvz., tolygų slinkimą ir vaizdo įrašų kadrų dažnį. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /> arba <ph name="BEGIN_LINK_2" />siųskite atsiliepimą<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">„ChromeOS Flex“ sistema</translation>
 <translation id="9067395829937117663">Kad būtų galima naudoti „Google Chrome“, reikalinga 7 ar naujesnės versijos „Windows“.</translation>
 <translation id="911206726377975832">Ar ištrinti naršymo duomenis?</translation>

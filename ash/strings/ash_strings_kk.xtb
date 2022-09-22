@@ -214,6 +214,7 @@
 <translation id="2132302418721800944">Толық экранды жазу</translation>
 <translation id="2135456203358955318">Бекітілген ұлғайтқыш</translation>
 <translation id="2148716181193084225">Бүгін</translation>
+<translation id="2161132820593978283">Бейнеқоңыраулар кезінде экранның ортасында тұруыңыз үшін, камерамен кадрлап көріңіз. Оны жылдам параметрлерден қоса аласыз.</translation>
 <translation id="2170530631236737939">Үш саусақпен төмен сырғытып, "Шолу" бөлімінен шығыңыз.</translation>
 <translation id="219905428774326614">Launcher, барлық қолданбалар</translation>
 <translation id="2201071101391734388">Соңғы фото: <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
@@ -234,6 +235,7 @@
 <translation id="2298170939937364391">Толық экран ұлғайтқышы қосулы. Оны өшіру үшін Ctrl+Search+M пернелер тіркесімін қайта басыңыз.</translation>
 <translation id="2302092602801625023">Бұл аккаунт Family Link арқылы басқарылады</translation>
 <translation id="2303600792989757991">Терезеде шолу режимін ауыстыру</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: экраннан түсірілген соңғы кескіндер, соңғы жүктеп алынған және бекітілген файлдар.</translation>
 <translation id="2318576281648121272">Бүгін <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060">Іздеу нәтижесінің санаты: <ph name="CATEGORY" /></translation>
 <translation id="2322173485024759474">Бір әріпке артқа жылжу</translation>
@@ -252,6 +254,7 @@
 <translation id="2405664212338326887">Қосылмаған</translation>
 <translation id="2408955596600435184">PIN кодын енгізіңіз</translation>
 <translation id="2412593942846481727">Жаңартылған нұсқа қолжетімді</translation>
+<translation id="2426051945783024481">Камерамен кадрлау автоматты түрде ортасына тураланды.</translation>
 <translation id="2427507373259914951">Тінтуірдің сол жақ түймесін басу</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұптау рұқсатын сұрайды. Қабылдаудан бұрын бұл кіру кілті аталмыш құрылғыда көрсетілетінін растаңыз: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
@@ -1038,6 +1041,7 @@
 <translation id="6960565108681981554">Іске қосылмаған. Операторға хабарласыңыз.</translation>
 <translation id="6961121602502368900">Жұмыс профилінде дыбыссыз телефон функциясы қолжетімді емес.</translation>
 <translation id="6961840794482373852">Alt + жоғарыға бағыттауыш перне тіркесімінің функциясы өзгерді. Page Up пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + жоғарыға бағыттауыш перне тіркесімін басыңыз.</translation>
+<translation id="696267987219125751">Камерамен кадрлау өшірулі.</translation>
 <translation id="6965382102122355670">Жарайды</translation>
 <translation id="6972754398087986839">Іске кірісу</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1128,6 +1132,7 @@
 <translation id="7513922695575567867">Күнтізбе, <ph name="DATE" /> аптасы, <ph name="SELECTED_DATE" /> қазір таңдалды.</translation>
 <translation id="7514365320538308">Жүктеу</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Камерамен кадрлау қосулы.</translation>
 <translation id="7526573455193969409">Желі бақылануы мүмкін</translation>
 <translation id="7536035074519304529">IP мекенжайы: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux қолданбалары мен инкогнито терезелеріне қазір қолдау көрсетілмейді. Басқа қолданбалар сақталады.</translation>
@@ -1146,6 +1151,7 @@
 <translation id="7607002721634913082">Кідіртілген</translation>
 <translation id="7609951632080598826">Күнтізбе көрінісі: <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камера қайта жалғанды.</translation>
+<translation id="761736749114493194">Камерамен кадрлауды ауыстыру. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Nearby Share параметрлерін көрсету.</translation>
 <translation id="7634648064048557203">Камера төменгі оң жақ бұрышқа ауыстырылды.</translation>
@@ -1308,6 +1314,7 @@
 <translation id="851458219935658693">Терезелерді қазіргі жұмыс үстелінен көрсету, ауыстырып қосқыш таңдалды.</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> іске қосылғанда зарядталмауы мүмкін.</translation>
 <translation id="8535393432370007982">Түс бойынша сұрыптау ретін қайтару</translation>
+<translation id="8541078764854166027">Камерамен кадрлау</translation>
 <translation id="8542053257095774575">Сақталған жұмыс үстелі немесе үлгі жоқ.</translation>
 <translation id="8546059259582788728">Сұрыптау реті қайтарылды.</translation>
 <translation id="8551588720239073785">Күн және уақыт параметрлері</translation>

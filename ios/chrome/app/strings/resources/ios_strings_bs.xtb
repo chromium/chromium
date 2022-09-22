@@ -23,6 +23,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1104948393051856124">Prihvati i nastavi</translation>
 <translation id="110724200315609752">Prebaci na otvoreni prozor</translation>
 <translation id="1112015203684611006">Štampanje nije uspjelo.</translation>
+<translation id="1118569444314402022">Dobro došli nazad, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Kreiranje nove kartice.</translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih web lokacija, preuzimanja i ekstenzija. I dalje ćete dobijati zaštitu Sigurno pregledanje, tamo gdje je dostupna, na drugim Googleovim uslugama kao što su Gmail i Pretraživanje.</translation>
 <translation id="1135212215217513471">Preuzmite Chrome za iOS</translation>
@@ -64,6 +65,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1377255359165588604">Sinhronizacija je prekinuta.</translation>
 <translation id="1377321085342047638">Broj kartice</translation>
 <translation id="1383876407941801731">Traži</translation>
+<translation id="138618066238211776">Nastavite kao <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Posljednje 4 sedmice</translation>
 <translation id="1404330357948037222">Odjavljeni ste</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
@@ -177,6 +179,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2421044535038393232">Nastavi uređivanje</translation>
 <translation id="2434405374328098816">Već ste sačuvali lozinku za korisnika "<ph name="USERNAME" />" na web lokaciji <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
+<translation id="2461070143328828326">Postavke lozinki</translation>
 <translation id="2469960372084740698">Isključiti Sigurno pregledanje?</translation>
 <translation id="2473876017985765807">Već ste sačuvali lozinku za <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Nije odabrano</translation>
@@ -331,6 +334,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3709582977625132201">Označi kao nepročitano</translation>
 <translation id="371230970611282515">Predviđa opasne događaje i upozorava vas na njih prije nego što nastupe.</translation>
 <translation id="37207012422556617">Popularna pretraživanja</translation>
+<translation id="3726360487031500941">Ponovo se prijavite na svoj račun <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Otvara unesene URL-ove u Google Chromeu u anonimnom načinu rada.</translation>
 <translation id="3762232513783804601">Napravljeno za vaš iPad</translation>
 <translation id="3771033907050503522">Anonimne kartice</translation>

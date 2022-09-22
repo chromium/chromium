@@ -23,6 +23,7 @@
 <translation id="117624967391683467">กำลังคัดลอก <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
 <translation id="1190144681599273207">การดึงไฟล์นี้จะใช้ข้อมูลมือถือขนาดประมาณ <ph name="FILE_SIZE" /></translation>
+<translation id="1194390763418645112">การเข้าถึงไฟล์จาก <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1209796539517632982">เซิร์ฟเวอร์ชื่ออัตโนมัติ</translation>
 <translation id="1210831758834677569">ลาว</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">อุปกรณ์ Chrome</translation>
 <translation id="1572585716423026576">ตั้งเป็นวอลเปเปอร์</translation>
 <translation id="1576937952766665062">บังกลา (การทับศัพท์)</translation>
+<translation id="1577977504532381335">อ่านนโยบายของผู้ดูแลระบบ</translation>
 <translation id="158849752021629804">ต้องใช้เครือข่ายในประเทศ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">ความละเอียดของรูปภาพ</translation>
 <translation id="1972984168337863910">ขยายแผงความคิดเห็นเกี่ยวกับไฟล์</translation>
 <translation id="1995337122023280937">ไปยังตำแหน่งที่ตั้งไฟล์</translation>
+<translation id="1999709132469742660">การเข้าถึงไฟล์จาก URL ทั้งหมด</translation>
 <translation id="2001796770603320721">จัดการใน Google ไดรฟ์</translation>
 <translation id="2009067268969781306">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์ การดำเนินการนี้ยกเลิกไม่ได้</translation>
 <translation id="2025955442973426285">ตีกรินยา</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">คนกับกาแฟ</translation>
 <translation id="2251368349685848079">กู้คืนจากถังขยะ</translation>
 <translation id="2282155092769082568">URL การกำหนดค่าอัตโนมัติ:</translation>
+<translation id="2284767815536050991">พื้นที่เก็บข้อมูลแบบถอดได้</translation>
 <translation id="2288278176040912387">เครื่องเล่นแผ่นเสียง</translation>
 <translation id="2291538123825441971">กำลังเปิด <ph name="NUMBER_OF_FILES" /> ไฟล์</translation>
 <translation id="2303301624314357662">กำลังเปิดไฟล์ <ph name="FILE_NAME" /></translation>
@@ -341,6 +345,7 @@
 <translation id="4057991113334098539">กำลังเปิดการใช้งาน...</translation>
 <translation id="4092890906744441904">ไอร์แลนด์</translation>
 <translation id="4124935795427217608">ยูนิคอร์น</translation>
+<translation id="4157569377477607576">นโยบายของผู้ดูแลระบบไม่แนะนำให้ทำสิ่งต่อไปนี้</translation>
 <translation id="4159731583141908892">ย้าย <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="4176286497474237543">ล้างข้อมูลทั้งหมดในถังขยะเลย</translation>
 <translation id="4186579485882418952">เปิดใช้แบบออฟไลน์</translation>
@@ -502,6 +507,7 @@
 <translation id="5323213332664049067">ละตินอเมริกา</translation>
 <translation id="5330145655348521461">ไฟล์เหล่านี้เปิดอยู่บนเดสก์ท็อปเครื่องอื่น โปรดย้ายมายัง <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) เพื่อดู</translation>
 <translation id="5330512191124428349">รับข้อมูล</translation>
+<translation id="5337538975554986899">การเข้าถึงไฟล์จาก URL ทั้งหมด ยกเว้น <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">คนกับแมว</translation>
 <translation id="5358764674931277">อัตราเฟรม</translation>
 <translation id="5363339716524495120">ภาษาในการป้อนข้อมูลคือภาษาจีน</translation>
@@ -526,6 +532,7 @@
 <translation id="5533102081734025921">รูปภาพ <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">กำลังคำนวณขนาด</translation>
 <translation id="554153475311314364">กรีก (การทับศัพท์)</translation>
+<translation id="5580591966435005537">เครื่องเสมือน</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">ความกว้างเครื่องหมายวรรคตอนเป็นแบบเต็ม</translation>
 <translation id="5602622065581044566">บัลแกเรียด้วยแป้นพิมพ์ตามการออกเสียง</translation>
@@ -586,6 +593,7 @@
 <translation id="61118516107968648">ข้อความ CSV</translation>
 <translation id="6129953537138746214">ช่องว่าง</translation>
 <translation id="6133173853026656527">กำลังย้าย <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">การตรวจสอบของผู้ดูแลระบบ:</translation>
 <translation id="613750717151263950">ญี่ปุ่นด้วยแป้นพิมพ์สหรัฐฯ</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" /> ไม่มีเครือข่าย</translation>
 <translation id="6146563240635539929">วิดีโอ</translation>
@@ -606,6 +614,7 @@
 <translation id="6287852322318138013">เลือกแอปที่จะเปิดไฟล์นี้</translation>
 <translation id="6295542640242147836">ล็อกซิม</translation>
 <translation id="6296410173147755564">PUK ไม่ถูกต้อง</translation>
+<translation id="6308243004861726558">ไฟล์นี้เป็นความลับและอยู่ภายใต้นโยบายของผู้ดูแลระบบ การเข้าถึงและการโอนไฟล์ต่อไปนี้มีผลบังคับใช้</translation>
 <translation id="6312403991423642364">ข้อผิดพลาดเครือข่ายที่ไม่รู้จัก</translation>
 <translation id="6317608858038767920"><ph name="INPUT_INDEX" /> ของ Nameserver ที่กำหนดเอง</translation>
 <translation id="6320212353742551423">ที่เก็บ <ph name="ARCHIVE_TYPE" /> ถาวร</translation>
@@ -834,6 +843,7 @@
 <translation id="8250920743982581267">เอกสาร</translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8261561378965667560">จีน (Array)</translation>
+<translation id="8262872909443689080">นโยบายของผู้ดูแลระบบ</translation>
 <translation id="8264024885325823677">การตั้งค่านี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="8269755669432358899">ยุบแผงความคิดเห็นเกี่ยวกับไฟล์</translation>
 <translation id="8280151743281770066">การออกเสียงภาษาอาร์เมเนีย</translation>
@@ -931,6 +941,7 @@
 <translation id="9100610230175265781">ต้องระบุรหัสผ่าน</translation>
 <translation id="9110990317705400362">เรายังคงค้นหาวิธีที่จะทำให้การท่องเว็บของคุณปลอดภัยยิ่งขึ้นอย่างสม่ำเสมอ ก่อนหน้านี้ทุกเว็บไซต์สามารถแสดงข้อความแจ้งให้คุณเพิ่มส่วนขยายในเบราว์เซอร์ แต่ใน Google Chrome เวอร์ชันล่าสุด คุณจะต้องแจ้งให้ Chrome ทราบอย่างชัดเจนว่าคุณต้องการติดตั้งส่วนขยายเหล่านี้โดยการเพิ่มส่วนขยายผ่านหน้า "ส่วนขยาย" <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ปลดล็อก</translation>
+<translation id="9116909380156770361">การโอนไฟล์ไปยัง <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">ตัวแปลงรหัส</translation>
 <translation id="9130775360844693113">สมาชิกของ "<ph name="DESTINATION_NAME" />" จะได้รับสิทธิ์เข้าถึงรายการเหล่านี้</translation>
 <translation id="9131598836763251128">โปรดเลือกอย่างน้อยหนึ่งไฟล์</translation>
@@ -952,6 +963,7 @@
 <translation id="943972244133411984">แก้ไขโดย</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="947144732524271678">เลือกรายการทั้งหมด <ph name="ENTRY_COUNT" /> รายการตั้งแต่ <ph name="FROM_ENTRY_NAME" /> จนถึง <ph name="TO_ENTRY_NAME" /></translation>
+<translation id="954194396377670556">นโยบายของผู้ดูแลระบบจะป้องกันสิ่งต่อไปนี้</translation>
 <translation id="965477715979482472">อังกฤษ (แอฟริกาใต้)</translation>
 <translation id="981121421437150478">ออฟไลน์</translation>
 <translation id="988685240266037636">มีไฟล์ชื่อ "<ph name="FILE_NAME" />" อยู่แล้ว คุณต้องการแทนที่ไฟล์ดังกล่าวไหม</translation>

@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">القبول والمتابعة</translation>
 <translation id="110724200315609752">التبديل إلى نافذة مفتوحة</translation>
 <translation id="1112015203684611006">تعذّرت الطباعة.</translation>
+<translation id="1118569444314402022">مرحبًا بك من جديد، "<ph name="USER_NAME" />"</translation>
 <translation id="1125564390852150847">إنشاء علامة تبويب جديدة.</translation>
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
 <translation id="1135212215217513471">‏الحصول على متصفِّح Chrome لنظام التشغيل iOS</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">توقفت المزامنة.</translation>
 <translation id="1377321085342047638">رقم البطاقة</translation>
 <translation id="1383876407941801731">البحث</translation>
+<translation id="138618066238211776">المتابعة باسم "<ph name="USER_NAME" />"</translation>
 <translation id="1400642268715879018">الأسابيع الأربعة الأخيرة</translation>
 <translation id="1404330357948037222">لقد سجّلت الخروج من حسابك.</translation>
 <translation id="1407135791313364759">فتح الكل</translation>
@@ -179,6 +181,7 @@
 <translation id="2421044535038393232">متابعة التعديل</translation>
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
+<translation id="2461070143328828326">إعدادات كلمة المرور</translation>
 <translation id="2469960372084740698">هل تريد إيقاف "التصفُّح الآمن"؟</translation>
 <translation id="2473876017985765807">سبق أن حفظت كلمة مرور للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="2476359652512522418">غير مختارة</translation>
@@ -333,6 +336,7 @@
 <translation id="3709582977625132201">وضع علامة "غير مقروءة"</translation>
 <translation id="371230970611282515">توقّع الأحداث الخطيرة قبل حدوثها والتحذير منها</translation>
 <translation id="37207012422556617">طلبات البحث الرائجة</translation>
+<translation id="3726360487031500941">سجِّل الدخول مرةً أخرى إلى حسابك "<ph name="USER_NAME" />".</translation>
 <translation id="3740397331642243698">‏فتح عناوين URL التي تم إدخالها في Google Chrome في وضع التصفُّح المتخفي</translation>
 <translation id="3762232513783804601">‏المتصفِّح مصمَّم خصيصًا لأجهزة iPad</translation>
 <translation id="3771033907050503522">علامات تبويب التصفح المتخفي</translation>

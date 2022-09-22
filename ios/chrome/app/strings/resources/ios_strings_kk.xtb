@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">Қабылдау және жалғастыру</translation>
 <translation id="110724200315609752">Ашық терезеге ауысу</translation>
 <translation id="1112015203684611006">Басып шығарылмады.</translation>
+<translation id="1118569444314402022">Қайта оралуыңызбен, <ph name="USER_NAME" />!</translation>
 <translation id="1125564390852150847">Жаңа қойынды жасау</translation>
 <translation id="1126809382673880764">Қауіпті веб-сайттардан, жүктеп алынған файлдардан және кеңейтімдерден қорғамайды. Gmail және Search сияқты басқа Google қызметтерінде "Қауіпсіз шолу" функциясы қорғайтын болады.</translation>
 <translation id="1135212215217513471">iOS-қа арналған Chrome-ды пайдаланыңыз.</translation>
@@ -56,6 +57,7 @@
 <translation id="1322735045095424339">Ұйымыңыз инкогнито режимін талап етеді.</translation>
 <translation id="1323735185997015385">Жою</translation>
 <translation id="132683371494960526">Түпкі қалтаны өзгерту үшін екі рет түртіңіз.</translation>
+<translation id="1335348992705722518">Параметрлерді басқару…</translation>
 <translation id="1340643665687018190">Мәзірді жабу</translation>
 <translation id="1358214951266274152">Көшірілген сілтемеге кіру</translation>
 <translation id="1360432990279830238">Шығып, синхрондауды өшіру керек пе?</translation>
@@ -63,6 +65,7 @@
 <translation id="1377255359165588604">Синхрондау тоқтап қалды.</translation>
 <translation id="1377321085342047638">Карта нөмірі</translation>
 <translation id="1383876407941801731">Іздеу</translation>
+<translation id="138618066238211776"><ph name="USER_NAME" /> ретінде жалғастыру</translation>
 <translation id="1400642268715879018">Соңғы 4 апта</translation>
 <translation id="1404330357948037222">Аккаунттан шықтыңыз.</translation>
 <translation id="1407135791313364759">Барлығын ашу</translation>
@@ -176,6 +179,7 @@
 <translation id="2421044535038393232">Өзгерте беру</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> веб-сайтында <ph name="USERNAME" /> құпия сөзін сақтап қойғансыз.</translation>
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
+<translation id="2461070143328828326">Құпия сөз параметрлері</translation>
 <translation id="2469960372084740698">Safe Browsing функциясы өшірілсін бе?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> веб-сайты үшін құпия сөзді сақтап қойғансыз.</translation>
 <translation id="2476359652512522418">Таңдалмады</translation>
@@ -330,6 +334,7 @@
 <translation id="3709582977625132201">Оқылмаған деп белгілеу</translation>
 <translation id="371230970611282515">Қауіпті іс-шараларды болжайды және хабарлайды.</translation>
 <translation id="37207012422556617">Танымал іздеу сұраулары</translation>
+<translation id="3726360487031500941"><ph name="USER_NAME" /> деген аккаунтыңызға қайтадан кіріңіз.</translation>
 <translation id="3740397331642243698">Енгізілген URL сілтемелерін Google Chrome браузерінде инкогнито режимінде ашады.</translation>
 <translation id="3762232513783804601">iPad үшін әзірленген</translation>
 <translation id="3771033907050503522">Инкогнито қойындылары</translation>

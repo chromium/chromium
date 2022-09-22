@@ -719,6 +719,7 @@
 <translation id="7248671827512403053">Rakendus</translation>
 <translation id="7256405249507348194">Tundmatu viga: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Saadaolevad teenused</translation>
+<translation id="7292816689782057017">Administraatori eeskirjad piiravad teatud asukohtadesse salvestamist.</translation>
 <translation id="7294063083760278948">telugu, transliteratsioon</translation>
 <translation id="7295662345261934369">Teistega jagamine</translation>
 <translation id="7297443947353982503">Kasutajanimi/parool on vale või EAP-autentimine ebaõnnestus</translation>
@@ -905,6 +906,7 @@
 <translation id="8810671769985673465">Pakkimine nurjus, üksus on juba olemas: „<ph name="FILE_NAME" />”</translation>
 <translation id="8813284582615685103">hispaania (Hispaania)</translation>
 <translation id="8834164572807951958">Sihtkoha „<ph name="DESTINATION_NAME" />” liikmed saavad juurdepääsu nende üksuste koopiatele.</translation>
+<translation id="8849389110234859568">Administraatori eeskirjad piiravad juurdepääsu teatud failidele.</translation>
 <translation id="8857149712089373752">nepaali, foneetilise klaviatuuriga</translation>
 <translation id="8860454412039442620">Exceli tabel</translation>
 <translation id="8866284467018526531">araabia, transliteratsioon</translation>

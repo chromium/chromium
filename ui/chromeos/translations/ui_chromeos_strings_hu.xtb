@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">Figyelem: Ezek ideiglenes fájlok, és automatikusan törlődhetnek, hogy tárhely szabaduljon fel.</translation>
 <translation id="3029114385395636667">Engedélyezze a Google Dokumentumok Offline bővítményt, hogy a Dokumentumok, a Táblázatok és a Diák szolgáltatás offline is hozzáférhető legyen.</translation>
 <translation id="303198083543495566">Földrajzi helyzet</translation>
+<translation id="3044404008258011032">Az elemek visszaállításához húzza őket a kukán kívülre, egy új mappába. Az elemek eredeti „<ph name="PARENT_FOLDER_NAME" />” mappája törlésre került.</translation>
 <translation id="3047197340186497470">kínai dayi</translation>
 <translation id="3067790092342515856">Windows-fájlok</translation>
 <translation id="3083975830683400843">Chromebitek</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">Aktiválás...</translation>
 <translation id="4092890906744441904">ír</translation>
 <translation id="4124935795427217608">Egyszarvú</translation>
+<translation id="4131235941541910880">Helyezze a kukába azokat az elemeket, amelyekre nincs szüksége.</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> áthelyezve.</translation>
 <translation id="4176286497474237543">Kuka ürítése most</translation>
 <translation id="4186579485882418952">Offline hozzáférés engedélyezése</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">német</translation>
 <translation id="4867079195717347957">Kattintson az oszlop csökkenő sorrendben való rendezéséhez.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bájt</translation>
+<translation id="4874569719830985133">Végleges törlés</translation>
 <translation id="4880214202172289027">Hangerőcsúszka</translation>
 <translation id="4881695831933465202">Megnyitás</translation>
+<translation id="4891091358278567964">Az elemek visszaállításához húzza őket a kukán kívülre, egy új mappába. Az elemek eredeti mappái törlésre kerültek.</translation>
 <translation id="4900532980794411603">Megosztás a Parallels Desktoppal</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, csatlakozás</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, telefon akkumulátora: <ph name="BATTERY_STATUS" />%, részletek</translation>
@@ -493,6 +497,7 @@
     <ph name="MARKUP_7" />Megoszthat és létrehozhat fájlokat, amelyeken együtt dolgozhat<ph name="MARKUP_8" />
     másokkal – mindezt egy helyen.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">A Google Drive-ról visszaállított fájlok</translation>
+<translation id="5278111733643988471">Az elem visszaállításához húzza a kukán kívülre, egy új mappába. Az elem eredeti „<ph name="PARENT_FOLDER_NAME" />” mappája törlésre került.</translation>
 <translation id="5286194356314741248">Keresés</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -505,6 +510,7 @@
 <translation id="535792325654997756">Ember macskákkal</translation>
 <translation id="5358764674931277">Képkockasebesség</translation>
 <translation id="5363339716524495120">A beviteli nyelv a kínai</translation>
+<translation id="5364067326287025678">A kuka üres</translation>
 <translation id="5368191757080475556">Mappa megosztása Linuxszal</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Ne használja a proxy-beállításokat ezekhez a hosztokhoz és domainekhez:</translation>
@@ -771,6 +777,7 @@
 <translation id="7711920809702896782">Képfájl adatai</translation>
 <translation id="7724603315864178912">Kivágás</translation>
 <translation id="7732111077498238432">A hálózatot házirend szabályozza</translation>
+<translation id="7736003208887389532">Véglegesen törli ezeket a fájlokat?</translation>
 <translation id="7748626145866214022">További lehetőségek érhetők el a műveletsávon, amelyre az Alt+A billentyűkóddal helyezheti át a fókuszt.</translation>
 <translation id="7760449188139285140">kínai, vubi</translation>
 <translation id="7765158879357617694">Áthelyezés</translation>
@@ -832,6 +839,7 @@
 <translation id="8249296373107784235">Megszakítás</translation>
 <translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Dokumentumok</translation>
+<translation id="8255595130163158297">A kukában lévő összes elem törlődni fog, és Ön nem fogja tudni visszaállítani őket.</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8261561378965667560">kínai, tömb</translation>
 <translation id="8264024885325823677">Ezt a beállítást a rendszergazdája kezeli.</translation>
@@ -910,6 +918,7 @@
 <translation id="8857149712089373752">nepáli, fonetikus billentyűzettel</translation>
 <translation id="8860454412039442620">Excel-táblázat</translation>
 <translation id="8866284467018526531">arab, betű szerinti átírás</translation>
+<translation id="8873014196523807561">Az elemek visszaállításához húzza őket egy új mappába. Az elemek egy részének eredeti mappái törlésre kerültek.</translation>
 <translation id="8874184842967597500">Nincs csatl.</translation>
 <translation id="8900820606136623064">magyar</translation>
 <translation id="8903931173357132290">Diplomás</translation>

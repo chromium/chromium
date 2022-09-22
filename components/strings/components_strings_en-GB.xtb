@@ -1420,6 +1420,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4744514002166662487">Create presentation</translation>
 <translation id="4744603770635761495">Executable Path</translation>
 <translation id="4749011317274908093">You’ve gone Incognito</translation>
+<translation id="4750671009706599284">this phone</translation>
 <translation id="4750917950439032686">Your information (for example, passwords or credit card numbers) is private when it is sent to this site.</translation>
 <translation id="4751476147751820511">Motion or light sensors</translation>
 <translation id="4754461935447132332">Not allowed for non-secure sites</translation>
@@ -2200,6 +2201,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome simplified this page to make it easier to read. Chrome retrieved the original page over an insecure connection.</translation>
 <translation id="6890443033788248019">Allow location?</translation>
+<translation id="6890531741535756070">You chose to verify with <ph name="DEVICE_LABEL" /> on websites that use <ph name="PROVIDER_ORIGIN" />. This provider may have stored information about your payment method, which you can <ph name="BEGIN_LINK" />request to have deleted<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Policy level is not supported.</translation>
 <translation id="6895143722905299846">Virtual number:</translation>
 <translation id="6895330447102777224">Your card is confirmed</translation>
@@ -2566,6 +2568,7 @@ Additional details:
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7770259615151589601">Designated-Long</translation>
 <translation id="7773005668374414287">Same order face up</translation>
+<translation id="7785790577395078482">this tablet</translation>
 <translation id="7791011319128895129">Unreleased</translation>
 <translation id="7791196057686275387">Bale</translation>
 <translation id="7791543448312431591">Add</translation>

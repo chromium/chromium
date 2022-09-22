@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">Прыняць і працягнуць</translation>
 <translation id="110724200315609752">Пераключыцца на адкрытае акно</translation>
 <translation id="1112015203684611006">Памылка друкавання.</translation>
+<translation id="1118569444314402022">З вяртаннем, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Стварыць новую ўкладку.</translation>
 <translation id="1126809382673880764">Не абараняе ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Вы застаняцеся пад абаронай Бяспечнага прагляду пры карыстанні іншымі сэрвісамі Google, у якіх ён даступны, такімі як Gmail і Пошук.</translation>
 <translation id="1135212215217513471">Спампаваць Chrome для iOS</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">Сінхранізацыя перастала працаваць.</translation>
 <translation id="1377321085342047638">Нумар карткі</translation>
 <translation id="1383876407941801731">Пошук</translation>
+<translation id="138618066238211776">Працягнуць як <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">За апошнія 4 тыдні</translation>
 <translation id="1404330357948037222">Вы выйшлі з уліковага запісу</translation>
 <translation id="1407135791313364759">Адкрыць усе</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">Працягнуць рэдагаванне</translation>
 <translation id="2434405374328098816">Вы ўжо захавалі пароль для карыстальніка <ph name="USERNAME" /> на вэб-сайце <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Паказаць пароль</translation>
+<translation id="2461070143328828326">Налады пароляў</translation>
 <translation id="2469960372084740698">Выключыць Бяспечны прагляд?</translation>
 <translation id="2473876017985765807">Вы ўжо захавалі пароль для вэб-сайта <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не выбрана</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">Пазначыць як непрачытанае</translation>
 <translation id="371230970611282515">Прадказвае небяспечныя падзеі і папярэджвае пра іх да таго, як яны здараюцца.</translation>
 <translation id="37207012422556617">Папулярныя пошукавыя запыты</translation>
+<translation id="3726360487031500941">Увайдзіце ва ўліковы запіс "<ph name="USER_NAME" />" зноў</translation>
 <translation id="3740397331642243698">Адкрывае ўведзеныя URL-адрасы ў Google Chrome у рэжыме інкогніта.</translation>
 <translation id="3762232513783804601">Распрацавана для iPad</translation>
 <translation id="3771033907050503522">Укладкі інкогніта</translation>

@@ -23,6 +23,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="1104948393051856124">Prihvati i nastavi</translation>
 <translation id="110724200315609752">Prijeđite na otvoreni prozor</translation>
 <translation id="1112015203684611006">Ispis nije uspio.</translation>
+<translation id="1118569444314402022">Dobro došli natrag, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Otvori novu karticu.</translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih web-lokacija, preuzimanja i proširenja. Na drugim Googleovim uslugama, kao što su Gmail i Pretraživanje, i dalje ste zaštićeni Sigurnim pregledavanjem, ako je dostupno.</translation>
 <translation id="1135212215217513471">Preuzmite Chrome za iOS</translation>
@@ -64,6 +65,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="1377255359165588604">Sinkronizacija je prekinuta.</translation>
 <translation id="1377321085342047638">Broj kartice</translation>
 <translation id="1383876407941801731">Traži</translation>
+<translation id="138618066238211776">Nastavite kao <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Protekla 4 tjedna</translation>
 <translation id="1404330357948037222">Odjavljeni ste</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
@@ -177,6 +179,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2421044535038393232">Nastavi uređivati</translation>
 <translation id="2434405374328098816">Već ste spremili zaporku za korisničko ime <ph name="USERNAME" /> na web-lokaciji <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Pokaži zaporku</translation>
+<translation id="2461070143328828326">Postavke zaporke</translation>
 <translation id="2469960372084740698">Želite li isključiti sigurno pregledavanje?</translation>
 <translation id="2473876017985765807">Već ste spremili zaporku za web-lokaciju <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Nije odabrano</translation>
@@ -331,6 +334,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3709582977625132201">Označi kao nepročitano</translation>
 <translation id="371230970611282515">Predviđa opasne događaje i upozorava vas na njih prije nego što se dogode.</translation>
 <translation id="37207012422556617">Pretraživanje u trendu</translation>
+<translation id="3726360487031500941">Ponovo se prijavite na svoj račun <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Unesene URL-ove otvara u Google Chromeu u anonimnom načinu.</translation>
 <translation id="3762232513783804601">Razvijeno za vaš iPad</translation>
 <translation id="3771033907050503522">Anonimne kartice</translation>

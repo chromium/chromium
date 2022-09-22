@@ -2176,6 +2176,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2977480621796371840">Supprimer du groupe</translation>
 <translation id="2979639724566107830">Ouvrir dans une nouvelle fenêtre</translation>
 <translation id="2981113813906970160">Afficher le grand curseur</translation>
+<translation id="2981293774053328982">Ce fichier contient des logiciels malveillants qui peuvent compromettre vos comptes de réseaux personnels ou sociaux</translation>
 <translation id="2983373101216420412">Niveau de la pile de l'étui : <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2985348301114641460">Envoyer une demande à votre administrateur pour installer « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="2987620471460279764">Texte partagé à partir d'un autre appareil</translation>
@@ -2297,6 +2298,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3090819949319990166">Impossible de copier un fichier crx externe dans <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">« <ph name="DEVICE_NAME" /> » associé à votre appareil.</translation>
 <translation id="3093714882666365141">Ne pas autoriser les sites à installer des modules de traitement de paiement</translation>
+<translation id="3093958632721393232">Activer uniquement lorsque ma pile est faible</translation>
 <translation id="3094141017404513551">Cette action séparera votre navigation de celle de <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Les favoris, les mots de passe et d'autres données de navigation sont synchronisés avec le compte principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 extension potentiellement nuisible est désactivée. Vous pouvez également la supprimer.}one{{NUM_EXTENSIONS} extension potentiellement nuisible est désactivée. Vous pouvez également la supprimer.}other{{NUM_EXTENSIONS} extensions potentiellement nuisibles sont désactivées. Vous pouvez également les supprimer.}}</translation>
@@ -3760,6 +3762,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4514610446763173167">Faire jouer la vidéo ou la mettre en pause</translation>
 <translation id="451515744433878153">Supprimer</translation>
 <translation id="4515872537870654449">Communiquez avec Dell pour faire réparer votre appareil. La station d'accueil s'éteindra si le ventilateur ne fonctionne pas.</translation>
+<translation id="4518840066030486079">Style de mode de la touche Maj</translation>
 <translation id="4519331665958994620">Les sites peuvent demander à utiliser votre caméra</translation>
 <translation id="4519935350946509010">Erreur de connexion.</translation>
 <translation id="4520385623207007473">Témoins en cours d'utilisation</translation>
@@ -3855,6 +3858,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4598345735110653698">Gérer les clés d'accès</translation>
 <translation id="4598556348158889687">Gestion du stockage</translation>
 <translation id="4598776695426288251">Connexion Wi-Fi possible à partir de plusieurs appareils</translation>
+<translation id="4600071396330666617">Nombre de suggestions</translation>
 <translation id="4601426376352205922">Marquer comme non lu</translation>
 <translation id="4602466770786743961">Toujours autoriser <ph name="HOST" /> à accéder à votre caméra et à votre microphone</translation>
 <translation id="4606551464649945562">Ne pas autoriser les sites à créer une carte 3D de votre environnement ni à faire le suivi de la position de l'appareil photo</translation>
@@ -4301,6 +4305,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5043913660911154449">Ou encore, sélectionnez le fichier PPD de votre imprimante <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
 <translation id="504561833207953641">Ouverture dans une session de navigateur existante.</translation>
+<translation id="5049614114599109018">Utiliser l'historique d'entrée</translation>
 <translation id="5051836348807686060">Le correcteur orthographique n'est pas pris en charge pour les langues que vous avez sélectionnées</translation>
 <translation id="5052499409147950210">Modifier le site</translation>
 <translation id="505347685865235222">Groupe sans nom : <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5015,6 +5020,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5747552184818312860">Date d'expiration</translation>
 <translation id="5747785204778348146">Développeur (instable)</translation>
 <translation id="5747809636523347288">Coller et a&amp;ccéder à l'adresse <ph name="URL" /></translation>
+<translation id="5748137879145720682">Activer lorsque mon ordinateur est débranché</translation>
 <translation id="5751345516399502412">Vérifier la préparation du partage de connexion</translation>
 <translation id="5755022574660047665">souvenirs de Google Photos</translation>
 <translation id="5756163054456765343">Centre d'aide</translation>
@@ -7649,6 +7655,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8248381369318572865">Accéder à votre microphone et analyser votre discours</translation>
 <translation id="8248887045858762645">Conseil relatif à Chrome</translation>
 <translation id="8249048954461686687">Dossier OEM</translation>
+<translation id="8249239468199142122">Économiseur de pile</translation>
 <translation id="8249615410597138718">Envoyer à vos appareils</translation>
 <translation id="8250210000648910632">Espace de stockage insuffisant</translation>
 <translation id="8251441930213048644">Actualiser maintenant</translation>

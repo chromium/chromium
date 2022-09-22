@@ -2182,6 +2182,7 @@
 <translation id="2977480621796371840">ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2979639724566107830">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="2981113813906970160">ದೊಡ್ಡ ಮೌಸ್ ಕರ್ಸರ್ ತೋರಿಸು</translation>
+<translation id="2981293774053328982">ಈ ಫೈಲ್ ಮಾಲ್‌ವೇರ್ ಅನ್ನು ಒಳಗೊಂಡಿದೆ ಅದು ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಅಥವಾ ಸಾಮಾಜಿಕ ನೆಟ್‌ವರ್ಕ್ ಖಾತೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಡೇಟಾಗೆ ಅಪಾಯವನ್ನು ಉಂಟುಮಾಡಬಹುದು</translation>
 <translation id="2983373101216420412">ಕೇಸ್ ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆಂದು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ವಿನಂತಿ ಸಲ್ಲಿಸಬೇಕೇ?</translation>
 <translation id="2987620471460279764">ಬೇರೆ ಸಾಧನದಿಂದ ಪಠ್ಯವನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
@@ -2303,6 +2304,7 @@
 <translation id="3090819949319990166">ಬಾಹ್ಯ crx ಫೈಲ್ ಅನ್ನು <ph name="TEMP_CRX_FILE" /> ಗೆ ನಕಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ಜೋಡಿಸಲಾಗಿದೆ</translation>
 <translation id="3093714882666365141">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
+<translation id="3093958632721393232">ನನ್ನ ಬ್ಯಾಟರಿಯ ಮಟ್ಟ ಕಡಿಮೆಯಿರುವಾಗ ಮಾತ್ರ ಆನ್ ಮಾಡಿ</translation>
 <translation id="3094141017404513551">ಇದು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು <ph name="EXISTING_USER" /> ನಿಂದ ಪ್ರತ್ಯೇಕಿಸುತ್ತದೆ</translation>
 <translation id="3095871294753148861">ಪ್ರಾಥಮಿಕ ಖಾತೆಯ ಜೊತೆಗೆ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಬ್ರೌಸಿಂಗ್‌ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಯು ಆಫ್ ಆಗಿದೆ. ಈಗಲೂ ನೀವು ಅದನ್ನು ತೆಗೆದುಹಾಕಬಹುದು.}one{{NUM_EXTENSIONS} ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಗಳು ಆಫ್ ಆಗಿವೆ. ಈಗಲೂ ನೀವು ಅವುಗಳನ್ನು ತೆಗೆದುಹಾಕಬಹುದು.}other{{NUM_EXTENSIONS} ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಗಳು ಆಫ್ ಆಗಿವೆ. ಈಗಲೂ ನೀವು ಅವುಗಳನ್ನು ತೆಗೆದುಹಾಕಬಹುದು.}}</translation>
@@ -3767,6 +3769,7 @@
 <translation id="4514610446763173167">ಪ್ಲೇ ಮಾಡಲು ಅಥವಾ ವಿರಾಮಗೊಳಿಸಲು ವೀಡಿಯೊವನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="451515744433878153">ತೆಗೆದುಹಾಕು</translation>
 <translation id="4515872537870654449">ದುರಸ್ತಿಗಾಗಿ ಡೆಲ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ. ಫ್ಯಾನ್ ಕೆಲಸ ಮಾಡದಿದ್ದರೆ ಡಾಕ್ ಸ್ಥಗಿತಗೊಳ್ಳುತ್ತದೆ.</translation>
+<translation id="4518840066030486079">Shift ಕೀ ಮೋಡ್ ಸ್ಟೈಲ್</translation>
 <translation id="4519331665958994620">ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಬಳಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="4519935350946509010">ಸಂಪರ್ಕ ದೋಷ.</translation>
 <translation id="4520385623207007473">ಬಳಕೆಯಲ್ಲಿರುವ ಕುಕೀಗಳು</translation>
@@ -3862,6 +3865,7 @@
 <translation id="4598345735110653698">ಪಾಸ್‌ಕೀಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4598556348158889687">ಸಂಗ್ರಹಣೆ ನಿರ್ವಹಣೆ</translation>
 <translation id="4598776695426288251">ಬಹು-ಸಾಧನಗಳ ಮೂಲಕ ವೈ-ಫೈ ಲಭ್ಯವಿದೆ</translation>
+<translation id="4600071396330666617">ಸಲಹೆಗಳ ಸಂಖ್ಯೆ</translation>
 <translation id="4601426376352205922">ಓದದಿರುವುದು ಎಂದು ಗುರುತಿಸಿ</translation>
 <translation id="4602466770786743961">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಹಾಗೂ ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಅನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="4606551464649945562">ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ 3D ನಕ್ಷೆಗಳನ್ನು ರಚಿಸುವುದು ಅಥವಾ ಕ್ಯಾಮರಾ ಸ್ಥಿತಿಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ.</translation>
@@ -4309,6 +4313,7 @@
 <translation id="5043913660911154449">ಅಥವಾ ನಿಮ್ಮ ಪ್ರಿಂಟರ್ PPD ಅನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸಿ <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">ತಪ್ಪು ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="504561833207953641">ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಬ್ರೌಸರ್ ಸೆಶನ್‌ನಲ್ಲಿ ತೆರೆಯಲಾಗುತ್ತಿದೆ.</translation>
+<translation id="5049614114599109018">ಇನ್‌ಪುಟ್ ಇತಿಹಾಸವನ್ನು ಬಳಸಿ</translation>
 <translation id="5051836348807686060">ನೀವು ಆಯ್ಕೆ ಮಾಡಿರುವ ಭಾಷೆಗಳಲ್ಲಿ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="5052499409147950210">ಸೈಟ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="505347685865235222">ಹೆಸರಿಸದ ಗುಂಪು - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5024,6 +5029,7 @@
 <translation id="5747552184818312860">ಅವಧಿ ಮೀರುವುದು</translation>
 <translation id="5747785204778348146">ಡೆವಲಪರ್ - ಅಸ್ಥಿರ</translation>
 <translation id="5747809636523347288">ಅಂ&amp;ಟಿಸಿ ಮತ್ತು <ph name="URL" /> ಗೆ ಹೋಗಿ</translation>
+<translation id="5748137879145720682">ನನ್ನ ಕಂಪ್ಯೂಟರ್ ಅನ್‌ಪ್ಲಗ್ ಆಗಿರುವಾಗ ಆನ್ ಮಾಡಿ</translation>
 <translation id="5751345516399502412">ಟೆಥರಿಂಗ್ ಸಿದ್ಧತೆಯನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="5755022574660047665">Google Photos ನಲ್ಲಿನ ನೆನಪುಗಳು</translation>
 <translation id="5756163054456765343">ಸ&amp;ಹಾಯ ಕೇಂದ್ರ</translation>
@@ -7657,6 +7663,7 @@
 <translation id="8248381369318572865">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಪ್ರವೇಶಿಸಿ ಹಾಗೂ ನಿಮ್ಮ ಧ್ವನಿಯನ್ನು ವಿಶ್ಲೇಷಿಸಿ</translation>
 <translation id="8248887045858762645">Chrome ಸಲಹೆ</translation>
 <translation id="8249048954461686687">OEM ಫೊಲ್ಡರ್</translation>
+<translation id="8249239468199142122">ಬ್ಯಾಟರಿ ಸೇವರ್</translation>
 <translation id="8249615410597138718">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಕಳುಹಿಸಿ</translation>
 <translation id="8250210000648910632">ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳಾವಕಾಶ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="8251441930213048644">ಈಗ ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>

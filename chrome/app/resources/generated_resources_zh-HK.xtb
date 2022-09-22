@@ -2311,6 +2311,7 @@
 <translation id="3090819949319990166">無法將外部 crx 檔案複製到 <ph name="TEMP_CRX_FILE" />。</translation>
 <translation id="3090871774332213558">已配對「<ph name="DEVICE_NAME" />」</translation>
 <translation id="3093714882666365141">不允許網站安裝付款處理常式</translation>
+<translation id="3093958632721393232">只在電量不足時開啟</translation>
 <translation id="3094141017404513551">這樣做會將您的瀏覽資料與 <ph name="EXISTING_USER" /> 分隔</translation>
 <translation id="3095871294753148861">書籤、密碼和其他瀏覽器資料已與主要帳戶同步。</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{已停用 1 個可能有害的擴充程式，但您可將之移除。}other{已停用 {NUM_EXTENSIONS} 個可能有害的擴充程式，但您可將之移除。}}</translation>
@@ -5031,6 +5032,7 @@
 <translation id="5747552184818312860">到期日</translation>
 <translation id="5747785204778348146">開發人員版 - 不穩定</translation>
 <translation id="5747809636523347288">貼上並前往 <ph name="URL" /> (&amp;S)</translation>
+<translation id="5748137879145720682">在電腦拔除電源時開啟</translation>
 <translation id="5751345516399502412">檢查網絡共享準備工作</translation>
 <translation id="5755022574660047665">來自「Google 相片」的回憶</translation>
 <translation id="5756163054456765343">說明中心(&amp;E)</translation>
@@ -7665,6 +7667,7 @@
 <translation id="8248381369318572865">存取麥克風，並分析您的語音</translation>
 <translation id="8248887045858762645">Chrome 提示</translation>
 <translation id="8249048954461686687">OEM 資料夾</translation>
+<translation id="8249239468199142122">省電模式</translation>
 <translation id="8249615410597138718">傳送至您的裝置</translation>
 <translation id="8250210000648910632">儲存空間已用盡</translation>
 <translation id="8251441930213048644">立即重新整理</translation>

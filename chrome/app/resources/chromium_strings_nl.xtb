@@ -55,6 +55,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2384373936468275798">Chromium OS kan je gegevens niet synchroniseren, omdat de inloggegevens voor je account zijn verouderd.</translation>
 <translation id="2396765026452590966">De extensie <ph name="EXTENSION_NAME" /> heeft gewijzigd welke pagina je ziet als je Chromium start.</translation>
+<translation id="2400844369696905771">Als deze instelling aanstaat, claimt Chromium geheugen terug van tabbladen die je niet actief gebruikt. Zo worden de resources van je computer vrijgemaakt voor andere taken en blijft Chromium snel. Inactieve tabbladen worden leeg weergegeven en worden automatisch opnieuw geladen als je erop klikt. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium heeft camera- en microfoonrechten nodig voor deze site</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
@@ -145,6 +146,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="4285930937574705105">De installatie is mislukt wegens een onbekende fout. Als Chromium momenteel actief is, moet je Chromium sluiten en het opnieuw proberen.</translation>
 <translation id="4304713468139749426">Wachtwoordmanager</translation>
 <translation id="4334294535648607276">Downloaden voltooid.</translation>
+<translation id="437317747729858884">Chromium claimt geheugen terug van tabbladen die je niet gebruikt, zodat je sneller kunt browsen.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> vereist dat je de volgende Servicevoorwaarden leest en accepteert voordat je dit apparaat gebruikt. Deze voorwaarden zijn geen uitbreiding, aanpassing of beperking van de Voorwaarden van Chromium OS.</translation>
 <translation id="4407044323746248786">Chromium toch sluiten?</translation>
 <translation id="4415566066719264597">Chromium laten uitvoeren op de achtergrond</translation>
@@ -313,6 +315,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7872446069773932638">Downloaden... Nog <ph name="SECONDS" /> seconden</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Ter bescherming van je privacy verwijderen we automatisch interesses die ouder zijn dan 4 weken. Het kan gebeuren dat een interesse weer in de lijst komt te staan als je blijft browsen. Je kunt ook interesses verwijderen waarvan je niet wilt dat Chromium deze overweegt.</translation>
 <translation id="7937630085815544518">Je bent ingelogd bij Chromium als <ph name="USER_EMAIL_ADDRESS" />. Gebruik hetzelfde account om opnieuw in te loggen.</translation>
+<translation id="7947085610734123927">Chromium heeft geheugenbesparing aangezet</translation>
 <translation id="7975919845073681630">Dit is een tweede installatie van Chromium en kan niet als standaardbrowser worden ingesteld.</translation>
 <translation id="7997934263947464652">Extensies, apps en thema's van onbekende bronnen kunnen schadelijk zijn voor je apparaat. Chromium raadt je aan ze alleen te installeren vanuit de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8013436988911883588">Zodra Chromium toegang heeft, kunnen websites je om toegang vragen.</translation>
@@ -338,6 +341,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8558383651099478961">Je ouder heeft Rechten voor sites, apps en extensies uitgezet voor Chromium. Je mag deze <ph name="EXTENSION_TYPE_PARAMETER" /> niet toevoegen.</translation>
 <translation id="8561285221328166383">Als je toekomstige Chromium-updates wilt krijgen, heb je macOS 10.13 of hoger nodig. Deze computer gebruikt macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium kan je wachtwoorden checken als je inlogt met je Google-account</translation>
+<translation id="8574036838419011058">Als deze instelling aanstaat, spaart Chromium de batterij door achtergrondactiviteit en visuele effecten te beperken, zoals vloeiend scrollen en videoframesnelheden. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Sites kunnen informatie over je interesses in Chromium opslaan. Als je bijvoorbeeld een site bezoekt om schoenen voor een marathon te kopen, kan de site je interesse definiëren als 'deelname aan marathons'. Als je later een andere site bezoekt om je aan te melden voor een race, kan die site je een advertentie voor hardloopschoenen laten zien op basis van je interesses.</translation>
 <translation id="8619360774459241877">Chromium starten…</translation>

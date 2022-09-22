@@ -55,6 +55,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2384373936468275798">ChromiumOS datanızı sinxronizasiya edə bilmir, çünki hesaba giriş məlumatlarınız köhnədir.</translation>
 <translation id="2396765026452590966">"<ph name="EXTENSION_NAME" />" artırması Chromium'u başlatdığınız zaman hansı səhifənin göstərildiyini dəyişdi.</translation>
+<translation id="2400844369696905771">Aktiv olduqda, Chromium aktiv istifadə etmədiyiniz tablardan yaddaşı geri alır. Bu, kompüterinizin resurslarını digər tapşırıqlar üçün boşaldır və Chromium'u sürətləndirir. Qeyri-aktiv tablar boş görünür və kliklədiyiniz zaman avtomatik olaraq yenidən yüklənir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium bu sayt üçün kamera və mikrofon icazəsi tələb edir</translation>
 <translation id="2483889755041906834">Chromium'da</translation>
 <translation id="2485422356828889247">Sistemdən silin</translation>
@@ -143,6 +144,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="4285930937574705105">Naməlum xəta üzündən quraşdırmaq alınmadı. Əgər Chromium hazırda işləyirsə, lütfən, qapadın və yenidən cəhd edin.</translation>
 <translation id="4304713468139749426">Parol Meneceri</translation>
 <translation id="4334294535648607276">Endirmə tamamlandı.</translation>
+<translation id="437317747729858884">Axtarışı sürətləndirmək üçün Chromium istifadə etmədiyiniz tablardan yaddaşı geri alır.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> bu cihazı istifadə etməzdən əvvəl aşağıdakı Xidmət Şərtlərini oxumağınızı və qəbul etməyinizi tələb edir. Bu şərtlər ChromiumOS Şərtlərini artırmır, dəyişdirmir və ya məhdudlaşdırmır.</translation>
 <translation id="4407044323746248786">Chromium'dan istənilən halda çıxılsın?</translation>
 <translation id="4415566066719264597">Chromium'a Arxa Fonda İşləmək İcazəsi Verin</translation>
@@ -309,6 +311,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7872446069773932638">Endirilir... <ph name="SECONDS" /> saniyə qalıb</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Datanızı necə idarə edə bilərsiniz:<ph name="END_BOLD" /> Məxfiliyinizi qorumaq üçün 4 həftədən köhnə maraqlarınızı avtomatik silirik. Baxmağa davam etdikcə, maraq siyahıda yenidən görünə bilər. Və ya Chromium'un nəzərə almasını istəmədiyiniz maraqları silə bilərsiniz.</translation>
 <translation id="7937630085815544518">Chromium'a <ph name="USER_EMAIL_ADDRESS" /> kimi daxil olmuşdunuz. Lütfən, yenidən daxil olmaq üçün eyni hesabdan istifadə edin.</translation>
+<translation id="7947085610734123927">Chromium Yaddaşa Qənaəti aktiv edib</translation>
 <translation id="7975919845073681630">Bu Chromium'un ikinci quraşdırmasıdır və defolt brauzer kimi ayarlana bilmir.</translation>
 <translation id="7997934263947464652">Naməlum mənbələrdən olan artırmalar, tətbiqlər və temalar cihazınıza zərər verə bilər. Chromium onları yalnız buradan quraşdırmağı tövsiyə edir: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Chromium'un giriş imkanı olduqda veb saytlar giriş üçün Sizdən icazə istəyəcək.</translation>
@@ -334,6 +337,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8558383651099478961">Valideyniniz Chromium üçün "Saytlar, tətbiqlər və artırmalar üçün icazələri" deaktiv edib. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> artırmasının əlavə edilməsinə icazə verilmir.</translation>
 <translation id="8561285221328166383">Chromium güncəlləmələrini əldə etmək üçün macOS 10.13 və ya daha yeni versiya tələb olunur. Bu kompüter macOS 10.12 istifadə edir.</translation>
 <translation id="8568283329061645092">Google Hesabınız ilə daxil olduqda Chromium parollarınızı yoxlaya bilər</translation>
+<translation id="8574036838419011058">Aktiv olduqda, Chromium arxa fon fəaliyyətini və rahat sürüşdürmə və video kadr sürətləri kimi vizual effektləri məhdudlaşdırmaqla batareya enerjisinə qənaət edir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Müəlliflik Hüququ <ph name="YEAR" /> Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Bu datanı necə istifadə edirik:<ph name="END_BOLD" /> Saytlar maraqlarınız haqqında Chromium ilə məlumat saxlaya bilər. Məsələn, marafona ayaqqabı almaq üçün sayta daxil olsanız, sayt marağınızı qaçış marafonu kimi müəyyən edə bilər. Sonra yarışa yazılmaq üçün başqa sayta daxil olsanız, həmin sayt maraqlarınız əsasında sizə qaçış ayaqqabısı reklamı göstərə bilər.</translation>
 <translation id="8619360774459241877">Chromium başlayır...</translation>

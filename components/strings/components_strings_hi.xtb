@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">लेटर फ़ोल्ड</translation>
 <translation id="138218114945450791">हल्का नीला</translation>
 <translation id="1382194467192730611">आपके व्यवस्थापक ने इस यूएसबी डिवाइस की मंज़ूरी दी है</translation>
+<translation id="1382378825779654399">किसी भी साइट पर, प्रॉडक्ट की कीमत कम होने पर आपको ईमेल से सूचना मिलेगी. यह पेज <ph name="LAST_BOOKMARKS_FOLDER" /> में सेव किया जाएगा.</translation>
 <translation id="1382912999714108023">क्या यह मौजूदा जानकारी नहीं है? इसे अपडेट करने के लिए कृपया अपने बैंक से संपर्क करें.</translation>
 <translation id="1384725838384960382">सुरक्षित पेमेंट करने के लिए, क्रेडेंशियल की पुष्टि करने की शीट</translation>
 <translation id="1386623374109090026">टिप्पणियां</translation>
@@ -260,6 +261,7 @@
 <translation id="156703335097561114">नेटवर्क से जुड़ी जानकारी जैसे कि पते, इंटरफ़ेस का कॉन्फ़िगरेशन, और कनेक्शन की क्वालिटी</translation>
 <translation id="1567040042588613346">यह नीति उम्मीद के मुताबिक काम कर रही है. हालांकि, किसी दूसरी जगह ऐसा ही मान सेट किया गया है और उसकी जगह इस नीति को लागू कर दिया गया है.</translation>
 <translation id="1569487616857761740">खत्म होने की तारीख डालें</translation>
+<translation id="1569694109004336106">Google Chrome, पासवर्ड भरने के लिए Windows Hello को चालू करने की कोशिश कर रहा है.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">इस वेबपेज को दिखाने के दौरान कुछ गड़बड़ी हुई है.</translation>
 <translation id="1586541204584340881">आपने कौनसे एक्सटेंशन इंस्टॉल किए हैं</translation>
@@ -399,6 +401,7 @@
 <translation id="1958218078413065209">आपका सबसे ज़्यादा स्कोर <ph name="SCORE" /> है.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />आप जिन पेजों पर जाते हैं उनमें से कुछ के यूआरएल, सिस्टम की थोड़ी जानकारी, और पेज का कुछ कॉन्टेंट<ph name="END_WHITEPAPER_LINK" /> Google को भेजकर, वेब पर सभी के लिए सुरक्षा को बेहतर बनाने में मदद करें. <ph name="BEGIN_PRIVACY_PAGE_LINK" />निजता नीति<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्क</translation>
+<translation id="1971033026002113380">TouchID की मदद से पासवर्ड सुरक्षित रखें</translation>
 <translation id="1973335181906896915">क्रमबद्ध करने में गड़बड़ी</translation>
 <translation id="1974060860693918893">बेहतर सेटिंग</translation>
 <translation id="1975457531113383421">इनपुट ट्रे</translation>
@@ -726,6 +729,7 @@
 <translation id="2881276955470682203">कार्ड सेव करें?</translation>
 <translation id="2882949212241984732">डबल-गेट फ़ोल्ड</translation>
 <translation id="2893773853358652045">चौथा रोल</translation>
+<translation id="289834758818479772">अगर इस डिवाइस को अन्य लोग इस्तेमाल करते हैं, तो आपके पास TouchID चालू करने का विकल्प होता है, ताकि जब भी आप सेव किया गया पासवर्ड इस्तेमाल करें, तो यह आपकी पहचान की पुष्टि कर सके</translation>
 <translation id="2900528713135656174">इवेंट बनाएं</translation>
 <translation id="2903493209154104877">पते</translation>
 <translation id="290376772003165898">क्या पेज <ph name="LANGUAGE" /> भाषा में नहीं है?</translation>
@@ -802,6 +806,8 @@
 <translation id="3108943290502734357">बीच की ट्रे</translation>
 <translation id="3109728660330352905">आपके पास इस पेज को देखने की अनुमति नहीं है.</translation>
 <translation id="3113284927548439113">तीसरी शिफ़्ट</translation>
+<translation id="3114040155724590991">Android सिस्टम अपडेट हो रहा है
+    आपके ऐप्लिकेशन को चालू करने में सामान्य से ज़्यादा समय लग सकता है.</translation>
 <translation id="3115363211799416195">{0,plural, =1{क्या आपको गोपनीय फ़ाइल डाउनलोड करनी है?}one{क्या आपको गोपनीय फ़ाइल डाउनलोड करनी है?}other{क्या आपको गोपनीय फ़ाइलें डाउनलोड करनी हैं?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को लौटा दें.</translation>
 <translation id="3116158981186517402">लैमनेट</translation>
@@ -1255,6 +1261,7 @@
 <translation id="4306812610847412719">क्लिपबोर्ड</translation>
 <translation id="4308567447483056043">उपयोगकर्ता का खाता संगठन के डोमेन से नहीं जुड़ा है. इसलिए, यह नीति लागू नहीं हो सकती. इस नीति को लागू करने के लिए, यह ज़रूरी है कि Chrome ब्राउज़र और प्रोफ़ाइल को Admin console की मदद से, एक ही संगठन से मैनेज किया जाए.</translation>
 <translation id="4310070645992025887">'Chrome इतिहास' में अपनी गतिविधियां खोजें</translation>
+<translation id="4310496734563057511">अगर इस डिवाइस को अन्य लोग इस्तेमाल करते हैं, तो आपके पास Windows Hello चालू करने का विकल्प होता है, ताकि जब भी आप सेव किया गया पासवर्ड इस्तेमाल करें, तो यह आपकी पहचान की पुष्टि कर सके</translation>
 <translation id="4312613361423056926">बी2</translation>
 <translation id="4312866146174492540">ब्लॉक करें (डिफ़ॉल्ट)</translation>
 <translation id="4314815835985389558">सिंक प्रबंधित करें</translation>
@@ -1469,6 +1476,7 @@
 <translation id="4880827082731008257">खोज इतिहास</translation>
 <translation id="4881695831933465202">खोलें</translation>
 <translation id="4885256590493466218">चेकआउट के दौरान <ph name="CARD_DETAIL" /> से पैसे चुकाएं</translation>
+<translation id="4887406273302438710">Windows Hello की मदद से पासवर्ड सुरक्षित रखें</translation>
 <translation id="4888600795924685526">विदेशी भाषा की पढ़ाई से जुड़े संसाधन</translation>
 <translation id="4889420713887366944">'गुप्त विंडो खोलें' बटन, निजी रूप से ब्राउज़ करने के लिए एक नई गुप्त विंडो खोलना चाहते हैं, तो Enter दबाएं</translation>
 <translation id="4892518386797173871">पीछे का हिस्सा</translation>
@@ -1520,6 +1528,7 @@
 <translation id="5018422839182700155">यह पेज खुल नहीं पा रहा है</translation>
 <translation id="5019198164206649151">बैकिंग संग्रह खराब स्थिति में है</translation>
 <translation id="5020776957610079374">वर्ल्ड म्यूज़िक</translation>
+<translation id="5021557570875267742">Chrome की मदद से कीमतों को ट्रैक करें</translation>
 <translation id="5023310440958281426">अपने एडमिन की नीतियां देखें</translation>
 <translation id="5029568752722684782">स्‍पष्‍ट कॉपी</translation>
 <translation id="5030338702439866405">जारीकर्ता</translation>
@@ -1687,6 +1696,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> वेबसाइट आपको सूचनाएं भेजना चाहती है</translation>
 <translation id="5428105026674456456">स्पैनिश</translation>
 <translation id="5430298929874300616">बुकमार्क निकालें</translation>
+<translation id="5434423669266814150">पासवर्ड भरने के लिए, TouchID चालू करें</translation>
 <translation id="5443468954631487277">दूसरी तरफ़ सीधा करके रखें</translation>
 <translation id="5447765697759493033">इस साइट का अनुवाद नहीं किया जाएगा</translation>
 <translation id="5452270690849572955">यह <ph name="HOST_NAME" /> पेज नहीं पाया जा सकता</translation>
@@ -2240,6 +2250,7 @@
 <translation id="6993898126790112050">6x9 (एन्वेलप)</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> का हमेशा अनुवाद करें</translation>
 <translation id="6999969238895751684">मनोरंजन उद्योग</translation>
+<translation id="7003335073762455340">इस प्रॉडक्ट को ट्रैक किया जा रहा है. यह पेज <ph name="LAST_BOOKMARKS_FOLDER" /> में सेव किया गया है.</translation>
 <translation id="7004583254764674281">कार्ड की जल्दी पुष्टि करने के लिए, Windows Hello का इस्तेमाल करें</translation>
 <translation id="7006930604109697472">फिर भी भेजें</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2463,6 +2474,7 @@
 <translation id="7564049878696755256">आपके <ph name="ORG_NAME" /> खाते का एक्सेस खो सकता है या पहचान चोरी हो सकती है. Chrome आपको अभी अपना पासवर्ड बदलने का सुझाव देता है.</translation>
 <translation id="7564680668369175887">स्टेशन वैगन</translation>
 <translation id="7567204685887185387">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; हो सकता है इसका सुरक्षा प्रमाणपत्र धोखे से जारी किया गया हो. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
+<translation id="7568616151991626879">Google Chrome, <ph name="APP_NAME" /> पर आपका पासवर्ड भरने की कोशिश कर रहा है.</translation>
 <translation id="7569490014721427265">गोल्फ़</translation>
 <translation id="7569761772822664555">सर्च इंजन के बटन मैनेज करें, अपने डिफ़ॉल्ट सर्च इंजन और साइट सर्च को मैनेज करने के लिए, Enter दबाएं</translation>
 <translation id="7569952961197462199">Chrome से क्रेडिट कार्ड निकालें?</translation>
@@ -2493,6 +2505,7 @@
 <translation id="7637586430889951925">{COUNT,plural, =0{कोई भी पासवर्ड नहीं है}=1{आपके खाते में 1 पासवर्ड है (<ph name="DOMAIN_LIST" /> के लिए)}one{आपके खाते में # पासवर्ड है (<ph name="DOMAIN_LIST" /> के लिए)}other{आपके खाते में # पासवर्ड हैं (<ph name="DOMAIN_LIST" /> के लिए)}}</translation>
 <translation id="7638605456503525968">सीरियल पोर्ट</translation>
 <translation id="7639968568612851608">गहरा धूसर</translation>
+<translation id="7646681339175747202">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google Password Manager, आपके पासवर्ड को तुरंत बदलने का सुझाव देता है.</translation>
 <translation id="7647206758853451655">प्रिंट क्वालिटी</translation>
 <translation id="7648992873808071793">फ़ाइलों को इस डिवाइस पर संग्रहित करें</translation>
 <translation id="7653957176542370971">पैसे चुकाने की हैंडलर शीट बंद है</translation>
@@ -3035,6 +3048,7 @@
 <translation id="9174623988242579721">कस्टमाइज़ किए गए और खास परफ़ॉर्मेंस वाले वाहन</translation>
 <translation id="9174917557437862841">टैब बदलने का बटन, इस टैब पर स्विच करने के लिए Enter दबाएं</translation>
 <translation id="9179703756951298733">Chrome की सेटिंग में, आप पैसे चुकाने और क्रेडिट कार्ड की जानकारी को प्रबंधित कर सकते हैं</translation>
+<translation id="9179907736442194268">किसी भी साइट पर, प्रॉडक्ट की कीमत कम होने पर ईमेल से सूचना पाएं</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> एक असमर्थित प्रोटोकॉल का उपयोग करता है.</translation>
 <translation id="9187461866967718678">जोखिम वाले खेल</translation>

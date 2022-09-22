@@ -53,6 +53,7 @@
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2384373936468275798">‏לא בוצע סנכרון של הנתונים שלך ב-ChromiumOS כי פרטי הכניסה לחשבון לא מעודכנים.</translation>
 <translation id="2396765026452590966">‏התוסף "<ph name="EXTENSION_NAME" />" שינה את הדף שמוצג כשמפעילים את Chromium.</translation>
+<translation id="2400844369696905771">‏כשההגדרה מופעלת, Chromium משתמש בזיכרון מכרטיסיות שאינן בשימוש באופן פעיל. כך המשאבים של המחשב מתפנים למשימות אחרות, ו-Chromium ממשיך לפעול במהירות. כרטיסיות לא פעילות מופיעות ריקות ונטענות מחדש באופן אוטומטי כשלוחצים עליהן. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">‏נדרשות הרשאות גישה למצלמה ולמיקרופון ב-Chromium עבור האתר הזה</translation>
 <translation id="2483889755041906834">‏ב-Chromium</translation>
 <translation id="2485422356828889247">הסרת התקנה</translation>
@@ -140,6 +141,7 @@
 <translation id="4285930937574705105">‏ההתקנה נכשלה בשל שגיאה לא צפויה. אם Chromium פועל כעת, יש לסגור אותו ולנסות שוב.</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
 <translation id="4334294535648607276">ההורדה הושלמה.</translation>
+<translation id="437317747729858884">‏כדי שהגלישה תהיה מהירה יותר, Chromium משתמש בזיכרון מכרטיסיות שלא בשימוש באותו רגע.</translation>
 <translation id="439358628917130594">‏לפי דרישת <ph name="MANAGER" />, יש לקרוא את התנאים וההגבלות הבאים ולהסכים להם לפני השימוש במכשיר הזה. תנאים אלה לא מרחיבים, משנים או מגבילים את התנאים של ChromiumOS.</translation>
 <translation id="4407044323746248786">‏לסגור את Chromium בכל זאת?</translation>
 <translation id="4415566066719264597">‏Chromium יכול לפעול ברקע</translation>
@@ -206,6 +208,7 @@
 <translation id="6072279588547424923">‏<ph name="EXTENSION_NAME" /> נוסף ל-‏Chromium‏</translation>
 <translation id="608006075545470555">הוספת פרופיל עבודה לדפדפן זה</translation>
 <translation id="6096348254544841612">‏כדי להתאים אישית את Google Chrome ולשלוט בו טוב יותר, כדאי להוריד את העדכון החדש.</translation>
+<translation id="6119438414301547735">‏מתן הרשאה לתוסף להציג בקשות גישה בסרגל הכלים של Chromium</translation>
 <translation id="6120345080069858279">‏הסיסמה הזאת תישמר על ידי Chromium בחשבון Google שלך. אין צורך לזכור אותה.</translation>
 <translation id="6129621093834146363">‏<ph name="FILE_NAME" /> מסוכן, ולכן Chromium חסם אותו.</translation>
 <translation id="6134968993075716475">‏הגלישה הבטוחה כבויה. ההמלצה של Chromium היא להפעיל אותה.</translation>
@@ -308,6 +311,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="7872446069773932638">מתבצעת הורדה… יש עוד <ph name="SECONDS" /> שנ'</translation>
 <translation id="7877292582355102282">‏<ph name="BEGIN_BOLD" />איך ניתן לנהל את הנתונים שלך:<ph name="END_BOLD" /> כדי להגן על הפרטיות שלך, תחומי עניין שהוגדרו לפני יותר מ-4 שבועות נמחקים אוטומטית. עם המשך הגלישה, תחום עניין כלשהו עשוי להופיע שוב ברשימה. יש גם אפשרות להסיר תחומי עניין מ-Chromium כדי שלא יילקחו בחשבון.</translation>
 <translation id="7937630085815544518">‏נכנסת ל-Chromium כ-<ph name="USER_EMAIL_ADDRESS" />. יש להשתמש באותו חשבון כדי להיכנס שוב.</translation>
+<translation id="7947085610734123927">‏Chromium הפעיל את החיסכון בזיכרון</translation>
 <translation id="7975919845073681630">‏זוהי התקנה משנית של Chromium, ולא ניתן להפוך אותו לדפדפן ברירת המחדל שלך.</translation>
 <translation id="7997934263947464652">‏תוספים, אפליקציות ועיצובים ממקורות לא מוכרים עלולים להזיק למכשיר. ההמלצה של Chromium היא להתקין אותם רק מ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">‏אחרי מתן גישה ל-Chromium, אתרים יוכלו לבקש ממך גישה.</translation>
@@ -333,6 +337,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8558383651099478961">‏אחד מההורים השבית ב-Chromium את ההגדרה "הרשאות לאתרים, אפליקציות ותוספים". לא ניתן להוסיף את ה<ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">‏כדי לקבל עדכונים של Chromium בעתיד, צריך להשתמש ב-macOS מגרסה 10.13 ואילך. במחשב הזה מותקנת מערכת ההפעלה macOS 10.12.</translation>
 <translation id="8568283329061645092">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google</translation>
+<translation id="8574036838419011058">‏כשהתכונה מופעלת, Chromium חוסך בחיי הסוללה על ידי הגבלת הפעילות ברקע והאפקטים החזותיים, כמו גלילה חלקה וקצב פריימים של סרטונים. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="8608079656141766906">‏<ph name="BEGIN_BOLD" />אופן השימוש בנתונים האלה:<ph name="END_BOLD" /> אתרים יכולים לשמור מידע ב-Chromium לגבי תחומי העניין שלך. לדוגמה, אם ביקרת באתר כדי לקנות נעליים למרתון, האתר עשוי להגדיר 'ריצת מרתון' כתחום עניין שלך. לאחר מכן, בביקור באתר שונה, למשל כדי להירשם למרוץ, יכול להיות שתוצג לך מודעה לנעלי ריצה על סמך תחומי העניין שלך.</translation>
 <translation id="8619360774459241877">‏הפעלת Chromium מתבצעת...</translation>

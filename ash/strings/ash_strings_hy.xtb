@@ -235,6 +235,7 @@
 <translation id="2298170939937364391">Լիաէկրան խոշորացույցը միացավ: Այն անջատելու համար նորից սեղմեք Ctrl+Search+M:</translation>
 <translation id="2302092602801625023">Այս հաշիվը կառավարվում է Family Link-ի կողմից</translation>
 <translation id="2303600792989757991">Փոխարկել պատուհանի համատեսքը</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />․ էկրանի վերջին տեսագրումները, ներբեռնումները և ամրացված ֆայլերը</translation>
 <translation id="2318576281648121272">Այսօր՝ <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060">Որոնման արդյունքների կատեգորիա՝ <ph name="CATEGORY" /></translation>
 <translation id="2322173485024759474">Մեկ տառով հետ</translation>
@@ -1154,6 +1155,7 @@
 <translation id="7633755430369750696">Ցուցադրել «Փոխանակում մոտակա սարքերի հետ» գործառույթի կարգավորումները։</translation>
 <translation id="7634648064048557203">Տեսախցիկի պատկերն ամրացված է ներքևի աջ անկյունում</translation>
 <translation id="7641938616688887143">Տեսագրել</translation>
+<translation id="7642106959537987271">գունաշրջման ռեժիմ</translation>
 <translation id="7642647758716480637">Բացել «<ph name="NETWORK_NAME" />» ցանցի կարգավորումները, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (սեփականատեր)</translation>
 <translation id="7647488630410863958">Ծանուցումները դիտելու համար ապակողպեք սարքը</translation>
@@ -1259,6 +1261,7 @@
 <translation id="8209010265547628927">Վերակայել</translation>
 <translation id="8214996719228530800">Canary կապուղի</translation>
 <translation id="8219451629189078428">Այս ընթացքում Chromebook-ը պետք է միացված լինի և սնուցվի հոսանքից։ Համոզվեք, որ լիցքավորիչի և ադապտերի մալուխները պատշաճ միացված են Chromebook-ին և վարդակին։ Մի՛ անջատեք Chromebook-ը։</translation>
+<translation id="8230305195727960608">Գունաշրջման ռեժիմ</translation>
 <translation id="8236042855478648955">Ընդմիջման ժամն է</translation>
 <translation id="8246282815785366524">Բարի վերադարձ, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" /></translation>
@@ -1385,6 +1388,7 @@
 <translation id="8982906748181120328">Մոտակա սարքերի հասանելիություն</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Օգտագործվում է՝ <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Գունաշրջման ռեժիմը միացված է։ Նորից սեղմեք Ctrl+Search+H՝ անջատելու համար։</translation>
 <translation id="899350903320462459">Ծանուցման հետ գործողություն կատարելու համար ապակողպեք սարքը որպես <ph name="LOGIN_ID" /></translation>
 <translation id="9000771174482730261">ԿԱՌԱՎԱՐԵԼ ՏԱՐԱԾՔԸ</translation>
 <translation id="9017320285115481645">Մուտքագրեք Family Link-ի ծնողի մուտքի կոդը։</translation>
@@ -1433,6 +1437,7 @@
 <translation id="921989828232331238">Ձեր ծնողը կողպել է սարքը մեկ օրով</translation>
 <translation id="9220525904950070496">Հեռացնել հաշիվը</translation>
 <translation id="923686485342484400">Դուրս գրվելու համար երկու անգամ սեղմեք Control Shift Q:</translation>
+<translation id="92580429198593979">Դուք սեղմեցիք գունաշրջման ստեղնային դյուրանցումը։ Միացնե՞լ։</translation>
 <translation id="925832987464884575">Անջատել նախադիտումը</translation>
 <translation id="937214777182567951">Կառավարիչը (<ph name="MANAGER" />) պահանջում է, որ անհապաղ թարմացնեք <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="938963181863597773">Ի՞նչ ունեմ պլանավորած։</translation>

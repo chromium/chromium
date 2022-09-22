@@ -2190,6 +2190,7 @@
 <translation id="2977480621796371840">গ্রুপ থেকে সরান</translation>
 <translation id="2979639724566107830">নতুন উইন্ডোতে খুলুন</translation>
 <translation id="2981113813906970160">বড় মাউস কার্সার দেখান</translation>
+<translation id="2981293774053328982">এই ফাইলটিতে ম্যালওয়্যার রয়েছে যা আপনার ব্যক্তিগত বা সোশ্যাল নেটওয়ার্ক অ্যাকাউন্টগুলি হ্যাক করতে পারে</translation>
 <translation id="2983373101216420412">কেসের ব্যাটারি লেভেল <ph name="PERCENTAGE" />%।</translation>
 <translation id="2985348301114641460">আপনার অ্যাডমিনিস্ট্রেটরকে "<ph name="EXTENSION_NAME" />" ইনস্টল করবার জন্য অনুরোধ পাঠাবেন?</translation>
 <translation id="2987620471460279764">অন্য ডিভাইস থেকে টেক্সট শেয়ার করা হয়েছে</translation>
@@ -2311,6 +2312,7 @@
 <translation id="3090819949319990166"><ph name="TEMP_CRX_FILE" />-এ বহিরাগত crx ফাইলটি কপি করতে পারবেন না৷</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" যুক্ত করা হয়েছে</translation>
 <translation id="3093714882666365141">পেমেন্ট হ্যান্ডলার ইনস্টল করার অনুমতি দেয় না</translation>
+<translation id="3093958632721393232">ব্যাটারির চার্জ কম থাকলে তবেই এই মোড চালু করতে হবে</translation>
 <translation id="3094141017404513551">এটি আপনার ব্রাউজিং <ph name="EXISTING_USER" /> থেকে আলাদা করে দেবে</translation>
 <translation id="3095871294753148861">বুকমার্ক, পাসওয়ার্ড, এবং ব্রাউজারের অন্যান্য ডেটা প্রাথমিক অ্যাকাউন্টের সাথে সিঙ্ক করা আছে।</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{১টি সম্ভাব্য ক্ষতিকারক এক্সটেনশন বন্ধ করে দেওয়া হয়েছে। আপনি এটি সরিয়েও দিতে পারেন।}one{{NUM_EXTENSIONS}টি সম্ভাব্য ক্ষতিকারক এক্সটেনশন বন্ধ করে দেওয়া হয়েছে। আপনি এগুলি সরিয়েও দিতে পারেন।}other{{NUM_EXTENSIONS}টি সম্ভাব্য ক্ষতিকারক এক্সটেনশন বন্ধ করে দেওয়া হয়েছে। আপনি এগুলি সরিয়েও দিতে পারেন।}}</translation>
@@ -3775,6 +3777,7 @@
 <translation id="4514610446763173167">ভিডিও চালাতে বা থামানোর জন্য টগল করুন</translation>
 <translation id="451515744433878153">সরান</translation>
 <translation id="4515872537870654449">সার্ভিসিংয়ের জন্য Dell-এর সাথে যোগাযোগ করুন। ফ্যান কাজ না করলে ডকিং স্টেশন বন্ধ হয়ে যাবে।</translation>
+<translation id="4518840066030486079">Shift কী মোড স্টাইল</translation>
 <translation id="4519331665958994620">সাইট আপনার ক্যামেরা ব্যবহার করার অনুমতি চাইতে পারে</translation>
 <translation id="4519935350946509010">কানেকশনে সমস্যা।</translation>
 <translation id="4520385623207007473">কুকিগুলি ব্যবহার করা হচ্ছে</translation>
@@ -3870,6 +3873,7 @@
 <translation id="4598345735110653698">'পাসকী' ম্যানেজ করুন</translation>
 <translation id="4598556348158889687">সঞ্চয়স্থান ব্যবস্থাপনা</translation>
 <translation id="4598776695426288251">একাধিক ডিভাইস থেকে ওয়াই ফাই পাওয়া যাচ্ছে</translation>
+<translation id="4600071396330666617">সাজেশনের সংখ্যা</translation>
 <translation id="4601426376352205922">'পড়া হয়নি' হিসেবে চিহ্নিত করুন</translation>
 <translation id="4602466770786743961">আপনার ক্যামেরা এবং মাইক্রোফোন যেকোনো সময় অ্যাক্সেস করতে <ph name="HOST" /> কে মঞ্জুরি দেয়</translation>
 <translation id="4606551464649945562">কোনও সাইটকে আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে বা ক্যামেরার অবস্থান ট্র্যাক করতে দেবেন না</translation>
@@ -4317,6 +4321,7 @@
 <translation id="5043913660911154449">অথবা আপনার নির্দিষ্ট প্রিন্টার PPD ফাইলটি বেছে নিন <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">ভুল পাসওয়ার্ড</translation>
 <translation id="504561833207953641">আগে থেকে থাকা ব্রাউজার সেশনে খোলা হচ্ছে।</translation>
+<translation id="5049614114599109018">ইনপুট ইতিহাস ব্যবহার করুন</translation>
 <translation id="5051836348807686060">আপনার বেছে নেওয়া ভাষায় বানান পরীক্ষা করা যাবে না</translation>
 <translation id="5052499409147950210">সাইট সম্পাদনা করুন</translation>
 <translation id="505347685865235222">নামহীন গ্রুপ - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5032,6 +5037,7 @@
 <translation id="5747552184818312860">মেয়াদ শেষ হবে</translation>
 <translation id="5747785204778348146">ডেভেলপার - অস্থায়ী</translation>
 <translation id="5747809636523347288"><ph name="URL" /> পে&amp;স্ট করে সেখানে যান</translation>
+<translation id="5748137879145720682">আমার কম্পিউটার আনপ্লাগ হয়ে গেলে তবেই এই মোড চালু করতে হবে</translation>
 <translation id="5751345516399502412">'টেথারিং রেডিনেস' চেক করুন</translation>
 <translation id="5755022574660047665">Google Photos-এ সেভ করা স্মৃতি</translation>
 <translation id="5756163054456765343">সহায়তা কেন্দ্র</translation>
@@ -7668,6 +7674,7 @@
 <translation id="8248381369318572865">আপনার মাইক্রোফোন অ্যাক্সেস এবং স্পিচ বিশ্লেষণ করুন</translation>
 <translation id="8248887045858762645">Chrome সম্পর্কিত পরামর্শ</translation>
 <translation id="8249048954461686687">OEM ফোল্ডার</translation>
+<translation id="8249239468199142122">ব্যাটারি সেভার</translation>
 <translation id="8249615410597138718">আপনার ডিভাইসে পাঠান</translation>
 <translation id="8250210000648910632">স্টোরেজের জায়গা শেষ</translation>
 <translation id="8251441930213048644">এখনই রিফ্রেশ করুন</translation>

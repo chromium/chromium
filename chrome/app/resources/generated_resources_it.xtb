@@ -2296,6 +2296,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3090819949319990166">Impossibile copiare il file crx esterno su <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" accoppiato</translation>
 <translation id="3093714882666365141">Non consentire ai siti di installare gestori dei pagamenti</translation>
+<translation id="3093958632721393232">Attiva solo quando la batteria è in esaurimento</translation>
 <translation id="3094141017404513551">In questo modo la tua navigazione verrà separata da quella di <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Preferiti, password e altri dati di navigazione sono sincronizzati con l'account principale.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 estensione potenzialmente dannosa è stata disattivata. Puoi anche rimuoverla.}other{{NUM_EXTENSIONS} estensioni potenzialmente dannose sono state disattivate. Puoi anche rimuoverle.}}</translation>
@@ -5015,6 +5016,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5747552184818312860">Scadenza</translation>
 <translation id="5747785204778348146">Sviluppatore - non stabile</translation>
 <translation id="5747809636523347288">I&amp;ncolla e vai all'indirizzo <ph name="URL" /></translation>
+<translation id="5748137879145720682">Attiva quando il mio computer è scollegato dall'alimentazione</translation>
 <translation id="5751345516399502412">Controlla disponibilità del tethering</translation>
 <translation id="5755022574660047665">ricordi di Google Foto</translation>
 <translation id="5756163054456765343">Centro assistenza</translation>
@@ -5370,7 +5372,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" vuole collegarsi a un dispositivo HID</translation>
 <translation id="608029822688206592">Nessuna rete trovata. Inserisci la SIM e riprova.</translation>
 <translation id="6080689532560039067">Controlla l'ora del sistema</translation>
-<translation id="6082877069782862752">Mappatura delle chiavi</translation>
+<translation id="6082877069782862752">Mappatura dei tasti</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Parte di un gruppo senza nome</translation>
 <translation id="6085886413119427067">Consente di stabilire come connettersi ai siti web tramite una connessione sicura</translation>
 <translation id="6086004606538989567">L'account che hai verificato non è autorizzato ad accedere a questo dispositivo.</translation>
@@ -7648,6 +7650,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8248381369318572865">Accesso al microfono e analisi delle tue parole</translation>
 <translation id="8248887045858762645">Suggerimento per Chrome</translation>
 <translation id="8249048954461686687">Cartella OEM</translation>
+<translation id="8249239468199142122">Risparmio energetico</translation>
 <translation id="8249615410597138718">Invia ai tuoi dispositivi</translation>
 <translation id="8250210000648910632">Spazio di archiviazione esaurito</translation>
 <translation id="8251441930213048644">Aggiorna ora</translation>

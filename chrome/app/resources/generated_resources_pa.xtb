@@ -2311,6 +2311,7 @@
 <translation id="3090819949319990166"><ph name="TEMP_CRX_FILE" /> 'ਤੇ ਬਾਹਰੀ crx ਫਾਈਲ ਨੂੰ ਕਾਪੀ ਨਹੀਂ ਕਰ ਸਕਦਾ।</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ਪੇਅਰ ਕੀਤਾ</translation>
 <translation id="3093714882666365141">ਸਾਈਟਾਂ ਨੂੰ ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
+<translation id="3093958632721393232">ਸਿਰਫ਼ ਉਦੋਂ ਚਾਲੂ ਕਰੋ ਜਦੋਂ ਮੇਰੀ ਬੈਟਰੀ ਘੱਟ ਹੋਵੇ</translation>
 <translation id="3094141017404513551">ਇਹ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ <ph name="EXISTING_USER" /> ਤੋਂ ਵੱਖ ਕਰ ਦੇਵੇਗਾ</translation>
 <translation id="3095871294753148861">ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬ੍ਰਾਊਜ਼ਰ ਡਾਟੇ ਦਾ ਮੁੱਖ ਖਾਤੇ ਨਾਲ ਸਿੰਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਨੁਕਸਾਨਦੇਹ ਐਕਸਟੈਂਸ਼ਨ ਬੰਦ ਹੈ। ਤੁਸੀਂ ਇਸ ਨੂੰ ਹਟਾ ਵੀ ਸਕਦੇ ਹੋ।}one{{NUM_EXTENSIONS} ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਨੁਕਸਾਨਦੇਹ ਐਕਸਟੈਂਸ਼ਨ ਬੰਦ ਹੈ। ਤੁਸੀਂ ਇਸ ਨੂੰ ਹਟਾ ਵੀ ਸਕਦੇ ਹੋ।}other{{NUM_EXTENSIONS} ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਨੁਕਸਾਨਦੇਹ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬੰਦ ਹਨ। ਤੁਸੀਂ ਇਹਨਾਂ ਨੂੰ ਹਟਾ ਵੀ ਸਕਦੇ ਹੋ।}}</translation>
@@ -5033,6 +5034,7 @@
 <translation id="5747552184818312860">ਮਿਆਦ ਸਮਾਪਤ ਹੁੰਦੀ ਹੈ</translation>
 <translation id="5747785204778348146">ਵਿਕਾਸਕਾਰ - ਅਸਥਿਰ</translation>
 <translation id="5747809636523347288"><ph name="URL" /> ਪੇਸਟ ਕਰਕੇ ਉਸ 'ਤੇ ਜਾਓ</translation>
+<translation id="5748137879145720682">ਉਦੋਂ ਚਾਲੂ ਕਰੋ ਜਦੋਂ ਮੇਰਾ ਕੰਪਿਊਟਰ ਅਣਪਲੱਗ ਹੋਵੇ</translation>
 <translation id="5751345516399502412">ਟੈਦਰਿੰਗ ਦੀ ਉਪਲਬਧਤਾ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="5755022574660047665">Google Photos ਤੋਂ ਯਾਦਾਂ</translation>
 <translation id="5756163054456765343">ਸ&amp;ਹਾਇਤਾ ਕੇਂਦਰ</translation>
@@ -7668,6 +7670,7 @@
 <translation id="8248381369318572865">ਆਪਣੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਕਰ ਕੇ ਆਪਣੀ ਬੋਲੀ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰੋ</translation>
 <translation id="8248887045858762645">Chrome ਲਈ ਨੁਕਤਾ</translation>
 <translation id="8249048954461686687">OEM ਫੋਲਡਰ</translation>
+<translation id="8249239468199142122">ਬੈਟਰੀ ਸੇਵਰ</translation>
 <translation id="8249615410597138718">ਆਪਣੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਭੇਜੋ</translation>
 <translation id="8250210000648910632">ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਭਰ ਗਈ ਹੈ</translation>
 <translation id="8251441930213048644">ਹੁਣੇ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>

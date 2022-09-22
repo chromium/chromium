@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">Продолжить</translation>
 <translation id="110724200315609752">Переключиться на открытое окно</translation>
 <translation id="1112015203684611006">Ошибка печати</translation>
+<translation id="1118569444314402022">С возвращением, <ph name="USER_NAME" />!</translation>
 <translation id="1125564390852150847">Создать вкладку</translation>
 <translation id="1126809382673880764">Не защищает вас от сайтов, расширений и скачанных файлов, которые могут представлять опасность. Безопасный просмотр по-прежнему будет работать в других сервисах Google, например в Gmail и Поиске.</translation>
 <translation id="1135212215217513471">Скачайте Chrome для iOS</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">Ошибка синхронизации.</translation>
 <translation id="1377321085342047638">Номер карты</translation>
 <translation id="1383876407941801731">Поиск</translation>
+<translation id="138618066238211776">Продолжить как <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Последние 4 недели</translation>
 <translation id="1404330357948037222">Вход в аккаунт не выполнен.</translation>
 <translation id="1407135791313364759">Открыть все</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">Продолжить редактирование</translation>
 <translation id="2434405374328098816">Пароль пользователя <ph name="USERNAME" /> для сайта <ph name="WEBSITE" /> уже сохранен.</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
+<translation id="2461070143328828326">Настройки паролей</translation>
 <translation id="2469960372084740698">Отключить Безопасный просмотр?</translation>
 <translation id="2473876017985765807">Вы уже сохранили пароль для сайта <ph name="WEBSITE" />.</translation>
 <translation id="2476359652512522418">Не выбрано</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">Отметить как непрочитанное</translation>
 <translation id="371230970611282515">Предсказывает опасные события и предупреждает вас до того, как они происходят.</translation>
 <translation id="37207012422556617">Популярные запросы</translation>
+<translation id="3726360487031500941">Снова войдите в аккаунт <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Введенные URL будут открываться в Google Chrome в режиме инкогнито.</translation>
 <translation id="3762232513783804601">Создан специально для iPad</translation>
 <translation id="3771033907050503522">Вкладки инкогнито</translation>
@@ -978,7 +982,7 @@
 <translation id="9055772144595778347">Ошибка</translation>
 <translation id="9057972802061533987">Не удалось подписаться. Произошла ошибка.</translation>
 <translation id="9065203028668620118">Изменить</translation>
-<translation id="9068336935206019333">Открыть в режиме инкогнито</translation>
+<translation id="9068336935206019333">Открыть в Chrome инкогнито</translation>
 <translation id="9079935439869366234">Отметить все как непрочитанные</translation>
 <translation id="9081058212938299310">Обновить пароль для аккаунта <ph name="USERNAME" />?</translation>
 <translation id="9083392325882095631">Закладок: 1</translation>

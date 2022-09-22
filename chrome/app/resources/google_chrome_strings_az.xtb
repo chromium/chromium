@@ -228,6 +228,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="5386244825306882791">O, həmçinin Chrome'u başlatdığınız zaman və ya Omnibox'dan axtarış etdiyiniz zaman göstərilən səhifəyə nəzarət edir.</translation>
 <translation id="5394833366792865639">Chrome tabı paylaşın</translation>
 <translation id="5412485296464121825">Saytlar maraqlarınız haqqında Chrome ilə məlumat saxlaya bilər. Məsələn, marafona ayaqqabı almaq üçün sayta daxil olsanız, sayt marağınızı qaçış marafonu kimi müəyyən edə bilər. Sonra yarışa yazılmaq üçün başqa sayta daxil olsanız, həmin sayt maraqlarınız əsasında sizə qaçış ayaqqabısı reklamı göstərə bilər.</translation>
+<translation id="5416870378730196769">Chrome Yaddaşa Qənaəti aktiv edib</translation>
 <translation id="5430073640787465221">Tərcih faylınız zədələnib və ya yanlışdır.  Google Chrome ayarlarınızı bərpa edə bilmir.</translation>
 <translation id="5524761631371622910">Sınaqlar aktiv olduqda və Chrome təsadüfi olaraq sizi aktiv sınağa təyin edibsə, baxış tarixçəniz gördüyünüz reklamlara və aşağıda təxmin edilən maraqlara təsir edir. Məxfiliyinizi qorumaq üçün Chrome hər ay maraqlarınızı növbəlilik əsasında silir.</translation>
 <translation id="556024056938947818">Google Chrome parolları göstərməyə cəhd edir.</translation>
@@ -324,6 +325,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7651907282515937834">Chrome'un Korporativ loqosu</translation>
 <translation id="7655455401911432608">Baxış tarixçəniz, bu cihazda Chrome istifadə edərək ziyarət etdiyiniz saytların qeydi.</translation>
+<translation id="7726773885101561560">Axtarışı sürətləndirmək üçün Chrome istifadə etmədiyiniz tablardan yaddaşı geri alır.</translation>
 <translation id="7747138024166251722">Quraşdırıcı müvəqqəti direktoriya yarada bilmədi. Proqramı quraşdırmaq üçün boş disk yeri və icazə tapın.</translation>
 <translation id="7761834446675418963">Chrome'u açmaq üçün adınızın üzərinə klikləyin və baxışa başlayın.</translation>
 <translation id="7777080907402804672">Şəklin təsviri faydalı deyilsə, Chrome Sizin üçün təsviri təmin etməyə çalışacaq. Təsvir yaratmaq üçün şəkillər Google'a göndərilir. Bunu istənilən vaxt ayarlardan deaktiv edə bilərsiniz.</translation>
@@ -396,6 +398,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="8986207147630327271">Bu brauzerə iş profili əlavə edirsiniz və administratorunuza yalnız iş profili üzərində nəzarət verirsiniz.</translation>
 <translation id="8989968390305463310">Baxış tarixçəniz gördüyünüz reklamlara və aşağıda təxmin edilən maraqlara təsir edir. Məxfiliyinizi qorumaq üçün Chrome hər ay maraqlarınızı növbəlilik əsasında avtomatik olaraq silir. Silmədiyiniz təqdirdə maraqlar yenilənə bilər.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome güncəlləməsi əlçatandır}=1{Chrome güncəlləməsi əlçatandır}other{Chrome güncəlləməsi # gün əlçatan olub}}</translation>
+<translation id="9003498785844995646">Aktiv olduqda, Chrome arxa fon fəaliyyətini və rahat sürüşdürmə və video kadr sürətləri kimi vizual effektləri məhdudlaşdırmaqla batareya enerjisinə qənaət edir. <ph name="BEGIN_LINK" />Ətraflı məlumat əldə edin<ph name="END_LINK" /> və ya <ph name="BEGIN_LINK_2" />rəy göndərin<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">ChromeOS Flex sistemi</translation>
 <translation id="9067395829937117663">Google Chrome  Windows 7 və ya daha yeni versiya tələb edir.</translation>
 <translation id="911206726377975832">Brauzinq datanız da silinsin?</translation>

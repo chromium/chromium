@@ -2310,6 +2310,7 @@
 <translation id="3090819949319990166">बाह्य crx फाइल <ph name="TEMP_CRX_FILE" /> वर कॉपी करू शकत नाही.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" जोडले</translation>
 <translation id="3093714882666365141">साइटना पेमेंट हँडलर इंस्टॉल करण्याची अनुमती देऊ नका</translation>
+<translation id="3093958632721393232">फक्त माझी बॅटरी कमी असेल, तेव्ह सुरू करा</translation>
 <translation id="3094141017404513551">हे तुमचे ब्राउझिंग <ph name="EXISTING_USER" /> पासून स्वतंत्र करेल</translation>
 <translation id="3095871294753148861">बुकमार्क, पासवर्ड आणि इतर ब्राउझर डेटा या गोष्टी प्राथमिक खात्याशी सिंक केल्या आहेत.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{हानीकारक असू शकणारे एक एक्स्टेंशन बंद आहे. तुम्ही ते काढूदेखील शकता.}other{हानीकारक असू शकणारी {NUM_EXTENSIONS} एक्स्टेंशन बंद आहेत. तुम्ही ती काढूदेखील शकता.}}</translation>
@@ -5030,6 +5031,7 @@
 <translation id="5747552184818312860">कालबाह्य होईल</translation>
 <translation id="5747785204778348146">डेव्हलपर - अस्थिर</translation>
 <translation id="5747809636523347288">पेस्ट करा आणि <ph name="URL" /> वर जा</translation>
+<translation id="5748137879145720682">माझा कॉंप्युटर अनप्लग केला असेल, तेव्हा सुरू करा</translation>
 <translation id="5751345516399502412">टेदरिंगची सज्जता तपासा</translation>
 <translation id="5755022574660047665">Google Photos मधील मेमरी</translation>
 <translation id="5756163054456765343">म&amp;दत केंद्र</translation>
@@ -6741,6 +6743,7 @@
 <translation id="7404065585741198296">USB केबल असलेला तुमचा फोन</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{सुरक्षा तपासणी एका तासापूर्वी रन केली गेली}other{सुरक्षा तपासणी {NUM_HOURS} तासांपूर्वी रन केली गेली}}</translation>
 <translation id="740624631517654988">पॉप-अप ब्लॉक केलेले होते</translation>
+<translation id="7406912950279255498">कलर इन्व्हर्जन मोड</translation>
 <translation id="7407430846095439694">इंपोर्ट करा आणि प्रतिबद्ध करा</translation>
 <translation id="7407504355934009739">बहुतेक लोक या साइटवरून येणार्‍या सूचना ब्लॉक करतात</translation>
 <translation id="740810853557944681">एखादा प्रिंट सर्व्हर जोडा</translation>
@@ -7662,6 +7665,7 @@
 <translation id="8248381369318572865">तुमचा मायक्रोफोन अ‍ॅक्सेस करा आणि तुमच्या स्पीचचे विश्लेषण करा</translation>
 <translation id="8248887045858762645">Chrome संबंधित टीप</translation>
 <translation id="8249048954461686687">OEM फोल्डर</translation>
+<translation id="8249239468199142122">बॅटरी सेव्हर</translation>
 <translation id="8249615410597138718">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="8250210000648910632">स्टोरेज जागा संपली</translation>
 <translation id="8251441930213048644">आता रिफ्रेश करा</translation>
@@ -7689,6 +7693,7 @@
     <ph name="BEGIN_PARAGRAPH3" />सेटिंग्ज &gt; प्रगत &gt; Google ला आपोआप निदान आणि वापरलेला डेटा पाठवा वरून मालक हे वैशिष्ट्य नियंत्रित करू शकतो.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />तुमची अतिरिक्त वेब आणि ॲप ॲक्टिव्हिटी सेटिंग सुरू केलेली असल्यास, ही माहिती त्यांच्या Google खात्यावर सेव्ह केली जाऊ शकते. तुम्ही families.google.com वर या सेटिंग्ज कशा ॲडजस्ट करायच्या आणि त्याबद्दल अधिक जाणून घ्या.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">चुकीचे क्लायंट सर्टिफिकेट</translation>
+<translation id="8270162672241199380">Steam इंस्टॉलर</translation>
 <translation id="827097179112817503">होम बटण दर्शवा</translation>
 <translation id="8271268254812352141">तुम्ही मजकुरावर राइट क्लिक करता किंवा त्यावर स्पर्श करून तो धरून ठेवता तेव्हा, व्याख्या, भाषांतरे अथवा युनिट रूपांतरे मिळवा. <ph name="LINK_BEGIN" />वेबसाइटच्या भाषा<ph name="LINK_END" /> मध्ये भाषांतराच्या भाषा कस्टमाइझ करा.</translation>
 <translation id="8271379370373330993">पालकांनो, पुढील काही पायऱ्या तुमच्यासाठी आहेत. खाते सेट करून झाल्यानंतर तुम्ही लहान मुलाकडे <ph name="DEVICE_TYPE" /> परत सोपवू शकता.</translation>

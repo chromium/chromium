@@ -52,6 +52,7 @@
 <translation id="3988789688219830639">Google Chrome n'a pas accès à vos photos ni à vos vidéos. Activez l'accès dans iOS via Réglages &gt; Confidentialité &gt; Photos.</translation>
 <translation id="4099578267706723511">Envoyer des statistiques d'utilisation et des rapports d'erreur pour améliorer Chrome</translation>
 <translation id="417201473131094001">Non disponible dans Chrome Canary</translation>
+<translation id="4192781968753717021">Ce mot de passe a été détecté lors d'une violation de données. Le Gestionnaire de mots de passe de Google vous recommande de le modifier immédiatement.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> utilisait Chrome et a laissé des favoris, des mots de passe et d'autres paramètres sur cet appareil.</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome ?</translation>
 <translation id="4249068189593983585">Astuce Chrome : Pour afficher plus d'options d'onglets, appuyez de manière prolongée sur le bouton "Afficher les onglets" situé dans la barre d'outils affichée dans la partie inférieure ou supérieure de l'écran.</translation>
@@ -83,6 +84,7 @@
 <translation id="6238746320622508509">Chrome peut verrouiller vos onglets de navigation privée.</translation>
 <translation id="6412673304250309937">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="6427126399757991875">Votre organisation configure Chrome…</translation>
+<translation id="651403856614361404">Ce mot de passe a été détecté lors d'une violation de données. Chrome vous recommande de changer de mot de passe immédiatement.</translation>
 <translation id="6600954340915313787">Copiée dans Chrome</translation>
 <translation id="6634107063912726160">Lorsque vous vous déconnectez, Chrome cesse de synchroniser vos données avec votre compte Google. Les données déjà synchronisées ne sont pas effacées.</translation>
 <translation id="6648150602980899529">Vous vous connectez avec un compte géré par <ph name="DOMAIN" />, ce qui permettra à son administrateur de contrôler vos données Chrome. Celles-ci seront définitivement associées à ce compte. Si vous vous déconnectez de Chrome, vos données seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
@@ -126,6 +128,7 @@
 <translation id="8736550665979974340">Restez protégé avec Google Chrome</translation>
 <translation id="8772179140489533211">Permet d'afficher des invites de connexion à Chrome.</translation>
 <translation id="8788269841521769222">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>
+<translation id="8897749957032330183">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe de Google sur cet appareil.</translation>
 <translation id="8969290730818637510">Si l'option est activée :
 <ph name="BEGIN_INDENT" />  • Vous contribuez à améliorer Chrome pour les personnes qui l'utilisent comme vous.<ph name="END_INDENT" />
 

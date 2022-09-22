@@ -53,6 +53,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2384373936468275798">Impossibile sincronizzare i dati in Chromium OS perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="2396765026452590966">L'estensione "<ph name="EXTENSION_NAME" />" ha cambiato la pagina mostrata all'avvio di Chromium.</translation>
+<translation id="2400844369696905771">Quando questa modalità è attiva, Chromium recupera memoria dalle schede che non utilizzi attivamente. Questo consente di liberare risorse del computer da usare per altre attività e di fare in modo che Chromium sia sempre veloce. Le schede non attive appaiono vuote e vengono ricaricate automaticamente quando ci fai clic sopra. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium deve avere le autorizzazioni di accesso al microfono e alla fotocamera per questo sito</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Disinstalla</translation>
@@ -143,6 +144,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="4285930937574705105">Installazione non riuscita a causa di un errore imprecisato. Se Chromium è in esecuzione, chiudilo e riprova.</translation>
 <translation id="4304713468139749426">Gestione password</translation>
 <translation id="4334294535648607276">Download completato.</translation>
+<translation id="437317747729858884">Per velocizzare la navigazione, Chromium recupera memoria dalle schede che non utilizzi.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Chromium OS.</translation>
 <translation id="4407044323746248786">Vuoi uscire comunque da Chromium?</translation>
 <translation id="4415566066719264597">Lascia Chromium in esecuzione in background</translation>
@@ -311,6 +313,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7872446069773932638">Download in corso… Secondi rimanenti: <ph name="SECONDS" /></translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Come puoi gestire i tuoi dati:<ph name="END_BOLD" /> per tutelare la tua privacy, eliminiamo automaticamente i tuoi interessi risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un interesse potrebbe essere nuovamente visualizzato nell'elenco. Puoi anche rimuovere gli interessi che non vuoi che Chromium prenda in considerazione.</translation>
 <translation id="7937630085815544518">Hai eseguito l'accesso a Chromium come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
+<translation id="7947085610734123927">Chromium ha attivato la modalità Risparmio memoria</translation>
 <translation id="7975919845073681630">Questa è un'installazione secondaria, di conseguenza Chromium non può essere impostato come browser predefinito.</translation>
 <translation id="7997934263947464652">Estensioni, app e temi da origini sconosciute possono danneggiare il tuo dispositivo. Chromium consiglia di installare questi elementi soltanto dal <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Dopo che Chromium avrà ottenuto l'accesso, i siti web potranno chiederti l'accesso.</translation>
@@ -336,6 +339,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8558383651099478961">Uno dei tuoi genitori ha disattivato "Autorizzazioni per siti, app ed estensioni" per Chromium. L'aggiunta di <ph name="EXTENSION_TYPE_PARAMETER" /> non è consentita.</translation>
 <translation id="8561285221328166383">Per ricevere gli aggiornamenti futuri di Chromium, devi avere macOS 10.13 o versioni successive. Su questo computer è installato macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium può controllare le tue password quando accedi con il tuo Account Google</translation>
+<translation id="8574036838419011058">Quando questa modalità è attiva, Chromium risparmia carica della batteria limitando l'attività in background e gli effetti visivi, ad esempio lo scorrimento continuo e le frequenze di fotogrammi dei video. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Come utilizziamo questi dati:<ph name="END_BOLD" /> i siti possono memorizzare su Chromium informazioni relative ai tuoi interessi. Ad esempio, se visiti un sito per acquistare scarpe per una maratona, il sito potrebbe definire come tuo interesse le maratone. Se in un secondo momento visiti un altro sito per registrarti a una gara, il sito può mostrarti un annuncio relativo a scarpe da corsa in base ai tuoi interessi.</translation>
 <translation id="8619360774459241877">Avvio di Chromium...</translation>

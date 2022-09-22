@@ -225,6 +225,7 @@
 <translation id="5386244825306882791">També controla la pàgina que es mostra quan inicieu Chrome o quan feu una cerca des de l'omnibox.</translation>
 <translation id="5394833366792865639">Comparteix una pestanya de Chrome</translation>
 <translation id="5412485296464121825">Els llocs web poden emmagatzemar informació a Chrome sobre els teus interessos. Per exemple, si visites un lloc web per comprar sabatilles per a una marató, és possible que el lloc web defineixi que t'interessa córrer maratons. Més endavant, si visites un altre lloc web per inscriure't a una cursa, aquest altre lloc web et pot mostrar un anunci de sabatilles de curses basant-se en els teus interessos.</translation>
+<translation id="5416870378730196769">Chrome ha activat l'estalvi de memòria</translation>
 <translation id="5430073640787465221">El fitxer de preferències està malmès o no és vàlid. Google Chrome no pot recuperar la configuració.</translation>
 <translation id="5524761631371622910">Quan les proves estan activades, i si Chrome t'ha inclòs aleatòriament en una prova activa, el teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix els interessos de manera contínua cada mes.</translation>
 <translation id="556024056938947818">Google Chrome està provant de mostrar les contrasenyes.</translation>
@@ -321,6 +322,7 @@
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7651907282515937834">Logotip de Chrome Enterprise</translation>
 <translation id="7655455401911432608">El teu historial de navegació, que és un registre dels llocs web que has visitat amb Chrome en aquest dispositiu.</translation>
+<translation id="7726773885101561560">Per agilitzar la navegació, Chrome es reapropia de la memòria de les pestanyes que no estàs utilitzant.</translation>
 <translation id="7747138024166251722">L'instal·lador no ha pogut crear un directori temporal. Comprova que hi ha espai lliure al disc i que tens permís per instal·lar el programari.</translation>
 <translation id="7761834446675418963">Feu clic al vostre nom per obrir Chrome i començar a navegar.</translation>
 <translation id="7777080907402804672">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google. Pots desactivar aquesta funció en qualsevol moment a la configuració.</translation>
@@ -393,6 +395,7 @@
 <translation id="8986207147630327271">Estàs afegint un perfil de treball a aquest navegador i donant control al teu administrador únicament sobre el perfil de treball.</translation>
 <translation id="8989968390305463310">El teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix automàticament els interessos de manera contínua cada mes, i es poden actualitzar tret que els suprimeixis.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hi ha una actualització de Chrome disponible}=1{Hi ha una actualització de Chrome disponible}other{Fa # dies que hi ha una actualització de Chrome disponible}}</translation>
+<translation id="9003498785844995646">Quan aquesta opció està activada, Chrome estalvia bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau i els fotogrames per segon dels vídeos. <ph name="BEGIN_LINK" />Obtén més informació<ph name="END_LINK" /> o <ph name="BEGIN_LINK_2" />envia suggeriments<ph name="END_LINK_2" />.</translation>
 <translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
 <translation id="9067395829937117663">Google Chrome requereix Windows 7 o una versió posterior.</translation>
 <translation id="911206726377975832">També voleu suprimir les dades de navegació?</translation>

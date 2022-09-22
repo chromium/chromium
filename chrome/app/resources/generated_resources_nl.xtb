@@ -2296,6 +2296,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3090819949319990166">Kan extern crx-bestand niet kopiëren naar <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">'<ph name="DEVICE_NAME" />' gekoppeld</translation>
 <translation id="3093714882666365141">Niet toestaan dat sites betalingshandlers installeren</translation>
+<translation id="3093958632721393232">Alleen aanzetten als de batterij bijna leeg is</translation>
 <translation id="3094141017404513551">Hierdoor worden je browsegegevens gescheiden van <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Bookmarks, wachtwoorden en andere browsegegevens worden gesynchroniseerd met het primaire account.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potentieel schadelijke extensie is uitgezet. Je kunt deze ook verwijderen.}other{{NUM_EXTENSIONS} potentieel schadelijke extensies zijn uitgezet. Je kunt ze ook verwijderen.}}</translation>
@@ -5013,6 +5014,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5747552184818312860">Verloopt</translation>
 <translation id="5747785204778348146">Ontwikkelaar - instabiel</translation>
 <translation id="5747809636523347288">Pl&amp;akken en naar <ph name="URL" /> gaan</translation>
+<translation id="5748137879145720682">Aanzetten als mijn computer niet is aangesloten</translation>
 <translation id="5751345516399502412">Gereedheid voor tethering checken</translation>
 <translation id="5755022574660047665">herinneringen uit Google Foto's</translation>
 <translation id="5756163054456765343">H&amp;elpcentrum</translation>
@@ -7641,6 +7643,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8248381369318572865">Toegang krijgen tot je microfoon en je spraak analyseren</translation>
 <translation id="8248887045858762645">Chrome-tip</translation>
 <translation id="8249048954461686687">OEM-map</translation>
+<translation id="8249239468199142122">Batterijbesparing</translation>
 <translation id="8249615410597138718">Naar je apparaten sturen</translation>
 <translation id="8250210000648910632">Geen opslagruimte</translation>
 <translation id="8251441930213048644">Nu vernieuwen</translation>

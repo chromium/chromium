@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">Derbyn a Pharhau</translation>
 <translation id="110724200315609752">Newid i ffenestr sydd ar Agor</translation>
 <translation id="1112015203684611006">Wedi methu ag argraffu.</translation>
+<translation id="1118569444314402022">Croeso'n ôl, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Creu tab newydd.</translation>
 <translation id="1126809382673880764">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Byddwch yn dal i gael amddiffyniad Pori'n Ddiogel, lle mae ar gael, mewn gwasanaethau Google eraill, megis Gmail a Search.</translation>
 <translation id="1135212215217513471">Cael Chrome ar gyfer iOS</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">Mae Cysoni wedi stopio gweithio.</translation>
 <translation id="1377321085342047638">Rhif y Cerdyn</translation>
 <translation id="1383876407941801731">Chwilio</translation>
+<translation id="138618066238211776">Parhau fel <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Y 4 wythnos ddiwethaf</translation>
 <translation id="1404330357948037222">Rydych wedi'ch Allgofnodi</translation>
 <translation id="1407135791313364759">Agor pob un</translation>
@@ -177,6 +179,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2421044535038393232">Parhau i olygu</translation>
 <translation id="2434405374328098816">Rydych eisoes wedi cadw cyfrinair ar gyfer "<ph name="USERNAME" />" yn <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Dangos y cyfrinair</translation>
+<translation id="2461070143328828326">Cyfrinair Gosodiadau</translation>
 <translation id="2469960372084740698">Diffodd Pori'n Ddiogel?</translation>
 <translation id="2473876017985765807">Rydych eisoes wedi cadw cyfrinair ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Heb ei dewis</translation>
@@ -266,7 +269,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3153862085237805241">Cadw'r Cerdyn</translation>
 <translation id="3157387275655328056">Ychwanegu at y Rhestr Ddarllen</translation>
 <translation id="3157684681743766797">Marcio'r Cyfan…</translation>
-<translation id="3169472444629675720">Darganfod</translation>
+<translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">Gallwch hefyd ddefnyddio cyfrineiriau sydd wedi'u cadw ar eich dyfeisiau eraill.</translation>
 <translation id="3175081911749765310">Gwasanaethau Gwe</translation>
 <translation id="3178650076442119961">Yma Heddiw</translation>
@@ -331,6 +334,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3709582977625132201">Marcio ei fod Heb ei Ddarllen</translation>
 <translation id="371230970611282515">Mae'n rhagfynegi digwyddiadau peryglus ac yn eich rhybuddio amdanynt cyn iddynt ddigwydd.</translation>
 <translation id="37207012422556617">Chwiliadau Poblogaidd</translation>
+<translation id="3726360487031500941">Mewngofnodwch eto i'ch cyfrif <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Yn agor y cyfeiriadau URL a fewnbynnwyd yn Google Chrome yn y Modd Anhysbys.</translation>
 <translation id="3762232513783804601">Wedi'i Ddatblygu ar gyfer Eich iPad</translation>
 <translation id="3771033907050503522">Tabiau Anhysbys</translation>
@@ -752,6 +756,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6988572888918530647">Rheoli'ch Cyfrif Google</translation>
 <translation id="6989674195860388998">Newid yn y Gosodiadau…</translation>
 <translation id="6998989275928107238">I</translation>
+<translation id="699954956411469731">Hysbysiadau Ffôn Symudol</translation>
 <translation id="7004032350256606903">Mae eich sefydliad yn gofyn i chi bori'n breifat.
 <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Tabiau Diweddar</translation>

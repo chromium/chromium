@@ -719,6 +719,7 @@
 <translation id="7248671827512403053">Aplicació</translation>
 <translation id="7256405249507348194">Error no reconegut: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Serveis disponibles</translation>
+<translation id="7292816689782057017">La política de l'administrador restringeix l'opció de desar en algunes ubicacions.</translation>
 <translation id="7294063083760278948">Telugu (transliteració)</translation>
 <translation id="7295662345261934369">Comparteix amb altres persones</translation>
 <translation id="7297443947353982503">El nom d'usuari o la contrasenya és incorrecte o no s'ha pogut realitzar l'autorització d'EAP.</translation>
@@ -905,6 +906,7 @@
 <translation id="8810671769985673465">S'ha produït un error en la compressió; l'element existeix: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Espanyol (Espanya)</translation>
 <translation id="8834164572807951958">Els membres de la unitat <ph name="DESTINATION_NAME" /> obtindran accés a la còpia d'aquests elements.</translation>
+<translation id="8849389110234859568">La política de l'administrador restringeix l'accés a alguns fitxers.</translation>
 <translation id="8857149712089373752">Nepalès amb teclat fonètic</translation>
 <translation id="8860454412039442620">Full de càlcul d'Excel</translation>
 <translation id="8866284467018526531">Àrab (transliteració)</translation>

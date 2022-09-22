@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">স্বীকার করুন ও চালিয়ে যান</translation>
 <translation id="110724200315609752">এই উইন্ডো থেকে পাল্টে খুলে রাখা উইন্ডোতে যান</translation>
 <translation id="1112015203684611006">প্রিন্ট ব্যর্থ হয়েছে।</translation>
+<translation id="1118569444314402022">আপনাকে আবার স্বাগত জানাই, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">নতুন ট্যাব তৈরি করুন।</translation>
 <translation id="1126809382673880764">এই মোডে আপনার ডিভাইসের ক্ষতি করতে পারে এমন ওয়েবসাইট, ডাউনলোড অথবা এক্সটেনশন থেকে কোনও সুরক্ষা পাওয়া সম্ভব হয় না। তবে Gmail এবং Search-এর মতো অন্যান্য Google পরিষেবায়, যেখানে উপলভ্য সেখানে আপনি এখনও 'Safe Browsing'-এর সুরক্ষা পাবেন।</translation>
 <translation id="1135212215217513471">iOS-এর জন্য Chrome ইনস্টল করুন</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">সিঙ্ক কাজ করা বন্ধ করে দিয়েছে।</translation>
 <translation id="1377321085342047638">কার্ড নম্বর</translation>
 <translation id="1383876407941801731">Search</translation>
+<translation id="138618066238211776"><ph name="USER_NAME" /> হিসেবে চালিয়ে যান</translation>
 <translation id="1400642268715879018">গত ৪ সপ্তাহ</translation>
 <translation id="1404330357948037222">আপনি সাইন-আউট করেছেন</translation>
 <translation id="1407135791313364759">সব খুলুন</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">এডিট করতে থাকুন</translation>
 <translation id="2434405374328098816">আপনি আগে থেকেই "<ph name="USERNAME" />"-এর জন্য <ph name="WEBSITE" />-এ পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
+<translation id="2461070143328828326">পাসওয়ার্ড সেটিংস</translation>
 <translation id="2469960372084740698">Safe Browsing বন্ধ করতে চান?</translation>
 <translation id="2473876017985765807">আপনি আগেই <ph name="WEBSITE" />-এর জন্য পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="2476359652512522418">বেছে নেওয়া হয়নি</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">'পড়া হয়নি' হিসেবে চিহ্নিত করুন</translation>
 <translation id="371230970611282515">কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি অনুমান করে আপনাকে সতর্ক করা হয়।</translation>
 <translation id="37207012422556617">জনপ্রিয় সার্চ</translation>
+<translation id="3726360487031500941">আপনার অ্যাকাউন্ট <ph name="USER_NAME" />-এ আবার সাইন-ইন করুন</translation>
 <translation id="3740397331642243698">এটি ইনপুট করা ইউআরএলগুলিকে Google Chrome-এ, 'ছদ্মবেশী' মোডে খোলে।</translation>
 <translation id="3762232513783804601">আপনার iPad-এর জন্য তৈরি করা হয়েছে</translation>
 <translation id="3771033907050503522">ছদ্মবেশী ট্যাবগুলি</translation>
@@ -753,6 +757,7 @@
 <translation id="6988572888918530647">আপনার Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="6989674195860388998">"সেটিংস"-এ যান…</translation>
 <translation id="6998989275928107238">প্রাপক:</translation>
+<translation id="699954956411469731">মোবাইল বিজ্ঞপ্তি</translation>
 <translation id="7004032350256606903">আপনার সংস্থা আপনাকে 'ব্যক্তিগত' মোডে ব্রাউজ করতে বলছে।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">সাম্প্রতিক ট্যাবগুলি</translation>

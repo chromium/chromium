@@ -23,6 +23,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="1104948393051856124">Aanvaar en gaan voort</translation>
 <translation id="110724200315609752">Wissel na oop venster</translation>
 <translation id="1112015203684611006">Kon nie druk nie.</translation>
+<translation id="1118569444314402022">Welkom terug, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Skep nuwe oortjie.</translation>
 <translation id="1126809382673880764">Beskerm jou nie teen gevaarlike webwerwe, aflaaie en uitbreidings nie. Jy sal steeds Veiligblaai-beskerming kry, indien beskikbaar, in ander Google-dienste, soos Gmail en Search.</translation>
 <translation id="1135212215217513471">Kry Chrome vir iOS</translation>
@@ -64,6 +65,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="1377255359165588604">Sinkronisering het ophou werk.</translation>
 <translation id="1377321085342047638">Kaartnommer</translation>
 <translation id="1383876407941801731">Soek</translation>
+<translation id="138618066238211776">Gaan voort as <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Afgelope vier weke</translation>
 <translation id="1404330357948037222">Jy is afgemeld</translation>
 <translation id="1407135791313364759">Maak alles oop</translation>
@@ -177,6 +179,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2421044535038393232">Hou wysiging</translation>
 <translation id="2434405374328098816">Jy het reeds 'n wagwoord vir "<ph name="USERNAME" />" op <ph name="WEBSITE" /> gestoor</translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
+<translation id="2461070143328828326">Wagwoordinstellings</translation>
 <translation id="2469960372084740698">Skakel Veiligblaai af?</translation>
 <translation id="2473876017985765807">Jy het reeds 'n wagwoord gestoor vir <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Nie gekies nie</translation>
@@ -331,6 +334,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3709582977625132201">Merk as ongelees</translation>
 <translation id="371230970611282515">Voorspel en waarsku jou teen gevaarlike gevalle voordat hulle plaasvind.</translation>
 <translation id="37207012422556617">Soektogneigings</translation>
+<translation id="3726360487031500941">Meld weer aan by jou rekening <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Maak die URL'e wat by Google Chrome ingevoer word in Incognitomodus oop.</translation>
 <translation id="3762232513783804601">Gebou vir jou iPad</translation>
 <translation id="3771033907050503522">Incognito-oortjies</translation>

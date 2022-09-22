@@ -52,6 +52,7 @@
 <translation id="3988789688219830639">A Google Chrome nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
 <translation id="4099578267706723511">Használati statisztikák és hibajelentések küldésével segíthet a Google-nak a Chrome fejlesztésében.</translation>
 <translation id="417201473131094001">A Chrome Canary nem támogatja</translation>
+<translation id="4192781968753717021">Ez a jelszó adatvédelmi incidensben volt érintett. A Google Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> felhasználó használta Chrome-ot, és könyvjelzőket, jelszavakat, valamint egyéb beállításokat hagyott az eszközön.</translation>
 <translation id="424864128008805179">Kijelentkezés a Chrome-ból</translation>
 <translation id="4249068189593983585">Tipp a Chrome használatához. A további lapbeállításokhoz érintse meg és tartsa lenyomva az eszköztárban lévő Lapok megjelenítése gombot, amely a képernyő alsó vagy felső részén található.</translation>
@@ -83,6 +84,7 @@
 <translation id="6238746320622508509">Az inkognitó lapok zárolásának engedélyezése a Chrome számára.</translation>
 <translation id="6412673304250309937">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján. Ha egy webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön ártalmas fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldaltartalmak részleteivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="6427126399757991875">A szervezete beállítja a Chrome-ot…</translation>
+<translation id="651403856614361404">Ez a jelszó adatvédelmi incidensben volt érintett. A Chrome a jelszó haladéktalan módosítását javasolja.</translation>
 <translation id="6600954340915313787">A Chrome-ba másolva</translation>
 <translation id="6634107063912726160">Ha kijelentkezik, a Chrome nem fogja szinkronizálni az új adatokat az Ön Google-fiókjába. A korábban szinkronizált adatok megmaradnak a fiókban.</translation>
 <translation id="6648150602980899529">Egy <ph name="DOMAIN" /> által felügyelt fiókkal jelentkezik be, és engedélyezi az adminisztrátor számára a Chrome-adatok kezelését. Adatai állandó jelleggel ehhez a fiókhoz lesznek társítva. A Chrome-ból való kijelentkezéssel törli adatait erről az eszközről, de azok továbbra is megmaradnak Google-fiókjában.</translation>
@@ -126,6 +128,7 @@
 <translation id="8736550665979974340">Gondoskodjon biztonságáról a Google Chrome-mal</translation>
 <translation id="8772179140489533211">Értesítéseket jelenít meg a Chrome-ba való bejelentkezéshez</translation>
 <translation id="8788269841521769222">Nem kell emlékeznie erre a jelszóra. Elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
+<translation id="8897749957032330183">A jelszavakat ezen az eszközön menti a rendszer a Google Jelszókezelőbe.</translation>
 <translation id="8969290730818637510">Ha be van kapcsolva:
 <ph name="BEGIN_INDENT" />  • Segíthet, hogy továbbfejlesszük a Chrome-ot azok számára, akik Önhöz hasonló módon használják.<ph name="END_INDENT" />
 

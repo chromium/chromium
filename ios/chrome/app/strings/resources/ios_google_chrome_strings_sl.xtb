@@ -52,6 +52,7 @@
 <translation id="3988789688219830639">Google Chrome nima dostopa do fotografij ali videoposnetkov. Omogočite dostop v sistemu iOS: Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4099578267706723511">Pomagajte izboljšati Chrome s pošiljanjem statističnih podatkov o uporabi in poročil o zrušitvah Googlu.</translation>
 <translation id="417201473131094001">Ni podprto v Chromu Canary</translation>
+<translation id="4192781968753717021">To geslo je bilo najdeno v podatkovni kršitvi. Googlov upravitelj gesel priporoča, da geslo spremenite takoj.</translation>
 <translation id="4233521129555661685">Uporabnik <ph name="USER_EMAIL1" /> je uporabljal Chrome in pustil zaznamke, gesla in druge nastavitve v tej napravi.</translation>
 <translation id="424864128008805179">Se želite odjaviti iz Chroma?</translation>
 <translation id="4249068189593983585">Nasvet za Chrome. Če želite več možnosti za zavihke, pridržite gumb za prikaz zavihkov v orodni vrstici na dnu ali vrhu zaslona.</translation>
@@ -83,6 +84,7 @@
 <translation id="6238746320622508509">Naj Chrome zaklene vaše anonimne zavihke.</translation>
 <translation id="6412673304250309937">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="6427126399757991875">Vaša organizacija nastavlja Chrome …</translation>
+<translation id="651403856614361404">To geslo je bilo najdeno v podatkovni kršitvi. Chrome priporoča, da takoj spremenite geslo.</translation>
 <translation id="6600954340915313787">Kopirano v Chrome</translation>
 <translation id="6634107063912726160">Če se odjavite, Chrome ne bo več sinhroniziral novih podatkov v račun Google. Predhodno sinhronizirani podatki ostanejo v računu.</translation>
 <translation id="6648150602980899529">Prijavljate se v račun, ki ga upravlja <ph name="DOMAIN" />, in nadzor nad podatki v Chromu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chroma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>
@@ -126,6 +128,7 @@
 <translation id="8736550665979974340">Ostanite varni z Google Chromom</translation>
 <translation id="8772179140489533211">Pokaže pozive za prijavo v Chrome.</translation>
 <translation id="8788269841521769222">Tega gesla si ne bo treba zapomniti. Shranjeno bo v Google Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
+<translation id="8897749957032330183">Gesla so shranjena v Googlovem upravitelju gesel v tej napravi.</translation>
 <translation id="8969290730818637510">Če je omogočeno:
 <ph name="BEGIN_INDENT" />  • Pomagate izboljšati Chrome za ljudi, ki ga uporabljajo kot vi.<ph name="END_INDENT" />
 

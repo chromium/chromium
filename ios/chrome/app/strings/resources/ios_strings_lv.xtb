@@ -23,6 +23,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="1104948393051856124">Pieņemt un turpināt</translation>
 <translation id="110724200315609752">Pārslēgties uz atvērto logu</translation>
 <translation id="1112015203684611006">Neizdevās drukāt.</translation>
+<translation id="1118569444314402022">Laipni lūdzam atpakaļ, <ph name="USER_NAME" />!</translation>
 <translation id="1125564390852150847">Izveidot jaunu cilni.</translation>
 <translation id="1126809382673880764">Netiek nodrošināta aizsardzība pret bīstamām vietnēm, lejupielādēm un paplašinājumiem. Jūs joprojām saņemsiet drošas pārlūkošanas aizsardzību, ja tā ir pieejama, citos Google pakalpojumos, piemēram, Gmail un Meklēšana.</translation>
 <translation id="1135212215217513471">Iegūt Chrome operētājsistēmai iOS</translation>
@@ -64,6 +65,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="1377255359165588604">Sinhronizācija vairs nedarbojas.</translation>
 <translation id="1377321085342047638">Kartes numurs</translation>
 <translation id="1383876407941801731">Meklēt</translation>
+<translation id="138618066238211776">Turpināt ar lietotāja <ph name="USER_NAME" /> kontu</translation>
 <translation id="1400642268715879018">Pēdējās 4 nedēļas</translation>
 <translation id="1404330357948037222">Jūs esat izrakstījies</translation>
 <translation id="1407135791313364759">Atvērt visas</translation>
@@ -177,6 +179,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="2421044535038393232">Turpināt rediģēt</translation>
 <translation id="2434405374328098816">Jūs jau esat saglabājis paroli lietotājvārdam “<ph name="USERNAME" />” vietnē <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
+<translation id="2461070143328828326">Paroļu iestatījumi</translation>
 <translation id="2469960372084740698">Vai izslēgt funkciju Droša pārlūkošana?</translation>
 <translation id="2473876017985765807">Jūs jau esat saglabājis paroli vietnei <ph name="WEBSITE" />.</translation>
 <translation id="2476359652512522418">Nav atlasīta</translation>
@@ -331,6 +334,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3709582977625132201">Atzīmēt kā nelasītu</translation>
 <translation id="371230970611282515">Bīstami notikumi tiek prognozēti, un jūs jau iepriekš saņemat brīdinājumus.</translation>
 <translation id="37207012422556617">Populārākie meklēšanas vaicājumi</translation>
+<translation id="3726360487031500941">Vēlreiz pierakstieties savā kontā (<ph name="USER_NAME" />)</translation>
 <translation id="3740397331642243698">Atver ievadītos vietrāžus URL inkognito režīmā pārlūkā Chrome.</translation>
 <translation id="3762232513783804601">Izstrādāts jūsu iPad planšetdatoram</translation>
 <translation id="3771033907050503522">Inkognito režīma cilnes</translation>

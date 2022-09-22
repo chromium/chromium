@@ -2183,6 +2183,7 @@
 <translation id="2977480621796371840">ከቡድን አስወግድ</translation>
 <translation id="2979639724566107830">በአዲስ መስኮት ክፈት</translation>
 <translation id="2981113813906970160">ትልቅ የመዳፊት ጠቋሚ አሳይ</translation>
+<translation id="2981293774053328982">ይህ ፋይል የእርስዎን የግል ወይም የማህበራዊ አውታረ መረብ መለያዎች ለአደጋ ሊያጋልጥ የሚችል ተንኮል አዘል ዌር ይዟል</translation>
 <translation id="2983373101216420412">የማስቀመጫ የባትሪ ደረጃ <ph name="PERCENTAGE" />%።</translation>
 <translation id="2985348301114641460">«<ph name="EXTENSION_NAME" />» ለመጫን ለእርስዎ አስተዳዳሪ ጥያቄ ይላክ?</translation>
 <translation id="2987620471460279764">ከሌሎች መሣሪያዎች የተጋራ ጽሁፍ</translation>
@@ -2304,6 +2305,7 @@
 <translation id="3090819949319990166">ውጫዊ የcrx ፋይል ወደ <ph name="TEMP_CRX_FILE" /> መቅዳት አልተቻለም።</translation>
 <translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» ተጣምሯል</translation>
 <translation id="3093714882666365141">ጣቢያዎች የክፍያ ተቆጣጣሪዎችን እንዲጭኑ አይፍቀዱ</translation>
+<translation id="3093958632721393232">የእኔ ባትሪ ኃይል አነስተኛ ሲሆን ብቻ አብራ</translation>
 <translation id="3094141017404513551">ይህ አሰሳዎን ከ<ph name="EXISTING_USER" /> ይለየዋል</translation>
 <translation id="3095871294753148861">እልባቶች፣ የይለፍ ቃላት እና ሌላ የአሳሽ ውሂብ ከተቀዳሚ መለያ ጋር ይሰምራሉ።</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 ሊጎዳ የሚችል ቅጥያ ጠፍቷል። እንዲሁም ሊያስወግዱት ይችላሉ።}one{{NUM_EXTENSIONS} ሊጎዱ የሚችሉ ቅጥያዎች ጠፍተዋል። እንዲሁም ሊያስወግዷቸው ይችላሉ።}other{{NUM_EXTENSIONS} ሊጎዱ የሚችሉ ቅጥያዎች ጠፍተዋል። እንዲሁም ሊያስወግዷቸው ይችላሉ።}}</translation>
@@ -3765,6 +3767,7 @@
 <translation id="4514610446763173167">ቪዲዮን ለማጫወት ወይም ባለበት ለማቆም ቀያይር</translation>
 <translation id="451515744433878153">አስወግድ</translation>
 <translation id="4515872537870654449">ለጥገና አገልግሎት Dell ን ያነጋግሩ። አየር ማርገብገቢያው የማይሠራ ከሆነ መትከያው ይዘጋል።</translation>
+<translation id="4518840066030486079">የShift ቁልፍ ሁነታ ቅጥ</translation>
 <translation id="4519331665958994620">ጣቢያዎች ካሜራዎን ለመጠቀም መጠየቅ ይችላሉ</translation>
 <translation id="4519935350946509010">የግንኙነት ስህተት።</translation>
 <translation id="4520385623207007473">ጥቅም ላይ የዋሉ ኩኪዎች</translation>
@@ -3860,6 +3863,7 @@
 <translation id="4598345735110653698">የይለፍ ቁልፎችን አስተዳድር</translation>
 <translation id="4598556348158889687">የማከማቻ አስተዳደር</translation>
 <translation id="4598776695426288251">Wi-Fi በበርካታ መሣሪያዎች በኩል ይገኛል</translation>
+<translation id="4600071396330666617">የአስተያየት ጥቆማዎች ብዛት</translation>
 <translation id="4601426376352205922">እንዳልተነበበ ምልክት አድርግ</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> ሁልጊዜ ካሜራዎን እና ማይክሮፎንዎን እንዲደርስባቸው ይፍቀዱ</translation>
 <translation id="4606551464649945562">ጣቢያዎች የዙሪያዎ የ3ል ካርታ እንዳይፈጥሩ ወይም የካሜራ ቦታን እንዳይከታተሉ ይከልክሉ</translation>
@@ -4306,6 +4310,7 @@
 <translation id="5043913660911154449">ወይም የእርስዎን አታሚ PPD ይጥቀሱ <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">ትክክል ያልሆነ የይለፍ ቃል</translation>
 <translation id="504561833207953641">በነባር የአሳሽ ክፍለ-ጊዜ ውስጥ በመክፈት ላይ።</translation>
+<translation id="5049614114599109018">የግቤት ታሪክን ይጠቀሙ</translation>
 <translation id="5051836348807686060">ፊደል ማረሚያ ለመረጧቸው ቋንቋዎች አይደገፍም</translation>
 <translation id="5052499409147950210">ጣቢያን አርትዕ ያድርጉ</translation>
 <translation id="505347685865235222">ያልተሰየመ ቡድን - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5020,6 +5025,7 @@
 <translation id="5747552184818312860">ጊዜው አልፎበታል</translation>
 <translation id="5747785204778348146">ገንቢ - ያልተረጋጋ</translation>
 <translation id="5747809636523347288">ይ&amp;ለጥፉና ወደ <ph name="URL" /> ይሂዱ</translation>
+<translation id="5748137879145720682">የእኔ ኮምፒውተር ሲነቀል አብራ</translation>
 <translation id="5751345516399502412">የእንደ ሞደም መሰካት ዝግጁነትን ፈትሽ</translation>
 <translation id="5755022574660047665">ማህደረ ትውስታዎች ከGoogle ፎቶዎች</translation>
 <translation id="5756163054456765343">የእገዛ ማዕከል</translation>
@@ -6732,6 +6738,7 @@
 <translation id="7404065585741198296">የእርስዎ ስልክ ከዩኤስቢ ገመድ ጋር</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{የደህንነት ፍተሻ ከ1 ሰዓት በፊት ተካሂዷል}one{የደህንነት ፍተሻ ከ{NUM_HOURS} ሰዓቶች በፊት ተካሂዷል}other{የደህንነት ፍተሻ ከ{NUM_HOURS} ሰዓቶች በፊት ተካሂዷል}}</translation>
 <translation id="740624631517654988">ብቅ-ባይ ታግዷል</translation>
+<translation id="7406912950279255498">የተቃራኒ ቀለም ሁነታ</translation>
 <translation id="7407430846095439694">አስመጣ እና እሰር</translation>
 <translation id="7407504355934009739">አብዛኛዎቹ ሰዎች ከዚህ ጣቢያ የሚመጡ ማሳወቂያዎችን ያግዳሉ</translation>
 <translation id="740810853557944681">የህትመት አገልጋይ ያክሉ</translation>
@@ -7660,6 +7667,7 @@ nil</translation>
 <translation id="8248381369318572865">ማይክሮፎንዎን ይድረሱ እና ንግግርዎን ይተንትኑ</translation>
 <translation id="8248887045858762645">የChrome ጠቃሚ ምክር</translation>
 <translation id="8249048954461686687">የኦኢኤም አቃፊ</translation>
+<translation id="8249239468199142122">የባትሪ ኃይል ቆጣቢ</translation>
 <translation id="8249615410597138718">ወደ መሣሪያዎችዎ ይላኩ</translation>
 <translation id="8250210000648910632">የማከማቻ ቦታ አልቋል</translation>
 <translation id="8251441930213048644">አሁንኑ አድስ</translation>
@@ -7687,6 +7695,7 @@ nil</translation>
     <ph name="BEGIN_PARAGRAPH3" />ይህን ባህሪ ከቅንብሮች &gt; የላቁ &gt; ወደ Google የአጠቃቀም እና ምርመራን ውሂብ በራስ ሰር ላክ ላይ ሆኖ ባለቤቱ ሊቆጣጠረው ይችላል።<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />የእርስዎ ልጅ ተጨማሪ የድር እና መተግበሪያ እንቅስቃሴ ቅንብር በርቶ ከሆነ ይህ ውሂብ ወደ የእነርሱ Google መለያ ሊቀመጥ ይችላል። families.google.com ላይ ስለእነዚህ ቅንብሮች እና እንዴት እነሱን ማስተካከል እንደሚችሉ የበለጠ ይረዱ።<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">ልክ ያልኾነ የደንበኛ ምስክርነት</translation>
+<translation id="8270162672241199380">የSteam ጫኝ</translation>
 <translation id="827097179112817503">መነሻ አዝራር አሳይ</translation>
 <translation id="8271268254812352141">ጽሑፍን በቀኝ ጠቅ ሲያደርጉ ወይም ነክተው ሲይዙ ፍቺዎችን፣ ትርጉሞችን ወይም የአሃድ ልወጣዎችን ያግኙ። በ<ph name="LINK_BEGIN" />ድር ጣቢያ ቋንቋዎች<ph name="LINK_END" /> ውስጥ የትርጉም ቋንቋዎችን ያብጁ።</translation>
 <translation id="8271379370373330993">ወላጆች፣ የሚቀጥሉት ጥቂት እርምጃዎች ለእርስዎ ናቸው። ከመለያ ማዋቀር በኋላ <ph name="DEVICE_TYPE" /> ለልጁ መስጠት ይችላሉ።</translation>

@@ -261,6 +261,7 @@
 <translation id="156703335097561114">Мекенжайлар, интерфейс конфигурациясы және байланыс сапасы сияқты желі ақпараты</translation>
 <translation id="1567040042588613346">Бұл саясат ойдағыдай жұмыс істеуде, бірақ басқа жерде осы саясат бойынша ауыстырылатын тап осындай мән орнатылған.</translation>
 <translation id="1569487616857761740">Жарамдылық мерзімін енгізіңіз.</translation>
+<translation id="1569694109004336106">Google Chrome құпия сөздерді толтыру үшін Windows Hello технологиясын қосқысы келеді.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Бұл веб-бетті көрсету кезінде қате кетті.</translation>
 <translation id="1586541204584340881">қай кеңейтімдерді орнатқаныңызды;</translation>
@@ -399,6 +400,7 @@
 <translation id="1958218078413065209">Ең жоғары ұпайыңыз: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Google-ға <ph name="BEGIN_WHITEPAPER_LINK" />кірген беттердің URL мекенжайларын, шектеулі жүйе ақпаратын және кейбір бет мазмұнын<ph name="END_WHITEPAPER_LINK" /> жіберу арқылы барлық пайдаланушы үшін интернет қауіпсіздігін жақсартуға көмектесіңіз. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Құпиялылық саясаты<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> бетбелгілері</translation>
+<translation id="1971033026002113380">Touch ID технологиясымен құпия сөздерді қорғау</translation>
 <translation id="1973335181906896915">Сериалау қатесі</translation>
 <translation id="1974060860693918893">Қосымша</translation>
 <translation id="1975457531113383421">Кіріс науасы</translation>
@@ -726,6 +728,7 @@
 <translation id="2881276955470682203">Карта сақталсын ба?</translation>
 <translation id="2882949212241984732">Қақпа тәрізді қос бүктеу</translation>
 <translation id="2893773853358652045">Төртінші орам</translation>
+<translation id="289834758818479772">Бұл құрылғыны басқалармен бірге қолдансаңыз, сақталған құпия сөзді пайдаланған кезде жеке басыңызды растау үшін Touch ID технологиясын қосып қоюыңызға болады.</translation>
 <translation id="2900528713135656174">Оқиға жасау</translation>
 <translation id="2903493209154104877">Мекенжайлар</translation>
 <translation id="290376772003165898">Бет <ph name="LANGUAGE" /> тілінде емес пе?</translation>
@@ -802,6 +805,8 @@
 <translation id="3108943290502734357">Ортаңғы науа</translation>
 <translation id="3109728660330352905">Бұл бетті көруге рұқсатыңыз жоқ.</translation>
 <translation id="3113284927548439113">Үшінші кідіріс</translation>
+<translation id="3114040155724590991">Android жүйесі жаңартылып жатыр
+    Қолданбаны іске қосу әдеттегіден ұзақ уақытқа созылуы мүмкін</translation>
 <translation id="3115363211799416195">{0,plural, =1{Құпия файлды жүктеп алу керек пе?}other{Құпия файлдарды жүктеп алу керек пе?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> домені деректердің сақтық көшірмесін жасап, осы <ph name="DEVICE_TYPE" /> құрылғысын қайтаруыңызды қажет етеді.</translation>
 <translation id="3116158981186517402">Ламинат</translation>
@@ -1255,6 +1260,7 @@
 <translation id="4306812610847412719">буфер</translation>
 <translation id="4308567447483056043">Пайдаланушы үлестес тұлға болмағандықтан, бұл саясат еленбейді. Бұл саясат қолданылуы үшін, Chrome браузері мен профилі сол ұйымдағы әкімші консолі арқылы басқарылуы қажет.</translation>
 <translation id="4310070645992025887">Саяхаттарыңызды іздеңіз</translation>
+<translation id="4310496734563057511">Бұл құрылғыны басқалармен бірге қолдансаңыз, сақталған құпия сөзді пайдаланған кезде жеке басыңызды растау үшін Windows Hello технологиясын қосып қоюыңызға болады.</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Бөгеу (әдепкі)</translation>
 <translation id="4314815835985389558">Синхрондауды басқару</translation>
@@ -1469,6 +1475,7 @@
 <translation id="4880827082731008257">Тарихтан іздеу</translation>
 <translation id="4881695831933465202">Ашу</translation>
 <translation id="4885256590493466218">Тапсырысты рәсімдегенде, <ph name="CARD_DETAIL" /> картасымен төлеңіз.</translation>
+<translation id="4887406273302438710">Windows Hello технологиясымен құпия сөздерді қорғау</translation>
 <translation id="4888600795924685526">Шет тілін үйрену</translation>
 <translation id="4889420713887366944">"Инкогнито терезесін ашу" түймесі. Жаңа инкогнито терезесін ашу үшін Enter пернесін басыңыз.</translation>
 <translation id="4892518386797173871">Артқы</translation>
@@ -1688,6 +1695,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> хабарландыру жіберуге рұқсат сұрады</translation>
 <translation id="5428105026674456456">испан</translation>
 <translation id="5430298929874300616">Бетбелгіні жою</translation>
+<translation id="5434423669266814150">құпия сөздерді толтыру үшін Touch ID технологиясын қосу</translation>
 <translation id="5443468954631487277">Кері ретпен беткі жағында</translation>
 <translation id="5447765697759493033">Бұл сайт аударылмайды</translation>
 <translation id="5452270690849572955">Бұл <ph name="HOST_NAME" /> бетін табу мүмкін емес</translation>
@@ -2465,6 +2473,7 @@
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> аккаунтыңызға кіру мүмкіндігін жоғалтып алуыңыз немесе жеке мәліметтеріңізді беріп қоюыңыз мүмкін. Chrome құпия сөзіңізді дереу өзгертуге кеңес береді.</translation>
 <translation id="7564680668369175887">Әмбебап автомобильдер</translation>
 <translation id="7567204685887185387">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты алаяқтық жолмен шығарылған болуы мүмкін. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
+<translation id="7568616151991626879">Google Chrome <ph name="APP_NAME" /> қолданбасында құпия сөзіңізді толтырғысы келеді.</translation>
 <translation id="7569490014721427265">Гольф</translation>
 <translation id="7569761772822664555">"Іздеу жүйелерін басқару" түймесі, әдепкі іздеу жүйесін және сайттан іздеуді басқару үшін Enter пернесін басыңыз.</translation>
 <translation id="7569952961197462199">Chrome браузерінен несиелік картаны өшіру қажет пе?</translation>
@@ -2495,6 +2504,7 @@
 <translation id="7637586430889951925">{COUNT,plural, =0{Жоқ}=1{Аккаунтыңыздағы 1 құпия сөз (<ph name="DOMAIN_LIST" /> үшін)}other{Аккаунтыңыздағы # құпия сөз (<ph name="DOMAIN_LIST" /> үшін)}}</translation>
 <translation id="7638605456503525968">Сериялық порттар</translation>
 <translation id="7639968568612851608">Қою сұр</translation>
+<translation id="7646681339175747202">Сіз жаңа ғана қолданған құпия сөз деректердің қолды болуы салдарынан жария етілді. Google Құпия сөз менеджері құпия сөзіңізді дереу өзгертуді ұсынады.</translation>
 <translation id="7647206758853451655">Басып шығару сапасы</translation>
 <translation id="7648992873808071793">Файлдарды осы құрылғыда сақтау</translation>
 <translation id="7653957176542370971">Төлем өңдегіш беті жабық.</translation>

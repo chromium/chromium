@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">ലെറ്റർ മടക്ക്</translation>
 <translation id="138218114945450791">ഇളം നീല</translation>
 <translation id="1382194467192730611">നിങ്ങളുടെ അഡ്‌‌മിനിസ്‌ട്രേറ്റർ USB ഉപകരണം അനുവദിച്ചു</translation>
+<translation id="1382378825779654399">ഏതെങ്കിലും സൈറ്റിൽ വിലക്കുറവ് ഉണ്ടെങ്കിൽ നിങ്ങൾക്ക് ഇമെയിൽ അറിയിപ്പുകൾ ലഭിക്കും. ഈ പേജ് <ph name="LAST_BOOKMARKS_FOLDER" /> എന്നതിൽ സംരക്ഷിക്കും.</translation>
 <translation id="1382912999714108023">നിങ്ങളുടെ നിലവിലെ വിവരങ്ങൾ കാണുന്നില്ലേ? അപ്ഡേറ്റ് ചെയ്യാൻ നിങ്ങളുടെ ബാങ്കിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="1384725838384960382">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യൽ പരിശോധിച്ചുറപ്പിക്കൽ ഷീറ്റ്</translation>
 <translation id="1386623374109090026">കുറിപ്പുകൾ</translation>
@@ -1526,6 +1527,7 @@
 <translation id="5018422839182700155">ഈ പേജ് തുറക്കാനായില്ല</translation>
 <translation id="5019198164206649151">ബാക്കിംഗ് സംഭരണം മോശം അവസ്ഥയിലാണ്</translation>
 <translation id="5020776957610079374">ആഗോള സംഗീതം</translation>
+<translation id="5021557570875267742">Chrome ഉപയോഗിച്ച് നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="5023310440958281426">നിങ്ങളുടെ അഡ്‌മിനിസ്ട്രേറ്ററുടെ നയങ്ങൾ പരിശോധിക്കുക.</translation>
 <translation id="5029568752722684782">പകർപ്പ് മായ്‌ക്കുക</translation>
 <translation id="5030338702439866405">ഇനിപ്പറയുന്നത് നല്‍‌കിയത്</translation>
@@ -2247,6 +2249,7 @@
 <translation id="6993898126790112050">6x9 (എൻവലപ്പ്)</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> എല്ലായ്‌പ്പോഴും വിവർത്തനം ചെയ്യുക</translation>
 <translation id="6999969238895751684">വിനോദ വ്യവസായം</translation>
+<translation id="7003335073762455340">നിങ്ങൾ ഈ ഉൽപ്പന്നം ട്രാക്ക് ചെയ്യുന്നു. ഈ പേജ് <ph name="LAST_BOOKMARKS_FOLDER" /> എന്നതിൽ സംരക്ഷിച്ചിരിക്കുന്നു.</translation>
 <translation id="7004583254764674281">കാർഡുകൾ വേഗത്തിൽ സ്ഥിരീകരിക്കാൻ Windows Hello ഉപയോഗിക്കുക</translation>
 <translation id="7006930604109697472">എന്തായാലും അയയ്‌ക്കുക</translation>
 <translation id="7012363358306927923">ചൈന UnionPay</translation>
@@ -3041,6 +3044,7 @@
 <translation id="9174623988242579721">ഇഷ്ടാനുസൃത, പെർഫോമൻസ് വാഹനങ്ങൾ</translation>
 <translation id="9174917557437862841">ടാബ് മാറാനുള്ള ബട്ടൺ, ഈ ടാബിലേക്ക് മാറാൻ എൻ്റർ അമർത്തുക</translation>
 <translation id="9179703756951298733">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പേയ്‌മെന്റുകളും ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങളും മാനേജ് ചെയ്യുക</translation>
+<translation id="9179907736442194268">ഏതെങ്കിലും സൈറ്റിൽ വിലക്കുറവ് ഉണ്ടെങ്കിൽ ഇമെയിൽ അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> പിന്തുണയ്‌ക്കാത്ത ഒരു പ്രോട്ടോക്കോളാണ് ഉപയോഗിക്കുന്നത്.</translation>
 <translation id="9187461866967718678">എക്‌സ്‌ട്രീം സ്‌പോർട്‌സ്</translation>

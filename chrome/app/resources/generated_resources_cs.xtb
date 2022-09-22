@@ -2176,6 +2176,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2977480621796371840">Odebrat ze skupiny</translation>
 <translation id="2979639724566107830">Otevřít v novém okně</translation>
 <translation id="2981113813906970160">Zobrazit velký kurzor myši</translation>
+<translation id="2981293774053328982">Tento soubor obsahuje malware, který může ohrozit vaše osobní účty nebo vaše účty na sociálních sítích</translation>
 <translation id="2983373101216420412">Stav baterie pouzdra: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2985348301114641460">Požádat administrátora o instalaci rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2987620471460279764">Text sdílený z jiného zařízení</translation>
@@ -3759,6 +3760,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4514610446763173167">Přepnout mezi přehráváním a pozastavením videa</translation>
 <translation id="451515744433878153">Odstranit</translation>
 <translation id="4515872537870654449">Požádejte společnost Dell o servis. Pokud nefunguje větrák, dok se vypne.</translation>
+<translation id="4518840066030486079">Styl režimu klávesy Shift</translation>
 <translation id="4519331665958994620">Weby mohou žádat o použití fotoaparátu</translation>
 <translation id="4519935350946509010">Chyba připojení.</translation>
 <translation id="4520385623207007473">Používané soubory cookie</translation>
@@ -3854,6 +3856,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4598345735110653698">Spravovat přístupové klíče</translation>
 <translation id="4598556348158889687">Správa úložiště</translation>
 <translation id="4598776695426288251">Je k dispozici síť Wi-Fi prostřednictvím několika zařízení</translation>
+<translation id="4600071396330666617">Počet návrhů</translation>
 <translation id="4601426376352205922">Označit jako nepřečtené</translation>
 <translation id="4602466770786743961">Vždy povolit webu <ph name="HOST" /> přístup k webové kameře a mikrofonu</translation>
 <translation id="4606551464649945562">Nepovolovat webům vytvořit 3D mapu okolí ani sledovat polohu kamery</translation>
@@ -4300,6 +4303,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5043913660911154449">Případně zadejte PPD tiskárny <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Nesprávné heslo</translation>
 <translation id="504561833207953641">Otevírání v existující relaci prohlížeče.</translation>
+<translation id="5049614114599109018">Používat historii zadávání textu</translation>
 <translation id="5051836348807686060">V jazycích, které jste zadali, není kontrola pravopisu podporována</translation>
 <translation id="5052499409147950210">Upravit web</translation>
 <translation id="505347685865235222">Skupina bez názvu – <ph name="GROUP_CONTENT_STRING" /></translation>

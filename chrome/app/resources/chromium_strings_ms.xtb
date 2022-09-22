@@ -53,6 +53,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2384373936468275798">Chromium OS tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
 <translation id="2396765026452590966">Sambungan "<ph name="EXTENSION_NAME" />" telah menukar halaman yang ditunjukkan apabila anda memulakan Chromium.</translation>
+<translation id="2400844369696905771">Apabila dihidupkan, Chromium memulih guna memori daripada tab yang tidak digunakan secara aktif. Tindakan ini membebaskan sumber komputer anda untuk tugasan lain dan memastikan Chromium sentiasa pantas. Tab tidak aktif kelihatan kosong dan memuat semula secara automatik apabila anda mengkliknya. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium memerlukan kebenaran kamera dan mikrofon untuk laman ini</translation>
 <translation id="2483889755041906834">Dalam Chromium</translation>
 <translation id="2485422356828889247">Nyahpasang</translation>
@@ -143,6 +144,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="4285930937574705105">Pemasangan gagal disebabkan ralat yang tidak dinyatakan. Jika Chromium sedang dijalankan, sila tutup dan cuba semula.</translation>
 <translation id="4304713468139749426">Pengurus Kata Laluan</translation>
 <translation id="4334294535648607276">Muat turun selesai.</translation>
+<translation id="437317747729858884">Untuk menjadikan penyemakan imbas anda lebih pantas, Chromium memulih guna memori daripada tab yang tidak digunakan.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> menghendaki anda membaca dan menerima Syarat Perkhidmatan berikut sebelum menggunakan peranti ini. Syarat ini tidak memperluas, mengubah suai atau mengehadkan Syarat Chromium OS.</translation>
 <translation id="4407044323746248786">Keluar daripada Chromium juga?</translation>
 <translation id="4415566066719264597">Benarkan Chromium Dijalankan dalam Latar Belakang</translation>
@@ -312,6 +314,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="7872446069773932638">Memuat turun... <ph name="SECONDS" /> saat lagi</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Cara anda boleh mengurus data anda:<ph name="END_BOLD" /> Untuk melindungi privasi anda, kami memadamkan minat anda yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, minat itu mungkin muncul semula dalam senarai. Anda juga boleh mengalih keluar minat yang anda tidak mahu dipertimbangkan Chromium.</translation>
 <translation id="7937630085815544518">Anda telah log masuk ke Chromium sebagai <ph name="USER_EMAIL_ADDRESS" />. Sila gunakan akaun yang sama untuk log masuk lagi.</translation>
+<translation id="7947085610734123927">Chromium menghidupkan Penjimat Memori</translation>
 <translation id="7975919845073681630">Ini adalah pemasangan kedua Chromium dan tidak boleh dijadikan penyemak imbas lalai anda.</translation>
 <translation id="7997934263947464652">Sambungan, apl dan tema daripada sumber yang tidak diketahui boleh membahayakan peranti anda. Chrome mengesyorkan agar memasang fail daripada <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> sahaja</translation>
 <translation id="8013436988911883588">Sebaik sahaja Chromium mendapat akses, laman web akan dapat meminta akses daripada anda.</translation>
@@ -337,6 +340,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8558383651099478961">Ibu/bapa anda telah mematikan "Kebenaran untuk laman web, apl dan sambungan" untuk Chromium. Tindakan menambah <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak dibenarkan.</translation>
 <translation id="8561285221328166383">Untuk mendapatkan kemaskinian Chromium yang akan datang, anda memerlukan macOS 10.13 atau yang lebih baharu. Komputer ini menggunakan macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda</translation>
+<translation id="8574036838419011058">Apabila dihidupkan, Chromium menjimatkan kuasa bateri dengan mengehadkan aktiviti latar belakang dan kesan visual, seperti tatal lancar dan kadar bingkai video. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Laman boleh menyimpan maklumat tentang minat anda menggunakan Chromium. Contohnya, jika anda melawat laman untuk membeli kasut untuk maraton, laman tersebut mungkin mentakrifkan minat anda sebagai larian maraton. Kemudian, jika anda melawati laman lain untuk mendaftar perlumbaan, laman tersebut boleh memaparkan kepada anda iklan kasut untuk berlari berdasarkan minat anda.</translation>
 <translation id="8619360774459241877">Melancarkan Chromium...</translation>

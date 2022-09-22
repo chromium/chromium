@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">Oprez: Ovi fajlovi su privremeni i mogu da se izbrišu automatski kako bi se oslobodio prostor na disku.</translation>
 <translation id="3029114385395636667">Omogućite Google dokumente oflajn da biste učinili dokumente, tabele i prezentacije dostupnim oflajn.</translation>
 <translation id="303198083543495566">Geografija</translation>
+<translation id="3044404008258011032">Da biste vratili ove stavke, prevucite ih u nov folder izvan otpada. Prvobitni folder <ph name="PARENT_FOLDER_NAME" /> za ovu stavku je izbrisan.</translation>
 <translation id="3047197340186497470">kineski daji</translation>
 <translation id="3067790092342515856">Windows datoteke</translation>
 <translation id="3083975830683400843">Chromebit-ovi</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">Aktiviranje...</translation>
 <translation id="4092890906744441904">irski</translation>
 <translation id="4124935795427217608">Jednorog</translation>
+<translation id="4131235941541910880">Premestite stavke koje vam ne trebaju u otpad</translation>
 <translation id="4159731583141908892">Premeštenih stavki: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Odmah isprazni otpad</translation>
 <translation id="4186579485882418952">Omogući oflajn</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">nemački</translation>
 <translation id="4867079195717347957">Kliknite da biste sortirali stavke u koloni po opadajućem redosledu.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bajt(ov)a</translation>
+<translation id="4874569719830985133">Izbriši zauvek</translation>
 <translation id="4880214202172289027">Klizač za jačinu zvuka</translation>
 <translation id="4881695831933465202">Otvori</translation>
+<translation id="4891091358278567964">Da biste vratili ove stavke, prevucite ih u nov folder izvan otpada. Prvobitni folderi za ove stavke su izbrisani.</translation>
 <translation id="4900532980794411603">Deli sa Parallels Desktop-om</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, poveži</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, baterija telefona <ph name="BATTERY_STATUS" />%, detalji</translation>
@@ -493,6 +497,7 @@
     <ph name="MARKUP_7" />Delite i pravite datoteke i sarađujte<ph name="MARKUP_8" />
     na njima sa drugima, i sve to na jednom mestu.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Vraćene datoteke sa Google diska</translation>
+<translation id="5278111733643988471">Da biste vratili ovu stavku, prevucite je u nov folder izvan otpada. Prvobitni folder <ph name="PARENT_FOLDER_NAME" /> za ovu stavku je izbrisan.</translation>
 <translation id="5286194356314741248">Skeniranje</translation>
 <translation id="5288441970121584418">Pljeskavica</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -505,6 +510,7 @@
 <translation id="535792325654997756">Osoba sa mačkama</translation>
 <translation id="5358764674931277">Brzina kadrova</translation>
 <translation id="5363339716524495120">Jezik unosa je kineski</translation>
+<translation id="5364067326287025678">Otpad je prazan</translation>
 <translation id="5368191757080475556">Delite direktorijum sa Linux-om</translation>
 <translation id="5402367795255837559">Brajeva azbuka</translation>
 <translation id="5411472733320185105">Ne koristi podešavanja proksija za ove hostove i domene:</translation>
@@ -771,6 +777,7 @@
 <translation id="7711920809702896782">Informacije o datoteci slike</translation>
 <translation id="7724603315864178912">Iseci</translation>
 <translation id="7732111077498238432">Mrežu kontrolišu smernice</translation>
+<translation id="7736003208887389532">Želite da trajno izbrišete ove fajlove?</translation>
 <translation id="7748626145866214022">Još opcija je dostupno na traci sa radnjama. Pritisnite Alt+A da biste fokusirali traku sa radnjama.</translation>
 <translation id="7760449188139285140">kineski vubi</translation>
 <translation id="7765158879357617694">Premesti</translation>
@@ -832,6 +839,7 @@
 <translation id="8249296373107784235">Otkaži</translation>
 <translation id="8250690786522693009">latinica</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
+<translation id="8255595130163158297">Sve stavke u otpadu će biti izbrisane i nećete moći da ih vratite.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8261561378965667560">niz za kineski</translation>
 <translation id="8264024885325823677">Ovim podešavanjem upravlja administrator.</translation>
@@ -910,6 +918,7 @@
 <translation id="8857149712089373752">nepalski sa fonetskom tastaturom</translation>
 <translation id="8860454412039442620">Excel tabela</translation>
 <translation id="8866284467018526531">transliteracija arapskog</translation>
+<translation id="8873014196523807561">Da biste vratili ove stavke, prevucite ih u nov folder. Prvobitni folderi za neke od ovih stavki su izbrisani.</translation>
 <translation id="8874184842967597500">Nije povezano</translation>
 <translation id="8900820606136623064">mađarski</translation>
 <translation id="8903931173357132290">Diplomac</translation>

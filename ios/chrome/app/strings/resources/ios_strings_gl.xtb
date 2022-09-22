@@ -23,6 +23,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1104948393051856124">Aceptar e continuar</translation>
 <translation id="110724200315609752">Ir á ventá aberta</translation>
 <translation id="1112015203684611006">Erro impresión</translation>
+<translation id="1118569444314402022">Dámosche a benvida de novo, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Crear pestana nova</translation>
 <translation id="1126809382673880764">Non te protexe contra sitios web, descargas e extensións perigosos. Continuarás dispoñendo da protección da función Navegación segura, sempre que estea dispoñible, noutros servizos de Google (como Gmail e a Busca).</translation>
 <translation id="1135212215217513471">Obter Chrome para iOS</translation>
@@ -64,6 +65,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1377255359165588604">A sincronización deixou de funcionar.</translation>
 <translation id="1377321085342047638">Nº tarxeta</translation>
 <translation id="1383876407941801731">Buscar</translation>
+<translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">As últimas 4 semanas</translation>
 <translation id="1404330357948037222">Non tes a sesión iniciada</translation>
 <translation id="1407135791313364759">Abrir todo</translation>
@@ -177,6 +179,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2421044535038393232">Seguir editando</translation>
 <translation id="2434405374328098816">Xa gardaches un contrasinal de <ph name="USERNAME" /> para <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
+<translation id="2461070143328828326">Configuración dos contrasinais</translation>
 <translation id="2469960372084740698">Queres desactivar a función Navegación segura?</translation>
 <translation id="2473876017985765807">Xa gardaches un contrasinal para <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Non seleccionada</translation>
@@ -331,6 +334,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3709582977625132201">Marcar como non lido</translation>
 <translation id="371230970611282515">Predí eventos perigosos antes de que se produzan e móstrache unha advertencia.</translation>
 <translation id="37207012422556617">Buscas populares</translation>
+<translation id="3726360487031500941">Inicia sesión de novo na túa conta (<ph name="USER_NAME" />)</translation>
 <translation id="3740397331642243698">Abre os URL escritos en Google Chrome no modo de incógnito.</translation>
 <translation id="3762232513783804601">Deseñado para iPad</translation>
 <translation id="3771033907050503522">Pestanas de incógnito</translation>

@@ -261,6 +261,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="156703335097561114">Sareei buruzko informazioa, hala nola helbideak, interfazeen konfigurazioa eta konexioen kalitatea</translation>
 <translation id="1567040042588613346">Gidalerroak espero bezala funtzionatzen du, baina balio bera beste nonbait dago ezarrita, eta gidalerro honek hura ordezten du.</translation>
 <translation id="1569487616857761740">Adierazi iraungitze-data</translation>
+<translation id="1569694109004336106">Google Chrome Windows Hello aktibatzen saiatzen ari da, pasahitzak betetzeko.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Arazo bat izan da web-orria bistaratzean.</translation>
 <translation id="1586541204584340881">Instalatuta dauzkazun luzapenak.</translation>
@@ -399,6 +400,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1958218078413065209">Lortu duzun puntuazio handiena <ph name="SCORE" /> da.</translation>
 <translation id="1959001866257244765">Sareko segurtasuna hobetzen laguntzeko, bidali <ph name="BEGIN_WHITEPAPER_LINK" />ireki dituzun orrietako batzuen URLak, sistemari buruzko informazio mugatua eta orrietako edukiaren zati bat<ph name="END_WHITEPAPER_LINK" /> Google-ri. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Pribatutasun-gidalerroak<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> domeinuko laster-markak</translation>
+<translation id="1971033026002113380">Babestu pasahitzak Touch ID erabilita</translation>
 <translation id="1973335181906896915">Serializazio-errorea</translation>
 <translation id="1974060860693918893">Aurreratuak</translation>
 <translation id="1975457531113383421">Papera sartzeko erretilua</translation>
@@ -726,6 +728,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2881276955470682203">Txartela gorde nahi duzu?</translation>
 <translation id="2882949212241984732">Leiho bikoitz erako tolestura</translation>
 <translation id="2893773853358652045">Laugarren arrabola</translation>
+<translation id="289834758818479772">Gailua besteekin partekatzen baduzu, aktibatu Touch ID gordetako pasahitz bat erabiltzen duzun bakoitzean zeu zarela egiaztatzeko.</translation>
 <translation id="2900528713135656174">Sortu gertaera</translation>
 <translation id="2903493209154104877">Helbideak</translation>
 <translation id="290376772003165898">Ez al da <ph name="LANGUAGE" /> orriko hizkuntza?</translation>
@@ -802,6 +805,8 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3108943290502734357">Erdiko erretilua</translation>
 <translation id="3109728660330352905">Ez duzu baimenik orri hau ikusteko.</translation>
 <translation id="3113284927548439113">Hirugarren lanaldia</translation>
+<translation id="3114040155724590991">Android sistema eguneratzen
+    Baliteke ohi baino denbora gehiago behar izatea aplikazioa abiarazteko.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Isilpeko fitxategia deskargatu nahi duzu?}other{Isilpeko fitxategiak deskargatu nahi dituzu?}}</translation>
 <translation id="3115874930288085374">Datuen babeskopia egiteko eta <ph name="DEVICE_TYPE" /> gailua itzultzeko eskatzen du <ph name="ENROLLMENT_DOMAIN" /> domeinuak.</translation>
 <translation id="3116158981186517402">Laminatu</translation>
@@ -1252,6 +1257,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4306812610847412719">arbela</translation>
 <translation id="4308567447483056043">Gidalerro honi ez ikusi egiten zaio erabiltzailea ez dagoelako kidetuta. Gidalerroa aplika dadin, Chrome arakatzailea eta Chrome-ko profila erakunde berak kudeatu behar ditu administrazio-kontsolaren bidez.</translation>
 <translation id="4310070645992025887">Bilatu bilaketa-ibilbideetan</translation>
+<translation id="4310496734563057511">Gailua beste batzuekin partekatzen baduzu, Windows Hello aktiba dezakezu. Horrela, gordetako pasahitz bat erabiltzen duzun bakoitzean zeu zarela egiaztatuko da.</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokeatu (lehenetsia)</translation>
 <translation id="4314815835985389558">Kudeatu sinkronizazioa</translation>
@@ -1466,6 +1472,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4880827082731008257">Bilatu historian</translation>
 <translation id="4881695831933465202">Ireki</translation>
 <translation id="4885256590493466218">Ordaintzerakoan, erabili <ph name="CARD_DETAIL" /> txartela</translation>
+<translation id="4887406273302438710">Babestu pasahitzak Windows Hello erabilita</translation>
 <translation id="4888600795924685526">Atzerriko hizkuntzen ikasketa</translation>
 <translation id="4889420713887366944">"Ireki ezkutuko moduko leihoa" botoia: sakatu "Sartu" ezkutuko moduko leiho bat irekitzeko, modu pribatuan arakatu ahal izateko</translation>
 <translation id="4892518386797173871">Atzealdea</translation>
@@ -1685,6 +1692,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5426179911063097041"><ph name="SITE" /> webguneak jakinarazpenak bidali nahi dizkizu</translation>
 <translation id="5428105026674456456">Espaniarra</translation>
 <translation id="5430298929874300616">Kendu laster-marka</translation>
+<translation id="5434423669266814150">Touch ID aktibatzen saiatzen ari da, pasahitzak betetzeko</translation>
 <translation id="5443468954631487277">Alderantzizko ordenan, ahoz gora</translation>
 <translation id="5447765697759493033">Webgune hau ez da itzuliko</translation>
 <translation id="5452270690849572955">Ezin da aurkitu <ph name="HOST_NAME" /> webguneko orria</translation>
@@ -2461,6 +2469,7 @@ Xehetasun gehiago:
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> konturako sarbidea gal zenezake, edo kontua lapur liezazukete. Pasahitza aldatzea gomendatzen dizu Chrome-k.</translation>
 <translation id="7564680668369175887">Familiarrak</translation>
 <translation id="7567204685887185387">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Bere segurtasun-ziurtagiria iruzurrezko moduan igorrita egon liteke. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
+<translation id="7568616151991626879"><ph name="APP_NAME" /> aplikazioko pasahitza betetzen saiatzen ari da Google Chrome.</translation>
 <translation id="7569490014721427265">Golfa</translation>
 <translation id="7569761772822664555">Kudeatu bilatzaileen botoia, sakatu "Sartu" bilatzaile eta webgune-bilaketa lehenetsiak kudeatzeko</translation>
 <translation id="7569952961197462199">Kreditu-txartela Chrome-tik kendu nahi duzu?</translation>
@@ -2491,6 +2500,7 @@ Xehetasun gehiago:
 <translation id="7637586430889951925">{COUNT,plural, =0{Bat ere ez}=1{1 pasahitz daukazu kontuan (<ph name="DOMAIN_LIST" />)}other{# pasahitz dauzkazu kontuan (<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Serieko atakak</translation>
 <translation id="7639968568612851608">Gris iluna</translation>
+<translation id="7646681339175747202">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Google-ren Pasahitz-kudeatzailea zerbitzuak pasahitza orain aldatzea gomendatzen du.</translation>
 <translation id="7647206758853451655">Inprimatze-kalitatea</translation>
 <translation id="7648992873808071793">Gorde fitxategiak gailu honetan</translation>
 <translation id="7653957176542370971">Ordainketa kudeatzeko orria itxita dago</translation>

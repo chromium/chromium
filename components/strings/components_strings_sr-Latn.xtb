@@ -1420,6 +1420,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4744514002166662487">Napravite prezentaciju</translation>
 <translation id="4744603770635761495">Putanja izvršne datoteke</translation>
 <translation id="4749011317274908093">Prešli ste na režim bez arhiviranja</translation>
+<translation id="4750671009706599284">ovog telefona</translation>
 <translation id="4750917950439032686">Informacije (na primer, lozinke ili brojevi kreditnih kartica) su privatne kada se šalju ovom sajtu.</translation>
 <translation id="4751476147751820511">Senzori za pokret ili svetlo</translation>
 <translation id="4754461935447132332">Nije dozvoljeno za nebezbedne sajtove</translation>
@@ -2199,6 +2200,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome je pojednostavio ovu stranicu radi lakšeg čitanja. Chrome je preuzeo originalnu stranicu preko nebezbedne veze.</translation>
 <translation id="6890443033788248019">Želite li da dozvolite lokaciju?</translation>
+<translation id="6890531741535756070">Odabrali ste da verifikujete pomoću <ph name="DEVICE_LABEL" /> na veb-sajtovima koji koriste <ph name="PROVIDER_ORIGIN" />. Ovaj dobavljač je možda sačuvao informacije o načinu plaćanja, za koji možete da <ph name="BEGIN_LINK" />zatražite brisanje<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Nivo smernica nije podržan.</translation>
 <translation id="6895143722905299846">Virtuelni broj:</translation>
 <translation id="6895330447102777224">Kartica je potvrđena</translation>
@@ -2565,6 +2567,7 @@ Dodatni detalji:
 <translation id="7766518757692125295">Obod</translation>
 <translation id="7770259615151589601">Designated-Long</translation>
 <translation id="7773005668374414287">Istim redosledom sa odštampanom stranom nagore</translation>
+<translation id="7785790577395078482">ovog tableta</translation>
 <translation id="7791011319128895129">Neobjavljeno</translation>
 <translation id="7791196057686275387">Baliranje</translation>
 <translation id="7791543448312431591">Dodaj</translation>

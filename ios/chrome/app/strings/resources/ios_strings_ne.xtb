@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">स्वीकार गर्नुहोस् र जारी राख्नुहोस्</translation>
 <translation id="110724200315609752">खुला विन्डोमा जानुहोस्</translation>
 <translation id="1112015203684611006">छाप्न सकिएन।</translation>
+<translation id="1118569444314402022">फेरि स्वागत छ, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">नयाँ ट्याब सिर्जना गर्नुहोस्।</translation>
 <translation id="1126809382673880764">तपाईंलाई जोखिमपूर्ण वेबसाइट, डाउनलोड वा एक्स्टेन्सनहरूविरुद्ध सुरक्षा प्रदान गर्दैन। उपलब्ध भएसम्म तपाईं अझै पनि Gmail र खोज जस्ता Google का अन्य सेवाहरूमा सुरक्षित ब्राउजिङको सुरक्षा प्राप्त गर्नु हुने छ।</translation>
 <translation id="1135212215217513471">Chrome को iOS संस्करण डाउनलोड गर्नुहोस्</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">सिंकले काम गर्न छोड्यो।</translation>
 <translation id="1377321085342047638">कार्ड नम्बर</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
+<translation id="138618066238211776"><ph name="USER_NAME" /> का नामबाट जारी राख्नुहोस्</translation>
 <translation id="1400642268715879018">पछिल्लो ४ हप्ता</translation>
 <translation id="1404330357948037222">तपाईं साइन आउट हुनुभएको छ</translation>
 <translation id="1407135791313364759">सबै खोल्नुहोस्</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">सम्पादन गरिरहनुहोस्</translation>
 <translation id="2434405374328098816">तपाईंले <ph name="WEBSITE" /> का हकमा "<ph name="USERNAME" />" को पासवर्ड सेभ गरिसक्नुभएको छ</translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
+<translation id="2461070143328828326">पासवर्डसम्बन्धी सेटिङ</translation>
 <translation id="2469960372084740698">Safe Browsing अफ गर्ने हो?</translation>
 <translation id="2473876017985765807">तपाईंले <ph name="WEBSITE" /> को पासवर्ड सेभ गरिसक्नुभएको छ</translation>
 <translation id="2476359652512522418">चयन गरिएको छैन</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">'नपढिएको' सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="371230970611282515">खतरनाक घटनाहरू घट्नुअघि नै तिनको पूर्वानुमान गर्छ र तपाईंलाई सोबारे चेतावनी दिन्छ।</translation>
 <translation id="37207012422556617">ट्रेन्डिङमा रहेका खोज</translation>
+<translation id="3726360487031500941">तपाईंको खाता <ph name="USER_NAME" /> मा फेरि साइन इन गर्नुहोस्</translation>
 <translation id="3740397331642243698">प्रविष्टि गरिएका URL हरू Google Chrome को इन्कोग्निटो मोडमा खोलिन्छ।</translation>
 <translation id="3762232513783804601">तपाईंको iPad का लागि बनाइएको</translation>
 <translation id="3771033907050503522">इन्कग्निटो ट्याबहरू</translation>
@@ -752,6 +756,7 @@
 <translation id="6988572888918530647">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6989674195860388998">सेटिङमा गई डिफल्ट ब्राउजर बदल्नुहोस्…</translation>
 <translation id="6998989275928107238">लाई</translation>
+<translation id="699954956411469731">मोबाइलमा प्राप्त सूचनाहरू</translation>
 <translation id="7004032350256606903">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले गोप्य रूपमा ब्राउज गर्नु पर्ने हुन्छ।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">हालका ट्याबहरू</translation>

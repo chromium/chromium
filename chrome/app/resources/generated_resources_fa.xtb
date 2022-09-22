@@ -1178,7 +1178,7 @@
 <translation id="2082187087049518845">گروه‌بندی برگه</translation>
 <translation id="2082510809738716738">انتخاب رنگ زمینه</translation>
 <translation id="208586643495776849">لطفاً دوباره امتحان کنید</translation>
-<translation id="208634871997892083">‏VPN همیشه فعال</translation>
+<translation id="208634871997892083">‏VPN همیشه روشن</translation>
 <translation id="2087822576218954668">چاپ: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">ثبت‌نام فقط پس‌از نصب <ph name="DEVICE_OS" /> پشتیبانی می‌شود.</translation>
 <translation id="2089090684895656482">کمتر</translation>
@@ -2308,6 +2308,7 @@
 <translation id="3090819949319990166">‏فایل خارجی crx در <ph name="TEMP_CRX_FILE" /> کپی نمی‌شود.</translation>
 <translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» مرتبط شد</translation>
 <translation id="3093714882666365141">به سایت‌ها اجازه داده نشود کنترل‌كننده‌های پرداخت را نصب کنند</translation>
+<translation id="3093958632721393232">فقط زمانی که شارژ باتری کم است روشن شود</translation>
 <translation id="3094141017404513551">با این کار مرورتان از <ph name="EXISTING_USER" /> جدا خواهد شد</translation>
 <translation id="3095871294753148861">نشانک‌ها، گذرواژه‌ها، و دیگر داده‌های محصول مرور با حساب اصلی همگام‌سازی می‌شوند.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{۱ افزونه بالقوه مضر خاموش است. همچنین می‌توانید آن را حذف کنید.}one{{NUM_EXTENSIONS} افزونه بالقوه مضر خاموش است. همچنین می‌توانید آن‌ها را حذف کنید.}other{{NUM_EXTENSIONS} افزونه بالقوه مضر خاموش است. همچنین می‌توانید آن‌ها را حذف کنید.}}</translation>
@@ -5030,6 +5031,7 @@
 <translation id="5747552184818312860">تاریخ انقضا</translation>
 <translation id="5747785204778348146">برنامه‌نویس - ناپایدار</translation>
 <translation id="5747809636523347288">جای‌گذاری و رفتن به <ph name="URL" /></translation>
+<translation id="5748137879145720682">وقتی رایانه به برق متصل نیست روشن شود</translation>
 <translation id="5751345516399502412">بررسی آمادگی برای اشتراک‌گذاری اینترنت</translation>
 <translation id="5755022574660047665">‏خاطرات ذخیره‌شده در Google Photos</translation>
 <translation id="5756163054456765343">مرکز را&amp;هنمایی</translation>
@@ -7665,6 +7667,7 @@
 <translation id="8248381369318572865">دسترسی به میکروفون شما و تجزیه‌وتحلیل گفتار شما</translation>
 <translation id="8248887045858762645">‏نکات Chrome</translation>
 <translation id="8249048954461686687">‏پوشه OEM</translation>
+<translation id="8249239468199142122">بهینه‌سازی باتری</translation>
 <translation id="8249615410597138718">ارسال به دستگاه‌هایتان</translation>
 <translation id="8250210000648910632">فضای ذخیره‌سازی پر شده است</translation>
 <translation id="8251441930213048644">بازآوری در همین لحظه</translation>

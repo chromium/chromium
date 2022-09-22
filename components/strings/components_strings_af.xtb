@@ -261,6 +261,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="156703335097561114">Netwerkinligting soos adresse, koppelvlakopstelling en verbindinggehalte</translation>
 <translation id="1567040042588613346">Hierdie beleid werk soos bedoel, maar dieselfde waarde is elders gestel en word deur hierdie beleid vervang.</translation>
 <translation id="1569487616857761740">Voer vervaldatum in</translation>
+<translation id="1569694109004336106">Google Chrome probeer tans om Windows Hello aan te skakel om wagwoorde in te vul.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Kon nie hierdie webbladsy vertoon nie.</translation>
 <translation id="1586541204584340881">Watter uitbreidings jy geïnstalleer het</translation>
@@ -399,6 +400,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1958218078413065209">Jou hoogste telling is <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Help om sekuriteit op die web vir almal beter te maak deur <ph name="BEGIN_WHITEPAPER_LINK" />URL'e van sommige bladsye wat jy besoek, beperkte stelselinligting en sommige bladsyinhoud<ph name="END_WHITEPAPER_LINK" /> na Google toe te stuur. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Privaatheidsbeleid<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" />-boekmerke</translation>
+<translation id="1971033026002113380">Beskerm wagwoorde met Raak-ID</translation>
 <translation id="1973335181906896915">Reeksfout</translation>
 <translation id="1974060860693918893">Gevorderd</translation>
 <translation id="1975457531113383421">Invoerlaai</translation>
@@ -726,6 +728,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2881276955470682203">Stoor kaart?</translation>
 <translation id="2882949212241984732">Dubbeluitvoublad</translation>
 <translation id="2893773853358652045">Vierde rol</translation>
+<translation id="289834758818479772">As jy hierdie toestel met ander mense deel, kan jy Raak-ID aanskakel om te verifieer dis jy wanneer ook al jy ’n gestoorde wagwoord gebruik</translation>
 <translation id="2900528713135656174">Skep geleentheid</translation>
 <translation id="2903493209154104877">Adresse</translation>
 <translation id="290376772003165898">Bladsy is nie in <ph name="LANGUAGE" /> nie?</translation>
@@ -802,6 +805,8 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3108943290502734357">Middelste laai</translation>
 <translation id="3109728660330352905">Jy het nie magtiging om hierdie bladsy te bekyk nie.</translation>
 <translation id="3113284927548439113">Derde skof</translation>
+<translation id="3114040155724590991">Dateer tans Android-stelsel op
+    Dit kan langer as gewoonlik neem om jou program te begin.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Laai vertroulike lêer af?}other{Laai vertroulike lêers af?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> terugstuur.</translation>
 <translation id="3116158981186517402">Lamineer</translation>
@@ -1256,6 +1261,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4306812610847412719">knipbord</translation>
 <translation id="4308567447483056043">Hierdie beleid word geïgnoreer omdat die gebruiker nie geaffilieer is nie. Vir hierdie beleid om toegepas te word, moet die Chrome-blaaier en -profiel deur die Adminkonsole bestuur word deur dieselfde organisasie.</translation>
 <translation id="4310070645992025887">Deursoek jou Reise</translation>
+<translation id="4310496734563057511">As jy hierdie toestel met ander mense deel, kan jy Windows Hello aanskakel om te verifieer dis jy wanneer ook al jy ’n gestoorde wagwoord gebruik</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokkeer (verstek)</translation>
 <translation id="4314815835985389558">Bestuur sinkronisering</translation>
@@ -1470,6 +1476,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4880827082731008257">Soekgeskiedenis</translation>
 <translation id="4881695831933465202">Maak oop</translation>
 <translation id="4885256590493466218">Betaal met <ph name="CARD_DETAIL" /> by betaalpunt</translation>
+<translation id="4887406273302438710">Beskerm wagwoorde met Windows Hello</translation>
 <translation id="4888600795924685526">Studie van vreemde tale</translation>
 <translation id="4889420713887366944">Maak Incognitovenster Oop-knoppie; druk Enter om 'n nuwe incognitovenster oop te maak om privaat te blaai</translation>
 <translation id="4892518386797173871">Agter</translation>
@@ -1689,6 +1696,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5426179911063097041"><ph name="SITE" /> wil vir jou kennisgewings stuur</translation>
 <translation id="5428105026674456456">Spaans</translation>
 <translation id="5430298929874300616">Verwyder boekmerk</translation>
+<translation id="5434423669266814150">skakel Raak-ID aan om wagwoorde in te vul</translation>
 <translation id="5443468954631487277">Omgekeerde volgorde, voorkant na bo</translation>
 <translation id="5447765697759493033">Hierdie werf sal nie vertaal word nie</translation>
 <translation id="5452270690849572955">Hierdie <ph name="HOST_NAME" />-bladsy kan nie gevind word nie</translation>
@@ -2466,6 +2474,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7564049878696755256">Jy kan toegang tot jou <ph name="ORG_NAME" />-rekening verloor of identiteitdiefstal ervaar. Chrome beveel aan dat jy jou wagwoord nou verander.</translation>
 <translation id="7564680668369175887">Stasiewaens</translation>
 <translation id="7567204685887185387">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat is dalk valslik uitgereik. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
+<translation id="7568616151991626879">Google Chrome probeer tans om jou wagwoord op <ph name="APP_NAME" /> in te vul.</translation>
 <translation id="7569490014721427265">Gholf</translation>
 <translation id="7569761772822664555">Knoppie om soekenjin te bestuur; druk Enter om jou versteksoekenjin en werfsoektog te bestuur</translation>
 <translation id="7569952961197462199">Verwyder kredietkaart uit Chrome?</translation>
@@ -2496,6 +2505,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7637586430889951925">{COUNT,plural, =0{Geen}=1{1 wagwoord vir jou rekening (vir <ph name="DOMAIN_LIST" />)}other{# wagwoorde vir jou rekening (vir <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Reekspoorte</translation>
 <translation id="7639968568612851608">Donkergrys</translation>
+<translation id="7646681339175747202">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Google Wagwoordbestuurder beveel aan dat jy jou wagwoord nou verander.</translation>
 <translation id="7647206758853451655">Drukgehalte</translation>
 <translation id="7648992873808071793">Berg lêers in hierdie toestel</translation>
 <translation id="7653957176542370971">Betalinghanteerdersigblad is toe</translation>

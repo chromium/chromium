@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">Фальцовка "спираль"</translation>
 <translation id="138218114945450791">Голубой</translation>
 <translation id="1382194467192730611">Это устройство USB входит в список разрешенных</translation>
+<translation id="1382378825779654399">Если на одном из сайтов появится скидка, вы получите оповещение по электронной почте. Эта страница будет сохранена в папку "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="1382912999714108023">Если вы видите устаревшие данные, обратитесь в свой банк.</translation>
 <translation id="1384725838384960382">Экран проверки учетных данных для защищенных платежей</translation>
 <translation id="1386623374109090026">Заметки</translation>
@@ -260,6 +261,7 @@
 <translation id="156703335097561114">Сетевые данные, такие как адреса, настройки интерфейса и качество подключения.</translation>
 <translation id="1567040042588613346">Правило работает корректно, но заменяет одинаковое значение, заданное где-то ещё.</translation>
 <translation id="1569487616857761740">Укажите дату окончания срока действия</translation>
+<translation id="1569694109004336106">Google Chrome пытается включить Windows Hello, чтобы указывать пароли.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">При загрузке этой страницы возникли неполадки.</translation>
 <translation id="1586541204584340881">Установленные расширения.</translation>
@@ -398,6 +400,7 @@
 <translation id="1958218078413065209">Ваш лучший результат: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Помогите сделать Интернет безопаснее для всех, разрешив Chrome отправлять в Google <ph name="BEGIN_WHITEPAPER_LINK" />URL и содержимое некоторых посещенных страниц, а также ограниченную информацию о системе<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Политика конфиденциальности<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Закладки <ph name="DOMAIN" /></translation>
+<translation id="1971033026002113380">Защитите пароли с помощью Touch ID</translation>
 <translation id="1973335181906896915">Не удалось выполнить сериализацию</translation>
 <translation id="1974060860693918893">Дополнительные</translation>
 <translation id="1975457531113383421">Входной лоток</translation>
@@ -725,6 +728,7 @@
 <translation id="2881276955470682203">Сохранить карту?</translation>
 <translation id="2882949212241984732">Фальцовка калиткой в три сгиба</translation>
 <translation id="2893773853358652045">Четвертый рулон</translation>
+<translation id="289834758818479772">Если устройством пользуется кто-то ещё, включите Touch ID, чтобы только вы могли получать доступ к своим сохраненным паролям.</translation>
 <translation id="2900528713135656174">Создать мероприятие</translation>
 <translation id="2903493209154104877">Адреса</translation>
 <translation id="290376772003165898">Язык страницы не <ph name="LANGUAGE" />?</translation>
@@ -801,6 +805,8 @@
 <translation id="3108943290502734357">Средний лоток</translation>
 <translation id="3109728660330352905">У вас нет прав для просмотра этой страницы.</translation>
 <translation id="3113284927548439113">До третьей смены</translation>
+<translation id="3114040155724590991">Выполняется обновление системы Android
+    Приложение может запускаться дольше обычного.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Скачать конфиденциальный файл?}one{Скачать конфиденциальные файлы?}few{Скачать конфиденциальные файлы?}many{Скачать конфиденциальные файлы?}other{Скачать конфиденциальные файлы?}}</translation>
 <translation id="3115874930288085374">По правилам домена <ph name="ENROLLMENT_DOMAIN" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Ламинация</translation>
@@ -1254,6 +1260,7 @@
 <translation id="4306812610847412719">Буфер обмена</translation>
 <translation id="4308567447483056043">Это правило игнорируется, так как пользователь не связан с организацией. Чтобы оно применялось, одна организация должна управлять браузером и профилем Chrome через консоль администратора.</translation>
 <translation id="4310070645992025887">Поиск по теме</translation>
+<translation id="4310496734563057511">Если устройством пользуется кто-то ещё, включите Windows Hello, чтобы только вы могли получать доступ к своим сохраненным паролям.</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блокировать (по умолчанию)</translation>
 <translation id="4314815835985389558">Настройки синхронизации</translation>
@@ -1468,6 +1475,7 @@
 <translation id="4880827082731008257">Искать в истории</translation>
 <translation id="4881695831933465202">Открыть</translation>
 <translation id="4885256590493466218">Оплатите с помощью <ph name="CARD_DETAIL" /></translation>
+<translation id="4887406273302438710">Защитите пароли с помощью Windows Hello</translation>
 <translation id="4888600795924685526">Изучение иностранных языков</translation>
 <translation id="4889420713887366944">Кнопка "Открыть окно в режиме инкогнито". Нажмите Ввод, чтобы открыть такое окно.</translation>
 <translation id="4892518386797173871">Задняя сторона</translation>
@@ -1519,6 +1527,7 @@
 <translation id="5018422839182700155">Не удалось открыть страницу</translation>
 <translation id="5019198164206649151">Данные в хранилище повреждены</translation>
 <translation id="5020776957610079374">Этническая музыка</translation>
+<translation id="5021557570875267742">Следите за ценами с помощью Chrome</translation>
 <translation id="5023310440958281426">Проверьте правила, установленные администратором</translation>
 <translation id="5029568752722684782">Удалить данные</translation>
 <translation id="5030338702439866405">Кем выдан</translation>
@@ -1686,6 +1695,7 @@
 <translation id="5426179911063097041">С сайта <ph name="SITE" /> поступил запрос на отправку уведомлений.</translation>
 <translation id="5428105026674456456">Испанский</translation>
 <translation id="5430298929874300616">Удалить закладку</translation>
+<translation id="5434423669266814150">включить Touch ID, чтобы указывать пароли</translation>
 <translation id="5443468954631487277">В обратном порядке лицевой стороной вверх</translation>
 <translation id="5447765697759493033">Этот сайт не будет переводиться автоматически</translation>
 <translation id="5452270690849572955">Страница <ph name="HOST_NAME" /> не найдена</translation>
@@ -2239,6 +2249,7 @@
 <translation id="6993898126790112050">6x9 (конверт)</translation>
 <translation id="6996312675313362352">Всегда переводить <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Индустрия развлечений</translation>
+<translation id="7003335073762455340">Вы следите за ценой на этот товар. Страница с ним сохранена в папке "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="7004583254764674281">Использовать Windows Hello для быстрого подтверждения карт</translation>
 <translation id="7006930604109697472">Все равно отправить</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2462,6 +2473,7 @@
 <translation id="7564049878696755256">Кто-то посторонний мог получить доступ к вашим личным данным или аккаунту в домене <ph name="ORG_NAME" />. Рекомендуем немедленно сменить пароль.</translation>
 <translation id="7564680668369175887">Автомобили типа "универсал"</translation>
 <translation id="7567204685887185387">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности мог быть выдан обманным путем. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
+<translation id="7568616151991626879">Google Chrome пытается указать пароль на сайте <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Гольф</translation>
 <translation id="7569761772822664555">Кнопка "Управление поисковыми системами". Нажмите Ввод, чтобы настроить поисковую систему по умолчанию и поиск по сайту.</translation>
 <translation id="7569952961197462199">Удалить кредитную карту из Chrome?</translation>
@@ -2492,6 +2504,7 @@
 <translation id="7637586430889951925">{COUNT,plural, =0{Нет}=1{1 пароль в вашем аккаунте (домены: <ph name="DOMAIN_LIST" />)}one{# пароль в вашем аккаунте (домены: <ph name="DOMAIN_LIST" />)}few{# пароля в вашем аккаунте (домены: <ph name="DOMAIN_LIST" />)}many{# паролей в вашем аккаунте (домены: <ph name="DOMAIN_LIST" />)}other{# пароля в вашем аккаунте (домены: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Последовательные порты</translation>
 <translation id="7639968568612851608">Темно-серый</translation>
+<translation id="7646681339175747202">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Измените его прямо сейчас в Google Менеджере паролей.</translation>
 <translation id="7647206758853451655">Качество печати</translation>
 <translation id="7648992873808071793">сохранение файлов на этом устройстве</translation>
 <translation id="7653957176542370971">Лист с обработчиком платежа закрыт</translation>
@@ -3033,6 +3046,7 @@
 <translation id="9174623988242579721">Изготовленные на заказ и тюнингованные автомобили</translation>
 <translation id="9174917557437862841">Кнопка переключения между вкладками. Чтобы переключиться на эту вкладку, нажмите клавишу "Ввод".</translation>
 <translation id="9179703756951298733">Обновить данные о способах оплаты и банковских картах в настройках Chrome</translation>
+<translation id="9179907736442194268">Если на одном из сайтов появится скидка, вы получите оповещение по электронной почте.</translation>
 <translation id="9183302530794969518">Google Документы</translation>
 <translation id="9183425211371246419">На сайте <ph name="HOST_NAME" /> используется неподдерживаемый протокол.</translation>
 <translation id="9187461866967718678">Экстремальные виды спорта</translation>

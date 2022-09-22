@@ -691,6 +691,7 @@
 <translation id="1640283014264083726">RSA шифрлауына ие PKCS #1 MD4</translation>
 <translation id="1641113438599504367">Қауіпсіз шолу</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> желісіне қатысты басқа әрекеттер</translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Дұрыс форматталмағандықтан, тағы 1 құпия сөз импортталмады.}other{Дұрыс форматталмағандықтан, тағы {NUM_PASSWORDS} құпия сөз импортталмады.}}</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> және тағы <ph name="NUMBER_OF_DEVICES" /> Bluetooth құрылғысына қосылды.</translation>
 <translation id="1642494467033190216">Басқа түзету мүмкіндтерін қосудан бұрын түпкі қорғанысты алып тастау және қайта іске қосу қажет.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA, SHA-1 алгоритмімен қол қою</translation>
@@ -1829,6 +1830,7 @@
 <translation id="2673135533890720193">Шолу журналыңызды оқу</translation>
 <translation id="2674764818721168631">Өшірулі</translation>
 <translation id="2678063897982469759">Қайта қосу</translation>
+<translation id="2678100101831051676">Трансляциялау мүмкін емес.</translation>
 <translation id="268053382412112343">Жу&amp;рнал</translation>
 <translation id="2681124317993121768">Қонақ профильдеріне қолдау көрсетілмейді.</translation>
 <translation id="2682498795777673382">Ата-анаңыз өзгерту енгізді</translation>
@@ -2169,6 +2171,7 @@
 <translation id="2977480621796371840">Топтан өшіру</translation>
 <translation id="2979639724566107830">Жаңа терезеде ашу</translation>
 <translation id="2981113813906970160">Үлкен тінтуір курсорын көрсету</translation>
+<translation id="2981293774053328982">Осы файлда жеке немесе әлеуметтік желілердегі аккаунтыңызға қауіп төндіретін зиянды бағдарлама бар.</translation>
 <translation id="2983373101216420412">Қап батареясының деңгейі: <ph name="PERCENTAGE" />%</translation>
 <translation id="2985348301114641460">Әкімшіңізге "<ph name="EXTENSION_NAME" />" орнату туралы сұрау жіберу керек пе?</translation>
 <translation id="2987620471460279764">Басқа құрылғылардан келген мәтін</translation>
@@ -3753,6 +3756,7 @@
 <translation id="4514610446763173167">Бейнені ойнату/кідірту</translation>
 <translation id="451515744433878153">Өшіру</translation>
 <translation id="4515872537870654449">Dell қолдау қызметіне хабарласыңыз. Желдеткіш жұмыс істемесе, қондыру станциясы өшіп қалады.</translation>
+<translation id="4518840066030486079">Shift пернесі режимінің стилі</translation>
 <translation id="4519331665958994620">Сайттар камераңызды пайдалануға рұқсат сұрай алады.</translation>
 <translation id="4519935350946509010">Байланыс қатесі шықты.</translation>
 <translation id="4520385623207007473">Пайдаланылатын cookie файлдары</translation>
@@ -3848,6 +3852,7 @@
 <translation id="4598345735110653698">Кіру кілттерін басқару</translation>
 <translation id="4598556348158889687">Жадты басқару</translation>
 <translation id="4598776695426288251">Wi-Fi желісі бірнеше құрылғыдан қолжетімді</translation>
+<translation id="4600071396330666617">Ұсыныстар саны</translation>
 <translation id="4601426376352205922">Оқылмаған деп белгілеу</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> хостына әрқашан камераңыз бен микрофоныңызға кіру рұқсатын беру</translation>
 <translation id="4606551464649945562">Сайттарға айналаңыздың 3D картасын жасауға немесе камераңыздың орнын бақылауға рұқсат бермеу</translation>
@@ -3865,6 +3870,7 @@
 <translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />" кеңейтімін пайдалану үшін бетті қайта жүктеңіз</translation>
 <translation id="4617270414136722281">Кеңейтім опциялары</translation>
 <translation id="4617880081511131945">Байланыс орнату мүмкін емес</translation>
+<translation id="4618195822946934889">URL мекенжайында тек ASCII таңбалары болуы қажет.</translation>
 <translation id="4619564267100705184">Жеке басыңызды растаңыз</translation>
 <translation id="4619615317237390068">Басқа құрылғылардағы қойындылар</translation>
 <translation id="4620809267248568679">Бұл параметр кеңейтім арқылы іске қосылады.</translation>
@@ -4293,6 +4299,7 @@
 <translation id="5043913660911154449">Немесе принтер үшін PPD файлын көрсетіңіз <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Құпия сөз дұрыс емес</translation>
 <translation id="504561833207953641">Бұрыннан бар браузер сеансында ашылуда.</translation>
+<translation id="5049614114599109018">Енгізу тарихын пайдалану</translation>
 <translation id="5051836348807686060">Таңдалған тілдер үшін емлені тексеру функциясы қолданылмайды.</translation>
 <translation id="5052499409147950210">Сайтты өзгерту</translation>
 <translation id="505347685865235222">Атауы жоқ топ: <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5063,6 +5070,7 @@
 <translation id="5800351251499368110">Бүйірлік панельде іздеу бетін жабыңыз. Бүйірлік панельде іздеу беті ашық.</translation>
 <translation id="5801568494490449797">Параметрлер</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
+<translation id="5805268472388605531">Екпін белгілері мен арнайы таңбаларды көру үшін пернетақта пернелерін басып тұрыңыз.</translation>
 <translation id="5805697420284793859">Терезе менеджері</translation>
 <translation id="5806447147478173900">Көрсетілген сайттар пайдаланатын жалпы жад көлемі: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Әдепкі)</translation>
@@ -5703,6 +5711,7 @@
 <translation id="642469772702851743">Бұл құрылғыны (сериялық нөмірі: <ph name="SERIAL_NUMBER" />) иесі құлыптады.</translation>
 <translation id="6425556984042222041">Мәтінді дыбыстау жылдамдығы</translation>
 <translation id="642729974267661262">Дыбысты ойнатуға рұқсаты жоқтар</translation>
+<translation id="6427608534767366138">"<ph name="NETWORK_ID" />" үшін прокси-сервер қажет.</translation>
 <translation id="6429384232893414837">Жаңарту кезінде қате шықты</translation>
 <translation id="6430814529589430811">Base64 кодталған ASCII, бір сертификат</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> өнімі осы компьютердің барлық пайдаланушылары үшін автоматты жаңартуларды орнатады.</translation>
@@ -7837,6 +7846,7 @@
 <translation id="844063558976952706">Әрдайым осы сайтта</translation>
 <translation id="8441313165929432954">Тетерингті қосу/өшіру</translation>
 <translation id="8443795068008423036">Құрылғыңыз жаңартылғанына көз жеткізіп, әрекетті қайталаңыз.</translation>
+<translation id="8443986842926457191">URL мекенжайының ұзындығы 2048 таңба шегінен асып кеткен.</translation>
 <translation id="8446884382197647889">Толығырақ</translation>
 <translation id="8447409163267621480">Ctrl не Alt пернесінен басталуы керек</translation>
 <translation id="844850004779619592">Ешқандай пәрмен табылмады.</translation>
@@ -7902,6 +7912,7 @@
 <translation id="851263357009351303"><ph name="HOST" /> хостына кескіндерді әрқашан көрсету мүмкіндігін беру</translation>
 <translation id="8513108775083588393">Автоматты бұру</translation>
 <translation id="8514746246728959655">Басқа қауіпсіздік кілтін пайдаланып көріңіз</translation>
+<translation id="8519895319663397036">Құпия сөздерді импорттау мүмкін емес. Файлдың көлемі 150 КБ-тан аз болуы керек.</translation>
 <translation id="8523493869875972733">Өзгерістерді сақтау</translation>
 <translation id="8523849605371521713">Саясат арқылы қосылған</translation>
 <translation id="8524783101666974011">Карталарды Google аккаунтына сақтау</translation>

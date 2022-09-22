@@ -31,6 +31,7 @@
 <translation id="1587223624401073077">Google Chrome ካሜራዎን እየተጠቀመ ነው።</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> አደገኛ ነው፣ ስለዚህ Chrome አግዶታል።</translation>
 <translation id="1597911401261118146">የእርስዎ የይለፍ ቃላት ከውሂብ ጥሰቶች እና ሌሎች የደህንነት ችግሮች ነጻ መሆናቸውን ለማረጋገጥ <ph name="BEGIN_LINK" />በመለያ ወደ Chrome ይግቡ<ph name="END_LINK" />።</translation>
+<translation id="1599904803480101533">Chrome ይህ መዝገብ ፋይል ተንኮል አዘል ዌርን ሊደብቅ ስለሚችል አግዶታል</translation>
 <translation id="1619887657840448962">Chromeን ይበልጥ ደህንነቱ የተጠበቀ እንዲሆን ለማድረግ፣ በ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ውስጥ ያልተዘረዘረውን የሚከተለውን ቅጥያ አሰናክለነዋል እና እርስዎ ሳያውቁት የታከለ ሊሆን ይችላል።</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />የእርስዎን ውሂብ እንዴት ማቀናበር እንደሚችሉ፦<ph name="END_BOLD" /> የእርስዎን ግላዊነት ለመጠበቅ ከ4 ሳምንታት በላይ የቆዩ ዝንባሌዎችዎን በራስ-ሰር እንሰርዛለን። ማሰስዎን በሚቀጥሉበት ጊዜ ዝንባሌ እንደገና በዝርዝሩ ላይ ሊታይ ይችላል። ወይም Chrome ከግምት ውስጥ እንዲያስገባቸው የማይፈልጓቸውን ዝንባሌዎች ማስወገድ ይችላሉ።</translation>
 <translation id="1628000112320670027">Chrome ላይ እገዛ ያግኙ</translation>
@@ -229,6 +230,7 @@
 <translation id="5386244825306882791">እንዲሁም Chromeን ሲጀምሩት ወይም ከኦምኒቦክሱ ሆነው ሲፈልጉ የሚታየውን ገጽ ይቆጣጠራል።</translation>
 <translation id="5394833366792865639">አንድ የChrome ትር ያጋሩ</translation>
 <translation id="5412485296464121825">ጣቢያዎች በChrome አማካኝነት ስለዝንባሌዎችዎ መረጃን ማከማቸት ይችላሉ። ለምሳሌ፣ ለማራቶን ጫማ ለመግዛት ጣቢያን ከጎበኙ ጣቢያው ዝንባሌዎን እንደ ማራቶን መሮጥ ሊገልጽ ይችላል። በኋላ ላይ ለሩጫ ለመመዝገብ ሌላ ጣቢያ ከጎበኙ ይህ ጣቢያ በዝንባሌዎችዎ ላይ ተመስርቶ የመሮጫ ጫማ ማስታወቂያ ሊያሳየዎት ይችላል።</translation>
+<translation id="5416870378730196769">Chrome የማህደረ ትውስታ ቆጣቢን አብርቷል</translation>
 <translation id="5430073640787465221">የምርጫዎችዎ ፋይል ተበላሽቷል ወይም ልክ አይደለም ነው።
 
 Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translation>
@@ -327,6 +329,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="7649070708921625228">እገዛ</translation>
 <translation id="7651907282515937834">Chrome Enterprise ዓርማ</translation>
 <translation id="7655455401911432608">የአሰሳ ታሪክዎ፣ በዚህ መሣሪያ ላይ Chromeን ተጠቅመው የጎበኟቸው የጣቢያዎች መዝገብ።</translation>
+<translation id="7726773885101561560">የእርስዎን አሰሳ የበለጠ ፈጣን ለማድረግ Chrome እየተጠቀሟቸው ካልሆኑ ትሮች ማህደረ ትውስታን መልሶ ይወስዳል።</translation>
 <translation id="7747138024166251722">ጫኝው ጊዜያዊ ማውጫ መፍጠር አልቻለም። እባክዎ ነፃ የዲስክ ቦታ እና ሶፍትዌር የመጫን ፍቃድ እንዳለ ይፈትሹ።</translation>
 <translation id="7761834446675418963">Chromeን ለመክፈት እና ማሰስ ለመጀመር ስምዎን ጠቅ ያድርጉት።</translation>
 <translation id="7777080907402804672">አንድ ምስል ጠቃሚ መግለጫ ከሌለው Chrome ለእርስዎ አንድ ለማቅረብ ይሞክራል። ዝርዝር መግለጫዎችን ለመፍጠር፣ ምስሎች ወደ Google ይላካሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ ሊያጠፉት ይችላሉ።</translation>
@@ -399,6 +402,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8986207147630327271">የስራ መገለጫን ወደዚህ አሳሽ እያከሉ እና ለአስተዳዳሪዎ በስራ መገለጫው ላይ ብቻ ቁጥጥር እየሰጡ ነው።</translation>
 <translation id="8989968390305463310">የአሰሳ ታሪክዎ ከታች እንደተገመተው እርስዎ በሚያዩዋቸው ማስታወቂያዎች እና ዝንባሌዎች ላይ ተጽዕኖ ያሳድራል። የእርስዎን ግላዊነት ለመጠበቅ Chrome በየወሩ ዝንባሌዎችዎን በራስ-ሰር ይሰርዛል። እርስዎ ካላስወገዷቸው በስተቀር ዝንባሌዎችን ማደስ ይችላሉ።</translation>
 <translation id="8999208279178790196">{0,plural, =0{የChrome ዝማኔ አለ}=1{የChrome ዝማኔ አለ}one{አንድ የChrome ዝማኔ ለ# ቀኖች ነበር}other{አንድ የChrome ዝማኔ ለ# ቀኖች ነበር}}</translation>
+<translation id="9003498785844995646">ሲበራ፣ Chrome የዳራ እንቅስቃሴን እና እንደ ለስላሳ ሽብለላ እና የቪድዮ የክፈፍ ፍጥነቶች ያሉ ምስላዊ ተጽዕኖዎችን በመገደብ የባትሪ ኃይልን ይቆጥባል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /> ወይም <ph name="BEGIN_LINK_2" />ግብረመልስ ይላኩ<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">የChromeOS Flex ስርዓት</translation>
 <translation id="9067395829937117663">Google Chrome Windows 7 ወይም ከዚያ በላይ ያስፈልገዋል።</translation>
 <translation id="911206726377975832">የአሰሳ ውሂብዎም ይሰረዝ?</translation>

@@ -2312,6 +2312,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3090819949319990166">Ekki er hægt að afrita ytri crx-skrá í <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />“ parað</translation>
 <translation id="3093714882666365141">Ekki leyfa vefsvæðum að setja upp greiðslumiðlara</translation>
+<translation id="3093958632721393232">Aðeins kveikja þegar rafhleðsla er lítil</translation>
 <translation id="3094141017404513551">Þetta aðskilur vefskoðun þína og <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Bókamerki, aðgangsorð og önnur vefskoðunargögn eru samstillt við aðalreikninginn.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Slökkt er á einni hugsanlega hættulegri viðbót. Þú getur einnig fjarlægt hana.}one{Slökkt er á {NUM_EXTENSIONS} hugsanlega hættulegri viðbót. Þú getur einnig fjarlægt þessar viðbætur.}other{Slökkt er á {NUM_EXTENSIONS} hugsanlega hættulegum viðbótum. Þú getur einnig fjarlægt þessar viðbætur.}}</translation>
@@ -5034,6 +5035,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5747552184818312860">Rennur út</translation>
 <translation id="5747785204778348146">Forritari – óstöðugt</translation>
 <translation id="5747809636523347288">Lí&amp;ma og fara á <ph name="URL" /></translation>
+<translation id="5748137879145720682">Kveikja þegar tölvan er ekki í tengd við rafmagn</translation>
 <translation id="5751345516399502412">Athuga stöðu tjóðrunar</translation>
 <translation id="5755022574660047665">minningar úr Google myndum</translation>
 <translation id="5756163054456765343">Hjálparmiðstöð</translation>
@@ -6746,6 +6748,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7404065585741198296">Síminn þinn með USB-snúru</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Öryggisathugun var gerð fyrir 1 klukkustund}one{Öryggisathugun var gerð fyrir {NUM_HOURS} klukkustund}other{Öryggisathugun var gerð fyrir {NUM_HOURS} klukkustundum}}</translation>
 <translation id="740624631517654988">Sprettigluggi útilokaður</translation>
+<translation id="7406912950279255498">Umsnúningur lita</translation>
 <translation id="7407430846095439694">Flytja inn og binda</translation>
 <translation id="7407504355934009739">Flestir notendur loka á tilkynningar frá þessu vefsvæði</translation>
 <translation id="740810853557944681">Bæta við prentþjóni</translation>
@@ -7668,6 +7671,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8248381369318572865">Fá aðgang að hljóðnema og greina tal þitt</translation>
 <translation id="8248887045858762645">Chrome ábending</translation>
 <translation id="8249048954461686687">Framleiðandamappa</translation>
+<translation id="8249239468199142122">Rafhlöðusparnaður</translation>
 <translation id="8249615410597138718">Senda í tækin þín</translation>
 <translation id="8250210000648910632">Geymslurýmið er fullt</translation>
 <translation id="8251441930213048644">Endurnýja núna</translation>
@@ -7695,6 +7699,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
     <ph name="BEGIN_PARAGRAPH3" />Eigandinn getur stjórnað þessum eiginleika með því að fara í Stillingar &gt; Ítarlegt &gt; Senda greiningar- og notkunargögn sjálfkrafa til Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Ef kveikt er á stillingu fyrir viðbótarvef- og forritavirkni hjá barninu verða þessar upplýsingar hugsanlega geymdar á Google reikningi þess. Á families.google.com geturðu fengið frekari upplýsingar um þessar stillingar og hvernig á að breyta þeim.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Ógilt biðlaravottorð</translation>
+<translation id="8270162672241199380">Uppsetningarforrit fyrir Steam</translation>
 <translation id="827097179112817503">Sýna heimahnapp</translation>
 <translation id="8271268254812352141">Fáðu skilgreiningar, þýðingar eða umreikninga mæligilda þegar þú hægrismellir eða heldur texta inni. Sérstilltu þýðingartungumál í <ph name="LINK_BEGIN" />„Tungumál vefsvæða“<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Foreldrar, það sem kemur næst er ætlað ykkur. Þið getið rétt barninu <ph name="DEVICE_TYPE" /> aftur þegar uppsetningu reikningsins er lokið.</translation>

@@ -23,6 +23,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1104948393051856124">Accepter et continuer</translation>
 <translation id="110724200315609752">Passer à une autre fenêtre ouverte</translation>
 <translation id="1112015203684611006">Échec impr.</translation>
+<translation id="1118569444314402022">Bon retour parmi nous, <ph name="USER_NAME" /> !</translation>
 <translation id="1125564390852150847">Créer un onglet</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions et les sites Web dangereux. Le cas échéant, vous bénéficierez toujours de la protection offerte par la navigation sécurisée dans d'autres services Google, tels que Gmail et la recherche.</translation>
 <translation id="1135212215217513471">Télécharger Chrome pour iOS</translation>
@@ -64,6 +65,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1377255359165588604">La synchronisation s'est arrêtée.</translation>
 <translation id="1377321085342047638">Numéro de carte</translation>
 <translation id="1383876407941801731">Rechercher</translation>
+<translation id="138618066238211776">Continuer en tant que <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 dernières semaines</translation>
 <translation id="1404330357948037222">Vous êtes déconnecté</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
@@ -177,6 +179,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2421044535038393232">Poursuivre les modifications</translation>
 <translation id="2434405374328098816">Vous avez déjà enregistré un mot de passe pour "<ph name="USERNAME" />" sur <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
+<translation id="2461070143328828326">Paramètres de mot de passe</translation>
 <translation id="2469960372084740698">Désactiver la navigation sécurisée ?</translation>
 <translation id="2473876017985765807">Vous avez déjà enregistré un mot de passe pour <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Non sélectionné</translation>
@@ -331,6 +334,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3709582977625132201">Marquer comme non lu</translation>
 <translation id="371230970611282515">Il prédit les événements dangereux et vous en informe avant qu'ils ne surviennent.</translation>
 <translation id="37207012422556617">Recherches populaires</translation>
+<translation id="3726360487031500941">Reconnectez-vous à votre compte <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Ouvre les URL saisies dans Google Chrome en mode navigation privée.</translation>
 <translation id="3762232513783804601">Conçu pour votre iPad</translation>
 <translation id="3771033907050503522">Ongl. navig. priv.</translation>

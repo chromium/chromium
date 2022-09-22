@@ -2311,6 +2311,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3090819949319990166">Tidak dapat menyalin fail crx luar ke <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" digandingkan</translation>
 <translation id="3093714882666365141">Jangan benarkan laman memasang pengendali pembayaran</translation>
+<translation id="3093958632721393232">Hidupkan hanya apabila bateri saya lemah</translation>
 <translation id="3094141017404513551">Tindakan ini akan memisahkan penyemakan imbas anda daripada <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Penanda halaman, kata laluan dan data semakan imbas lain disegerakkan dengan akaun utama.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 sambungan yang mungkin berbahaya dimatikan. Anda juga boleh mengalih keluar sambungan tersebut.}other{{NUM_EXTENSIONS} sambungan yang mungkin berbahaya dimatikan. Anda juga boleh mengalih keluar sambungan tersebut.}}</translation>
@@ -5033,6 +5034,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5747552184818312860">Tamat tempoh</translation>
 <translation id="5747785204778348146">Pembangun - tidak stabil</translation>
 <translation id="5747809636523347288">Ta&amp;mpal dan pergi ke <ph name="URL" /></translation>
+<translation id="5748137879145720682">Hidupkan apabila palam komputer saya dicabut</translation>
 <translation id="5751345516399502412">Semak Kesediaan Penambatan</translation>
 <translation id="5755022574660047665">kenangan daripada Google Photos</translation>
 <translation id="5756163054456765343">P&amp;usat bantuan</translation>
@@ -7667,6 +7669,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8248381369318572865">Akses mikrofon dan analisis pertuturan anda</translation>
 <translation id="8248887045858762645">Petua Chrome</translation>
 <translation id="8249048954461686687">Folder OEM</translation>
+<translation id="8249239468199142122">Penjimat Bateri</translation>
 <translation id="8249615410597138718">Hantar ke Peranti Anda</translation>
 <translation id="8250210000648910632">Kehabisan ruang storan</translation>
 <translation id="8251441930213048644">Muat semula sekarang</translation>

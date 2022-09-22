@@ -2172,6 +2172,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="2977480621796371840">Gruptan kaldır</translation>
 <translation id="2979639724566107830">Yeni pencerede aç</translation>
 <translation id="2981113813906970160">Büyük fare imleci göster</translation>
+<translation id="2981293774053328982">Bu dosya, kişisel veya sosyal ağ hesaplarınızın güvenliğini ihlal edebilecek kötü amaçlı yazılım içeriyor</translation>
 <translation id="2983373101216420412">Kılıfın pil seviyesi %<ph name="PERCENTAGE" />.</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" öğesini yüklemesi için yöneticinize istek gönderilsin mi?</translation>
 <translation id="2987620471460279764">Başka cihazdan paylaşılan metin</translation>
@@ -3756,6 +3757,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4514610446763173167">Oynatmak veya duraklatmak için videoyu aç/kapat</translation>
 <translation id="451515744433878153">Kaldır</translation>
 <translation id="4515872537870654449">Servis için Dell ile iletişime geçin. Fan çalışmıyorsa yuva kapanır.</translation>
+<translation id="4518840066030486079">Üst Karakter Tuşu Mod Stili</translation>
 <translation id="4519331665958994620">Siteler kameranızı kullanmak isteyebilir</translation>
 <translation id="4519935350946509010">Bağlantı hatası.</translation>
 <translation id="4520385623207007473">Kullanımdaki çerezler</translation>
@@ -3851,6 +3853,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4598345735110653698">Şifre anahtarlarını yönet</translation>
 <translation id="4598556348158889687">Depolama alanı yönetimi</translation>
 <translation id="4598776695426288251">Kablosuz bağlantı çeşitli cihazlar üzerinden kullanılabilir</translation>
+<translation id="4600071396330666617">Öneri sayısı</translation>
 <translation id="4601426376352205922">Okunmadı Olarak İşaretle</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> sitesinin kamerama ve mikrofonuma erişmesine her zaman izin ver</translation>
 <translation id="4606551464649945562">Sitelerin çevremin 3D haritasını oluşturmasına veya kamera konumunu takip etmesine izin verme</translation>
@@ -4297,6 +4300,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5043913660911154449">İsterseniz yazıcınızın PPD'sini de belirtebilirsiniz <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Hatalı parola</translation>
 <translation id="504561833207953641">Mevcut tarayıcı oturumunda açılıyor.</translation>
+<translation id="5049614114599109018">Giriş geçmişini kullan</translation>
 <translation id="5051836348807686060">Yazım denetimi, seçtiğiniz diller için desteklenmiyor</translation>
 <translation id="5052499409147950210">Siteyi düzenle</translation>
 <translation id="505347685865235222">Adsız grup - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -6722,6 +6726,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7404065585741198296">USB kablosuyla bağlı telefonunuz</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Güvenlik kontrolü 1 saat önce çalıştırıldı}other{Güvenlik kontrolü {NUM_HOURS} saat önce çalıştırıldı}}</translation>
 <translation id="740624631517654988">Pop-up engellendi</translation>
+<translation id="7406912950279255498">Rengi ters çevirme modu</translation>
 <translation id="7407430846095439694">İçe Aktar ve Bağla</translation>
 <translation id="7407504355934009739">Çoğu kullanıcı bu siteden gelen bildirimleri engelliyor</translation>
 <translation id="740810853557944681">Yazdırma sunucusu ekleyin</translation>
@@ -7671,6 +7676,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
     <ph name="BEGIN_PARAGRAPH3" />Cihaz sahibi bu özelliği Ayarlar &gt; Gelişmiş &gt; Teşhis ve kullanım verilerini Google'a otomatik olarak gönder seçeneğinden kontrol edebilir.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Çocuğunuz için ek Web ve Uygulama Etkinliği açıksa bu bilgiler çocuğunuzun Google Hesabına kaydedilebilir. Bu ayarlar hakkında daha fazla bilgiyi ve nasıl düzenleneceklerini families.google.com sayfasında bulabilirsiniz.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Geçersiz istemci sertifikası</translation>
+<translation id="8270162672241199380">Steam Yükleyici</translation>
 <translation id="827097179112817503">Ana Sayfa düğmesini göster</translation>
 <translation id="8271268254812352141">Metni sağ tıkladığınızda veya dokunup basılı tuttuğunuzda tanımını veya çevirisini görün ya da birim dönüştürmesi alın. Çeviri dillerini <ph name="LINK_BEGIN" />Web sitesi dilleri<ph name="LINK_END" /> bölümünden özelleştirin.</translation>
 <translation id="8271379370373330993">Ebeveynler, sonraki birkaç adım sizin için. Hesap kurulumundan sonra <ph name="DEVICE_TYPE" /> cihazını çocuğa geri verebilirsiniz.</translation>

@@ -53,6 +53,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2384373936468275798">Sistemul de operare Chromium nu a putut sincroniza datele, deoarece detaliile de conectare pentru contul tău nu sunt actualizate.</translation>
 <translation id="2396765026452590966">Extensia „<ph name="EXTENSION_NAME" />” a modificat ce pagină se afișează când pornești Chromium.</translation>
+<translation id="2400844369696905771">Când opțiunea este activată, Chromium revendică memoria din filele pe care nu le folosești în mod activ. Acțiunea eliberează resursele computerului pentru alte activități și menține viteza ridicată a browserului Chromium. Filele inactive se afișează goale și se reîncarcă automat când dai clic pe ele. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium are nevoie de acces la cameră și microfon pentru acest site</translation>
 <translation id="2483889755041906834">În Chromium</translation>
 <translation id="2485422356828889247">Dezinstalează</translation>
@@ -143,6 +144,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="4285930937574705105">Instalarea a eșuat din cauza unei erori necunoscute. Dacă Chromium rulează în acest moment, închideți-l și încercați din nou.</translation>
 <translation id="4304713468139749426">Manager de parole</translation>
 <translation id="4334294535648607276">Descărcarea a fost finalizată.</translation>
+<translation id="437317747729858884">Pentru a face navigarea mai rapidă, Chromium revendică memoria din filele pe care nu le folosești.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> îți solicită să citești și să accepți Termenii și condițiile următoare înainte de a folosi acest dispozitiv. Aceste condiții nu extind, nu modifică și nu limitează Condițiile sistemului de operare Chromium.</translation>
 <translation id="4407044323746248786">Ieși din Chromium oricum?</translation>
 <translation id="4415566066719264597">Permite Chromium să ruleze în fundal</translation>
@@ -311,6 +313,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7872446069773932638">Se descarcă… Timp rămas: <ph name="SECONDS" /> secunde</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Cum îți poți gestiona datele:<ph name="END_BOLD" /> pentru a-ți proteja confidențialitatea, ștergem automat categoriile de interese mai vechi de patru săptămâni. Pe măsură ce navighezi, o categorie de interese poate să reapară în listă. Sau poți elimina categoriile de interese pe care nu dorești ca Chromium să le ia în considerare.</translation>
 <translation id="7937630085815544518">Ați fost conectat(ă) la Chromium ca <ph name="USER_EMAIL_ADDRESS" />. Utilizați același cont pentru a vă conecta din nou.</translation>
+<translation id="7947085610734123927">Chromium a activat Economisirea memoriei</translation>
 <translation id="7975919845073681630">Aceasta este o instalare secundară a browserului Chromium și nu poate fi setat ca browser prestabilit.</translation>
 <translation id="7997934263947464652">Extensiile, aplicațiile și temele din surse necunoscute pot să dăuneze dispozitivului. Chromium recomandă să le instalezi numai din <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Odată ce Chromium are acces, site-urile web îți vor putea solicita accesul.</translation>
@@ -336,6 +339,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8558383651099478961">Părintele tău a dezactivat opțiunea „Permisiuni pentru site-uri, aplicații și extensii” în Chromium. Adăugarea acestei <ph name="EXTENSION_TYPE_PARAMETER" /> nu este permisă.</translation>
 <translation id="8561285221328166383">Pentru a primi actualizările Chromium viitoare, vei avea nevoie de macOS 10.13 sau o versiune ulterioară. Acest computer folosește macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium poate să îți verifice parolele atunci când te conectezi folosind Contul Google</translation>
+<translation id="8574036838419011058">Când opțiunea este activată, Chromium economisește energia bateriei limitând activitatea de fundal și efectele vizuale, cum ar fi derularea lină și ratele de cadre ale videoclipurilor. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> site-urile pot stoca informații în Chromium despre interesele tale. De exemplu, dacă accesezi un site ca să cumperi pantofi pentru un maraton, site-ul poate defini interesul tău drept maraton. Mai târziu, dacă accesezi alt site ca să te înscrii într-o cursă, acel site îți poate afișa un anunț pentru pantofi de alergare pe baza intereselor tale.</translation>
 <translation id="8619360774459241877">Se lansează Chromium...</translation>

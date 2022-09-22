@@ -261,6 +261,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="156703335097561114">Informace o síti, jako jsou adresy, konfigurace rozhraní a kvalita připojení</translation>
 <translation id="1567040042588613346">Zásada funguje podle očekávání, ale jinde je nastavena stejná hodnota, kterou tato zásada nahrazuje.</translation>
 <translation id="1569487616857761740">Zadejte datum vypršení platnosti</translation>
+<translation id="1569694109004336106">Google Chrome se pokouší zapnout Windows Hello pro vyplňování hesel.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Při zobrazování této webové stránky došlo k chybě.</translation>
 <translation id="1586541204584340881">Která rozšíření máte nainstalovaná</translation>
@@ -399,6 +400,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1958218078413065209">Vaše nejvyšší skóre je <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Pomozte se zlepšováním bezpečnosti na webu tím, že do Googlu budete odesílat <ph name="BEGIN_WHITEPAPER_LINK" />adresy URL některých navštívených stránek, omezené informace o systému a část obsahu stránek<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Zásady ochrany soukromí<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Záložky domény <ph name="DOMAIN" /></translation>
+<translation id="1971033026002113380">Ochrana hesel pomocí TouchID</translation>
 <translation id="1973335181906896915">Chyba serializace</translation>
 <translation id="1974060860693918893">Rozšířená nastavení</translation>
 <translation id="1975457531113383421">Vstupní zásobník</translation>
@@ -726,6 +728,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2881276955470682203">Uložit kartu?</translation>
 <translation id="2882949212241984732">Dvojité otevírací přeložení</translation>
 <translation id="2893773853358652045">Čtvrtá role</translation>
+<translation id="289834758818479772">Pokud zařízení sdílíte s dalšími lidmi, můžete zapnout Touch ID, aby se při každém použití uloženého hesla ověřovalo, zda akci provádíte vy</translation>
 <translation id="2900528713135656174">Vytvořit událost</translation>
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="290376772003165898">Stránka není v jazyce <ph name="LANGUAGE" />?</translation>
@@ -802,6 +805,8 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3108943290502734357">Prostřední zásobník</translation>
 <translation id="3109728660330352905">K zobrazení této stránky nemáte oprávnění.</translation>
 <translation id="3113284927548439113">Třetí směna</translation>
+<translation id="3114040155724590991">Probíhá aktualizace systému Android
+    Spuštění aplikace může trvat déle než obvykle.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Stáhnout důvěrný soubor?}few{Stáhnout důvěrné soubory?}many{Stáhnout důvěrné soubory?}other{Stáhnout důvěrné soubory?}}</translation>
 <translation id="3115874930288085374">Organizace <ph name="ENROLLMENT_DOMAIN" /> vyžaduje, abyste si zálohovali data a zařízení <ph name="DEVICE_TYPE" /> vrátili.</translation>
 <translation id="3116158981186517402">Laminování</translation>
@@ -1252,6 +1257,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4306812610847412719">schránka</translation>
 <translation id="4308567447483056043">Tato zásada se ignoruje, protože uživatel není přidružený. Aby se tato zásada uplatnila, musí prohlížeč Chrome a profil prostřednictvím administrátorské konzole spravovat stejná organizace.</translation>
 <translation id="4310070645992025887">Prohledat cesty</translation>
+<translation id="4310496734563057511">Pokud toto zařízení sdílíte s dalšími lidmi, můžete zapnout funkci Windows Hello, aby se při použití uloženého hesla ověřovalo, zda akci provádíte vy</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokovat (výchozí)</translation>
 <translation id="4314815835985389558">Správa synchronizace</translation>
@@ -1466,6 +1472,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4880827082731008257">Hledat v historii</translation>
 <translation id="4881695831933465202">Otevřít</translation>
 <translation id="4885256590493466218">U pokladny zaplaťte kartou <ph name="CARD_DETAIL" /></translation>
+<translation id="4887406273302438710">Chraňte hesla pomocí Windows Hello</translation>
 <translation id="4888600795924685526">Jazykové studium v zahraničí</translation>
 <translation id="4889420713887366944">Tlačítko Otevřít anonymní okno, stisknutím klávesy Enter otevřete nové anonymní okno, abyste mohli prohlížet v soukromí</translation>
 <translation id="4892518386797173871">Zadní</translation>
@@ -1685,6 +1692,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5426179911063097041"><ph name="SITE" /> vám chce zasílat oznámení</translation>
 <translation id="5428105026674456456">španělština</translation>
 <translation id="5430298929874300616">Odstranit záložku</translation>
+<translation id="5434423669266814150">zapnout TouchID pro vyplňování hesel</translation>
 <translation id="5443468954631487277">Obrácené pořadí lícem nahoru</translation>
 <translation id="5447765697759493033">Tento web nebude přeložen</translation>
 <translation id="5452270690849572955">Tuto stránku na webu <ph name="HOST_NAME" /> nelze najít</translation>
@@ -2460,6 +2468,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7564049878696755256">Mohli byste ztratit přístup k účtu <ph name="ORG_NAME" /> nebo by mohlo dojít k odcizení vaší identity. Doporučujeme vám okamžitě změnit heslo.</translation>
 <translation id="7564680668369175887">Kombi a dodávkové vozy</translation>
 <translation id="7567204685887185387">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát byl zřejmě vydán podvodně. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
+<translation id="7568616151991626879">Google Chrome se pokouší vyplnit vaše heslo na webu <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569761772822664555">Tlačítko správy vyhledávačů. Stisknutím klávesy Enter můžete spravovat výchozí vyhledávač a vyhledávání na webu</translation>
 <translation id="7569952961197462199">Odstranit platební kartu z Chromu?</translation>
@@ -2490,6 +2499,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Žádné}=1{V účtu máte 1 heslo (pro domény <ph name="DOMAIN_LIST" />)}few{V účtu máte # hesla (pro domény <ph name="DOMAIN_LIST" />)}many{V účtu máte # hesla (pro domény <ph name="DOMAIN_LIST" />)}other{V účtu máte # hesel (pro domény <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Sériové porty</translation>
 <translation id="7639968568612851608">Tmavě šedá</translation>
+<translation id="7646681339175747202">Právě použité heslo bylo nalezeno na seznamu hesel uniklých při incidentu porušení zabezpečení údajů. Správce hesel Google doporučuje ihned toto heslo změnit.</translation>
 <translation id="7647206758853451655">Kvalita tisku</translation>
 <translation id="7648992873808071793">Ukládat soubory v tomto zařízení</translation>
 <translation id="7653957176542370971">List obslužného nástroje pro platby je zavřený</translation>

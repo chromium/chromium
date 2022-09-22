@@ -1279,6 +1279,7 @@
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">การเชื่อมต่อกับ <ph name="SITE" /> ไม่ปลอดภัย</translation>
 <translation id="4349365535725594680">แชร์เนื้อหาที่เป็นความลับไม่ได้</translation>
+<translation id="4349810866125026513">อัปโหลดเลย</translation>
 <translation id="4350629523305688469">ถาดหลายฟังก์ชัน</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ต้องการสแกนหาอุปกรณ์บลูทูธที่อยู่ใกล้เคียงและได้พบอุปกรณ์ต่อไปนี้</translation>
 <translation id="4351175281479794167">ป้อนรหัสยืนยัน</translation>
@@ -2016,6 +2017,7 @@
 <translation id="6337133576188860026">หากเพิ่มพื้นที่ว่างไม่ถึง <ph name="SIZE" /> ไซต์บางแห่งอาจโหลดช้าลงเมื่อคุณเข้าชมครั้งถัดไป</translation>
 <translation id="6337534724793800597">กรองนโยบายตามชื่อ</translation>
 <translation id="6340739886198108203">นโยบายของผู้ดูแลระบบไม่แนะนำให้ถ่ายภาพหน้าจอหรือบันทึกวิดีโอเมื่อมีการแสดงเนื้อหาที่เป็นความลับ</translation>
+<translation id="6341434961864773665">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้อัปโหลดไฟล์นี้ไปยัง <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้อัปโหลดไฟล์เหล่านี้ไปยัง <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">รูปแบบที่ใช้งานอยู่</translation>
 <translation id="6349101878882523185">ติดตั้ง <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ไม่มี}=1{มีรหัสผ่าน 1 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}=2{มีรหัสผ่าน 2 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}other{มีรหัสผ่าน # รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}}</translation>
@@ -2662,6 +2664,7 @@
 <translation id="8075736640322370409">สร้างชีตใหม่ใน Google ชีตอย่างรวดเร็ว</translation>
 <translation id="8075898834294118863">จัดการการตั้งค่าเว็บไซต์</translation>
 <translation id="8076492880354921740">แท็บ</translation>
+<translation id="8078006011486731853">{0,plural, =1{อัปโหลดไฟล์ลับไหม}other{อัปโหลดไฟล์ลับไหม}}</translation>
 <translation id="8078141288243656252">เมื่อหมุนแล้วจะใส่หมายเหตุไม่ได้</translation>
 <translation id="8079031581361219619">โหลดเว็บไซต์ซ้ำไหม</translation>
 <translation id="8081087320434522107">รถซีดาน</translation>

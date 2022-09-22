@@ -231,6 +231,7 @@ Puede que algunas funciones no estén disponibles. Especifica otro directorio de
 <translation id="5386244825306882791">También controla qué página se muestra al iniciar Chrome o al hacer búsquedas desde el omnibox.</translation>
 <translation id="5394833366792865639">Compartir una pestaña de Chrome</translation>
 <translation id="5412485296464121825">Los sitios pueden almacenar información con Chrome sobre tus intereses. Por ejemplo, si visitas un sitio para comprar zapatillas para una maratón, es posible que el sitio considere que te interesa correr maratones. Después, si visitas un sitio diferente para registrarte en una carrera, ese sitio puede mostrarte un anuncio de zapatillas de correr basándose en tus intereses.</translation>
+<translation id="5416870378730196769">Chrome ha activado Ahorro de memoria</translation>
 <translation id="5430073640787465221">Tu archivo de preferencias está dañado o no es válido.
 
 Google Chrome no puede recuperar tu configuración.</translation>
@@ -329,6 +330,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7651907282515937834">Logotipo de Chrome Enterprise</translation>
 <translation id="7655455401911432608">Tu historial de navegación, un registro de los sitios que has visitado usando Chrome en este dispositivo.</translation>
+<translation id="7726773885101561560">Para que la navegación sea más rápida, Chrome recupera la memoria de las pestañas que no estás usando.</translation>
 <translation id="7747138024166251722">El programa de instalación no ha podido crear un directorio temporal. Comprueba si hay espacio libre en el disco y si tienes autorización para instalar el software.</translation>
 <translation id="7761834446675418963">Haz clic en tu nombre para abrir Chrome y empezar a navegar.</translation>
 <translation id="7777080907402804672">Si una imagen no tiene ninguna descripción útil, Chrome intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google. Puedes desactivar esta opción cuando quieras desde la configuración.</translation>
@@ -401,6 +403,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8986207147630327271">Vas a añadir un perfil de trabajo a este navegador y le vas a dar a tu administrador el control únicamente sobre este perfil.</translation>
 <translation id="8989968390305463310">Tu historial de navegación influye en los anuncios que ves y en los intereses que se estiman abajo. Para proteger tu privacidad, Chrome elimina automáticamente tus intereses cada mes. Los intereses se actualizan a menos que los elimines.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible desde hace # días}}</translation>
+<translation id="9003498785844995646">Si se activa esta opción, Chrome ahorrará batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento suave y la velocidad de fotogramas de los vídeos. <ph name="BEGIN_LINK" />Consulta más información<ph name="END_LINK" /> o <ph name="BEGIN_LINK_2" />envíanos comentarios<ph name="END_LINK_2" />.</translation>
 <translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
 <translation id="9067395829937117663">Google Chrome requiere Windows 7 o una versión posterior.</translation>
 <translation id="911206726377975832">¿Quieres borrar también los datos de navegación?</translation>

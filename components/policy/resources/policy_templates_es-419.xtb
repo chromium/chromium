@@ -1847,6 +1847,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2799297758492717491">Permitir la reproducción automática de contenido multimedia en una lista blanca de patrones de URL</translation>
 <translation id="2801065672151277034">Configuración de la administración de certificados</translation>
 <translation id="2801155097555584385">Establecer el porcentaje del nivel de la batería en el que debe comenzar la carga</translation>
+<translation id="2801378553855965587">Inhabilitar la integración de <ph name="GOOGLE_CALENDAR_NAME" /></translation>
 <translation id="2805707493867224476">Permitir que todos los sitios muestren ventanas emergentes.</translation>
 <translation id="2818074121667686266">Si habilitas la política o no la estableces, a excepción de las URL que se indican en la lista AudioCaptureAllowedUrls, se les solicitará a los usuarios permiso para acceder a la captura de audio.
 
@@ -2453,6 +2454,7 @@ Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_
           Solo se muestra el mensaje de advertencia si la acción de inactividad es salir de la cuenta o apagar el dispositivo.</translation>
 <translation id="3360490004791301756">Permitir a los usuarios canjear ofertas a través del Registro de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3363360928811201045">Agregar restricciones en cuentas administradas</translation>
+<translation id="3364400740222114778">Recuperación de la cuenta</translation>
 <translation id="3373381043600809954">Habilita <ph name="PRODUCT_NAME" /></translation>
 <translation id="3374587000313305002">Configura el directorio que empleará <ph name="PRODUCT_NAME" /> para almacenar datos del usuario.
 
@@ -2474,6 +2476,7 @@ Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_
       Si no estableces la política <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />, esta política no tendrá efecto.</translation>
 <translation id="3397883909301547525">No mostrar recomendaciones de apps en el selector de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3399859571630358395">Inhabilitar de manera automática la Vinculación rápida (vinculación rápida por Bluetooth)</translation>
+<translation id="3404681701763345449">Habilitar la integración de <ph name="GOOGLE_CALENDAR_NAME" /></translation>
 <translation id="3408078762098350617">Controla la experiencia del usuario de las funciones inhabilitadas que se mencionan en <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
 
       Si estableces esta política como bloqueada, las funciones inhabilitadas estarán inutilizables, pero los usuarios aún podrán verlas.
@@ -3395,6 +3398,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="4389073105055031853">Permitir que los usuarios administren todos los certificados</translation>
 <translation id="4389091865841123886">Permite configurar la atestación remota con el mecanismo de TPM.</translation>
+<translation id="4397045637922200204">Desactivar la recuperación de la cuenta</translation>
 <translation id="4397464099112037398">Configuración predeterminada del permiso de Ubicación de ventanas</translation>
 <translation id="4401496838830169080">Te permite controlar si se habilita o no la función de Navegación segura de <ph name="PRODUCT_NAME" /> y el modo en el que opera.
 
@@ -3810,6 +3814,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4913065710388638917">Permite el flujo de certificación para una lista de URL</translation>
 <translation id="4917385247580444890">Fuerte</translation>
 <translation id="4918261735182294270">Permitir que los usuarios puedan habilitar <ph name="CHROME_SYNC_NAME" /></translation>
+<translation id="491889618361437456">Habilitar la integración de <ph name="GOOGLE_CALENDAR_NAME" /></translation>
 <translation id="4919122295221518724">Habilita un tratamiento más estricto para contenido mixto</translation>
 <translation id="4920367374739265095">Si estableces la política, se designará la política de acceso que se utilizará para la configuración de impresoras en lote, lo que permitirá determinar las impresoras de <ph name="DEVICE_PRINTERS_POLICY_NAME" /> que estarán disponibles para los usuarios.
 
@@ -3968,6 +3973,13 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       Si no la estableces o la inhabilitas, webkitRequestFileSystem con tipo persistente funcionará con cuota temporal.
       </translation>
+<translation id="5099372083252975644">Habilita la integración de <ph name="GOOGLE_CALENDAR_NAME" />, que permite que los usuarios de <ph name="PRODUCT_OS_NAME" /> recuperen eventos de <ph name="GOOGLE_CALENDAR_NAME" /> para propagar el widget del calendario de <ph name="PRODUCT_OS_NAME" /> en la barra de estado del sistema.
+
+          Si habilitas esta política, el dispositivo <ph name="PRODUCT_OS_NAME" /> podrá recuperar los eventos de <ph name="GOOGLE_CALENDAR_NAME" /> a fin de propagar el widget del calendario de <ph name="PRODUCT_OS_NAME" /> en la barra de estado del sistema para el usuario que accedió.
+
+          Si inhabilitas esta política, el dispositivo <ph name="PRODUCT_OS_NAME" /> no podrá recuperar los eventos de <ph name="GOOGLE_CALENDAR_NAME" /> a fin de propagar el widget del calendario de <ph name="PRODUCT_OS_NAME" /> en la barra de estado del sistema para el usuario que accedió.
+
+          Si no la estableces, la función <ph name="GOOGLE_CALENDAR_NAME" /> estará inhabilitada de forma predeterminada para los usuarios empresariales.</translation>
 <translation id="5103112931744164177">Esta política controla la pila de software que se utiliza para establecer la comunicación con el servidor DNS: el cliente DNS del sistema operativo o el cliente DNS integrado de <ph name="PRODUCT_NAME" />. Esta política no cambia los servidores DNS que se utilizan: si, por ejemplo, el sistema operativo está configurado para usar un servidor DNS empresarial, el cliente DNS integrado utilizará ese mismo servidor. Tampoco controla si se utiliza el protocolo DNS por HTTPS; <ph name="PRODUCT_NAME" /> siempre utilizará el agente de resolución integrado para las solicitudes del protocolo DNS por HTTPS. Para obtener información sobre el control de este protocolo, consulta la política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
 
       Si habilitas esta política, se usará el cliente DNS integrado cuando esté disponible.
@@ -6328,6 +6340,15 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7482768039644066614">Habilitar la recuperación de metadatos de la carga de páginas y de modelos de aprendizaje automático para mejorar la experiencia de navegación</translation>
 <translation id="7485481791539008776">Normas de selección de la impresora predeterminada</translation>
 <translation id="7486205887492534734">Notificar cuando coinciden varios certificados en la pantalla de acceso</translation>
+<translation id="7489661071474025727">Especifica si el servicio de recuperación de la cuenta está activado para tus usuarios en dispositivos <ph name="PRODUCT_OS_NAME" />.
+
+      Si habilitas la política, se activa la recuperación de datos del usuario. Si la inhabilitas o no la estableces, no se activará la recuperación de datos del usuario.
+      Si estableces el nivel de la política como recomendado, los usuarios podrán cambiar la activación de la recuperación de la cuenta a través de la página de configuración. Si estableces el nivel de la política como obligatorio, los usuarios no podrán cambiar la activación de la recuperación de la cuenta.
+
+      En el cambio del valor de la política, se completa el proceso de actualización en el siguiente acceso al dispositivo <ph name="PRODUCT_OS_NAME" />, después de que se recupere el nuevo valor de la política.
+
+      Nota: Este parámetro de configuración solo se aplica a las cuentas nuevas que se agregan en dispositivos <ph name="PRODUCT_OS_NAME" />.
+      </translation>
 <translation id="7491720878670299691">Es la tasa a la que se registran los datos de red y se buscan eventos. El mínimo permitido es 1 minuto.
 
       Si no estableces la política, se aplicará la tasa predeterminada de 1 minuto.</translation>
@@ -7353,6 +7374,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8543108307976719751">Impide las conexiones de acceso remoto a esta máquina</translation>
 <translation id="8544375438507658205">Procesador HTML predeterminado para <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Permite que los mensajes SMS se sincronicen desde el teléfono con la Chromebook</translation>
+<translation id="8549906780629620346">Activar la recuperación de la cuenta</translation>
 <translation id="8553955290407912156">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen qué sitios no pueden pedir a los usuarios permiso para acceder a un dispositivo HID.
 
       Si no estableces la política, se aplicará <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.

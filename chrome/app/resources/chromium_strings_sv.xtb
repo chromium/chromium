@@ -63,6 +63,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2583187216237139145">All data i Chromium som uppstår när den här profilen används (t.ex. bokmärken, historik, lösenord och andra inställningar) kan tas bort av jobbprofilens administratör. <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">Ett operativsystemsfel inträffade under installationen. Ladda ned Chromium igen.</translation>
 <translation id="2661879430930417727">Om du delar en enhet med vänner och familj kan de konfigurera Chromium precis som de vill och surfa separat.</translation>
+<translation id="2669853942967761236">Den här arkivfilen blockerades av Chromium eftersom den kan dölja skadlig programvara</translation>
 <translation id="268602741124540128">Välkommen till Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium-flik</translation>
 <translation id="2718390899429598676">Din data krypteras i Chromium för att öka säkerheten.</translation>

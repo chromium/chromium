@@ -2188,6 +2188,7 @@
 <translation id="2977480621796371840">ລຶບອອກຈາກກຸ່ມ</translation>
 <translation id="2979639724566107830">ເປີດໃນໜ້າຈໍໃໝ່</translation>
 <translation id="2981113813906970160">ສະ​ແດງເຄີເຊີເມົາສ໌ໃຫຍ່</translation>
+<translation id="2981293774053328982">ໄຟລ໌ນີ້ມີເມົາແວທີ່ສາມາດສ້າງຄວາມເສຍຫາຍໃຫ້ກັບບັນຊີສ່ວນຕົວ ຫຼື ບັນຊີເຄືອຂ່າຍສັງຄົມຂອງທ່ານໄດ້</translation>
 <translation id="2983373101216420412">ລະດັບແບັດເຕີຣີເຄສ <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">ສົ່ງຄຳຂໍຫາຜູ້ເບິ່ງແຍງລະບົບເພື່ອຕິດຕັ້ງ "<ph name="EXTENSION_NAME" />" ບໍ?</translation>
 <translation id="2987620471460279764">ຂໍ້ຄວາມທີ່ແບ່ງປັນຈາກອຸປະກອນອື່ນ</translation>
@@ -2309,6 +2310,7 @@
 <translation id="3090819949319990166">ບໍ່​ສາ​ມາດ​ກັອບປີ້​ໄຟລ​໌ crx ທາງນອກໃສ່ <ph name="TEMP_CRX_FILE" /> ໄດ້.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ຈັບຄູ່ແລ້ວ</translation>
 <translation id="3093714882666365141">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຕິດຕັ້ງຕົວຈັດການການຈ່າຍເງິນ</translation>
+<translation id="3093958632721393232">ເປີດເມື່ອແບັດເຕີຣີຂອງຂ້ອຍຕ່ຳເທົ່ານັ້ນ</translation>
 <translation id="3094141017404513551">ນີ້ຈະແຍກການທ່ອງເວັບຂອງທ່ານອອກຈາກ <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">ບຸກມາກ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນໂປຣແກຣມທ່ອງເວັບອື່ນຖືກຊິ້ງຂໍ້ມູນກັບບັນຊີຫຼັກຂອງທ່ານ.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{ສ່ວນຂະຫຍາຍທີ່ອາດຈະເປັນອັນຕະລາຍ 1 ລາຍການປິດຢູ່. ທ່ານສາມາດລຶບມັນອອກໄດ້ນຳ.}other{ສ່ວນຂະຫຍາຍທີ່ອາດຈະເປັນອັນຕະລາຍ {NUM_EXTENSIONS} ລາຍການປິດຢູ່. ທ່ານສາມາດລຶບມັນອອກໄດ້ນຳ.}}</translation>
@@ -3773,6 +3775,7 @@
 <translation id="4514610446763173167">ເປີດປິດວິດີໂອເພື່ອຫຼິ້ນ ຫຼື ຢຸດໄວ້ຊົ່ວຄາວ</translation>
 <translation id="451515744433878153">ລຶບ</translation>
 <translation id="4515872537870654449">ຕິດຕໍ່ Dell ສຳລັບການບໍລິການ. ແທ່ນສາກຈະປິດເຄື່ອງຖ້າພັດລົມໃຊ້ບໍ່ໄດ້.</translation>
+<translation id="4518840066030486079">ຮູບແບບໂໝດປຸ່ມ Shift</translation>
 <translation id="4519331665958994620">ເວັບໄຊສາມາດຂໍໃຊ້ກ້ອງຂອງທ່ານໄດ້</translation>
 <translation id="4519935350946509010">ການເຊື່ອມຕໍ່ຜິດພາດ.</translation>
 <translation id="4520385623207007473">ຄຸກກີ້ທີ່ໃຊ້ຢູ່</translation>
@@ -3868,6 +3871,7 @@
 <translation id="4598345735110653698">ຈັດການກະແຈຜ່ານ</translation>
 <translation id="4598556348158889687">ການຈັດການບ່ອນເກັບຂໍ້ມູນ</translation>
 <translation id="4598776695426288251">Wi-Fi ມີໃຫ້ນຳໃຊ້ຜ່ານຫຼາຍອຸປະກອນ</translation>
+<translation id="4600071396330666617">ຈຳນວນການແນະນຳ</translation>
 <translation id="4601426376352205922">ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="4602466770786743961">ອະນຸຍາດໃຫ້ <ph name="HOST" /> ​​ເຂົ້າຫາ​ກ້ອງ​ຖ່າຍ​ຮູບ​ ແລະໄມໂຄຣໂຟນຂອງ​ທ່ານສະເໝີ</translation>
 <translation id="4606551464649945562">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ຫຼື ຕິດຕາມຕຳແໜ່ງກ້ອງ</translation>
@@ -4314,6 +4318,7 @@
 <translation id="5043913660911154449">ຫຼື ລະບຸ PPD ຂອງເຄື່ອງພິມຂອງທ່ານ <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">ລະ​ຫັດ​ຜ່ານ​ບໍ່​ຖືກ​ຕ້ອງ​</translation>
 <translation id="504561833207953641">ກຳລັງເປີດໃນເຊດຊັນໂປຣແກຣມທ່ອງເວັບທີ່ມີຢູ່ແລ້ວ.</translation>
+<translation id="5049614114599109018">ໃຊ້ປະຫວັດອິນພຸດ</translation>
 <translation id="5051836348807686060">ບໍ່ຮອງຮັບການກວດການສະກົດຄຳສຳລັບພາສາທີ່ທ່ານເລືອກ</translation>
 <translation id="5052499409147950210">ແກ້ໄຂເວັບໄຊ</translation>
 <translation id="505347685865235222">ກຸ່ມບໍ່ມີຊື່ - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5027,6 +5032,7 @@
 <translation id="5747552184818312860">ໝົດອາຍຸ</translation>
 <translation id="5747785204778348146">ຜູ້ພັດ​ທະ​ນາ - ບໍ່ໝັ້ນຄົງ</translation>
 <translation id="5747809636523347288">ວາງໃສ່ ແລະ ໄປຫາ <ph name="URL" /></translation>
+<translation id="5748137879145720682">ເປີດເມື່ອຄອມພິວເຕີຂອງຂ້ອຍຖອດປັກອອກ</translation>
 <translation id="5751345516399502412">ກວດສອບຄວາມພ້ອມຂອງການປ່ອຍສັນຍານ</translation>
 <translation id="5755022574660047665">ຄວາມຊົງຈຳຈາກ Google ຮູບພາບ</translation>
 <translation id="5756163054456765343">ສູນຊ່ວຍເຫຼືອ</translation>
@@ -7659,6 +7665,7 @@
 <translation id="8248381369318572865">ເຂົ້າເຖິງໄມໂຄຣໂຟນ ແລະ ວິເຄາະຄຳເວົ້າຂອງທ່ານ</translation>
 <translation id="8248887045858762645">ເຄັດລັບ Chrome</translation>
 <translation id="8249048954461686687">ໂຟລເດີ OEM</translation>
+<translation id="8249239468199142122">ຕົວປະຢັດແບັດເຕີຣີ</translation>
 <translation id="8249615410597138718">ສົ່ງຫາອຸປະກອນຂອງທ່ານ</translation>
 <translation id="8250210000648910632">ພື້ນທີ່ຈັດເກັບຂໍ້ມູນເຕັມ</translation>
 <translation id="8251441930213048644">ໂຫຼດຂໍ້ມູນໃຫມ່ດຽວນີ້</translation>

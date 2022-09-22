@@ -61,6 +61,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="2583187216237139145">El administrador del perfil de trabajo puede quitar cualquier dato de Chromium que se genere durante el uso de este perfil (como la creación de favoritos, un historial, contraseñas y otras opciones de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">Se produjo un error del sistema operativo durante la instalación. Descarga Chromium nuevamente.</translation>
 <translation id="2661879430930417727">Si compartes un dispositivo, tus amigos y familiares podrán navegar de forma independiente y configurar Chromium según sus preferencias.</translation>
+<translation id="2669853942967761236">Chromium bloqueó este archivo porque es posible que ocultara software malicioso</translation>
 <translation id="268602741124540128">Bienvenido a Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Pestaña de Chromium</translation>
 <translation id="2718390899429598676">Para mayor seguridad, Chromium encriptará los datos.</translation>

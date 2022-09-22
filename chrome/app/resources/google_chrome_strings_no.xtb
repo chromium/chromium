@@ -224,6 +224,7 @@
 <translation id="5386244825306882791">Den styrer også hvilken side som vises når du starter Chrome eller søker fra multifunksjonsfeltet.</translation>
 <translation id="5394833366792865639">Del en Chrome-fane</translation>
 <translation id="5412485296464121825">Nettsteder kan lagre informasjon om interessene dine i Chrome. Hvis du for eksempel besøker et nettsted for å kjøpe maratonsko, kan det hende nettstedet definerer interessen din som maratonløp. Hvis du senere besøker et annet nettsted for å melde deg på et løp, kan dette nettstedet vise deg en annonse for løpesko basert på interessene dine.</translation>
+<translation id="5416870378730196769">Chrome har slått på minnesparing</translation>
 <translation id="5430073640787465221">Innstillingsfilen er skadet eller ugyldig. Google Chrome kan ikke gjenopprette innstillingene dine.</translation>
 <translation id="5524761631371622910">Når prøveprosjekter er påslått, og hvis Chrome har plassert deg tilfeldig i et aktivt prøveprosjekt, påvirker nettleserloggen din annonsene du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chrome interessene dine på rullerende basis hver måned.</translation>
 <translation id="556024056938947818">Google Chrome prøver å vise passord.</translation>
@@ -320,6 +321,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="7649070708921625228">Hjelp</translation>
 <translation id="7651907282515937834">Chrome Enterprise-logo</translation>
 <translation id="7655455401911432608">Nettleserloggen din, som er en logg over nettsteder du har besøkt med Chrome på denne enheten.</translation>
+<translation id="7726773885101561560">For å gjøre surfingen din raskere tar Chrome tilbake minne fra faner du ikke bruker.</translation>
 <translation id="7747138024166251722">Installasjonsprogrammet kunne ikke opprette en midlertidig katalog. Kontroller at du har nok ledig diskplass og tillatelse til å installere programvare.</translation>
 <translation id="7761834446675418963">Klikk på navnet ditt for å åpne Chrome og starte surfingen.</translation>
 <translation id="7777080907402804672">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chrome å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google. Du kan slå av dette i innstillingene når som helst.</translation>
@@ -392,6 +394,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8986207147630327271">Du er i ferd med å legge til en jobbprofil i denne nettleseren og gi administratoren din kontroll over kun jobbprofilen.</translation>
 <translation id="8989968390305463310">Nettleserloggen din påvirker hvilke annonser du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chrome interessene dine automatisk på rullerende basis hver måned. Interessene kan fornyes med mindre du fjerner dem.</translation>
 <translation id="8999208279178790196">{0,plural, =0{En Chrome-oppdatering er tilgjengelig}=1{En Chrome-oppdatering er tilgjengelig}other{En Chrome-oppdatering har vært tilgjengelig i # dager}}</translation>
+<translation id="9003498785844995646">Når dette er på, sparer Chrome batteristrøm ved å begrense bakgrunnsaktivitet og visuelle effekter, for eksempel jevn rulling og bildefrekvensen til videoer. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" />, eller <ph name="BEGIN_LINK_2" />send en tilbakemelding<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">ChromeOS Flex-system</translation>
 <translation id="9067395829937117663">Google Chrome krever Windows 7 eller nyere.</translation>
 <translation id="911206726377975832">Vil du slette all nettlesingsdata også?</translation>

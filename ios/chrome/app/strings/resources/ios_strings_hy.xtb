@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">Ընդունել և շարունակել</translation>
 <translation id="110724200315609752">Անցնել բացված պատուհան</translation>
 <translation id="1112015203684611006">Չհաջողվեց տպել:</translation>
+<translation id="1118569444314402022">Բարի վերադարձ, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Ստեղծել նոր ներդիր:</translation>
 <translation id="1126809382673880764">Չի պաշտպանում վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։ Անվտանգ դիտարկումը նախկինի պես կաշխատի Google-ի այլ ծառայություններում (եթե հասանելի է), օրինակ՝ Gmail-ում կամ Որոնման էջերում։</translation>
 <translation id="1135212215217513471">Տեղադրել iOS-ի համար Chrome-ը</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">Չհաջողվեց համաժամացնել:</translation>
 <translation id="1377321085342047638">Քարտի համարը</translation>
 <translation id="1383876407941801731">Որոնում</translation>
+<translation id="138618066238211776">Շարունակել <ph name="USER_NAME" /> հաշվով</translation>
 <translation id="1400642268715879018">Վերջին 4 շաբաթվա</translation>
 <translation id="1404330357948037222">Դուք դուրս եք եկել հաշվից</translation>
 <translation id="1407135791313364759">Բացել բոլորը</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">Շարունակել խմբագրումը</translation>
 <translation id="2434405374328098816">Դուք <ph name="WEBSITE" /> կայքում «<ph name="USERNAME" />» օգտատիրոջ համար արդեն գաղտնաբառ պահել եք։</translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
+<translation id="2461070143328828326">Գաղտնաբառերի կարգավորումներ</translation>
 <translation id="2469960372084740698">Անջատե՞լ ապահով դիտարկումը</translation>
 <translation id="2473876017985765807">Դուք <ph name="WEBSITE" /> կայքի համար արդեն պահել եք գաղտնաբառ։</translation>
 <translation id="2476359652512522418">Ընտրված չէ</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">Նշել որպես չկարդացված</translation>
 <translation id="371230970611282515">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին։</translation>
 <translation id="37207012422556617">Թրենդային որոնումներ</translation>
+<translation id="3726360487031500941">Նորից մուտք գործեք <ph name="USER_NAME" /> հաշիվ</translation>
 <translation id="3740397331642243698">Մուտքագրված URL-ները բացվում են Google Chrome-ի ինկոգնիտո ներդիրում։</translation>
 <translation id="3762232513783804601">Ստեղծված է հատուկ ձեր iPad-ի համար</translation>
 <translation id="3771033907050503522">Ինկոգնիտո ներդիրներ</translation>

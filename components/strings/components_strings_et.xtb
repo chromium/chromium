@@ -174,6 +174,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1380591466760231819">Kirjakujuliselt volditud</translation>
 <translation id="138218114945450791">Helesinine</translation>
 <translation id="1382194467192730611">Teie administraator lubas selle USB-seadme</translation>
+<translation id="1382378825779654399">Teile saadetakse meiliteavitus, kui hind mõnel saidil langeb. See leht salvestatakse kausta <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Teie teave on aegunud? Võtke selle värskendamiseks ühendust pangaga.</translation>
 <translation id="1384725838384960382">Turvalise maksemandaadi autentimisleht</translation>
 <translation id="1386623374109090026">Märkused</translation>
@@ -1527,6 +1528,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5018422839182700155">Seda lehte ei saa avada</translation>
 <translation id="5019198164206649151">Varusalves esineb probleeme</translation>
 <translation id="5020776957610079374">Maailmamuusika</translation>
+<translation id="5021557570875267742">Hindade jälgimine Chrome'iga</translation>
 <translation id="5023310440958281426">Tutvuge administraatori reeglitega</translation>
 <translation id="5029568752722684782">Kustuta koopia</translation>
 <translation id="5030338702439866405">Väljaandja</translation>
@@ -2248,6 +2250,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6993898126790112050">6x9 (ümbrik)</translation>
 <translation id="6996312675313362352">Tõlgi alati: <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Meelelahutustööstus</translation>
+<translation id="7003335073762455340">Jälgite seda toodet. See leht on salvestatud kausta <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Kasutage kaartide kiiremaks kinnitamiseks teenust Windows Hello</translation>
 <translation id="7006930604109697472">Saada ikkagi</translation>
 <translation id="7012363358306927923">Hiina UnionPay</translation>
@@ -3044,6 +3047,7 @@ Lisateave:
 <translation id="9174623988242579721">Kohandatud ja suure võimsusega sõidukid</translation>
 <translation id="9174917557437862841">Vahelehe vahetamise nupp, vajutage selle vahelehe aktiveerimiseks sisestusklahvi</translation>
 <translation id="9179703756951298733">Hallake oma maksete ja krediitkaardi teavet Chrome'i seadetes</translation>
+<translation id="9179907736442194268">Saadetakse meiliteavitus, kui hind mõnel saidil langeb</translation>
 <translation id="9183302530794969518">Google'i dokumendid</translation>
 <translation id="9183425211371246419">Host <ph name="HOST_NAME" /> kasutab toetamata protokolli.</translation>
 <translation id="9187461866967718678">Ekstreemsport</translation>

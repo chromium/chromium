@@ -719,6 +719,7 @@
 <translation id="7248671827512403053">Aplicación</translation>
 <translation id="7256405249507348194">Error no reconocido: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Servicios disponibles</translation>
+<translation id="7292816689782057017">La política del administrador restringe la capacidad de guardar en algunas ubicaciones.</translation>
 <translation id="7294063083760278948">Telugu (transliteración)</translation>
 <translation id="7295662345261934369">Compartir con otros usuarios</translation>
 <translation id="7297443947353982503">Nombre de usuario o contraseña incorrectos o error de autenticación EAP</translation>
@@ -905,6 +906,7 @@
 <translation id="8810671769985673465">Error al comprimir; el elemento ya existe: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Español (España)</translation>
 <translation id="8834164572807951958">Los miembros de "<ph name="DESTINATION_NAME" />" obtendrán acceso a la copia de estos elementos.</translation>
+<translation id="8849389110234859568">La política del administrador restringe el acceso a algunos archivos.</translation>
 <translation id="8857149712089373752">Nepalí con teclado fonético</translation>
 <translation id="8860454412039442620">Hoja de cálculo de Excel</translation>
 <translation id="8866284467018526531">Árabe (transliteración)</translation>

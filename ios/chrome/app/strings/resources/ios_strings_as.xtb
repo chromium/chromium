@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">গ্ৰহণ কৰক আৰু অব্যাহত ৰাখক</translation>
 <translation id="110724200315609752">খোলা থকা ৱিণ্ড’লৈ যাওক</translation>
 <translation id="1112015203684611006">প্ৰিণ্টিং কৰিব পৰা নগ'ল।</translation>
+<translation id="1118569444314402022">পুনৰ স্বাগতম, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">নতুন টেব সৃষ্টি কৰক।</translation>
 <translation id="1126809382673880764">আপোনাক বিপজ্জনক ৱেবছাইট, ডাউনল’ড অথবা এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষা প্ৰদান নকৰে। Gmail আৰু Searchৰ দৰে অন্য Google সেৱাসমূহ, য’ত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধাটো উপলব্ধ, সেইবিলাকত আপুনি তথাপি এই সুবিধাটো পাব।</translation>
 <translation id="1135212215217513471">iOSৰ বাবে Chrome লাভ কৰক</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">ছিংকৰ সুবিধাটোৱে কাম নকৰা হৈছে।</translation>
 <translation id="1377321085342047638">কার্ডৰ নম্বৰ</translation>
 <translation id="1383876407941801731">Search</translation>
+<translation id="138618066238211776"><ph name="USER_NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
 <translation id="1400642268715879018">যোৱা ৪ সপ্তাহত</translation>
 <translation id="1404330357948037222">আপুনি ছাইন আউট কৰিলে</translation>
 <translation id="1407135791313364759">সকলো খোলক</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">সম্পাদনা কৰি থাকক</translation>
 <translation id="2434405374328098816">আপুনি ইতিমধ্যে "<ph name="USERNAME" />"ৰ বাবে <ph name="WEBSITE" />ত এটা পাছৱৰ্ড ছেভ কৰিছে</translation>
 <translation id="2435457462613246316">পাছৱৰ্ড দেখুৱাওক</translation>
+<translation id="2461070143328828326">পাছৱৰ্ডৰ ছেটিং</translation>
 <translation id="2469960372084740698">সুৰক্ষিত ব্ৰাউজিং অফ কৰিবনে?</translation>
 <translation id="2473876017985765807">আপুনি <ph name="WEBSITE" />ৰ বাবে ইতিমধ্যে এটা পাছৱৰ্ড ছেভ কৰিছে</translation>
 <translation id="2476359652512522418">বাছনি কৰা হোৱা নাই</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">নপঢ়া হিচাপে চিহ্নিত কৰক</translation>
 <translation id="371230970611282515">বিপজ্জনক ঘটনাবোৰৰ সম্পর্কে অনুমান কৰে আৰু সেইবোৰ ঘটাৰ পূর্বে আপোনাক সকীয়নি দিয়ে।</translation>
 <translation id="37207012422556617">ট্ৰেণ্ডিং সন্ধানসমূহ</translation>
+<translation id="3726360487031500941">পুনৰ আপোনাৰ একাউণ্টত <ph name="USER_NAME" /> ছাইন ইন কৰক</translation>
 <translation id="3740397331642243698">অন্তৰ্ভুক্ত কৰা URLসমূহ Google Chromeৰ ইনক’গনিট’ত খোলে।</translation>
 <translation id="3762232513783804601">আপোনাৰ iPadৰ বাবে প্ৰস্তুত কৰা</translation>
 <translation id="3771033907050503522">ইনক’গনিট’ টেব</translation>

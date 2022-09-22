@@ -261,6 +261,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="156703335097561114">Podaci o mreži kao što su adrese, konfiguracija sučelja i kvaliteta veze</translation>
 <translation id="1567040042588613346">Pravilo funkcionira kako je predviđeno, ali na drugoj lokaciji postavljena je ista vrijednost koju ovo pravilo nasljeđuje.</translation>
 <translation id="1569487616857761740">Unesite datum isteka</translation>
+<translation id="1569694109004336106">Google Chrome pokušava uključiti Windows Hello za unos zaporki.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Nešto nije u redu s prikazivanjem ove web-stranice.</translation>
 <translation id="1586541204584340881">koja ste proširenja instalirali</translation>
@@ -399,6 +400,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1958218078413065209">Vaš najbolji rezultat je <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Pomognite poboljšati sigurnost na webu za sve korisnike tako što ćete Googleu slati <ph name="BEGIN_WHITEPAPER_LINK" />URL-ove nekih stranica koje posjetite, ograničene podatke o sustavu i dio sadržaja web-stranica<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Pravila o privatnosti<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Oznake s domene <ph name="DOMAIN" /></translation>
+<translation id="1971033026002113380">Zaštita zaporki pomoću TouchID-ja</translation>
 <translation id="1973335181906896915">Pogreška postavljanja u seriju</translation>
 <translation id="1974060860693918893">Napredno</translation>
 <translation id="1975457531113383421">Ladica za ulaganje</translation>
@@ -726,6 +728,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2881276955470682203">Želite li spremiti karticu?</translation>
 <translation id="2882949212241984732">Dvostruko presavijanje u obliku prozora</translation>
 <translation id="2893773853358652045">Četvrti kolut</translation>
+<translation id="289834758818479772">Ako ovaj uređaj dijelite s drugima, možete uključiti TouchID da biste potvrdili da ste to vi svaki put kad koristite spremljenu zaporku</translation>
 <translation id="2900528713135656174">Stvori događaj</translation>
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="290376772003165898">Ovo nije <ph name="LANGUAGE" />?</translation>
@@ -802,6 +805,8 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3108943290502734357">Srednja ladica</translation>
 <translation id="3109728660330352905">Nemate ovlaštenje za prikaz te stranice.</translation>
 <translation id="3113284927548439113">Treća smjena</translation>
+<translation id="3114040155724590991">Ažuriranje Android sustava
+    Pokretanje aplikacije može potrajati dulje nego obično.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Želite li preuzeti povjerljivu datoteku?}one{Želite li preuzeti povjerljive datoteke?}few{Želite li preuzeti povjerljive datoteke?}other{Želite li preuzeti povjerljive datoteke?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> traži da izradite sigurnosnu kopiju svojih podataka i vratite ovaj uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Laminiranje</translation>
@@ -1255,6 +1260,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4306812610847412719">međuspremnik</translation>
 <translation id="4308567447483056043">Pravilo se zanemaruje jer korisnik nije povezan. Da bi se to pravilo primijenilo, ista organizacija mora upravljati preglednikom Chrome i profilom putem administratorske konzole.</translation>
 <translation id="4310070645992025887">Pretražite svoja putovanja</translation>
+<translation id="4310496734563057511">Ako ovaj uređaj dijelite s drugima, možete uključiti Windows Hello da biste potvrdili da ste to vi svaki put kad koristite spremljenu zaporku</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokiraj (zadano)</translation>
 <translation id="4314815835985389558">Upravljanje sinkronizacijom</translation>
@@ -1413,6 +1419,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4744514002166662487">Izradite prezentaciju</translation>
 <translation id="4744603770635761495">Izvršna putanja</translation>
 <translation id="4749011317274908093">Sad ste u anonimnom načinu</translation>
+<translation id="4750671009706599284">ovaj telefon</translation>
 <translation id="4750917950439032686">Vaši podaci (na primjer, zaporke i brojevi kreditnih kartica) privatni su kada se šalju na tu web-lokaciju.</translation>
 <translation id="4751476147751820511">Senzori pokreta ili osvjetljenja</translation>
 <translation id="4754461935447132332">Nije dopušteno za web-lokacije koje nisu sigurne</translation>
@@ -1469,6 +1476,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4880827082731008257">Pretraži povijest</translation>
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="4885256590493466218">Platite karticom <ph name="CARD_DETAIL" /> prilikom naplate</translation>
+<translation id="4887406273302438710">Zaštita zaporki pomoću Windows Helloa</translation>
 <translation id="4888600795924685526">Učenje stranih jezika</translation>
 <translation id="4889420713887366944">Gumb Otvori anonimni prozor, pritisnite Enter da biste otvorili novi anonimni prozor za pregledavanje u privatnosti</translation>
 <translation id="4892518386797173871">Stražnji</translation>
@@ -1688,6 +1696,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5426179911063097041"><ph name="SITE" /> želi vam slati obavijesti</translation>
 <translation id="5428105026674456456">Španjolski</translation>
 <translation id="5430298929874300616">Ukloni oznaku</translation>
+<translation id="5434423669266814150">uključiti TouchID za unos zaporki</translation>
 <translation id="5443468954631487277">Suprotnim redoslijedom prema gore</translation>
 <translation id="5447765697759493033">Ova web-stranica neće biti prevedena</translation>
 <translation id="5452270690849572955">Tu stranicu na <ph name="HOST_NAME" /> nije moguće pronaći</translation>
@@ -2191,6 +2200,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome je pojednostavio ovu stranicu radi lakšeg čitanja. Chrome je dohvatio izvornu stranicu sigurnom vezom.</translation>
 <translation id="6890443033788248019">Želite li omogućiti lokaciju?</translation>
+<translation id="6890531741535756070">Odabrali ste potvrdu putem značajke <ph name="DEVICE_LABEL" /> na web-lokacijama koje upotrebljavaju <ph name="PROVIDER_ORIGIN" />. Taj je davatelj usluga možda pohranio podatke o vašem načinu plaćanja za koje možete <ph name="BEGIN_LINK" />zatražiti brisanje<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Razina pravila nije podržana.</translation>
 <translation id="6895143722905299846">Virtualni broj:</translation>
 <translation id="6895330447102777224">Kartica je potvrđena</translation>
@@ -2465,6 +2475,7 @@ Dodatne pojedinosti:
 <translation id="7564049878696755256">Mogli biste izgubiti pristup svojem <ph name="ORG_NAME" /> računu ili bi netko mogao ukrasti vaš identitet. Chrome preporučuje da odmah promijenite zaporku.</translation>
 <translation id="7564680668369175887">Karavani</translation>
 <translation id="7567204685887185387">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; njegov sigurnosni certifikat možda je lažan. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
+<translation id="7568616151991626879">Google Chrome pokušava unijeti vašu zaporku u aplikaciji <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569761772822664555">Gumb Upravljaj tražilicama, pritisnite Enter da biste upravljali zadanom tražilicom i pretraživanjem web-lokacije</translation>
 <translation id="7569952961197462199">Želite li s Chromea ukloniti kreditnu karticu?</translation>
@@ -2495,6 +2506,7 @@ Dodatne pojedinosti:
 <translation id="7637586430889951925">{COUNT,plural, =0{Nijedna}=1{Jedna zaporka na vašem računu (za <ph name="DOMAIN_LIST" />)}one{# zaporka na vašem računu (za <ph name="DOMAIN_LIST" />)}few{# zaporke na vašem računu (za <ph name="DOMAIN_LIST" />)}other{# zaporki na vašem računu (za <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Serijski priključci</translation>
 <translation id="7639968568612851608">Tamnosiva</translation>
+<translation id="7646681339175747202">Zaporka koju ste upravo upotrijebili otkrivena je u neovlaštenom pristupu podacima. Google upravitelj zaporki preporučuje da odmah promijenite zaporku.</translation>
 <translation id="7647206758853451655">Kvaliteta ispisa</translation>
 <translation id="7648992873808071793">spremati datoteke na uređaj</translation>
 <translation id="7653957176542370971">List rukovatelja plaćanjima je zatvoren.</translation>
@@ -2555,6 +2567,7 @@ Dodatne pojedinosti:
 <translation id="7766518757692125295">Ivica</translation>
 <translation id="7770259615151589601">Designated-Long</translation>
 <translation id="7773005668374414287">Istim redoslijedom prema gore</translation>
+<translation id="7785790577395078482">ovaj tablet</translation>
 <translation id="7791011319128895129">Neobjavljeno</translation>
 <translation id="7791196057686275387">Napusti</translation>
 <translation id="7791543448312431591">Dodavanje</translation>

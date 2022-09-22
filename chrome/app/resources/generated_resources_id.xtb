@@ -2311,6 +2311,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3090819949319990166">Tidak dapat menyalin file crx eksternal ke <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" disandingkan</translation>
 <translation id="3093714882666365141">Jangan izinkan situs menginstal pengendali pembayaran</translation>
+<translation id="3093958632721393232">Aktifkan hanya saat daya baterai lemah</translation>
 <translation id="3094141017404513551">Ini akan memisahkan penjelajahan Anda dari <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Bookmark, sandi, dan data penjelajahan lainnya disinkronkan dengan akun utama.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 ekstensi yang berpotensi berbahaya nonaktif. Anda juga dapat menghapusnya.}other{{NUM_EXTENSIONS} ekstensi yang berpotensi berbahaya nonaktif. Anda juga dapat menghapusnya.}}</translation>
@@ -5033,6 +5034,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5747552184818312860">Kedaluwarsa</translation>
 <translation id="5747785204778348146">Pengembang - tidak stabil</translation>
 <translation id="5747809636523347288">Tempel dan buka <ph name="URL" /></translation>
+<translation id="5748137879145720682">Aktifkan saat komputer tidak terhubung ke sumber listrik</translation>
 <translation id="5751345516399502412">Periksa Kesiapan Tethering</translation>
 <translation id="5755022574660047665">kenangan dari Google Foto</translation>
 <translation id="5756163054456765343">Pusat bantuan</translation>
@@ -7667,6 +7669,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8248381369318572865">Mengakses mikrofon dan menganalisis ucapan</translation>
 <translation id="8248887045858762645">Tips Chrome</translation>
 <translation id="8249048954461686687">Folder OEM</translation>
+<translation id="8249239468199142122">Penghemat Baterai</translation>
 <translation id="8249615410597138718">Kirim ke Perangkat Anda</translation>
 <translation id="8250210000648910632">Ruang penyimpanan habis</translation>
 <translation id="8251441930213048644">Muat ulang sekarang</translation>

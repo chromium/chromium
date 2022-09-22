@@ -235,6 +235,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2298170939937364391">La loupe en mode plein écran a été activée. Appuyez à nouveau sur Ctrl+Recherche+M pour la désactiver.</translation>
 <translation id="2302092602801625023">Ce compte est géré par Family Link</translation>
 <translation id="2303600792989757991">Activer ou désactiver la vue d'ensemble des fenêtres</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" /> : captures d'écran, téléchargements et fichiers épinglés récents</translation>
 <translation id="2318576281648121272">Aujourd'hui le <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, catégorie de résultats de recherche</translation>
 <translation id="2322173485024759474">Déplacer une lettre vers l'arrière</translation>
@@ -895,6 +896,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6064463340679478396">Fini d'utiliser le fichier</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
 <translation id="6074087755403037157">Version bêta</translation>
+<translation id="6095008505822982596">Vitesse de la voix</translation>
 <translation id="6099678161144790572">Modifié au cours du dernier mois</translation>
 <translation id="6103838137565245112">système</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>

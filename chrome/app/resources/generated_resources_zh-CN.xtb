@@ -2288,6 +2288,7 @@
 <translation id="3090819949319990166">无法将外部 crx 文件复制到 <ph name="TEMP_CRX_FILE" />。</translation>
 <translation id="3090871774332213558">“<ph name="DEVICE_NAME" />”已配对</translation>
 <translation id="3093714882666365141">不允许网站安装付款处理程序</translation>
+<translation id="3093958632721393232">仅在电池电量不足时开启</translation>
 <translation id="3094141017404513551">这会将您的浏览数据与 <ph name="EXISTING_USER" /> 的浏览数据分隔开来</translation>
 <translation id="3095871294753148861">书签、密码和其他浏览器数据会与主帐号同步。</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{关闭了 1 个可能有害的扩展程序。您也可移除它。}other{关闭了 {NUM_EXTENSIONS} 个可能有害的扩展程序。您也可移除它们。}}</translation>
@@ -5004,6 +5005,7 @@
 <translation id="5747552184818312860">到期时间</translation>
 <translation id="5747785204778348146">开发者版本 - 不稳定</translation>
 <translation id="5747809636523347288">粘贴并转到 <ph name="URL" /></translation>
+<translation id="5748137879145720682">在拔下计算机电源线时开启</translation>
 <translation id="5751345516399502412">检查网络共享就绪与否</translation>
 <translation id="5755022574660047665">Google 相册中的回忆集锦</translation>
 <translation id="5756163054456765343">帮助中心(&amp;E)</translation>
@@ -7636,6 +7638,7 @@
 <translation id="8248381369318572865">使用您的麦克风并分析您的语音</translation>
 <translation id="8248887045858762645">Chrome 小窍门</translation>
 <translation id="8249048954461686687">OEM文件夹</translation>
+<translation id="8249239468199142122">省电模式</translation>
 <translation id="8249615410597138718">发送到您的设备</translation>
 <translation id="8250210000648910632">可用的存储空间不足</translation>
 <translation id="8251441930213048644">立即刷新</translation>

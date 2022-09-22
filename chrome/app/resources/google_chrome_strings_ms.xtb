@@ -225,6 +225,7 @@
 <translation id="5386244825306882791">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chrome atau membuat carian dari Kotak Omni.</translation>
 <translation id="5394833366792865639">Kongsi tab Chrome</translation>
 <translation id="5412485296464121825">Laman boleh menyimpan maklumat tentang minat anda menggunakan Chrome. Contohnya, jika anda melawat laman untuk membeli kasut untuk maraton, laman tersebut mungkin mentakrifkan minat anda sebagai larian maraton. Kemudian, jika anda melawati laman lain untuk mendaftar perlumbaan, laman tersebut boleh memaparkan kepada anda iklan kasut untuk berlari berdasarkan minat anda.</translation>
+<translation id="5416870378730196769">Chrome menghidupkan Penjimat Memori</translation>
 <translation id="5430073640787465221">Fail pilihan anda rosak atau tidak sah. Google Chrome tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="5524761631371622910">Semasa percubaan dihidupkan dan jika Chrome telah meletakkan anda secara rawak dalam percubaan aktif, sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat dan minat seperti yang dianggarkan di bawah. Untuk melindungi privasi anda, Chrome memadamkan minat anda secara bergilir setiap bulan.</translation>
 <translation id="556024056938947818">Google Chrome sedang cuba memaparkan kata laluan.</translation>
@@ -321,6 +322,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="7655455401911432608">Sejarah penyemakan imbas anda, rekod laman yang anda lawati menggunakan Chrome pada peranti ini.</translation>
+<translation id="7726773885101561560">Untuk menjadikan penyemakan imbas anda lebih pantas, Chrome memulih guna memori daripada tab yang tidak digunakan.</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat mencipta direktori sementara. Sila semak ruang cakera kosong dan kebenaran untuk memasang perisian.</translation>
 <translation id="7761834446675418963">Klik nama anda untuk membuka Chrome dan mula menyemak imbas.</translation>
 <translation id="7777080907402804672">Jika imej tiada perihalan yang berguna, Chrome akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google. Anda boleh mematikan pilihan ini dalam tetapan pada bila-bila masa.</translation>
@@ -393,6 +395,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8986207147630327271">Anda menambahkan profil kerja pada penyemak imbas ini dan memberi pentadbir anda kawalan terhadap profil kerja sahaja.</translation>
 <translation id="8989968390305463310">Sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat dan minat seperti yang dianggarkan di bawah. Untuk melindungi privasi anda, Chrome memadamkan minat anda secara automatik secara bergilir setiap bulan. Minat akan dimuat semula melainkan anda mengalih keluar minat anda.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Kemas kini Chrome tersedia}=1{Kemas kini Chrome tersedia}other{Kemas kini Chrome telah tersedia selama # hari}}</translation>
+<translation id="9003498785844995646">Apabila dihidupkan, Chrome menjimatkan kuasa bateri dengan mengehadkan aktiviti latar belakang dan kesan visual, seperti tatal lancar dan kadar bingkai video. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> atau <ph name="BEGIN_LINK_2" />hantar maklum balas<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">Sistem Chrome OS Flex</translation>
 <translation id="9067395829937117663">Google Chrome memerlukan Windows 7 atau lebih tinggi.</translation>
 <translation id="911206726377975832">Padamkan juga data menyemak imbas anda?</translation>

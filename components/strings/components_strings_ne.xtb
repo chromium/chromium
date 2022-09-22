@@ -261,6 +261,7 @@
 <translation id="156703335097561114">ठेगाना, इन्टरफेसको कन्फिगुरेसन र कनेक्सनको गुणस्तरलगायतका नेटवर्किङसम्बन्धी जानकारी</translation>
 <translation id="1567040042588613346">यो नीतिले सोचेअनुसार काम गरिरहेको छ तर एउटै मान अन्यत्र तय गरिएका कारण यस नीतिअनुसार उक्त मानको साटो अर्को मान लागू गरिएको छ।</translation>
 <translation id="1569487616857761740">म्याद सकिने मिति प्रविष्टि गर्नुहोस्</translation>
+<translation id="1569694109004336106">Google Chrome पासवर्डहरू हाल्नका निम्ति Windows Hello अन गर्न खोज्दै छ।</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">यो वेबपृष्ठ प्रदर्शन गर्दा कुनै त्रुटी भयो।</translation>
 <translation id="1586541204584340881">तपाईंले स्थापना गर्नुभएका एक्स्टेन्सनहरू</translation>
@@ -399,6 +400,7 @@
 <translation id="1958218078413065209">तपाईंले ल्याउनुभएको अधिकतम अङ्क <ph name="SCORE" /> हो।</translation>
 <translation id="1959001866257244765">Google लाई आफूले हेर्ने केही पृष्ठका <ph name="BEGIN_WHITEPAPER_LINK" />URL, प्रणालीसम्बन्धी निश्चित जानकारी र पृष्ठका केही सामग्रीहरू<ph name="END_WHITEPAPER_LINK" /> पठाएर वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई झन् सुरक्षित राख्न मद्दत गर्नुहोस्। <ph name="BEGIN_PRIVACY_PAGE_LINK" />गोपनीयता नीति<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्कहरू</translation>
+<translation id="1971033026002113380">TouchID का सहायताले आफ्ना पासवर्ड सुरक्षित राख्नुहोस्</translation>
 <translation id="1973335181906896915">अनुक्रमण त्रुटि</translation>
 <translation id="1974060860693918893">उन्नत</translation>
 <translation id="1975457531113383421">इनपुट ट्रे</translation>
@@ -726,6 +728,7 @@
 <translation id="2881276955470682203">कार्ड सुरक्षित गर्ने हो?</translation>
 <translation id="2882949212241984732">डबल गेट फोल्ड</translation>
 <translation id="2893773853358652045">चौथो रोल</translation>
+<translation id="289834758818479772">तपाईं अरूसँग यो डिभाइस साझा रूपमा प्रयोग गर्नुहुन्छ भने तपाईंले सेभ गरेको पासवर्ड प्रयोग गर्ने बेला आफ्नो पहिचान पुष्टि गर्न TouchID अन गर्न सक्नुहुन्छ</translation>
 <translation id="2900528713135656174">कार्यक्रम सिर्जना गर्नुहोस्</translation>
 <translation id="2903493209154104877">ठेगानाहरू</translation>
 <translation id="290376772003165898"><ph name="LANGUAGE" /> भाषामा पृष्ठ छैन?</translation>
@@ -802,6 +805,8 @@
 <translation id="3108943290502734357">बिचको ट्रे</translation>
 <translation id="3109728660330352905">तपाईंलाई यस पृष्ठ हेर्न अधिकार छैन।</translation>
 <translation id="3113284927548439113">तेस्रो सिफ्ट</translation>
+<translation id="3114040155724590991">Android सिस्टम अपडेट हुँदै छ
+    तपाईंको एप खुल्न अरू बेलाको भन्दा बढी समय लाग्न सक्छ।</translation>
 <translation id="3115363211799416195">{0,plural, =1{गोप्य फाइल डाउनलोड गर्ने हो?}other{गोप्य फाइलहरू डाउनलोड गर्ने हो?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> का अनुसार तपाईंले आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ।</translation>
 <translation id="3116158981186517402">लेमिनेसन गर्नुहोस्</translation>
@@ -1253,6 +1258,7 @@
 <translation id="4306812610847412719">क्लिपबोर्ड</translation>
 <translation id="4308567447483056043">यी प्रयोगकर्ता असम्बद्ध भएकाले यो नीति लागू गरिएन। एउटै सङ्गठनले Chrome ब्राउजर र प्रोफाइल एड्मिन कन्सोलमार्फत व्यवस्थापन गरेका अवस्थामा मात्र यो नीति लागू गरिन्छ।</translation>
 <translation id="4310070645992025887">Journeys खोज्नुहोस्</translation>
+<translation id="4310496734563057511">तपाईं अरूसँग यो डिभाइस साझा रूपमा प्रयोग गर्नुहुन्छ भने तपाईंले सेभ गरेको पासवर्ड प्रयोग गर्ने बेला आफ्नो पहिचान पुष्टि गर्न Windows Hello अन गर्न सक्नुहुन्छ</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">रोक लगाउनुहोस् (डिफल्ट मान)</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापन गर्नुहोस्</translation>
@@ -1467,6 +1473,7 @@
 <translation id="4880827082731008257">खोज इतिहास</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
 <translation id="4885256590493466218">चेकआउटका बेला <ph name="CARD_DETAIL" /> प्रयोग गरी भुक्तानी गर्नुहोस्</translation>
+<translation id="4887406273302438710">Windows Hello मार्फत पासवर्डहरू सुरक्षित राख्नुहोस्</translation>
 <translation id="4888600795924685526">विदेशी भाषाको अध्ययन</translation>
 <translation id="4889420713887366944">'इन्कोग्निटो विन्डो खोल्नुहोस्' नामक बटन, गोप्य रूपमा ब्राउज गर्नका निम्ति नयाँ इन्कोग्निटो विन्डो खोल्न Enter थिच्नुहोस्</translation>
 <translation id="4892518386797173871">पछाडिको भाग</translation>
@@ -1686,6 +1693,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> तपाईंलाई सूचनाहरू पठाउन चाहन्छ</translation>
 <translation id="5428105026674456456">स्पेनिस</translation>
 <translation id="5430298929874300616">पुस्तकचिनो हटाउनुहोस्</translation>
+<translation id="5434423669266814150">पासवर्डहरू हाल्नका निम्ति TouchID अन गर्न</translation>
 <translation id="5443468954631487277">विपरीत क्रम तर माथितिर फर्काएर</translation>
 <translation id="5447765697759493033">यो साइटलाई अनुवाद गरिने छैन</translation>
 <translation id="5452270690849572955">यो <ph name="HOST_NAME" /> को पृष्ठ फेला पार्न सक्दैन</translation>
@@ -2463,6 +2471,7 @@
 <translation id="7564049878696755256">तपाईंले आफ्नो <ph name="ORG_NAME" /> खातामाथिको पहुँच गुमाउन सक्नुहुन्छ वा तपाईंको पहिचान चोरी हुन सक्छ। Chrome तपाईंलाई आफ्नो पासवर्ड अहिले नै परिवर्तन गर्न सिफारिस गर्छ।</translation>
 <translation id="7564680668369175887">स्टेसन वागन कारहरू</translation>
 <translation id="7567204685887185387">यो सर्भरले यो <ph name="DOMAIN" /> को भनि प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई कपटपूर्वक जारी गरिएको हुन सक्छ। यो कुनै एउटा मिसकन्फिगरेसन वा कुनै आक्रमणकारीले तपाईंको जडानमा गरेको हस्तक्षेपको कारणले गर्दा भएको हुन सक्छ।</translation>
+<translation id="7568616151991626879">Google Chrome <ph name="APP_NAME" /> मा तपाईंको पासवर्ड हाल्न खोज्दै छ।</translation>
 <translation id="7569490014721427265">गल्फ</translation>
 <translation id="7569761772822664555">"सर्च इन्जिनहरू व्यवस्थापन गर्नुहोस्" बटन, आफ्नो डिफल्ट सर्च इन्जिन र साइटमा भएको कुरा खोज्ने सुविधा व्यवस्थापन गर्न इन्टर थिच्नुहोस्</translation>
 <translation id="7569952961197462199">Chrome बाट क्रेडिट कार्ड हटाउने हो?</translation>
@@ -2493,6 +2502,7 @@
 <translation id="7637586430889951925">{COUNT,plural, =0{कुनै पनि होइन}=1{तपाईंको खातामा सुरक्षित गरिएको १ पासवर्ड (<ph name="DOMAIN_LIST" /> को)}other{तपाईंको खातामा सुरक्षित गरिएका # पासवर्डहरू (<ph name="DOMAIN_LIST" /> का)}}</translation>
 <translation id="7638605456503525968">सिरियल पोर्टहरू</translation>
 <translation id="7639968568612851608">गाढा खैरो</translation>
+<translation id="7646681339175747202">तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेटिएको छ। Google पासवर्ड म्यानेजर तपाईंलाई अहिले नै आफ्नो पासवर्ड परिवर्तन गर्न सिफारिस गर्छ।</translation>
 <translation id="7647206758853451655">मुद्रणको गुणस्तर</translation>
 <translation id="7648992873808071793">यस यन्त्रमा फाइलहरू भण्डार गर्नुहोस्</translation>
 <translation id="7653957176542370971">भुक्तानी ह्यान्ड्लरसम्बन्धी पाना बन्द गरिएको छ</translation>

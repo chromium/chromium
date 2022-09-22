@@ -261,6 +261,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="156703335097561114">Podatki o omrežju, kot so naslovi, konfiguracija vmesnika in kakovost povezave</translation>
 <translation id="1567040042588613346">Ta pravilnik deluje, kot je predvideno, vendar je nekje drugje nastavljena enaka vrednost, ki jo ta pravilnik nadomesti.</translation>
 <translation id="1569487616857761740">Vnesite datum poteka</translation>
+<translation id="1569694109004336106">Google Chrome poskuša vklopiti Windows Hello za izpolnjevanje gesel.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Med prikazom spletne strani je prišlo do napake.</translation>
 <translation id="1586541204584340881">Katere razširitve ste namestili</translation>
@@ -399,6 +400,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1958218078413065209">Vaš najboljši rezultat je <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">S pošiljanjem <ph name="BEGIN_WHITEPAPER_LINK" />URL-jev nekaterih strani, ki jih obiščete, omejenih podatkov o sistemu in nekatere vsebine strani<ph name="END_WHITEPAPER_LINK" /> Googlu lahko pomagate izboljšati varnost v spletu za vse. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Pravilnik o zasebnosti<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Zaznamki domene <ph name="DOMAIN" /></translation>
+<translation id="1971033026002113380">Zaščita gesel s funkcijo TouchID</translation>
 <translation id="1973335181906896915">Napaka pri serializaciji</translation>
 <translation id="1974060860693918893">Dodatno</translation>
 <translation id="1975457531113383421">Podajalni pladenj</translation>
@@ -726,6 +728,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2881276955470682203">Želite shraniti kartico?</translation>
 <translation id="2882949212241984732">Dvojno prepogibanje v obliki okna</translation>
 <translation id="2893773853358652045">Kolut 4</translation>
+<translation id="289834758818479772">Če to napravo delite z drugimi, lahko vklopite TouchID, da potrdite, da ste to res vi, ko uporabite shranjeno geslo.</translation>
 <translation id="2900528713135656174">Ustvarite dogodek</translation>
 <translation id="2903493209154104877">Naslovi</translation>
 <translation id="290376772003165898">Stran ni v jeziku <ph name="LANGUAGE" />?</translation>
@@ -802,6 +805,8 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3108943290502734357">Srednji pladenj</translation>
 <translation id="3109728660330352905">Nimate dovoljenja za ogled te strani.</translation>
 <translation id="3113284927548439113">Tretja izmena</translation>
+<translation id="3114040155724590991">Posodabljanje sistema Android
+    Zagon aplikacije lahko traja dlje kot običajno.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Želite prenesti zaupno datoteko?}one{Želite prenesti zaupne datoteke?}two{Želite prenesti zaupne datoteke?}few{Želite prenesti zaupne datoteke?}other{Želite prenesti zaupne datoteke?}}</translation>
 <translation id="3115874930288085374">Domena <ph name="ENROLLMENT_DOMAIN" /> zahteva, da varnostno kopirate podatke in vrnete to napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Laminiranje</translation>
@@ -1256,6 +1261,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4306812610847412719">odložišče</translation>
 <translation id="4308567447483056043">Ta pravilnik se prezre, ker uporabnik ni povezan. Če želite, da je uporabljen ta pravilnik, mora brskalnik Chrome in profil v Chromu prek skrbniške konzole upravljati ista organizacija.</translation>
 <translation id="4310070645992025887">Iščite po poteh</translation>
+<translation id="4310496734563057511">Če napravo delite z drugimi, lahko vklopite Windows Hello in potrdite, da ste to res vi, ko uporabite shranjeno geslo.</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokira (privzeto)</translation>
 <translation id="4314815835985389558">Upravljanje sinhronizacije</translation>
@@ -1470,6 +1476,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4880827082731008257">Zgodovina iskanja</translation>
 <translation id="4881695831933465202">Odpri</translation>
 <translation id="4885256590493466218">Plačajte s kartico <ph name="CARD_DETAIL" /> pri dokončanju nakupa.</translation>
+<translation id="4887406273302438710">Zaščita gesel s funkcijo Windows Hello</translation>
 <translation id="4888600795924685526">Študij tujega jezika</translation>
 <translation id="4889420713887366944">Gumb za odpiranje anonimnega okna, pritisnite Enter, če želite odpreti novo anonimno okno za zasebno brskanje</translation>
 <translation id="4892518386797173871">Zadaj</translation>
@@ -1689,6 +1696,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5426179911063097041"><ph name="SITE" /> vam želi pošiljati obvestila</translation>
 <translation id="5428105026674456456">španščina</translation>
 <translation id="5430298929874300616">Odstrani zaznamek</translation>
+<translation id="5434423669266814150">vklopiti funkcijo TouchID za izpolnjevanje gesel.</translation>
 <translation id="5443468954631487277">V obratnem vrstnem redu s tiskom na zgornji strani</translation>
 <translation id="5447765697759493033">To spletno mesto ne bo prevedeno</translation>
 <translation id="5452270690849572955">Te strani spletnega mesta <ph name="HOST_NAME" /> ni mogoče najti</translation>
@@ -2466,6 +2474,7 @@ Dodatne podrobnosti:
 <translation id="7564049878696755256">Izgubite lahko dostop do računa za <ph name="ORG_NAME" /> ali postanete žrtev kraje identitete. Chrome priporoča, da spremenite geslo.</translation>
 <translation id="7564680668369175887">Kombiji</translation>
 <translation id="7567204685887185387">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo je bilo morda izdano z goljufijo. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
+<translation id="7568616151991626879">Google Chrome poskuša izpolniti vaše geslo na <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569761772822664555">Gumb za upravljanje iskalnikov, pritisnite Enter, če želite upravljati privzeti iskalnik in iskanje po spletnih mestih.</translation>
 <translation id="7569952961197462199">Želite odstraniti kreditno kartico iz Chroma?</translation>
@@ -2496,6 +2505,7 @@ Dodatne podrobnosti:
 <translation id="7637586430889951925">{COUNT,plural, =0{Nič}=1{1 geslo v računu (za <ph name="DOMAIN_LIST" />)}one{# geslo v računu (za <ph name="DOMAIN_LIST" />)}two{# gesli v računu (za <ph name="DOMAIN_LIST" />)}few{# gesla v računu (za <ph name="DOMAIN_LIST" />)}other{# gesel v računu (za <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Serijska vrata</translation>
 <translation id="7639968568612851608">Temno siva</translation>
+<translation id="7646681339175747202">Geslo, ki ste ga pravkar uporabili, je bilo najdeno v podatkovni kršitvi. Googlov upravitelj gesel priporoča, da geslo spremenite takoj.</translation>
 <translation id="7647206758853451655">Kakovost tiskanja</translation>
 <translation id="7648992873808071793">Shranjevanje datotek v tej napravi</translation>
 <translation id="7653957176542370971">List rutine za obravnavo plačil je zaprt</translation>

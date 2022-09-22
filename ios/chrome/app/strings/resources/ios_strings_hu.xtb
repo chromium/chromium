@@ -23,6 +23,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1104948393051856124">Elfogadás és folytatás</translation>
 <translation id="110724200315609752">Váltás megnyitott ablakra</translation>
 <translation id="1112015203684611006">A nyomtatás sikertelen.</translation>
+<translation id="1118569444314402022">Üdvözöljük ismét, kedves <ph name="USER_NAME" />!</translation>
 <translation id="1125564390852150847">Új lap létrehozása.</translation>
 <translation id="1126809382673880764">Nem védi meg Önt a veszélyes webhelyek, letöltések vagy bővítmények ellen. Ahol lehetséges (más Google-szolgáltatásokban, például a Gmailben és a Keresőben) továbbra is megkapja a Biztonságos Böngészés által nyújtott védelmet.</translation>
 <translation id="1135212215217513471">A Chrome letöltése iOS rendszerhez</translation>
@@ -64,6 +65,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1377255359165588604">A szinkronizálás leállt.</translation>
 <translation id="1377321085342047638">Kártyaszám</translation>
 <translation id="1383876407941801731">Keresés</translation>
+<translation id="138618066238211776">Folytatás mint <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Elmúlt négy hét</translation>
 <translation id="1404330357948037222">Ön nincs bejelentkezve</translation>
 <translation id="1407135791313364759">Összes megnyitása</translation>
@@ -177,6 +179,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2421044535038393232">Szerkesztés folytatása</translation>
 <translation id="2434405374328098816">Már mentett jelszót a(z) „<ph name="USERNAME" />” felhasználónévhez a(z) <ph name="WEBSITE" /> webhelyen</translation>
 <translation id="2435457462613246316">Jelszó megjelenítése</translation>
+<translation id="2461070143328828326">Jelszóbeállítások</translation>
 <translation id="2469960372084740698">Kikapcsolja a Biztonságos Böngészést?</translation>
 <translation id="2473876017985765807">Már mentett jelszót a(z) „<ph name="WEBSITE" />” webhelyhez.</translation>
 <translation id="2476359652512522418">Nincs kiválasztva</translation>
@@ -331,6 +334,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3709582977625132201">Megjelölés olvasatlanként</translation>
 <translation id="371230970611282515">Előrejelzi a veszélyes eseményeket, és figyelmezteti Önt rájuk még a bekövetkezésük előtt.</translation>
 <translation id="37207012422556617">Felkapott keresések</translation>
+<translation id="3726360487031500941">Jelentkezzen be újra a fiókjába (<ph name="USER_NAME" />)</translation>
 <translation id="3740397331642243698">A megadott URL-eket a Google Chrome böngészőben, inkognitó módban nyitja meg.</translation>
 <translation id="3762232513783804601">iPadhez készült</translation>
 <translation id="3771033907050503522">Inkognitó lapok</translation>

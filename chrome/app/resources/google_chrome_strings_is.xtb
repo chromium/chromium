@@ -230,6 +230,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 <translation id="5386244825306882791">Þetta stýrir því einnig hvaða síða er birt þegar þú ræsir Chrome eða leitar úr veffangastikunni.</translation>
 <translation id="5394833366792865639">Deila Chrome flipa</translation>
 <translation id="5412485296464121825">Vefsvæði geta vistað upplýsingar um áhugasvið þín í Chrome. Ef þú heimsækir til dæmis vefsvæði til að kaupa skó fyrir maraþonhlaup kann vefsvæðið að skilgreina maraþonhlaup sem áhugasvið þitt. Ef þú heimsækir svo annað vefsvæði síðar meir til að skrá þig í hlaup getur viðkomandi vefsvæði birt þér auglýsingu um hlaupaskó í samræmi við áhugasvið þitt.</translation>
+<translation id="5416870378730196769">Chrome kveikti á minnissparnaði</translation>
 <translation id="5430073640787465221">Kjörstillingaskráin þín er skemmd eða ógild.
 
 Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
@@ -328,6 +329,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7651907282515937834">Lógó Chrome Enterprise</translation>
 <translation id="7655455401911432608">Vafraferillinn þinn, skrá yfir vefsvæði sem þú hefur opnað með Chrome í þessu tæki.</translation>
+<translation id="7726773885101561560">Chrome endurheimtir minni úr flipum sem eru ekki í notkun til að auka hraða vefskoðunar.</translation>
 <translation id="7747138024166251722">Uppsetningarforritið gat ekki búið til tímabundna möppu. Athugaðu laust diskpláss og heimildir fyrir uppsetningu hugbúnaðar.</translation>
 <translation id="7761834446675418963">Smelltu á nafnið þitt til að opna Chrome og byrja að vafra.</translation>
 <translation id="7777080907402804672">Ef gagnlega lýsingu vantar við mynd reynir Chrome að útvega þér lýsingu. Til að búa til lýsingar eru myndir sendar til Google. Þú getur slökkt á þessu hvenær sem er í stillingunum.</translation>
@@ -400,6 +402,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8986207147630327271">Þú ert að bæta vinnusniði við þennan vafra og veita stjórnanda þínum leyfi til að stjórna vinnusniðinu eingöngu.</translation>
 <translation id="8989968390305463310">Vafraferillinn þinn hefur áhrif á auglýsingarnar sem þú sérð og áhugasviðin sem eru áætluð hér fyrir neðan. Til að gæta persónuverndar þinnar eyðir Chrome áhugamálunum þínum sjálfkrafa mánaðarlega. Áhugasvið verða hugsanlega endurnýjuð nema þú fjarlægir þau.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Uppfærsla er í boði fyrir Chrome}=1{Uppfærsla er í boði fyrir Chrome}one{Uppfærsla hefur verið í boði fyrir Chrome í # dag}other{Uppfærsla hefur verið í boði fyrir Chrome í # daga}}</translation>
+<translation id="9003498785844995646">Þegar kveikt er á minnissparnaði dregur Chrome úr rafhlöðunotkun með því að takmarka bakgrunnsvirkni og myndáhrif á borð við mjúkflettingu og rammatíðni myndskeiða. <ph name="BEGIN_LINK" />Kynntu þér þetta nánar<ph name="END_LINK" /> eða <ph name="BEGIN_LINK_2" />sendu ábendingu<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">ChromeOS Flex kerfi</translation>
 <translation id="9067395829937117663">Google Chrome krefst Windows 7 eða nýrri útgáfu.</translation>
 <translation id="911206726377975832">Eyða líka vafragögnum?</translation>

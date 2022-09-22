@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">Caution: These files are temporary and may be automatically deleted to free up disk space.</translation>
 <translation id="3029114385395636667">Enable Google Docs Offline to make Docs, Sheets and Slides available offline.</translation>
 <translation id="303198083543495566">Geography</translation>
+<translation id="3044404008258011032">To restore these items, drag them to a new folder outside the bin. The original folder '<ph name="PARENT_FOLDER_NAME" />' for these items has been deleted.</translation>
 <translation id="3047197340186497470">Chinese Dayi</translation>
 <translation id="3067790092342515856">Windows files</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">Activating...</translation>
 <translation id="4092890906744441904">Irish</translation>
 <translation id="4124935795427217608">Unicorn</translation>
+<translation id="4131235941541910880">Move items that you don't need to the bin</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> moved.</translation>
 <translation id="4176286497474237543">Empty bin now</translation>
 <translation id="4186579485882418952">Enable offline</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">German</translation>
 <translation id="4867079195717347957">Click to sort the column in descending order.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
+<translation id="4874569719830985133">Delete forever</translation>
 <translation id="4880214202172289027">Volume slider</translation>
 <translation id="4881695831933465202">Open</translation>
+<translation id="4891091358278567964">To restore these items, drag them to a new folder outside the bin. The original folders for these items have been deleted.</translation>
 <translation id="4900532980794411603">Share with Parallels Desktop</translation>
 <translation id="4902546322522096650">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, connect</translation>
 <translation id="4906580650526544301">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, details</translation>
@@ -493,6 +497,7 @@
     <ph name="MARKUP_7" />Share, create and collaborate<ph name="MARKUP_8" />
     on files with others all in one place.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Recovered files from Google Drive</translation>
+<translation id="5278111733643988471">To restore this item, drag it to a new folder outside the bin. The original folder '<ph name="PARENT_FOLDER_NAME" />' for this item has been deleted.</translation>
 <translation id="5286194356314741248">Scanning</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -505,6 +510,7 @@
 <translation id="535792325654997756">Person with cats</translation>
 <translation id="5358764674931277">Frame rate</translation>
 <translation id="5363339716524495120">Input language is Chinese</translation>
+<translation id="5364067326287025678">Nothing in the bin</translation>
 <translation id="5368191757080475556">Share folder with Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Do not use the proxy settings for these hosts and domains:</translation>
@@ -771,6 +777,7 @@
 <translation id="7711920809702896782">Image info</translation>
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7732111077498238432">Network is policy controlled</translation>
+<translation id="7736003208887389532">Permanently delete these files?</translation>
 <translation id="7748626145866214022">More options available on the action bar. Press Alt + A to focus the action bar.</translation>
 <translation id="7760449188139285140">Chinese Wubi</translation>
 <translation id="7765158879357617694">Move</translation>
@@ -832,6 +839,7 @@
 <translation id="8249296373107784235">Abort</translation>
 <translation id="8250690786522693009">Latin</translation>
 <translation id="8250920743982581267">Documents</translation>
+<translation id="8255595130163158297">All items in the bin will be deleted and you won't be able to restore them.</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8261561378965667560">Chinese Array</translation>
 <translation id="8264024885325823677">This setting is managed by your administrator.</translation>
@@ -910,6 +918,7 @@
 <translation id="8857149712089373752">Nepali with phonetic keyboard</translation>
 <translation id="8860454412039442620">Excel spreadsheet</translation>
 <translation id="8866284467018526531">Arabic transliteration</translation>
+<translation id="8873014196523807561">To restore these items, drag them to a new folder. The original folders for some of these items have been deleted.</translation>
 <translation id="8874184842967597500">Not connected</translation>
 <translation id="8900820606136623064">Hungarian</translation>
 <translation id="8903931173357132290">Graduate</translation>

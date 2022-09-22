@@ -31,6 +31,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1587223624401073077">Google Chrome se sert de votre caméra Web.</translation>
 <translation id="1587325591171447154">Chrome a bloqué le fichier <ph name="FILE_NAME" />, car il est dangereux.</translation>
 <translation id="1597911401261118146">Pour vérifier si vos mots de passe sont en sécurité contre les violations de données et d'autres risques de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chrome<ph name="END_LINK" />.</translation>
+<translation id="1599904803480101533">Chrome a bloqué ce fichier d'archive, car il peut masquer des logiciels malveillants</translation>
 <translation id="1619887657840448962">Afin de rendre Chrome plus sûr, nous avons désactivé l'extension suivante qui n'est pas répertoriée dans <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et a pu être ajoutée à votre insu.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Comment gérer vos données :<ph name="END_BOLD" /> afin de protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt ayant plus de quatre semaines. Au fur et à mesure que vous naviguez, un centre d'intérêt peut réapparaître sur la liste. Vous pouvez également retirer des centres d'intérêt si vous ne voulez pas que Chrome les prenne en compte.</translation>
 <translation id="1628000112320670027">Obtenir de l'aide pour Chrome</translation>
@@ -229,6 +230,7 @@ Certaines fonctionnalités peuvent être inaccessibles. Veuillez spécifier un r
 <translation id="5386244825306882791">Elle règle également la page qui s'affiche lorsque vous démarrez Chrome ou faites une recherche dans l'omnibox.</translation>
 <translation id="5394833366792865639">Partager un onglet de Chrome</translation>
 <translation id="5412485296464121825">Les sites peuvent stocker des renseignements sur vos centres d'intérêt dans Chrome. Par exemple, si vous visitez un site pour acheter des chaussures pour un marathon, le site pourrait définir votre centre d'intérêt comme la course de marathons. Ultérieurement, si vous visitez un autre site pour vous inscrire à une course, celui-ci peut vous montrer une annonce pour des chaussures de course en fonction de vos centres d'intérêt.</translation>
+<translation id="5416870378730196769">Chrome a activé la fonctionnalité Économiseur de mémoire</translation>
 <translation id="5430073640787465221">Votre fichier des préférences est endommagé ou n'est pas valide. 
 
 Google Chrome ne peut pas récupérer vos paramètres.</translation>
@@ -327,6 +329,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7651907282515937834">Logo de Chrome Enterprise</translation>
 <translation id="7655455401911432608">Votre historique de navigation, soit un enregistrement des sites que vous avez visités à l'aide de Chrome sur cet appareil.</translation>
+<translation id="7726773885101561560">Pour rendre votre navigation plus rapide, Chrome récupère la mémoire des onglets que vous n'utilisez pas.</translation>
 <translation id="7747138024166251722">Le programme d'installation n'a pas pu créer de répertoire temporaire. Vérifiez que le disque a suffisamment d'espace libre et que vous disposez des autorisations nécessaires pour installer le logiciel.</translation>
 <translation id="7761834446675418963">Cliquez sur votre nom pour ouvrir Chrome et commencer à naviguer.</translation>
 <translation id="7777080907402804672">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour créer des descriptions, les images sont envoyées à Google. Vous pouvez désactiver cette option dans les paramètres à tout moment.</translation>
@@ -399,6 +402,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8986207147630327271">Vous ajoutez un profil professionnel à ce navigateur et vous octroyez uniquement le contrôle de ce profil à votre administrateur.</translation>
 <translation id="8989968390305463310">Votre historique de navigation a une incidence sur les annonces que vous voyez ainsi que sur les centres d'intérêt tels qu'ils sont estimés ci-dessous. Afin de protéger votre confidentialité, Chrome supprime automatiquement et de façon continue vos centres d'intérêt chaque mois. Les centres d'intérêt peuvent être actualisés à moins que vous ne les retiriez.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est proposée}=1{Une mise à jour de Chrome est proposée}one{Une mise à jour de Chrome est proposée depuis # jour}other{Une mise à jour de Chrome est proposée depuis # jours}}</translation>
+<translation id="9003498785844995646">Lorsque cette fonctionnalité est activée, Chrome économise l'énergie de la pile en limitant l'activité en arrière-plan et les effets visuels, tels que le défilement fluide et les fréquences d'images vidéo. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> ou <ph name="BEGIN_LINK_2" />envoyer des commentaires<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">Système Chrome OS Flex</translation>
 <translation id="9067395829937117663">Google Chrome requiert Windows 7 ou une version ultérieure.</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation?</translation>

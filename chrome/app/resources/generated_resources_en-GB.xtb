@@ -547,6 +547,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> is encrypted. Ask its owner to decrypt it.</translation>
 <translation id="151501797353681931">Imported from Safari</translation>
 <translation id="1515163294334130951">Launch</translation>
+<translation id="1517467582299994451">To cast with a code, turn on Chrome browser sync settings</translation>
 <translation id="1521442365706402292">Manage certificates</translation>
 <translation id="1521774566618522728">Active today</translation>
 <translation id="152234381334907219">Never saved</translation>
@@ -792,6 +793,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1723824996674794290">&amp;New window</translation>
 <translation id="1724801751621173132">Input mode</translation>
 <translation id="1725562816265788801">Tab scrolling</translation>
+<translation id="1726503915437308071">Italic font</translation>
 <translation id="1729533290416704613">It also controls what page is shown when you search from the Omnibox.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />To remove apps, go to Settings &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app that you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Scroll towards the last tab</translation>
@@ -1795,6 +1797,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2627424346328942291">Can't share</translation>
 <translation id="2628770867680720336">A factory reset of this Chromebook is required to enable ADB debugging. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Develop Android apps</translation>
+<translation id="2629437048544561682">Clear canvas</translation>
 <translation id="2631498379019108537">Show input options in the shelf</translation>
 <translation id="2633212996805280240">Remove "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> couldn't complete installation, but will continue to run from its disk image.</translation>
@@ -2428,6 +2431,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3225319735946384299">Code Signing</translation>
 <translation id="3226487301970807183">Toggle left-aligned side panel</translation>
 <translation id="3227137524299004712">Microphone</translation>
+<translation id="3232558119926886907">Align right</translation>
 <translation id="3232754137068452469">Web App</translation>
 <translation id="3233271424239923319">Backup Linux apps and files</translation>
 <translation id="3234251228180563751">Username is more than 1,000 characters</translation>
@@ -2472,6 +2476,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3275778809241512831">Your internal security key is currently insecure. Please remove it from any services that you used it with. In order to resolve the issue, please reset the security key.</translation>
 <translation id="3275778913554317645">Open as window</translation>
 <translation id="3277214528693754078">Navigate with text cursor (Caret Browsing)</translation>
+<translation id="3277594800340743211">Large shadow</translation>
 <translation id="3278001907972365362">Your Google Account(s) need attention</translation>
 <translation id="3279092821516760512">Selected contacts can share with you when nearby. Transfers won't start until you accept.</translation>
 <translation id="3279230909244266691">This process may take a few minutes. Starting the virtual machine.</translation>
@@ -3928,6 +3933,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4651484272688821107">Could not load online component with demo mode resources.</translation>
 <translation id="4651921906638302153">Can't sign in with this account</translation>
 <translation id="4652935475563630866">The change in camera setting requires Parallels Desktop to relaunch. Relaunch Parallels Desktop to proceed.</translation>
+<translation id="4653116291358041820">Small shadow</translation>
 <translation id="4653405415038586100">Error configuring Linux</translation>
 <translation id="465406513924180949">You’re seeing baskets that help you easily get back to items that you left in shopping baskets across the web.
         <ph name="BREAK" />
@@ -4163,6 +4169,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4878718769565915065">Adding a fingerprint to this security key failed</translation>
 <translation id="4879491255372875719">Automatic (default)</translation>
 <translation id="4880827082731008257">Search history</translation>
+<translation id="4881062916686771679">This file contains malware that can compromise your personal or social network accounts, including <ph name="USER_EMAIL" /></translation>
 <translation id="4881685975363383806">Don't remind me next time</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="488211015466188466">Follow Site</translation>
@@ -4262,6 +4269,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4972737347717125191">Sites can ask to use virtual reality devices and data</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Mute site}other{Mute sites}}</translation>
 <translation id="497403230787583386">Security checks are complete. Your document will be printed.</translation>
+<translation id="4975543297921324897">Monospace font</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Confirm Access</translation>
 <translation id="4980805016576257426">This extension contains malware.</translation>
@@ -4664,6 +4672,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5390743329570580756">Send for</translation>
 <translation id="5392192690789334093">Allowed to send notifications</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# links}}</translation>
+<translation id="5395498824851198390">Default font</translation>
 <translation id="5396325212236512832">Automatically sign in to sites and apps using stored credentials. If turned off, you'll be asked for confirmation every time before signing in to a site or app.</translation>
 <translation id="5397378439569041789">Enrol kiosk or signage device</translation>
 <translation id="5397794290049113714">You</translation>
@@ -4938,6 +4947,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5639549361331209298">Reload this page, hold to see more options</translation>
 <translation id="5640133431808313291">Manage security keys</translation>
 <translation id="5641608986289282154">Start using <ph name="DEVICE_OS" /></translation>
+<translation id="5641648607875312660">Screenshot image editor</translation>
 <translation id="5642508497713047">CRL Signer</translation>
 <translation id="5643321261065707929">Metered network</translation>
 <translation id="5643620609347735571">Clear and continue</translation>
@@ -5131,6 +5141,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5842497610951477805">Bluetooth enable</translation>
 <translation id="5844574845205796324">Suggest new content to explore</translation>
 <translation id="5846200638699387931">Relation syntax error: <ph name="ERROR_LINE" /></translation>
+<translation id="5846455742152785308">No shadow</translation>
 <translation id="5846504156837627898">Manage site permissions</translation>
 <translation id="5846807460505171493">Install updates and apps. By continuing, you agree that this device may also automatically download and install updates and apps from Google, your operator and your device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases.</translation>
 <translation id="5849212445710944278">Already added</translation>
@@ -5495,6 +5506,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6185132558746749656">Device Location</translation>
 <translation id="6190953336330058278">Phone Hub apps</translation>
 <translation id="6195005504600220730">Read information about your browser, OS and device</translation>
+<translation id="6195155925303302899">Align centre</translation>
 <translation id="6195693561221576702">This device cannot be set up in offline demo mode.</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6196854373336333322">The extension "<ph name="EXTENSION_NAME" />" has taken control of your proxy settings, which means it can change, break or eavesdrop on anything you do online. If you aren't sure why this change happened, you probably don't want it.</translation>
@@ -6170,6 +6182,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6828860976882136098">Failed to set up automatic updates for all users (preflight execution error: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google Privacy Policy</translation>
 <translation id="6831043979455480757">Translate</translation>
+<translation id="6832218595502288407">Align left</translation>
 <translation id="6833479554815567477">Tab removed from group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Switch to a smart and secure browser</translation>
 <translation id="6833996806551876956">Privacy sandbox trial</translation>
@@ -7582,6 +7595,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">With <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome is developing new technologies to safeguard you from cross-site tracking while preserving the open web.</translation>
 <translation id="8161293209665121583">Reader mode for web pages</translation>
+<translation id="8161604891089629425">Outline font</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Move Tab to New Window}other{Move Tabs to New Window}}</translation>
 <translation id="8165997195302308593">Crostini port forwarding</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{a phone number}other{# phone numbers}}</translation>
@@ -7807,6 +7821,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8379991678458444070">Get back here fast by bookmarking this tab</translation>
 <translation id="8380266723152870797">Window name</translation>
 <translation id="8380941800586852976">Dangerous</translation>
+<translation id="8382677870544805359">You will have to factory reset this device to use enterprise features.</translation>
 <translation id="8382715499079447151">Viewing protection</translation>
 <translation id="8382913212082956454">Copy &amp;email address</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Try these troubleshooting steps:
@@ -8011,6 +8026,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8596540852772265699">Customised Files</translation>
 <translation id="8597845839771543242">Property format:</translation>
 <translation id="8599681327221583254">One or more policies are not configured correctly. Please contact your administrator</translation>
+<translation id="8599864823732014237">Skip enterprise enrolment?</translation>
 <translation id="8601206103050338563">TLS WWW Client Authentication</translation>
 <translation id="8601611099293226919">Search your screen with Google Lens</translation>
 <translation id="8602851771975208551">Another program on your computer added an app that may change the way Chrome works.</translation>

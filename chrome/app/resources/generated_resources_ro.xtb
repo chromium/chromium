@@ -2297,6 +2297,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3090819949319990166">Fișierul crx extern nu se poate copia în <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />” conectată</translation>
 <translation id="3093714882666365141">Nu permite site-urilor să instaleze handlere pentru plăți</translation>
+<translation id="3093958632721393232">Activează opțiunea numai când nivelul bateriei este scăzut</translation>
 <translation id="3094141017404513551">Astfel, vei separa navigarea de cea asociată contului <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Marcajele, parolele și alte date ale browserului sunt sincronizate cu contul principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{O extensie potențial dăunătoare a fost dezactivată. Poți să o elimini.}few{{NUM_EXTENSIONS} extensii potențial dăunătoare au fost dezactivate. Poți să le elimini.}other{{NUM_EXTENSIONS} de extensii potențial dăunătoare au fost dezactivate. Poți să le elimini.}}</translation>
@@ -5018,6 +5019,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5747552184818312860">Expiră</translation>
 <translation id="5747785204778348146">Canal pentru dezvoltatori – instabil</translation>
 <translation id="5747809636523347288">In&amp;serează și accesează <ph name="URL" /></translation>
+<translation id="5748137879145720682">Activează opțiunea când computerul este deconectat</translation>
 <translation id="5751345516399502412">Verifică gradul de pregătire pentru tethering</translation>
 <translation id="5755022574660047665">amintiri din Google Foto</translation>
 <translation id="5756163054456765343">C&amp;entrul de ajutor</translation>
@@ -7653,6 +7655,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8248381369318572865">Accesează microfonul și analizează-ți vorbirea</translation>
 <translation id="8248887045858762645">Sfat pentru Chrome</translation>
 <translation id="8249048954461686687">Dosar OEM</translation>
+<translation id="8249239468199142122">Economisirea bateriei</translation>
 <translation id="8249615410597138718">Trimite pe dispozitivele tale</translation>
 <translation id="8250210000648910632">Spațiu de stocare indisponibil</translation>
 <translation id="8251441930213048644">Actualizează acum</translation>

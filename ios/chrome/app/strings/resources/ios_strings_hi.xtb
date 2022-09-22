@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">स्‍वीकार करें और जारी रखें</translation>
 <translation id="110724200315609752">खुली हुई विंडो पर जाएं</translation>
 <translation id="1112015203684611006">प्रिंट विफल रहा.</translation>
+<translation id="1118569444314402022"><ph name="USER_NAME" />, आपका फिर से स्वागत है</translation>
 <translation id="1125564390852150847">नया टैब बनाएं.</translation>
 <translation id="1126809382673880764">इस मोड में आपको नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से सुरक्षा नहीं मिलती. Gmail और Search जैसी दूसरी Google की सेवाओं में, आपको अब भी सुरक्षित ब्राउज़िंग की सुरक्षा मिल सकती है.</translation>
 <translation id="1135212215217513471">iOS के लिए Chrome डाउनलोड करें</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">समन्‍वयन ने काम करना बंद कर दिया है.</translation>
 <translation id="1377321085342047638">कार्ड नंबर</translation>
 <translation id="1383876407941801731">Search</translation>
+<translation id="138618066238211776"><ph name="USER_NAME" /> के तौर पर जारी रखें</translation>
 <translation id="1400642268715879018">पिछले चार हफ़्ते</translation>
 <translation id="1404330357948037222">आप साइन आउट कर चुके हैं</translation>
 <translation id="1407135791313364759">सभी बुकमार्क खोलें</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">बदलाव करते रहें</translation>
 <translation id="2434405374328098816">आपने <ph name="WEBSITE" /> पर, "<ph name="USERNAME" />" का पासवर्ड पहले ही सेव कर दिया है</translation>
 <translation id="2435457462613246316">पासवर्ड दिखाएं</translation>
+<translation id="2461070143328828326">पासवर्ड सेटिंग</translation>
 <translation id="2469960372084740698">सुरक्षित ब्राउज़िंग की सुविधा बंद को करना है?</translation>
 <translation id="2473876017985765807">आपने <ph name="WEBSITE" /> पर, पासवर्ड पहले ही सेव कर दिया है</translation>
 <translation id="2476359652512522418">नहीं चुना गया</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">'नहीं पढ़ा गया' का निशान लगाएं</translation>
 <translation id="371230970611282515">नुकसान पहुंचाने वाली घटनाओं का पहले से अंदाज़ा लगाता है. साथ ही, उनके बारे में आपको चेतावनी देता है.</translation>
 <translation id="37207012422556617">रुझान में चल रही खोजें</translation>
+<translation id="3726360487031500941">अपने खाते <ph name="USER_NAME" /> में फिर से साइन इन करें</translation>
 <translation id="3740397331642243698">यह डाले गए यूआरएल को Google Chrome में, गुप्त मोड में खोलता है.</translation>
 <translation id="3762232513783804601">आपके iPad के लिए बनाया गया</translation>
 <translation id="3771033907050503522">गुप्त टैब</translation>

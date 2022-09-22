@@ -32,6 +32,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1587223624401073077">Google Chrome uporablja vašo kamero.</translation>
 <translation id="1587325591171447154">Datoteka <ph name="FILE_NAME" /> je nevarna, zato jo je Chrome blokiral.</translation>
 <translation id="1597911401261118146">Če želite preveriti, ali so gesla varna pred podatkovnimi kršitvami in drugimi varnostnimi težavami, <ph name="BEGIN_LINK" />se prijavite v Chrome<ph name="END_LINK" />.</translation>
+<translation id="1599904803480101533">Chrome je blokiral to datoteko arhiva, ker morda skriva zlonamerno programsko opremo.</translation>
 <translation id="1619887657840448962">Zaradi večje varnosti smo v Chromu onemogočili to razširitev, ki ni navedena tukaj in je bila morda dodana brez vaše vednosti: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Kako lahko upravljate podatke:<ph name="END_BOLD" /> Zaradi zaščite vaše varnosti samodejno izbrišemo vaša zanimanja, starejša od 4 tednov. Ko brskate naprej, se zanimanje morda znova prikaže na seznamu. Odstranite lahko tudi zanimanja, za katera ne želite, da jih Chrome predlaga.</translation>
 <translation id="1628000112320670027">Pomoč za Chrome</translation>
@@ -230,6 +231,7 @@ Nekatere funkcije morda ne bodo na voljo. Navedite drug imenik profila ali upora
 <translation id="5386244825306882791">Določa tudi, katera stran je prikazana, ko zaženete Chrome ali iščete v naslovni vrstici.</translation>
 <translation id="5394833366792865639">Deljenje zavihka v Chromu</translation>
 <translation id="5412485296464121825">Spletna mesta lahko v Chromu shranjujejo podatke o vaših zanimanjih. Če na primer obiščete spletno mesto zaradi nakupa športnih copatov za maraton, bo spletno mesto morda določilo vaše zanimanje kot udeleževanje maratonov. Če pozneje obiščete drugo spletno mesto za registriranje za tek, vam lahko to spletno mesto glede na vaša zanimanja prikaže oglas za tekaško obutev.</translation>
+<translation id="5416870378730196769">Chrome je vklopil varčevanje s pomnilnikom</translation>
 <translation id="5430073640787465221">Datoteka z nastavitvami je poškodovana ali neveljavna.
 
 Google Chrome ne more obnoviti vaših nastavitev.</translation>
@@ -328,6 +330,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7649070708921625228">Pomoč</translation>
 <translation id="7651907282515937834">Logotip za Chrome Enterprise</translation>
 <translation id="7655455401911432608">Zgodovina brskanja, evidenca spletnih mest, ki ste jih obiskali s Chromom v tej napravi.</translation>
+<translation id="7726773885101561560">Zaradi hitrejšega brskanja Chrome znova pridobi pomnilnik z zavihkov, ki jih ne uporabljate.</translation>
 <translation id="7747138024166251722">Namestitvenemu programu ni uspelo ustvariti začasnega imenika. Preverite, ali je na disku dovolj prostora in ali imate dovoljenje za namestitev programske opreme.</translation>
 <translation id="7761834446675418963">Kliknite ime, da odprete Chrome in začnete brskati.</translation>
 <translation id="7777080907402804672">Če slika nima koristnega opisa, ga bo Chrome poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu. To lahko kadar koli izklopite v nastavitvah.</translation>
@@ -400,6 +403,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8986207147630327271">V ta brskalnik dodajate delovni profil in skrbniku omogočate nadzor samo nad delovnim profilom.</translation>
 <translation id="8989968390305463310">Zgodovina brskanja vpliva na prikazane oglase in zanimanja, kot je ocenjeno spodaj. Chrome zaradi varovanja vaše zasebnosti vsak mesec sproti samodejno izbriše vaša zanimanja. Zanimanja se lahko osvežujejo, razen če jih odstranite.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Posodobitev za Chrome je na voljo}=1{Posodobitev za Chrome je na voljo}one{Posodobitev za Chrome je na voljo že # dan}two{Posodobitev za Chrome je na voljo že # dneva}few{Posodobitev za Chrome je na voljo že # dni}other{Posodobitev za Chrome je na voljo že # dni}}</translation>
+<translation id="9003498785844995646">Če je vklopljena ta nastavitev, Chrome varčuje z energijo baterije tako, da omeji dejavnost v ozadju in vizualne učinke, kot sta tekoče pomikanje in število sličic v sekundi pri videoposnetkih. <ph name="BEGIN_LINK" />Preberite več<ph name="END_LINK" /> ali <ph name="BEGIN_LINK_2" />pošljite povratne informacije<ph name="END_LINK_2" />.</translation>
 <translation id="9053892488859122171">Sistem ChromeOS Flex</translation>
 <translation id="9067395829937117663">Za Google Chrome potrebujete Windows 7 ali novejši.</translation>
 <translation id="911206726377975832">Ali želite izbrisati tudi podatke brskanja?</translation>

@@ -23,6 +23,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1104948393051856124">Přijmout a pokračovat</translation>
 <translation id="110724200315609752">Přepnout na otevřené okno</translation>
 <translation id="1112015203684611006">Tisk se nezdařil.</translation>
+<translation id="1118569444314402022">Vítejte zpět, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Vytvořit novou kartu</translation>
 <translation id="1126809382673880764">Nebudete chráněni před nebezpečnými weby, soubory ke stažení a rozšířeními. V jiných službách Google, v nichž je ochrana pomocí Bezpečného prohlížení k dispozici (např. Gmail a Vyhledávání), ji budete mít i nadále.</translation>
 <translation id="1135212215217513471">Stáhnout Chrome pro iOS</translation>
@@ -64,6 +65,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1377255359165588604">Synchronizace přestala fungovat.</translation>
 <translation id="1377321085342047638">Číslo karty</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
+<translation id="138618066238211776">Pokračovat jako <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Z posledních 4 týdnů</translation>
 <translation id="1404330357948037222">Jste odhlášeni</translation>
 <translation id="1407135791313364759">Otevřít vše</translation>
@@ -177,6 +179,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2421044535038393232">Pokračovat v úpravách</translation>
 <translation id="2434405374328098816">Heslo pro uživatelské jméno „<ph name="USERNAME" />“ už jste na webu <ph name="WEBSITE" /> uložili</translation>
 <translation id="2435457462613246316">Zobrazit heslo</translation>
+<translation id="2461070143328828326">Nastavení hesla</translation>
 <translation id="2469960372084740698">Vypnout Bezpečné prohlížení?</translation>
 <translation id="2473876017985765807">Pro web <ph name="WEBSITE" /> jste již heslo uložili</translation>
 <translation id="2476359652512522418">Nevybráno</translation>
@@ -331,6 +334,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3709582977625132201">Označit jako nepřečtené</translation>
 <translation id="371230970611282515">Předvídá nebezpečné události a upozorňuje vás na ně ještě předtím, než k nim dojde.</translation>
 <translation id="37207012422556617">Populární vyhledávání</translation>
+<translation id="3726360487031500941">Znovu se přihlaste k účtu <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Otevře zadané adresy URL v prohlížeči Google Chrome v anonymním režimu.</translation>
 <translation id="3762232513783804601">Vytvořeno pro iPad</translation>
 <translation id="3771033907050503522">Anonymní karty</translation>

@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">Прийняти та продовжити</translation>
 <translation id="110724200315609752">Перейти у відкрите вікно</translation>
 <translation id="1112015203684611006">Не надруковано.</translation>
+<translation id="1118569444314402022">З поверненням, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Створити вкладку.</translation>
 <translation id="1126809382673880764">Не захищає від небезпечних веб-сайтів, завантажень і розширень. Безпечний перегляд усе ще працюватиме в інших сервісах Google (у яких він доступний), як-от Gmail і Пошук.</translation>
 <translation id="1135212215217513471">Завантажити Chrome для iOS</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">Синхронізація перестала працювати.</translation>
 <translation id="1377321085342047638">Номер картки</translation>
 <translation id="1383876407941801731">Пошук</translation>
+<translation id="138618066238211776">Продовжити як <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Останні 4 тижні</translation>
 <translation id="1404330357948037222">Ви вийшли з облікового запису</translation>
 <translation id="1407135791313364759">Відкрити все</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">Продовжити редагувати</translation>
 <translation id="2434405374328098816">Ви вже зберегли пароль для користувача <ph name="USERNAME" /> на веб-сайті <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Показати пароль</translation>
+<translation id="2461070143328828326">Налаштування паролю</translation>
 <translation id="2469960372084740698">Вимкнути Безпечний перегляд?</translation>
 <translation id="2473876017985765807">Ви вже зберегли пароль для сайту <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не вибрано</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">Позначити як непрочитане</translation>
 <translation id="371230970611282515">Передбачає небезпечні події та повідомляє про них ще до того, як вони відбудуться.</translation>
 <translation id="37207012422556617">Популярні запити</translation>
+<translation id="3726360487031500941">Увійдіть в обліковий запис <ph name="USER_NAME" /> знову</translation>
 <translation id="3740397331642243698">Відкриває введені URL-адреси в Google Chrome в анонімному режимі.</translation>
 <translation id="3762232513783804601">Створено для iPad</translation>
 <translation id="3771033907050503522">Анонімні вкладки</translation>

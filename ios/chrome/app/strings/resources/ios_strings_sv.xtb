@@ -23,6 +23,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1104948393051856124">Godkänn och fortsätt</translation>
 <translation id="110724200315609752">Byt till Öppet fönster</translation>
 <translation id="1112015203684611006">Utskriftsfel.</translation>
+<translation id="1118569444314402022">Välkommen tillbaka, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Skapa en ny flik.</translation>
 <translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Där funktionen är tillgänglig får du fortfarande skydd med Säker webbsökning i andra tjänster från Google, till exempel Gmail och Sök.</translation>
 <translation id="1135212215217513471">Ladda ned Chrome för iOS</translation>
@@ -64,6 +65,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1377255359165588604">Synkronisering har slutat fungera.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
 <translation id="1383876407941801731">Sök</translation>
+<translation id="138618066238211776">Fortsätt som <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Senaste fyra veckorna</translation>
 <translation id="1404330357948037222">Du är utloggad</translation>
 <translation id="1407135791313364759">Öppna alla</translation>
@@ -177,6 +179,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2421044535038393232">Fortsätt redigera</translation>
 <translation id="2434405374328098816">Du har redan sparat ett lösenord för <ph name="USERNAME" /> på <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
+<translation id="2461070143328828326">Lösenordsinställningar</translation>
 <translation id="2469960372084740698">Vill du inaktivera Säker webbsökning?</translation>
 <translation id="2473876017985765807">Du har redan sparat ett lösenord för <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Inte markerad</translation>
@@ -331,6 +334,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3709582977625132201">Markera som oläst</translation>
 <translation id="371230970611282515">Förutser och varnar dig om farliga händelser innan de inträffar.</translation>
 <translation id="37207012422556617">Populära sökningar</translation>
+<translation id="3726360487031500941">Logga in igen på ditt konto, <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Öppnar de angivna webbadresserna i Google Chrome i inkognitoläge.</translation>
 <translation id="3762232513783804601">Byggd för iPad</translation>
 <translation id="3771033907050503522">Inkognitoflikar</translation>

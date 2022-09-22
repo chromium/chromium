@@ -2189,6 +2189,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2977480621796371840">Ta bort från gruppen</translation>
 <translation id="2979639724566107830">Öppna i nytt fönster</translation>
 <translation id="2981113813906970160">Visa stor muspekare</translation>
+<translation id="2981293774053328982">Den här filen innehåller skadlig programvara som kan äventyra dina personliga konton eller sociala nätverkskonton</translation>
 <translation id="2983373101216420412">Fodralets batterinivå är på <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2985348301114641460">Vill du skicka en begäran om att installera <ph name="EXTENSION_NAME" /> till administratören?</translation>
 <translation id="2987620471460279764">Text delad från annan enhet</translation>
@@ -3774,6 +3775,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4514610446763173167">Växla mellan att spela upp och pausa video</translation>
 <translation id="451515744433878153">Ta bort</translation>
 <translation id="4515872537870654449">Kontakta Dell för service. Dockningsstationen stängs av om fläkten inte fungerar.</translation>
+<translation id="4518840066030486079">Format för skifttangentsläget</translation>
 <translation id="4519331665958994620">Webbplatser får begära åtkomst till kameran</translation>
 <translation id="4519935350946509010">Anslutningsfel.</translation>
 <translation id="4520385623207007473">Cookies är aktiverade</translation>
@@ -3869,6 +3871,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4598345735110653698">Hantera nycklar</translation>
 <translation id="4598556348158889687">Lagringshantering</translation>
 <translation id="4598776695426288251">wifi är tillgängligt via flera enheter</translation>
+<translation id="4600071396330666617">Antal förslag</translation>
 <translation id="4601426376352205922">Markera som oläst</translation>
 <translation id="4602466770786743961">Tillåt alltid att <ph name="HOST" /> använder kameran och mikrofonen</translation>
 <translation id="4606551464649945562">Tillåt inte att webbplatser skapar en 3D-karta över dina omgivningar eller registrera kamerans position</translation>
@@ -4315,6 +4318,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5043913660911154449">Eller ange PPD-fil för skrivaren <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Felaktigt lösenord</translation>
 <translation id="504561833207953641">Öppnas i en befintlig webbläsarsession.</translation>
+<translation id="5049614114599109018">Använd inmatningshistorik</translation>
 <translation id="5051836348807686060">Stavningskontroll stöds inte för de språk du valt</translation>
 <translation id="5052499409147950210">Redigera webbplats</translation>
 <translation id="505347685865235222">Namnlös grupp – <ph name="GROUP_CONTENT_STRING" /></translation>

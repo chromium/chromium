@@ -1841,6 +1841,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2799297758492717491">Autoriser la lecture automatique des contenus multimédias pour les formats d'URL sur liste blanche</translation>
 <translation id="2801065672151277034">Paramètres de gestion des certificats</translation>
 <translation id="2801155097555584385">Personnaliser le pourcentage auquel la batterie doit commencer à être rechargée</translation>
+<translation id="2801378553855965587">Désactiver l'intégration de <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
 <translation id="2805707493867224476">Autoriser tous les sites à afficher des fenêtres pop-up</translation>
 <translation id="2818074121667686266">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur est invité à autoriser ou non l'accès à la capture audio, sauf si l'URL concernée figure dans la liste AudioCaptureAllowedUrls.
 
@@ -2442,6 +2443,7 @@ Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
           Le message d'avertissement ne s'affiche que si le dépassement du délai d'inactivité entraîne une déconnexion ou l'arrêt de l'appareil.</translation>
 <translation id="3360490004791301756">Autoriser les utilisateurs à profiter de leurs offres via le service d'enregistrement <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3363360928811201045">Ajouter des restrictions aux comptes gérés</translation>
+<translation id="3364400740222114778">Récupération de compte</translation>
 <translation id="3373381043600809954">Activer <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3374587000313305002">Permet de configurer le répertoire utilisé par <ph name="PRODUCT_NAME" /> pour le stockage des données de l'utilisateur.
 
@@ -2463,6 +2465,7 @@ Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
       Cette règle n'a aucune incidence si la règle <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> n'est pas configurée.</translation>
 <translation id="3397883909301547525">Ne pas afficher de recommandations d'applis dans le lanceur de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3399859571630358395">Forcer la désactivation de l'Association express (association Bluetooth rapide).</translation>
+<translation id="3404681701763345449">Activer l'intégration de <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
 <translation id="3408078762098350617">Contrôle l'expérience utilisateur des fonctionnalités désactivées répertoriées dans la liste <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
 
       Si cette règle est définie sur "bloqué", les utilisateurs peuvent voir les fonctionnalités désactivées, mais ne peuvent pas les utiliser.
@@ -3365,6 +3368,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="4389073105055031853">Autoriser les utilisateurs à gérer tous les certificats</translation>
 <translation id="4389091865841123886">Configurer l'attestation à distance avec le mécanisme TPM</translation>
+<translation id="4397045637922200204">Désactiver la récupération de compte</translation>
 <translation id="4397464099112037398">Paramètre d'autorisation de positionnement des fenêtres par défaut</translation>
 <translation id="4401496838830169080">Permet de contrôler si la fonctionnalité de navigation sécurisée de <ph name="PRODUCT_NAME" /> est activée ou non, ainsi que le mode dans lequel elle est définie.
 
@@ -3780,6 +3784,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4913065710388638917">Activer le flux d'attestation pour une liste d'URL</translation>
 <translation id="4917385247580444890">Très bon</translation>
 <translation id="4918261735182294270">Laisser aux utilisateurs le choix d'activer ou de désactiver <ph name="CHROME_SYNC_NAME" /></translation>
+<translation id="491889618361437456">Activer l'intégration de <ph name="GOOGLE_CALENDAR_NAME" /></translation>
 <translation id="4919122295221518724">Appliquer un traitement plus strict au contenu mixte</translation>
 <translation id="4920367374739265095">Cette règle permet de désigner la règle d'accès qui s'applique à la configuration groupée des imprimantes, en déterminant les imprimantes soumises à la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" /> qui sont accessibles aux utilisateurs.
 
@@ -3934,6 +3939,13 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 
       Si cette règle n'est pas configurée ou qu'elle est désactivée, webkitRequestFileSystem de type persistant fonctionnera avec un quota temporaire.
       </translation>
+<translation id="5099372083252975644">Activer l'intégration de <ph name="GOOGLE_CALENDAR_NAME" /> permet aux utilisateurs <ph name="PRODUCT_OS_NAME" /> de récupérer des événements de <ph name="GOOGLE_CALENDAR_NAME" /> pour remplir le widget d'agenda <ph name="PRODUCT_OS_NAME" /> dans la barre d'état système.
+
+          Si cette règle est activée, l'appareil <ph name="PRODUCT_OS_NAME" /> peut récupérer les événements <ph name="GOOGLE_CALENDAR_NAME" /> pour remplir le widget d'agenda <ph name="PRODUCT_OS_NAME" /> dans la barre d'état système pour l'utilisateur connecté.
+
+          Si elle est désactivée, l'appareil <ph name="PRODUCT_OS_NAME" /> ne peut pas récupérer les événements <ph name="GOOGLE_CALENDAR_NAME" /> pour remplir le widget d'agenda <ph name="PRODUCT_OS_NAME" /> dans la barre d'état système pour l'utilisateur connecté.
+
+          Si elle n'est pas configurée, la fonctionnalité <ph name="GOOGLE_CALENDAR_NAME" /> est désactivée par défaut pour les utilisateurs de la version Enterprise.</translation>
 <translation id="5103112931744164177">Cette règle détermine la pile logicielle utilisée pour communiquer avec le serveur DNS, c'est-à-dire soit le client DNS du système d'exploitation, soit le client DNS intégré de <ph name="PRODUCT_NAME" />. Cette règle n'a aucune incidence sur les serveurs DNS utilisés : si, par exemple, le système d'exploitation est configuré pour utiliser un serveur DNS d'entreprise, ce même serveur sera utilisé par le client DNS intégré. Elle ne contrôle pas non plus l'utilisation du protocole DNS-over-HTTPS. <ph name="PRODUCT_NAME" /> utilisera toujours le résolveur intégré pour les requêtes DNS-over-HTTPS. Pour plus d'informations sur le contrôle du protocole DNS-over-HTTPS, veuillez consulter la règle <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
 
       Si vous activez cette règle, le client DNS intégré est utilisé, si disponible.
@@ -6279,6 +6291,15 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7482768039644066614">Activer l'extraction des métadonnées de chargement de la page et les modèles de machine learning pour améliorer l'expérience de navigation</translation>
 <translation id="7485481791539008776">Instructions de sélection de l'imprimante par défaut</translation>
 <translation id="7486205887492534734">Demander lorsque plusieurs certificats correspondent sur l'écran de connexion</translation>
+<translation id="7489661071474025727">Indique si le service de récupération de compte est activé pour vos utilisateurs sur les appareils <ph name="PRODUCT_OS_NAME" />.
+
+      Lorsque cette règle est activée, la récupération des données utilisateur est activée. Si elle est désactivée ou si elle n'est pas configurée, la récupération des données utilisateur n'est pas activée.
+      Configurer cette règle sur le niveau recommandé autorise les utilisateurs à activer ou désactiver la récupération de compte depuis la page des paramètres. Sur le niveau obligatoire, les utilisateurs ne peuvent pas modifier le paramètre de récupération de compte.
+
+      Lorsque la valeur de cette règle est modifiée, les changements prennent effet lors de la prochaine connexion à l'appareil <ph name="PRODUCT_OS_NAME" />, une fois la nouvelle valeur récupérée.
+
+      Remarque : Ce paramètre s'applique uniquement aux nouveaux comptes ajoutés sur les appareils <ph name="PRODUCT_OS_NAME" />.
+      </translation>
 <translation id="7491720878670299691">Fréquence à laquelle les données du réseau sont interrogées pour vérifier la présence d'événements. La valeur minimale autorisée est de 1 minute.
 
       Si cette règle n'est pas configurée, la fréquence par défaut (1 minute) est appliquée.</translation>
@@ -7284,6 +7305,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8543108307976719751">Empêcher les connexions d'accès à distance à cet ordinateur</translation>
 <translation id="8544375438507658205">Moteur de rendu HTML par défaut pour <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Autoriser la synchronisation des SMS entre le téléphone et le Chromebook</translation>
+<translation id="8549906780629620346">Activer la récupération de compte</translation>
 <translation id="8553955290407912156">Permet de dresser la liste des formats d'URL pour lesquels les sites peuvent demander aux utilisateurs de leur accorder l'accès à un appareil HID.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.

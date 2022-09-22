@@ -2297,6 +2297,7 @@ Pretende pará-lo?</translation>
 <translation id="3090819949319990166">Não é possível copiar o ficheiro crx externo para <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" sincronizado</translation>
 <translation id="3093714882666365141">Não permitir que os sites instalem controladores de pagamentos</translation>
+<translation id="3093958632721393232">Ativar apenas quando a bateria estiver fraca</translation>
 <translation id="3094141017404513551">Esta ação irá separar a sua navegação de <ph name="EXISTING_USER" />.</translation>
 <translation id="3095871294753148861">Os marcadores, as palavras-passe e outros dados do navegador são sincronizados com a conta principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Foi desativada 1 extensão potencialmente prejudicial. Também a pode remover.}other{Foram desativadas {NUM_EXTENSIONS} extensões potencialmente prejudiciais. Também as pode remover.}}</translation>
@@ -5019,6 +5020,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5747552184818312860">Expira</translation>
 <translation id="5747785204778348146">Programador – instável</translation>
 <translation id="5747809636523347288">Co&amp;lar e ir para <ph name="URL" /></translation>
+<translation id="5748137879145720682">Ativar quando o computador estiver desligado</translation>
 <translation id="5751345516399502412">Verificar prontidão da ligação (à Internet) via telemóvel</translation>
 <translation id="5755022574660047665">memórias do Google Fotos</translation>
 <translation id="5756163054456765343">C&amp;entro de Ajuda</translation>
@@ -7653,6 +7655,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8248381369318572865">Aceder ao microfone e analisar o seu discurso</translation>
 <translation id="8248887045858762645">Sugestão do Chrome</translation>
 <translation id="8249048954461686687">Pasta OEM</translation>
+<translation id="8249239468199142122">Poupança de bateria</translation>
 <translation id="8249615410597138718">Enviar para os seus dispositivos</translation>
 <translation id="8250210000648910632">Sem espaço de armazenamento</translation>
 <translation id="8251441930213048644">Atualizar agora</translation>

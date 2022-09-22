@@ -261,6 +261,7 @@
 <translation id="156703335097561114">নেটওয়ার্কিং তথ্য যেমন ঠিকানা, ইন্টারফেস কনফিগারেশন এবং কানেকশন কোয়ালিটি</translation>
 <translation id="1567040042588613346">এই নীতি আশানুরূপ কাজ করছে। আসলে অন্য একটি জায়গাতে একই ধরনের মান সেট করা হয়েছে এবং সেই মানের জায়গাতে এই নীতি প্রয়োগ করা হয়।</translation>
 <translation id="1569487616857761740">মেয়াদ শেষ হওয়ার তারিখ লিখুন</translation>
+<translation id="1569694109004336106">Google Chrome পাসওয়ার্ড পূরণ করার জন্য Windows Hello চালু করার চেষ্টা করছে।</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">এই ওয়েবপৃষ্ঠাটি দেখানোর সময় কোনো সমস্যা হয়েছে।</translation>
 <translation id="1586541204584340881">কোন কোন এক্সটেনশন আপনি ইনস্টল করেছেন</translation>
@@ -400,6 +401,7 @@
 <translation id="1958218078413065209">আপনার সর্বোচ্চ স্কোর <ph name="SCORE" />।</translation>
 <translation id="1959001866257244765">Google-এ <ph name="BEGIN_WHITEPAPER_LINK" />আপনার দেখা পৃষ্ঠাগুলির ইউআরএল, সিস্টেমের কিছু সীমিত তথ্য এবং পৃষ্ঠার কিছু কন্টেন্ট<ph name="END_WHITEPAPER_LINK" /> পাঠিয়ে ওয়েবে সকলের জন্য নিরাপত্তা উন্নত করতে সাহায্য করুন। <ph name="BEGIN_PRIVACY_PAGE_LINK" />গোপনীয়তা নীতি<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> বুকমার্ক</translation>
+<translation id="1971033026002113380">TouchID-এর মাধ্যমে পাসওয়ার্ড সুরক্ষিত করুন</translation>
 <translation id="1973335181906896915">ধারাবাহিকতাতে ত্রুটি</translation>
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1975457531113383421">ইনপুট ট্রে</translation>
@@ -727,6 +729,7 @@
 <translation id="2881276955470682203">কার্ড সেভ করবেন?</translation>
 <translation id="2882949212241984732">ডবল-গেট ফোল্ড</translation>
 <translation id="2893773853358652045">Fourth Roll</translation>
+<translation id="289834758818479772">আপনি অন্যদের সাথে এই ডিভাইসটি শেয়ার করলে, আপনি যখনই একটি সেভ করা পাসওয়ার্ড ব্যবহার করেন তখন আপনার পরিচয় যাচাই করতে TouchID চালু করতে পারেন</translation>
 <translation id="2900528713135656174">ইভেন্ট তৈরি করুন</translation>
 <translation id="2903493209154104877">ঠিকানা</translation>
 <translation id="290376772003165898">পৃষ্ঠাটি <ph name="LANGUAGE" /> ভাষায় নয়?</translation>
@@ -803,6 +806,8 @@
 <translation id="3108943290502734357">মাঝের ট্রে</translation>
 <translation id="3109728660330352905">আপনার এই পৃষ্ঠাটি দেখার জন্য অনুমোদন নেই।</translation>
 <translation id="3113284927548439113">থার্ড শিফ্ট</translation>
+<translation id="3114040155724590991">Android সিস্টেম আপডেট করা হচ্ছে
+    আপনার অ্যাপ কাজ করা শুরু করতে স্বাভাবিকের চেয়ে বেশি সময় লাগতে পারে।</translation>
 <translation id="3115363211799416195">{0,plural, =1{গোপনীয় ফাইল ডাউনলোড করবেন?}one{গোপনীয় ফাইল ডাউনলোড করবেন?}other{গোপনীয় ফাইল ডাউনলোড করবেন?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> আপনাকে নিজের ডেটার ব্যাকআপ নিয়ে এই <ph name="DEVICE_TYPE" /> ফেরত দিতে বলছে।</translation>
 <translation id="3116158981186517402">ল্যামিনেট করুন</translation>
@@ -1257,6 +1262,7 @@
 <translation id="4306812610847412719">ক্লিপবোর্ড</translation>
 <translation id="4308567447483056043">এই নীতিটি উপেক্ষা করা হয়েছে কারণ ব্যবহারকারী অ্যাফিলিয়েট নন। এই নীতি প্রয়োগ করার জন্য, Chrome ব্রাউজার এবং প্রোফাইল একই সংস্থার দ্বারা অ্যাডমিন কনসোলের মাধ্যমে ম্যানেজ করতে হবে।</translation>
 <translation id="4310070645992025887">আপনার অ্যাক্টিভিটির সিরিজ সার্চ করুন</translation>
+<translation id="4310496734563057511">আপনি অন্যদের সাথে এই ডিভাইসটি শেয়ার করলে, আপনি যখনই একটি সেভ করা পাসওয়ার্ড ব্যবহার করেন তখন আপনার পরিচয় যাচাই করতে Windows Hello চালু করতে পারেন</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">অবরুদ্ধ করুন (ডিফল্ট)</translation>
 <translation id="4314815835985389558">সিঙ্ক ম্যানেজ করুন</translation>
@@ -1471,6 +1477,7 @@
 <translation id="4880827082731008257">সার্চের ইতিহাস</translation>
 <translation id="4881695831933465202">খুলুন</translation>
 <translation id="4885256590493466218">চেক-আউট করার সময় <ph name="CARD_DETAIL" /> দিয়ে পেমেন্ট করুন</translation>
+<translation id="4887406273302438710">Windows Hello-এর মাধ্যমে পাসওয়ার্ড সুরক্ষিত করুন</translation>
 <translation id="4888600795924685526">বিদেশী ভাষা শিক্ষা</translation>
 <translation id="4889420713887366944">'ছদ্মবেশী উইন্ডো' বোতাম খুলুন, গোপনে ব্রাউজিংয়ের জন্য নতুন ছদ্মবেশী উইন্ডো খুলতে প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
 <translation id="4892518386797173871">রিয়ার</translation>
@@ -1690,6 +1697,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> আপনাকে বিজ্ঞপ্তি পাঠাতে চায়</translation>
 <translation id="5428105026674456456">স্প্যানিশ</translation>
 <translation id="5430298929874300616">বুকমার্ক সরান</translation>
+<translation id="5434423669266814150">পাসওয়ার্ড পূরণ করার জন্য TouchID চালু করুন</translation>
 <translation id="5443468954631487277">রিভার্স অর্ডার, সামনের দিক উপরে</translation>
 <translation id="5447765697759493033">এই সাইটটি অনুবাদ করা হবে না</translation>
 <translation id="5452270690849572955">এই <ph name="HOST_NAME" /> পৃষ্ঠাটি পাওয়া যাচ্ছে না</translation>
@@ -2466,6 +2474,7 @@
 <translation id="7564049878696755256">আপনি নিজের <ph name="ORG_NAME" /> অ্যাকাউন্টের অ্যাক্সেস হারাতে পারেন অথবা আপনার পরিচয় চুরি হয়ে যেতে পারে। Chrome এখনই আপনার পাসওয়ার্ড পরিবর্তন করার আর্জি জানাচ্ছে।</translation>
 <translation id="7564680668369175887">স্টেশন ওয়াগন</translation>
 <translation id="7567204685887185387">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট প্রতারণাপূর্ণভাবে ইস্যু করা হয়ে থাকতে পারে। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
+<translation id="7568616151991626879">Google Chrome <ph name="APP_NAME" />-এ আপনার পাসওয়ার্ড পূরণ করার চেষ্টা করছে।</translation>
 <translation id="7569490014721427265">গল্ফ</translation>
 <translation id="7569761772822664555">সার্চ ইঞ্জিন বোতাম ম্যানেজ করুন, আপনার ডিফল্ট সার্চ ইঞ্জিন এবং সাইট সার্চ ম্যানেজ করতে Enter প্রেস করুন</translation>
 <translation id="7569952961197462199">Chrome থেকে ক্রেডিট কার্ড সরাবেন?</translation>
@@ -2496,6 +2505,7 @@
 <translation id="7637586430889951925">{COUNT,plural, =0{কোনও পাসওয়ার্ড সেভ করা নেই}=1{আপনার অ্যাকাউন্টে ১টি পাসওয়ার্ড সেভ করা আছে (<ph name="DOMAIN_LIST" />-এর জন্য)}one{আপনার অ্যাকাউন্টে #টি পাসওয়ার্ড সেভ করা আছে (<ph name="DOMAIN_LIST" />-এর জন্য)}other{আপনার অ্যাকাউন্টে #টি পাসওয়ার্ড সেভ করা আছে (<ph name="DOMAIN_LIST" />-এর জন্য)}}</translation>
 <translation id="7638605456503525968">সিরিয়াল পোর্ট</translation>
 <translation id="7639968568612851608">গাঢ় ধূসর</translation>
+<translation id="7646681339175747202">ডেটা লঙ্ঘনের ঘটনাতে আপনার এইমাত্র ব্যবহার করা পাসওয়ার্ডটি পাওয়া গেছে। Google Password Manager আপনার পাসওয়ার্ড এখনই পরিবর্তন করতে সাজেস্ট করছে।</translation>
 <translation id="7647206758853451655">প্রিন্টের কোয়ালিটি</translation>
 <translation id="7648992873808071793">এই ডিভাইসে ফাইলগুলি জমা করুন</translation>
 <translation id="7653957176542370971">পেমেন্ট হ্যান্ডলার শিট বন্ধ করা আছে</translation>

@@ -23,6 +23,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1104948393051856124">Kabul Et ve Devam Et</translation>
 <translation id="110724200315609752">Açık Pencereye Geç</translation>
 <translation id="1112015203684611006">Yazdırılamadı.</translation>
+<translation id="1118569444314402022">Tekrar hoş geldiniz <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Yeni sekme oluştur.</translation>
 <translation id="1126809382673880764">Sizi tehlikeli web siteleri, indirmeler ve uzantılara karşı korumaz. Gmail ve Arama gibi diğer Google hizmetlerinde, mümkün olduğunda Güvenli Tarama korumasından yararlanmaya devam edersiniz.</translation>
 <translation id="1135212215217513471">iOS için Chrome'u yükleyin</translation>
@@ -64,6 +65,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1377255359165588604">Senkronizasyonun çalışması durdu.</translation>
 <translation id="1377321085342047638">Kart Numarası</translation>
 <translation id="1383876407941801731">Ara</translation>
+<translation id="138618066238211776"><ph name="USER_NAME" /> olarak devam et</translation>
 <translation id="1400642268715879018">Son 4 Hafta</translation>
 <translation id="1404330357948037222">Oturumunuz kapalı</translation>
 <translation id="1407135791313364759">Tümünü aç</translation>
@@ -177,6 +179,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2421044535038393232">Düzenlemeye Devam Et</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> adresinde "<ph name="USERNAME" />" için zaten kayıtlı şifreniz var</translation>
 <translation id="2435457462613246316">Şifreyi göster</translation>
+<translation id="2461070143328828326">Şifre Ayarları</translation>
 <translation id="2469960372084740698">Güvenli Tarama kapatılsın mı?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> için zaten kayıtlı şifreniz var</translation>
 <translation id="2476359652512522418">Seçilmedi</translation>
@@ -331,6 +334,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3709582977625132201">Okunmadı Olarak İşaretle</translation>
 <translation id="371230970611282515">Tehlikeli etkinlikleri meydana gelmeden önce tahmin ederek sizi uyarır.</translation>
 <translation id="37207012422556617">Trend Olan Aramalar</translation>
+<translation id="3726360487031500941"><ph name="USER_NAME" /> hesabınızda tekrar oturum açın</translation>
 <translation id="3740397331642243698">Girilen URL'leri Google Chrome'da Gizli modda açar.</translation>
 <translation id="3762232513783804601">iPad'iniz İçin Geliştirildi</translation>
 <translation id="3771033907050503522">Gizli Sekmeler</translation>

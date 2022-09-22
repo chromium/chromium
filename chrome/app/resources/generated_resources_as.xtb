@@ -2187,6 +2187,7 @@
 <translation id="2977480621796371840">গোটৰ পৰা আঁতৰাওক</translation>
 <translation id="2979639724566107830">নতুন ৱিণ্ড'ত খোলক</translation>
 <translation id="2981113813906970160">ডাঙৰ মাউছ কাৰ্ছৰ দেখুৱাওক</translation>
+<translation id="2981293774053328982">এই ফাইলটোত এনে মালৱেৰ আছে, যি আপোনাৰ ব্যক্তিগত অথবা সামাজিক নেটৱৰ্কৰ একাউণ্টসমূহৰ ডেটা আপোচ কৰিব পাৰে</translation>
 <translation id="2983373101216420412">কে’ছৰ বেটাৰীৰ স্তৰ <ph name="PERCENTAGE" />%।</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" ইনষ্টল কৰিবলৈ আপোনাৰ প্ৰশাসকলৈ এটা অনুৰোধ পঠিয়াবনে?</translation>
 <translation id="2987620471460279764">অন্য ডিভাইচৰ পৰা শ্বেয়াৰ কৰা পাঠ</translation>
@@ -3772,6 +3773,7 @@
 <translation id="4514610446763173167">প্লে' বা পজ কৰিবলৈ ভিডিঅ' ট'গল কৰক</translation>
 <translation id="451515744433878153">আঁতৰ কৰক</translation>
 <translation id="4515872537870654449">ছাৰ্ভিছিঙৰ বাবে Dellৰ সৈতে যোগাযোগ কৰক। ফেনখনে যদি কাম কৰা নাই ড’কটো বন্ধ হৈ যাব।</translation>
+<translation id="4518840066030486079">শ্বিফ্ট কীৰ ম’ডৰ শৈলী</translation>
 <translation id="4519331665958994620">ছাইটে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="4519935350946509010">সংযোগৰ আসোঁৱাহ।</translation>
 <translation id="4520385623207007473">ব্যৱহাৰ হৈ থকা কুকি</translation>
@@ -3867,6 +3869,7 @@
 <translation id="4598345735110653698">পাছকী পৰিচালনা কৰক</translation>
 <translation id="4598556348158889687">ষ্ট’ৰেজ মেনেজমেণ্ট</translation>
 <translation id="4598776695426288251">একাধিক ডিভাইচৰ জৰিয়তে ৱাই-ফাই উপলব্ধ</translation>
+<translation id="4600071396330666617">পৰামৰ্শৰ সংখ্যা</translation>
 <translation id="4601426376352205922">নপঢ়া হিচাপে চিহ্নিত কৰক</translation>
 <translation id="4602466770786743961">আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’নলৈ সদায় <ph name="HOST" />ক এক্সেছ দিয়ক</translation>
 <translation id="4606551464649945562">ছাইটসমূহক আপোনাৰ চৌপাশৰ এখন 3D মেপ সৃষ্টি কৰাৰ অথবা কেমেৰাৰ স্থান ট্ৰেক কৰাৰ অনুমতি নিদিব</translation>
@@ -4313,6 +4316,7 @@
 <translation id="5043913660911154449">অথবা আপোনাৰ প্ৰিণ্টাৰ PPD নিৰ্দিষ্ট কৰক <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">ভুল পাছৱৰ্ড</translation>
 <translation id="504561833207953641">পূর্বে থকা ব্ৰাউজাৰ ছেশ্বনত খুলি আছে।</translation>
+<translation id="5049614114599109018">ইনপুটৰ ইতিহাস ব্যৱহাৰ কৰক</translation>
 <translation id="5051836348807686060">আপুনি বাছনি কৰা ভাষাৰ ক্ষেত্ৰত বানান পৰীক্ষক সমৰ্থিত নহয়</translation>
 <translation id="5052499409147950210">ছাইট সম্পাদনা কৰক</translation>
 <translation id="505347685865235222">নামবিহীন গোট - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -4946,6 +4950,7 @@
 <translation id="5658415415603568799">অতিৰিক্ত সুৰক্ষাৰ বাবে Smart Lockএ আপোনাক ২০ ঘণ্টাৰ পিছত পাছৱৰ্ড দিবলৈ ক’ব।</translation>
 <translation id="5659593005791499971">ইমেইল</translation>
 <translation id="5662513737565158057">Linux এপ্‌সমূহে কেনেদৰে কাম কৰিব সেয়া সলনি কৰক।</translation>
+<translation id="5663459693447872156">স্বয়ংক্ৰিয়ভাৱে halfwidthলৈ সলনি কৰক</translation>
 <translation id="5667293444945855280">মালৱেৰ</translation>
 <translation id="5667546120811588575">Google Play ছেট আপ কৰি থকা হৈছে...</translation>
 <translation id="5668351004957198136">বিফল</translation>
@@ -6739,6 +6744,7 @@
 <translation id="7404065585741198296">এডাল ইউএছবি কে’বলৰ জৰিয়তে আপোনাৰ ফ’নটো সংযোগ কৰি</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{১ ঘণ্টা পূর্বে সুৰক্ষা পৰীক্ষা চলোৱা হৈছিল}one{{NUM_HOURS} ঘণ্টা পূর্বে সুৰক্ষা পৰীক্ষা চলোৱা হৈছিল}other{{NUM_HOURS} ঘণ্টা পূর্বে সুৰক্ষা পৰীক্ষা চলোৱা হৈছিল}}</translation>
 <translation id="740624631517654988">পপ-আপ অৱৰোধ কৰা হ’ল</translation>
+<translation id="7406912950279255498">ৰং বিপৰীতকৰণ ম'ড</translation>
 <translation id="7407430846095439694">আমদানি কৰক আৰু সংযুক্ত কৰক</translation>
 <translation id="7407504355934009739">অধিকাংশ লোকে এই ছাইটটোৰ জাননীসমূহ অৱৰোধ কৰে</translation>
 <translation id="740810853557944681">এটা প্ৰিণ্ট ছার্ভাৰ যোগ দিয়ক</translation>
@@ -7688,6 +7694,7 @@
     <ph name="BEGIN_PARAGRAPH3" />গৰাকীজনে এই সুবিধাটো ছেটিং &gt; উন্নত ছেটিং &gt; Googleলৈ স্বয়ংক্রিয়ভাৱে ডাইগন‘ষ্টিক আৰু ব্যৱহাৰৰ ডেটা পঠিয়াওক<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />যদি আপোনাৰ শিশুৰ বাবে অতিৰিক্ত ৱেব আৰু এপৰ কার্যকলাপৰ ছেটিংসমূহ অন কৰা আছে, তেন্তে এই ডেটা তেওঁলোকৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে। এই ছেটিংসমূহ-ৰ বিষয়ে আৰু সেইবোৰ কেনেদৰে সালসলনি কৰিব পাৰি সেই বিষয়ে জানিবলৈ families.google.comলৈ যাওক।<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">ক্লায়েণ্টৰ প্ৰমাণপত্র অমান্য</translation>
+<translation id="8270162672241199380">ষ্ট্ৰীম ইনষ্টলাৰ</translation>
 <translation id="827097179112817503">গৃহপৃষ্ঠালৈ যোৱা বুটামটো দেখুৱাওক</translation>
 <translation id="8271268254812352141">আপুনি ৰাইট ক্লিক কৰিলে অথবা পাঠত দীঘলীয়াকৈ টিপি ধৰি থাকিলে সংজ্ঞা, অনুবাদ অথবা একক ৰূপান্তৰণৰ সুবিধা পাওক। <ph name="LINK_BEGIN" />ৱেবছাইটৰ ভাষা<ph name="LINK_END" />ত অনুবাদৰ ভাষা কাষ্টমাইজ কৰক।</translation>
 <translation id="8271379370373330993">অভিভাৱকসকল, পৰৱৰ্তী কেইটামান পদক্ষেপ আপোনালোকৰ বাবে। একাউণ্ট ছেটআপ কৰাৰ পাছত আপুনি <ph name="DEVICE_TYPE" />টো শিশুটিক ঘূৰাই দিব পাৰে।</translation>
@@ -7706,6 +7713,7 @@
 <translation id="8284279544186306258">সকলো <ph name="WEBSITE_1" /> ছাইট</translation>
 <translation id="8284326494547611709">কেপশ্বন</translation>
 <translation id="8286036467436129157">ছাইন ইন কৰক</translation>
+<translation id="8286227656784970313">ছিষ্টেমৰ অভিধান ব্যৱহাৰ কৰক</translation>
 <translation id="828642162569365647">এই পাছৱৰ্ড অথবা পিনটোৱে এই <ph name="DEVICE_TYPE" />টোত আপোনাৰ ডেটা আৰু আপুনি আপোনাৰ ফ’নৰ পৰা এক্সেছ কৰা যিকোনো তথ্য সুৰক্ষিত কৰে। আপোনাৰ <ph name="DEVICE_TYPE" /> সুপ্ত অৱস্থাৰ পৰা জাগ্ৰত হওঁতে প্ৰতিবাৰেই আপুনি আনলক কৰিব লাগিব।</translation>
 <translation id="8287902281644548111">API কল/URLৰ দ্বাৰা সন্ধান কৰক</translation>
 <translation id="8288032458496410887"><ph name="APP" /> আনইনষ্টল কৰক ...</translation>
@@ -7816,6 +7824,7 @@
 <translation id="8393511274964623038">প্লাগইন বন্ধ কৰক</translation>
 <translation id="839363317075970734">ব্লুটুথ ডিভাইচৰ সবিশেষ</translation>
 <translation id="8393700583063109961">বাৰ্তা পঠিয়াওক</translation>
+<translation id="8394212467245680403">Alphanumeric</translation>
 <translation id="8397825320644530257">সংযুক্ত হৈ থকা ফ’নৰ সংযোগ বিচ্ছিন্ন কৰক</translation>
 <translation id="8398877366907290961">যিকোনো প্ৰকাৰে অব্যাহত ৰাখক</translation>
 <translation id="8399282673057829204">পাছৱৰ্ড চাওক</translation>

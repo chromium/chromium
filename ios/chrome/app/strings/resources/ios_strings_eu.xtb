@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">Onartu eta jarraitu</translation>
 <translation id="110724200315609752">Erabili irekita dagoen leihoa</translation>
 <translation id="1112015203684611006">Ezin izan da inprimatu.</translation>
+<translation id="1118569444314402022">Ongi etorri berriro, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Sortu beste fitxa bat.</translation>
 <translation id="1126809382673880764">Ez zaitu babesten webgune, deskarga eta luzapen kaltegarrien aurka. Erabilgarri dagoenean, arakatze seguruaren babesa jasotzen jarraituko duzu Google-ren beste zerbitzu batzuetan (Gmail-en eta Bilaketa zerbitzuan, esaterako).</translation>
 <translation id="1135212215217513471">Lortu iOS-erako Chrome</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">Gelditu egin da sinkronizazioa.</translation>
 <translation id="1377321085342047638">Txartelaren zenbakia</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
+<translation id="138618066238211776">Egin aurrera <ph name="USER_NAME" /> gisa</translation>
 <translation id="1400642268715879018">Azken lau asteetakoak</translation>
 <translation id="1404330357948037222">Amaitu egin da saioa</translation>
 <translation id="1407135791313364759">Ireki guztiak</translation>
@@ -177,6 +179,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2421044535038393232">Jarraitu editatzen</translation>
 <translation id="2434405374328098816">Gordeta daukazu jada "<ph name="USERNAME" />" erabiltzaile-izenari eta <ph name="WEBSITE" /> webguneari dagokien pasahitza</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
+<translation id="2461070143328828326">Pasahitzen ezarpenak</translation>
 <translation id="2469960372084740698">Arakatze segurua desaktibatu nahi duzu?</translation>
 <translation id="2473876017985765807">Gordeta daukazu jada <ph name="WEBSITE" /> webguneari dagokion pasahitza</translation>
 <translation id="2476359652512522418">Ez dago hautatuta</translation>
@@ -331,6 +334,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3709582977625132201">Markatu irakurri gabeko gisa</translation>
 <translation id="371230970611282515">Gertaera arriskutsuak iragartzen ditu eta haien berri ematen dizu gertatu aurretik.</translation>
 <translation id="37207012422556617">Pil-pilean dauden bilaketak</translation>
+<translation id="3726360487031500941">Hasi saioa berriro <ph name="USER_NAME" /> kontuan</translation>
 <translation id="3740397331642243698">Idatzitako URLak Google Chrome-ren ezkutuko moduan irekitzen ditu.</translation>
 <translation id="3762232513783804601">Zure iPad-erako garatua</translation>
 <translation id="3771033907050503522">Ezkutuko moduko fitxak</translation>
@@ -752,6 +756,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6988572888918530647">Kudeatu Google-ko kontua</translation>
 <translation id="6989674195860388998">Aldatu ezarpenetan…</translation>
 <translation id="6998989275928107238">Hartzailea</translation>
+<translation id="699954956411469731">Mugikorreko jakinarazpenak</translation>
 <translation id="7004032350256606903">Modu pribatuan arakatzeko eskatzen dizu zure erakundeak.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Azken fitxak</translation>

@@ -225,6 +225,7 @@
 <translation id="5386244825306882791">這個擴充功能也會控管 Chrome 啟動時或你使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="5394833366792865639">分享 Chrome 分頁</translation>
 <translation id="5412485296464121825">網站可以將你的興趣喜好相關資訊儲存在 Chrome 中。舉例來說，如果你造訪某個網站想購買適合馬拉松活動的慢跑鞋，網站可能會判斷你的興趣是跑馬拉松。在此之後，如果你造訪另一個網站報名參加比賽，該網站就可以根據你的興趣喜好向你顯示慢跑鞋的廣告。</translation>
+<translation id="5416870378730196769">Chrome 已開啟記憶體節省模式</translation>
 <translation id="5430073640787465221">你的偏好設定檔已毀損或無效。
 
 Google Chrome 無法復原你的設定。</translation>
@@ -323,6 +324,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7651907282515937834">Chrome Enterprise 標誌</translation>
 <translation id="7655455401911432608">你的瀏覽記錄，以及在這部裝置上透過 Chrome 造訪的網站記錄。</translation>
+<translation id="7726773885101561560">為提升瀏覽速度，Chrome 從目前未使用的分頁回收記憶體。</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟體。</translation>
 <translation id="7761834446675418963">按一下你的名稱即可開啟 Chrome 並開始瀏覽。</translation>
 <translation id="7777080907402804672">如果圖片缺少有用的說明，Chrome 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。你隨時可以在設定中關閉這項功能。</translation>
@@ -395,6 +397,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8986207147630327271">你即將在這個瀏覽器中新增工作資料夾，並僅將工作資料夾的控制權授予管理員。</translation>
 <translation id="8989968390305463310">你的瀏覽記錄會影響你所看到的廣告，以及系統推測的下列興趣喜好。為保護個人隱私，Chrome 每個月都會自動刪除你的興趣喜好。系統會重新整理這項資訊，除非你自行予以移除。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發布 # 天}}</translation>
+<translation id="9003498785844995646">開啟後，Chrome 會限制背景活動和視覺效果 (例如順暢捲動和視訊影格速率)，以節省電池電力。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />或<ph name="BEGIN_LINK_2" />提供意見<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">ChromeOS Flex 系統</translation>
 <translation id="9067395829937117663">Google Chrome 僅支援 Windows 7 以上版本的作業系統。</translation>
 <translation id="911206726377975832">你要一併刪除瀏覽資料嗎？</translation>

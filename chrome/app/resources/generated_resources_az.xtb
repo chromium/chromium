@@ -2295,6 +2295,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3090819949319990166">Xarici crx faylını <ph name="TEMP_CRX_FILE" /> üzərinə kopyalamaq olmur.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" cütləşdi</translation>
 <translation id="3093714882666365141">Saytlara ödəniş nizamlayıcılarını quraşdırmaq icazəsi verməyin</translation>
+<translation id="3093958632721393232">Yalnız enerji az olduqda aktiv edin</translation>
 <translation id="3094141017404513551">Bununla baxış <ph name="EXISTING_USER" /> adlı istifadəçidən ayrılacaq</translation>
 <translation id="3095871294753148861">Əlfəcinlər, parollar və digər brauzer datası əsas hesabla sinxronizasiya edilir.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potensial zərərli artırma deaktiv edilib. Onu silə də bilərsiniz.}other{{NUM_EXTENSIONS} potensial zərərli artırma deaktiv edilib. Onları silə də bilərsiniz.}}</translation>
@@ -5014,6 +5015,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5747552184818312860">Vaxtı bitir</translation>
 <translation id="5747785204778348146">Developer - qeyri-stabil</translation>
 <translation id="5747809636523347288"><ph name="URL" /> yerləşdirib daxil olun</translation>
+<translation id="5748137879145720682">Kompüterim elektrik şəbəkəsindən ayrıldıqda aktiv edin</translation>
 <translation id="5751345516399502412">Modem Rejiminin Hazır Olub-Olmadığını Yoxlayın</translation>
 <translation id="5755022574660047665">Google Foto'dan xatirələr</translation>
 <translation id="5756163054456765343">Yardım mərkəzi</translation>
@@ -7644,6 +7646,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8248381369318572865">Mikrofonunuza daxil olmaq və nitqinizi təhlil etmək</translation>
 <translation id="8248887045858762645">Chrome ipucu</translation>
 <translation id="8249048954461686687">OEM qovluğu</translation>
+<translation id="8249239468199142122">Enerjiyə Qənaət</translation>
 <translation id="8249615410597138718">Cihazlara göndərin</translation>
 <translation id="8250210000648910632">Yaddaşda yer qalmayıb</translation>
 <translation id="8251441930213048644">İndi yeniləyin</translation>

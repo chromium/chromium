@@ -224,6 +224,7 @@
 <translation id="5386244825306882791">它还能够控制您启动Chrome后或通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="5394833366792865639">共享 Chrome 标签页</translation>
 <translation id="5412485296464121825">网站可以将您的兴趣信息存储在 Chrome 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>
+<translation id="5416870378730196769">Chrome 已开启内存节省程序</translation>
 <translation id="5430073640787465221">您的偏好设置文件已损坏或无效。Google Chrome 浏览器无法恢复您的设置。</translation>
 <translation id="5524761631371622910">在试用期间，如果 Chrome 随机将您加入到了其中某项正在进行的试用活动，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序删除您的部分兴趣。</translation>
 <translation id="556024056938947818">Google Chrome 正尝试显示密码。</translation>
@@ -320,6 +321,7 @@
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7651907282515937834">Chrome 企业版徽标</translation>
 <translation id="7655455401911432608">您的浏览记录，即您在此设备上使用 Chrome 访问过的网站的记录。</translation>
+<translation id="7726773885101561560">为了让您享受更快速的浏览体验，Chrome 会从您目前未使用的标签页回收内存。</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
 <translation id="7761834446675418963">点击您的姓名即可打开Chrome并开始浏览。</translation>
 <translation id="7777080907402804672">如果图片缺少有用的说明，则 Chrome 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。您可以随时在“设置”中关闭此功能。</translation>
@@ -392,6 +394,7 @@
 <translation id="8986207147630327271">您将要向此浏览器添加工作资料并允许您的管理员仅控制此工作资料。</translation>
 <translation id="8989968390305463310">您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序自动删除您的部分兴趣。兴趣能够刷新，除非您将其移除。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有一项可用的 Chrome 更新}=1{有一项可用的 Chrome 更新}other{有一项可用的 Chrome 更新（已发布 # 天）}}</translation>
+<translation id="9003498785844995646">开启此设置后，Chrome 会通过限制后台活动和视觉效果（例如流畅滚动和视频帧速率）来节省电池电量。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" />或<ph name="BEGIN_LINK_2" />发送反馈<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">ChromeOS Flex 系统</translation>
 <translation id="9067395829937117663">Google Chrome 仅支持 Windows 7 或更高版本的操作系统。</translation>
 <translation id="911206726377975832">同时删除您的浏览数据吗？</translation>

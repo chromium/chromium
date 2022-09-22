@@ -53,6 +53,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2384373936468275798">O ChromiumOS não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>
 <translation id="2396765026452590966">A extensão "<ph name="EXTENSION_NAME" />" alterou a página apresentada quando inicia o Chromium.</translation>
+<translation id="2400844369696905771">Quando a definição está ativada, o Chromium recupera a memória dos separadores que não está a usar ativamente. Esta ação liberta os recursos do computador para outras tarefas e mantém o Chromium rápido. Os separadores inativos aparecem vazios e são atualizados automaticamente quando clica nos mesmos. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">O Chromium necessita de autorizações da câmara e do microfone para este site</translation>
 <translation id="2483889755041906834">No Chromium</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -143,6 +144,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="4285930937574705105">A instalação falhou devido a um erro não especificado. Se o Chromium estiver em execução, feche-o e tente de novo.</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
 <translation id="4334294535648607276">Transferência concluída.</translation>
+<translation id="437317747729858884">Para tornar a sua navegação mais rápida, o Chromium recupera a memória dos separadores que não está a usar.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> requer a leitura e a aceitação dos seguintes Termos de Utilização antes de usar este dispositivo. Estes termos não ampliam, não modificam nem limitam os Termos do ChromiumOS.</translation>
 <translation id="4407044323746248786">Pretende sair do Chromium mesmo assim?</translation>
 <translation id="4415566066719264597">Permitir que o Chromium seja executado em segundo plano</translation>
@@ -312,6 +314,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7872446069773932638">A transferir… Falta(m) <ph name="SECONDS" /> segundo(s)</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> para proteger a sua privacidade, eliminamos automaticamente os seus interesses com mais de 4 semanas. Enquanto navega, um interesse pode aparecer novamente na lista. Em alternativa, pode remover os interesses que não quer que o Chromium considere.</translation>
 <translation id="7937630085815544518">Iniciou sessão no Chromium com a conta <ph name="USER_EMAIL_ADDRESS" />. Utilize a mesma conta para iniciar sessão novamente.</translation>
+<translation id="7947085610734123927">O Chromium ativou a Poupança de memória</translation>
 <translation id="7975919845073681630">Esta é uma instalação secundária do Chromium, pelo que não pode tornar-se o navegador predefinido.</translation>
 <translation id="7997934263947464652">As extensões, as apps e os temas de fontes desconhecidas podem danificar o seu dispositivo. O Chromium recomenda instalá-los apenas a partir da <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Assim que o Chromium tiver acesso, os Websites poderão solicitar-lhe o acesso.</translation>
@@ -337,6 +340,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8558383651099478961">O teu pai/mãe desativou as "Autorizações para sites, apps e extensões" para o Chromium. Não é permitido adicionar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Para obter atualizações futuras do Chromium, precisa do macOS 10.13 ou posterior. Este computador está a usar o macOS 10.12.</translation>
 <translation id="8568283329061645092">O Chromium pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
+<translation id="8574036838419011058">Quando esta definição está ativada, o Chromium poupa a energia da bateria ao limitar a atividade em segundo plano e os efeitos visuais, como o deslocamento suave e as velocidades de frames do vídeo. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Como usamos estes dados:<ph name="END_BOLD" /> os sites podem armazenar informações no Chromium sobre os seus interesses. Por exemplo, se visitar um site para comprar ténis para uma maratona, o site pode definir "correr maratonas" como o seu interesse. Posteriormente, se visitar um site diferente para se inscrever numa corrida, esse site pode mostrar-lhe um anúncio de ténis de corrida com base nos seus interesses.</translation>
 <translation id="8619360774459241877">A iniciar o Chromium…</translation>

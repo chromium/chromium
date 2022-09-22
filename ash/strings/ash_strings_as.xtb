@@ -235,6 +235,7 @@
 <translation id="2298170939937364391">পূর্ণ স্ক্ৰীনৰ বিৱৰ্ধক সক্ষম কৰা হৈছে। ইয়াক ট’গল অফ কৰিবলৈ আকৌ Ctrl+Search+H টিপক।</translation>
 <translation id="2302092602801625023">এই একাউণ্টটো পাৰিবাৰিক লিংকৰ দ্বাৰা পৰিচালনা কৰা হয়</translation>
 <translation id="2303600792989757991">ৱিণ্ড‘ অৱলোকন ট‘গল কৰক</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: শেহতীয়া স্ক্ৰীন কেপচাৰ, ডাউনল’ড আৰু পিন কৰা ফাইল</translation>
 <translation id="2318576281648121272">আজি <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , সন্ধানৰ ফলাফলৰ শিতান</translation>
 <translation id="2322173485024759474">এটা বৰ্ণ পিছলৈ যাওক</translation>
@@ -1156,6 +1157,7 @@
 <translation id="7633755430369750696">Nearby Shareৰ ছেটিং দেখুৱাওক।</translation>
 <translation id="7634648064048557203">কেমেৰা তলৰ সোঁফালৰ কোণলৈ স্নেপ কৰা হৈছে</translation>
 <translation id="7641938616688887143">ৰেকৰ্ড কৰক</translation>
+<translation id="7642106959537987271">ৰং বিপৰীতকৰণ ম'ড</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />ৰ বাবে ছেটিংসমূহ খোলক, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (গৰাকী)</translation>
 <translation id="7647488630410863958">আপোনাৰ জাননীবোৰ চাবলৈ ডিভাইচ আনলক কৰক</translation>
@@ -1261,6 +1263,7 @@
 <translation id="8209010265547628927">ৰিছেট কৰক</translation>
 <translation id="8214996719228530800">Canary চেনেল</translation>
 <translation id="8219451629189078428">এই সময়ছোৱাত আপোনাৰ Chromebookটো অন হৈ থকা আৰু বিদ্যুৎ শক্তিৰ উৎসৰ লগত সংযোগ হৈ থকা আৱশ্যক। চাৰ্জাৰটো অথবা এডাপ্টৰ কে’বলসমূহ আপোনাৰ Chromebookটো আৰু পাৱাৰ আউটলেট উভয়তে ভালকৈ সংযোগ হৈ থকাটো নিশ্চিত কৰক। আপোনাৰ Chromebookটো অফ নকৰিব।</translation>
+<translation id="8230305195727960608">ৰং বিপৰীতকৰণ ম'ড</translation>
 <translation id="8236042855478648955">বিৰতিৰ সময়</translation>
 <translation id="8246282815785366524">পুনৰ স্বাগতম, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, ফ’নৰ বেটাৰী <ph name="BATTERY_STATUS" /></translation>
@@ -1387,6 +1390,7 @@
 <translation id="8982906748181120328">নীয়েৰবাই দৃশ্যমানতা</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ব্যৱহাৰ কৰি</translation>
+<translation id="8991617137207906966">ৰং বিপৰীতকৰণ ম'ডটো সক্ষম কৰা হৈছে। ইয়াক ট’গল অফ কৰিবলৈ আকৌ Ctrl+Search+H টিপক।</translation>
 <translation id="899350903320462459">জাননী সম্পর্কীয় কার্যসমূহ কৰিবলৈ <ph name="LOGIN_ID" /> হিচাপে ডিভাইচটো আনলক কৰক</translation>
 <translation id="9000771174482730261">ষ্ট’ৰেজ পৰিচালনা কৰক</translation>
 <translation id="9017320285115481645">Family Linkৰ অভিভাৱকৰ এক্সেছ ক'ডটো দিয়ক।</translation>
@@ -1435,6 +1439,7 @@
 <translation id="921989828232331238">আপোনাৰ অভিভাৱকে আপোনাৰ ডিভাইচটো দিনটোৰ বাবে লক কৰিছে</translation>
 <translation id="9220525904950070496">একাউণ্ট আঁতৰাওক</translation>
 <translation id="923686485342484400">ছাইন আউট কৰিবলৈ Control Shift Q দুবাৰ টিপক।</translation>
+<translation id="92580429198593979">আপুনি ৰং বিপৰীতকৰণৰ বাবে কীব’ৰ্ডৰ শ্বৰ্টকাটত টিপিছে। আপুনি এইটো অন কৰিব বিচাৰেনে?</translation>
 <translation id="925832987464884575">পূৰ্বদৰ্শন লুকুৱাওক</translation>
 <translation id="937214777182567951"><ph name="MANAGER" />ৰ বাবে আপুনি তৎক্ষণাৎ আপোনাৰ <ph name="DEVICE_TYPE" />টো আপডে’ট কৰাৰ আৱশ্যক</translation>
 <translation id="938963181863597773">আপোনাৰ কেলেণ্ডাৰত কি আছে?</translation>

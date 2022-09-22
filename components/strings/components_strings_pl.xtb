@@ -174,6 +174,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1380591466760231819">Składanie typu C</translation>
 <translation id="138218114945450791">Jasnoniebieski</translation>
 <translation id="1382194467192730611">Urządzenie USB dozwolone przez administratora</translation>
+<translation id="1382378825779654399">Otrzymasz alert e-mail, jeśli produkt stanieje w dowolnej witrynie. Ta strona zostanie zapisana w folderze <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Nie widzisz aktualnych informacji? Skontaktuj się z bankiem, aby je zaktualizować.</translation>
 <translation id="1384725838384960382">Arkusz uwierzytelniania danych logowania na potrzeby bezpiecznych płatności</translation>
 <translation id="1386623374109090026">Adnotacje</translation>
@@ -1419,6 +1420,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4744514002166662487">Utwórz prezentację</translation>
 <translation id="4744603770635761495">Ścieżka pliku wykonywalnego</translation>
 <translation id="4749011317274908093">Jesteś w trybie incognito</translation>
+<translation id="4750671009706599284">tego telefonu</translation>
 <translation id="4750917950439032686">Informacje, które wysyłasz tej witrynie (na przykład hasła lub numery kart kredytowych), pozostają prywatne.</translation>
 <translation id="4751476147751820511">Czujniki ruchu lub światła</translation>
 <translation id="4754461935447132332">Niedozwolone w niezabezpieczonych witrynach</translation>
@@ -1527,6 +1529,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5018422839182700155">Nie można otworzyć tej strony</translation>
 <translation id="5019198164206649151">Nieprawidłowy stan magazynu wspomagającego</translation>
 <translation id="5020776957610079374">Muzyka świata</translation>
+<translation id="5021557570875267742">Monitorowanie cen w Chrome</translation>
 <translation id="5023310440958281426">Sprawdź zasady administratora</translation>
 <translation id="5029568752722684782">Usuń kopię</translation>
 <translation id="5030338702439866405">Wystawiony przez</translation>
@@ -2198,6 +2201,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Strona została uproszczona przez Chrome, by było ją łatwiej przeczytać. Przeglądarka Chrome pobrała oryginalną stronę przez niezabezpieczone połączenie.</translation>
 <translation id="6890443033788248019">Zezwolić na dostęp do lokalizacji?</translation>
+<translation id="6890531741535756070">W witrynach korzystających z <ph name="PROVIDER_ORIGIN" /> do potwierdzania tożsamości używasz <ph name="DEVICE_LABEL" />. Możliwe, że ten dostawca przechowuje dane Twojej formy płatności. Możesz <ph name="BEGIN_LINK" />poprosić o ich usunięcie<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Ten poziom zasad nie jest obsługiwany.</translation>
 <translation id="6895143722905299846">Numer wirtualny:</translation>
 <translation id="6895330447102777224">Karta została potwierdzona</translation>
@@ -2248,6 +2252,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6993898126790112050">6x9 (koperta)</translation>
 <translation id="6996312675313362352">Zawsze tłumacz z tego języka: <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Branża rozrywkowa</translation>
+<translation id="7003335073762455340">Obserwujesz ten produkt. Ta strona jest zapisana w folderze <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Używaj Windows Hello, by szybciej potwierdzać karty</translation>
 <translation id="7006930604109697472">Wyślij mimo wszystko</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2345,7 +2350,7 @@ Dodatkowe informacje:
 <translation id="7277998515889183784">Makijaż i kosmetyki</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby zmienić swoje hasło do konta Google</translation>
 <translation id="7292031607255951991">Nazwa odbiorcy</translation>
-<translation id="7298195798382681320">Zalecane</translation>
+<translation id="7298195798382681320">Zalecana</translation>
 <translation id="7299471494012161875">Pokaż podłączone urządzenia peryferyjne</translation>
 <translation id="7300012071106347854">Niebieski kobalt</translation>
 <translation id="7304030187361489308">Wysoki</translation>
@@ -2454,7 +2459,7 @@ Dodatkowe informacje:
 <translation id="7526934274050461096">Twoje połączenie z tą stroną nie jest prywatne</translation>
 <translation id="7529884293139707752">Edukacja domowa</translation>
 <translation id="7535087603100972091">Wartość</translation>
-<translation id="7537536606612762813">Obowiązkowe</translation>
+<translation id="7537536606612762813">Obowiązkowa</translation>
 <translation id="7538364083937897561">A2 (koperta)</translation>
 <translation id="7542403920425041731">Po potwierdzeniu szczegółowe dane karty zostaną udostępnione tej stronie.</translation>
 <translation id="7542995811387359312">Automatyczne wypełnianie danych karty kredytowej jest wyłączone, ponieważ ten formularz nie korzysta z bezpiecznego połączenia.</translation>
@@ -2563,6 +2568,7 @@ Dodatkowe informacje:
 <translation id="7766518757692125295">Fartuch</translation>
 <translation id="7770259615151589601">Designated-Long</translation>
 <translation id="7773005668374414287">Ta sama kolejność, strona do drukowania skierowana w górę</translation>
+<translation id="7785790577395078482">tego tabletu</translation>
 <translation id="7791011319128895129">Nieopublikowana</translation>
 <translation id="7791196057686275387">Owijanie</translation>
 <translation id="7791543448312431591">Dodaj</translation>
@@ -3044,6 +3050,7 @@ Dodatkowe informacje:
 <translation id="9174623988242579721">Pojazdy nietypowe i specjalne</translation>
 <translation id="9174917557437862841">Przycisk przełączania kart, naciśnij Enter, by przełączyć na tę kartę</translation>
 <translation id="9179703756951298733">Zarządzaj płatnościami i kartami kredytowymi w ustawieniach Chrome</translation>
+<translation id="9179907736442194268">Otrzymuj alerty e-mail, jeśli produkt stanieje w dowolnej witrynie</translation>
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="9183425211371246419">Serwer <ph name="HOST_NAME" /> używa nieobsługiwanego protokołu.</translation>
 <translation id="9187461866967718678">Sporty ekstremalne</translation>

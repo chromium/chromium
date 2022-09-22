@@ -235,6 +235,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2298170939937364391">Pilnekrāna lupa ir iespējota. Lai to izslēgtu, vēlreiz nospiediet taustiņu kombināciju Ctrl+Search+M.</translation>
 <translation id="2302092602801625023">Šo kontu pārvalda lietotne Family Link.</translation>
 <translation id="2303600792989757991">Pārslēgt loga kopsavilkumu</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: nesen izveidoti ekrānuzņēmumi, lejupielādes un piespraustie faili</translation>
 <translation id="2318576281648121272">Šodien, <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, meklēšanas rezultātu kategorija</translation>
 <translation id="2322173485024759474">Pāriet atpakaļ pa burtam</translation>
@@ -1155,6 +1156,7 @@ Jauna instalācija</translation>
 <translation id="7633755430369750696">Rādīt funkcijas “Kopīgošana tuvumā” iestatījumus.</translation>
 <translation id="7634648064048557203">Kamera pārnesta uz labo apakšējo stūri</translation>
 <translation id="7641938616688887143">Ierakstīt</translation>
+<translation id="7642106959537987271">krāsu inversijas režīms</translation>
 <translation id="7642647758716480637">Atvērt tīkla <ph name="NETWORK_NAME" /> iestatījumus. Statuss: <ph name="CONNECTION_STATUS" />.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (īpašnieks)</translation>
 <translation id="7647488630410863958">Atbloķējiet ierīci, lai skatītu paziņojumus.</translation>
@@ -1260,6 +1262,7 @@ Jauna instalācija</translation>
 <translation id="8209010265547628927">Atiestatīt</translation>
 <translation id="8214996719228530800">Canary versija</translation>
 <translation id="8219451629189078428">Šajā laika periodā jūsu Chromebook datoram ir jābūt ieslēgtam un pievienotam strāvas avotam. Uzlādes ierīcei vai adaptera vadiem ir jābūt pilnībā pievienotiem gan Chromebook datoram, gan kontaktligzdai. Neizslēdziet Chromebook datoru.</translation>
+<translation id="8230305195727960608">Krāsu inversijas režīms</translation>
 <translation id="8236042855478648955">Laiks pārtraukumam</translation>
 <translation id="8246282815785366524">Laipni lūdzam atpakaļ, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1389,7 @@ Jauna instalācija</translation>
 <translation id="8982906748181120328">Tuvumā: redzamība</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Izmantojot <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Krāsu inversijas režīms ir iespējots. Lai to izslēgtu, vēlreiz nospiediet taustiņu kombināciju Ctrl+Search+H.</translation>
 <translation id="899350903320462459">Atbloķēt ierīci kā <ph name="LOGIN_ID" />, lai veiktu paziņojuma darbību</translation>
 <translation id="9000771174482730261">PĀRVALDĪT KRĀTUVI</translation>
 <translation id="9017320285115481645">Ievadiet Family Link vecāku piekļuves kodu.</translation>
@@ -1434,6 +1438,7 @@ Jauna instalācija</translation>
 <translation id="921989828232331238">Jūsu vecāki bloķēja jūsu ierīci šai dienai</translation>
 <translation id="9220525904950070496">Konta noņemšana</translation>
 <translation id="923686485342484400">Lai izrakstītos, divas reizes nospiediet taustiņu kombināciju Ctrl+Shift+Q.</translation>
+<translation id="92580429198593979">Jūs nospiedāt krāsu inversijas īsinājumtaustiņu. Vai vēlaties to ieslēgt?</translation>
 <translation id="925832987464884575">Paslēpt priekšskatījumus</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> pieprasa, lai jūs nekavējoties atjauninātu ierīci <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Kas ir atrodams manā kalendārā?</translation>

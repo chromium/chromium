@@ -719,6 +719,7 @@
 <translation id="7248671827512403053">애플리케이션</translation>
 <translation id="7256405249507348194">알 수 없는 오류(<ph name="DESC" />)입니다.</translation>
 <translation id="7268659760406822741">사용 가능한 서비스</translation>
+<translation id="7292816689782057017">관리자 정책에 따라 일부 위치에만 저장할 수 있습니다.</translation>
 <translation id="7294063083760278948">텔루구어(음역)</translation>
 <translation id="7295662345261934369">다른 사용자와 공유</translation>
 <translation id="7297443947353982503">사용자 이름 또는 비밀번호가 잘못되었거나 EAP 인증에 실패했습니다.</translation>
@@ -905,6 +906,7 @@
 <translation id="8810671769985673465">압축에 실패했습니다. 남은 항목: '<ph name="FILE_NAME" />'</translation>
 <translation id="8813284582615685103">스페인어(스페인)</translation>
 <translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />' 멤버에게 이 항목의 사본에 액세스할 수 있는 권한이 부여됩니다.</translation>
+<translation id="8849389110234859568">관리자 정책은 일부 파일에 대한 액세스를 제한합니다.</translation>
 <translation id="8857149712089373752">네팔어(표음 키보드)</translation>
 <translation id="8860454412039442620">Excel 스프레드시트</translation>
 <translation id="8866284467018526531">아랍어(음역)</translation>

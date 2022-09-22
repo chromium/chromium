@@ -896,6 +896,7 @@
 <translation id="6064463340679478396">फाइल वापरून झाली</translation>
 <translation id="6073451960410192870">रेकॉर्डिंग थांबवा</translation>
 <translation id="6074087755403037157">बीटा चॅनल</translation>
+<translation id="6095008505822982596">स्पीच रेट</translation>
 <translation id="6099678161144790572">मागील महिन्यात संपादित केलेली</translation>
 <translation id="6103838137565245112">सिस्टीम</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> च्या स्पीच फाइल डाउनलोड केल्या आहेत</translation>
@@ -1156,6 +1157,7 @@
 <translation id="7633755430369750696">Nearby सह शेअरिंग सेटिंग्ज दाखवा.</translation>
 <translation id="7634648064048557203">कॅमेरा सर्वात खालच्या उजव्या कोपऱ्यात स्नॅप केला आहे</translation>
 <translation id="7641938616688887143">रेकॉर्ड करा</translation>
+<translation id="7642106959537987271">कलर इन्व्हर्जन मोड</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> साठी सेटिंग्ज उघडा</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (मालक)</translation>
 <translation id="7647488630410863958">आपल्या सूचना पाहण्यासाठी डिव्हाइस अनलॉक करा</translation>
@@ -1261,6 +1263,7 @@
 <translation id="8209010265547628927">रीसेट करा</translation>
 <translation id="8214996719228530800">कॅनरी चॅनल</translation>
 <translation id="8219451629189078428">या कालावधी दरम्यान Chromebook सुरू असणे आणि पॉवरशी कनेक्ट केलेले असणे आवश्यक आहे. चार्जर किंवा अडॅप्टर केबल तुमचे Chromebook आणि पॉवर आउटलेट या दोन्ही गोष्टींशी पूर्णपणे प्लग इन केल्या असल्याची खात्री करा. तुमचे Chromebook बंद करू नका.</translation>
+<translation id="8230305195727960608">कलर इन्व्हर्जन मोड</translation>
 <translation id="8236042855478648955">विश्रांतीची वेळ</translation>
 <translation id="8246282815785366524"><ph name="GIVEN_NAME" />, तुमचे पुन्हा स्वागत आहे</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, फोन बॅटरी <ph name="BATTERY_STATUS" /></translation>
@@ -1387,6 +1390,7 @@
 <translation id="8982906748181120328">Nearby असलेले</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> वापरत आहे</translation>
+<translation id="8991617137207906966">कलर इन्व्हर्जन मोड सुरू केला आहे. तो बंद वर टॉगल करण्यासाठी पुन्हा Ctrl+Search+H दाबा.</translation>
 <translation id="899350903320462459">सूचनेशी संबंधित क्रिया पार पाडण्यासाठी डिव्हाइस <ph name="LOGIN_ID" /> म्हणून अनलॉक करा</translation>
 <translation id="9000771174482730261">स्टोरेज व्यवस्थापित करा</translation>
 <translation id="9017320285115481645">Family Link पालक ॲक्सेस कोड एंटर करा.</translation>
@@ -1436,6 +1440,7 @@
 <translation id="921989828232331238">तुमच्या पालकाने आज दिवसभरासाठी तुमचे डिव्हाइस लॉक केले</translation>
 <translation id="9220525904950070496">खाते काढून टाका</translation>
 <translation id="923686485342484400">साइन आउट करण्यासाठी Control Shift Q दोनदा दाबा.</translation>
+<translation id="92580429198593979">तुम्ही कलर इन्व्हर्जनसाठी कीबोर्ड शॉर्टकट दाबला आहे. तुम्हाला ते बंद करायचे आहे का?</translation>
 <translation id="925832987464884575">पूर्वावलोकने लपवा</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> नुसार तुम्ही तुमचे <ph name="DEVICE_TYPE" /> त्वरित अपडेट करणे आवश्यक आहे</translation>
 <translation id="938963181863597773">माझ्या कॅलेंडरमधील इव्हेंट काय आहेत?</translation>

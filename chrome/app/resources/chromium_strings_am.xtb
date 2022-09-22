@@ -55,6 +55,7 @@
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2384373936468275798">የመለያ መግቢያ ዝርዝሮችዎ ጊዜ ያለፈባቸው ስለሆኑ ChromiumOS ውሂብዎን ማስመር አልቻለም።</translation>
 <translation id="2396765026452590966">ይህ «<ph name="EXTENSION_NAME" />» ቅጥያ Chromiumን ሲጀምሩት የሚታየውን ገጽ ቀይሮታል።</translation>
+<translation id="2400844369696905771">ሲበራ፣ Chromium በንቃት እየተጠቀሟቸው ካልሆኑ ትሮች ማህደረ ትውስታን መልሶ ይወስዳል። ይህ የእርስዎን ኮምፒውተር ንብረቶች ለሌሎች ተግባሮች ቦታ ያስለቅቃል እና Chromium ፈጣን ሆኖ እንዲቆይ ያደርጋል። ንቁ ያልሆኑ ትሮች ባዶ ሆነው ይታያሉ እና ጠቅ ሲያደርጓቸው በራስ-ሰር እንደገና ይጭናሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium ለዚህ ጣቢያ የካሜራ እና የማይክሮፎን ፈቃዶች ያስፈልጉታል</translation>
 <translation id="2483889755041906834">በChromium ውስጥ</translation>
 <translation id="2485422356828889247">አራግፍ</translation>
@@ -63,6 +64,7 @@
 <translation id="2583187216237139145">ይህን መገለጫ በሚጠቀሙበት ጊዜ የመነጨ ማንኛውም የChromium ውሂብ (እንደ የዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች መፈጠር ያለ) በስራ መገለጫ አስተዳዳሪው ሊወገድ ይችላል። <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">በጭነት ጊዜ የስርዓተ ክወና ስህተት ተፈጥሯል። እባክዎ Chromiumን እንደገና ያውርዱት።</translation>
 <translation id="2661879430930417727">መሣሪያ የሚያጋሩ ከሆኑ ጓደኛዎች እና ቤተሰብ ተለይተው ሊያስሱ እና Chromiumን በሚፈልጉበት መንገድ ማዋቀር ይችላሉ</translation>
+<translation id="2669853942967761236">Chromium ይህ መዝገብ ፋይል ተንኮል አዘል ዌርን ሊደብቅ ስለሚችል አግዶታል</translation>
 <translation id="268602741124540128">እንኳን ወደ Chromium በደህና መጡ <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">የChromium ትር</translation>
 <translation id="2718390899429598676">ለተጨማሪ ደህንነት ሲባል Chromium ውሂብዎን ያመሰጥረዋል።</translation>
@@ -144,6 +146,7 @@
 <translation id="4285930937574705105">ተለይቶ ባልታወቀ ስህተት ምክንያት ጭነት ከሽፏል። Chromium አሁን እያሄደ ከሆነ እባክዎ ይዝጉትና እንደገና ይሞክሩ።</translation>
 <translation id="4304713468139749426">የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="4334294535648607276">ማውረድ ተጠናቅቋል።</translation>
+<translation id="437317747729858884">የእርስዎን አሰሳ የበለጠ ፈጣን ለማድረግ Chromium እየተጠቀሟቸው ካልሆኑ ትሮች ማህደረ ትውስታን መልሶ ይወስዳል።</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> ይህን መሣሪያ ከመጠቀምዎ በፊት የሚከተለውን የአገልግሎት ውል እንዲያነብቡት እና እንዲቀበሉት ይፈለጋል። ይህ ውል የChromiumOS ውሉን አያስፋፋውም፣ አይቀይረውም ወይም አይገድበውም።</translation>
 <translation id="4407044323746248786">የሆነው ሆኖ ከChromium ይወጣ?</translation>
 <translation id="4415566066719264597">Chromium በበስተጀርባ ላይ ያሂድ</translation>
@@ -312,6 +315,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="7872446069773932638">በማውረድ ላይ... <ph name="SECONDS" /> ሰከንድ(ዶች) ይቀራሉ</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />የእርስዎን ውሂብ እንዴት ማቀናበር እንደሚችሉ፦<ph name="END_BOLD" /> የእርስዎን ግላዊነት ለመጠበቅ ከ4 ሳምንታት በላይ የቆዩ ዝንባሌዎችዎን በራስ-ሰር እንሰርዛለን። ማሰስዎን በሚቀጥሉበት ጊዜ ዝንባሌ እንደገና በዝርዝሩ ላይ ሊታይ ይችላል። ወይም Chromium ከግምት ውስጥ እንዳያስገባቸው የማይፈልጓቸውን ዝንባሌዎች ማስወገድ ይችላሉ።</translation>
 <translation id="7937630085815544518">እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ወደ Chromium ገብተዋል። እባክዎ እንደገና ለመግባት ተመሳሳዩን መለያ ይጠቀሙ።</translation>
+<translation id="7947085610734123927">Chromium የማህደረ ትውስታ ቆጣቢን አብርቷል</translation>
 <translation id="7975919845073681630">ይሄ ሁለተኛ የChromium ጭነት ነው፣ እና ነባሪ አሳሽዎ ማድረግ አይቻልም።</translation>
 <translation id="7997934263947464652">ካልታወቁ ምንጮች የመጡ ቅጥያዎች፣ መተግበሪያዎች እና ገጽታዎች መሣሪያዎን ሊጎዱ ይችላሉ። Chromium እነሱን ከ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ብቻ መጫንን ይመክራል</translation>
 <translation id="8013436988911883588">አንዴ Chromium መዳረሻ ከኖረው በኋላ ድር ጣቢያዎች እርስዎን መዳረሻ መጠየቅ ይችላሉ።</translation>
@@ -337,6 +341,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8558383651099478961">የእርስዎ ወላጅ ለChromium «የጣቢያዎች፣ መተግበሪያዎች እና ቅጥያዎች ፈቃዶች»ን አጥፍተዋል። ይህን <ph name="EXTENSION_TYPE_PARAMETER" /> ማከል አይፈቀድም።</translation>
 <translation id="8561285221328166383">የወደፊቱን የChromium ዝመኔዎችን ለማግኘት፣ macOS 10.13 ወይም ከዚያ በኋላ ያለው ያስፈልግዎታል። ይህ ኮምፒተር macOS 10.12 እየተጠቀመ ነው።</translation>
 <translation id="8568283329061645092">Chromium በእርስዎ የGoogle መለያ በሚገቡበት ጊዜ የእርስዎን የይለፍ ቃላትን ሊፈትሽ ይችላል</translation>
+<translation id="8574036838419011058">ሲበራ፣ Chromium የዳራ እንቅስቃሴን እና እንደ ለስላሳ ሽብለላ እና የቪድዮ የክፈፍ ፍጥነቶች ያሉ ምስላዊ ተጽዕኖዎችን በመገደብ የባትሪ ኃይልን ይቆጥባል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">የቅጂ መብት <ph name="YEAR" /> የChromium ደራሲያን። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />ይህንን ውሂብ እንዴት እንደሚጠቀሙበት፦<ph name="END_BOLD" /> ጣቢያዎች ስለዝንባሌዎችዎ መረጃን በChromium አማካኝነት ማከማቸት ይችላሉ። ለምሳሌ፣ ለማራቶን ጫማ ለመግዛት ጣቢያን ከጎበኙ ጣቢያው ዝንባሌዎን እንደ ማራቶን መሮጥ ሊገልጽ ይችላል። በኋላ ላይ ለሩጫ ለመመዝገብ ሌላ ጣቢያ ከጎበኙ ይህ ጣቢያ በዝንባሌዎችዎ ላይ ተመስርቶ የመሮጫ ጫማ ማስታወቂያ ሊያሳየዎት ይችላል።</translation>
 <translation id="8619360774459241877">Chromiumን በማስጀመር ላይ...</translation>

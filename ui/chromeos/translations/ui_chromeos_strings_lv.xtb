@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Notiek faila “<ph name="FILE_NAME" />” kopēšana...</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
 <translation id="1190144681599273207">Izgūstot šo failu, tiks izmantoti aptuveni <ph name="FILE_SIZE" /> mobilo datu.</translation>
+<translation id="1194390763418645112">piekļuvi failiem šeit: <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1209796539517632982">Automātiski nosaukumu serveri</translation>
 <translation id="1210831758834677569">Laosiešu</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome</translation>
 <translation id="1572585716423026576">Iestatīt kā fona tapeti</translation>
 <translation id="1576937952766665062">Bengāļu, transliterācija</translation>
+<translation id="1577977504532381335">Pārskatīt administratora politiku</translation>
 <translation id="158849752021629804">Nepieciešams mājas tīkls</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Attēla izšķirtspēja</translation>
 <translation id="1972984168337863910">Notiek failu atsauksmju paneļu izvēršana</translation>
 <translation id="1995337122023280937">Pāriet uz faila atrašanās vietu</translation>
+<translation id="1999709132469742660">piekļuvi failiem visos URL</translation>
 <translation id="2001796770603320721">Pārvaldīt Diskā</translation>
 <translation id="2009067268969781306">Formatējot disku, tiks dzēsti visi tajā uzglabātie dati. Šo darbību nevar atsaukt.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Persona ar kafiju</translation>
 <translation id="2251368349685848079">Atjaunot no atkritnes</translation>
 <translation id="2282155092769082568">Automātiskās konfigurācijas vietrādis URL</translation>
+<translation id="2284767815536050991">noņemama atmiņas ierīce</translation>
 <translation id="2288278176040912387">Ierakstu atskaņotājs</translation>
 <translation id="2291538123825441971">Notiek <ph name="NUMBER_OF_FILES" /> failu atvēršana.</translation>
 <translation id="2303301624314357662">Tiek atvērts fails <ph name="FILE_NAME" />.</translation>
@@ -341,6 +345,7 @@
 <translation id="4057991113334098539">Notiek aktivizācija...</translation>
 <translation id="4092890906744441904">Īru</translation>
 <translation id="4124935795427217608">Vienradzis</translation>
+<translation id="4157569377477607576">Administratora politika nosaka, ka nav ieteicams:</translation>
 <translation id="4159731583141908892">Pārvietots vienums: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Iztukšot atkritni tūlīt</translation>
 <translation id="4186579485882418952">Iespējot piekļuvi bezsaistē</translation>
@@ -502,6 +507,7 @@
 <translation id="5323213332664049067">Latīņamerikas</translation>
 <translation id="5330145655348521461">Šie faili tika atvērti citā darbvirsmā. Lai skatītu šo darbvirsmu, izmantojiet profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Iegūt informāciju</translation>
+<translation id="5337538975554986899">piekļuvi failiem visos URL, izņemot <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Persona ar kaķiem</translation>
 <translation id="5358764674931277">Kadri sekundē</translation>
 <translation id="5363339716524495120">Ievades valoda ir ķīniešu valoda.</translation>
@@ -526,6 +532,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> attēls</translation>
 <translation id="5534520101572674276">Notiek lieluma aprēķināšana.</translation>
 <translation id="554153475311314364">Grieķu, transliterācija</translation>
+<translation id="5580591966435005537">virtuālā mašīna</translation>
 <translation id="5583640892426849032">Atkāpšanās taustiņš</translation>
 <translation id="5583664733673201137">Pieturzīmju platums ir pilns.</translation>
 <translation id="5602622065581044566">Bulgāru, ar fonētisko tastatūru</translation>
@@ -586,6 +593,7 @@
 <translation id="61118516107968648">CSV formāta teksts</translation>
 <translation id="6129953537138746214">Atstarpe</translation>
 <translation id="6133173853026656527">Notiek faila “<ph name="FILE_NAME" />” pārvietošana...</translation>
+<translation id="6133877453787250710">Administrators uzrauga:</translation>
 <translation id="613750717151263950">Japāņu, ar ASV tastatūru</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nav tīkla</translation>
 <translation id="6146563240635539929">Videoklipi</translation>
@@ -606,6 +614,7 @@
 <translation id="6287852322318138013">Lietotnes atlasīšana šī faila atvēršanai</translation>
 <translation id="6295542640242147836">Bloķēt SIM karti</translation>
 <translation id="6296410173147755564">PUK kods nav derīgs</translation>
+<translation id="6308243004861726558">Šis fails ir konfidenciāls, un uz to attiecas administratora politika. Tiek piemērotas tālāk minētās faila piekļuves un pārsūtīšanas darbības.</translation>
 <translation id="6312403991423642364">Nezināma tīkla kļūda</translation>
 <translation id="6317608858038767920">Pielāgots nosaukuma serveris <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> arhīvs</translation>
@@ -833,6 +842,7 @@
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8261506727792406068">Dzēst</translation>
 <translation id="8261561378965667560">Ķīniešu, masīva ievades metode</translation>
+<translation id="8262872909443689080">Administratora politika</translation>
 <translation id="8264024885325823677">Šo iestatījumu pārvalda jūsu administrators.</translation>
 <translation id="8269755669432358899">Notiek failu atsauksmju paneļu sakļaušana</translation>
 <translation id="8280151743281770066">Armēņu fonētiskā</translation>
@@ -929,6 +939,7 @@
 <translation id="9100610230175265781">Jāievada ieejas frāze.</translation>
 <translation id="9110990317705400362">Mēs arvien meklējam veidus, kā papildus aizsargāt pārlūkošanu. Iepriekš jebkura vietne varēja aicināt pievienot paplašinājumu pārlūkā. Jaunākajās Google Chrome versijās lapā “Paplašinājumi” ir precīzi jānorāda, ka vēlaties instalēt šos paplašinājumus. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="9111102763498581341">Atbloķēt</translation>
+<translation id="9116909380156770361">failu pārsūtīšanu uz: <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Kodeks</translation>
 <translation id="9130775360844693113">“<ph name="DESTINATION_NAME" />” dalībnieki iegūs piekļuvi šiem vienumiem.</translation>
 <translation id="9131598836763251128">Lūdzu, atlasiet vienu vai vairākus failus</translation>
@@ -950,6 +961,7 @@
 <translation id="943972244133411984">Pārveidoja</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="947144732524271678">Atlasīts diapazons (<ph name="ENTRY_COUNT" /> vienumi) no “<ph name="FROM_ENTRY_NAME" />” līdz “<ph name="TO_ENTRY_NAME" />”.</translation>
+<translation id="954194396377670556">Administratora politika aizliedz:</translation>
 <translation id="965477715979482472">Angļu (Dienvidāfrika)</translation>
 <translation id="981121421437150478">Bezsaistē</translation>
 <translation id="988685240266037636">Fails ar nosaukumu “<ph name="FILE_NAME" />” jau pastāv. Vai vēlaties to aizstāt?</translation>

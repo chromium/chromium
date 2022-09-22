@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">ຍອມ​ຮັບ​ ແລະ​ສືບ​ຕໍ່</translation>
 <translation id="110724200315609752">ປ່ຽນເພື່ອເປີດໜ້າຈໍ</translation>
 <translation id="1112015203684611006">ການພິມບໍ່ສຳເລັດ.</translation>
+<translation id="1118569444314402022">ຍິນດີຕ້ອນຮັບກັບມາ, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">ສ້າງ​ແຖບ​ໃໝ່.</translation>
 <translation id="1126809382673880764">ບໍ່ປົກປ້ອງທ່ານຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ. ທ່ານຈະຍັງໄດ້ຮັບການປົກປ້ອງຈາກ Safe Browsing ຢູ່ບ່ອນທີ່ໃຊ້ໄດ້, ຢູ່ໃນການບໍລິການອື່ນຂອງ Google ເຊັ່ນ: Gmail ແລະ ຊອກຫາ.</translation>
 <translation id="1135212215217513471">ດາວໂຫຼດ Chrome ສໍາລັບ iOS</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">ການຊິ້ງຂໍ້ມູນໄດ້ຢຸດເຊົາເຮັດວຽກແລ້ວ.</translation>
 <translation id="1377321085342047638">ເລກບັດ</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
+<translation id="138618066238211776">ສືບຕໍ່ເປັນ <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 ອາທິດຜ່ານມາ</translation>
 <translation id="1404330357948037222">ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
 <translation id="1407135791313364759">ເປີດ​ທັງ​ຫມົດ</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">ສືບຕໍ່ແກ້ໄຂ</translation>
 <translation id="2434405374328098816">ທ່ານມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ "<ph name="USERNAME" />" ຢູ່ <ph name="WEBSITE" /> ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="2435457462613246316">ສະ​ແດງ​ລະ​ຫັດ​ຜ່ານ</translation>
+<translation id="2461070143328828326">ການຕັ້ງຄ່າລະຫັດຜ່ານ</translation>
 <translation id="2469960372084740698">ປິດ Safe Browsing ບໍ?</translation>
 <translation id="2473876017985765807">ທ່ານມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ <ph name="WEBSITE" /> ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="2476359652512522418">ບໍ່ໄດ້ເລືອກ</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="371230970611282515">ຄາດເດົາ ແລະ ເຕືອນທ່ານກ່ຽວກັບເຫດການອັນຕະລາຍກ່ອນທີ່ພວກມັນຈະເກີດຂຶ້ນ.</translation>
 <translation id="37207012422556617">ການຊອກຫາມາແຮງ</translation>
+<translation id="3726360487031500941">ເຂົ້າສູ່ລະບົບຄືນໃໝ່ຫາບັນຊີ <ph name="USER_NAME" /> ຂອງທ່ານ</translation>
 <translation id="3740397331642243698">ເປີດ URL ທີ່ປ້ອນເຂົ້າໃນ Google Chrome ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="3762232513783804601">ສ້າງມາສຳລັບ iPad ຂອງທ່ານ</translation>
 <translation id="3771033907050503522">ແຖບບໍ່ເຜີຍຕົນຕົວ</translation>
@@ -752,6 +756,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6988572888918530647">ຈັດການບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="6989674195860388998">ສະຫຼັບໃນການຕັ້ງຄ່າ…</translation>
 <translation id="6998989275928107238">ເຖິງ</translation>
+<translation id="699954956411469731">ການແຈ້ງເຕືອນມືຖື</translation>
 <translation id="7004032350256606903">ອົງການຂອງທ່ານກຳນົດໃຫ້ທ່ານທ່ອງເວັບແບບເປັນສ່ວນຕົວ.
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">ແຖບບໍ່ດົນມານີ້</translation>

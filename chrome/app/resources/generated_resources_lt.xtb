@@ -2314,6 +2314,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3090819949319990166">Nepavyko nukopijuoti išorinio CRX failo į „<ph name="TEMP_CRX_FILE" />“.</translation>
 <translation id="3090871774332213558">Įrenginys „<ph name="DEVICE_NAME" />“ susietas</translation>
 <translation id="3093714882666365141">Neleisti svetainėms įdiegti mokėjimo doroklių</translation>
+<translation id="3093958632721393232">Įjungti, tik kai akumuliatorius senka</translation>
 <translation id="3094141017404513551">Jūsų naršymo veikla bus atskirta nuo <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Žymės, slaptažodžiai ir kiti naršyklės duomenys sinchronizuojami su pagrindine paskyra.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Išjungtas vienas potencialiai žalingas plėtinys. Taip pat galite jį pašalinti.}one{Išjungtas {NUM_EXTENSIONS} potencialiai žalingas plėtinys. Taip pat galite juos pašalinti.}few{Išjungti {NUM_EXTENSIONS} potencialiai žalingi plėtiniai. Taip pat galite juos pašalinti.}many{Išjungta {NUM_EXTENSIONS} potencialiai žalingo plėtinio. Taip pat galite juos pašalinti.}other{Išjungta {NUM_EXTENSIONS} potencialiai žalingų plėtinių. Taip pat galite juos pašalinti.}}</translation>
@@ -5037,6 +5038,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5747552184818312860">Galioja iki</translation>
 <translation id="5747785204778348146">Kūrėjas – nestabilus</translation>
 <translation id="5747809636523347288">Įk&amp;lijuoti ir apsilankyti adresu <ph name="URL" /></translation>
+<translation id="5748137879145720682">Įjungti, kai kompiuteris atjungtas nuo maitinimo lizdo</translation>
 <translation id="5751345516399502412">Patikrinti, ar parengta naudoti įrenginį kaip modemą</translation>
 <translation id="5755022574660047665">„Google“ nuotraukų prisiminimų</translation>
 <translation id="5756163054456765343">P&amp;agalbos centras</translation>
@@ -7677,6 +7679,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8248381369318572865">Pasiekti mikrofoną ir analizuoti jūsų kalbą</translation>
 <translation id="8248887045858762645">„Chrome“ patarimas</translation>
 <translation id="8249048954461686687">OEM aplankas</translation>
+<translation id="8249239468199142122">Akumuliatoriaus tausojimo priemonė</translation>
 <translation id="8249615410597138718">Išsiųsti į jūsų įrenginius</translation>
 <translation id="8250210000648910632">Baigėsi saugyklos vieta</translation>
 <translation id="8251441930213048644">Atnaujinti dabar</translation>

@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">ተቀበል እና ቀጥል</translation>
 <translation id="110724200315609752">ወደ ክፍት መስኮት ቀይር</translation>
 <translation id="1112015203684611006">ማተም አልተሳካም።</translation>
+<translation id="1118569444314402022">እንኳን በደህና ተመልሰው መጡ፣ <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">አዲስ ትር ፍጠር።</translation>
 <translation id="1126809382673880764">እርስዎን አደገኛ ከሆኑ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች አይጠብቀዎትም። አሁንም የሚገኝ በሆነበት ጊዜ እንደ Gmail እና ፍለጋ ባሉ ሌሎች የGoogle አገልግሎቶች ላይ የጥንቃቄ አሰሳ ጥበቃን ያገኛሉ።</translation>
 <translation id="1135212215217513471">ለiOS Chromeን አግኝ</translation>
@@ -64,6 +65,7 @@
 <translation id="1377255359165588604">ስምረት መሥራት አቁሟል።</translation>
 <translation id="1377321085342047638">የካርድ ቁጥር</translation>
 <translation id="1383876407941801731">ፍለጋ </translation>
+<translation id="138618066238211776">እንደ <ph name="USER_NAME" /> ቀጥል</translation>
 <translation id="1400642268715879018">ባለፉት 4 ሳምንቶች</translation>
 <translation id="1404330357948037222">ወጥተዋል</translation>
 <translation id="1407135791313364759">ሁሉንም ክፈት</translation>
@@ -177,6 +179,7 @@
 <translation id="2421044535038393232">አርትዖቱን ቀጥል</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> ላይ ለ«<ph name="USERNAME" />» የይለፍ ቃል አስቀድመው አስቀምጠዋል</translation>
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
+<translation id="2461070143328828326">የይለፍ ቃል ቅንብሮች</translation>
 <translation id="2469960372084740698">የጥንቃቄ አሰሳ ይጥፋ?</translation>
 <translation id="2473876017985765807">አስቀድመው ለ<ph name="WEBSITE" /> የይለፍ ቃል አስቀምጠዋል</translation>
 <translation id="2476359652512522418">አልተመረጠም</translation>
@@ -331,6 +334,7 @@
 <translation id="3709582977625132201">እንዳልተነበበ ምልክት አድርግ</translation>
 <translation id="371230970611282515">አደገኛ ክስተቶች ከመፈጠራቸው በፊት ይገምት እና እርስዎን ያስጠነቅቀዎታል።</translation>
 <translation id="37207012422556617">በመታየት ላይ ያሉ ፍለጋዎች</translation>
+<translation id="3726360487031500941">ወደ <ph name="USER_NAME" /> መለያዎ እንደገና ይግቡ</translation>
 <translation id="3740397331642243698">በGoogle Chrome ውስጥ የገቡትን ዩአርኤሎች ማንነትን በማያሳውቅ ሁነታ ላይ ይከፍታል።</translation>
 <translation id="3762232513783804601">ለእርስዎ iPad የተገነባ</translation>
 <translation id="3771033907050503522">ማንነት የማያሳውቁ ትሮች</translation>
@@ -752,6 +756,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6988572888918530647">የGoogle መለያዎን ያቀናብሩ</translation>
 <translation id="6989674195860388998">በቅንብሮች ውስጥ ይቀይሩ…</translation>
 <translation id="6998989275928107238">ለ</translation>
+<translation id="699954956411469731">የሞባይል ማሳወቂያዎች</translation>
 <translation id="7004032350256606903">ድርጅትዎ በግል እንዲያሰሱ ይፈልግብዎታል።
 <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">የቅርብ ጊዜ ትሮች</translation>

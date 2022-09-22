@@ -2185,6 +2185,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2977480621796371840">Премахване от групата</translation>
 <translation id="2979639724566107830">Отваряне в нов прозорец</translation>
 <translation id="2981113813906970160">Показване на голям курсор на мишката</translation>
+<translation id="2981293774053328982">Този файл съдържа злонамерен софтуер, който може да компрометира личните ви профили или тези в социални мрежи</translation>
 <translation id="2983373101216420412">Нивото на батерията на калъфа е <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Да се изпрати ли заявка до администратора ви за инсталиране на <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2987620471460279764">Текст, споделен от друго устройство</translation>
@@ -2306,6 +2307,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3090819949319990166">Външният crx файл не може да се копира в/ъв „<ph name="TEMP_CRX_FILE" />“.</translation>
 <translation id="3090871774332213558">Успешно сдвояване на <ph name="DEVICE_NAME" /></translation>
 <translation id="3093714882666365141">Да не се разрешава на сайтовете да инсталират приложения за обработване на плащания</translation>
+<translation id="3093958632721393232">Включване само когато батерията ми е изтощена</translation>
 <translation id="3094141017404513551">По този начин ще отделите данните за сърфирането си от тези на <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Отметките, паролите и другите данни в браузъра се синхронизират с основния профил.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 потенциално опасно разширение е изключено. Можете също да го премахнете.}other{{NUM_EXTENSIONS} потенциално опасни разширения са изключени. Можете също да ги премахнете.}}</translation>
@@ -3771,6 +3773,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4514610446763173167">Превключвател за възпроизвеждане или поставяне на пауза на видеоклипа</translation>
 <translation id="451515744433878153">Премахване</translation>
 <translation id="4515872537870654449">Обърнете се към Dell за обслужване. Докинг станцията ще се изключи, ако вентилаторът не работи.</translation>
+<translation id="4518840066030486079">Стил на режимa за клавиша Shift</translation>
 <translation id="4519331665958994620">Сайтовете могат да извеждат запитвания за използване на камерата ви</translation>
 <translation id="4519935350946509010">Грешка при свързване.</translation>
 <translation id="4520385623207007473">„Бисквитки“, които се използват</translation>
@@ -3866,6 +3869,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4598345735110653698">Управление на кодовете за достъп</translation>
 <translation id="4598556348158889687">Управление на хранилището</translation>
 <translation id="4598776695426288251">Налице е Wi-Fi през няколко устройства</translation>
+<translation id="4600071396330666617">Брой предложения</translation>
 <translation id="4601426376352205922">Означаване като непрочетено</translation>
 <translation id="4602466770786743961">Достъпът на <ph name="HOST" /> до камерата и микрофона ви да е разрешен винаги</translation>
 <translation id="4606551464649945562">Да не се разрешава на сайтовете да създават триизмерна карта на заобикалящата ви среда или да следят позицията на камерата</translation>
@@ -4312,6 +4316,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5043913660911154449">Или посочете PPD файла за принтера си. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Грешна парола</translation>
 <translation id="504561833207953641">Отваря се в съществуваща сесия на браузъра.</translation>
+<translation id="5049614114599109018">Използване на историята на въвеждане</translation>
 <translation id="5051836348807686060">Проверката на правописа не се поддържа за избраните от вас езици</translation>
 <translation id="5052499409147950210">Редактиране на сайта</translation>
 <translation id="505347685865235222">Група без име – <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5027,6 +5032,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5747552184818312860">Изтича на</translation>
 <translation id="5747785204778348146">За програмисти – нестабилен</translation>
 <translation id="5747809636523347288">Пост&amp;авяне и отваряне на <ph name="URL" /></translation>
+<translation id="5748137879145720682">Включване, когато компютърът ми е изключен от захранването</translation>
 <translation id="5751345516399502412">Проверка на готовността за тетъринг</translation>
 <translation id="5755022574660047665">спомени от Google Снимки</translation>
 <translation id="5756163054456765343">П&amp;омощен център</translation>
@@ -6737,6 +6743,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7404065585741198296">Вашият телефон, свързан с USB кабел</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Проверката на безопасността бе изпълнена преди 1 час}other{Проверката на безопасността бе изпълнена преди {NUM_HOURS} часа}}</translation>
 <translation id="740624631517654988">Блокиран бе изскачащ прозорец</translation>
+<translation id="7406912950279255498">Режим на инвертиране на цветовете</translation>
 <translation id="7407430846095439694">Импортиране и свързване</translation>
 <translation id="7407504355934009739">Повечето хора блокират известията от този сайт</translation>
 <translation id="740810853557944681">Добавяне на сървър за отпечатване</translation>
@@ -7660,6 +7667,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8248381369318572865">Достъп до микрофона и анализиране на говора ви</translation>
 <translation id="8248887045858762645">Съвет за Chrome</translation>
 <translation id="8249048954461686687">OEM папка</translation>
+<translation id="8249239468199142122">Режим за запазване на батерията</translation>
 <translation id="8249615410597138718">Изпращане до устройствата ви</translation>
 <translation id="8250210000648910632">Мястото в хранилището е изчерпано</translation>
 <translation id="8251441930213048644">Опресняване сега</translation>
@@ -7687,6 +7695,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <ph name="BEGIN_PARAGRAPH3" />Собственикът може да контролира тази функция от „Настройки“ &gt; „Разширени“ &gt; „Автоматично изпращане до Google на данни за диагностиката и употребата“.<ph name="END_PARAGRAPH3" />
 <ph name="BEGIN_PARAGRAPH4" />Ако сте включили Допълнителна активност в мрежата и приложенията за детето си, тези данни може да се запазват в профила му в Google. Научете повече за съответните настройки и как да ги коригирате на адрес families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Невалиден клиентски сертификат</translation>
+<translation id="8270162672241199380">Инсталационна програма за Steam</translation>
 <translation id="827097179112817503">Показване на бутона за начална страница</translation>
 <translation id="8271268254812352141">Получавайте определения, преводи или преобразувани мерни единици, когато докоснете и задържите текст или кликнете върху него с десния бутон. Персонализирайте езиците за превод в секцията <ph name="LINK_BEGIN" />Езици на уебсайтовете<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Родители, следващите няколко стъпки са предназначени за вас. След настройването на профила можете да върнете устройството <ph name="DEVICE_TYPE" /> на детето.</translation>

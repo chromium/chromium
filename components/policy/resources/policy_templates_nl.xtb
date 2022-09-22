@@ -32,6 +32,7 @@
 
       De volgende talen worden momenteel ondersteund: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="1019101089073227242">Gegevensdirectory voor gebruiker instellen</translation>
+<translation id="1020006815010587263">De prullenbak is uitgezet voor de gebruiker.</translation>
 <translation id="1022361784792428773">Id's van extensies die de gebruiker niet mag installeren (of '*' voor alle extensies)</translation>
 <translation id="102492767056134033">De standaardstatus van het schermtoetsenbord op het inlogscherm instellen</translation>
 <translation id="102658870205613876">Instellingen voor pop-ups</translation>
@@ -545,6 +546,9 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="1553532014072799546">Witte lijst voor tijdslimieten per app</translation>
 <translation id="1553956579506604198">Blokkeert de installatie van externe extensies</translation>
 <translation id="1555248923316727072">Beheerinstellingen voor SAML-gebruikersidentiteit</translation>
+<translation id="1557113199339446336">Als je het beleid instelt op True, rapporteren ingeschreven apparaten informatie over XDR-gebeurtenissen (Extended Detection and Response).
+
+      Als je het beleid instelt op False of niet instelt, rapporteren ingeschreven apparaten niet over XDR-gebeurtenissen (Extended Detection and Response).</translation>
 <translation id="1561424797596341174">Beleid overschrijft Debug-builds van de host voor externe toegang</translation>
 <translation id="1561967320164410511">U2F plus extensies voor individuele bevestiging</translation>
 <translation id="1567718448549957373">Als je het beleid aanzet of niet instelt, mogen <ph name="BASIC_AUTH" />-verificatie-uitdagingen worden ontvangen via niet-beveiligde HTTP.
@@ -1139,6 +1143,9 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="2157842368188031417">Het beleid is alleen van toepassing op beheerde gastsessies. Het moet worden aangezet voor de gedeelde werkstationmodus van Imprivata om tijdens een sessie tussen gebruikers te kunnen wisselen.
       Als je het beleid instelt op True, worden bepaalde beleidsregels afgedwongen overschreven voor functies die gevoelige gebruikersgegevens bewaren en die niet worden verwerkt door het opschoonmechanisme dat wordt gebruikt om in de gedeelde werkstationmodus van Imprivata tijdens een sessie tussen gebruikers te wisselen.
       Als je het beleid instelt op False of niet instelt, wordt er geen beleid overschreven.</translation>
+<translation id="2158741059065130266">Als je het beleid instelt op True, kunnen gebruikers van de Bestanden-app van <ph name="PRODUCT_OS_NAME" /> een prullenbak zien en worden bestanden onder Mijn bestanden en Downloads (inclusief door de gebruiker gemaakte onderliggende items) daar naartoe gestuurd als ze worden verwijderd.
+
+      Als je het beleid instelt op False, zijn de bestanden die eerder in de prullenbak stonden, nog steeds beschikbaar door verborgen bestanden te tonen en de directory .Trash te zoeken onder Mijn bestanden of Downloads.</translation>
 <translation id="2159486052528894673">Toestaan dat cloudbeleidsregels voor gebruikers cloudbeleidsregels voor machines overschrijven.</translation>
 <translation id="2160336427036785721">Hiermee configureer je de hoeveelheid geheugen die één instantie van <ph name="PRODUCT_NAME" /> kan gebruiken voordat tabbladen worden verwijderd om geheugen te besparen (dit houdt in dat het geheugen dat voor het tabblad wordt gebruikt, wordt vrijgemaakt en dat het tabblad opnieuw moet worden geladen als de gebruiker naar dit tabblad schakelt).
 
@@ -1584,6 +1591,7 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
           De URL voor de instantresultaten van Google kan worden opgegeven als: <ph name="GOOGLE_INSTANT_SEARCH_URL" />.
 
           Dit beleid wordt alleen gerespecteerd als het beleid DefaultSearchProviderEnabled is toegepast.</translation>
+<translation id="2563373001850981577">De mogelijkheid aanzetten om bestanden naar de prullenbak te sturen (op ondersteunde bestandssystemen) in de Bestanden-app van <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2567227673131796227">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />.
 
       Als je dit beleid toepast, geef je aan welke hosts voor systeemeigen berichten niet mogen worden geladen. Een weigeringslijst met de waarde <ph name="WILDCARD_VALUE" /> betekent dat alle hosts voor systeemeigen berichten worden geweigerd, tenzij ze expliciet zijn toegestaan.
@@ -2944,6 +2952,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
       Als je dit beleid niet toepast of niet instelt, wordt de gebruiker misschien alleen gevraagd een clientcertificaat te selecteren als geen enkel certificaat overeenkomt met de automatische selectie.</translation>
 <translation id="3950110092991281616">Ambient-verificatie alleen in normale sessies aanzetten.</translation>
 <translation id="3950239119790560549">Tijdsbeperkingen voor updates</translation>
+<translation id="3953860513079094502">Informatie over XDR-gebeurtenissen (Extended Detection and Response) rapporteren</translation>
 <translation id="3956243291190637924">Kop- en voetteksten verbergen in afdrukvoorbeeld</translation>
 <translation id="3956573780915784996">Toestaan dat gebruikers een prestatietracering voor het hele systeem verzamelen.</translation>
 <translation id="3956686688560604829">Gebruik het SiteList-beleid van Internet Explorer voor ondersteuning voor oudere browsers.</translation>
@@ -3073,6 +3082,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 <translation id="4098920079809952737">Afdrukken zowel met als zonder achtergrondbeelden toestaan</translation>
 <translation id="410068710490553233">Inloggen op aanvullende Google-accounts toestaan</translation>
 <translation id="4101282687722389021">UTC-tijdstempel voor de laatste tijd waarop dit item is geüpdatet. Gestuurd als tekenreeks omdat het tijdstempel niet past in een geheel getal.</translation>
+<translation id="4102347680024644994">Rapporteren over XDR-gebeurtenissen (Extended Detection and Response)</translation>
 <translation id="4105989332710272578">Handhaving van Certificaattransparantie voor een lijst met URL's uitzetten</translation>
 <translation id="4114059938441379876">Als je dit beleid instelt, stel je de URL in waarmee gebruikers hun wachtwoord moeten wijzigen nadat zij een waarschuwing zien in de browser. De service voor wachtwoordbeveiliging stuurt gebruikers naar de URL (alleen HTTP- en HTTPS-protocollen) die je opgeeft via dit beleid. Zorg dat je pagina voor het wijzigen van wachtwoorden voldoet aan de richtlijnen op https://www.chromium.org/developers/design-documents/create-amazing-password-forms, zodat <ph name="PRODUCT_NAME" /> de salted hash van het nieuwe wachtwoord op deze pagina voor het wijzigen van wachtwoorden juist vastlegt.
 
@@ -5607,6 +5617,7 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
       Hiermee worden de markeringen gespecificeerd die bij het starten moeten worden toegepast op <ph name="PRODUCT_NAME" />. De opgegeven markeringen worden alleen toegepast op het inlogscherm. Markeringen die worden ingesteld via dit beleid, worden niet doorgevoerd in gebruikerssessies.</translation>
 <translation id="6857240169209507953">Voorkomen dat <ph name="BOREALIS_NAME" /> wordt uitgevoerd op een apparaat</translation>
 <translation id="685769593149966548">Strenge 'Beperkte modus' voor YouTube afdwingen</translation>
+<translation id="6860349155164463644">Informatie over XDR-gebeurtenissen (Extended Detection and Response) niet rapporteren</translation>
 <translation id="686079137349561371">Microsoft Windows 7 of later</translation>
 <translation id="68818134518270542">Als je het beleid instelt, geef je de apps op die gebruikers beschikbaar kunnen maken als notitie-app op het vergrendelscherm van <ph name="PRODUCT_OS_NAME" />.
 
@@ -6229,6 +6240,7 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
       De velden <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> worden gebruikt om een bericht in te stellen dat de gebruiker te zien krijgt als een waarschuwing wordt getoond nadat een scan problemen heeft gevonden. Het veld 'message' bevat de tekst die de gebruiker te zien krijgt en mag maximaal 200 tekens bevatten. Het veld 'learn_more_url' bevat een door de beheerder geleverde URL waarop de gebruiker kan klikken voor meer door de klant geleverde informatie over waarom de actie is geblokkeerd. Het veld 'language' is optioneel en bevat de taal van het bericht. Met een leeg veld 'language' of de waarde 'default' wordt een bericht aangegeven dat moet worden gebruikt als er geen bericht is in de taal van de gebruiker. Het veld 'tag' geeft aan voor welk type scans het bericht wordt getoond. De lijst 'custom_messages' kan nul of meer items bevatten. Voor elk item moeten de velden 'message' en 'tag' zijn ingevuld.
 
       Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting voor meer informatie.</translation>
+<translation id="7481702249684965639">De prullenbak is aangezet voor de gebruiker.</translation>
 <translation id="7482768039644066614">Ophalen aanzetten van metadata voor het laden van pagina's en machinelearning-modellen die de browsefunctionaliteit verbeteren</translation>
 <translation id="7485481791539008776">Regels voor selectie van standaardprinter</translation>
 <translation id="7486205887492534734">Prompt voor als meerdere certificaten overeenkomen op het inlogscherm</translation>

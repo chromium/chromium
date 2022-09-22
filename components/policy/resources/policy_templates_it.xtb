@@ -32,6 +32,7 @@
 
       Le lingue attualmente supportate sono: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="1019101089073227242">Imposta directory dati utente</translation>
+<translation id="1020006815010587263">Il Cestino non è attivo per l'utente.</translation>
 <translation id="1022361784792428773">ID delle estensioni (oppure * per tutte le estensioni) per cui non è consentita l'installazione</translation>
 <translation id="102492767056134033">Impostazione stato predefinito della tastiera sullo schermo nella schermata di accesso</translation>
 <translation id="102658870205613876">Impostazioni popup</translation>
@@ -550,6 +551,9 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1553532014072799546">Whitelist limiti di utilizzo per app</translation>
 <translation id="1553956579506604198">Blocca l'installazione delle estensioni esterne</translation>
 <translation id="1555248923316727072">Impostazioni di gestione dell'identità degli utenti SAML</translation>
+<translation id="1557113199339446336">Se il criterio viene impostato su True, i dispositivi registrati segnalano informazioni relative a eventi di rilevamento e risposta estesi (XDR).
+
+      Se il criterio viene impostato su False o se non viene configurato, i dispositivi registrati non segnalano eventi di rilevamento e risposta estesi (XDR).</translation>
 <translation id="1561424797596341174">La norma sostituisce le build di debug dell'host di accesso remoto</translation>
 <translation id="1561967320164410511">U2F più estensioni per singola attestazione</translation>
 <translation id="1567718448549957373">Se il criterio viene impostato su Attivato o se non viene configurato, le richieste di autenticazione <ph name="BASIC_AUTH" /> ricevute tramite connessioni HTTP non sicure sono consentite.
@@ -1153,6 +1157,9 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2157842368188031417">Il criterio viene applicato soltanto alle sessioni Ospite gestite. Deve essere attivato per consentire il cambio di utente all'interno della sessione nella modalità di workstation condivisa di Imprivata.
       Se il criterio viene impostato su Vero, vengono sostituiti forzatamente alcuni criteri per le funzionalità, che memorizzano dati utente sensibili e non vengono gestite tramite il meccanismo di pulizia usato per il cambio di utente all'interno della sessione con la modalità di workstation condivisa di Imprivata.
       Se il criterio viene impostato su Falso o se non viene configurato, i criteri non vengono sostituiti.</translation>
+<translation id="2158741059065130266">Se il criterio viene impostato su True, gli utenti dell'app File di <ph name="PRODUCT_OS_NAME" /> possono vedere un Cestino e i file nelle cartelle I miei file e Download (inclusi i discendenti creati dall'utente) verranno inviati al Cestino quando verranno eliminati.
+
+      Se il criterio viene impostato su False, i file che si trovavano nel cestino continueranno a essere disponibili visualizzando i file nascosti e cercando la directory .Trash nella cartella I miei file o Download.</translation>
 <translation id="2159486052528894673">Consenti ai criteri relativi al cloud degli utenti di eseguire l'override dei criteri relativi al cloud delle macchine.</translation>
 <translation id="2160336427036785721">Consente di configurare la quantità di memoria che una singola istanza di <ph name="PRODUCT_NAME" /> può utilizzare prima che le schede vengano eliminate (ossia la memoria utilizzata dalla scheda verrà liberata e la scheda dovrà essere ricaricata quando l'utente la seleziona) per risparmiare memoria.
 
@@ -1600,6 +1607,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
           L'URL per i risultati immediati di Google può essere specificato come segue: <ph name="GOOGLE_INSTANT_SEARCH_URL" />.
 
           Questa norma viene rispettata soltanto se è attiva la norma "DefaultSearchProviderEnabled".</translation>
+<translation id="2563373001850981577">Attiva la possibilità di inviare file al Cestino (su file system supportati) nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2567227673131796227">Questo criterio è deprecato. Utilizza il criterio "<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />".
 
       La configurazione del criterio consente di specificare quale host di messaggistica nativo non deve essere caricato. Il valore <ph name="WILDCARD_VALUE" /> nell'elenco di host non consentiti comporta il rifiuto di tutti gli host di messaggistica nativi, a meno che non siano consentiti in modo esplicito.
@@ -2963,6 +2971,7 @@ Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP
       Se viene impostato su Disattivato o se non viene configurato, all'utente può essere richiesta la selezione solo quando nessun certificato corrisponde alla selezione automatica.</translation>
 <translation id="3950110092991281616">Attiva l'autenticazione ambientale solo nelle sessioni standard.</translation>
 <translation id="3950239119790560549">Limitazioni relative alla data/ora di aggiornamento</translation>
+<translation id="3953860513079094502">Segnala informazioni su eventi di rilevamento e risposta estesi (XDR)</translation>
 <translation id="3956243291190637924">Nascondi intestazioni e piè di pagina nell'anteprima di stampa</translation>
 <translation id="3956573780915784996">Gli utenti possono raccogliere dati di rilevamento del rendimento a livello di sistema.</translation>
 <translation id="3956686688560604829">Utilizza la norma SiteList di Internet Explorer per il Supporto dei browser precedenti.</translation>
@@ -3092,6 +3101,7 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4098920079809952737">Consenti la stampa con e senza immagini di sfondo</translation>
 <translation id="410068710490553233">Consenti l'accesso ad altri Account Google</translation>
 <translation id="4101282687722389021">Timestamp UTC relativo all'ultimo aggiornamento della voce. Viene inviato sotto forma di stringa perché non rientrerebbe in un numero intero.</translation>
+<translation id="4102347680024644994">Segnala eventi di rilevamento e risposta estesi (XDR)</translation>
 <translation id="4105989332710272578">Disattiva l'imposizione di Certificate Transparency per un elenco di URL</translation>
 <translation id="4114059938441379876">La configurazione del criterio consente di impostare l'URL per gli utenti per la modifica delle proprie password dopo aver visualizzato un avviso nel browser. Il servizio di protezione tramite password reindirizza gli utenti all'URL (solo protocolli HTTP e HTTPS) indicato tramite questo criterio. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente l'hash con salt della nuova password in questa pagina di modifica della password, segui queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 
@@ -5651,6 +5661,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Consente di specificare i flag da applicare all'avvio di <ph name="PRODUCT_NAME" />. I flag specificati vengono applicati soltanto alla schermata di accesso. I flag impostati tramite questa norma non vengono applicati anche alle sessioni utente.</translation>
 <translation id="6857240169209507953">È vietata l'esecuzione di <ph name="BOREALIS_NAME" /> su un dispositivo</translation>
 <translation id="685769593149966548">Imponi il livello massimo della Modalità con restrizioni per YouTube</translation>
+<translation id="6860349155164463644">Non segnalare informazioni su eventi di rilevamento e risposta estesi (XDR)</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
 <translation id="68818134518270542">La configurazione del criterio consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
 
@@ -6274,6 +6285,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       I campi <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> vengono utilizzati per configurare un messaggio da mostrare all'utente quando viene visualizzato un avviso dopo una scansione che ha rilevato dei problemi. Il campo del messaggio contiene il testo da mostrare all'utente e può includere al massimo 200 caratteri. Il campo learn_more_url contiene un URL fornito dall'amministratore su cui l'utente può fare clic per ricevere maggiori informazioni fornite dal cliente sul motivo per cui l'azione è stata bloccata. Il campo della lingua è facoltativo e contiene la lingua in cui è scritto il messaggio. Un campo della lingua vuoto o con il valore "predefinito" indica il messaggio da utilizzare se la lingua dell'utente non ne ha uno. Il campo dei tag consente di specificare per quale tipo di scansioni viene visualizzato il messaggio. L'elenco custom_messages può avere alcune voci o nessuna, dove per ognuna di queste i campi del messaggio e dei tag non devono essere vuoti.
 
       Questo criterio richiede una configurazione aggiuntiva per essere applicato. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
+<translation id="7481702249684965639">Il Cestino è attivo per l'utente.</translation>
 <translation id="7482768039644066614">Attiva il recupero dei metadati di caricamento delle pagine e dei modelli di machine learning per migliorare l'esperienza di navigazione</translation>
 <translation id="7485481791539008776">Regole di selezione della stampante predefinita</translation>
 <translation id="7486205887492534734">Mostra una richiesta in caso di corrispondenza tra più certificati nella schermata di accesso</translation>

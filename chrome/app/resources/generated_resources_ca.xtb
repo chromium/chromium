@@ -2296,6 +2296,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3090819949319990166">No es pot copiar el fitxer crx extern a <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" vinculat</translation>
 <translation id="3093714882666365141">No permetis que els llocs web instal·lin gestors de pagaments</translation>
+<translation id="3093958632721393232">Activa només quan tingui poca bateria</translation>
 <translation id="3094141017404513551">Se separarà la teva navegació de l'usuari <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Les adreces d'interès, les contrasenyes i altres dades de navegació se sincronitzen amb el compte principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Hi ha 1 extensió potencialment perjudicial desactivada. També la pots suprimir.}other{Hi ha {NUM_EXTENSIONS} extensions potencialment perjudicials desactivades. També les pots suprimir.}}</translation>
@@ -5016,6 +5017,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5747552184818312860">Caduca el dia</translation>
 <translation id="5747785204778348146">Desenvolupador: inestable</translation>
 <translation id="5747809636523347288">Engan&amp;xa i ves a <ph name="URL" /></translation>
+<translation id="5748137879145720682">Activa quan l'ordinador estigui desendollat</translation>
 <translation id="5751345516399502412">Comprova la preparació de la compartició de xarxa</translation>
 <translation id="5755022574660047665">records de Google Fotos</translation>
 <translation id="5756163054456765343">C&amp;entre d'ajuda</translation>
@@ -7649,6 +7651,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8248381369318572865">Accedeix al micròfon i analitza la teva parla</translation>
 <translation id="8248887045858762645">Consell de Chrome</translation>
 <translation id="8249048954461686687">Carpeta OEM</translation>
+<translation id="8249239468199142122">Estalvi de bateria</translation>
 <translation id="8249615410597138718">Envia als teus dispositius</translation>
 <translation id="8250210000648910632">No queda espai d'emmagatzematge</translation>
 <translation id="8251441930213048644">Actualitza ara</translation>

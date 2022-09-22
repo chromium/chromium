@@ -235,6 +235,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2298170939937364391">"Zmadhuesi i ekranit të plotë" u aktivizua. Shtyp përsëri Ctrl+Kërko+M për ta çaktivizuar.</translation>
 <translation id="2302092602801625023">Kjo llogari menaxhohet nga Family Link</translation>
 <translation id="2303600792989757991">Ndrysho përmbledhjen e dritares</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: regjistrimet e fundit të ekranit, shkarkimet dhe skedarët e gozhduar</translation>
 <translation id="2318576281648121272">Sot <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060">Kategoria e rezultateve të kërkimit: <ph name="CATEGORY" /></translation>
 <translation id="2322173485024759474">Një shkronjë pas</translation>
@@ -1155,6 +1156,7 @@ Instalim i ri</translation>
 <translation id="7633755430369750696">Shfaq cilësimet e "Ndarjes në afërsi".</translation>
 <translation id="7634648064048557203">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas</translation>
 <translation id="7641938616688887143">Regjistro</translation>
+<translation id="7642106959537987271">modaliteti i anasjelljes së ngjyrës</translation>
 <translation id="7642647758716480637">Hap cilësimet për <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (zotëruesi)</translation>
 <translation id="7647488630410863958">Shkyçe pajisjen për të parë njoftimet e tua</translation>
@@ -1260,6 +1262,7 @@ Instalim i ri</translation>
 <translation id="8209010265547628927">Rivendos</translation>
 <translation id="8214996719228530800">Kanali i versionit Canary</translation>
 <translation id="8219451629189078428">Pajisja jote Chromebook ka nevojë të qëndrojë aktive dhe e lidhur me energjinë gjatë kësaj kohe. Sigurohu që karikuesi ose kabllot e përshtatësit të jenë plotësisht të lidhura si me pajisjen tënde Chromebook, ashtu dhe me prizën elektrike. Mos e fik pajisjen tënde Chromebook.</translation>
+<translation id="8230305195727960608">Modaliteti i anasjelljes së ngjyrës</translation>
 <translation id="8236042855478648955">Koha për një pushim</translation>
 <translation id="8246282815785366524">Mirë se u ktheve, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, bateria e telefonit <ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1389,7 @@ Instalim i ri</translation>
 <translation id="8982906748181120328">Dukshmëria</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Po përdor <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Modaliteti i anasjelljes së ngjyrës u aktivizua. Shtyp përsëri Ctrl+Kërko+H për ta çaktivizuar.</translation>
 <translation id="899350903320462459">Shkyç pajisjen si <ph name="LOGIN_ID" /> për të kryer veprimin e njoftimit</translation>
 <translation id="9000771174482730261">MENAXHO HAPËSIRËN RUAJTËSE</translation>
 <translation id="9017320285115481645">Fut kodin e qasjes së prindit për Family Link</translation>
@@ -1434,6 +1438,7 @@ Instalim i ri</translation>
 <translation id="921989828232331238">Prindi yt e kyçi pajisjen tënde për këtë ditë</translation>
 <translation id="9220525904950070496">Hiq llogarinë</translation>
 <translation id="923686485342484400">Shtyp dy herë Control, Shift, Q për të dalë.</translation>
+<translation id="92580429198593979">Ke shtypur shkurtoren e tastierës për anasjelljen e ngjyrës. Dëshiron ta aktivizosh?</translation>
 <translation id="925832987464884575">Fshih pamjet paraprake</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> kërkon që ta përditësosh menjëherë <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Çfarë ka në kalendarin tim?</translation>

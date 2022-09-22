@@ -23,6 +23,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="1104948393051856124">Kubali na Uendelee</translation>
 <translation id="110724200315609752">Nenda kwenye Dirisha Lililofunguka</translation>
 <translation id="1112015203684611006">Imeshindwa kuchapisha.</translation>
+<translation id="1118569444314402022">Karibu tena, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Unda kichupo kipya</translation>
 <translation id="1126809382673880764">Haikulindi dhidi ya tovuti, viendelezi na faili hatari zinazopakuliwa. Bado utapata ulinzi wa kipengele cha Kuvinjari Salama, kinapopatikana, katika huduma nyingine za Google kama vile Gmail na Tafuta na Google.</translation>
 <translation id="1135212215217513471">Pata Chrome inayotumika kwenye iOS</translation>
@@ -64,6 +65,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="1377255359165588604">Usawazishaji umeacha kufanya kazi.</translation>
 <translation id="1377321085342047638">Nambari ya Kadi</translation>
 <translation id="1383876407941801731">Tafuta</translation>
+<translation id="138618066238211776">Endelea ukitumia <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Wiki 4 zilizopita</translation>
 <translation id="1404330357948037222">Umeondoka Katika Akaunti</translation>
 <translation id="1407135791313364759">Fungua zote</translation>
@@ -177,6 +179,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2421044535038393232">Endelea Kubadilisha</translation>
 <translation id="2434405374328098816">Tayari umehifadhi nenosiri la "<ph name="USERNAME" />" unalotumia katika <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Onyesha nenosiri</translation>
+<translation id="2461070143328828326">Mipangilio ya Nenosiri</translation>
 <translation id="2469960372084740698">Ungependa Kuzima Kipengele cha Kuvinjari Salama?</translation>
 <translation id="2473876017985765807">Tayari umehifadhi nenosiri unalotumia katika <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Hakijachaguliwa</translation>
@@ -331,6 +334,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3709582977625132201">Tia Alama Kuwa Hujasoma</translation>
 <translation id="371230970611282515">Hutabiri na kukuonya kuhusu matukio hatari yanapotendeka.</translation>
 <translation id="37207012422556617">Hoja za Utafutaji zinazovuma</translation>
+<translation id="3726360487031500941">Ingia tena katika akaunti yako ya <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Hufungua URL zilizowekwa kwenye Google Chrome katika Hali Fiche.</translation>
 <translation id="3762232513783804601">Imeundwa kwa ajili ya iPad Yako</translation>
 <translation id="3771033907050503522">Vichupo Fiche</translation>

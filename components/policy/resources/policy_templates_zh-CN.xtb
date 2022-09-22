@@ -32,6 +32,7 @@
 
       目前支持的语言包括：af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi。</translation>
 <translation id="1019101089073227242">设置用户数据目录</translation>
+<translation id="1020006815010587263">已为用户停用回收站。</translation>
 <translation id="1022361784792428773">应禁止用户安装的扩展程序的 ID（或者用“*”表示禁止安装所有扩展程序）</translation>
 <translation id="102492767056134033">设置屏幕键盘在登录屏幕上的默认状态</translation>
 <translation id="102658870205613876">弹出式窗口设置</translation>
@@ -542,6 +543,9 @@
 <translation id="1553532014072799546">应用级使用时间限制白名单</translation>
 <translation id="1553956579506604198">禁止安装外部扩展程序</translation>
 <translation id="1555248923316727072">SAML 用户身份管理设置</translation>
+<translation id="1557113199339446336">如果此政策设为 True，已注册的设备便会报告与扩展检测和响应 (XDR) 事件相关的信息。
+
+      如果此政策设为 False 或未设置，则意味着已注册的设备不会报告与扩展检测和响应 (XDR) 事件相关的信息。</translation>
 <translation id="1561424797596341174">覆盖与远程访问主机的调试版本号相关的政策</translation>
 <translation id="1561967320164410511">用于个人认证的 U2F 和扩展程序</translation>
 <translation id="1567718448549957373">如果此政策已启用或未设置，系统将会允许通过不安全的 HTTP 接收<ph name="BASIC_AUTH" />身份验证请求。
@@ -1130,6 +1134,9 @@
 <translation id="2157842368188031417">此政策仅适用于受管理的访客会话。必须为 Imprivata 的共享工作站模式启用此政策，以允许在会话期间切换用户。
       如果此政策设为 True，系统将强制覆盖某些政策以实现相关功能，这些功能会保留敏感用户数据，而不会被清理机制（用于在 Imprivata 共享工作站模式下的会话期间切换用户）处理。
       如果此政策设为 False 或未设置，系统将不会覆盖任何政策。</translation>
+<translation id="2158741059065130266">如果此政策设为 True，<ph name="PRODUCT_OS_NAME" />“文件”应用的用户可以看到回收站的垃圾桶图标，“我的文件”和“下载内容”下的文件（包括其使用者创建的子文件夹中的文件）在删除后会被发送到回收站中。
+
+      如果此政策设为 False，通过显示隐藏文件并在“我的文件”或“下载内容”下找到 .Trash 目录，用户仍可查看之前位于回收站中的文件。</translation>
 <translation id="2159486052528894673">允许用户级云政策覆盖计算机级云政策。</translation>
 <translation id="2160336427036785721">配置在单个 <ph name="PRODUCT_NAME" /> 实例使用的内存量达到多少后浏览器会为节省内存空间而开始舍弃标签页（即：标签页使用的内存将被释放，而且在用户切换到此标签页时它必须重新加载）。
 
@@ -1577,6 +1584,7 @@
           您可以按以下格式指定 Google 的即搜即得结果网址：<ph name="GOOGLE_INSTANT_SEARCH_URL" />。
 
           仅当“DefaultSearchProviderEnabled”政策处于启用状态时，此政策才能发挥作用。</translation>
+<translation id="2563373001850981577">在 <ph name="PRODUCT_OS_NAME" />“文件”应用中启用将文件发送到回收站的功能（适用于支持的文件系统）</translation>
 <translation id="2567227673131796227">此政策已被弃用，请改用“<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />”政策。
 
       通过设置此政策，您可以指定不应加载哪些本地消息传递主机。拒绝名单值 <ph name="WILDCARD_VALUE" /> 表示所有本地消息传递主机均会被拒绝，除非它们已获得明确许可。
@@ -2938,6 +2946,7 @@
       如果此政策已停用或未设置，只有当无任何证书与自动选择政策匹配时，系统才会提示用户。</translation>
 <translation id="3950110092991281616">仅为常规会话启用静默身份验证。</translation>
 <translation id="3950239119790560549">更新时间限制</translation>
+<translation id="3953860513079094502">报告扩展检测和响应 (XDR) 事件的相关信息</translation>
 <translation id="3956243291190637924">在打印预览中隐藏页眉和页脚</translation>
 <translation id="3956573780915784996">允许用户收集系统级性能跟踪记录。</translation>
 <translation id="3956686688560604829">为旧版浏览器支持使用 Internet Explorer 的 SiteList 政策。</translation>
@@ -3067,6 +3076,7 @@
 <translation id="4098920079809952737">始终允许打印（无论是否有背景图片）</translation>
 <translation id="410068710490553233">允许登录其他 Google 帐号</translation>
 <translation id="4101282687722389021">时间戳（采用世界协调时间），用于表明此条目的上次更新时间。将以字符串的形式发送，因为该时间戳不能表示为整数</translation>
+<translation id="4102347680024644994">报告扩展检测和响应 (XDR) 事件</translation>
 <translation id="4105989332710272578">对于指定的一系列网址，不强制要求必须符合证书透明度政策</translation>
 <translation id="4114059938441379876">通过设置此政策，您可以配置当浏览器显示警告后，供用户更改密码的网址。密码保护服务会将用户转到您通过此政策指定的网址（仅限 HTTP 和 HTTPS 协议）。为了使 <ph name="PRODUCT_NAME" /> 能够在这个密码更改页面上正确捕获新密码的加盐哈希值，请务必确保该页面遵循了这些准则 ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms )。
 
@@ -5604,6 +5614,7 @@
       指定要在 <ph name="PRODUCT_NAME" /> 启动时向其应用的实验性设置。指定的实验性设置仅会应用于登录屏幕。通过此政策设定的实验性设置不会反映在用户会话中。</translation>
 <translation id="6857240169209507953">禁止 <ph name="BOREALIS_NAME" /> 在设备上运行</translation>
 <translation id="685769593149966548">强制启用 YouTube“严格”受限模式</translation>
+<translation id="6860349155164463644">不报告扩展检测和响应 (XDR) 事件的相关信息</translation>
 <translation id="686079137349561371">Microsoft Windows 7 或更高版本</translation>
 <translation id="68818134518270542">通过设置此政策，您可以指定用户能在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中将哪些应用作为笔记应用开启。
 
@@ -6227,6 +6238,7 @@
       <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 字段用于配置系统在扫描完毕并判定文件有问题后向用户显示的警告消息。message 字段包含要向用户显示的文字，最多只能有 200 个字符。learn_more_url 字段包含管理员提供的网址，用户可点击该网址以从客户提供的信息中详细了解相应操作被禁止的原因。language 字段是可选字段，包含消息所用的语言。空 language 字段或“default”值用于指明要显示的消息不是以用户所用语言设定的。tag 字段用于指定要针对哪类扫描显示消息。custom_messages 列表可包含零个或多个条目，每个条目都必须具有非空的 message 和 tag 字段。
 
       此政策需要额外的设置才能生效，请访问 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting 了解详情。</translation>
+<translation id="7481702249684965639">已为用户启用回收站。</translation>
 <translation id="7482768039644066614">启用页面加载元数据提取功能和用以提升浏览体验的机器学习模型</translation>
 <translation id="7485481791539008776">默认打印机选择规则</translation>
 <translation id="7486205887492534734">当登录屏幕上有多份证书匹配时，提示用户做出选择</translation>

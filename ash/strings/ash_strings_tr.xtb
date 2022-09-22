@@ -235,6 +235,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2298170939937364391">Tam Ekran Büyüteci etkinleştirildi. Kapatmak için tekrar Ctrl+Arama+M tuşlarına basın.</translation>
 <translation id="2302092602801625023">Bu hesap Family Link tarafından yönetiliyor</translation>
 <translation id="2303600792989757991">Pencere genel bakışını değiştir</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: son ekran görüntüleri, indirmeler ve sabitlenmiş dosyalar</translation>
 <translation id="2318576281648121272">Bugün <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, arama sonucu kategorisi</translation>
 <translation id="2322173485024759474">Harf bazında geri git</translation>
@@ -1155,6 +1156,7 @@ Yeni yüklenmiş</translation>
 <translation id="7633755430369750696">Yakındakilerle Paylaşım ayarlarını gösterir.</translation>
 <translation id="7634648064048557203">Kamera sağ alt köşeye tutturuldu</translation>
 <translation id="7641938616688887143">Kaydet</translation>
+<translation id="7642106959537987271">rengi ters çevirme modu</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> için ayarları aç</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (cihaz sahibi)</translation>
 <translation id="7647488630410863958">Bildirimlerinizi görüntülemek için cihazınızın kilidini açın</translation>
@@ -1260,6 +1262,7 @@ Yeni yüklenmiş</translation>
 <translation id="8209010265547628927">Sıfırla</translation>
 <translation id="8214996719228530800">Canary Kanalı</translation>
 <translation id="8219451629189078428">Bu süre zarfında Chromebook'unuzun açık ve güç kaynağına bağlı kalması gerekir. Şarj cihazının veya adaptör kablolarının hem Chromebook'unuza hem de prize tam olarak takılı olduğundan emin olun. Chromebook'unuzu kapatmayın.</translation>
+<translation id="8230305195727960608">Rengi Ters Çevirme Modu</translation>
 <translation id="8236042855478648955">Mola verme zamanı</translation>
 <translation id="8246282815785366524">Tekrar hoş geldiniz <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, <ph name="BATTERY_STATUS" /> Telefon Pili</translation>
@@ -1386,6 +1389,7 @@ Yeni yüklenmiş</translation>
 <translation id="8982906748181120328">Yakındakiler görünürlüğü</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> kullanılıyor</translation>
+<translation id="8991617137207906966">Rengi ters çevirme modu etkinleştirildi. Modu kapatmak için tekrar Ctrl+Ara+H tuşlarına basın.</translation>
 <translation id="899350903320462459">Bildirim işlemi gerçekleştirmek için <ph name="LOGIN_ID" /> olarak cihazın kilidini açın</translation>
 <translation id="9000771174482730261">DEPOLAMA ALANINI YÖNET</translation>
 <translation id="9017320285115481645">Family Link ebeveyn erişim kodunu girin.</translation>
@@ -1434,6 +1438,7 @@ Yeni yüklenmiş</translation>
 <translation id="921989828232331238">Ebeveyniniz cihazınızı bugün için kilitledi</translation>
 <translation id="9220525904950070496">Hesabı kaldır</translation>
 <translation id="923686485342484400">Oturumu kapatmak için Control ÜstKrktr Q tuşlarına iki defa basın.</translation>
+<translation id="92580429198593979">Rengi ters çevirmek için klavye kısayoluna bastınız. Bu modu etkinleştirmek istiyor musunuz?</translation>
 <translation id="925832987464884575">Önizlemeleri gizle</translation>
 <translation id="937214777182567951"><ph name="MANAGER" />, hemen <ph name="DEVICE_TYPE" /> cihazınızı güncellemenizi gerektiriyor</translation>
 <translation id="938963181863597773">Takvimimde ne var?</translation>

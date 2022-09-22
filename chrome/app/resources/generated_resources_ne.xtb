@@ -2172,6 +2172,7 @@
 <translation id="2977480621796371840">समूहबाट हटाउनुहोस्</translation>
 <translation id="2979639724566107830">नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="2981113813906970160">ठुलो माउस कर्सर देखाउँनुहोस्</translation>
+<translation id="2981293774053328982">यो फाइलमा तपाईंको व्यक्तिगत वा सामाजिक सञ्जालका खाताहरू ह्याक गर्न सक्ने मालवेयर समावेश छ</translation>
 <translation id="2983373101216420412">केसमा <ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="2985348301114641460">आफ्ना प्रशासकलाई "<ph name="EXTENSION_NAME" />" स्थापना गरिदिन आग्रह गर्दै एउटा अनुरोध पठाउने हो?</translation>
 <translation id="2987620471460279764">अर्को यन्त्रबाट आदान प्रदान गरिएको टेक्स्ट म्यासेज</translation>
@@ -2293,6 +2294,7 @@
 <translation id="3090819949319990166">बाह्य सिआरएक्स फाइललाई <ph name="TEMP_CRX_FILE" /> मा प्रतिलिपि गर्न सकिएन।</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" जोडि मिलाईयो</translation>
 <translation id="3093714882666365141">साइटहरूलाई भुक्तानी ह्यान्ड्लर इन्स्टल गर्ने अनुमति नदिइयोस्</translation>
+<translation id="3093958632721393232">मेरो कम्प्युटरको ब्याट्री कम हुँदा मात्र अन गरियोस्</translation>
 <translation id="3094141017404513551">तपाईंले नयाँ Chromium प्रोफाइल प्रयोग गर्नुभयो भने तपाईंको ब्राउजिङ इतिहास र <ph name="EXISTING_USER" /> को ब्राउजिङ इतिहास छुट्टाछुट्टै सुरक्षित गरिने छ</translation>
 <translation id="3095871294753148861">बुकमार्क, पासवर्ड र ब्राउजरसम्बन्धी अन्य डेटा प्राथमिक खातामा सिंक गरिन्छन्।</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{हानिकारक हुन सक्ने १ एक्स्टेन्सन निष्क्रिय पारिएको छ। तपाईं यसलाई हटाउन पनि सक्नुहुन्छ।}other{हानिकारक हुन सक्ने {NUM_EXTENSIONS} एक्स्टेन्सनहरू निष्क्रिय पारिएका छन्। तपाईं तिनीहरूलाई हटाउन पनि सक्नुहुन्छ।}}</translation>
@@ -3755,6 +3757,7 @@
 <translation id="4514610446763173167">भिडियो प्ले वा पज गर्न टगल गर्नुहोस्‌</translation>
 <translation id="451515744433878153">हटाउनुहोस्</translation>
 <translation id="4515872537870654449">मर्मतका लागि Dell मा सम्पर्क गर्नुहोस्। पङ्खाले काम गरिरहेको छैन भने डक बन्द हुने छ।</translation>
+<translation id="4518840066030486079">सिफ्ट की मोडको शैली</translation>
 <translation id="4519331665958994620">साइटहरूले तपाईंको क्यामेरा प्रयोग गर्ने अनुमति माग्न सक्छन्</translation>
 <translation id="4519935350946509010">जडानसम्बन्धी त्रुटि।</translation>
 <translation id="4520385623207007473">प्रयोगमा रहेका कुकीहरू</translation>
@@ -3850,6 +3853,7 @@
 <translation id="4598345735110653698">पासकी व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4598556348158889687">भण्डारणको व्यवस्थापन</translation>
 <translation id="4598776695426288251">विभिन्‍न यन्त्रहरू मार्फत Wi-Fi उपलब्ध छ</translation>
+<translation id="4600071396330666617">सुझावहरूको सङ्ख्या</translation>
 <translation id="4601426376352205922">'नपढिएको' सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> लाई जहिले पनि तपाइँको क्यामेरा र माइक्रोफोन पहुँच गर्ने अनुमति दिनुहोस्</translation>
 <translation id="4606551464649945562">साइटहरूलाई आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन नदिनुहोस्</translation>
@@ -4296,6 +4300,7 @@
 <translation id="5043913660911154449">वा आफ्नो प्रिन्टरको PPD तोक्नुहोस् <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">गलत पासवर्ड</translation>
 <translation id="504561833207953641">विद्यमान ब्राउजर सत्रमा खोल्दै।</translation>
+<translation id="5049614114599109018">यसअघि इनपुट गरिएका कुरा प्रयोग गरियोस्</translation>
 <translation id="5051836348807686060">तपाईंले चयन गर्नुभएको भाषामा हिज्जे परीक्षण गर्ने सुविधा प्रयोग गर्न मिल्दैन</translation>
 <translation id="5052499409147950210">साइट सम्पादन गर्नुहोस्</translation>
 <translation id="505347685865235222">नाम नभएको समूह - <ph name="GROUP_CONTENT_STRING" /></translation>
@@ -5010,6 +5015,7 @@
 <translation id="5747552184818312860">म्याद सकिन्छ</translation>
 <translation id="5747785204778348146">विकासकर्ता - अस्थिर</translation>
 <translation id="5747809636523347288">टाँस्नुहोस् र <ph name="URL" /> मा जानुहोस्</translation>
+<translation id="5748137879145720682">मेरो कम्प्युटर अनप्लग हुँदा अन गरियोस्</translation>
 <translation id="5751345516399502412">टेदरिङको उपलब्धता जाँच्नुहोस्</translation>
 <translation id="5755022574660047665">Google Photos मा भएका स्मरणीय क्षणहरू</translation>
 <translation id="5756163054456765343">मद्द&amp;त केन्द्र</translation>
@@ -7642,6 +7648,7 @@
 <translation id="8248381369318572865">तपाईंको डिभाइसको माइक्रोफोन प्रयोग गर्ने तथा तपाईंको बोलीको विश्लेषण गर्ने अनुमति</translation>
 <translation id="8248887045858762645">Chrome सम्बन्धी सुझाव</translation>
 <translation id="8249048954461686687">OEM फोल्डर</translation>
+<translation id="8249239468199142122">ब्याट्री सेभर</translation>
 <translation id="8249615410597138718">आफ्ना यन्त्रहरूमा पठाउनुहोस्</translation>
 <translation id="8250210000648910632">भण्डारणमा खाली ठाउँ सकिएको छ</translation>
 <translation id="8251441930213048644">अब पुनः ताजा गर्नुहोस्</translation>

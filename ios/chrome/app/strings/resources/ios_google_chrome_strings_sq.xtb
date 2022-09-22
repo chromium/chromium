@@ -52,6 +52,7 @@
 <translation id="3988789688219830639">Google Chrome nuk ka qasje te fotografitë apo videot e tua. Aktivizo qasjen te Cilësimet e iOS &gt; Privatësia &gt; Fotografitë.</translation>
 <translation id="4099578267706723511">Ndihmo në përmirësimin e Chrome duke dërguar automatikisht te Google statistika përdorimi dhe raporte të ndërprerjeve aksidentale.</translation>
 <translation id="417201473131094001">Nuk mbështetet në Chrome Canary</translation>
+<translation id="4192781968753717021">Ky fjalëkalim është gjetur në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve i Google" rekomandon që ta ndryshosh fjalëkalimin tënd tani.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> po përdorte Chrome dhe ka lënë faqeshënues, fjalëkalime dhe cilësime të tjera në këtë pajisje.</translation>
 <translation id="424864128008805179">Do të dalësh nga Chrome?</translation>
 <translation id="4249068189593983585">Këshillë për Chrome. Për më shumë opsione për skedat, shtyp dhe mbaj shtypur butonin "Shfaq skedat" në shiritin e veglave që ndodhet në fund ose në krye të ekranit tënd.</translation>
@@ -83,6 +84,7 @@
 <translation id="6238746320622508509">Lejo që Chrome t'i kyçë skedat "e fshehta".</translation>
 <translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>
 <translation id="6427126399757991875">Organizata jote po konfiguron Chrome...</translation>
+<translation id="651403856614361404">Ky fjalëkalim është gjetur në një nxjerrje të paautorizuar të të dhënave. Chrome rekomandon që ta ndryshosh fjalëkalimin tënd tani.</translation>
 <translation id="6600954340915313787">Kopjuar në Chrome</translation>
 <translation id="6634107063912726160">Kur të dalësh, Chrome nuk do të sinkronizojë asnjë nga të dhënat e tua të reja me "Llogarinë tënde të Google". Të dhënat e sinkronizuara më herët qëndrojnë në llogari.</translation>
 <translation id="6648150602980899529">Po identifikohesh me një llogari të menaxhuar nga <ph name="DOMAIN" /> dhe po i jep administratorit të saj kontroll mbi të dhënat e tua të Chrome. Duke dalë nga Chrome do të fshihen të dhënat e tua nga kjo pajisje, por do të mbeten të ruajtura në llogarinë tënde të Google.</translation>
@@ -126,6 +128,7 @@
 <translation id="8736550665979974340">Qëndro i sigurt me Google Chrome</translation>
 <translation id="8772179140489533211">Shfaq kërkesa për t'u identifikuar në Chrome.</translation>
 <translation id="8788269841521769222">Nuk është nevoja ta kujtosh këtë fjalëkalim. Ai do të ruhet në "Menaxherin e fjalëkalimeve të Google" për <ph name="EMAIL" /></translation>
+<translation id="8897749957032330183">Fjalëkalimet ruhen në "Menaxherin e fjalëkalimeve të Google" në këtë pajisje.</translation>
 <translation id="8969290730818637510">Kur aktivizohet:
 <ph name="BEGIN_INDENT" />  • Ndihmo në përmirësimin e Chrome për njerëzit që e përdorin atë ashtu si ti.<ph name="END_INDENT" />
 

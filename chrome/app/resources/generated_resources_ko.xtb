@@ -2312,6 +2312,7 @@
 <translation id="3090819949319990166">외부 crx 파일을 <ph name="TEMP_CRX_FILE" />에 복사할 수 없습니다.</translation>
 <translation id="3090871774332213558">'<ph name="DEVICE_NAME" />' 페어링됨</translation>
 <translation id="3093714882666365141">사이트에서 결제 핸들러를 설치하도록 허용하지 않음</translation>
+<translation id="3093958632721393232">배터리 잔량이 부족한 경우에만 사용 설정</translation>
 <translation id="3094141017404513551">그러면 <ph name="EXISTING_USER" /> 기록과 내 인터넷 사용 기록이 구분됩니다.</translation>
 <translation id="3095871294753148861">북마크, 비밀번호 등의 브라우저 데이터가 기본 계정과 동기화되어 있습니다.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1개의 잠재적으로 위험한 확장 프로그램이 사용 중지되었습니다. 삭제할 수도 있습니다.}other{{NUM_EXTENSIONS}개의 잠재적으로 위험한 확장 프로그램이 사용 중지되었습니다. 삭제할 수도 있습니다.}}</translation>
@@ -5032,6 +5033,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5747552184818312860">만료</translation>
 <translation id="5747785204778348146">개발자 - 불안정</translation>
 <translation id="5747809636523347288"><ph name="URL" /> 붙여넣기 및 이동(&amp;S)</translation>
+<translation id="5748137879145720682">컴퓨터의 전원이 연결되어 있지 않을 때 사용 설정</translation>
 <translation id="5751345516399502412">테더링 준비 여부 확인</translation>
 <translation id="5755022574660047665">Google 포토 추억</translation>
 <translation id="5756163054456765343">고객센터(&amp;H)</translation>
@@ -7667,6 +7669,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8248381369318572865">마이크에 액세스하여 음성을 분석합니다.</translation>
 <translation id="8248887045858762645">Chrome 도움말</translation>
 <translation id="8249048954461686687">OEM 폴더</translation>
+<translation id="8249239468199142122">절전 모드</translation>
 <translation id="8249615410597138718">기기로 전송</translation>
 <translation id="8250210000648910632">저장공간 부족</translation>
 <translation id="8251441930213048644">지금 새로고침</translation>

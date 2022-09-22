@@ -32,6 +32,7 @@
 
       Bahasa yang didukung saat ini adalah: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="1019101089073227242">Menyetel direktori data pengguna</translation>
+<translation id="1020006815010587263">Sampah dinonaktifkan untuk pengguna.</translation>
 <translation id="1022361784792428773">ID ekstensi yang tidak diizinkan dipasang pengguna (atau * untuk semua)</translation>
 <translation id="102492767056134033">Menyetel status default keyboard di layar di layar masuk</translation>
 <translation id="102658870205613876">Setelan pop-up</translation>
@@ -549,6 +550,9 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1553532014072799546">Daftar yang Diizinkan terkait Batas Waktu per Aplikasi</translation>
 <translation id="1553956579506604198">Memblokir ekstensi eksternal sehingga tidak dapat diinstal</translation>
 <translation id="1555248923316727072">Setelan pengelolaan identitas pengguna SAML</translation>
+<translation id="1557113199339446336">Jika kebijakan disetel ke Benar (True), perangkat terdaftar akan melaporkan informasi terkait peristiwa deteksi dan respons yang diperluas (XDR).
+
+      Jika kebijakan disetel ke Salah (False) atau tidak disetel, perangkat terdaftar tidak akan melaporkan peristiwa deteksi dan respons yang diperluas (XDR).</translation>
 <translation id="1561424797596341174">Penggantian kebijakan untuk versi Debug host akses jarak jauh</translation>
 <translation id="1561967320164410511">U2F ditambah beberapa ekstensi untuk masing-masing pengesahan</translation>
 <translation id="1567718448549957373">Jika kebijakan disetel ke Aktif atau tidak disetel, verifikasi autentikasi <ph name="BASIC_AUTH" /> akan diizinkan diterima melalui HTTP yang tidak aman.
@@ -1158,6 +1162,9 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 <translation id="2157842368188031417">Kebijakan ini hanya berlaku untuk sesi tamu terkelola. Kebijakan ini harus diaktifkan untuk mode workstation bersama Imprivata guna memungkinkan pengalihan pengguna dalam sesi.
       Menyetel kebijakan ke Benar (True) akan memaksa penggantian kebijakan tertentu untuk fitur, yang mempertahankan data pengguna sensitif dan tidak ditangani oleh mekanisme pembersihan yang digunakan untuk pengalihan pengguna dalam sesi dengan mode workstation bersama Imprivata.
       Jika kebijakan disetel ke Salah (False) atau tidak disetel, tidak ada kebijakan yang akan diganti.</translation>
+<translation id="2158741059065130266">Jika kebijakan disetel ke Benar (True), pengguna aplikasi File <ph name="PRODUCT_OS_NAME" /> akan melihat Sampah dan file di bagian File saya dan Download (termasuk turunan yang dibuat oleh pengguna) akan dikirim ke sana saat dihapus.
+
+      Jika kebijakan disetel ke Salah (False), file yang sebelumnya berada di sampah akan tetap tersedia dengan menampilkan file tersembunyi dan menemukan direktori .Trash di bagian File saya atau Download.</translation>
 <translation id="2159486052528894673">Izinkan kebijakan cloud pengguna mengabaikan kebijakan cloud perangkat.</translation>
 <translation id="2160336427036785721">Mengonfigurasi jumlah memori yang dapat digunakan oleh satu instance <ph name="PRODUCT_NAME" /> sebelum tab mulai dihapus (artinya, memori yang digunakan oleh tab akan dibebaskan dan tab harus dimuat ulang saat dialihkan) untuk menghemat memori.
 
@@ -1605,6 +1612,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
           URL hasil instan Google dapat ditentukan sebagai: <ph name="GOOGLE_INSTANT_SEARCH_URL" />.
 
           Kebijakan ini hanya diterapkan jika kebijakan 'DefaultSearchProviderEnabled' diaktifkan.</translation>
+<translation id="2563373001850981577">Mengaktifkan kemampuan untuk mengirim file ke Sampah (pada sistem file yang didukung) di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2567227673131796227">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />'.
 
       Menyetel kebijakan akan menentukan host pesan native mana yang tidak boleh dimuat. Nilai <ph name="WILDCARD_VALUE" /> untuk daftar yang ditolak berarti semua host pesan native ditolak, kecuali diizinkan secara eksplisit.
@@ -3000,6 +3008,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna mungkin hanya diminta saat tidak ada sertifikat yang cocok dengan pemilihan otomatis.</translation>
 <translation id="3950110092991281616">Mengaktifkan autentikasi pasif di sesi reguler saja.</translation>
 <translation id="3950239119790560549">Memperbarui Batasan Waktu</translation>
+<translation id="3953860513079094502">Laporkan informasi tentang peristiwa deteksi dan respons yang diperluas (XDR)</translation>
 <translation id="3956243291190637924">Sembunyikan header dan footer dalam pratinjau cetak</translation>
 <translation id="3956573780915784996">Izinkan pengguna mengumpulkan jejak performa di seluruh sistem.</translation>
 <translation id="3956686688560604829">Gunakan kebijakan SiteList Internet Explorer untuk Dukungan Browser Lama.</translation>
@@ -3129,6 +3138,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4098920079809952737">Izinkan pencetakan dengan dan tanpa grafis latar belakang</translation>
 <translation id="410068710490553233">Mengizinkan Login ke Akun Google Tambahan</translation>
 <translation id="4101282687722389021">Stempel waktu UTC untuk terakhir kali entri ini diperbarui. Dikirim sebagai string karena stempel waktu tidak cocok dengan bilangan bulat</translation>
+<translation id="4102347680024644994">Melaporkan peristiwa deteksi dan respons yang diperluas (XDR)</translation>
 <translation id="4105989332710272578">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar URL</translation>
 <translation id="4114059938441379876">Menyetel kebijakan akan menentukan URL yang dapat dipakai pengguna untuk mengubah sandinya setelah melihat peringatan di browser. Layanan perlindungan sandi mengirimkan pengguna ke URL (hanya protokol HTTP dan HTTPS) yang Anda tentukan melalui kebijakan ini. Agar <ph name="PRODUCT_NAME" /> dapat merekam hash sandi baru yang dilengkapi salt dengan benar di halaman ubah sandi ini, pastikan halaman ubah sandi Anda mengikuti pedoman ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms ).
 
@@ -5723,6 +5733,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Menentukan tanda yang harus diterapkan ke <ph name="PRODUCT_NAME" /> saat dimulai. Tanda yang ditentukan hanya diterapkan di layar login. Tanda yang disetel melalui kebijakan ini tidak diterapkan ke dalam sesi pengguna.</translation>
 <translation id="6857240169209507953">Cegah <ph name="BOREALIS_NAME" /> berjalan di perangkat</translation>
 <translation id="685769593149966548">Terapkan Mode Terbatas Ketat untuk YouTube</translation>
+<translation id="6860349155164463644">Jangan laporkan informasi tentang peristiwa deteksi dan respons yang diperluas (XDR)</translation>
 <translation id="686079137349561371">Microsoft Windows 7 atau lebih baru</translation>
 <translation id="68818134518270542">Menyetel kebijakan akan menentukan aplikasi yang dapat diaktifkan pengguna sebagai aplikasi pencatat di layar kunci <ph name="PRODUCT_OS_NAME" />.
 
@@ -6345,6 +6356,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
       Kolom <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> digunakan untuk mengonfigurasi pesan yang akan ditampilkan kepada pengguna, yaitu saat peringatan dimunculkan setelah hasil pemindaian menunjukkan ada masalah. Kolom message berisi teks yang akan ditampilkan kepada pengguna dan tidak boleh melebihi 200 karakter. Kolom learn_more_url berisi URL yang disediakan oleh admin. Pengguna dapat mengklik URL untuk mengetahui lebih lanjut penyebab diblokirnya tindakan tersebut. Kolom language bersifat opsional dan berisi bahasa pesan. Kolom language yang kosong atau nilai 'default' menunjukkan pesan yang akan digunakan saat bahasa pengguna tidak memiliki pesan. Kolom tag menentukan jenis pemindaian yang akan menampilkan pesan. Daftar custom_messages dapat memiliki nol atau beberapa entri, dengan tiap entri perlu memiliki kolom message dan tag yang tidak kosong.
 
       Kebijakan ini memerlukan penyiapan tambahan agar dapat berlaku. Buka https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting untuk informasi selengkapnya.</translation>
+<translation id="7481702249684965639">Sampah diaktifkan untuk pengguna.</translation>
 <translation id="7482768039644066614">Aktifkan pengambilan metadata pemuatan halaman dan model machine learning yang meningkatkan pengalaman penjelajahan</translation>
 <translation id="7485481791539008776">Aturan pemilihan printer default</translation>
 <translation id="7486205887492534734">Meminta pengguna memilih saat beberapa sertifikat cocok pada layar login</translation>

@@ -55,6 +55,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2384373936468275798">Ni allai ChromiumOS gysoni'ch data gan fod manylion mewngofnodi eich cyfrif yn hen.</translation>
 <translation id="2396765026452590966">Mae'r estyniad "<ph name="EXTENSION_NAME" />" wedi newid pa dudalen sy'n cael ei dangos pan fyddwch yn dechrau Chromium.</translation>
+<translation id="2400844369696905771">Pan fydd ymlaen, mae Chromium yn adfer cof o dabiau nad ydych yn eu defnyddio'n weithredol. Mae hyn yn rhyddhau adnoddau eich cyfrifiadur ar gyfer tasgau eraill ac yn cadw Chromium yn gyflym. Mae tabiau anweithredol yn ymddangos yn wag ac yn ail-lwytho'n awtomatig pan fyddwch yn clicio arnynt. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Mae angen caniatâd camera a meicroffon ar Chromium ar gyfer y wefan hon</translation>
 <translation id="2483889755041906834">Yn Chromium</translation>
 <translation id="2485422356828889247">Dadosod</translation>
@@ -63,6 +64,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="2583187216237139145">Gall unrhyw ddata Chromium a gynhyrchir wrth ddefnyddio'r proffil hwn (megis creu nodau tudalen, hanes, cyfrineiriau, a gosodiadau eraill) gael eu tynnu gan weinyddwr y proffil gwaith. <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">Bu gwall system weithredu wrth osod. Lawrlwythwch Chromium eto.</translation>
 <translation id="2661879430930417727">Os ydych yn rhannu dyfais, gall ffrindiau a theulu bori ar wahân a gosod Chromium yn yr union ffordd y maent eisiau</translation>
+<translation id="2669853942967761236">Gwnaeth Chromium rwysto'r ffeil archif hon oherwydd mae'n bosib ei bod yn cuddio drwgwedd</translation>
 <translation id="268602741124540128">Croeso i Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Tab Chromium</translation>
 <translation id="2718390899429598676">Ar gyfer diogelwch ychwanegol, bydd Chromium yn amgryptio'ch data.</translation>
@@ -144,6 +146,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="4285930937574705105">Methwyd y gosodiad oherwydd gwall amhenodol. Os yw Chromium yn rhedeg ar hyn o bryd, caewch ef a rhowch gynnig arall arni.</translation>
 <translation id="4304713468139749426">Rheolwr Cyfrineiriau</translation>
 <translation id="4334294535648607276">Lawrlwytho wedi'i gwblhau.</translation>
+<translation id="437317747729858884">I wneud eich pori yn gyflymach, mae Chromium yn adfer cof o dabiau nad ydych yn eu defnyddio.</translation>
 <translation id="439358628917130594">Mae <ph name="MANAGER" /> yn gofyn i chi ddarllen a derbyn y Telerau Gwasanaeth canlynol cyn defnyddio'r ddyfais hon. Nid yw'r telerau hyn yn ehangu, addasu na chyfyngu ar Delerau ChromiumOS.</translation>
 <translation id="4407044323746248786">Gadael Chromium beth bynnag?</translation>
 <translation id="4415566066719264597">Caniatáu i Chromium Rhedeg yn y Cefndir</translation>
@@ -313,6 +316,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="7872446069773932638">Wrthi'n lawrlwytho... Mae <ph name="SECONDS" /> eiliad ar ôl</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Sut gallwch reoli eich data:<ph name="END_BOLD" /> Er mwyn amddiffyn eich preifatrwydd, rydym yn awtoddileu eich diddordebau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y bydd diddordeb yn ymddangos ar y rhestr eto. Neu gallwch gael gwared ar ddiddordebau nad ydych am i Chromium eu hystyried.</translation>
 <translation id="7937630085815544518">Roeddech wedi'ch mewngofnodi i Chromium fel <ph name="USER_EMAIL_ADDRESS" />. Defnyddiwch yr un cyfrif i fewngofnodi eto.</translation>
+<translation id="7947085610734123927">Gwnaeth Chromium droi'r Arbedwr Cof ymlaen</translation>
 <translation id="7975919845073681630">Gosodiad eilaidd o Chromium yw hwn, ac ni ellir ei wneud yn borwr diofyn i chi.</translation>
 <translation id="7997934263947464652">Gall estyniadau, apiau a themâu o ffynonellau anhysbys niweidio'ch dyfais. Mae Chromium yn argymell eu gosod o'r <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> yn unig</translation>
 <translation id="8013436988911883588">Unwaith y bydd gan Chromium fynediad, bydd gwefannau yn gallu gofyn i chi am fynediad.</translation>
@@ -338,6 +342,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8558383651099478961">Mae dy riant wedi diffodd "Caniatadau ar gyfer gwefannau, apiau ac estyniadau" ar gyfer Chromium. Ni chaniateir ychwanegu'r <ph name="EXTENSION_TYPE_PARAMETER" /> hwn.</translation>
 <translation id="8561285221328166383">I gael diweddariadau Chromium yn y dyfodol, bydd angen macOS 10.13 neu'n hwyrach arnoch. Mae'r cyfrifiadur hwn yn defnyddio macOS 10.12.</translation>
 <translation id="8568283329061645092">Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn mewngofnodi gyda'ch Cyfrif Google</translation>
+<translation id="8574036838419011058">Pan fydd ymlaen, mae Chromium yn arbed pŵer batri drwy gyfyngu ar weithgarwch cefndir ac effeithiau gweledol, megis sgrolio llyfn a chyfraddau ffrâm fideo. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Hawlfraint <ph name="YEAR" /> Awduron Chromium. Cedwir Pob Hawl.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Sut rydym yn defnyddio'r data hyn:<ph name="END_BOLD" /> Gall gwefannau storio gwybodaeth am eich diddordebau gyda Chromium. Er enghraifft, os ydych yn ymweld â gwefan i brynu esgidiau ar gyfer marathon, mae'n bosib y bydd y wefan yn diffinio'ch diddordeb fel rhedeg marathon. Yn ddiweddarach, os byddwch yn ymweld â gwefan wahanol i gofrestru ar gyfer ras, gall y wefan honno ddangos hysbyseb i chi ar gyfer esgidiau rhedeg yn seiliedig ar eich diddordebau.</translation>
 <translation id="8619360774459241877">Wrthi'n lansio Chromium...</translation>

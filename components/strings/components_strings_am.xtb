@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">የደብዳቤ እጥፋት</translation>
 <translation id="138218114945450791">ፈካ ያለ ሰማያዊ</translation>
 <translation id="1382194467192730611">በእርስዎ አስተዳዳሪ የተፈቀደ የዩኤስቢ መሣሪያ</translation>
+<translation id="1382378825779654399">በማንኛውም ጣቢያ ላይ ዋጋው ከቀነሰ የኢሜይል ማንቂያዎችን ያገኛሉ። ይህ ገጽ ወደ <ph name="LAST_BOOKMARKS_FOLDER" /> ይቀመጣል።</translation>
 <translation id="1382912999714108023">የአሁን መረጃዎን እየተመለከተ አይደለም? እባክዎ ለማዘመን ባንክዎን ያነጋግሩ።</translation>
 <translation id="1384725838384960382">ደህንነቱ የተጠበቀ የክፍያ የመግቢያ ማስረጃ ማረጋገጫ ሉህ</translation>
 <translation id="1386623374109090026">ማብራሪያዎች</translation>
@@ -260,6 +261,7 @@
 <translation id="156703335097561114">እንደ አድራሻዎች፣ የበይነገጽ ውቅረት እና የግንኙነት ጥራት ያሉ የአውታረ መረብ መረጃ</translation>
 <translation id="1567040042588613346">ይህ መመሪያ እንደታሰበው እየሰራ ነው፣ ነገር ግን ተመሳሳይ እሴት በሌላ ቦታ የተቀናበረ ሲሆን በዚህ መመሪያ ተተክቷል።</translation>
 <translation id="1569487616857761740">የጊዜ ማብቂያ ቀን ያስገቡ</translation>
+<translation id="1569694109004336106">Google Chrome የይለፍ ቃላትን ለመሙላት Windows Helloን ለማብራት እየሞከረ ነው።</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">ይህን ድረ-ገጽ በማሳየት ላይ ሳለ የሆነ ችግር ተፈጥሯል።</translation>
 <translation id="1586541204584340881">የትኛዎቹ ቅጥያዎች ናቸው እርስዎ የጫኑት</translation>
@@ -398,6 +400,7 @@
 <translation id="1958218078413065209">የእርስዎ ከፍተኛ ውጤት <ph name="SCORE" /> ነው።</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />የጎበኙትን የአንዳንድ ገጾች ዩአርኤልዎች፣ የተገደበ የስርዓት መረጃ እና አንዳንድ የገጽ ይዘት<ph name="END_WHITEPAPER_LINK" /> ወደ Google በመላክ ለሁሉም ሰው ድር ላይ ደህንነት እንዲሻሻል ያግዙ። <ph name="BEGIN_PRIVACY_PAGE_LINK" />የግላዊነት መመሪያ<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> እልባቶች</translation>
+<translation id="1971033026002113380">በTouchID ለይለፍ ቃላት ጥበቃ ያድርጉ</translation>
 <translation id="1973335181906896915">የመለያ ቁጥር መስጠት ላይ ስህተት</translation>
 <translation id="1974060860693918893">የላቀ</translation>
 <translation id="1975457531113383421">የግቤት መሳቢያ</translation>
@@ -725,6 +728,7 @@
 <translation id="2881276955470682203">ካርድ ይቀመጥ?</translation>
 <translation id="2882949212241984732">ድርብ-በር ማጠፍ</translation>
 <translation id="2893773853358652045">አራተኛ ጥቅልል</translation>
+<translation id="289834758818479772">ይህን መሣሪያ ከሌሎች ጋር የሚጋሩ ከሆነ የተቀመጠ የይለፍ ቃልን በተጠቀሙ ቁጥር እርስዎ መሆንዎን ለማረጋገጥ TouchIDን ማብራት ይችላሉ</translation>
 <translation id="2900528713135656174">ክስተት ፍጠር</translation>
 <translation id="2903493209154104877">አድራሻዎች</translation>
 <translation id="290376772003165898">ገጽ በ<ph name="LANGUAGE" /> አይደለም?</translation>
@@ -801,6 +805,8 @@
 <translation id="3108943290502734357">መሃከለኛ መሳቢያ</translation>
 <translation id="3109728660330352905">ይህን ገጽ ለማየት ፍቃድ የለዎትም።</translation>
 <translation id="3113284927548439113">ሶስተኛ ፈረቃ</translation>
+<translation id="3114040155724590991">የAndroid ስርዓትን በማዘመን ላይ
+    መተግበሪያዎን ማስጀመር ከተለመደው ጊዜ በላይ ሊወስድ ይችላል።</translation>
 <translation id="3115363211799416195">{0,plural, =1{ምስጢራዊ ፋይል ይውረድ?}one{ምስጢራዊ ፋይል ይውረድ?}other{ምስጢራዊ ፋይሎች ይውረዱ?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> የውሂብዎን ምትኬ እንዲያስቀምጡና እና ይህን <ph name="DEVICE_TYPE" /> እንዲመልሱ ይፈልግብዎታል።</translation>
 <translation id="3116158981186517402">አሽግ</translation>
@@ -1254,6 +1260,7 @@
 <translation id="4306812610847412719">ቅንጥብ ሰሌዳ</translation>
 <translation id="4308567447483056043">ተጠቃሚው አጋር ስላልሆነ መመሪያው ችላ ተብሏል። ይህ መመሪያ እንዲተገበር የChrome አሳሽ እና መገለጫ በተመሳሳይ ድርጅት አስተዳዳሪ ኮንሶል በኩል መተዳዳር አለባቸው።</translation>
 <translation id="4310070645992025887">ጉዞዎችዎን ይፈልጉ</translation>
+<translation id="4310496734563057511">ይህን መሣሪያ ከሌሎች ጋር የሚጋሩ ከሆነ የተቀመጠ የይለፍ ቃልን በተጠቀሙ ቁጥር እርስዎ መሆንዎን ለማረጋገጥ Windows Helloን ማብራት ይችላሉ</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">አግድ (ነባሪ)</translation>
 <translation id="4314815835985389558">ስምረትን ያቀናብሩ</translation>
@@ -1468,6 +1475,7 @@
 <translation id="4880827082731008257">የፍለጋ ታሪክ</translation>
 <translation id="4881695831933465202">ክፍት የሚሆንባቸው</translation>
 <translation id="4885256590493466218">ከፍሎ መውጫው ላይ በ<ph name="CARD_DETAIL" /> ይክፈሉ</translation>
+<translation id="4887406273302438710">በWindows Hello የይለፍ ቃላትን ይጠብቁ</translation>
 <translation id="4888600795924685526">የውጪ ቋንቋ ጥናት</translation>
 <translation id="4889420713887366944">ማንነት የማያሳውቅ መስኮት አዝራርን ይክፈቱ፣ በግል እንዲያስሱ አዲስ ማንነት የማያሳውቅ መስኮትን ለመክፈት አስገባን ይጫኑ</translation>
 <translation id="4892518386797173871">የኋላ</translation>
@@ -1519,6 +1527,7 @@
 <translation id="5018422839182700155">ይህን ገጽ መክፈት አልተቻለም</translation>
 <translation id="5019198164206649151">የመጠባበቂያ ማከማቻ በመጥፎ ሁኔታ ላይ</translation>
 <translation id="5020776957610079374">የዓለም ሙዚቃ</translation>
+<translation id="5021557570875267742">በChrome አማካኝነት ዋጋዎችን ይከታተሉ</translation>
 <translation id="5023310440958281426">የአስተዳዳሪዎ መመሪያዎችን ያረጋግጡ</translation>
 <translation id="5029568752722684782">ቅጂን አጽዳ</translation>
 <translation id="5030338702439866405">የቀረበው</translation>
@@ -1686,6 +1695,7 @@
 <translation id="5426179911063097041"><ph name="SITE" /> ማሳወቂያዎችን ለእርስዎ መላክ ይፈልጋል</translation>
 <translation id="5428105026674456456">ስፓኒሽ</translation>
 <translation id="5430298929874300616">ዕልባት አስወግድ</translation>
+<translation id="5434423669266814150">የይለፍ ቃላትን ለመሙላት TouchIDን ያብሩ</translation>
 <translation id="5443468954631487277">ተቃራኒ ቅደም-ተከተል ፊቱ ወደ ላይ</translation>
 <translation id="5447765697759493033">ይህ ጣቢያ አይተረጎምም</translation>
 <translation id="5452270690849572955">ይህ <ph name="HOST_NAME" /> ገጽ ሊገኝ አይችልም</translation>
@@ -2239,6 +2249,7 @@
 <translation id="6993898126790112050">6x9 (የደብዳቤ ፖስታ)</translation>
 <translation id="6996312675313362352">ሁልጊዜ <ph name="ORIGINAL_LANGUAGE" />ን ተርጉም</translation>
 <translation id="6999969238895751684">የመዝናኛ ኢንዱስትሪ</translation>
+<translation id="7003335073762455340">ይህን ምርት እየተከታተሉ ነው። ይህ ገጽ በ<ph name="LAST_BOOKMARKS_FOLDER" /> ውስጥ ተቀምጧል።</translation>
 <translation id="7004583254764674281">ካርዶችን በበለጠ ፍጥነት ለማረጋገጥ Windows Helloን ይጠቀሙ</translation>
 <translation id="7006930604109697472">ለማንኛውም ላክ</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2462,6 +2473,7 @@
 <translation id="7564049878696755256">የ<ph name="ORG_NAME" /> መለያዎን መዳረሻ ሊያጡ ወይም የማንነት ስርቆት ሊያጋጥመዎት ይችላሉ። Chrome የይለፍ ቃልዎን አሁን እንዲቀይሩ ይመክራል።</translation>
 <translation id="7564680668369175887">ስቴሽን ዋቅገኖች</translation>
 <translation id="7567204685887185387">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በተጭበረበረ ሁኔታ ተሰጥቶ ሊሆን ይችላል። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
+<translation id="7568616151991626879">Google Chrome <ph name="APP_NAME" /> ላይ የይለፍ ቃልዎን ለመሙላት እየሞከረ ነው።</translation>
 <translation id="7569490014721427265">ጎልፍ</translation>
 <translation id="7569761772822664555">የፍለጋ ፕሮግራሞች ቁልፍን ያቀናብሩ፣ ነባሪ የፍለጋ ፕሮግራምዎን እና የጣቢያ ፍለጋዎን ለማቀናበር አስገባን ይጫኑ</translation>
 <translation id="7569952961197462199">ክሬዲት ካርድ ከChrome ይወገድ?</translation>
@@ -2492,6 +2504,7 @@
 <translation id="7637586430889951925">{COUNT,plural, =0{ምንም}=1{በእርስዎ መለያ ውስጥ 1 የይለፍ ቃል (ለ<ph name="DOMAIN_LIST" />)}one{በእርስዎ መለያ ውስጥ # የይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />)}other{በእርስዎ መለያ ውስጥ # የይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">ተከታታይ ወደቦች</translation>
 <translation id="7639968568612851608">ጠቆር ያለ ግራጫ</translation>
+<translation id="7646681339175747202">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። Google የይለፍ ቃል አስተዳዳሪ የይለፍ ቃልዎን አሁን እንዲቀይሩ ይመክራል።</translation>
 <translation id="7647206758853451655">የህትመት ጥራት</translation>
 <translation id="7648992873808071793">በዚህ መሣሪያ ላይ ፋይሎችን አከማች</translation>
 <translation id="7653957176542370971">የክፍያ ተቆጣጣሪ ሉህ ተዘግቷል</translation>
@@ -3034,6 +3047,7 @@
 <translation id="9174623988242579721">ብጁ እና የከፍተኛ ስራ ተሽከርካሪዎች</translation>
 <translation id="9174917557437862841">የማብሪያ ማጥፊያ አዝራር ትር፣ ወደዚህ ትር ለመቀየር Enter ይጫኑ</translation>
 <translation id="9179703756951298733">በChrome ቅንብሮች ውስጥ የእርስዎን ክፍያዎች እና የክሬዲት ካርድ መረጃ ያስተዳድሩ</translation>
+<translation id="9179907736442194268">በማንኛውም ጣቢያ ላይ ዋጋው ቢቀንስ የኢሜይል ማንቂያዎችን ያግኙ</translation>
 <translation id="9183302530794969518">Google ሰነድ</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> የማይጠቀም ፕሮቶኮል ይጠቀማል።</translation>
 <translation id="9187461866967718678">ጽንፍ ስፖርቶች</translation>

@@ -32,6 +32,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="1587223624401073077">Mae Google Chrome yn defnyddio'ch camera.</translation>
 <translation id="1587325591171447154">Mae <ph name="FILE_NAME" /> yn beryglus, felly mae Chrome wedi ei rhwystro.</translation>
 <translation id="1597911401261118146">I wirio a yw'ch cyfrineiriau'n ddiogel rhag toriadau data a phroblemau diogelwch eraill, <ph name="BEGIN_LINK" />mewngofnodwch i Chrome<ph name="END_LINK" />.</translation>
+<translation id="1599904803480101533">Gwnaeth Chrome rwysto'r ffeil archif hon oherwydd mae'n bosib ei bod yn cuddio drwgwedd</translation>
 <translation id="1619887657840448962">I wneud Chrome yn fwy diogel, gwnaethom analluogi'r estyniad canlynol nad yw wedi'i restru yn y <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ac a allai fod wedi'i ychwanegu heb i chi wybod.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Sut gallwch reoli eich data:<ph name="END_BOLD" /> Er mwyn amddiffyn eich preifatrwydd, rydym yn awtoddileu eich diddordebau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y bydd diddordeb yn ymddangos ar y rhestr eto. Neu gallwch gael gwared ar ddiddordebau nad ydych am i Chrome eu hystyried.</translation>
 <translation id="1628000112320670027">Cael help gyda Chrome</translation>
@@ -230,6 +231,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael. Rhowch gyfeiriadur proffil gwahanol
 <translation id="5386244825306882791">Mae hefyd yn rheoli pa dudalen sy'n cael ei dangos pan fyddwch yn cychwyn Chrome neu'n chwilio o'r Omniflwch.</translation>
 <translation id="5394833366792865639">Rhannu tab Chrome</translation>
 <translation id="5412485296464121825">Gall gwefannau storio gwybodaeth am eich diddordebau gyda Chrome. Er enghraifft, os ydych yn ymweld â gwefan i brynu esgidiau ar gyfer marathon, mae'n bosib y bydd y wefan yn diffinio'ch diddordeb fel rhedeg marathon. Yn ddiweddarach, os byddwch yn ymweld â gwefan wahanol i gofrestru ar gyfer ras, gall y wefan honno ddangos hysbyseb i chi ar gyfer esgidiau rhedeg yn seiliedig ar eich diddordebau.</translation>
+<translation id="5416870378730196769">Gwnaeth Chrome droi'r Arbedwr Cof ymlaen</translation>
 <translation id="5430073640787465221">Mae eich ffeil dewisiadau yn llygredig neu'n annilys.
 
 Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
@@ -328,6 +330,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="7649070708921625228">Cymorth</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="7655455401911432608">Eich hanes pori, cofnod o wefannau rydych wedi ymweld â nhw drwy ddefnyddio Chrome ar y ddyfais hon.</translation>
+<translation id="7726773885101561560">I wneud eich pori yn gyflymach, mae Chrome yn adfer cof o dabiau nad ydych yn eu defnyddio.</translation>
 <translation id="7747138024166251722">Ni allai'r gosodwr greu cyfeiriadur dros dro. Gwnewch yn siŵr bod gennych ddigon o le storio ar gael a bod gennych y caniatâd i osod meddalwedd.</translation>
 <translation id="7761834446675418963">Cliciwch eich enw i agor Chrome ac i ddechrau pori.</translation>
 <translation id="7777080907402804672">Os nad oes gan ddelwedd ddisgrifiad defnyddiol, bydd Chrome yn ceisio darparu un ar eich cyfer. Rydym yn anfon delweddau at Google er mwyn creu disgrifiadau. Gallwch ddiffodd hyn yn y gosodiadau ar unrhyw adeg.</translation>
@@ -400,6 +403,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8986207147630327271">Rydych yn ychwanegu proffil gwaith i'r porwr hwn ac yn rhoi rheolaeth i'ch gweinyddwr dros y proffil gwaith yn unig.</translation>
 <translation id="8989968390305463310">Mae eich hanes pori yn effeithio ar yr hysbysebion rydych yn eu gweld a'r diddordebau fel yr amcangyfrifir isod. Er mwyn amddiffyn eich preifatrwydd, mae Chrome yn dileu'ch diddordebau yn awtomatig bob mis. Gall diddordebau ail-lwytho oni bai eich bod yn eu tynnu.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Mae diweddariad Chrome ar gael}=1{Mae diweddariad Chrome ar gael}two{Mae diweddariad Chrome wedi bod ar gael ers # ddiwrnod}few{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}many{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}other{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}}</translation>
+<translation id="9003498785844995646">Pan fydd ymlaen, mae Chrome yn arbed pŵer batri drwy gyfyngu ar weithgarwch cefndir ac effeithiau gweledol, megis sgrolio llyfn a chyfraddau ffrâm fideo. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /> neu <ph name="BEGIN_LINK_2" />anfon adborth<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">System ChromeOS Flex</translation>
 <translation id="9067395829937117663">Mae Chrome yn gofyn am Windows 7 neu uwch.</translation>
 <translation id="911206726377975832">Dileu eich data pori hefyd?</translation>

@@ -261,6 +261,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="156703335097561114">Nätverksinformation som adresser, gränssnittskonfiguration och anslutningskvalitet</translation>
 <translation id="1567040042588613346">Den här principen fungerar som avsett, men den har även ställts in på annan plats med samma värde och detta andra värde ersätts av denna princip.</translation>
 <translation id="1569487616857761740">Ange sista giltighetsdatum</translation>
+<translation id="1569694109004336106">Google Chrome försöker aktivera Windows Hello för att fylla i lösenord.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Ett fel uppstod när webbsidan skulle visas.</translation>
 <translation id="1586541204584340881">Vilka tillägg du har installerat</translation>
@@ -399,6 +400,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1958218078413065209">Ditt rekord är <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Hjälp oss att göra webben säkrare för alla genom att skicka <ph name="BEGIN_WHITEPAPER_LINK" />webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll<ph name="END_WHITEPAPER_LINK" /> till Google <ph name="BEGIN_PRIVACY_PAGE_LINK" />Integritetspolicy<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Bokmärken på <ph name="DOMAIN" /></translation>
+<translation id="1971033026002113380">Skydda dina lösenord med TouchID</translation>
 <translation id="1973335181906896915">Serieproduktionsfel</translation>
 <translation id="1974060860693918893">Avancerat</translation>
 <translation id="1975457531113383421">Inmatningsfack</translation>
@@ -726,6 +728,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2881276955470682203">Vill du spara kortet?</translation>
 <translation id="2882949212241984732">Altarskåpsfalsning</translation>
 <translation id="2893773853358652045">Fjärde rullen</translation>
+<translation id="289834758818479772">Om du delar enheten med andra kan du aktivera TouchID för att verifiera din identitet när du använder ett sparat lösenord</translation>
 <translation id="2900528713135656174">Skapa händelse</translation>
 <translation id="2903493209154104877">Adresser</translation>
 <translation id="290376772003165898">Är sidan inte på <ph name="LANGUAGE" />?</translation>
@@ -802,6 +805,8 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3108943290502734357">Mittenfack</translation>
 <translation id="3109728660330352905">Du är inte behörig att se den här sidan.</translation>
 <translation id="3113284927548439113">tredje skiftet</translation>
+<translation id="3114040155724590991">Uppdaterar Android-systemet
+    Det kan ta längre tid än vanligt att starta appen.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Vill du ladda ned den konfidentiella filen?}other{Vill du ladda ned dessa konfidentiella filer?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Laminera</translation>
@@ -1256,6 +1261,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4306812610847412719">urklipp</translation>
 <translation id="4308567447483056043">Den här principen ignoreras eftersom användaren inte är kopplad. Om denna policy ska tillämpas måste webbläsaren Chrome och profilen hanteras av samma organisation via administratörskonsolen.</translation>
 <translation id="4310070645992025887">Sök bland dina sökningar</translation>
+<translation id="4310496734563057511">Om du delar enheten med andra kan du aktivera Windows Hello för att verifiera din identitet när du använder ett sparat lösenord</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blockera (standard)</translation>
 <translation id="4314815835985389558">Hantera synkronisering</translation>
@@ -1470,6 +1476,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4880827082731008257">Sök i historiken</translation>
 <translation id="4881695831933465202">Öppna</translation>
 <translation id="4885256590493466218">Betala med <ph name="CARD_DETAIL" /> i kassan</translation>
+<translation id="4887406273302438710">Skydda lösenord med Windows Hello</translation>
 <translation id="4888600795924685526">Språkstudier</translation>
 <translation id="4889420713887366944">Knappen Öppna ett inkognitofönster, tryck på Retur om du vill öppna ett nytt inkognitofönster och surfa privat</translation>
 <translation id="4892518386797173871">Bakre</translation>
@@ -1689,6 +1696,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5426179911063097041"><ph name="SITE" /> vill skicka aviseringar</translation>
 <translation id="5428105026674456456">spanska</translation>
 <translation id="5430298929874300616">Ta bort bokmärke</translation>
+<translation id="5434423669266814150">aktivera TouchID för att fylla i lösenord</translation>
 <translation id="5443468954631487277">Omvänd ordning – framsidan uppåt</translation>
 <translation id="5447765697759493033">Den här webbplatsen översätts inte</translation>
 <translation id="5452270690849572955">Sidan på <ph name="HOST_NAME" /> kan inte hittas</translation>
@@ -2466,6 +2474,7 @@ Mer information.
 <translation id="7564049878696755256">Du kan förlora åtkomsten till kontot på <ph name="ORG_NAME" /> eller bli utsatt för identitetsstöld. Du rekommenderas att ändra lösenordet nu.</translation>
 <translation id="7564680668369175887">Kombi</translation>
 <translation id="7567204685887185387">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat kan ha utfärdats utan behörighet. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
+<translation id="7568616151991626879">Google Chrome försöker fylla i ditt lösenord i <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569761772822664555">Knappen Hantera sökmotor: tryck på Retur för att hantera standardsökmotor och webbplatssökning</translation>
 <translation id="7569952961197462199">Vill du ta bort kreditkortet från Chrome?</translation>
@@ -2496,6 +2505,7 @@ Mer information.
 <translation id="7637586430889951925">{COUNT,plural, =0{Inga}=1{1 lösenord i kontot (för <ph name="DOMAIN_LIST" />)}other{# lösenord i kontot (för <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Serieportar</translation>
 <translation id="7639968568612851608">Mörkgrå</translation>
+<translation id="7646681339175747202">Lösenordet som du precis använde har läckt ut vid ett dataintrång. Du rekommenderas av Google Lösenordshantering att byta dina lösenord nu.</translation>
 <translation id="7647206758853451655">Utskriftskvalitet</translation>
 <translation id="7648992873808071793">Spara filer på enheten</translation>
 <translation id="7653957176542370971">Arbetsbladet för betalningshantering har stängts</translation>
