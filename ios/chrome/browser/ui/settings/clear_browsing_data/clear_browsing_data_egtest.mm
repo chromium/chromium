@@ -7,6 +7,9 @@
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -15,6 +18,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -73,8 +77,13 @@ using chrome_test_util::WindowWithNumber;
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   if ([self isRunningTest:@selector(testTapLearnMore)] ||
-      [self isRunningTest:@selector(testTapLearnMoreFromHistory)]) {
+      [self isRunningTest:@selector(testTapLearnMoreFromHistory)] ||
+      [self
+          isRunningTest:@selector(testUserSignedOutWhenClearingBrowsingData)]) {
     config.features_disabled.push_back(switches::kEnableCbdSignOut);
+  } else if ([self isRunningTest:@selector
+                   (testUserSignedInWhenClearingBrowsingData)]) {
+    config.features_enabled.push_back(switches::kEnableCbdSignOut);
   }
   return config;
 }
@@ -307,6 +316,60 @@ using chrome_test_util::WindowWithNumber;
   // Check that the URL of the help center was opened.
   GREYAssertEqual(kHelpCenterURL, [ChromeEarlGrey webStateVisibleURL].host(),
                   @"Did not navigate to the help center url.");
+}
+
+// Sign-in without sync. Clear browsing data.
+- (void)signInOpenCBDAndClearDataWithFakeIdentity:
+    (FakeChromeIdentity*)fakeIdentity {
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
+  [ChromeEarlGreyUI
+      tapPrivacyMenuButton:chrome_test_util::ButtonWithAccessibilityLabelId(
+                               IDS_IOS_CLEAR_BROWSING_DATA_TITLE)];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        chrome_test_util::ClearBrowsingDataButton()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ConfirmClearBrowsingDataButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kActivityOverlayViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Tests that a user in the `ConsentLevel::kSignin` state will be signed out
+// after clearing their browsing history if `kEnableCbdSignOut` feature is
+// enabled.
+// TODO(crbug.com/1363372): Flaky on iOS simulator.
+- (void)testUserSignedInWhenClearingBrowsingData {
+#if TARGET_IPHONE_SIMULATOR
+  EARL_GREY_TEST_DISABLED(
+      @"testUserSignedInWhenClearingBrowsingData is flaky on iPhone");
+#else
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+#endif
+}
+
+// Tests that a user in the `ConsentLevel::kSignin` state will be signed out
+// after clearing their browsing history if `kEnableCbdSignOut` feature is
+// disabled.
+// TODO(crbug.com/1363372): Flaky on iOS simulator.
+- (void)testUserSignedOutWhenClearingBrowsingData {
+#if TARGET_IPHONE_SIMULATOR
+  EARL_GREY_TEST_DISABLED(
+      @"testUserSignedOutWhenClearingBrowsingData is flaky on iPhone");
+#else
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedOut];
+#endif
 }
 
 @end
