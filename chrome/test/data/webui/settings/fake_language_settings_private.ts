@@ -25,7 +25,6 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
   onInputMethodRemoved: FakeChromeEvent;
 
   languages: chrome.languageSettingsPrivate.Language[];
-  neverTranslateList: string[];
   componentExtensionImes: chrome.languageSettingsPrivate.InputMethod[];
 
   constructor() {
@@ -142,8 +141,6 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
         supportsUI: true,
       },
     ];
-
-    this.neverTranslateList = ['en, fr'];
 
     this.componentExtensionImes = [
       {
