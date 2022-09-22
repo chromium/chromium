@@ -194,6 +194,7 @@ std::string GetTag() {
                      tag:(NSString* _Nullable)ap
                  version:(NSString* _Nullable)version
     existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
+       clientInstallData:(NSString* _Nullable)clientInstallData
         installDataIndex:(NSString* _Nullable)installDataIndex
                 priority:(CRUPriorityWrapper* _Nonnull)priority
              updateState:(CRUUpdateStateObserver* _Nonnull)updateState
