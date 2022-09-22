@@ -175,11 +175,6 @@ void PreloadHelper::DnsPrefetchIfNeeded(
                 String("DNS prefetch triggered for " + params.href.Host())),
             document, frame);
       }
-      if (caller == kLinkCalledFromHeader &&
-          base::FeatureList::IsEnabled(
-              network::features::kPreconnectInNetworkService)) {
-        return;
-      }
       WebPrescientNetworking* web_prescient_networking =
           frame ? frame->PrescientNetworking() : nullptr;
       if (web_prescient_networking) {
@@ -222,11 +217,6 @@ void PreloadHelper::PreconnectIfNeeded(
                             : "use-credentials")),
             document, frame);
       }
-    }
-    if (caller == kLinkCalledFromHeader &&
-        base::FeatureList::IsEnabled(
-            network::features::kPreconnectInNetworkService)) {
-      return;
     }
     WebPrescientNetworking* web_prescient_networking =
         frame ? frame->PrescientNetworking() : nullptr;
