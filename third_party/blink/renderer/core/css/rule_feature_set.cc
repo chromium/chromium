@@ -543,7 +543,7 @@ void RuleFeatureSet::UpdateFeaturesFromStyleScope(
       ExtractInvalidationSetFeaturesFromCompound(
           *selector, scope_features, kSubject,
           /* for_logical_combination_in_has */ false);
-      descendant_features.Add(scope_features);
+      descendant_features.Merge(scope_features);
     }
   }
 }
@@ -824,7 +824,7 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
     if (!all_sub_selectors_have_features)
       continue;
     if (complex_features.HasFeatures())
-      any_features.Add(complex_features);
+      any_features.Merge(complex_features);
     else
       all_sub_selectors_have_features = false;
   }
@@ -1536,8 +1536,7 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromSelector(
                                   metadata) == kSelectorNeverMatches) {
     return kSelectorNeverMatches;
   }
-
-  metadata_.Add(metadata);
+  metadata_.Merge(metadata);
 
   UpdateInvalidationSets(selector, style_scope);
   return kSelectorMayMatch;
@@ -1623,7 +1622,7 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectMetadataFromSelector(
   return kSelectorMayMatch;
 }
 
-void RuleFeatureSet::FeatureMetadata::Add(const FeatureMetadata& other) {
+void RuleFeatureSet::FeatureMetadata::Merge(const FeatureMetadata& other) {
   uses_first_line_rules |= other.uses_first_line_rules;
   uses_window_inactive_selector |= other.uses_window_inactive_selector;
   max_direct_adjacent_selectors = std::max(max_direct_adjacent_selectors,
@@ -1669,7 +1668,7 @@ void RuleFeatureSet::Merge(const RuleFeatureSet& other) {
   if (other.metadata_.invalidates_parts)
     metadata_.invalidates_parts = true;
 
-  metadata_.Add(other.metadata_);
+  metadata_.Merge(other.metadata_);
   media_query_result_flags_.Add(other.media_query_result_flags_);
 
   for (const auto& class_name : other.classes_in_has_argument_)
@@ -1996,7 +1995,7 @@ bool RuleFeatureSet::NeedsHasInvalidationForPseudoClass(
   return pseudos_in_has_argument_.Contains(pseudo_type);
 }
 
-void RuleFeatureSet::InvalidationSetFeatures::Add(
+void RuleFeatureSet::InvalidationSetFeatures::Merge(
     const InvalidationSetFeatures& other) {
   classes.AppendVector(other.classes);
   attributes.AppendVector(other.attributes);
@@ -2030,7 +2029,7 @@ void RuleFeatureSet::InvalidationSetFeatures::NarrowToFeatures(
   unsigned other_size = other.Size();
   if (size == 0 || (1 <= other_size && other_size < size)) {
     ClearFeatures();
-    Add(other);
+    Merge(other);
   }
 }
 

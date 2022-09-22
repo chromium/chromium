@@ -213,7 +213,7 @@ class CORE_EXPORT RuleFeatureSet {
 
   struct FeatureMetadata {
     DISALLOW_NEW();
-    void Add(const FeatureMetadata& other);
+    void Merge(const FeatureMetadata& other);
     void Clear();
     bool operator==(const FeatureMetadata&) const;
     bool operator!=(const FeatureMetadata& o) const { return !(*this == o); }
@@ -253,7 +253,7 @@ class CORE_EXPORT RuleFeatureSet {
   struct InvalidationSetFeatures {
     DISALLOW_NEW();
 
-    void Add(const InvalidationSetFeatures& other);
+    void Merge(const InvalidationSetFeatures& other);
     bool HasFeatures() const;
     bool HasIdClassOrAttribute() const;
 
