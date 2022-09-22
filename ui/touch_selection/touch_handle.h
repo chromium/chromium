@@ -142,7 +142,7 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandle : public TouchSelectionDraggable {
 
   std::unique_ptr<TouchHandleDrawable> drawable_;
 
-  const raw_ptr<TouchHandleClient, DanglingUntriaged> client_;
+  const raw_ptr<TouchHandleClient> client_;
 
   gfx::PointF focus_bottom_;
   gfx::PointF focus_top_;
