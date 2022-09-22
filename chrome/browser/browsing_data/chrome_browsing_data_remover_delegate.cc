@@ -614,6 +614,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     // Cleared for DATA_TYPE_HISTORY, DATA_TYPE_COOKIES and DATA_TYPE_PASSWORDS.
     browsing_data::RemoveFederatedSiteSettingsData(delete_begin_, delete_end_,
+                                                   website_settings_filter,
                                                    host_content_settings_map_);
   }
 
@@ -646,6 +647,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     // Cleared for DATA_TYPE_HISTORY, DATA_TYPE_COOKIES and DATA_TYPE_PASSWORDS.
     browsing_data::RemoveFederatedSiteSettingsData(delete_begin_, delete_end_,
+                                                   website_settings_filter,
                                                    host_content_settings_map_);
 
     if (!filter_builder->IsCrossSiteClearSiteDataForCookies()) {
@@ -863,6 +865,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     // Cleared for DATA_TYPE_HISTORY, DATA_TYPE_COOKIES and DATA_TYPE_PASSWORDS.
     browsing_data::RemoveFederatedSiteSettingsData(delete_begin_, delete_end_,
+                                                   website_settings_filter,
                                                    host_content_settings_map_);
   }
 

@@ -91,6 +91,7 @@ void RemovePersistentOriginTrials(PrefService* pref_service);
 void RemoveFederatedSiteSettingsData(
     const base::Time& delete_begin,
     const base::Time& delete_end,
+    HostContentSettingsMap::PatternSourcePredicate pattern_predicate,
     HostContentSettingsMap* host_content_settings_map);
 
 }  // namespace browsing_data
