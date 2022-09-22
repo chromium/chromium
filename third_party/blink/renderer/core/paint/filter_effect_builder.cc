@@ -369,9 +369,12 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
         Filter* reference_filter =
             BuildReferenceFilter(reference_operation, nullptr);
         if (reference_filter && reference_filter->LastEffect()) {
+          // Set the interpolation space for the source of the (sub)filter to
+          // match that of the previous primitive (or input).
+          auto* source = reference_filter->GetSourceGraphic();
+          source->SetOperatingInterpolationSpace(current_interpolation_space);
           paint_filter_builder::PopulateSourceGraphicImageFilters(
-              reference_filter->GetSourceGraphic(),
-              current_interpolation_space);
+              source, current_interpolation_space);
 
           FilterEffect* filter_effect = reference_filter->LastEffect();
           current_interpolation_space =
@@ -472,6 +475,9 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
       case FilterOperation::OperationType::kNone:
         break;
     }
+    // TODO(fs): When transitioning from a reference filter using "linearRGB"
+    // to a filter function we should insert a conversion (like the one below)
+    // for the results to be correct.
   }
   if (current_interpolation_space != kInterpolationSpaceSRGB) {
     // Transform to device color space at the end of processing, if required.
