@@ -354,11 +354,8 @@ test("web_runner_integration_tests") {
       "web_runner",
     ],
   ]
-  use_cfv1 = true
-  use_cfv2 = false
   additional_manifest_fragments = [
-    "//build/config/fuchsia/test/network_capabilities.test-cmx",
-    "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
-    "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
+    "//build/config/fuchsia/test/web_instance.shard.test-cml",
+    "//fuchsia_web/runners/web/web_runner_integration_tests.test-cml",
   ]
 }

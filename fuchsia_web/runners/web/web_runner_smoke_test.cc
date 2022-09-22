@@ -8,9 +8,12 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/bind.h"
+#include "base/files/file_enumerator.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/service_provider_impl.h"
+#include "base/process/process.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -28,7 +31,6 @@ namespace {
 class WebRunnerSmokeTest : public testing::Test {
  public:
   WebRunnerSmokeTest() = default;
-
   WebRunnerSmokeTest(const WebRunnerSmokeTest&) = delete;
   WebRunnerSmokeTest& operator=(const WebRunnerSmokeTest&) = delete;
 
@@ -77,6 +79,57 @@ class WebRunnerSmokeTest : public testing::Test {
   }
 
  protected:
+  // Returns a fuchsia.sys.Launcher to be used when launching web_runner. The
+  // returned instance belongs to a fuchsia.sys.Environment that has access to
+  // all services available to this test component. This is necessary because
+  // the default Launcher available to tests run by the Fuchsia test_manager
+  // does not have access to system services.
+  fuchsia::sys::Launcher* GetLauncher() {
+    if (runner_environment_launcher_)
+      return runner_environment_launcher_.get();
+
+    // Collect the names of all services provided to the test. Calling stat() in
+    // /svc is problematic; see https://fxbug.dev/100207. Tell the enumerator
+    // not to recurse, to return both files and directories, and to report only
+    // the names of entries.
+    std::vector<std::string> runner_services;
+    base::FileEnumerator file_enum(base::FilePath("/svc"), /*recursive=*/false,
+                                   base::FileEnumerator::NAMES_ONLY);
+    for (auto file = file_enum.Next(); !file.empty(); file = file_enum.Next()) {
+      runner_services.push_back(file.BaseName().value());
+    }
+
+    auto environment = base::ComponentContextForProcess()
+                           ->svc()
+                           ->Connect<fuchsia::sys::Environment>();
+
+    // Provide all of this test component's services to the runner.
+    auto services = fuchsia::sys::ServiceList::New();
+    services->names = std::move(runner_services);
+    services->host_directory =
+        base::ComponentContextForProcess()->svc()->CloneChannel().TakeChannel();
+
+    fuchsia::sys::EnvironmentPtr runner_environment;
+    environment->CreateNestedEnvironment(
+        runner_environment.NewRequest(),
+        runner_environment_controller_.NewRequest(),
+        base::StringPrintf("web_runners:%lu", base::Process::Current().Pid()),
+        std::move(services),
+        {.inherit_parent_services = false,
+         .use_parent_runners = false,
+         .delete_storage_on_death = true});
+
+    runner_environment->GetLauncher(runner_environment_launcher_.NewRequest());
+    runner_environment_launcher_.set_error_handler([](zx_status_t status) {
+      ZX_LOG(ERROR, status) << "Launcher disconnected.";
+    });
+    runner_environment_controller_.set_error_handler([](zx_status_t status) {
+      ZX_LOG(ERROR, status) << "EnvironmentController disconnected.";
+    });
+
+    return runner_environment_launcher_.get();
+  }
+
   bool test_html_requested_ = false;
   bool test_image_requested_ = false;
 
@@ -84,6 +137,8 @@ class WebRunnerSmokeTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   sys::OutgoingDirectory outgoing_directory_;
+  fuchsia::sys::EnvironmentControllerPtr runner_environment_controller_;
+  fuchsia::sys::LauncherPtr runner_environment_launcher_;
   std::unique_ptr<base::ServiceProviderImpl> service_provider_;
 
   net::EmbeddedTestServer test_server_;
@@ -103,12 +158,9 @@ TEST_F(WebRunnerSmokeTest, MAYBE_RequestHtmlAndImage) {
   fuchsia::sys::LaunchInfo launch_info = LaunchInfoWithServices();
   launch_info.url = test_server_.GetURL("/test.html").spec();
 
-  auto launcher = base::ComponentContextForProcess()
-                      ->svc()
-                      ->Connect<fuchsia::sys::Launcher>();
-
   fuchsia::sys::ComponentControllerSyncPtr controller;
-  launcher->CreateComponent(std::move(launch_info), controller.NewRequest());
+  GetLauncher()->CreateComponent(std::move(launch_info),
+                                 controller.NewRequest());
 
   run_loop_.Run();
 
@@ -124,12 +176,9 @@ TEST_F(WebRunnerSmokeTest, LifecycleTerminate) {
   launch_info.url = test_server_.GetURL("/test.html").spec();
   launch_info.directory_request = directory.NewRequest().TakeChannel();
 
-  auto launcher = base::ComponentContextForProcess()
-                      ->svc()
-                      ->Connect<fuchsia::sys::Launcher>();
-
   fuchsia::sys::ComponentControllerPtr controller;
-  launcher->CreateComponent(std::move(launch_info), controller.NewRequest());
+  GetLauncher()->CreateComponent(std::move(launch_info),
+                                 controller.NewRequest());
 
   sys::ServiceDirectory component_services(std::move(directory));
   auto lifecycle = component_services.Connect<fuchsia::modular::Lifecycle>();
@@ -153,12 +202,9 @@ TEST_F(WebRunnerSmokeTest, ComponentExitOnFrameClose) {
   fuchsia::sys::LaunchInfo launch_info = LaunchInfoWithServices();
   launch_info.url = test_server_.GetURL("/window_close.html").spec();
 
-  auto launcher = base::ComponentContextForProcess()
-                      ->svc()
-                      ->Connect<fuchsia::sys::Launcher>();
-
   fuchsia::sys::ComponentControllerPtr controller;
-  launcher->CreateComponent(std::move(launch_info), controller.NewRequest());
+  GetLauncher()->CreateComponent(std::move(launch_info),
+                                 controller.NewRequest());
 
   // Script in the page will execute window.close(), which should teardown the
   // Component, causing |controller| to be disconnected.
@@ -202,12 +248,9 @@ TEST_F(WebRunnerSmokeTest, RemoveSelfFromStoryOnFrameClose) {
   launch_info.additional_services->names.emplace_back(
       fuchsia::modular::ModuleContext::Name_);
 
-  auto launcher = base::ComponentContextForProcess()
-                      ->svc()
-                      ->Connect<fuchsia::sys::Launcher>();
-
   fuchsia::sys::ComponentControllerPtr controller;
-  launcher->CreateComponent(std::move(launch_info), controller.NewRequest());
+  GetLauncher()->CreateComponent(std::move(launch_info),
+                                 controller.NewRequest());
 
   // Script in the page will execute window.close(), which should teardown the
   // Component, causing |controller| to be disconnected.

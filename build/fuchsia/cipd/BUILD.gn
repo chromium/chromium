@@ -297,6 +297,7 @@ cipd_test_archive("tests") {
       far_sources = [
         "${root_gen_dir}/base/base_unittests/base_unittests.far",
         "${root_gen_dir}/fuchsia_web/runners/cast_runner_integration_tests/cast_runner_integration_tests.far",
+        "${root_gen_dir}/fuchsia_web/runners/web_runner_integration_tests/web_runner_integration_tests.far",
         "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests/web_engine_integration_tests.far",
         "${root_gen_dir}/ipc/ipc_tests/ipc_tests.far",
         "${root_gen_dir}/media/media_unittests/media_unittests.far",
@@ -304,10 +305,7 @@ cipd_test_archive("tests") {
         "${root_gen_dir}/skia/skia_unittests/skia_unittests.far",
         "${root_gen_dir}/third_party/blink/common/blink_common_unittests/blink_common_unittests.far",
       ]
-      cfv1_far_sources = [
-        "${root_gen_dir}/fuchsia_web/runners/web_runner_integration_tests/web_runner_integration_tests.far",
-        "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests_cfv1/web_engine_integration_tests_cfv1.far",
-      ]
+      cfv1_far_sources = [ "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests_cfv1/web_engine_integration_tests_cfv1.far" ]
     },
     {
       manifest_path = "${target_gen_dir}/common_tests_manifest.json"
@@ -322,11 +320,11 @@ cipd_test_archive("tests") {
     },
     {
       manifest_path = "${target_gen_dir}/web_engine_tests_manifest.json"
-      far_sources = [ "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests/web_engine_integration_tests.far" ]
-      cfv1_far_sources = [
+      far_sources = [
         "${root_gen_dir}/fuchsia_web/runners/web_runner_integration_tests/web_runner_integration_tests.far",
-        "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests_cfv1/web_engine_integration_tests_cfv1.far",
+        "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests/web_engine_integration_tests.far",
       ]
+      cfv1_far_sources = [ "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests_cfv1/web_engine_integration_tests_cfv1.far" ]
     },
     {
       manifest_path = "${target_gen_dir}/cast_runner_tests_manifest.json"
