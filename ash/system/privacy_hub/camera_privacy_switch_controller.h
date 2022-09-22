@@ -57,9 +57,12 @@ class ASH_EXPORT CameraPrivacySwitchController
   // Returns the last observed HW switch state for the camera.
   cros::mojom::CameraPrivacySwitchState HWSwitchState() const;
 
-  // Sets Privacy switch API for testing
+  // Sets Privacy switch API for testing.
   void SetCameraPrivacySwitchAPIForTest(
       std::unique_ptr<CameraPrivacySwitchAPI> switch_api);
+
+  // Displays the camera off notification.
+  void ShowNotification(const std::u16string& app_name);
 
  private:
   // Retrieves the current value of the user pref.

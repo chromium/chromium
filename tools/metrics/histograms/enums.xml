@@ -71603,6 +71603,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="151" label="ARC Low Disk Space Pre-stop"/>
   <int value="152" label="ARC Low Disk Space Post-stop"/>
   <int value="153" label="Multi capture started"/>
+  <int value="154" label="PrivacyHubCamera"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">

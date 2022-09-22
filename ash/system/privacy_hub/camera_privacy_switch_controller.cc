@@ -7,16 +7,26 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "components/prefs/pref_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
+
+// The ID for a notification shown when the user tries to use a camera while the
+// camera is disabled in Privacy Hub.
+constexpr char kPrivacyHubCameraOffNotificationId[] =
+    "ash.media.privacy_hub.activity_with_disabled_camera";
 
 namespace {
 
@@ -113,6 +123,48 @@ void CameraPrivacySwitchController::OnCameraHWPrivacySwitchStatusChanged(
 cros::mojom::CameraPrivacySwitchState
 CameraPrivacySwitchController::HWSwitchState() const {
   return camera_privacy_switch_state_;
+}
+
+void CameraPrivacySwitchController::ShowNotification(
+    const std::u16string& app_name) {
+  message_center::RichNotificationData notification_data;
+  notification_data.pinned = true;
+  notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
+      IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_ACTION_BUTTON));
+
+  scoped_refptr<message_center::NotificationDelegate> delegate =
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating([](absl::optional<int> button_index) {
+            if (button_index) {
+              PrefService* const pref_service =
+                  Shell::Get()->session_controller()->GetActivePrefService();
+              if (pref_service) {
+                pref_service->SetBoolean(prefs::kUserCameraAllowed, true);
+              }
+            } else {
+              // Click on the notification body is no-op.
+            }
+          }));
+
+  message_center::MessageCenter::Get()->RemoveNotification(
+      kPrivacyHubCameraOffNotificationId, /*by_user=*/false);
+  message_center::MessageCenter::Get()->AddNotification(
+      ash::CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          kPrivacyHubCameraOffNotificationId,
+          l10n_util::GetStringUTF16(
+              IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE),
+          /*display_source=*/std::u16string(),
+          /*origin_url=*/GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kPrivacyHubCameraOffNotificationId,
+              ash::NotificationCatalogName::kPrivacyHubCamera),
+          notification_data, std::move(delegate),
+          vector_icons::kVideocamOffIcon,
+          message_center::SystemNotificationWarningLevel::NORMAL));
 }
 
 }  // namespace ash
