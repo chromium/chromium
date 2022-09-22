@@ -759,6 +759,12 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
     PartitionRoot<thread_safe>* root,
     unsigned int flags) {
   auto super_page = AllocNewSuperPageSpan(root, 1, flags);
+  if (PA_UNLIKELY(!super_page)) {
+    // If the `kReturnNull` flag isn't set and the allocation attempt fails,
+    // `AllocNewSuperPageSpan` should've failed with an OOM crash.
+    PA_DCHECK(flags & AllocFlags::kReturnNull);
+    return 0;
+  }
   return SuperPagePayloadBegin(super_page, root->IsQuarantineAllowed());
 }
 
