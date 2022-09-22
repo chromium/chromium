@@ -43,6 +43,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/chrome_resource_bundle_helper.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/common/buildflags.h"
@@ -1505,6 +1506,15 @@ absl::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
 }
 
 void ChromeMainDelegate::ProcessExiting(const std::string& process_type) {
+  // If not already set, set the shutdown type to be a clean process exit
+  // |kProcessExit|. These browser process shutdowns are clean shutdowns and
+  // their shutdown type must differ from |kNotValid|. If the shutdown type was
+  // already set (a.k.a closing window, end-session), this statement is a no-op.
+  if (process_type.empty()) {
+    browser_shutdown::OnShutdownStarting(
+        browser_shutdown::ShutdownType::kOtherExit);
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   if (ChromeProcessSingleton::IsEarlySingletonFeatureEnabled())
     ChromeProcessSingleton::DeleteInstance();

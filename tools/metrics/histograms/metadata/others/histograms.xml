@@ -12307,8 +12307,7 @@ should be kept until we remove incident reporting. -->
   <summary>
     Time duration for shutdown initiated by the browser exit menu command. The
     duration covers from the shutdown trigger to the deletion of the
-    BrowserImpl. Note: Android has an atomic shutdown and does not have shutdown
-    metrics.
+    BrowserImpl. Note: Android does not have shutdown metrics.
   </summary>
 </histogram>
 
@@ -12327,8 +12326,8 @@ should be kept until we remove incident reporting. -->
   <summary>
     Time duration for shutdown initiated by an end session (user logs off, shuts
     down or reboots without explicitly exiting).The duration covers from the
-    shutdown trigger to the deletion of the BrowserImpl. Note: Android has an
-    atomic shutdown and does not have shutdown metrics.
+    shutdown trigger to the deletion of the BrowserImpl. Note: Android does not
+    have shutdown metrics.
   </summary>
 </histogram>
 
@@ -12349,8 +12348,27 @@ should be kept until we remove incident reporting. -->
     Time for shutdown for a not valid exit. This situation happen when a chrome
     process is already running and the process is terminated after the process
     singleton rendez-vous. The duration covers from the shutdown trigger to the
-    deletion of the BrowserImpl. Note: Android has an atomic shutdown and does
-    not have shutdown metrics.
+    deletion of the BrowserImpl. Note: Android does not have shutdown metrics.
+  </summary>
+</histogram>
+
+<histogram name="Shutdown.OtherExit.Time" units="ms" expires_after="M110">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time duration for clean shutdown that are not initiated by the users. The
+    duration covers from the shutdown trigger to the deletion of the
+    BrowserImpl. Note: Android does not have shutdown metrics.
+  </summary>
+</histogram>
+
+<histogram name="Shutdown.OtherExit.Time2" units="ms" expires_after="M110">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time duration for clean shutdown that are not catched by other not initiated
+    by the users. The duration covers from the shutdown trigger to the deletion
+    of the BrowserImpl. Note: Android does not have shutdown metrics.
   </summary>
 </histogram>
 
@@ -12377,7 +12395,12 @@ should be kept until we remove incident reporting. -->
     expires_after="M110">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
-  <summary>The type of the last shutdown.</summary>
+  <summary>
+    The type of the last shutdown.
+
+    In M-108, the detection of shutdown due to early exit paths changed and
+    these shutdowns will be moved from the NotValid bucket to the Other bucket.
+  </summary>
 </histogram>
 
 <histogram name="Shutdown.ShutdownType2" enum="ShutdownType"
@@ -12386,8 +12409,11 @@ should be kept until we remove incident reporting. -->
   <owner>gab@chromium.org</owner>
   <summary>
     The action type that triggered a browser shutdown. The metric is emitted
-    just after BrowserImpl deletion. Note: Android has an atomic shutdown and
-    does not shutdown metrics.
+    just after BrowserImpl deletion. Note: Android does not have shutdown
+    metrics.
+
+    In M-108, the detection of shutdown due to early exit paths changed and
+    these shutdowns will be moved from the NotValid bucket to the Other bucket.
   </summary>
 </histogram>
 
@@ -12402,8 +12428,8 @@ should be kept until we remove incident reporting. -->
   <owner>gab@chromium.org</owner>
   <summary>
     Time for shutdown for a silent exit. The duration covers from the shutdown
-    trigger to the deletion of the BrowserImpl. Note: Android has an atomic
-    shutdown and does not have shutdown metrics.
+    trigger to the deletion of the BrowserImpl. Note: Android does not have
+    shutdown metrics.
   </summary>
 </histogram>
 
@@ -12421,8 +12447,7 @@ should be kept until we remove incident reporting. -->
   <summary>
     Time for shutdown initiated by the last browser window being closed. The
     duration covers from the shutdown trigger to the deletion of the
-    BrowserImpl. Note: Android has an atomic shutdown and does not have shutdown
-    metrics.
+    BrowserImpl. Note: Android does not have shutdown metrics.
   </summary>
 </histogram>
 

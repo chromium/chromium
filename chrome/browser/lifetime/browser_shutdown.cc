@@ -104,6 +104,8 @@ const char* ToShutdownTypeString(ShutdownType type) {
       return "end";
     case ShutdownType::kSilentExit:
       return "silent_exit";
+    case ShutdownType::kOtherExit:
+      return "other_exit";
   }
   return "";
 }
@@ -132,6 +134,10 @@ void LogShutdownMetrics() {
 
     case ShutdownType::kEndSession:
       time_metric_name = "Shutdown.EndSession.Time2";
+      break;
+
+    case ShutdownType::kOtherExit:
+      time_metric_name = "Shutdown.OtherExit.Time2";
       break;
   }
   DCHECK(time_metric_name);
@@ -162,7 +168,7 @@ void OnShutdownStarting(ShutdownType type) {
   if (g_shutdown_type != ShutdownType::kNotValid)
     return;
 
-  static crash_reporter::CrashKeyString<8> shutdown_type_key("shutdown-type");
+  static crash_reporter::CrashKeyString<11> shutdown_type_key("shutdown-type");
   shutdown_type_key.Set(ToShutdownTypeString(type));
 
   g_shutdown_type = type;
@@ -186,14 +192,16 @@ void OnShutdownStarting(ShutdownType type) {
   // Call FastShutdown on all of the RenderProcessHosts.  This will be
   // a no-op in some cases, so we still need to go through the normal
   // shutdown path for the ones that didn't exit here.
-  g_shutdown_num_processes = 0;
-  g_shutdown_num_processes_slow = 0;
-  for (content::RenderProcessHost::iterator i(
-           content::RenderProcessHost::AllHostsIterator());
-       !i.IsAtEnd(); i.Advance()) {
-    ++g_shutdown_num_processes;
-    if (!i.GetCurrentValue()->FastShutdownIfPossible())
-      ++g_shutdown_num_processes_slow;
+  if (g_browser_process) {
+    g_shutdown_num_processes = 0;
+    g_shutdown_num_processes_slow = 0;
+    for (content::RenderProcessHost::iterator i(
+             content::RenderProcessHost::AllHostsIterator());
+         !i.IsAtEnd(); i.Advance()) {
+      ++g_shutdown_num_processes;
+      if (!i.GetCurrentValue()->FastShutdownIfPossible())
+        ++g_shutdown_num_processes_slow;
+    }
   }
 }
 
@@ -383,6 +391,10 @@ void ReadLastShutdownFile(ShutdownType type,
 
     case ShutdownType::kEndSession:
       time_metric_name = "Shutdown.EndSession.Time";
+      break;
+
+    case ShutdownType::kOtherExit:
+      time_metric_name = "Shutdown.OtherExit.Time";
       break;
   }
   DCHECK(time_metric_name);

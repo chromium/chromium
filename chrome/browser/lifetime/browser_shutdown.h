@@ -55,7 +55,10 @@ enum class ShutdownType {
   kEndSession = 3,
   // Exit without onbeforeunload or in-progress download prompts.
   kSilentExit = 4,
-  kMaxValue = kSilentExit
+  // The browser process is exiting but not by a user action. These exit paths
+  // can happen with early exit paths where the browser main is not executed.
+  kOtherExit = 5,
+  kMaxValue = kOtherExit
 };
 
 void RegisterPrefs(PrefRegistrySimple* registry);
