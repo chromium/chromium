@@ -513,6 +513,13 @@ target(link_target_type, "gles2_sources") {
       "texture_owner.h",
     ]
 
+    if (use_dawn) {
+      sources += [
+        "shared_image/dawn_ahardwarebuffer_image_representation.cc",
+        "shared_image/dawn_ahardwarebuffer_image_representation.h",
+      ]
+    }
+
     deps += [ "//base" ]
 
     # TODO(cblume): http://crbug.com/911313

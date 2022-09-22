@@ -5,6 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_AHARDWAREBUFFER_IMAGE_BACKING_FACTORY_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_AHARDWAREBUFFER_IMAGE_BACKING_FACTORY_H_
 
+#include <dawn/dawn_proc_table.h>
+
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/gpu_gles2_export.h"
@@ -119,6 +121,8 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
 
   // Used to limit the max size of AHardwareBuffer.
   int32_t max_gl_texture_size_ = 0;
+
+  scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
 };
 
 }  // namespace gpu

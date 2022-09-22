@@ -438,7 +438,10 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   device_ = descriptor->device();
 
   switch (texture_descriptor_.format) {
+    // TODO(crbug.com/1361468): support BGRA8Unorm on Android.
+#if !BUILDFLAG(IS_ANDROID)
     case WGPUTextureFormat_BGRA8Unorm:
+#endif
       // TODO(crbug.com/1298618): support RGBA8Unorm on MAC.
 #if !BUILDFLAG(IS_MAC)
     case WGPUTextureFormat_RGBA8Unorm:

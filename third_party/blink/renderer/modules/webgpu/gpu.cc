@@ -315,7 +315,11 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
 
 String GPU::getPreferredCanvasFormat() {
   // TODO(crbug.com/1007166): Return actual preferred format for the swap chain.
+#if BUILDFLAG(IS_ANDROID)
+  return "rgba8unorm";
+#else
   return "bgra8unorm";
+#endif
 }
 
 void GPU::TrackMappableBuffer(GPUBuffer* buffer) {
