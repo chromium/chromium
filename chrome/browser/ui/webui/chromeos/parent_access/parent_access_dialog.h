@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_PARENT_ACCESS_PARENT_ACCESS_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_PARENT_ACCESS_PARENT_ACCESS_DIALOG_H_
 
+#include <memory>
+#include <string>
+
+#include "base/callback_forward.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 
@@ -17,9 +21,29 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
   // Error state returned by the Show() function.
   enum ShowError { kNone, kDialogAlreadyVisible, kNotAChildUser };
 
+  // The result of the parent access request, passed back to the caller.
+  struct Result {
+    // The status of the result.
+    enum Status {
+      kApproved,   // The parent was verified and they approved.
+      kDeclined,   // The request was explicitly declined by the parent.
+      kCancelled,  // The request was cancelled/dismissed by the parent.
+      kError,      // An error occurred while handling the request.
+    };
+    Status status = kCancelled;
+
+    // The Parent Access Token.  Only set if status is kVerified.
+    std::string parent_access_token = "";
+  };
+
+  // Callback for the result of the dialog.
+  using ParentAccessDialogCallback =
+      base::OnceCallback<void(std::unique_ptr<Result>)>;
+
   // Shows the dialog; if the dialog is already displayed, this returns an
   // error.
-  static ShowError Show(parent_access_ui::mojom::ParentAccessParamsPtr params);
+  static ShowError Show(parent_access_ui::mojom::ParentAccessParamsPtr params,
+                        ParentAccessDialogCallback callback);
 
   static ParentAccessDialog* GetInstance();
 
@@ -40,11 +64,13 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
 
  protected:
   explicit ParentAccessDialog(
-      parent_access_ui::mojom::ParentAccessParamsPtr params);
+      parent_access_ui::mojom::ParentAccessParamsPtr params,
+      ParentAccessDialogCallback callback);
   ~ParentAccessDialog() override;
 
  private:
   parent_access_ui::mojom::ParentAccessParamsPtr parent_access_params_;
+  ParentAccessDialogCallback callback_;
 };
 
 }  // namespace chromeos

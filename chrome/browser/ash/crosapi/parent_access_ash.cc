@@ -38,10 +38,14 @@ void ParentAccessAsh::GetWebsiteParentApproval(
               parent_access_ui::mojom::WebApprovalsParams::New(
                   url, child_display_name, favicon_bitmap)));
 
-  // TODO(b/200587178): pass ParentAccessDialogCallback when it has been
-  // defined.
   chromeos::ParentAccessDialog::ShowError show_dialog_result =
-      chromeos::ParentAccessDialog::Show(std::move(params));
+      chromeos::ParentAccessDialog::Show(
+          std::move(params),
+          base::BindOnce(
+              [](std::unique_ptr<chromeos::ParentAccessDialog::Result> result)
+                  -> void {
+                // TODO(b/200587178): Handle ParentAccessDialogCallback.
+              }));
 
   crosapi::mojom::ParentAccessResultPtr result =
       crosapi::mojom::ParentAccessResult::New();

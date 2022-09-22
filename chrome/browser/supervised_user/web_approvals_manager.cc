@@ -47,17 +47,20 @@ void WebApprovalsManager::RequestLocalApproval(
     const GURL& url,
     ApprovalRequestInitiatedCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1233615): pass completion_callback.
-  // TODO(b/195316776): Pass in relevant local web approvals params instead of
-  // an empty object.
+  // TODO(b/195316776): replace this with call to the ParentAccess crosapi with
+  // appropriate parameters and handle the ParentAccess crosapi result.
   parent_access_ui::mojom::ParentAccessParamsPtr params =
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
               parent_access_ui::mojom::WebApprovalsParams::New()));
   chromeos::ParentAccessDialog::ShowError result =
-      chromeos::ParentAccessDialog::Show(std::move(params));
-
+      chromeos::ParentAccessDialog::Show(
+          std::move(params),
+          base::BindOnce(
+              [](std::unique_ptr<
+                  chromeos::ParentAccessDialog::ParentAccessDialog::Result>
+                     result) -> void {}));
   if (result != chromeos::ParentAccessDialog::ShowError::kNone) {
     LOG(ERROR) << "Error showing ParentAccessDialog: " << result;
     std::move(callback).Run(false);
