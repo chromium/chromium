@@ -49,7 +49,7 @@ and the "cast" functionality were also implemented as extensions.
 
 There are also component platform apps; ChromeOS historically had many of
 these.  Now, the general guidance is to instead implement these features as
-[System Web Apps](/chrome/browser/web\_applications/system\_web\_apps/README.md).
+[System Web Apps](/chrome/browser/ash/system_web_apps/README.md).
 
 ## Component extensions permissions
 
