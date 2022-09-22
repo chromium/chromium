@@ -18,6 +18,9 @@ reports=no
 # Maximum number of arguments for function / method
 max-args=6
 
+# Maximum number of instance attributes
+max-attributes=10
+
 [FORMAT]
 
 max-line-length=80

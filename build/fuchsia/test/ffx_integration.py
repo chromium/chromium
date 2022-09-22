@@ -107,6 +107,16 @@ class FfxEmulator(AbstractContextManager):
         self._scoped_pb_storage = ScopedFfxConfig(
             'pbms.storage.path', os.path.join(SDK_ROOT, os.pardir, 'images'))
 
+        override_file = os.path.join(os.path.dirname(__file__), os.pardir,
+                                     'sdk_override.txt')
+        self._scoped_pb_metadata = None
+        if os.path.exists(override_file):
+            with open(override_file) as f:
+                pb_metadata = f.read().split('\n')
+                pb_metadata.append('{sdk.root}/*.json')
+                self._scoped_pb_metadata = ScopedFfxConfig(
+                    'pbms.metadata', json.dumps((pb_metadata)))
+
     @staticmethod
     def _check_ssh_config_file() -> None:
         """Checks for ssh keys and generates them if they are missing."""
@@ -141,6 +151,8 @@ class FfxEmulator(AbstractContextManager):
         """
 
         self._scoped_pb_storage.__enter__()
+        if self._scoped_pb_metadata:
+            self._scoped_pb_metadata.__enter__()
         self._check_ssh_config_file()
         self._download_product_bundle_if_necessary()
         emu_command = [
@@ -210,6 +222,8 @@ class FfxEmulator(AbstractContextManager):
         # might fail.
         run_ffx_command(('emu', 'stop', self._node_name), check=False)
 
+        if self._scoped_pb_metadata:
+            self._scoped_pb_metadata.__exit__(exc_type, exc_value, traceback)
         self._scoped_pb_storage.__exit__(exc_type, exc_value, traceback)
 
         # Do not suppress exceptions.
