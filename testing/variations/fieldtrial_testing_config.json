@@ -5913,6 +5913,21 @@
             ]
         }
     ],
+    "InfobarScrollOptimization": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InfobarScrollOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "InitialNavigationEntry": [
         {
             "platforms": [
