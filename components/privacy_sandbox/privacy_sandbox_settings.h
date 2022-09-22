@@ -48,6 +48,10 @@ class PrivacySandboxSettings : public KeyedService {
     // TODO(crbug.com/1304132): Unify this so Trust Tokens only need to consult
     // a single source of truth.
     virtual void OnTrustTokenBlockingChanged(bool blocked) {}
+
+    // Fired when the First-Party Sets changes to being `enabled` as a result of
+    // the kPrivacySandboxFirstPartySets preference changing.
+    virtual void OnFirstPartySetsEnabledChanged(bool enabled) {}
   };
 
   class Delegate {
@@ -190,6 +194,9 @@ class PrivacySandboxSettings : public KeyedService {
 
   // Called when the main privacy sandbox preference is changed.
   void OnPrivacySandboxPrefChanged();
+
+  // Called when the First-Party Sets enabled preference is changed.
+  void OnFirstPartySetsEnabledPrefChanged();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

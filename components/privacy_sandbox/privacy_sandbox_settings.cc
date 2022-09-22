@@ -16,6 +16,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "content/public/common/content_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
@@ -84,6 +85,11 @@ PrivacySandboxSettings::PrivacySandboxSettings(
       prefs::kPrivacySandboxApisEnabledV2,
       base::BindRepeating(&PrivacySandboxSettings::OnPrivacySandboxPrefChanged,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kPrivacySandboxFirstPartySetsEnabled,
+      base::BindRepeating(
+          &PrivacySandboxSettings::OnFirstPartySetsEnabledPrefChanged,
+          base::Unretained(this)));
 }
 
 PrivacySandboxSettings::~PrivacySandboxSettings() = default;
@@ -395,6 +401,16 @@ void PrivacySandboxSettings::OnPrivacySandboxPrefChanged() {
 
   for (auto& observer : observers_)
     observer.OnTrustTokenBlockingChanged(!IsTrustTokensAllowed());
+}
+
+void PrivacySandboxSettings::OnFirstPartySetsEnabledPrefChanged() {
+  if (!base::FeatureList::IsEnabled(features::kFirstPartySets))
+    return;
+
+  for (auto& observer : observers_) {
+    observer.OnFirstPartySetsEnabledChanged(
+        pref_service_->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled));
+  }
 }
 
 void PrivacySandboxSettings::AddObserver(Observer* observer) {
