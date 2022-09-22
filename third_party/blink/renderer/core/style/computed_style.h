@@ -800,96 +800,34 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // Scroll properties.
+
+  PhysicalToLogicalGetter<const Length&, ComputedStyle>
+  PhysicalScrollPaddingToLogicalGetter() const {
+    return PhysicalToLogicalGetter<const Length&, ComputedStyle>(
+        GetWritingDirection(), *this, &ComputedStyleBase::ScrollPaddingTop,
+        &ComputedStyleBase::ScrollPaddingRight,
+        &ComputedStyleBase::ScrollPaddingBottom,
+        &ComputedStyleBase::ScrollPaddingLeft);
+  }
+
   // scroll-padding-block-start
   const Length& ScrollPaddingBlockStart() const {
-    return IsHorizontalWritingMode() ? ScrollPaddingTop() : ScrollPaddingLeft();
-  }
-  void SetScrollPaddingBlockStart(const Length& v) {
-    if (IsHorizontalWritingMode())
-      SetScrollPaddingTop(v);
-    else
-      SetScrollPaddingLeft(v);
+    return PhysicalScrollPaddingToLogicalGetter().BlockStart();
   }
 
   // scroll-padding-block-end
   const Length& ScrollPaddingBlockEnd() const {
-    return IsHorizontalWritingMode() ? ScrollPaddingBottom()
-                                     : ScrollPaddingRight();
-  }
-  void SetScrollPaddingBlockEnd(const Length& v) {
-    if (IsHorizontalWritingMode())
-      SetScrollPaddingBottom(v);
-    else
-      SetScrollPaddingRight(v);
+    return PhysicalScrollPaddingToLogicalGetter().BlockEnd();
   }
 
   // scroll-padding-inline-start
   const Length& ScrollPaddingInlineStart() const {
-    return IsHorizontalWritingMode() ? ScrollPaddingLeft() : ScrollPaddingTop();
-  }
-  void SetScrollPaddingInlineStart(const Length& v) {
-    if (IsHorizontalWritingMode())
-      SetScrollPaddingLeft(v);
-    else
-      SetScrollPaddingTop(v);
+    return PhysicalScrollPaddingToLogicalGetter().InlineStart();
   }
 
   // scroll-padding-inline-end
   const Length& ScrollPaddingInlineEnd() const {
-    return IsHorizontalWritingMode() ? ScrollPaddingRight()
-                                     : ScrollPaddingBottom();
-  }
-  void SetScrollPaddingInlineEnd(const Length& v) {
-    if (IsHorizontalWritingMode())
-      SetScrollPaddingRight(v);
-    else
-      SetScrollPaddingBottom(v);
-  }
-
-  // scroll-margin-block-start
-  float ScrollMarginBlockStart() const {
-    return IsHorizontalWritingMode() ? ScrollMarginTop() : ScrollMarginLeft();
-  }
-  void SetScrollMarginBlockStart(float v) {
-    if (IsHorizontalWritingMode())
-      SetScrollMarginTop(v);
-    else
-      SetScrollMarginLeft(v);
-  }
-
-  // scroll-margin-block-end
-  float ScrollMarginBlockEnd() const {
-    return IsHorizontalWritingMode() ? ScrollMarginBottom()
-                                     : ScrollMarginRight();
-  }
-  void SetScrollMarginBlockEnd(float v) {
-    if (IsHorizontalWritingMode())
-      SetScrollMarginBottom(v);
-    else
-      SetScrollMarginRight(v);
-  }
-
-  // scroll-margin-inline-start
-  float ScrollMarginInlineStart() const {
-    return IsHorizontalWritingMode() ? ScrollMarginLeft() : ScrollMarginTop();
-  }
-  void SetScrollMarginInlineStart(float v) {
-    if (IsHorizontalWritingMode())
-      SetScrollMarginLeft(v);
-    else
-      SetScrollMarginTop(v);
-  }
-
-  // scroll-margin-inline-end
-  float ScrollMarginInlineEnd() const {
-    return IsHorizontalWritingMode() ? ScrollMarginRight()
-                                     : ScrollMarginBottom();
-  }
-  void SetScrollMarginInlineEnd(float v) {
-    if (IsHorizontalWritingMode())
-      SetScrollMarginRight(v);
-    else
-      SetScrollMarginBottom(v);
+    return PhysicalScrollPaddingToLogicalGetter().InlineEnd();
   }
 
   // scrollbar-gutter
