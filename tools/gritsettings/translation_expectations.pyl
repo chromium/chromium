@@ -135,6 +135,7 @@
     "ui/base/test/ui_base_test_resources.grd": "Test data",
     "ui/strings/app_locale_settings.grd": "Not UI strings; localized separately",
     "ui/views/examples/views_examples_resources.grd": "Test data",
+    "ui/webui/examples/resources/webui_examples_resources.grd": "Test data",
   },
   # Internal grds that contain parts not available publicly and thus should
   # not be checked by translation script.
