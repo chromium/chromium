@@ -847,7 +847,8 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   // Note that this code has to go after CreateBubble() above, since setting up
   // the placeholder image and background color require a ColorProvider, which
   // is only available once this View has been added to its widget.
-  if (thumbnail_view_ && !tab->data().thumbnail->has_data() &&
+  if (thumbnail_view_ &&
+      (!tab->data().thumbnail || !tab->data().thumbnail->has_data()) &&
       !tab->IsActive()) {
     thumbnail_view_->SetPlaceholderImage();
   }

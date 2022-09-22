@@ -19,8 +19,6 @@
 -OutOfProcessPPAPITest.Printing
 -ProfileListDesktopBrowserTest.SwitchToProfile
 -SSLUITest.TestCloseTabWithUnsafePopup
--TabHoverCardBubbleViewBrowserTest.WidgetNotVisibleOnMousePressAfterTabFocus
--TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnKeyPressAfterTabFocus
 # crbug.com/1121486
 # Following tests were flaky. We disable them first until we have time to investigate.
 -All/HostedOrWebAppTest.CtrlClickLink/HostedApp

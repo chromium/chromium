@@ -15,8 +15,6 @@
 -JavaScriptTabModalDialogViewViewsBrowserTest.AlertDialogCloseButtonAccessibilityIgnored
 -PreservedWindowPlacement.Test
 -ProfileHelperTest.OpenNewWindowForProfile
--TabHoverCardBubbleViewBrowserTest.WidgetNotVisibleOnMousePressAfterTabFocus
--TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnKeyPressAfterTabFocus
 
 # Screen capture on Wayland is tricky.
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/0

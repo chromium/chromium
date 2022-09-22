@@ -327,14 +327,16 @@ class TabStrip : public views::View,
       gfx::Point loc_in_local_coords) override;
   views::View* GetViewForDrop() override;
 
+  TabHoverCardController* hover_card_controller_for_testing() {
+    return hover_card_controller_.get();
+  }
+
  private:
   class TabDragContextImpl;
 
   friend class TabDragControllerTest;
   friend class TabDragContextImpl;
   friend class TabGroupEditorBubbleViewDialogBrowserTest;
-  friend class TabHoverCardBubbleViewBrowserTest;
-  friend class TabHoverCardBubbleViewInteractiveUiTest;
   friend class TabStripTestBase;
   friend class TabStripRegionViewTestBase;
 

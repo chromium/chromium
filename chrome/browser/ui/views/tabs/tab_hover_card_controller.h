@@ -53,9 +53,16 @@ class TabHoverCardController : public views::ViewObserver,
   void PreventImmediateReshow();
   void TabSelectedViaMouse(Tab* tab);
 
+  TabHoverCardBubbleView* hover_card_for_testing() { return hover_card_.get(); }
+
+  static void set_disable_animations_for_testing(
+      bool disable_animations_for_testing) {
+    disable_animations_for_testing_ = disable_animations_for_testing;
+  }
+
+  TabHoverCardMetrics* metrics_for_testing() const { return metrics_.get(); }
+
  private:
-  friend class TabHoverCardBubbleViewBrowserTest;
-  friend class TabHoverCardBubbleViewInteractiveUiTest;
   friend class TabHoverCardMetrics;
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, ShowWrongTabDoesntCrash);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
@@ -111,8 +118,6 @@ class TabHoverCardController : public views::ViewObserver,
 
   void OnMemoryPressureChanged(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
-
-  TabHoverCardMetrics* metrics_for_testing() const { return metrics_.get(); }
 
   bool waiting_for_preview() const {
     return thumbnail_wait_state_ != ThumbnailWaitState::kNotWaiting;

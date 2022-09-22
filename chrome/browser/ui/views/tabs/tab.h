@@ -195,8 +195,8 @@ class Tab : public gfx::AnimationDelegate,
   friend class TabStripTestBase;
   FRIEND_TEST_ALL_PREFIXES(TabStripTest, TabCloseButtonVisibility);
   FRIEND_TEST_ALL_PREFIXES(TabTest, TitleTextHasSufficientContrast);
-  FRIEND_TEST_ALL_PREFIXES(TabHoverCardBubbleViewBrowserTest,
-                           WidgetVisibleOnTabCloseButtonFocusAfterTabFocus);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
+                           HoverCardVisibleOnTabCloseButtonFocusAfterTabFocus);
 
   // Invoked from Layout to adjust the position of the favicon or alert
   // indicator for pinned tabs. The visual_width parameter is how wide the
