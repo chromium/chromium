@@ -60,6 +60,7 @@ ts_library("build_ts") {
                                 target_gen_dir) ]
   in_files = non_preprocessed_files + preprocessed_files
   deps = [
+    "..:build_ts",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",

@@ -46,7 +46,10 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/pending.d.ts",
   ]
 
-  deps = [ "//chrome/browser/resources/new_tab_page:build_ts" ]
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/new_tab_page:build_ts",
+  ]
   extra_deps = [ "..:generate_definitions" ]
 }
 

@@ -38,7 +38,10 @@ ts_library("build_ts") {
     "welcome_app_test.ts",
   ]
   definitions = [ "//tools/typescript/definitions/bookmarks.d.ts" ]
-  deps = [ "//chrome/browser/resources/welcome:build_ts" ]
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/welcome:build_ts",
+  ]
   extra_deps = [ "..:generate_definitions" ]
 }
 

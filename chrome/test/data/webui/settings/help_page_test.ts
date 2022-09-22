@@ -8,7 +8,7 @@
 import 'chrome://settings/settings.js';
 
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
+import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {getPage, getSection} from './settings_page_test_util.js';
 // clang-format on

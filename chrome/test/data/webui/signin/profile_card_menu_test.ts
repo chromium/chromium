@@ -7,9 +7,9 @@ import 'chrome://profile-picker/profile_picker.js';
 import {ManageProfilesBrowserProxyImpl, ProfileCardMenuElement, ProfileState, Statistics, StatisticsResult} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
+import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 // <if expr="chromeos_lacros">
-import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 // </if>
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';

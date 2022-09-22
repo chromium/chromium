@@ -15,7 +15,7 @@ import {CrDialogElement} from 'chrome://settings/lazy_load.js';
 
 import {CrButtonElement, CrRadioButtonElement, CrRadioGroupElement, PageStatus, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
+import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 // <if expr="not chromeos_ash">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

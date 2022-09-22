@@ -447,6 +447,7 @@ ts_library("build_ts") {
     "color_provider_css_colors_test.ts",
     "color_provider_css_colors_test_chromeos.ts",
     "cr_focus_row_mixin_test.ts",
+    "polymer_test_util.ts",
     "text_defaults_test.ts",
     "test_store_ts.ts",
   ]

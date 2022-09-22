@@ -23,7 +23,8 @@ import {pageVisibility, ProfileInfoBrowserProxyImpl, Router, routes, SettingsPeo
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // <if expr="not is_chromeos">
 import {assertLT} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 // </if>
 

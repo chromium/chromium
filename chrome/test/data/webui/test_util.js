@@ -4,7 +4,7 @@
 
 // clang-format off
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
-import {afterNextRender, beforeNextRender, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
 
 // Do not depend on the Chai Assertion Library in this file. Some consumers of
@@ -97,28 +97,6 @@ export function fakeDataBind(el1, el2, property) {
   el2.addEventListener(property + '-changed', forwardChange.bind(null, el1));
 }
 
-/**
- * Converts beforeNextRender() API to promise-based.
- * @param {!Element} element
- * @return {!Promise}
- */
-export function waitBeforeNextRender(element) {
-  return new Promise(resolve => {
-    beforeNextRender(element, resolve);
-  });
-}
-
-/**
- * @param {!HTMLElement} element
- * @return {!Promise} Promise that resolves when an afterNextRender()
- *     callback on |element| is run.
- */
-export function waitAfterNextRender(element) {
-  return new Promise(resolve => {
-    afterNextRender(element, resolve);
-  });
-}
-
 /*
  * Waits for queued up tasks to finish before proceeding. Inspired by:
  * https://github.com/Polymer/web-component-tester/blob/master/browser/environment/helpers.js#L97
@@ -154,4 +132,15 @@ export function isChildVisible(parentEl, selector, checkLightDom) {
   const element = checkLightDom ? parentEl.querySelector(selector) :
                                   parentEl.shadowRoot.querySelector(selector);
   return isVisible(element);
+}
+
+/**
+ * @param {!HTMLElement} element
+ * @return {!Promise} Promise that resolves when an afterNextRender()
+ *     callback on |element| is run.
+ */
+export function waitAfterNextRender(element) {
+  return new Promise(resolve => {
+    afterNextRender(element, resolve);
+  });
 }

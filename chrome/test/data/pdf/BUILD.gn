@@ -68,7 +68,10 @@ ts_library("build_ts") {
 
   definitions =
       ts_definitions + [ "//tools/typescript/definitions/chrome_test.d.ts" ]
-  deps = [ "//chrome/browser/resources/pdf:build_ts" ]
+  deps = [
+    "../webui:build_ts",
+    "//chrome/browser/resources/pdf:build_ts",
+  ]
   extra_deps = [ "../webui:generate_definitions" ]
 }
 

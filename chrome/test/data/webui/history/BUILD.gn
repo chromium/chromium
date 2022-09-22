@@ -42,7 +42,10 @@ ts_library("build_ts") {
   ]
   in_files = non_preprocessed_files
 
-  deps = [ "//chrome/browser/resources/history:build_ts" ]
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/history:build_ts",
+  ]
   extra_deps = [ "..:generate_definitions" ]
 }
 

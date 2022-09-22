@@ -125,6 +125,7 @@ ts_library("build_ts") {
   ]
   in_files = preprocessed_tests + non_preprocessed_tests
   deps = [
+    "..:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
     "//chrome/browser/resources/print_preview:build_ts",
   ]

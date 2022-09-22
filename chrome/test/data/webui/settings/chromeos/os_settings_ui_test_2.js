@@ -5,8 +5,9 @@
 import {CrSettingsPrefs, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {eventToPromise, isVisible, waitBeforeNextRender} from '../../../test_util.js';
+import {eventToPromise, isVisible} from '../../../test_util.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.js';
