@@ -10,13 +10,12 @@ include_rules = [
     "+base/allocator/buildflags.h",
     "+base/allocator/early_zone_registration_mac.h",
     "+base/allocator/partition_alloc_features.h",
+    "+base/allocator/partition_allocator/partition_alloc_base",
     "+base/base_export.h",
     "+base/bind.h",
     "+base/compiler_specific.h",
     "+base/feature_list.h",
-    "+base/ios/ios_util.h",
     "+base/logging.h",
-    "+base/mac/mac_util.h",
     "+base/mac/mach_logging.h",
     "+base/memory/nonscannable_memory.h",
     "+base/memory/page_size.h",
@@ -35,7 +34,6 @@ include_rules = [
 
 specific_include_rules = {
   "allocator_shim_unittest\.cc$": [
-    "+base/mac/mac_util.h",
     "+base/synchronization/waitable_event.h",
     "+base/threading/thread_local.h",
   ],
