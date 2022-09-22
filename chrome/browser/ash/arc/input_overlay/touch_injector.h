@@ -76,11 +76,6 @@ class TouchInjector : public ui::EventRewriter {
   bool show_nudge() const { return show_nudge_; }
   void set_show_nudge(bool show_nudge) { show_nudge_ = show_nudge; }
 
-  bool data_reading_finished() const { return data_reading_finished_; }
-  void set_data_reading_finished(bool finished) {
-    data_reading_finished_ = finished;
-  }
-
   void set_display_mode(DisplayMode mode) { display_mode_ = mode; }
   void set_display_overlay_controller(DisplayOverlayController* controller) {
     display_overlay_controller_ = controller;
@@ -260,8 +255,6 @@ class TouchInjector : public ui::EventRewriter {
   // Check whether to show the nudge view. We only show the nudge view for the
   // first time launch and before it is dismissed.
   bool show_nudge_ = false;
-  // Data reading is finished after launching if the value is true.
-  bool data_reading_finished_ = false;
 
   // Key is the original touch id. Value is a struct containing required info
   // for this touch event.

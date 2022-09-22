@@ -96,6 +96,11 @@ class ArcInputOverlayManager : public KeyedService,
       window_observations_{this};
   base::flat_map<aura::Window*, std::unique_ptr<input_overlay::TouchInjector>>
       input_overlay_enabled_windows_;
+  // To avoid UAF issue reported in crbug.com/1363030. Save the windows which
+  // prepare or start loading the GIO default key mapping data. Once window is
+  // destroying or the GIO data reading is finished, window is removed from this
+  // set.
+  base::flat_set<aura::Window*> loading_data_windows_;
   bool is_text_input_active_ = false;
   raw_ptr<ui::InputMethod> input_method_ = nullptr;
   std::unique_ptr<InputMethodObserver> input_method_observer_;
@@ -112,18 +117,21 @@ class ArcInputOverlayManager : public KeyedService,
   void ReadData(const std::string& package_name,
                 aura::Window* top_level_window);
   // Read default data.
-  input_overlay::TouchInjector* ReadDefaultData(const std::string& package_name,
-                                                aura::Window* top_level_window);
+  std::unique_ptr<input_overlay::TouchInjector> ReadDefaultData(
+      const std::string& package_name,
+      std::unique_ptr<input_overlay::TouchInjector> touch_injector);
   // Read customized data. Customized data will overrides the default data if
   // there is any.
-  void ReadCustomizedData(const std::string& package_name,
-                          input_overlay::TouchInjector* touch_injector);
+  void ReadCustomizedData(
+      const std::string& package_name,
+      std::unique_ptr<input_overlay::TouchInjector> touch_injector);
   // Get the Proto object from customized data.
   std::unique_ptr<input_overlay::AppDataProto> GetProto(
       const std::string& package_name);
   // Apply the customized proto data.
-  void OnProtoDataAvailable(input_overlay::TouchInjector* touch_injector,
-                            std::unique_ptr<input_overlay::AppDataProto> proto);
+  void OnProtoDataAvailable(
+      std::unique_ptr<input_overlay::TouchInjector> touch_injector,
+      std::unique_ptr<input_overlay::AppDataProto> proto);
   // Callback function triggered by Save button.
   void OnSaveProtoFile(std::unique_ptr<input_overlay::AppDataProto> proto,
                        const std::string& package_name);
@@ -140,6 +148,10 @@ class ArcInputOverlayManager : public KeyedService,
   void AddDisplayOverlayController(
       input_overlay::TouchInjector* touch_injector);
   void RemoveDisplayOverlayController();
+  // Reset for removing pending |touch_injector| because of no GIO data or
+  // window destroying.
+  void ResetForPendingTouchInjector(
+      std::unique_ptr<input_overlay::TouchInjector> touch_injector);
 
   base::WeakPtrFactory<ArcInputOverlayManager> weak_ptr_factory_{this};
 };

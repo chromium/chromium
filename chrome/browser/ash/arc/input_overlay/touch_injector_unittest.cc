@@ -248,7 +248,7 @@ class TouchInjectorTest : public views::ViewsTestBase {
 
   aura::Window* root_window() { return GetContext(); }
 
-  input_overlay::test::EventCapturer event_capturer_;
+  test::EventCapturer event_capturer_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
   std::unique_ptr<views::Widget> widget_;
@@ -586,7 +586,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
   EXPECT_TRUE(*(action->touch_id()) == 0);
   EXPECT_TRUE(event_capturer_.key_events().empty());
-  task_environment()->FastForwardBy(input_overlay::kSendTouchMoveDelay);
+  task_environment()->FastForwardBy(kSendTouchMoveDelay);
   EXPECT_TRUE((int)event_capturer_.touch_events().size() == 2);
   // Generate touch down event.
   event = event_capturer_.touch_events()[0].get();
@@ -617,8 +617,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   EXPECT_TRUE(hover_binding->mouse_types().contains(ui::ET_MOUSE_EXITED));
   EXPECT_EQ(0, hover_binding->mouse_flags());
 
-  auto* right_action =
-      static_cast<input_overlay::ActionMove*>(injector_->actions()[1].get());
+  auto* right_action = static_cast<ActionMove*>(injector_->actions()[1].get());
   auto* right_binding = right_action->current_input();
   EXPECT_EQ(right_binding->mouse_action(), MouseAction::SECONDARY_DRAG_MOVE);
   EXPECT_TRUE(right_binding->mouse_types().contains(ui::ET_MOUSE_PRESSED));
