@@ -1533,22 +1533,6 @@ RenderProcessHostImpl::RenderProcessHostImpl(
   gpu_client_.reset(
       new viz::GpuClient(std::make_unique<BrowserGpuClientDelegate>(), id,
                          tracing_id, GetUIThreadTaskRunner({})));
-
-  // Set cache information after the GpuClient has been initialized. Note that
-  // we also check if the factory is initialized because in tests the factory
-  // may never have been initialized properly.
-  if (!GetBrowserContext()->IsOffTheRecord() &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableGpuShaderDiskCache)) {
-    if (auto* cache_factory = GetGpuDiskCacheFactorySingleton()) {
-      for (const gpu::GpuDiskCacheType type : gpu::kGpuDiskCacheTypes) {
-        auto handle = cache_factory->GetCacheHandle(
-            type, storage_partition_impl_->GetPath().Append(
-                      gpu::GetGpuDiskCacheSubdir(type)));
-        gpu_client_->SetDiskCacheHandle(handle);
-      }
-    }
-  }
 }
 
 // static
@@ -1676,6 +1660,22 @@ bool RenderProcessHostImpl::Init() {
   sent_render_process_ready_ = false;
 
   gpu_client_->PreEstablishGpuChannel();
+
+  // Set cache information after establishing a channel since the handles are
+  // stored on the channels. Note that we also check if the factory is
+  // initialized because in tests the factory may never have been initialized.
+  if (!GetBrowserContext()->IsOffTheRecord() &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableGpuShaderDiskCache)) {
+    if (auto* cache_factory = GetGpuDiskCacheFactorySingleton()) {
+      for (const gpu::GpuDiskCacheType type : gpu::kGpuDiskCacheTypes) {
+        auto handle = cache_factory->GetCacheHandle(
+            type, storage_partition_impl_->GetPath().Append(
+                      gpu::GetGpuDiskCacheSubdir(type)));
+        gpu_client_->SetDiskCacheHandle(handle);
+      }
+    }
+  }
 
   // We may reach Init() during process death notification (e.g.
   // RenderProcessExited on some observer). In this case the Channel may be
