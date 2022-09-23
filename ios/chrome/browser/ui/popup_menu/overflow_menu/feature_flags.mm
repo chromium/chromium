@@ -13,14 +13,14 @@
 const base::Feature kNewOverflowMenu{"NewOverflowMenu",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kNewOverflowMenuCBDAction{
-    "NewOverflowMenuCBDAction", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kNewOverflowMenuCBDAction{"NewOverflowMenuCBDAction",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kNewOverflowMenuSettingsAction{
     "NewOverflowMenuSettingsAction", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kNewOverflowMenuSimpleDestinationIcons{
-    "NewOverflowMenuSimpleDestinationIcons", base::FEATURE_DISABLED_BY_DEFAULT};
+    "NewOverflowMenuSimpleDestinationIcons", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSmartSortingNewOverflowMenu{
     "kSmartSortingNewOverflowMenu", base::FEATURE_DISABLED_BY_DEFAULT};

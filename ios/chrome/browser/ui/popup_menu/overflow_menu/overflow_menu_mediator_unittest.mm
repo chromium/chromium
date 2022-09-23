@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
@@ -261,6 +262,13 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
   mediator_.localStatePrefs = localStatePrefs_.get();
 
   NSUInteger number_of_action_items = 5;
+
+  if (IsNewOverflowMenuCBDActionEnabled()) {
+    number_of_action_items++;
+  }
+  if (IsNewOverflowMenuSettingsActionEnabled()) {
+    number_of_action_items++;
+  }
   if (ios::provider::IsTextZoomEnabled()) {
     number_of_action_items++;
   }
