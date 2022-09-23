@@ -2193,9 +2193,18 @@ void WebAppIntegrationTestDriver::CheckTabCreated() {
   absl::optional<BrowserState> previous_browser_state = GetStateForBrowser(
       before_state_change_action_state_.get(), profile(), browser());
   ASSERT_TRUE(most_recent_browser_state.has_value());
-  ASSERT_TRUE(previous_browser_state.has_value());
-  EXPECT_GT(most_recent_browser_state->tabs.size(),
-            previous_browser_state->tabs.size());
+#if BUILDFLAG(IS_MAC)
+  if (!previous_browser_state.has_value()) {
+    // The tab was created in a new browser, which is expected if the original
+    // browser lived on a non-primary display.
+  } else {
+#endif
+    ASSERT_TRUE(previous_browser_state.has_value());
+    EXPECT_GT(most_recent_browser_state->tabs.size(),
+              previous_browser_state->tabs.size());
+#if BUILDFLAG(IS_MAC)
+  }
+#endif
 
   absl::optional<TabState> active_tab =
       GetStateForActiveTab(most_recent_browser_state.value());
