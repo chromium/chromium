@@ -8,31 +8,25 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <ios>
+#include <utility>
+
 #include "base/callback.h"
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/task/bind_post_task.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/win/setup/setup_util.h"
+#include "chrome/updater/util.h"
+#include "chrome/updater/win/proxy_impl_base.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/wrl_module_initializer.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace updater {
 namespace {
-
-static constexpr base::TaskTraits kComClientTraits = {
-    base::TaskPriority::BEST_EFFORT,
-    base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
 // This class implements the IUpdaterInternalCallback interface and exposes it
 // as a COM object. The class has thread-affinity for the STA thread.
@@ -91,156 +85,101 @@ base::OnceClosure UpdaterInternalCallback::Disconnect() {
   return std::move(callback_);
 }
 
-// Creates an instance of COM server in the COM STA apartment.
-HRESULT CreateUpdaterInternal(
-    UpdaterScope scope,
-    Microsoft::WRL::ComPtr<IUpdaterInternal>& updater_internal) {
-  ::Sleep(kCreateUpdaterInstanceDelayMs);
-
-  Microsoft::WRL::ComPtr<IUnknown> unknown;
-  HRESULT hr = ::CoCreateInstance(
-      scope == UpdaterScope::kSystem ? __uuidof(UpdaterInternalSystemClass)
-                                     : __uuidof(UpdaterInternalUserClass),
-      nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&unknown));
-
-  if (FAILED(hr)) {
-    VLOG(2) << "Failed to instantiate the update internal server: " << std::hex
-            << hr;
-    return hr;
-  }
-
-  hr = unknown.As(&updater_internal);
-
-  // TODO(crbug.com/1341471) - revert the CL that introduced the check after
-  // the bug is resolved.
-  if (hr == TYPE_E_CANTLOADLIBRARY) {
-    CheckComInterfaceTypeLib(scope, true);
-    CheckComInterfaceTypeLib(scope, false);
-    NOTREACHED();
-  }
-
-  return hr;
-}
-
 }  // namespace
 
-scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(
-    UpdaterScope updater_scope) {
-  return base::MakeRefCounted<UpdateServiceInternalProxy>(updater_scope);
-}
+class UpdateServiceInternalProxyImpl
+    : public base::RefCountedThreadSafe<UpdateServiceInternalProxyImpl>,
+      public ProxyImplBase<UpdateServiceInternalProxyImpl, IUpdaterInternal> {
+ public:
+  explicit UpdateServiceInternalProxyImpl(UpdaterScope scope)
+      : ProxyImplBase(scope) {}
+
+  static auto GetClassGuid(UpdaterScope scope) {
+    return scope == UpdaterScope::kSystem ? __uuidof(UpdaterInternalSystemClass)
+                                          : __uuidof(UpdaterInternalUserClass);
+  }
+
+  void Run(base::OnceClosure callback) {
+    PostRPCTask(base::BindOnce(&UpdateServiceInternalProxyImpl::RunOnSTA, this,
+                               std::move(callback)));
+  }
+
+  void InitializeUpdateService(base::OnceClosure callback) {
+    PostRPCTask(base::BindOnce(
+        &UpdateServiceInternalProxyImpl::InitializeUpdateServiceOnSTA, this,
+        std::move(callback)));
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<UpdateServiceInternalProxyImpl>;
+  ~UpdateServiceInternalProxyImpl() = default;
+
+  void RunOnSTA(base::OnceClosure callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!ConnectToServer()) {
+      std::move(callback).Run();
+      return;
+    }
+    auto callback_wrapper = Microsoft::WRL::Make<UpdaterInternalCallback>(
+        get_interface(), std::move(callback));
+    HRESULT hr = get_interface()->Run(callback_wrapper.Get());
+    if (FAILED(hr)) {
+      VLOG(2) << "Failed to call IUpdaterInternal::Run" << std::hex << hr;
+      callback_wrapper->Disconnect().Run();
+      return;
+    }
+  }
+
+  void InitializeUpdateServiceOnSTA(base::OnceClosure callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!ConnectToServer()) {
+      std::move(callback).Run();
+      return;
+    }
+    auto callback_wrapper = Microsoft::WRL::Make<UpdaterInternalCallback>(
+        get_interface(), std::move(callback));
+    HRESULT hr =
+        get_interface()->InitializeUpdateService(callback_wrapper.Get());
+    if (FAILED(hr)) {
+      VLOG(2) << "Failed to call IUpdaterInternal::InitializeUpdateService"
+              << std::hex << hr;
+      callback_wrapper->Disconnect().Run();
+      return;
+    }
+  }
+};
 
 UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope scope)
-    : scope_(scope),
-      main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      com_task_runner_(
-          base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {
-  WRLModuleInitializer::Get();
-}
+    : impl_(base::MakeRefCounted<UpdateServiceInternalProxyImpl>(scope)) {}
 
-UpdateServiceInternalProxy::~UpdateServiceInternalProxy() = default;
-
-void UpdateServiceInternalProxy::Uninitialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
-
-  com_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpdateServiceInternalProxy::UninitializeOnSTA, this));
-}
-
-HRESULT UpdateServiceInternalProxy::InitializeSTA() {
-  DCHECK(com_task_runner_->BelongsToCurrentThread());
-
-  if (updater_internal_)
-    return S_OK;
-  return CreateUpdaterInternal(scope_, updater_internal_);
-}
-
-void UpdateServiceInternalProxy::UninitializeOnSTA() {
-  DCHECK(com_task_runner_->BelongsToCurrentThread());
-
-  updater_internal_ = nullptr;
+UpdateServiceInternalProxy::~UpdateServiceInternalProxy() {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  UpdateServiceInternalProxyImpl::Destroy(impl_);
+  CHECK_EQ(impl_, nullptr);
 }
 
 void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-
-  com_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpdateServiceInternalProxy::InitializeSTA, this)
-          .Then(base::BindOnce(
-              &UpdateServiceInternalProxy::RunOnSTA, this,
-              base::BindPostTask(main_task_runner_, std::move(callback)))));
-}
-
-void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback,
-                                          HRESULT prev_hr) {
-  DCHECK(com_task_runner_->BelongsToCurrentThread());
-
-  if (FAILED(prev_hr)) {
-    std::move(callback).Run();
-    return;
-  }
-
-  CHECK(updater_internal_);
-
-  // The COM RPC takes ownership of the `rpc_callback` and owns a reference to
-  // the `updater_internal` object as well. As long as the `rpc_callback`
-  // retains this reference to the `updater_internal` object, then the object
-  // is going to stay alive. Once the server has notified, then released its
-  // last reference to the `rpc_callback` object, the `rpc_callback` is
-  // destroyed, and as a result, the last reference to `updater_internal` is
-  // released as well, which causes the destruction of the `updater_internal`
-  // object.
-  auto rpc_callback = Microsoft::WRL::Make<UpdaterInternalCallback>(
-      updater_internal_, std::move(callback));
-  HRESULT hr = updater_internal_->Run(rpc_callback.Get());
-  if (FAILED(hr)) {
-    VLOG(2) << "Failed to call IUpdaterInternal::Run" << std::hex << hr;
-
-    // Since the RPC call returned an error, it can't be determined what the
-    // state of the update server is. The RPC callback may or may not have run.
-    // Disconnecting the object resolves this ambiguity and transfers the
-    // ownership of the callback back to the caller.
-    rpc_callback->Disconnect().Run();
-    return;
-  }
+  impl_->Run(OnCurrentSequence(std::move(callback)));
 }
 
 void UpdateServiceInternalProxy::InitializeUpdateService(
     base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-
-  com_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpdateServiceInternalProxy::InitializeSTA, this)
-          .Then(base::BindOnce(
-              &UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA, this,
-              base::BindPostTask(main_task_runner_, std::move(callback)))));
+  impl_->InitializeUpdateService(OnCurrentSequence(std::move(callback)));
 }
 
-void UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA(
-    base::OnceClosure callback,
-    HRESULT prev_hr) {
-  DCHECK(com_task_runner_->BelongsToCurrentThread());
+// TODO(crbug.com/1363829) - remove the function.
+void UpdateServiceInternalProxy::Uninitialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
-  if (FAILED(prev_hr)) {
-    std::move(callback).Run();
-    return;
-  }
-
-  CHECK(updater_internal_);
-
-  auto rpc_callback = Microsoft::WRL::Make<UpdaterInternalCallback>(
-      updater_internal_, std::move(callback));
-  HRESULT hr = updater_internal_->InitializeUpdateService(rpc_callback.Get());
-  if (FAILED(hr)) {
-    VLOG(2) << "Failed to call IUpdaterInternal::InitializeUpdateService"
-            << std::hex << hr;
-    rpc_callback->Disconnect().Run();
-    return;
-  }
+scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(
+    UpdaterScope updater_scope) {
+  return base::MakeRefCounted<UpdateServiceInternalProxy>(updater_scope);
 }
 
 }  // namespace updater

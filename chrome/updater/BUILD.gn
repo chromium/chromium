@@ -279,6 +279,7 @@ if (is_win || is_mac || is_linux) {
         "win/net/network_fetcher.h",
         "win/protocol_parser_xml.cc",
         "win/protocol_parser_xml.h",
+        "win/proxy_impl_base.h",
         "win/scoped_handle.h",
         "win/scoped_impersonation.cc",
         "win/scoped_impersonation.h",

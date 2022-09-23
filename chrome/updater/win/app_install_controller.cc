@@ -825,6 +825,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
 // TODO(crbug.com/1218219) - propagate error code in case of errors.
 void AppInstallControllerImpl::InstallComplete(UpdateService::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
   if (result == UpdateService::Result::kServiceFailed) {
     UpdateService::UpdateState update_state;
     update_state.app_id = app_id_;
@@ -879,6 +880,9 @@ void AppInstallControllerImpl::StateChange(
     case UpdateService::UpdateState::State::kUpdated:
     case UpdateService::UpdateState::State::kNoUpdate:
     case UpdateService::UpdateState::State::kUpdateError:
+      // TODO(crbug.com/1366393) - refactor the control flow of the UI so that
+      // the `update_service_` reference is released by a single call site.
+      update_service_ = nullptr;
       HandleInstallResult(update_state);
       break;
 
