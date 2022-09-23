@@ -15,7 +15,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -191,13 +190,6 @@ public class ContextMenuHelper {
                 "ContextMenu.TimeToTakeAction." + (selectedItem ? "SelectedItem" : "Abandoned");
         final long timeToTakeActionMs = SystemClock.uptimeMillis() - mMenuShownTimeMs;
         RecordHistogram.recordTimesHistogram(histogramName, timeToTakeActionMs);
-        if (mCurrentContextMenuParams.isAnchor()
-                && PerformanceHintsObserver.getPerformanceClassForURL(
-                           mWebContents, mCurrentContextMenuParams.getLinkUrl())
-                        == PerformanceHintsObserver.PerformanceClass.PERFORMANCE_FAST) {
-            RecordHistogram.recordTimesHistogram(
-                    histogramName + ".PerformanceClassFast", timeToTakeActionMs);
-        }
     }
 
     @VisibleForTesting

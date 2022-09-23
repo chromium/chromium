@@ -1463,16 +1463,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="NewTabPage.ContentSuggestions.DismissedVisited"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ContextMenuLinkPerformanceClass" separator=".">
-  <suffix name="PerformanceClassFast"
-      label="The context menu was shown for a link with a fast
-             PerformanceClass."/>
-  <affected-histogram name="ContextMenu.SelectedOptionAndroid.ImageLink"/>
-  <affected-histogram name="ContextMenu.SelectedOptionAndroid.Link"/>
-  <affected-histogram name="ContextMenu.TimeToTakeAction.Abandoned"/>
-  <affected-histogram name="ContextMenu.TimeToTakeAction.SelectedItem"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ContextMenuShoppingDomain" separator=".">
   <suffix name="ShoppingDomain"
       label="The context menu was shown for a link that its domain is on the

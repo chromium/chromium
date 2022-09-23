@@ -72,38 +72,5 @@ found in the LICENSE file.
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
             app:leading="@dimen/text_size_small_leading" />
-
-        <LinearLayout
-            android:id="@+id/menu_header_performance_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="4dp"
-            android:visibility="gone">
-
-          <org.chromium.ui.widget.ChromeImageView
-              android:id="@+id/performance_info_icon"
-              android:layout_height="@dimen/text_size_small_leading"
-              android:layout_width="@dimen/text_size_small_leading"
-              android:layout_gravity="center_vertical"
-              android:scaleType="fitStart"
-              android:importantForAccessibility="no"
-              app:srcCompat="@drawable/ic_checkmark_24dp"
-              app:tint="@macro/default_icon_color_accent1" />
-
-          <org.chromium.ui.widget.TextViewWithLeading
-              android:id="@+id/performance_info_text"
-              android:text="@string/contextmenu_performance_info_fast"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="center_vertical"
-              android:paddingStart="3sp"
-              android:textAlignment="viewStart"
-              android:ellipsize="end"
-              android:maxLines="1"
-              android:textAppearance="@style/TextAppearance.TextSmall.Primary"
-              app:leading="@dimen/text_size_small_leading" />
-
-        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
