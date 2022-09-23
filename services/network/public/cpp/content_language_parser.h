@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_CONTENT_LANGUAGE_PARSER_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_CONTENT_LANGUAGE_PARSER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
