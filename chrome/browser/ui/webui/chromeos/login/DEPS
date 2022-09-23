@@ -2,6 +2,9 @@ specific_include_rules = {
   "core_oobe_handler\.cc": [
     "+ash/shell.h",
   ],
+  "oobe_ui\.cc": [
+    "+ash/shell.h",
+  ],
   # Tests.
   "oobe_display_chooser_browsertest\.cc": [
     "+ash/shell.h",
