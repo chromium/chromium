@@ -3779,6 +3779,10 @@ void RenderFrameHostManager::CommitPending(
                 ChromeTrackEvent::kBrowsingContextState,
                 old_browsing_context_state);
     for (auto* proxy : removed_proxies) {
+      // After deleting the proxy we will not have either a proxy or
+      // main frame associated with the RenderViewHost. Do not allow
+      // it to be used for new navigations in this inconsistent state.
+      proxy->GetRenderViewHost()->DisallowReuse();
       old_browsing_context_state->DeleteRenderFrameProxyHost(
           proxy->site_instance_group());
     }

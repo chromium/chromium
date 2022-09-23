@@ -33,6 +33,7 @@
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -1390,6 +1391,55 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
 
   EXPECT_FALSE(root->HasStickyUserActivation());
   EXPECT_FALSE(root->HasTransientUserActivation());
+}
+
+class BrowserContextGroupSwapFrameTreeBrowserTest : public ContentBrowserTest {
+ public:
+  BrowserContextGroupSwapFrameTreeBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    IsolateAllSitesForTesting(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    net::test_server::RegisterDefaultHandlers(&https_server_);
+    ASSERT_TRUE(https_server_.Start());
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ public:
+  net::EmbeddedTestServer https_server_;
+};
+
+// Force a race between when the RenderViewHostImpl's main frame is running
+// the unload handlers and when a new navigation occurs that tries to
+// reuse a RenderViewHostImpl.
+IN_PROC_BROWSER_TEST_F(BrowserContextGroupSwapFrameTreeBrowserTest,
+                       NavigateAndGoBack) {
+  GURL main_url(https_server()->GetURL("a.test", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+  web_contents->GetPrimaryMainFrame()->DoNotDeleteForTesting();
+  DisableBFCacheForRFHForTesting(
+      web_contents->GetPrimaryFrameTree().root()->current_frame_host());
+
+  // Load a page with COOP set to force the browsing context group swap
+  // and clears out old proxies.
+  GURL new_main_url(https_server()->GetURL(
+      "b.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), new_main_url));
+
+  TestNavigationObserver back_load_observer(web_contents);
+  web_contents->GetController().GoBack();
+  back_load_observer.Wait();
 }
 
 // FrameTreeBrowserTest variant where we isolate http://*.is, Iceland's top

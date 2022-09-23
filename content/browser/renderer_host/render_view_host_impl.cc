@@ -340,6 +340,7 @@ RenderViewHostImpl::RenderViewHostImpl(
 
   GetWidget()->set_owner_delegate(this);
   frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
+  registered_with_frame_tree_ = true;
 }
 
 RenderViewHostImpl::~RenderViewHostImpl() {
@@ -374,9 +375,9 @@ RenderViewHostImpl::~RenderViewHostImpl() {
   delegate_->RenderViewDeleted(this);
   GetProcess()->RemoveObserver(this);
 
-  // If |this| is in the BackForwardCache, then it was already removed from
-  // the FrameTree at the time it entered the BackForwardCache.
-  if (!is_in_back_forward_cache_)
+  // We may have already unregistered the RenderViewHost when marking this
+  // not available for reuse.
+  if (registered_with_frame_tree_)
     frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
 
   // Corresponds to the TRACE_EVENT_BEGIN in RenderViewHostImpl's constructor.
@@ -385,6 +386,13 @@ RenderViewHostImpl::~RenderViewHostImpl() {
 
 RenderViewHostDelegate* RenderViewHostImpl::GetDelegate() {
   return delegate_;
+}
+
+void RenderViewHostImpl::DisallowReuse() {
+  if (registered_with_frame_tree_) {
+    frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
+    registered_with_frame_tree_ = false;
+  }
 }
 
 bool RenderViewHostImpl::CreateRenderView(
@@ -554,6 +562,7 @@ void RenderViewHostImpl::SetMainFrameRoutingId(int routing_id) {
 void RenderViewHostImpl::SetFrameTree(FrameTree& frame_tree) {
   TRACE_EVENT("navigation", "RenderViewHostImpl::SetFrameTree",
               ChromeTrackEvent::kRenderViewHost, *this);
+  DCHECK(registered_with_frame_tree_);
   frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
   frame_tree_ = &frame_tree;
   frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
@@ -565,7 +574,9 @@ void RenderViewHostImpl::EnterBackForwardCache() {
 
   TRACE_EVENT("navigation", "RenderViewHostImpl::EnterBackForwardCache",
               ChromeTrackEvent::kRenderViewHost, *this);
+  DCHECK(registered_with_frame_tree_);
   frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
+  registered_with_frame_tree_ = false;
   is_in_back_forward_cache_ = true;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, /*page_restore_params=*/nullptr,
@@ -583,9 +594,11 @@ void RenderViewHostImpl::LeaveBackForwardCache(
     bool restoring_main_frame_from_back_forward_cache) {
   TRACE_EVENT("navigation", "RenderViewHostImpl::LeaveBackForwardCache",
               ChromeTrackEvent::kRenderViewHost, *this);
+  DCHECK(!registered_with_frame_tree_);
   // At this point, the frames |this| RenderViewHostImpl belongs to are
   // guaranteed to be committed, so it should be reused going forward.
   frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
+  registered_with_frame_tree_ = true;
   is_in_back_forward_cache_ = false;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, std::move(page_restore_params),

@@ -324,6 +324,10 @@ class CONTENT_EXPORT RenderViewHostImpl
   FrameTree* frame_tree() const { return frame_tree_; }
   void SetFrameTree(FrameTree& frame_tree);
 
+  // Mark this RenderViewHost as not available for reuse. This will remove
+  // it from being registered with the associated FrameTree.
+  void DisallowReuse();
+
   // NOTE: Do not add functions that just send an IPC message that are called in
   // one or two places. Have the caller send the IPC message directly (unless
   // the caller places are in different platforms, in which case it's better
@@ -452,6 +456,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   // See main_browsing_context_state() for more details.
   absl::optional<base::SafeRef<BrowsingContextState>>
       main_browsing_context_state_;
+
+  bool registered_with_frame_tree_ = false;
 
   base::WeakPtrFactory<RenderViewHostImpl> weak_factory_{this};
 };
