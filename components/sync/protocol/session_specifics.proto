@@ -112,10 +112,11 @@ message TabNavigation {
   optional bool navigation_from_address_bar = 11;
   // User is navigating to the home page.
   optional bool navigation_home_page = 12;
-  // The beginning of a navigation chain.
-  optional bool navigation_chain_start = 13;
-  // The last transition in a redirect chain.
-  optional bool navigation_chain_end = 14;
+  // The start/end of a redirect chain. Deprecated because they were always
+  // set to false in practice, and don't make sense in the first place - this
+  // message corresponds to a complete chain.
+  optional bool navigation_chain_start = 13 [deprecated = true];
+  optional bool navigation_chain_end = 14 [deprecated = true];
   // The id for this navigation, which is globally unique with high
   // probability.
   optional int64 global_id = 15;

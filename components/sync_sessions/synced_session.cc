@@ -68,12 +68,6 @@ SerializedNavigationEntry SessionNavigationFromSyncData(
   if (sync_data.navigation_home_page()) {
     transition |= ui::PAGE_TRANSITION_HOME_PAGE;
   }
-  if (sync_data.navigation_chain_start()) {
-    transition |= ui::PAGE_TRANSITION_CHAIN_START;
-  }
-  if (sync_data.navigation_chain_end()) {
-    transition |= ui::PAGE_TRANSITION_CHAIN_END;
-  }
 
   navigation.set_transition_type(static_cast<ui::PageTransition>(transition));
 
@@ -108,8 +102,6 @@ SerializedNavigationEntry SessionNavigationFromSyncData(
   return navigation;
 }
 
-// TODO(zea): perhaps sync state (scroll position, form entries, etc.) as well?
-// See http://crbug.com/67068.
 sync_pb::TabNavigation SessionNavigationToSyncData(
     const SerializedNavigationEntry& navigation) {
   sync_pb::TabNavigation sync_data;
@@ -138,10 +130,6 @@ sync_pb::TabNavigation SessionNavigationToSyncData(
       (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) != 0);
   sync_data.set_navigation_home_page(
       (transition_type & ui::PAGE_TRANSITION_HOME_PAGE) != 0);
-  sync_data.set_navigation_chain_start(
-      (transition_type & ui::PAGE_TRANSITION_CHAIN_START) != 0);
-  sync_data.set_navigation_chain_end(
-      (transition_type & ui::PAGE_TRANSITION_CHAIN_END) != 0);
 
   sync_data.set_unique_id(navigation.unique_id());
   sync_data.set_timestamp_msec(syncer::TimeToProtoTime(navigation.timestamp()));

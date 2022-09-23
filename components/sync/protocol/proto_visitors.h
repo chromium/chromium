@@ -1166,8 +1166,6 @@ VISIT_PROTO_FIELDS(const sync_pb::TabNavigation& proto) {
   VISIT(navigation_forward_back);
   VISIT(navigation_from_address_bar);
   VISIT(navigation_home_page);
-  VISIT(navigation_chain_start);
-  VISIT(navigation_chain_end);
   VISIT(global_id);
   VISIT(favicon_url);
   VISIT_ENUM(blocked_state);
