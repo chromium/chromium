@@ -75,9 +75,31 @@ void AudioDebugRecordingHelper::DisableDebugRecording() {
 }
 
 void AudioDebugRecordingHelper::OnData(const AudioBus* source) {
+  // Check if debug recording is enabled to avoid an unnecessary copy and thread
+  // jump if not.
+  bool recording_enabled = false;
+  if (file_writer_lock_.Try()) {
+    recording_enabled = static_cast<bool>(file_writer_);
+    file_writer_lock_.Release();
+  }
+  if (!recording_enabled)
+    return;
+
+  // TODO(tommi): This is costly. AudioBus heap allocs and we create a new one
+  // for every callback. We could instead have a pool of bus objects that get
+  // returned to us somehow.
+  // We should also avoid calling PostTask here since the implementation of the
+  // debug writer will basically do a PostTask straight away anyway. Might
+  // require some modifications to AudioDebugFileWriter though since there are
+  // some threading concerns there and AudioDebugFileWriter's lifetime
+  // guarantees need to be longer than that of associated active audio streams.
+  std::unique_ptr<AudioBus> audio_bus_copy =
+      AudioBus::Create(source->channels(), source->frames());
+  source->CopyTo(audio_bus_copy.get());
+
   if (file_writer_lock_.Try()) {
     if (file_writer_) {
-      file_writer_->Write(*source);
+      file_writer_->Write(std::move(audio_bus_copy));
     }
     file_writer_lock_.Release();
   }

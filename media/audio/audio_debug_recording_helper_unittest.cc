@@ -23,7 +23,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "media/audio/audio_bus_pool.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,7 +45,7 @@ class MockAudioDebugFileWriter : public AudioDebugFileWriter {
  public:
   explicit MockAudioDebugFileWriter(const AudioParameters& params,
                                     base::File file)
-      : AudioDebugFileWriter(params, std::move(file), nullptr),
+      : AudioDebugFileWriter(params, std::move(file)),
         reference_data_(nullptr) {}
 
   MockAudioDebugFileWriter(const MockAudioDebugFileWriter&) = delete;
@@ -55,18 +54,20 @@ class MockAudioDebugFileWriter : public AudioDebugFileWriter {
   MOCK_METHOD0(DestructorCalled, void());
   ~MockAudioDebugFileWriter() override { DestructorCalled(); }
 
-  MOCK_METHOD1(DoWrite, void(const AudioBus&));
-  void Write(const AudioBus& data) override {
+  // Functions with move-only types as arguments can't be mocked directly, so
+  // we pass on to DoWrite(). Also, we can verify the data this way.
+  MOCK_METHOD1(DoWrite, void(AudioBus*));
+  void Write(std::unique_ptr<AudioBus> data) override {
     CHECK(reference_data_);
-    EXPECT_EQ(reference_data_->channels(), data.channels());
-    EXPECT_EQ(reference_data_->frames(), data.frames());
-    for (int i = 0; i < data.channels(); ++i) {
-      const float* data_ptr = data.channel(i);
+    EXPECT_EQ(reference_data_->channels(), data->channels());
+    EXPECT_EQ(reference_data_->frames(), data->frames());
+    for (int i = 0; i < data->channels(); ++i) {
+      float* data_ptr = data->channel(i);
       float* ref_data_ptr = reference_data_->channel(i);
-      for (int j = 0; j < data.frames(); ++j, ++data_ptr, ++ref_data_ptr)
+      for (int j = 0; j < data->frames(); ++j, ++data_ptr, ++ref_data_ptr)
         EXPECT_EQ(*ref_data_ptr, *data_ptr);
     }
-    DoWrite(data);
+    DoWrite(data.get());
   }
 
   // Set reference data to compare against. Must be called before Write() is

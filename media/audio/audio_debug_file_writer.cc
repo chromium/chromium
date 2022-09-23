@@ -17,7 +17,6 @@
 #include "base/sequence_checker.h"
 #include "base/sys_byteorder.h"
 #include "base/task/sequenced_task_runner.h"
-#include "media/audio/audio_bus_pool.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 
@@ -146,39 +145,23 @@ AudioDebugFileWriter::~AudioDebugFileWriter() {
     WriteHeader();
 }
 
-void AudioDebugFileWriter::Write(const AudioBus& data) {
-  std::unique_ptr<AudioBus> data_copy = audio_bus_pool_->GetAudioBus();
-  DCHECK(data_copy);
-  data.CopyTo(data_copy.get());
+AudioDebugFileWriter::AudioDebugFileWriter(const AudioParameters& params,
+                                           base::File file)
+    : params_(params), file_(std::move(file)) {
+  weak_this_ = weak_factory_.GetWeakPtr();
+}
+
+void AudioDebugFileWriter::Write(std::unique_ptr<AudioBus> data) {
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AudioDebugFileWriter::DoWrite, weak_this_,
-                                std::move(data_copy)));
+                                std::move(data)));
 }
 
 AudioDebugFileWriter::Ptr AudioDebugFileWriter::Create(
     const AudioParameters& params,
     base::File file) {
-  return Create(params, std::move(file),
-                std::make_unique<AudioBusPoolImpl>(
-                    params, kPreallocatedAudioBuses, kMaxCachedAudioBuses));
-}
-
-AudioDebugFileWriter::AudioDebugFileWriter(
-    const AudioParameters& params,
-    base::File file,
-    std::unique_ptr<AudioBusPool> audio_bus_pool)
-    : params_(params),
-      file_(std::move(file)),
-      audio_bus_pool_(std::move(audio_bus_pool)) {
-  weak_this_ = weak_factory_.GetWeakPtr();
-}
-
-AudioDebugFileWriter::Ptr AudioDebugFileWriter::Create(
-    const AudioParameters& params,
-    base::File file,
-    std::unique_ptr<AudioBusPool> audio_bus_pool) {
-  AudioDebugFileWriter* writer = new AudioDebugFileWriter(
-      params, std::move(file), std::move(audio_bus_pool));
+  AudioDebugFileWriter* writer =
+      new AudioDebugFileWriter(params, std::move(file));
   writer->task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AudioDebugFileWriter::WriteHeader, writer->weak_this_));
@@ -210,9 +193,6 @@ void AudioDebugFileWriter::DoWrite(std::unique_ptr<AudioBus> data) {
 
   file_.WriteAtCurrentPos(reinterpret_cast<char*>(interleaved_data_.get()),
                           data_size * sizeof(interleaved_data_[0]));
-
-  // Cache the AudioBus for later use.
-  audio_bus_pool_->InsertAudioBus(std::move(data));
 }
 
 void AudioDebugFileWriter::WriteHeader() {
