@@ -715,7 +715,7 @@ TEST(RawRef, CTAD) {
 }
 
 using RawPtrCountingImpl =
-    base::internal::RawPtrCountingImplWrapperForTest<base::DefaultRawPtrType>;
+    base::internal::RawPtrCountingImplWrapperForTest<base::DefaultRawPtrImpl>;
 
 template <typename T>
 using CountingRawRef = raw_ref<T, RawPtrCountingImpl>;

@@ -286,7 +286,7 @@ void ResourceDownloader::Destroy() {
   delegate_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UrlDownloadHandler::Delegate::OnUrlDownloadStopped,
-                     delegate_, base::UnsafeDanglingUntriaged(this)));
+                     delegate_, this));
 }
 
 void ResourceDownloader::RequestWakeLock(

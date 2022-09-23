@@ -15,14 +15,6 @@
 namespace base {
 namespace features {
 
-extern const BASE_EXPORT Feature kPartitionAllocUnretainedDanglingPtr;
-enum class UnretainedDanglingPtrMode {
-  kCrash,
-  kDumpWithoutCrashing,
-};
-extern const BASE_EXPORT base::FeatureParam<UnretainedDanglingPtrMode>
-    kUnretainedDanglingPtrModeParam;
-
 // See /docs/dangling_ptr.md
 //
 // Usage:

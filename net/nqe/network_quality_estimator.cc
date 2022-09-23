@@ -903,8 +903,7 @@ void NetworkQualityEstimator::AddEffectiveConnectionTypeObserver(
       FROM_HERE,
       base::BindOnce(&NetworkQualityEstimator::
                          NotifyEffectiveConnectionTypeObserverIfPresent,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::UnsafeDanglingUntriaged(observer)));
+                     weak_ptr_factory_.GetWeakPtr(), observer));
 }
 
 void NetworkQualityEstimator::RemoveEffectiveConnectionTypeObserver(
@@ -925,8 +924,7 @@ void NetworkQualityEstimator::AddPeerToPeerConnectionsCountObserver(
       FROM_HERE,
       base::BindOnce(&NetworkQualityEstimator::
                          NotifyPeerToPeerConnectionsCountObserverIfPresent,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::UnsafeDanglingUntriaged(observer)));
+                     weak_ptr_factory_.GetWeakPtr(), observer));
 }
 
 void NetworkQualityEstimator::RemovePeerToPeerConnectionsCountObserver(

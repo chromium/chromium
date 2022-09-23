@@ -195,8 +195,7 @@ void HistoryService::ClearCachedDataForContextID(ContextID context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScheduleTask(PRIORITY_NORMAL,
                base::BindOnce(&HistoryBackend::ClearCachedDataForContextID,
-                              history_backend_,
-                              base::UnsafeDanglingUntriaged(context_id)));
+                              history_backend_, context_id));
 }
 
 void HistoryService::ClearAllOnDemandFavicons() {
@@ -472,8 +471,7 @@ void HistoryService::UpdateWithPageEndTime(ContextID context_id,
   ScheduleTask(
       PRIORITY_NORMAL,
       base::BindOnce(&HistoryBackend::UpdateWithPageEndTime, history_backend_,
-                     base::UnsafeDanglingUntriaged(context_id), nav_entry_id,
-                     url, end_ts));
+                     context_id, nav_entry_id, url, end_ts));
 }
 
 void HistoryService::SetBrowsingTopicsAllowed(ContextID context_id,

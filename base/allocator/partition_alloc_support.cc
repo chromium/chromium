@@ -14,7 +14,6 @@
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -23,9 +22,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/debug/stack_trace.h"
-#include "base/debug/task_trace.h"
 #include "base/feature_list.h"
 #include "base/immediate_crash.h"
 #include "base/metrics/histogram_functions.h"
@@ -545,49 +542,6 @@ void InstallDanglingRawPtrChecks() {
 #else   // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 void InstallDanglingRawPtrChecks() {}
 #endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-
-void UnretainedDanglingRawPtrDetectedDumpWithoutCrashing(uintptr_t id) {
-  PA_NO_CODE_FOLDING();
-  debug::DumpWithoutCrashing();
-}
-
-void UnretainedDanglingRawPtrDetectedCrash(uintptr_t id) {
-  debug::TaskTrace task_trace;
-  debug::StackTrace stack_trace;
-  if (!task_trace.empty()) {
-    LOG(ERROR) << "Detected dangling raw_ptr in unretained with id="
-               << StringPrintf("0x%016" PRIxPTR, id) << ":\n\n"
-               << task_trace << ":\n Stack trace:\n"
-               << stack_trace;
-  } else {
-    LOG(ERROR) << "Detected dangling raw_ptr in unretained with id="
-               << StringPrintf("0x%016" PRIxPTR, id) << ":\n\n"
-               << "Stack trace:\n"
-               << stack_trace;
-  }
-  IMMEDIATE_CRASH();
-}
-
-void InstallUnretainedDanglingRawPtrChecks() {
-  if (!FeatureList::IsEnabled(features::kPartitionAllocUnretainedDanglingPtr)) {
-    partition_alloc::SetUnretainedDanglingRawPtrDetectedFn([](uintptr_t) {});
-    partition_alloc::SetUnretainedDanglingRawPtrCheckEnabled(/*enabled=*/false);
-    return;
-  }
-
-  partition_alloc::SetUnretainedDanglingRawPtrCheckEnabled(/*enabled=*/true);
-  switch (features::kUnretainedDanglingPtrModeParam.Get()) {
-    case features::UnretainedDanglingPtrMode::kCrash:
-      partition_alloc::SetUnretainedDanglingRawPtrDetectedFn(
-          &UnretainedDanglingRawPtrDetectedCrash);
-      break;
-
-    case features::UnretainedDanglingPtrMode::kDumpWithoutCrashing:
-      partition_alloc::SetUnretainedDanglingRawPtrDetectedFn(
-          &UnretainedDanglingRawPtrDetectedDumpWithoutCrashing);
-      break;
-  }
-}
 
 }  // namespace allocator
 }  // namespace base
