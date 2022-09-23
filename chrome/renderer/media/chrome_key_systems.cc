@@ -164,8 +164,7 @@ SupportedCodecs GetDolbyVisionCodecs(
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 
-SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability,
-                                   bool requires_clear_lead_support = true) {
+SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability) {
   SupportedCodecs supported_codecs = media::EME_CODEC_NONE;
 
   for (const auto& codec : capability.audio_codecs) {
@@ -199,8 +198,6 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability,
   // For compatibility with older CDMs different profiles are only used
   // with some video codecs.
   for (const auto& [codec, video_codec_info] : capability.video_codecs) {
-    if (requires_clear_lead_support && !video_codec_info.supports_clear_lead)
-      continue;
     switch (codec) {
       case media::VideoCodec::kVP8:
         supported_codecs |= media::EME_CODEC_VP8;
@@ -288,10 +285,6 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
   // Codecs and encryption schemes.
   SupportedCodecs codecs = media::EME_CODEC_NONE;
   SupportedCodecs hw_secure_codecs = media::EME_CODEC_NONE;
-#if BUILDFLAG(IS_WIN)
-  SupportedCodecs hw_secure_codecs_clear_lead_support_not_required =
-      media::EME_CODEC_NONE;
-#endif
   base::flat_set<::media::EncryptionScheme> encryption_schemes;
   base::flat_set<::media::EncryptionScheme> hw_secure_encryption_schemes;
   base::flat_set<CdmSessionType> session_types;
@@ -312,13 +305,6 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
   if (capability->hw_secure_capability) {
     hw_secure_codecs =
         GetSupportedCodecs(capability->hw_secure_capability.value());
-#if BUILDFLAG(IS_WIN)
-    // In Chrome, for the experimental key system, we do not have to filter the
-    // hardware secure codecs by whether they support clear lead or not.
-    hw_secure_codecs_clear_lead_support_not_required =
-        GetSupportedCodecs(capability->hw_secure_capability.value(),
-                           /*requires_clear_lead_support=*/false);
-#endif
     hw_secure_encryption_schemes =
         capability->hw_secure_capability->encryption_schemes;
     hw_secure_session_types = UpdatePersistentLicenseSupport(
@@ -354,32 +340,12 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
   distinctive_identifier_support = EmeFeatureSupport::REQUESTABLE;
 #endif
 
-  key_systems->emplace_back(std::make_unique<cdm::WidevineKeySystemInfo>(
-      codecs, encryption_schemes, session_types, hw_secure_codecs,
-      hw_secure_encryption_schemes, hw_secure_session_types,
-      max_audio_robustness, max_video_robustness, persistent_state_support,
+  key_systems->emplace_back(new cdm::WidevineKeySystemInfo(
+      codecs, std::move(encryption_schemes), std::move(session_types),
+      hw_secure_codecs, std::move(hw_secure_encryption_schemes),
+      std::move(hw_secure_session_types), max_audio_robustness,
+      max_video_robustness, persistent_state_support,
       distinctive_identifier_support));
-
-#if BUILDFLAG(IS_WIN)
-  // Register another WidevineKeySystemInfo on Windows only for
-  // `kWideVineExperimentKeySystem`. The default WidevineKeySystemInfo
-  // above requires clear lead to be supported. This is not required for
-  // the experimental key system because content providers using the
-  // experimental key system would not serve clear lead content.
-  if (base::FeatureList::IsEnabled(
-          media::kHardwareSecureDecryptionExperiment)) {
-    auto experimental_key_system_info =
-        std::make_unique<cdm::WidevineKeySystemInfo>(
-            codecs, encryption_schemes, session_types,
-            hw_secure_codecs_clear_lead_support_not_required,
-            hw_secure_encryption_schemes, hw_secure_session_types,
-            max_audio_robustness, max_video_robustness,
-            persistent_state_support, distinctive_identifier_support);
-    experimental_key_system_info->set_experimental();
-
-    key_systems->emplace_back(std::move(experimental_key_system_info));
-  }
-#endif
   return true;
 }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)

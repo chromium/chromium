@@ -89,8 +89,10 @@ std::string WidevineKeySystemInfo::GetBaseKeySystemName() const {
 bool WidevineKeySystemInfo::IsSupportedKeySystem(
     const std::string& key_system) const {
 #if BUILDFLAG(IS_WIN)
-  if (is_experimental_) {
-    return key_system == kWidevineExperimentKeySystem;
+  if (key_system == kWidevineExperimentKeySystem &&
+      base::FeatureList::IsEnabled(
+          media::kHardwareSecureDecryptionExperiment)) {
+    return true;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
