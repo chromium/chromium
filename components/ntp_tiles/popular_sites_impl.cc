@@ -487,7 +487,7 @@ void PopularSitesImpl::OnJsonParsed(
     return;
   }
   sections_ = ParseSites(list.GetList(), version_in_pending_url_);
-  prefs_->SetList(prefs::kPopularSitesJsonPref, std::move(list.GetList()));
+  prefs_->SetList(prefs::kPopularSitesJsonPref, std::move(list).TakeList());
   prefs_->SetInt64(prefs::kPopularSitesLastDownloadPref,
                    base::Time::Now().ToInternalValue());
   prefs_->SetInteger(prefs::kPopularSitesVersionPref, version_in_pending_url_);
