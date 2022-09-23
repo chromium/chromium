@@ -107,7 +107,7 @@ int64_t BucketizeBounceDelay(base::TimeDelta delta) {
   return base::clamp(delta.InSeconds(), INT64_C(0), INT64_C(10));
 }
 
-std::string GetDIPSSite(const GURL& url) {
+std::string GetSiteForDIPS(const GURL& url) {
   const auto domain = net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   return domain.empty() ? url.host() : domain;

@@ -71,7 +71,7 @@ int64_t BucketizeBounceDelay(base::TimeDelta delta);
 
 // Returns an opaque value representing the "privacy boundary" that the URL
 // belongs to. Currently returns eTLD+1, but this is an implementation detail
-// and will change (e.g. after adding support for First-Party Sets).
-std::string GetDIPSSite(const GURL& url);
+// and may change (e.g. after adding support for First-Party Sets).
+std::string GetSiteForDIPS(const GURL& url);
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_UTILS_H_

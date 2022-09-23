@@ -54,12 +54,12 @@ INSTANTIATE_TEST_SUITE_P(All, DIPSDatabaseTest, testing::Bool());
 // in the DIPSDatabase.
 TEST_P(DIPSDatabaseTest, AddUpdateQueryDeleteBounce) {
   // Add a bounce for site1.
-  const std::string site1 = GetDIPSSite(GURL("http://www.youtube.com/"));
+  const std::string site1 = GetSiteForDIPS(GURL("http://www.youtube.com/"));
   absl::optional<base::Time> storage_time1 = Time::FromDoubleT(1);
   EXPECT_TRUE(db_->Write(site1, storage_time1, absl::nullopt));
 
   // Add a bounce for site2.
-  const std::string site2 = GetDIPSSite(GURL("http://mail.google.com/"));
+  const std::string site2 = GetSiteForDIPS(GURL("http://mail.google.com/"));
   absl::optional<base::Time> interaction_time2 = Time::FromDoubleT(2);
   EXPECT_TRUE(db_->Write(site2, absl::nullopt, interaction_time2));
 
@@ -92,6 +92,6 @@ TEST_P(DIPSDatabaseTest, AddUpdateQueryDeleteBounce) {
   EXPECT_FALSE(db_->Read(site1).has_value());
 
   // Query a site that never had DIPS State.
-  const std::string site3 = GetDIPSSite(GURL("https://www.waze.com/"));
+  const std::string site3 = GetSiteForDIPS(GURL("https://www.waze.com/"));
   EXPECT_FALSE(db_->Read(site3).has_value());
 }

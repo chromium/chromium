@@ -44,15 +44,16 @@ TEST(DirtyBit, Move) {
   ASSERT_FALSE(bit);  // NOLINT
 }
 
-TEST(DIPSUtilsTest, GetDIPSSite) {
-  EXPECT_EQ("example.com", GetDIPSSite(GURL("http://example.com/foo")));
-  EXPECT_EQ("example.com", GetDIPSSite(GURL("https://www.example.com/bar")));
-  EXPECT_EQ("example.com", GetDIPSSite(GURL("http://other.example.com/baz")));
+TEST(DIPSUtilsTest, GetSiteForDIPS) {
+  EXPECT_EQ("example.com", GetSiteForDIPS(GURL("http://example.com/foo")));
+  EXPECT_EQ("example.com", GetSiteForDIPS(GURL("https://www.example.com/bar")));
+  EXPECT_EQ("example.com",
+            GetSiteForDIPS(GURL("http://other.example.com/baz")));
   EXPECT_EQ("bar.baz.r.appspot.com",
-            GetDIPSSite(GURL("http://foo.bar.baz.r.appspot.com/baz")));
-  EXPECT_EQ("localhost", GetDIPSSite(GURL("http://localhost:8000/qux")));
-  EXPECT_EQ("127.0.0.1", GetDIPSSite(GURL("http://127.0.0.1:8888/")));
-  EXPECT_EQ("[::1]", GetDIPSSite(GURL("http://[::1]/")));
+            GetSiteForDIPS(GURL("http://foo.bar.baz.r.appspot.com/baz")));
+  EXPECT_EQ("localhost", GetSiteForDIPS(GURL("http://localhost:8000/qux")));
+  EXPECT_EQ("127.0.0.1", GetSiteForDIPS(GURL("http://127.0.0.1:8888/")));
+  EXPECT_EQ("[::1]", GetSiteForDIPS(GURL("http://[::1]/")));
 }
 
 TEST_F(DIPSStorageTest, NewURL) {

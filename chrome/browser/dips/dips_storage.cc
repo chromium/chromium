@@ -66,7 +66,7 @@ void DIPSStorage::Init(const absl::optional<base::FilePath>& path) {
 
 DIPSState DIPSStorage::Read(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string site = GetDIPSSite(url);
+  std::string site = GetSiteForDIPS(url);
   absl::optional<StateValue> state = db_->Read(site);
 
   if (state.has_value()) {

@@ -154,9 +154,9 @@ DIPSRedirectChainInfo::DIPSRedirectChainInfo(const GURL& initial_url,
                                              const GURL& final_url,
                                              int length)
     : initial_url(initial_url),
-      initial_site(GetDIPSSite(initial_url)),
+      initial_site(GetSiteForDIPS(initial_url)),
       final_url(final_url),
-      final_site(GetDIPSSite(final_url)),
+      final_site(GetSiteForDIPS(final_url)),
       initial_and_final_sites_same(initial_site == final_site),
       length(length) {}
 
@@ -260,7 +260,7 @@ void DIPSRedirectContext::EndChain(GURL url) {
 
 void DIPSBounceDetector::HandleRedirect(const DIPSRedirectInfo& redirect,
                                         const DIPSRedirectChainInfo& chain) {
-  const std::string site = GetDIPSSite(redirect.url);
+  const std::string site = GetSiteForDIPS(redirect.url);
   EngagementLevel level =
       site_engagement_service_->GetEngagementLevel(redirect.url);
   bool initial_site_same = (site == chain.initial_site);
@@ -353,7 +353,7 @@ void DIPSBounceDetector::OnCookiesAccessed(
   }
 
   if (client_detection_state_ &&
-      GetDIPSSite(details.url) == client_detection_state_->current_site) {
+      GetSiteForDIPS(details.url) == client_detection_state_->current_site) {
     client_detection_state_->cookie_access_type =
         client_detection_state_->cookie_access_type |
         (details.type == content::CookieAccessDetails::Type::kChange
@@ -391,7 +391,7 @@ void DIPSBounceDetector::DidFinishNavigation(
   if (navigation_handle->HasCommitted()) {
     client_detection_state_ = ClientBounceDetectionState(
         navigation_handle->GetPreviousPrimaryMainFrameURL(),
-        GetDIPSSite(navigation_handle->GetURL()), now);
+        GetSiteForDIPS(navigation_handle->GetURL()), now);
   }
 
   auto* server_state =
