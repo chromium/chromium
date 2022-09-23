@@ -31,9 +31,6 @@
   }
 
   .help-item-icon {
-    --iron-icon-fill-color: var(--cros-text-color-secondary);
-    --iron-icon-height: 20px;
-    --iron-icon-width: 20px;
     padding-inline-end: 12px;
   }
 
@@ -62,8 +59,33 @@
     margin-inline-start: 6px;
   }
 
+  #helpContentIcon:focus {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+
   #helpContentContainer {
     overflow: visible;
+    padding-top: 32px;
+  }
+
+  iron-icon {
+    --iron-icon-fill-color: var(--cros-text-color-secondary);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+  }
+
+  paper-tooltip::part(tooltip) {
+    border-radius: 2px;
+    font-family: Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    padding: 3px 8px;
+  }
+
+  paper-tooltip {
+    --paper-tooltip-background: var(--cros-tooltip-background-color);
+    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
   }
 </style>
 <iron-media-query query="(prefers-color-scheme: dark)"
@@ -72,11 +94,15 @@
 <div id="helpContentContainer">
   <div id="helpContentLabelContainer">
     <h2 class="help-content-label">[[getLabel_(searchResult, isOnline_)]]</h2>
-    <cr-tooltip-icon icon-class="os-feedback:info" id="helpContentIcon"
+    <iron-icon icon="os-feedback:info" id="helpContentIcon" tabindex="0"
         hidden$="[[!hasSuggestedHelpContent_(searchResult, isOnline_)]]"
-        tooltip-text="[[i18n('helpContentLabelTooltip')]]"
-        icon-aria-label="[[i18n('helpContentLabelTooltip')]]">
-    </cr-tooltip-icon>
+        aria-labelledby="helpContentLabelTooltip">
+    </iron-icon>
+    <paper-tooltip for="helpContentIcon" position="top" offset="5">
+      <div id="helpContentLabelTooltip">
+        [[i18n('helpContentLabelTooltip')]]
+      </div>
+    </paper-tooltip>
   </div>
   <template is="dom-if" if="[[!isOnline_]]">
     <div class="help-content-offline-details">
