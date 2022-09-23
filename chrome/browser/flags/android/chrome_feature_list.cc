@@ -279,9 +279,11 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRelatedSearchesSimplifiedUx,
     &kRelatedSearchesUi,
     &kRequestDesktopSiteDefaults,
-    &kRequestDesktopSiteDefaultsSynthetic,
     &kRequestDesktopSiteDefaultsControl,
     &kRequestDesktopSiteDefaultsControlSynthetic,
+    &kRequestDesktopSiteDefaultsSynthetic,
+    &kRequestDesktopSiteOptInControlSynthetic,
+    &kRequestDesktopSiteOptInSynthetic,
     &kRequestDesktopSiteDefaultsDowngrade,
     &kSafeModeForCachedFlags,
     &kSearchEnginePromoExistingDevice,
@@ -812,15 +814,22 @@ const base::Feature kRelatedSearchesUi{"RelatedSearchesUi",
 const base::Feature kRequestDesktopSiteDefaults{
     "RequestDesktopSiteDefaults", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kRequestDesktopSiteDefaultsSynthetic{
-    "RequestDesktopSiteDefaults_Synthetic", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kRequestDesktopSiteDefaultsControl{
     "RequestDesktopSiteDefaultsControl", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kRequestDesktopSiteDefaultsControlSynthetic{
-    "RequestDesktopSiteDefaultsControl_Synthetic",
+    "RequestDesktopSiteDefaultsControlSynthetic",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kRequestDesktopSiteDefaultsSynthetic{
+    "RequestDesktopSiteDefaultsSynthetic", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kRequestDesktopSiteOptInControlSynthetic{
+    "RequestDesktopSiteOptInControlSynthetic",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kRequestDesktopSiteOptInSynthetic{
+    "RequestDesktopSiteOptInSynthetic", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kRequestDesktopSiteDefaultsDowngrade{
     "RequestDesktopSiteDefaultsDowngrade", base::FEATURE_DISABLED_BY_DEFAULT};

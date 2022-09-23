@@ -514,6 +514,14 @@ public abstract class ChromeFeatureList {
             "RequestDesktopSiteDefaultsControl";
     public static final String REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE =
             "RequestDesktopSiteDefaultsDowngrade";
+    public static final String REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL_SYNTHETIC =
+            "RequestDesktopSiteDefaultsControlSynthetic";
+    public static final String REQUEST_DESKTOP_SITE_DEFAULTS_SYNTHETIC =
+            "RequestDesktopSiteDefaultsSynthetic";
+    public static final String REQUEST_DESKTOP_SITE_OPT_IN_SYNTHETIC =
+            "RequestDesktopSiteOptInSynthetic";
+    public static final String REQUEST_DESKTOP_SITE_OPT_IN_CONTROL_SYNTHETIC =
+            "RequestDesktopSiteOptInControlSynthetic";
     public static final String REQUEST_DESKTOP_SITE_FOR_TABLETS = "RequestDesktopSiteForTablets";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
     public static final String SAFE_MODE_FOR_CACHED_FLAGS = "SafeModeForCachedFlags";

@@ -228,10 +228,7 @@ public class RequestDesktopUtilsUnitTest {
         when(mRegularTabModel.getProfile()).thenReturn(mProfile);
 
         TrackerFactory.setTrackerForTests(mTracker);
-
-        enableFeatureWithParams("RequestDesktopSiteDefaultsControl", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaults_Synthetic", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsControl_Synthetic", null, false);
+        disableGlobalDefaultsExperimentFeatures();
     }
 
     @After
@@ -251,9 +248,6 @@ public class RequestDesktopUtilsUnitTest {
         mSharedPreferencesManager.removeKey(
                 ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED);
         TrackerFactory.setTrackerForTests(null);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsControl", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaults_Synthetic", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsControl_Synthetic", null, false);
     }
 
     @Test
@@ -440,28 +434,36 @@ public class RequestDesktopUtilsUnitTest {
     }
 
     @Test
-    public void testMaybeRegisterSyntheticFieldTrials_DefaultOnEnabled10Inches() {
-        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(false, 10.0, false);
-        Assert.assertEquals("Trial name is incorrect.", "RequestDesktopSiteDefaultsSyntheticTrial",
+    public void testMaybeRegisterSyntheticFieldTrials_DefaultOnEnabled12Inches() {
+        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(false, 12.0, false);
+        Assert.assertEquals("Trial name is incorrect.", "RequestDesktopSiteDefaultsSynthetic",
                 sGlobalDefaultsExperimentTrialName);
-        Assert.assertEquals("Group name is incorrect.", "DefaultOn_10_0_Enabled",
+        Assert.assertEquals("Group name is incorrect.", "DefaultOn_12_0_Enabled",
                 sGlobalDefaultsExperimentGroupName);
     }
 
     @Test
-    public void testMaybeRegisterSyntheticFieldTrials_DefaultOnControl10Inches() {
-        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(true, 10.0, false);
+    public void testMaybeRegisterSyntheticFieldTrials_DefaultOnControl12Inches() {
+        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(true, 12.0, false);
         Assert.assertEquals("Trial name is incorrect.",
-                "RequestDesktopSiteDefaultsControlSyntheticTrial",
+                "RequestDesktopSiteDefaultsControlSynthetic", sGlobalDefaultsExperimentTrialName);
+        Assert.assertEquals("Group name is incorrect.", "DefaultOn_12_0_Control",
+                sGlobalDefaultsExperimentGroupName);
+    }
+
+    @Test
+    public void testMaybeRegisterSyntheticFieldTrials_OptInEnabled10Inches() {
+        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(false, 10.0, true);
+        Assert.assertEquals("Trial name is incorrect.", "RequestDesktopSiteOptInSynthetic",
                 sGlobalDefaultsExperimentTrialName);
-        Assert.assertEquals("Group name is incorrect.", "DefaultOn_10_0_Control",
+        Assert.assertEquals("Group name is incorrect.", "OptIn_10_0_Enabled",
                 sGlobalDefaultsExperimentGroupName);
     }
 
     @Test
     public void testMaybeRegisterSyntheticFieldTrials_DoNothingWhenExperimentIsActive() {
-        enableFeatureWithParams("RequestDesktopSiteDefaults_Synthetic", null, true);
-        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(false, 10.0, false);
+        enableFeatureWithParams("RequestDesktopSiteDefaultsSynthetic", null, true);
+        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(false, 12.0, false);
         Assert.assertTrue("Synthetic trial should not be registered.",
                 sGlobalDefaultsExperimentTrialName == null
                         && sGlobalDefaultsExperimentGroupName == null);
@@ -662,6 +664,30 @@ public class RequestDesktopUtilsUnitTest {
     }
 
     @Test
+    public void testShouldShowGlobalSettingOptInMessage_ExperimentControlGroup() {
+        Map<String, String> params = new HashMap<>();
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, "true");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, false);
+        enableFeatureWithParams(
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL, params, true);
+
+        boolean shouldShowOptIn = RequestDesktopUtils.shouldShowGlobalSettingOptInMessage(
+                RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
+                mProfile);
+        Assert.assertFalse(
+                "Opt-in message for desktop site global setting should not be shown in the control experiment group.",
+                shouldShowOptIn);
+        Assert.assertTrue(
+                "SharedPreference DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT should be true.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT)
+                        && mSharedPreferencesManager.readBoolean(
+                                ChromePreferenceKeys
+                                        .DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT,
+                                false));
+    }
+
+    @Test
     public void testMaybeShowGlobalSettingOptInMessage() {
         Map<String, String> params = new HashMap<>();
         params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, "true");
@@ -692,6 +718,11 @@ public class RequestDesktopUtilsUnitTest {
                 "SharedPreference DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN should be true.",
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN,
+                        false));
+        Assert.assertTrue(
+                "SharedPreference DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT should be true.",
+                mSharedPreferencesManager.readBoolean(
+                        ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT,
                         false));
     }
 
@@ -963,5 +994,14 @@ public class RequestDesktopUtilsUnitTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.RequestDesktopSite.Changed",
                         requestDesktopSite ? SiteLayout.DESKTOP : SiteLayout.MOBILE));
+    }
+
+    private void disableGlobalDefaultsExperimentFeatures() {
+        enableFeatureWithParams("RequestDesktopSiteDefaults", null, false);
+        enableFeatureWithParams("RequestDesktopSiteDefaultsControl", null, false);
+        enableFeatureWithParams("RequestDesktopSiteDefaultsControlSynthetic", null, false);
+        enableFeatureWithParams("RequestDesktopSiteDefaultsSynthetic", null, false);
+        enableFeatureWithParams("RequestDesktopSiteOptInControlSynthetic", null, false);
+        enableFeatureWithParams("RequestDesktopSiteOptInSynthetic", null, false);
     }
 }
