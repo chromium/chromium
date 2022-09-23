@@ -2209,7 +2209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmFileIO.{FileOperation}{IncognitoOrNormal}"
-    units="BooleanSuccess" expires_after="2023-05-07">
+    enum="BooleanSuccess" expires_after="2023-05-07">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
