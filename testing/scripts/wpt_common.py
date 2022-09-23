@@ -230,8 +230,6 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 self._include_filename)
 
     def generate_test_launcher_retry_limit_args(self, retry_limit):
-        if retry_limit is None:
-            retry_limit = 0 if self._has_explicit_tests else 3
         return ['--retry-unexpected=%d' % retry_limit]
 
     def generate_sharding_args(self, total_shards, shard_index):
@@ -258,6 +256,9 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 report = self._default_wpt_report()
             self.wptreport = self.fs.join(self.fs.dirname(self.wpt_output),
                                           report)
+        if self.options.isolated_script_test_launcher_retry_limit is None:
+            retries = 0 if self._has_explicit_tests else 3
+            self.options.isolated_script_test_launcher_retry_limit = retries
 
     @property
     def wpt_output(self):
