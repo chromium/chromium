@@ -70,7 +70,7 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest, EnabledWithPolicy) {
   profile.GetPrefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
                                  true);
   profile.GetPrefs()->SetDict(first_party_sets::kFirstPartySetsOverrides,
-                              std::move(empty_lists.GetDict()));
+                              std::move(empty_lists).TakeDict());
 
   const base::Value::Dict* policy =
       FirstPartySetsPolicyServiceFactory::GetPolicyIfEnabled(profile);
