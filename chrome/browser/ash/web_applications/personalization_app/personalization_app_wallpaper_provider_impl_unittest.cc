@@ -149,7 +149,7 @@ gfx::ImageSkia CreateSolidImageSkia(int width, int height, SkColor color) {
 base::Value::Dict JsonToDict(base::StringPiece json) {
   absl::optional<base::Value> parsed_json = base::JSONReader::Read(json);
   EXPECT_TRUE(parsed_json.has_value() && parsed_json->is_dict());
-  return std::move(parsed_json->GetDict());
+  return std::move(*parsed_json).TakeDict();
 }
 
 // Returns a non-null pointer to the album in a hypothetical Google Photos
