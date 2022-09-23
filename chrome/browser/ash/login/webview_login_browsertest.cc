@@ -1095,7 +1095,7 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
       base::ScopedAllowBlockingForTesting allow_io;
       ASSERT_TRUE(base::ReadFileToString(authority_file_path, &x509_contents));
     }
-    base::DictionaryValue onc_dict =
+    base::Value::Dict onc_dict =
         BuildDeviceOncDictForUntrustedAuthority(x509_contents);
 
     em::ChromeDeviceSettingsProto& proto(device_policy_builder_.payload());
@@ -1213,24 +1213,23 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
  private:
   // Builds a device ONC dictionary defining a single untrusted authority
   // certificate.
-  static base::DictionaryValue BuildDeviceOncDictForUntrustedAuthority(
+  static base::Value::Dict BuildDeviceOncDictForUntrustedAuthority(
       const std::string& x509_authority_cert) {
-    base::DictionaryValue onc_certificate;
-    onc_certificate.SetKey(onc::certificate::kGUID, base::Value(kTestGuid));
-    onc_certificate.SetKey(onc::certificate::kType,
-                           base::Value(onc::certificate::kAuthority));
-    onc_certificate.SetKey(onc::certificate::kX509,
-                           base::Value(x509_authority_cert));
+    base::Value::Dict onc_certificate;
+    onc_certificate.Set(onc::certificate::kGUID, base::Value(kTestGuid));
+    onc_certificate.Set(onc::certificate::kType,
+                        base::Value(onc::certificate::kAuthority));
+    onc_certificate.Set(onc::certificate::kX509,
+                        base::Value(x509_authority_cert));
 
-    base::ListValue onc_certificates;
+    base::Value::List onc_certificates;
     onc_certificates.Append(std::move(onc_certificate));
 
-    base::DictionaryValue onc_dict;
-    onc_dict.SetKey(onc::toplevel_config::kCertificates,
-                    std::move(onc_certificates));
-    onc_dict.SetKey(
-        onc::toplevel_config::kType,
-        base::Value(onc::toplevel_config::kUnencryptedConfiguration));
+    base::Value::Dict onc_dict;
+    onc_dict.Set(onc::toplevel_config::kCertificates,
+                 std::move(onc_certificates));
+    onc_dict.Set(onc::toplevel_config::kType,
+                 base::Value(onc::toplevel_config::kUnencryptedConfiguration));
     return onc_dict;
   }
 

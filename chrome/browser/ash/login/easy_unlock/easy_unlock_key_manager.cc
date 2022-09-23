@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "base/values.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_names.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager_factory.h"
@@ -94,20 +93,19 @@ void EasyUnlockKeyManager::GetDeviceDataList(
 void EasyUnlockKeyManager::DeviceDataToRemoteDeviceDictionary(
     const AccountId& account_id,
     const EasyUnlockDeviceKeyData& data,
-    base::DictionaryValue* dict) {
-  dict->SetStringKey(key_names::kKeyBluetoothAddress, data.bluetooth_address);
-  dict->SetStringKey(key_names::kKeyPsk, data.psk);
-  base::DictionaryValue permit_record;
-  dict->SetKey(key_names::kKeyPermitRecord, std::move(permit_record));
-  dict->SetStringPath(key_names::kKeyPermitId, data.public_key);
-  dict->SetStringPath(key_names::kKeyPermitData, data.public_key);
-  dict->SetStringPath(key_names::kKeyPermitType, key_names::kPermitTypeLicence);
-  dict->SetStringPath(key_names::kKeyPermitPermitId,
-                      base::StringPrintf(key_names::kPermitPermitIdFormat,
-                                         account_id.GetUserEmail().c_str()));
-  dict->SetStringKey(key_names::kKeySerializedBeaconSeeds,
-                     data.serialized_beacon_seeds);
-  dict->SetBoolKey(key_names::kKeyUnlockKey, data.unlock_key);
+    base::Value::Dict* dict) {
+  dict->Set(key_names::kKeyBluetoothAddress, data.bluetooth_address);
+  dict->Set(key_names::kKeyPsk, data.psk);
+  base::Value::Dict permit_record;
+  dict->Set(key_names::kKeyPermitRecord, std::move(permit_record));
+  dict->Set(key_names::kKeyPermitId, data.public_key);
+  dict->Set(key_names::kKeyPermitData, data.public_key);
+  dict->Set(key_names::kKeyPermitType, key_names::kPermitTypeLicence);
+  dict->Set(key_names::kKeyPermitPermitId,
+            base::StringPrintf(key_names::kPermitPermitIdFormat,
+                               account_id.GetUserEmail().c_str()));
+  dict->Set(key_names::kKeySerializedBeaconSeeds, data.serialized_beacon_seeds);
+  dict->Set(key_names::kKeyUnlockKey, data.unlock_key);
 }
 
 // static
@@ -154,7 +152,7 @@ void EasyUnlockKeyManager::DeviceDataListToRemoteDeviceList(
     base::Value::List* device_list) {
   device_list->clear();
   for (const auto& data : data_list) {
-    base::DictionaryValue device_dict;
+    base::Value::Dict device_dict;
     DeviceDataToRemoteDeviceDictionary(account_id, data, &device_dict);
     device_list->Append(std::move(device_dict));
   }

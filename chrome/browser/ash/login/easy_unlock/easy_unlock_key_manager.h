@@ -14,16 +14,12 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_get_keys_operation.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_refresh_keys_operation.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 
 class AccountId;
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-}  // namespace base
 
 namespace ash {
 
@@ -63,12 +59,12 @@ class EasyUnlockKeyManager {
   static void DeviceDataToRemoteDeviceDictionary(
       const AccountId& account_id,
       const EasyUnlockDeviceKeyData& data,
-      base::DictionaryValue* dict);
+      base::Value::Dict* dict);
   static bool RemoteDeviceDictionaryToDeviceData(const base::Value::Dict& dict,
                                                  EasyUnlockDeviceKeyData* data);
 
   // Helpers to convert between EasyUnlockDeviceKeyDataList and remote devices
-  // ListValue.
+  // base::Value::List.
   static void DeviceDataListToRemoteDeviceList(
       const AccountId& account_id,
       const EasyUnlockDeviceKeyDataList& data_list,

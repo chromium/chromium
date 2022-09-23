@@ -137,49 +137,47 @@ std::string SupervisedUserManagerImpl::GetManagerDisplayEmail(
 
 void SupervisedUserManagerImpl::GetPasswordInformation(
     const std::string& user_id,
-    base::DictionaryValue* result) {
+    base::Value::Dict* result) {
   int value;
   if (GetUserIntegerValue(user_id, kSupervisedUserPasswordSchema, &value))
-    result->SetKey(kSchemaVersion, base::Value(value));
+    result->Set(kSchemaVersion, base::Value(value));
   if (GetUserIntegerValue(user_id, kSupervisedUserPasswordRevision, &value))
-    result->SetKey(kPasswordRevision, base::Value(value));
+    result->Set(kPasswordRevision, base::Value(value));
 
   bool flag;
   if (GetUserBooleanValue(user_id, kSupervisedUserNeedPasswordUpdate, &flag))
-    result->SetKey(kRequirePasswordUpdate, base::Value(flag));
+    result->Set(kRequirePasswordUpdate, base::Value(flag));
   if (GetUserBooleanValue(user_id, kSupervisedUserIncompleteKey, &flag))
-    result->SetKey(kHasIncompleteKey, base::Value(flag));
+    result->Set(kHasIncompleteKey, base::Value(flag));
 
   std::string salt;
   if (GetUserStringValue(user_id, kSupervisedUserPasswordSalt, &salt))
-    result->SetKey(kSalt, base::Value(salt));
+    result->Set(kSalt, base::Value(salt));
 }
 
 void SupervisedUserManagerImpl::SetPasswordInformation(
     const std::string& user_id,
-    const base::DictionaryValue* password_info) {
-  absl::optional<int> schema_version =
-      password_info->FindIntKey(kSchemaVersion);
+    const base::Value::Dict* password_info) {
+  absl::optional<int> schema_version = password_info->FindInt(kSchemaVersion);
   if (schema_version.has_value())
     SetUserIntegerValue(user_id, kSupervisedUserPasswordSchema,
                         schema_version.value());
   absl::optional<int> password_revision =
-      password_info->FindIntKey(kPasswordRevision);
+      password_info->FindInt(kPasswordRevision);
   if (password_revision.has_value())
     SetUserIntegerValue(user_id, kSupervisedUserPasswordRevision,
                         password_revision.value());
 
-  absl::optional<bool> flag =
-      password_info->FindBoolKey(kRequirePasswordUpdate);
+  absl::optional<bool> flag = password_info->FindBool(kRequirePasswordUpdate);
   if (flag.has_value()) {
     SetUserBooleanValue(user_id, kSupervisedUserNeedPasswordUpdate,
                         flag.value());
   }
-  flag = password_info->FindBoolKey(kHasIncompleteKey);
+  flag = password_info->FindBool(kHasIncompleteKey);
   if (flag.has_value())
     SetUserBooleanValue(user_id, kSupervisedUserIncompleteKey, flag.value());
 
-  const std::string* salt = password_info->FindStringKey(kSalt);
+  const std::string* salt = password_info->FindString(kSalt);
   if (salt)
     SetUserStringValue(user_id, kSupervisedUserPasswordSalt, *salt);
   g_browser_process->local_state()->CommitPendingWrite();

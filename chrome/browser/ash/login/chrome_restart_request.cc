@@ -84,7 +84,7 @@ bool IsRunningTest() {
 // - Append/override switches using `new_switches`;
 void DeriveCommandLine(const GURL& start_url,
                        const base::CommandLine& base_command_line,
-                       const base::DictionaryValue& new_switches,
+                       const base::Value::Dict& new_switches,
                        base::CommandLine* command_line) {
   DCHECK_NE(&base_command_line, command_line);
 
@@ -240,7 +240,7 @@ void DeriveCommandLine(const GURL& start_url,
   if (start_url.is_valid())
     command_line->AppendArg(start_url.spec());
 
-  for (auto new_switch : new_switches.DictItems()) {
+  for (auto new_switch : new_switches) {
     command_line->AppendSwitchASCII(new_switch.first,
                                     new_switch.second.GetString());
   }
@@ -368,22 +368,21 @@ void ChromeRestartRequest::OnRestartJob(base::ScopedFD local_auth_fd,
 void GetOffTheRecordCommandLine(const GURL& start_url,
                                 const base::CommandLine& base_command_line,
                                 base::CommandLine* command_line) {
-  base::DictionaryValue otr_switches;
-  otr_switches.SetStringKey(switches::kGuestSession, std::string());
-  otr_switches.SetStringKey(::switches::kIncognito, std::string());
-  otr_switches.SetStringKey(::switches::kLoggingLevel, kGuestModeLoggingLevel);
-  otr_switches.SetStringKey(
+  base::Value::Dict otr_switches;
+  otr_switches.Set(switches::kGuestSession, std::string());
+  otr_switches.Set(::switches::kIncognito, std::string());
+  otr_switches.Set(::switches::kLoggingLevel, kGuestModeLoggingLevel);
+  otr_switches.Set(
       switches::kLoginUser,
       cryptohome::Identification(user_manager::GuestAccountId()).id());
   if (!base::SysInfo::IsRunningOnChromeOS()) {
-    otr_switches.SetStringKey(
-        switches::kLoginProfile,
-        ash::BrowserContextHelper::kLegacyBrowserContextDirName);
+    otr_switches.Set(switches::kLoginProfile,
+                     ash::BrowserContextHelper::kLegacyBrowserContextDirName);
   }
 
   // Override the home page.
-  otr_switches.SetStringKey(::switches::kHomePage,
-                            GURL(chrome::kChromeUINewTabURL).spec());
+  otr_switches.Set(::switches::kHomePage,
+                   GURL(chrome::kChromeUINewTabURL).spec());
 
   DeriveCommandLine(start_url, base_command_line, otr_switches, command_line);
   DeriveEnabledFeatures(command_line);

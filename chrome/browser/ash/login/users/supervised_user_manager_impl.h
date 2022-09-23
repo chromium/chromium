@@ -30,10 +30,9 @@ class SupervisedUserManagerImpl : public SupervisedUserManager {
   std::string GetManagerUserId(const std::string& user_id) const override;
   std::string GetManagerDisplayEmail(const std::string& user_id) const override;
   void GetPasswordInformation(const std::string& user_id,
-                              base::DictionaryValue* result) override;
-  void SetPasswordInformation(
-      const std::string& user_id,
-      const base::DictionaryValue* password_info) override;
+                              base::Value::Dict* result) override;
+  void SetPasswordInformation(const std::string& user_id,
+                              const base::Value::Dict* password_info) override;
 
  private:
   friend class ChromeUserManagerImpl;

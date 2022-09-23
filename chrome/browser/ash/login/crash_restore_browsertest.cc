@@ -201,8 +201,8 @@ class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
     // NOTE: This does not include IdentityManager prefs like
     // kGoogleServicesAccountId, so the IdentityManager will not initialize
     // itself with a primary account.
-    base::DictionaryValue prefs;
-    prefs.SetStringPath(prefs::kSessionExitType, "Crashed");
+    base::Value::Dict prefs;
+    prefs.Set(prefs::kSessionExitType, "Crashed");
     std::string prefs_json;
     ASSERT_TRUE(base::JSONWriter::Write(prefs, &prefs_json));
 
