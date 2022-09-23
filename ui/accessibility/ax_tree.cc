@@ -1046,6 +1046,8 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
 
   AXTreeUpdateState update_state(*this, update);
   const AXNodeID old_root_id = root_ ? root_->id() : kInvalidAXNodeID;
+  DCHECK(old_root_id != kInvalidAXNodeID || update.root_id != kInvalidAXNodeID)
+      << "Tree must have a valid root or update must have a valid root.";
 
   // Accumulates the work that will be required to update the AXTree.
   // This allows us to notify observers of structure changes when the

@@ -68,7 +68,6 @@ void ReadAnythingModel::Init(
 
 void ReadAnythingModel::AddObserver(Observer* obs) {
   observers_.AddObserver(obs);
-  NotifyAXTreeDistilled();
   NotifyThemeChanged();
 }
 
@@ -131,6 +130,8 @@ void ReadAnythingModel::IncreaseTextSize() {
 }
 
 void ReadAnythingModel::NotifyAXTreeDistilled() {
+  // The snapshot must have a valid root id.
+  DCHECK(snapshot_.root_id != ui::kInvalidAXNodeID);
   for (Observer& obs : observers_) {
     obs.OnAXTreeDistilled(snapshot_, content_node_ids_);
   }

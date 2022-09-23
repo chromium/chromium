@@ -62,10 +62,10 @@ class ReadAnythingModelTest : public TestWithBrowserView {
 TEST_F(ReadAnythingModelTest, AddingModelObserverNotifiesAllObservers) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnAXTreeDistilled(_, _)).Times(1);
+  EXPECT_CALL(model_observer_1_, OnAXTreeDistilled(_, _)).Times(0);
   EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
-  EXPECT_CALL(model_observer_2_, OnAXTreeDistilled(_, _)).Times(1);
+  EXPECT_CALL(model_observer_2_, OnAXTreeDistilled(_, _)).Times(0);
   EXPECT_CALL(model_observer_2_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->AddObserver(&model_observer_2_);
@@ -75,13 +75,13 @@ TEST_F(ReadAnythingModelTest, RemovedModelObserversDoNotReceiveNotifications) {
   model_->AddObserver(&model_observer_1_);
   model_->AddObserver(&model_observer_2_);
 
-  EXPECT_CALL(model_observer_1_, OnAXTreeDistilled(_, _)).Times(1);
+  EXPECT_CALL(model_observer_1_, OnAXTreeDistilled(_, _)).Times(0);
   EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   EXPECT_CALL(model_observer_2_, OnAXTreeDistilled(_, _)).Times(0);
   EXPECT_CALL(model_observer_2_, OnReadAnythingThemeChanged(_)).Times(0);
 
-  EXPECT_CALL(model_observer_3_, OnAXTreeDistilled(_, _)).Times(1);
+  EXPECT_CALL(model_observer_3_, OnAXTreeDistilled(_, _)).Times(0);
   EXPECT_CALL(model_observer_3_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->RemoveObserver(&model_observer_2_);
@@ -96,12 +96,13 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedFontIndex) {
   model_->SetSelectedFontByIndex(2);
 }
 
-TEST_F(ReadAnythingModelTest, NotifiationsOnSetDistilledAXTree) {
+TEST_F(ReadAnythingModelTest, NotificationsOnSetDistilledAXTree) {
   model_->AddObserver(&model_observer_1_);
 
   EXPECT_CALL(model_observer_1_, OnAXTreeDistilled(_, _)).Times(1);
 
   ui::AXTreeUpdate snapshot_;
+  snapshot_.root_id = 1;
   std::vector<ui::AXNodeID> content_node_ids_;
   model_->SetDistilledAXTree(snapshot_, content_node_ids_);
 }
