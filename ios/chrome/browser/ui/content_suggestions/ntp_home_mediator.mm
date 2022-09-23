@@ -7,7 +7,6 @@
 #import <memory>
 
 #import "base/mac/foundation_util.h"
-#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/ntp_snippets/content_suggestions_service.h"
@@ -32,7 +31,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
@@ -317,20 +315,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     return YES;
   }
   return NO;
-}
-
-- (void)fakeboxTapped {
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(self.webState);
-  if (NTPHelper) {
-    if (NTPHelper->ShouldShowStartSurface()) {
-      UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnStartSurface",
-                                IOSContentSuggestionsActionType::kFakebox);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnNTP",
-                                IOSContentSuggestionsActionType::kFakebox);
-    }
-  }
 }
 
 #pragma mark - SearchEngineObserving

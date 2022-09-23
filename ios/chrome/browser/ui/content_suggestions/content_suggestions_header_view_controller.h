@@ -59,6 +59,9 @@ class ReadingListModel;
 // `YES` if Google is the default search engine.
 @property(nonatomic, assign) BOOL isGoogleDefaultSearchEngine;
 
+// `YES` if the Start Surface is currently being shown.
+@property(nonatomic, assign) BOOL isStartShowing;
+
 // The base view controller from which to present UI.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
