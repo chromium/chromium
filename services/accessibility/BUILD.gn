@@ -1,0 +1,36 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/chromeos/ui_mode.gni")
+
+source_set("lib") {
+  sources = [
+    "accessibility_service_impl.cc",
+    "accessibility_service_impl.h",
+    "automation_impl.cc",
+    "automation_impl.h",
+  ]
+  public_deps = [
+    "//services/accessibility/public/mojom",
+    "//ui/accessibility:ax_base",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "assistive_technology_controller_impl.cc",
+      "assistive_technology_controller_impl.h",
+    ]
+  }
+}
+
+if (is_chromeos_ash) {
+  source_set("tests") {
+    testonly = true
+    sources = [ "assistive_technology_controller_impl_unittest.cc" ]
+    deps = [
+      ":lib",
+      "//testing/gtest",
+      "//ui/gfx:test_support",
+    ]
+  }
+}

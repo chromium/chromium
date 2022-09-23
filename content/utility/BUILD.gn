@@ -87,6 +87,7 @@ source_set("utility") {
       "//ash/services/ime:sandbox_hook",
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/services/tts:sandbox_hook",
+      "//services/accessibility:lib",
     ]
     if (use_vaapi || use_v4l2_codec) {
       deps += [ "//ash/components/arc/video_accelerator" ]

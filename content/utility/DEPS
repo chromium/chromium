@@ -10,6 +10,7 @@ include_rules = [
   "+chromeos/services/tts",
   "+device/vr/buildflags",
   "+device/vr/public",
+  "+services/accessibility",
   "+services/audio",
   "+services/data_decoder",
   "+services/network",

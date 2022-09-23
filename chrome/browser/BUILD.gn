@@ -7208,6 +7208,10 @@ static_library("browser") {
       sources += [
         "accessibility/accessibility_extension_api_chromeos.cc",
         "accessibility/accessibility_extension_api_chromeos.h",
+        "accessibility/service/accessibility_service_router.cc",
+        "accessibility/service/accessibility_service_router.h",
+        "accessibility/service/accessibility_service_router_factory.cc",
+        "accessibility/service/accessibility_service_router_factory.h",
         "speech/extension_api/tts_engine_extension_api_chromeos.cc",
         "speech/extension_api/tts_engine_extension_api_chromeos.h",
         "speech/extension_api/tts_engine_extension_observer_chromeos.cc",
@@ -7215,6 +7219,7 @@ static_library("browser") {
       ]
       deps += [
         "//chromeos/services/tts/public/mojom",
+        "//services/accessibility/public/mojom",
         "//ui/events/ozone/layout:layout",
       ]
     }

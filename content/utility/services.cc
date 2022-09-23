@@ -91,6 +91,12 @@ extern sandbox::TargetServices* g_utility_target_services;
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) &&
         // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "services/accessibility/accessibility_service_impl.h"  // nogncheck
+#include "services/accessibility/public/mojom/accessibility_service.mojom.h"  // nogncheck
+#include "ui/accessibility/accessibility_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace content {
 
 namespace {
@@ -243,6 +249,13 @@ auto RunDataDecoder(
       std::move(receiver));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+auto RunAccessibilityService(
+    mojo::PendingReceiver<ax::mojom::AccessibilityService> receiver) {
+  return std::make_unique<ax::AccessibilityServiceImpl>(std::move(receiver));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_WIN)
 std::unique_ptr<media::MediaFoundationServiceBroker>
 RunMediaFoundationServiceBroker(
@@ -347,6 +360,11 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunStableVideoDecoderFactoryService);
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) &&
         // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (::features::IsAccessibilityServiceEnabled())
+    services.Add(RunAccessibilityService);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Add new main-thread services above this line.
   GetContentClient()->utility()->RegisterMainThreadServices(services);

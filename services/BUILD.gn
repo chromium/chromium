@@ -53,6 +53,10 @@ test("services_unittests") {
     ]
   }
 
+  if (is_chromeos_ash) {
+    deps += [ "//services/accessibility:tests" ]
+  }
+
   if (is_win) {
     deps += [ "//services/proxy_resolver_win:tests" ]
   }
