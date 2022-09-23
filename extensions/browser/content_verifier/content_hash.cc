@@ -217,8 +217,12 @@ std::unique_ptr<VerifiedContents> ContentHash::StoreAndRetrieveVerifiedContents(
   // move to parsing this in a sandboxed helper (https://crbug.com/372878).
   absl::optional<base::Value> parsed =
       base::JSONReader::Read(*fetched_contents);
-  if (!parsed)
+  if (!parsed) {
+    LOG(ERROR)
+        << "Failed to parse fetched verified_contents.json for extension id: "
+        << key.extension_id << " version: " << key.extension_version;
     return nullptr;
+  }
 
   VLOG(1) << "JSON parsed ok for " << key.extension_id;
   parsed.reset();  // no longer needed
@@ -245,16 +249,23 @@ void ContentHash::DidFetchVerifiedContents(
     FetchKey key,
     std::unique_ptr<std::string> fetched_contents,
     FetchErrorCode fetch_error) {
+  size_t json_size = fetched_contents ? fetched_contents->size() : 0;
   std::unique_ptr<VerifiedContents> verified_contents =
       StoreAndRetrieveVerifiedContents(std::move(fetched_contents), key);
 
   if (!verified_contents) {
+    LOG(ERROR) << "Fetching verified_contents.json for extension id: "
+               << key.extension_id << " version: " << key.extension_version
+               << " failed with error code " << fetch_error;
     std::move(verified_contents_callback)
         .Run(std::move(key), nullptr, /*did_attempt_fetch=*/true,
              /*fetch_error=*/fetch_error);
     return;
   }
 
+  LOG(WARNING) << "Fetched verified_contents.json with size: " << json_size
+               << " bytes for extension id: " << key.extension_id
+               << " version: " << key.extension_version;
   RecordFetchResult(true, fetch_error);
   std::move(verified_contents_callback)
       .Run(std::move(key), std::move(verified_contents),
