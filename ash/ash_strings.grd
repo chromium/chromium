@@ -1329,6 +1329,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT" desc="Prompt shown in the pinned files area of the holding space bubble if the user has no pinned files.">
         You can pin your important files here. Open Files app to get started.
       </message>
+      <message name="IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT_SUGGESTIONS" desc="Prompt shown in the pinned files area of the holding space bubble if the user has no pinned files and suggestions are enabled.">
+        You can pin important files, including Google Drive files. To pin, hover over an item or open Files and right-click an item.
+      </message>
+      <message name="IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT_SUGGESTIONS_DRIVE_DISABLED" desc="Prompt shown in the pinned files area of the holding space bubble if the user has no pinned files and suggestions are enabled, but Drive is disabled.">
+        You can pin important files. To pin, hover over an item or open Files and right-click an item.
+      </message>
       <message name="IDS_ASH_HOLDING_SPACE_PINNED_FILES_APP_CHIP_TEXT" desc="Text for chip which opens the Files app shown in the pinned files area of the holding space bubble if the user has no pinned files.">
         Open Files
       </message>

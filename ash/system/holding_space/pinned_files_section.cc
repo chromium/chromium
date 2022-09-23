@@ -25,6 +25,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "build/branding_buildflags.h"
+#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -80,15 +81,15 @@ views::Builder<views::ImageView> CreateGSuiteIcon(const gfx::VectorIcon& icon) {
 }
 #endif
 
-std::u16string GetPlaceholderText() {
+std::u16string GetPlaceholderText(bool drive_disabled) {
+  int message_id = IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT;
   if (features::IsHoldingSpaceSuggestionsEnabled()) {
-    // TODO(https://crbug.com/1363339): Replace the placeholder text below with
-    // the final proper internationalized string once the exact verbiage is
-    // decided. Also we'll need a separate string for when drive is disabled.
-    return u"[i18n]You can pin important files here, from the Files app, as "
-           u"well as from Google Slides, Docs, and Drive.";
+    message_id =
+        drive_disabled
+            ? IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT_SUGGESTIONS_DRIVE_DISABLED
+            : IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT_SUGGESTIONS;
   }
-  return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT);
+  return l10n_util::GetStringUTF16(message_id);
 }
 
 // FilesAppChip ----------------------------------------------------------------
@@ -224,6 +225,9 @@ std::unique_ptr<views::View> PinnedFilesSection::CreatePlaceholder() {
   if (!ShouldShowPlaceholder(prefs))
     return nullptr;
 
+  bool drive_disabled =
+      HoldingSpaceController::Get()->client()->IsDriveDisabled();
+
   auto placeholder_builder =
       views::Builder<views::BoxLayoutView>()
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
@@ -232,24 +236,27 @@ std::unique_ptr<views::View> PinnedFilesSection::CreatePlaceholder() {
           .AddChild(
               views::Builder<views::Label>(
                   bubble_utils::CreateLabel(bubble_utils::LabelStyle::kBody,
-                                            GetPlaceholderText()))
+                                            GetPlaceholderText(drive_disabled)))
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   .SetMultiLine(true)
                   .SetID(kHoldingSpacePinnedFilesSectionPlaceholderLabelId));
 
-  // TODO(https://crbug.com/1361645): Also check if drive is disabled.
   if (features::IsHoldingSpaceSuggestionsEnabled()) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // G Suite icons.
-    placeholder_builder.AddChild(
+    auto icons_builder =
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
             .SetBetweenChildSpacing(kPlaceholderGSuiteIconSpacing)
-            .SetID(kHoldingSpacePinnedFilesSectionPlaceholderGSuiteIconsId)
-            .AddChild(CreateGSuiteIcon(vector_icons::kGoogleDriveIcon))
-            .AddChild(CreateGSuiteIcon(vector_icons::kGoogleSlidesIcon))
-            .AddChild(CreateGSuiteIcon(vector_icons::kGoogleDocsIcon))
-            .AddChild(CreateGSuiteIcon(vector_icons::kGoogleSheetsIcon)));
+            .SetID(kHoldingSpacePinnedFilesSectionPlaceholderGSuiteIconsId);
+
+    if (!drive_disabled)
+      icons_builder.AddChild(CreateGSuiteIcon(vector_icons::kGoogleDriveIcon));
+
+    icons_builder.AddChild(CreateGSuiteIcon(vector_icons::kGoogleSlidesIcon))
+        .AddChild(CreateGSuiteIcon(vector_icons::kGoogleDocsIcon))
+        .AddChild(CreateGSuiteIcon(vector_icons::kGoogleSheetsIcon));
+    placeholder_builder.AddChild(std::move(icons_builder));
 #endif
   } else {
     // Files app chip.

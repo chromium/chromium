@@ -23,6 +23,8 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "components/drive/drive_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "net/base/mime_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 
@@ -138,6 +140,10 @@ base::FilePath HoldingSpaceClientImpl::CrackFileSystemUrl(
   return file_manager::util::GetFileManagerFileSystemContext(profile_)
       ->CrackURLInFirstPartyContext(file_system_url)
       .path();
+}
+
+bool HoldingSpaceClientImpl::IsDriveDisabled() const {
+  return profile_->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
 }
 
 void HoldingSpaceClientImpl::OpenDownloads(SuccessCallback callback) {

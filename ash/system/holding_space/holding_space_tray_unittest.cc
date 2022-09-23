@@ -3452,6 +3452,10 @@ class HoldingSpaceTraySuggestionsFeatureTest
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
+  void SetDisableDrive(bool disable) {
+    ON_CALL(*client(), IsDriveDisabled).WillByDefault(testing::Return(disable));
+  }
+
   bool IsHoldingSpacePredictabilityEnabled() const {
     return std::get<0>(GetParam());
   }
@@ -3577,12 +3581,30 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
           kHoldingSpacePinnedFilesSectionPlaceholderLabelId));
   ASSERT_TRUE(suggestions_placeholder_label);
 
-  // TODO(https://crbug.com/1363339): Replace the placeholder text below when
-  // the final string is added.
   std::u16string expected_text =
       IsHoldingSpaceSuggestionsEnabled()
-          ? u"[i18n]You can pin important files here, from the Files app, as "
-            u"well as from Google Slides, Docs, and Drive."
+          ? l10n_util::GetStringUTF16(
+                IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT_SUGGESTIONS)
+          : l10n_util::GetStringUTF16(
+                IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT);
+  EXPECT_EQ(suggestions_placeholder_label->GetText(), expected_text);
+
+  // Also check to make sure that the label is adjusted when drive is disabled.
+  test_api()->Close();
+  SetDisableDrive(true);
+  test_api()->Show();
+
+  pinned_files_bubble = test_api()->GetPinnedFilesBubble();
+  ASSERT_TRUE(pinned_files_bubble);
+
+  suggestions_placeholder_label =
+      static_cast<views::Label*>(pinned_files_bubble->GetViewByID(
+          kHoldingSpacePinnedFilesSectionPlaceholderLabelId));
+  ASSERT_TRUE(suggestions_placeholder_label);
+  expected_text =
+      IsHoldingSpaceSuggestionsEnabled()
+          ? l10n_util::GetStringUTF16(
+                IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT_SUGGESTIONS_DRIVE_DISABLED)
           : l10n_util::GetStringUTF16(
                 IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT);
   EXPECT_EQ(suggestions_placeholder_label->GetText(), expected_text);

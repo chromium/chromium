@@ -43,6 +43,7 @@ class MockHoldingSpaceClient : public HoldingSpaceClient {
               CrackFileSystemUrl,
               (const GURL& file_system_url),
               (const, override));
+  MOCK_METHOD(bool, IsDriveDisabled, (), (const, override));
   MOCK_METHOD(void, OpenDownloads, (SuccessCallback callback), (override));
   MOCK_METHOD(void, OpenMyFiles, (SuccessCallback callback), (override));
   MOCK_METHOD(void,
