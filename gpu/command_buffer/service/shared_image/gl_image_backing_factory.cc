@@ -21,7 +21,6 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/buffer_format_utils.h"
-#include "ui/gl/gl_image_shared_memory.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/progress_reporter.h"
 
@@ -42,14 +41,12 @@ GLImageBackingFactory::GLImageBackingFactory(
     const GpuDriverBugWorkarounds& workarounds,
     const gles2::FeatureInfo* feature_info,
     ImageFactory* image_factory,
-    gl::ProgressReporter* progress_reporter,
-    const bool for_shared_memory_gmbs)
+    gl::ProgressReporter* progress_reporter)
     : GLCommonImageBackingFactory(gpu_preferences,
                                   workarounds,
                                   feature_info,
                                   progress_reporter),
-      image_factory_(image_factory),
-      for_shared_memory_gmbs_(for_shared_memory_gmbs) {
+      image_factory_(image_factory) {
   gpu_memory_buffer_formats_ =
       feature_info->feature_flags().gpu_memory_buffer_formats;
   // Return if scanout images are not supported
@@ -154,10 +151,8 @@ std::unique_ptr<SharedImageBacking> GLImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  const gfx::GpuMemoryBufferType handle_type = handle.type;
   GLenum target =
-      (handle_type == gfx::SHARED_MEMORY_BUFFER ||
-       !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane))
+      !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane)
           ? GL_TEXTURE_2D
           : gpu::GetPlatformSpecificTextureTarget();
   scoped_refptr<gl::GLImage> image =
@@ -182,8 +177,8 @@ std::unique_ptr<SharedImageBacking> GLImageBackingFactory::CreateSharedImage(
   texture_2d_support =
       (gpu::GetPlatformSpecificTextureTarget() == GL_TEXTURE_2D);
 #endif  // BUILDFLAG(IS_MAC)
-  DCHECK(handle_type == gfx::SHARED_MEMORY_BUFFER || target != GL_TEXTURE_2D ||
-         texture_2d_support || image->ShouldBindOrCopy() == gl::GLImage::BIND);
+  DCHECK(target != GL_TEXTURE_2D || texture_2d_support ||
+         image->ShouldBindOrCopy() == gl::GLImage::BIND);
 #endif  // DCHECK_IS_ON()
   if (usage & SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)
     image->DisableInUseByWindowServer();
@@ -219,20 +214,6 @@ scoped_refptr<gl::GLImage> GLImageBackingFactory::MakeGLImage(
     gfx::BufferPlane plane,
     SurfaceHandle surface_handle,
     const gfx::Size& size) {
-  if (handle.type == gfx::SHARED_MEMORY_BUFFER) {
-    if (plane != gfx::BufferPlane::DEFAULT)
-      return nullptr;
-    auto image = base::MakeRefCounted<gl::GLImageSharedMemory>(size);
-    if (color_space.IsValid())
-      image->SetColorSpace(color_space);
-    if (!image->Initialize(handle.region, handle.id, format, handle.offset,
-                           handle.stride)) {
-      return nullptr;
-    }
-
-    return image;
-  }
-
   if (!image_factory_)
     return nullptr;
 
@@ -254,10 +235,8 @@ bool GLImageBackingFactory::IsSupported(uint32_t usage,
   if (thread_safe) {
     return false;
   }
-  // If the GLImage factory is created specifically for SHARED_MEMORY Gmbs,
-  // make sure that it used for that purpose based on flag
-  if ((for_shared_memory_gmbs_ && gmb_type != gfx::SHARED_MEMORY_BUFFER) ||
-      (!for_shared_memory_gmbs_ && gmb_type == gfx::SHARED_MEMORY_BUFFER)) {
+  // Never used with shared memory GMBs.
+  if (gmb_type == gfx::SHARED_MEMORY_BUFFER) {
     return false;
   }
   if (usage & SHARED_IMAGE_USAGE_CPU_UPLOAD) {

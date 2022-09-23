@@ -34,11 +34,13 @@ GLTextureImageBackingFactory::GLTextureImageBackingFactory(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
     const gles2::FeatureInfo* feature_info,
-    gl::ProgressReporter* progress_reporter)
+    gl::ProgressReporter* progress_reporter,
+    bool for_cpu_upload_usage)
     : GLCommonImageBackingFactory(gpu_preferences,
                                   workarounds,
                                   feature_info,
-                                  progress_reporter) {}
+                                  progress_reporter),
+      for_cpu_upload_usage_(for_cpu_upload_usage) {}
 
 GLTextureImageBackingFactory::~GLTextureImageBackingFactory() = default;
 
@@ -131,10 +133,22 @@ bool GLTextureImageBackingFactory::IsSupported(
     return false;
   }
 
-  constexpr uint32_t kInvalidUsages = SHARED_IMAGE_USAGE_VIDEO_DECODE |
-                                      SHARED_IMAGE_USAGE_SCANOUT |
-                                      SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  bool has_cpu_upload_usage = usage & SHARED_IMAGE_USAGE_CPU_UPLOAD;
 
+  if (for_cpu_upload_usage_ != has_cpu_upload_usage)
+    return false;
+
+  if (has_cpu_upload_usage) {
+    if (!GLTextureImageBacking::SupportsPixelUploadWithFormat(format))
+      return false;
+
+    // Drop scanout usage for shared memory GMBs to match legacy behaviour
+    // from GLImageBackingFactory.
+    usage = usage & ~SHARED_IMAGE_USAGE_SCANOUT;
+  }
+
+  constexpr uint32_t kInvalidUsages =
+      SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_SCANOUT;
   if (usage & kInvalidUsages) {
     return false;
   }
