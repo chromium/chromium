@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-  /** @typedef {{name: string}} */
+/** @typedef {{name: string}} */
 export let Action;
 
 /** @typedef {function(function(?Action))} */
@@ -17,13 +17,13 @@ export class StoreObserver {
   onStateChanged(newState) {}
 }
 
-  /**
-   * A generic datastore for the state of a page, where the state is publicly
-   * readable but can only be modified by dispatching an Action.
-   * The Store should be extended by specifying T, the page state type
-   * associated with the store.
-   * @template T
-   */
+/**
+ * A generic datastore for the state of a page, where the state is publicly
+ * readable but can only be modified by dispatching an Action.
+ * The Store should be extended by specifying T, the page state type
+ * associated with the store.
+ * @template T
+ */
 export class Store {
   /**
    * @param {T} emptyState

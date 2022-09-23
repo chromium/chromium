@@ -42,6 +42,7 @@ js_library("types") {
 
 js_library("actions") {
   deps = [
+    "//ash/webui/common/resources/store:store",
     "//ui/webui/resources/cr_components/app_management:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
@@ -52,6 +53,7 @@ js_library("api_listener") {
     ":actions",
     ":store",
     ":util",
+    "//ash/webui/common/resources/store:store",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -208,18 +210,18 @@ js_library("shared_vars") {
 
 js_library("store") {
   deps = [
+    "//ash/webui/common/resources/store:store",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:store",
   ]
 }
 
 js_library("store_client") {
   deps = [
     ":store",
+    "//ash/webui/common/resources/store:store",
+    "//ash/webui/common/resources/store:store_client",
     "//ui/webui/resources/cr_components/app_management:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:store",
-    "//ui/webui/resources/js/cr/ui:store_client",
   ]
   externs_list = [ "./types.js" ]
 }

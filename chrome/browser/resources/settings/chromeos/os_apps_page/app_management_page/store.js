@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {createEmptyState} from 'chrome://resources/cr_components/app_management/util.js';
-import {Store} from 'chrome://resources/js/cr/ui/store.js';
+import {Store} from 'chrome://resources/ash/common/store/store.js';
 
 import {reduceAction} from './reducers.js';
 

@@ -428,13 +428,17 @@ ts_definitions("generate_definitions") {
     "test_util.js",
   ]
   if (is_chromeos_ash) {
-    js_files += [ "test_store.js" ]
+    js_files += [ "chromeos/test_store.js" ]
   }
 
   extra_deps = [
     ":copy_checked_in_dts_files",
     "//ui/webui/resources:generate_definitions",
   ]
+
+  if (is_chromeos_ash) {
+    extra_deps += [ "//ash/webui/common/resources:generate_definitions" ]
+  }
 }
 
 ts_library("build_ts") {
@@ -617,7 +621,7 @@ generate_grd("build_grd") {
   }
 
   if (is_chromeos_ash) {
-    input_files += [ "test_store.js" ]
+    input_files += [ "chromeos/test_store.js" ]
     deps += [
       "chromeos/cloud_upload:build_grdp",
       "chromeos/manage_mirrorsync:build_grdp",

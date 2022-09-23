@@ -58,6 +58,8 @@ non_web_component_files = [
   "post_message_api/post_message_api_request_handler.js",
   "post_message_api/post_message_api_server.js",
   "smb_shares/smb_browser_proxy.js",
+  "store/store.js",
+  "store/store_client.js",
   "traffic_counters/traffic_counters_adapter.js",
   "quick_unlock/lock_screen_constants.js",
 ]
@@ -167,6 +169,8 @@ generate_definitions_js_files = [
   "navigation_shared_vars.css.js",
   "quick_unlock/lock_screen_constants.js",
   "quick_unlock/pin_keyboard_icons.html.js",
+  "store/store.js",
+  "store/store_client.js",
 ]
 
 ts_definitions("generate_definitions") {
@@ -215,6 +219,7 @@ group("closure_compile") {
     "post_message_api:closure_compile",
     "quick_unlock:closure_compile_module",
     "smb_shares:closure_compile_module",
+    "store:closure_compile_module",
     "traffic_counters:closure_compile_module",
   ]
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action, Store} from 'chrome://resources/js/cr/ui/store.js';
-import {StoreClient, StoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.js';
+import {Action, Store} from 'chrome://resources/ash/common/store/store.js';
+import {StoreClient, StoreClientInterface} from 'chrome://resources/ash/common/store/store_client.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {IronResizableBehavior} from 'chrome://resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';

@@ -4,7 +4,7 @@
 
 import {createInitialState} from 'chrome://resources/cr_components/app_management/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {Action} from 'chrome://resources/js/cr/ui/store.js';
+import {Action} from 'chrome://resources/ash/common/store/store.js';
 
 import {addApp, changeApp, removeApp} from './actions.js';
 import {BrowserProxy} from './browser_proxy.js';

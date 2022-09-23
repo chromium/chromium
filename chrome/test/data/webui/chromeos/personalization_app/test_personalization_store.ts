@@ -8,8 +8,8 @@
  */
 
 import {emptyState, PersonalizationStore, reduce} from 'chrome://personalization/js/personalization_app.js';
-import {Action} from 'chrome://resources/js/cr/ui/store.js';
-import {TestStore} from 'chrome://webui-test/test_store.js';
+import {Action} from 'chrome://resources/ash/common/store/store.js';
+import {TestStore} from 'chrome://webui-test/chromeos/test_store.js';
 
 export class TestPersonalizationStore extends TestStore {
   // received actions and states.

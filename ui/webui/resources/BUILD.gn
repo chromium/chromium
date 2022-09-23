@@ -248,8 +248,6 @@ if (is_chromeos_ash) {
     "js/cr/ui/focus_row_js.js",
     "js/cr/ui/focus_without_ink_js.js",
     "js/cr/ui/keyboard_shortcut_list_js.js",
-    "js/cr/ui/store_client.js",
-    "js/cr/ui/store.js",
   ]
 }
 
