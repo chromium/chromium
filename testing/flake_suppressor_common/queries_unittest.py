@@ -15,7 +15,8 @@ from flake_suppressor_common import unittest_utils as uu
 
 class GetResultCountsUnittest(unittest.TestCase):
   def setUp(self) -> None:
-    results_processor = uu.UnitTestResultProcessor()
+    expectations_proceccor = uu.UnitTestExpectationProcessor()
+    results_processor = uu.UnitTestResultProcessor(expectations_proceccor)
     self._querier_instance = uu.UnitTest_BigQueryQuerier(
         1, 'project', results_processor)
 

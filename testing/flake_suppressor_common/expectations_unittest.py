@@ -5,16 +5,11 @@
 
 # pylint: disable=protected-access
 
-import base64
 import os
 import sys
 import tempfile
-from typing import Any
 import unittest
 import unittest.mock as mock
-import urllib.error
-
-import validate_tag_consistency
 
 from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
 
@@ -31,11 +26,12 @@ class IterateThroughResultsForUserUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self) -> None:
     self._new_stdout = open(os.devnull, 'w')
     self.setUpPyfakefs()
+    self._expectations = uu.UnitTestExpectationProcessor()
     # Redirect stdout since the tested function prints a lot.
     self._old_stdout = sys.stdout
     sys.stdout = self._new_stdout
 
-    self._input_patcher = mock.patch.object(expectations,
+    self._input_patcher = mock.patch.object(expectations.ExpectationProcessor,
                                             'PromptUserForExpectationAction')
     self._input_mock = self._input_patcher.start()
     self.addCleanup(self._input_patcher.stop)
@@ -52,17 +48,22 @@ class IterateThroughResultsForUserUnittest(fake_filesystem_unittest.TestCase):
         },
     }
 
-    self.expectation_file = os.path.join(
-        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-        'pixel_expectations.txt')
+    self.expectation_file = os.path.join(uu.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                                         'pixel_expectations.txt')
     uu.CreateFile(self, self.expectation_file)
-    expectation_file_contents = validate_tag_consistency.TAG_HEADER + """\
+    expectation_file_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
 [ android ] some_test [ Failure ]
 """
     with open(self.expectation_file, 'w') as outfile:
       outfile.write(expectation_file_contents)
+
+    self._expectation_file_patcher = mock.patch.object(
+        uu.UnitTestExpectationProcessor, 'GetExpectationFileForSuite')
+    self._expectation_file_mock = self._expectation_file_patcher.start()
+    self._expectation_file_mock.return_value = self.expectation_file
+    self.addCleanup(self._expectation_file_patcher.stop)
 
   def tearDown(self) -> None:
     sys.stdout = self._old_stdout
@@ -71,8 +72,9 @@ class IterateThroughResultsForUserUnittest(fake_filesystem_unittest.TestCase):
   def testIterateThroughResultsForUserIgnoreNoGroupByTags(self) -> None:
     """Tests that everything appears to function with ignore and no group."""
     self._input_mock.return_value = (None, None)
-    expectations.IterateThroughResultsForUser(self.result_map, False, True)
-    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+    self._expectations.IterateThroughResultsForUser(self.result_map, False,
+                                                    True)
+    expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
 [ android ] some_test [ Failure ]
@@ -83,8 +85,8 @@ class IterateThroughResultsForUserUnittest(fake_filesystem_unittest.TestCase):
   def testIterateThroughResultsForUserIgnoreGroupByTags(self) -> None:
     """Tests that everything appears to function with ignore and grouping."""
     self._input_mock.return_value = (None, None)
-    expectations.IterateThroughResultsForUser(self.result_map, True, True)
-    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+    self._expectations.IterateThroughResultsForUser(self.result_map, True, True)
+    expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
 [ android ] some_test [ Failure ]
@@ -95,8 +97,9 @@ class IterateThroughResultsForUserUnittest(fake_filesystem_unittest.TestCase):
   def testIterateThroughResultsForUserRetryNoGroupByTags(self) -> None:
     """Tests that everything appears to function with retry and no group."""
     self._input_mock.return_value = ('RetryOnFailure', '')
-    expectations.IterateThroughResultsForUser(self.result_map, False, True)
-    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+    self._expectations.IterateThroughResultsForUser(self.result_map, False,
+                                                    True)
+    expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
 [ android ] some_test [ Failure ]
@@ -110,8 +113,8 @@ class IterateThroughResultsForUserUnittest(fake_filesystem_unittest.TestCase):
   def testIterateThroughResultsForUserRetryGroupByTags(self) -> None:
     """Tests that everything appears to function with retry and grouping."""
     self._input_mock.return_value = ('RetryOnFailure', 'crbug.com/1')
-    expectations.IterateThroughResultsForUser(self.result_map, True, True)
-    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+    self._expectations.IterateThroughResultsForUser(self.result_map, True, True)
+    expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 crbug.com/1 [ win ] foo_test [ RetryOnFailure ]
 crbug.com/1 [ win ] bar_test [ RetryOnFailure ]
@@ -125,8 +128,9 @@ crbug.com/1 [ mac ] foo_test [ RetryOnFailure ]
   def testIterateThroughResultsForUserFailNoGroupByTags(self) -> None:
     """Tests that everything appears to function with failure and no group."""
     self._input_mock.return_value = ('Failure', 'crbug.com/1')
-    expectations.IterateThroughResultsForUser(self.result_map, False, True)
-    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+    self._expectations.IterateThroughResultsForUser(self.result_map, False,
+                                                    True)
+    expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
 [ android ] some_test [ Failure ]
@@ -140,8 +144,8 @@ crbug.com/1 [ win ] bar_test [ Failure ]
   def testIterateThroughResultsForUserFailGroupByTags(self) -> None:
     """Tests that everything appears to function with failure and grouping."""
     self._input_mock.return_value = ('Failure', '')
-    expectations.IterateThroughResultsForUser(self.result_map, True, True)
-    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+    self._expectations.IterateThroughResultsForUser(self.result_map, True, True)
+    expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ win ] foo_test [ Failure ]
 [ win ] bar_test [ Failure ]
@@ -166,8 +170,9 @@ crbug.com/1 [ win ] bar_test [ Failure ]
         },
     }
     self._input_mock.return_value = ('RetryOnFailure', '')
-    expectations.IterateThroughResultsForUser(self.result_map, False, False)
-    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+    self._expectations.IterateThroughResultsForUser(self.result_map, False,
+                                                    False)
+    expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
 [ android ] some_test [ Failure ]
@@ -184,7 +189,7 @@ class IterateThroughResultsWithThresholdsUnittest(
     fake_filesystem_unittest.TestCase):
   def setUp(self) -> None:
     self.setUpPyfakefs()
-
+    self._expectations = uu.UnitTestExpectationProcessor()
     self.result_map = {
         'pixel_integration_test': {
             'foo_test': {
@@ -197,17 +202,22 @@ class IterateThroughResultsWithThresholdsUnittest(
         },
     }
 
-    self.expectation_file = os.path.join(
-        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-        'pixel_expectations.txt')
+    self.expectation_file = os.path.join(uu.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                                         'pixel_expectations.txt')
     uu.CreateFile(self, self.expectation_file)
-    expectation_file_contents = validate_tag_consistency.TAG_HEADER + """\
+    expectation_file_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
 [ android ] some_test [ Failure ]
 """
     with open(self.expectation_file, 'w') as outfile:
       outfile.write(expectation_file_contents)
+
+    self._expectation_file_patcher = mock.patch.object(
+        uu.UnitTestExpectationProcessor, 'GetExpectationFileForSuite')
+    self._expectation_file_mock = self._expectation_file_patcher.start()
+    self._expectation_file_mock.return_value = self.expectation_file
+    self.addCleanup(self._expectation_file_patcher.stop)
 
   def testGroupByTags(self) -> None:
     """Tests that threshold-based expectations work when grouping by tags."""
@@ -223,10 +233,9 @@ class IterateThroughResultsWithThresholdsUnittest(
             'foo_test': 2
         }
     }
-    expectations.IterateThroughResultsWithThresholds(self.result_map, True,
-                                                     result_counts, 0.02, 0.5,
-                                                     True)
-    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+    self._expectations.IterateThroughResultsWithThresholds(
+        self.result_map, True, result_counts, 0.02, 0.5, True)
+    expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ win ] bar_test [ RetryOnFailure ]
 [ mac ] some_test [ Failure ]
@@ -250,10 +259,9 @@ class IterateThroughResultsWithThresholdsUnittest(
             'foo_test': 2
         }
     }
-    expectations.IterateThroughResultsWithThresholds(self.result_map, False,
-                                                     result_counts, 0.02, 0.5,
-                                                     True)
-    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+    self._expectations.IterateThroughResultsWithThresholds(
+        self.result_map, False, result_counts, 0.02, 0.5, True)
+    expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
 [ android ] some_test [ Failure ]
@@ -289,10 +297,9 @@ class IterateThroughResultsWithThresholdsUnittest(
             'foo_test': 2
         }
     }
-    expectations.IterateThroughResultsWithThresholds(self.result_map, False,
-                                                     result_counts, 0.02, 0.5,
-                                                     False)
-    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+    self._expectations.IterateThroughResultsWithThresholds(
+        self.result_map, False, result_counts, 0.02, 0.5, False)
+    expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
 [ android ] some_test [ Failure ]
@@ -306,6 +313,7 @@ class IterateThroughResultsWithThresholdsUnittest(
 @unittest.skipIf(sys.version_info[0] != 3, 'Python 3-only')
 class FindFailuresInSameConditionUnittest(unittest.TestCase):
   def setUp(self) -> None:
+    self._expectations = uu.UnitTestExpectationProcessor()
     self.result_map = {
         'pixel_integration_test': {
             'foo_test': {
@@ -330,14 +338,14 @@ class FindFailuresInSameConditionUnittest(unittest.TestCase):
     }
 
   def testFindFailuresInSameTest(self) -> None:
-    other_failures = expectations.FindFailuresInSameTest(
+    other_failures = self._expectations.FindFailuresInSameTest(
         self.result_map, 'pixel_integration_test', 'foo_test', tuple(['win']))
     self.assertEqual(other_failures, [(tuple(['mac']), 2)])
 
   def testFindFailuresInSameConfig(self) -> None:
-    typ_tag_ordered_result_map = expectations._ReorderMapByTypTags(
+    typ_tag_ordered_result_map = self._expectations._ReorderMapByTypTags(
         self.result_map)
-    other_failures = expectations.FindFailuresInSameConfig(
+    other_failures = self._expectations.FindFailuresInSameConfig(
         typ_tag_ordered_result_map, 'pixel_integration_test', 'foo_test',
         tuple(['win']))
     expected_other_failures = [
@@ -353,27 +361,29 @@ class FindFailuresInSameConditionUnittest(unittest.TestCase):
 class ModifyFileForResultUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self) -> None:
     self.setUpPyfakefs()
-    self.expectation_file = os.path.join(
-        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY, 'expectation.txt')
+    self._expectations = uu.UnitTestExpectationProcessor()
+    self.expectation_file = os.path.join(uu.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                                         'expectation.txt')
     uu.CreateFile(self, self.expectation_file)
     self._expectation_file_patcher = mock.patch.object(
-        expectations, 'GetExpectationFileForSuite')
+        uu.UnitTestExpectationProcessor, 'GetExpectationFileForSuite')
     self._expectation_file_mock = self._expectation_file_patcher.start()
     self.addCleanup(self._expectation_file_patcher.stop)
     self._expectation_file_mock.return_value = self.expectation_file
 
   def testNoGroupByTags(self) -> None:
     """Tests that not grouping by tags appends to the end."""
-    expectation_file_contents = validate_tag_consistency.TAG_HEADER + """\
+    expectation_file_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 
 [ mac ] some_test [ Failure ]
 """
     with open(self.expectation_file, 'w') as outfile:
       outfile.write(expectation_file_contents)
-    expectations.ModifyFileForResult('some_file', 'some_test', ('win', 'win10'),
-                                     '', 'Failure', False, True)
-    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+    self._expectations.ModifyFileForResult('some_file', 'some_test',
+                                           ('win', 'win10'), '', 'Failure',
+                                           False, True)
+    expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 
 [ mac ] some_test [ Failure ]
@@ -384,14 +394,15 @@ class ModifyFileForResultUnittest(fake_filesystem_unittest.TestCase):
 
   def testGroupByTagsNoMatch(self) -> None:
     """Tests that grouping by tags but finding no match appends to the end."""
-    expectation_file_contents = validate_tag_consistency.TAG_HEADER + """\
+    expectation_file_contents = uu.TAG_HEADER + """\
 [ mac ] some_test [ Failure ]
 """
     with open(self.expectation_file, 'w') as outfile:
       outfile.write(expectation_file_contents)
-    expectations.ModifyFileForResult('some_file', 'some_test', ('win', 'win10'),
-                                     '', 'Failure', True, True)
-    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+    self._expectations.ModifyFileForResult('some_file', 'some_test',
+                                           ('win', 'win10'), '', 'Failure',
+                                           True, True)
+    expected_contents = uu.TAG_HEADER + """\
 [ mac ] some_test [ Failure ]
 [ win win10 ] some_test [ Failure ]
 """
@@ -400,16 +411,17 @@ class ModifyFileForResultUnittest(fake_filesystem_unittest.TestCase):
 
   def testGroupByTagsMatch(self) -> None:
     """Tests that grouping by tags and finding a match adds mid-file."""
-    expectation_file_contents = validate_tag_consistency.TAG_HEADER + """\
+    expectation_file_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 
 [ mac ] some_test [ Failure ]
 """
     with open(self.expectation_file, 'w') as outfile:
       outfile.write(expectation_file_contents)
-    expectations.ModifyFileForResult('some_file', 'foo_test', ('win', 'win10'),
-                                     '', 'Failure', True, True)
-    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+    self._expectations.ModifyFileForResult('some_file', 'foo_test',
+                                           ('win', 'win10'), '', 'Failure',
+                                           True, True)
+    expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ win ] foo_test [ Failure ]
 
@@ -422,6 +434,7 @@ class ModifyFileForResultUnittest(fake_filesystem_unittest.TestCase):
 @unittest.skipIf(sys.version_info[0] != 3, 'Python 3-only')
 class FilterToMostSpecificTagTypeUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self) -> None:
+    self._expectations = uu.UnitTestExpectationProcessor()
     self.setUpPyfakefs()
     with tempfile.NamedTemporaryFile(delete=False) as tf:
       self.expectation_file = tf.name
@@ -436,7 +449,7 @@ class FilterToMostSpecificTagTypeUnittest(fake_filesystem_unittest.TestCase):
 
     tags = ('tag1_least_specific', 'tag1_most_specific', 'tag2_middle_specific',
             'tag2_least_specific')
-    filtered_tags = expectations.FilterToMostSpecificTypTags(
+    filtered_tags = self._expectations.FilterToMostSpecificTypTags(
         tags, self.expectation_file)
     self.assertEqual(filtered_tags,
                      ('tag1_most_specific', 'tag2_middle_specific'))
@@ -450,7 +463,7 @@ class FilterToMostSpecificTagTypeUnittest(fake_filesystem_unittest.TestCase):
       outfile.write(expectation_file_contents)
 
     tags = ('tag1_most_specific', 'tag2_most_specific')
-    filtered_tags = expectations.FilterToMostSpecificTypTags(
+    filtered_tags = self._expectations.FilterToMostSpecificTypTags(
         tags, self.expectation_file)
     self.assertEqual(filtered_tags, tags)
 
@@ -465,7 +478,7 @@ class FilterToMostSpecificTagTypeUnittest(fake_filesystem_unittest.TestCase):
 
     tags = ('tag1_least_specific', 'tag1_most_specific', 'tag2_middle_specific',
             'tag2_least_specific')
-    filtered_tags = expectations.FilterToMostSpecificTypTags(
+    filtered_tags = self._expectations.FilterToMostSpecificTypTags(
         tags, self.expectation_file)
     self.assertEqual(filtered_tags,
                      ('tag1_most_specific', 'tag2_middle_specific'))
@@ -483,7 +496,7 @@ class FilterToMostSpecificTagTypeUnittest(fake_filesystem_unittest.TestCase):
 
     tags = ('tag1_least_specific', 'tag1_middle_specific', 'tag1_most_specific',
             'tag2_middle_specific', 'tag2_least_specific')
-    filtered_tags = expectations.FilterToMostSpecificTypTags(
+    filtered_tags = self._expectations.FilterToMostSpecificTypTags(
         tags, self.expectation_file)
     self.assertEqual(filtered_tags,
                      ('tag1_most_specific', 'tag2_middle_specific'))
@@ -499,46 +512,8 @@ class FilterToMostSpecificTagTypeUnittest(fake_filesystem_unittest.TestCase):
     tags = ('tag1_least_specific', 'tag1_most_specific', 'tag2_middle_specific',
             'tag2_least_specific')
     with self.assertRaises(RuntimeError):
-      expectations.FilterToMostSpecificTypTags(tags, self.expectation_file)
-
-
-@unittest.skipIf(sys.version_info[0] != 3, 'Python 3-only')
-class GetExpectationFileForSuiteUnittest(unittest.TestCase):
-  def testRegularExpectationFile(self) -> None:
-    """Tests that a regular expectation file is found properly."""
-    expected_filepath = os.path.join(
-        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-        'pixel_expectations.txt')
-    actual_filepath = expectations.GetExpectationFileForSuite(
-        'pixel_integration_test', tuple(['webgl-version-2']))
-    self.assertEqual(actual_filepath, expected_filepath)
-
-  def testOverrideExpectationFile(self) -> None:
-    """Tests that an overridden expectation file is found properly."""
-    expected_filepath = os.path.join(
-        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-        'info_collection_expectations.txt')
-    actual_filepath = expectations.GetExpectationFileForSuite(
-        'info_collection_test', tuple(['webgl-version-2']))
-    self.assertEqual(actual_filepath, expected_filepath)
-
-  def testWebGl1Conformance(self) -> None:
-    """Tests that a WebGL 1 expectation file is found properly."""
-    expected_filepath = os.path.join(
-        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-        'webgl_conformance_expectations.txt')
-    actual_filepath = expectations.GetExpectationFileForSuite(
-        'webgl_conformance_integration_test', tuple([]))
-    self.assertEqual(actual_filepath, expected_filepath)
-
-  def testWebGl2Conformance(self) -> None:
-    """Tests that a WebGL 2 expectation file is found properly."""
-    expected_filepath = os.path.join(
-        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-        'webgl2_conformance_expectations.txt')
-    actual_filepath = expectations.GetExpectationFileForSuite(
-        'webgl_conformance_integration_test', tuple(['webgl-version-2']))
-    self.assertEqual(actual_filepath, expected_filepath)
+      self._expectations.FilterToMostSpecificTypTags(tags,
+                                                     self.expectation_file)
 
 
 @unittest.skipIf(sys.version_info[0] != 3, 'Python 3-only')
@@ -546,10 +521,11 @@ class FindBestInsertionLineForExpectationUnittest(
     fake_filesystem_unittest.TestCase):
   def setUp(self) -> None:
     self.setUpPyfakefs()
-    self.expectation_file = os.path.join(
-        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY, 'expectation.txt')
+    self._expectations = uu.UnitTestExpectationProcessor()
+    self.expectation_file = os.path.join(uu.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                                         'expectation.txt')
     uu.CreateFile(self, self.expectation_file)
-    expectation_file_contents = validate_tag_consistency.TAG_HEADER + """\
+    expectation_file_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 
 [ mac ] some_test [ Failure ]
@@ -564,116 +540,44 @@ class FindBestInsertionLineForExpectationUnittest(
 
   def testNoMatchingTags(self) -> None:
     """Tests behavior when there are no expectations with matching tags."""
-    insertion_line, tags = expectations.FindBestInsertionLineForExpectation(
-        tuple(['android']), self.expectation_file)
+    insertion_line, tags = (
+        self._expectations.FindBestInsertionLineForExpectation(
+            tuple(['android']), self.expectation_file))
     self.assertEqual(insertion_line, -1)
     self.assertEqual(tags, set())
 
   def testMatchingTagsLastEntryChosen(self) -> None:
     """Tests that the last matching line is chosen."""
-    insertion_line, tags = expectations.FindBestInsertionLineForExpectation(
-        tuple(['win']), self.expectation_file)
+    insertion_line, tags = (
+        self._expectations.FindBestInsertionLineForExpectation(
+            tuple(['win']), self.expectation_file))
     # We expect "[ win ] foo_test [ Failure ]" to be chosen
-    expected_line = len(validate_tag_consistency.TAG_HEADER.splitlines()) + 6
+    expected_line = len(uu.TAG_HEADER.splitlines()) + 6
     self.assertEqual(insertion_line, expected_line)
     self.assertEqual(tags, set(['win']))
 
   def testMatchingTagsClosestMatchChosen(self) -> None:
     """Tests that the closest tag match is chosen."""
-    insertion_line, tags = expectations.FindBestInsertionLineForExpectation(
-        ('win', 'release'), self.expectation_file)
+    insertion_line, tags = (
+        self._expectations.FindBestInsertionLineForExpectation(
+            ('win', 'release'), self.expectation_file))
     # We expect "[ win release ] bar_test [ Failure ]" to be chosen
-    expected_line = len(validate_tag_consistency.TAG_HEADER.splitlines()) + 5
+    expected_line = len(uu.TAG_HEADER.splitlines()) + 5
     self.assertEqual(insertion_line, expected_line)
     self.assertEqual(tags, set(['win', 'release']))
 
 
-class GetExpectationFilesFromOriginUnittest(unittest.TestCase):
-  class FakeRequestResult():
-    def __init__(self):
-      self.text = ''
-
-    def read(self) -> str:
-      return self.text
-
-  def setUp(self) -> None:
-    self._get_patcher = mock.patch(
-        'flake_suppressor_common.expectations.urllib.request.urlopen')
-    self._get_mock = self._get_patcher.start()
-    self.addCleanup(self._get_patcher.stop)
-
-  def testBasic(self) -> None:
-    """Tests basic functionality along the happy path."""
-
-    def SideEffect(url: str
-                   ) -> GetExpectationFilesFromOriginUnittest.FakeRequestResult:
-      request_result = GetExpectationFilesFromOriginUnittest.FakeRequestResult()
-      text = ''
-      if url.endswith('test_expectations?format=TEXT'):
-        text = """\
-mode type hash foo_tests.txt
-mode type hash bar_tests.txt"""
-      elif url.endswith('foo_tests.txt?format=TEXT'):
-        text = 'foo_tests.txt content'
-      elif url.endswith('bar_tests.txt?format=TEXT'):
-        text = 'bar_tests.txt content'
-      else:
-        self.fail('Given unhandled URL %s' % url)
-      request_result.text = base64.b64encode(text.encode('utf-8'))
-      return request_result
-
-    self._get_mock.side_effect = SideEffect
-    expected_contents = {
-        'foo_tests.txt': 'foo_tests.txt content',
-        'bar_tests.txt': 'bar_tests.txt content',
-    }
-    self.assertEqual(expectations.GetExpectationFilesFromOrigin(),
-                     expected_contents)
-    self.assertEqual(self._get_mock.call_count, 3)
-
-  def testNonOkStatusCodesSurfaced(self) -> None:
-    """Tests that getting a non-200 status code back results in a failure."""
-
-    def SideEffect(_: Any) -> None:
-      raise urllib.error.HTTPError('url', 404, 'No exist :(', {}, None)
-
-    self._get_mock.side_effect = SideEffect
-    with self.assertRaises(urllib.error.HTTPError):
-      expectations.GetExpectationFilesFromOrigin()
-
-
-class GetExpectationFilesFromLocalCheckoutUnittest(
-    fake_filesystem_unittest.TestCase):
-  def setUp(self) -> None:
-    self.setUpPyfakefs()
-
-  def testBasic(self) -> None:
-    """Tests basic functionality."""
-    os.makedirs(expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY)
-    with open(
-        os.path.join(expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-                     'foo.txt'), 'w') as outfile:
-      outfile.write('foo.txt contents')
-    with open(
-        os.path.join(expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-                     'bar.txt'), 'w') as outfile:
-      outfile.write('bar.txt contents')
-    expected_contents = {
-        'foo.txt': 'foo.txt contents',
-        'bar.txt': 'bar.txt contents',
-    }
-    self.assertEqual(expectations.GetExpectationFilesFromLocalCheckout(),
-                     expected_contents)
-
-
 class AssertCheckoutIsUpToDateUnittest(unittest.TestCase):
   def setUp(self) -> None:
+    self._expectations = uu.UnitTestExpectationProcessor()
     self._origin_patcher = mock.patch(
-        'flake_suppressor_common.expectations.GetExpectationFilesFromOrigin')
+        'flake_suppressor_common.expectations.ExpectationProcessor.'
+        'GetExpectationFilesFromOrigin')
     self._origin_mock = self._origin_patcher.start()
     self.addCleanup(self._origin_patcher.stop)
-    self._local_patcher = mock.patch('flake_suppressor_common.expectations.' +
-                                     'GetExpectationFilesFromLocalCheckout')
+    self._local_patcher = mock.patch(
+        'flake_suppressor_common.expectations.' +
+        'ExpectationProcessor.GetExpectationFilesFromLocalCheckout')
     self._local_mock = self._local_patcher.start()
     self.addCleanup(self._local_patcher.stop)
 
@@ -687,7 +591,7 @@ class AssertCheckoutIsUpToDateUnittest(unittest.TestCase):
         'bar.txt': 'bar_content',
         'foo.txt': 'foo_content',
     }
-    expectations.AssertCheckoutIsUpToDate()
+    self._expectations.AssertCheckoutIsUpToDate()
 
   def testContentsDoNotMatch(self) -> None:
     """Tests that mismatched contents results in a failure."""
@@ -701,7 +605,7 @@ class AssertCheckoutIsUpToDateUnittest(unittest.TestCase):
         'foo2.txt': 'foo_content',
     }
     with self.assertRaises(RuntimeError):
-      expectations.AssertCheckoutIsUpToDate()
+      self._expectations.AssertCheckoutIsUpToDate()
 
     # Differing values.
     self._local_mock.return_value = {
@@ -709,7 +613,7 @@ class AssertCheckoutIsUpToDateUnittest(unittest.TestCase):
         'foo.txt': 'foo_content2',
     }
     with self.assertRaises(RuntimeError):
-      expectations.AssertCheckoutIsUpToDate()
+      self._expectations.AssertCheckoutIsUpToDate()
 
 
 if __name__ == '__main__':

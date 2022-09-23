@@ -8,6 +8,7 @@
 import unittest
 import unittest.mock as mock
 
+from flake_suppressor import gpu_expectations
 from flake_suppressor import gpu_results
 from flake_suppressor import gpu_tag_utils as tag_utils
 
@@ -31,10 +32,11 @@ crbug.com/1111 [ win nvidia ] conformance/textures/misc/video-rotation.html [ Fa
 class GPUResultsUnittest(unittest.TestCase):
   def setUp(self) -> None:
     common_tag_utils.SetTagUtilsImplementation(tag_utils.GpuTagUtils)
-    self._results = gpu_results.GpuResultProcessor()
+    expectations_processor = gpu_expectations.GpuExpectationProcessor()
+    self._results = gpu_results.GpuResultProcessor(expectations_processor)
     self._local_patcher = mock.patch(
         'flake_suppressor_common.results.expectations.'
-        'GetExpectationFilesFromLocalCheckout')
+        'ExpectationProcessor.GetExpectationFilesFromLocalCheckout')
     self._local_mock = self._local_patcher.start()
     self._local_mock.return_value = {}
     self.addCleanup(self._local_patcher.stop)

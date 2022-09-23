@@ -16,6 +16,9 @@ from typ import expectations_parser
 
 
 class ResultProcessor():
+  def __init__(self, expectations_processor: expectations.ExpectationProcessor):
+    self._expectations_processor = expectations_processor
+
   def AggregateResults(self,
                        results: ct.QueryJsonType) -> ct.AggregatedResultsType:
     """Aggregates BigQuery results.
@@ -77,7 +80,7 @@ class ResultProcessor():
     """
     # Get all the expectations.
     origin_expectation_contents = (
-        expectations.GetExpectationFilesFromLocalCheckout())
+        self._expectations_processor.GetExpectationFilesFromLocalCheckout())
     origin_expectations = collections.defaultdict(list)
     for filename, contents in origin_expectation_contents.items():
       list_parser = expectations_parser.TaggedTestListParser(contents)
@@ -89,8 +92,9 @@ class ResultProcessor():
     # Discard any results that already have a matching expectation.
     kept_results = []
     for r in results:
-      expectation_filename = expectations.GetExpectationFileForSuite(
-          r.suite, r.tags)
+      expectation_filename = (
+          self._expectations_processor.GetExpectationFileForSuite(
+              r.suite, r.tags))
       expectation_filename = os.path.basename(expectation_filename)
       should_keep = True
       for e in origin_expectations[expectation_filename]:

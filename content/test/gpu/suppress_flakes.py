@@ -24,10 +24,9 @@ CHROMIUM_SRC_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..')
 sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
 
 # pylint: disable=wrong-import-position
-from flake_suppressor_common import expectations
 from flake_suppressor_common import result_output
-from flake_suppressor_common import results as results_module
 from flake_suppressor_common import tag_utils as common_tag_utils
+from flake_suppressor import gpu_expectations
 from flake_suppressor import gpu_queries
 from flake_suppressor import gpu_tag_utils as tag_utils
 from flake_suppressor import gpu_results as results_module
@@ -112,10 +111,11 @@ def ParseArgs():
 def main():
   args = ParseArgs()
   common_tag_utils.SetTagUtilsImplementation(tag_utils.GpuTagUtils)
+  expectations_processor = gpu_expectations.GpuExpectationProcessor()
   if not args.bypass_up_to_date_check:
-    expectations.AssertCheckoutIsUpToDate()
+    expectations_processor.AssertCheckoutIsUpToDate()
 
-  results_processor = results_module.GpuResultProcessor()
+  results_processor = results_module.GpuResultProcessor(expectations_processor)
   querier_instance = gpu_queries.GpuBigQueryQuerier(args.sample_period,
                                                     args.project,
                                                     results_processor)
@@ -133,12 +133,12 @@ def main():
         'a bad CL.')
   if args.prompt_for_user_input:
     input('\nBeginning of user input section - press any key to continue')
-    expectations.IterateThroughResultsForUser(aggregated_results,
-                                              args.group_by_tags,
-                                              args.include_all_tags)
+    expectations_processor.IterateThroughResultsForUser(aggregated_results,
+                                                        args.group_by_tags,
+                                                        args.include_all_tags)
   else:
     result_counts = querier_instance.GetResultCounts()
-    expectations.IterateThroughResultsWithThresholds(
+    expectations_processor.IterateThroughResultsWithThresholds(
         aggregated_results, args.group_by_tags, result_counts,
         args.ignore_threshold, args.flaky_threshold, args.include_all_tags)
     print('\nGenerated expectations will need to have bugs manually added.')

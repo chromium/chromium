@@ -5,6 +5,7 @@
 
 # pylint: disable=protected-access
 
+import os
 import unittest
 import unittest.mock as mock
 
@@ -32,13 +33,18 @@ crbug.com/1111 [ win nvidia ] conformance/textures/misc/video-rotation.html [ Fa
 class BaseResultsUnittest(unittest.TestCase):
   def setUp(self) -> None:
     common_tag_utils.SetTagUtilsImplementation(uu.UnitTestTagUtils)
-    self._results = uu.UnitTestResultProcessor()
+    expectations_processor = uu.UnitTestExpectationProcessor()
+    self._results = uu.UnitTestResultProcessor(expectations_processor)
     self._local_patcher = mock.patch(
         'flake_suppressor_common.results.expectations.'
-        'GetExpectationFilesFromLocalCheckout')
+        'ExpectationProcessor.GetExpectationFilesFromLocalCheckout')
     self._local_mock = self._local_patcher.start()
     self._local_mock.return_value = {}
     self.addCleanup(self._local_patcher.stop)
+    self._expectation_file_patcher = mock.patch.object(
+        uu.UnitTestExpectationProcessor, 'GetExpectationFileForSuite')
+    self._expectation_file_mock = self._expectation_file_patcher.start()
+    self.addCleanup(self._expectation_file_patcher.stop)
 
 
 class AggregateResultsUnittest(BaseResultsUnittest):
@@ -154,7 +160,6 @@ class FilterOutSuppressedResultsUnittest(BaseResultsUnittest):
     self._local_mock.return_value = {
         'foo_expectations.txt': GENERIC_EXPECTATION_FILE_CONTENTS,
     }
-
     r = [
         data_types.Result('foo_integration_test', 'foo_test', tuple(['linux']),
                           'id'),
@@ -163,6 +168,7 @@ class FilterOutSuppressedResultsUnittest(BaseResultsUnittest):
         data_types.Result('bar_integration_test', 'foo_test', tuple(['win']),
                           'id')
     ]
+
     self.assertEqual(self._results._FilterOutSuppressedResults(r), r)
 
   def testSuppressedResults(self) -> None:
@@ -170,6 +176,8 @@ class FilterOutSuppressedResultsUnittest(BaseResultsUnittest):
     self._local_mock.return_value = {
         'foo_expectations.txt': GENERIC_EXPECTATION_FILE_CONTENTS,
     }
+    self._expectation_file_mock.return_value = os.path.join(
+        uu.ABSOLUTE_EXPECTATION_FILE_DIRECTORY, 'foo_expectations.txt')
 
     r = [
         data_types.Result('foo_integration_test', 'foo_test', ('win', 'nvidia'),
