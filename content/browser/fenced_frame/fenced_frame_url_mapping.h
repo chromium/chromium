@@ -60,6 +60,54 @@ class CONTENT_EXPORT FencedFrameURLMapping {
     ~SharedStorageURNMappingResult();
   };
 
+ private:
+  // Contains the fenced frame configuration a particular URN is mapped to.
+  // This specifies how to generate a set of `FencedFrameProperties` to install
+  // at navigation commit time.
+  // Most properties are copied over directly from the configuration, but some
+  // require some additional processing (e.g. `ad_component_configs`).
+  //
+  // TODO(https://crbug.com/1260472): In order to only report FLEDGE results if
+  // an ad is shown, InterestGroup reporting will also need to be wired up here.
+  struct MapInfo {
+    MapInfo();
+    explicit MapInfo(const GURL& url);
+    MapInfo(const GURL& url,
+            const SharedStorageBudgetMetadata& shared_storage_budget_metadata,
+            const ReportingMetadata& reporting_metadata = ReportingMetadata());
+    MapInfo(const MapInfo&);
+    MapInfo(MapInfo&&);
+    ~MapInfo();
+
+    MapInfo& operator=(const MapInfo&);
+    MapInfo& operator=(MapInfo&&);
+
+    GURL mapped_url;
+
+    // Extra data set if `mapped_url` is the result of a FLEDGE auction. Used
+    // to fill in `AdAuctionDocumentData` for the fenced frame that navigates
+    // to `mapped_url`.
+    absl::optional<AdAuctionData> ad_auction_data;
+
+    // Configurations for nested ad components.
+    // Currently only used by FLEDGE.
+    // When a fenced frame loads this configuration, these component
+    // configurations will be mapped to URNs themselves, and those URNs will be
+    // provided to the fenced frame for use in nested fenced frames.
+    absl::optional<std::vector<MapInfo>> ad_component_configs;
+
+    // Contains the metadata needed for shared storage budget charging. Will be
+    // initialized to absl::nullopt if the associated URN is not generated from
+    // shared storage. Its `budget_to_charge` can be updated to 0 when the
+    // budget is charged.
+    absl::optional<SharedStorageBudgetMetadata> shared_storage_budget_metadata;
+
+    // If reporting events from fenced frames are registered, then this
+    // information gets filled here.
+    ReportingMetadata reporting_metadata;
+  };
+
+ public:
   // When the result of an ad auction is a main ad URL with a set of ad
   // component URLs (instead of just a single ad URL), a URN that maps to the
   // main ad URL needs to be loaded in a (parent) fenced frame, and then that
@@ -101,70 +149,25 @@ class CONTENT_EXPORT FencedFrameURLMapping {
    private:
     friend class FencedFrameURLMapping;
 
-    // Contains an ad component URN and the URL it maps to.
+    // Contains an ad component URN and the configuration it maps to.
     struct AdComponent {
       GURL urn;
-      GURL url;
+      MapInfo config;
     };
 
-    explicit PendingAdComponentsMap(const std::vector<GURL>& ad_component_urls);
+    explicit PendingAdComponentsMap(
+        const std::vector<MapInfo>& ad_component_configs);
 
     std::vector<AdComponent> component_ads_;
   };
 
- private:
-  // Contains the fenced frame configuration a particular URN is mapped to.
-  // This specifies how to generate a set of `FencedFrameProperties` to install
-  // at navigation commit time.
-  // Most properties are copied over directly from the configuration, but some
-  // require some additional processing (e.g. `ad_component_urls`).
-  //
-  // TODO(https://crbug.com/1260472): In order to only report FLEDGE results if
-  // an ad is shown, InterestGroup reporting will also need to be wired up here.
-  struct MapInfo {
-    MapInfo();
-    explicit MapInfo(const GURL& url);
-    MapInfo(const GURL& url,
-            const SharedStorageBudgetMetadata& shared_storage_budget_metadata,
-            const ReportingMetadata& reporting_metadata = ReportingMetadata());
-    MapInfo(const MapInfo&);
-    MapInfo(MapInfo&&);
-    ~MapInfo();
-
-    MapInfo& operator=(const MapInfo&);
-    MapInfo& operator=(MapInfo&&);
-
-    GURL mapped_url;
-
-    // Extra data set if `mapped_url` is the result of a FLEDGE auction. Used
-    // to fill in `AdAuctionDocumentData` for the fenced frame that navigates
-    // to `mapped_url`.
-    absl::optional<AdAuctionData> ad_auction_data;
-
-    // Ad component URLs if `mapped_url` is the result of a FLEDGE auction. When
-    // a fenced frame navigates to `mapped_url`, these will be mapped to URNs
-    // themselves, and those URNs will be provided to the fenced frame.
-    absl::optional<std::vector<GURL>> ad_component_urls;
-
-    // Contains the metadata needed for shared storage budget charging. Will be
-    // initialized to absl::nullopt if the associated URN is not generated from
-    // shared storage. Its `budget_to_charge` can be updated to 0 when the
-    // budget is charged.
-    absl::optional<SharedStorageBudgetMetadata> shared_storage_budget_metadata;
-
-    // If reporting events from fenced frames are registered, then this
-    // information gets filled here.
-    ReportingMetadata reporting_metadata;
-  };
-
- public:
   // Contains a set of fenced frame properties. These are generated at
   // urn:uuid navigation time according to a fenced frame configuration,
   // specified by `MapInfo` above.
   // Most of these are copied from `MapInfo` directly, but some are generated
   // by another transformation, e.g.:
-  // * We generate urns for the urls in `ad_component_urls` and store them in
-  // `pending_ad_components_map`.
+  // * We generate urns for the configs in `ad_component_configs` and store
+  //   them in `pending_ad_components_map`.
   // * We generate a pointer to `shared_storage_budget_metadata` and store it in
   //   `shared_storage_budget_metadata`, because it should only take effect once
   //   across all fenced frames navigated to a particular configuration.
