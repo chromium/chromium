@@ -172,7 +172,7 @@ class PrivacySandboxService : public KeyedService {
   bool IsFirstPartySetsDataAccessEnabled();
 
   // Returns whether the FirstPartySets preference is managed.
-  bool IsFirstPartySetsDataAccessManaged();
+  virtual bool IsFirstPartySetsDataAccessManaged();
 
   // Toggles the FirstPartySets preference.
   void SetFirstPartySetsDataAccessEnabled(bool enabled);

@@ -686,6 +686,8 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
         "CookiesSubpageFpsAllowed3pcEnforcedByExtension";
     constexpr char kCookiesSubpageFpsAllowed3pcEnforcedByCookieSetting[] =
         "CookiesSubpageFpsAllowed3pcEnforcedByCookieSetting";
+    constexpr char kCookiesSubpageFpsManaged3pcAllowed[] =
+        "CookiesSubpageFpsManaged3pcAllowed";
 
     const int blocked_sites_count = 8;
     const int allowed_sites_count = 9;
@@ -702,8 +704,14 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
         name == kCookiesSubpageFpsAllowed3pcBlocked ||
         name == kCookiesSubpageFpsAllowed3pcEnforcedByPolicy ||
         name == kCookiesSubpageFpsAllowed3pcEnforcedByExtension ||
-        name == kCookiesSubpageFpsAllowed3pcEnforcedByCookieSetting) {
+        name == kCookiesSubpageFpsAllowed3pcEnforcedByCookieSetting ||
+        name == kCookiesSubpageFpsManaged3pcAllowed) {
       cookie_info.fps_info = {PageInfoUI::CookiesFpsInfo(kSiteOrigin)};
+
+      // Otherwise it's by default false
+      if (name == kCookiesSubpageFpsManaged3pcAllowed)
+        cookie_info.fps_info->is_managed = true;
+
     }  // Otherwise by default it's null
 
     if (name == kCookiesSubpageFpsAllowed3pcBlocked ||
@@ -722,7 +730,8 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
             CookieControlsEnforcement::kEnforcedByCookieSetting;
       }
     } else if (name == kCookiesSubpageFpsAllowed3pcAllowed ||
-               name == kCookiesSubpageFpsBlocked3pcAllowed) {
+               name == kCookiesSubpageFpsBlocked3pcAllowed ||
+               name == kCookiesSubpageFpsManaged3pcAllowed) {
       cookie_info.status = CookieControlsStatus::kDisabled;
     }
 
@@ -760,11 +769,13 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Show different sets of buttons in cookies subpage with different
+// enforcements:
+
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesSubpageFpsBlocked3pcAllowed) {
   ShowAndVerifyUi();
 }
-
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesSubpageFpsAllowed3pcBlocked) {
   ShowAndVerifyUi();
@@ -789,5 +800,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     PageInfoBubbleViewCookiesSubpageBrowserTest,
     InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByCookieSetting) {
+  ShowAndVerifyUi();
+}
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
+                       InvokeUi_CookiesSubpageFpsManaged3pcAllowed) {
   ShowAndVerifyUi();
 }

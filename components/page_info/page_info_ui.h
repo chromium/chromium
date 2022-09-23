@@ -94,6 +94,9 @@ class PageInfoUI {
 
     // The name of the owner of the FPS.
     std::u16string owner_name;
+
+    // Whether the Fps are managed by the company.
+    bool is_managed = false;
   };
 
   // |CookiesNewInfo| contains information about the sites that are allowed

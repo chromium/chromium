@@ -48,7 +48,7 @@ class PageInfoHoverButton : public HoverButton {
   // concatenated with the |title_resource_id|, it is shown separately on right
   // side before the |action_image_icon|.
   // *-------------------------------------------------------------------------*
-  // | Icon | |title_resource_id|               |secondary_text| | Action icon |
+  // | Icon | |title_resource_id|   |secondary_text| State image | Action icon |
   // |-------------------------------------------------------------------------|
   // |      | |subtitle_text|                                                  |
   // *-------------------------------------------------------------------------*
@@ -60,7 +60,8 @@ class PageInfoHoverButton : public HoverButton {
       int click_target_id,
       const std::u16string& tooltip_text,
       const std::u16string& subtitle_text,
-      absl::optional<ui::ImageModel> action_image_icon = absl::nullopt);
+      absl::optional<ui::ImageModel> action_image_icon = absl::nullopt,
+      absl::optional<ui::ImageModel> state_icon = absl::nullopt);
 
   PageInfoHoverButton(const PageInfoHoverButton&) = delete;
   PageInfoHoverButton& operator=(const PageInfoHoverButton&) = delete;
