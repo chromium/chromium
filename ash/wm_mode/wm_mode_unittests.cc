@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "ash/constants/ash_features.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
@@ -10,7 +13,9 @@
 #include "ash/wm_mode/wm_mode_button_tray.h"
 #include "ash/wm_mode/wm_mode_controller.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/views/controls/image_view.h"
 
 namespace ash {
 
@@ -58,6 +63,50 @@ TEST_F(WmModeTests, ToggleFromTray) {
 
   LeftClickOn(tray_button);
   EXPECT_FALSE(controller->is_active());
+}
+
+TEST_F(WmModeTests, TraysOnMultipleDisplays) {
+  display_manager()->AddRemoveDisplay();
+  auto roots = Shell::GetAllRootWindows();
+  EXPECT_EQ(roots.size(), 2u);
+
+  auto* controller = WmModeController::Get();
+  EXPECT_FALSE(controller->is_active());
+
+  WmModeButtonTray* tray_button_1 = GetWmModeButtonTrayForRoot(roots[0]);
+  WmModeButtonTray* tray_button_2 = GetWmModeButtonTrayForRoot(roots[1]);
+  ASSERT_TRUE(tray_button_1);
+  ASSERT_TRUE(tray_button_2);
+
+  LeftClickOn(tray_button_2);
+  EXPECT_TRUE(controller->is_active());
+  EXPECT_TRUE(tray_button_1->is_active());
+  EXPECT_TRUE(tray_button_2->is_active());
+
+  // Returns true if `image_view` has the same `vector_icon` on its image model.
+  auto has_same_vector_icon = [](const views::ImageView* image_view,
+                                 const gfx::VectorIcon& vector_icon) -> bool {
+    const auto image_model = image_view->GetImageModel();
+    if (!image_model.IsVectorIcon() || image_model.GetVectorIcon().is_empty())
+      return false;
+    return std::string(vector_icon.name) ==
+           std::string(image_model.GetVectorIcon().vector_icon()->name);
+  };
+
+  EXPECT_TRUE(has_same_vector_icon(tray_button_1->GetImageViewForTesting(),
+                                   kWmModeOnIcon));
+  EXPECT_TRUE(has_same_vector_icon(tray_button_2->GetImageViewForTesting(),
+                                   kWmModeOnIcon));
+
+  LeftClickOn(tray_button_1);
+  EXPECT_FALSE(controller->is_active());
+  EXPECT_FALSE(tray_button_1->is_active());
+  EXPECT_FALSE(tray_button_2->is_active());
+
+  EXPECT_TRUE(has_same_vector_icon(tray_button_1->GetImageViewForTesting(),
+                                   kWmModeOffIcon));
+  EXPECT_TRUE(has_same_vector_icon(tray_button_2->GetImageViewForTesting(),
+                                   kWmModeOffIcon));
 }
 
 TEST_F(WmModeTests, ScreenDimming) {

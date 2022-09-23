@@ -48,6 +48,9 @@ class ASH_EXPORT WmModeController : public ShellObserver {
  private:
   void UpdateDimmers();
 
+  // Updates the state of all the WM Mode tray buttons on all displays.
+  void UpdateTrayButtons();
+
   bool is_active_ = false;
 
   // When WM Mode is enabled, we dim all the displays as an indication of this

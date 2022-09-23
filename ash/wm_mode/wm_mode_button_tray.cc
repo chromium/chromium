@@ -11,7 +11,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/wm_mode/wm_mode_controller.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -40,9 +40,16 @@ WmModeButtonTray::~WmModeButtonTray() {
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
+void WmModeButtonTray::UpdateButtonVisuals(bool is_wm_mode_active) {
+  image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+      is_wm_mode_active ? kWmModeOnIcon : kWmModeOffIcon,
+      GetColorProvider()->GetColor(kColorAshIconColorPrimary)));
+  SetIsActive(is_wm_mode_active);
+}
+
 void WmModeButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
-  UpdateButtonIcon();
+  UpdateButtonVisuals(WmModeController::Get()->is_active());
 }
 
 void WmModeButtonTray::UpdateAfterLoginStatusChange() {
@@ -60,8 +67,6 @@ bool WmModeButtonTray::PerformAction(const ui::Event& event) {
          event.type() == ui::ET_KEY_PRESSED);
 
   WmModeController::Get()->Toggle();
-  SetIsActive(WmModeController::Get()->is_active());
-  UpdateButtonIcon();
 
   return true;
 }
@@ -69,12 +74,6 @@ bool WmModeButtonTray::PerformAction(const ui::Event& event) {
 void WmModeButtonTray::OnSessionStateChanged(
     session_manager::SessionState state) {
   UpdateButtonVisibility();
-}
-
-void WmModeButtonTray::UpdateButtonIcon() {
-  image_view_->SetImage(gfx::CreateVectorIcon(
-      WmModeController::Get()->is_active() ? kWmModeOnIcon : kWmModeOffIcon,
-      GetColorProvider()->GetColor(kColorAshIconColorPrimary)));
 }
 
 void WmModeButtonTray::UpdateButtonVisibility() {

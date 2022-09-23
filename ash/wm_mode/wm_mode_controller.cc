@@ -5,9 +5,12 @@
 #include "ash/wm_mode/wm_mode_controller.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/wm/window_dimmer.h"
+#include "ash/wm_mode/wm_mode_button_tray.h"
 #include "base/check.h"
 #include "base/check_op.h"
 
@@ -51,6 +54,7 @@ WmModeController* WmModeController::Get() {
 void WmModeController::Toggle() {
   is_active_ = !is_active_;
 
+  UpdateTrayButtons();
   UpdateDimmers();
 }
 
@@ -75,6 +79,16 @@ void WmModeController::UpdateDimmers() {
 
   for (auto* root : Shell::GetAllRootWindows())
     dimmers_[root] = CreateDimmerForRoot(root);
+}
+
+void WmModeController::UpdateTrayButtons() {
+  for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
+    if (!root_window_controller->GetRootWindow()->is_destroying()) {
+      root_window_controller->GetStatusAreaWidget()
+          ->wm_mode_button_tray()
+          ->UpdateButtonVisuals(is_active_);
+    }
+  }
 }
 
 }  // namespace ash

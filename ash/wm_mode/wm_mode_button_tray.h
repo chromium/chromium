@@ -18,6 +18,10 @@ class WmModeButtonTray : public TrayBackgroundView, public SessionObserver {
   WmModeButtonTray& operator=(const WmModeButtonTray&) = delete;
   ~WmModeButtonTray() override;
 
+  // Updates the icon used on `image_view_` and the active state of this button
+  // based on the given `is_wm_mode_active`.
+  void UpdateButtonVisuals(bool is_wm_mode_active);
+
   // TrayBackgroundView:
   void OnThemeChanged() override;
   void UpdateAfterLoginStatusChange() override;
@@ -30,11 +34,9 @@ class WmModeButtonTray : public TrayBackgroundView, public SessionObserver {
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
- private:
-  // Updates the icon used on `image_view_` which matches the current state
-  // enabled state of WM Mode.
-  void UpdateButtonIcon();
+  views::ImageView* GetImageViewForTesting() { return image_view_; }
 
+ private:
   // Updates the visibility of this tray button based on the current state of
   // the user session (i.e. whether it's blocked or not).
   void UpdateButtonVisibility();
