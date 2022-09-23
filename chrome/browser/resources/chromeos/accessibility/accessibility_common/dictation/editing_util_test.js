@@ -5,7 +5,7 @@
 GEN_INCLUDE(['dictation_test_base.js']);
 
 /** Test fixture for editing_util.js. */
-DictationEditingUtilTest = class extends DictationE2ETestBase {
+DictationEditingUtilTest = class extends DictationE2ETestDisallowConsole {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

@@ -5,7 +5,7 @@
 GEN_INCLUDE(['dictation_test_base.js']);
 
 /** UI tests for Dictation. */
-DictationUIE2ETest = class extends DictationE2ETestBase {
+DictationUIE2ETest = class extends DictationE2ETestDisallowConsole {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

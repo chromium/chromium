@@ -5,7 +5,7 @@
 GEN_INCLUDE(['../dictation_test_base.js']);
 
 /** Dictation tests for Macros. */
-DictationMacrosTest = class extends DictationE2ETestBase {
+DictationMacrosTest = class extends DictationE2ETestDisallowConsole {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

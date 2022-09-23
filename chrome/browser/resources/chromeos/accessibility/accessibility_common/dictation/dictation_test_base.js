@@ -110,7 +110,6 @@ DictationE2ETestBase = class extends E2ETestBase {
         base::Unretained(ash::AccessibilityManager::Get()),
         true);
     `);
-    super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
   }
 
   /** Turns on Dictation and checks IME and Speech Recognition state. */
@@ -381,5 +380,27 @@ DictationE2ETestBase = class extends E2ETestBase {
       icon: ${props.icon}
       text: ${props.text}
       hints: ${props.hints}`);
+  }
+};
+
+/** A Dictation test class that fails on console warnings and errors. */
+DictationE2ETestDisallowConsole = class extends DictationE2ETestBase {
+  /** @override */
+  testGenPreamble() {
+    super.testGenPreamble();
+    super.testGenPreambleCommon(
+        /*extensionIdName=*/ 'kAccessibilityCommonExtensionId',
+        /*failOnConsoleError=*/ true);
+  }
+};
+
+/** A Dictation test class that ignores console warnings and errors. */
+DictationE2ETestAllowConsole = class extends DictationE2ETestBase {
+  /** @override */
+  testGenPreamble() {
+    super.testGenPreamble();
+    super.testGenPreambleCommon(
+        /*extensionIdName=*/ 'kAccessibilityCommonExtensionId',
+        /*failOnConsoleError=*/ false);
   }
 };
