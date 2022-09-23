@@ -51,26 +51,11 @@ void HibernateManager::PrepareHibernateAndMaybeResumeAuthOp(
 void HibernateManager::PrepareHibernateAndMaybeResume(
     std::unique_ptr<UserContext> user_context,
     HibernateResumeCallback callback) {
-  HibermanClient::Get()->WaitForServiceToBeAvailable(
-      base::BindOnce(&HibernateManager::OnHibernateServiceAvailable,
-                     weak_factory_.GetWeakPtr(), std::move(user_context),
-                     std::move(callback)));
-}
-
-void HibernateManager::OnHibernateServiceAvailable(
-    std::unique_ptr<UserContext> user_context,
-    HibernateResumeCallback callback,
-    bool service_is_available) {
-  if (!service_is_available) {
-    LOG(ERROR) << "Hibernate service is unavailable";
-    std::move(callback).Run(std::move(user_context), false);
-  } else {
-    // In a successful resume case, this function never returns, as execution
-    // continues in the resumed hibernation image.
-    HibermanClient::Get()->ResumeFromHibernateAS(
-        user_context->GetAuthSessionId(),
-        base::BindOnce(std::move(callback), std::move(user_context)));
-  }
+  // In a successful resume case, this function never returns, as execution
+  // continues in the resumed hibernation image.
+  HibermanClient::Get()->ResumeFromHibernateAS(
+      user_context->GetAuthSessionId(),
+      base::BindOnce(std::move(callback), std::move(user_context)));
 }
 
 #else  // !ENABLE_HIBERNATE

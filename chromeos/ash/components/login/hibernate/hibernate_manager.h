@@ -45,12 +45,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_HIBERNATE)
                                       HibernateResumeCallback callback);
 
  private:
-#if BUILDFLAG(ENABLE_HIBERNATE)
-  void OnHibernateServiceAvailable(std::unique_ptr<UserContext> user_context,
-                                   HibernateResumeCallback callback,
-                                   bool service_is_available);
-#endif
-
   void ResumeFromHibernateAuthOpCallback(
       AuthOperationCallback callback,
       std::unique_ptr<UserContext> user_context,
