@@ -39,8 +39,10 @@ enum class BannerInteraction {
   kMaxValue = kDismissed
 };
 
-AboutThisSiteService::AboutThisSiteService(std::unique_ptr<Client> client)
-    : client_(std::move(client)) {}
+AboutThisSiteService::AboutThisSiteService(std::unique_ptr<Client> client,
+                                           bool allow_missing_description)
+    : client_(std::move(client)),
+      allow_missing_description_(allow_missing_description) {}
 
 absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
     const GURL& url,
@@ -54,7 +56,7 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
       decision == OptimizationGuideDecision::kUnknown
           ? AboutThisSiteStatus::kUnknown
           : about_this_site_validation::ValidateMetadata(
-                about_this_site_metadata);
+                about_this_site_metadata, allow_missing_description_);
   base::UmaHistogramEnumeration("Security.PageInfo.AboutThisSiteStatus",
                                 status);
   RecordAboutThisSiteInteraction(
@@ -84,8 +86,7 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
   if (kShowSampleContent.Get()) {
     page_info::proto::SiteInfo site_info;
     if (url == GURL("https://example.com")) {
-      if (!base::FeatureList::IsEnabled(
-              kPageInfoAboutThisSiteDescriptionPlaceholder)) {
+      if (!allow_missing_description_) {
         auto* description = site_info.mutable_description();
         description->set_name("Example website");
         description->set_subtitle("Website");

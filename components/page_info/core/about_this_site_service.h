@@ -56,7 +56,8 @@ class AboutThisSiteService : public KeyedService {
     kMaxValue = kOpenedDirectlyFromSidePanel
   };
 
-  explicit AboutThisSiteService(std::unique_ptr<Client> client);
+  explicit AboutThisSiteService(std::unique_ptr<Client> client,
+                                bool allow_missing_description);
   ~AboutThisSiteService() override;
 
   AboutThisSiteService(const AboutThisSiteService&) = delete;
@@ -75,6 +76,7 @@ class AboutThisSiteService : public KeyedService {
  private:
   std::unique_ptr<Client> client_;
   base::flat_set<url::Origin> dismissed_banners_;
+  const bool allow_missing_description_;
 
   base::WeakPtrFactory<AboutThisSiteService> weak_ptr_factory_{this};
 };

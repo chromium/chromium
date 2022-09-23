@@ -89,7 +89,8 @@ class AboutThisSiteServiceTest : public testing::Test {
     auto client_mock =
         std::make_unique<testing::StrictMock<MockAboutThisSiteServiceClient>>();
     client_ = client_mock.get();
-    service_ = std::make_unique<AboutThisSiteService>(std::move(client_mock));
+    service_ = std::make_unique<AboutThisSiteService>(
+        std::move(client_mock), /*allow_missing_description*/ false);
   }
 
   MockAboutThisSiteServiceClient* client() { return client_; }

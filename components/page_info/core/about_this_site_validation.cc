@@ -64,7 +64,8 @@ AboutThisSiteStatus ValidateMoreAbout(const proto::MoreAbout& more_info) {
   return AboutThisSiteStatus::kValid;
 }
 
-AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info) {
+AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info,
+                                     bool allow_missing_description) {
   if (!site_info.has_description() && !site_info.has_first_seen() &&
       !site_info.has_more_about())
     return AboutThisSiteStatus::kEmptySiteInfo;
@@ -74,9 +75,7 @@ AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info) {
   if (site_info.has_description()) {
     status = ValidateDescription(site_info.description());
   } else {
-    if (!base::FeatureList::IsEnabled(kPageInfoAboutThisSiteMoreInfo) ||
-        !base::FeatureList::IsEnabled(
-            kPageInfoAboutThisSiteDescriptionPlaceholder))
+    if (!allow_missing_description)
       return AboutThisSiteStatus::kMissingDescription;
   }
 
@@ -102,12 +101,13 @@ AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info) {
 }
 
 AboutThisSiteStatus ValidateMetadata(
-    const absl::optional<proto::AboutThisSiteMetadata>& metadata) {
+    const absl::optional<proto::AboutThisSiteMetadata>& metadata,
+    bool allow_missing_description) {
   if (!metadata)
     return AboutThisSiteStatus::kNoResult;
   if (!metadata->has_site_info())
     return AboutThisSiteStatus::kMissingSiteInfo;
-  return ValidateSiteInfo(metadata->site_info());
+  return ValidateSiteInfo(metadata->site_info(), allow_missing_description);
 }
 
 }  // namespace about_this_site_validation
