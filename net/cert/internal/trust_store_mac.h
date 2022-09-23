@@ -155,8 +155,6 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   class TrustImplNoCache;
   class TrustImplLRUCache;
 
-  FRIEND_TEST_ALL_PREFIXES(TrustStoreMacImplTest, MultiRootNotTrusted);
-
   // Finds certificates in the OS keychains whose Subject matches |name_data|.
   // The result is an array of CRYPTO_BUFFERs containing the DER certificate
   // data.
