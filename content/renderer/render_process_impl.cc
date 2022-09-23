@@ -140,6 +140,11 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfFeature(features::kJavaScriptExperimentalSharedMemory,
                      "--shared-string-table --harmony-struct");
 
+  SetV8FlagIfFeature(features::kJavaScriptArrayGrouping,
+                     "--harmony-array-grouping");
+  SetV8FlagIfNotFeature(features::kJavaScriptArrayGrouping,
+                        "--no-harmony-array-grouping");
+
   SetV8FlagIfFeature(features::kV8VmFuture, "--future");
   SetV8FlagIfNotFeature(features::kV8VmFuture, "--no-future");
 

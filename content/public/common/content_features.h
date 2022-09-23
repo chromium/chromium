@@ -128,6 +128,8 @@ enum class IsolateSandboxedIframesGrouping {
 };
 CONTENT_EXPORT extern const base::FeatureParam<IsolateSandboxedIframesGrouping>
     kIsolateSandboxedIframesGroupingParam;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kJavaScriptArrayGrouping);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kJavaScriptExperimentalSharedMemory);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyFrameLoading);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyFrameVisibleLoadTimeMetrics);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLazyImageLoading);
@@ -265,7 +267,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserActivationSameOriginVisibility);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kVerifyDidCommitParams);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kVideoPlaybackQuality);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kV8VmFuture);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kJavaScriptExperimentalSharedMemory);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAppWindowControlsOverlay);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyBaseline);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyCodeProtection);

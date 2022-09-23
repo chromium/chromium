@@ -555,6 +555,16 @@ const base::FeatureParam<IsolateSandboxedIframesGrouping>
         IsolateSandboxedIframesGrouping::kPerSite,
         &isolated_sandboxed_iframes_grouping_types};
 
+// Enables the TC39 Array grouping proposal.
+BASE_FEATURE(kJavaScriptArrayGrouping,
+             "JavaScriptArrayGrouping",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables experimental JavaScript shared memory features.
+BASE_FEATURE(kJavaScriptExperimentalSharedMemory,
+             "JavaScriptExperimentalSharedMemory",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLazyFrameLoading,
              "LazyFrameLoading",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1205,11 +1215,6 @@ BASE_FEATURE(kVideoPlaybackQuality,
 
 // Enables future V8 VM features
 BASE_FEATURE(kV8VmFuture, "V8VmFuture", base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables experimental JavaScript shared memory features.
-BASE_FEATURE(kJavaScriptExperimentalSharedMemory,
-             "JavaScriptExperimentalSharedMemory",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable window controls overlays for desktop PWAs
 BASE_FEATURE(kWebAppWindowControlsOverlay,
