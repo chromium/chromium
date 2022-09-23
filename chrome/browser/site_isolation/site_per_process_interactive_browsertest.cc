@@ -1174,41 +1174,6 @@ class SitePerProcessInteractivePDFTest
   raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 };
 
-// This class observes a WebContents for a navigation to an extension scheme to
-// finish.
-class NavigationToExtensionSchemeObserver
-    : public content::WebContentsObserver {
- public:
-  explicit NavigationToExtensionSchemeObserver(content::WebContents* contents)
-      : content::WebContentsObserver(contents),
-        extension_loaded_(contents->GetLastCommittedURL().SchemeIs(
-            extensions::kExtensionScheme)) {}
-
-  NavigationToExtensionSchemeObserver(
-      const NavigationToExtensionSchemeObserver&) = delete;
-  NavigationToExtensionSchemeObserver& operator=(
-      const NavigationToExtensionSchemeObserver&) = delete;
-
-  void Wait() {
-    if (extension_loaded_)
-      return;
-    message_loop_runner_ = new content::MessageLoopRunner();
-    message_loop_runner_->Run();
-  }
-
- private:
-  void DidFinishNavigation(content::NavigationHandle* handle) override {
-    if (!handle->GetURL().SchemeIs(extensions::kExtensionScheme) ||
-        !handle->HasCommitted() || handle->IsErrorPage())
-      return;
-    extension_loaded_ = true;
-    message_loop_runner_->Quit();
-  }
-
-  bool extension_loaded_;
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-};
-
 // This test loads a PDF inside an OOPIF and then verifies that context menu
 // shows up at the correct position.
 IN_PROC_BROWSER_TEST_F(SitePerProcessInteractivePDFTest,
@@ -1236,19 +1201,11 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractivePDFTest,
   EXPECT_TRUE(NavigateIframeToURL(active_web_contents, "test", frame_url));
 
   // Wait until the guest contents for PDF is created.
-  content::WebContents* guest_contents =
-      test_guest_view_manager()->DeprecatedWaitForSingleGuestCreated();
-
-  // Observe navigations in guest to find out when navigation to the (PDF)
-  // extension commits. It will be used as an indicator that BrowserPlugin
-  // has attached.
-  NavigationToExtensionSchemeObserver navigation_observer(guest_contents);
-
-  // Before sending the mouse clicks, we need to make sure the BrowserPlugin has
-  // attached, which happens before navigating the guest to the PDF extension.
-  // When attached, the window rects are updated and the context menu position
-  // can be properly calculated.
-  navigation_observer.Wait();
+  guest_view::GuestViewBase* guest_view =
+      test_guest_view_manager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  extensions::TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(
+      guest_view);
 
   content::RenderWidgetHostView* child_view =
       ChildFrameAt(active_web_contents->GetPrimaryMainFrame(), 0)->GetView();
