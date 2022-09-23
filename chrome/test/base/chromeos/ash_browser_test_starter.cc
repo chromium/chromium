@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,9 +45,11 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
       {chromeos::features::kLacrosSupport, chromeos::features::kLacrosPrimary,
        chromeos::features::kLacrosOnly},
       {});
-  command_line->AppendSwitch("enable-wayland-server");
-  command_line->AppendSwitch("no-startup-window");
-  command_line->AppendSwitchASCII("lacros-chrome-additional-args",
+  command_line->AppendSwitch(ash::switches::kAshEnableWaylandServer);
+  command_line->AppendSwitch(ash::switches::kDisableLacrosKeepAliveForTesting);
+  command_line->AppendSwitch(ash::switches::kDisableLoginLacrosOpening);
+  command_line->AppendSwitch(switches::kNoStartupWindow);
+  command_line->AppendSwitchASCII(ash::switches::kLacrosChromeAdditionalArgs,
                                   "--no-first-run");
   return true;
 }
