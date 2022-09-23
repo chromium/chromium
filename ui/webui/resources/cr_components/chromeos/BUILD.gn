@@ -10,7 +10,6 @@ group("closure_compile") {
   deps = [
     "bluetooth:closure_compile_module",
     "cellular_setup:closure_compile_module",
-    "network:closure_compile_module",
   ]
 }
 
@@ -18,6 +17,5 @@ group("web_components") {
   public_deps = [
     "bluetooth:web_components",
     "cellular_setup:web_components",
-    "network:web_components",
   ]
 }

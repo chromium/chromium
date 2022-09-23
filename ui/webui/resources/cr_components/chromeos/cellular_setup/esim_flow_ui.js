@@ -10,9 +10,9 @@ import './final_page.js';
 import './profile_discovery_list_page.js';
 import './confirmation_code_page.js';
 
-import {hasActiveCellularNetwork} from '//resources/cr_components/chromeos/network/cellular_utils.js';
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.js';
-import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.js';
+import {hasActiveCellularNetwork} from '//resources/ash/common/network/cellular_utils.js';
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
+import {NetworkListenerBehavior} from '//resources/ash/common/network/network_listener_behavior.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ESimManagerRemote, ESimOperationResult, ESimProfileRemote, EuiccRemote, ProfileInstallResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';

@@ -102,8 +102,8 @@ js_library("password_change") {
 
 js_library("lock_screen_network") {
   deps = [
-    "//ui/webui/resources/cr_components/chromeos/network:network_select",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
+    "//ash/webui/common/resources/network:network_select",
+    "//ash/webui/common/resources/network:onc_mojo",
     "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:load_time_data.m",
   ]

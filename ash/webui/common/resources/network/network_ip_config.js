@@ -7,18 +7,18 @@
  * a network state.
  */
 
-import '../../../cr_elements/cr_toggle/cr_toggle.js';
-import '../../../cr_elements/policy/cr_policy_indicator.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.js';
 import './network_property_list_mojo.js';
-import './network_shared_css.js';
+import './network_shared.css.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {IPConfigProperties, ManagedProperties, NO_ROUTING_PREFIX} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {IPConfigType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
-
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {getTemplate} from './network_ip_config.html.js';
 import {OncMojo} from './onc_mojo.js';
 
 /**
@@ -104,7 +104,7 @@ const getRoutingPrefixAsLength = function(netmask) {
 };
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'network-ip-config',
 
   behaviors: [I18nBehavior, CrPolicyNetworkBehaviorMojo],

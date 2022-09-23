@@ -7,20 +7,20 @@
  */
 
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../../../cr_elements/cr_input/cr_input.js';
-import '../../../cr_elements/cr_radio_button/cr_radio_button.js';
-import '../../../cr_elements/cr_radio_group/cr_radio_group.js';
-import '../../../cr_elements/policy/cr_policy_indicator.js';
-import '../../../cr_elements/md_select.css.js';
-import './network_shared_css.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.js';
+import '//resources/cr_elements/md_select.css.js';
+import './network_shared.css.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {IPConfigType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
-
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {getTemplate} from './network_nameservers.html.js';
 import {OncMojo} from './onc_mojo.js';
 
 /**
@@ -34,7 +34,7 @@ const NameserversType = {
 };
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'network-nameservers',
 
   behaviors: [I18nBehavior, CrPolicyNetworkBehaviorMojo],

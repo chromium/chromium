@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://os-settings/strings.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_property_list_mojo.js';
+import 'chrome://resources/ash/common/network/network_property_list_mojo.js';
 
-import {FAKE_CREDENTIAL} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
+import {FAKE_CREDENTIAL} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkPropertyListMojoTest', function() {

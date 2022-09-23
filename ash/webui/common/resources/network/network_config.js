@@ -8,11 +8,11 @@
  * and existing networks.
  */
 
-import '../../../cr_elements/action_link.css.js';
-import '../../../cr_elements/cr_dialog/cr_dialog.js';
-import '../../../cr_elements/cr_toggle/cr_toggle.js';
-import '../../../cr_elements/policy/cr_policy_indicator.js';
-import '../../../js/action_link.js';
+import '//resources/cr_elements/action_link.css.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.js';
+import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
@@ -20,17 +20,17 @@ import './network_config_input.js';
 import './network_config_select.js';
 import './network_config_toggle.js';
 import './network_password_input.js';
-import './network_shared_css.js';
+import './network_shared.css.js';
 
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CertificateType, ConfigProperties, CrosNetworkConfigRemote, EAPConfigProperties, GlobalPolicy, HiddenSsidMode, IPSecConfigProperties, L2TPConfigProperties, ManagedBoolean, ManagedEAPProperties, ManagedInt32, ManagedIPSecProperties, ManagedL2TPProperties, ManagedOpenVPNProperties, ManagedProperties, ManagedString, ManagedStringList, ManagedWireGuardProperties, NetworkCertificate, OpenVPNConfigProperties, SecurityType, StartConnectResult, SubjectAltName, VpnType, WireGuardConfigProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, IPConfigType, NetworkType, OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
-
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
+import {getTemplate} from './network_config.html.js';
 import {NetworkListenerBehavior} from './network_listener_behavior.js';
 import {OncMojo} from './onc_mojo.js';
 
@@ -73,7 +73,7 @@ const WireGuardKeyConfigType = {
 /** @type {string}  */ const PLACEHOLDER_CREDENTIAL = '(credential)';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'network-config',
 
   behaviors: [

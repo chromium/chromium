@@ -12,13 +12,15 @@ import '//resources/cr_elements/md_select.css.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './network_property_list_mojo.js';
-import './network_shared_css.js';
+import './network_shared.css.js';
 
-import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.js';
+import {OncMojo} from '//resources/ash/common/network/onc_mojo.js';
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert} from '//resources/js/assert.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ApnProperties, ManagedApnProperties, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+
+import {getTemplate} from './network_apnlist.html.js';
 
 const kDefaultAccessPointName = 'NONE';
 const kOtherAccessPointName = 'Other';
@@ -27,7 +29,7 @@ const USE_ATTACH_APN_ON_SAVE_METRIC_NAME =
     'Network.Cellular.Apn.UseAttachApnOnSave';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'network-apnlist',
 
   behaviors: [I18nBehavior],

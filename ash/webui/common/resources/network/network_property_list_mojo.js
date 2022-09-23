@@ -8,23 +8,23 @@
  * editFieldTypes.
  */
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../../../cr_elements/cr_input/cr_input.js';
-import '../../../cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 import './cr_policy_network_indicator_mojo.js';
-import './network_shared_css.js';
+import './network_shared.css.js';
 
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert} from '//resources/js/assert.js';
-import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ActivationStateType, SecurityType, SubjectAltName, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
-
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {getTemplate} from './network_property_list_mojo.html.js';
 import {FAKE_CREDENTIAL, OncMojo} from './onc_mojo.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'network-property-list-mojo',
 
   behaviors: [I18nBehavior, CrPolicyNetworkBehaviorMojo],

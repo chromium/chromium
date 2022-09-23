@@ -680,10 +680,8 @@ export class OncMojo {
     switch (properties.type) {
       case NetworkType.kCellular:
         const cellularProperties = properties.typeProperties.cellular;
-        networkState.typeState.cellular.iccid =
-            cellularProperties.iccid || '';
-        networkState.typeState.cellular.eid =
-            cellularProperties.eid || '';
+        networkState.typeState.cellular.iccid = cellularProperties.iccid || '';
+        networkState.typeState.cellular.eid = cellularProperties.eid || '';
         networkState.typeState.cellular.activationState =
             cellularProperties.activationState;
         networkState.typeState.cellular.networkTechnology =
@@ -1190,8 +1188,7 @@ export class OncMojo {
       const acurrent = a[i];
       const bcurrent = b[i];
       if (acurrent.slotId !== bcurrent.slotId ||
-          acurrent.eid !== bcurrent.eid ||
-          acurrent.iccid !== bcurrent.iccid ||
+          acurrent.eid !== bcurrent.eid || acurrent.iccid !== bcurrent.iccid ||
           acurrent.isPrimary !== bcurrent.isPrimary) {
         return false;
       }
@@ -1209,9 +1206,8 @@ export class OncMojo {
     if (!a || !b) {
       return !!a === !!b;
     }
-    return a.accessPointName === b.accessPointName &&
-           a.name === b.name && a.username === b.username &&
-           a.password === b.password;
+    return a.accessPointName === b.accessPointName && a.name === b.name &&
+        a.username === b.username && a.password === b.password;
   }
 
   /**
@@ -1337,7 +1333,7 @@ export class OncMojo {
   static deserializeSubjectAltNameMatch(subjectAltNameMatch) {
     const regValidEmailChars = RegExp('^[a-zA-Z0-9-\\.\\+_~@]*$');
     const regValidUriChars =
-      RegExp('^[a-zA-Z0-9-\\._~:/?#\\[\\]@!$&\'()\\*\\+,;=]*$');
+        RegExp('^[a-zA-Z0-9-\\._~:/?#\\[\\]@!$&\'()\\*\\+,;=]*$');
 
     const entries = subjectAltNameMatch.trim().split(';');
     const result =

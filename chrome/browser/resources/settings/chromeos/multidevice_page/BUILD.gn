@@ -151,8 +151,8 @@ js_library("multidevice_subpage") {
     "..:os_settings_routes",
     "..:route_observer_behavior",
     "../..:router",
+    "//ash/webui/common/resources/network:network_listener_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior",
   ]
 }
 
@@ -172,10 +172,10 @@ js_library("multidevice_tether_item") {
     ":multidevice_feature_behavior",
     "..:os_route",
     "..:os_settings_routes",
+    "//ash/webui/common/resources/network:mojo_interface_provider",
+    "//ash/webui/common/resources/network:network_listener_behavior",
+    "//ash/webui/common/resources/network:onc_mojo",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
-    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
   ]
 }
 

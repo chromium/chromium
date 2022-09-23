@@ -12,17 +12,18 @@ import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
 import './network_list.js';
 
 import {assert} from '//resources/js/assert.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrosNetworkConfigRemote, FilterType, GlobalPolicy, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 import {NetworkList} from './network_list_types.js';
 import {NetworkListenerBehavior} from './network_listener_behavior.js';
+import {getTemplate} from './network_select.html.js';
 import {OncMojo} from './onc_mojo.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'network-select',
 
   behaviors: [NetworkListenerBehavior],

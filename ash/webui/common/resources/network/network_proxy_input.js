@@ -9,18 +9,18 @@
  * string, url:port.
  */
 
-import '../../../cr_elements/cr_input/cr_input.js';
-import './network_shared_css.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import './network_shared.css.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ManagedProxyLocation} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
-
+import {getTemplate} from './network_proxy_input.html.js';
 import {OncMojo} from './onc_mojo.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'network-proxy-input',
 
   behaviors: [I18nBehavior],

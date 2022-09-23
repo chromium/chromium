@@ -799,7 +799,7 @@
                   'chrome/test/data/webui/cr_components/chromeos/network/|'\
                   'components/onc/|'\
                   'extensions/browser/api/networking_private/|'\
-                  'ui/webui/resources/cr_components/chromeos/network/'
+                  'ash/webui/common/resources/network/'
     },
     'chromeos_tast_control': {
       'filepath': 'chromeos/tast_control.gni',

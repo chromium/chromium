@@ -15,19 +15,20 @@ import '//resources/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './network_proxy_exclusions.js';
 import './network_proxy_input.js';
-import './network_shared_css.js';
+import './network_shared.css.js';
 
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert} from '//resources/js/assert.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ManagedManualProxySettings, ManagedProperties, ManagedProxyLocation, ManagedProxySettings, ManagedStringList, ProxyLocation, ProxySettings} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {IPConfigType, OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {getTemplate} from './network_proxy.html.js';
 import {OncMojo} from './onc_mojo.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'network-proxy',
 
   behaviors: [

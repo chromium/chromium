@@ -7,7 +7,7 @@
  * Settings UI.
  */
 import './internet_shared_css.js';
-import 'chrome://resources/cr_components/chromeos/network/network_shared_css.js';
+import 'chrome://resources/ash/common/network/network_shared.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/md_select.css.js';

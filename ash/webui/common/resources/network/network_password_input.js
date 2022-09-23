@@ -6,24 +6,24 @@
  * @fileoverview Polymer element for network password input fields.
  */
 
-import '../../../cr_elements/cr_icon_button/cr_icon_button.js';
-import '../../../cr_elements/cr_icons.css.js';
-import '../../../cr_elements/cr_input/cr_input.js';
-import '../../../cr_elements/cr_shared_vars.css.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_icons.css.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './cr_policy_network_indicator_mojo.js';
-import './network_shared_css.js';
+import './network_shared.css.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
 import {NetworkConfigElementBehavior} from './network_config_element_behavior.js';
+import {getTemplate} from './network_password_input.html.js';
 import {FAKE_CREDENTIAL} from './onc_mojo.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'network-password-input',
 
   behaviors: [

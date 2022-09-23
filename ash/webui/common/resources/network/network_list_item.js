@@ -9,30 +9,30 @@
 
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../../../cr_elements/cr_icon_button/cr_icon_button.js';
-import '../../../cr_elements/icons.html.js';
-import '../../../cr_elements/policy/cr_policy_indicator.js';
-import '../../../cr_elements/cr_shared_style.css.js';
-import '../../../cr_elements/cr_shared_vars.css.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 import './network_icon.js';
 
 import {CellularSetupPageName} from '//resources/cr_components/chromeos/cellular_setup/cellular_types.js';
 import {getESimProfileProperties} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_utils.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert} from '//resources/js/assert.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ActivationStateType, CrosNetworkConfigRemote, GlobalPolicy, ManagedCellularProperties, ManagedProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
-import {FocusRowBehavior} from '../../../js/cr/ui/focus_row_behavior.js';
-
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
+import {getTemplate} from './network_list_item.html.js';
 import {NetworkList} from './network_list_types.js';
 import {OncMojo} from './onc_mojo.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'network-list-item',
 
   behaviors: [

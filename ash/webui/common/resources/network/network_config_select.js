@@ -10,19 +10,20 @@ import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import './cr_policy_network_indicator_mojo.js';
-import './network_shared_css.js';
+import './network_shared.css.js';
 
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assertNotReached} from '//resources/js/assert.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {NetworkCertificate} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
 import {NetworkConfigElementBehavior} from './network_config_element_behavior.js';
+import {getTemplate} from './network_config_select.html.js';
 import {OncMojo} from './onc_mojo.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'network-config-select',
 
   behaviors: [

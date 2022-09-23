@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NetworkConfigElementBehavior} from 'chrome://resources/cr_components/chromeos/network/network_config_element_behavior.js';
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
+import {NetworkConfigElementBehavior} from 'chrome://resources/ash/common/network/network_config_element_behavior.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('CrComponentsNetworkConfigElementBehaviorTest', function() {

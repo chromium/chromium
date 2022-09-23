@@ -8,8 +8,8 @@
  * shared networks'.
  */
 
-import 'chrome://resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.js';
-import 'chrome://resources/cr_components/chromeos/network/network_proxy.js';
+import 'chrome://resources/ash/common/network/cr_policy_network_indicator_mojo.js';
+import 'chrome://resources/ash/common/network/network_proxy.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
@@ -20,8 +20,8 @@ import './internet_shared_css.js';
 import '../../controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
-import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.js';
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
+import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {ManagedProperties, ManagedString} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';

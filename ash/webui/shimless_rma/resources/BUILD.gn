@@ -196,14 +196,14 @@ js_library("hardware_error_page") {
 js_library("data") {
   deps = [
     ":shimless_rma_types",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
+    "//ash/webui/common/resources/network:onc_mojo",
   ]
 }
 
 js_library("fake_data") {
   deps = [
     ":shimless_rma_types",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
+    "//ash/webui/common/resources/network:onc_mojo",
   ]
 }
 
@@ -295,10 +295,10 @@ js_library("onboarding_network_page") {
     ":icons",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//ash/webui/common/resources/network:network_config",
+    "//ash/webui/common/resources/network:network_list",
+    "//ash/webui/common/resources/network:onc_mojo",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_components/chromeos/network:network_config",
-    "//ui/webui/resources/cr_components/chromeos/network:network_list",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:util.m",

@@ -6,10 +6,10 @@
  * @fileoverview
  * 'diagnostics-network-icon' is a wrapper for 'network-icon' to ensure the
  * correct icon displayed based on network type, state, and technology.
- * @see //ui/webui/resources/cr_components/chromeos/network/network_icon.js
+ * @see //ash/webui/common/resources/network/network_icon.js
  */
 
-import 'chrome://resources/cr_components/chromeos/network/network_icon.js';
+import 'chrome://resources/ash/common/network/network_icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './diagnostics_shared.css.js';
 
