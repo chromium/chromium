@@ -149,7 +149,7 @@ void WebUIExtension::Send(gin::Arguments* args) {
         V8ValueConverter::Create()->FromV8Value(
             obj, frame->MainWorldScriptContext());
     DCHECK(value->is_list());
-    content = std::move(value->GetList());
+    content = std::move(*value).TakeList();
 
     // The conversion of |obj| could have triggered arbitrary JavaScript code,
     // so check that the frame is still valid to avoid dereferencing a stale

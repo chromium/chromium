@@ -5685,7 +5685,7 @@ void RenderFrameImpl::BeginNavigationInternal(
     absl::optional<base::Value> initiator_value =
         base::JSONReader::Read(info->devtools_initiator_info.Utf8());
     if (initiator_value && initiator_value->is_dict())
-      initiator = std::move(initiator_value->GetDict());
+      initiator = std::move(*initiator_value).TakeDict();
   }
 
   absl::optional<network::ResourceRequest::WebBundleTokenParams>
