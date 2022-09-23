@@ -2564,8 +2564,6 @@ static_library("ui") {
       "views/select_file_dialog_extension.h",
       "views/select_file_dialog_extension_factory.cc",
       "views/select_file_dialog_extension_factory.h",
-      "web_applications/file_stream_data_pipe_getter.cc",
-      "web_applications/file_stream_data_pipe_getter.h",
       "webui/app_management/app_management_shelf_delegate_chromeos.cc",
       "webui/app_management/app_management_shelf_delegate_chromeos.h",
       "webui/ash/account_manager/account_manager_error_ui.cc",

@@ -14,21 +14,6 @@ source_set("web_share_target") {
   ]
 }
 
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
-    sources = [ "target_util_browsertest.cc" ]
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    deps = [
-      ":web_share_target",
-      "//chrome/browser/ui",
-      "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
-      "//skia",
-    ]
-  }
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [ "target_util_unittest.cc" ]

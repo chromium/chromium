@@ -25,10 +25,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/arc/nearby_share/share_info_file_handler.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/web_applications/file_stream_data_pipe_getter.h"
 #endif
 
 namespace web_app {
@@ -79,8 +77,6 @@ NavigateParams NavigateParamsForShareTarget(
   std::vector<bool> is_value_file_uris;
   std::vector<std::string> filenames;
   std::vector<std::string> types;
-  std::vector<mojo::PendingRemote<network::mojom::DataPipeGetter>>
-      data_pipe_getters;
 
   if (intent.mime_type.has_value() && !intent.files.empty()) {
     if (!launch_files.empty()) {
@@ -113,7 +109,6 @@ NavigateParams NavigateParamsForShareTarget(
         continue;
 
       storage::FileSystemURL file_system_url;
-      mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       storage::FileSystemContext* file_system_context =
@@ -121,29 +116,6 @@ NavigateParams NavigateParamsForShareTarget(
               browser->profile());
       file_system_url =
           file_system_context->CrackURLInFirstPartyContext(file->url);
-
-      if (!file_system_url.is_valid() && !file->url.SchemeIsFile()) {
-        // We have an ARC content uri.
-        // TODO(crbug.com/1166982): We could be more intelligent here and
-        // decide which cracking method to use based on the scheme.
-        auto file_system_url_and_handle =
-            arc::ShareInfoFileHandler::GetFileSystemURL(browser->profile(),
-                                                        file->url);
-        file_system_url = file_system_url_and_handle.url;
-        if (!file_system_url.is_valid()) {
-          LOG(WARNING) << "Received unexpected file URL: " << file->url.spec();
-          continue;
-        }
-
-        constexpr int kBufSize = 16 * 1024;
-        FileStreamDataPipeGetter::Create(
-            /*receiver=*/data_pipe_getter.InitWithNewPipeAndPassReceiver(),
-            /*context=*/file_system_context,
-            /*url=*/file_system_url,
-            /*offset=*/0,
-            /*file_size=*/file->file_size,
-            /*buf_size=*/kBufSize);
-      }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
       const std::string filename =
@@ -168,7 +140,6 @@ NavigateParams NavigateParamsForShareTarget(
       is_value_file_uris.push_back(true);
       filenames.push_back(filename);
       types.push_back(mime_type);
-      data_pipe_getters.push_back(std::move(data_pipe_getter));
     }
   }
 
@@ -181,7 +152,6 @@ NavigateParams NavigateParamsForShareTarget(
     is_value_file_uris.push_back(false);
     filenames.emplace_back();
     types.push_back("text/plain");
-    data_pipe_getters.emplace_back();
   }
 
   if (share_target.enctype == apps::ShareTarget::Enctype::kMultipartFormData) {
@@ -189,8 +159,7 @@ NavigateParams NavigateParamsForShareTarget(
     nav_params.extra_headers = base::StringPrintf(
         "Content-Type: multipart/form-data; boundary=%s\r\n", boundary.c_str());
     nav_params.post_data = web_share_target::ComputeMultipartBody(
-        names, values, is_value_file_uris, filenames, types,
-        std::move(data_pipe_getters), boundary);
+        names, values, is_value_file_uris, filenames, types, boundary);
   } else {
     const std::string serialization =
         web_share_target::ComputeUrlEncodedBody(names, values);

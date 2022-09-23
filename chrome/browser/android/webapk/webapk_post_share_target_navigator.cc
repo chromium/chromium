@@ -73,8 +73,7 @@ static void JNI_WebApkPostShareTargetNavigator_NativeLoadViewForShareTargetPost(
     header_list = base::StringPrintf(
         "Content-Type: multipart/form-data; boundary=%s\r\n", boundary.c_str());
     post_data = web_share_target::ComputeMultipartBody(
-        names, values, is_value_file_uris, filenames, types,
-        /*data_pipe_getters=*/absl::nullopt, boundary);
+        names, values, is_value_file_uris, filenames, types, boundary);
   } else {
     std::string body = web_share_target::ComputeUrlEncodedBody(names, values);
     header_list = "Content-Type: application/x-www-form-urlencoded\r\n";

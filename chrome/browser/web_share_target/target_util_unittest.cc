@@ -51,7 +51,7 @@ TEST(TargetUtilTest, InvalidMultipartBody) {
   std::string boundary = "boundary";
   scoped_refptr<network::ResourceRequestBody> multipart_body =
       ComputeMultipartBody(names, values, is_value_file_uris, filenames, types,
-                           /*data_pipe_getters=*/absl::nullopt, boundary);
+                           boundary);
   EXPECT_EQ(nullptr, multipart_body.get());
 }
 
@@ -67,7 +67,7 @@ TEST(TargetUtilTest, ValidMultipartBodyForFile) {
   std::string boundary = "boundary";
   scoped_refptr<network::ResourceRequestBody> multipart_body =
       ComputeMultipartBody(names, values, is_value_file_uris, filenames, types,
-                           /*data_pipe_getters=*/absl::nullopt, boundary);
+                           boundary);
 
   std::vector<network::DataElement::Tag> expected_types = {
       network::DataElement::Tag::kBytes, network::DataElement::Tag::kFile,
@@ -95,7 +95,7 @@ TEST(TargetUtilTest, ValidMultipartBodyForText) {
   std::string boundary = "boundary";
   scoped_refptr<network::ResourceRequestBody> multipart_body =
       ComputeMultipartBody(names, values, is_value_file_uris, filenames, types,
-                           /*data_pipe_getters=*/absl::nullopt, boundary);
+                           boundary);
 
   std::vector<network::DataElement::Tag> expected_types = {
       network::DataElement::Tag::kBytes, network::DataElement::Tag::kBytes};
@@ -122,9 +122,8 @@ TEST(TargetUtilTest, ValidMultipartBodyForTextAndFile) {
                                     "type4", "type5", "type6"};
   std::string boundary = "boundary";
 
-  scoped_refptr<network::ResourceRequestBody> body =
-      ComputeMultipartBody(names, values, is_value_file_uris, filenames, types,
-                           /*data_pipe_getters=*/absl::nullopt, boundary);
+  scoped_refptr<network::ResourceRequestBody> body = ComputeMultipartBody(
+      names, values, is_value_file_uris, filenames, types, boundary);
 
   std::vector<network::DataElement::Tag> expected_types = {
       // item 1
@@ -178,9 +177,8 @@ TEST(TargetUtilTest, MultipartBodyWithPercentEncoding) {
   std::vector<std::string> filenames = {"filename"};
   std::vector<std::string> types = {"type"};
   std::string boundary = "boundary";
-  scoped_refptr<network::ResourceRequestBody> body =
-      ComputeMultipartBody(names, values, is_value_file_uris, filenames, types,
-                           /*data_pipe_getters=*/absl::nullopt, boundary);
+  scoped_refptr<network::ResourceRequestBody> body = ComputeMultipartBody(
+      names, values, is_value_file_uris, filenames, types, boundary);
   EXPECT_NE(nullptr, body->elements());
 
   std::vector<network::DataElement::Tag> expected_types = {

@@ -14,10 +14,6 @@ source_set("unit_tests") {
     "web_app_launch_utils_unittest.cc",
   ]
 
-  if (is_chromeos_ash) {
-    sources += [ "file_stream_data_pipe_getter_unittest.cc" ]
-  }
-
   deps = [
     "//chrome/browser",
     "//chrome/browser/ui",
