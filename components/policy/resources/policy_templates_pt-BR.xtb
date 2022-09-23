@@ -138,6 +138,11 @@
 
           Se a política for definida como verdadeira ou deixada sem definição, o recurso poderá ser ativado ou desativado pelo usuário.</translation>
 <translation id="1138294736309071213">Esta política é ativa somente no modo de varejo. Determina o tempo antes do protetor de tela ser mostrado na tela de login para os dispositivos no modo de varejo. O valor da política deve ser especificado em milésimos de segundos.</translation>
+<translation id="1143257335984030879">Esta política controla a disponibilidade do recurso da lista de compras.
+      Se for ativada, os usuários vão receber uma IU para monitorar o preço do produto mostrado na página atual. O produto é mostrado no painel lateral de favoritos.
+      Se a política for ativada ou deixada sem definição, a lista de compras vai ficar disponível para os usuários.
+      Se for desativada, o recurso da lista de compras vai ficar indisponível.
+      </translation>
 <translation id="1144540226829648811">Especifica o canal de liberação ao qual este dispositivo precisa ser vinculado.
 
       A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá efeito se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> for definida como falsa.</translation>
@@ -434,6 +439,11 @@
       As impressoras de extensão também são conhecidas como destinos de provedores de impressão e incluem qualquer destino que pertença a uma extensão do <ph name="PRODUCT_NAME" />.
 
       As impressoras locais também são conhecidas como destinos de impressão nativos e incluem os destinos disponíveis para as impressoras de rede compartilhada e de máquinas locais.</translation>
+<translation id="1456449214426764016">A API window.webkitStorageInfo não padrão foi descontinuada e vai ser removida.
+      A política reativa essa API.
+      Se a política for ativada, a API window.webkitStorageInfo vai ficar disponível.
+      Se ela for desativada ou deixada sem definição, a API não vai ficar disponível.
+      </translation>
 <translation id="1456822151187621582">Windows (clientes do <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Controla o comportamento do usuário em uma sessão de diversos perfis nos dispositivos com <ph name="PRODUCT_OS_NAME" />.
 
@@ -3222,6 +3232,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Veja mais detalhes em https://developer.chrome.com/blog/immutable-document-domain/
       (link em inglês).
       </translation>
+<translation id="416817811987180750">O recurso da lista de compras vai estar disponível para os usuários.</translation>
 <translation id="4169692397912242417">Ativar o recurso de acessibilidade de resposta falada na tela de login.
 
           Se esta política for definida como verdadeira, a resposta falada vai ficar sempre ativada na tela de login.
@@ -3910,6 +3921,7 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 
       Se a política for desativada ou deixada sem definição, um app da Web de quiosque só vai poder usar a janela principal do navegador e não poderá abrir uma nova. Chamadas de funções JavaScript para abrir uma nova janela vão ser ignoradas.</translation>
 <translation id="4980635395568992380">Tipo do dado:</translation>
+<translation id="4981831669478419057">O recurso da lista de compras não vai estar disponível para os usuários.</translation>
 <translation id="4983201894483989687">Permitir a execução de plug-ins que estão desatualizados</translation>
 <translation id="4986560318567565414">Caminho para mudar do navegador alternativo para o Chrome.</translation>
 <translation id="4987813583395474995">Se esta política for definida como "Ativada", a API U2F Security Key descontinuada poderá ser usada e o lembrete de descontinuação mostrado para solicitações de API U2F será suprimido.
@@ -6728,6 +6740,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
       Se essa política for definida como <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, o navegador vai restaurar a sessão anterior e abrir uma janela separada para mostrar URLs definidos em <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Além disso, os usuários podem optar por manter esses URLs abertos. Assim, eles também vão ser restaurados na próxima sessão.
 
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
+<translation id="7919665519909231619">Permitir que o recurso da lista de compras seja ativado</translation>
 <translation id="7922358664346625612">Mantém a última guia aberta no Chrome.</translation>
 <translation id="7924321157669251966">Porcentagem de brilho da tela quando em funcionamento com energia da bateria.</translation>
 <translation id="7925224837072026018">Se a política for definida, as extensões ou os apps Android terão acesso a chaves corporativas. Apenas chaves geradas usando a API chrome.enterprise.platformKeys em uma conta gerenciada são designadas para uso corporativo. O usuário não poderá conceder ou revogar o acesso de extensões ou apps Android a chaves corporativas.
@@ -7142,6 +7155,12 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8329984337216493753">Esta política é ativa somente no modo de varejo. Quando o DeviceIdleLogoutTimeout for especificado, esta política definirá a duração da caixa de aviso com contagem regressiva que será mostrada ao usuário antes da desconexão. O valor da política deve ser especificado em milésimos de segundos.</translation>
 <translation id="8330437518362176921">Usar apenas o URL de atualização fornecido pela política para fazer o download e a atualização de apps do Chrome para quiosque</translation>
 <translation id="8331479227794770304">Ativar tecla aderente</translation>
+<translation id="8336469459912731404">Quando esta política é ativada, o <ph name="PRODUCT_NAME" /> verifica os certificados do servidor usando o verificador de certificados integrado com a Chrome Root Store como fonte de confiança pública.
+      Se esta política for desativada, o <ph name="PRODUCT_NAME" /> vai usar o verificador de certificados e os certificados raiz do sistema.
+      Quando ela não for definida, o sistema vai poder usar a Chrome Root Store ou fornecer as próprias raízes.
+
+      Esta política vai ser removida no <ph name="PRODUCT_NAME" /> para <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" /> versão 111. O suporte ao uso das raízes e do verificador de certificados disponibilizados pela plataforma também vai ser removido nessa versão.
+      </translation>
 <translation id="8337114537412769126">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> especificará os parâmetros durante a pesquisa sugerida com POST. Ele consiste em pares nome-valor separados por vírgula. Se o valor for um parâmetro modelo, como <ph name="SEARCH_TERM_MARKER" />, ele será substituído pelos dados dos termos de pesquisa reais.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> não for definida, as solicitações de pesquisa sugerida serão enviadas usando o método get.</translation>
