@@ -24,14 +24,13 @@ function getVolumeMetadataList() {
  */
 function getVolumeRoot(volumeId, volumeKey) {
   return new Promise(function(resolve, reject) {
-    chrome.fileManagerPrivate.getVolumeRoot(
-        {volumeId: volumeId}, function(rootDirectoryEntry) {
-          if (chrome.runtime.lastError) {
-            reject(chrome.runtime.lastError.message);
-          } else {
-            resolve({'volumeKey': volumeKey, 'root': rootDirectoryEntry});
-          }
-        });
+    chrome.fileManagerPrivate.getVolumeRoot({volumeId}, function(root) {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+      } else {
+        resolve({volumeId, volumeKey, root});
+      }
+    });
   });
 }
 
@@ -53,32 +52,70 @@ function getTestVolumeRoots() {
   });
 }
 
+/** Async wrapper for chrome.fileManager.addFileWatch() */
+async function addFileWatch(...args) {
+  return new Promise(resolve => {
+    chrome.fileManagerPrivate.addFileWatch(...args, resolve);
+  });
+}
+
+/** Async wrapper for chrome.fileManager.removeFileWatch() */
+async function removeFileWatch(...args) {
+  return new Promise(resolve => {
+    chrome.fileManagerPrivate.removeFileWatch(...args, resolve);
+  });
+}
+
+/** Async wrapper for chrome.fileManager.removeMount() */
+async function removeMount(...args) {
+  return new Promise(resolve => {
+    chrome.fileManagerPrivate.removeMount(...args, resolve);
+  });
+}
+
 // Run the tests.
 getTestVolumeRoots().then(function(testVolumeRoots) {
   // Convert the array of <string, DirectoryEntry> into a map.
-  const volumeRootsByVolumeKey =
+  const volumesByVolumeKey =
       testVolumeRoots.reduce(function(map, volumeAssociation) {
-        map[volumeAssociation.volumeKey] = volumeAssociation.root;
+        map[volumeAssociation.volumeKey] = volumeAssociation;
         return map;
       }, {});
 
   chrome.test.runTests([
     // Test that addFileWatch succeeds on a watchable volume ("downloads").
     async function testAddFileWatchToWatchableVolume() {
-      await chrome.fileManagerPrivate.addFileWatch(
-          volumeRootsByVolumeKey['downloads'], () => {
-            chrome.test.assertNoLastError();
-            chrome.test.succeed();
-          });
+      const downloads = volumesByVolumeKey['downloads'];
+      await addFileWatch(downloads.root);
+      chrome.test.assertNoLastError();
+      await removeFileWatch(downloads.root);
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
     },
 
     // Test that addFileWatch fails on a non-watchable volume ("testing").
     async function testAddFileWatchToNonWatchableVolume() {
-      await chrome.fileManagerPrivate.addFileWatch(
-          volumeRootsByVolumeKey['testing'], () => {
-            chrome.test.assertLastError('Volume is not watchable');
-            chrome.test.succeed();
-          });
-    }
+      const testing = volumesByVolumeKey['testing'];
+      await addFileWatch(testing.root);
+      chrome.test.assertLastError('Volume is not watchable');
+      await removeFileWatch(testing.root);
+      // chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    },
+
+    // Test that removeFileWatcher doesn't fail after unmounting the volume.
+    async function testRemoveFileWatcherAfterUnmounting() {
+      const volume = volumesByVolumeKey['testing'];
+      await addFileWatch(volume.root);
+      chrome.test.assertLastError('Volume is not watchable');
+
+      // Unmount the testing volume.
+      await removeMount(volume.volumeId);
+      chrome.test.assertNoLastError();
+
+      await removeFileWatch(volume.root);
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    },
   ]);
 });

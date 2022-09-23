@@ -208,13 +208,12 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
 
   switch (volume->type()) {
     case file_manager::VOLUME_TYPE_REMOVABLE_DISK_PARTITION:
-    case file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE: {
+    case file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE:
       DiskMountManager::GetInstance()->UnmountPath(
           volume->mount_path().value(),
           base::BindOnce(
               &FileManagerPrivateRemoveMountFunction::OnDiskUnmounted, this));
       return RespondLater();
-    }
 
     case file_manager::VOLUME_TYPE_PROVIDED: {
       auto* service =
@@ -237,6 +236,15 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
     case file_manager::VOLUME_TYPE_SMB:
       ash::smb_client::SmbServiceFactory::Get(profile)->UnmountSmbFs(
           volume->mount_path());
+      return RespondNow(WithArguments());
+
+    case file_manager::VOLUME_TYPE_TESTING:
+      file_manager::VolumeManager::Get(profile)
+          ->RemoveVolumeForTesting(  // IN-TEST
+              volume->mount_path(), volume->type(), volume->device_type(),
+              volume->is_read_only(), volume->storage_device_path(),
+              volume->drive_label(), volume->file_system_type());
+
       return RespondNow(WithArguments());
 
     case file_manager::VOLUME_TYPE_GUEST_OS:

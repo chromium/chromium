@@ -596,18 +596,22 @@ ExtensionFunction::ResponseAction FileWatchFunctionBase::Run() {
     return RespondNow(Error("Invalid URL"));
   }
 
-  VolumeManager* const volume_manager = VolumeManager::Get(profile);
-  if (!volume_manager)
-    return RespondNow(Error("Cannot find VolumeManager"));
+  // For removeFileWatch() we can't validate the volume because it might have
+  // been unmounted.
+  if (IsAddWatch()) {
+    VolumeManager* const volume_manager = VolumeManager::Get(profile);
+    if (!volume_manager)
+      return RespondNow(Error("Cannot find VolumeManager"));
 
-  const base::WeakPtr<Volume> volume =
-      volume_manager->FindVolumeFromPath(file_system_url.path());
-  if (!volume)
-    return RespondNow(
-        Error("Cannot find volume *", Redact(file_system_url.path())));
+    const base::WeakPtr<Volume> volume =
+        volume_manager->FindVolumeFromPath(file_system_url.path());
+    if (!volume)
+      return RespondNow(
+          Error("Cannot find volume *", Redact(file_system_url.path())));
 
-  if (!volume->watchable())
-    return RespondNow(Error("Volume is not watchable"));
+    if (!volume->watchable())
+      return RespondNow(Error("Volume is not watchable"));
+  }
 
   file_manager::EventRouter* const event_router =
       file_manager::EventRouterFactory::GetForProfile(profile);
@@ -706,6 +710,14 @@ void FileManagerPrivateInternalRemoveFileWatchFunction::
   event_router->RemoveFileWatch(file_system_url.path(),
                                 url::Origin::Create(source_url()));
   RespondWith(true);
+}
+
+bool FileManagerPrivateInternalAddFileWatchFunction::IsAddWatch() {
+  return true;
+}
+
+bool FileManagerPrivateInternalRemoveFileWatchFunction::IsAddWatch() {
+  return false;
 }
 
 ExtensionFunction::ResponseAction

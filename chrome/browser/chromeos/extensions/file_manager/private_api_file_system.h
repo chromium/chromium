@@ -113,6 +113,9 @@ class FileWatchFunctionBase : public LoggedExtensionFunction {
  protected:
   ~FileWatchFunctionBase() override = default;
 
+  // A virtual method to tell the base class if the function is addFileWatch().
+  virtual bool IsAddWatch() = 0;
+
   // Performs a file watch operation (ex. adds or removes a file watch) on
   // the IO thread with storage::WatcherManager.
   virtual void PerformFileWatchOperationOnIOThread(
@@ -158,6 +161,7 @@ class FileManagerPrivateInternalAddFileWatchFunction
   void PerformFallbackFileWatchOperationOnUIThread(
       const storage::FileSystemURL& file_system_url,
       base::WeakPtr<file_manager::EventRouter> event_router) override;
+  bool IsAddWatch() override;
 };
 
 // Implements the chrome.fileManagerPrivate.removeFileWatch method.
@@ -180,6 +184,7 @@ class FileManagerPrivateInternalRemoveFileWatchFunction
   void PerformFallbackFileWatchOperationOnUIThread(
       const storage::FileSystemURL& file_system_url,
       base::WeakPtr<file_manager::EventRouter> event_router) override;
+  bool IsAddWatch() override;
 };
 
 // Implements the chrome.fileManagerPrivate.getSizeStats method.
