@@ -23,6 +23,7 @@ const CpuUarchTableEntry kCpuUarchTable[] = {
     // These were found on various sources on the Internet. Main ones are:
     // http://instlatx64.atw.hu/ for CPUID to model name and
     // http://www.cpu-world.com for model name to microarchitecture
+    // clang-format off
     {"06_09", "Banias"},
     {"06_0D", "Dothan"},
     {"06_0F", "Merom"},
@@ -61,11 +62,13 @@ const CpuUarchTableEntry kCpuUarchTable[] = {
     {"06_7A", "GoldmontPlus"},
     {"06_8C", "Tigerlake"},
     {"06_8E", "Kabylake"},
+    {"06_9C", "Tremont"},     // Jasperlake
     {"06_9E", "Kabylake"},
     {"0F_03", "Prescott"},
     {"0F_04", "Prescott"},
     {"0F_06", "Presler"},
     {"15_70", "Excavator"},   // AMD Stoney Ridge
+    // clang-format on
 };
 
 const CpuUarchTableEntry* kCpuUarchTableEnd =

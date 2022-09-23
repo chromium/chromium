@@ -207,6 +207,10 @@ const char kPerfITLBMissCyclesCmdAtom[] =
 const char kPerfDTLBMissCyclesCmdAtom[] =
     "-- record -a -e page_walks.d_side_cycles -g -c 350003";
 
+// TLB miss cycles using raw PMU event codes.
+const char kPerfITLBMissCyclesCmdTremont[] = "-- record -a -e r1085 -c 30001";
+const char kPerfDTLBMissCyclesCmdTremont[] = "-- record -a -e r1008 -c 350003";
+
 const char kPerfLLCMissesCmd[] = "-- record -a -e r412e -g -c 30007";
 // Precise events (request zero skid) for last level cache misses.
 const char kPerfLLCMissesPreciseCmd[] = "-- record -a -e r412e:pp -g -c 30007";
@@ -236,6 +240,10 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
       cpu_uarch == "Tigerlake" || cpu_uarch == "GoldmontPlus") {
     itlb_miss_cycles_cmd = kPerfITLBMissCyclesCmdSkylake;
     dtlb_miss_cycles_cmd = kPerfDTLBMissCyclesCmdSkylake;
+  }
+  if (cpu_uarch == "Tremont") {
+    itlb_miss_cycles_cmd = kPerfITLBMissCyclesCmdTremont;
+    dtlb_miss_cycles_cmd = kPerfDTLBMissCyclesCmdTremont;
   }
   if (cpu_uarch == "Silvermont" || cpu_uarch == "Airmont" ||
       cpu_uarch == "Goldmont") {
@@ -288,13 +296,19 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
       cpu_uarch == "Skylake" || cpu_uarch == "Kabylake" ||
       cpu_uarch == "Tigerlake" || cpu_uarch == "Silvermont" ||
       cpu_uarch == "Airmont" || cpu_uarch == "Goldmont" ||
-      cpu_uarch == "GoldmontPlus") {
-    cmds.emplace_back(WeightAndValue(15.0, lbr_cmd));
-    cmds.emplace_back(WeightAndValue(5.0, itlb_miss_cycles_cmd));
-    cmds.emplace_back(WeightAndValue(5.0, dtlb_miss_cycles_cmd));
-    // Only Goldmont and GoldmontPlus support precise events on last level cache
-    // misses.
-    if (cpu_uarch == "Goldmont" || cpu_uarch == "GoldmontPlus") {
+      cpu_uarch == "GoldmontPlus" || cpu_uarch == "Tremont") {
+    if (cpu_uarch == "Tremont") {
+      cmds.emplace_back(WeightAndValue(12.5, itlb_miss_cycles_cmd));
+      cmds.emplace_back(WeightAndValue(12.5, dtlb_miss_cycles_cmd));
+    } else {
+      cmds.emplace_back(WeightAndValue(15.0, lbr_cmd));
+      cmds.emplace_back(WeightAndValue(5.0, itlb_miss_cycles_cmd));
+      cmds.emplace_back(WeightAndValue(5.0, dtlb_miss_cycles_cmd));
+    }
+    // Record precise events on last level cache misses whenever the hardware
+    // supports.
+    if (cpu_uarch == "Goldmont" || cpu_uarch == "GoldmontPlus" ||
+        cpu_uarch == "Tremont") {
       cmds.emplace_back(WeightAndValue(5.0, kPerfLLCMissesPreciseCmd));
     } else {
       cmds.emplace_back(WeightAndValue(5.0, kPerfLLCMissesCmd));

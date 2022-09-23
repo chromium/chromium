@@ -58,6 +58,7 @@ const char kPerfITLBMissCyclesCmdSkylake[] =
     "-- record -a -e itlb_misses.walk_pending -c 30001";
 const char kPerfITLBMissCyclesCmdAtom[] =
     "-- record -a -e page_walks.i_side_cycles -c 30001";
+const char kPerfITLBMissCyclesCmdTremont[] = "-- record -a -e r1085 -c 30001";
 const char kPerfLLCMissesCmd[] = "-- record -a -e r412e -g -c 30007";
 const char kPerfLLCMissesPreciseCmd[] = "-- record -a -e r412e:pp -g -c 30007";
 const char kPerfETMCmd[] =
@@ -693,6 +694,32 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_GoldmontPlus) {
   EXPECT_TRUE(base::Contains(cmds, kPerfLLCMissesPreciseCmd,
                              &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(base::Contains(cmds, kPerfITLBMissCyclesCmdSkylake,
+                             &RandomSelector::WeightAndValue::value));
+}
+
+TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tremont) {
+  CPUIdentity cpuid;
+  cpuid.arch = "x86_64";
+  cpuid.vendor = "GenuineIntel";
+  cpuid.family = 0x06;
+  cpuid.model = 0x9c;  // Tremont
+  cpuid.model_name = "";
+  cpuid.release = "5.4.206";
+  std::vector<RandomSelector::WeightAndValue> cmds =
+      internal::GetDefaultCommandsForCpuModel(cpuid, "");
+  ASSERT_GE(cmds.size(), 2UL);
+  EXPECT_EQ(cmds[0].value, kPerfCyclesCmd);
+  EXPECT_TRUE(DoesCommandSampleCycles(cmds[0].value));
+  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphCmd);
+  EXPECT_TRUE(DoesCommandSampleCycles(cmds[1].value));
+  // No LBR callstacks because the microarchitecture doesn't support it.
+  EXPECT_FALSE(base::Contains(cmds, kPerfLBRCallgraphCmd,
+                              &RandomSelector::WeightAndValue::value));
+  EXPECT_FALSE(base::Contains(cmds, kPerfLBRCmdAtom,
+                              &RandomSelector::WeightAndValue::value));
+  EXPECT_TRUE(base::Contains(cmds, kPerfLLCMissesPreciseCmd,
+                             &RandomSelector::WeightAndValue::value));
+  EXPECT_TRUE(base::Contains(cmds, kPerfITLBMissCyclesCmdTremont,
                              &RandomSelector::WeightAndValue::value));
 }
 
