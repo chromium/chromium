@@ -223,35 +223,6 @@ void WebAppInstallTask::InstallWebAppFromManifestWithFallback(
       base::BindOnce(&WebAppInstallTask::OnGetWebAppInstallInfo, GetWeakPtr()));
 }
 
-void WebAppInstallTask::LoadAndInstallSubAppFromURL(
-    const GURL& install_url,
-    const AppId& expected_app_id,
-    content::WebContents* contents,
-    WebAppUrlLoader* url_loader,
-    WebAppInstallDialogCallback dialog_callback,
-    OnceInstallCallback install_callback) {
-  DCHECK(AreWebAppsUserInstallable(profile_));
-  CheckInstallPreconditions();
-
-  Observe(contents);
-
-  if (ShouldStopInstall())
-    return;
-
-  ExpectAppId(expected_app_id);
-
-  // TODO(https://crbug.com/1326843): Change to background installation in case
-  // of relevant policy.
-  dialog_callback_ = std::move(dialog_callback);
-  install_callback_ = std::move(install_callback);
-
-  url_loader->LoadUrl(
-      install_url, contents,
-      WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
-      base::BindOnce(&WebAppInstallTask::OnWebAppUrlLoadedGetWebAppInstallInfo,
-                     GetWeakPtr(), install_url));
-}
-
 // static
 void WebAppInstallTask::UpdateFinalizerClientData(
     const absl::optional<WebAppInstallParams>& params,

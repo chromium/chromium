@@ -202,35 +202,6 @@ class WebAppInstallManagerTest
     webapps::InstallResultCode code;
   };
 
-  InstallResult InstallSubApp(const AppId& parent_app_id,
-                              const GURL& install_url) {
-    UseDefaultDataRetriever(install_url);
-    url_loader().SetNextLoadUrlResult(install_url,
-                                      WebAppUrlLoader::Result::kUrlLoaded);
-    InstallResult result;
-    base::RunLoop run_loop;
-    install_manager().InstallSubApp(
-        parent_app_id, install_url,
-        GenerateAppId(/*manifest_id=*/{}, install_url),
-        /*dialog_callback=*/
-        base::BindLambdaForTesting(
-            [](content::WebContents* initiator_web_contents,
-               std::unique_ptr<WebAppInstallInfo> web_app_info,
-               WebAppInstallationAcceptanceCallback acceptance_callback) {
-              std::move(acceptance_callback)
-                  .Run(/*user_accepted=*/true, std::move(web_app_info));
-            }),
-        /*install_callback=*/
-        base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                       webapps::InstallResultCode code) {
-          result.app_id = installed_app_id;
-          result.code = code;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return result;
-  }
-
   InstallResult InstallWebAppFromInfo(
       std::unique_ptr<WebAppInstallInfo> install_info,
       bool overwrite_existing_manifest_fields,
@@ -783,54 +754,6 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   EXPECT_EQ(SK_ColorYELLOW, IconManagerReadAppIconPixel(icon_manager(), app_id,
                                                         icon_size::k128));
-}
-
-TEST_P(WebAppInstallManagerTest_SyncOnly, InstallSubApp) {
-  const GURL parent_url{"https://example.com/parent"};
-  const AppId parent_app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, parent_url);
-  const GURL install_url{"https://example.com/sub/app"};
-  const AppId app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, install_url);
-  const GURL second_install_url{"https://example.com/sub/second_app"};
-  const AppId second_app_id =
-      GenerateAppId(/*manifest_id=*/absl::nullopt, second_install_url);
-
-  // Install a sub-app and verify a bunch of things.
-  InstallResult result = InstallSubApp(parent_app_id, install_url);
-
-  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-  EXPECT_EQ(app_id, result.app_id);
-
-  EXPECT_TRUE(registrar().IsInstalled(app_id));
-  EXPECT_TRUE(registrar().IsLocallyInstalled(app_id));
-  EXPECT_EQ(DisplayMode::kStandalone,
-            registrar().GetAppEffectiveDisplayMode(app_id));
-  EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
-
-  const WebApp* app = registrar().GetAppById(app_id);
-  EXPECT_EQ(parent_app_id, app->parent_app_id());
-  EXPECT_TRUE(app->IsSubAppInstalledApp());
-  EXPECT_TRUE(app->CanUserUninstallWebApp());
-
-  // One sub-app.
-  EXPECT_EQ(1ul, registrar().GetAllSubAppIds(parent_app_id).size());
-
-  // Check that we get |kSuccessAlreadyInstalled| if we try installing the same
-  // app again.
-  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
-            InstallSubApp(parent_app_id, install_url).code);
-
-  // Still one sub-app.
-  EXPECT_EQ(1ul, registrar().GetAllSubAppIds(parent_app_id).size());
-
-  // Install a different sub-app and verify count equals 2.
-  result = InstallSubApp(parent_app_id, second_install_url);
-  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-  EXPECT_EQ(second_app_id, result.app_id);
-
-  // Two sub-apps.
-  EXPECT_EQ(2ul, registrar().GetAllSubAppIds(parent_app_id).size());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

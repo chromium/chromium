@@ -120,39 +120,6 @@ void WebAppInstallManager::SetSubsystems(
   translation_manager_ = translation_manager;
 }
 
-void WebAppInstallManager::InstallSubApp(
-    const AppId& parent_app_id,
-    const GURL& install_url,
-    const AppId& expected_app_id,
-    WebAppInstallDialogCallback dialog_callback,
-    OnceInstallCallback install_callback) {
-  if (!started_)
-    return;
-  auto task = std::make_unique<WebAppInstallTask>(
-      profile_, finalizer_, data_retriever_factory_.Run(), registrar_,
-      webapps::WebappInstallSource::SUB_APP);
-
-  WebAppInstallParams params;
-  params.parent_app_id = parent_app_id;
-  params.require_manifest = true;
-  params.add_to_quick_launch_bar = false;
-  params.user_display_mode = UserDisplayMode::kStandalone;
-  params.fallback_start_url = install_url;
-  // Don't want to allow devs to force manifest updates with the API.
-  params.force_reinstall = false;
-  params.install_url = install_url;
-
-  task->SetInstallParams(params);
-
-  WebAppInstallTask* task_ptr = task.get();
-  tasks_.insert(std::move(task));
-  task_ptr->LoadAndInstallSubAppFromURL(
-      install_url, expected_app_id, EnsureWebContentsCreated(),
-      url_loader_.get(), std::move(dialog_callback),
-      base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
-                     GetWeakPtr(), task_ptr, std::move(install_callback)));
-}
-
 base::WeakPtr<WebAppInstallManager> WebAppInstallManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
