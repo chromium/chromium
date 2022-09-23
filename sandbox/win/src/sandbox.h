@@ -197,7 +197,7 @@ class [[clang::lto_visibility_public]] TargetServices {
   ~TargetServices() {}
 };
 
-class PolicyInfo {
+class [[clang::lto_visibility_public]] PolicyInfo {
  public:
   // Returns a JSON representation of the policy snapshot.
   // This pointer has the same lifetime as this PolicyInfo object.
@@ -207,7 +207,7 @@ class PolicyInfo {
 
 // This is returned by BrokerServices::GetPolicyDiagnostics().
 // PolicyInfo entries need not be ordered.
-class PolicyList {
+class [[clang::lto_visibility_public]] PolicyList {
  public:
   virtual std::vector<std::unique_ptr<PolicyInfo>>::iterator begin() = 0;
   virtual std::vector<std::unique_ptr<PolicyInfo>>::iterator end() = 0;
@@ -216,7 +216,7 @@ class PolicyList {
 };
 
 // This class mediates calls to BrokerServices::GetPolicyDiagnostics().
-class PolicyDiagnosticsReceiver {
+class [[clang::lto_visibility_public]] PolicyDiagnosticsReceiver {
  public:
   // ReceiveDiagnostics() should return quickly and should not block the
   // thread on which it is called.
