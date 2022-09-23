@@ -2300,6 +2300,7 @@
 <translation id="3090819949319990166"><ph name="TEMP_CRX_FILE" /> වෙත බාහිර crx ගොනුව පිටපත් කළ නොහැක.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" යුගල විය</translation>
 <translation id="3093714882666365141">ගෙවීම් හසුරු ස්ථාපනය කිරීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
+<translation id="3093958632721393232">මගේ බැටරිය අඩු වූ විට පමණක් ක්‍රියාත්මක කරන්න</translation>
 <translation id="3094141017404513551">මෙය ඔබගේ බ්‍රවුස් කිරීම <ph name="EXISTING_USER" /> වෙතින් වෙන් කරනු ඇත</translation>
 <translation id="3095871294753148861">පිටුසන්, මුරපද, සහ අනෙකුත් බ්‍රවුසර දත්ත ප්‍රාථමික ගිණුම සමඟ සමමුහූර්ත කෙරේ.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 හානිකර විය හැකි දිගුවක් අක්‍රියයි. ඔබට එය ඉවත් කිරීමට ද හැකිය.}one{හානිකර විය හැකි දිගු {NUM_EXTENSIONS} ක් අක්‍රියයි. ඔබට ඒවා ඉවත් කිරීමට ද හැකිය.}other{හානිකර විය හැකි දිගු {NUM_EXTENSIONS} ක් අක්‍රියයි. ඔබට ඒවා ඉවත් කිරීමට ද හැකිය.}}</translation>
@@ -5023,6 +5024,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5747552184818312860">කල් ඉකුත් වේ</translation>
 <translation id="5747785204778348146">සංවර්ධක - අස්ථිර</translation>
 <translation id="5747809636523347288">අලවා <ph name="URL" /> වෙත යන්න</translation>
+<translation id="5748137879145720682">මගේ පරිගණකය පේනු ඉවත් කර ඇති විට ක්‍රියාත්මක කරන්න</translation>
 <translation id="5751345516399502412">ටෙදරින් සූදානම පරීක්ෂා කරන්න</translation>
 <translation id="5755022574660047665">Google ඡායාරූප වෙතින් මතක</translation>
 <translation id="5756163054456765343">උපකාර මධ්‍යස්ථානය</translation>
@@ -7654,6 +7656,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8248381369318572865">ඔබගේ මයික්‍රෆෝනය වෙත ප්‍රවේශ වන්න ඔබගේ කථාව විශ්ලේෂණය කරන්න</translation>
 <translation id="8248887045858762645">Chrome ඉඟිය</translation>
 <translation id="8249048954461686687">OEM ෆෝල්ඩරය</translation>
+<translation id="8249239468199142122">බැටරි සුරැකුම</translation>
 <translation id="8249615410597138718">ඔබේ උපාංග වෙත යවන්න</translation>
 <translation id="8250210000648910632">ගබඩා ඉඩ නැත</translation>
 <translation id="8251441930213048644">දැන් නැවුම් කරන්න</translation>

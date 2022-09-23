@@ -1280,6 +1280,7 @@
 <translation id="4346833872170306413">રૉક-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" />નું કનેક્શન સુરક્ષિત નથી</translation>
 <translation id="4349365535725594680">ગોપનીય કન્ટેન્ટ શેર કરી શકાતું નથી</translation>
+<translation id="4349810866125026513">કોઈપણ રીતે અપલોડ કરો</translation>
 <translation id="4350629523305688469">મલ્ટિ ફંક્શન ટ્રે</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> નજીકના બ્લૂટૂથ ડિવાઇસ માટે સ્કૅન કરવા માગે છે. નીચે મુજબના ડિવાઇસ મળ્યા છે:</translation>
 <translation id="4351175281479794167">ચકાસણી કોડ દાખલ કરો</translation>
@@ -1420,6 +1421,7 @@
 <translation id="4744514002166662487">પ્રસ્તુતિ બનાવો</translation>
 <translation id="4744603770635761495">અમલ કરવાયોગ્ય પાથ</translation>
 <translation id="4749011317274908093">તમે છૂપા મોડમાં ગયા છો</translation>
+<translation id="4750671009706599284">આ ફોન</translation>
 <translation id="4750917950439032686">તમારી માહિતી (ઉદાહરણ તરીકે, પાસવર્ડ્સ અથવા ક્રેડિટ કાર્ડ નંબર્સ) ખાનગી હોય છે જ્યારે તે આ સાઇટ પર મોકલવામાં આવે.</translation>
 <translation id="4751476147751820511">મોશન અથવા લાઇટ સેન્સર</translation>
 <translation id="4754461935447132332">અસુરક્ષિત સાઇટમાં મંજૂરી આપવામાં આવતી નથી</translation>
@@ -2017,6 +2019,7 @@
 <translation id="6337133576188860026"><ph name="SIZE" /> કરતાં ઓછી જગ્યા ખાલી કરે છે. તમારી આગલી મુલાકાત સમયે કેટલીક સાઇટ વધુ ધીમે લોડ થઈ શકે છે.</translation>
 <translation id="6337534724793800597">નામ દ્વારા નીતિઓને ફિલ્ટર કરો</translation>
 <translation id="6340739886198108203">જ્યારે ગોપનીય કન્ટેન્ટ દેખાતું હોય, ત્યારે ઍડમિનિસ્ટ્રેટરની પૉલિસી સ્ક્રીનશૉટ અથવા રેકોર્ડિંગ લેવાનો સુઝાવ આપતી નથી:</translation>
+<translation id="6341434961864773665">{0,plural, =1{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર અપલોડ કરવાનો સુઝાવ આપતી નથી}one{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલોને <ph name="DESTINATION_NAME" /> પર અપલોડ કરવાનો સુઝાવ આપતી નથી}other{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલોને <ph name="DESTINATION_NAME" /> પર અપલોડ કરવાનો સુઝાવ આપતી નથી}}</translation>
 <translation id="6348220984832452017">સક્રિય વિવિધતાઓ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ઇન્સ્ટૉલ કરો</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{એકપણ નહીં}=1{1 પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}=2{2 પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}one{# પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}other{# પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}}</translation>
@@ -2200,6 +2203,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome દ્વારા આ પેજને સરળ બનાવવામાં આવ્યું છે જેથી તેને વધુ સરળતાથી વાંચી શકાય. Chrome દ્વારા અસુરક્ષિત કનેક્શન વડે ઑરિજિનલ પેજ પાછું મેળવવામાં આવ્યું.</translation>
 <translation id="6890443033788248019">શું સ્થાનની મંજૂરી આપીએ?</translation>
+<translation id="6890531741535756070">તમે <ph name="PROVIDER_ORIGIN" />નો ઉપયોગ કરતી વેબસાઇટ પર <ph name="DEVICE_LABEL" /> વડે ચકાસણી કરવાનું પસંદ કર્યું છે. આ પ્રદાતાએ તમારી ચુકવણી પદ્ધતિ વિશેની માહિતી કદાચ સ્ટોર કરી હોઈ શકે છે, જેને તમે <ph name="BEGIN_LINK" />ડિલીટ કરવા માટેની વિનંતી<ph name="END_LINK" /> કરી શકો છો.</translation>
 <translation id="6891596781022320156">પૉલિસી લેવલ સમર્થિત નથી.</translation>
 <translation id="6895143722905299846">વર્ચ્યુઅલ નંબર:</translation>
 <translation id="6895330447102777224">તમારા કાર્ડની પુષ્ટિ કરવામાં આવી છે</translation>
@@ -2566,6 +2570,7 @@
 <translation id="7766518757692125295">સ્કર્ટ</translation>
 <translation id="7770259615151589601">નિર્દિષ્ટ-લાંબું</translation>
 <translation id="7773005668374414287">ઉપર તરફ તે જ ક્રમમાં</translation>
+<translation id="7785790577395078482">આ ટૅબ્લેટ</translation>
 <translation id="7791011319128895129">રિલીઝ ન થયેલી</translation>
 <translation id="7791196057686275387">ગાંસળી બનાવો</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
@@ -2663,6 +2668,7 @@
 <translation id="8075736640322370409">Google Sheetમાં ઝડપથી નવી શીટ બનાવો</translation>
 <translation id="8075898834294118863">સાઇટ સેટિંગ મેનેજ કરો</translation>
 <translation id="8076492880354921740">ટૅબ્સ</translation>
+<translation id="8078006011486731853">{0,plural, =1{શું ગોપનીય ફાઇલ અપલોડ કરીએ?}one{શું ગોપનીય ફાઇલ અપલોડ કરીએ?}other{શું ગોપનીય ફાઇલો અપલોડ કરીએ?}}</translation>
 <translation id="8078141288243656252">ફેરવેલ હોય ત્યારે એનોટેટ કરી શકતા નથી</translation>
 <translation id="8079031581361219619">સાઇટ ફરીથી લોડ કરીએ?</translation>
 <translation id="8081087320434522107">સીડાન</translation>

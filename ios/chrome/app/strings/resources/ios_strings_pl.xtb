@@ -72,7 +72,6 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1434356225517321998">Twoja przeglądarka jest zarządzana. <ph name="BEGIN_LINK" />Szczegóły<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ukryj hasło</translation>
-<translation id="145015347812617860">Elementy: <ph name="COUNT" /></translation>
 <translation id="1450170672351507823">Włączona jest standardowa ochrona. Jeśli zależy Ci na większym bezpieczeństwie, użyj silniejszej ochrony.</translation>
 <translation id="149095475893949513">Ta strona próbuje pobrać profil konfiguracji.</translation>
 <translation id="1491277525950327607">Kliknij dwukrotnie, by zmienić ustawienie</translation>
@@ -106,7 +105,6 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="168715261339224929">Aby korzystać ze swoich zakładek na wszystkich urządzeniach, włącz synchronizację.</translation>
 <translation id="1687475363370981210">Oznacz wszystkie jako przeczytane</translation>
 <translation id="1689333818294560261">Pseudonim</translation>
-<translation id="1690731385917361335">Brak elementów</translation>
 <translation id="1700629756560807968">Wybrane: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Kliknij dwukrotnie, by zainstalować.</translation>
 <translation id="1752547299766512813">Zapisuj hasła</translation>
@@ -986,7 +984,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9068336935206019333">Otwórz w Chrome w trybie incognito</translation>
 <translation id="9079935439869366234">Oznacz wszystkie jako nieprzeczytane</translation>
 <translation id="9081058212938299310">Zaktualizować hasło dla <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">Jeden element</translation>
 <translation id="9083838294503912307">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację.</translation>
 <translation id="9087108903408689779">Hasło proponowane przez Chrome:</translation>
 <translation id="9094033019050270033">Aktualizuj hasło</translation>

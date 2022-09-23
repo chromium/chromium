@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1434356225517321998">Прелистувачот е управуван. <ph name="BEGIN_LINK" />Детали<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Сокријте ја лозинката</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> ставки</translation>
 <translation id="1450170672351507823">Вклучена е „Стандардната заштита“. За уште поголема безбедност, користете ја „Подобрената заштита“.</translation>
 <translation id="149095475893949513">Веб-сајтов се обидува да преземе профил за конфигурација.</translation>
 <translation id="1491277525950327607">Допрете двапати за да ја измените поставката</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">За да ги добиете обележувачите на сите уреди, вклучете ја синхронизацијата.</translation>
 <translation id="1687475363370981210">Означи ги сите како прочитани</translation>
 <translation id="1689333818294560261">Прекар</translation>
-<translation id="1690731385917361335">Нема ставки</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> избрани</translation>
 <translation id="1740468249224277719">Двоен допир за инсталирање.</translation>
 <translation id="1752547299766512813">Зачувај лозинки</translation>
@@ -986,7 +984,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9068336935206019333">Отвори во „Инкогнито“ на Chrome</translation>
 <translation id="9079935439869366234">Означи ги сите како непрочитани</translation>
 <translation id="9081058212938299310">Да се ажурира лозинката за <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 ставка</translation>
 <translation id="9083838294503912307">За да ги синхронизирате и персонализирате уредите, вклучете синхронизација.</translation>
 <translation id="9087108903408689779">Предложена лозинка од Chrome:</translation>
 <translation id="9094033019050270033">Ажурирај ја лозинката</translation>

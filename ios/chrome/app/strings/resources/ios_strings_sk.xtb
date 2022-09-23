@@ -72,7 +72,6 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1434356225517321998">Váš prehliadač je spravovaný. <ph name="BEGIN_LINK" />Podrobnosti<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Skryť heslo</translation>
-<translation id="145015347812617860">Počet položiek: <ph name="COUNT" /></translation>
 <translation id="1450170672351507823">Je zapnutá štandardná ochrana. Lepšie zabezpečenie dosiahnete používaním rozšírenej ochrany.</translation>
 <translation id="149095475893949513">Tento web sa pokúša stiahnuť profil konfigurácie.</translation>
 <translation id="1491277525950327607">Nastavenie môžete prepnúť dvojitým klepnutím</translation>
@@ -106,7 +105,6 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="168715261339224929">Ak chcete získať záložky vo všetkých zariadeniach, zapnite synchronizáciu.</translation>
 <translation id="1687475363370981210">Označiť všetko ako prečítané</translation>
 <translation id="1689333818294560261">Prezývka</translation>
-<translation id="1690731385917361335">Žiadne položky</translation>
 <translation id="1700629756560807968">Počet vybraných záložiek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Dvojitým klepnutím spustíte inštaláciu.</translation>
 <translation id="1752547299766512813">Ukladať heslá</translation>
@@ -986,7 +984,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9068336935206019333">Otvoriť v Chrome v režime inkognito</translation>
 <translation id="9079935439869366234">Označiť všetko ako neprečítané</translation>
 <translation id="9081058212938299310">Chcete aktualizovať heslo používateľa <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 položka</translation>
 <translation id="9083838294503912307">Ak chcete synchronizovať a prispôsobovať viaceré zariadenia, zapnite synchronizáciu.</translation>
 <translation id="9087108903408689779">Heslo navrhnuté Chromom:</translation>
 <translation id="9094033019050270033">Aktualizovať heslo</translation>

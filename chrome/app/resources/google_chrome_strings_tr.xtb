@@ -226,6 +226,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5386244825306882791">Ayrıca, Chrome'u başlattığınızda veya Çok Amaçlı Adres Çubuğu'ndan arama yaptığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="5394833366792865639">Chrome sekmesi paylaşın</translation>
 <translation id="5412485296464121825">Siteler, ilgi alanlarınız hakkındaki bilgileri Chrome'da saklayabilir. Örneğin, maraton ayakkabısı satın almak için ziyaret ettiğiniz bir site, maraton koşmayı ilgi alanınız olarak tanımlayabilir. Daha sonra bir yarışa kaydolmak için farklı bir siteyi ziyaret ettiğinizde o site ilgi alanlarınıza dayalı olarak size koşu ayakkabısı reklamı gösterebilir.</translation>
+<translation id="5416870378730196769">Chrome, Bellek Tasarrufu'nu etkinleştirdi</translation>
 <translation id="5430073640787465221">Tercih dosyanız bozuk veya geçersiz. Google Chrome, ayarlarınızı kurtaramıyor.</translation>
 <translation id="5524761631371622910">Denemeler açıksa ve Chrome tarafından etkin bir denemeye rastgele yerleştirildiyseniz tarama geçmişiniz gördüğünüz reklamları ve aşağıdaki şekilde tahmin edilen ilgi alanlarınızı etkiler. Chrome, gizliliğinizi korumak için ilgi alanlarınızı her ay sürekli olarak siler.</translation>
 <translation id="556024056938947818">Google Chrome şifreleri göstermeyi deniyor.</translation>
@@ -261,6 +262,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6273793429163604305">Başlamak üzere...</translation>
 <translation id="6291089322031436445">Chrome Dev Uygulamaları</translation>
 <translation id="6291549208091401781">Google Chrome zaten bilgisayarınızdaki tüm kullanıcılar için yüklendi.</translation>
+<translation id="6326175484149238433">Chrome'dan kaldır</translation>
 <translation id="6327105987658262776">Kullanılabilir güncelleme yok.</translation>
 <translation id="6412673304250309937">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="6418662306461808273">Mevcut Chrome profiline geçilsin mi?</translation>
@@ -322,6 +324,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7651907282515937834">Chrome Enterprise logosu</translation>
 <translation id="7655455401911432608">Tarama geçmişiniz, bu cihazda Chrome'u kullanarak ziyaret ettiğiniz sitelerin kaydı.</translation>
+<translation id="7726773885101561560">Chrome, internette daha hızlı gezinmenizi sağlamak için kullanmadığınız sekmelerdeki belleği geri kazanır.</translation>
 <translation id="7747138024166251722">Yükleyici geçici bir dizin oluşturamadı. Lütfen, kullanılabilir disk alanını ve yazılım yükleme iznini kontrol edin.</translation>
 <translation id="7761834446675418963">Chrome'u açmak ve göz atmaya başlamak için adınızı tıklayın.</translation>
 <translation id="7777080907402804672">Bir resmin işe yarar bir açıklaması yoksa, Chrome sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir. Bu özelliği istediğiniz zaman ayarlardan kapatabilirsiniz.</translation>
@@ -394,6 +397,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8986207147630327271">Bu tarayıcıya bir iş profili ekliyor ve yöneticinize yalnızca iş profilini kontrol etme yetkisi veriyorsunuz.</translation>
 <translation id="8989968390305463310">Tarama geçmişiniz gördüğünüz reklamları ve aşağıdaki şekilde tahmin edilen ilgi alanlarınızı etkiler. Chrome, gizliliğinizi korumak için ilgi alanlarınızı her ay sürekli olarak siler. Silme işlemi otomatik olarak gerçekleştirilir. Kaldırmadığınız sürece ilgi alanlarınız yenilenmeye devam edebilir.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Bir Chrome güncellemesi var}=1{Bir Chrome güncellemesi var}other{# gün önce kullanıma sunulmuş bir Chrome güncellemesi var}}</translation>
+<translation id="9003498785844995646">Bu ayar etkinleştirildiğinde Chrome, arka plan etkinliğini ve görsel efektleri (ör. yumuşak kaydırma, video kare hızı) sınırlandırarak pil gücünden tasarruf eder. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /> veya <ph name="BEGIN_LINK_2" />geri bildirim gönderin<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">ChromeOS Flex sistemi</translation>
 <translation id="9067395829937117663">Google Chrome, Windows 7 veya daha sonraki bir sürümü gerektirir.</translation>
 <translation id="911206726377975832">Tarama verileriniz de silinsin mi?</translation>

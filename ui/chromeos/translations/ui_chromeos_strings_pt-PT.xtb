@@ -23,6 +23,7 @@
 <translation id="117624967391683467">A copiar <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1190144681599273207">A obtenção deste ficheiro utilizará aproximadamente <ph name="FILE_SIZE" /> de dados móveis.</translation>
+<translation id="1194390763418645112">O acesso ao ficheiro por <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1209796539517632982">Servidores de nome automático</translation>
 <translation id="1210831758834677569">Laosiano</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">dispositivos Chrome</translation>
 <translation id="1572585716423026576">Definir como imagem de fundo</translation>
 <translation id="1576937952766665062">Transliteração de bengali</translation>
+<translation id="1577977504532381335">Rever política do administrador</translation>
 <translation id="158849752021629804">Requer rede doméstica</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Câmara</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Resolução da imagem</translation>
 <translation id="1972984168337863910">Expandir painéis de comentários dos ficheiros</translation>
 <translation id="1995337122023280937">Aceder à localização do ficheiro</translation>
+<translation id="1999709132469742660">O acesso ao ficheiro por todos os URLs</translation>
 <translation id="2001796770603320721">Gerir no Drive</translation>
 <translation id="2009067268969781306">Ao formatar uma unidade, todos os dados aí armazenados são eliminados. Não é possível anular esta ação.</translation>
 <translation id="2025955442973426285">Tigrínia</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Pessoa com um café</translation>
 <translation id="2251368349685848079">Restaurar do lixo</translation>
 <translation id="2282155092769082568">URL de configuração automática:</translation>
+<translation id="2284767815536050991">armazenamento amovível</translation>
 <translation id="2288278176040912387">Gira-discos</translation>
 <translation id="2291538123825441971">A abrir <ph name="NUMBER_OF_FILES" /> ficheiros…</translation>
 <translation id="2303301624314357662">A abrir o ficheiro <ph name="FILE_NAME" />…</translation>
@@ -341,6 +345,7 @@
 <translation id="4057991113334098539">A activar...</translation>
 <translation id="4092890906744441904">Irlandês</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
+<translation id="4157569377477607576">A política do administrador não recomenda:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> movido.</translation>
 <translation id="4176286497474237543">Esvaziar lixo agora</translation>
 <translation id="4186579485882418952">Ativar modo offline</translation>
@@ -502,6 +507,7 @@
 <translation id="5323213332664049067">Latino-americano</translation>
 <translation id="5330145655348521461">Estes ficheiros foram abertos num ambiente de trabalho diferente. Mova para <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para ver.</translation>
 <translation id="5330512191124428349">Obter informações</translation>
+<translation id="5337538975554986899">O acesso ao ficheiro por todos os URLs, exceto <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Pessoa com gatos</translation>
 <translation id="5358764674931277">Velocidade de fotogramas</translation>
 <translation id="5363339716524495120">O idioma de entrada é o chinês</translation>
@@ -526,6 +532,7 @@
 <translation id="5533102081734025921">Imagem <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">A calcular tamanho</translation>
 <translation id="554153475311314364">Transliteração de grego</translation>
+<translation id="5580591966435005537">máquina virtual</translation>
 <translation id="5583640892426849032">Retrocesso</translation>
 <translation id="5583664733673201137">A largura da pontuação é Completa</translation>
 <translation id="5602622065581044566">Búlgaro com teclado fonético</translation>
@@ -586,6 +593,7 @@
 <translation id="61118516107968648">Texto CSV</translation>
 <translation id="6129953537138746214">Espaço</translation>
 <translation id="6133173853026656527">A mover <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">O administrador monitoriza:</translation>
 <translation id="613750717151263950">Japonês com teclado dos EUA</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, sem rede</translation>
 <translation id="6146563240635539929">Vídeos</translation>
@@ -606,6 +614,7 @@
 <translation id="6287852322318138013">Selecionar uma aplicação para abrir este ficheiro</translation>
 <translation id="6295542640242147836">Bloquear SIM</translation>
 <translation id="6296410173147755564">PUK inválido</translation>
+<translation id="6308243004861726558">Este ficheiro é confidencial e está sujeito à política do administrador. Aplicam-se as seguintes ações de acesso e transferência de ficheiros.</translation>
 <translation id="6312403991423642364">Erro de rede desconhecido</translation>
 <translation id="6317608858038767920">Servidor de nomes personalizado <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Arquivo <ph name="ARCHIVE_TYPE" /></translation>
@@ -834,6 +843,7 @@
 <translation id="8250920743982581267">Docs</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8261561378965667560">Matriz chinesa</translation>
+<translation id="8262872909443689080">Política do administrador</translation>
 <translation id="8264024885325823677">Esta definição é gerida pelo seu administrador.</translation>
 <translation id="8269755669432358899">Reduzir painéis de comentários dos ficheiros</translation>
 <translation id="8280151743281770066">Fonético arménio</translation>
@@ -931,6 +941,7 @@
 <translation id="9100610230175265781">Frase de acesso obrigatória</translation>
 <translation id="9110990317705400362">Estamos constantemente a procurar formas de tornar a navegação mais segura. Anteriormente, qualquer Website poderia pedir-lhe para adicionar uma extensão ao navegador. Nas versões mais recentes do Google Chrome, tem de definir explicitamente no Chrome que pretende instalar estas extensões adicionando-as através da página Extensões. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
+<translation id="9116909380156770361">A transferência do ficheiro para <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113">Os membros de "<ph name="DESTINATION_NAME" />" irão obter acesso a estes itens.</translation>
 <translation id="9131598836763251128">Selecione um ou mais ficheiros</translation>
@@ -952,6 +963,7 @@
 <translation id="943972244133411984">Modificado por</translation>
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="947144732524271678">Selecionou um intervalo de <ph name="ENTRY_COUNT" /> entradas de <ph name="FROM_ENTRY_NAME" /> a <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">A política do administrador impede:</translation>
 <translation id="965477715979482472">Inglês (África do Sul)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Já existe um ficheiro com o nome "<ph name="FILE_NAME" />". Pretende substituí-lo?</translation>

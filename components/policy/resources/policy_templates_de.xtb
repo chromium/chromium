@@ -32,6 +32,7 @@
 
       Aktuell werden die folgenden Sprachen unterstützt: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="1019101089073227242">Verzeichnis für Nutzerdaten festlegen</translation>
+<translation id="1020006815010587263">Der Papierkorb ist für den Nutzer deaktiviert.</translation>
 <translation id="1022361784792428773">Erweiterungs-IDs, die der Nutzer nicht installieren darf ("*" für alle)</translation>
 <translation id="102492767056134033">Standardstatus für die Bildschirmtastatur auf der Anmeldeseite festlegen</translation>
 <translation id="102658870205613876">Einstellungen für Pop-ups</translation>
@@ -543,6 +544,9 @@ Wenn du diese Richtlinie deaktivierst, wird das Scrollen zu bestimmten Textfragm
 <translation id="1553532014072799546">Zulassungsliste für App-Zeitbeschränkungen</translation>
 <translation id="1553956579506604198">Installation externer Erweiterungen blockieren</translation>
 <translation id="1555248923316727072">SAML-Einstellungen zur Verwaltung der Nutzeridentität</translation>
+<translation id="1557113199339446336">Wenn die Richtlinie auf „True“ gesetzt ist, melden registrierte Geräte Informationen zu Ereignissen vom Typ „Extended Detection and Response“ (XDR).
+
+      Wenn die Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, melden registrierte Geräte Informationen zu Ereignissen vom Typ „Extended Detection and Response“ (XDR) nicht.</translation>
 <translation id="1561424797596341174">Überschreiben von Richtlinien für Fehlerbehebungs-Builds des Hosts für den Remotezugriff</translation>
 <translation id="1561967320164410511">U2F plus Erweiterungen zur individuellen Bestätigung</translation>
 <translation id="1567718448549957373">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, sind <ph name="BASIC_AUTH" />-Authentifizierungsherausforderungen zulässig, die über nicht sicheres HTTP empfangen wurden.
@@ -1133,6 +1137,9 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 <translation id="2157842368188031417">Die Richtlinie wird nur auf verwaltete Gastsitzungen angewendet. Für den Modus für gemeinsam genutzte Arbeitsstationen von Imprivata muss sie aktiviert werden, um Benutzerwechsel bei laufender Sitzung zu ermöglichen.
       Ist die Richtlinie auf „True“ gesetzt, wird die Überschreibung bestimmter Richtlinien für Funktionen erzwungen, die sensible Benutzerdaten beibehalten und nicht durch den Bereinigungsmechanismus abgedeckt sind, der im Modus für gemeinsam genutzte Arbeitsstationen von Imprivata den Benutzerwechsel bei laufender Sitzung ermöglicht.
       Wenn die Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, werden keine Richtlinien überschrieben.</translation>
+<translation id="2158741059065130266">Wenn die Richtlinie auf „True“ gesetzt ist, können Nutzer der <ph name="PRODUCT_OS_NAME" />-App „Dateien“ einen Papierkorb sehen und Dateien unter „Meine Dateien“ und „Downloads“ (einschließlich der vom Nutzer erstellten Nachfolgerelemente) beim Löschen dorthin verschieben.
+
+      Wenn die Richtlinie auf „False“ gesetzt ist, sind die Dateien, die sich bereits im Papierkorb befanden, weiterhin verfügbar: Zuvor verborgene Dateien werden angezeigt und das Verzeichnis „Papierkorb“ ist unter „Meine Dateien“ oder „Downloads“ einsehbar.</translation>
 <translation id="2159486052528894673">Zulassen, dass Cloud-Richtlinien auf Nutzerebene Cloud-Richtlinien auf Maschinenebene überschreiben.</translation>
 <translation id="2160336427036785721">Diese Richtlinie legt fest, wie viel Arbeitsspeicher eine einzelne Instanz von <ph name="PRODUCT_NAME" /> verbrauchen darf, bevor Tabs verworfen werden, um Arbeitsspeicher zu leeren. Der vom jeweiligen Tab verbrauchte Arbeitsspeicher wird freigegeben und der Tab muss neu geladen werden, wenn er wieder aufgerufen wird.
 
@@ -1580,6 +1587,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
           Die Google-URL für Instant-Ergebnisse kann wie folgt angegeben werden: <ph name="GOOGLE_INSTANT_SEARCH_URL" />.
 
           Diese Richtlinie wird nur beachtet, wenn die Richtlinie "DefaultSearchProviderEnabled" aktiviert ist.</translation>
+<translation id="2563373001850981577">Option zum Senden von Dateien in den Papierkorb (in unterstützten Dateisystemen) in der <ph name="PRODUCT_OS_NAME" />-App „Dateien“ aktivieren</translation>
 <translation id="2567227673131796227">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />.
 
       Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche nativen Nachrichtenhosts nicht geladen werden dürfen. Der Wert <ph name="WILDCARD_VALUE" /> in der Liste der blockierten nativen Hosts gibt an, dass alle nativen Nachrichtenhosts gesperrt sind, sofern sie nicht ausdrücklich zugelassen wurden.
@@ -2971,6 +2979,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
       Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, dürfen Nutzer nur dann aufgefordert werden, wenn kein Zertifikat zur automatischen Auswahl passt.</translation>
 <translation id="3950110092991281616">Aktiviert die passive Authentifizierung nur für reguläre Sitzungen.</translation>
 <translation id="3950239119790560549">Zeitbeschränkungen aktualisieren</translation>
+<translation id="3953860513079094502">Informationen zu Ereignissen vom Typ „Extended Detection and Response“ (XDR) melden</translation>
 <translation id="3956243291190637924">Kopf- und Fußzeilen in der Druckvorschau ausblenden</translation>
 <translation id="3956573780915784996">Nutzern erlauben, eine systemweite Leistungs-Trace zu erfassen.</translation>
 <translation id="3956686688560604829">Richtlinie "SiteList" von Internet Explorer zur Unterstützung älterer Browser verwenden.</translation>
@@ -3100,6 +3109,7 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4098920079809952737">Drucken mit und ohne Hintergrundgrafiken zulassen</translation>
 <translation id="410068710490553233">Anmeldung in zusätzlichen Google-Konten zulassen</translation>
 <translation id="4101282687722389021">UTC-Zeitstempel für die letzte Änderung dieses Eintrags. Wird als String gesendet, da der Zeitstempel nicht als Ganzzahl angegeben werden kann.</translation>
+<translation id="4102347680024644994">Ereignisse vom Typ „Extended Detection and Response“ (XDR) melden</translation>
 <translation id="4105989332710272578">Erzwingung der Zertifikatstransparenz für eine Liste von URLs deaktivieren</translation>
 <translation id="4114059938441379876">Wenn diese Richtlinie konfiguriert ist, wird die URL für Nutzer festgelegt, über die sie ihr Passwort ändern können, nachdem ihnen im Browser eine Warnung angezeigt wurde. Der Passwortschutzdienst leitet Nutzer weiter zu der URL (nur HTTP- und HTTPS-Protokolle), die du mit dieser Richtlinie festlegst. Die Seite zum Ändern des Passworts muss den Richtlinien unter https://www.chromium.org/developers/design-documents/create-amazing-password-forms entsprechen, damit der Salted-Hash-Wert des neuen Passworts in <ph name="PRODUCT_NAME" /> richtig erfasst werden kann.
 
@@ -5639,6 +5649,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
       Hiermit werden die Parameter angegeben, die beim Starten von <ph name="PRODUCT_NAME" /> angewendet werden sollen. Sie gelten nur auf dem Anmeldebildschirm. Über diese Richtlinie festgelegte Parameter haben keine Auswirkungen auf Nutzersitzungen.</translation>
 <translation id="6857240169209507953">Ausführung von <ph name="BOREALIS_NAME" /> auf einem Gerät verhindern</translation>
 <translation id="685769593149966548">Strikt eingeschränkten Modus auf YouTube erzwingen</translation>
+<translation id="6860349155164463644">Ereignisse vom Typ „Extended Detection and Response“ (XDR) nicht melden</translation>
 <translation id="686079137349561371">Microsoft Windows 7 oder höher</translation>
 <translation id="68818134518270542">Mit der Konfiguration der Richtlinie werden die Apps festgelegt, die Nutzer als Notizen-App auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> aktivieren können.
 
@@ -6259,6 +6270,7 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
       Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />“ wird festgelegt, welche Meldung der Nutzer sieht, wenn eine Warnung angezeigt wird, nachdem beim Scan ein potenzielles Problem gefunden wurde. Das Nachrichtenfeld enthält den Text, den der Nutzer sieht (maximal 200 Zeichen). Das Feld „learn_more_url“ enthält eine vom Administrator festgelegte URL, die der Nutzer anklicken kann, um weitere benutzerdefinierte Informationen darüber zu erhalten, warum die Aktion blockiert wurde. Das Feld für die Sprache ist optional und enthält die Sprache der Meldung. Wenn das Feld leer oder auf „default“ festgelegt ist, wird die entsprechende Nachricht angezeigt, wenn es für die Sprache des Nutzers keine eigene Meldung gibt. Das Tag-Feld gibt an, für welche Arten von Scans die Meldung angezeigt wird. Die Liste „custom_messages“ kann keine oder mehrere Einträge haben – das Nachrichten- und das Tag-Feld der einzelnen Einträge dürfen dabei nicht leer sein.
 
       Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
+<translation id="7481702249684965639">Der Papierkorb ist für den Nutzer aktiviert.</translation>
 <translation id="7482768039644066614">Abruf von Metadaten zum Seitenaufbau und Modellen zum maschinellen Lernen zum Verbessern der Browsernutzung aktivieren</translation>
 <translation id="7485481791539008776">Regeln zur Auswahl des Standarddruckers</translation>
 <translation id="7486205887492534734">Aufforderung auf dem Anmeldebildschirm, wenn mehrere Zertifikate passen</translation>

@@ -53,6 +53,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2384373936468275798">Hesap oturum açma ayrıntılarınız güncel olmadığından ChromiumOS, verilerinizi senkronize edemedi.</translation>
 <translation id="2396765026452590966">"<ph name="EXTENSION_NAME" />" uzantısı, Chromium'u başlattığınızda gösterilen sayfayı değiştirdi.</translation>
+<translation id="2400844369696905771">Bu ayar etkinleştirildiğinde Chromium, aktif olarak kullanmadığınız sekmelerdeki belleği geri kazanır. Böylece, bilgisayarınızın kaynaklarında diğer görevler için yer açılır ve Chromium hızlı çalışmaya devam eder. Aktif olmayan sekmeler boş görünür ve bunları tıkladığınızda otomatik olarak yeniden yüklenir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Bu site için Chromium'un kamera ve mikrofon izinlerine ihtiyacı var</translation>
 <translation id="2483889755041906834">Chromium'da</translation>
 <translation id="2485422356828889247">Kaldır</translation>
@@ -141,6 +142,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="4285930937574705105">Belirlenemeyen bir hata nedeniyle yükleme başarısız oldu. Chromium şu anda çalışır durumdaysa kapatıp yeniden deneyin.</translation>
 <translation id="4304713468139749426">Şifre Yöneticisi</translation>
 <translation id="4334294535648607276">İndirme işlemi tamamlandı.</translation>
+<translation id="437317747729858884">Chromium, internette daha hızlı gezinmenizi sağlamak için kullanmadığınız sekmelerdeki belleği geri kazanır.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" />, bu cihazı kullanmadan önce aşağıdaki Hizmet Şartları'nı okuyup kabul etmenizi zorunlu tutmaktadır. Bu şartlar, ChromiumOS Şartları'nın kapsamını genişletmez, değiştirmez veya sınırlamaz.</translation>
 <translation id="4407044323746248786">Yine de Chromium'dan çıkılsın mı?</translation>
 <translation id="4415566066719264597">Chromium'un Arka Planda Çalışmasına İzin Ver</translation>
@@ -178,6 +180,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5386450000063123300">Chromium güncelleniyor (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium'da oturum açmaya izin verin</translation>
 <translation id="5398878173008909840">Chromium'un yeni bir sürümü çıktı.</translation>
+<translation id="5405650547142096840">Chromium'dan kaldır</translation>
 <translation id="5427571867875391349">Chromium'u varsayılan tarayıcım olarak ayarla</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5473971139929175403">Chromium artık bu Linux dağıtım sisteminde desteklenmediği için doğru şekilde çalışmayabilir</translation>
@@ -309,6 +312,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7872446069773932638">İndiriliyor... <ph name="SECONDS" /> saniye kaldı</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Verilerinizi yönetme:<ph name="END_BOLD" /> Gizliliğinizi korumak için 4 haftadan eski ilgi alanlarınızı otomatik olarak sileriz. Siz internette gezindikçe ilgi alanları tekrar listede görünmeye başlayabilir. Dilerseniz Chromium'un dikkate almasını istemediğiniz ilgi alanlarını kaldırabilirsiniz.</translation>
 <translation id="7937630085815544518">Chromium'da <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Tekrar oturum açmak için lütfen aynı hesabı kullanın.</translation>
+<translation id="7947085610734123927">Chromium, Bellek Tasarrufu'nu etkinleştirdi</translation>
 <translation id="7975919845073681630">Bu, Chromium'un ikincil bir yüklemesidir ve varsayılan tarayıcınız yapılamaz.</translation>
 <translation id="7997934263947464652">Bilinmeyen kaynaklardan gelen uzantılar, uygulamalar ve temalar cihazınıza zarar verebilir. Chromium bunların yalnızca <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> kaynağından yüklenmesini önerir.</translation>
 <translation id="8013436988911883588">Chromium erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.</translation>
@@ -334,6 +338,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8558383651099478961">Ebeveyniniz, Chromium'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> uzantısını eklemeye izin verilmiyor.</translation>
 <translation id="8561285221328166383">Gelecekteki Chromium güncellemelerini almak için macOS 10.13 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar macOS 10.12 kullanıyor.</translation>
 <translation id="8568283329061645092">Chromium, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir</translation>
+<translation id="8574036838419011058">Bu ayar etkinleştirildiğinde Chromium, arka plan etkinliğini ve görsel efektleri (ör. yumuşak kaydırma, video kare hızı) sınırlandırarak pil gücünden tasarruf eder. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Telif Hakkı <ph name="YEAR" /> The Chromium Authors. Tüm hakları saklıdır.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Bu verileri kullanma şeklimiz:<ph name="END_BOLD" /> Siteler, ilgi alanlarınız hakkındaki bilgileri Chromium'da saklayabilir. Örneğin, maraton ayakkabısı satın almak için ziyaret ettiğiniz bir site, maraton koşmayı ilgi alanınız olarak tanımlayabilir. Daha sonra bir yarışa kaydolmak için farklı bir siteyi ziyaret ettiğinizde o site ilgi alanlarınıza dayalı olarak size koşu ayakkabısı reklamı gösterebilir.</translation>
 <translation id="8619360774459241877">Chromium başlatılıyor...</translation>

@@ -72,7 +72,6 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1434356225517321998">El navegador està gestionat. <ph name="BEGIN_LINK" />Detalls<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Amaga la contrasenya</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> elements</translation>
 <translation id="1450170672351507823">Està activada la protecció estàndard. Per augmentar la seguretat, utilitza la protecció Millorada.</translation>
 <translation id="149095475893949513">Aquest lloc web està provant de baixar un perfil de configuració</translation>
 <translation id="1491277525950327607">Fes doble toc per canviar la configuració</translation>
@@ -106,7 +105,6 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="168715261339224929">Per accedir a les adreces d'interès des de tots els dispositius, activa la sincronització.</translation>
 <translation id="1687475363370981210">Marca-ho tot com a llegit</translation>
 <translation id="1689333818294560261">Àlies</translation>
-<translation id="1690731385917361335">Cap element</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionades</translation>
 <translation id="1740468249224277719">Feu doble toc per instal·lar l'aplicació.</translation>
 <translation id="1752547299766512813">Desa les contrasenyes</translation>
@@ -986,7 +984,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9068336935206019333">Obre en mode d'incògnit a Chrome</translation>
 <translation id="9079935439869366234">Marca-ho tot com a no llegit</translation>
 <translation id="9081058212938299310">Vols actualitzar la contrasenya per a <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 element</translation>
 <translation id="9083838294503912307">Per sincronitzar i personalitzar el contingut en tots els dispositius, activa la sincronització.</translation>
 <translation id="9087108903408689779">Contrasenya suggerida per Chrome:</translation>
 <translation id="9094033019050270033">Actualitza la contrasenya</translation>

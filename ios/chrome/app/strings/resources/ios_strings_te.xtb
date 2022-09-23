@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1434356225517321998">మీ బ్రౌజర్ మేనేజ్ చేయబడుతుంది. <ph name="BEGIN_LINK" />వివరాలు<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">పాస్‌వర్డ్‌ను దాచండి</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> అంశాలు</translation>
 <translation id="1450170672351507823">స్టాండర్డ్ రక్షణ ఆన్‌లో ఉంది. మరింత సెక్యూరిటీ కోసం, మెరుగైన రక్షణను ఉపయోగించండి.</translation>
 <translation id="149095475893949513">ఈ వెబ్‌సైట్, కాన్ఫిగరేషన్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయడానికి ప్రయత్నిస్తోంది.</translation>
 <translation id="1491277525950327607">సెట్టింగ్‌ను టోగుల్ చేయడానికి రెండుసార్లు నొక్కండి</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">మీ బుక్‌మార్క్‌లను మీ అన్ని పరికరాలలోనూ పొందాలంటే, సింక్‌ను ఆన్ చేయండి.</translation>
 <translation id="1687475363370981210">అన్నీ చదివినట్లు గుర్తు పెట్టు</translation>
 <translation id="1689333818294560261">మారుపేరు</translation>
-<translation id="1690731385917361335">అంశాలు లేవు</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ఎంచుకోబడ్డాయి</translation>
 <translation id="1740468249224277719">ఇన్‌స్టాల్ చేయడానికి రెండుసార్లు నొక్కండి.</translation>
 <translation id="1752547299766512813">పాస్‌వర్డ్‌లను సేవ్ చేయి</translation>
@@ -756,6 +754,7 @@
 <translation id="6988572888918530647">మీ Google ఖాతాను మేనేజ్ చేయండి</translation>
 <translation id="6989674195860388998">సెట్టింగ్‌లలో స్విచ్ చేయి…</translation>
 <translation id="6998989275928107238">స్వీకర్త</translation>
+<translation id="699954956411469731">మొబైల్ నోటిఫికేషన్‌లు</translation>
 <translation id="7004032350256606903">మీరు ప్రైవేట్‌గా బ్రౌజ్ చేయాల్సిందిగా మీ సంస్థ కోరుతోంది.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">ఇటీవలి ట్యాబ్‌లు</translation>
@@ -985,7 +984,6 @@
 <translation id="9068336935206019333">Chrome అజ్ఞాత మోడ్‌లో తెరవండి</translation>
 <translation id="9079935439869366234">అన్నీ చదవనట్లు గుర్తు పెట్టు</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> పాస్‌వర్డ్‌ని అప్‌డేట్ చేయాలా?</translation>
-<translation id="9083392325882095631">1 అంశం</translation>
 <translation id="9083838294503912307">మీ అన్ని పరికరాలలోనూ సింక్‌ మరియు వ్యక్తిగతీకరణ చేయడం కోసం, సింక్‌ను ఆన్ చేయండి.</translation>
 <translation id="9087108903408689779">Chrome సూచిత పాస్‌వర్డ్:</translation>
 <translation id="9094033019050270033">పాస్‌వర్డ్‌ను అప్‌డేట్ చేయి</translation>

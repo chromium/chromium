@@ -70,7 +70,6 @@
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1434356225517321998">הדפדפן שלך מנוהל. <ph name="BEGIN_LINK" />פרטים<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">הסתרת סיסמה</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> פריטים</translation>
 <translation id="1450170672351507823">מופעלת הגנה רגילה. כדי להוסיף שכבת אבטחה, ניתן להשתמש בהגנה המשופרת.</translation>
 <translation id="149095475893949513">האתר הזה מנסה להוריד פרופיל של הגדרות אישיות.</translation>
 <translation id="1491277525950327607">יש ללחוץ פעמיים כדי להחליף את מצב ההגדרה</translation>
@@ -104,7 +103,6 @@
 <translation id="168715261339224929">כדי שהסימניות שלך יופיעו בכל המכשירים, יש להפעיל סנכרון.</translation>
 <translation id="1687475363370981210">סימון הכול כ'נקרא'</translation>
 <translation id="1689333818294560261">כינוי</translation>
-<translation id="1690731385917361335">אין פריטים</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> נבחרו</translation>
 <translation id="1740468249224277719">יש להקיש פעמיים כדי להתקין.</translation>
 <translation id="1752547299766512813">שמירת סיסמאות</translation>
@@ -982,7 +980,6 @@
 <translation id="9068336935206019333">‏פתיחה במצב פרטי ב-Chrome</translation>
 <translation id="9079935439869366234">סימון הכול כ'לא נקרא'</translation>
 <translation id="9081058212938299310">לעדכן את הסיסמה של <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">פריט אחד</translation>
 <translation id="9083838294503912307">כדי לסנכרן ולהתאים אישית את החוויה במכשירים שונים, צריך להפעיל את הסנכרון.</translation>
 <translation id="9087108903408689779">‏הצעה לסיסמה מ-Chrome:</translation>
 <translation id="9094033019050270033">עדכון סיסמה</translation>

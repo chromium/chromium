@@ -2298,6 +2298,7 @@
 <translation id="3090819949319990166">Չհաջողվեց պատճենել արտաքին CRX ֆայլը <ph name="TEMP_CRX_FILE" />-ում:</translation>
 <translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» սարքը զուգակցված է</translation>
 <translation id="3093714882666365141">Թույլ չտալ կայքերին տեղադրել վճարումների մշակիչներ</translation>
+<translation id="3093958632721393232">Միացնել, միայն երբ մարտկոցի լիցքը սպառվում է</translation>
 <translation id="3094141017404513551">Դիտարկիչում ձեր աշխատանքը կառանձնացվի <ph name="EXISTING_USER" /> հաշվից</translation>
 <translation id="3095871294753148861">Էջանիշները, գաղտնաբառերն ու դիտարկիչի մյուս տվյալները համաժամացված են հիմնական հաշվի հետ։</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Անջատվել է 1 վտանգավոր ընդլայնում։ Դուք կարող եք նաև հեռացնել այն։}one{Անջատվել է {NUM_EXTENSIONS} վտանգավոր ընդլայնում։ Դուք կարող եք նաև հեռացնել դրանք։}other{Անջատվել է {NUM_EXTENSIONS} վտանգավոր ընդլայնում։ Դուք կարող եք նաև հեռացնել դրանք։}}</translation>
@@ -5018,6 +5019,7 @@
 <translation id="5747552184818312860">Սպառվում է</translation>
 <translation id="5747785204778348146">Մշակողների վարկած - անկայուն</translation>
 <translation id="5747809636523347288">Տեղադրել և անցնել <ph name="URL" /> կայք</translation>
+<translation id="5748137879145720682">Միացնել, երբ համակարգիչն անջատված է հոսանքից</translation>
 <translation id="5751345516399502412">Ստուգել մոդեմի ռեժիմի պատրաստ լինելը</translation>
 <translation id="5755022574660047665">հիշողություններ Google Լուսանկարներից</translation>
 <translation id="5756163054456765343">Օ&amp;գնության կենտրոն</translation>
@@ -7650,6 +7652,7 @@
 <translation id="8248381369318572865">Օգտագործել խոսափողը և վերլուծել ձեր խոսքը</translation>
 <translation id="8248887045858762645">Chrome-ին առնչվող խորհուրդներ</translation>
 <translation id="8249048954461686687">OEM պանակ</translation>
+<translation id="8249239468199142122">Մարտկոցի տնտեսում</translation>
 <translation id="8249615410597138718">Ուղարկել սարքերին</translation>
 <translation id="8250210000648910632">Տարածքը բավարար չէ</translation>
 <translation id="8251441930213048644">Թարմացնել հիմա</translation>

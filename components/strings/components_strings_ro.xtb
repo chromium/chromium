@@ -1420,6 +1420,7 @@
 <translation id="4744514002166662487">Creează o prezentare</translation>
 <translation id="4744603770635761495">Cale executabilă</translation>
 <translation id="4749011317274908093">Ai trecut în modul incognito</translation>
+<translation id="4750671009706599284">acest telefon</translation>
 <translation id="4750917950439032686">Informațiile tale (de exemplu, parolele și numerele cardurilor de credit) sunt private când sunt trimise la acest site.</translation>
 <translation id="4751476147751820511">Senzori de mișcare sau de lumină</translation>
 <translation id="4754461935447132332">Nu sunt permise pentru site-uri nesecurizate</translation>
@@ -2200,6 +2201,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome a simplificat această pagină pentru a fi mai ușor de citit. Chrome a preluat pagina originală printr-o conexiune nesigură.</translation>
 <translation id="6890443033788248019">Permiți accesul la locație?</translation>
+<translation id="6890531741535756070">Ai ales să confirmi cu <ph name="DEVICE_LABEL" /> pe site-urile care folosesc <ph name="PROVIDER_ORIGIN" />. Este posibil ca acest furnizor să fi stocat informații despre metoda de plată, pentru care poți <ph name="BEGIN_LINK" />trimite o solicitare de ștergere<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">Nivelul politicii nu este acceptat.</translation>
 <translation id="6895143722905299846">Număr virtual:</translation>
 <translation id="6895330447102777224">Cardul tău este confirmat</translation>
@@ -2566,6 +2568,7 @@ Detalii suplimentare:
 <translation id="7766518757692125295">Contur</translation>
 <translation id="7770259615151589601">Designated-Lung</translation>
 <translation id="7773005668374414287">În aceeași ordine, cu fața în sus</translation>
+<translation id="7785790577395078482">această tabletă</translation>
 <translation id="7791011319128895129">Nelansată</translation>
 <translation id="7791196057686275387">Balot</translation>
 <translation id="7791543448312431591">Adaugă</translation>

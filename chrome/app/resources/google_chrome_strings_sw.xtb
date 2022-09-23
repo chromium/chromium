@@ -231,6 +231,7 @@ Huenda baadhi ya vipengele visipatikane. Tafadhali bainisha saraka tofauti ya wa
 <translation id="5386244825306882791">Pia inadhibiti ukurasa unaoonyeshwa unapoanzisha Chrome au unapotafuta kutoka Sanduku Kuu.</translation>
 <translation id="5394833366792865639">Shiriki kichupo cha Chrome</translation>
 <translation id="5412485296464121825">Tovuti zinaweza kuhifadhi maelezo kuhusu mambo yanayokuvutia kwa kutumia Chrome. Kwa mfano, iwapo utatembelea tovuti ili kununua viatu kwa ajili ya kukimbia mbio za marathoni, tovuti hiyo huenda ikatambua kuwa moja ya mambo yanayokuvutia ni kukimbia mbio za marathoni. Baadaye, iwapo utatembelea tovuti tofauti ili kujisajili kwa ajili ya mbio, tovuti hiyo huenda ikakuonyesha tangazo la viatu vya kukimbilia kulingana na mambo yanayokuvutia.</translation>
+<translation id="5416870378730196769">Chrome imewasha Mipangilio ya Kuhifadhi Kumbukumbu</translation>
 <translation id="5430073640787465221">Faili yako ya mapendekezo imeharibika au ni batili.
 
 Google Chrome haiwezi kufufua mipangilio yako.</translation>
@@ -268,6 +269,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6273793429163604305">Hatua ya kwanza...</translation>
 <translation id="6291089322031436445">Programu za Chrome Dev</translation>
 <translation id="6291549208091401781">Tayari Google Chrome imesakinishwa kwa watumiaji wote kwenye kompyuta yako.</translation>
+<translation id="6326175484149238433">Ondoa kwenye Chrome</translation>
 <translation id="6327105987658262776">Hakuna sasisho linalopatikana.</translation>
 <translation id="6412673304250309937">Hukagua URL zilizo na orodha ya tovuti zisizo salama zinazohifadhiwa kwenye Chrome. Iwapo tovuti inajaribu kuiba nenosiri lako au unapopakua faili hatari, Chrome inaweza pia kutuma URL, ikiwa ni pamoja na sehemu za maudhui ya ukurasa, kwenye kipengele cha Kuvinjari Salama.</translation>
 <translation id="6418662306461808273">Ungependa kutumia wasifu uliopo wa Chrome?</translation>
@@ -329,6 +331,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="7649070708921625228">Usaidizi</translation>
 <translation id="7651907282515937834">Nembo ya Chrome Enterprise</translation>
 <translation id="7655455401911432608">Historia yako ya kuvinjari, kumbukumbu ya tovuti ulizozitembelea ukitumia Chrome kwenye kifaa hiki.</translation>
+<translation id="7726773885101561560">Ili uweze kuvinjari kwa kasi, Chrome hurejesha hifadhi ya vichupo ambavyo hutumii.</translation>
 <translation id="7747138024166251722">Kisakinishi hakikuweza kuunda saraka la muda. Tafadhali chunguza nafasi iliyo wazi kwenye diski na ruhusa ya kusakinisha programu.</translation>
 <translation id="7761834446675418963">Bofya jina lako ili ufungue Chrome na uanze kuvinjari.</translation>
 <translation id="7777080907402804672">Ikiwa picha haina ufafanuzi muhimu, Chrome itajaribu kukuwekea. Ili kuweka ufafanuzi, tutatuma picha kwa Google. Unaweza kuzima mipangilio hii wakati wowote.</translation>
@@ -401,6 +404,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="8986207147630327271">Unaongeza wasifu wa kazini kwenye kivinjari hiki na unampa msimamizi wako uwezo wa kudhibiti wasifu huo wa kazini pekee.</translation>
 <translation id="8989968390305463310">Historia yako ya kuvinjari huathiri matangazo unayoyaona na mambo yanayokuvutia kama inavyokadiriwa hapa chini. Ili kulinda faragha yako, Chrome hufuta kiotomatiki mambo yanayokuvutia kadiri unavyoendelea kutumia kila mwezi. Mambo yanayokuvutia yanaweza kuonyeshwa upya isipokuwa ukiyaondoa.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Sasisho la Chrome linapatikana}=1{Sasisho la Chrome linapatikana}other{Sasisho la Chrome limekuwepo kwa siku #}}</translation>
+<translation id="9003498785844995646">Ukiwasha mipangilio hii, Chrome huhifadhi chaji ya betri kwa kudhibiti shughuli ya chinichini na madoido, kama vile usogezaji rahisi na kasi ya picha ya video. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /> au <ph name="BEGIN_LINK_2" />tuma maoni<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">Mfumo wa ChromeOS Flex</translation>
 <translation id="9067395829937117663">Google Chrome inahitaji Windows 7 au toleo jipya zaidi.</translation>
 <translation id="911206726377975832">Futa historia yako ya kuvinjari pia?</translation>

@@ -2311,6 +2311,7 @@
 <translation id="3090819949319990166">வெளிப்புற crx ஃபைலை <ph name="TEMP_CRX_FILE" />க்கு நகலெடுக்க முடியாது.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" இணைக்கப்பட்டது</translation>
 <translation id="3093714882666365141">பேமெண்ட் ஹேண்ட்லர்களை நிறுவ தளங்களை அனுமதிக்காதே</translation>
+<translation id="3093958632721393232">பேட்டரி குறைவாக இருக்கும்போது மட்டும் இயக்கு</translation>
 <translation id="3094141017404513551">இதனால் <ph name="EXISTING_USER" /> பயனரிடமிருந்து உங்கள் உலாவல் தனிப்பட்டதாக வைத்திருக்கப்படும்</translation>
 <translation id="3095871294753148861">புக்மார்க்குகள், கடவுச்சொற்கள், பிற உலாவித் தரவு ஆகியவை முதன்மைக் கணக்குடன் ஒத்திசைக்கப்படும்.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{தீங்கிழைக்கச் சாத்தியமுள்ள 1 நீட்டிப்பு முடக்கப்பட்டுள்ளது. அதை நீங்கள் அகற்றவும் செய்யலாம்.}other{தீங்கிழைக்கச் சாத்தியமுள்ள {NUM_EXTENSIONS} நீட்டிப்புகள் முடக்கப்பட்டுள்ளன. அவற்றை நீங்கள் அகற்றவும் செய்யலாம்.}}</translation>
@@ -5034,6 +5035,7 @@
 <translation id="5747552184818312860">காலாவதியாகும் தேதி</translation>
 <translation id="5747785204778348146">டெவெலப்பர் - நிலையற்றது</translation>
 <translation id="5747809636523347288"><ph name="URL" /> எனும் இணைப்பை ஒட்டி அங்கு செல்</translation>
+<translation id="5748137879145720682">கம்ப்யூட்டர் மின் இணைப்பில் இல்லாதபோது இயக்கு</translation>
 <translation id="5751345516399502412">இணைப்பு முறையின் தயார்நிலையைச் சரிபார்</translation>
 <translation id="5755022574660047665">Google Photosஸில் உள்ள நினைவுகள்</translation>
 <translation id="5756163054456765343">உதவி மையம்</translation>
@@ -7668,6 +7670,7 @@
 <translation id="8248381369318572865">எனது மைக்ரோஃபோனை அணுகி எனது பேச்சை ஆய்வு செய்</translation>
 <translation id="8248887045858762645">Chrome உதவிக்குறிப்பு</translation>
 <translation id="8249048954461686687">OEM ஃபோல்டர்</translation>
+<translation id="8249239468199142122">பேட்டரி சேமிப்பான்</translation>
 <translation id="8249615410597138718">என் சாதனங்களுக்கு அனுப்பு</translation>
 <translation id="8250210000648910632">சேமிப்பிடம் நிரம்பிவிட்டது</translation>
 <translation id="8251441930213048644">இப்போது ரெஃப்ரெஷ் செய்</translation>

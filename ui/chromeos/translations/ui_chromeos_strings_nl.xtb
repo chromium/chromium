@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">Let op: Deze bestanden zijn tijdelijk en kunnen automatisch worden verwijderd om schijfruimte vrij te maken.</translation>
 <translation id="3029114385395636667">Zet Google Offline Documenten aan om Documenten, Spreadsheets en Presentaties offline beschikbaar te maken.</translation>
 <translation id="303198083543495566">Geografie</translation>
+<translation id="3044404008258011032">Als je deze items wilt herstellen, sleep je ze naar een nieuwe map buiten de prullenbak. De oorspronkelijke map <ph name="PARENT_FOLDER_NAME" /> voor deze items is verwijderd.</translation>
 <translation id="3047197340186497470">Chinees (Dayi)</translation>
 <translation id="3067790092342515856">Windows-bestanden</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">Wordt geactiveerd...</translation>
 <translation id="4092890906744441904">Iers</translation>
 <translation id="4124935795427217608">Eenhoorn</translation>
+<translation id="4131235941541910880">Verplaats overbodige items naar de prullenbak.</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verplaatst.</translation>
 <translation id="4176286497474237543">Prullenbak leegmaken</translation>
 <translation id="4186579485882418952">Offline aanzetten</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">Duits</translation>
 <translation id="4867079195717347957">Klik om de kolom in aflopende volgorde te sorteren.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
+<translation id="4874569719830985133">Definitief verwijderen</translation>
 <translation id="4880214202172289027">Volumeregelaar</translation>
 <translation id="4881695831933465202">Openen</translation>
+<translation id="4891091358278567964">Als je deze items wilt herstellen, sleep je ze naar een nieuwe map buiten de prullenbak. De oorspronkelijke mappen voor deze items zijn verwijderd.</translation>
 <translation id="4900532980794411603">Delen met Parallels Desktop</translation>
 <translation id="4902546322522096650">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, verbinden</translation>
 <translation id="4906580650526544301">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, telefoonbatterij <ph name="BATTERY_STATUS" />%, details</translation>
@@ -494,6 +498,7 @@
     <ph name="MARKUP_7" />Bestanden delen, maken en eraan samenwerken<ph name="MARKUP_8" />
     met anderen allemaal op één locatie.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Bestanden hersteld vanaf Google Drive</translation>
+<translation id="5278111733643988471">Als je dit item wilt herstellen, sleep je het naar een nieuwe map buiten de prullenbak. De oorspronkelijke map <ph name="PARENT_FOLDER_NAME" /> voor dit item is verwijderd.</translation>
 <translation id="5286194356314741248">Scannen</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -506,6 +511,7 @@
 <translation id="535792325654997756">Persoon met katten</translation>
 <translation id="5358764674931277">Framesnelheid</translation>
 <translation id="5363339716524495120">Invoertaal is Chinees</translation>
+<translation id="5364067326287025678">Niets in de prullenbak</translation>
 <translation id="5368191757080475556">Map delen met Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">De proxyinstellingen niet gebruiken voor deze hosts en domeinen:</translation>
@@ -772,6 +778,7 @@
 <translation id="7711920809702896782">Afbeeldingsgegevens</translation>
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7732111077498238432">Netwerk wordt beheerd op basis van beleid</translation>
+<translation id="7736003208887389532">Deze bestanden definitief verwijderen?</translation>
 <translation id="7748626145866214022">Meer opties beschikbaar op de actiebalk. Druk op Alt+A om de focus op de actiebalk te plaatsen.</translation>
 <translation id="7760449188139285140">Chinees (Wubi)</translation>
 <translation id="7765158879357617694">Verplaatsen</translation>
@@ -833,6 +840,7 @@
 <translation id="8249296373107784235">Annuleren</translation>
 <translation id="8250690786522693009">Latijn</translation>
 <translation id="8250920743982581267">Documenten</translation>
+<translation id="8255595130163158297">Alle items in de prullenbak worden verwijderd en je kunt ze niet herstellen.</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8261561378965667560">Chinees (Array)</translation>
 <translation id="8264024885325823677">Deze instelling wordt beheerd door je beheerder.</translation>
@@ -911,6 +919,7 @@
 <translation id="8857149712089373752">Nepalees met fonetisch toetsenbord</translation>
 <translation id="8860454412039442620">Excel-spreadsheet</translation>
 <translation id="8866284467018526531">Arabisch (transliteratie)</translation>
+<translation id="8873014196523807561">Als je deze items wilt herstellen, sleep je ze naar een nieuwe map. De oorspronkelijke mappen voor sommige van deze items zijn verwijderd.</translation>
 <translation id="8874184842967597500">Niet verbonden</translation>
 <translation id="8900820606136623064">Hongaars</translation>
 <translation id="8903931173357132290">Afgestudeerde</translation>

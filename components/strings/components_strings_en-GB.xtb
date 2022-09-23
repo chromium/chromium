@@ -1280,6 +1280,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">The connection to <ph name="SITE" /> is not secure</translation>
 <translation id="4349365535725594680">Can’t share confidential content</translation>
+<translation id="4349810866125026513">Upload anyway</translation>
 <translation id="4350629523305688469">Multifunctional tray</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> wants to scan for nearby Bluetooth devices. The following devices have been found:</translation>
 <translation id="4351175281479794167">Enter verification code</translation>
@@ -2018,6 +2019,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6337133576188860026">Frees up less than <ph name="SIZE" />. Some sites may load more slowly on your next visit.</translation>
 <translation id="6337534724793800597">Filter policies by name</translation>
 <translation id="6340739886198108203">Administrator policy doesn’t recommend taking screenshots or recordings when confidential content is visible:</translation>
+<translation id="6341434961864773665">{0,plural, =1{Administrator policy doesn’t recommend uploading this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend uploading these files to <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Active variations</translation>
 <translation id="6349101878882523185">Install <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{None}=1{1 password (for <ph name="DOMAIN_LIST" />, synced)}=2{2 passwords (for <ph name="DOMAIN_LIST" />, synced)}other{# passwords (for <ph name="DOMAIN_LIST" />, synced)}}</translation>
@@ -2666,6 +2668,7 @@ Additional details:
 <translation id="8075736640322370409">Create a new Google Sheet quickly</translation>
 <translation id="8075898834294118863">Manage site settings</translation>
 <translation id="8076492880354921740">Tabs</translation>
+<translation id="8078006011486731853">{0,plural, =1{Upload confidential file?}other{Upload confidential files?}}</translation>
 <translation id="8078141288243656252">Cannot annotate when rotated</translation>
 <translation id="8079031581361219619">Reload site?</translation>
 <translation id="8081087320434522107">Sedans</translation>

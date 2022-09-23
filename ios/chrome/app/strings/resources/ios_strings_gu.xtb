@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1434356225517321998">તમારું બ્રાઉઝર મેનેજ કરવામાં આવી રહ્યું છે. <ph name="BEGIN_LINK" />વિગતો<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">પાસવર્ડ છુપાવો</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> આઇટમ્સ</translation>
 <translation id="1450170672351507823">માનક સુરક્ષા ચાલુ છે. વધુ સઘન સુરક્ષા માટે, વધારેલા સંરક્ષણનો ઉપયોગ કરો.</translation>
 <translation id="149095475893949513">આ વેબસાઇટ કન્ફિગ્યુરેશન પ્રોફાઇલ ડાઉનલોડ કરવાનો પ્રયાસ કરી રહી છે.</translation>
 <translation id="1491277525950327607">સેટિંગ ટૉગલ કરવા માટે બે વાર ટૅપ કરો</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, સિંક કરવાનું ચાલુ કરો.</translation>
 <translation id="1687475363370981210">તમામને વાંચેલ તરીકે ચિહ્નિત કરો</translation>
 <translation id="1689333818294560261">ઉપનામ</translation>
-<translation id="1690731385917361335">કોઈ આઇટમ નથી</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> પસંદ કર્યાં</translation>
 <translation id="1740468249224277719">ઇન્સ્ટૉલ કરવા માટે બે વાર ટૅપ કરો.</translation>
 <translation id="1752547299766512813">પાસવર્ડ સાચવો</translation>
@@ -756,6 +754,7 @@
 <translation id="6988572888918530647">તમારા Google એકાઉન્ટને મેનેજ કરો</translation>
 <translation id="6989674195860388998">સેટિંગ પર સ્વિચ કરો…</translation>
 <translation id="6998989275928107238">પ્રતિ</translation>
+<translation id="699954956411469731">મોબાઇલ નોટિફિકેશન</translation>
 <translation id="7004032350256606903">તમારી સંસ્થા માટે જરૂરી છે કે તમે ખાનગી રીતે બ્રાઉઝ કરો.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">તાજેતરના ટૅબ્સ</translation>
@@ -985,7 +984,6 @@
 <translation id="9068336935206019333">Chromeના છૂપા મોડમાં ખોલો</translation>
 <translation id="9079935439869366234">તમામને વાંચ્યા વગરની તરીકે ચિહ્નિત કરો</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> માટેનો પાસવર્ડ અપડેટ કરીએ?</translation>
-<translation id="9083392325882095631">1 આઇટમ</translation>
 <translation id="9083838294503912307">એકથી વધુ ડિવાઇસને સિંક અને વ્યક્તિગત કરવા માટે સિંક ચાલુ કરો.</translation>
 <translation id="9087108903408689779">Chrome દ્વારા સૂચિત પાસવર્ડ:</translation>
 <translation id="9094033019050270033">પાસવર્ડ અપડેટ કરો</translation>

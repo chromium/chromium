@@ -2293,6 +2293,7 @@
 <translation id="3090819949319990166">Сыртқы CRX файлын <ph name="TEMP_CRX_FILE" /> файлына көшіру мүмкін емес.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" жұптастырылған</translation>
 <translation id="3093714882666365141">Сайттардың төлем өңдегіштерін орнатуына рұқсат бермеу</translation>
+<translation id="3093958632721393232">Тек батареям заряды азайғанда қосу</translation>
 <translation id="3094141017404513551">Бұл браузерді пайдалану деректеріңізді <ph name="EXISTING_USER" /> пайдаланушысынан бөледі.</translation>
 <translation id="3095871294753148861">Бетбелгілер, құпия сөздер және басқа браузерді пайдалану деректері негізгі аккаунтпен синхрондалады.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 зиянды болуы мүмкін кеңейтім өшірулі. Оны жоюға да болады.}other{{NUM_EXTENSIONS} зиянды болуы мүмкін кеңейтім өшірулі. Оларды жоюға да болады.}}</translation>
@@ -5012,6 +5013,7 @@
 <translation id="5747552184818312860">Мерзімі бітеді</translation>
 <translation id="5747785204778348146">Әзірлеуші – тұрақсыз</translation>
 <translation id="5747809636523347288">Қою және "<ph name="URL" />" бетіне өту</translation>
+<translation id="5748137879145720682">Компьютерім желіден ажыратулы кезде қосу</translation>
 <translation id="5751345516399502412">Тетеринг режимін тексеру</translation>
 <translation id="5755022574660047665">Google Photos-дан естеліктер</translation>
 <translation id="5756163054456765343">А&amp;нықтама орталығы</translation>
@@ -7643,6 +7645,7 @@
 <translation id="8248381369318572865">Микрофонды пайдаланып, айтқан сөзіңізді талдаңыз.</translation>
 <translation id="8248887045858762645">Chrome кеңесі</translation>
 <translation id="8249048954461686687">OEM қалтасы</translation>
+<translation id="8249239468199142122">Батареяны үнемдеу режимі</translation>
 <translation id="8249615410597138718">Құрылғыларға жіберу</translation>
 <translation id="8250210000648910632">Жадта орын таусылды.</translation>
 <translation id="8251441930213048644">Қазір жаңарту</translation>

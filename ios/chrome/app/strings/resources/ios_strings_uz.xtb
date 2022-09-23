@@ -72,7 +72,6 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1434356225517321998">Bu brauzer nazorat ostida. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Parolni berkitish</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> ta xatcho‘p</translation>
 <translation id="1450170672351507823">Standart himoya yoniq. Yanada kuchli himoyalanish uchun kengaytirilgan himoyadan foydalaning.</translation>
 <translation id="149095475893949513">Bu sayt konfiguratsiya profilini yuklab olishga harakat qilmoqda.</translation>
 <translation id="1491277525950327607">Almashtirish uchun ikki marta bosing</translation>
@@ -106,7 +105,6 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="168715261339224929">Brauzer varaqlarini barcha qurilmalaringizda ko‘rish uchun sinxronizatsiyani yoqing.</translation>
 <translation id="1687475363370981210">Hammasi o‘qildi</translation>
 <translation id="1689333818294560261">Nik</translation>
-<translation id="1690731385917361335">Xatcho‘plar yo‘q</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p tanlandi</translation>
 <translation id="1740468249224277719">O‘rnatish uchun ikki marta bosing.</translation>
 <translation id="1752547299766512813">Parollarni saqlash</translation>
@@ -986,7 +984,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="9068336935206019333">Chrome Inkognito oynasida ochish</translation>
 <translation id="9079935439869366234">Hammasini o‘qilmagan deb belgilash</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> paroli yangilansinmi?</translation>
-<translation id="9083392325882095631">1 ta xatcho‘p</translation>
 <translation id="9083838294503912307">Barcha qurilmalarda sinxronlash va oʻzingizga moslash uchun sinxronizatsiyani yoqing.</translation>
 <translation id="9087108903408689779">Chrome taklif qilgan parol:</translation>
 <translation id="9094033019050270033">Parolni yangilash</translation>

@@ -72,7 +72,6 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1434356225517321998">Din browser administreres. <ph name="BEGIN_LINK" />Info<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Skjul adgangskode</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> elementer</translation>
 <translation id="1450170672351507823">Standardbeskyttelse er aktiveret. Du kan øge sikkerheden ved at bruge forbedret beskyttelse.</translation>
 <translation id="149095475893949513">Dette website forsøger at downloade en konfigurationsprofil.</translation>
 <translation id="1491277525950327607">Tryk to gange for at skifte indstilling</translation>
@@ -106,7 +105,6 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="168715261339224929">Aktivér synkronisering for at se dine bogmærker på alle dine enheder.</translation>
 <translation id="1687475363370981210">Markér alle som læste</translation>
 <translation id="1689333818294560261">Kaldenavn</translation>
-<translation id="1690731385917361335">Ingen elementer</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valgt</translation>
 <translation id="1740468249224277719">Tryk to gange for at installere.</translation>
 <translation id="1752547299766512813">Gem adgangskoder</translation>
@@ -986,7 +984,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9068336935206019333">Åbn i inkognitotilstand i Chrome</translation>
 <translation id="9079935439869366234">Markér alle som ulæste</translation>
 <translation id="9081058212938299310">Vil du opdatere adgangskoden til <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 element</translation>
 <translation id="9083838294503912307">Aktivér synkronisering for at synkronisere og tilpasse på alle dine enheder.</translation>
 <translation id="9087108903408689779">Foreslået adgangskode fra Chrome:</translation>
 <translation id="9094033019050270033">Opdater adgangskoden</translation>

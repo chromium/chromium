@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" /> másolása...</translation>
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="1190144681599273207">E fájl lekérése mintegy <ph name="FILE_SIZE" />-nyi mobiladat-forgalmat fog generálni.</translation>
+<translation id="1194390763418645112">A következő általi fájlhozzáférés: <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Tovább</translation>
 <translation id="1209796539517632982">Automatikus névszerverek</translation>
 <translation id="1210831758834677569">lao</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome-eszközök</translation>
 <translation id="1572585716423026576">Beállítás háttérként</translation>
 <translation id="1576937952766665062">bengáli, betű szerinti átírás</translation>
+<translation id="1577977504532381335">Rendszergazdai házirend áttekintése</translation>
 <translation id="158849752021629804">Otthoni hálózat szükséges</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Képfelbontás</translation>
 <translation id="1972984168337863910">A fájlokhoz tartozó visszajelzési párbeszédpanel kibontása</translation>
 <translation id="1995337122023280937">Ugrás a fájl helyéhez</translation>
+<translation id="1999709132469742660">Fájlhozzáférés minden URL számára</translation>
 <translation id="2001796770603320721">Kezelés a Drive-ban</translation>
 <translation id="2009067268969781306">A meghajtó formázásával törli a rajta lévő összes adatot. A művelet nem vonható vissza.</translation>
 <translation id="2025955442973426285">tigrinya</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Ember kávéval</translation>
 <translation id="2251368349685848079">Visszaállítás a kukából</translation>
 <translation id="2282155092769082568">URL automatikus konfigurációja:</translation>
+<translation id="2284767815536050991">cserélhető tárhely</translation>
 <translation id="2288278176040912387">Lemezjátszó</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fájl megnyitása.</translation>
 <translation id="2303301624314357662">A <ph name="FILE_NAME" /> fájl megnyitása folyamatban van.</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">ír</translation>
 <translation id="4124935795427217608">Egyszarvú</translation>
 <translation id="4131235941541910880">Helyezze a kukába azokat az elemeket, amelyekre nincs szüksége.</translation>
+<translation id="4157569377477607576">A rendszergazda által beállított házirend nem javasolja a következőket:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> áthelyezve.</translation>
 <translation id="4176286497474237543">Kuka ürítése most</translation>
 <translation id="4186579485882418952">Offline hozzáférés engedélyezése</translation>
@@ -507,6 +512,7 @@
 <translation id="5323213332664049067">latin-amerikai</translation>
 <translation id="5330145655348521461">Ezek a fájlok meg vannak nyitva egy másik asztalon. A megtekintésükhöz váltson át <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) profiljára.</translation>
 <translation id="5330512191124428349">Információk megtekintése</translation>
+<translation id="5337538975554986899">Fájlhozzáférés minden URL számára, kivéve a következőket: <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Ember macskákkal</translation>
 <translation id="5358764674931277">Képkockasebesség</translation>
 <translation id="5363339716524495120">A beviteli nyelv a kínai</translation>
@@ -532,6 +538,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> kép</translation>
 <translation id="5534520101572674276">Méret számítása</translation>
 <translation id="554153475311314364">görög, betű szerinti átírás</translation>
+<translation id="5580591966435005537">virtuális gép</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">A központozás teljes szélességű</translation>
 <translation id="5602622065581044566">bolgár, fonetikus billentyűzettel</translation>
@@ -592,6 +599,7 @@
 <translation id="61118516107968648">CSV-szöveg</translation>
 <translation id="6129953537138746214">Szóköz</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> áthelyezése...</translation>
+<translation id="6133877453787250710">Rendszergazda felügyeli:</translation>
 <translation id="613750717151263950">japán, amerikai billentyűzettel</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nincs hálózat</translation>
 <translation id="6146563240635539929">Videók</translation>
@@ -612,6 +620,7 @@
 <translation id="6287852322318138013">Válasszon egy alkalmazást a fájl megnyitásához</translation>
 <translation id="6295542640242147836">SIM zárolása</translation>
 <translation id="6296410173147755564">Érvénytelen PUK-kód</translation>
+<translation id="6308243004861726558">Ez a fájl bizalmas, és a rendszergazda által beállított házirend vonatkozik rá. A következő fájlhozzáférési és -átviteli műveletek érvényesek.</translation>
 <translation id="6312403991423642364">Ismeretlen hálózati hiba</translation>
 <translation id="6317608858038767920">Egyéni névszerver: <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-archívum</translation>
@@ -842,6 +851,7 @@
 <translation id="8255595130163158297">A kukában lévő összes elem törlődni fog, és Ön nem fogja tudni visszaállítani őket.</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8261561378965667560">kínai, tömb</translation>
+<translation id="8262872909443689080">Rendszergazda által beállított házirend</translation>
 <translation id="8264024885325823677">Ezt a beállítást a rendszergazdája kezeli.</translation>
 <translation id="8269755669432358899">A fájlokhoz tartozó visszajelzési párbeszédpanel összecsukása</translation>
 <translation id="8280151743281770066">örmény fonetikus</translation>
@@ -940,6 +950,7 @@
 <translation id="9100610230175265781">Összetett jelszó szükséges</translation>
 <translation id="9110990317705400362">Folyamatosan keressük az új módszereket, hogy a böngészést biztonságosabbá tegyük. Korábban bármelyik webhely megkérhette Önt, hogy adjon hozzá egy bővítményt a böngészőjéhez. A Google Chrome legújabb verzióiban kifejezetten meg kell mondania a Chrome-nak, hogy telepíteni szeretné ezeket a bővítményeket. Ehhez a Bővítmények oldalon kell hozzáadnia őket. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Feloldás</translation>
+<translation id="9116909380156770361">Fájlátvitel ide: <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Kodek</translation>
 <translation id="9130775360844693113">A(z) „<ph name="DESTINATION_NAME" />” tagjai hozzá fognak férni ezekhez az elemekhez.</translation>
 <translation id="9131598836763251128">Válasszon ki egy vagy több fájlt</translation>
@@ -961,6 +972,7 @@
 <translation id="943972244133411984">Módosította</translation>
 <translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> bejegyzést tartalmazó tartomány kijelölve <ph name="FROM_ENTRY_NAME" />–<ph name="TO_ENTRY_NAME" /> között.</translation>
+<translation id="954194396377670556">A rendszergazda által beállított házirend megakadályozza a következőket:</translation>
 <translation id="965477715979482472">angol (Dél-Afrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Már van „<ph name="FILE_NAME" />” nevű fájl. Lecseréli?</translation>

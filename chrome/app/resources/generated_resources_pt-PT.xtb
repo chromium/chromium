@@ -1616,6 +1616,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2468178265280335214">Aceleração da deslocação do touchpad</translation>
 <translation id="2468205691404969808">Utiliza cookies para memorizar as suas preferências, mesmo que não visite essas páginas.</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470085922875120">Está a usar palavras-passe que parecem ser difíceis de adivinhar</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 separador}other{<ph name="GROUP_TITLE" /> - # separadores}}</translation>
 <translation id="2469141124738294431">Estado da VM</translation>
 <translation id="2469259292033957819">Não tem qualquer impressora guardada.</translation>
@@ -1953,6 +1954,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2783321960289401138">Criar atalho...</translation>
 <translation id="2783829359200813069">Selecionar tipos de encriptação</translation>
 <translation id="2783952358106015700">Utilizar a chave de segurança com a aplicação <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">Verificação de Palavra-passe</translation>
 <translation id="2785873697295365461">Descritores de ficheiros</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Manter dados de navegação locais (marcadores, palavras-passe, histórico, etc.)</translation>
@@ -2028,6 +2030,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2844169650293029770">Dispositivo USB-C (porta frontal do lado esquerdo)</translation>
 <translation id="2844809857160214557">Veja e faça a gestão de tarefas de impressão.</translation>
 <translation id="2845382757467349449">Mostrar Sempre a Barra de Marcadores</translation>
+<translation id="284581348330507117">Crie palavras-passe únicas</translation>
 <translation id="284805635805850872">Remover software prejudicial?</translation>
 <translation id="2849035674501872372">Olhe para cima</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2180,6 +2183,7 @@ Pretende pará-lo?</translation>
 <translation id="2985348301114641460">Pretende enviar um pedido ao seu administrador para instalar a extensão "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Texto partilhado de outro dispositivo</translation>
 <translation id="2988018669686457659">Renderizador sobresselente</translation>
+<translation id="2988328607561082373">Não está a reutilizar nenhuma palavra-passe</translation>
 <translation id="2989123969927553766">Aceleração da deslocação do rato</translation>
 <translation id="2989474696604907455">não ligado</translation>
 <translation id="2989786307324390836">Certificado único de binário codificado DER</translation>
@@ -2208,6 +2212,7 @@ Pretende pará-lo?</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009300415590184725">Tem a certeza de que pretende cancelar o processo de configuração do serviço de dados móveis?</translation>
 <translation id="3009779501245596802">Bases de dados indexadas</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{As suas palavras-passe parecem fortes}=1{{COUNT} palavra-passe fraca}other{{COUNT} palavras-passe fracas}}</translation>
 <translation id="3010279545267083280">Palavra-passe eliminada</translation>
 <translation id="3010389206479238935">Forçar abertura em</translation>
 <translation id="3011384993885886186">Cinzento quente</translation>
@@ -4409,6 +4414,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5153234146675181447">Esquecer telemóvel</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Definições avançadas de <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{Não existem palavras-passe guardadas.}=1{Palavras-passe verificadas para {COUNT} site}other{Palavras-passe verificadas para {COUNT} sites e apps}}</translation>
 <translation id="5154702632169343078">Assunto</translation>
 <translation id="5155327081870541046">Na barra de endereço, introduza o atalho para o site que quer pesquisar, tal como "@bookmarks". Em seguida, prima o seu atalho de teclado favorito e introduza o termo de pesquisa.</translation>
 <translation id="5156638757840305347">O cursor é realçado quando é apresentado ou se move</translation>
@@ -4990,6 +4996,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5713158217420111469">Ligado a <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Estilo de introdução de espaço</translation>
 <translation id="5715711091495208045">Mediador de plug-ins: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">Deve alterá-las agora</translation>
 <translation id="5719603411793408026">Motores de pesquisa predefinidos</translation>
 <translation id="5719854774000914513">Os sites podem solicitar a ligação a dispositivos HID</translation>
 <translation id="572155275267014074">Definições do Android</translation>
@@ -6445,6 +6452,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7098447629416471489">Os outros motores de pesquisa guardados aparecem aqui</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Remover app}other{Remover apps}}</translation>
 <translation id="7099337801055912064">Não é possível carregar PPDs grandes. O tamanho máximo é 250 kB.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Nenhuma palavra-passe comprometida}=1{{COUNT} palavra-passe comprometida}other{{COUNT} palavras-passe comprometidas}}</translation>
 <translation id="7102687220333134671">As atualizações automáticas estão ativadas</translation>
 <translation id="7102832101143475489">O pedido excedeu o tempo limite.</translation>
 <translation id="710640343305609397">Abrir definições de rede</translation>
@@ -7390,6 +7398,7 @@ Ficheiro de chave: <ph name="KEY_FILE" />
 Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para criar novas versões da sua extensão.</translation>
 <translation id="8002274832045662704">Configuração avançada da impressora</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> já não está disponível.</translation>
+<translation id="8004092996156083991">Informamos se as suas palavras-passe estiverem comprometidas.</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8005600846065423578">Permitir sempre que <ph name="HOST" /> veja a área de transferência</translation>
 <translation id="8006630792898017994">Espaço ou separador</translation>
@@ -7887,6 +7896,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8470513973197838199">Palavras-passe guardadas para <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Normalmente, os sites estabelecem ligação a dispositivos USB para funcionalidades como imprimir um documento ou guardar num dispositivo de armazenamento.</translation>
 <translation id="8471959340398751476">Os descontos estão desativados. Pode ativá-los no menu Personalizar</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{As suas palavras-passe são únicas}=1{{COUNT} palavra-passe reutilizada}other{{COUNT} palavras-passe reutilizadas}}</translation>
 <translation id="8472623782143987204">suporte de hardware</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="8475313423285172237">Outro programa do computador adicionou uma extensão que pode alterar o funcionamento do Chrome.</translation>
@@ -8365,6 +8375,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8940081510938872932">O seu computador está a executar demasiadas operações neste momento. Tente novamente mais tarde.</translation>
 <translation id="8940381019874223173">A partir do Google Fotos</translation>
 <translation id="8941173171815156065">Revogar a autorização "<ph name="PERMISSION" />"</translation>
+<translation id="894191600409472540">Crie palavras-passe fortes</translation>
 <translation id="894360074127026135">Step-Up Internacional Netscape</translation>
 <translation id="8944099748578356325">Utilizar a bateria mais rapidamente (atualmente, <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Tamanho do ícone</translation>
@@ -8588,6 +8599,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9140067245205650184">Está a utilizar um sinalizador de funcionalidade não suportado: <ph name="BAD_FLAG" />. A estabilidade e a segurança serão afetadas.</translation>
 <translation id="9142637293078737510">Alias da imagem</translation>
 <translation id="9143298529634201539">Remover a sugestão?</translation>
+<translation id="9143922477019434797">Proteja as suas palavras-passe</translation>
 <translation id="9147392381910171771">&amp;Opções</translation>
 <translation id="9148058034647219655">Sair</translation>
 <translation id="9148126808321036104">Iniciar sessão novamente</translation>

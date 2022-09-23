@@ -2300,6 +2300,7 @@
 <translation id="3090819949319990166">‏لا يمكن نسخ ملف CRX الخارجي إلى <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">تم إقران "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3093714882666365141">عدم السماح للمواقع الإلكترونية بتثبيت معالِجات الدفع</translation>
+<translation id="3093958632721393232">تفعيل الوضع عند انخفاض مستوى شحن البطارية فقط</translation>
 <translation id="3094141017404513551">سيؤدي هذا إلى فصل تجربة تصفّحك عن <ph name="EXISTING_USER" />.</translation>
 <translation id="3095871294753148861">تتم مزامنة الإشارات المرجعية وكلمات المرور وبيانات التصفُّح الأخرى مع الحساب الأساسي.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{تم إيقاف إضافة واحدة يُحتمل أن تكون ضارة، ويمكنك أيضًا إزالتها.}zero{تم إيقاف {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة. ويمكنك أيضًا إزالتها.}two{تم إيقاف إضافتَين ({NUM_EXTENSIONS}) يُحتمل أن تكونا ضارتَين. ويمكنك أيضًا إزالتهما.}few{تم إيقاف {NUM_EXTENSIONS} إضافات يُحتمل أن تكون ضارة. ويمكنك أيضًا إزالتها.}many{تم إيقاف {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة. ويمكنك أيضًا إزالتها.}other{تم إيقاف {NUM_EXTENSIONS} إضافة يُحتمل أن تكون ضارة. ويمكنك أيضًا إزالتها.}}</translation>
@@ -5020,6 +5021,7 @@
 <translation id="5747552184818312860">تاريخ انتهاء الصلاحية</translation>
 <translation id="5747785204778348146">المطوّر - غير ثابت</translation>
 <translation id="5747809636523347288">ل&amp;صق والانتقال إلى <ph name="URL" /></translation>
+<translation id="5748137879145720682">تفعيل الوضع عند فصل جهاز الكمبيوتر عن مصدر الطاقة</translation>
 <translation id="5751345516399502412">التحقّق من جاهزية التوصيل</translation>
 <translation id="5755022574660047665">‏ذكريات من "صور Google"</translation>
 <translation id="5756163054456765343">مركز المساعدة</translation>
@@ -7664,6 +7666,7 @@
 <translation id="8248381369318572865">الوصول إلى الميكروفون وتحليل كلامك</translation>
 <translation id="8248887045858762645">‏معلومة مفيدة عن Chrome</translation>
 <translation id="8249048954461686687">‏مجلد OEM</translation>
+<translation id="8249239468199142122">توفير شحن البطارية</translation>
 <translation id="8249615410597138718">إرسال إلى أجهزتك</translation>
 <translation id="8250210000648910632">مساحة التخزين المتاحة لا تكفي.</translation>
 <translation id="8251441930213048644">إعادة التحميل الآن</translation>

@@ -55,6 +55,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2384373936468275798">ChromiumOS nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë janë të papërditësuara.</translation>
 <translation id="2396765026452590966">Shtesa "<ph name="EXTENSION_NAME" />" ka ndryshuar se cila faqe shfaqet kur nis Chromium.</translation>
+<translation id="2400844369696905771">Kur është aktiv, Chromium rikuperon memorien nga skedat që ti nuk po i përdor në mënyrë aktive. Kjo liron burimet e kompjuterit për detyra të tjera dhe bën që Chromium të jetë i shpejtë. Skedat joaktive shfaqen bosh dhe ringarkohen automatikisht kur klikon tek ato. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium ka nevojë për lejet e kamerës dhe të mikrofonit për këtë sajt</translation>
 <translation id="2483889755041906834">Në Chromium</translation>
 <translation id="2485422356828889247">Çinstalo</translation>
@@ -145,6 +146,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="4285930937574705105">Instalimi dështoi për shkak të një gabimi të paspecifikuar. Nëse Chromium është aktualisht në ekzekutim, mbylle dhe provo përsëri.</translation>
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
 <translation id="4334294535648607276">Shkarkimi përfundoi</translation>
+<translation id="437317747729858884">Për ta bërë më të shpejtë shfletimin, Chromium rikuperon memorien nga skedat që ti nuk po i përdor.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> kërkon që të lexosh dhe të pranosh "Kushtet e shërbimit" më poshtë para se ta përdorësh këtë pajisje. Këto kushte nuk i zgjerojnë, modifikojnë ose kufizojnë "Kushtet e ChromiumOS".</translation>
 <translation id="4407044323746248786">Dëshiron të dalësh nga Chromium gjithsesi?</translation>
 <translation id="4415566066719264597">Lejo që Chromium të ekzekutohet në sfond</translation>
@@ -313,6 +315,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7872446069773932638">Po shkarkohet... Kanë mbetur edhe <ph name="SECONDS" /> sekonda</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht interesat e tua që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një interes mund të shfaqet përsëri në listë. Ndryshe, mund të heqësh interesat që nuk dëshiron që Chromium të marrë parasysh.</translation>
 <translation id="7937630085815544518">Je identifikuar në Chromium si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
+<translation id="7947085610734123927">Chromium aktivizoi "Kursyesin e memories"</translation>
 <translation id="7975919845073681630">Ky është instalim dytësor i Chromium dhe nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
 <translation id="7997934263947464652">Shtesat, aplikacionet dhe temat nga burime të panjohura mund ta dëmtojnë pajisjen tënde. Chromium rekomandon që t'i instalosh ato vetëm nga<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Pasi Chromium të ketë qasje, sajtet e uebit do të jenë në gjendje të kërkojnë prej teje qasje.</translation>
@@ -338,6 +341,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8558383651099478961">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chromium. Nuk lejohet shtimi për këtë <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Për të marrë përditësimet e ardhshme të Chromium, do të të duhet macOS 10.13 e lart. Ky kompjuter përdor macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google"</translation>
+<translation id="8574036838419011058">Kur ai është aktiv, Chromium kursen energjinë e baterisë duke kufizuar aktivitetin në sfond dhe efektet vizuale, si p.sh. lëvizjen e butë dhe shpejtësitë e kuadrove për videot. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Të drejtat e autorit <ph name="YEAR" /> Autorët e Chromium. Të gjitha të drejtat të rezervuara.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Si i përdorim këto të dhëna:<ph name="END_BOLD" /> Sajtet mund të ruajnë informacione për interesat e tua në Chromium. Për shembull, nëse viziton një sajt për të blerë këpucë për një maratonë, sajti mund ta përcaktojë interesin tënd si vrapim në maratona. Më vonë, nëse viziton një sajt tjetër për t'u regjistruar për një garë, ai sajt mund të të shfaqë një reklamë për këpucë vrapimi bazuar në interesat e tua.</translation>
 <translation id="8619360774459241877">Po hapet Chromium...</translation>

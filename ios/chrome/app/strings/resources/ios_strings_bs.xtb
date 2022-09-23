@@ -72,7 +72,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1430915738399379752">Štampaj</translation>
 <translation id="1434356225517321998">Vašim preglednikom se upravlja. <ph name="BEGIN_LINK" />Detalji<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Sakrijte lozinku</translation>
-<translation id="145015347812617860">Broj stavki: <ph name="COUNT" /></translation>
 <translation id="1450170672351507823">Standardna zaštita je uključena. Za još veću sigurnost koristite poboljšanu zaštitu.</translation>
 <translation id="149095475893949513">Ova web lokacija pokušava preuzeti profil konfiguracije.</translation>
 <translation id="1491277525950327607">Dodirnite dvaput da prebacite postavku</translation>
@@ -106,7 +105,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="168715261339224929">Da biste imali svoje oznake na svim svojim uređajima, uključite sinhronizaciju.</translation>
 <translation id="1687475363370981210">Označi sve pročitano</translation>
 <translation id="1689333818294560261">Nadimak</translation>
-<translation id="1690731385917361335">Nema stavki</translation>
 <translation id="1700629756560807968">Odabrano je <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Dodirnite dvaput da instalirate.</translation>
 <translation id="1752547299766512813">Sačuvaj lozinke</translation>
@@ -756,7 +754,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="6988572888918530647">Upravljanje Google računom</translation>
 <translation id="6989674195860388998">Prebacite u Postavkama…</translation>
 <translation id="6998989275928107238">Do</translation>
-<translation id="699954956411469731">Obavijesti na mobilnom uređaju</translation>
+<translation id="699954956411469731">Obavještenja na mobilnom uređaju</translation>
 <translation id="7004032350256606903">Vaša organizacija zahtijeva da pregledate privatno.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
@@ -986,7 +984,6 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="9068336935206019333">Otvori u Chrome anonimnom načinu rada</translation>
 <translation id="9079935439869366234">Označi sve kao nepročitano</translation>
 <translation id="9081058212938299310">Ažurirati lozinku za <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 stavka</translation>
 <translation id="9083838294503912307">Uključite sinhroniziranje da sinhronizirate i personalizirate kartice na svim uređajima.</translation>
 <translation id="9087108903408689779">Lozinka koju predlaže Chrome:</translation>
 <translation id="9094033019050270033">Ažuriraj lozinku</translation>

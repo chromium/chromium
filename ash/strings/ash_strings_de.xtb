@@ -896,6 +896,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6064463340679478396">Ich bin mit dieser Datei fertig</translation>
 <translation id="6073451960410192870">Aufnahme beenden</translation>
 <translation id="6074087755403037157">Betaversion</translation>
+<translation id="6095008505822982596">Sprechgeschwindigkeit</translation>
 <translation id="6099678161144790572">Im letzten Monat bearbeitet</translation>
 <translation id="6103838137565245112">System</translation>
 <translation id="6114505516289286752">Sprachdateien auf <ph name="LANGUAGE" /> heruntergeladen</translation>
@@ -1252,7 +1253,6 @@ Neuinstallation</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatische Vervollständigung</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> – Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="8155628902202578800">Infodialog für <ph name="USER_EMAIL_ADDRESS" /> öffnen</translation>
-<translation id="8157728322324420120">Vorschläge für dich</translation>
 <translation id="8167567890448493835">"<ph name="LOCALE_NAME" />" wird verwendet</translation>
 <translation id="8183592608247778598">Du kannst auf deinem Gerät „<ph name="DEVICE_TYPE" />“ die letzten Fotos, Medien, Benachrichtigungen und Apps von deinem Smartphone aufrufen</translation>
 <translation id="8192202700944119416">Benachrichtigungen sind ausgeblendet.</translation>

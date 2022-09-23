@@ -72,7 +72,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1430915738399379752">Štampaj</translation>
 <translation id="1434356225517321998">Pregledačem se upravlja. <ph name="BEGIN_LINK" />Detalji<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Sakrijte lozinku</translation>
-<translation id="145015347812617860">Stavki: <ph name="COUNT" /></translation>
 <translation id="1450170672351507823">Standardna zaštita je uključena. Koristite naprednu zaštitu da biste se dodatno zaštitili.</translation>
 <translation id="149095475893949513">Ovaj veb-sajt pokušava da preuzme profil konfiguracije.</translation>
 <translation id="1491277525950327607">Dvaput dodirnite da biste uključili/isključili podešavanje</translation>
@@ -106,7 +105,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="168715261339224929">Da bi vam obeleživači bili dostupni na svim uređajima, uključite sinhronizaciju.</translation>
 <translation id="1687475363370981210">Označi sve kao pročitano</translation>
 <translation id="1689333818294560261">Nadimak</translation>
-<translation id="1690731385917361335">Nema stavki</translation>
 <translation id="1700629756560807968">Broj izabranih stavki je <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Dodirnite dvaput da biste instalirali.</translation>
 <translation id="1752547299766512813">Sačuvane lozinke</translation>
@@ -986,7 +984,6 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="9068336935206019333">Otvori u Chrome režimu bez arhiviranja</translation>
 <translation id="9079935439869366234">Označi sve kao nepročitano</translation>
 <translation id="9081058212938299310">Želite li da ažurirate lozinku za <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 stavka</translation>
 <translation id="9083838294503912307">Da biste sinhronizovali i personalizovali sadržaj na uređajima, uključite sinhronizaciju.</translation>
 <translation id="9087108903408689779">Predložena lozinka za Chrome:</translation>
 <translation id="9094033019050270033">Ažuriraj lozinku</translation>

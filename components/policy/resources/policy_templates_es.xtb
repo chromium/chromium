@@ -32,6 +32,7 @@
 
       Estos son los idiomas que se admiten actualmente: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk y vi.</translation>
 <translation id="1019101089073227242">Establecer directorio de datos de usuarios</translation>
+<translation id="1020006815010587263">La papelera está inhabilitada para el usuario.</translation>
 <translation id="1022361784792428773">ID de extensiones que el usuario no debe poder instalar (o * para incluirlas todas)</translation>
 <translation id="102492767056134033">Establecer el estado predeterminado del teclado en pantalla en la pantalla de inicio de sesión</translation>
 <translation id="102658870205613876">Configuración de ventanas emergentes</translation>
@@ -550,6 +551,9 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1553532014072799546">Lista blanca de límites de tiempo por aplicación</translation>
 <translation id="1553956579506604198">Bloquea las extensiones externas para que no puedan instalarse</translation>
 <translation id="1555248923316727072">Configuración de gestión de identidades de usuarios de SAML</translation>
+<translation id="1557113199339446336">Si se le asigna el valor True a esta política, los dispositivos registrados informarán sobre los eventos de detección y respuesta extendidas (XDR).
+
+      Si se le asigna el valor False a esta política o no se establece, los dispositivos registrados no informarán sobre los eventos de detección y respuesta extendidas (XDR).</translation>
 <translation id="1561424797596341174">La política anula las compilaciones de depuración del host de acceso remoto.</translation>
 <translation id="1561967320164410511">U2F y extensiones de confirmación individual</translation>
 <translation id="1567718448549957373">Si se habilita la política o no se establece, se permitirán las solicitudes de autenticación <ph name="BASIC_AUTH" /> recibidas desde conexiones HTTP no seguras.
@@ -1158,6 +1162,9 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2157842368188031417">La política solo se aplica a las sesiones de invitado administradas. Tiene que estar habilitada para que el modo de estación de trabajo compartida de Imprivata permita cambios de usuario durante la sesión.
       Si se le asigna el valor True a la política, se forzará la anulación de determinadas políticas de funciones, que conservan datos de usuario sensibles y no se gestionan mediante el mecanismo de limpieza usado en los cambios de usuario durante la sesión del modo de estación de trabajo compartida de Imprivata.
       Si se le asigna el valor False a la política o no se define, no se anulará ninguna política.</translation>
+<translation id="2158741059065130266">Si se le asigna el valor True a esta política, los usuarios de la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /> verán una papelera, y los archivos que se encuentren en Mis archivos y en Descargas (incluidos sus descendientes creados por el usuario) se enviarán allí cuando se eliminen.
+
+      Si se le asigna el valor False a esta política, los archivos que estuvieran previamente en la papelera seguirán disponibles y se podrán ver mostrando los archivos ocultos y buscando el directorio .Trash en Mis archivos o en Descargas.</translation>
 <translation id="2159486052528894673">Permitir que las políticas basadas en la nube a nivel de usuario anulen las políticas en la nube a nivel de máquina</translation>
 <translation id="2160336427036785721">Configura la cantidad de memoria que una única instancia de <ph name="PRODUCT_NAME" /> puede usar antes de que se empiecen a descartar pestañas (es decir, se liberará la memoria que usa una pestaña y esta se tendrá que volver a cargar cuando se vuelva a acceder a ella) para ahorrar memoria.
 
@@ -1606,6 +1613,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           Una URL de resultados instantáneos de Google se puede especificar de la siguiente forma: <ph name="GOOGLE_INSTANT_SEARCH_URL" />.
 
           Solo se aplica si se habilita la política "DefaultSearchProviderEnabled".</translation>
+<translation id="2563373001850981577">Habilitar la capacidad de enviar archivos a la papelera (en sistemas de archivos compatibles) en la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2567227673131796227">Esta política está obsoleta. Se debe usar la política <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" /> en su lugar.
 
       Si se establece esta política, se especificará qué hosts de mensajes nativos no se deben cargar. Un valor de lista de bloqueados de <ph name="WILDCARD_VALUE" /> significa que todos los hosts de mensajes nativos han sido denegados, excepto los que estén permitidos explícitamente.
@@ -3003,6 +3011,7 @@ Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
       Si se inhabilita esta política o no se establece, solo se le podrá pedir al usuario que realice una acción cuando no haya ningún certificado que coincida con la selección automática.</translation>
 <translation id="3950110092991281616">Habilita la autenticación pasiva solo en sesiones normales.</translation>
 <translation id="3950239119790560549">Actualizar restricciones de tiempo</translation>
+<translation id="3953860513079094502">Informar sobre los eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="3956243291190637924">Ocultar encabezados y pies de página en la vista previa de impresión</translation>
 <translation id="3956573780915784996">Permite a los usuarios recoger trazas de rendimiento del sistema.</translation>
 <translation id="3956686688560604829">Usar la política SiteList de Internet Explorer para gestionar la compatibilidad con navegadores antiguos.</translation>
@@ -3132,6 +3141,7 @@ Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 <translation id="4098920079809952737">Permitir imprimir con y sin gráficos de fondo</translation>
 <translation id="410068710490553233">Permite iniciar sesión en más cuentas de Google</translation>
 <translation id="4101282687722389021">Marca de tiempo UTC de la última vez que se actualizó esta entrada. Enviada como cadena porque la marca de tiempo no cabe en un número entero.</translation>
+<translation id="4102347680024644994">Informar sobre los eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="4105989332710272578">No permite que se aplique la Transparencia en Certificados a una lista de URLs</translation>
 <translation id="4114059938441379876">Si se define esta política, se configurará la URL donde los usuarios podrán cambiar sus contraseñas después de ver una advertencia en el navegador. El servicio de protección de contraseñas envía a los usuarios a la URL que designes (únicamente con protocolos HTTP y HTTPS) a través de esta política. Para que <ph name="PRODUCT_NAME" /> capture correctamente el hash con salt de la nueva contraseña en esta página de cambio de contraseña, la página debe seguir las directrices incluidas en https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
 
@@ -5715,6 +5725,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Especifica las opciones que se deben aplicar a <ph name="PRODUCT_NAME" /> cuando se inicia. Las opciones especificadas solo se aplican en la pantalla de inicio de sesión. Las opciones establecidas a través de esta política no se propagan a las sesiones del usuario.</translation>
 <translation id="6857240169209507953">Impedir que <ph name="BOREALIS_NAME" /> se ejecute en un dispositivo</translation>
 <translation id="685769593149966548">Aplicar el modo restringido estricto en YouTube</translation>
+<translation id="6860349155164463644">No informar sobre los eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versiones posteriores</translation>
 <translation id="68818134518270542">Si se establece esta política, se especificarán las aplicaciones que pueden activar los usuarios para tomar notas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" />.
 
@@ -6340,6 +6351,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Los campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> se usan para configurar un mensaje que se mostrará al usuario cuando aparezca una advertencia después de que un análisis detecte alguna infracción de políticas. El campo del mensaje contiene el texto que se va a mostrar al usuario y debe tener una longitud máxima de 200 caracteres. El campo learn_more_url contiene una URL proporcionada por el administrador a la que podrá acceder el usuario para consultar más información del cliente sobre las razones por las que se ha bloqueado la acción. El campo del idioma es opcional y contiene el idioma del mensaje. Si el campo del idioma está vacío o tiene el valor predeterminado, indica que el mensaje se usará cuando no exista un mensaje en el idioma del usuario. El campo de etiqueta especifica para qué tipo de análisis se muestra el mensaje. La lista custom_messages puede tener cero o más entradas, y cada entrada debe tener un mensaje que no esté vacío y campos de etiquetas.
 
       Para que esta política tenga efecto, es necesario realizar una configuración adicional. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para consultar más información.</translation>
+<translation id="7481702249684965639">La papelera está habilitada para el usuario.</translation>
 <translation id="7482768039644066614">Habilitar la obtención de metadatos de carga de páginas y modelos de aprendizaje automático para mejorar la experiencia de navegación</translation>
 <translation id="7485481791539008776">Reglas para la selección de la impresora predeterminada</translation>
 <translation id="7486205887492534734">Preguntar cuando coincidan varios certificados en la pantalla de inicio de sesión</translation>

@@ -230,6 +230,7 @@
 <translation id="5386244825306882791">Tamén controla a páxina que se mostra ao iniciar Chrome ou ao realizar unha busca desde Omnibox.</translation>
 <translation id="5394833366792865639">Compartir unha pestana de Chrome</translation>
 <translation id="5412485296464121825">Os sitios poden almacenar con Chrome información sobre os teus intereses. Por exemplo, se visitas un sitio para comprar zapatillas deportivas para un maratón, ese sitio podería determinar que che interesa correr maratóns. Máis tarde, se visitas un sitio distinto que che permite rexistrarte para participar nunha carreira, pode mostrárseche nel un anuncio de zapatillas deportivas baseado nos teus intereses.</translation>
+<translation id="5416870378730196769">Chrome activou o aforro de memoria</translation>
 <translation id="5430073640787465221">O teu ficheiro de preferencias está danado ou non é válido.
 
 Google Chrome non pode recuperar a túa configuración.</translation>
@@ -267,6 +268,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6273793429163604305">Preparados…</translation>
 <translation id="6291089322031436445">Aplicacións de Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome xa está instalado para todos os usuarios no teu ordenador.</translation>
+<translation id="6326175484149238433">Eliminar de Chrome</translation>
 <translation id="6327105987658262776">Non hai ningunha actualización dispoñible.</translation>
 <translation id="6412673304250309937">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
 <translation id="6418662306461808273">Queres cambiar ao perfil existente de Chrome?</translation>
@@ -328,6 +330,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7651907282515937834">Logotipo de Chrome Enterprise</translation>
 <translation id="7655455401911432608">O teu historial de navegación e un rexistro dos sitios que visitases usando Chrome neste dispositivo.</translation>
+<translation id="7726773885101561560">Para que a navegación sexa máis rápida, Chrome recuperará a memoria das pestanas que non esteas a usar.</translation>
 <translation id="7747138024166251722">O programa de instalación non puido crear un directorio temporal. Comproba se hai espazo libre no disco e se tes autorización para instalar o software.</translation>
 <translation id="7761834446675418963">Fai clic no teu nome para abrir Chrome e comezar a navegar.</translation>
 <translation id="7777080907402804672">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google. Podes desactivar esta función na configuración cando queiras.</translation>
@@ -400,6 +403,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8986207147630327271">Estás a piques de engadir un perfil de traballo a este navegador e de permitir que o teu administrador controle só o perfil de traballo.</translation>
 <translation id="8989968390305463310">O teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina automaticamente os teus intereses cada mes. A menos que os quites, os intereses poden actualizarse.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hai unha actualización de Chrome dispoñible}=1{Hai unha actualización de Chrome dispoñible}other{Hai unha actualización de Chrome que leva dispoñible # días}}</translation>
+<translation id="9003498785844995646">Se activas esta opción, Chrome conservará a carga da batería limitando as actividades en segundo plano e os efectos visuais, como o desprazamento suave ou os fotogramas por segundo dos vídeos. Consulta <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> ou <ph name="BEGIN_LINK_2" />envía os teus comentarios<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">Sistema Chrome OS Flex</translation>
 <translation id="9067395829937117663">Google Chrome require Windows 7 ou unha versión posterior.</translation>
 <translation id="911206726377975832">Queres eliminar tamén os teus datos de navegación?</translation>

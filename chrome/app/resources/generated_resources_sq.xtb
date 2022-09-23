@@ -2294,6 +2294,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3090819949319990166">Skedari i jashtëm crx nuk mund të kopjohet te <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" u çiftua</translation>
 <translation id="3093714882666365141">Mos lejo që sajtet të instalojnë përpunuesit e pagesave</translation>
+<translation id="3093958632721393232">Aktivizoje vetëm kur bateria është në nivel të ulët</translation>
 <translation id="3094141017404513551">Kjo do ta ndajë shfletimin tënd nga <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Faqeshënuesit, fjalëkalimet dhe të dhënat e tjera të shfletuesit sinkronizohen me llogarinë parësore.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 shtesë që mund të jetë e dëmshme është çaktivizuar. Mund ta heqësh po ashtu atë.}other{{NUM_EXTENSIONS} shtesa që mund të jenë të dëmshme janë çaktivizuar. Mund t'i heqësh po ashtu ato.}}</translation>
@@ -5015,6 +5016,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5747552184818312860">Skadon</translation>
 <translation id="5747785204778348146">Programimi - i paqëndrueshëm</translation>
 <translation id="5747809636523347288">Ngj&amp;it dhe shko te <ph name="URL" /></translation>
+<translation id="5748137879145720682">Aktivizoje kur kompjuteri im nuk është në prizë</translation>
 <translation id="5751345516399502412">Kontrollo gatishmërinë e ndarjes së internetit</translation>
 <translation id="5755022574660047665">kujtime nga "Fotografitë e Google"</translation>
 <translation id="5756163054456765343">Qendra e n&amp;dihmës</translation>
@@ -7646,6 +7648,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8248381369318572865">Qasu te mikrofoni dhe analizo ligjërimin tënd</translation>
 <translation id="8248887045858762645">Këshillë për Chrome</translation>
 <translation id="8249048954461686687">Skedar OEM</translation>
+<translation id="8249239468199142122">Kursyesi i baterisë</translation>
 <translation id="8249615410597138718">Dërgo te pajisjet e tua</translation>
 <translation id="8250210000648910632">Nuk ka hapësirë ruajtëse</translation>
 <translation id="8251441930213048644">Rifresko tani</translation>

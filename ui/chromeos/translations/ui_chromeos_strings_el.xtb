@@ -228,6 +228,7 @@
 <translation id="3016566519832145558">Προσοχή: Αυτά τα αρχεία είναι προσωρινά και ενδέχεται να διαγραφούν αυτόματα για να απελευθερωθεί χώρος στη μονάδα δίσκου.</translation>
 <translation id="3029114385395636667">Ενεργοποιήστε τα Έγγραφα Google εκτός σύνδεσης για να κάνετε τα Έγγραφα, τα Υπολογιστικά φύλλα και τις Παρουσιάσεις διαθέσιμα εκτός σύνδεσης.</translation>
 <translation id="303198083543495566">Γεωγραφία</translation>
+<translation id="3044404008258011032">Για να επαναφέρετε αυτά τα στοιχεία, σύρετέ τα σε έναν νέο φάκελο εκτός του κάδου. Ο αρχικός φάκελος "<ph name="PARENT_FOLDER_NAME" />" αυτών των στοιχείων έχει διαγραφεί.</translation>
 <translation id="3047197340186497470">Κινεζικά Dayi</translation>
 <translation id="3067790092342515856">Αρχεία Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -349,6 +350,7 @@
 <translation id="4057991113334098539">Ενεργοποίηση...</translation>
 <translation id="4092890906744441904">Ιρλανδικά</translation>
 <translation id="4124935795427217608">Μονόκερος</translation>
+<translation id="4131235941541910880">Μεταφέρετε τα στοιχεία που δεν θέλετε στον κάδο</translation>
 <translation id="4159731583141908892">Το αρχείο <ph name="FILE_NAME" /> μετακινήθηκε.</translation>
 <translation id="4176286497474237543">Άδειασμα κάδου τώρα</translation>
 <translation id="4186579485882418952">Ενεργοποίηση πρόσβασης εκτός σύνδεσης</translation>
@@ -445,8 +447,10 @@
 </translation>
 <translation id="4867079195717347957">Κάντε κλικ για ταξινόμηση της στήλης σε φθίνουσα σειρά.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
+<translation id="4874569719830985133">Μόνιμη διαγραφή</translation>
 <translation id="4880214202172289027">Ρυθμιστικό έντασης ήχου</translation>
 <translation id="4881695831933465202">Άνοιγμα</translation>
+<translation id="4891091358278567964">Για να επαναφέρετε αυτά τα στοιχεία, σύρετέ τα σε έναν νέο φάκελο εκτός του κάδου. Οι αρχικοί φάκελοι αυτών των στοιχείων έχουν διαγραφεί.</translation>
 <translation id="4900532980794411603">Κοινή χρήση με το Parallels Desktop</translation>
 <translation id="4902546322522096650">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Σύνδεση</translation>
 <translation id="4906580650526544301">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" />%, Λεπτομέρειες</translation>
@@ -505,6 +509,7 @@
     <ph name="MARKUP_7" />Κοινή χρήση, δημιουργία και συνεργασία<ph name="MARKUP_8" />
     σε αρχεία με άλλους χρήστες σε ένα μέρος.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Ανακτημένα αρχεία από το Google Drive</translation>
+<translation id="5278111733643988471">Για να επαναφέρετε αυτό το στοιχείο, σύρετέ το σε έναν νέο φάκελο εκτός του κάδου. Ο αρχικός φάκελος "<ph name="PARENT_FOLDER_NAME" />" αυτού του στοιχείου έχει διαγραφεί.</translation>
 <translation id="5286194356314741248">Σάρωση</translation>
 <translation id="5288441970121584418">Μπέργκερ</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -517,6 +522,7 @@
 <translation id="535792325654997756">Άτομο με γάτες</translation>
 <translation id="5358764674931277">Ρυθμός καρέ</translation>
 <translation id="5363339716524495120">Η γλώσσα εισόδου είναι τα Κινέζικα</translation>
+<translation id="5364067326287025678">Ο κάδος είναι κενός</translation>
 <translation id="5368191757080475556">Κοινοποίηση φακέλου με Linux</translation>
 <translation id="5402367795255837559">Μπράιγ</translation>
 <translation id="5411472733320185105">Μην χρησιμοποιείτε τις ρυθμίσεις διακομιστή μεσολάβησης για αυτούς τους κεντρικούς υπολογιστές και τομείς:</translation>
@@ -788,6 +794,7 @@
 <translation id="7711920809702896782">Πληροφορίες εικόνας</translation>
 <translation id="7724603315864178912">Αποκοπή</translation>
 <translation id="7732111077498238432">Το δίκτυο διέπεται από πολιτική</translation>
+<translation id="7736003208887389532">Μόνιμη διαγραφή αυτών των αρχείων;</translation>
 <translation id="7748626145866214022">Στη γραμμή ενεργειών υπάρχουν περισσότερες επιλογές. Πιέστε Alt + A, για να εστιάσετε στη γραμμή ενεργειών.</translation>
 <translation id="7760449188139285140">Κινεζικά Wubi</translation>
 <translation id="7765158879357617694">Μεταφορά</translation>
@@ -850,6 +857,7 @@
 <translation id="8249296373107784235">Ματαίωση</translation>
 <translation id="8250690786522693009">Λατινικά</translation>
 <translation id="8250920743982581267">Έγγραφα</translation>
+<translation id="8255595130163158297">Όλα τα στοιχεία στον κάδο θα διαγραφούν και δεν θα μπορείτε να τα επαναφέρετε.</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8261561378965667560">Πίνακας Κινεζικών</translation>
 <translation id="8264024885325823677">Η διαχείριση αυτής της ρύθμισης πραγματοποιείται από τον διαχειριστή σας.</translation>
@@ -931,6 +939,7 @@
 <translation id="8857149712089373752">Νεπαλικά με φωνητικό πληκτρολόγιο</translation>
 <translation id="8860454412039442620">Υπολογιστικό φύλλο Excel</translation>
 <translation id="8866284467018526531">Μεταγραφή σε Αραβικά</translation>
+<translation id="8873014196523807561">Για να επαναφέρετε αυτά τα στοιχεία, σύρετέ τα σε έναν νέο φάκελο. Οι αρχικοί φάκελοι για ορισμένα από αυτά τα στοιχεία έχουν διαγραφεί.</translation>
 <translation id="8874184842967597500">Καμία σύνδεση</translation>
 <translation id="8900820606136623064">Ουγγρικά
 </translation>

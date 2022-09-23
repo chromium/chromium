@@ -1278,6 +1278,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">A kapcsolat a következő webhellyel nem biztonságos: <ph name="SITE" /></translation>
 <translation id="4349365535725594680">Nem lehet megosztani bizalmas tartalmat</translation>
+<translation id="4349810866125026513">Feltöltés mindenképp</translation>
 <translation id="4350629523305688469">Többfunkciós tálca</translation>
 <translation id="4351060348582610152">A(z) <ph name="ORIGIN" /> szeretné megkeresni a közeli Bluetooth-eszközöket. A következő eszközöket találta:</translation>
 <translation id="4351175281479794167">Ellenőrző kód megadása</translation>
@@ -2016,6 +2017,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6337133576188860026"><ph name="SIZE" />-nál kevesebb hely szabadul fel. Előfordulhat, hogy egyes webhelyek lassabban töltődnek be, amikor legközelebb felkeresi őket.</translation>
 <translation id="6337534724793800597">Házirendek szűrése név szerint</translation>
 <translation id="6340739886198108203">A rendszergazda által beállított házirend nem javasolja képernyőképek vagy felvételek készítését, amikor a következő bizalmas tartalmak láthatók:</translation>
+<translation id="6341434961864773665">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak a feltöltését a következő helyre: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak a feltöltését a következő helyre: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Aktív változatok</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> telepítése</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nincs}=1{1 jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />, szinkronizálva)}=2{2 jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />, szinkronizálva)}other{# jelszó (a következő domainekhez: <ph name="DOMAIN_LIST" />, szinkronizálva)}}</translation>
@@ -2664,6 +2666,7 @@ További részletek:
 <translation id="8075736640322370409">Új Google-táblázat létrehozása gyorsan</translation>
 <translation id="8075898834294118863">Webhelybeállítások kezelése</translation>
 <translation id="8076492880354921740">Lapok</translation>
+<translation id="8078006011486731853">{0,plural, =1{Feltölti a bizalmas fájlt?}other{Feltölti a bizalmas fájlokat?}}</translation>
 <translation id="8078141288243656252">Elforgatott állapotban nem lehetséges a jegyzetelés</translation>
 <translation id="8079031581361219619">Újratölti a webhelyet?</translation>
 <translation id="8081087320434522107">Szedánok</translation>

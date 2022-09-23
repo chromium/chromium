@@ -53,6 +53,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2384373936468275798">Chromium OS konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos veraltet sind.</translation>
 <translation id="2396765026452590966">Die beim Start von Chromium angezeigte Seite wurde durch die Erweiterung <ph name="EXTENSION_NAME" /> geändert.</translation>
+<translation id="2400844369696905771">Wenn diese Option aktiviert ist, gibt Chromium den für Tabs genutzten Arbeitsspeicher wieder frei, wenn du sie gerade nicht aktiv verwendest. Dadurch werden die Ressourcen deines Computers für andere Aufgaben frei und Chromium wird schneller. Inaktive Tabs erscheinen leer und werden automatisch aktualisiert, wenn du sie anklickst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium benötigt die Kamera- und Mikrofonberechtigungen für diese Website</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
@@ -143,6 +144,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="4285930937574705105">Die Installation konnte aufgrund eines undefinierten Fehlers nicht abgeschlossen werden. Falls Chromium derzeit ausgeführt wird, schließe es bitte und versuche es erneut.</translation>
 <translation id="4304713468139749426">Passwortmanager</translation>
 <translation id="4334294535648607276">Download abgeschlossen.</translation>
+<translation id="437317747729858884">Um das Surfen zu beschleunigen, verwendet Chromium Arbeitsspeicher von nicht genutzten Tabs.</translation>
 <translation id="439358628917130594">Für <ph name="MANAGER" /> ist erforderlich, dass du vor der Verwendung dieses Geräts die folgenden Nutzungsbedingungen akzeptierst. Durch diese Nutzungsbedingungen werden die Chromium OS-Nutzungsbedingungen nicht erweitert, geändert oder eingeschränkt.</translation>
 <translation id="4407044323746248786">Chromium trotzdem beenden?</translation>
 <translation id="4415566066719264597">Chromium im Hintergrund ausführen</translation>
@@ -180,6 +182,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5386450000063123300">Chromium wird aktualisiert (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Anmeldung in Chromium zulassen</translation>
 <translation id="5398878173008909840">Eine neue Version von Chromium ist verfügbar.</translation>
+<translation id="5405650547142096840">Aus Chromium entfernen</translation>
 <translation id="5427571867875391349">Chromium als Standardbrowser festlegen</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5473971139929175403">Chromium funktioniert unter Umständen nicht ordnungsgemäß, da es unter dieser Linux-Distribution nicht mehr unterstützt wird</translation>
@@ -311,6 +314,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7872446069773932638">Wird heruntergeladen… Noch <ph name="SECONDS" /> Sekunde(n)</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Zum Schutz deiner Daten löschen wir automatisch deine Interessen, die älter als vier Wochen sind. Je nach deinen Browsingaktivitäten können die Interessen wieder in der Liste erscheinen. Du kannst jedoch Interessen entfernen, die Chromium nicht berücksichtigen soll.</translation>
 <translation id="7937630085815544518">Du warst in Chromium als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melde dich bitte wieder mit demselben Konto an.</translation>
+<translation id="7947085610734123927">Chromium hat den Arbeitsspeichersparmodus aktiviert</translation>
 <translation id="7975919845073681630">Dies ist eine Zweitinstallation, daher kann Chromium nicht als Standardbrowser festgelegt werden.</translation>
 <translation id="7997934263947464652">Erweiterungen, Apps und Designs aus unbekannten Quellen können Schäden auf deinem Gerät verursachen. Chromium empfiehlt, sie nur über den <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zu installieren.</translation>
 <translation id="8013436988911883588">Sobald Chromium Zugriff hat, können Websites dich um Zugriff bitten.</translation>
@@ -336,6 +340,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8558383651099478961">Dein Elternteil hat "Berechtigungen für Websites, Apps und Erweiterungen" für Chromium deaktiviert. Das Hinzufügen dieser <ph name="EXTENSION_TYPE_PARAMETER" /> ist nicht zulässig.</translation>
 <translation id="8561285221328166383">Du benötigst macOS 10.13 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird macOS 10.12 ausgeführt.</translation>
 <translation id="8568283329061645092">Chromium kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest</translation>
+<translation id="8574036838419011058">Wenn die Option aktiviert ist, reduziert Chromium den Akkuverbrauch, indem Hintergrundaktivitäten und visuelle Effekte wie optimiertes Scrollen und Video-Framerates eingeschränkt werden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Die Chromium-Autoren. Alle Rechte vorbehalten.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />So verwenden wir diese Daten<ph name="END_BOLD" />: Websites können Daten zu deinen Interessen bei Chromium speichern. Wenn du beispielsweise im Internet Schuhe für einen Marathon kaufst, definiert die Website möglicherweise Marathons als eines deiner Interessen. Wenn du dann später eine andere Website besuchst, um dich für ein Wettrennen anzumelden, kann dir auf Grundlage deiner Interessen Werbung zu Laufschuhen angezeigt werden.</translation>
 <translation id="8619360774459241877">Chromium wird gestartet…</translation>

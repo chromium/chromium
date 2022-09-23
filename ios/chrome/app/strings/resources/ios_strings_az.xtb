@@ -72,7 +72,6 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1434356225517321998">Brauzeriniz idarə edilir. <ph name="BEGIN_LINK" />Ətraflı<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Parolu Gizlədin</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> element</translation>
 <translation id="1450170672351507823">Standart qoruma aktivdir. Təhlükəsizliyi daha da artırmaq üçün Qabaqcıl qoruma işlədin.</translation>
 <translation id="149095475893949513">Bu vebsayt konfiqurasiya profilini endirməyə çalışır.</translation>
 <translation id="1491277525950327607">Ayarı dəyişmək üçün iki dəfə klikləyin</translation>
@@ -106,7 +105,6 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="168715261339224929">Bütün cihazlarınızda əlfəcinləri əldə etmək üçün sinxronizasiyanı aktiv edin.</translation>
 <translation id="1687475363370981210">Hamısını Oxunmuş Kimi Qeyd Edin</translation>
 <translation id="1689333818294560261">Ləqəb</translation>
-<translation id="1690731385917361335">Element yoxdur</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seçildi</translation>
 <translation id="1740468249224277719">Yükləmək üçün iki dəfə tıklayın.</translation>
 <translation id="1752547299766512813">Parolları Yadda saxlayın</translation>
@@ -986,7 +984,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9068336935206019333">Chrome Anonim rejimində açın</translation>
 <translation id="9079935439869366234">Hamısını Oxunmamış kimi Qeyd Edin</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> üçün parollar yenilənsin?</translation>
-<translation id="9083392325882095631">1 element</translation>
 <translation id="9083838294503912307">Cihazlarda sinxronizasiya etmək və fərdiləşdirmək üçün sinxronizasiyanı aktiv edin</translation>
 <translation id="9087108903408689779">Chrome Tərəfindən Təklif Edilən Parol:</translation>
 <translation id="9094033019050270033">Parolu güncəlləyin</translation>

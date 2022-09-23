@@ -72,7 +72,6 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1434356225517321998">Jūsu pārlūks tiek pārvaldīts. <ph name="BEGIN_LINK" />Informācija<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Slēpt paroli</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> vienumi</translation>
 <translation id="1450170672351507823">Ir ieslēgta standarta aizsardzība. Lai iegūtu lielāku drošību, izmantojiet uzlaboto aizsardzību.</translation>
 <translation id="149095475893949513">Šī vietne mēģina lejupielādēt konfigurācijas profilu.</translation>
 <translation id="1491277525950327607">Veiciet dubultskārienu, lai pārslēgtu iestatījumu.</translation>
@@ -106,7 +105,6 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="168715261339224929">Lai grāmatzīmes būtu pieejamas visās jūsu ierīcēs, ieslēdziet sinhronizāciju.</translation>
 <translation id="1687475363370981210">Atzīmēt visu kā izlasītu</translation>
 <translation id="1689333818294560261">Apzīmējums</translation>
-<translation id="1690731385917361335">Nav neviena vienuma</translation>
 <translation id="1700629756560807968">Atlasītas: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Divreiz pieskarieties, lai instalētu.</translation>
 <translation id="1752547299766512813">Sagl. paroles</translation>
@@ -756,6 +754,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="6988572888918530647">Google konta pārvaldība</translation>
 <translation id="6989674195860388998">Mainīt iestatījumos…</translation>
 <translation id="6998989275928107238">Kam</translation>
+<translation id="699954956411469731">Paziņojumi mobilajās ierīcēs</translation>
 <translation id="7004032350256606903">Saskaņā ar jūsu organizācijas politiku tīmeklis ir jāpārlūko privāti.
 <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nesen atvērtas cilnes</translation>
@@ -985,7 +984,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9068336935206019333">Atvērt Chrome inkognito režīmā</translation>
 <translation id="9079935439869366234">Atzīmēt visu kā nelasītu</translation>
 <translation id="9081058212938299310">Vai atjaunināt lietotājvārda <ph name="USERNAME" /> paroli?</translation>
-<translation id="9083392325882095631">1 vienums</translation>
 <translation id="9083838294503912307">Lai sinhronizētu un personalizētu saturu dažādās ierīcēs, ieslēdziet sinhronizāciju.</translation>
 <translation id="9087108903408689779">Chrome ieteiktā parole:</translation>
 <translation id="9094033019050270033">Atjaunināt paroli</translation>

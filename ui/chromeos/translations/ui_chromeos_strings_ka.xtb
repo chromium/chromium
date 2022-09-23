@@ -718,6 +718,7 @@
 <translation id="7248671827512403053">პროგრამა</translation>
 <translation id="7256405249507348194">ამოუცნობი შეცდომა: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ხელმისაწვდომი მომსახურებები</translation>
+<translation id="7292816689782057017">ადმინისტრატორის მიერ დადგენილი წესები ზღუდავს ზოგიერთ მდებარეობაზე შენახვას.</translation>
 <translation id="7294063083760278948">ტელუგუ ტრანსლიტერაცია</translation>
 <translation id="7295662345261934369">სხვებთან გაზიარება</translation>
 <translation id="7297443947353982503">სახელი/პაროლი არასწორია ან ვერ მოხერხდა EAP-ავტორიზაცია</translation>
@@ -904,6 +905,7 @@
 <translation id="8810671769985673465">შეკუმშვა ვერ მოხერხდა, ერთეული უკვე არსებობს: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">ესპანური (ესპანეთი)</translation>
 <translation id="8834164572807951958">„<ph name="DESTINATION_NAME" />“-ის წევრები მიიღებენ წვდომას ამ ერთეულების ასლებზე.</translation>
+<translation id="8849389110234859568">ადმინისტრატორის მიერ დადგენილი წესები ზღუდავს წვდომას ზოგიერთ ფაილზე.</translation>
 <translation id="8857149712089373752">ნეპალური ფონეტიკური კლავიატურით</translation>
 <translation id="8860454412039442620">Excel-ის ელცხრილი</translation>
 <translation id="8866284467018526531">არაბული ტრანსლიტერაცია</translation>

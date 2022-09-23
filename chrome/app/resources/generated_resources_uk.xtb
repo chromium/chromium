@@ -2314,6 +2314,7 @@
 <translation id="3090819949319990166">Не вдається скопіювати зовнішній файл .crx у файл <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558"><ph name="DEVICE_NAME" />: підключено</translation>
 <translation id="3093714882666365141">Заборонити сайтам встановлювати обробники платежів</translation>
+<translation id="3093958632721393232">Вмикати, лише коли заряд акумулятора низький</translation>
 <translation id="3094141017404513551">Ви переглядатимете веб-сторінки окремо від користувача <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Закладки, паролі й інші дані веб-перегляду синхронізуються з основним обліковим записом.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Вимкнено 1 потенційно шкідливе розширення. Його також можна видалити.}one{Вимкнено {NUM_EXTENSIONS} потенційно шкідливе розширення. Їх також можна видалити.}few{Вимкнено {NUM_EXTENSIONS} потенційно шкідливі розширення. Їх також можна видалити.}many{Вимкнено {NUM_EXTENSIONS} потенційно шкідливих розширень. Їх також можна видалити.}other{Вимкнено {NUM_EXTENSIONS} потенційно шкідливого розширення. Їх також можна видалити.}}</translation>
@@ -5034,6 +5035,7 @@
 <translation id="5747552184818312860">Діє до</translation>
 <translation id="5747785204778348146">Для розробників (нестабільна)</translation>
 <translation id="5747809636523347288">Вставити й перейти за посиланням <ph name="URL" /></translation>
+<translation id="5748137879145720682">Вмикати, лише коли комп’ютер не підключено до мережі живлення</translation>
 <translation id="5751345516399502412">Перевірити готовність до використання телефона як модема</translation>
 <translation id="5755022574660047665">Спогади з Google Фото</translation>
 <translation id="5756163054456765343">Довідковий центр</translation>
@@ -7673,6 +7675,7 @@
 <translation id="8248381369318572865">Дозволити доступ до мікрофона й аналіз мовлення</translation>
 <translation id="8248887045858762645">Порада щодо Chrome</translation>
 <translation id="8249048954461686687">Папка OEM</translation>
+<translation id="8249239468199142122">Режим енергозбереження</translation>
 <translation id="8249615410597138718">Надіслати на пристрої</translation>
 <translation id="8250210000648910632">Не вистачає обсягу пам’яті</translation>
 <translation id="8251441930213048644">Оновити</translation>

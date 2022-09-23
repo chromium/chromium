@@ -72,7 +72,6 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1434356225517321998">Váš prohlížeč je spravován. <ph name="BEGIN_LINK" />Podrobnosti<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Skrýt heslo</translation>
-<translation id="145015347812617860">Počet položek: <ph name="COUNT" /></translation>
 <translation id="1450170672351507823">Je zapnutá standardní ochrana. Ještě vyšší zabezpečení poskytuje Pokročilá ochrana.</translation>
 <translation id="149095475893949513">Tento web se pokouší stáhnout profil konfigurace.</translation>
 <translation id="1491277525950327607">Nastavení můžete přepnout dvojitým klepnutím</translation>
@@ -106,7 +105,6 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="168715261339224929">Chcete-li mít záložky ve všech zařízeních, zapněte synchronizaci.</translation>
 <translation id="1687475363370981210">Označit vše jako přečtené</translation>
 <translation id="1689333818294560261">Přezdívka</translation>
-<translation id="1690731385917361335">Žádné položky</translation>
 <translation id="1700629756560807968">Počet vybraných položek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Dvojitým klepnutím spustíte instalaci.</translation>
 <translation id="1752547299766512813">Ukládání hesel</translation>
@@ -756,6 +754,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6988572888918530647">Spravovat účet Google</translation>
 <translation id="6989674195860388998">Přepnout v nastavení…</translation>
 <translation id="6998989275928107238">Komu</translation>
+<translation id="699954956411469731">Oznámení na mobilní zařízení</translation>
 <translation id="7004032350256606903">Vaše organizace vyžaduje, abyste si obsah prohlíželi anonymně.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nedávno použité karty</translation>
@@ -985,7 +984,6 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9068336935206019333">Otevřít v Chromu v anonymním režimu</translation>
 <translation id="9079935439869366234">Označit vše jako nepřečtené</translation>
 <translation id="9081058212938299310">Aktualizovat heslo uživatele <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 položka</translation>
 <translation id="9083838294503912307">Chcete-li synchronizovat a přizpůsobit různá zařízení, zapněte synchronizaci.</translation>
 <translation id="9087108903408689779">Heslo navrhované prohlížečem Chrome:</translation>
 <translation id="9094033019050270033">Aktualizovat heslo</translation>

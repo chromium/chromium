@@ -2303,6 +2303,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3090819949319990166">Ārējo .crx failu nevar kopēt uz failu <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Izveidots savienojums pārī ar ierīci “<ph name="DEVICE_NAME" />”.</translation>
 <translation id="3093714882666365141">Neļaut vietnēm instalēt maksājumu apdarinātājus</translation>
+<translation id="3093958632721393232">Ieslēgt tikai tad, kad akumulatora uzlādes līmenis ir zems</translation>
 <translation id="3094141017404513551">Tādējādi jūsu pārlūkošanas dati tiks atdalīti no profila <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Grāmatzīmes, paroles un citi pārlūkošanas dati tiek sinhronizēti ar primāro kontu.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potenciāli kaitīgs paplašinājums ir izslēgts. Varat to arī noņemt.}zero{{NUM_EXTENSIONS} potenciāli kaitīgi paplašinājumi ir izslēgti. Varat tos arī noņemt.}one{{NUM_EXTENSIONS} potenciāli kaitīgs paplašinājums ir izslēgts. Varat tos arī noņemt.}other{{NUM_EXTENSIONS} potenciāli kaitīgi paplašinājumi ir izslēgti. Varat tos arī noņemt.}}</translation>
@@ -5024,6 +5025,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5747552184818312860">Termiņš</translation>
 <translation id="5747785204778348146">Izstrādātāju — nav stabila</translation>
 <translation id="5747809636523347288">Ielīmēt un doties uz <ph name="URL" /></translation>
+<translation id="5748137879145720682">Ieslēgt, kad dators ir atvienots</translation>
 <translation id="5751345516399502412">Pārbaudīt piesaistes gatavību</translation>
 <translation id="5755022574660047665">atmiņas no Google fotoattēliem</translation>
 <translation id="5756163054456765343">P&amp;alīdzības centrs</translation>
@@ -6516,7 +6518,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7175037578838465313">Tīkla “<ph name="NAME" />” konfigurēšana</translation>
 <translation id="7175353351958621980">Ielādēts no:</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
-<translation id="7180865173735832675">Piemērot</translation>
+<translation id="7180865173735832675">Pielāgot</translation>
 <translation id="7182791023900310535">Pārvietot paroli</translation>
 <translation id="7186088072322679094">Saglabāšana rīkjoslā</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> nevar atvērt šo mapi, jo tajā ir arī sistēmas faili</translation>
@@ -7662,6 +7664,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8248381369318572865">Piekļuve jūsu mikrofonam un jūsu runas analīze</translation>
 <translation id="8248887045858762645">Chrome padoms</translation>
 <translation id="8249048954461686687">OEM mape</translation>
+<translation id="8249239468199142122">Akumulatora enerģijas taupīšanas režīms</translation>
 <translation id="8249615410597138718">Sūtīt uz jūsu ierīcēm</translation>
 <translation id="8250210000648910632">Krātuvē vairs nav vietas</translation>
 <translation id="8251441930213048644">Atsvaidzināt tūlīt</translation>

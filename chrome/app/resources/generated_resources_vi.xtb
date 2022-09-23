@@ -2311,6 +2311,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3090819949319990166">Không thể sao chép tệp crx bên ngoài sang <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Đã ghép nối "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3093714882666365141">Không cho phép trang web cài đặt trình xử lý thanh toán</translation>
+<translation id="3093958632721393232">Chỉ bật khi pin yếu</translation>
 <translation id="3094141017404513551">Thao tác này sẽ tách biệt hoạt động duyệt web của bạn với <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Dấu trang, mật khẩu và dữ liệu khác của trình duyệt sẽ được đồng bộ hóa với tài khoản chính.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Đã tắt 1 tiện ích có thể gây hại. Bạn cũng có thể xóa tiện ích này.}other{Đã tắt {NUM_EXTENSIONS} tiện ích có thể gây hại. Bạn cũng có thể xóa các tiện ích này.}}</translation>
@@ -4155,7 +4156,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4873312501243535625">Trình kiểm tra tệp phương tiện</translation>
 <translation id="4876273079589074638">Giúp các kỹ sư của chúng tôi điều tra và khắc phục trục trặc này. Liệt kê các bước chính xác nếu bạn có thể. Không cần liệt kê quá chi tiết!</translation>
 <translation id="4876895919560854374">Khóa và mở khóa màn hình</translation>
-<translation id="4877276003880815204">Kiểm tra các yếu tố</translation>
+<translation id="4877276003880815204">Kiểm tra phần tử</translation>
 <translation id="4877652723592270843">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS Flex) không? Nếu có, hãy nhấn và giữ cả hai phím âm lượng trong 5 giây.</translation>
 <translation id="4878634973244289103">Không thể gửi ý kiến phản hồi. Vui lòng thử lại sau.</translation>
 <translation id="4878653975845355462">Quản trị viên đã tắt các nền tùy chỉnh</translation>
@@ -5033,6 +5034,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5747552184818312860">Hết hạn</translation>
 <translation id="5747785204778348146">Nhà phát triển - không chính thức</translation>
 <translation id="5747809636523347288">Dá&amp;n và truy cập <ph name="URL" /></translation>
+<translation id="5748137879145720682">Bật khi máy tính không cắm sạc</translation>
 <translation id="5751345516399502412">Kiểm tra trạng thái sẵn sàng của tính năng chia sẻ Internet</translation>
 <translation id="5755022574660047665">kỷ niệm trong Google Photos</translation>
 <translation id="5756163054456765343">Trung tâm trợ g&amp;iúp</translation>
@@ -7667,6 +7669,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8248381369318572865">Truy cập micrô và phân tích lời nói</translation>
 <translation id="8248887045858762645">Mẹo khi dùng Chrome</translation>
 <translation id="8249048954461686687">Thư mục OEM</translation>
+<translation id="8249239468199142122">Trình tiết kiệm pin</translation>
 <translation id="8249615410597138718">Gửi đến các thiết bị của bạn</translation>
 <translation id="8250210000648910632">Hết không gian lưu trữ</translation>
 <translation id="8251441930213048644">Làm mới ngay</translation>

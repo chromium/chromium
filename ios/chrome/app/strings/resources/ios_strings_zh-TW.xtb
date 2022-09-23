@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">列印</translation>
 <translation id="1434356225517321998">你的瀏覽器受到管理。<ph name="BEGIN_LINK" />詳細資料<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">隱藏密碼</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> 個項目</translation>
 <translation id="1450170672351507823">已啟用標準防護功能。如需更完整的安全防護，請使用強化防護功能。</translation>
 <translation id="149095475893949513">這個網站正在嘗試下載設定描述檔。</translation>
 <translation id="1491277525950327607">輕觸兩下即可切換設定</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">如要將書籤同步到所有裝置，請開啟同步處理功能。</translation>
 <translation id="1687475363370981210">全部標示為已讀取</translation>
 <translation id="1689333818294560261">暱稱</translation>
-<translation id="1690731385917361335">沒有任何項目</translation>
 <translation id="1700629756560807968">已選取 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
 <translation id="1740468249224277719">輕觸兩下即可安裝。</translation>
 <translation id="1752547299766512813">儲存密碼</translation>
@@ -986,7 +984,6 @@
 <translation id="9068336935206019333">在 Chrome 無痕模式中開啟</translation>
 <translation id="9079935439869366234">全部標示為未讀取</translation>
 <translation id="9081058212938299310">要更新 <ph name="USERNAME" /> 的密碼嗎？</translation>
-<translation id="9083392325882095631">1 個項目</translation>
 <translation id="9083838294503912307">想在所有裝置上保持同步並享有個人化體驗，請開啟同步功能。</translation>
 <translation id="9087108903408689779">Chrome 建議的密碼：</translation>
 <translation id="9094033019050270033">更新密碼</translation>

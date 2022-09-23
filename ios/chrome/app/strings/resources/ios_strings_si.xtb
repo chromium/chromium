@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
 <translation id="1434356225517321998">ඔබේ බ්‍රවුසරය කළමනාකරණය කෙරේ. <ph name="BEGIN_LINK" />විස්තර<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">මුරපදය සඟවන්න</translation>
-<translation id="145015347812617860">අයිතම <ph name="COUNT" /></translation>
 <translation id="1450170672351507823">සම්මත ආරක්ෂාව ක්‍රියාත්මකයි. ඊටත් වඩා වැඩි ආරක්ෂාව සඳහා, වැඩි දියුණු කළ ආරක්ෂාව භාවිත කරන්න.</translation>
 <translation id="149095475893949513">මෙම වෙබ් අඩවිය වින්‍යාසකරණ පැතිකඩක් බාගැනීමට උත්සාහ කරයි.</translation>
 <translation id="1491277525950327607">සැකසීම ටොගල් කිරීමට දෙවරක් තට්ටු කරන්න</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">ඔබේ සියලු උපාංගවල ඔබේ පිටුසන් ලබා ගැනීමට, සමමුහුර්තය ක්‍රියාත්මක කරන්න.</translation>
 <translation id="1687475363370981210">සියල්ල කියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="1689333818294560261">අපනාමය</translation>
-<translation id="1690731385917361335">අයිතම නොමැත</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ක් තෝරා ගන්නා ලදි</translation>
 <translation id="1740468249224277719">ස්ථාපනය කිරීමට දෙවරක් තට්ටු කරන්න.</translation>
 <translation id="1752547299766512813">මුරපද සුරකින්න</translation>
@@ -756,6 +754,7 @@
 <translation id="6988572888918530647">ඔබේ Google ගිණුම කළමනා කරන්න</translation>
 <translation id="6989674195860388998">සැකසීම් තුළ මාරු කරන්න…</translation>
 <translation id="6998989275928107238">වෙත</translation>
+<translation id="699954956411469731">ජංගම දැනුම්දීම්</translation>
 <translation id="7004032350256606903">ඔබගේ සංවිධානයට ඔබ පෞද්ගලිකව බ්‍රවුස් කිරීම අවශ්‍ය වේ.
 <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">මෑතකාලීන ටැබ</translation>
@@ -985,7 +984,6 @@
 <translation id="9068336935206019333">Chrome අප්‍රසිද්ධ තුළ විවෘත කරන්න</translation>
 <translation id="9079935439869366234">සියල්ල නොකියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> සඳහා මුරපදය යාවත්කාලීන කරන්නේද?</translation>
-<translation id="9083392325882095631">අයිතම 1</translation>
 <translation id="9083838294503912307">උපාංග හරහා සමමුහුර්ත සහ පෞද්ගලීකරණය කිරීමට, සමමුහුර්තය ක්‍රියාත්මක කරන්න.</translation>
 <translation id="9087108903408689779">Chrome යෝජනා කළ මුරපදය:</translation>
 <translation id="9094033019050270033">මුරපදය යාවත්කාලීන කරන්න</translation>

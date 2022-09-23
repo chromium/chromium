@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1434356225517321998">আপনার ব্রাউজার ম্যানেজ করা হয়। <ph name="BEGIN_LINK" />বিবরণ<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">পাসওয়ার্ড লুকান</translation>
-<translation id="145015347812617860"><ph name="COUNT" />টি আইটেম</translation>
 <translation id="1450170672351507823">'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করা আছে। আরও উন্নত নিরাপত্তার জন্য 'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করুন।</translation>
 <translation id="149095475893949513">এই ওয়েবসাইটটি একটি কনফিগারেশন প্রোফাইল ডাউনলোড করার চেষ্টা করছে।</translation>
 <translation id="1491277525950327607">সেটিং টগল করতে দুবার আলতো চাপুন</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">সব ডিভাইসে আপনার বুকমার্ক পেতে সিঙ্ক চালু করুন।</translation>
 <translation id="1687475363370981210">সমস্ত পঠিত হিসেবে চিহ্নিত করুন</translation>
 <translation id="1689333818294560261">বিশেষ নাম</translation>
-<translation id="1690731385917361335">কোনো আইটেম নেই</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি নির্বাচিত</translation>
 <translation id="1740468249224277719">ইনস্টল করতে দুবার আলতো চাপুন।</translation>
 <translation id="1752547299766512813">পাসওয়ার্ডগুলি সেভ করুন</translation>
@@ -987,7 +985,6 @@
 <translation id="9068336935206019333">Chrome ছদ্মবেশী ট্যাবে খুলুন</translation>
 <translation id="9079935439869366234">সমস্ত অপঠিত হিসেবে চিহ্নিত করুন</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" />-এর পাসওয়ার্ড আপডেট করবেন?</translation>
-<translation id="9083392325882095631">১টি আইটেম</translation>
 <translation id="9083838294503912307">সমগ্র ডিভাইস জুড়ে সিঙ্ক এবং নিজের মতো সাজিয়ে নিতে সিঙ্ক বিকল্পটি চালু করুন।</translation>
 <translation id="9087108903408689779">Chrome-এর সাজেস্ট করা পাসওয়ার্ড:</translation>
 <translation id="9094033019050270033">পাসওয়ার্ড আপডেট করুন</translation>

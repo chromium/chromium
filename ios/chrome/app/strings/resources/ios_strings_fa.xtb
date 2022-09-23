@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1434356225517321998">مرورگرتان تحت‌مدیریت است. <ph name="BEGIN_LINK" />جزئیات<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">پنهان کردن گذرواژه</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> مورد</translation>
 <translation id="1450170672351507823">«محافظت استاندارد» روشن است. برای امنیت بیشتر، از «محافظت پیشرفته» استفاده کنید.</translation>
 <translation id="149095475893949513">این وب‌سایت می‌خواهد نمایه پیکربندی بارگیری کند.</translation>
 <translation id="1491277525950327607">برای جابه‌جایی بین تنظیمات، دو ضربه سریع بزنید</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">برای دریافت نشانک‌ها در همه دستگاه‌هایتان، همگام‌سازی را روشن کنید.</translation>
 <translation id="1687475363370981210">علامت‌گذاری همه به‌‌عنوان خوانده‌شده</translation>
 <translation id="1689333818294560261">نام مستعار</translation>
-<translation id="1690731385917361335">هیچ موردی وجود ندارد</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> نشانک انتخاب شده است</translation>
 <translation id="1740468249224277719">برای نصب دو ضربه سریع بزنید.</translation>
 <translation id="1752547299766512813">ذخیره گذرواژه‌ها</translation>
@@ -986,7 +984,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9068336935206019333">‏باز کردن در حالت ناشناس Chrome</translation>
 <translation id="9079935439869366234">علامت‌گذاری همه موارد به‌‌عنوان خوانده‌شده</translation>
 <translation id="9081058212938299310">گذرواژه <ph name="USERNAME" /> به‌روزرسانی شود؟</translation>
-<translation id="9083392325882095631">۱ مورد</translation>
 <translation id="9083838294503912307">برای همگام‌سازی و شخصی‌سازی در همه دستگاه‌ها، همگام‌سازی را روشن کنید.</translation>
 <translation id="9087108903408689779">‏گذرواژه پیشنهادی Chrome:</translation>
 <translation id="9094033019050270033">به‌روزرسانی گذرواژه</translation>

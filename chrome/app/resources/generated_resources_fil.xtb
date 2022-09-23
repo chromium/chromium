@@ -548,6 +548,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1512642802859169995">Naka-encrypt ang <ph name="FILE_NAME" />. Hilingin sa may-ari nitong i-decrypt ito.</translation>
 <translation id="151501797353681931">Na-import Mula sa Safari</translation>
 <translation id="1515163294334130951">Ilunsad</translation>
+<translation id="1517467582299994451">Para mag-cast gamit ang isang code, i-on ang mga setting sa pag-sync ng Chrome browser</translation>
 <translation id="1521442365706402292">Pamahalaan ang mga sertipiko</translation>
 <translation id="1521774566618522728">Aktibo ngayong araw</translation>
 <translation id="152234381334907219">Hindi Kailanman Na-save</translation>
@@ -793,6 +794,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1723824996674794290">&amp;Bagong window</translation>
 <translation id="1724801751621173132">Pamamaraan ng pag-input</translation>
 <translation id="1725562816265788801">Pag-scroll ng Tab</translation>
+<translation id="1726503915437308071">Italic na font</translation>
 <translation id="1729533290416704613">Kinokontrol din nito kung anong pahina ang ipinapakita kapag naghanap ka mula sa Omnibox.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Para mag-alis ng mga app, pumunta sa Mga Setting &gt; Google Play Store &gt; Pamahalaan ang mga kagustuhan sa Android &gt; Mga App o Application manager. Pagkatapos ay i-tap ang app na gusto mong i-uninstall (maaaring kailanganin mong mag-swipe pakanan o pakaliwa para mahanap ang app). Pagkatapos, i-tap ang I-uninstall o I-disable.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Mag-scroll papunta sa huling tab</translation>
@@ -1796,6 +1798,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2627424346328942291">Hindi maibahagi</translation>
 <translation id="2628770867680720336">Kinakailangang i-factory reset ang Chromebook na ito para ma-enable ang pag-debug ng ADB. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Mag-develop ng mga Android app</translation>
+<translation id="2629437048544561682">I-clear ang Canvas</translation>
 <translation id="2631498379019108537">Ipakita ang mga opsyon sa pag-input sa shelf</translation>
 <translation id="2633212996805280240">Alisin ang "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101">Hindi makumpleto ng <ph name="PRODUCT_NAME" /> ang pag-install, ngunit patuloy na gagana mula sa larawan ng disk nito.</translation>
@@ -2429,6 +2432,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3225319735946384299">Pag-sign sa Code</translation>
 <translation id="3226487301970807183">I-toggle ang panel sa gilid na naka-align sa kaliwa</translation>
 <translation id="3227137524299004712">Mikropono</translation>
+<translation id="3232558119926886907">I-align sa kanan</translation>
 <translation id="3232754137068452469">Web App</translation>
 <translation id="3233271424239923319">I-back up ang mga app at file ng Linux</translation>
 <translation id="3234251228180563751">Mahigit sa 1000 character ang username</translation>
@@ -2473,6 +2477,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3275778809241512831">Kasalukuyang hindi secure ang iyong internal na security key. Pakialis ito sa anumang serbisyo kung saan mo ito ginamit. Para lutasin ang isyu, paki-reset ang security key.</translation>
 <translation id="3275778913554317645">Buksan bilang window</translation>
 <translation id="3277214528693754078">Mag-navigate gamit ang cursor ng text (caret browsing)</translation>
+<translation id="3277594800340743211">Malaking shadow</translation>
 <translation id="3278001907972365362">Nangangailangan ng pansin ang iyong (mga) Google Account</translation>
 <translation id="3279092821516760512">Makakapagbahagi sa iyo ang mga piling contact kapag malapit sila. Hindi magsisimula ang mga paglilipat hangga't hindi mo tinatanggap ang mga ito.</translation>
 <translation id="3279230909244266691">Maaaring abutin nang ilang minuto ang prosesong ito. Sinisimulan ang virtual machine.</translation>
@@ -3929,6 +3934,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4651484272688821107">Hindi ma-load ang online na bahagi gamit ang mga resource ng demo mode.</translation>
 <translation id="4651921906638302153">Hindi makapag-sign in gamit ang account na ito</translation>
 <translation id="4652935475563630866">Hinihingi ng pagbabago sa setting ng camera na ilunsad ulit ang Parallels Desktop. Ilunsad ulit ang Parallels Desktop para magpatuloy.</translation>
+<translation id="4653116291358041820">Maliit na shadow</translation>
 <translation id="4653405415038586100">Error sa pag-configure ng Linux</translation>
 <translation id="465406513924180949">Nakikita mo ang mga cart na makakatulong para madali mong mabalikan ang mga item na iniwan mo sa mga shopping cart sa buong web.
         <ph name="BREAK" />
@@ -4164,6 +4170,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4878718769565915065">Hindi nakapagdagdag ng fingerprint sa security key na ito</translation>
 <translation id="4879491255372875719">Awtomatiko (default)</translation>
 <translation id="4880827082731008257">History ng paghahanap</translation>
+<translation id="4881062916686771679">Naglalaman ang file na ito ng malware na posibleng magkompromiso sa iyong personal na account o mga account sa social network, kabilang ang <ph name="USER_EMAIL" /></translation>
 <translation id="4881685975363383806">Huwag nang ipaalala sa akin sa susunod</translation>
 <translation id="4881695831933465202">Buksan</translation>
 <translation id="488211015466188466">Magsubaybay ng Site</translation>
@@ -4263,6 +4270,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4972737347717125191">Puwedeng hilingin ng mga site na gumamit ng mga virtual reality device at data</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{I-mute ang site}one{I-mute ang mga site}other{I-mute ang mga site}}</translation>
 <translation id="497403230787583386">Tapos na ang mga pagsusuri sa seguridad. Ipi-print ang iyong dokumento.</translation>
+<translation id="4975543297921324897">Monospace font</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Kumpirmahin ang Pag-access</translation>
 <translation id="4980805016576257426">May malware ang extension na ito.</translation>
@@ -4665,6 +4673,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5390743329570580756">Magpadala para sa</translation>
 <translation id="5392192690789334093">Pinapayagang magpadala ng mga notification</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}one{# link}other{# na link}}</translation>
+<translation id="5395498824851198390">Default na font</translation>
 <translation id="5396325212236512832">Awtomatikong mag-sign in sa mga site at app gamit ang mga naka-store na kredensyal. Kung naka-off ito, palaging hihilingin ang iyong kumpirmasyon bago mag-sign in sa isang site o app.</translation>
 <translation id="5397378439569041789">I-enroll ang kiosk o signage device</translation>
 <translation id="5397794290049113714">Ikaw</translation>
@@ -4939,6 +4948,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5639549361331209298">I-reload ang pahinang ito, pindutin nang matagal upang makakita ng higit pang mga pagpipilian</translation>
 <translation id="5640133431808313291">Pamahalaan ang mga security key</translation>
 <translation id="5641608986289282154">Simulang gamitin ang <ph name="DEVICE_OS" /></translation>
+<translation id="5641648607875312660">Editor ng Screenshot na Larawan</translation>
 <translation id="5642508497713047">Tagapaglagda ng CRL</translation>
 <translation id="5643321261065707929">Nakametrong network</translation>
 <translation id="5643620609347735571">I-clear at magpatuloy</translation>
@@ -5132,6 +5142,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5842497610951477805">I-enable ang Bluetooth</translation>
 <translation id="5844574845205796324">Magmungkahi ng bagong content na ie-explore</translation>
 <translation id="5846200638699387931">Error sa syntax sa kaugnayan: <ph name="ERROR_LINE" /></translation>
+<translation id="5846455742152785308">Walang shadow</translation>
 <translation id="5846504156837627898">Pamahalaan ang Mga Pahintulot ng Site</translation>
 <translation id="5846807460505171493">Mag-install ng mga update at app. Sa pamamagitan ng pagpapatuloy, sumasang-ayon kang ang device na ito ay puwede ring awtomatikong mag-download at mag-install ng mga update at app mula sa Google, iyong carrier, at manufacturer ng device mo, nang posibleng gamit ang cellular data. Posibleng mag-alok ang ilan sa mga app na ito ng mga in-app na pagbili.</translation>
 <translation id="5849212445710944278">Naidagdag na</translation>
@@ -5496,6 +5507,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6185132558746749656">Lokasyon ng Device</translation>
 <translation id="6190953336330058278">Mga Phone Hub app</translation>
 <translation id="6195005504600220730">Basahin ang impormasyon tungkol sa iyong browser, OS, at device</translation>
+<translation id="6195155925303302899">I-align sa gitna</translation>
 <translation id="6195693561221576702">Hindi ma-set up ang device na ito sa offline na demo mode.</translation>
 <translation id="6196640612572343990">I-block ang mga third-party na cookie</translation>
 <translation id="6196854373336333322">Kinokontrol na ng extension na "<ph name="EXTENSION_NAME" />" ang iyong mga setting ng proxy, na ang ibig sabihin ay maaari nitong baguhin, sirain o alamin ang anumang bagay na gagawin mo online. Kung hindi ka sigurado kung bakit naganap ang pagbabagong ito, malamang ay hindi mo ito ginustong mangyari.</translation>
@@ -6173,6 +6185,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6828860976882136098">Hindi na-set up ang mga awtomatikong pag-update para sa lahat ng user (error sa pagpapatupad sa preflight: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Patakaran sa privacy ng Google</translation>
 <translation id="6831043979455480757">Isalin</translation>
+<translation id="6832218595502288407">I-align sa kaliwa</translation>
 <translation id="6833479554815567477">Inalis ang tab sa grupong <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Lumipat sa isang mahusay at ligtas na browser</translation>
 <translation id="6833996806551876956">Trial ng Privacy Sandbox</translation>
@@ -7585,6 +7598,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">Sa pamamagitan ng <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, nagde-develop ang Chrome ng mga bagong teknolohiya para protektahan ka laban sa cross-site na pagsubaybay habang pinapanatili ang bukas na web.</translation>
 <translation id="8161293209665121583">Reader mode para sa mga web page</translation>
+<translation id="8161604891089629425">Outline font</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Ilipat ang Tab sa Bagong Window}one{Maglipat ng Mga Tab sa Bagong Window}other{Maglipat ng Mga Tab sa Bagong Window}}</translation>
 <translation id="8165997195302308593">Pag-forward ng port sa Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{isang numero ng telepono}one{# numero ng telepono}other{# na numero ng telepono}}</translation>
@@ -7810,6 +7824,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8379991678458444070">Makabalik kaagad dito sa pamamagitan ng pag-bookmark sa tab na ito</translation>
 <translation id="8380266723152870797">Pangalan ng Window</translation>
 <translation id="8380941800586852976">Mapanganib</translation>
+<translation id="8382677870544805359">Kakailangin mong i-factory reset ang device na ito para gumamit ng mga feature ng enterprise.</translation>
 <translation id="8382715499079447151">Proteksyon sa pagtingin</translation>
 <translation id="8382913212082956454">Kopyahin ang &amp;email address</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Subukan ang mga hakbang na ito sa pag-troubleshoot:
@@ -8015,6 +8030,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8596540852772265699">Mga Custom na File</translation>
 <translation id="8597845839771543242">Format ng property:</translation>
 <translation id="8599681327221583254">Isa o higit pang patakaran ang hindi wastong naka-configure. Makipag-ugnayan sa iyong administrator</translation>
+<translation id="8599864823732014237">Laktawan ang pag-enroll sa enterprise?</translation>
 <translation id="8601206103050338563">Pagpapatotoo ng Client sa TLS WWW</translation>
 <translation id="8601611099293226919">Ibahagi ang iyong screen gamit ang Google Lens</translation>
 <translation id="8602851771975208551">Ang isa pang program sa iyong computer ay nagdagdag ng app na maaaring magpabago sa paraan ng paggana ng Chrome.</translation>

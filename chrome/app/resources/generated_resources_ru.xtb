@@ -2298,6 +2298,7 @@
 <translation id="3090819949319990166">Не удалось скопировать внешний файл CRX в <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Подключено устройство: <ph name="DEVICE_NAME" /></translation>
 <translation id="3093714882666365141">Запретить сайтам устанавливать обработчики платежей</translation>
+<translation id="3093958632721393232">Включать только при низком уровне заряда батареи</translation>
 <translation id="3094141017404513551">Вы будете работать в браузере отдельно от пользователя <ph name="EXISTING_USER" />.</translation>
 <translation id="3095871294753148861">Закладки, пароли и другие данные о работе в браузере синхронизируются с основным аккаунтом.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Отключено 1 потенциально опасное расширение. Вы можете удалить его.}one{Отключено {NUM_EXTENSIONS} потенциально опасное расширение. Вы можете удалить их.}few{Отключено {NUM_EXTENSIONS} потенциально опасных расширения. Вы можете удалить их.}many{Отключено {NUM_EXTENSIONS} потенциально опасных расширений. Вы можете удалить их.}other{Отключено {NUM_EXTENSIONS} потенциально опасного расширения. Вы можете удалить их.}}</translation>
@@ -5019,6 +5020,7 @@
 <translation id="5747552184818312860">Срок действия</translation>
 <translation id="5747785204778348146">Для разработчиков (нестабильная)</translation>
 <translation id="5747809636523347288">Вс&amp;тавить и перейти на страницу <ph name="URL" /></translation>
+<translation id="5748137879145720682">Включать, когда компьютер работает не от сети</translation>
 <translation id="5751345516399502412">Проверить готовность режима модема</translation>
 <translation id="5755022574660047665">воспоминания из Google Фото</translation>
 <translation id="5756163054456765343">Справочный &amp;центр</translation>
@@ -7658,6 +7660,7 @@
 <translation id="8248381369318572865">Доступ к микрофону и анализ речи</translation>
 <translation id="8248887045858762645">Совет по работе с Chrome</translation>
 <translation id="8249048954461686687">Папка OEM</translation>
+<translation id="8249239468199142122">Режим энергосбережения</translation>
 <translation id="8249615410597138718">Отправьте на свои устройства</translation>
 <translation id="8250210000648910632">Недостаточно места в хранилище</translation>
 <translation id="8251441930213048644">Обновить сейчас</translation>

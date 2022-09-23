@@ -72,7 +72,6 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="1430915738399379752">Prenta</translation>
 <translation id="1434356225517321998">Vafranum þínum er stjórnað. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Fela aðgangsorð</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> atriði</translation>
 <translation id="1450170672351507823">Kveikt er á hefðbundinni vörn. Þú getur aukið öryggið með því að nota aukna vörn.</translation>
 <translation id="149095475893949513">Þetta vefsvæði er að reyna að sækja stillingasnið.</translation>
 <translation id="1491277525950327607">Ýttu tvisvar til að breyta stillingum</translation>
@@ -106,7 +105,6 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="168715261339224929">Kveiktu á samstillingu til að fá aðgang að bókamerkjunum þínum í öllum tækjum.</translation>
 <translation id="1687475363370981210">Merkja allt sem lesið</translation>
 <translation id="1689333818294560261">Gælunafn</translation>
-<translation id="1690731385917361335">Engin atriði</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valin</translation>
 <translation id="1740468249224277719">Ýttu tvisvar til að setja upp.</translation>
 <translation id="1752547299766512813">Vista aðgangsorð</translation>
@@ -986,7 +984,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9068336935206019333">Opna í huliðsstillingu Chrome</translation>
 <translation id="9079935439869366234">Merkja allt sem ólesið</translation>
 <translation id="9081058212938299310">Uppfæra aðgangsorð fyrir <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">Eitt atriði</translation>
 <translation id="9083838294503912307">Kveiktu á samstillingu til að hafa allt samstillt og sérsniðið í tækjunum þínum.</translation>
 <translation id="9087108903408689779">Aðgangsorð sem Chrome stingur upp á:</translation>
 <translation id="9094033019050270033">Uppfæra aðgangsorð</translation>

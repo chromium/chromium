@@ -23,6 +23,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" /> કૉપિ કરી રહ્યું છે...</translation>
 <translation id="1178581264944972037">થોભો</translation>
 <translation id="1190144681599273207">આ ફાઇલને આનયન કરવું લગભગ <ph name="FILE_SIZE" /> મોબાઇલ ડેટાનો ઉપયોગ કરશે.</translation>
+<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> દ્વારા ફાઇલ ઍક્સેસ</translation>
 <translation id="1201402288615127009">આગલું</translation>
 <translation id="1209796539517632982">સ્વયંચાલિત નામ સર્વર્સ</translation>
 <translation id="1210831758834677569">લાઓ</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome ડિવાઇસ</translation>
 <translation id="1572585716423026576">વૉલપેપર તરીકે સેટ કરો</translation>
 <translation id="1576937952766665062">બંગાળી (લિપ્યંતર)</translation>
+<translation id="1577977504532381335">ઍડમિન પૉલિસી રિવ્યૂ કરો</translation>
 <translation id="158849752021629804">હોમ નેટવર્કની આવશ્યકતા છે</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">છબી રિઝોલ્યુશન</translation>
 <translation id="1972984168337863910">ફાઇલોના પ્રતિસાદની પૅનલ મોટી કરો</translation>
 <translation id="1995337122023280937">ફાઇલના સ્થાન પર જાઓ</translation>
+<translation id="1999709132469742660">તમામ URLs દ્વારા ફાઇલ ઍક્સેસ</translation>
 <translation id="2001796770603320721">ડ્રાઇવમાં મેનેજ કરો</translation>
 <translation id="2009067268969781306">ડ્રાઇવને ફોર્મેટ કરવાથી તેના પર સ્ટોર કરેલો બધો ડેટા ડિલીટ થઈ જશે. આ છેલ્લા ફેરફારને રદ કરી શકાતો નથી.</translation>
 <translation id="2025955442973426285">ટિગ્રિન્યા</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">કૉફીનો કપ પકડીને ઉભેલી વ્યક્તિ</translation>
 <translation id="2251368349685848079">ટ્રેશમાંથી રિસ્ટોર કરો</translation>
 <translation id="2282155092769082568">સ્વતઃગોઠવણી URL:</translation>
+<translation id="2284767815536050991">કાઢી નાખી શકાય તેવો સ્ટોરેજ</translation>
 <translation id="2288278176040912387">રેકોર્ડ પ્લેયર</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ફાઇલ ખુલી રહી છે.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ફાઇલ ખુલી રહી છે.</translation>
@@ -224,6 +228,7 @@
 <translation id="3016566519832145558">ચેતવણી: આ ફાઇલો હંગામી છે અને ડિસ્ક પર સ્પેસ ખાલી કરવા માટે તેમને ઑટોમૅટિક રીતે ડિલીટ કરવામાં આવે તેવું બની શકે છે.</translation>
 <translation id="3029114385395636667">Google Docs ઑફલાઇનની સુવિધા ચાલુ કરો જેથી Docs, Sheets અને Slides ઑફલાઇન ઉપલબ્ધ રહી શકે.</translation>
 <translation id="303198083543495566">સ્થાન માહિતી</translation>
+<translation id="3044404008258011032">આ આઇટમને રિસ્ટોર કરવા માટે, તેમને ટ્રેશની બહાર કોઈ નવા ફોલ્ડર પર ખેંચો. આ આઇટમ માટેનું ઑરિજિનલ ફોલ્ડર "<ph name="PARENT_FOLDER_NAME" />" ડિલીટ કરવામાં આવ્યું છે.</translation>
 <translation id="3047197340186497470">ચાઇનીઝ ડાયી</translation>
 <translation id="3067790092342515856">Windows ફાઇલો</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -341,6 +346,8 @@
 <translation id="4057991113334098539">સક્રિય કરી રહ્યું છે</translation>
 <translation id="4092890906744441904">આઇરિશ</translation>
 <translation id="4124935795427217608">યુનિકોર્ન - એક કાલ્પનિક પાંખવાળો ઘોડો</translation>
+<translation id="4131235941541910880">તમને જરૂર ન હોય તેવી આઇટમ ટ્રેશમાં ખસેડો</translation>
+<translation id="4157569377477607576">ઍડમિનિસ્ટ્રેટર પૉલિસી આમ કરવાનો સુઝાવ આપતી નથી:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ખસેડી.</translation>
 <translation id="4176286497474237543">ટ્રેશને હમણાં ખાલી કરો</translation>
 <translation id="4186579485882418952">ઑફલાઇન સુવિધા ચાલુ કરો</translation>
@@ -435,8 +442,10 @@
 <translation id="485316830061041779">જર્મન</translation>
 <translation id="4867079195717347957">કૉલમને: ઉતરતા ક્રમમાં સૉર્ટ કરવા માટે ક્લિક કરો.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> બાઇટ</translation>
+<translation id="4874569719830985133">કાયમ માટે ડિલીટ કરો</translation>
 <translation id="4880214202172289027">વોલ્યુમ સ્લાઇડર</translation>
 <translation id="4881695831933465202">ખોલો</translation>
+<translation id="4891091358278567964">આ આઇટમને રિસ્ટોર કરવા માટે, તેમને ટ્રેશની બહાર કોઈ નવા ફોલ્ડર પર ખેંચો. આ આઇટમ માટેના ઑરિજિનલ ફોલ્ડર ડિલીટ કરવામાં આવ્યા છે.</translation>
 <translation id="4900532980794411603">Parallels ડેસ્કટૉપ સાથે શેર કરો</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, કનેક્ટ કરો</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />માંથી <ph name="NETWORK_COUNT" /> નેટવર્ક, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, ફોનની બૅટરી <ph name="BATTERY_STATUS" />%, વિગતો</translation>
@@ -493,6 +502,7 @@
     <ph name="MARKUP_7" />એક જ સ્થાનમાં ફાઇલો શેર કરો, બનાવો<ph name="MARKUP_8" />
     અને અન્ય લોકો સાથે તેના પર સહયોગ કરો.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Driveમાંથી રિકવર કરેલી ફાઇલો</translation>
+<translation id="5278111733643988471">આ આઇટમને રિસ્ટોર કરવા માટે, તેને ટ્રેશની બહાર કોઈ નવા ફોલ્ડર પર ખેંચો. આ આઇટમ માટેનું ઑરિજિનલ ફોલ્ડર "<ph name="PARENT_FOLDER_NAME" />" ડિલીટ કરવામાં આવ્યું છે.</translation>
 <translation id="5286194356314741248">સ્કેનિંગ</translation>
 <translation id="5288441970121584418">બર્ગર</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -502,9 +512,11 @@
 <translation id="5323213332664049067">લેટિન અમેરિકન</translation>
 <translation id="5330145655348521461">આ ફાઇલોને બીજા ડેસ્કટૉપ પર ખોલી હતી. એને જોવા માટે <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) પર જાઓ.</translation>
 <translation id="5330512191124428349">માહિતી મેળવો</translation>
+<translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> સિવાય તમામ URLs દ્વારા ફાઇલ ઍક્સેસ</translation>
 <translation id="535792325654997756">બિલાડીઓ સાથે વ્યક્તિ</translation>
 <translation id="5358764674931277">ફ્રેમ રેટ</translation>
 <translation id="5363339716524495120">ઇનપુટ ભાષા ચીની છે</translation>
+<translation id="5364067326287025678">ટ્રેશમાં કંઈ નથી</translation>
 <translation id="5368191757080475556">Linux વડે ફોલ્ડર શેર કરો</translation>
 <translation id="5402367795255837559">બ્રેઇલ</translation>
 <translation id="5411472733320185105">આ હોસ્ટ અને ડોમેન માટે પ્રૉક્સી સેટિંગનો ઉપયોગ કરશો નહીંં:</translation>
@@ -526,6 +538,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> છબી</translation>
 <translation id="5534520101572674276">કદની ગણના કરી રહ્યું છે</translation>
 <translation id="554153475311314364">ગ્રીક લિપ્યંતર</translation>
+<translation id="5580591966435005537">વર્ચ્યુઅલ મશીન</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">વિરામચિહ્નની પહોળાઈ પૂર્ણ છે</translation>
 <translation id="5602622065581044566">બલ્ગેરિયન, ફોનેટિક કીબોર્ડ સાથે</translation>
@@ -586,6 +599,7 @@
 <translation id="61118516107968648">CSV ટેક્સ્ટ</translation>
 <translation id="6129953537138746214">જગ્યા</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> ખસેડાઈ રહી છે...</translation>
+<translation id="6133877453787250710">ઍડમિનિસ્ટ્રેટર મૉનિટર:</translation>
 <translation id="613750717151263950">જાપાનીઝ, યુએસ કીબોર્ડ સાથે</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, નેટવર્ક નથી</translation>
 <translation id="6146563240635539929">વીડિયો</translation>
@@ -606,6 +620,7 @@
 <translation id="6287852322318138013">આ ફાઇલ ખોલવા માટે એક ઍપ્લિકેશન પસંદ કરો</translation>
 <translation id="6295542640242147836">સિમ કાર્ડ લૉક કરો</translation>
 <translation id="6296410173147755564">અમાન્ય PUK</translation>
+<translation id="6308243004861726558">આ ફાઇલ ગોપનીય છે અને ઍડમિનિસ્ટ્રેટર પૉલિસીને આધીન છે. ફાઇલની ઍક્સેસ અને ટ્રાન્સફર સંબંધિત નીચે મુજબની ક્રિયાઓ લાગુ થાય છે.</translation>
 <translation id="6312403991423642364">અજ્ઞાત નેટવર્ક ભૂલ</translation>
 <translation id="6317608858038767920">કસ્ટમ નેમસર્વર <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> આર્કાઇવ</translation>
@@ -719,6 +734,7 @@
 <translation id="7248671827512403053">ઍપ્લિકેશન</translation>
 <translation id="7256405249507348194">અજ્ઞાત ભૂલ: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ઉપલબ્ધ સેવાઓ</translation>
+<translation id="7292816689782057017">ઍડમિનિસ્ટ્રેટર પૉલિસી કેટલાક લોકેશન પર ફાઇલોને સાચવવાનું પ્રતિબંધિત કરે છે.</translation>
 <translation id="7294063083760278948">તેલુગુ લિપ્યંતર</translation>
 <translation id="7295662345261934369">બીજા સાથે શેર કરો</translation>
 <translation id="7297443947353982503">વપરાશકર્તાનામ/પાસવર્ડ ખોટો છે અથવા EAP-auth નિષ્ફળ થયું</translation>
@@ -770,6 +786,7 @@
 <translation id="7711920809702896782">છબીની માહિતી</translation>
 <translation id="7724603315864178912">કાપો</translation>
 <translation id="7732111077498238432">નેટવર્ક પૉલિસી દ્વારા નિયંત્રિત છે</translation>
+<translation id="7736003208887389532">શું આ ફાઇલો કાયમ માટે ડિલીટ કરીએ?</translation>
 <translation id="7748626145866214022">ક્રિયા બાર પર વધુ વિકલ્પો ઉપલબ્ધ છે. ક્રિયા બાર પર ફોકસ કરવા માટે Alt + A દબાવો.</translation>
 <translation id="7760449188139285140">ચાઇનીઝ વુબી</translation>
 <translation id="7765158879357617694">સ્થાન</translation>
@@ -829,8 +846,10 @@
 <translation id="8249296373107784235">છોડો</translation>
 <translation id="8250690786522693009">લેટિન</translation>
 <translation id="8250920743982581267">દસ્તાવેજો</translation>
+<translation id="8255595130163158297">ટ્રેશમાંની તમામ આઇટમ ડિલીટ કરવામાં આવશે અને તમે તેમને રિસ્ટોર કરી શકશો નહીં.</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8261561378965667560">ચાઇનીઝ અરે</translation>
+<translation id="8262872909443689080">ઍડમિનિસ્ટ્રેટર પૉલિસી</translation>
 <translation id="8264024885325823677">આ સેટિંગને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="8269755669432358899">ફાઇલોના પ્રતિસાદની પૅનલ નાની કરો</translation>
 <translation id="8280151743281770066">આર્મેનિયન ધ્વન્યાત્મક</translation>
@@ -903,9 +922,11 @@
 <translation id="8810671769985673465">ઝિપ કરવાનું નિષ્ફળ, આઇટમ અસ્તિત્વમાં છે: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">સ્પેનિશ (સ્પેન)</translation>
 <translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />'ના સભ્યો આ આઇટમની કૉપિનો ઍક્સેસ મેળવશે.</translation>
+<translation id="8849389110234859568">ઍડમિનિસ્ટ્રેટર પૉલિસી કેટલીક ફાઇલોના ઍક્સેસને પ્રતિબંધિત કરે છે.</translation>
 <translation id="8857149712089373752">નેપાળી, ફોનેટિક કીબોર્ડ સાથે</translation>
 <translation id="8860454412039442620">Excel સ્પ્રેડશીટ</translation>
 <translation id="8866284467018526531">અરબી લિપ્યંતર</translation>
+<translation id="8873014196523807561">આ આઇટમને રિસ્ટોર કરવા માટે, તેમને કોઈ નવા ફોલ્ડર પર ખેંચો. આ આઇટમમાંથી અમુક આઇટમ માટેના ઑરિજિનલ ફોલ્ડર ડિલીટ કરવામાં આવ્યા છે.</translation>
 <translation id="8874184842967597500">કનેક્ટ નથી</translation>
 <translation id="8900820606136623064">હંગેરિયન</translation>
 <translation id="8903931173357132290">સ્નાતક</translation>
@@ -927,6 +948,7 @@
 <translation id="9100610230175265781">પાસફ્રેઝ આવશ્યક છે</translation>
 <translation id="9110990317705400362">અમે સતત તમારા બ્રાઉઝિંગને વધુ સલામત બનાવવાની રીતો શોધી રહ્યાં છીએ. પહેલાં, કોઈપણ વેબસાઇટ તમને તમારા બ્રાઉઝરમાં એક્સ્ટેન્શન ઉમેરવા માટે સંકેત આપી શકતી હતી. Google Chromeના નવીનતમ વર્ઝનમાં, તમે એક્સ્ટેન્શન પેજ દ્વારા આ એક્સ્ટેન્શનને ઉમેરીને તમે તેમને ઇન્સ્ટૉલ કરવા માગો છો તે, તમારે Chromeને સ્પષ્ટપણે કહેવું આવશ્યક છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">અનલોક કરો</translation>
+<translation id="9116909380156770361"><ph name="RESTRICTED_COMPONENTS" /> પર ફાઇલ ટ્રાન્સફર</translation>
 <translation id="912419004897138677">કૉડેક</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />'ના સભ્યો આ આઇટમનો ઍક્સેસ મેળવશે.</translation>
 <translation id="9131598836763251128">એક અથવા વધુ ફાઇલ પસંદ કરો</translation>
@@ -948,6 +970,7 @@
 <translation id="943972244133411984">ફેરફાર કરનાર</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> થી <ph name="TO_ENTRY_NAME" /> સુધીની <ph name="ENTRY_COUNT" /> એન્ટ્રીની શ્રેણી પસંદ કરી.</translation>
+<translation id="954194396377670556">ઍડમિનિસ્ટ્રેટર પૉલિસી આમ કરતા અટકાવે છે:</translation>
 <translation id="965477715979482472">અંગ્રેજી (દક્ષિણ આફ્રિકા)</translation>
 <translation id="981121421437150478">ઑફલાઇન</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" નામની ફાઇલ પહેલાંથી અસ્તિત્વમાં છે. શું તમે તેને બદલવા માગો છો?</translation>

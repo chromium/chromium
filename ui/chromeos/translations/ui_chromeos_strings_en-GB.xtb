@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Copying <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1190144681599273207">Fetching this file will use approximately <ph name="FILE_SIZE" /> of mobile data.</translation>
+<translation id="1194390763418645112">File access by <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1209796539517632982">Automatic name servers</translation>
 <translation id="1210831758834677569">Lao</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome devices</translation>
 <translation id="1572585716423026576">Set as wallpaper</translation>
 <translation id="1576937952766665062">Bangla transliteration</translation>
+<translation id="1577977504532381335">Review admin policy</translation>
 <translation id="158849752021629804">Need home network</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Camera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Image resolution</translation>
 <translation id="1972984168337863910">Expand files feedback panels</translation>
 <translation id="1995337122023280937">Go to file location</translation>
+<translation id="1999709132469742660">File access by all URLs</translation>
 <translation id="2001796770603320721">Manage in Drive</translation>
 <translation id="2009067268969781306">Formatting a drive will delete all data stored on it. This action cannot be undone.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Person with coffee</translation>
 <translation id="2251368349685848079">Restore from bin</translation>
 <translation id="2282155092769082568">Auto-configuration URL:</translation>
+<translation id="2284767815536050991">removable storage</translation>
 <translation id="2288278176040912387">Record player</translation>
 <translation id="2291538123825441971">Opening <ph name="NUMBER_OF_FILES" /> files.</translation>
 <translation id="2303301624314357662">Opening file <ph name="FILE_NAME" />.</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">Irish</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Move items that you don't need to the bin</translation>
+<translation id="4157569377477607576">Administrator policy doesn't recommend:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> moved.</translation>
 <translation id="4176286497474237543">Empty bin now</translation>
 <translation id="4186579485882418952">Enable offline</translation>
@@ -507,6 +512,7 @@
 <translation id="5323213332664049067">Latin American</translation>
 <translation id="5330145655348521461">These files opened on a different desktop. Move to <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) to view it.</translation>
 <translation id="5330512191124428349">Get info</translation>
+<translation id="5337538975554986899">File access by all URLs except <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Person with cats</translation>
 <translation id="5358764674931277">Frame rate</translation>
 <translation id="5363339716524495120">Input language is Chinese</translation>
@@ -532,6 +538,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> image</translation>
 <translation id="5534520101572674276">Calculating size</translation>
 <translation id="554153475311314364">Greek (transliteration)</translation>
+<translation id="5580591966435005537">virtual machine</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Punctuation width is Full</translation>
 <translation id="5602622065581044566">Bulgarian with phonetic keyboard</translation>
@@ -592,6 +599,7 @@
 <translation id="61118516107968648">CSV text</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6133173853026656527">Moving <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">Administrator monitors:</translation>
 <translation id="613750717151263950">Japanese with US keyboard</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, no network</translation>
 <translation id="6146563240635539929">Videos</translation>
@@ -612,6 +620,7 @@
 <translation id="6287852322318138013">Select an app to open this file</translation>
 <translation id="6295542640242147836">Lock SIM</translation>
 <translation id="6296410173147755564">Invalid PUK</translation>
+<translation id="6308243004861726558">This file is confidential and subject to administrator policy. The following file access and transfer actions apply.</translation>
 <translation id="6312403991423642364">Unknown network error</translation>
 <translation id="6317608858038767920">Custom nameserver <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> archive</translation>
@@ -842,6 +851,7 @@
 <translation id="8255595130163158297">All items in the bin will be deleted and you won't be able to restore them.</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8261561378965667560">Chinese Array</translation>
+<translation id="8262872909443689080">Administrator policy</translation>
 <translation id="8264024885325823677">This setting is managed by your administrator.</translation>
 <translation id="8269755669432358899">Collapse files feedback panels</translation>
 <translation id="8280151743281770066">Armenian Phonetic</translation>
@@ -940,6 +950,7 @@
 <translation id="9100610230175265781">Passphrase required</translation>
 <translation id="9110990317705400362">We're constantly looking for ways to make your browsing safer. Previously, any website could prompt you to add an extension into your browser. In the latest versions of Google Chrome, you must explicitly tell Chrome that you want to install these extensions by adding them through the Extensions page. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Unlock</translation>
+<translation id="9116909380156770361">File transfer to <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113">Members of '<ph name="DESTINATION_NAME" />' will gain access to these items.</translation>
 <translation id="9131598836763251128">Select one or more files</translation>
@@ -961,6 +972,7 @@
 <translation id="943972244133411984">Modified by</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="947144732524271678">Selected a range of <ph name="ENTRY_COUNT" /> entries from <ph name="FROM_ENTRY_NAME" /> to <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Administrator policy prevents:</translation>
 <translation id="965477715979482472">English (South Africa)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">A file named '<ph name="FILE_NAME" />' already exists. Do you want to replace it?</translation>

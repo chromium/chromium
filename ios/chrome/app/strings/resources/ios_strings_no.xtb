@@ -72,7 +72,6 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1434356225517321998">Nettleseren din administreres. <ph name="BEGIN_LINK" />Detaljer<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Skjul passordet</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> elementer</translation>
 <translation id="1450170672351507823">Standardbeskyttelse er på. Bruk økt beskyttelse om du vil ha enda mer sikkerhet.</translation>
 <translation id="149095475893949513">Dette nettstedet prøver å laste ned en konfigurasjonsprofil.</translation>
 <translation id="1491277525950327607">Dobbelttrykk for å slå innstillingen av/på</translation>
@@ -106,7 +105,6 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="168715261339224929">For å få bokmerkene dine på alle enhetene dine, slå på synkronisering.</translation>
 <translation id="1687475363370981210">Merk alle som lest</translation>
 <translation id="1689333818294560261">Kallenavn</translation>
-<translation id="1690731385917361335">Ingen elementer</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> er valgt</translation>
 <translation id="1740468249224277719">Dobbelttrykk for å installere.</translation>
 <translation id="1752547299766512813">Lagre passord</translation>
@@ -986,7 +984,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9068336935206019333">Åpne i Chrome Inkognito</translation>
 <translation id="9079935439869366234">Merk alle som ulest</translation>
 <translation id="9081058212938299310">Vil du oppdatere passordet for <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 element</translation>
 <translation id="9083838294503912307">For å synkronisere og gi et personlig preg på alle enhetene, slå på synkronisering.</translation>
 <translation id="9087108903408689779">Passordforslag fra Chrome:</translation>
 <translation id="9094033019050270033">Oppdater passordet</translation>

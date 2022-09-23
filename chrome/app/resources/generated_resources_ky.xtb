@@ -2311,6 +2311,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3090819949319990166">Тышкы crx файлы <ph name="TEMP_CRX_FILE" /> ичине көчүрүлбөй жатат.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" жупташты</translation>
 <translation id="3093714882666365141">Сайттар төлөм иштеткичтерди орното албасын</translation>
+<translation id="3093958632721393232">Батареянын кубаты азайганда гана күйгүзүлсүн</translation>
 <translation id="3094141017404513551">Серептеген нерселериңиз <ph name="EXISTING_USER" /> аккаунтунан өзүнчө сакталат</translation>
 <translation id="3095871294753148861">Кыстармалар, сырсөздөр жана башка серептөө дайындары негизги аккаунт менен шайкештирилген.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 мүмкүн болгон кооптуу кеңейтүү өчүрүлдү. Аны алып салсаңыз болот.}other{{NUM_EXTENSIONS} мүмкүн болгон кооптуу кеңейтүү өчүрүлдү. Аларды алып салсаңыз болот.}}</translation>
@@ -5033,6 +5034,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5747552184818312860">Жарамдуулук мөөнөтү</translation>
 <translation id="5747785204778348146">Иштеп чыгуучу – туруктуу эмес</translation>
 <translation id="5747809636523347288">Ча&amp;птоо жана "<ph name="URL" />" баракчасына өтүү</translation>
+<translation id="5748137879145720682">Компьютер электр кубатынан ажыратылганда күйгүзүлсүн</translation>
 <translation id="5751345516399502412">Байланыш түйүнүнүн даярдыгын текшерүү</translation>
 <translation id="5755022574660047665">Google Фотодогу эстен кеткис көз ирмемдер</translation>
 <translation id="5756163054456765343">Ж&amp;ардам борбору</translation>
@@ -7666,6 +7668,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8248381369318572865">Микрофонуңузду пайдалануу жана сөзүңүздү талдоо</translation>
 <translation id="8248887045858762645">Chrome кеңеши</translation>
 <translation id="8249048954461686687">OEM папкасы</translation>
+<translation id="8249239468199142122">Батареяны үнөмдөгүч | кубат үнөмдөө режими</translation>
 <translation id="8249615410597138718">Түзмөктөрүңүзгө жөнөтүңүз</translation>
 <translation id="8250210000648910632">Сактагычта орун жок калды</translation>
 <translation id="8251441930213048644">Азыр жаңыртуу</translation>

@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">Pli roulé</translation>
 <translation id="138218114945450791">Bleu ciel</translation>
 <translation id="1382194467192730611">Appareil USB autorisé par votre administrateur</translation>
+<translation id="1382378825779654399">Vous recevrez des alertes par courriel si le prix est réduit sur un site. Cette page sera enregistrée dans <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Vous ne voyez pas vos renseignements actuels? Veuillez communiquer avec votre banque pour les mettre à jour.</translation>
 <translation id="1384725838384960382">Fiche d'authentification de l'authentifiant de paiement sécurisé</translation>
 <translation id="1386623374109090026">Annotations</translation>
@@ -1527,6 +1528,7 @@
 <translation id="5018422839182700155">Impossible d'ouvrir cette page</translation>
 <translation id="5019198164206649151">L'espace de stockage destiné à la sauvegarde est en mauvais état</translation>
 <translation id="5020776957610079374">Musique du monde</translation>
+<translation id="5021557570875267742">Suivre les prix avec Chrome</translation>
 <translation id="5023310440958281426">Vérifiez les règles définies par votre administrateur</translation>
 <translation id="5029568752722684782">Effacer la copie</translation>
 <translation id="5030338702439866405">Délivré par</translation>
@@ -2248,6 +2250,7 @@
 <translation id="6993898126790112050">Enveloppe 6 po x 9 po</translation>
 <translation id="6996312675313362352">Toujours traduire les pages en <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Secteur du divertissement</translation>
+<translation id="7003335073762455340">Vous suivez ce produit. Cette page est enregistrée dans <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="7004583254764674281">Utiliser Windows Hello pour vérifier les cartes plus rapidement</translation>
 <translation id="7006930604109697472">Envoyer quand même</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3044,6 +3047,7 @@ Détails supplémentaires :
 <translation id="9174623988242579721">Véhicules personnalisés et de performance</translation>
 <translation id="9174917557437862841">Bouton de commutation d'onglet, appuyez sur Entrée pour basculer vers cet onglet</translation>
 <translation id="9179703756951298733">Gérez vos données de paiement et vos cartes de crédit dans les paramètres de Chrome</translation>
+<translation id="9179907736442194268">Obtenez des alertes par courriel si le prix est réduit sur un site.</translation>
 <translation id="9183302530794969518">Google Documents</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> utilise un protocole non pris en charge.</translation>
 <translation id="9187461866967718678">Sports extrêmes</translation>

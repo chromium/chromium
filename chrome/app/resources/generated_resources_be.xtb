@@ -1619,6 +1619,7 @@
 <translation id="2468178265280335214">Паскарэнне прагорткі сэнсарнай панэллю</translation>
 <translation id="2468205691404969808">Выкарыстоўвае файлы cookie для захоўвання параметраў, нават калі вы не наведваеце гэтыя старонкі</translation>
 <translation id="2468402215065996499">Тамагочы</translation>
+<translation id="2468470085922875120">Вы выкарыстоўваеце паролі, якія цяжка падабраць</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 укладка}one{<ph name="GROUP_TITLE" /> – # укладка}few{<ph name="GROUP_TITLE" /> – # укладкі}many{<ph name="GROUP_TITLE" /> – # укладак}other{<ph name="GROUP_TITLE" /> – # укладкі}}</translation>
 <translation id="2469141124738294431">Стан віртуальнай машыны</translation>
 <translation id="2469259292033957819">У вас няма захаваных прынтараў.</translation>
@@ -1956,6 +1957,7 @@
 <translation id="2783321960289401138">Стварыць ярлык...</translation>
 <translation id="2783829359200813069">Выберыце тыпы шыфравання</translation>
 <translation id="2783952358106015700">Выкарыстоўвайце свой ключ бяспекі, уваходзячы на <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">Праверка пароляў</translation>
 <translation id="2785873697295365461">Дэскрыптары файлаў</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Звязаць з новым профілем існуючыя даныя вэб-прагляду (закладкі, паролі, гісторыю і г. д.)</translation>
@@ -2031,6 +2033,7 @@
 <translation id="2844169650293029770">Прылада USB-C (пярэдні порт злева)</translation>
 <translation id="2844809857160214557">Прагляд заданняў друку і кіраванне імі</translation>
 <translation id="2845382757467349449">Заўсёды паказваць панэль закладак</translation>
+<translation id="284581348330507117">Стварыце ўнікальныя паролі</translation>
 <translation id="284805635805850872">Выдаліць шкоднае праграмнае забеспячэнне?</translation>
 <translation id="2849035674501872372">Знайсці</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2182,6 +2185,7 @@
 <translation id="2985348301114641460">Адправіць запыт адміністратару на ўсталяванне пашырэння "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Тэкст, абагулены з іншай прылады</translation>
 <translation id="2988018669686457659">Дадатковы сродак візуалізацыі</translation>
+<translation id="2988328607561082373">У вас няма ўжытых раней пароляў</translation>
 <translation id="2989123969927553766">Паскарэнне прагорткі мышшу</translation>
 <translation id="2989474696604907455">не далучана</translation>
 <translation id="2989786307324390836">Адзін двайковы сертыфікат з DER-шыфраваннем</translation>
@@ -2210,6 +2214,7 @@
 <translation id="3009178788565917040">Выхад</translation>
 <translation id="3009300415590184725">Сапраўды скасаваць наладжванне сэрвісу мабільнай перадачы даных?</translation>
 <translation id="3009779501245596802">Індэксаваныя базы даных</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Вы выкарыстоўваеце надзейныя паролі}=1{{COUNT} ненадзейны пароль}one{{COUNT} ненадзейны пароль}few{{COUNT} ненадзейныя паролі}many{{COUNT} ненадзейных пароляў}other{{COUNT} ненадзейнага пароля}}</translation>
 <translation id="3010279545267083280">Пароль выдалены.</translation>
 <translation id="3010389206479238935">Прымусова адкрыць у:</translation>
 <translation id="3011384993885886186">Бэжава-шэры</translation>
@@ -2299,6 +2304,7 @@
 <translation id="3090819949319990166">Не ўдалося скапіраваць знешні файл crx у <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Клавіятура "<ph name="DEVICE_NAME" />" спалучана</translation>
 <translation id="3093714882666365141">Не дазваляць сайтам усталёўваць апрацоўшчыкі плацяжоў</translation>
+<translation id="3093958632721393232">Уключаць толькі пры нізкім зарадзе акумулятара</translation>
 <translation id="3094141017404513551">Вы будзеце праглядаць старонкі асобна ад карыстальніка <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Закладкі, паролі і іншыя даныя браўзера сінхранізуюцца з асноўным уліковым запісам.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Адно патэнцыйна шкоднае пашырэнне выключана. Таксама яго можна выдаліць.}one{{NUM_EXTENSIONS} патэнцыйна шкоднае пашырэнне выключана. Таксама іх можна выдаліць.}few{{NUM_EXTENSIONS} патэнцыйна шкодныя пашырэнні выключаны. Таксама іх можна выдаліць.}many{{NUM_EXTENSIONS} патэнцыйна шкодных пашырэнняў выключаны. Таксама іх можна выдаліць.}other{{NUM_EXTENSIONS} патэнцыйна шкоднага пашырэння выключаны. Таксама іх можна выдаліць.}}</translation>
@@ -4410,6 +4416,7 @@
 <translation id="5153234146675181447">Забыць тэлефон</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Пашыраныя налады для прынтара "<ph name="PRINTING_DESTINATION" />"</translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{Няма захаваных пароляў.}=1{Правераны паролі для {COUNT} сайта}one{Правераны паролі для {COUNT} сайта і праграмы}few{Правераны паролі для {COUNT} сайтаў і праграм}many{Правераны паролі для {COUNT} сайтаў і праграм}other{Правераны паролі для {COUNT} сайта і праграмы}}</translation>
 <translation id="5154702632169343078">Тэма</translation>
 <translation id="5155327081870541046">У адрасным радку ўвядзіце каманду для старонкі, на якой трэба выканаць пошук (напрыклад, "@bookmarks"). Потым націсніце выбранае спалучэнне клавіш і ўвядзіце пошукавы запыт.</translation>
 <translation id="5156638757840305347">Курсор будзе вылучацца пры з'яўленні на экране і пры руху</translation>
@@ -4990,6 +4997,7 @@
 <translation id="5713158217420111469">Падключана да прылады "<ph name="DEVICE" />"</translation>
 <translation id="5713960379473463904">Стыль уводу прабелаў</translation>
 <translation id="5715711091495208045">Брокер убудовы: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">Неадкладна змяніце іх</translation>
 <translation id="5719603411793408026">Стандартныя пошукавыя сістэмы</translation>
 <translation id="5719854774000914513">Сайты могуць запытваць дазвол на падключэнне да прылад з HID</translation>
 <translation id="572155275267014074">Налады Android</translation>
@@ -5020,6 +5028,7 @@
 <translation id="5747552184818312860">Тэрмін дзеяння:</translation>
 <translation id="5747785204778348146">Распрацоўшчык – нестабільны параметр</translation>
 <translation id="5747809636523347288">У&amp;ставіць і перайсці на адрас <ph name="URL" /></translation>
+<translation id="5748137879145720682">Уключаць, калі камп'ютар адключаны ад сілкавання</translation>
 <translation id="5751345516399502412">Праверыць гатоўнасць рэжыму мадэма</translation>
 <translation id="5755022574660047665">успаміны з Google Фота</translation>
 <translation id="5756163054456765343">&amp;Даведачны цэнтр</translation>
@@ -6450,6 +6459,7 @@
 <translation id="7098447629416471489">Тут з'явяцца іншыя захаваныя пошукавыя сістэмы</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Выдаліць праграму}one{Выдаліць праграмы}few{Выдаліць праграмы}many{Выдаліць праграмы}other{Выдаліць праграмы}}</translation>
 <translation id="7099337801055912064">Не ўдалося загрузіць вялікі файл PPD. Максімальны памер – 250 КБ.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Раскрытых пароляў няма}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
 <translation id="7102687220333134671">Аўтаматычныя абнаўленні ўключаны</translation>
 <translation id="7102832101143475489">Запыт пратэрмінаваны</translation>
 <translation id="710640343305609397">Адкрыць налады сеткі</translation>
@@ -7394,6 +7404,7 @@
 Захавайце файл ключа ў бяспечным месцы. Ён спатрэбіцца вам для стварэння новых версій пашырэння.</translation>
 <translation id="8002274832045662704">Дадатковыя параметры канфігурацыі прынтара</translation>
 <translation id="8002670234429879764">Прынтар "<ph name="PRINTER_NAME" />" больш не даступны</translation>
+<translation id="8004092996156083991">Мы паведамім вам, калі вашы паролі будуць раскрыты.</translation>
 <translation id="8004582292198964060">Браўзер</translation>
 <translation id="8005600846065423578">Заўсёды дазваляць хосту <ph name="HOST" /> праглядаць буфер абмену</translation>
 <translation id="8006630792898017994">Прабел або Tab</translation>
@@ -7658,6 +7669,7 @@
 <translation id="8248381369318572865">Доступ да мікрафона і аналіз гаворкі</translation>
 <translation id="8248887045858762645">Парада Chrome</translation>
 <translation id="8249048954461686687">Папка OEM</translation>
+<translation id="8249239468199142122">Рэжым энергазберажэння</translation>
 <translation id="8249615410597138718">Адправіць на вашы прылады</translation>
 <translation id="8250210000648910632">Закончылася месца ў сховішчы</translation>
 <translation id="8251441930213048644">Абнавіць</translation>
@@ -7889,6 +7901,7 @@
 <translation id="8470513973197838199">Захаваныя паролі для сайта <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Сайты звычайна падключаюцца да прылад USB для работы такіх функцый, як друкаванне дакументаў або захаванне даных на прыладзе знешняга сховішча</translation>
 <translation id="8471959340398751476">Функцыя пошуку скідак выключана. Уключыць яе можна праз меню наладжвання</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Вашы паролі ўнікальныя}=1{{COUNT} ужыты раней пароль}one{{COUNT} ужыты раней пароль}few{{COUNT} ужытыя раней паролі}many{{COUNT} ужытых раней пароляў}other{{COUNT} ужытага раней пароля}}</translation>
 <translation id="8472623782143987204">патрабуюцца апаратныя сродкі</translation>
 <translation id="8473863474539038330">Адрасы і іншае</translation>
 <translation id="8475313423285172237">Іншая праграма на камп'ютары дадала пашырэнне, якое можа змяніць працу Chrome.</translation>
@@ -8370,6 +8383,7 @@
 <translation id="8940081510938872932">На вашым камп'ютары выконваецца занадта шмат працэсаў.  Паўтарыце спробу пазней.</translation>
 <translation id="8940381019874223173">З Google Фота</translation>
 <translation id="8941173171815156065">Адклікаць дазвол "<ph name="PERMISSION" />"</translation>
+<translation id="894191600409472540">Стварыце надзейныя паролі</translation>
 <translation id="894360074127026135">Шыфраванне International Step-Up ад Netscape</translation>
 <translation id="8944099748578356325">Актыўней спажывае зарад акумулятара (зараз – <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8945274638472141382">Памер значкоў</translation>
@@ -8590,6 +8604,7 @@
 <translation id="9140067245205650184">Вы карыстаецеся эксперыментальным параметрам функцыі, які не падтрымліваецца: <ph name="BAD_FLAG" />. Стабільнасць і бяспека пагоршацца.</translation>
 <translation id="9142637293078737510">Псеўданім вобраза</translation>
 <translation id="9143298529634201539">Выдаліць прапанову?</translation>
+<translation id="9143922477019434797">Абараніце свае паролі</translation>
 <translation id="9147392381910171771">&amp;Параметры</translation>
 <translation id="9148058034647219655">Выйсці</translation>
 <translation id="9148126808321036104">Увайсці зноў</translation>

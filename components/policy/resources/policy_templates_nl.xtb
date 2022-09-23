@@ -142,6 +142,11 @@
       Bepaalt de periode waarna de schermbeveiliging zichtbaar is in het inlogvenster voor apparaten in de winkelmodus.
 
       De beleidswaarde moet worden opgegeven in milliseconden.</translation>
+<translation id="1143257335984030879">Dit beleid bepaalt de beschikbaarheid van de functie voor boodschappenlijstjes.
+      Als je dit beleid toepast, krijgen gebruikers een UI te zien om de prijs te volgen van het product dat op de huidige pagina wordt getoond. Het gevolgde product wordt in het zijvenster met bookmarks getoond.
+      Als je dit beleid toepast of niet instelt, is de functie voor boodschappenlijstjes beschikbaar voor gebruikers.
+      Als je dit beleid niet toepast, is de functie voor boodschappenlijstjes niet beschikbaar.
+      </translation>
 <translation id="1144540226829648811">Hiermee wordt het releasekanaal gespecificeerd waarmee dit apparaat moet worden vergrendeld.
 
       Het instellen van <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> heeft alleen effect als je <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> hebt ingesteld op False.</translation>
@@ -437,6 +442,11 @@ Als dit beleid wordt toegepast of niet is ingesteld, bepaalt de browser welk Use
       Extensieprinters staan ook bekend als afdrukproviderbestemmingen en omvatten elke bestemming die bij een <ph name="PRODUCT_NAME" />-extensie hoort.
 
       Lokale printers staan ook bekend als systeemeigen afdrukbestemmingen en omvatten bestemmingen die beschikbaar zijn voor de lokale computer en gedeelde netwerkprinters.</translation>
+<translation id="1456449214426764016">De niet-standaard API window.webkitStorageInfo is beëindigd en wordt binnenkort verwijderd.
+      Dit beleid zet de API opnieuw aan.
+      Als je dit beleid toepast, is de API window.webkitStorageInfo beschikbaar.
+      Als je dit beleid niet toepast of niet instelt, is de API window.webkitStorageInfo niet beschikbaar.
+      </translation>
 <translation id="1456822151187621582">Windows (<ph name="PRODUCT_OS_NAME" />-clients):</translation>
 <translation id="1464848559468748897">Bepaal het gebruikersgedrag tijdens een sessie met meerdere profielen op <ph name="PRODUCT_OS_NAME" />-apparaten.
 
@@ -3158,6 +3168,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 
       Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer informatie.
       </translation>
+<translation id="416817811987180750">De functie voor boodschappenlijstjes is beschikbaar voor gebruikers.</translation>
 <translation id="4169692397912242417">Zet de toegankelijkheidsfunctie voor gesproken feedback op het inlogscherm aan.
 
           Als dit beleid is ingesteld op True, staat gesproken feedback altijd aan op het inlogscherm.
@@ -3841,6 +3852,7 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 
       Als je het beleid uitzet of niet instelt, kan een kiosk-web-app alleen het hoofdbrowservenster gebruiken en kan de app geen nieuw venster openen. Als er JavaScript-functies worden aangeroepen om een nieuw venster te openen, wordt dit genegeerd.</translation>
 <translation id="4980635395568992380">Gegevenstype:</translation>
+<translation id="4981831669478419057">De functie voor boodschappenlijstjes is niet beschikbaar voor gebruikers.</translation>
 <translation id="4983201894483989687">Verouderde plug-ins toestaan die actief zijn</translation>
 <translation id="4986560318567565414">Pad naar Chrome voor overschakeling vanaf de alternatieve browser.</translation>
 <translation id="4987813583395474995">Als je dit beleid toepast, kan de beëindigde U2F-beveiligingssleutel-API worden gebruikt en wordt de herinnering voor beëindiging onderdrukt die bij U2F-API-verzoeken wordt getoond.
@@ -6637,6 +6649,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
       Als je dit beleid instelt op <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, herstelt de browser de vorige sessie en wordt een afzonderlijk venster geopend om URL's te tonen die zijn ingesteld via <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Gebruikers kunnen ervoor kiezen om deze URL's geopend te laten en dan worden ze ook hersteld in de toekomstige sessie.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
+<translation id="7919665519909231619">Toestaan dat de functie voor boodschappenlijstjes wordt aangezet</translation>
 <translation id="7922358664346625612">Laatste tabblad open houden in Chrome.</translation>
 <translation id="7924321157669251966">Percentage voor schermhelderheid als er op de batterij wordt gewerkt</translation>
 <translation id="7925224837072026018">Als je het beleid instelt, geef je toegang tot zakelijke sleutels tot extensies of Android-apps. Sleutels zijn alleen voor zakelijk gebruik bedoeld als ze via een beheerd account worden aangemaakt met de chrome.enterprise.platformKeys API. Gebruikers kunnen geen toegang toestaan of intrekken tot zakelijke sleutels naar of van extensies of Android-apps.
@@ -7055,6 +7068,12 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
       De beleidswaarde moet worden opgegeven in milliseconden.</translation>
 <translation id="8330437518362176921">Alleen de door het beleid geleverde update-URL gebruiken als Chrome-kiosk-apps worden gedownload en geüpdatet</translation>
 <translation id="8331479227794770304">Plaktoetsen aanzetten</translation>
+<translation id="8336469459912731404">Als je dit beleid toepast, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie in de Chrome Root Store als bron van openbaar vertrouwen.
+      Als je dit beleid niet toepast, gebruikt <ph name="PRODUCT_NAME" /> de systeemcertificaatverificatie en de rootcertificaten van het systeem.
+      Als je dit beleid niet instelt, kunnen de Chrome Root Store of de door het systeem geleverde rootcertificaten worden gebruikt.
+
+      Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> voor <ph name="MS_WIN_NAME" /> en <ph name="MAC_OS_NAME" /> versie 111, wanneer de ondersteuning voor de certificaatverificatie en rootcertificaten van het platform volgens de planning worden verwijderd.
+      </translation>
 <translation id="8337114537412769126">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> instelt, worden de parameters gespecificeerd tijdens voorgestelde zoekopdrachten met POST. Deze bestaan uit door komma's gescheiden naam/waarde-paren. Als een waarde een templateparameter is (zoals <ph name="SEARCH_TERM_MARKER" />), wordt deze vervangen door de echte zoektermen.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> niet instelt, worden voorgestelde zoekopdrachten gestuurd met de GET-methode.</translation>

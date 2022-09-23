@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Kopioidaan tiedostoa <ph name="FILE_NAME" />…</translation>
 <translation id="1178581264944972037">Tauko</translation>
 <translation id="1190144681599273207">Mobiiliyhteyden kautta noudettavan tiedoston koko on noin <ph name="FILE_SIZE" />.</translation>
+<translation id="1194390763418645112">Pääsy tiedostoon: <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1209796539517632982">Automaattiset nimipalvelimet</translation>
 <translation id="1210831758834677569">lao</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome-laitteet</translation>
 <translation id="1572585716423026576">Aseta taustakuvaksi</translation>
 <translation id="1576937952766665062">translitteroitu bangla</translation>
+<translation id="1577977504532381335">Tutustu järjestelmänvalvojakäytäntöön</translation>
 <translation id="158849752021629804">Kotiverkko tarvitaan</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> Pt</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Kuvan resoluutio</translation>
 <translation id="1972984168337863910">Laajenna tiedostojen palautepaneelit</translation>
 <translation id="1995337122023280937">Siirry tiedoston sijaintiin</translation>
+<translation id="1999709132469742660">Pääsy tiedostoon kaikista URL-osoitteista</translation>
 <translation id="2001796770603320721">Ylläpidä Drivessa</translation>
 <translation id="2009067268969781306">Driven alustaminen poistaa kaiken sille tallennetun datan. Tätä toimintoa ei voi kumota.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Henkilö ja kahvikuppi</translation>
 <translation id="2251368349685848079">Palauta roskakorista</translation>
 <translation id="2282155092769082568">Automaattisen määrityksen URL-osoite:</translation>
+<translation id="2284767815536050991">siirrettävä tallennustila</translation>
 <translation id="2288278176040912387">Levysoitin</translation>
 <translation id="2291538123825441971">Avataan <ph name="NUMBER_OF_FILES" /> tiedostoa.</translation>
 <translation id="2303301624314357662">Avataan tiedostoa <ph name="FILE_NAME" />.</translation>
@@ -341,6 +345,7 @@
 <translation id="4057991113334098539">Aktivoidaan...</translation>
 <translation id="4092890906744441904">iiri</translation>
 <translation id="4124935795427217608">Yksisarvinen</translation>
+<translation id="4157569377477607576">Järjestelmänvalvojakäytännössä ei suositella seuraavia:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> siirretty.</translation>
 <translation id="4176286497474237543">Tyhjennä roskakori nyt</translation>
 <translation id="4186579485882418952">Ota Docs Offline käyttöön</translation>
@@ -502,6 +507,7 @@
 <translation id="5323213332664049067">Latinalainen Amerikka</translation>
 <translation id="5330145655348521461">Nämä tiedostot avattiin toisella työpöydällä. Näet tiedostot siirtymällä profiiliin <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Näytä tiedot</translation>
+<translation id="5337538975554986899">Pääsy tiedostoon kaikista URL-osoitteista paitsi täältä: <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Henkilö ja kissoja</translation>
 <translation id="5358764674931277">Kuvanopeus</translation>
 <translation id="5363339716524495120">Syöttökieli on kiina</translation>
@@ -526,6 +532,7 @@
 <translation id="5533102081734025921">Kuva, jonka tyyppi on <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Lasketaan kokoa</translation>
 <translation id="554153475311314364">translitteroitu kreikka</translation>
+<translation id="5580591966435005537">virtuaalikone</translation>
 <translation id="5583640892426849032">Askelpalautin</translation>
 <translation id="5583664733673201137">Välimerkkileveys on täysleveä</translation>
 <translation id="5602622065581044566">bulgaria, foneettinen näppäimistö</translation>
@@ -586,6 +593,7 @@
 <translation id="61118516107968648">CSV-tekstitiedosto</translation>
 <translation id="6129953537138746214">Välilyönti</translation>
 <translation id="6133173853026656527">Siirretään tiedostoa <ph name="FILE_NAME" />…</translation>
+<translation id="6133877453787250710">Järjestelmänvalvojien näytöt:</translation>
 <translation id="613750717151263950">japani, Yhdysvaltain näppäimistö</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ei verkkoa</translation>
 <translation id="6146563240635539929">Videot</translation>
@@ -606,6 +614,7 @@
 <translation id="6287852322318138013">Valitse sovellus, jolla haluat avata tämän tiedoston</translation>
 <translation id="6295542640242147836">Lukitse SIM-kortti</translation>
 <translation id="6296410173147755564">Väärä PUK-koodi</translation>
+<translation id="6308243004861726558">Tiedosto on luottamuksellinen, ja siihen sovelletaan järjestelmänvalvojakäytäntöä. Seuraavia tiedoston pääsyoikeus- ja siirtotoimintoja sovelletaan.</translation>
 <translation id="6312403991423642364">Tuntematon verkkovirhe</translation>
 <translation id="6317608858038767920">Oma nimipalvelin <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-arkisto</translation>
@@ -719,6 +728,7 @@
 <translation id="7248671827512403053">Sovellus</translation>
 <translation id="7256405249507348194">Tunnistamaton virhe: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Käytettävissä olevat palvelut</translation>
+<translation id="7292816689782057017">Järjestelmänvalvojakäytäntö rajoittaa tallentamista joihinkin sijainteihin.</translation>
 <translation id="7294063083760278948">translitteroitu telugu</translation>
 <translation id="7295662345261934369">Jaa muille</translation>
 <translation id="7297443947353982503">Käyttäjätunnus/salasana on virheellinen tai EAP-todennus epäonnistui</translation>
@@ -833,6 +843,7 @@
 <translation id="8250920743982581267">Dokumentit</translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8261561378965667560">kiina (array)</translation>
+<translation id="8262872909443689080">Järjestelmänvalvojakäytäntö</translation>
 <translation id="8264024885325823677">Järjestelmänvalvojasi ylläpitää tätä asetusta.</translation>
 <translation id="8269755669432358899">Tiivistä tiedostojen palautepaneelit</translation>
 <translation id="8280151743281770066">armenia (foneettinen)</translation>
@@ -905,6 +916,7 @@
 <translation id="8810671769985673465">Pakkaus epäonnistui, koska kohde on jo olemassa: <ph name="FILE_NAME" /></translation>
 <translation id="8813284582615685103">espanja (Espanja)</translation>
 <translation id="8834164572807951958">Paikan <ph name="DESTINATION_NAME" /> jäsenet saavat käyttöoikeuden näiden kohteiden kopioon.</translation>
+<translation id="8849389110234859568">Järjestelmänvalvojakäytäntö rajoittaa pääsyä joihinkin tiedostoihin.</translation>
 <translation id="8857149712089373752">nepali, foneettinen näppäimistö</translation>
 <translation id="8860454412039442620">Excel-laskentataulukko</translation>
 <translation id="8866284467018526531">translitteroitu arabia</translation>
@@ -929,6 +941,7 @@
 <translation id="9100610230175265781">Tunnuslause tarvitaan</translation>
 <translation id="9110990317705400362">Pyrimme jatkuvasti tekemään selaamisesta turvallisempaa. Aiemmin mikä tahansa sivusto pystyi pyytämään laajennuksen lisäämistä selaimeen. Uusimmissa Google Chrome -versioissa sinun on erikseen ilmoitettava Chromelle, että haluat asentaa nämä laajennukset, lisäämällä ne Laajennukset-sivulla. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Poista lukitus</translation>
+<translation id="9116909380156770361">Tiedostonsiirto tänne: <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Pakkaus</translation>
 <translation id="9130775360844693113">Paikan <ph name="DESTINATION_NAME" /> jäsenet saavat käyttöoikeuden näihin kohteisiin.</translation>
 <translation id="9131598836763251128">Valitse vähintään yksi tiedosto</translation>
@@ -950,6 +963,7 @@
 <translation id="943972244133411984">Muokkaaja</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="947144732524271678">Valittiin <ph name="ENTRY_COUNT" /> kohdetta välillä <ph name="FROM_ENTRY_NAME" /> ja <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Järjestelmänvalvojakäytännössä estetään nämä:</translation>
 <translation id="965477715979482472">englanti (Etelä-Afrikka)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Tiedosto nimeltä <ph name="FILE_NAME" /> on jo olemassa. Haluatko korvata sen?</translation>

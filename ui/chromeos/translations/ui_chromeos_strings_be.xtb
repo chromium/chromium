@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Ідзе капіраванне файла "<ph name="FILE_NAME" />"...</translation>
 <translation id="1178581264944972037">Прыпыніць</translation>
 <translation id="1190144681599273207">Каб атрымаць гэты файл, будзе выкарыстана прыкладна <ph name="FILE_SIZE" /> мабільнага трафіка.</translation>
+<translation id="1194390763418645112">Доступ да файла адсюль: <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1209796539517632982">Аўтаматычныя серверы даменных імён</translation>
 <translation id="1210831758834677569">Лаоская</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome</translation>
 <translation id="1572585716423026576">Усталяваць як шпалеры</translation>
 <translation id="1576937952766665062">Бенгальская (транслітарацыя)</translation>
+<translation id="1577977504532381335">Азнаёміцца з палітыкай адміністратара</translation>
 <translation id="158849752021629804">Патрабуецца хатняя сетка</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Раздзяляльнасць відарыса</translation>
 <translation id="1972984168337863910">Разгарнуць панэлі водгукаў для файлаў</translation>
 <translation id="1995337122023280937">Адкрыць месцазнаходжанне файла</translation>
+<translation id="1999709132469742660">Доступ да файла з усіх URL-адрасоў</translation>
 <translation id="2001796770603320721">Кіраваць на Дыску</translation>
 <translation id="2009067268969781306">Фармаціраванне дыска прывядзе да выдалення ўсіх захаваных на ім даных. Гэта дзеянне нельга адрабіць.</translation>
 <translation id="2025955442973426285">Тыгрынья</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Чалавек з кубкам кавы</translation>
 <translation id="2251368349685848079">Аднавіць са сметніцы</translation>
 <translation id="2282155092769082568">URL-адрас аўтаматычнай канфігурацыі:</translation>
+<translation id="2284767815536050991">здымнае сховішча</translation>
 <translation id="2288278176040912387">Патэфон</translation>
 <translation id="2291538123825441971">Адкрываюцца некалькі файлаў (<ph name="NUMBER_OF_FILES" />) .</translation>
 <translation id="2303301624314357662">Адкрываецца файл "<ph name="FILE_NAME" />".</translation>
@@ -341,6 +345,7 @@
 <translation id="4057991113334098539">Ідзе актывацыя...</translation>
 <translation id="4092890906744441904">Ірландская</translation>
 <translation id="4124935795427217608">Аднарог</translation>
+<translation id="4157569377477607576">Палітыка адміністратара не рэкамендуе наступнае:</translation>
 <translation id="4159731583141908892">Элемент "<ph name="FILE_NAME" />" перамешчаны.</translation>
 <translation id="4176286497474237543">Ачысціць сметніцу</translation>
 <translation id="4186579485882418952">Уключыць пазасеткавы рэжым</translation>
@@ -501,6 +506,7 @@
 <translation id="5323213332664049067">Лацінаамерыканская</translation>
 <translation id="5330145655348521461">Гэтыя файлы адкрыты на іншым працоўным стале. Каб бачыць яго, перайдзіце на профіль <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Атрымаць інфармацыю</translation>
+<translation id="5337538975554986899">Доступ да файла з усіх URL-адрасоў, акрамя <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Чалавек з катамі</translation>
 <translation id="5358764674931277">Частата кадраў</translation>
 <translation id="5363339716524495120">Мова ўводу – кітайская</translation>
@@ -525,6 +531,7 @@
 <translation id="5533102081734025921">Відарыс <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Разлічваецца памер</translation>
 <translation id="554153475311314364">Грэчаская (транслітарацыя)</translation>
+<translation id="5580591966435005537">віртуальная машына</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Шырыня знакаў пунктуацыі – поўная</translation>
 <translation id="5602622065581044566">Балгарская (фанетычная раскладка)</translation>
@@ -585,6 +592,7 @@
 <translation id="61118516107968648">Тэкставы файл CSV</translation>
 <translation id="6129953537138746214">Прабел</translation>
 <translation id="6133173853026656527">Ідзе перамяшчэнне файла <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">Адміністратар адсочвае наступнае:</translation>
 <translation id="613750717151263950">Японская з клавіятурай ЗША</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, няма сеткі</translation>
 <translation id="6146563240635539929">Відэа</translation>
@@ -605,6 +613,7 @@
 <translation id="6287852322318138013">Выберыце, у якой праграме адкрыць гэты файл</translation>
 <translation id="6295542640242147836">Заблакіраваць SIM-карту</translation>
 <translation id="6296410173147755564">Няправільны PUK-код</translation>
+<translation id="6308243004861726558">Гэта канфідэнцыяльны файл. Яго выкарыстанне рэгулюецца палітыкай адміністратара. Ніжэй пералічаны ўмовы доступу да файла і яго перадачы.</translation>
 <translation id="6312403991423642364">Невядомая памылка сеткі</translation>
 <translation id="6317608858038767920">Адмысловы сервер даменных імён: <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Архіў <ph name="ARCHIVE_TYPE" /></translation>
@@ -718,6 +727,7 @@
 <translation id="7248671827512403053">Праграма</translation>
 <translation id="7256405249507348194">Невядомая памылка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Даступныя сэрвісы</translation>
+<translation id="7292816689782057017">Палітыка адміністратара дазваляе захоўваць файлы толькі ў пэўных месцах.</translation>
 <translation id="7294063083760278948">Тэлугу (транслітарацыя)</translation>
 <translation id="7295662345261934369">Абагуліць з іншымі</translation>
 <translation id="7297443947353982503">Няправільнае імя карыстальніка або пароль ці збой аўтэнтыфікацыі EAP</translation>
@@ -832,6 +842,7 @@
 <translation id="8250920743982581267">Дакументы</translation>
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8261561378965667560">Кітайская (структурны метад уводу)</translation>
+<translation id="8262872909443689080">Палітыка адміністратара</translation>
 <translation id="8264024885325823677">Гэта налада знаходзіцца пад кіраваннем адміністратара.</translation>
 <translation id="8269755669432358899">Згарнуць панэлі водгукаў для файлаў</translation>
 <translation id="8280151743281770066">Армянская фанетычная</translation>
@@ -904,6 +915,7 @@
 <translation id="8810671769985673465">Не ўдалося стварыць архіў – элемент ужо існуе: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Іспанская (Іспанія)</translation>
 <translation id="8834164572807951958">Да копіі гэтых элементаў атрымаюць доступ удзельнікі дыска "<ph name="DESTINATION_NAME" />".</translation>
+<translation id="8849389110234859568">Палітыка адміністратара забараняе доступ да пэўных файлаў.</translation>
 <translation id="8857149712089373752">Непальская (фанетычная раскладка)</translation>
 <translation id="8860454412039442620">Электронная табліца Excel</translation>
 <translation id="8866284467018526531">Арабская (транслітарацыя)</translation>
@@ -928,6 +940,7 @@
 <translation id="9100610230175265781">Патрабуецца фраза-пароль</translation>
 <translation id="9110990317705400362">Мы пастаянна працуем над новымі спосабамі зрабіць працу ў інтэрнэце больш бяспечнай. Раней любы сайт мог прапанаваць вам дадаць пашырэнні ў браўзер. У апошніх версіях Google Chrome пашырэнні трэба дадаваць праз старонку "Пашырэнні", даючы браўзеру яўнае ўказанне, што вы хочаце іх усталяваць. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Разблакіраваць</translation>
+<translation id="9116909380156770361">Перадача файла сюды: <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Кодэк</translation>
 <translation id="9130775360844693113">Да гэтых элементаў атрымаюць доступ удзельнікі дыска "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="9131598836763251128">Выберыце адзін або некалькі файлаў</translation>
@@ -949,6 +962,7 @@
 <translation id="943972244133411984">Зменена карыстальнікам</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="947144732524271678">Выбраны элементы з <ph name="FROM_ENTRY_NAME" /> да <ph name="TO_ENTRY_NAME" />, колькасць элементаў – <ph name="ENTRY_COUNT" />.</translation>
+<translation id="954194396377670556">Палітыка адміністратара забараняе наступнае:</translation>
 <translation id="965477715979482472">Англійская (Паўднёва-Афрыканская Рэспубліка)</translation>
 <translation id="981121421437150478">Па-за сеткай</translation>
 <translation id="988685240266037636">Файл пад назвай "<ph name="FILE_NAME" />" ужо існуе. Замяніць яго?</translation>

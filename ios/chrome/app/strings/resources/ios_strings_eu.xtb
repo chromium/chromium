@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1434356225517321998">Arakatzailea kudeatuta dago. <ph name="BEGIN_LINK" />Xehetasunak<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ezkutatu pasahitza</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> elementu</translation>
 <translation id="1450170672351507823">Babes estandarra dago aktibatuta. Segurtasuna areagotzeko, erabili babes hobetua.</translation>
 <translation id="149095475893949513">Webgunea konfigurazio-profil bat deskargatu nahian dabil.</translation>
 <translation id="1491277525950327607">Sakatu birritan ezarpena aldatzeko</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">Laster-markak gailu guztietan eskura izateko, aktibatu sinkronizazioa.</translation>
 <translation id="1687475363370981210">Markatu guztiak irakurritako gisa</translation>
 <translation id="1689333818294560261">Goitizena</translation>
-<translation id="1690731385917361335">Ez dago ezer</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> hautatu dira</translation>
 <translation id="1740468249224277719">Instalatzeko, sakatu birritan.</translation>
 <translation id="1752547299766512813">Gorde pasahitzak</translation>
@@ -986,7 +984,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9068336935206019333">Ireki Chrome-ren ezkutuko moduan</translation>
 <translation id="9079935439869366234">Markatu guztiak irakurri gabeko gisa</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> erabiltzailearen pasahitza eguneratu nahi duzu?</translation>
-<translation id="9083392325882095631">Elementu bat</translation>
 <translation id="9083838294503912307">Gailu guztiak sinkronizatu eta pertsonalizatzeko, aktibatu sinkronizazioa.</translation>
 <translation id="9087108903408689779">Chrome-k iradokitako pasahitza:</translation>
 <translation id="9094033019050270033">Aldatu pasahitza</translation>

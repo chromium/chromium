@@ -54,6 +54,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2384373936468275798">Impossible de synchroniser vos données dans Chromium OS, car les informations de connexion de votre compte ne sont plus à jour.</translation>
 <translation id="2396765026452590966">L'extension <ph name="EXTENSION_NAME" /> a modifié la page qui s'affiche lorsque vous démarrez Chromium.</translation>
+<translation id="2400844369696905771">Lorsque ce mode est activé, Chromium récupère la mémoire des onglets que vous n'utilisez pas activement. Cela libère des ressources de votre ordinateur pour d'autres tâches, tout en maintenant la rapidité de Chromium. Les onglets inactifs apparaissent vides et s'actualisent automatiquement quand vous cliquez dessus. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium a besoin de l'autorisation d'accéder au micro et à la caméra pour ce site</translation>
 <translation id="2483889755041906834">Dans Chromium</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
@@ -144,6 +145,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="4285930937574705105">Échec de l'installation suite à une erreur non spécifiée. Si Chromium est en cours d'exécution, veuillez le fermer, puis réessayer.</translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4334294535648607276">Le téléchargement a bien été effectué.</translation>
+<translation id="437317747729858884">Pour accélérer la navigation, Chromium récupère la mémoire des onglets que vous n'utilisez pas.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> exige que vous lisiez et acceptiez les présentes conditions d'utilisation pour utiliser cet appareil. Celles-ci n'étendent, ne modifient ni ne restreignent les conditions d'utilisation de Chromium OS.</translation>
 <translation id="4407044323746248786">Quitter Chromium quand même ?</translation>
 <translation id="4415566066719264597">Laisser Chromium s'exécuter en arrière-plan</translation>
@@ -181,6 +183,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5386450000063123300">Mise à jour de Chromium (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="538767207339317086">Autoriser la connexion à Chromium</translation>
 <translation id="5398878173008909840">Une nouvelle version de Chromium est disponible.</translation>
+<translation id="5405650547142096840">Supprimer de Chromium</translation>
 <translation id="5427571867875391349">Définir Chromium comme navigateur par défaut</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Bêta</translation>
 <translation id="5473971139929175403">Chromium risque de ne pas fonctionner correctement, car la compatibilité n'est plus assurée sur cette distribution Linux.</translation>
@@ -313,6 +316,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7872446069773932638">Téléchargement… <ph name="SECONDS" /> seconde(s) restante(s)</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Comment vous pouvez gérer vos données<ph name="END_BOLD" /> : pour protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt s'ils datent de plus de quatre semaines. Au fil de votre navigation, un centre d'intérêt peut réapparaître dans la liste. Vous pouvez aussi supprimer des centres d'intérêt si vous ne souhaitez pas que Chromium les prenne en compte.</translation>
 <translation id="7937630085815544518">Vous étiez connecté à Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
+<translation id="7947085610734123927">Chromium a activé l'économiseur de mémoire</translation>
 <translation id="7975919845073681630">Ceci est une installation secondaire de Chromium. Vous ne pouvez pas le définir comme navigateur par défaut.</translation>
 <translation id="7997934263947464652">Les extensions, les applications et les thèmes provenant de sources inconnues risquent d'endommager votre appareil. Chromium recommande de les installer uniquement à partir du <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Une fois l'accès à une ressource accordé à Chromium, les sites Web sont également en mesure de vous demander l'accès.</translation>
@@ -338,6 +342,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8558383651099478961">Ton parent a désactivé l'option "Autorisations des sites, applications et extensions" pour Chromium. Tu ne peux pas ajouter cette <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Vous devez disposer de macOS 10.13 ou d'une version ultérieure pour recevoir les futures mises à jour de Chromium. Or, c'est la version macOS 10.12 qui est installée sur cet ordinateur.</translation>
 <translation id="8568283329061645092">Chromium peut vérifier vos mots de passe lorsque vous vous connectez à votre compte Google</translation>
+<translation id="8574036838419011058">Lorsque cette option est activée, Chromium préserve l'autonomie de la batterie en limitant l'activité et les effets visuels en arrière-plan, comme le défilement fluide et la fréquence d'images vidéo. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données<ph name="END_BOLD" /> : les sites peuvent stocker des informations sur vos centres d'intérêt dans Chromium. Par exemple, si vous allez sur un site afin d'acheter des chaussures pour un marathon, le site peut définir le marathon comme l'un de vos centres d'intérêt. Ensuite, si vous consultez un autre site pour vous enregistrer pour une course, ce site peut diffuser une annonce pour des chaussures de running en se basant sur vos centres d'intérêt.</translation>
 <translation id="8619360774459241877">Lancement de Chromium…</translation>

@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1434356225517321998">เบราว์เซอร์ของคุณมีการจัดการ <ph name="BEGIN_LINK" />รายละเอียด<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">ซ่อนรหัสผ่าน</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> รายการ</translation>
 <translation id="1450170672351507823">การปกป้องแบบมาตรฐานเปิดอยู่ ใช้การปกป้องที่ปรับปรุงแล้วเพื่อความปลอดภัยมากขึ้น</translation>
 <translation id="149095475893949513">เว็บไซต์นี้พยายามดาวน์โหลดโปรไฟล์การกำหนดค่า</translation>
 <translation id="1491277525950327607">แตะ 2 ครั้งเพื่อสลับการตั้งค่า</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">เปิดการซิงค์เพื่อรับบุ๊กมาร์กในอุปกรณ์ทุกเครื่องของคุณ</translation>
 <translation id="1687475363370981210">ทำเครื่องหมายทั้งหมดว่าอ่านแล้ว</translation>
 <translation id="1689333818294560261">ชื่อเล่น</translation>
-<translation id="1690731385917361335">ไม่มีรายการ</translation>
 <translation id="1700629756560807968">เลือก <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> รายการ</translation>
 <translation id="1740468249224277719">แตะ 2 ครั้งเพื่อติดตั้ง</translation>
 <translation id="1752547299766512813">บันทึกรหัสผ่าน</translation>
@@ -986,7 +984,6 @@
 <translation id="9068336935206019333">เปิดในโหมดไม่ระบุตัวตนของ Chrome</translation>
 <translation id="9079935439869366234">ทำเครื่องหมายทั้งหมดว่ายังไม่ได้อ่าน</translation>
 <translation id="9081058212938299310">อัปเดตรหัสผ่านของ <ph name="USERNAME" /> ไหม</translation>
-<translation id="9083392325882095631">1 รายการ</translation>
 <translation id="9083838294503912307">เปิดการซิงค์เพื่อซิงค์และปรับเปลี่ยนข้อมูลตามความต้องการในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="9087108903408689779">รหัสผ่านที่ Chrome แนะนำ</translation>
 <translation id="9094033019050270033">อัปเดตรหัสผ่าน</translation>

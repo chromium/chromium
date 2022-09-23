@@ -896,6 +896,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6064463340679478396">Jag är klar med filen</translation>
 <translation id="6073451960410192870">Sluta spela in</translation>
 <translation id="6074087755403037157">Betakanal</translation>
+<translation id="6095008505822982596">Talhastighet</translation>
 <translation id="6099678161144790572">Redigerades under den senaste månaden</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Filerna för taligenkänning på <ph name="LANGUAGE" /> har laddats ned</translation>
@@ -1252,7 +1253,6 @@ Nyligen installerad</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autoslutför</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Den här inställningen hanteras av administratören.</translation>
 <translation id="8155628902202578800">Öppna informationsdialogrutan för <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="8157728322324420120">Våra förslag</translation>
 <translation id="8167567890448493835">Använder <ph name="LOCALE_NAME" /></translation>
 <translation id="8183592608247778598">Se de senaste bilderna, mediefilerna, aviseringarna och apparna från telefonen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="8192202700944119416">Aviseringar har dolts.</translation>

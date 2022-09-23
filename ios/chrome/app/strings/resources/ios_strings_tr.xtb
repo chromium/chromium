@@ -72,7 +72,6 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1430915738399379752">Yazdır</translation>
 <translation id="1434356225517321998">Tarayıcınız yönetilmektedir. <ph name="BEGIN_LINK" />Ayrıntılar<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Şifreyi Gizle</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> öğe</translation>
 <translation id="1450170672351507823">Standart koruma açık. Daha fazla güvenlik için gelişmiş korumayı kullanın.</translation>
 <translation id="149095475893949513">Bu web sitesi bir yapılandırma profili indirmeye çalışıyor.</translation>
 <translation id="1491277525950327607">Ayarı açıp kapatmak için iki kez dokunun</translation>
@@ -106,7 +105,6 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="168715261339224929">Yer işaretlerinize tüm cihazlarınızda ulaşmak için senkronizasyonu açın.</translation>
 <translation id="1687475363370981210">Tümünü Okundu Olarak İşaretle</translation>
 <translation id="1689333818294560261">Takma ad</translation>
-<translation id="1690731385917361335">Öğe yok</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> yer işareti seçildi</translation>
 <translation id="1740468249224277719">Yüklemek için iki kez dokunun.</translation>
 <translation id="1752547299766512813">Şifreleri Kaydet</translation>
@@ -756,6 +754,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="6988572888918530647">Google Hesabınızı Yönetin</translation>
 <translation id="6989674195860388998">Ayarlar'da değiştir…</translation>
 <translation id="6998989275928107238">Nereye</translation>
+<translation id="699954956411469731">Mobil Bildirimler</translation>
 <translation id="7004032350256606903">Kuruluşunuz, gizli olarak göz atmanızı zorunlu tutuyor.
 <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Son Sekmeler</translation>
@@ -985,7 +984,6 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="9068336935206019333">Chrome Gizli modda aç</translation>
 <translation id="9079935439869366234">Tümünü Okunmadı Olarak İşaretle</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> hesabının şifresi güncellensin mi?</translation>
-<translation id="9083392325882095631">1 öğe</translation>
 <translation id="9083838294503912307">Cihazlar arasında senkronizasyon ve kişiselleştirme yapmak için senkronizasyonu etkinleştirin.</translation>
 <translation id="9087108903408689779">Chrome Tarafından Önerilen Şifre:</translation>
 <translation id="9094033019050270033">Şifreyi güncelle</translation>

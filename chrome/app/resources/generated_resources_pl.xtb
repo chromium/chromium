@@ -1605,6 +1605,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2468178265280335214">Przyspieszenie przewijania na touchpadzie</translation>
 <translation id="2468205691404969808">Zapisuje Twoje ustawienia w plikach cookie, nawet jeśli nie odwiedzasz tych stron</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470085922875120">Używasz haseł, które są trudne do odgadnięcia</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 karta}few{<ph name="GROUP_TITLE" /> – # karty}many{<ph name="GROUP_TITLE" /> – # kart}other{<ph name="GROUP_TITLE" /> – # karty}}</translation>
 <translation id="2469141124738294431">Stan maszyny wirtualnej</translation>
 <translation id="2469259292033957819">Nie masz zapisanych drukarek.</translation>
@@ -1943,6 +1944,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2783321960289401138">Utwórz skrót...</translation>
 <translation id="2783829359200813069">Wybieranie typów szyfrowania</translation>
 <translation id="2783952358106015700">Użyj klucza bezpieczeństwa w: <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">Sprawdzanie hasła</translation>
 <translation id="2785873697295365461">Deskryptory plików</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Zachowaj lokalne dane przeglądania (m.in. zakładki, hasła i historię)</translation>
@@ -2018,6 +2020,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2844169650293029770">Urządzenie USB-C (przedni port na lewym boku)</translation>
 <translation id="2844809857160214557">Przeglądaj zadania drukowania i zarządzaj nimi</translation>
 <translation id="2845382757467349449">Zawsze pokazuj pasek zakładek</translation>
+<translation id="284581348330507117">Utwórz niepowtarzalne hasła</translation>
 <translation id="284805635805850872">Usunąć szkodliwe oprogramowanie?</translation>
 <translation id="2849035674501872372">Znajdź</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2169,6 +2172,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2985348301114641460">Wysłać do administratora prośbę o zainstalowanie: „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2987620471460279764">Tekst udostępniany przez inne urządzenia</translation>
 <translation id="2988018669686457659">Zapasowy mechanizm renderowania</translation>
+<translation id="2988328607561082373">Nie używasz ponownie żadnych haseł</translation>
 <translation id="2989123969927553766">Przyspieszenie przewijania myszą</translation>
 <translation id="2989474696604907455">niepodłączone</translation>
 <translation id="2989786307324390836">Plik binarny z kodowaniem DER, jeden certyfikat</translation>
@@ -2197,6 +2201,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3009178788565917040">Urządzenie wyjściowe</translation>
 <translation id="3009300415590184725">Czy na pewno chcesz anulować konfigurowanie komórkowej usługi transmisji danych?</translation>
 <translation id="3009779501245596802">Zindeksowane bazy danych</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Twoje hasła wyglądają na silne}=1{{COUNT} słabe hasło}few{{COUNT} słabe hasła}many{{COUNT} słabych haseł}other{{COUNT} słabego hasła}}</translation>
 <translation id="3010279545267083280">Hasło usunięte</translation>
 <translation id="3010389206479238935">Wymuszaj otwieranie w</translation>
 <translation id="3011384993885886186">Ciepła szarość</translation>
@@ -4403,6 +4408,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5153234146675181447">Zapomnij telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Ustawienia zaawansowane dla <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{Brak zapisanych haseł.}=1{Sprawdziliśmy hasła do {COUNT} strony}few{Sprawdziliśmy hasła do {COUNT} stron i aplikacji}many{Sprawdziliśmy hasła do {COUNT} stron i aplikacji}other{Sprawdziliśmy hasła do {COUNT} strony i aplikacji}}</translation>
 <translation id="5154702632169343078">Temat</translation>
 <translation id="5155327081870541046">Na pasku adresu wpisz skrót obszaru, w którym chcesz coś wyszukać, na przykład „@bookmarks”. Następnie naciśnij preferowany skrót klawiszowy i wpisz wyszukiwane słowa.</translation>
 <translation id="5156638757840305347">Gdy kursor się pojawia się lub porusza, jest podświetlany</translation>
@@ -4984,6 +4990,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5713158217420111469">Połączono z siecią <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Styl wprowadzania spacji</translation>
 <translation id="5715711091495208045">Broker wtyczek: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">Należy je teraz zmienić</translation>
 <translation id="5719603411793408026">Domyślne wyszukiwarki</translation>
 <translation id="5719854774000914513">Witryny mogą prosić o zgodę na połączenie z urządzeniami HID</translation>
 <translation id="572155275267014074">Ustawienia Androida</translation>
@@ -6444,6 +6451,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7098447629416471489">Tutaj pojawią się inne zapisane wyszukiwarki</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Usuń aplikację}few{Usuń aplikacje}many{Usuń aplikacje}other{Usuń aplikacje}}</translation>
 <translation id="7099337801055912064">Nie można załadować pliku PPD, bo jest zbyt duży. Maksymalny rozmiar to 250 kB.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Brak przejętych haseł}=1{{COUNT} przejęte hasło}few{{COUNT} przejęte hasła}many{{COUNT} przejętych haseł}other{{COUNT} przejętego hasła}}</translation>
 <translation id="7102687220333134671">Automatyczne aktualizacje są włączone</translation>
 <translation id="7102832101143475489">Żądanie przekroczyło limit czasu</translation>
 <translation id="710640343305609397">Otwórz ustawienia sieci</translation>
@@ -7389,6 +7397,7 @@ Plik klucza: <ph name="KEY_FILE" />
 Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia nowych wersji rozszerzenia.</translation>
 <translation id="8002274832045662704">Zaawansowana konfiguracja drukarki</translation>
 <translation id="8002670234429879764">Drukarka <ph name="PRINTER_NAME" /> nie jest już dostępna</translation>
+<translation id="8004092996156083991">Jeśli Twoje hasła zostaną przejęte, damy Ci znać.</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
 <translation id="8005600846065423578">Zawsze zezwalaj stronie <ph name="HOST" /> na dostęp do schowka</translation>
 <translation id="8006630792898017994">Spacja lub Tab</translation>
@@ -7888,6 +7897,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8470513973197838199">Zapisane hasła do <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Strony zwykle łączą się z urządzeniami USB na przykład w celu drukowania dokumentów lub zapisywania plików na urządzeniu pamięci masowej</translation>
 <translation id="8471959340398751476">Zniżki są wyłączone. Możesz je włączyć w menu Dostosuj.</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Twoje hasła są unikalne}=1{{COUNT} ponownie użyte hasło}few{{COUNT} ponownie użyte hasła}many{{COUNT} ponownie użytych haseł}other{{COUNT} ponownie użytego hasła}}</translation>
 <translation id="8472623782143987204">sprzętowe</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
 <translation id="8475313423285172237">Inny program na Twoim komputerze dodał rozszerzenie, które może zmienić działanie Chrome.</translation>
@@ -8369,6 +8379,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8940081510938872932">Komputer robi teraz zbyt wiele rzeczy. Spróbuj ponownie później.</translation>
 <translation id="8940381019874223173">Ze Zdjęć Google</translation>
 <translation id="8941173171815156065">Cofnij uprawnienie „<ph name="PERMISSION" />”</translation>
+<translation id="894191600409472540">Utwórz silne hasła</translation>
 <translation id="894360074127026135">Dostęp międzynarodowy firmy Netscape</translation>
 <translation id="8944099748578356325">szybciej zużyje baterię (obecnie <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Rozmiar ikon</translation>
@@ -8589,6 +8600,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9140067245205650184">Korzystasz z nieobsługiwanej flagi funkcji: <ph name="BAD_FLAG" />. Ma to negatywny wpływ na stabilność i zabezpieczenia.</translation>
 <translation id="9142637293078737510">Alias obrazu</translation>
 <translation id="9143298529634201539">Usunąć sugestię?</translation>
+<translation id="9143922477019434797">Chroń swoje hasła</translation>
 <translation id="9147392381910171771">&amp;Opcje</translation>
 <translation id="9148058034647219655">Zakończ</translation>
 <translation id="9148126808321036104">Zaloguj się ponownie</translation>

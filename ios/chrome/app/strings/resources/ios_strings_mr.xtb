@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1434356225517321998">तुमचा ब्राउझर व्यवस्थापित केला आहे. <ph name="BEGIN_LINK" />तपशील<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">पासवर्ड लपवा</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> आयटम</translation>
 <translation id="1450170672351507823">साधारण संरक्षण सुरू आहे. याहून अधिक सुरक्षेसाठी, वर्धित संरक्षण वापरा.</translation>
 <translation id="149095475893949513">ही वेबसाइट प्रोफाइल कॉंफिगरेशन डाउनलोड करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="1491277525950327607">सेटिंग टॉगल करण्यासाठी दोनदा टॅप करा</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क मिळवण्यासाठी, सिंक सुरू करा.</translation>
 <translation id="1687475363370981210">सर्व वाचले चिन्हांकित करा</translation>
 <translation id="1689333818294560261">टोपणनाव</translation>
-<translation id="1690731385917361335">कोणतेही आयटम नाहीत</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> निवडले</translation>
 <translation id="1740468249224277719">इंस्टॉल करण्यासाठी दोनदा टॅप करा.</translation>
 <translation id="1752547299766512813">पासवर्ड सेव्ह करा</translation>
@@ -988,7 +986,6 @@
 <translation id="9068336935206019333">Chrome गुप्त मोडमध्ये उघडा</translation>
 <translation id="9079935439869366234">सर्व न वाचलेले चिन्हांकित करा</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> साठी पासवर्ड अपडेट करायचा?</translation>
-<translation id="9083392325882095631">1 आयटम</translation>
 <translation id="9083838294503912307">सर्व डिव्हाइसवर सिंक आणि पर्सनलाइझ करण्यासाठी, सिंक सुरू करा.</translation>
 <translation id="9087108903408689779">Chrome ने सुचवलेला पासवर्ड:</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट करा</translation>

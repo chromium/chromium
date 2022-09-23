@@ -1280,6 +1280,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Veza sa sajtom <ph name="SITE" /> nije bezbedna</translation>
 <translation id="4349365535725594680">Deljenje poverljivog sadržaja nije uspelo</translation>
+<translation id="4349810866125026513">Ipak otpremi</translation>
 <translation id="4350629523305688469">Višenamenska fioka</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> želi da traži Bluetooth uređaje u blizini. Pronađeni su sledeći uređaji:</translation>
 <translation id="4351175281479794167">Unesite verifikacioni kôd</translation>
@@ -2017,6 +2018,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6337133576188860026">Oslobađa manje od <ph name="SIZE" />. Neki sajtovi će se možda sporije učitavati kad ih sledeći put posetite.</translation>
 <translation id="6337534724793800597">Filtriraj smernice prema nazivu</translation>
 <translation id="6340739886198108203">Smernice administratora ne preporučuju pravljenje snimaka ekrana ili snimaka kada je poverljiv sadržaj vidljiv:</translation>
+<translation id="6341434961864773665">{0,plural, =1{Smernice administratora ne preporučuju otpremanje ovog fajla na <ph name="DESTINATION_NAME" />}one{Smernice administratora ne preporučuju otpremanje ovih fajlova na <ph name="DESTINATION_NAME" />}few{Smernice administratora ne preporučuju otpremanje ovih fajlova na <ph name="DESTINATION_NAME" />}other{Smernice administratora ne preporučuju otpremanje ovih fajlova na <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Aktivne varijacije</translation>
 <translation id="6349101878882523185">Instalirajte <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nijedna}=1{1 lozinka (za <ph name="DOMAIN_LIST" />, sinhronizovano)}=2{2 lozinke (za <ph name="DOMAIN_LIST" />, sinhronizovano)}one{# lozinka (za <ph name="DOMAIN_LIST" />, sinhronizovano)}few{# lozinke (za <ph name="DOMAIN_LIST" />, sinhronizovano)}other{# lozinki (za <ph name="DOMAIN_LIST" />, sinhronizovano)}}</translation>
@@ -2665,6 +2667,7 @@ Dodatni detalji:
 <translation id="8075736640322370409">Brzo napravite novu Google tabelu</translation>
 <translation id="8075898834294118863">Upravljajte podešavanjima sajtova</translation>
 <translation id="8076492880354921740">Kartice</translation>
+<translation id="8078006011486731853">{0,plural, =1{Želite da otpremite poverljivi fajl?}one{Želite da otpremite poverljive fajlove?}few{Želite da otpremite poverljive fajlove?}other{Želite da otpremite poverljive fajlove?}}</translation>
 <translation id="8078141288243656252">Dodavanje napomene nije moguće kada je rotiran</translation>
 <translation id="8079031581361219619">Želite li ponovo da učitate sajt?</translation>
 <translation id="8081087320434522107">Sedani</translation>

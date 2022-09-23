@@ -231,6 +231,7 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="5386244825306882791">Také řídí, která stránka se zobrazí, když spustíte Chrome nebo budete vyhledávat v omniboxu.</translation>
 <translation id="5394833366792865639">Sdílet kartu prohlížeče Chrome</translation>
 <translation id="5412485296464121825">Weby mohou v prohlížeči Chrome ukládat informace o vašich zájmech. Např. když navštívíte web, kde se prodávají boty na maraton, web může definovat váš zájem jako běhání maratonů. Když později navštívíte jiný web s registrací na závod, může se vám na něm na základě vašich zájmů zobrazit reklama na boty na běhání.</translation>
+<translation id="5416870378730196769">Chrome zapnul Spořič paměti</translation>
 <translation id="5430073640787465221">Soubor nastavení je poškozený nebo neplatný.
 
 Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
@@ -268,6 +269,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6273793429163604305">Připravit…</translation>
 <translation id="6291089322031436445">Chrome Dev – aplikace</translation>
 <translation id="6291549208091401781">Prohlížeč Google Chrome je na tomto počítači již nainstalován pro všechny uživatele.</translation>
+<translation id="6326175484149238433">Odstranit z Chromu</translation>
 <translation id="6327105987658262776">Nejsou k dispozici žádné aktualizace.</translation>
 <translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="6418662306461808273">Přepnout na stávající profil Chrome?</translation>
@@ -329,6 +331,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="7655455401911432608">Vaši historii prohlížení, což je seznam webů, které jste navštívili v Chromu na tomto zařízení.</translation>
+<translation id="7726773885101561560">Aby procházení webu bylo rychlejší, využívá prohlížeč Chrome paměť obsazenou kartami, které nepoužíváte.</translation>
 <translation id="7747138024166251722">Instalační soubor nemohl vytvořit dočasný adresář. Zkontrolujte prosím volné místo na disku a povolení instalovat software.</translation>
 <translation id="7761834446675418963">Chcete-li otevřít Chrome a začít procházet Internet, klikněte na svoje jméno.</translation>
 <translation id="7777080907402804672">Pokud obrázek nemá užitečný popis, Chrome se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu. Tuto funkci můžete kdykoliv vypnout v nastavení.</translation>
@@ -401,6 +404,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8986207147630327271">Přidáváte do tohoto prohlížeče pracovní profil a povolujete administrátorovi ovládat pouze pracovní profil.</translation>
 <translation id="8989968390305463310">Vaše historie prohlížení ovlivňuje zobrazované reklamy a odhadované zájmy uvedené níže. Aby Chrome chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže. Zájmy se mohou obnovovat, dokud je neodstraníte.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Je k dispozici aktualizace Chromu}=1{Je k dispozici aktualizace Chromu}few{Již # dny je k dispozici aktualizace Chromu}many{Již # dne je k dispozici aktualizace Chromu}other{Již # dní je k dispozici aktualizace Chromu}}</translation>
+<translation id="9003498785844995646">Když je tato funkce zapnutá, Chrome šetří baterii tím, že omezuje aktivitu na pozadí a vizuální efekty, jako jsou plynulé posouvání a snímková frekvence videí. Můžete si přečíst <ph name="BEGIN_LINK" />další informace<ph name="END_LINK" /> nebo <ph name="BEGIN_LINK_2" />odeslat zpětnou vazbu<ph name="END_LINK_2" />.</translation>
 <translation id="9053892488859122171">Systém ChromeOS Flex</translation>
 <translation id="9067395829937117663">Google Chrome vyžaduje systém Windows 7 nebo vyšší.</translation>
 <translation id="911206726377975832">Vymazat také všechna data procházení?</translation>

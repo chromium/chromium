@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1434356225517321998">Таны хөтчийг удирдаж байна. <ph name="BEGIN_LINK" />Дэлгэрэнгүй<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Нууц үгийг нуух</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> зүйлс</translation>
 <translation id="1450170672351507823">Стандарт хамгаалалт асаалттай байна. Аюулгүй байдлаа улам нэмэгдүүлэхийг хүсвэл сайжруулсан хамгаалалтыг ашиглаарай.</translation>
 <translation id="149095475893949513">Энэ вебсайт тохируулгын профайлыг татаж авахаар оролдож байна.</translation>
 <translation id="1491277525950327607">Асаах/унтраах тохиргоог хийхийн тулд хоёр удаа товшино уу</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">Хавчуургаа бүх төхөөрөмждөө авах бол синкийг асаана уу.</translation>
 <translation id="1687475363370981210">Бүгдийг уншсан гэж тэмдэглэх</translation>
 <translation id="1689333818294560261">Хоч</translation>
-<translation id="1690731385917361335">Ямар ч зүйл алга</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> сонгогдсон</translation>
 <translation id="1740468249224277719">Суулгахын тулд хоёр удаа товшино уу.</translation>
 <translation id="1752547299766512813">Нууц үг хадгалах</translation>
@@ -985,7 +983,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9068336935206019333">Chrome-н Нууцлалтай горимд нээх үү?</translation>
 <translation id="9079935439869366234">Бүгдийг уншаагүй гэж тэмдэглэх</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" />-н нууц үгийг шинэчлэх үү?</translation>
-<translation id="9083392325882095631">1 зүйл</translation>
 <translation id="9083838294503912307">Төхөөрөмжүүдэд синк хийж, хувийн болгохын тулд синкийг асаана уу.</translation>
 <translation id="9087108903408689779">Chrome-с санал болгосон нууц үг:</translation>
 <translation id="9094033019050270033">Нууц үг шинэчлэх</translation>

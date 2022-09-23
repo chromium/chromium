@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1434356225517321998">관리 대상 브라우저입니다 <ph name="BEGIN_LINK" />세부정보<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">비밀번호 숨기기</translation>
-<translation id="145015347812617860">항목 <ph name="COUNT" />개</translation>
 <translation id="1450170672351507823">표준 보호 모드가 사용 설정되어 있습니다. 보안을 더욱 강화하려면 향상된 보호 모드를 사용하세요.</translation>
 <translation id="149095475893949513">웹사이트에서 구성 프로필을 다운로드하려고 합니다.</translation>
 <translation id="1491277525950327607">설정을 전환하려면 두 번 탭하세요.</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">어느 기기에서나 북마크를 사용하려면 동기화를 사용 설정하세요.</translation>
 <translation id="1687475363370981210">모두 읽음으로 표시</translation>
 <translation id="1689333818294560261">닉네임</translation>
-<translation id="1690731385917361335">항목 없음</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 선택됨</translation>
 <translation id="1740468249224277719">설치하려면 두 번 탭하세요.</translation>
 <translation id="1752547299766512813">비밀번호 저장</translation>
@@ -986,7 +984,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="9068336935206019333">Chrome 시크릿 모드에서 열기</translation>
 <translation id="9079935439869366234">모두 읽지않음으로 표시</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" />님의 비밀번호를 업데이트하시겠습니까?</translation>
-<translation id="9083392325882095631">항목 1개</translation>
 <translation id="9083838294503912307">모든 기기에서 동기화 및 맞춤설정하려면 동기화를 사용 설정하세요.</translation>
 <translation id="9087108903408689779">Chrome 추천 비밀번호:</translation>
 <translation id="9094033019050270033">비밀번호 업데이트</translation>

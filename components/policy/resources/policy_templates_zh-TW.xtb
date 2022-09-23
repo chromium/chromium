@@ -32,6 +32,7 @@
 
       拼字檢查功能目前支援的語言如下：af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi。</translation>
 <translation id="1019101089073227242">設定使用者資料目錄</translation>
+<translation id="1020006815010587263">這位使用者的垃圾桶已停用。</translation>
 <translation id="1022361784792428773">使用者應避免安裝的擴充功能 ID (使用星號 (*) 排除所有擴充功能)</translation>
 <translation id="102492767056134033">設定螢幕小鍵盤在登入畫面中的預設狀態</translation>
 <translation id="102658870205613876">彈出式視窗設定</translation>
@@ -539,6 +540,9 @@
 <translation id="1553532014072799546">個別應用程式時間限制許可清單</translation>
 <translation id="1553956579506604198">禁止系統安裝外部擴充功能</translation>
 <translation id="1555248923316727072">SAML 使用者身分管理設定</translation>
+<translation id="1557113199339446336">如果將這項政策設為 True，已註冊的裝置會回報與擴展式偵測及回應 (XDR) 事件相關的資訊。
+
+      如果將這項政策設為 False 或不設定，已註冊的裝置就不會回報擴展式偵測及回應 (XDR) 事件。</translation>
 <translation id="1561424797596341174">針對遠端存取主機的偵錯版本覆寫政策</translation>
 <translation id="1561967320164410511">用於個人認證的 U2F 和擴充功能</translation>
 <translation id="1567718448549957373">如果將這項政策設為啟用或不設定，將可透過不安全的 HTTP 連線接收 <ph name="BASIC_AUTH" /> 驗證要求。
@@ -1130,6 +1134,7 @@
 <translation id="2157842368188031417">這項政策僅適用於受管理的訪客工作階段。你必須為 Imprivata 的共用工作站模式啟用此政策，才能讓使用者在工作階段中進行切換。
       如果將此政策設為 True，系統會強制覆寫某些功能的政策，這些功能會保留機密的使用者資料，且不會由清理機制處理 (該機制用於 Imprivata 共用工作站模式下的工作階段中使用者切換作業)。
       如果將這項政策設為 False 或不設定，系統便不會覆寫任何政策。</translation>
+<translation id="2158741059065130266">如果將這項政策設為 True，<ph name="PRODUCT_OS_NAME" />「檔案」應用程式的使用者將可查看垃圾桶中的項目。如果使用者要刪除「我的檔案」及「下載內容」中的檔案 (包括使用者建立的子系)，這些檔案也會傳送到垃圾桶中。如果將這項政策設為 False，使用者仍可查看先前位於垃圾桶中的檔案，方法是顯示隱藏的檔案，並在「我的檔案」或「下載內容」中找出 .Trash 目錄即可。</translation>
 <translation id="2159486052528894673">允許使用者雲端政策覆寫裝置雲端政策。</translation>
 <translation id="2160336427036785721">設定單一 <ph name="PRODUCT_NAME" /> 例項可用的記憶體大小。超過此值後，系統會開始捨棄分頁以節省記憶體。這表示系統會釋放分頁所用的記憶體，而當使用者切換至該分頁時，系統必須重新載入該分頁。
 
@@ -1578,6 +1583,7 @@
           您可以使用以下形式指定 Google 的互動智慧搜尋結果網址：<ph name="GOOGLE_INSTANT_SEARCH_URL" />。
 
           只有在啟用「DefaultSearchProviderEnabled」政策時，系統才會遵循這項政策。</translation>
+<translation id="2563373001850981577">允許將檔案傳送至 <ph name="PRODUCT_OS_NAME" />「檔案」應用程式中的垃圾桶 (如果檔案系統支援的話)</translation>
 <translation id="2567227673131796227">這項政策已遭淘汰，請改用「<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />」政策。
 
       你可以透過這項政策，指定拒絕載入的原生訊息傳遞主機。如果將拒絕清單的值設為 <ph name="WILDCARD_VALUE" />，系統會拒絕所有原生訊息傳遞主機，但政策明確允許使用的主機除外。
@@ -2927,6 +2933,7 @@
       如果將這項政策設為 Disabled 或不予設定，則只有在沒有任何符合自動選取政策的憑證時，系統才會提示使用者。</translation>
 <translation id="3950110092991281616">僅在一般工作階段中啟用背景驗證功能。</translation>
 <translation id="3950239119790560549">更新時間限制</translation>
+<translation id="3953860513079094502">回報擴展式偵測及回應 (XDR) 事件的相關資訊</translation>
 <translation id="3956243291190637924">在列印預覽中隱藏標頭和頁尾</translation>
 <translation id="3956573780915784996">允許使用者收集整個系統的效能追蹤記錄。</translation>
 <translation id="3956686688560604829">使用 Internet Explorer 的 SiteList 政策取得舊版瀏覽器支援。</translation>
@@ -3055,6 +3062,7 @@
 <translation id="4098920079809952737">不論是否使用背景圖形一律允許列印</translation>
 <translation id="410068710490553233">允許登入其他 Google 帳戶</translation>
 <translation id="4101282687722389021">這個項目上次進行更新的時間戳記 (世界標準時間)。時間戳記並非整數值，因此會以字串的形式傳送</translation>
+<translation id="4102347680024644994">回報擴展式偵測及回應 (XDR) 事件</translation>
 <translation id="4105989332710272578">不針對列出的網址強制執行憑證透明化政策</translation>
 <translation id="4114059938441379876">你可以透過設定這項政策，指定使用者在瀏覽器中看到警告後，前往變更密碼的網址。密碼保護服務會將使用者導向你透過這項政策設定的網址 (僅限 HTTP 和 HTTPS 通訊協定)。為了讓 <ph name="PRODUCT_NAME" /> 能在這個變更密碼頁面中正確擷取新密碼的加鹽雜湊值，請確保變更密碼頁面符合以下網址所述的規範：https://www.chromium.org/developers/design-documents/create-amazing-password-forms。
 
@@ -5573,6 +5581,7 @@
       指定要在 <ph name="PRODUCT_NAME" /> 啟動時套用的設定。系統僅會在進入登入畫面時套用指定的設定。透過這個政策所指定的設定不會反映在使用者工作階段中。</translation>
 <translation id="6857240169209507953">禁止在裝置上執行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="685769593149966548">強制執行 YouTube 高度嚴格篩選模式</translation>
+<translation id="6860349155164463644">不要回報擴展式偵測及回應 (XDR) 事件的相關資訊</translation>
 <translation id="686079137349561371">Microsoft Windows 7 以上版本</translation>
 <translation id="68818134518270542">你可以透過這項政策指定應用程式，允許使用者在 <ph name="PRODUCT_OS_NAME" />螢幕鎖定畫面上以筆記應用程式的形式開啟。
 
@@ -6196,6 +6205,7 @@
       當掃描結果判定檔案有問題時，系統會根據 <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 欄位設定要向使用者顯示的訊息。「message」欄位包含要向使用者顯示的文字，長度上限為 200 個半形字元。「learn_more_url」欄位包含由管理員提供的網址，使用者點選後可取得更多由客戶提供的資訊，瞭解動作遭到封鎖的原因。「language」欄位為選填，包含訊息所用語言。如果將「language」欄位留空或設為「default」值，表示在找不到使用者語言的訊息時，系統會使用預設訊息。「tag」欄位可用來指定要顯示訊息的掃描類型。「custom_messages」清單可以有零或多個項目，每個項目都必須包括非空白的「message」和「tag」欄位。
 
       這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
+<translation id="7481702249684965639">已為使用者啟用垃圾桶。</translation>
 <translation id="7482768039644066614">啟用網頁載入中繼資料擷取功能和強化瀏覽體驗的機器學習模型</translation>
 <translation id="7485481791539008776">預設印表機選取規則</translation>
 <translation id="7486205887492534734">當有多個憑證相符時，在登入畫面中顯示提示訊息</translation>

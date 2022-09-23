@@ -1633,6 +1633,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2468178265280335214">Touchpad scroll acceleration</translation>
 <translation id="2468205691404969808">Uses cookies to remember your preferences, even if you don’t visit those pages</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
+<translation id="2468470085922875120">You’re using passwords that look hard to guess</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 tab}other{<ph name="GROUP_TITLE" /> – # tabs}}</translation>
 <translation id="2469141124738294431">VM status</translation>
 <translation id="2469259292033957819">You have no saved printers.</translation>
@@ -1971,6 +1972,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2783321960289401138">Create shortcut...</translation>
 <translation id="2783829359200813069">Select encryption types</translation>
 <translation id="2783952358106015700">Use your security key with <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">Password Checkup</translation>
 <translation id="2785873697295365461">File descriptors</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Keep local browsing data (bookmarks, passwords, history, etc.)</translation>
@@ -2046,6 +2048,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2844169650293029770">USB-C device (left side front port)</translation>
 <translation id="2844809857160214557">View and manage print jobs</translation>
 <translation id="2845382757467349449">Always Show Bookmarks Bar</translation>
+<translation id="284581348330507117">Create unique passwords</translation>
 <translation id="284805635805850872">Remove harmful software?</translation>
 <translation id="2849035674501872372">Look up</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2197,6 +2200,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2985348301114641460">Send a request to your administrator to install '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="2987620471460279764">Text shared from other device</translation>
 <translation id="2988018669686457659">Spare renderer</translation>
+<translation id="2988328607561082373">You’re not reusing any passwords</translation>
 <translation id="2989123969927553766">Mouse scroll acceleration</translation>
 <translation id="2989474696604907455">not attached</translation>
 <translation id="2989786307324390836">DER-encoded binary, single certificate</translation>
@@ -2225,6 +2229,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009300415590184725">Are you sure you want to cancel the mobile data service set-up process?</translation>
 <translation id="3009779501245596802">Indexed Databases</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Your passwords look strong}=1{{COUNT} weak password}other{{COUNT} weak passwords}}</translation>
 <translation id="3010279545267083280">Password deleted</translation>
 <translation id="3010389206479238935">Force open in</translation>
 <translation id="3011384993885886186">Warm grey</translation>
@@ -4432,6 +4437,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5153234146675181447">Forget phone</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Advanced settings for <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{No saved passwords.}=1{Checked passwords for {COUNT} site}other{Checked passwords for {COUNT} sites and apps}}</translation>
 <translation id="5154702632169343078">Subject</translation>
 <translation id="5155327081870541046">In the address bar, enter the shortcut for the site that you want to search, such as '@bookmarks'. Then, press your preferred keyboard shortcut, and enter your search term.</translation>
 <translation id="5156638757840305347">Cursor is highlighted when it appears or moves</translation>
@@ -5014,6 +5020,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5713158217420111469">Connected to <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Space input style</translation>
 <translation id="5715711091495208045">Plug-in Broker: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">You should change these now</translation>
 <translation id="5719603411793408026">Default search engines</translation>
 <translation id="5719854774000914513">Sites can ask to connect to HID devices</translation>
 <translation id="572155275267014074">Android settings</translation>
@@ -6472,6 +6479,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7098447629416471489">Other saved search engines will appear here</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Remove app}other{Remove apps}}</translation>
 <translation id="7099337801055912064">Can’t load large PPD. Maximum size is 250 KB.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
 <translation id="7102687220333134671">Automatic updates are turned on</translation>
 <translation id="7102832101143475489">The request timed out</translation>
 <translation id="710640343305609397">Open network settings</translation>
@@ -7417,6 +7425,7 @@ Key File: <ph name="KEY_FILE" />
 Keep your key file in a safe place. You will need it to create new versions of your extension.</translation>
 <translation id="8002274832045662704">Advanced printer configuration</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> is no longer available</translation>
+<translation id="8004092996156083991">If your passwords are compromised, we’ll let you know.</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8005600846065423578">Always allow <ph name="HOST" /> to see the clipboard</translation>
 <translation id="8006630792898017994">Space or tab</translation>
@@ -7916,6 +7925,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8470513973197838199">Saved passwords for <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sites usually connect to USB devices for features like printing a document or saving to a storage device</translation>
 <translation id="8471959340398751476">Discounts are off. You can turn them on in the customise menu</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Your passwords are unique}=1{{COUNT} reused password}other{{COUNT} reused passwords}}</translation>
 <translation id="8472623782143987204">hardware-backed</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8475313423285172237">Another programme on your computer added an extension that may change the way Chrome works.</translation>
@@ -8395,6 +8405,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8940081510938872932">Your computer is doing too many things right now.  Try again later.</translation>
 <translation id="8940381019874223173">From your Google Photos</translation>
 <translation id="8941173171815156065">Revoke the permission '<ph name="PERMISSION" />'</translation>
+<translation id="894191600409472540">Create strong passwords</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Use the battery more quickly (currently <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Icon size</translation>
@@ -8618,6 +8629,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9140067245205650184">You are using an unsupported feature flag: <ph name="BAD_FLAG" />. Stability and security will suffer.</translation>
 <translation id="9142637293078737510">Image alias</translation>
 <translation id="9143298529634201539">Remove suggestion?</translation>
+<translation id="9143922477019434797">Protect your passwords</translation>
 <translation id="9147392381910171771">&amp;Options</translation>
 <translation id="9148058034647219655">Exit</translation>
 <translation id="9148126808321036104">Sign in again</translation>

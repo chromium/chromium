@@ -72,7 +72,6 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="1430915738399379752">In</translation>
 <translation id="1434356225517321998">Trình duyệt của bạn thuộc diện quản lý. <ph name="BEGIN_LINK" />Thông tin chi tiết<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ẩn mật khẩu</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> mục</translation>
 <translation id="1450170672351507823">Tính năng Bảo vệ thông thường đang bật. Để tăng cường khả năng bảo mật, hãy sử dụng chế độ Bảo vệ nâng cao.</translation>
 <translation id="149095475893949513">Trang web này đang cố gắng tải một hồ sơ cấu hình xuống.</translation>
 <translation id="1491277525950327607">Nhấn đúp để chuyển đổi cài đặt</translation>
@@ -106,7 +105,6 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="168715261339224929">Để sử dụng dấu trang trên tất cả các thiết bị của bạn, hãy bật đồng bộ hóa.</translation>
 <translation id="1687475363370981210">Đánh dấu tất cả là đã đọc</translation>
 <translation id="1689333818294560261">Biệt hiệu</translation>
-<translation id="1690731385917361335">Không có mục nào</translation>
 <translation id="1700629756560807968">Đã chọn <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dấu trang</translation>
 <translation id="1740468249224277719">Nhấn đúp để cài đặt.</translation>
 <translation id="1752547299766512813">Lưu mật khẩu</translation>
@@ -756,6 +754,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="6988572888918530647">Quản lý Tài khoản Google của bạn</translation>
 <translation id="6989674195860388998">Chuyển đổi trong phần Cài đặt…</translation>
 <translation id="6998989275928107238">Đến</translation>
+<translation id="699954956411469731">Thông báo qua thiết bị di động</translation>
 <translation id="7004032350256606903">Tổ chức của bạn yêu cầu bạn duyệt web ở chế độ riêng tư.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Các thẻ gần đây</translation>
@@ -985,7 +984,6 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="9068336935206019333">Mở trong chế độ ẩn danh của Chrome</translation>
 <translation id="9079935439869366234">Đánh dấu tất cả là chưa đọc</translation>
 <translation id="9081058212938299310">Bạn có muốn cập nhật mật khẩu cho <ph name="USERNAME" /> không?</translation>
-<translation id="9083392325882095631">1 mục</translation>
 <translation id="9083838294503912307">Để đồng bộ hóa và cá nhân hóa trên các thiết bị, hãy bật tính năng đồng bộ hóa.</translation>
 <translation id="9087108903408689779">Mật khẩu do Chrome đề xuất:</translation>
 <translation id="9094033019050270033">Cập nhật mật khẩu</translation>

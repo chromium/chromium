@@ -5707,6 +5707,15 @@
 <translation id="7200364929485466022">アップデートを確認する時間（デバイスのローカル タイムゾーン）です。</translation>
 <translation id="7202925763179776247">ダウンロードの制限を許可する</translation>
 <translation id="7207095846245296855">Google セーフサーチを強制する</translation>
+<translation id="7208483746373960784">この設定により、<ph name="LACROS_NAME" /> が無効になった後、どれだけのユーザーデータが保持されるかが決まります。
+
+      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> に設定した場合、後方へのデータ移行は行われません。
+
+      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" /> に設定した場合は、すべてのユーザーデータが削除されます。これは最も安全な設定です。
+
+      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" /> に設定した場合は、ほとんどのユーザーデータが削除され、ブラウザに依存しないファイルのみ（例: 「ダウンロード」）が保存されます。
+
+      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" /> に設定した場合、ユーザーデータはすべて保持されます。この設定ではエラーが発生するリスクが高く、復旧するには Powerwash が必要になります。</translation>
 <translation id="7211368186050418507">タイムゾーンを自動検出しない</translation>
 <translation id="7216442368414164495">セーフ ブラウジングの詳細レポートを有効にすることをユーザーに許可する</translation>
 <translation id="721970071627370558">デバイスの電源ステータス レポートを無効にする</translation>

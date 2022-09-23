@@ -72,7 +72,6 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1434356225517321998">Teie brauserit hallatakse. <ph name="BEGIN_LINK" />Üksikasjad<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Peida parool</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> üksust</translation>
 <translation id="1450170672351507823">Tavakaitse on sisse lülitatud. Turvalisuse suurendamiseks kasutage täiustatud kaitset.</translation>
 <translation id="149095475893949513">See veebisait üritab alla laadida seadistusprofiili.</translation>
 <translation id="1491277525950327607">Seade vahetamiseks topeltpuudutage</translation>
@@ -106,7 +105,6 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="168715261339224929">Järjehoidjate hankimiseks kõigisse oma seadmetesse lülitage sünkroonimine sisse.</translation>
 <translation id="1687475363370981210">Märgi kõik loetuks</translation>
 <translation id="1689333818294560261">Hüüdnimi</translation>
-<translation id="1690731385917361335">Üksuseid pole</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valitud</translation>
 <translation id="1740468249224277719">Installimiseks topeltpuudutage.</translation>
 <translation id="1752547299766512813">Paroolide salv.</translation>
@@ -986,7 +984,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="9068336935206019333">Ava Chrome'i inkognito režiim</translation>
 <translation id="9079935439869366234">Märgi kõik mitteloetuks</translation>
 <translation id="9081058212938299310">Kas soovite kasutaja <ph name="USERNAME" /> parooli värskendada?</translation>
-<translation id="9083392325882095631">1 üksus</translation>
 <translation id="9083838294503912307">Seadmete vahel sünkroonimiseks ja isikupärastamiseks lülitage sünkroonimine sisse.</translation>
 <translation id="9087108903408689779">Chrome'i soovitatud parool:</translation>
 <translation id="9094033019050270033">Värskenda parooli</translation>

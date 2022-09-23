@@ -72,7 +72,6 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1434356225517321998">Din webbläsare hanteras. <ph name="BEGIN_LINK" />Detaljer<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Dölj lösenord</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> objekt</translation>
 <translation id="1450170672351507823">Standardskydd är aktiverat. Använd förbättrat skydd för ännu bättre säkerhet.</translation>
 <translation id="149095475893949513">Den här webbplatsen försöker ladda ned en konfigurationsprofil.</translation>
 <translation id="1491277525950327607">Aktivera eller inaktivera inställningen genom att trycka snabbt två gånger</translation>
@@ -106,7 +105,6 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="168715261339224929">Aktivera synkronisering om du vill få tillgång till dina bokmärken på alla enheter</translation>
 <translation id="1687475363370981210">Markera alla som lästa</translation>
 <translation id="1689333818294560261">Kortnamn</translation>
-<translation id="1690731385917361335">Det finns inga objekt</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valda</translation>
 <translation id="1740468249224277719">Tryck snabbt två gånger här om du vill installera.</translation>
 <translation id="1752547299766512813">Spara lösenord</translation>
@@ -756,6 +754,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6988572888918530647">Hantera Google-kontot</translation>
 <translation id="6989674195860388998">Byt i inställningarna …</translation>
 <translation id="6998989275928107238">Till</translation>
+<translation id="699954956411469731">Telefonavisering</translation>
 <translation id="7004032350256606903">Organisationen kräver att du surfar privat.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Senaste flikarna</translation>
@@ -985,7 +984,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9068336935206019333">Öppna i Chromes inkognitoläge</translation>
 <translation id="9079935439869366234">Markera alla som olästa</translation>
 <translation id="9081058212938299310">Vill du uppdatera lösenordet för <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 objekt</translation>
 <translation id="9083838294503912307">Aktivera synkronisering om du vill synkronisera och anpassa alla dina enheter.</translation>
 <translation id="9087108903408689779">Föreslaget lösenord:</translation>
 <translation id="9094033019050270033">Uppdatera lösenordet</translation>

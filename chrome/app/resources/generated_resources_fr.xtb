@@ -2297,6 +2297,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3090819949319990166">Impossible de copier le fichier crx externe dans <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" associé.</translation>
 <translation id="3093714882666365141">Ne pas autoriser les sites à installer des gestionnaires de paiement</translation>
+<translation id="3093958632721393232">Activer uniquement lorsque la batterie est faible</translation>
 <translation id="3094141017404513551">Votre navigation sera distincte de celle de <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Les favoris, les mots de passe et d'autres données du navigateur sont synchronisés avec le compte principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 extension potentiellement dangereuse est désactivée. Vous pouvez également la supprimer.}one{{NUM_EXTENSIONS} extension potentiellement dangereuse est désactivée. Vous pouvez également la supprimer.}other{{NUM_EXTENSIONS} extensions potentiellement dangereuses sont désactivées. Vous pouvez également les supprimer.}}</translation>
@@ -5019,6 +5020,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5747552184818312860">Date d'expiration</translation>
 <translation id="5747785204778348146">Développeur (instable)</translation>
 <translation id="5747809636523347288">Coller et accéder à <ph name="URL" /></translation>
+<translation id="5748137879145720682">Activer lorsque l'ordinateur est débranché</translation>
 <translation id="5751345516399502412">Vérifier l'aptitude au partage de connexion</translation>
 <translation id="5755022574660047665">souvenirs Google Photos</translation>
 <translation id="5756163054456765343">C&amp;entre d'aide</translation>
@@ -7655,6 +7657,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8248381369318572865">Accéder à votre micro et analyser vos paroles</translation>
 <translation id="8248887045858762645">Astuce Chrome</translation>
 <translation id="8249048954461686687">Dossier OEM</translation>
+<translation id="8249239468199142122">Économiseur de batterie</translation>
 <translation id="8249615410597138718">Envoyer à vos appareils</translation>
 <translation id="8250210000648910632">Espace de stockage insuffisant</translation>
 <translation id="8251441930213048644">Actualiser</translation>

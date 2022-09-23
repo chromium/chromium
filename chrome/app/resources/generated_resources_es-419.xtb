@@ -2293,6 +2293,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3090819949319990166">No se puede copiar el archivo crx externo a <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" sincronizado</translation>
 <translation id="3093714882666365141">No permitir que los sitios instalen controladores de pago</translation>
+<translation id="3093958632721393232">Activar solo cuando la batería esté baja</translation>
 <translation id="3094141017404513551">Esta acción separará tu navegación de la de <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Los favoritos, las contraseñas y otros datos de navegación se sincronizan con la cuenta principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Se desactivó 1 extensión potencialmente dañina. También puedes quitarla.}other{Se desactivaron {NUM_EXTENSIONS} extensiones potencialmente dañinas. También puedes quitarlas.}}</translation>
@@ -5014,6 +5015,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5747552184818312860">Caduca</translation>
 <translation id="5747785204778348146">Programador: versión inestable</translation>
 <translation id="5747809636523347288">&amp;Pegar y dirigirse a <ph name="URL" /></translation>
+<translation id="5748137879145720682">Activar cuando la computadora esté desenchufada</translation>
 <translation id="5751345516399502412">Comprobar la disponibilidad de la conexión mediante dispositivo móvil</translation>
 <translation id="5755022574660047665">recuerdos de Google Fotos</translation>
 <translation id="5756163054456765343">C&amp;entro de ayuda</translation>
@@ -7648,6 +7650,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8248381369318572865">Acceder al micrófono y analizar tu voz</translation>
 <translation id="8248887045858762645">Sugerencia para Chrome</translation>
 <translation id="8249048954461686687">Carpeta OEM</translation>
+<translation id="8249239468199142122">Ahorro de batería</translation>
 <translation id="8249615410597138718">Enviar a tus dispositivos</translation>
 <translation id="8250210000648910632">No hay espacio de almacenamiento disponible.</translation>
 <translation id="8251441930213048644">Actualizar ahora</translation>

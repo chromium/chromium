@@ -1420,6 +1420,7 @@
 <translation id="4744514002166662487">ສ້າງພຣີເຊັນເທເຊິນ</translation>
 <translation id="4744603770635761495">ຊ່ອງ​ທາງ​ທີ່ປະ​ຕິ​ບັດໄດ້</translation>
 <translation id="4749011317274908093">ທ່ານເຂົ້າໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນແລ້ວ</translation>
+<translation id="4750671009706599284">ໂທລະສັບນີ້</translation>
 <translation id="4750917950439032686">ຂໍ້ມູນຂອງທ່ານ (ຕົວຢ່າງ: ລະຫັດຜ່ານ ຫຼື ເລກບັດເຄຣດິດ) ແມ່ນເປັນຄວາມລັບເມື່ອມັນຖືກສົ່ງຫາເວັບໄຊນີ້.</translation>
 <translation id="4751476147751820511">ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ ຫຼື ແສງ</translation>
 <translation id="4754461935447132332">ບໍ່ອະນຸຍາດສຳລັບເວັບໄຊທີ່ບໍ່ປອດໄພ</translation>
@@ -2200,6 +2201,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome ໄດ້ເຮັດໃຫ້ໜ້ານີ້ອ່ານໄດ້ງ່າຍຂຶ້ນ. Chrome ກູ້ຄືນໜ້າຕົ້ນສະບັບຜ່ານການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພ.</translation>
 <translation id="6890443033788248019">ອະນຸຍາດສະຖານທີ່ບໍ?</translation>
+<translation id="6890531741535756070">ທ່ານໄດ້ເລືອກທີ່ຈະຢັ້ງຢືນດ້ວຍ <ph name="DEVICE_LABEL" /> ຢູ່ເວັບໄຊທີ່ໃຊ້ <ph name="PROVIDER_ORIGIN" />. ຜູ້ໃຫ້ບໍລິການນີ້ອາດຈັດເກັບຂໍ້ມູນກ່ຽວກັບວິທີການຈ່າຍເງິນຂອງທ່ານໄວ້ແລ້ວ, ໂດຍທ່ານສາມາດ <ph name="BEGIN_LINK" />ຮ້ອງຂໍໃຫ້ລຶບອອກໄດ້<ph name="END_LINK" />.</translation>
 <translation id="6891596781022320156">ລະດັບນະໂຍບາຍບໍ່ຖືກຮອງຮັບ.</translation>
 <translation id="6895143722905299846">ໝາຍເລກສະເໝືອນ:</translation>
 <translation id="6895330447102777224">ຢືນຢັນບັດຂອງທ່ານແລ້ວ</translation>
@@ -2566,6 +2568,7 @@
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7770259615151589601">Designated-Long</translation>
 <translation id="7773005668374414287">ລຳດັບດຽວກັນປີ້ນໜ້າຂຶ້ນ</translation>
+<translation id="7785790577395078482">ແທັບເລັດນີ້</translation>
 <translation id="7791011319128895129">ບໍ່ທັນເຜີຍແຜ່ເທື່ອ</translation>
 <translation id="7791196057686275387">ບັນຈຸພັນ</translation>
 <translation id="7791543448312431591">ເພີ່ມ</translation>

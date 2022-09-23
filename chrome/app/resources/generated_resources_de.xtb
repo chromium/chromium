@@ -2293,6 +2293,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3090819949319990166">Externe CRX-Datei konnte nicht als <ph name="TEMP_CRX_FILE" /> kopiert werden.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ist gekoppelt</translation>
 <translation id="3093714882666365141">Websites dürfen keine Zahlungs-Handler installieren</translation>
+<translation id="3093958632721393232">Nur bei niedrigem Akkustand aktivieren</translation>
 <translation id="3094141017404513551">Dadurch werden deine Browsingaktivitäten von <ph name="EXISTING_USER" /> getrennt</translation>
 <translation id="3095871294753148861">Lesezeichen, Passwörter und andere Browserdaten werden mit dem primären Konto synchronisiert.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potenziell schädliche Erweiterung wurde deaktiviert. Du kannst sie auch entfernen.}other{{NUM_EXTENSIONS} potenziell schädliche Erweiterungen wurden deaktiviert. Du kannst sie auch entfernen.}}</translation>
@@ -5012,6 +5013,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5747552184818312860">Ablaufdatum</translation>
 <translation id="5747785204778348146">Entwickler – instabil</translation>
 <translation id="5747809636523347288">Einfügen und <ph name="URL" /> aufrufen</translation>
+<translation id="5748137879145720682">Aktivieren, wenn mein Computer vom Stromnetz getrennt ist</translation>
 <translation id="5751345516399502412">Tethering-Bereitschaft prüfen</translation>
 <translation id="5755022574660047665">Erinnerungen von Google Fotos</translation>
 <translation id="5756163054456765343">H&amp;ilfe</translation>
@@ -7644,6 +7646,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8248381369318572865">Auf dein Mikrofon zugreifen und deine Spracheingabe analysieren</translation>
 <translation id="8248887045858762645">Chrome-Tipp</translation>
 <translation id="8249048954461686687">OEM-Ordner</translation>
+<translation id="8249239468199142122">Energiesparmodus</translation>
 <translation id="8249615410597138718">An meine Geräte senden</translation>
 <translation id="8250210000648910632">Nicht genug Speicherplatz</translation>
 <translation id="8251441930213048644">Jetzt aktualisieren</translation>

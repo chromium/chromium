@@ -896,6 +896,7 @@
 <translation id="6064463340679478396">Այլևս չեմ օգտագործում ֆայլը</translation>
 <translation id="6073451960410192870">Դադարեցնել տեսագրումը</translation>
 <translation id="6074087755403037157">Բետա կապուղի</translation>
+<translation id="6095008505822982596">Խոսքի արագությունը</translation>
 <translation id="6099678161144790572">Անցած ամիս փոփոխել եք</translation>
 <translation id="6103838137565245112">համակարգ</translation>
 <translation id="6114505516289286752">Այս լեզվով (<ph name="LANGUAGE" />) խոսքի ճանաչման ֆայլերը ներբեռնվեցին</translation>
@@ -1251,7 +1252,6 @@
 <translation id="8152264887680882389"><ph name="TEXT" />, ինքնալրացում</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="8155628902202578800">Բացել <ph name="USER_EMAIL_ADDRESS" /> հաշվի տեղեկությունների երկխոսության պատուհանը</translation>
-<translation id="8157728322324420120">Առաջարկում ենք</translation>
 <translation id="8167567890448493835">Օգտագործվում է՝ <ph name="LOCALE_NAME" /></translation>
 <translation id="8183592608247778598">Դիտեք ձեր հեռախոսի վերջին լուսանկարները, մեդիաֆայլերը, ծանուցումներն ու հավելվածները <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="8192202700944119416">Ծանուցումները թաքցված են:</translation>

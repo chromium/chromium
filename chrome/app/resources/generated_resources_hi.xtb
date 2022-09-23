@@ -2312,6 +2312,7 @@
 <translation id="3090819949319990166">बाहरी crx फ़ाइल की <ph name="TEMP_CRX_FILE" /> में कॉपी नहीं बनाई जा सकती.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" युग्मित किया गया</translation>
 <translation id="3093714882666365141">साइटों को पेमेंट हैंडलर इंस्टॉल करने की अनुमति न दें</translation>
+<translation id="3093958632721393232">बैटरी कम होने पर ही चालू करें</translation>
 <translation id="3094141017404513551">यह आपकी ब्राउज़िंग को <ph name="EXISTING_USER" /> से अलग कर देगा</translation>
 <translation id="3095871294753148861">बुकमार्क, पासवर्ड, और ब्राउज़र का दूसरा डेटा प्राथमिक खाते से जुड़ा होता है.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 ऐसा एक्सटेंशन बंद किया गया जो शायद नुकसान पहुंचा सकता है. आप इसे हटा भी सकते हैं.}one{{NUM_EXTENSIONS} ऐसा एक्सटेंशन बंद किया गया जो शायद नुकसान पहुंचा सकता है. आप इसे हटा भी सकते हैं.}other{{NUM_EXTENSIONS} ऐसे एक्सटेंशन बंद किए गए जो शायद नुकसान पहुंचा सकते हैं. आप इन्हें हटा भी सकते हैं.}}</translation>
@@ -5033,6 +5034,7 @@
 <translation id="5747552184818312860">समय सीमा समाप्ति तारीख</translation>
 <translation id="5747785204778348146">डेवलपर - अस्थिर</translation>
 <translation id="5747809636523347288"><ph name="URL" /> चिपकाएं और इस पर जाएं</translation>
+<translation id="5748137879145720682">मेरे कंप्यूटर के अनप्लग होने पर चालू करें</translation>
 <translation id="5751345516399502412">देखें कि टेदरिंग की जा सकती है या नहीं</translation>
 <translation id="5755022574660047665">Google Photos में सेव की गई आपकी यादें</translation>
 <translation id="5756163054456765343">&amp;सहायता केंद्र</translation>
@@ -7668,6 +7670,7 @@
 <translation id="8248381369318572865">माइक्रोफ़ोन को ऐक्सेस करना और बोली का विश्लेषण करना</translation>
 <translation id="8248887045858762645">Chrome से जुड़ी सलाह</translation>
 <translation id="8249048954461686687">OEM फ़ोल्डर</translation>
+<translation id="8249239468199142122">बैटरी सेवर</translation>
 <translation id="8249615410597138718">अपने डिवाइस पर भेजें</translation>
 <translation id="8250210000648910632">स्टोरेज के लिए जगह नहीं बची है</translation>
 <translation id="8251441930213048644">अभी रीफ़्रेश करें</translation>

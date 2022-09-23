@@ -72,7 +72,6 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1434356225517321998">Jou blaaier word bestuur. <ph name="BEGIN_LINK" />Besonderhede<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Versteek wagwoord</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> items</translation>
 <translation id="1450170672351507823">Standaardbeskerming is aan. Gebruik verbeterde beskerming vir selfs nog meer sekuriteit.</translation>
 <translation id="149095475893949513">Hierdie webwerf probeer tans om 'n opstellingprofiel af te laai.</translation>
 <translation id="1491277525950327607">Dubbeltik om instelling te wissel</translation>
@@ -106,7 +105,6 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="168715261339224929">Skakel sinkronisering aan om jou boekmerke op al jou toestelle te kry.</translation>
 <translation id="1687475363370981210">Merk alles as gelees</translation>
 <translation id="1689333818294560261">Bynaam</translation>
-<translation id="1690731385917361335">Geen items nie</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> gekies</translation>
 <translation id="1740468249224277719">Dubbeltik om te installeer.</translation>
 <translation id="1752547299766512813">Stoor wagwoorde</translation>
@@ -986,7 +984,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9068336935206019333">Maak in Chrome Incognito oop</translation>
 <translation id="9079935439869366234">Merk alles as ongelees</translation>
 <translation id="9081058212938299310">Dateer wagwoord op vir <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 item</translation>
 <translation id="9083838294503912307">Skakel sinkronisering aan om oor toestelle heen te sinkroniseer en personaliseer.</translation>
 <translation id="9087108903408689779">Chrome se voorgestelde wagwoord:</translation>
 <translation id="9094033019050270033">Dateer wagwoord op</translation>

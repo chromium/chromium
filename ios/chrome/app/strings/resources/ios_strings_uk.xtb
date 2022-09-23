@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1434356225517321998">Вашим веб-переглядачем керує адміністратор. <ph name="BEGIN_LINK" />Деталі<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Сховати пароль</translation>
-<translation id="145015347812617860">Закладок: <ph name="COUNT" /></translation>
 <translation id="1450170672351507823">Стандартний захист увімкнено. Щоб посилити свою безпеку, активуйте покращений захист.</translation>
 <translation id="149095475893949513">Цей веб-сайт намагається завантажити профіль конфігурації.</translation>
 <translation id="1491277525950327607">Двічі торкніться, щоб змінити налаштування</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">Щоб мати доступ до закладок на всіх своїх пристроях, увімкніть синхронізацію.</translation>
 <translation id="1687475363370981210">Позначити всі як прочитані</translation>
 <translation id="1689333818294560261">Псевдонім</translation>
-<translation id="1690731385917361335">Нічого немає</translation>
 <translation id="1700629756560807968">Вибрано <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Торкніться двічі, щоб установити.</translation>
 <translation id="1752547299766512813">Зберігати паролі</translation>
@@ -756,6 +754,7 @@
 <translation id="6988572888918530647">Керуйте обліковим записом Google</translation>
 <translation id="6989674195860388998">Змінити веб-переглядач у налаштуваннях…</translation>
 <translation id="6998989275928107238">Кому</translation>
+<translation id="699954956411469731">Сповіщення на мобільному пристрої</translation>
 <translation id="7004032350256606903">Адміністратор вашої організації вимагає, щоб ви переглядали веб-сторінки конфіденційно.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Останні вкладки</translation>
@@ -985,7 +984,6 @@
 <translation id="9068336935206019333">Відкрити в анонімній вкладці Chrome</translation>
 <translation id="9079935439869366234">Позначити всі як непрочитані</translation>
 <translation id="9081058212938299310">Оновити пароль для <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 закладка</translation>
 <translation id="9083838294503912307">Щоб синхронізувати й персоналізувати дані на всіх своїх пристроях, увімкніть синхронізацію.</translation>
 <translation id="9087108903408689779">Запропонований пароль від Chrome:</translation>
 <translation id="9094033019050270033">Оновити пароль</translation>

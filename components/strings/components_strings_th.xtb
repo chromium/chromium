@@ -1420,6 +1420,7 @@
 <translation id="4744514002166662487">สร้างงานนำเสนอ</translation>
 <translation id="4744603770635761495">เส้นทางปฏิบัติการ</translation>
 <translation id="4749011317274908093">คุณเข้าสู่โหมดไม่ระบุตัวตนแล้ว</translation>
+<translation id="4750671009706599284">โทรศัพท์เครื่องนี้</translation>
 <translation id="4750917950439032686">ข้อมูลของคุณ (ตัวอย่างเช่น รหัสผ่านหรือหมายเลขบัตรเครดิต) จะเป็นส่วนตัวเมื่อส่งมายังเว็บไซต์นี้</translation>
 <translation id="4751476147751820511">เซ็นเซอร์จับความเคลื่อนไหวหรือเซ็นเซอร์แสง</translation>
 <translation id="4754461935447132332">ไม่อนุญาตสำหรับเว็บไซต์ที่ไม่ปลอดภัย</translation>
@@ -2201,6 +2202,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome ทำให้หน้านี้อ่านง่ายขึ้น Chrome ดึงข้อมูลหน้าต้นฉบับผ่านการเชื่อมต่อที่ไม่ปลอดภัย</translation>
 <translation id="6890443033788248019">อนุญาตให้เข้าถึงตำแหน่งไหม</translation>
+<translation id="6890531741535756070">คุณเลือกยืนยันด้วย<ph name="DEVICE_LABEL" />ในเว็บไซต์ที่ใช้ <ph name="PROVIDER_ORIGIN" /> ผู้ให้บริการรายนี้อาจจัดเก็บข้อมูลเกี่ยวกับวิธีการชำระเงินของคุณไว้แล้ว โดยคุณ<ph name="BEGIN_LINK" />ส่งคำขอให้ลบ<ph name="END_LINK" />ได้</translation>
 <translation id="6891596781022320156">ระดับนโยบายไม่ได้รับการสนับสนุน</translation>
 <translation id="6895143722905299846">หมายเลขเสมือน:</translation>
 <translation id="6895330447102777224">บัตรของคุณได้รับการยืนยันแล้ว</translation>
@@ -2567,6 +2569,7 @@
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7770259615151589601">Designated-Long</translation>
 <translation id="7773005668374414287">ลำดับเดียวกันหงายหน้าขึ้น</translation>
+<translation id="7785790577395078482">แท็บเล็ตเครื่องนี้</translation>
 <translation id="7791011319128895129">ยังไม่ได้เผยแพร่</translation>
 <translation id="7791196057686275387">บรรจุภัณฑ์</translation>
 <translation id="7791543448312431591">เพิ่ม</translation>

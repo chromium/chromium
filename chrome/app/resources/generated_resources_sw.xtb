@@ -2308,6 +2308,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3090819949319990166">Haiwezi kunakili faili ya CRX kwenye <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" imeoanishwa</translation>
 <translation id="3093714882666365141">Usiruhusu tovuti zisakinishe vidhibiti vya malipo</translation>
+<translation id="3093958632721393232">Iwake tu chaji ya betri inapopungua</translation>
 <translation id="3094141017404513551">Hatua hii itatenganisha shughuli zako za kuvinjari na za <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Alamisho, manenosiri na data nyingine ya kuvinjari husawazishwa na akaunti ya msingi.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Kiendelezi kimoja ambacho huenda ni hatari kimezimwa. Unaweza pia kukiondoa.}other{Viendelezi {NUM_EXTENSIONS} ambavyo huenda ni hatari vimezimwa. Unaweza pia kuviondoa.}}</translation>
@@ -5028,6 +5029,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5747552184818312860">Muda wake unakwisha</translation>
 <translation id="5747785204778348146">Msanidi programu - sio imara</translation>
 <translation id="5747809636523347288">Ba&amp;ndika na ufungue <ph name="URL" /></translation>
+<translation id="5748137879145720682">Iwake tu wakati kompyuta haijachomekwa kwenye umeme</translation>
 <translation id="5751345516399502412">Kagua Utayari wa Kipengele cha Kusambaza Mtandao</translation>
 <translation id="5755022574660047665">kumbukumbu kutoka huduma ya Picha kwenye Google</translation>
 <translation id="5756163054456765343">Kituo cha Usaidizi</translation>
@@ -7663,6 +7665,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8248381369318572865">Kufikia maikrofoni yako na kuchambua matamshi yako</translation>
 <translation id="8248887045858762645">Kidokezo cha Chrome</translation>
 <translation id="8249048954461686687">Folda ya OEM</translation>
+<translation id="8249239468199142122">Kiokoa Betri</translation>
 <translation id="8249615410597138718">Tuma kwenye Vifaa Vyako</translation>
 <translation id="8250210000648910632">Hakuna nafasi ya kuhifadhi</translation>
 <translation id="8251441930213048644">Onyesha upya sasa</translation>

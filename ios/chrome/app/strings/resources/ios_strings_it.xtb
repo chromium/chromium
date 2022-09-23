@@ -72,7 +72,6 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1434356225517321998">Il tuo browser è gestito. <ph name="BEGIN_LINK" />Dettagli<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Nascondi password</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> elementi</translation>
 <translation id="1450170672351507823">È attiva la protezione standard. Per una maggiore sicurezza, utilizza la Protezione avanzata.</translation>
 <translation id="149095475893949513">Questo sito web sta cercando di scaricare un profilo di configurazione.</translation>
 <translation id="1491277525950327607">Tocca due volte per attivare/disattivare l'impostazione</translation>
@@ -106,7 +105,6 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="168715261339224929">Attiva la sincronizzazione per trovare i tuoi preferiti su tutti i dispositivi.</translation>
 <translation id="1687475363370981210">Segna tutti come già letti</translation>
 <translation id="1689333818294560261">Nickname</translation>
-<translation id="1690731385917361335">Nessun elemento</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selezionati</translation>
 <translation id="1740468249224277719">Tocca due volte per installare.</translation>
 <translation id="1752547299766512813">Salva password</translation>
@@ -986,7 +984,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9068336935206019333">Apri in modalità di navigazione in incognito di Chrome</translation>
 <translation id="9079935439869366234">Segna tutti come da leggere</translation>
 <translation id="9081058212938299310">Aggiornare la password per <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 elemento</translation>
 <translation id="9083838294503912307">Attiva la sincronizzazione per sincronizzare e personalizzare tutti i dispositivi.</translation>
 <translation id="9087108903408689779">Password suggerita da Chrome:</translation>
 <translation id="9094033019050270033">Aggiorna password</translation>

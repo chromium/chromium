@@ -72,7 +72,6 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="1430915738399379752">Natisni</translation>
 <translation id="1434356225517321998">Vaš brskalnik je upravljan. <ph name="BEGIN_LINK" />Podrobnosti<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Skrivanje gesla</translation>
-<translation id="145015347812617860">Št. elementov: <ph name="COUNT" /></translation>
 <translation id="1450170672351507823">Standardna zaščita je vklopljena. Za večjo varnost uporabite izboljšano zaščito.</translation>
 <translation id="149095475893949513">To spletno mesto poskuša prenesti profil konfiguracije.</translation>
 <translation id="1491277525950327607">Dvakrat se dotaknite, da preklopite nastavitev</translation>
@@ -106,7 +105,6 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="168715261339224929">Če želite dostopati do zaznamkov v vseh napravah, vklopite sinhronizacijo.</translation>
 <translation id="1687475363370981210">Označi vse kot prebrano</translation>
 <translation id="1689333818294560261">Vzdevek</translation>
-<translation id="1690731385917361335">Ni elementov</translation>
 <translation id="1700629756560807968">Št. izbranih: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Dvakrat se dotaknite, če želite namestiti.</translation>
 <translation id="1752547299766512813">Shranjena gesla</translation>
@@ -986,7 +984,6 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9068336935206019333">Odpri v anonimnem oknu v Chromu</translation>
 <translation id="9079935439869366234">Označi vse kot neprebrano</translation>
 <translation id="9081058212938299310">Želite posodobiti geslo za <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 element</translation>
 <translation id="9083838294503912307">Če želite sinhronizirati in prilagajati v vseh napravah, vklopite sinhronizacijo.</translation>
 <translation id="9087108903408689779">Geslo, ki ga predlaga Chrome:</translation>
 <translation id="9094033019050270033">Posodobi geslo</translation>

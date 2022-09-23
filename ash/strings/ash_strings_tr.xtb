@@ -896,6 +896,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6064463340679478396">Dosyayla işim bitti</translation>
 <translation id="6073451960410192870">Kaydı durdur</translation>
 <translation id="6074087755403037157">Beta Kanalı</translation>
+<translation id="6095008505822982596">Konuşma hızı</translation>
 <translation id="6099678161144790572">Geçen ay düzenlendi</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> dosyaları indirildi</translation>
@@ -1252,7 +1253,6 @@ Yeni yüklenmiş</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Otomatik tamamlama</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Bu ayar, yöneticiniz tarafından yönetilir.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> için bilgi iletişim kutusunu aç</translation>
-<translation id="8157728322324420120">Sizin için önerilenler</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> kullanılıyor</translation>
 <translation id="8183592608247778598">Telefonunuzdaki son fotoğraflar, medya içerikleri, bildirimler ve uygulamaları <ph name="DEVICE_TYPE" /> cihazınızda görün</translation>
 <translation id="8192202700944119416">Bildirimler gizlendi.</translation>

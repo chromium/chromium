@@ -2298,6 +2298,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3090819949319990166">Obsah externího souboru CRX nelze zkopírovat do souboru <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Zařízení „<ph name="DEVICE_NAME" />“ bylo spárováno</translation>
 <translation id="3093714882666365141">Nepovolovat webům instalovat obslužné nástroje pro platby</translation>
+<translation id="3093958632721393232">Zapnout, jen když je baterie slabá</translation>
 <translation id="3094141017404513551">Vaše prohlížení bude odděleno od uživatele <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Záložky, hesla a další data prohlížeče se synchronizují s primárním účtem.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Je vypnuto jedno potenciálně škodlivé rozšíření. Můžete ho také odstranit.}few{Jsou vypnuta {NUM_EXTENSIONS} potenciálně škodlivá rozšíření. Můžete je také odstranit.}many{Je vypnuto {NUM_EXTENSIONS} potenciálně škodlivého rozšíření. Můžete je také odstranit.}other{Je vypnuto {NUM_EXTENSIONS} potenciálně škodlivých rozšíření. Můžete je také odstranit.}}</translation>
@@ -5016,6 +5017,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5747552184818312860">Konec platnosti</translation>
 <translation id="5747785204778348146">Pro vývojáře – nestabilní</translation>
 <translation id="5747809636523347288">Vl&amp;ožit a přejít na adresu <ph name="URL" /></translation>
+<translation id="5748137879145720682">Zapnout, když počítač není připojen ke zdroji napájení</translation>
 <translation id="5751345516399502412">Zkontrolovat připravenost tetheringu</translation>
 <translation id="5755022574660047665">vzpomínky z Fotek Google</translation>
 <translation id="5756163054456765343">C&amp;entrum nápovědy</translation>
@@ -7652,6 +7654,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8248381369318572865">Přístup k mikrofonu a analýza řeči</translation>
 <translation id="8248887045858762645">Tip pro Chrome</translation>
 <translation id="8249048954461686687">Složka OEM</translation>
+<translation id="8249239468199142122">Spořič baterie</translation>
 <translation id="8249615410597138718">Odeslat na vaše zařízení</translation>
 <translation id="8250210000648910632">Nedostatek úložného prostoru</translation>
 <translation id="8251441930213048644">Obnovit</translation>

@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">Atenção: esses arquivos são temporários e podem ser excluídos automaticamente para liberar espaço em disco.</translation>
 <translation id="3029114385395636667">Ative o Documentos Google off-line para usar o Documentos, Planilhas e Apresentações off-line.</translation>
 <translation id="303198083543495566">Região geográfica</translation>
+<translation id="3044404008258011032">Para restaurar esses itens, arraste-os para uma nova pasta fora da lixeira. A pasta original "<ph name="PARENT_FOLDER_NAME" />" foi excluída.</translation>
 <translation id="3047197340186497470">Chinês (dayi)</translation>
 <translation id="3067790092342515856">Arquivos do Windows</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">Ativando...</translation>
 <translation id="4092890906744441904">Irlandês</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
+<translation id="4131235941541910880">Mova os itens desnecessários para a lixeira</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> movido.</translation>
 <translation id="4176286497474237543">Esvaziar lixeira agora</translation>
 <translation id="4186579485882418952">Ativar Documentos off-line</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">Alemão</translation>
 <translation id="4867079195717347957">Clique para classificar a coluna em ordem decrescente.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
+<translation id="4874569719830985133">Excluir definitivamente</translation>
 <translation id="4880214202172289027">Controle deslizante de volume</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4891091358278567964">Para restaurar esses itens, arraste-os para uma nova pasta fora da lixeira. As pastas originais foram excluídas.</translation>
 <translation id="4900532980794411603">Compartilhar com o Parallels Desktop</translation>
 <translation id="4902546322522096650">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, conectada</translation>
 <translation id="4906580650526544301">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, bateria do smartphone em <ph name="BATTERY_STATUS" />%, detalhes</translation>
@@ -493,6 +497,7 @@
     <ph name="MARKUP_7" />Compartilhe, crie e colabore<ph name="MARKUP_8" />
     em arquivos com outras pessoas em um só lugar.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Arquivos recuperados a partir do Google Drive</translation>
+<translation id="5278111733643988471">Para restaurar esse item, arraste-o para uma nova pasta fora da lixeira. A pasta original "<ph name="PARENT_FOLDER_NAME" />" foi excluída.</translation>
 <translation id="5286194356314741248">Verificando</translation>
 <translation id="5288441970121584418">Hambúrguer</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -505,6 +510,7 @@
 <translation id="535792325654997756">Pessoa com gatos</translation>
 <translation id="5358764674931277">Frame rate</translation>
 <translation id="5363339716524495120">O idioma de entrada é o chinês</translation>
+<translation id="5364067326287025678">Lixeira vazia</translation>
 <translation id="5368191757080475556">Compartilhar pasta com o Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Não usar as configurações de proxy para estes hosts e domínios:</translation>
@@ -771,6 +777,7 @@
 <translation id="7711920809702896782">Informações sobre a imagem</translation>
 <translation id="7724603315864178912">Recortar</translation>
 <translation id="7732111077498238432">A rede é controlada por política</translation>
+<translation id="7736003208887389532">Excluir esses arquivos permanentemente?</translation>
 <translation id="7748626145866214022">Mais opções disponíveis na barra de ação. Pressione Alt e A para colocar o foco na barra de ação.</translation>
 <translation id="7760449188139285140">Chinês (wubi)</translation>
 <translation id="7765158879357617694">Mover</translation>
@@ -832,6 +839,7 @@
 <translation id="8249296373107784235">Cancelar</translation>
 <translation id="8250690786522693009">latim</translation>
 <translation id="8250920743982581267">Documentos</translation>
+<translation id="8255595130163158297">Todos os itens na lixeira vão ser excluídos e não vão poder ser restaurados.</translation>
 <translation id="8261506727792406068">Excluir</translation>
 <translation id="8261561378965667560">Chinês (array)</translation>
 <translation id="8264024885325823677">Essas configurações são gerenciadas pelo administrador.</translation>
@@ -910,6 +918,7 @@
 <translation id="8857149712089373752">Nepalês com teclado fonético</translation>
 <translation id="8860454412039442620">Planilha do Excel</translation>
 <translation id="8866284467018526531">Árabe (transliteração)</translation>
+<translation id="8873014196523807561">Para restaurar esses itens, arraste-os para uma nova pasta. As pastas originais de alguns deles foram excluídas.</translation>
 <translation id="8874184842967597500">Não conectado</translation>
 <translation id="8900820606136623064">Húngaro</translation>
 <translation id="8903931173357132290">Formando</translation>

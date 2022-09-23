@@ -72,7 +72,6 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1434356225517321998">O seu navegador é gerido. <ph name="BEGIN_LINK" />Detalhes<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ocultar a palavra-passe</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> itens</translation>
 <translation id="1450170672351507823">A proteção padrão está ativada. Para desfrutar de ainda mais segurança, use a proteção melhorada.</translation>
 <translation id="149095475893949513">Este Website está a tentar transferir um perfil de configuração.</translation>
 <translation id="1491277525950327607">Toque duas vezes para ativar ou desativar a definição</translation>
@@ -106,7 +105,6 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="168715261339224929">Para obter os seus marcadores em todos os dispositivos, ative a sincronização.</translation>
 <translation id="1687475363370981210">Marcar tudo como lido</translation>
 <translation id="1689333818294560261">Alcunha</translation>
-<translation id="1690731385917361335">Sem itens</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
 <translation id="1752547299766512813">Guardar Palavras-passe</translation>
@@ -986,7 +984,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9068336935206019333">Abrir na Navegação anónima do Chrome</translation>
 <translation id="9079935439869366234">Marcar tudo como não lido</translation>
 <translation id="9081058212938299310">Pretende atualizar a palavra-passe de <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 item</translation>
 <translation id="9083838294503912307">Para sincronizar e personalizar dados entre dispositivos, ative a sincronização.</translation>
 <translation id="9087108903408689779">Palavra-passe sugerida do Chrome:</translation>
 <translation id="9094033019050270033">Atualizar a palavra-passe</translation>

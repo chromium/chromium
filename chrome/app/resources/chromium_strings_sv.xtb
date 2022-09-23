@@ -55,6 +55,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2384373936468275798">Det gick inte att synkronisera data med Chromium OS eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="2396765026452590966">Tillägget <ph name="EXTENSION_NAME" /> har ändrat vilken sida som visas när du startar Chromium.</translation>
+<translation id="2400844369696905771">När inställningen är aktiverad återtar Chromium minne från flikar som du inte använder aktivt. Då frigörs datorns resurser för andra uppgifter så Chromium fungerar så snabbt som möjligt. Inaktiva flikar verkar tomma och läses in automatiskt när du klickar på dem. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Du behöver ge Chromium kamera- och mikrofonbehörighet för den här webbplatsen</translation>
 <translation id="2483889755041906834">I Chromium</translation>
 <translation id="2485422356828889247">Avinstallera</translation>
@@ -145,6 +146,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4285930937574705105">Installationen misslyckades på grund av ett ospecificerat fel. Stäng Chromium om det är igång och försök sedan igen.</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
 <translation id="4334294535648607276">Nedladdningen har slutförts.</translation>
+<translation id="437317747729858884">Chromium återtar minne från flikar som du inte använder så att du kan surfa snabbare.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> kräver att du läser och godkänner följande användarvillkor innan du använder enheten. Villkoren varken utökar, ändrar eller begränsar villkoren för Chromium OS.</translation>
 <translation id="4407044323746248786">Vill du avsluta Chromium ändå?</translation>
 <translation id="4415566066719264597">Låt Chromium köras i bakgrunden</translation>
@@ -182,6 +184,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5386450000063123300">Chromium uppdateras (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Tillåt inloggning i Chromium</translation>
 <translation id="5398878173008909840">Det finns en ny version av Chromium.</translation>
+<translation id="5405650547142096840">Ta bort från Chromium</translation>
 <translation id="5427571867875391349">Använd Chromium som standardwebbläsare</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5473971139929175403">Chromium kanske inte fungerar ordentligt eftersom det inte längre stöds på den här Linux-distributionen</translation>
@@ -314,6 +317,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7872446069773932638">Laddar ned … <ph name="SECONDS" /> sekund/sekunder återstår</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Så här kan du hantera dina uppgifter:<ph name="END_BOLD" /> För att skydda din integritet raderar vi automatiskt intressen som är äldre än fyra veckor. Medan du surfar kan ett intresse dyka upp på listan igen. Du kan också ta bort intressen som du inte vill att Chromium ska inkludera.</translation>
 <translation id="7937630085815544518">Du var inloggad i Chromium som <ph name="USER_EMAIL_ADDRESS" />. Använd samma konto när du loggar in igen.</translation>
+<translation id="7947085610734123927">Chromium har aktiverat minnessparläget</translation>
 <translation id="7975919845073681630">Det här är en sekundär installation av Chromium. Det går inte att göra den till standardwebbläsare.</translation>
 <translation id="7997934263947464652">Tillägg, appar och teman från okända källor kan skada enheten. Vi rekommenderar att du bara installerar dem från <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">När du har gett Chromium åtkomst kan webbplatser begära att få åtkomst.</translation>
@@ -339,6 +343,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8558383651099478961">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chromium. Det är inte tillåtet att lägga till denna <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Du behöver macOS 10.13 eller senare för att få kommande uppdateringar av Chromium. På den här datorn används macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium kan kontrollera dina lösenord när du loggar in med Google-kontot</translation>
+<translation id="8574036838419011058">När inställningen är aktiverad sparar Chromium batteri genom att begränsa aktivitet i bakgrunden och visuella effekter, till exempel jämnare scrollning och bildfrekvenser för video. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Så här använder vi denna data:<ph name="END_BOLD" /> Webbplatser kan lagra information om dina intressen i Chromium. Om du till exempel besöker en webbplats för att köpa skor till ett maraton kanske webbplatsen anger att du är intresserad av att springa maraton. Om du sedan besöker en annan webbplats för att registrera dig för ett lopp kan webbplatsen visa en annons för löparskor utifrån dina intressen.</translation>
 <translation id="8619360774459241877">Chromium startas …</translation>

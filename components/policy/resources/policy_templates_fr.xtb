@@ -32,6 +32,7 @@
 
       Actuellement, les langues compatibles sont les suivantes : af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk et vi.</translation>
 <translation id="1019101089073227242">Définir le répertoire de données utilisateur</translation>
+<translation id="1020006815010587263">La corbeille est désactivée pour l'utilisateur.</translation>
 <translation id="1022361784792428773">Identifiants d'extension que l'utilisateur ne doit pas être autorisé à installer (ou * pour tous)</translation>
 <translation id="102492767056134033">Définir l'état par défaut du clavier à l'écran sur l'écran de connexion</translation>
 <translation id="102658870205613876">Paramètres des pop-up</translation>
@@ -545,6 +546,9 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1553532014072799546">Liste blanche des restrictions temporelles spécifiques à chaque application</translation>
 <translation id="1553956579506604198">Empêche que des extensions externes soient installées</translation>
 <translation id="1555248923316727072">Paramètres de gestion de l'identité des utilisateurs authentifiés via SAML</translation>
+<translation id="1557113199339446336">Si cette règle est définie sur "True", les appareils enregistrés signalent des informations sur les événements de détection et réponse étendues (XDR).
+
+      Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les appareils enregistrés ne signalent pas les événements de détection et réponse étendues (XDR).</translation>
 <translation id="1561424797596341174">Remplacements de règle pour les versions de débogage de l'hôte distant</translation>
 <translation id="1561967320164410511">U2F plus extensions pour chaque attestation</translation>
 <translation id="1567718448549957373">Si cette règle est activée ou si elle n'est pas définie, l'authentification <ph name="BASIC_AUTH" /> sera autorisée sur les connexions HTTP non sécurisées.
@@ -1152,6 +1156,9 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="2157842368188031417">Cette règle ne concerne que les sessions Invité gérées. Elle doit être activée pour que le mode station de travail partagée d'Imprivata autorise les changements d'utilisateurs en cours de session.
       Si cette règle est définie sur "True", certaines règles sont ignorées d'office pour des fonctionnalités, qui conservent les données utilisateur sensibles et qui ne sont pas gérées par le mécanisme de nettoyage utilisé pour les changements d'utilisateurs en cours de session avec le mode station de travail partagée d'Imprivata.
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, aucune règle n'est ignorée.</translation>
+<translation id="2158741059065130266">Si cette règle est définie sur "True", les utilisateurs de l'appli Fichiers de <ph name="PRODUCT_OS_NAME" /> voient une corbeille et les fichiers sous "Mes fichiers" et "Téléchargements" (y compris leurs descendants créés par l'utilisateur) y sont envoyés lors de la suppression.
+
+      Si cette règle est définie sur "False", les fichiers qui se trouvaient dans la corbeille sont disponibles en affichant les fichiers masqués et en trouvant le répertoire ".Corbeille" sous "Mes fichiers" ou "Téléchargements".</translation>
 <translation id="2159486052528894673">Autoriser les règles cloud utilisateur à ignorer les règles cloud machine.</translation>
 <translation id="2160336427036785721">Permet de configurer la quantité de mémoire qu'une instance de <ph name="PRODUCT_NAME" /> peut utiliser avant que des onglets ne commencent à être ignorés (c'est-à-dire que la mémoire utilisée par l'onglet sera libérée, et l'onglet devra être actualisé lorsque l'utilisateur le sélectionnera) afin d'économiser de la mémoire.
 
@@ -1599,6 +1606,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
           L'URL en question peut être spécifiée comme suit : <ph name="GOOGLE_INSTANT_SEARCH_URL" />.
 
           Cette règle n'est respectée que si la règle "DefaultSearchProviderEnabled" est activée.</translation>
+<translation id="2563373001850981577">Autoriser l'envoi de fichiers à la corbeille (sur les systèmes de fichiers compatibles) dans l'appli Fichiers de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2567227673131796227">Cette règle est obsolète (veuillez utiliser la règle "<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />" à la place).
 
       Cette règle permet de spécifier les hôtes de messagerie native qui ne doivent pas être chargés. Si vous définissez la valeur liée à la liste noire sur <ph name="WILDCARD_VALUE" />, tous les hôtes de messagerie native sont refusés, sauf s'ils sont explicitement autorisés.
@@ -2985,6 +2993,7 @@ Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
       Si cette règle est désactivée ou n'est pas configurée, l'utilisateur ne peut être invité que si la règle de sélection automatique n'établit de correspondance avec aucun certificat.</translation>
 <translation id="3950110092991281616">Activer l'authentification ambiante seulement pour les sessions standards.</translation>
 <translation id="3950239119790560549">Mettre à jour les restrictions de temps</translation>
+<translation id="3953860513079094502">Signaler des informations sur les événements de détection et réponse étendues (XDR)</translation>
 <translation id="3956243291190637924">Masquer les en-têtes et pieds de page dans l'aperçu avant impression</translation>
 <translation id="3956573780915784996">Autoriser les utilisateurs à collecter une trace des performances au niveau du système.</translation>
 <translation id="3956686688560604829">Utiliser la règle SiteList d'Internet Explorer pour Legacy Browser Support.</translation>
@@ -3114,6 +3123,7 @@ Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 <translation id="4098920079809952737">Autoriser l'impression à la fois avec et sans graphiques d'arrière-plan</translation>
 <translation id="410068710490553233">Autoriser la connexion à d'autres comptes Google</translation>
 <translation id="4101282687722389021">Horodatage UTC de la dernière mise à jour de cette entrée. Il est envoyé sous forme de chaîne, car il ne tiendrait pas dans un entier.</translation>
+<translation id="4102347680024644994">Signaler les événements de détection et réponse étendues (XDR)</translation>
 <translation id="4105989332710272578">Désactiver l'application des règles de transparence des certificats pour une liste d'URL</translation>
 <translation id="4114059938441379876">Permet de spécifier l'URL à laquelle les utilisateurs doivent modifier leur mot de passe après avoir lu l'avertissement affiché dans le navigateur. Le service de protection par mot de passe redirige les utilisateurs vers l'URL (protocoles HTTP et HTTPS uniquement) que vous avez indiquée dans cette règle. Pour que <ph name="PRODUCT_NAME" /> enregistre correctement la copie hachée et après salage du nouveau mot de passe sur la page de modification de celui-ci, vérifiez si cette page respecte bien les consignes indiquées sur https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
 
@@ -5664,6 +5674,7 @@ Si vous sélectionnez les options suivantes :
       Spécifie les indicateurs à appliquer à <ph name="PRODUCT_NAME" /> au démarrage. Ceux-ci ne sont appliqués que sur l'écran de connexion. Les indicateurs définis par cette règle ne sont pas répercutés dans les sessions utilisateur.</translation>
 <translation id="6857240169209507953">Empêcher <ph name="BOREALIS_NAME" /> de fonctionner sur un appareil</translation>
 <translation id="685769593149966548">Appliquer le mode restreint strict sur YouTube</translation>
+<translation id="6860349155164463644">Ne pas signaler d'informations sur les événements de détection et réponse étendues (XDR)</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou version ultérieure</translation>
 <translation id="68818134518270542">Permet de spécifier les applications que les utilisateurs peuvent activer comme applications de prise de notes sur l'écran de verrouillage <ph name="PRODUCT_OS_NAME" />.
 
@@ -6288,6 +6299,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Les champs "<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />" permettent de configurer le message à montrer à l'utilisateur lorsqu'un avertissement s'affiche après une analyse dont le résultat révèle un problème. Le message saisi dans le champ ne doit pas comporter plus de 200 caractères. Le champ "learn_more_url" contient une URL fournie par l'administrateur sur laquelle l'utilisateur peut cliquer pour obtenir des informations indiquées par le client et savoir pourquoi l'action a été bloquée. Le champ "language" est facultatif. Il indique la langue dans laquelle est saisi le message. Si ce champ est vide ou contient la valeur "par défaut", un message est proposé par défaut. Le champ "tag" spécifie pour quel type d'analyses le message est affiché. Le champ "custom_messages" peut être vide ou contenir plusieurs entrées (les champs "message" et "tag" devant être renseignés pour chacune d'elles).
 
       Cette règle nécessite un réglage supplémentaire pour être appliquée. Pour en savoir plus, consultez la page https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
+<translation id="7481702249684965639">La corbeille est activée pour l'utilisateur.</translation>
 <translation id="7482768039644066614">Activer l'extraction des métadonnées de chargement de la page et les modèles de machine learning pour améliorer l'expérience de navigation</translation>
 <translation id="7485481791539008776">Instructions de sélection de l'imprimante par défaut</translation>
 <translation id="7486205887492534734">Demander lorsque plusieurs certificats correspondent sur l'écran de connexion</translation>

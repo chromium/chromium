@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Kopiuję <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1190144681599273207">Pobranie tego pliku spowoduje przesłanie <ph name="FILE_SIZE" /> przy użyciu komórkowej transmisji danych.</translation>
+<translation id="1194390763418645112">Dostęp do pliku dla: <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1209796539517632982">Automatyczny wybór serwerów nazw</translation>
 <translation id="1210831758834677569">Laotański</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Urządzenia z Chrome</translation>
 <translation id="1572585716423026576">Ustaw jako tapetę</translation>
 <translation id="1576937952766665062">Bengalski – transliteracja</translation>
+<translation id="1577977504532381335">Przejrzyj zasady administratora</translation>
 <translation id="158849752021629804">Wymagana sieć macierzysta</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Rozdzielczość grafiki</translation>
 <translation id="1972984168337863910">Rozwiń panele informacji zwrotnej o plikach</translation>
 <translation id="1995337122023280937">Otwórz lokalizację pliku</translation>
+<translation id="1999709132469742660">Dostęp do plików dla wszystkich adresów URL</translation>
 <translation id="2001796770603320721">Zarządzaj na Dysku</translation>
 <translation id="2009067268969781306">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych. Nie można tego cofnąć.</translation>
 <translation id="2025955442973426285">Tigrinia</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Osoba z kawą</translation>
 <translation id="2251368349685848079">Przywróć z kosza</translation>
 <translation id="2282155092769082568">URL automatycznej konfiguracji:</translation>
+<translation id="2284767815536050991">pamięć wymienna</translation>
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Otwieram pliki (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Otwieram plik <ph name="FILE_NAME" />.</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">Irlandzki</translation>
 <translation id="4124935795427217608">Jednorożec</translation>
 <translation id="4131235941541910880">Przenieś niepotrzebne elementy do kosza</translation>
+<translation id="4157569377477607576">Zgodnie z zasadą administratora nie zaleca się:</translation>
 <translation id="4159731583141908892">Plik <ph name="FILE_NAME" /> został przeniesiony.</translation>
 <translation id="4176286497474237543">Opróżnij kosz</translation>
 <translation id="4186579485882418952">Włącz tryb offline</translation>
@@ -507,6 +512,7 @@
 <translation id="5323213332664049067">Ameryka Łacińska</translation>
 <translation id="5330145655348521461">Te pliki zostały otwarte na innym pulpicie. Przejdź do <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), aby je zobaczyć.</translation>
 <translation id="5330512191124428349">Więcej informacji</translation>
+<translation id="5337538975554986899">Dostęp do plików dla wszystkich adresów URL oprócz <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Osoba z kotami</translation>
 <translation id="5358764674931277">Liczba klatek</translation>
 <translation id="5363339716524495120">Język wprowadzania: chiński</translation>
@@ -532,6 +538,7 @@
 <translation id="5533102081734025921">Obraz <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Obliczanie rozmiaru</translation>
 <translation id="554153475311314364">Grecki – transliteracja</translation>
+<translation id="5580591966435005537">maszyna wirtualna</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Szerokość przestankowania: pełna</translation>
 <translation id="5602622065581044566">Bułgarski z klawiaturą fonetyczną</translation>
@@ -592,6 +599,7 @@
 <translation id="61118516107968648">Tekst CSV</translation>
 <translation id="6129953537138746214">Spacja</translation>
 <translation id="6133173853026656527">Przenoszę <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">Administrator monitoruje:</translation>
 <translation id="613750717151263950">Japoński z klawiaturą amerykańską</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, brak sieci</translation>
 <translation id="6146563240635539929">Filmy</translation>
@@ -612,6 +620,7 @@
 <translation id="6287852322318138013">Wybierz aplikację, by otworzyć ten plik</translation>
 <translation id="6295542640242147836">Zablokuj kartę SIM</translation>
 <translation id="6296410173147755564">Nieprawidłowy kod PUK</translation>
+<translation id="6308243004861726558">Ten plik jest poufny i podlega zasadom administratora. Obowiązują poniższe działania dotyczące dostępu do plików i ich przenoszenia.</translation>
 <translation id="6312403991423642364">Nieznany błąd sieci</translation>
 <translation id="6317608858038767920">Niestandardowy serwer nazw <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Archiwum <ph name="ARCHIVE_TYPE" /></translation>
@@ -842,6 +851,7 @@
 <translation id="8255595130163158297">Wszystkie elementy w koszu zostaną usunięte i nie będzie można ich przywrócić.</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8261561378965667560">Chiński array</translation>
+<translation id="8262872909443689080">Zasada administratora</translation>
 <translation id="8264024885325823677">Tym ustawieniem zarządza Twój administrator.</translation>
 <translation id="8269755669432358899">Zwiń panele informacji zwrotnej o plikach</translation>
 <translation id="8280151743281770066">ormiańska klawiatura fonetyczna</translation>
@@ -940,6 +950,7 @@
 <translation id="9100610230175265781">Wymagane jest hasło</translation>
 <translation id="9110990317705400362">Stale szukamy rozwiązań, dzięki którym przeglądanie internetu będzie bezpieczniejsze. Wcześniej każda strona mogła poprosić o dodanie rozszerzenia do przeglądarki. W nowszych wersjach Google Chrome musisz dodać rozszerzenie na stronie Rozszerzenia, by wyraźnie poinformować przeglądarkę, że chcesz je zainstalować. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Odblokuj</translation>
+<translation id="9116909380156770361">Przeniesienie pliku do: <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Kodek</translation>
 <translation id="9130775360844693113">Osoby z uprawnieniami do: „<ph name="DESTINATION_NAME" />” uzyskają dostęp do tych elementów.</translation>
 <translation id="9131598836763251128">Wybierz jeden lub kilka plików</translation>
@@ -961,6 +972,7 @@
 <translation id="943972244133411984">Zmodyfikowany przez:</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="947144732524271678">Wybrano zakres <ph name="ENTRY_COUNT" /> elementów. Od: <ph name="FROM_ENTRY_NAME" /> do: <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Zasada administratora uniemożliwia:</translation>
 <translation id="965477715979482472">angielski (RPA)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Istnieje już plik „<ph name="FILE_NAME" />”. Czy chcesz go zastąpić?</translation>

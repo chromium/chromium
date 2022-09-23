@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">打印</translation>
 <translation id="1434356225517321998">您的浏览器处于受管理状态。<ph name="BEGIN_LINK" />详细信息<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">隐藏密码</translation>
-<translation id="145015347812617860">有<ph name="COUNT" />个书签</translation>
 <translation id="1450170672351507823">已开启标准保护。若要进一步提升安全性，请使用增强型保护。</translation>
 <translation id="149095475893949513">此网站正要尝试下载一个配置文件。</translation>
 <translation id="1491277525950327607">点按两次即可切换设置</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">要想将您的书签同步到您的所有设备上，请开启同步功能。</translation>
 <translation id="1687475363370981210">全部标为已读</translation>
 <translation id="1689333818294560261">昵称</translation>
-<translation id="1690731385917361335">没有书签</translation>
 <translation id="1700629756560807968">已选中<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="1740468249224277719">点按两次即可安装。</translation>
 <translation id="1752547299766512813">保存密码</translation>
@@ -986,7 +984,6 @@
 <translation id="9068336935206019333">在 Chrome 中以无痕模式打开</translation>
 <translation id="9079935439869366234">全部标为未读</translation>
 <translation id="9081058212938299310">更新 <ph name="USERNAME" /> 的密码？</translation>
-<translation id="9083392325882095631">有1个书签</translation>
 <translation id="9083838294503912307">要在您的所有设备上保持同步并获享个性化体验，请开启同步功能。</translation>
 <translation id="9087108903408689779">Chrome 建议的密码：</translation>
 <translation id="9094033019050270033">更新密码</translation>

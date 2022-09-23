@@ -1279,6 +1279,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Veza s web-lokacijom <ph name="SITE" /> nije sigurna</translation>
 <translation id="4349365535725594680">Nije moguće dijeljenje povjerljivog sadržaja</translation>
+<translation id="4349810866125026513">Ipak prenesi</translation>
 <translation id="4350629523305688469">Multifunkcionalna ladica</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> želi potražiti Bluetooth uređaje u blizini. Pronađeni su sljedeći uređaji:</translation>
 <translation id="4351175281479794167">Unos kontrolnog koda</translation>
@@ -2017,6 +2018,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6337133576188860026">Oslobodit će se <ph name="SIZE" />. Neke bi se web-lokacije pri sljedećem otvaranju mogle sporije učitavati.</translation>
 <translation id="6337534724793800597">Filtriranje pravila prema nazivu</translation>
 <translation id="6340739886198108203">Prema pravilima administratora ne preporučuje se izrada snimki zaslona ili snimki kad je vidljiv povjerljiv sadržaj:</translation>
+<translation id="6341434961864773665">{0,plural, =1{Prema pravilima administratora ne preporučuje se prijenos te datoteke na <ph name="DESTINATION_NAME" />}one{Prema pravilima administratora ne preporučuje se prijenos tih datoteka na <ph name="DESTINATION_NAME" />}few{Prema pravilima administratora ne preporučuje se prijenos tih datoteka na <ph name="DESTINATION_NAME" />}other{Prema pravilima administratora ne preporučuje se prijenos tih datoteka na <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Aktivne varijacije</translation>
 <translation id="6349101878882523185">Instalirajte aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nijedna}=1{Jedna zaporka (za <ph name="DOMAIN_LIST" />, sinkronizirano)}=2{Dvije zaporke (za <ph name="DOMAIN_LIST" />, sinkronizirano)}one{# zaporka (za <ph name="DOMAIN_LIST" />, sinkronizirano)}few{# zaporke (za <ph name="DOMAIN_LIST" />, sinkronizirano)}other{# zaporki (za <ph name="DOMAIN_LIST" />, sinkronizirano)}}</translation>
@@ -2665,6 +2667,7 @@ Dodatne pojedinosti:
 <translation id="8075736640322370409">Brzo izradite novu Google tablicu</translation>
 <translation id="8075898834294118863">Upravljajte postavkama web-lokacija</translation>
 <translation id="8076492880354921740">Kartice</translation>
+<translation id="8078006011486731853">{0,plural, =1{Želite li prenijeti povjerljivu datoteku?}one{Želite li prenijeti povjerljive datoteke?}few{Želite li prenijeti povjerljive datoteke?}other{Želite li prenijeti povjerljive datoteke?}}</translation>
 <translation id="8078141288243656252">Ne može dodati bilješku kada je dokument zakrenut</translation>
 <translation id="8079031581361219619">Želite li ponovo učitati web-lokaciju?</translation>
 <translation id="8081087320434522107">Limuzine</translation>

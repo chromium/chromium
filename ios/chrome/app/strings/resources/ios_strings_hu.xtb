@@ -72,7 +72,6 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1434356225517321998">A böngésző felügyelet alatt áll. <ph name="BEGIN_LINK" />Részletek<ph name="END_LINK" />.</translation>
 <translation id="1449835205994625556">Jelszó elrejtése</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> elem</translation>
 <translation id="1450170672351507823">A Normál védelem be van kapcsolva. A még nagyobb biztonság érdekében használjon Speciális védelmet.</translation>
 <translation id="149095475893949513">Ez a webhely konfigurációs profilt próbál letölteni.</translation>
 <translation id="1491277525950327607">A beállítás módosításához koppintson duplán</translation>
@@ -106,7 +105,6 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="168715261339224929">Ha az összes eszközén szeretné elérni könyvjelzőit, kapcsolja be a szinkronizálást.</translation>
 <translation id="1687475363370981210">Összes megjelölése olvasottként</translation>
 <translation id="1689333818294560261">Egyedi név</translation>
-<translation id="1690731385917361335">Nincsenek elemek</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> kiválasztva</translation>
 <translation id="1740468249224277719">A telepítéshez koppintson duplán.</translation>
 <translation id="1752547299766512813">Jelszómentés</translation>
@@ -986,7 +984,6 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="9068336935206019333">Megnyitás a Chrome inkognitó módjában</translation>
 <translation id="9079935439869366234">Az összes megjelölése olvasatlanként</translation>
 <translation id="9081058212938299310">Frissíti <ph name="USERNAME" /> jelszavát?</translation>
-<translation id="9083392325882095631">1 elem</translation>
 <translation id="9083838294503912307">Az eszközök közötti szinkronizáláshoz és személyre szabáshoz kapcsolja be a szinkronizálást.</translation>
 <translation id="9087108903408689779">Chrome által javasolt jelszó:</translation>
 <translation id="9094033019050270033">Jelszó frissítése</translation>

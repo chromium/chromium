@@ -1422,6 +1422,7 @@
 <translation id="4744514002166662487">ప్రెజెంటేషన్‌ను క్రియేట్ చేయండి</translation>
 <translation id="4744603770635761495">అమలు చేయగల పాథ్‌</translation>
 <translation id="4749011317274908093">మీరు అజ్ఞాత మోడ్‌లోకి వెళ్లారు</translation>
+<translation id="4750671009706599284">ఈ ఫోన్</translation>
 <translation id="4750917950439032686">మీ సమాచారాన్ని (ఉదాహరణకు, పాస్‌వర్డ్‌లు లేదా క్రెడిట్ కార్డ్ నంబర్‌లు) ఈ సైట్‌కు పంపినప్పుడు అది ప్రైవేట్‌గా ఉంచబడుతుంది.</translation>
 <translation id="4751476147751820511">కదలిక లేదా కాంతి సెన్సార్‌లు</translation>
 <translation id="4754461935447132332">సురక్షితం కాని సైట్‌లకు అనుమతి లేదు</translation>
@@ -2202,6 +2203,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">మరింత తేలికగా చదవడానికి వీలుగా Chrome ఈ పేజీని సులభతరం చేసింది. సురక్షితం కాని కనెక్షన్ ద్వారా Chrome అసలు పేజీని తిరిగి పొందింది.</translation>
 <translation id="6890443033788248019">లొకేషన్‌ను యాక్సెస్ చేయడానికి అనుమతించాలా?</translation>
+<translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" />‌ను ఉపయోగించే వెబ్‌సైట్‌లలో <ph name="DEVICE_LABEL" />‌తో వెరిఫై చేయాలని మీరు ఎంచుకున్నారు. ఈ ప్రొవైడర్ మీ పేమెంట్ ఆప్షన్‌కు సంబంధించిన సమాచారాన్ని స్టోర్ చేసుకొని ఉండవచ్చు, మీరు దాన్ని <ph name="BEGIN_LINK" />తొలగించమని రిక్వెస్ట్<ph name="END_LINK" /> చేయవచ్చు.</translation>
 <translation id="6891596781022320156">విధాన స్థాయికి మద్దతు లేదు.</translation>
 <translation id="6895143722905299846">వర్చువల్ నంబర్:</translation>
 <translation id="6895330447102777224">మీ కార్డ్ నిర్ధారించబడింది</translation>
@@ -2568,6 +2570,7 @@
 <translation id="7766518757692125295">స్కర్ట్</translation>
 <translation id="7770259615151589601">పొడవుగా నిర్దేశించబడింది</translation>
 <translation id="7773005668374414287">ఒకే క్రమంలో ఉన్న ఫేస్ అప్</translation>
+<translation id="7785790577395078482">ఈ టాబ్లెట్</translation>
 <translation id="7791011319128895129">రిలీజ్ కానివి</translation>
 <translation id="7791196057686275387">బండిల్</translation>
 <translation id="7791543448312431591">జోడించు</translation>

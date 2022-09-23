@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Prebieha kopírovanie súboru <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
 <translation id="1190144681599273207">Načítanie tohto súboru spotrebuje približne <ph name="FILE_SIZE" /> mobilných dát.</translation>
+<translation id="1194390763418645112">Prístupu webovej adresy <ph name="RESTRICTED_DESTINATIONS" /> k súboru</translation>
 <translation id="1201402288615127009">Ďalej</translation>
 <translation id="1209796539517632982">Automatické menné servery</translation>
 <translation id="1210831758834677569">Laoská klávesnica</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Zariadenia Chrome</translation>
 <translation id="1572585716423026576">Nastaviť ako tapetu</translation>
 <translation id="1576937952766665062">Bengálska klávesnica (prepis)</translation>
+<translation id="1577977504532381335">Skontrolovať pravidlá správcu</translation>
 <translation id="158849752021629804">Je potrebná domáca sieť</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Rozlíšenie obrázka</translation>
 <translation id="1972984168337863910">Rozbaliť panely so spätnou väzbou týkajúcou sa súborov</translation>
 <translation id="1995337122023280937">Prejsť na umiestnenie súboru</translation>
+<translation id="1999709132469742660">Prístupu všetkých webových adries k súboru</translation>
 <translation id="2001796770603320721">Spravovať na Disku</translation>
 <translation id="2009067268969781306">Formátovaním kľúča odstránite všetky dáta, ktoré sú v ňom uložené. Túto akciu nie je možné vrátiť späť.</translation>
 <translation id="2025955442973426285">Tigrinská klávesnica</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Osoba s kávou</translation>
 <translation id="2251368349685848079">Obnoviť z koša</translation>
 <translation id="2282155092769082568">Webová adresa automatickej konfigurácie</translation>
+<translation id="2284767815536050991">vymeniteľné úložisko</translation>
 <translation id="2288278176040912387">Gramofón</translation>
 <translation id="2291538123825441971">Otvárajú sa súbory (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Otvára sa súbor <ph name="FILE_NAME" />.</translation>
@@ -224,6 +228,7 @@
 <translation id="3016566519832145558">Upozornenie: Tieto súbory sú dočasné a môžu byť automaticky odstránené na uvoľnenie priestoru na disku.</translation>
 <translation id="3029114385395636667">Ak chcete, aby boli Dokumenty, Tabuľky a Prezentácie k dispozícii offline, zapnite Dokumenty Google offline.</translation>
 <translation id="303198083543495566">Geografia</translation>
+<translation id="3044404008258011032">Ak chcete tieto položky obnoviť, presuňte ich do nového priečinka mimo koša. Pôvodný priečinok <ph name="PARENT_FOLDER_NAME" /> pre tieto položky bol odstránený.</translation>
 <translation id="3047197340186497470">Čínska klávesnica Dayi</translation>
 <translation id="3067790092342515856">Súbory systému Windows</translation>
 <translation id="3083975830683400843">Chromebity</translation>
@@ -341,6 +346,8 @@
 <translation id="4057991113334098539">Prebieha aktivácia...</translation>
 <translation id="4092890906744441904">Írska klávesnica</translation>
 <translation id="4124935795427217608">Jednorožec</translation>
+<translation id="4131235941541910880">Položky, ktoré nepotrebujete, presuňte do koša</translation>
+<translation id="4157569377477607576">Pravidlá správcu neodporúčajú:</translation>
 <translation id="4159731583141908892">Súbor <ph name="FILE_NAME" /> bol presunutý.</translation>
 <translation id="4176286497474237543">Vyprázdniť kôš</translation>
 <translation id="4186579485882418952">Povoliť offline režim</translation>
@@ -435,8 +442,10 @@
 <translation id="485316830061041779">Nemčina</translation>
 <translation id="4867079195717347957">Kliknutím zoradíte stĺpec v zostupnom poradí.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> B</translation>
+<translation id="4874569719830985133">Navždy odstrániť</translation>
 <translation id="4880214202172289027">Posúvač hlasitosti</translation>
 <translation id="4881695831933465202">Otvoriť</translation>
+<translation id="4891091358278567964">Ak chcete tieto položky obnoviť, presuňte ich do nového priečinka mimo koša. Pôvodné priečinky pre tieto položky boli odstránené.</translation>
 <translation id="4900532980794411603">Zdieľať pomocou aplikácie Parallels Desktop</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, pripojenie</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intenzita signálu <ph name="SIGNAL_STRENGTH" /> %, batéria telefónu <ph name="BATTERY_STATUS" /> %, podrobnosti</translation>
@@ -493,6 +502,7 @@ Vaše súbory sú bezpečne uložené na Disku Google bez ohľadu na to, čo sa 
 <ph name="MARKUP_7" />Zdieľajte a vytvárajte súbory, spolupracuje na nich<ph name="MARKUP_8" />
 s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Obnovené súbory z Disku Google</translation>
+<translation id="5278111733643988471">Ak chcete túto položku obnoviť, presuňte ju do nového priečinka mimo koša. Pôvodný priečinok <ph name="PARENT_FOLDER_NAME" /> pre túto položku bol odstránený.</translation>
 <translation id="5286194356314741248">Prebieha vyhľadávanie</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -502,9 +512,11 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5323213332664049067">Latinskoamerická</translation>
 <translation id="5330145655348521461">Tieto súbory sú otvorené na inej pracovnej ploche. Ak ich chcete zobraziť, prejdite do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Získať informácie</translation>
+<translation id="5337538975554986899">Prístupu všetkých webových adries okrem adresy <ph name="NON_RESTRICTED_DESTINATIONS" /> k súboru</translation>
 <translation id="535792325654997756">Osoba s mačkami</translation>
 <translation id="5358764674931277">Snímková frekvencia</translation>
 <translation id="5363339716524495120">Jazyk vstupu je čínština</translation>
+<translation id="5364067326287025678">Kôš je prázdny</translation>
 <translation id="5368191757080475556">Zdieľanie priečinka so systémom Linux</translation>
 <translation id="5402367795255837559">Braillovo písmo</translation>
 <translation id="5411472733320185105">Nepoužívať nastavenia servera proxy pre nasledujúcich hostiteľov a domény:</translation>
@@ -526,6 +538,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5533102081734025921">Obrázok <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Prebieha výpočet veľkosti</translation>
 <translation id="554153475311314364">Grécka klávesnica (prepis)</translation>
+<translation id="5580591966435005537">virtuálne zariadenie</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Šírka interpunkcie je Plná</translation>
 <translation id="5602622065581044566">Bulharská fonetická klávesnica</translation>
@@ -586,6 +599,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="61118516107968648">Text vo formáte CSV</translation>
 <translation id="6129953537138746214">Medzera</translation>
 <translation id="6133173853026656527">Prebieha presúvanie súboru <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">Správcovia sledujú:</translation>
 <translation id="613750717151263950">Japonská klávesnica s americkou klávesnicou</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, žiadna sieť</translation>
 <translation id="6146563240635539929">Videá</translation>
@@ -606,6 +620,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6287852322318138013">Vyberte aplikáciu na otvorenie tohto súboru</translation>
 <translation id="6295542640242147836">Uzamknúť SIM</translation>
 <translation id="6296410173147755564">Neplatný kód PUK</translation>
+<translation id="6308243004861726558">Tento súbor je dôverný a vzťahujú sa naň pravidlá správcu. Uplatňujú sa nasledujúce akcie prístupu k súborom a ich prenosu.</translation>
 <translation id="6312403991423642364">Neznáma chyba siete</translation>
 <translation id="6317608858038767920">Vlastný nameserver <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Archív <ph name="ARCHIVE_TYPE" /></translation>
@@ -771,6 +786,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7711920809702896782">Informácie o obrázku</translation>
 <translation id="7724603315864178912">Vystrihnúť</translation>
 <translation id="7732111077498238432">Sieť je riadená pravidlami</translation>
+<translation id="7736003208887389532">Chcete tieto súbory natrvalo odstrániť?</translation>
 <translation id="7748626145866214022">Ďalšie možnosti sú k dispozícii na paneli akcií. Prejdete na neho stlačením klávesov Alt + A.</translation>
 <translation id="7760449188139285140">Čínska klávesnica Wubi</translation>
 <translation id="7765158879357617694">Presunúť</translation>
@@ -832,8 +848,10 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8249296373107784235">Prerušiť</translation>
 <translation id="8250690786522693009">Latinka</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
+<translation id="8255595130163158297">Všetky položky v koši budú odstránené a nebudete ich môcť obnoviť.</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="8261561378965667560">Čínska klávesnica Array</translation>
+<translation id="8262872909443689080">Pravidlá správcu</translation>
 <translation id="8264024885325823677">Toto nastavenie ovláda váš správca.</translation>
 <translation id="8269755669432358899">Zbaliť panely so spätnou väzbou týkajúcou sa súborov</translation>
 <translation id="8280151743281770066">Arménska fonetická klávesnica</translation>
@@ -910,6 +928,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8857149712089373752">Nepálska fonetická klávesnica</translation>
 <translation id="8860454412039442620">Tabuľka aplikácie Excel</translation>
 <translation id="8866284467018526531">Arabská klávesnica (prepis)</translation>
+<translation id="8873014196523807561">Ak chcete tieto položky obnoviť, presuňte ich do nového priečinka. Pôvodné priečinky pre niektoré tieto položky boli odstránené.</translation>
 <translation id="8874184842967597500">Nepripojené</translation>
 <translation id="8900820606136623064">Maďarčina</translation>
 <translation id="8903931173357132290">Absolvent</translation>
@@ -931,6 +950,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="9100610230175265781">Vyžaduje sa prístupová fráza</translation>
 <translation id="9110990317705400362">Neustále hľadáme spôsoby, ako zvýšiť bezpečnosť vášho prehliadania. Predtým vás mohli všetky webové stránky vyzvať pridať rozšírenie do prehliadača. Keď chcete v novších verziách prehliadača Google Chrome pridať rozšírenia, musíte to urobiť explicitne ich pridaním na stránke Rozšírenia. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Odomknúť</translation>
+<translation id="9116909380156770361">Prenosu súboru do komponentu <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Kodek</translation>
 <translation id="9130775360844693113">Členovia cieľa <ph name="DESTINATION_NAME" /> získajú prístup k týmto položkám.</translation>
 <translation id="9131598836763251128">Vyberte jeden alebo viac súborov</translation>
@@ -952,6 +972,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="943972244133411984">Upravil(a):</translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 <translation id="947144732524271678">Bol vybraný rozsah <ph name="ENTRY_COUNT" /> položiek od <ph name="FROM_ENTRY_NAME" /> do <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Pravidlá správcu bránia:</translation>
 <translation id="965477715979482472">Angličtina (Južná Afrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Súbor s názvom <ph name="FILE_NAME" /> už existuje. Chcete ho nahradiť?</translation>

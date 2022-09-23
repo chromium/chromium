@@ -6733,6 +6733,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7404065585741198296">Votre téléphone avec un câble USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{La vérification de sécurité s'est exécutée il y a 1 heure}one{La vérification de sécurité s'est exécutée il y a {NUM_HOURS} heure}other{La vérification de sécurité s'est exécutée il y a {NUM_HOURS} heures}}</translation>
 <translation id="740624631517654988">Fenêtre contextuelle bloquée</translation>
+<translation id="7406912950279255498">Mode d'inversion des couleurs</translation>
 <translation id="7407430846095439694">Importer et associer</translation>
 <translation id="7407504355934009739">La plupart des gens bloquent les notifications provenant de ce site</translation>
 <translation id="740810853557944681">Ajouter un serveur d'impression</translation>
@@ -7683,6 +7684,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
     <ph name="BEGIN_PARAGRAPH3" />L'utilisateur peut contrôler cette fonctionnalité en accédant à Paramètres &gt; Paramètres avancés… &gt; Envoyer automatiquement un diagnostic et des données d'utilisation à Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Si le paramètre supplémentaire enregistrant l'activité sur le Web et dans les applications est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google. Apprenez-en davantage sur ces paramètres et sur la façon de les configurer à l'adresse families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificat client incorrect</translation>
+<translation id="8270162672241199380">Programme d'installation de Steam</translation>
 <translation id="827097179112817503">Afficher le bouton Accueil</translation>
 <translation id="8271268254812352141">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte. Personnalisez les langues de traduction dans la section <ph name="LINK_BEGIN" />Langues du site Web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Parents, les prochaines étapes sont pour vous. Vous pourrez redonner l'appareil <ph name="DEVICE_TYPE" /> à l'enfant une fois que son compte aura été configuré.</translation>

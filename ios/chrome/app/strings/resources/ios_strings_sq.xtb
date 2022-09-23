@@ -72,7 +72,6 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1430915738399379752">Printo</translation>
 <translation id="1434356225517321998">Shfletuesi yt është i menaxhuar. <ph name="BEGIN_LINK" />Detajet<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Fshih fjalëkalimin</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> artikuj</translation>
 <translation id="1450170672351507823">"Mbrojtja standarde" është aktive. Për akoma më shumë mbrojtje, përdor "Mbrojtjen e përparuar".</translation>
 <translation id="149095475893949513">Ky sajt uebi po përpiqet të shkarkojë një profil konfigurimi.</translation>
 <translation id="1491277525950327607">Trokit dy herë për të ndryshuar cilësimin</translation>
@@ -106,7 +105,6 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="168715261339224929">Për të marrë faqeshënuesit e tu në të gjitha pajisjet e tua, aktivizo sinkronizimin.</translation>
 <translation id="1687475363370981210">Shëno të gjitha si të lexuara</translation>
 <translation id="1689333818294560261">Pseudonimi</translation>
-<translation id="1690731385917361335">Nuk ka elementë</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> u zgjodhën</translation>
 <translation id="1740468249224277719">Trokit dy herë për ta instaluar.</translation>
 <translation id="1752547299766512813">Ruaj fjalëkalimet</translation>
@@ -756,6 +754,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6988572888918530647">Menaxho "Llogarinë tënde të Google"</translation>
 <translation id="6989674195860388998">Kalo te "Cilësimet"…</translation>
 <translation id="6998989275928107238">Për</translation>
+<translation id="699954956411469731">Njoftimet në celular</translation>
 <translation id="7004032350256606903">Organizata jote kërkon që të shfletosh në mënyrë private.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Skedat e fundit</translation>
@@ -985,7 +984,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9068336935206019333">Hape në modalitetin "e fshehtë" në Chrome</translation>
 <translation id="9079935439869366234">Shëno të gjitha si të palexuara</translation>
 <translation id="9081058212938299310">Të përditësohet fjalëkalimi për <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 artikull</translation>
 <translation id="9083838294503912307">Për të sinkronizuar dhe personalizuar mes pajisjeve, aktivizo sinkronizimin.</translation>
 <translation id="9087108903408689779">Fjalëkalimi i sugjeruar nga Chrome:</translation>
 <translation id="9094033019050270033">Përditëso fjalëkalimin</translation>

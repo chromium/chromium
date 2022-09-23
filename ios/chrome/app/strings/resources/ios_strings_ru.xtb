@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1434356225517321998">Этот браузер управляется администратором. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Скрыть пароль</translation>
-<translation id="145015347812617860">Закладок: <ph name="COUNT" /></translation>
 <translation id="1450170672351507823">Стандартная защита включена. Для большей безопасности используйте улучшенную защиту.</translation>
 <translation id="149095475893949513">Этот сайт пытается скачать профиль конфигурации.</translation>
 <translation id="1491277525950327607">Для переключения нажмите дважды</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">Чтобы получить доступ к закладкам на всех ваших устройствах, включите синхронизацию.</translation>
 <translation id="1687475363370981210">Отметить все как прочитанные</translation>
 <translation id="1689333818294560261">Название</translation>
-<translation id="1690731385917361335">Закладок нет</translation>
 <translation id="1700629756560807968">Выбрано закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Нажмите дважды, чтобы установить</translation>
 <translation id="1752547299766512813">Сохр. пароли</translation>
@@ -756,6 +754,7 @@
 <translation id="6988572888918530647">Перейти в настройки аккаунта Google</translation>
 <translation id="6989674195860388998">Перейти в настройки…</translation>
 <translation id="6998989275928107238">Кому</translation>
+<translation id="699954956411469731">Уведомления на мобильном устройстве</translation>
 <translation id="7004032350256606903">Согласно правилам вашей организации, использовать режим инкогнито обязательно.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Недавние вкладки</translation>
@@ -985,7 +984,6 @@
 <translation id="9068336935206019333">Открыть в Chrome инкогнито</translation>
 <translation id="9079935439869366234">Отметить все как непрочитанные</translation>
 <translation id="9081058212938299310">Обновить пароль для аккаунта <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">Закладок: 1</translation>
 <translation id="9083838294503912307">Чтобы синхронизировать и персонализировать данные на всех устройствах, включите синхронизацию.</translation>
 <translation id="9087108903408689779">Сгенерированный в Chrome пароль:</translation>
 <translation id="9094033019050270033">Обновить пароль</translation>

@@ -896,6 +896,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="6064463340679478396">Haluan lopettaa tiedoston käytön</translation>
 <translation id="6073451960410192870">Lopeta tallennus</translation>
 <translation id="6074087755403037157">Betaversio</translation>
+<translation id="6095008505822982596">Puheen nopeus</translation>
 <translation id="6099678161144790572">Muokattu kuluneen kuukauden aikana</translation>
 <translation id="6103838137565245112">järjestelmä</translation>
 <translation id="6114505516289286752">Puhetiedostot (<ph name="LANGUAGE" />) ladattu</translation>
@@ -1252,7 +1253,6 @@ Uusi asennus</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automaattinen täydennys</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Järjestelmänvalvojasi ylläpitää tätä asetusta.</translation>
 <translation id="8155628902202578800">Avaa tietoikkuna: <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="8157728322324420120">Sinulle ehdotetut</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> käytössä</translation>
 <translation id="8183592608247778598">Katso puhelimesi viimeisimpiä kuvia, mediaa, ilmoituksia ja sovelluksia tällä laitteella: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8192202700944119416">Ilmoitukset on piilotettu.</translation>

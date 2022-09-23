@@ -32,6 +32,7 @@
 
       Actualmente, los idiomas compatibles son los siguientes: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="1019101089073227242">Configurar directorio de datos de usuarios</translation>
+<translation id="1020006815010587263">Inhabilitar la Papelera para el usuario</translation>
 <translation id="1022361784792428773">ID de extensiones que el usuario no debe poder instalar (o * para incluirlas todas).</translation>
 <translation id="102492767056134033">Establecer el estado predeterminado del teclado en pantalla en la pantalla de acceso</translation>
 <translation id="102658870205613876">Configuración de ventanas emergentes</translation>
@@ -550,6 +551,9 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1553532014072799546">Lista blanca de límites de tiempo por app</translation>
 <translation id="1553956579506604198">Impide la instalación de extensiones externas</translation>
 <translation id="1555248923316727072">Configuración de la administración de identidades de usuarios con Saml</translation>
+<translation id="1557113199339446336">Si estableces la política como verdadera, los dispositivos inscritos informarán sobre eventos de detección y respuesta extendidas (XDR).
+
+      Si la estableces como falsa o no la estableces, los dispositivos inscritos no informarán eventos de detección y respuesta extendidas (XDR).</translation>
 <translation id="1561424797596341174">Anulaciones de políticas en compilaciones de depuración del host de acceso remoto</translation>
 <translation id="1561967320164410511">U2F más extensiones para atestación individual</translation>
 <translation id="1567718448549957373">Si habilitas esta política o no la estableces, se podrán recibir desafíos de autenticación <ph name="BASIC_AUTH" /> en las solicitudes HTTP no seguras.
@@ -1156,6 +1160,9 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="2157842368188031417">La política solo se aplica a sesiones de invitado administradas. Debe habilitarse para que se pueda cambiar de usuario durante la sesión en el modo de estación de trabajo compartida de Imprivata.
       Si estableces la política como verdadera, se anularán de manera automática algunas políticas de funciones, las cuales conservan datos sensibles del usuario y no se controlan mediante el mecanismo de limpieza utilizado para cambiar de usuario durante la sesión con el modo de estación de trabajo compartida de Imprivata.
       Si estableces la política como falsa o no la estableces, no se anulará ninguna política.</translation>
+<translation id="2158741059065130266">Si estableces la política como verdadera, los usuarios de la app de Archivos de <ph name="PRODUCT_OS_NAME" /> podrán ver la Papelera y los archivos de Mis archivos y Descargas (incluidos los subordinados creados por el usuario) se enviarán allí cuando los borres.
+
+      Si estableces la política como falsa, los archivos de la papelera seguirán disponibles si se muestran los archivos ocultos y si se busca el directorio Papelera en Mis archivos o Descargas.</translation>
 <translation id="2159486052528894673">Permitir que las políticas de nube destinadas a los usuarios anulen las políticas de nube de la máquina</translation>
 <translation id="2160336427036785721">Configura la cantidad de memoria que puede usar una única instancia de <ph name="PRODUCT_NAME" /> antes de que se empiecen a descartar las pestañas (es decir que se liberará la memoria que utiliza la pestaña, la cual se deberá volver a cargar cuando se seleccione), a fin de ahorrar memoria.
 
@@ -1603,6 +1610,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           La URL de los resultados al instante de Google se puede especificar como: <ph name="GOOGLE_INSTANT_SEARCH_URL" />.
 
           Esta política se aplica solo si la política "DefaultSearchProviderEnabled" está habilitada.</translation>
+<translation id="2563373001850981577">Habilitar la función para enviar archivos a la Papelera (en sistemas de archivos compatibles) en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2567227673131796227">Esta política dejó de estar disponible. Usa la política "<ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" />" en su lugar.
 
       Si estableces la política, se especificarán los hosts de mensajería nativa que no se deben cargar. Un valor de <ph name="WILDCARD_VALUE" /> en una lista de bloqueo significa que todos los hosts de mensajería nativa están bloqueados, a menos que se permitan de forma explícita.
@@ -2994,6 +3002,7 @@ Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_
       Si inhabilitas esta política o no la estableces, solo se le solicitará al usuario que haga una elección cuando ningún certificado coincida con la selección automática.</translation>
 <translation id="3950110092991281616">Permite la autenticación ambiental solo en sesiones comunes.</translation>
 <translation id="3950239119790560549">Actualizar las restricciones de tiempo</translation>
+<translation id="3953860513079094502">Enviar información sobre eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="3956243291190637924">Ocultar encabezados y pies de página en la vista previa de impresión</translation>
 <translation id="3956573780915784996">Permite que los usuarios hagan un registro del rendimiento de todo el sistema</translation>
 <translation id="3956686688560604829">Usar la política SiteList de Internet Explorer para la extensión Compatibilidad con navegadores heredados</translation>
@@ -3123,6 +3132,7 @@ Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_
 <translation id="4098920079809952737">Permitir la impresión con y sin gráficos de fondo</translation>
 <translation id="410068710490553233">Permite acceder en más Cuentas de Google</translation>
 <translation id="4101282687722389021">Una marca de tiempo (UTC) que indica la última vez que se actualizó esta entrada. Se envía como un string ya que la marca de tiempo no entra en un valor entero.</translation>
+<translation id="4102347680024644994">Informar eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="4105989332710272578">Inhabilitar la aplicación del Certificado de transparencia para una lista de URL</translation>
 <translation id="4114059938441379876">Si estableces la política, se configurará la URL para que los usuarios cambien su contraseña cuando vean una advertencia en el navegador. El servicio de protección de contraseñas envíará a los usuarios a la URL (solo protocolos HTTP y HTTPS) que designes a través de esta política. Para que <ph name="PRODUCT_NAME" /> capture correctamente el hash con sal de la nueva contraseña en esta página de cambio de contraseña, asegúrate de que la página cumpla con estos lineamientos ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms ).
 
@@ -5717,6 +5727,7 @@ principal del string usuario-agente en 99.
       Especifica las marcas que se deben aplicar a <ph name="PRODUCT_NAME" /> cuando se inicia. Las marcas especificadas se aplican solo en la pantalla de acceso. Las marcas establecidas mediante esta política no se propagan a las sesiones de usuario.</translation>
 <translation id="6857240169209507953">Impide que se ejecute <ph name="BOREALIS_NAME" /> en un dispositivo</translation>
 <translation id="685769593149966548">Aplicar el modo restringido estricto para YouTube</translation>
+<translation id="6860349155164463644">No informar eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versiones posteriores</translation>
 <translation id="68818134518270542">Si estableces la política, se especificarán las apps que los usuarios pueden activar para tomar notas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" />.
 
@@ -6337,6 +6348,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Los campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> se usan para configurar el mensaje que verá el usuario cuando se muestre una advertencia después de que un análisis determine una infracción de política. El campo del mensaje incluye el texto que se le mostrará al usuario. Este puede tener un máximo de 200 caracteres. El administrador puede incluir una URL en el campo learn_more_url a fin de que el usuario obtenga con un clic más información del cliente sobre los motivos para bloquear la acción. El campo del idioma es opcional. Indica el idioma del mensaje. Si el campo se deja vacío o con el valor "default", se utilizará el mensaje correspondiente cuando no haya ningún mensaje en el idioma del usuario. El campo de la etiqueta especifica para qué tipo de análisis se mostrará el mensaje. La lista custom_messages puede tener cero o más entradas, y cada una deberá tener completos los campos del mensaje y de la etiqueta.
 
       Esta política requiere configuración adicional para tener efecto. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para obtener más información.</translation>
+<translation id="7481702249684965639">Habilitar la Papelera para el usuario</translation>
 <translation id="7482768039644066614">Habilitar la recuperación de metadatos de la carga de páginas y de modelos de aprendizaje automático para mejorar la experiencia de navegación</translation>
 <translation id="7485481791539008776">Normas de selección de la impresora predeterminada</translation>
 <translation id="7486205887492534734">Notificar cuando coinciden varios certificados en la pantalla de acceso</translation>

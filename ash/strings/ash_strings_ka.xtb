@@ -896,6 +896,7 @@
 <translation id="6064463340679478396">ამ ფაილის გამოყენება დავასრულე</translation>
 <translation id="6073451960410192870">ჩაწერის შეწყვეტა</translation>
 <translation id="6074087755403037157">ბეტა არხი</translation>
+<translation id="6095008505822982596">მეტყველების ტემპი</translation>
 <translation id="6099678161144790572">თვის განმავლობაში რედაქტირებული</translation>
 <translation id="6103838137565245112">სისტემა</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> მეტყველების ფაილები ჩამოიტვირთა</translation>
@@ -1252,7 +1253,6 @@
 <translation id="8152264887680882389"><ph name="TEXT" />, ავტომატური დასრულება</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
 <translation id="8155628902202578800">საინფორმაციო დიალოგის გახსნა <ph name="USER_EMAIL_ADDRESS" />-ისთვის</translation>
-<translation id="8157728322324420120">თქვენთვის შემოთავაზებული</translation>
 <translation id="8167567890448493835">გამოიყენება <ph name="LOCALE_NAME" /></translation>
 <translation id="8183592608247778598">ნახეთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები, მედიაფაილები, შეტყობინებები და აპები თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="8192202700944119416">შეტყობინებები დამალულია.</translation>

@@ -719,6 +719,7 @@
 <translation id="7248671827512403053">تطبيق</translation>
 <translation id="7256405249507348194">خطأ غير معروف: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">الخدمات المتوفرة</translation>
+<translation id="7292816689782057017">تحظر سياسة المشرف الحفظ في بعض المجلدات.</translation>
 <translation id="7294063083760278948">تحويل صوتي إلى اللغة التيلوغوية</translation>
 <translation id="7295662345261934369">المشاركة مع الآخرين</translation>
 <translation id="7297443947353982503">‏اسم المستخدم/كلمة المرور غير صحيحة أو تعذّرت مصادقة EAP</translation>
@@ -905,6 +906,7 @@
 <translation id="8810671769985673465">تعذّر الضغط، العناصر الموجودة هي: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">الإسبانية (إسبانيا)</translation>
 <translation id="8834164572807951958">سيحصل أعضاء '<ph name="DESTINATION_NAME" />' على إمكانية الوصول إلى نسخة من هذه العناصر.</translation>
+<translation id="8849389110234859568">تحظر سياسة المشرف الوصول إلى بعض الملفات.</translation>
 <translation id="8857149712089373752">النيبالية باستخدام لوحة المفاتيح الصوتية</translation>
 <translation id="8860454412039442620">‏جدول بيانات Excel</translation>
 <translation id="8866284467018526531">تحويل صوتي إلى اللغة العربية</translation>

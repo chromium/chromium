@@ -228,6 +228,7 @@
 <translation id="3016566519832145558">ข้อควรระวัง: ไฟล์เหล่านี้ใช้ชั่วคราวและอาจถูกลบโดยอัตโนมัติเพื่อเพิ่มพื้นที่ว่างในดิสก์</translation>
 <translation id="3029114385395636667">เปิดใช้ Google เอกสารออฟไลน์เพื่อให้ใช้งานเอกสาร ชีต และสไลด์แบบออฟไลน์ได้</translation>
 <translation id="303198083543495566">ภูมิศาสตร์</translation>
+<translation id="3044404008258011032">หากต้องการกู้คืนรายการเหล่านี้ ให้ลากไปที่โฟลเดอร์ใหม่นอกถังขยะ ระบบลบโฟลเดอร์ "<ph name="PARENT_FOLDER_NAME" />" เดิมของรายการเหล่านี้แล้ว</translation>
 <translation id="3047197340186497470">จีน (Dayi)</translation>
 <translation id="3067790092342515856">ไฟล์ Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -345,6 +346,7 @@
 <translation id="4057991113334098539">กำลังเปิดการใช้งาน...</translation>
 <translation id="4092890906744441904">ไอร์แลนด์</translation>
 <translation id="4124935795427217608">ยูนิคอร์น</translation>
+<translation id="4131235941541910880">ย้ายรายการที่คุณไม่ต้องการไปยังถังขยะ</translation>
 <translation id="4157569377477607576">นโยบายของผู้ดูแลระบบไม่แนะนำให้ทำสิ่งต่อไปนี้</translation>
 <translation id="4159731583141908892">ย้าย <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="4176286497474237543">ล้างข้อมูลทั้งหมดในถังขยะเลย</translation>
@@ -440,8 +442,10 @@
 <translation id="485316830061041779">เยอรมัน</translation>
 <translation id="4867079195717347957">คลิกเพื่อจัดเรียงคอลัมน์จากมากไปหาน้อย</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ไบต์</translation>
+<translation id="4874569719830985133">ลบทิ้งถาวร</translation>
 <translation id="4880214202172289027">แถบเลื่อนระดับเสียง</translation>
 <translation id="4881695831933465202">เปิด</translation>
+<translation id="4891091358278567964">หากต้องการกู้คืนรายการเหล่านี้ ให้ลากไปที่โฟลเดอร์ใหม่นอกถังขยะ ระบบลบโฟลเดอร์เดิมของรายการเหล่านี้แล้ว</translation>
 <translation id="4900532980794411603">แชร์กับ Parallels Desktop</translation>
 <translation id="4902546322522096650">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, เชื่อมต่อ</translation>
 <translation id="4906580650526544301">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" />%, รายละเอียด</translation>
@@ -498,6 +502,7 @@
     <ph name="MARKUP_7" />แชร์ สร้าง และทำงานร่วมกัน<ph name="MARKUP_8" />
     กับผู้อื่นบนไฟล์ได้ทั้งหมดในที่เดียว<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">ไฟล์ที่กู้คืนจาก Google ไดรฟ์</translation>
+<translation id="5278111733643988471">หากต้องการกู้คืนรายการนี้ ให้ลากไปที่โฟลเดอร์ใหม่นอกถังขยะ ระบบลบโฟลเดอร์ "<ph name="PARENT_FOLDER_NAME" />" เดิมของรายการนี้แล้ว</translation>
 <translation id="5286194356314741248">กำลังสแกน</translation>
 <translation id="5288441970121584418">เบอร์เกอร์</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -511,6 +516,7 @@
 <translation id="535792325654997756">คนกับแมว</translation>
 <translation id="5358764674931277">อัตราเฟรม</translation>
 <translation id="5363339716524495120">ภาษาในการป้อนข้อมูลคือภาษาจีน</translation>
+<translation id="5364067326287025678">ไม่มีรายการในถังขยะ</translation>
 <translation id="5368191757080475556">แชร์โฟลเดอร์กับ Linux</translation>
 <translation id="5402367795255837559">เบรลล์</translation>
 <translation id="5411472733320185105">อย่าใช้การตั้งค่าพร็อกซีสำหรับโฮสต์และโดเมนเหล่านี้:</translation>
@@ -780,6 +786,7 @@
 <translation id="7711920809702896782">ข้อมูลรูปภาพ</translation>
 <translation id="7724603315864178912">ตัด</translation>
 <translation id="7732111077498238432">เครือข่ายมีนโยบายควบคุม</translation>
+<translation id="7736003208887389532">ลบไฟล์เหล่านี้อย่างถาวรใช่ไหม</translation>
 <translation id="7748626145866214022">มีตัวเลือกเพิ่มเติมในแถบการทำงาน กด Alt + A เพื่อโฟกัสแถบการทำงาน</translation>
 <translation id="7760449188139285140">จีน (Wubi)</translation>
 <translation id="7765158879357617694">ย้าย</translation>
@@ -841,6 +848,7 @@
 <translation id="8249296373107784235">ล้มเลิก</translation>
 <translation id="8250690786522693009">ภาษาละติน</translation>
 <translation id="8250920743982581267">เอกสาร</translation>
+<translation id="8255595130163158297">ระบบจะลบรายการทั้งหมดในถังขยะและคุณจะกู้คืนไม่ได้</translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8261561378965667560">จีน (Array)</translation>
 <translation id="8262872909443689080">นโยบายของผู้ดูแลระบบ</translation>
@@ -920,6 +928,7 @@
 <translation id="8857149712089373752">เนปาลด้วยแป้นพิมพ์ตามการออกเสียง</translation>
 <translation id="8860454412039442620">สเปรดชีต Excel</translation>
 <translation id="8866284467018526531">อาหรับ (การทับศัพท์)</translation>
+<translation id="8873014196523807561">หากต้องการกู้คืนรายการเหล่านี้ ให้ลากไปที่โฟลเดอร์ใหม่ ระบบลบโฟลเดอร์เดิมของบางรายการเหล่านี้แล้ว</translation>
 <translation id="8874184842967597500">ไม่เชื่อมต่อ</translation>
 <translation id="8900820606136623064">ฮังการี</translation>
 <translation id="8903931173357132290">รับปริญญา</translation>

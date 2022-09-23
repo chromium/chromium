@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">ພິມ</translation>
 <translation id="1434356225517321998">ມີການຈັດການໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ. <ph name="BEGIN_LINK" />ລາຍລະອຽດ<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">ເຊື່ອງລະຫັດຜ່ານ</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> ລາຍ​ການ</translation>
 <translation id="1450170672351507823">ການປົກປ້ອງມາດຕະຖານເປີດຢູ່. ເພື່ອຄວາມປອດໄພຍິ່ງຂຶ້ນ, ກະລຸນາໃຊ້ການປົກປ້ອງທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ.</translation>
 <translation id="149095475893949513">ເວັບໄຊນີ້ກຳລັງພະຍາຍາມດາວໂຫຼດໂປຣໄຟລ໌ການຕັ້ງຄ່າຢູ່.</translation>
 <translation id="1491277525950327607">ແຕະສອງຄັ້ງເພື່ອສັບປ່ຽນການຕັ້ງຄ່າ</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">ເພື່ອມີບຸກມາກຢູ່ໃນທຸກອຸປະກອນຂອງທ່ານ, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນກ່ອນ.</translation>
 <translation id="1687475363370981210">ໝາຍທັງໝົດວ່າອ່ານແລ້ວ</translation>
 <translation id="1689333818294560261">ຊື່ຫຼິ້ນ</translation>
-<translation id="1690731385917361335">ບໍ່​ມີ​ລາຍ​ການ</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ຖືກ​ເລືອກ​ແລ້ວ</translation>
 <translation id="1740468249224277719">ແຕະສອງຄັ້ງເພື່ອຕິດຕັ້ງ.</translation>
 <translation id="1752547299766512813">ບັນທຶກລະ​ຫັດ​ຜ່ານ</translation>
@@ -986,7 +984,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="9068336935206019333">ເປີດໃນໂໝດບໍ່ເຜີຍຕົວຕົນຂອງ Chrome</translation>
 <translation id="9079935439869366234">ໝາຍທັງໝົດວ່າຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="9081058212938299310">ອັບເດດລະຫັດຜ່ານສຳລັບ <ph name="USERNAME" /> ບໍ?</translation>
-<translation id="9083392325882095631">1 ລາຍ​ການ</translation>
 <translation id="9083838294503912307">ເພື່ອຊິ້ງຂໍ້ມູນ ແລະ ປັບແຕ່ງເປັນແບບສ່ວນຕົວໃນທົ່ວອຸປະກອນ, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນກ່ອນ.</translation>
 <translation id="9087108903408689779">ລະຫັດຜ່ານທີ່ແນະນຳຂອງ Chrome:</translation>
 <translation id="9094033019050270033">ອັບ​ເດດ​ລະ​ຫັດ​ຜ່ານ</translation>

@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">హెచ్చరిక: ఈ ఫైల్స్ తాత్కాలికమైనవి, డిస్క్ స్పేస్‌ను ఖాళీ చేయడం కోసం ఆటోమేటిక్‌గా ఇవి తొలగించబడవచ్చు.</translation>
 <translation id="3029114385395636667">Docs, Sheets, Slidesను ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచడానికి Google Docs ఆఫ్‌లైన్‌ను ఎనేబుల్ చేయండి.</translation>
 <translation id="303198083543495566">భూగోళ శాస్త్రం</translation>
+<translation id="3044404008258011032">ఈ ఐటెమ్‌లను రీస్టోర్ చేయడానికి, వాటిని ట్రాష్ వెలుపల ఉన్న కొత్త ఫోల్డర్‌కు లాగండి. ఈ ఐటెమ్‌లకు సంబంధించిన ఒరిజినల్ ఫోల్డర్ "<ph name="PARENT_FOLDER_NAME" />" తొలగించబడింది.</translation>
 <translation id="3047197340186497470">చైనీస్ డేయి</translation>
 <translation id="3067790092342515856">Windows ఫైళ్లు</translation>
 <translation id="3083975830683400843">Chromebitలు</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">సక్రియం చేస్తోంది...</translation>
 <translation id="4092890906744441904">ఐరిష్</translation>
 <translation id="4124935795427217608">యునికార్న్</translation>
+<translation id="4131235941541910880">మీకు అవసరం లేని ఐటెమ్‌లను ట్రాష్‌కు తరలించండి</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> తరలించబడింది.</translation>
 <translation id="4176286497474237543">ఇప్పుడే ట్రాష్‌ను ఖాళీ చేయండి</translation>
 <translation id="4186579485882418952">ఆఫ్‌లైన్ మోడ్‌ను ఎనేబుల్ చేయి</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">జర్మన్</translation>
 <translation id="4867079195717347957">నిలువు వరుసను అవరోహణ క్రమంలో వర్గీకరించడానికి క్లిక్ చేయండి.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> బైట్‌లు</translation>
+<translation id="4874569719830985133">శాశ్వతంగా తొలగించండి</translation>
 <translation id="4880214202172289027">వాల్యూమ్ స్లయిడర్</translation>
 <translation id="4881695831933465202">తెరువు</translation>
+<translation id="4891091358278567964">ఈ ఐటెమ్‌లను రీస్టోర్ చేయడానికి, వాటిని ట్రాష్ వెలుపల ఉన్న కొత్త ఫోల్డర్‌కు లాగండి. ఈ ఐటెమ్‌లకు సంబంధించిన ఒరిజినల్ ఫోల్డర్‌లు తొలగించబడ్డాయి.</translation>
 <translation id="4900532980794411603">Parallels Desktopతో షేర్ చేయండి</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, కనెక్ట్ చేయండి</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, వివరాలు</translation>
@@ -493,6 +497,7 @@
     అన్ని ఫైళ్లు ఒకే చోట ఉంటాయి, కాబట్టి <ph name="MARKUP_7" />షేర్ చేయండి, క్రియేట్ చేయండి,
     వాటిపై ఇతరులతో కలిసి పని చేయండి<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive నుండి పునరుద్ధరించబడిన ఫైళ్లు</translation>
+<translation id="5278111733643988471">ఈ ఐటెమ్‌ను రీస్టోర్ చేయడానికి, దాన్ని ట్రాష్ వెలుపల ఉన్న కొత్త ఫోల్డర్‌కు లాగండి. ఈ ఐటెమ్‌కు సంబంధించిన ఒరిజినల్ ఫోల్డర్ "<ph name="PARENT_FOLDER_NAME" />" తొలగించబడింది.</translation>
 <translation id="5286194356314741248">స్కాన్ చేస్తోంది</translation>
 <translation id="5288441970121584418">బర్గర్</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -505,6 +510,7 @@
 <translation id="535792325654997756">పిల్లులతో ఉన్న వ్యక్తి</translation>
 <translation id="5358764674931277">ఫ్రేమ్ రేట్</translation>
 <translation id="5363339716524495120">ఇన్‌పుట్ భాష చైనీస్</translation>
+<translation id="5364067326287025678">ట్రాష్‌లో ఏదీ లేదు</translation>
 <translation id="5368191757080475556">Linuxతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
 <translation id="5402367795255837559">బ్రెయిలీ</translation>
 <translation id="5411472733320185105">ఈ హోస్ట్‌లు మరియు డొమేన్‌ల కోసం ప్రాక్సీ సెట్టింగ్‌లను ఉపయోగించవద్దు:</translation>
@@ -719,6 +725,7 @@
 <translation id="7248671827512403053">అప్లికేషన్‌</translation>
 <translation id="7256405249507348194">గుర్తించబడని ఎర్రర్: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">అందుబాటులో ఉన్న సేవలు</translation>
+<translation id="7292816689782057017">అడ్మినిస్ట్రేటర్ పాలసీ ప్రకారం, ఫైల్స్‌ను కేవలం కొన్ని లొకేషన్‌లలో మాత్రమే సేవ్ చేయడానికి వీలవుతుంది.</translation>
 <translation id="7294063083760278948">తెలుగు ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="7295662345261934369">ఇతరులతో షేర్ చేయండి</translation>
 <translation id="7297443947353982503">వినియోగదారు పేరు/పాస్‌వర్డ్ తప్పు లేదా EAP-ప్రామాణీకరణ విఫలమైంది</translation>
@@ -770,6 +777,7 @@
 <translation id="7711920809702896782">చిత్రం సమాచారం</translation>
 <translation id="7724603315864178912">కత్తిరించండి</translation>
 <translation id="7732111077498238432">విధానం ద్వారా నెట్‌వర్క్ నియంత్రించబడుతుంది</translation>
+<translation id="7736003208887389532">ఈ ఫైల్స్‌ను శాశ్వతంగా తొలగించాలా?</translation>
 <translation id="7748626145866214022">చర్య బార్‌లో మరిన్ని ఎంపికలు అందుబాటులో ఉంటాయి. చర్య బార్‌పై దృష్టి పెట్టడం కోసం Alt + A నొక్కండి.</translation>
 <translation id="7760449188139285140">చైనీస్ వుబీ</translation>
 <translation id="7765158879357617694">తరలించు</translation>
@@ -831,6 +839,7 @@
 <translation id="8249296373107784235">రద్దుచేయి</translation>
 <translation id="8250690786522693009">లాటిన్</translation>
 <translation id="8250920743982581267">డాక్యుమెంట్లు</translation>
+<translation id="8255595130163158297">ట్రాష్‌లోని అన్ని ఐటెమ్‌లు తొలగించబడతాయి, ఇంకా మీరు వాటిని రీస్టోర్ చేయలేరు.</translation>
 <translation id="8261506727792406068">తొలగించు</translation>
 <translation id="8261561378965667560">చైనీస్ శ్రేణి</translation>
 <translation id="8264024885325823677">ఈ సెట్టింగ్ మీ నిర్వాహకుడి ద్వారా నిర్వహించబడుతుంది.</translation>
@@ -905,9 +914,11 @@
 <translation id="8810671769985673465">జిప్ చేయడంలో విఫలమైంది, ఈ అంశం ఉనికిలో ఉంది: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">స్పానిష్ (స్పెయిన్)</translation>
 <translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />' మెంబర్‌లు ఈ ఐటెమ్‌ల కాపీకి యాక్సెస్‌ను పొందుతారు.</translation>
+<translation id="8849389110234859568">అడ్మినిస్ట్రేటర్ పాలసీ కొన్ని ఫైల్స్‌కు యాక్సెస్‌ను పరిమితం చేస్తుంది.</translation>
 <translation id="8857149712089373752">ఫోనెటిక్ కీబోర్డ్‌తో నేపాలీ</translation>
 <translation id="8860454412039442620">Excel స్ప్రెడ్‌షీట్</translation>
 <translation id="8866284467018526531">అరబిక్ ట్రాన్స్‌లిటరేషన్</translation>
+<translation id="8873014196523807561">ఈ ఐటెమ్‌లను రీస్టోర్ చేయడానికి, వాటిని కొత్త ఫోల్డర్‌కు లాగండి. ఈ ఐటెమ్‌లలో కొన్నింటికి సంబంధించిన ఒరిజినల్ ఫోల్డర్‌లు తొలగించబడ్డాయి.</translation>
 <translation id="8874184842967597500">కనెక్ట్ కాలేదు</translation>
 <translation id="8900820606136623064">హంగేరియన్</translation>
 <translation id="8903931173357132290">గ్రాడ్యుయేట్</translation>

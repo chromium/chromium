@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Argraffu</translation>
 <translation id="1434356225517321998">Rheolir eich porwr. <ph name="BEGIN_LINK" />Manylion<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Cuddio'r Cyfrinair</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> eitem</translation>
 <translation id="1450170672351507823">Mae amddiffyniad safonol wedi'i droi ymlaen. Am fwy fyth o ddiogelwch, defnyddiwch Gwell amddiffyniad.</translation>
 <translation id="149095475893949513">Mae'r wefan hon yn ceisio lawrlwytho proffil ffurfweddiad.</translation>
 <translation id="1491277525950327607">Tapiwch ddwywaith i doglo'r gosodiad</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">I gael eich nodau tudalen ar eich holl ddyfeisiau, trowch gysoni ymlaen.</translation>
 <translation id="1687475363370981210">Marcio Pob un ohonynt fel wedi'u Darllen</translation>
 <translation id="1689333818294560261">Llysenw</translation>
-<translation id="1690731385917361335">Dim eitemau</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> wedi'i ddewis</translation>
 <translation id="1740468249224277719">Tapiwch ddwywaith i'w osod.</translation>
 <translation id="1752547299766512813">Cadw Cyfrineiriau</translation>
@@ -986,7 +984,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9068336935206019333">Agor yn y modd Anhysbys Chrome</translation>
 <translation id="9079935439869366234">Marcio pob un fel heb ei ddarllen</translation>
 <translation id="9081058212938299310">Diweddaru'r cyfrinair ar gyfer <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 eitem</translation>
 <translation id="9083838294503912307">I gysoni a phersonoleiddio ar draws dyfeisiau, trowch gysoni ymlaen.</translation>
 <translation id="9087108903408689779">Cyfrinair sy'n cael ei awgrymu gan Chrome:</translation>
 <translation id="9094033019050270033">Diweddaru cyfrinair</translation>

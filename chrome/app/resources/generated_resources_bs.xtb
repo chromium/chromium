@@ -1632,6 +1632,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2468178265280335214">Ubrzanje klizanja dodirne podloge</translation>
 <translation id="2468205691404969808">Kolačići se koriste kako bi se zapamtile vaše postavke čak iako ne posjećujete ove stranice</translation>
 <translation id="2468402215065996499">Tamagoči</translation>
+<translation id="2468470085922875120">Upotrebljavate zaporke koje je teško pogoditi</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 kartica}one{<ph name="GROUP_TITLE" /> – # kartica}few{<ph name="GROUP_TITLE" /> – # kartice}other{<ph name="GROUP_TITLE" /> – # kartica}}</translation>
 <translation id="2469141124738294431">Status VM-a</translation>
 <translation id="2469259292033957819">Nemate sačuvanih štampača.</translation>
@@ -1970,6 +1971,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2783321960289401138">Kreiranje prečice...</translation>
 <translation id="2783829359200813069">Odabir vrsta enkripcije</translation>
 <translation id="2783952358106015700">Koristite svoj Sigurnosni ključ s aplikacijom <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">Provjera zaporke</translation>
 <translation id="2785873697295365461">Deskriptori fajlova</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Čuvajte lokalne podatke o pregledanju (oznake, lozinke, historiju itd.)</translation>
@@ -2045,6 +2047,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2844169650293029770">USB-C uređaj (prednji priključak na lijevoj strani)</translation>
 <translation id="2844809857160214557">Pregled zadataka štampanja i upravljanje njima</translation>
 <translation id="2845382757467349449">Uvijek prikaži traku oznaka</translation>
+<translation id="284581348330507117">Izradite jedinstvene zaporke</translation>
 <translation id="284805635805850872">Ukloniti štetni softver?</translation>
 <translation id="2849035674501872372">Potražite</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2196,6 +2199,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="2985348301114641460">Poslati administratoru zahtjev da instalira ekstenziju "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2987620471460279764">Tekst dijeljen s drugog uređaja</translation>
 <translation id="2988018669686457659">Rezervni renderer</translation>
+<translation id="2988328607561082373">Ne upotrebljavate stare zaporke</translation>
 <translation id="2989123969927553766">Ubrzanje klizanja miša</translation>
 <translation id="2989474696604907455">nije priključeno</translation>
 <translation id="2989786307324390836">DER šifrirani binarni sistem, pojedinačni certifikat</translation>
@@ -2224,6 +2228,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3009178788565917040">Izlaz</translation>
 <translation id="3009300415590184725">Jeste li sigurni da želite otkazati uslugu postavljanja prijenosa podataka na mobilnoj mreži?</translation>
 <translation id="3009779501245596802">Baza indeksa</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Vaše zaporke izgledaju snažno}=1{{COUNT} slaba zaporka}one{{COUNT} slaba zaporka}few{{COUNT} slabe zaporke}other{{COUNT} slabih zaporki}}</translation>
 <translation id="3010279545267083280">Lozinka je izbrisana</translation>
 <translation id="3010389206479238935">Prisilno otvaranje u:</translation>
 <translation id="3011384993885886186">Toplosiva</translation>
@@ -2313,7 +2318,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3090819949319990166">Nije moguće kopirati crx fajl u <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Uparen je uređaj "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3093714882666365141">Nemoj dozvoliti web lokacijama instaliranje obrađivača plaćanja</translation>
-<translation id="3093958632721393232">Uključi samo kad je razina baterije niska</translation>
+<translation id="3093958632721393232">Uključi samo kada je baterija slaba</translation>
 <translation id="3094141017404513551">Ovo će odvojiti vaše pregledanje od korisnika <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Oznake, lozinke i drugi podaci iz preglednika se sinhroniziraju s primarnim računom.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Isključena je 1 potencijalno štetna ekstenzija. Možete je i ukloniti.}one{Isključena je {NUM_EXTENSIONS} potencijalno štetna ekstenzija. Možete je i ukloniti.}few{Isključene su {NUM_EXTENSIONS} potencijalno štetne ekstenzije. Možete ih i ukloniti.}other{Isključeno je {NUM_EXTENSIONS} potencijalno štetnih ekstenzija. Možete ih i ukloniti.}}</translation>
@@ -4431,6 +4436,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5153234146675181447">Zaboravi telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Napredne postavke za <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{Nema nijedne spremljene zaporke.}=1{Provjerene zaporke za {COUNT} web-lokaciju}one{Provjerene zaporke za {COUNT} web-lokaciju i aplikaciju}few{Provjerene zaporke za {COUNT} web-lokacije i aplikacije}other{Provjerene zaporke za {COUNT} web-lokacija i aplikacija}}</translation>
 <translation id="5154702632169343078">Naslov</translation>
 <translation id="5155327081870541046">Na traci za adresu unesite prečicu za web lokaciju koju želite pretraživati, kao što je "@oznake". Zatim pritisnite željenu prečicu na tastaturi i unesite pojam za pretraživanje.</translation>
 <translation id="5156638757840305347">Kursor se istakne kada se prikaže ili pokrene</translation>
@@ -5013,6 +5019,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5713158217420111469">Povezano je s uređajem <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Stil unosa razmaka</translation>
 <translation id="5715711091495208045">Posrednik dodatka: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">Trebali biste ih odmah promijeniti</translation>
 <translation id="5719603411793408026">Zadani pretraživači</translation>
 <translation id="5719854774000914513">Web lokacije mogu tražiti da se povežu s HID uređajima</translation>
 <translation id="572155275267014074">Postavke Androida</translation>
@@ -5043,7 +5050,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5747552184818312860">Ističe</translation>
 <translation id="5747785204778348146">Programer - nestabilno</translation>
 <translation id="5747809636523347288">Za&amp;lijepi i idi na <ph name="URL" /></translation>
-<translation id="5748137879145720682">Uključi kada je moje računalo isključeno</translation>
+<translation id="5748137879145720682">Uključi kada računar nije priključen na napajanje</translation>
 <translation id="5751345516399502412">Provjeri spremnost dijeljenja internetske veze</translation>
 <translation id="5755022574660047665">uspomene s Google Fotografija</translation>
 <translation id="5756163054456765343">C&amp;entar za pomoć</translation>
@@ -6475,6 +6482,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7098447629416471489">Ostali sačuvani pretraživači će se pojaviti ovdje</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Ukloni aplikaciju}one{Ukloni aplikacije}few{Ukloni aplikacije}other{Ukloni aplikacije}}</translation>
 <translation id="7099337801055912064">Nije moguće učitati veliki PPD. Maksimalna veličina je 250 kB.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Nema ugroženih zaporki}=1{{COUNT} ugrožena zaporka}one{{COUNT} ugrožena zaporka}few{{COUNT} ugrožene zaporke}other{{COUNT} ugroženih zaporki}}</translation>
 <translation id="7102687220333134671">Automatska su ažuriranja uključena</translation>
 <translation id="7102832101143475489">Zahtjev je istekao.</translation>
 <translation id="710640343305609397">Otvori postavke mreže</translation>
@@ -7420,6 +7428,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 Čuvajte fajl ključa na sigurnom mjestu. Trebaće vam za kreiranje nove verzije vaše ekstenzije.</translation>
 <translation id="8002274832045662704">Napredna konfiguracija štampača</translation>
 <translation id="8002670234429879764">Štampač <ph name="PRINTER_NAME" /> više nije dostupan</translation>
+<translation id="8004092996156083991">Obavijestit ćemo vas ako su zaporke ugrožene.</translation>
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8005600846065423578">Uvijek omogući da <ph name="HOST" /> vidi međumemoriju</translation>
 <translation id="8006630792898017994">Razmak ili Tab</translation>
@@ -7686,7 +7695,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8248381369318572865">Pristup mikrofonu i analiziranje vašeg govora</translation>
 <translation id="8248887045858762645">Savjet za Chrome</translation>
 <translation id="8249048954461686687">OEM folder</translation>
-<translation id="8249239468199142122">Štednja baterije</translation>
+<translation id="8249239468199142122">Ušteda baterije</translation>
 <translation id="8249615410597138718">Pošaljite na svoje uređaje</translation>
 <translation id="8250210000648910632">Nema prostora za pohranu</translation>
 <translation id="8251441930213048644">Osvježi sada</translation>
@@ -7919,6 +7928,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8470513973197838199">Sačuvane lozinke za <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Web lokacije se obično povezuju s USB uređajima radi funkcija kao što je štampanje dokumenta ili pohranjivanje na uređaj za pohranu</translation>
 <translation id="8471959340398751476">Popusti su isključeni. Možete ih uključiti u meniju za prilagođavanje</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Vaše su zaporke jedinstvene}=1{{COUNT} višestruko korištena zaporka}one{{COUNT} višestruko korištena zaporka}few{{COUNT} višestruko korištene zaporke}other{{COUNT} višestruko korištenih zaporki}}</translation>
 <translation id="8472623782143987204">s hardverskom podlogom</translation>
 <translation id="8473863474539038330">Adrese i još mnogo toga</translation>
 <translation id="8475313423285172237">Drugi program na vašem računaru je dodao ekstenziju koja može promijeniti rad Chromea.</translation>
@@ -8400,6 +8410,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8940081510938872932">Vaš računar trenutno obavlja previše poslova.  Pokušajte ponovo kasnije.</translation>
 <translation id="8940381019874223173">Iz vaših Google Fotografija</translation>
 <translation id="8941173171815156065">Opozovi odobrenje "<ph name="PERMISSION" />"</translation>
+<translation id="894191600409472540">Izradite snažne zaporke</translation>
 <translation id="894360074127026135">Netscape međunarodna nadogradnja</translation>
 <translation id="8944099748578356325">Brže troši bateriju (trenutno je na <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Veličina ikona</translation>
@@ -8623,6 +8634,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9140067245205650184">Koristite nepodržanu oznaku za funkciju: <ph name="BAD_FLAG" />. Ovo će uticati na stabilnost i sigurnost.</translation>
 <translation id="9142637293078737510">Pseudonim za sliku</translation>
 <translation id="9143298529634201539">Ukloniti prijedlog?</translation>
+<translation id="9143922477019434797">Zaštita zaporki</translation>
 <translation id="9147392381910171771">&amp;Opcije</translation>
 <translation id="9148058034647219655">Izađi</translation>
 <translation id="9148126808321036104">Prijavi se ponovo</translation>

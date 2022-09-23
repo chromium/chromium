@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">I-print</translation>
 <translation id="1434356225517321998">Pinapamahalaan ang iyong browser. <ph name="BEGIN_LINK" />Mga Detalye<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Itago ang Password</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> (na) item</translation>
 <translation id="1450170672351507823">Naka-on ang standard na proteksyon. Para sa higit pang seguridad, gamitin ang Pinahusay na proteksyon.</translation>
 <translation id="149095475893949513">Sinusubukan ng website na ito na mag-download ng profile ng configuration.</translation>
 <translation id="1491277525950327607">I-double tap upang i-toggle ang setting</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">Para mailagay ang iyong mga bookmark sa lahat ng device mo, i-on ang sync.</translation>
 <translation id="1687475363370981210">Markahan ang Lahat Bilang Nabasa Na</translation>
 <translation id="1689333818294560261">Nickname</translation>
-<translation id="1690731385917361335">Walang mga item</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ang napili</translation>
 <translation id="1740468249224277719">I-double tap upang i-install.</translation>
 <translation id="1752547299766512813">I-save ang Mga Password</translation>
@@ -986,7 +984,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9068336935206019333">Buksan sa Chrome Incognito</translation>
 <translation id="9079935439869366234">Markahan ang Lahat bilang Hindi pa Nababasa</translation>
 <translation id="9081058212938299310">I-update ang password para sa <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 item</translation>
 <translation id="9083838294503912307">Para mag-sync at mag-personalize sa mga device, i-on ang pag-sync.</translation>
 <translation id="9087108903408689779">Iminungkahing Password ng Chrome:</translation>
 <translation id="9094033019050270033">I-update ang password</translation>

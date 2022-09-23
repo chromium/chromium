@@ -2294,6 +2294,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3090819949319990166">Harici crx dosyası <ph name="TEMP_CRX_FILE" /> hedefine kopyalanamıyor.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" eşlendi</translation>
 <translation id="3093714882666365141">Sitelerin ödeme işleyici yüklemesine izin verme</translation>
+<translation id="3093958632721393232">Yalnızca şarjım azken etkinleştir</translation>
 <translation id="3094141017404513551">Bu işlem göz atma etkinliklerinizi <ph name="EXISTING_USER" /> hesabından ayıracak</translation>
 <translation id="3095871294753148861">Yer işaretleri, şifreler ve diğer tarayıcı verileri, birincil hesapla senkronize edilir.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Zararlı olabilecek 1 uzantı kapalı. İsterseniz bunu kaldırabilirsiniz.}other{Zararlı olabilecek {NUM_EXTENSIONS} uzantı kapalı. İsterseniz bunları kaldırabilirsiniz.}}</translation>
@@ -5016,6 +5017,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5747552184818312860">Süre sonu tarihi</translation>
 <translation id="5747785204778348146">Geliştirici - kararsız</translation>
 <translation id="5747809636523347288">Ya&amp;pıştır ve <ph name="URL" /> adresine git</translation>
+<translation id="5748137879145720682">Bilgisayarım fişe takılı değilken etkinleştir</translation>
 <translation id="5751345516399502412">Tethering Hazırlık Durumunu Kontrol Et</translation>
 <translation id="5755022574660047665">Google Fotoğraflar'dan anılar</translation>
 <translation id="5756163054456765343">Y&amp;ardım merkezi</translation>
@@ -7649,6 +7651,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8248381369318572865">Mikrofonunuza erişme ve konuşmanızı analiz etme</translation>
 <translation id="8248887045858762645">Chrome ipucu</translation>
 <translation id="8249048954461686687">OEM klasörü</translation>
+<translation id="8249239468199142122">Pil Tasarrufu</translation>
 <translation id="8249615410597138718">Cihazlarınıza Gönderin</translation>
 <translation id="8250210000648910632">Depolama alanı yetersiz</translation>
 <translation id="8251441930213048644">Şimdi yenile</translation>

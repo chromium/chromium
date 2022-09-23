@@ -72,7 +72,6 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1434356225517321998">Tu navegador está administrado. <ph name="BEGIN_LINK" />Detalles<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ocultar contraseña</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> elementos</translation>
 <translation id="1450170672351507823">Se activó la protección estándar. Para obtener más seguridad, usa la Protección mejorada.</translation>
 <translation id="149095475893949513">Este sitio web intenta descargar un perfil de configuración.</translation>
 <translation id="1491277525950327607">Presiona dos veces para activar o desactivar la configuración</translation>
@@ -106,7 +105,6 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="168715261339224929">Activa la sincronización para que tus favoritos estén en todos tus dispositivos.</translation>
 <translation id="1687475363370981210">Marcar todas como leídas</translation>
 <translation id="1689333818294560261">Sobrenombre</translation>
-<translation id="1690731385917361335">Sin elementos</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
 <translation id="1740468249224277719">Presiona dos veces para instalar.</translation>
 <translation id="1752547299766512813">Guardar contraseñas</translation>
@@ -756,6 +754,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6988572888918530647">Administrar tu Cuenta de Google</translation>
 <translation id="6989674195860388998">Cambiar en Configuración…</translation>
 <translation id="6998989275928107238">A</translation>
+<translation id="699954956411469731">Notificaciones móviles</translation>
 <translation id="7004032350256606903">Tu organización requiere que navegues de forma privada.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Pestañas recientes</translation>
@@ -985,7 +984,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9068336935206019333">Abrir en modo Incógnito en Chrome</translation>
 <translation id="9079935439869366234">Marcar todas como no leídas</translation>
 <translation id="9081058212938299310">¿Quieres actualizar la contraseña para <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 elemento</translation>
 <translation id="9083838294503912307">Para sincronizar diferentes dispositivos y personalizar tu experiencia, activa la sincronización.</translation>
 <translation id="9087108903408689779">Contraseña sugerida de Chrome:</translation>
 <translation id="9094033019050270033">Actualizar contraseña</translation>

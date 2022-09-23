@@ -72,7 +72,6 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="1430915738399379752">Chapisha</translation>
 <translation id="1434356225517321998">Kivinjari chako kinadhibitiwa. <ph name="BEGIN_LINK" />Maelezo<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ficha Nenosiri</translation>
-<translation id="145015347812617860">Vipengee <ph name="COUNT" /></translation>
 <translation id="1450170672351507823">Kipengele cha ulinzi wa kawaida kimewashwa. Kwa usalama zaidi, tumia kipengele cha usalama Ulioboreshwa.</translation>
 <translation id="149095475893949513">Tovuti hii inajaribu kupakua wasifu wa mipangilio.</translation>
 <translation id="1491277525950327607">Gusa mara mbili ili ugeuze mipangilio</translation>
@@ -106,7 +105,6 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="168715261339224929">Ili upate alamisho kwenye vifaa vyako vyote, washa usawazishaji.</translation>
 <translation id="1687475363370981210">Tia Alama kuwa Umesoma Zote</translation>
 <translation id="1689333818294560261">Jina la kuwakilisha</translation>
-<translation id="1690731385917361335">Hakuna chochote</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> vimechaguliwa</translation>
 <translation id="1740468249224277719">Gusa mara mbili ili usakinishe.</translation>
 <translation id="1752547299766512813">Hifadhi Manenosiri</translation>
@@ -756,6 +754,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6988572888918530647">Dhibiti Akaunti Yako ya Google</translation>
 <translation id="6989674195860388998">Badilisha katika Mipangilio…</translation>
 <translation id="6998989275928107238">Hadi</translation>
+<translation id="699954956411469731">Arifa za Vifaa vya Mkononi</translation>
 <translation id="7004032350256606903">Shirika lako linahitaji uvinjari kwa faragha.
 <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Vichupo vya Hivi Punde</translation>
@@ -985,7 +984,6 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="9068336935206019333">Fungua katika hali fiche ya Chrome</translation>
 <translation id="9079935439869366234">Tia Alama kuwa Hujasoma Zote</translation>
 <translation id="9081058212938299310">Ungependa kubadilisha nenosiri la <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">Kipengee 1</translation>
 <translation id="9083838294503912307">Ili usawazishe na uweke mapendeleo kwenye vifaa vyote, washa kipengele cha kusawazisha.</translation>
 <translation id="9087108903408689779">Nenosiri Linalopendekezwa na Chrome:</translation>
 <translation id="9094033019050270033">Sasisha nenosiri</translation>

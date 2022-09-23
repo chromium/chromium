@@ -72,7 +72,6 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1434356225517321998">Browser Anda dikelola. <ph name="BEGIN_LINK" />Detail<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Sembunyikan Sandi</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> item</translation>
 <translation id="1450170672351507823">Perlindungan standar aktif. Untuk keamanan yang lebih baik, gunakan Perlindungan yang ditingkatkan.</translation>
 <translation id="149095475893949513">Situs ini mencoba mendownload profil konfigurasi.</translation>
 <translation id="1491277525950327607">Ketuk dua kali untuk beralih setelan</translation>
@@ -106,7 +105,6 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="168715261339224929">Agar bookmark tersedia di semua perangkat Anda, aktifkan sinkronisasi.</translation>
 <translation id="1687475363370981210">Tandai Semua Sudah Dibaca</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
-<translation id="1690731385917361335">Tidak ada item</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dipilih</translation>
 <translation id="1740468249224277719">Ketuk dua kali untuk memasang.</translation>
 <translation id="1752547299766512813">Simpan Sandi</translation>
@@ -986,7 +984,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9068336935206019333">Buka di Samaran Chrome</translation>
 <translation id="9079935439869366234">Tandai Semua Belum Dibaca</translation>
 <translation id="9081058212938299310">Perbarui sandi untuk <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 item</translation>
 <translation id="9083838294503912307">Untuk menyinkronkan dan mempersonalisasi berbagai perangkat, aktifkan sinkronisasi.</translation>
 <translation id="9087108903408689779">Sandi yang Disarankan Chrome:</translation>
 <translation id="9094033019050270033">Perbarui sandi</translation>

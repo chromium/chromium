@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">ລະວັງ: ໄຟລ໌ເຫຼົ່ານີ້ເປັນໄຟລ໌ຊົ່ວຄາວ ແລະ ອາດຖືກລຶບອັດຕະໂນມັດເພື່ອສ້າງພື້ນທີ່ຫວ່າງໃນດິສກ໌.</translation>
 <translation id="3029114385395636667">ເປີດການນຳໃຊ້ Google Docs Offline ເພື່ອໃຫ້ Docs, Sheets ແລະ Slides ໃຊ້ໄດ້ແບບອອບລາຍ</translation>
 <translation id="303198083543495566">ພູມສາດ</translation>
+<translation id="3044404008258011032">ເພື່ອກູ້ຄືນລາຍການເຫຼົ່ານີ້, ກະລຸນາລາກພວກມັນໄປໃສ່ໂຟນເດີໃໝ່ທີ່ຢູ່ນອກຖັງຂີ້ເຫຍື້ອ. ໂຟນເດີເດີມ "<ph name="PARENT_FOLDER_NAME" />" ສຳລັບລາຍການເຫຼົ່ານີ້ຖືກລຶບແລ້ວ.</translation>
 <translation id="3047197340186497470">ພາສາຈີນ (Dayi)</translation>
 <translation id="3067790092342515856">ໄຟລ໌ Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">ກຳລັງເປີດນຳໃຊ້...</translation>
 <translation id="4092890906744441904">ພາສາໄອຣິຊ</translation>
 <translation id="4124935795427217608">ຢູນິຄອນ</translation>
+<translation id="4131235941541910880">ຍ້າຍລາຍການທີ່ທ່ານບໍ່ຕ້ອງການໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="4159731583141908892">ຍ້າຍ <ph name="FILE_NAME" /> ແລ້ວ.</translation>
 <translation id="4176286497474237543">ລ້າງຖັງຂີ້ເຫຍື້ອດຽວນີ້</translation>
 <translation id="4186579485882418952">ເປີດການນຳໃຊ້ອອບລາຍ</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">ພາສາເຢຍລະມັນ</translation>
 <translation id="4867079195717347957">ຄລິກເພື່ອຮຽງລຳດັບຖັນແຕ່ໃຫຍ່ຫານ້ອຍ.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ໄບຕ໌</translation>
+<translation id="4874569719830985133">ລຶບຖາວອນ</translation>
 <translation id="4880214202172289027">​ແຖບ​ເລື່ອນປັບ​ລະດັບ​ສຽງ</translation>
 <translation id="4881695831933465202">ເປີດ</translation>
+<translation id="4891091358278567964">ເພື່ອກູ້ຄືນລາຍການເຫຼົ່ານີ້, ກະລຸນາລາກພວກມັນໄປໃສ່ໂຟນເດີໃໝ່ທີ່ຢູ່ນອກຖັງຂີ້ເຫຍື້ອ. ໂຟນເດີເດີມສຳລັບລາຍການເຫຼົ່ານີ້ຖືກລຶບແລ້ວ.</translation>
 <translation id="4900532980794411603">ແບ່ງປັນກັບ Parallels Desktop</translation>
 <translation id="4902546322522096650">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ເຊື່ອມຕໍ່</translation>
 <translation id="4906580650526544301">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" />%, ລາຍລະອຽດ</translation>
@@ -493,6 +497,7 @@
     <ph name="MARKUP_7" />ແບ່ງປັນ, ສ້າງ ແລະ ເຮັດວຽກຮ່ວມກັນ<ph name="MARKUP_8" />
     ໃນໄຟລ໌ຕ່າງໆກັບຄົນອື່ນທັງໝົດຢູ່ບ່ອນດຽວ.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">ໄຟລ໌ທີ່ກູ້ຄືນຈາກ Google Drive</translation>
+<translation id="5278111733643988471">ເພື່ອກູ້ຄືນລາຍການນີ້, ກະລຸນາລາກມັນໄປໃສ່ໂຟນເດີໃໝ່ທີ່ຢູ່ນອກຖັງຂີ້ເຫຍື້ອ. ໂຟນເດີເດີມ "<ph name="PARENT_FOLDER_NAME" />" ສຳລັບລາຍການນີ້ຖືກລຶບແລ້ວ.</translation>
 <translation id="5286194356314741248">ກຳລັງສະແກນ</translation>
 <translation id="5288441970121584418">ເບີເກີ</translation>
 <translation id="5305688511332277257">ບໍ່ອັນໃດຖືກ​ຕິດ​ຕັ້ງ</translation>
@@ -504,6 +509,7 @@
 <translation id="535792325654997756">ຄົນກັບແມວ</translation>
 <translation id="5358764674931277">ອັດຕາພາບ</translation>
 <translation id="5363339716524495120">ພາສາປ້ອນເຂົ້າແມ່ນຈີນ</translation>
+<translation id="5364067326287025678">ບໍ່ມີຫຍັງໃນຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="5368191757080475556">ແບ່ງປັນໂຟນເດີກັບ Linux</translation>
 <translation id="5402367795255837559">ຕົວໜັງສືນູນ</translation>
 <translation id="5411472733320185105">ຢ່າໃຊ້ການຕັ້ງຄ່າພຣັອກຊີສໍາລັບແມ່ຂ່າຍ ແລະໂດເມນເຫຼົ່ານີ້:</translation>
@@ -770,6 +776,7 @@
 <translation id="7711920809702896782">ຂໍ້ມູນຮູບ</translation>
 <translation id="7724603315864178912">ຕັດ</translation>
 <translation id="7732111077498238432">ຄວບຄຸມເຄືອຂ່າຍຕາມນະໂຍບາຍ</translation>
+<translation id="7736003208887389532">ລຶບໄຟລ໌ເຫຼົ່ານີ້ອອກຢ່າງຖາວອນບໍ?</translation>
 <translation id="7748626145866214022">ມີຕົວເລືອກເພີ່ມເຕີມຢູ່ໃນແຖບດຳເນີນການ. ກະລຸນາກົດ Alt + A ເພື່ອເນັ້ນໜັກໃສ່ແຖບດຳເນີນການ.</translation>
 <translation id="7760449188139285140">ພາສາຈີນ (Wubi)</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
@@ -831,6 +838,7 @@
 <translation id="8249296373107784235">ຍົກເລີກ</translation>
 <translation id="8250690786522693009">ລາຕິນ</translation>
 <translation id="8250920743982581267">ເອກະສານ</translation>
+<translation id="8255595130163158297">ລາຍການທັງໝົດໃນຖັງຂີ້ເຫຍື້ອຈະຖືກລຶບ ແລະ ທ່ານຈະບໍ່ສາມາດກູ້ຄືນພວກມັນໄດ້.</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
 <translation id="8261561378965667560">ອາເຣພາສາຈີນ</translation>
 <translation id="8264024885325823677">ການຕັ້ງຄ່ານີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
@@ -909,6 +917,7 @@
 <translation id="8857149712089373752">ພາສາເນປານທີ່ໃຊ້ແປ້ນພິມຕາມການອອກສຽງ</translation>
 <translation id="8860454412039442620">​ແຜ່ນ​ງານ Excel</translation>
 <translation id="8866284467018526531">ການແປທັບສັບພາສາອາຣັບ</translation>
+<translation id="8873014196523807561">ເພື່ອກູ້ຄືນລາຍການເຫຼົ່ານີ້, ກະລຸນາລາກພວກມັນໄປໃສ່ໂຟນເດີໃໝ່. ໂຟນເດີເດີມສຳລັບບາງລາຍການເຫຼົ່ານີ້ຖືກລຶບແລ້ວ.</translation>
 <translation id="8874184842967597500">ບໍ່​ໄດ້​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="8900820606136623064">ພາສາຮັງກາຣີ</translation>
 <translation id="8903931173357132290">ຈົບ​ການ​ສຶກ​ສາ</translation>

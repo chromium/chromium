@@ -72,7 +72,6 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="1430915738399379752">Ispis</translation>
 <translation id="1434356225517321998">Vaš je preglednik upravljan. <ph name="BEGIN_LINK" />Pojedinosti<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Sakrijte zaporku</translation>
-<translation id="145015347812617860">Broj stavki: <ph name="COUNT" /></translation>
 <translation id="1450170672351507823">Uključena je standardna zaštita. Za još veću sigurnost koristite poboljšanu zaštitu.</translation>
 <translation id="149095475893949513">Web-lokacija pokušava preuzeti profil za konfiguraciju.</translation>
 <translation id="1491277525950327607">Dodirnite dvaput da biste promijenili postavku</translation>
@@ -106,7 +105,6 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="168715261339224929">Da bi se vaše oznake prikazale na svim vašim uređajima, uključite sinkronizaciju.</translation>
 <translation id="1687475363370981210">Označi sve kao pročitano</translation>
 <translation id="1689333818294560261">Nadimak</translation>
-<translation id="1690731385917361335">Nema stavki</translation>
 <translation id="1700629756560807968">Broj odabranih oznaka: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Dodirnite dvaput da biste instalirali.</translation>
 <translation id="1752547299766512813">Spremi zaporke</translation>
@@ -986,7 +984,6 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="9068336935206019333">Otvori u anonimnom načinu Chromea</translation>
 <translation id="9079935439869366234">Označi sve kao nepročitano</translation>
 <translation id="9081058212938299310">Želite li ažurirati zaporku za <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 stavka</translation>
 <translation id="9083838294503912307">Da biste sinkronizirali i prilagodili više uređaja, uključite sinkronizaciju.</translation>
 <translation id="9087108903408689779">Zaporka koju predlaže Chrome:</translation>
 <translation id="9094033019050270033">Ažuriraj zaporku</translation>

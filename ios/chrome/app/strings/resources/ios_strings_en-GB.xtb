@@ -72,7 +72,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1430915738399379752">Print</translation>
 <translation id="1434356225517321998">Your browser is managed. <ph name="BEGIN_LINK" />Details<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Hide password</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> items</translation>
 <translation id="1450170672351507823">Standard protection is on. For even more security, use enhanced protection.</translation>
 <translation id="149095475893949513">This website is trying to download a configuration profile.</translation>
 <translation id="1491277525950327607">Double tap to toggle setting</translation>
@@ -106,7 +105,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="168715261339224929">To get your bookmarks on all your devices, turn on sync.</translation>
 <translation id="1687475363370981210">Mark All Read</translation>
 <translation id="1689333818294560261">Nickname</translation>
-<translation id="1690731385917361335">No items</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selected</translation>
 <translation id="1740468249224277719">Double tap to install.</translation>
 <translation id="1752547299766512813">Save Passwords</translation>
@@ -986,7 +984,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9068336935206019333">Open in Chrome Incognito</translation>
 <translation id="9079935439869366234">Mark All Unread</translation>
 <translation id="9081058212938299310">Update password for <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 item</translation>
 <translation id="9083838294503912307">To sync and personalise across devices, turn on sync.</translation>
 <translation id="9087108903408689779">Chrome suggested password:</translation>
 <translation id="9094033019050270033">Update password</translation>

@@ -2311,6 +2311,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3090819949319990166">Det går inte att kopiera den externa CRX-filen till <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558"><ph name="DEVICE_NAME" /> har kopplats</translation>
 <translation id="3093714882666365141">Tillåt inte att webbplatser installerar betalningshanterare</translation>
+<translation id="3093958632721393232">Aktivera endast när batterinivån är låg</translation>
 <translation id="3094141017404513551">Om du gör detta hålls webbinformationen isär från <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Bokmärken, lösenord och annan webbinformation synkroniseras med det primära kontot.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 tillägg som kan vara skadligt har inaktiverats. Du kan även ta bort det.}other{{NUM_EXTENSIONS} tillägg som kan vara skadliga har inaktiverats. Du kan även ta bort dem.}}</translation>
@@ -5033,6 +5034,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5747552184818312860">Upphör att gälla</translation>
 <translation id="5747785204778348146">Utvecklare – instabil</translation>
 <translation id="5747809636523347288">Kli&amp;stra in och besök <ph name="URL" /></translation>
+<translation id="5748137879145720682">Aktivera när datorn är urkopplad</translation>
 <translation id="5751345516399502412">Kontrollera beredskap för internetdelning</translation>
 <translation id="5755022574660047665">minnen från Google Foto</translation>
 <translation id="5756163054456765343">Hjälpc&amp;enter</translation>
@@ -7667,6 +7669,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8248381369318572865">Få åtkomst till telefonen och analysera ditt tal</translation>
 <translation id="8248887045858762645">Tips för Chrome</translation>
 <translation id="8249048954461686687">OEM-mapp</translation>
+<translation id="8249239468199142122">Batterisparläge</translation>
 <translation id="8249615410597138718">Skicka till dina enheter</translation>
 <translation id="8250210000648910632">Slut på lagringsutrymme</translation>
 <translation id="8251441930213048644">Uppdatera nu</translation>

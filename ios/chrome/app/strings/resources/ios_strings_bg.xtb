@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1434356225517321998">Браузърът ви е управляван. <ph name="BEGIN_LINK" />Подробности<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Скриване на паролата</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> елемента</translation>
 <translation id="1450170672351507823">Режимът за стандартна защита е включен. За още по-голяма сигурност използвайте подобрената защита.</translation>
 <translation id="149095475893949513">Този уебсайт се опитва да изтегли конфигурационен профил.</translation>
 <translation id="1491277525950327607">Докоснете двукратно за превключване на настройката</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">Включете синхронизирането, за да получите отметките си на всичките си устройства.</translation>
 <translation id="1687475363370981210">Означаване на всичко като прочетено</translation>
 <translation id="1689333818294560261">Псевдоним</translation>
-<translation id="1690731385917361335">Няма елементи</translation>
 <translation id="1700629756560807968">Избрахте <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Докоснете двукратно, за да инсталирате.</translation>
 <translation id="1752547299766512813">Запазени пароли</translation>
@@ -986,7 +984,6 @@
 <translation id="9068336935206019333">Отваряне в режим „инкогнито“ в Chrome</translation>
 <translation id="9079935439869366234">Означаване на всичко като непрочетено</translation>
 <translation id="9081058212938299310">Да се актуализира ли паролата за <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 елемент</translation>
 <translation id="9083838294503912307">Включете синхронизирането, за да се възползвате от синхронизиране и персонализиране на всички устройства.</translation>
 <translation id="9087108903408689779">Предложена от Chrome парола:</translation>
 <translation id="9094033019050270033">Актуализиране на паролата</translation>

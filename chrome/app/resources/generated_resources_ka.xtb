@@ -2296,6 +2296,7 @@
 <translation id="3090819949319990166">გარე crx ფაილის <ph name="TEMP_CRX_FILE" />-ში კოპირება შეუძლებელია.</translation>
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />“ დაწყვილებულია</translation>
 <translation id="3093714882666365141">საიტებისთვის გადახდის დამმუშავებლების ინსტალაციის აკრძალვა</translation>
+<translation id="3093958632721393232">მხოლოდ მაშინ ჩართვა, როცა ბატარეის დონე დაბალია</translation>
 <translation id="3094141017404513551">ეს ქმედება განაცალკევებს თქვენსა და <ph name="EXISTING_USER" />-ის დათვალიერების მონაცემებს</translation>
 <translation id="3095871294753148861">სანიშნეები, პაროლები და ბრაუზერის სხვა მონაცემები სინქრონიზებულია ძირითად ანგარიშთან.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 პოტენციურად საზიანო გაფართოება გამორთულია. შეგიძლიათ მისი ამოშლაც.}other{{NUM_EXTENSIONS} პოტენციურად საზიანო გაფართოება გამორთულია. შეგიძლიათ მათი ამოშლაც.}}</translation>
@@ -5017,6 +5018,7 @@
 <translation id="5747552184818312860">ვადა</translation>
 <translation id="5747785204778348146">შემმუშავებელი - არასტაბილური</translation>
 <translation id="5747809636523347288">ჩა&amp;სმა და <ph name="URL" />-ზე გადასვლა</translation>
+<translation id="5748137879145720682">ჩართვა, როცა კომპიუტერი ელკვებიდან გამოერთებულია</translation>
 <translation id="5751345516399502412">ტეტერინგის მზადყოფნის შემოწმება</translation>
 <translation id="5755022574660047665">მოგონებები Google Photos-იდან</translation>
 <translation id="5756163054456765343">დახმარ&amp;ების ცენტრი</translation>
@@ -7649,6 +7651,7 @@
 <translation id="8248381369318572865">თქვენს მიკროფონზე წვდომა და თქვენი მეტყველების გაანალიზება</translation>
 <translation id="8248887045858762645">Chrome მინიშნება</translation>
 <translation id="8249048954461686687">OEM საქაღალდე</translation>
+<translation id="8249239468199142122">ბატარეის დამზოგი</translation>
 <translation id="8249615410597138718">გააგზავნეთ თქვენს მოწყობილობებზე</translation>
 <translation id="8250210000648910632">მეხსიერება არასაკმარისია</translation>
 <translation id="8251441930213048644">ახლავე განახლება</translation>

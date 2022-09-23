@@ -1276,6 +1276,7 @@
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> saytına bağlantı güvənli deyil</translation>
 <translation id="4349365535725594680">Məxfi kontenti paylaşmaq olmur</translation>
+<translation id="4349810866125026513">İstənilən halda yükləyin</translation>
 <translation id="4350629523305688469">Çoxfunksiyalı Qab</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> yaxınlıqdakı Bluetooth cihazlarını axtarmaq istəyir. Aşağıdakı cihazlar tapıldı:</translation>
 <translation id="4351175281479794167">Doğrulama Kodunu daxil edin</translation>
@@ -1416,6 +1417,7 @@
 <translation id="4744514002166662487">Təqdimat yaradın</translation>
 <translation id="4744603770635761495">İcra olunan yol</translation>
 <translation id="4749011317274908093">Anonim rejimə keçdiniz</translation>
+<translation id="4750671009706599284">bu telefon</translation>
 <translation id="4750917950439032686">Bu saytda göndərildiyi zaman məlumatınız (məsələn, parol və ya kredit kartı nömrəsi) gizli saxlanır.</translation>
 <translation id="4751476147751820511">Hərəkət və ışıq sensorları</translation>
 <translation id="4754461935447132332">Güvənsiz saytlar üçün icazə verilmir</translation>
@@ -2013,6 +2015,7 @@
 <translation id="6337133576188860026">Maksimum <ph name="SIZE" /> boşaldılır. Növbəti dəfə daxil olarkən bəzi saytlar daha yavaş yüklənə bilər.</translation>
 <translation id="6337534724793800597">Siyasətləri adlara əsasən filtrləyin</translation>
 <translation id="6340739886198108203">Administrator siyasəti məxfi kontent göründükdə skrinşot çəkməyi və ya nəsə qeydə almağı tövsiyə etmir:</translation>
+<translation id="6341434961864773665">{0,plural, =1{Administrator siyasəti bu faylı <ph name="DESTINATION_NAME" /> bölməsinə yükləməyi tövsiyə etmir}other{Administrator siyasəti bu faylları <ph name="DESTINATION_NAME" /> bölməsinə yükləməyi tövsiyə etmir}}</translation>
 <translation id="6348220984832452017">Aktiv Variasiyalar</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> tətbiqini quraşdırın</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Heç biri}=1{1 parol (<ph name="DOMAIN_LIST" /> üçün sinxronizasiya edilib)}=2{2 parol (<ph name="DOMAIN_LIST" />üçün sinxronizasiya edilib)}other{# parol (<ph name="DOMAIN_LIST" />üçün sinxronizasiya edilib)}}</translation>
@@ -2196,6 +2199,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome bu səhifənin daha rahat oxunması üçün onu sadələşdirib. Chrome güvənsiz bağlantı üzərindən ilkin səhifəni açdı.</translation>
 <translation id="6890443033788248019">Məkan icazəsi verilsin?</translation>
+<translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> istifadə edən saytlarda <ph name="DEVICE_LABEL" /> ilə doğrulamağı seçmisiniz. Bu provayder ödəniş metodunuz haqqında məlumat saxlamış ola bilər, bu məlumatın <ph name="BEGIN_LINK" />silinməsini tələb edə<ph name="END_LINK" /> bilərsiniz.</translation>
 <translation id="6891596781022320156">Qayda səviyyəsi dəstəklənmir.</translation>
 <translation id="6895143722905299846">Virtual nömrə:</translation>
 <translation id="6895330447102777224">Kartınız təsdiqləndi</translation>
@@ -2562,6 +2566,7 @@
 <translation id="7766518757692125295">Ətək</translation>
 <translation id="7770259615151589601">Təyin Edilmiş Uzunluq</translation>
 <translation id="7773005668374414287">Eyni sıra ilə üzü yuxarı</translation>
+<translation id="7785790577395078482">bu planşet</translation>
 <translation id="7791011319128895129">Buraxılmayıb</translation>
 <translation id="7791196057686275387">Balanslaşdırın</translation>
 <translation id="7791543448312431591">Əlavə etmək</translation>
@@ -2659,6 +2664,7 @@
 <translation id="8075736640322370409">Cəld yeni Google Cədvəl yaradın</translation>
 <translation id="8075898834294118863">Sayt ayarlarını idarə edin</translation>
 <translation id="8076492880354921740">Tablar</translation>
+<translation id="8078006011486731853">{0,plural, =1{Məxfi fayl yüklənsin?}other{Məxfi fayllar yüklənsin?}}</translation>
 <translation id="8078141288243656252">Döndərilidikdə annotasiya mümkün deyil</translation>
 <translation id="8079031581361219619">Sayt yenidən yüklənsin?</translation>
 <translation id="8081087320434522107">Sedan</translation>

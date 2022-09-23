@@ -69,7 +69,6 @@
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1434356225517321998">お使いのブラウザは管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">パスワードを非表示にします</translation>
-<translation id="145015347812617860"><ph name="COUNT" />個のアイテム</translation>
 <translation id="1450170672351507823">標準保護機能がオンになっています。セキュリティをさらに強化するには、保護強化機能を使用してください。</translation>
 <translation id="149095475893949513">このウェブサイトが設定プロファイルをダウンロードしようとしています。</translation>
 <translation id="1491277525950327607">設定を切り替えるにはダブルタップします</translation>
@@ -103,7 +102,6 @@
 <translation id="168715261339224929">お使いのどのデバイスでも同じブックマークを使用するには、同期を有効にします。</translation>
 <translation id="1687475363370981210">すべて既読にする</translation>
 <translation id="1689333818294560261">ニックネーム</translation>
-<translation id="1690731385917361335">アイテムなし</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件選択しました</translation>
 <translation id="1740468249224277719">ダブルタップしてインストール。</translation>
 <translation id="1752547299766512813">パスワードの保存</translation>
@@ -384,6 +382,7 @@
 <translation id="4187450337729239226">貼り付けて検索</translation>
 <translation id="4223967053752765281">ログインは組織によってオフにされています。このデバイスのブックマーク、履歴、パスワードなどの設定は、引き続き使用できます。これらの設定に変更を加えた場合、変更内容はアカウントと同期されません。</translation>
 <translation id="4233831822770018312">権限を編集</translation>
+<translation id="4236584471598725073">価格をトラッキング中</translation>
 <translation id="4237377247299956313">[<ph name="BEGIN_BOLD" />デフォルトのブラウザアプリ<ph name="END_BOLD" />] をタップする</translation>
 <translation id="424315890655130736">パスフレーズの入力</translation>
 <translation id="4249955472157341256">最新で並べ替え</translation>
@@ -979,7 +978,6 @@
 <translation id="9068336935206019333">シークレット モードの Chrome で開く</translation>
 <translation id="9079935439869366234">すべて未読にする</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> のパスワードを更新しますか？</translation>
-<translation id="9083392325882095631">1個のアイテム</translation>
 <translation id="9083838294503912307">カスタマイズした設定を複数のデバイスで同期して使用するには、同期を有効にします。</translation>
 <translation id="9087108903408689779">Chrome の推奨パスワード:</translation>
 <translation id="9094033019050270033">パスワードを更新</translation>

@@ -1617,6 +1617,7 @@
 <translation id="2468178265280335214">Убрзање померања тачпедом</translation>
 <translation id="2468205691404969808">Користи колачиће да би се запамтила подешавања, чак и када не посећујете те странице</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
+<translation id="2468470085922875120">Користите лозинке које тешко могу да се погоде</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 картица}one{<ph name="GROUP_TITLE" /> – # картица}few{<ph name="GROUP_TITLE" /> – # картице}other{<ph name="GROUP_TITLE" /> – # картица}}</translation>
 <translation id="2469141124738294431">Статус виртуелне машине</translation>
 <translation id="2469259292033957819">Немате сачуваних штампача.</translation>
@@ -1955,6 +1956,7 @@
 <translation id="2783321960289401138">Направи пречицу...</translation>
 <translation id="2783829359200813069">Изаберите типове шифровања</translation>
 <translation id="2783952358106015700">Користите безбедносни кључ у апликацији <ph name="APP_NAME" /></translation>
+<translation id="2785267875302712148">Провера лозинки</translation>
 <translation id="2785873697295365461">Дескриптори датотека</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Задржи локалне податке прегледања (обележиваче, лозинке, историју итд)</translation>
@@ -2030,6 +2032,7 @@
 <translation id="2844169650293029770">Уређај са USB прикључком типа C (леви предњи порт)</translation>
 <translation id="2844809857160214557">Прегледајте задатке штампања и управљајте њима</translation>
 <translation id="2845382757467349449">Увек приказуј траку са обележивачима</translation>
+<translation id="284581348330507117">Направите јединствене лозинке</translation>
 <translation id="284805635805850872">Желите ли да уклоните штетан софтвер?</translation>
 <translation id="2849035674501872372">Потражите</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2181,6 +2184,7 @@
 <translation id="2985348301114641460">Желите ли да пошаљете захтев администратору да инсталира „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2987620471460279764">Текст који се дели са другог уређаја</translation>
 <translation id="2988018669686457659">Резервни приказивач</translation>
+<translation id="2988328607561082373">Ниједну лозинку не користите за више налога</translation>
 <translation id="2989123969927553766">Убрзавање померања мишем</translation>
 <translation id="2989474696604907455">није прикључено</translation>
 <translation id="2989786307324390836">Бинарна датотека шифрована методом „DER“, један сертификат</translation>
@@ -2209,6 +2213,7 @@
 <translation id="3009178788565917040">Излаз</translation>
 <translation id="3009300415590184725">Да ли сте сигурни да желите да откажете процес подешавања услуге мобилних података?</translation>
 <translation id="3009779501245596802">Индексиране базе података</translation>
+<translation id="3010234549896186761">{COUNT,plural, =0{Лозинке изгледају јако}=1{{COUNT} слаба лозинка}one{{COUNT} слаба лозинка}few{{COUNT} слабе лозинке}other{{COUNT} слабих лозинки}}</translation>
 <translation id="3010279545267083280">Лозинка је избрисана</translation>
 <translation id="3010389206479238935">Принудно отварање у</translation>
 <translation id="3011384993885886186">Топла нијанса сиве</translation>
@@ -4415,6 +4420,7 @@
 <translation id="5153234146675181447">Заборављање телефона</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Напредна подешавања за <ph name="PRINTING_DESTINATION" /></translation>
+<translation id="5154489426653745263">{COUNT,plural, =0{Нема сачуваних лозинки.}=1{Проверили смо лозинке за {COUNT} сајт}one{Проверили смо лозинке за {COUNT} сајт и апликацију}few{Проверили смо лозинке за {COUNT} сајта и апликације}other{Проверили смо лозинке за {COUNT} сајтова и апликација}}</translation>
 <translation id="5154702632169343078">Тема</translation>
 <translation id="5155327081870541046">У траци за адресу унесите пречицу за сајт који желите да претражите, на пример, „@bookmarks“. Затим притисните жељену тастерску пречицу и унесите термин за претрагу.</translation>
 <translation id="5156638757840305347">Курсор се истиче кад се појави или помери</translation>
@@ -4997,6 +5003,7 @@
 <translation id="5713158217420111469">Успостављена је веза са: <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Стил уноса за Space</translation>
 <translation id="5715711091495208045">Посредник додатне компоненте: <ph name="PLUGIN_NAME" /></translation>
+<translation id="5718049162805123412">Одмах их промените</translation>
 <translation id="5719603411793408026">Подразумевани претраживачи</translation>
 <translation id="5719854774000914513">Сајтови могу да траже да се повезују са HID уређајима</translation>
 <translation id="572155275267014074">Android подешавања</translation>
@@ -6459,6 +6466,7 @@
 <translation id="7098447629416471489">Други сачувани претраживачи ће се појавити овде</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Уклони апликацију}one{Уклони апликације}few{Уклони апликације}other{Уклони апликације}}</translation>
 <translation id="7099337801055912064">Велики PPD не може да се учита. Максимална величина је 250 kB.</translation>
+<translation id="7099739618316136113">{COUNT,plural, =0{Нема угрожених лозинки}=1{{COUNT} угрожена лозинка}one{{COUNT} угрожена лозинка}few{{COUNT} угрожене лозинке}other{{COUNT} угрожених лозинки}}</translation>
 <translation id="7102687220333134671">Аутоматска ажурирања су укључена</translation>
 <translation id="7102832101143475489">Захтев је истекао</translation>
 <translation id="710640343305609397">Отвори подешавања мреже</translation>
@@ -7403,6 +7411,7 @@
 Чувајте датотеку кључа на сигурном месту. Биће вам потребна да направите нове верзије додатка.</translation>
 <translation id="8002274832045662704">Напредна конфигурација штампача</translation>
 <translation id="8002670234429879764">Штампач <ph name="PRINTER_NAME" /> више није доступан</translation>
+<translation id="8004092996156083991">Ако су вам лозинке угрожене, обавестићемо вас о томе.</translation>
 <translation id="8004582292198964060">Прегледач</translation>
 <translation id="8005600846065423578">Увек дозволи да <ph name="HOST" /> види привремену меморију</translation>
 <translation id="8006630792898017994">Тастер за размак или Tab</translation>
@@ -7902,6 +7911,7 @@
 <translation id="8470513973197838199">Сачуване лозинке за <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Сајтови се обично повезују са USB уређајима за потребе функција попут штампања докумената или чувања садржаја на меморијским уређајима</translation>
 <translation id="8471959340398751476">Попусти су искључени. Можете да их укључите у менију за прилагођавање</translation>
+<translation id="8472563193954285009">{COUNT,plural, =0{Ваше лозинке су јединствене}=1{{COUNT} лозинка коју користите за више налога}one{{COUNT} лозинка коју користите за више налога}few{{COUNT} лозинке које користите за више налога}other{{COUNT} лозинки које користите за више налога}}</translation>
 <translation id="8472623782143987204">хардверски подржан</translation>
 <translation id="8473863474539038330">Адресе и друго</translation>
 <translation id="8475313423285172237">Други програм на рачунару је додао додатак који може да промени начин на који Chrome функционише.</translation>
@@ -8383,6 +8393,7 @@
 <translation id="8940081510938872932">Рачунар тренутно ради превише ствари. Пробајте поново касније.</translation>
 <translation id="8940381019874223173">Из Google слика</translation>
 <translation id="8941173171815156065">Опозовите дозволу „<ph name="PERMISSION" />“</translation>
+<translation id="894191600409472540">Направите јаке лозинке</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">бржа потрошња батерије (тренутно <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8945274638472141382">Величина иконе</translation>
@@ -8606,6 +8617,7 @@
 <translation id="9140067245205650184">Користите неподржану ознаку функције: <ph name="BAD_FLAG" />. Угрозићете стабилност и безбедност.</translation>
 <translation id="9142637293078737510">Псеудоним за слику</translation>
 <translation id="9143298529634201539">Желите ли да уклоните предлог?</translation>
+<translation id="9143922477019434797">Заштитите лозинке</translation>
 <translation id="9147392381910171771">&amp;Опције</translation>
 <translation id="9148058034647219655">Изађи</translation>
 <translation id="9148126808321036104">Пријави ме поново</translation>

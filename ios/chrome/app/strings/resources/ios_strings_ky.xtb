@@ -72,7 +72,6 @@
 <translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1434356225517321998">Серепчиңиз башкарылып жатат. <ph name="BEGIN_LINK" />Чоо-жайы<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Сырсөздү жашыруу</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> нерсе</translation>
 <translation id="1450170672351507823">Стандарттуу коргоо күйүк. Анын ордуна Жакшыртылган коргоону колдонуңуз.</translation>
 <translation id="149095475893949513">Бул вебсайт конфигурациялык профилди жүктөп алууга аракет кылып жатат.</translation>
 <translation id="1491277525950327607">Жөндөөнү которуштуруу үчүн, эки жолу таптаңыз</translation>
@@ -106,7 +105,6 @@
 <translation id="168715261339224929">Кыстармаларды бардык түзмөктөрүңүздө колдонуу үчүн шайкештирүүнү күйгүзүңүз.</translation>
 <translation id="1687475363370981210">Баары окулган деп белгилөө</translation>
 <translation id="1689333818294560261">Ылакап ат</translation>
-<translation id="1690731385917361335">Эч нерсе жок</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> тандалды</translation>
 <translation id="1740468249224277719">Орнотуу үчүн эки жолу таптап коюңуз.</translation>
 <translation id="1752547299766512813">Сырсздрдү сакт</translation>
@@ -756,6 +754,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6988572888918530647">Google аккаунтунун жөндөөлөрүнө өтүү</translation>
 <translation id="6989674195860388998">Жөндөөлөрдөн которуу…</translation>
 <translation id="6998989275928107238">Кимге</translation>
+<translation id="699954956411469731">Мобилдик түзмөктөгү билдирмелер</translation>
 <translation id="7004032350256606903">Уюмуңуз жекече серептөөнү талап кылат.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Акыркы өтмөктөр</translation>
@@ -985,7 +984,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="9068336935206019333">Chrome'до Жашыруун режимде ачуу</translation>
 <translation id="9079935439869366234">Баарын окула элек деп белгилөө</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> үчүн сырсөз жаңыртылсынбы?</translation>
-<translation id="9083392325882095631">1 нерсе</translation>
 <translation id="9083838294503912307">Бардык түзмөктөрүңүздө шайкештирүү жана жекечелештирүү үчүн шайкештирүүнү иштетиңиз.</translation>
 <translation id="9087108903408689779">Chrome сунуштаган сырсөз:</translation>
 <translation id="9094033019050270033">Сырсөздү жаңыртуу</translation>

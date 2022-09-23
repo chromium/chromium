@@ -896,6 +896,7 @@
 <translation id="6064463340679478396">Я больше не использую этот файл</translation>
 <translation id="6073451960410192870">Остановить запись</translation>
 <translation id="6074087755403037157">Бета-версия</translation>
+<translation id="6095008505822982596">Скорость речи</translation>
 <translation id="6099678161144790572">Изменено за последний месяц</translation>
 <translation id="6103838137565245112">система</translation>
 <translation id="6114505516289286752">Скачаны файлы распознавания речи для языка: <ph name="LANGUAGE" /></translation>
@@ -1252,7 +1253,6 @@
 <translation id="8152264887680882389"><ph name="TEXT" />, автозаполнение</translation>
 <translation id="8155007568264258537">Функцией "<ph name="FEATURE_NAME" />" управляет администратор.</translation>
 <translation id="8155628902202578800">Открыть диалоговое окно с информацией об аккаунте <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="8157728322324420120">Рекомендуем</translation>
 <translation id="8167567890448493835">Используемый язык: <ph name="LOCALE_NAME" /></translation>
 <translation id="8183592608247778598">Просмотр недавних фотографий, медиафайлов, уведомлений и приложений с телефона на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="8192202700944119416">Уведомления скрыты</translation>

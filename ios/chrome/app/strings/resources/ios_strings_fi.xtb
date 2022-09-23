@@ -72,7 +72,6 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="1430915738399379752">Tulosta</translation>
 <translation id="1434356225517321998">Tämä on ylläpidetty selain. <ph name="BEGIN_LINK" />Tiedot<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Piilota salasana</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> kohdetta</translation>
 <translation id="1450170672351507823">Perustason suojaus on päällä. Käytä parannettua suojausta, jos haluat lisäsuojaa.</translation>
 <translation id="149095475893949513">Verkkosivusto yrittää ladata määritysprofiilia.</translation>
 <translation id="1491277525950327607">Muuta asetusta kaksoisnapauttamalla.</translation>
@@ -106,7 +105,6 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="168715261339224929">Ota synkronointi käyttöön, niin voit käyttää kirjanmerkkejä kaikilla laitteillasi.</translation>
 <translation id="1687475363370981210">Merkitse kaikki luetuiksi</translation>
 <translation id="1689333818294560261">Lempinimi</translation>
-<translation id="1690731385917361335">Ei kohteita</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valittu</translation>
 <translation id="1740468249224277719">Asenna kaksoisnapauttamalla.</translation>
 <translation id="1752547299766512813">Tall. salasanat</translation>
@@ -756,6 +754,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="6988572888918530647">Hallinnoi Google-tiliäsi</translation>
 <translation id="6989674195860388998">Vaihda asetuksissa…</translation>
 <translation id="6998989275928107238">Vastaanottaja</translation>
+<translation id="699954956411469731">Mobiili-ilmoitukset</translation>
 <translation id="7004032350256606903">Organisaatiosi edellyttää, että selaat yksityisesti.
 <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Hiljattain suljetut välilehdet</translation>
@@ -985,7 +984,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="9068336935206019333">Avaa Chromen incognito-tilassa</translation>
 <translation id="9079935439869366234">Merkitse kaikki lukemattomiksi</translation>
 <translation id="9081058212938299310">Päivitetäänkö salasana: <ph name="USERNAME" />?</translation>
-<translation id="9083392325882095631">1 kohde</translation>
 <translation id="9083838294503912307">Ota synkronointi käyttöön, niin sisältö synkronoidaan ja yksilöidään eri laitteilla.</translation>
 <translation id="9087108903408689779">Chromen salasanaehdotus:</translation>
 <translation id="9094033019050270033">Päivitä salasana</translation>

@@ -72,7 +72,6 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1434356225517321998">Je browser wordt beheerd. <ph name="BEGIN_LINK" />Details<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Wachtwoord verbergen</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> items</translation>
 <translation id="1450170672351507823">Standaardbeveiliging staat aan. Gebruik verbeterde beveiliging voor nog meer bescherming.</translation>
 <translation id="149095475893949513">Deze website probeert een configuratieprofiel te downloaden.</translation>
 <translation id="1491277525950327607">Dubbeltik om de instelling aan of uit te zetten</translation>
@@ -106,7 +105,6 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="168715261339224929">Zet de synchronisatie aan om al je bookmarks op al je apparaten te bekijken.</translation>
 <translation id="1687475363370981210">Alles als gelezen markeren</translation>
 <translation id="1689333818294560261">Bijnaam</translation>
-<translation id="1690731385917361335">Geen items</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> geselecteerd</translation>
 <translation id="1740468249224277719">Dubbeltik om te installeren.</translation>
 <translation id="1752547299766512813">Wachtwoorden opslaan</translation>
@@ -986,7 +984,6 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9068336935206019333">Openen in Chrome-incognitomodus</translation>
 <translation id="9079935439869366234">Alles als ongelezen markeren</translation>
 <translation id="9081058212938299310">Wachtwoord voor <ph name="USERNAME" /> updaten?</translation>
-<translation id="9083392325882095631">1 item</translation>
 <translation id="9083838294503912307">Zet de synchronisatie aan om verschillende apparaten te synchroniseren en te personaliseren.</translation>
 <translation id="9087108903408689779">Wachtwoord voorgesteld door Chrome:</translation>
 <translation id="9094033019050270033">Wachtwoord updaten</translation>

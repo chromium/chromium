@@ -897,6 +897,7 @@
 <translation id="6064463340679478396">अब फ़ाइल को इस्तेमाल नहीं करना है</translation>
 <translation id="6073451960410192870">रिकॉर्डिंग बंद करें</translation>
 <translation id="6074087755403037157">बीटा चैनल</translation>
+<translation id="6095008505822982596">बोलने की दर</translation>
 <translation id="6099678161144790572">इसमें, पिछले महीने बदलाव किया गया था</translation>
 <translation id="6103838137565245112">सिस्टम</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> स्पीच फ़ाइलें डाउनलोड हो गई हैं</translation>
@@ -1253,7 +1254,6 @@
 <translation id="8152264887680882389"><ph name="TEXT" />, अपने आप पूरा</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> इस सेटिंग को आपका एडमिन मैनेज करता है.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> के लिए, जानकारी वाला डायलॉग खोलें.</translation>
-<translation id="8157728322324420120">आपके लिए सुझाए गए</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> का इस्तेमाल किया जा रहा है</translation>
 <translation id="8183592608247778598">अपने <ph name="DEVICE_TYPE" /> पर, फ़ोन में मौजूद हाल ही की फ़ोटो, मीडिया, सूचनाएं, और ऐप्लिकेशन देखें</translation>
 <translation id="8192202700944119416">सूचनाएं छिपी हुई हैं.</translation>

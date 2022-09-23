@@ -72,7 +72,6 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="1430915738399379752">Spausdinti</translation>
 <translation id="1434356225517321998">Jūsų naršyklė tvarkoma. <ph name="BEGIN_LINK" />Išsami informacija<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Slėpti slaptažodį</translation>
-<translation id="145015347812617860">Elementų: <ph name="COUNT" /></translation>
 <translation id="1450170672351507823">Įprasta apsauga įjungta. Jei norite apsisaugoti dar labiau, naudokite sustiprintą apsaugą.</translation>
 <translation id="149095475893949513">Ši svetainė bando atsisiųsti konfigūracijos profilį.</translation>
 <translation id="1491277525950327607">Dukart palieskite, kad perjungtumėte nustatymą</translation>
@@ -106,7 +105,6 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="168715261339224929">Jei norite gauti žymes visuose įrenginiuose, įjunkite sinchronizavimą.</translation>
 <translation id="1687475363370981210">Pažymėti visus kaip skaitytus</translation>
 <translation id="1689333818294560261">Slapyvardis</translation>
-<translation id="1690731385917361335">Nėra jokių elementų</translation>
 <translation id="1700629756560807968">Pasirinkta: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1740468249224277719">Dukart palieskite, kad įdiegtumėte.</translation>
 <translation id="1752547299766512813">Išs. slaptažod.</translation>
@@ -986,7 +984,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9068336935206019333">Atidaryti „Chrome“ inkognito režimu</translation>
 <translation id="9079935439869366234">Pažymėti visus kaip neskaitytus</translation>
 <translation id="9081058212938299310">Atnaujinti <ph name="USERNAME" /> slaptažodį?</translation>
-<translation id="9083392325882095631">Elementų: 1</translation>
 <translation id="9083838294503912307">Kad turinys būtų sinchronizuojamas ir suasmeninamas visuose įrenginiuose, įjunkite sinchronizavimą</translation>
 <translation id="9087108903408689779">„Chrome“ siūlomas slaptažodis:</translation>
 <translation id="9094033019050270033">Atnaujinti slaptažodį</translation>

@@ -224,6 +224,7 @@
 <translation id="3016566519832145558">Atenție: aceste fișiere sunt temporare și pot fi șterse automat pentru a elibera spațiu pe disc.</translation>
 <translation id="3029114385395636667">Activează Documente Google Offline pentru a folosi offline Documente, Foi de calcul și Prezentări.</translation>
 <translation id="303198083543495566">Geografie</translation>
+<translation id="3044404008258011032">Pentru a restabili elementele, trage-le într-un dosar nou în afara coșului de gunoi. Dosarul inițial <ph name="PARENT_FOLDER_NAME" /> pentru aceste elemente a fost șters.</translation>
 <translation id="3047197340186497470">Chineză Dayi</translation>
 <translation id="3067790092342515856">Fișiere Windows</translation>
 <translation id="3083975830683400843">Dispozitivele Chromebit</translation>
@@ -341,6 +342,7 @@
 <translation id="4057991113334098539">Activare...</translation>
 <translation id="4092890906744441904">Irlandeză</translation>
 <translation id="4124935795427217608">Unicorn</translation>
+<translation id="4131235941541910880">Mută elementele de care nu ai nevoie în coșul de gunoi</translation>
 <translation id="4159731583141908892">Mutate: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Golește coșul de gunoi acum</translation>
 <translation id="4186579485882418952">Activează funcția offline</translation>
@@ -435,8 +437,10 @@
 <translation id="485316830061041779">Germană</translation>
 <translation id="4867079195717347957">Dă clic pentru a sorta coloana în ordine descrescătoare.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byți</translation>
+<translation id="4874569719830985133">Șterge definitiv</translation>
 <translation id="4880214202172289027">Glisor de volum</translation>
 <translation id="4881695831933465202">Deschide</translation>
+<translation id="4891091358278567964">Pentru a restabili elementele, trage-le într-un dosar nou în afara coșului de gunoi. Dosarele inițiale pentru aceste elemente au fost șterse.</translation>
 <translation id="4900532980794411603">Permite accesul Parallels Desktop</translation>
 <translation id="4902546322522096650">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, conectează-te</translation>
 <translation id="4906580650526544301">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, detalii</translation>
@@ -493,6 +497,7 @@
     <ph name="MARKUP_7" />Trimite și creează fișiere. Colaborează<ph name="MARKUP_8" />
     cu alte persoane la realizarea fișierelor. Totul într-un singur loc.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Fișiere recuperate din Google Drive</translation>
+<translation id="5278111733643988471">Pentru a restabili elementul, trage-l într-un dosar nou în afara coșului de gunoi. Dosarul inițial <ph name="PARENT_FOLDER_NAME" /> pentru acest element a fost șters.</translation>
 <translation id="5286194356314741248">Scanare</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -505,6 +510,7 @@
 <translation id="535792325654997756">Persoană cu pisici</translation>
 <translation id="5358764674931277">Rata de cadre</translation>
 <translation id="5363339716524495120">Limba de introducere a textului este chineza</translation>
+<translation id="5364067326287025678">Coșul de gunoi este gol</translation>
 <translation id="5368191757080475556">Permite accesul Linux la dosar</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5411472733320185105">Nu utiliza setările proxy pentru următoarele gazde și domenii:</translation>
@@ -771,6 +777,7 @@
 <translation id="7711920809702896782">Informații despre fișierul imagine</translation>
 <translation id="7724603315864178912">Decupează</translation>
 <translation id="7732111077498238432">Rețeaua este controlată de politică</translation>
+<translation id="7736003208887389532">Ștergi definitiv fișierele?</translation>
 <translation id="7748626145866214022">Mai multe opțiuni disponibile în bara de acțiuni. Apasă pe Alt + A pentru a focaliza bara de acțiune.</translation>
 <translation id="7760449188139285140">Chineză Wubi</translation>
 <translation id="7765158879357617694">Mută</translation>
@@ -832,6 +839,7 @@
 <translation id="8249296373107784235">Abandonați</translation>
 <translation id="8250690786522693009">Latină</translation>
 <translation id="8250920743982581267">Documente</translation>
+<translation id="8255595130163158297">Toate elementele din coșul de gunoi vor fi șterse și nu le vei putea restabili.</translation>
 <translation id="8261506727792406068">Șterge</translation>
 <translation id="8261561378965667560">Chineză Array</translation>
 <translation id="8264024885325823677">Această setare este gestionată de administrator.</translation>
@@ -910,6 +918,7 @@
 <translation id="8857149712089373752">Nepaleză cu tastatură fonetică</translation>
 <translation id="8860454412039442620">Foaie de calcul Excel</translation>
 <translation id="8866284467018526531">Arabă, transliterație</translation>
+<translation id="8873014196523807561">Pentru a restabili elementele, trage-le într-un dosar nou. Dosarele inițiale pentru unele dintre aceste elemente au fost șterse.</translation>
 <translation id="8874184842967597500">Neconectat</translation>
 <translation id="8900820606136623064">Maghiară</translation>
 <translation id="8903931173357132290">Absolvent</translation>

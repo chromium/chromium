@@ -1281,6 +1281,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Yhteys sivustoon (<ph name="SITE" />) ei ole turvallinen</translation>
 <translation id="4349365535725594680">Luottamuksellista sisältöä ei voida jakaa</translation>
+<translation id="4349810866125026513">Lataa silti</translation>
 <translation id="4350629523305688469">Monikäyttölokero</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> haluaa etsiä lähellä olevia Bluetooth-laitteita. Seuraavat laitteet löydettiin:</translation>
 <translation id="4351175281479794167">Lisää vahvistuskoodi</translation>
@@ -2018,6 +2019,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6337133576188860026">Vapauttaa alle <ph name="SIZE" />. Jotkin sivustot saattavat latautua hitaammin seuraavalla käynnillä.</translation>
 <translation id="6337534724793800597">Suodata käytäntöjä nimen mukaan</translation>
 <translation id="6340739886198108203">Järjestelmänvalvojakäytännössä ei suositella kuvakaappausten ottamista tai tallenteen kuvaamista, kun luottamuksellinen sisältö on näkyvissä:</translation>
+<translation id="6341434961864773665">{0,plural, =1{Järjestelmänvalvojakäytännössä ei suositella tiedoston lataamista tänne: <ph name="DESTINATION_NAME" />.}other{Järjestelmänvalvojakäytännössä ei suositella tiedostojen lataamista tänne: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6348220984832452017">Aktiiviset muunnelmat</translation>
 <translation id="6349101878882523185">Asenna <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ei mitään}=1{1 salasana: (<ph name="DOMAIN_LIST" />, synkronoitu)}=2{2 salasanaa (<ph name="DOMAIN_LIST" />, synkronoitu)}other{# salasanaa (<ph name="DOMAIN_LIST" />, synkronoitu)}}</translation>
@@ -2664,6 +2666,7 @@ Lisätietoja:
 <translation id="8075736640322370409">Luo uusi Google-taulukko nopeasti</translation>
 <translation id="8075898834294118863">Muuta sivustoasetuksia</translation>
 <translation id="8076492880354921740">Välilehdet</translation>
+<translation id="8078006011486731853">{0,plural, =1{Ladataanko luottamuksellinen tiedosto?}other{Ladataanko luottamukselliset tiedostot?}}</translation>
 <translation id="8078141288243656252">Kierrettyyn asiakirjaan ei voi tehdä merkintöjä</translation>
 <translation id="8079031581361219619">Ladataanko sivusto uudelleen?</translation>
 <translation id="8081087320434522107">Sedan-autot</translation>

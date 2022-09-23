@@ -23,6 +23,7 @@
 <translation id="117624967391683467">Копирање датотеке <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Паузирај</translation>
 <translation id="1190144681599273207">Преузимање ове датотеке ће искористити око <ph name="FILE_SIZE" /> података за мобилне уређаје.</translation>
+<translation id="1194390763418645112">Приступ фајлу са <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Даље</translation>
 <translation id="1209796539517632982">Аутоматски сервери назива</translation>
 <translation id="1210831758834677569">лаоски</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">Chrome уређаји</translation>
 <translation id="1572585716423026576">Постави као позадину</translation>
 <translation id="1576937952766665062">бенгалски (транслитерација)</translation>
+<translation id="1577977504532381335">Прегледајте смернице администратора</translation>
 <translation id="158849752021629804">Потребна је матична мрежа</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -112,6 +114,7 @@
 <translation id="1942765061641586207">Резолуција слике</translation>
 <translation id="1972984168337863910">Прошири окна за повратне информације о датотекама</translation>
 <translation id="1995337122023280937">Иди на локацију датотеке</translation>
+<translation id="1999709132469742660">Приступ фајлу преко свих URL-ова</translation>
 <translation id="2001796770603320721">Управљајте на Диску</translation>
 <translation id="2009067268969781306">Форматирањем диска избрисаће се сви подаци сачувани на њему. Ова радња не може да се опозове.</translation>
 <translation id="2025955442973426285">тигриња</translation>
@@ -142,6 +145,7 @@
 <translation id="2239068707900391003">Особа са кафом</translation>
 <translation id="2251368349685848079">Врати из отпада</translation>
 <translation id="2282155092769082568">URL за аутоматску конфигурацију:</translation>
+<translation id="2284767815536050991">преносива меморија</translation>
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Отварају се датотеке (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Отвара се датотека <ph name="FILE_NAME" />.</translation>
@@ -343,6 +347,7 @@
 <translation id="4092890906744441904">ирски</translation>
 <translation id="4124935795427217608">Једнорог</translation>
 <translation id="4131235941541910880">Преместите ставке које вам не требају у отпад</translation>
+<translation id="4157569377477607576">Смернице администратора не препоручују:</translation>
 <translation id="4159731583141908892">Премештених ставки: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Одмах испразни отпад</translation>
 <translation id="4186579485882418952">Омогући офлајн</translation>
@@ -507,6 +512,7 @@
 <translation id="5323213332664049067">Латинска Америка</translation>
 <translation id="5330145655348521461">Ове датотеке су отворене на другом профилу. Пређите на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) да бисте их погледали.</translation>
 <translation id="5330512191124428349">Преузми податке</translation>
+<translation id="5337538975554986899">Приступ фајлу преко свих URL-ова осим <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">Особа са мачкама</translation>
 <translation id="5358764674931277">Брзина кадрова</translation>
 <translation id="5363339716524495120">Језик уноса је кинески</translation>
@@ -532,6 +538,7 @@
 <translation id="5533102081734025921">Слика <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Израчунавање величине</translation>
 <translation id="554153475311314364">грчки, транслитерација</translation>
+<translation id="5580591966435005537">виртуелна машина</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Ширина знакова интерпункције је пуна</translation>
 <translation id="5602622065581044566">бугарски са фонетском тастатуром</translation>
@@ -592,6 +599,7 @@
 <translation id="61118516107968648">CSV текст</translation>
 <translation id="6129953537138746214">Размак</translation>
 <translation id="6133173853026656527">Премештање датотеке <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">Администратор прати:</translation>
 <translation id="613750717151263950">јапански са америчком тастатуром</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, нема мреже</translation>
 <translation id="6146563240635539929">Видео снимци</translation>
@@ -612,6 +620,7 @@
 <translation id="6287852322318138013">Изаберите апликацију за отварање ове датотеке</translation>
 <translation id="6295542640242147836">Закључај SIM</translation>
 <translation id="6296410173147755564">Неважећи PUK</translation>
+<translation id="6308243004861726558">Овај фајл је поверљив и подлеже смерницама администратора. Важе следеће радње приступа фајлу и преноса фајла.</translation>
 <translation id="6312403991423642364">Непозната грешка на мрежи</translation>
 <translation id="6317608858038767920">Прилагођени сервер имена <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> архива</translation>
@@ -842,6 +851,7 @@
 <translation id="8255595130163158297">Све ставке у отпаду ће бити избрисане и нећете моћи да их вратите.</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8261561378965667560">низ за кинески</translation>
+<translation id="8262872909443689080">Администраторске смернице</translation>
 <translation id="8264024885325823677">Овим подешавањем управља администратор.</translation>
 <translation id="8269755669432358899">Скупи окна за повратне информације о датотекама</translation>
 <translation id="8280151743281770066">јерменска фонетска</translation>
@@ -940,6 +950,7 @@
 <translation id="9100610230175265781">Потребна је приступна фраза</translation>
 <translation id="9110990317705400362">Стално тражимо нове начине да учинимо прегледање безбеднијим. Раније је сваки веб-сајт могао да вам затражи да додате додатак у прегледач. У најновијим верзијама Google Chrome-а морате експлицитно да кажете Chrome-у да желите да инсталирате те додатке тако што ћете их додати преко странице Додаци. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Откључај</translation>
+<translation id="9116909380156770361">Пренос фајла у: <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Кодек</translation>
 <translation id="9130775360844693113">Чланови из „<ph name="DESTINATION_NAME" />“ ће добити приступ овим ставкама.</translation>
 <translation id="9131598836763251128">Избор једне или више датотека</translation>
@@ -961,6 +972,7 @@
 <translation id="943972244133411984">Изменио/ла</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
 <translation id="947144732524271678">Изабрали сте низ ставки (<ph name="ENTRY_COUNT" />) од ставке <ph name="FROM_ENTRY_NAME" /> до ставке <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">Смернице администратора спречавају:</translation>
 <translation id="965477715979482472">енглески (Јужноафричка Република)</translation>
 <translation id="981121421437150478">Офлајн</translation>
 <translation id="988685240266037636">Датотека „<ph name="FILE_NAME" />“ већ постоји. Да ли желите да је замените?</translation>
