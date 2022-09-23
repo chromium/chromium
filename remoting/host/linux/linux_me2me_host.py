@@ -188,6 +188,11 @@ def gen_xorg_config():
       # add additional devices.
       '  Option "CoreKeyboard" "true"\n'
       '  Option "CorePointer" "true"\n'
+      # The "void" driver is no longer available since Debian 11, but having an
+      # InputDevice section with an invalid driver will still prevent the Xorg
+      # server from using a fallback InputDevice setting. However, "Chrome
+      # Remote Desktop Input" will not appear in the device list if the driver
+      # is not available.
       '  Driver "void"\n'
       'EndSection\n'
       '\n'
@@ -999,13 +1004,6 @@ class XDesktop(Desktop):
     if USE_XVFB_ENV_VAR in os.environ:
       return True
 
-    # xserver-xorg-input-void is no longer available in Debian stable. If we
-    # don't see the driver then Xorg+Dummy will be broken, and we fallback to
-    # XVFB.
-    if not os.path.exists('/usr/lib/xorg/modules/input/void_drv.so'):
-      logging.info('xserver-xorg-input-void is not installed')
-      return True
-
     # Check if xserver-xorg-video-dummy is up-to-date. Older versions don't
     # support the DUMMY* outputs and can't be used.
     # Unfortunately, dummy_drv.so doesn't seem to have any version info so we
@@ -1048,8 +1046,6 @@ class XDesktop(Desktop):
     # GTK can end up connecting to an active Wayland display instead of the
     # CRD X11 session.
     self.child_env["GDK_BACKEND"] = "x11"
-    if self.use_xvfb:
-      self.child_env[USE_XVFB_ENV_VAR] = "true"
 
   def launch_session(self, *args, **kwargs):
     logging.info("Launching X server and X session.")

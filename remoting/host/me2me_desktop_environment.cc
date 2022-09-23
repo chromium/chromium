@@ -37,15 +37,25 @@
 #include "base/win/windows_version.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if defined(REMOTING_USE_X11)
+#include "remoting/host/linux/x11_util.h"
+#include "ui/gfx/x/connection.h"
+#endif  // defined(REMOTING_USE_X11)
+
 namespace remoting {
 
 namespace {
 
-#if BUILDFLAG(IS_LINUX)
+#if defined(REMOTING_USE_X11)
 
-constexpr char kUseXvfbEnvVar[] = "CHROME_REMOTE_DESKTOP_USE_XVFB";
+// Helper function that caches the result of IsUsingVideoDummyDriver().
+bool UsingVideoDummyDriver() {
+  static bool is_using_dummy_driver =
+      IsUsingVideoDummyDriver(x11::Connection::Get());
+  return is_using_dummy_driver;
+}
 
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // defined(REMOTING_USE_X11)
 
 }  // namespace
 
@@ -115,19 +125,17 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
   }
 
 #if BUILDFLAG(IS_LINUX)
-  // Multi-stream and client-controlled layout are only supported with
-  // Xorg+Dummy.
-  // TODO(crbug.com/1366595): Either just remove this check if the dependency
-  // issue is resolved in Debian stable, or make it smarter, such as checking if
-  // the randr output has DUMMY*.
-  if (!base::Environment::Create()->HasVar(kUseXvfbEnvVar)) {
-    capabilities += " ";
-    capabilities += protocol::kMultiStreamCapability;
+  capabilities += " ";
+  capabilities += protocol::kMultiStreamCapability;
+
 #if defined(REMOTING_USE_X11)
+  // Client-controlled layout is only supported with Xorg+video-dummy.
+  if (UsingVideoDummyDriver()) {
     capabilities += " ";
     capabilities += protocol::kClientControlledLayoutCapability;
-#endif  // defined(REMOTING_USE_X11)
   }
+#endif  // defined(REMOTING_USE_X11)
+
 #endif  // BUILDFLAG(IS_LINUX)
 
   return capabilities;

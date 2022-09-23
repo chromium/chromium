@@ -5,8 +5,11 @@
 #include "remoting/host/linux/x11_util.h"
 
 #include "base/bind.h"
+#include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "remoting/base/logging.h"
 #include "ui/gfx/x/future.h"
+#include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xproto_types.h"
 #include "ui/gfx/x/xtest.h"
@@ -37,6 +40,9 @@ bool IgnoreXServerGrabs(x11::Connection* connection, bool ignore) {
 bool IsVirtualSession(x11::Connection* connection) {
   // Try to identify a virtual session. Since there's no way to tell from the
   // vendor string, we check for known virtual input devices.
+  // For Xorg+video-dummy, there is no input device that is specific to CRD, so
+  // we just check if all input devices are virtual and if the display outputs
+  // are all DUMMY*.
   // TODO(lambroslambrou): Find a similar way to determine that the *output* is
   // secure.
   if (!connection->xinput().present()) {
@@ -53,7 +59,6 @@ bool IsVirtualSession(x11::Connection* connection) {
 
   bool found_xvfb_mouse = false;
   bool found_xvfb_keyboard = false;
-  bool found_crd_void_input = false;
   bool found_other_devices = false;
   for (size_t i = 0; i < devices->devices.size(); i++) {
     const auto& device_info = devices->devices[i];
@@ -62,7 +67,9 @@ bool IsVirtualSession(x11::Connection* connection) {
       if (name == "Xvfb mouse") {
         found_xvfb_mouse = true;
       } else if (name == "Chrome Remote Desktop Input") {
-        found_crd_void_input = true;
+        // Ignored. This device only exists if xserver-xorg-input-void is
+        // installed, which is no longer available since Debian 11, so we can't
+        // use it to reliably check if the user is on Xorg+video-dummy.
       } else if (name != "Virtual core XTEST pointer") {
         found_other_devices = true;
         HOST_LOG << "Non-virtual mouse found: " << name;
@@ -90,8 +97,49 @@ bool IsVirtualSession(x11::Connection* connection) {
       HOST_LOG << "Non-virtual device found: " << name;
     }
   }
-  return ((found_xvfb_mouse && found_xvfb_keyboard) || found_crd_void_input) &&
+  return ((found_xvfb_mouse && found_xvfb_keyboard) ||
+          IsUsingVideoDummyDriver(connection)) &&
          !found_other_devices;
+}
+
+bool IsUsingVideoDummyDriver(x11::Connection* connection) {
+  if (!connection->randr().present()) {
+    // If RANDR is not available, assume it is not using a video dummy driver.
+    LOG(ERROR) << "RANDR extension not available";
+    return false;
+  }
+
+  auto root = connection->default_root();
+  auto randr = connection->randr();
+  auto resources = randr.GetScreenResourcesCurrent({root}).Sync();
+  if (!resources) {
+    LOG(ERROR) << "Cannot get screen resources";
+    return false;
+  }
+  if (resources->outputs.empty()) {
+    LOG(ERROR) << "RANDR returns no outputs";
+    return false;
+  }
+  bool has_only_dummy_outputs = true;
+  for (x11::RandR::Output output : resources->outputs) {
+    auto output_info =
+        randr
+            .GetOutputInfo({.output = output,
+                            .config_timestamp = resources->config_timestamp})
+            .Sync();
+    if (!output_info) {
+      LOG(WARNING) << "Cannot get info for output "
+                   << base::to_underlying(output);
+      continue;
+    }
+    auto* output_name = reinterpret_cast<char*>(output_info->name.data());
+    if (!base::StartsWith(output_name, "DUMMY")) {
+      HOST_LOG << "Non-dummy output found: " << output_name;
+      has_only_dummy_outputs = false;
+      break;
+    }
+  }
+  return has_only_dummy_outputs;
 }
 
 }  // namespace remoting

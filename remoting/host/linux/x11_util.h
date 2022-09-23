@@ -38,6 +38,10 @@ bool IgnoreXServerGrabs(x11::Connection* connection, bool ignore);
 // Returns whether the host is running under a virtual session.
 bool IsVirtualSession(x11::Connection* connection);
 
+// Returns whether the video dummy driver is being used (all outputs are
+// DUMMY*).
+bool IsUsingVideoDummyDriver(x11::Connection* connection);
+
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_LINUX_X11_UTIL_H_
