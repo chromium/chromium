@@ -355,7 +355,7 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, signatures are only verified at installation-time, thus the
   // `FakeSignatureVerifier` set up above will never be called.
-  // TODO(cmfcmf): Make sure signatures are actually verified during
+  // TODO(crbug.com/1366309): Make sure signatures are actually verified during
   // installation once installation is implemented.
   FulfillMetadata();
   FulfillResponse(resource_request);
@@ -539,7 +539,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   }
 }
 
-// TODO(crbug.com/1334594): Add a test that checks the behavior when
+// TODO(crbug.com/1365853): Add a test that checks the behavior when
 // `SignedWebBundleReader`s for two different Web Bundle IDs are requested
 // concurrently. Testing this is currently not possible, since running two
 // `MockWebBundleParser`s at the same time is not yet possible.

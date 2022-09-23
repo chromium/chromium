@@ -13,7 +13,8 @@
 namespace web_app {
 
 // This class represents an entry on the signature stack of the integrity block
-// of a Signed Web Bundle.
+// of a Signed Web Bundle. See the documentation of
+// `SignedWebBundleIntegrityBlock` for more details of how this class is used.
 class SignedWebBundleSignatureStackEntry {
  public:
   // Attempt to convert the provided Mojo signature stack entry into an instance

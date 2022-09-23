@@ -149,7 +149,8 @@ void SignedWebBundleReader::OnIntegrityBlockParsed(
   }
 
   integrity_block_size_in_bytes_ = integrity_block->size_in_bytes();
-  auto public_key_stack = integrity_block->GetPublicKeyStack();
+  std::vector<web_package::Ed25519PublicKey> public_key_stack =
+      integrity_block->GetPublicKeyStack();
 
   std::move(integrity_block_result_callback)
       .Run(public_key_stack,

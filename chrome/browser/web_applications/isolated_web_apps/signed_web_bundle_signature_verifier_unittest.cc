@@ -108,8 +108,8 @@ class SignedWebBundleSignatureVerifierGoToolTest
   base::test::TaskEnvironment task_environment_;
 };
 
-// TODO(crbug.com/1315947): Add additional tests for Signed Web Bundles that
-// have more than once signature once the Go tool supports it.
+// TODO(crbug.com/1366303): Add additional tests for Signed Web Bundles that
+// have more than one signature once the Go tool supports it.
 
 TEST_P(SignedWebBundleSignatureVerifierGoToolTest, VerifySimpleWebBundle) {
   auto file_path = GetTestFilePath(std::get<0>(GetParam()).first);

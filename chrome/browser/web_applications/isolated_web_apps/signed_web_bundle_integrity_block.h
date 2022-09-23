@@ -18,7 +18,16 @@ namespace web_app {
 
 // This class represents the integrity block of a Signed Web Bundle. It is
 // guaranteed to have a `size_in_bytes` greater than 0, and at least one
-// signature stack entry.
+// signature stack entry. It is constructed from a
+// `web_package::mojom::BundleIntegrityBlockPtr`, which is the result of
+// CBOR-parsing the integrity block of the Signed Web Bundle in a separate data
+// decoder process. Given that the Signed Web Bundle is untrusted user input,
+// there is a potential for an attacker to compromise the data decoder process
+// by providing a malicious bundle and exploiting a memory safety bug.
+//
+// This class wraps the data received from the data decoder process into
+// strongly typed classes, and re-verifies the validity of the data where
+// possible (e.g., by checking that public keys have the correct length).
 class SignedWebBundleIntegrityBlock {
  public:
   // Attempt to convert the provided Mojo integrity block into an instance of

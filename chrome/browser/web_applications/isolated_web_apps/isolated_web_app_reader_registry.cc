@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
@@ -18,16 +19,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
-
-namespace {
-
-// This is used in `absl::visit` below, but Clang incorrectly detects this as an
-// unused variable. Therefore this is marked with `__attribute__((unused))` to
-// suppress that warning.
-template <class>
-inline constexpr bool always_false_v __attribute__((unused)) = false;
-
-}  // namespace
 
 IsolatedWebAppReaderRegistry::IsolatedWebAppReaderRegistry(
     std::unique_ptr<IsolatedWebAppValidator> validator,
@@ -135,32 +126,25 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
 
   if (read_error.has_value()) {
     std::string error_message = absl::visit(
-        [](auto&& error) {
-          using T = std::decay_t<decltype(error)>;
-          if constexpr (std::is_same_v<T,
-                                       web_package::mojom::
-                                           BundleIntegrityBlockParseErrorPtr>) {
-            return base::StringPrintf("Failed to parse integrity block: %s",
-                                      error->message.c_str());
-          } else if constexpr (std::is_same_v<
-                                   T, SignedWebBundleReader::AbortedByCaller>) {
-            return base::StringPrintf(
-                "Public keys of the Isolated Web App are untrusted: %s",
-                error.message.c_str());
-          } else if constexpr (std::is_same_v<
-                                   T,
-                                   SignedWebBundleSignatureVerifier::Error>) {
-            return base::StringPrintf("Failed to verify signatures: %s",
-                                      error.message.c_str());
-          } else if constexpr (std::is_same_v<
-                                   T, web_package::mojom::
-                                          BundleMetadataParseErrorPtr>) {
-            return base::StringPrintf("Failed to parse metadata: %s",
-                                      error->message.c_str());
-          } else {
-            static_assert(always_false_v<T>, "The visitor is non-exhaustive.");
-          }
-        },
+        base::Overloaded{
+            [](const web_package::mojom::BundleIntegrityBlockParseErrorPtr&
+                   error) {
+              return base::StringPrintf("Failed to parse integrity block: %s",
+                                        error->message.c_str());
+            },
+            [](const SignedWebBundleReader::AbortedByCaller& error) {
+              return base::StringPrintf(
+                  "Public keys of the Isolated Web App are untrusted: %s",
+                  error.message.c_str());
+            },
+            [](const SignedWebBundleSignatureVerifier::Error& error) {
+              return base::StringPrintf("Failed to verify signatures: %s",
+                                        error.message.c_str());
+            },
+            [](const web_package::mojom::BundleMetadataParseErrorPtr& error) {
+              return base::StringPrintf("Failed to parse metadata: %s",
+                                        error->message.c_str());
+            }},
         *read_error);
     for (auto& [resource_request, callback] : pending_requests) {
       std::move(callback).Run(

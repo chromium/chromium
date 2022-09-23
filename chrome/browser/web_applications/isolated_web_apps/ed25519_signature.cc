@@ -10,6 +10,8 @@
 
 namespace web_app {
 
+// We don't use `ED25519_SIGNATURE_LEN` in the header file, because we want to
+// avoid including large BoringSSL headers in header files.
 static_assert(Ed25519Signature::kLength == ED25519_SIGNATURE_LEN);
 
 // static

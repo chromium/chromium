@@ -95,10 +95,15 @@ SignedWebBundleSignatureVerifier::CalculateHashOfUnsignedWebBundle(
 
   auto secure_hash = crypto::SecureHash::Create(crypto::SecureHash::SHA512);
 
-  // The unsigned Web Bundle begins after the integrity block, thus this loop
-  // initializes `offset` with the size of the integrity block.
+  // Calculate the hash of the Signed Web Bundle excluding its integrity block.
+  // The file might be too big to read it into memory all at once, which is why
+  // it is read in chunks of size `web_bundle_chunk_size`.
   for (int64_t offset = integrity_block_size; offset < file_length;) {
-    std::vector<char> data(std::min(web_bundle_chunk_size, file_length));
+    std::vector<char> data(
+        // The size of the last chunk (`file_length - offset`) might be smaller
+        // than `web_bundle_chunk_size`. Make sure to only reserve as much
+        // memory as is really needed.
+        std::min(web_bundle_chunk_size, file_length - offset));
     int bytes_read = (*file)->Read(offset, data.data(), data.size());
     if (bytes_read < 0) {
       return base::unexpected(
@@ -143,7 +148,25 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
   const SignedWebBundleSignatureStackEntry& signature_stack_entry =
       integrity_block.signature_stack()[0];
 
-  auto payload_to_verify = web_package::CreateSignaturePayload({
+  // The algorithm shown in [1] is a more abstract view of the verification
+  // process, i.e., it does not take the actual technical limitations imposed by
+  // the browser architecture into account:
+  //
+  // Instead of reading the integrity block from the Signed Web Bundle and
+  // popping the top signature stack entry from the signature stack to create an
+  // empty integrity block, we create an empty integrity block here from
+  // scratch. This is because we cannot do any CBOR parsing of untrusted input
+  // (like the Signed Web Bundle) outside of the data decoder process due to the
+  // "Rule Of 2". Any CBOR parsing must occur in `web_package::WebBundleParser`.
+  //
+  // Similarly, magic bytes and version of the integrity block are read deep
+  // within the low-level `web_package::IntegrityBlockParser`. The code that
+  // checks that the signature stack entry attributes only contain the
+  // `ed25519PublicKey` attribute also lives in that class.
+  //
+  // [1]
+  // https://github.com/WICG/webpackage/blob/3f95ec365b87ed19d2cb5186e473ccc4d011e2af/explainers/integrity-signature.md
+  std::vector<uint8_t> payload_to_verify = web_package::CreateSignaturePayload({
       .unsigned_web_bundle_hash = *unsigned_web_bundle_hash,
       .integrity_block_cbor = CreateIntegrityBlockCBOR(),
       .attributes_cbor = signature_stack_entry.attributes_cbor(),

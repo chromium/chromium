@@ -26,6 +26,8 @@ class SignedWebBundleIntegrityBlock;
 // Bundle's integrity block. Currently, only one signature is supported, as
 // described in the explainer here:
 // github.com/WICG/webpackage/blob/main/explainers/integrity-signature.md
+//
+// TODO(crbug.com/1366303): Support more than one signature.
 class SignedWebBundleSignatureVerifier {
  public:
   struct Error {
@@ -41,9 +43,9 @@ class SignedWebBundleSignatureVerifier {
     std::string message;
   };
 
-  // Takes the size of each chunk read from the web bundle to verify its
-  // integrity. Higher values use more RAM, but may potentially be a bit faster.
-  // It is exposed here instead of being a constant mainly for testing.
+  // Takes the chunk size in which the Signed Web Bundle is read for calculating
+  // its SHA512 hash. Higher values use more RAM, but may potentially be a bit
+  // faster. It is exposed here instead of being a constant mainly for testing.
   explicit SignedWebBundleSignatureVerifier(
       uint64_t web_bundle_chunk_size = 10 * 1000 * 1000);
 
@@ -56,6 +58,8 @@ class SignedWebBundleSignatureVerifier {
   // block `integrity_block`. Executes the `callback` with `absl::nullopt` on
   // success, or an instance of `Error` on error. Only one signature is
   // currently supported.
+  //
+  // TODO(crbug.com/1366303): Support more than one signature.
   virtual void VerifySignatures(scoped_refptr<web_package::SharedFile> file,
                                 SignedWebBundleIntegrityBlock integrity_block,
                                 SignatureVerificationCallback callback);

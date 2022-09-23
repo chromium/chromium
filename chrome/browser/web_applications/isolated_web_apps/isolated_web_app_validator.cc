@@ -20,8 +20,8 @@ absl::optional<std::string> IsolatedWebAppValidator::ValidateIntegrityBlock(
     return "The Isolated Web App must have at least one signature.";
   }
 
-  // TODO: Check whether we trust the public keys contained in the integrity
-  // block here.
+  // TODO(crbug.com/1365852): Check whether we trust the public keys contained
+  // in the integrity block here.
   return absl::nullopt;
 }
 

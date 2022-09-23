@@ -41,7 +41,7 @@ constexpr std::array<uint8_t, 32> kEd25519PublicKey = {
 
 }  // namespace
 
-// TODO(crbug.com/1315947): Extend this test once we have implemented a
+// TODO(crbug.com/1365852): Extend this test once we have implemented a
 // mechanism that provides the trusted public keys.
 TEST(IsolatedWebAppValidatorIntegrityBlockTest, OnePublicKey) {
   auto web_bundle_id =

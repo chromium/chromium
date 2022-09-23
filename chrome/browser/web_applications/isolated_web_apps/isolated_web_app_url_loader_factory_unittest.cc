@@ -71,6 +71,8 @@ std::unique_ptr<WebApp> CreateIsolatedWebApp(const GURL& start_url,
   return web_app;
 }
 
+}  // namespace
+
 class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
  public:
   explicit IsolatedWebAppURLLoaderFactoryTest(
@@ -326,5 +328,4 @@ TEST_F(IsolatedWebAppURLLoaderFactoryFeatureFlagDisabledTest,
   EXPECT_THAT(ResponseInfo(), IsNull());
 }
 
-}  // namespace
 }  // namespace web_app

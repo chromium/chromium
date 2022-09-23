@@ -24,8 +24,8 @@ class IsolatedWebAppValidator {
   virtual ~IsolatedWebAppValidator() = default;
 
   // Validates that the integrity block of the Isolated Web App contains trusted
-  // signatures given the `web_bundle_id`. Returns `absl::nullopt` on success,
-  // or an error message if the signatures are not trusted.
+  // public keys given the `web_bundle_id`. Returns `absl::nullopt` on success,
+  // or an error message if the public keys are not trusted.
   [[nodiscard]] virtual absl::optional<std::string> ValidateIntegrityBlock(
       web_package::SignedWebBundleId web_bundle_id,
       const std::vector<web_package::Ed25519PublicKey>& public_key_stack);

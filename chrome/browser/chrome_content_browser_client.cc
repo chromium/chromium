@@ -5151,7 +5151,7 @@ void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kIsolatedWebApps) &&
       !browser_context->ShutdownStarted()) {
-    // TODO(crbug.com/1334594): Only register the factory if we are already in
+    // TODO(crbug.com/1365848): Only register the factory if we are already in
     // an isolated storage partition.
     factories->emplace(chrome::kIsolatedAppScheme,
                        web_app::IsolatedWebAppURLLoaderFactory::Create(
@@ -5407,7 +5407,7 @@ void ChromeContentBrowserClient::
       web_contents) {
     if (auto* browser_context = web_contents->GetBrowserContext();
         !browser_context->ShutdownStarted()) {
-      // TODO(crbug.com/1334594): Only register the factory if we are already in
+      // TODO(crbug.com/1365848): Only register the factory if we are already in
       // an isolated storage partition.
       factories->emplace(
           chrome::kIsolatedAppScheme,

@@ -48,7 +48,10 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       delete;
 
   // A `Response` object contains the response head, as well as a `ReadBody`
-  // function to read the response's body.
+  // function to read the response's body. It holds weakly onto a
+  // `SignedWebBundleReader` for reading the response body. This reference will
+  // remain valid until the reader is evicted from the cache of the
+  // `IsolatedWebAppReaderRegistry`.
   class Response {
    public:
     Response(web_package::mojom::BundleResponsePtr head,
@@ -67,7 +70,9 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
     const web_package::mojom::BundleResponsePtr& head() { return head_; }
 
     // Reads the body of the response into `producer_handle`, calling `callback`
-    // on both success and failure.
+    // with `net::OK` on success, and another error code on failure. A failure
+    // may also occur if the `SignedWebBundleReader` that was used to read the
+    // response head has since been evicted from the cache.
     void ReadBody(mojo::ScopedDataPipeProducerHandle producer_handle,
                   base::OnceCallback<void(net::Error net_error)> callback);
 
@@ -134,9 +139,9 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
                      SignedWebBundleReader::ReadResponseError> response_head);
 
   // A `CacheEntry` has two states: In its initial `kPending` state, it caches
-  // requests made to a web bundle until the `SignedWebBundleReader` is ready.
-  // Once the `SignedWebBundleReader` is ready to serve responses, all queued
-  // requests are run and the state is updated to `kReady`.
+  // requests made to a Signed Web Bundle until the `SignedWebBundleReader` is
+  // ready. Once the `SignedWebBundleReader` is ready to serve responses, all
+  // queued requests are run and the state is updated to `kReady`.
   struct CacheEntry {
     explicit CacheEntry(std::unique_ptr<SignedWebBundleReader> reader);
     ~CacheEntry();

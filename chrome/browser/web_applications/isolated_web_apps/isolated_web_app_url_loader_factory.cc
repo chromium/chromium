@@ -85,7 +85,7 @@ void CompleteWith404(
 
 void LogErrorMessageToConsole(int frame_tree_node_id,
                               const std::string& error_message) {
-  // TODO(crbug.com/1334594): The console message will vanish from the console
+  // TODO(crbug.com/1365850): The console message will vanish from the console
   // if the user does not have the `Preserve Log` option enabled, since it is
   // triggered before the navigation commits. We should try to use a similar
   // approach as in crrev.com/c/3397976, but `FrameTreeNode` is not part of

@@ -85,7 +85,7 @@ struct BundleIntegrityBlockSignatureStackEntry {
   // The CBOR of this signature stack entry.
   // This is needed for verification of more than one signature later, because
   // to verify the n+1th signature, the CBOR of the signature stack entries of
-  // all n previous signatures is needed (crbug.com/1315947).
+  // all n previous signatures is needed (crbug.com/1366303).
   array<uint8> complete_entry_cbor;
   // The CBOR of the attributes of this signature stack entry.
   array<uint8> attributes_cbor;

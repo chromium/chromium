@@ -141,7 +141,7 @@ class IsolatedWebAppGURLConversionTest
 TEST_P(IsolatedWebAppGURLConversionTest, RemovesInvalidPartsFromUrls) {
   // GURL automatically removes port and credentials, and converts
   // `isolated-app:foo` to `isolated-app://foo`. This test is here to verify
-  // that and therefore make sure that the `CHECK` inside
+  // that and therefore make sure that the `DCHECK` inside
   // `ParseSignedWebBundleId` will never actually trigger as long as this test
   // succeeds.
   GURL gurl(GetParam().first);
