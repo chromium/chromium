@@ -19,7 +19,7 @@ import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spi
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './checkup_section.html.js';
-import {PasswordCheckStatusChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
+import {PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;
 
@@ -155,6 +155,15 @@ export class CheckupSectionElement extends PolymerElement {
   private showCheckButton_(): boolean {
     return this.status_.state !== CheckState.NO_PASSWORDS &&
         this.status_.state !== CheckState.QUOTA_LIMIT;
+  }
+
+  /**
+   * Starts/Restarts bulk password check.
+   */
+  private onPasswordCheckButtonClick_() {
+    PasswordManagerImpl.getInstance().startBulkPasswordCheck();
+    PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
+        PasswordCheckInteraction.START_CHECK_MANUALLY);
   }
 }
 

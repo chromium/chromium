@@ -69,10 +69,11 @@
     </div>
     <div id="checkupButtons" hidden="[[!showCheckButton_(status_)]]">
       <cr-icon-button id="refreshButton" class="icon-refresh"
-          disabled="[[isCheckRunning_]]" hidden="[[showRetryButton_(status_)]]">
+          disabled="[[isCheckRunning_]]" hidden="[[showRetryButton_(status_)]]"
+          on-click="onPasswordCheckButtonClick_">
       </cr-icon-button>
       <cr-button id="retryButton" hidden="[[!showRetryButton_(status_)]]"
-          class="action-button">
+          class="action-button" on-click="onPasswordCheckButtonClick_">
         $i18n{tryAgain}
       </cr-button>
     </div>

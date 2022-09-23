@@ -4,8 +4,8 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {PasswordCheckInteraction, PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -87,4 +87,19 @@ suite('SettingsSectionTest', function() {
                  assertTrue(isVisible(section.$.retryButton));
                  assertFalse(isVisible(section.$.spinner));
                }));
+
+  test('Start check', async function() {
+    passwordManager.data.checkStatus =
+        makePasswordCheckStatus(PasswordCheckState.IDLE);
+
+    const section = document.createElement('checkup-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    section.$.refreshButton.click();
+    await passwordManager.whenCalled('startBulkPasswordCheck');
+    const interaction =
+        await passwordManager.whenCalled('recordPasswordCheckInteraction');
+    assertEquals(PasswordCheckInteraction.START_CHECK_MANUALLY, interaction);
+  });
 });

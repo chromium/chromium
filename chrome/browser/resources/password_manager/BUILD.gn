@@ -36,6 +36,7 @@ build_webui("build") {
   ts_composite = true
 
   ts_definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/passwords_private.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
   ]

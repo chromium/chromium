@@ -4,7 +4,7 @@
 
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
-import {PasswordCheckStatusChangedListener, PasswordManagerProxy, SavedPasswordListChangedListener} from 'chrome://password-manager/password_manager.js';
+import {PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerProxy, SavedPasswordListChangedListener} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {makePasswordCheckStatus} from './test_util.js';
@@ -28,6 +28,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     super([
       'getPasswordCheckStatus',
       'getSavedPasswordList',
+      'recordPasswordCheckInteraction',
+      'startBulkPasswordCheck',
     ]);
 
     // Set these to have non-empty data.
@@ -70,5 +72,18 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   getPasswordCheckStatus() {
     this.methodCalled('getPasswordCheckStatus');
     return Promise.resolve(this.data.checkStatus);
+  }
+
+  startBulkPasswordCheck() {
+    this.methodCalled('startBulkPasswordCheck');
+    if (this.data.checkStatus.state ===
+        chrome.passwordsPrivate.PasswordCheckState.NO_PASSWORDS) {
+      return Promise.reject(new Error('error'));
+    }
+    return Promise.resolve();
+  }
+
+  recordPasswordCheckInteraction(interaction: PasswordCheckInteraction) {
+    this.methodCalled('recordPasswordCheckInteraction', interaction);
   }
 }
