@@ -542,7 +542,7 @@ bool FrameLoader::AllowRequestForThisFrame(const FrameLoadRequest& request) {
     if (request.GetOriginWindow()
             ->CheckAndGetJavascriptUrl(request.JavascriptWorld().get(), url,
                                        frame_->DeprecatedLocalOwner())
-            .IsEmpty()) {
+            .empty()) {
       return false;
     }
 

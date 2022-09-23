@@ -299,7 +299,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
     if (opener_window
             .CheckAndGetJavascriptUrl(request.JavascriptWorld().get(), url,
                                       nullptr /* element */)
-            .IsEmpty()) {
+            .empty()) {
       return nullptr;
     }
   }

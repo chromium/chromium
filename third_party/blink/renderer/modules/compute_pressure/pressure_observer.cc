@@ -138,7 +138,7 @@ void PressureObserver::ReportToCallback(ExecutionContext* execution_context) {
     return;
 
   // Cleared by takeRecords, for example.
-  if (records_.IsEmpty())
+  if (records_.empty())
     return;
 
   HeapVector<Member<PressureRecord>, kMaxQueuedRecords> records;

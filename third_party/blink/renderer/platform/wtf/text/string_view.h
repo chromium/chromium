@@ -142,8 +142,6 @@ class WTF_EXPORT StringView {
 
   bool IsNull() const { return !bytes_; }
   bool empty() const { return !length_; }
-  // TODO(wangxianzhu): This is deprecated. Remove it.
-  bool IsEmpty() const { return empty(); }
 
   unsigned length() const { return length_; }
 
