@@ -17,10 +17,14 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
     content::WebContents* web_contents,
     OnTrackPriceCallback on_track_price_callback,
     Type type)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents) {
-  type_ = type;
+    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+      type_(type),
+      action_callback_(std::move(on_track_price_callback)) {
   SetShowCloseButton(true);
   SetButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+  auto run_callback = [](PriceTrackingBubbleDialogView* bubble, bool is_track) {
+    std::move(bubble->action_callback_).Run(is_track);
+  };
   // TODO(meiliang@): Update the body to use the string that includes the
   // bookmark name.
   auto body = l10n_util::GetStringUTF16(
@@ -34,7 +38,8 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                    l10n_util::GetStringUTF16(
                        IDS_OMNIBOX_TRACK_PRICE_DIALOG_CANCEL_BUTTON));
-    SetAcceptCallback(std::move(on_track_price_callback));
+    SetAcceptCallback(
+        base::BindOnce(run_callback, base::Unretained(this), true));
   } else if (type == PriceTrackingBubbleDialogView::Type::TYPE_NORMAL) {
     SetTitle(
         l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE_DIALOG_TITLE));
@@ -44,6 +49,8 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                    l10n_util::GetStringUTF16(
                        IDS_OMNIBOX_TRACKING_PRICE_DIALOG_UNTRACK_BUTTON));
+    SetCancelCallback(
+        base::BindOnce(run_callback, base::Unretained(this), false));
     // TODO(meiliang@): Update the body to use the new normal bubble string.
   }
 
