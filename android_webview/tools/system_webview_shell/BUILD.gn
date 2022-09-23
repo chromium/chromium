@@ -37,6 +37,9 @@ android_apk("system_webview_shell_apk") {
     ":system_webview_shell_apk_java",
     ":system_webview_shell_apk_resources",
   ]
+  enable_lint = true
+  lint_baseline_file = "lint-baseline.xml"
+  lint_suppressions_file = "lint-suppressions.xml"
 }
 
 android_library("system_webview_shell_apk_java") {
