@@ -1359,6 +1359,14 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.chrome_public_test_apk.filter',
         ],
+        'swarming': {
+          'shards': 25,
+          'dimension_sets': [
+            {
+              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
+            },
+          ],
+        },
       },
       'android-pie-arm64-rel': {
         'args': [
@@ -1787,7 +1795,12 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_browsertests.filter',
         ],
         'swarming': {
-          'shards': 20,
+          'shards': 25,
+          'dimension_sets': [
+            {
+              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
+            },
+          ],
         },
       },
       'android-pie-arm64-rel': {
@@ -1904,6 +1917,13 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_shell_test_apk.filter',
         ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
+            },
+          ],
+        },
       },
       'android-pie-x86-rel': {
         'args': [
@@ -4060,6 +4080,15 @@
       'android-marshmallow-arm64-rel': {
         'swarming': {
           'quickrun_shards': 2,
+        },
+      },
+      'android-nougat-x86-rel': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
+            },
+          ],
         },
       },
     },

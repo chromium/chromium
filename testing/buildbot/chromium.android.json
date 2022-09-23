@@ -37227,7 +37227,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "shards": 25
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
@@ -37516,7 +37516,7 @@
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
+              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -37545,7 +37545,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "shards": 25
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -37578,7 +37578,7 @@
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
+              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
@@ -40048,7 +40048,7 @@
               "cpu": "x86-64",
               "device_os": null,
               "device_type": null,
-              "machine_type": "n1-standard-4|e2-standard-4",
+              "machine_type": "e2-standard-8",
               "os": "Ubuntu-18.04",
               "pool": "chromium.tests.avd"
             }
