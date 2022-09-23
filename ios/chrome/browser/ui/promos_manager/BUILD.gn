@@ -32,7 +32,6 @@ source_set("promos_manager_scene_agent") {
     "promos_manager_scene_agent.mm",
   ]
   deps = [
-    "//base",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/main:observing_scene_agent",

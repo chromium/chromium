@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
 
-#import "base/time/time.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -15,15 +14,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// If the previous app foregrounding occurred less than
-// `kHoursBetweenForegrounding` hours ago, a promo won't be displayed.
-constexpr base::TimeDelta kHoursBetweenForegrounding =
-    base::Hours(4);  // (4 hours) (inclusive)
-
-}  // namespace
 
 @interface PromosManagerSceneAgent () <AppStateObserver>
 
@@ -100,39 +90,29 @@ constexpr base::TimeDelta kHoursBetweenForegrounding =
   if (self.sceneState.activationLevel < SceneActivationLevelForegroundActive)
     return NO;
 
-  // (3) At least `kHoursBetweenForegrounding` have elapsed since the app was
-  // last foregrounded, if ever.
-  if (!self.sceneState.appState.lastTimeInForeground.is_null()) {
-    base::TimeDelta elapsedTimeSinceLastForeground =
-        base::TimeTicks::Now() - self.sceneState.appState.lastTimeInForeground;
-
-    if (elapsedTimeSinceLastForeground < kHoursBetweenForegrounding)
-      return NO;
-  }
-
-  // (4) There is no UI blocker.
+  // (3) There is no UI blocker.
   if (self.sceneState.appState.currentUIBlocker)
     return NO;
 
-  // (5) The app isn't shutting down.
+  // (4) The app isn't shutting down.
   if (self.sceneState.appState.appIsTerminating)
     return NO;
 
-  // (6) There are no launch intents (external intents).
+  // (5) There are no launch intents (external intents).
   if (self.sceneState.startupHadExternalIntent)
     return NO;
 
-  // (7) The app isn't launching after a crash.
+  // (6) The app isn't launching after a crash.
   if (self.sceneState.appState.postCrashLaunch)
     return NO;
 
   // Additional, sensible checks to add to minimize user annoyance:
 
-  // (8) The user isn't currently signing in.
+  // (7) The user isn't currently signing in.
   if (self.sceneState.signinInProgress)
     return NO;
 
-  // (9) The user isn't currently looking at a modal overlay.
+  // (8) The user isn't currently looking at a modal overlay.
   if (self.sceneState.presentingModalOverlay)
     return NO;
 
