@@ -31,7 +31,7 @@ void OnGotExtensionValue(GetExtensionKeyPermissionsServiceCallback callback,
 
   base::Value::List store_state_list;
   if (value && value->is_list()) {
-    store_state_list = std::move(value->GetList());
+    store_state_list = std::move(*value).TakeList();
   } else if (value) {
     LOG(ERROR) << "Found a state store of wrong type.";
   }
