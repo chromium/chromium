@@ -213,8 +213,8 @@ def _set_orchestrator_properties(ctx):
             o_properties = json.decode(o.builder.properties)
             if o_properties != orchestrator_properties:
                 message = ["experimental orchestrator {!r} must have properties equal to those of {!r}".format(o.name, orchestrator.name)]
-                message.append("properties of {!r}: {}".format(o.name, json.indent(json.encode(o_properties), indent = 2)))
-                message.append("properties of {!r}: {}".format(orchestrator.name, json.indent(json.encode(orchestrator_properties), indent = 2)))
+                message.append("properties of {!r}: {}".format(o.name, json.indent(json.encode(o_properties), indent = "  ")))
+                message.append("properties of {!r}: {}".format(orchestrator.name, json.indent(json.encode(orchestrator_properties), indent = "  ")))
                 fail("\n".join(message))
 
         compilator = d.compilator
