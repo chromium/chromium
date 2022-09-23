@@ -31,7 +31,9 @@ ServerFieldType ToSafeServerFieldType(
            // Billing names (values [67,72]) are deprecated.
            !(67 <= t && t <= 72) &&
            // Fax numbers (values [20,24]) are deprecated.
-           !(20 <= t && t <= 24);
+           !(20 <= t && t <= 24) &&
+           // Reserved for server-side only use.
+           t != 127;
   };
   return IsValid(raw_value) ? static_cast<ServerFieldType>(raw_value)
                             : fallback_value;

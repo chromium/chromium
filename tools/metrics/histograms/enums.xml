@@ -9491,6 +9491,7 @@ others/histograms.xml -->
   <int value="124" label="PHONE_HOME_NUMBER_SUFFIX"/>
   <int value="125" label="IBAN_VALUE"/>
   <int value="126" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE"/>
+  <int value="127" label="RESERVED"/>
 </enum>
 
 <enum name="AutofillServerPredictionAvailability">

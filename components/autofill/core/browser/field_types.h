@@ -345,11 +345,14 @@ enum ServerFieldType {
 
   // Standalone card verification code (CVC).
   CREDIT_CARD_STANDALONE_VERIFICATION_CODE = 126,
+
+  // Reserved for a server-side-only use: 127
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // Please update enum `AutofillServerFieldType` in
   // `tools/metrics/histogram/enums.xml` for metrics tracking.
-  MAX_VALID_FIELD_TYPE = 127,
+  MAX_VALID_FIELD_TYPE = 128,
 };
 
 enum class FieldTypeGroup {
