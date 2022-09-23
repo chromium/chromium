@@ -1039,6 +1039,7 @@ bool SwapChainPresenter::PresentToSwapChain(
     swap_chain_size_ = swap_chain_size;
     if (swap_chain_) {
       ReleaseSwapChainResources();
+      content_.Reset();
     }
     return true;
   }
@@ -1475,7 +1476,6 @@ void SwapChainPresenter::ReleaseSwapChainResources() {
   decode_resource_.Reset();
   swap_chain_handle_.Close();
   staging_texture_.Reset();
-  content_.Reset();
 }
 
 bool SwapChainPresenter::ReallocateSwapChain(
