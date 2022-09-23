@@ -487,8 +487,8 @@ void LayerTreeHost::CommitComplete(const CommitTimestamps& commit_timestamps) {
     did_complete_scale_animation_ = false;
   }
   if (compositor_mode_ == CompositorMode::THREADED) {
-    base::UmaHistogramBoolean("Compositing.DidMainThreadBlockDuringCommit",
-                              waited_for_protected_sequence_);
+    UMA_HISTOGRAM_BOOLEAN("Compositing.DidMainThreadBlockDuringCommit",
+                          waited_for_protected_sequence_);
   }
   waited_for_protected_sequence_ = false;
 }
@@ -822,9 +822,12 @@ bool LayerTreeHost::UpdateLayers() {
   if (const char* client_name = GetClientNameForMetrics()) {
     auto elapsed = elapsed_delta.InMicroseconds();
 
-    std::string histogram_name =
-        base::StringPrintf("Compositing.%s.LayersUpdateTime", client_name);
-    base::UmaHistogramCounts10M(histogram_name, elapsed);
+    // The histogram name must be a constant for the macro to work.
+    // GetClientNameForMetrics() guarantees to always return the same string or
+    // null
+    UMA_HISTOGRAM_COUNTS_10M(
+        base::StringPrintf("Compositing.%s.LayersUpdateTime", client_name),
+        elapsed);
   }
 
   return result;
