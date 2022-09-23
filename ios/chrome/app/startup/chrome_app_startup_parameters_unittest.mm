@@ -316,7 +316,7 @@ TEST_F(AppStartupParametersTest, ParseSearchWidgetKit) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  EXPECT_FALSE(params.launchInIncognito);
+  EXPECT_NE(params.applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 1, 1);
 }
 
@@ -335,7 +335,7 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitSearch) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  EXPECT_FALSE(params.launchInIncognito);
+  EXPECT_NE(params.applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 2, 1);
 }
 
@@ -354,7 +354,7 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitIncognito) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  EXPECT_TRUE(params.launchInIncognito);
+  EXPECT_EQ(params.applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 3, 1);
 }
 
@@ -424,7 +424,7 @@ TEST_F(AppStartupParametersTest, ParseLockscreenLauncherSearch) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  EXPECT_FALSE(params.launchInIncognito);
+  EXPECT_NE(params.applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 6, 1);
 }
 
@@ -442,7 +442,7 @@ TEST_F(AppStartupParametersTest, ParseLockscreenLauncherIncognito) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  EXPECT_TRUE(params.launchInIncognito);
+  EXPECT_EQ(params.applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 7, 1);
 }
 

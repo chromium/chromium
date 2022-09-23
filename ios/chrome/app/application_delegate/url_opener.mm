@@ -51,9 +51,9 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
                      fromSourceApplication:sourceApplication];
 
   if (IsIncognitoModeDisabled(prefService)) {
-    params.launchInIncognito = NO;
+    params.applicationMode = ApplicationModeForTabOpening::NORMAL;
   } else if (IsIncognitoModeForced(prefService)) {
-    params.launchInIncognito = YES;
+    params.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
   }
 
   MobileSessionCallerApp callerApp = [params callerApp];
@@ -106,7 +106,7 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
       if (callerApp == CALLER_APP_GOOGLE_CHROME)
         targetMode = ApplicationModeForTabOpening::CURRENT;
 
-      if (![params launchInIncognito] &&
+      if (params.applicationMode != ApplicationModeForTabOpening::INCOGNITO &&
           [tabOpener URLIsOpenedInRegularMode:urlLoadParams.web_params.url]) {
         // Record metric.
       }
