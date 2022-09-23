@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.contextmenu;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
@@ -41,6 +42,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuGroup;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
+import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
+import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
+import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserverJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
@@ -107,7 +111,8 @@ public class ContextMenuCoordinatorTest {
         public ShadowContextMenuHeaderCoordinator() {}
 
         @Implementation
-        public void __constructor__(Activity activity, ContextMenuParams params, Profile profile,
+        public void __constructor__(Activity activity, @PerformanceClass int performanceClass,
+                ContextMenuParams params, Profile profile,
                 ContextMenuNativeDelegate nativeDelegate) {}
     }
 
@@ -131,6 +136,8 @@ public class ContextMenuCoordinatorTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock
+    PerformanceHintsObserver.Natives mNativeMock;
+    @Mock
     ContextMenuNativeDelegate mNativeDelegate;
     @Mock
     WebContents mWebContentsMock;
@@ -144,6 +151,8 @@ public class ContextMenuCoordinatorTest {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
         mCoordinator = new ContextMenuCoordinator(TOP_CONTENT_OFFSET_PX, mNativeDelegate);
         MockitoAnnotations.initMocks(this);
+        mocker.mock(PerformanceHintsObserverJni.TEST_HOOKS, mNativeMock);
+        when(mNativeMock.isContextMenuPerformanceInfoEnabled()).thenReturn(false);
         ShadowProfile.sProfileFromWebContents = mProfile;
     }
 
