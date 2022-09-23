@@ -20,6 +20,7 @@
 #include <fuchsia/memorypressure/cpp/fidl.h>
 #include <fuchsia/net/interfaces/cpp/fidl.h>
 #include <fuchsia/sysmem/cpp/fidl.h>
+#include <fuchsia/tracing/provider/cpp/fidl.h>
 #include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
@@ -104,6 +105,7 @@ constexpr SandboxConfig kGpuConfig = {
         fuchsia::media::ProfileProvider::Name_,
         fuchsia::sysmem::Allocator::Name_,
         "fuchsia.vulkan.loader.Loader",
+        fuchsia::tracing::provider::Registry::Name_,
         fuchsia::ui::composition::Allocator::Name_,
         fuchsia::ui::composition::Flatland::Name_,
         fuchsia::ui::scenic::Scenic::Name_,
