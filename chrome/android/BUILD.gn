@@ -2200,6 +2200,8 @@ if (enable_resource_allowlist_generation) {
 }
 
 libchrome_impl("libchrome") {
+  define_unwind_table_target =
+      add_unwind_tables_in_chrome_32bit_apk && target_cpu == "arm"
   if (enable_resource_allowlist_generation) {
     # Make sure allowlist_inputs is built first so when concurrent_links == 1
     # it comes before the actual (very slow) link step.
@@ -2209,6 +2211,8 @@ libchrome_impl("libchrome") {
 
 chrome_common_shared_library("libchromefortest") {
   testonly = true
+  define_unwind_table_target =
+      add_unwind_tables_in_chrome_32bit_apk && target_cpu == "arm"
   sources = [
     "../browser/android/chrome_entry_point_for_test.cc",
     chrome_jni_for_test_registration_header,
@@ -2306,6 +2310,8 @@ if (current_toolchain == default_toolchain) {
         if (_is_monochrome || _is_trichrome) {
           # Always use the 32-bit library's allowlist since the 64-bit one is
           # webview-only.
+          # TODO(agrieve): For 64-bit primary, using libmonochrome_64 would be
+          #     more efficient.
           if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
             _fat_lib_toolchain = android_secondary_abi_toolchain
           } else {
@@ -2499,14 +2505,15 @@ template("libmonochrome_apk_or_bundle_tmpl") {
 if (!android_64bit_target_cpu ||
     (!skip_secondary_abi_for_cq &&
      current_toolchain == android_secondary_abi_toolchain)) {
-  if (enable_resource_allowlist_generation) {
-    # Avoiding a real link for this step allows the actual libmonochrome to
-    # run at the same time as R8.
-    libmonochrome_apk_or_bundle_tmpl("libmonochrome_pak_allowlist_inputs") {
-      collect_inputs_only = true
-    }
+  # Avoiding a real link for this step allows the actual libmonochrome to
+  # run at the same time as R8.
+  libmonochrome_apk_or_bundle_tmpl("libmonochrome_pak_allowlist_inputs") {
+    collect_inputs_only = true
   }
+
   libmonochrome_apk_or_bundle_tmpl("libmonochrome") {
+    define_unwind_table_target =
+        add_unwind_tables_in_chrome_32bit_apk && current_cpu == "arm"
     if (enable_resource_allowlist_generation) {
       # Make sure allowlist_inputs is built first so when concurrent_links == 1
       # it comes before the actual (very slow) link step.
@@ -2528,6 +2535,42 @@ if (!android_64bit_target_cpu ||
   if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
     group("monochrome_secondary_abi_lib") {
       public_deps = [ ":libmonochrome($android_secondary_abi_toolchain)" ]
+    }
+  }
+}
+
+if (add_unwind_tables_in_chrome_32bit_apk) {
+  if (defined(android_secondary_abi_toolchain)) {
+    _toolchain = android_secondary_abi_toolchain
+  } else {
+    _toolchain = default_toolchain
+  }
+  _toolchain_out_dir = get_label_info(":foo($_toolchain)", "target_out_dir")
+
+  template("chrome_unwind_assets") {
+    android_assets(target_name) {
+      forward_variables_from(invoker, [ "testonly" ])
+      _libname = invoker.libname
+      deps = [ ":${_libname}_unwind_table_v1($_toolchain)" ]
+      sources = [ "$_toolchain_out_dir/${_libname}_unwind_table_v1/$unwind_table_asset_v1_filename" ]
+      disable_compression = true
+      if (use_android_unwinder_v2) {
+        sources += [ "$_toolchain_out_dir/${_libname}_unwind_table_v2/$unwind_table_asset_v2_filename" ]
+        deps += [ ":${_libname}_unwind_table_v2($_toolchain)" ]
+      }
+    }
+  }
+  chrome_unwind_assets("libmonochrome_unwind_table_assets") {
+    libname = "libmonochrome"
+  }
+  # We create fat apks only with libmonochrome.
+  if (target_cpu == "arm") {
+    chrome_unwind_assets("libchrome_unwind_table_assets") {
+      libname = "libchrome"
+    }
+    chrome_unwind_assets("libchromefortest_unwind_table_assets") {
+      testonly = true
+      libname = "libchromefortest"
     }
   }
 }
@@ -3196,7 +3239,6 @@ template("chrome_test_apk_tmpl") {
 
     testonly = true
     target_type = "instrumentation_test_apk"
-    shared_library_for_unwind_asset = "chromefortest"
     bundles_supported = true
 
     deps = _chrome_public_shared_deps + invoker.deps + [
@@ -3207,6 +3249,9 @@ template("chrome_test_apk_tmpl") {
              "//third_party/android_sdk:android_test_runner_java",
              "//third_party/android_support_test_runner:runner_java",
            ]
+    if (add_unwind_tables_in_chrome_32bit_apk && current_cpu == "arm") {
+      deps += [ ":libchromefortest_unwind_table_assets" ]
+    }
     if (enable_vr) {
       # Contains VrFirstRunActivity, which is referenced by AndroidManifest.xml.
       deps += [ "//chrome/android/features/vr:java" ]
@@ -3247,11 +3292,6 @@ template("monochrome_test_apk_tmpl") {
 
     testonly = true
     target_type = "instrumentation_test_apk"
-
-    # Always set to false so that we don't have to change the shared library we
-    # use. See the comment in the monochrome_public_test_ar_apk target for
-    # details.
-    add_unwind_tables_in_apk = false
 
     deps = _chrome_public_shared_deps + invoker.deps + [
              ":chrome_public_base_module_java_for_test",

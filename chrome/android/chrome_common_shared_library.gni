@@ -4,6 +4,8 @@
 
 import("//base/android/linker/config.gni")
 import("//build/config/android/config.gni")
+import("//build/config/android/create_unwind_table.gni")
+import("//build/config/android/extract_unwind_tables.gni")
 import("//build/config/android/linker_version_script.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/partitioned_shared_library.gni")
@@ -80,7 +82,10 @@ template("chrome_common_shared_library") {
   }
 
   target(_target_type, target_name) {
-    forward_variables_from(invoker, "*")
+    forward_variables_from(
+        invoker,
+        "*",
+        TESTONLY_AND_VISIBILITY + [ "define_unwind_table_target" ])
 
     if (!_is_webview) {
       deps += [ "//chrome:chrome_android_core" ]
@@ -89,7 +94,7 @@ template("chrome_common_shared_library") {
     # Warn if linking code which could implicitly disable BTI on Arm systems
     configs += [ "//build/config/android:lld_branch_target_hardening" ]
 
-    if (!(defined(invoker.testonly) && invoker.testonly)) {
+    if (!(defined(testonly) && testonly)) {
       configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
       configs += [ "//build/config/compiler:thinlto_optimize_max" ]
     }
@@ -120,7 +125,7 @@ template("chrome_common_shared_library") {
         sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
       } else {
         sources += [ "../browser/android/vr/register_jni.cc" ]
-        if (defined(invoker.testonly) && invoker.testonly) {
+        if (defined(testonly) && testonly) {
           defines = [ "JNI_REGISTRATION_FOR_TESTING" ]
           deps += [ "//chrome/browser/android/vr:jni_registration_for_testing($default_toolchain)" ]
         } else {
@@ -178,9 +183,25 @@ template("chrome_common_shared_library") {
     foreach(_module_desc, _module_descs) {
       if (defined(_module_desc.native_deps)) {
         group("${target_name}_${_module_desc.name}") {
-          forward_variables_from(invoker, [ "testonly" ])
           deps = _module_desc.native_deps
         }
+      }
+    }
+  }
+
+  if (defined(invoker.define_unwind_table_target) &&
+      invoker.define_unwind_table_target) {
+    _library_target = ":$target_name"
+
+    # TODO(crbug.com/1315603): Remove generation of v1 unwind asset when
+    # `CFIBacktraceAndroid` is replaced with `ChromeUnwinderAndroidV2`.
+    unwind_table_v1("${target_name}_unwind_table_v1") {
+      library_target = _library_target
+    }
+
+    if (use_android_unwinder_v2) {
+      unwind_table_v2("${target_name}_unwind_table_v2") {
+        library_target = _library_target
       }
     }
   }
