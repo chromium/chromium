@@ -14,6 +14,10 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class WebContents;
@@ -52,6 +56,12 @@ class CONTENT_EXPORT AttributionHost
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+
+  // Returns the top frame origin corresponding to the current target frame.
+  // Returns nullptr and reports a bad message if the top frame origin is not
+  // potentially trustworthy or the current target frame is not a secure
+  // context.
+  [[nodiscard]] const url::Origin* TopFrameOriginForSecureContext();
 
   // Notifies the `AttributionDataHostManager` that a navigation with an
   // associated `AttributionDataHost` failed, if necessary.
