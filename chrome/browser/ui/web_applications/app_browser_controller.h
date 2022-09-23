@@ -177,6 +177,8 @@ class AppBrowserController
   // Returns true when an app's effective display mode is borderless.
   virtual bool AppUsesBorderlessMode() const;
 
+  virtual bool IsIsolatedWebApp() const;
+
   // Returns true when the app's effective display mode is
   // window-controls-overlay and the user has toggled WCO on for the app.
   virtual bool IsWindowControlsOverlayEnabled() const;

@@ -36,6 +36,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
@@ -154,6 +155,15 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled() {
 bool WebAppBrowserController::AppUsesBorderlessMode() const {
   DisplayMode display = registrar().GetAppEffectiveDisplayMode(app_id());
   return display == DisplayMode::kBorderless;
+}
+
+bool WebAppBrowserController::IsIsolatedWebApp() const {
+  if (!web_contents())
+    return false;
+
+  return content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+      web_contents()->GetPrimaryMainFrame()->GetBrowserContext(),
+      web_contents()->GetVisibleURL());
 }
 
 gfx::Rect WebAppBrowserController::GetDefaultBounds() const {

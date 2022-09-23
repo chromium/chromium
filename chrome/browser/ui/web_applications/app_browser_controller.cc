@@ -251,6 +251,10 @@ bool AppBrowserController::AppUsesBorderlessMode() const {
   return false;
 }
 
+bool AppBrowserController::IsIsolatedWebApp() const {
+  return false;
+}
+
 bool AppBrowserController::IsWindowControlsOverlayEnabled() const {
   return false;
 }

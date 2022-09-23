@@ -5,6 +5,7 @@
 #include "chrome/browser/chooser_controller/title_util.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/permissions/chooser_title_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/buildflags/buildflags.h"
@@ -12,6 +13,9 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #endif
@@ -27,19 +31,27 @@ std::u16string CreateExtensionAwareChooserTitle(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   url::Origin origin = render_frame_host->GetLastCommittedOrigin();
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+
   if (origin.scheme() == extensions::kExtensionScheme) {
-    content::BrowserContext* browser_context =
-        render_frame_host->GetBrowserContext();
-    extensions::ExtensionRegistry* extension_registry =
-        extensions::ExtensionRegistry::Get(browser_context);
-    if (extension_registry) {
-      const extensions::Extension* extension =
-          extension_registry->enabled_extensions().GetByID(origin.host());
-      if (extension) {
+    if (auto* extension_registry =
+            extensions::ExtensionRegistry::Get(profile)) {
+      if (const extensions::Extension* extension =
+              extension_registry->enabled_extensions().GetByID(origin.host())) {
         return l10n_util::GetStringFUTF16(title_string_id_extension,
                                           base::UTF8ToUTF16(extension->name()));
       }
     }
+  }
+
+  // Isolated Web Apps should show the app's name instead of the origin.
+  Browser* browser = chrome::FindBrowserWithProfile(profile);
+  if (browser && browser->app_controller() &&
+      browser->app_controller()->IsIsolatedWebApp()) {
+    return l10n_util::GetStringFUTF16(
+        title_string_id_extension,
+        browser->app_controller()->GetAppShortName());
   }
 #endif
 

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
@@ -72,6 +73,12 @@ std::u16string GetDisplayName(
   // File URLs should be displayed as "This file".
   if (origin_url.SchemeIsFile())
     return l10n_util::GetStringUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT_THIS_FILE);
+
+  // Isolated Web Apps should show the app's name instead of the origin.
+  if (browser && browser->app_controller() &&
+      browser->app_controller()->IsIsolatedWebApp()) {
+    return browser->app_controller()->GetAppShortName();
+  }
 
   // Web URLs should be displayed as the origin in the URL.
   return url_formatter::FormatUrlForSecurityDisplay(
