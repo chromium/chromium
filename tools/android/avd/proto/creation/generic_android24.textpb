@@ -29,6 +29,11 @@ avd_settings {
     height: 1920
     width: 1080
   }
+  # crbug.com/1110997: Disable GLDMA for android-24
+  advanced_features {
+    key: "GLDMA"
+    value: "off"
+  }
   advanced_features {
     key: "GLESDynamicVersion"
     value: "on"
