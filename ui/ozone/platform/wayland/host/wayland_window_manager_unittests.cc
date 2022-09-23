@@ -31,7 +31,7 @@ class WaylandWindowManagerTest : public WaylandTest {
     WaylandTest::SetUp();
 
     manager_ = connection_->wayland_window_manager();
-    DCHECK(manager_);
+    ASSERT_TRUE(manager_);
   }
 
  protected:

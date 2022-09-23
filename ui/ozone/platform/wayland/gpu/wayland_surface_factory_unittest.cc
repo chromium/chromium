@@ -60,7 +60,7 @@ class FakeGLImageNativePixmap : public gl::GLImageEGL {
 
   // Associates swap id with this image.
   void AssociateWithSwapId(uint32_t swap_id) {
-    DCHECK_NE(swap_id_, swap_id);
+    ASSERT_NE(swap_id_, swap_id);
     swap_id_ = swap_id;
   }
 
@@ -147,9 +147,9 @@ class CallbacksHelper {
                        const gfx::PresentationFeedback& feedback) {
     // Make sure the presentation doesn't come earlier than than swap
     // completion. We don't explicitly check if the buffer is presented as this
-    // DCHECK is more that enough.
-    DCHECK(pending_local_swap_ids_.empty() ||
-           pending_local_swap_ids_.front() > local_swap_id);
+    // assert is more than enough.
+    ASSERT_TRUE(pending_local_swap_ids_.empty() ||
+                pending_local_swap_ids_.front() > local_swap_id);
   }
 
  private:
@@ -318,7 +318,7 @@ TEST_P(WaylandSurfaceFactoryTest,
   // The wl_buffers are requested during ScheduleOverlays. Thus, we have pending
   // requests that we need to execute.
   auto params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
-  DCHECK_EQ(params_vector.size(), 2u);
+  ASSERT_EQ(params_vector.size(), 2u);
   for (auto* mock_params : params_vector) {
     zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
                                             mock_params->buffer_resource());
@@ -399,7 +399,7 @@ TEST_P(WaylandSurfaceFactoryTest,
   Sync();
 
   auto params_vector2 = server_.zwp_linux_dmabuf_v1()->buffer_params();
-  DCHECK_EQ(params_vector.size(), 2u);
+  ASSERT_EQ(params_vector.size(), 2u);
   for (auto* mock_params : params_vector2) {
     zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
                                             mock_params->buffer_resource());
@@ -468,7 +468,7 @@ TEST_P(WaylandSurfaceFactoryTest,
   Sync();
 
   auto params_vector3 = server_.zwp_linux_dmabuf_v1()->buffer_params();
-  DCHECK_EQ(params_vector.size(), 2u);
+  ASSERT_EQ(params_vector.size(), 2u);
   for (auto* mock_params : params_vector3) {
     zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
                                             mock_params->buffer_resource());
@@ -621,7 +621,7 @@ TEST_P(WaylandSurfaceFactoryTest,
   // If wl_buffers have never been created, they will be requested during the
   // first commit.
   auto params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
-  DCHECK_EQ(params_vector.size(), 3u);
+  ASSERT_EQ(params_vector.size(), 3u);
   for (auto* param : params_vector) {
     zwp_linux_buffer_params_v1_send_created(param->resource(),
                                             param->buffer_resource());
@@ -718,7 +718,7 @@ TEST_P(WaylandSurfaceFactoryTest,
 
   // 2 more buffers are to be created.
   params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
-  DCHECK_EQ(params_vector.size(), 2u);
+  ASSERT_EQ(params_vector.size(), 2u);
   for (auto* param : params_vector) {
     zwp_linux_buffer_params_v1_send_created(param->resource(),
                                             param->buffer_resource());
@@ -793,7 +793,7 @@ TEST_P(WaylandSurfaceFactoryTest, Canvas) {
 
     canvas->ResizeCanvas(bounds_px.size(), scale_factor);
     auto* sk_canvas = canvas->GetCanvas();
-    DCHECK(sk_canvas);
+    ASSERT_TRUE(sk_canvas);
     canvas->PresentCanvas(gfx::Rect(5, 10, 20, 15));
 
     // Wait until the mojo calls are done.
@@ -832,10 +832,10 @@ TEST_P(WaylandSurfaceFactoryTest, CanvasResize) {
 
   canvas->ResizeCanvas(window_->GetBoundsInDIP().size(), 1);
   auto* sk_canvas = canvas->GetCanvas();
-  DCHECK(sk_canvas);
+  ASSERT_TRUE(sk_canvas);
   canvas->ResizeCanvas(gfx::Size(100, 50), 1);
   sk_canvas = canvas->GetCanvas();
-  DCHECK(sk_canvas);
+  ASSERT_TRUE(sk_canvas);
   canvas->PresentCanvas(gfx::Rect(0, 0, 100, 50));
 
   base::RunLoop().RunUntilIdle();
@@ -994,7 +994,7 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
   Sync();
 
   auto params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
-  DCHECK_EQ(params_vector.size(), 1u);
+  ASSERT_EQ(params_vector.size(), 1u);
 
   zwp_linux_buffer_params_v1_send_created(
       params_vector.front()->resource(),

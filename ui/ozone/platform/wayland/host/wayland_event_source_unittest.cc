@@ -36,7 +36,7 @@ class WaylandEventSourceTest : public WaylandTest {
     WaylandTest::SetUp();
 
     pointer_delegate_ = connection_->event_source();
-    DCHECK(pointer_delegate_);
+    ASSERT_TRUE(pointer_delegate_);
   }
 
  protected:

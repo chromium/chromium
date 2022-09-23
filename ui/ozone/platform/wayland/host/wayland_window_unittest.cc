@@ -262,7 +262,7 @@ class WaylandWindowTest : public WaylandTest {
     auto* pointer_focused_window =
         connection_->wayland_window_manager()->GetCurrentPointerFocusedWindow();
 
-    DCHECK(pointer_focused_window);
+    ASSERT_TRUE(pointer_focused_window);
     Event::DispatcherApi(&test_mouse_event_).set_target(pointer_focused_window);
     EXPECT_TRUE(dispatching_window->CanDispatchEvent(&test_mouse_event_));
     for (auto* window : non_dispatching_windows)
@@ -272,7 +272,7 @@ class WaylandWindowTest : public WaylandTest {
   void VerifyCanDispatchTouchEvents(
       const std::vector<WaylandWindow*>& dispatching_windows,
       const std::vector<WaylandWindow*>& non_dispatching_windows) {
-    DCHECK(dispatching_windows.size() < 2);
+    ASSERT_LT(dispatching_windows.size(), 2u);
     auto* touch_focused_window =
         connection_->wayland_window_manager()->GetCurrentTouchFocusedWindow();
     // There must be focused window to dispatch.
@@ -299,7 +299,7 @@ class WaylandWindowTest : public WaylandTest {
   void VerifyCanDispatchKeyEvents(
       const std::vector<WaylandWindow*>& dispatching_windows,
       const std::vector<WaylandWindow*>& non_dispatching_windows) {
-    DCHECK(dispatching_windows.size() < 2);
+    ASSERT_LT(dispatching_windows.size(), 2u);
     auto* keyboard_focused_window = connection_->wayland_window_manager()
                                         ->GetCurrentKeyboardFocusedWindow();
 
@@ -1432,7 +1432,8 @@ TEST_P(WaylandWindowTest, CanCreateMenuWindow) {
       server_.seat()->resource(),
       WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_TOUCH);
   Sync();
-  ASSERT_TRUE(connection_->seat()->pointer() && connection_->seat()->touch());
+  ASSERT_TRUE(connection_->seat()->pointer());
+  ASSERT_TRUE(connection_->seat()->touch());
   SetPointerFocusedWindow(window_.get());
 
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
@@ -2918,7 +2919,7 @@ TEST_P(WaylandWindowTest, SetsPropertiesOnShow) {
   MockWaylandPlatformWindowDelegate delegate;
   auto window = delegate.CreateWaylandWindow(connection_.get(),
                                              std::move(properties), true, true);
-  DCHECK(window);
+  ASSERT_TRUE(window);
   window->Show(false);
 
   Sync();

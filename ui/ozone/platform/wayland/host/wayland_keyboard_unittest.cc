@@ -63,7 +63,7 @@ class WaylandKeyboardTest : public WaylandTest {
 
     std::unique_ptr<char, base::FreeDeleter> keymap_string(
         xkb_keymap_get_as_string(xkb_keymap_.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
-    DCHECK(keymap_string.get());
+    ASSERT_TRUE(keymap_string.get());
     size_t keymap_size = strlen(keymap_string.get()) + 1;
 
     base::UnsafeSharedMemoryRegion shared_keymap_region =
@@ -73,7 +73,7 @@ class WaylandKeyboardTest : public WaylandTest {
     base::subtle::PlatformSharedMemoryRegion platform_shared_keymap =
         base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
             std::move(shared_keymap_region));
-    DCHECK(shared_keymap.IsValid());
+    ASSERT_TRUE(shared_keymap.IsValid());
 
     memcpy(shared_keymap.memory(), keymap_string.get(), keymap_size);
     wl_keyboard_send_keymap(

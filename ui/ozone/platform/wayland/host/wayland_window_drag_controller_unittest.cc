@@ -175,7 +175,7 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
-  DCHECK(move_loop_handler);
+  ASSERT_TRUE(move_loop_handler);
 
   enum { kStarted, kDragging, kDropping, kDone } test_step = kStarted;
 
@@ -412,7 +412,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
-  DCHECK(move_loop_handler);
+  ASSERT_TRUE(move_loop_handler);
 
   enum { kStarted, kDragging, kExitedDropping, kDone } test_step = kStarted;
 
@@ -521,7 +521,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
-  DCHECK(move_loop_handler);
+  ASSERT_TRUE(move_loop_handler);
 
   enum {
     kStarted,
@@ -936,7 +936,7 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
-  DCHECK(move_loop_handler);
+  ASSERT_TRUE(move_loop_handler);
 
   enum { kStarted, kDragging, kDropping, kDone } test_step = kStarted;
 

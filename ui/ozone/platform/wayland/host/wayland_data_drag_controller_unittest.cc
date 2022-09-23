@@ -212,7 +212,7 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
       const gfx::Size& size,
       MockPlatformWindowDelegate* delegate,
       gfx::AcceleratedWidget context) {
-    DCHECK(delegate);
+    CHECK(delegate);
     PlatformWindowInitProperties properties{gfx::Rect(size)};
     properties.type = type;
     properties.parent_widget = context;

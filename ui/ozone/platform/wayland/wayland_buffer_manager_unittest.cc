@@ -306,16 +306,16 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
 
     auto buffer_formats =
         connection_->wayland_buffer_factory()->GetSupportedBufferFormats();
-    DCHECK_EQ(buffer_formats.size(), 1u);
-    DCHECK_EQ(buffer_formats.begin()->first,
+    ASSERT_EQ(buffer_formats.size(), 1u);
+    ASSERT_EQ(buffer_formats.begin()->first,
               GetBufferFormatFromFourCCFormat(kFourccFormatR8));
 
     auto modifiers = buffer_formats.begin()->second;
     if (modifier == DRM_FORMAT_MOD_INVALID) {
-      DCHECK_EQ(modifiers.size(), 0u);
+      ASSERT_EQ(modifiers.size(), 0u);
     } else {
-      DCHECK_EQ(modifiers.size(), 1u);
-      DCHECK_EQ(modifiers[0], modifier);
+      ASSERT_EQ(modifiers.size(), 1u);
+      ASSERT_EQ(modifiers[0], modifier);
     }
   }
 
@@ -2725,10 +2725,10 @@ class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
     EXPECT_EQ(temp_window->wayland_subsurfaces_.size(), 1u);
     WaylandSubsurface* subsurface =
         temp_window->wayland_subsurfaces_.begin()->get();
-    DCHECK(subsurface);
+    ASSERT_TRUE(subsurface);
     auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
         subsurface->wayland_surface()->get_surface_id());
-    DCHECK(mock_surface_of_subsurface);
+    ASSERT_TRUE(mock_surface_of_subsurface);
 
     auto* test_vp = mock_surface_of_subsurface->viewport();
 
