@@ -355,7 +355,6 @@ void AuthFactorEditor::OnListAuthFactors(
       NOTREACHED();
       continue;
     }
-    LOG(ERROR) << "Supported " << static_cast<int>(type);
     supported_factors.Put(type);
   }
 

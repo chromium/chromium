@@ -571,12 +571,6 @@ UserSessionManager::UserSessionManager()
   content::GetNetworkConnectionTrackerFromUIThread(
       base::BindOnce(&UserSessionManager::SetNetworkConnectionTracker,
                      GetUserSessionManagerAsWeakPtr()));
-  // TODO(crbug/1341307): Remove the log after the feature settles in Stable.
-  LOG(WARNING) << "UseAuthsessionAuthentication experiment is "
-               << (base::FeatureList::IsEnabled(
-                       ash::features::kUseAuthsessionAuthentication)
-                       ? "enabled"
-                       : "disabled");
 }
 
 UserSessionManager::~UserSessionManager() {
