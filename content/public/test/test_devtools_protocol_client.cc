@@ -110,7 +110,7 @@ base::Value::Dict TestDevToolsProtocolClient::WaitForMatchingNotification(
     base::Value* params = it->Find(kParamsParam);
     if (!params || !matcher.Run(params->GetDict()))
       continue;
-    base::Value::Dict result = std::move(params->GetDict());
+    base::Value::Dict result = std::move(*params).TakeDict();
     notifications_.erase(it);
     return result;
   }
@@ -143,7 +143,7 @@ void TestDevToolsProtocolClient::DispatchProtocolMessage(
   base::Value parsed = *base::JSONReader::Read(message_str);
   if (absl::optional<int> id = parsed.GetDict().FindInt("id")) {
     received_responses_count_++;
-    response_ = std::move(parsed.GetDict());
+    response_ = std::move(parsed).TakeDict();
     in_dispatch_ = false;
     if (*id && *id == waiting_for_command_result_id_) {
       waiting_for_command_result_id_ = 0;
@@ -151,7 +151,7 @@ void TestDevToolsProtocolClient::DispatchProtocolMessage(
     }
   } else {
     const std::string* notification = parsed.GetDict().FindString("method");
-    notifications_.push_back(std::move(parsed.GetDict()));
+    notifications_.push_back(std::move(parsed).TakeDict());
     if (waiting_for_notification_ != *notification)
       return;
     const base::Value* params = notifications_.back().Find(kParamsParam);
