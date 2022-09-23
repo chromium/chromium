@@ -125,7 +125,7 @@ whenever VideoDecoderConfig changes.
 
       // First output should be a key frame and have acompanying metadata.
       // Corresponding input RGBA sRGB, so we expect encoder will have used
-      // libYUV to convert to I420 rec601.
+      // libYUV to convert to I420 or NV12 rec601.
       TEST.assert(inputFrames[0].format == 'RGBA', 'inputs[0] is RGBA');
       TEST.assert(isSRGB(inputFrames[0].colorSpace), 'inputs[0] is sRGB');
       TEST.assert(outputChunks[0].type == 'key', 'outputs[0] is key');

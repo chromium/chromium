@@ -30,6 +30,7 @@
 #include "media/video/mock_video_encode_accelerator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "ui/gfx/color_space.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -104,9 +105,11 @@ class VideoEncodeAcceleratorAdapterTest
     gmb->Unmap();
 
     gpu::MailboxHolder empty_mailboxes[media::VideoFrame::kMaxPlanes];
-    return VideoFrame::WrapExternalGpuMemoryBuffer(
+    auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
         gfx::Rect(gmb_size), size, std::move(gmb), empty_mailboxes,
         base::NullCallback(), timestamp);
+    frame->set_color_space(kYUVColorSpace);
+    return frame;
   }
 
   scoped_refptr<VideoFrame> CreateGreenCpuFrame(gfx::Size size,
@@ -129,6 +132,7 @@ class VideoEncodeAcceleratorAdapterTest
                      0x40,                            // U color
                      0x40);                           // V color
 
+    frame->set_color_space(kYUVColorSpace);
     return frame;
   }
 
@@ -146,6 +150,7 @@ class VideoEncodeAcceleratorAdapterTest
                      frame->visible_rect().height(),  // bottom
                      0x24D93B00);                     // V color
 
+    frame->set_color_space(kRGBColorSpace);
     return frame;
   }
 
@@ -163,6 +168,23 @@ class VideoEncodeAcceleratorAdapterTest
         EXPECT_TRUE(false) << "not supported pixel format";
         return nullptr;
     }
+  }
+
+  gfx::ColorSpace ExpectedColorSpace(VideoPixelFormat src_format,
+                                     VideoPixelFormat dst_format) {
+    // Converting between YUV formats doesn't change the color space.
+    if (IsYuvPlanar(src_format) && IsYuvPlanar(dst_format)) {
+      return kYUVColorSpace;
+    }
+
+    // libyuv's RGB to YUV methods always output BT.601.
+    if (IsRGB(src_format) && IsYuvPlanar(dst_format)) {
+      return gfx::ColorSpace::CreateREC601();
+    }
+
+    EXPECT_TRUE(false) << "unexpected formats: src=" << src_format
+                       << ", dst=" << dst_format;
+    return gfx::ColorSpace();
   }
 
   VideoEncoder::EncoderStatusCB ValidatingStatusCB(
@@ -187,6 +209,10 @@ class VideoEncodeAcceleratorAdapterTest
 
  protected:
   VideoCodecProfile profile_ = VP8PROFILE_ANY;
+  static constexpr gfx::ColorSpace kRGBColorSpace =
+      gfx::ColorSpace::CreateSRGB();
+  static constexpr gfx::ColorSpace kYUVColorSpace =
+      gfx::ColorSpace::CreateREC709();
   std::vector<VideoEncodeAccelerator::SupportedProfile> supported_profiles_;
   base::test::TaskEnvironment task_environment_;
   raw_ptr<FakeVideoEncodeAccelerator> vea_;  // owned by |vae_adapter_|
@@ -213,8 +239,12 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializeAfterFirstFrame) {
   options.frame_size = gfx::Size(640, 480);
   int outputs_count = 0;
   auto pixel_format = PIXEL_FORMAT_I420;
+  const gfx::ColorSpace expected_color_space =
+      ExpectedColorSpace(pixel_format, pixel_format);
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput output,
+          absl::optional<VideoEncoder::CodecDescription>) {
+        EXPECT_EQ(output.color_space, expected_color_space);
         outputs_count++;
       });
 
@@ -230,6 +260,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializeAfterFirstFrame) {
 
   auto frame =
       CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
+
   adapter()->Encode(frame, true, ValidatingStatusCB());
   RunUntilIdle();
   EXPECT_EQ(outputs_count, 1);
@@ -241,6 +272,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
   options.scalability_mode = SVCScalabilityMode::kL1T3;
   int outputs_count = 0;
   auto pixel_format = PIXEL_FORMAT_I420;
+  const gfx::ColorSpace expected_color_space =
+      ExpectedColorSpace(pixel_format, pixel_format);
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
           absl::optional<VideoEncoder::CodecDescription>) {
@@ -252,6 +285,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
           EXPECT_EQ(output.temporal_id, 2);
         else
           EXPECT_EQ(output.temporal_id, 2);
+
+        EXPECT_EQ(output.color_space, expected_color_space);
         outputs_count++;
       });
 
@@ -300,8 +335,12 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {
   options.frame_size = gfx::Size(640, 480);
   int outputs_count = 0;
   auto pixel_format = PIXEL_FORMAT_I420;
+  const gfx::ColorSpace expected_color_space =
+      ExpectedColorSpace(pixel_format, pixel_format);
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput output,
+          absl::optional<VideoEncoder::CodecDescription>) {
+        EXPECT_EQ(output.color_space, expected_color_space);
         outputs_count++;
       });
 
@@ -400,9 +439,12 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, TwoFramesResize) {
   if (pixel_format != PIXEL_FORMAT_I420 || !small_frame->IsMappable())
     expected_input_format = PIXEL_FORMAT_NV12;
 #endif
-
+  const gfx::ColorSpace expected_color_space =
+      ExpectedColorSpace(pixel_format, expected_input_format);
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput output,
+          absl::optional<VideoEncoder::CodecDescription>) {
+        EXPECT_EQ(output.color_space, expected_color_space);
         outputs_count++;
       });
 
@@ -427,8 +469,12 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, AutomaticResizeSupport) {
   int outputs_count = 0;
   gfx::Size small_size(480, 320);
   auto pixel_format = PIXEL_FORMAT_NV12;
+  const gfx::ColorSpace expected_color_space =
+      ExpectedColorSpace(pixel_format, pixel_format);
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput output,
+          absl::optional<VideoEncoder::CodecDescription>) {
+        EXPECT_EQ(output.color_space, expected_color_space);
         outputs_count++;
       });
 
@@ -471,8 +517,24 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, RunWithAllPossibleInputConversions) {
           ? PIXEL_FORMAT_NV12
           : PIXEL_FORMAT_I420;
 
+  constexpr auto get_source_format = [](int i) {
+    // Every 4 frames switch between the 3 supported formats.
+    const int rem = i % 12;
+    auto format = PIXEL_FORMAT_XRGB;
+    if (rem < 4)
+      format = PIXEL_FORMAT_I420;
+    else if (rem < 8)
+      format = PIXEL_FORMAT_NV12;
+    return format;
+  };
+
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput output,
+          absl::optional<VideoEncoder::CodecDescription>) {
+        VideoPixelFormat source_frame_format = get_source_format(outputs_count);
+        const gfx::ColorSpace expected_color_space =
+            ExpectedColorSpace(source_frame_format, expected_input_format);
+        EXPECT_EQ(output.color_space, expected_color_space);
         outputs_count++;
       });
 
@@ -494,13 +556,7 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, RunWithAllPossibleInputConversions) {
     else
       size = same_size;
 
-    // Every 4 frames switch between the 3 supported formats.
-    const int rem = frame_index % 12;
-    auto format = PIXEL_FORMAT_XRGB;
-    if (rem < 4)
-      format = PIXEL_FORMAT_I420;
-    else if (rem < 8)
-      format = PIXEL_FORMAT_NV12;
+    const auto format = get_source_format(frame_index);
     bool key = frame_index % 9 == 0;
     auto frame =
         CreateGreenFrame(size, format, base::Milliseconds(frame_index));
@@ -516,9 +572,12 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, DroppedFrame) {
   options.frame_size = gfx::Size(640, 480);
   auto pixel_format = PIXEL_FORMAT_I420;
   std::vector<base::TimeDelta> output_timestamps;
+  const gfx::ColorSpace expected_color_space =
+      ExpectedColorSpace(pixel_format, pixel_format);
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
           absl::optional<VideoEncoder::CodecDescription>) {
+        EXPECT_EQ(output.color_space, expected_color_space);
         output_timestamps.push_back(output.timestamp);
       });
 
@@ -553,12 +612,18 @@ TEST_F(VideoEncodeAcceleratorAdapterTest,
   auto pixel_format = PIXEL_FORMAT_I420;
   int output_count_before_change = 0;
   int output_count_after_change = 0;
+  const gfx::ColorSpace expected_color_space =
+      ExpectedColorSpace(pixel_format, pixel_format);
   VideoEncoder::OutputCB first_output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput output,
+          absl::optional<VideoEncoder::CodecDescription>) {
+        EXPECT_EQ(output.color_space, expected_color_space);
         output_count_before_change++;
       });
   VideoEncoder::OutputCB second_output_cb = base::BindLambdaForTesting(
-      [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
+      [&](VideoEncoderOutput output,
+          absl::optional<VideoEncoder::CodecDescription>) {
+        EXPECT_EQ(output.color_space, expected_color_space);
         output_count_after_change++;
       });
 
