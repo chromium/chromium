@@ -277,11 +277,22 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // PDFEngine::Client:
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
+  void ScrollToX(int x_screen_coords) override;
+  void ScrollToY(int y_screen_coords) override;
+  void ScrollBy(const gfx::Vector2d& delta) override;
+  void ScrollToPage(int page) override;
+  void NavigateTo(const std::string& url,
+                  WindowOpenDisposition disposition) override;
+  void NavigateToDestination(int page,
+                             const float* x,
+                             const float* y,
+                             const float* zoom) override;
   void UpdateCursor(ui::mojom::CursorType new_cursor_type) override;
   void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
   void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
   void NotifySelectedFindResultChanged(int current_find_index,
                                        bool final_result) override;
+  void NotifyTouchSelectionOccurred() override;
   void GetDocumentPassword(
       base::OnceCallback<void(const std::string&)> callback) override;
   void Beep() override;
@@ -290,6 +301,11 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   std::string Prompt(const std::string& question,
                      const std::string& default_answer) override;
   std::string GetURL() override;
+  void Email(const std::string& to,
+             const std::string& cc,
+             const std::string& bcc,
+             const std::string& subject,
+             const std::string& body) override;
   void Print() override;
   void SubmitForm(const std::string& url,
                   const void* data,
@@ -503,6 +519,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // Sends the thumbnail image data.
   void SendThumbnail(base::Value::Dict reply, Thumbnail thumbnail);
+
+  // Converts `frame_coordinates` to PDF coordinates.
+  gfx::Point FrameToPdfCoordinates(const gfx::PointF& frame_coordinates) const;
 
   blink::WebString selected_text_;
 

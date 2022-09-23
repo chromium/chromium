@@ -27,6 +27,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -100,6 +101,7 @@
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -797,6 +799,70 @@ void PdfViewWebPlugin::ProposeDocumentLayout(const DocumentLayout& layout) {
     LoadAccessibility();
 }
 
+void PdfViewWebPlugin::ScrollToX(int x_screen_coords) {
+  const float x_scroll_pos = x_screen_coords / device_scale();
+
+  base::Value::Dict message;
+  message.Set("type", "setScrollPosition");
+  message.Set("x", static_cast<double>(x_scroll_pos));
+  SendMessage(std::move(message));
+}
+
+void PdfViewWebPlugin::ScrollToY(int y_screen_coords) {
+  const float y_scroll_pos = y_screen_coords / device_scale();
+
+  base::Value::Dict message;
+  message.Set("type", "setScrollPosition");
+  message.Set("y", static_cast<double>(y_scroll_pos));
+  SendMessage(std::move(message));
+}
+
+void PdfViewWebPlugin::ScrollBy(const gfx::Vector2d& delta) {
+  const float x_delta = delta.x() / device_scale();
+  const float y_delta = delta.y() / device_scale();
+
+  base::Value::Dict message;
+  message.Set("type", "scrollBy");
+  message.Set("x", static_cast<double>(x_delta));
+  message.Set("y", static_cast<double>(y_delta));
+  SendMessage(std::move(message));
+}
+
+void PdfViewWebPlugin::ScrollToPage(int page) {
+  if (!engine() || engine()->GetNumberOfPages() == 0)
+    return;
+
+  base::Value::Dict message;
+  message.Set("type", "goToPage");
+  message.Set("page", page);
+  SendMessage(std::move(message));
+}
+
+void PdfViewWebPlugin::NavigateTo(const std::string& url,
+                                  WindowOpenDisposition disposition) {
+  base::Value::Dict message;
+  message.Set("type", "navigate");
+  message.Set("url", url);
+  message.Set("disposition", static_cast<int>(disposition));
+  SendMessage(std::move(message));
+}
+
+void PdfViewWebPlugin::NavigateToDestination(int page,
+                                             const float* x,
+                                             const float* y,
+                                             const float* zoom) {
+  base::Value::Dict message;
+  message.Set("type", "navigateToDestination");
+  message.Set("page", page);
+  if (x)
+    message.Set("x", static_cast<double>(*x));
+  if (y)
+    message.Set("y", static_cast<double>(*y));
+  if (zoom)
+    message.Set("zoom", static_cast<double>(*zoom));
+  SendMessage(std::move(message));
+}
+
 void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
   cursor_type_ = new_cursor_type;
 }
@@ -842,6 +908,12 @@ void PdfViewWebPlugin::NotifySelectedFindResultChanged(int current_find_index,
   DCHECK_GE(current_find_index, -1);
   client_->ReportFindInPageSelection(find_identifier_, current_find_index + 1,
                                      final_result);
+}
+
+void PdfViewWebPlugin::NotifyTouchSelectionOccurred() {
+  base::Value::Dict message;
+  message.Set("type", "touchSelectionOccurred");
+  SendMessage(std::move(message));
 }
 
 void PdfViewWebPlugin::CaretChanged(const gfx::Rect& caret_rect) {
@@ -896,6 +968,21 @@ void PdfViewWebPlugin::LoadUrl(base::StringPiece url,
   UrlLoader* raw_loader = loader.get();
   raw_loader->Open(request,
                    base::BindOnce(std::move(callback), std::move(loader)));
+}
+
+void PdfViewWebPlugin::Email(const std::string& to,
+                             const std::string& cc,
+                             const std::string& bcc,
+                             const std::string& subject,
+                             const std::string& body) {
+  base::Value::Dict message;
+  message.Set("type", "email");
+  message.Set("to", base::EscapeUrlEncodedData(to, false));
+  message.Set("cc", base::EscapeUrlEncodedData(cc, false));
+  message.Set("bcc", base::EscapeUrlEncodedData(bcc, false));
+  message.Set("subject", base::EscapeUrlEncodedData(subject, false));
+  message.Set("body", base::EscapeUrlEncodedData(body, false));
+  SendMessage(std::move(message));
 }
 
 void PdfViewWebPlugin::Print() {
@@ -1991,6 +2078,14 @@ void PdfViewWebPlugin::SendThumbnail(base::Value::Dict reply,
   reply.Set("width", thumbnail.image_size().width());
   reply.Set("height", thumbnail.image_size().height());
   SendMessage(std::move(reply));
+}
+
+gfx::Point PdfViewWebPlugin::FrameToPdfCoordinates(
+    const gfx::PointF& frame_coordinates) const {
+  // TODO(crbug.com/1288847): Use methods on `blink::WebPluginContainer`.
+  return gfx::ToFlooredPoint(
+             gfx::ScalePoint(frame_coordinates, device_scale())) -
+         gfx::Vector2d(available_area().x(), 0);
 }
 
 }  // namespace chrome_pdf

@@ -25,7 +25,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -52,7 +51,6 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -88,91 +86,6 @@ void PdfViewPluginBase::Invalidate(const gfx::Rect& rect) {
 void PdfViewPluginBase::DidScroll(const gfx::Vector2d& offset) {
   if (!image_data_.drawsNothing())
     paint_manager_.ScrollRect(available_area_, offset);
-}
-
-void PdfViewPluginBase::ScrollToX(int x_screen_coords) {
-  const float x_scroll_pos = x_screen_coords / device_scale();
-
-  base::Value::Dict message;
-  message.Set("type", "setScrollPosition");
-  message.Set("x", static_cast<double>(x_scroll_pos));
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::ScrollToY(int y_screen_coords) {
-  const float y_scroll_pos = y_screen_coords / device_scale();
-
-  base::Value::Dict message;
-  message.Set("type", "setScrollPosition");
-  message.Set("y", static_cast<double>(y_scroll_pos));
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::ScrollBy(const gfx::Vector2d& delta) {
-  const float x_delta = delta.x() / device_scale();
-  const float y_delta = delta.y() / device_scale();
-
-  base::Value::Dict message;
-  message.Set("type", "scrollBy");
-  message.Set("x", static_cast<double>(x_delta));
-  message.Set("y", static_cast<double>(y_delta));
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::ScrollToPage(int page) {
-  if (!engine() || engine()->GetNumberOfPages() == 0)
-    return;
-
-  base::Value::Dict message;
-  message.Set("type", "goToPage");
-  message.Set("page", page);
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::NavigateTo(const std::string& url,
-                                   WindowOpenDisposition disposition) {
-  base::Value::Dict message;
-  message.Set("type", "navigate");
-  message.Set("url", url);
-  message.Set("disposition", static_cast<int>(disposition));
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::NavigateToDestination(int page,
-                                              const float* x,
-                                              const float* y,
-                                              const float* zoom) {
-  base::Value::Dict message;
-  message.Set("type", "navigateToDestination");
-  message.Set("page", page);
-  if (x)
-    message.Set("x", static_cast<double>(*x));
-  if (y)
-    message.Set("y", static_cast<double>(*y));
-  if (zoom)
-    message.Set("zoom", static_cast<double>(*zoom));
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::NotifyTouchSelectionOccurred() {
-  base::Value::Dict message;
-  message.Set("type", "touchSelectionOccurred");
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::Email(const std::string& to,
-                              const std::string& cc,
-                              const std::string& bcc,
-                              const std::string& subject,
-                              const std::string& body) {
-  base::Value::Dict message;
-  message.Set("type", "email");
-  message.Set("to", base::EscapeUrlEncodedData(to, false));
-  message.Set("cc", base::EscapeUrlEncodedData(cc, false));
-  message.Set("bcc", base::EscapeUrlEncodedData(bcc, false));
-  message.Set("subject", base::EscapeUrlEncodedData(subject, false));
-  message.Set("body", base::EscapeUrlEncodedData(body, false));
-  SendMessage(std::move(message));
 }
 
 void PdfViewPluginBase::DocumentLoadComplete() {
@@ -565,14 +478,6 @@ void PdfViewPluginBase::LoadAccessibility() {
       base::BindOnce(&PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo,
                      GetWeakPtr(), /*page_index=*/0),
       kAccessibilityPageDelay);
-}
-
-gfx::Point PdfViewPluginBase::FrameToPdfCoordinates(
-    const gfx::PointF& frame_coordinates) const {
-  // TODO(crbug.com/1288847): Use methods on `blink::WebPluginContainer`.
-  return gfx::ToFlooredPoint(
-             gfx::ScalePoint(frame_coordinates, device_scale())) -
-         gfx::Vector2d(available_area_.x(), 0);
 }
 
 }  // namespace chrome_pdf

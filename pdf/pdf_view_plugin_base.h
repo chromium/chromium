@@ -69,22 +69,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // PDFEngine::Client:
   void Invalidate(const gfx::Rect& rect) override;
   void DidScroll(const gfx::Vector2d& offset) override;
-  void ScrollToX(int x_screen_coords) override;
-  void ScrollToY(int y_screen_coords) override;
-  void ScrollBy(const gfx::Vector2d& delta) override;
-  void ScrollToPage(int page) override;
-  void NavigateTo(const std::string& url,
-                  WindowOpenDisposition disposition) override;
-  void NavigateToDestination(int page,
-                             const float* x,
-                             const float* y,
-                             const float* zoom) override;
-  void NotifyTouchSelectionOccurred() override;
-  void Email(const std::string& to,
-             const std::string& cc,
-             const std::string& bcc,
-             const std::string& subject,
-             const std::string& body) override;
   void DocumentLoadComplete() override;
   void DocumentLoadFailed() override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
@@ -289,9 +273,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Starts loading accessibility information.
   void LoadAccessibility();
-
-  // Converts `frame_coordinates` to PDF coordinates.
-  gfx::Point FrameToPdfCoordinates(const gfx::PointF& frame_coordinates) const;
 
  private:
   // TODO(crbug.com/1302059): `PdfViewPluginBase` is being merged into
