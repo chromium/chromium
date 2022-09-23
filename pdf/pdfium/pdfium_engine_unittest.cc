@@ -864,6 +864,18 @@ TEST_F(PDFiumEngineTest, SelectLinkAreaWithNoText) {
   EXPECT_EQ(kExpectedText, engine->GetSelectedText());
 }
 
+TEST_F(PDFiumEngineTest, SelectTextWithNonPrintableCharacter) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("bug_1357385.pdf"));
+  ASSERT_TRUE(engine);
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  engine->SelectAll();
+  EXPECT_EQ("Hello, world!", engine->GetSelectedText());
+}
+
 using PDFiumEngineDeathTest = PDFiumEngineTest;
 
 TEST_F(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
