@@ -93,6 +93,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CrosDisks.ReadOnlyFileSystemAfterError"
+    enum="CrosDisksFilesystemType" expires_after="2023-04-01">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    File system type of external media that the ChromeOS cros-disks daemon had
+    to mount in read-only mode because there was an error when trying to mount
+    them in read-write mode. See crbug.com/1366204.
+  </summary>
+</histogram>
+
 <histogram name="CrosDisksClient.FormatCompletedError"
     enum="CrosDisksClientFormatError" expires_after="2023-02-05">
   <owner>austinct@chromium.org</owner>
