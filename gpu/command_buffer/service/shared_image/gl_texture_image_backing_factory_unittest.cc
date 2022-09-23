@@ -9,7 +9,6 @@
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -30,7 +29,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
@@ -93,7 +91,7 @@ class GLTextureImageBackingFactoryTestBase
   }
 
   void SetUpBase(const GpuDriverBugWorkarounds& workarounds,
-                 bool for_cpu_upload_usage) {
+                 ImageFactory* factory) {
     scoped_refptr<gles2::FeatureInfo> feature_info;
     CreateSharedContext(workarounds, surface_, context_, context_state_,
                         feature_info);
@@ -107,7 +105,7 @@ class GLTextureImageBackingFactoryTestBase
     preferences.use_passthrough_cmd_decoder = use_passthrough();
     backing_factory_ = std::make_unique<GLTextureImageBackingFactory>(
         preferences, workarounds, context_state_->feature_info(),
-        &progress_reporter_, for_cpu_upload_usage);
+        &progress_reporter_);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
     shared_image_representation_factory_ =
@@ -154,19 +152,11 @@ class GLTextureImageBackingFactoryTest
       : GLTextureImageBackingFactoryTestBase(false) {}
   void SetUp() override {
     GpuDriverBugWorkarounds workarounds;
-    SetUpBase(workarounds, /*for_cpu_upload_usage=*/false);
+    SetUpBase(workarounds, &image_factory_);
   }
-};
 
-class GLTextureImageBackingFactoryWithUploadTest
-    : public GLTextureImageBackingFactoryTestBase {
- public:
-  GLTextureImageBackingFactoryWithUploadTest()
-      : GLTextureImageBackingFactoryTestBase(false) {}
-  void SetUp() override {
-    GpuDriverBugWorkarounds workarounds;
-    SetUpBase(workarounds, /*for_cpu_upload_usage=*/true);
-  }
+ protected:
+  TextureImageFactory image_factory_;
 };
 
 TEST_P(GLTextureImageBackingFactoryTest, Basic) {
@@ -358,16 +348,11 @@ TEST_P(GLTextureImageBackingFactoryTest, InitialData) {
 }
 
 TEST_P(GLTextureImageBackingFactoryTest, InitialDataImage) {
-  auto format = get_format();
-
-  // Initial pixel data isn't supported for BGRX or RGBX formats.
-  if (format == viz::BGRX_8888 || format == viz::RGBX_8888)
-    return;
-
   const bool should_succeed = can_create_non_scanout_shared_image(get_format());
   if (should_succeed)
     EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   auto mailbox = Mailbox::GenerateForSharedImage();
+  auto format = get_format();
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -544,73 +529,15 @@ TEST_P(GLTextureImageBackingFactoryTest, TexImageTexStorageEquivalence) {
   }
 }
 
-TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
-  // TODO(jonahr): Test fails on Mac with ANGLE/passthrough
-  // (crbug.com/1100975)
-  gpu::GPUTestBotConfig bot_config;
-  if (bot_config.LoadCurrentConfig(nullptr) &&
-      bot_config.Matches("mac passthrough")) {
-    return;
-  }
-
-  const bool should_succeed = can_create_non_scanout_shared_image(get_format());
-  if (should_succeed)
-    EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
-  auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = get_format();
-  gfx::Size size(9, 9);
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_CPU_UPLOAD;
-  gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-
-  bool supported =
-      backing_factory_->IsSupported(usage, format, size, /*thread_safe=*/false,
-                                    gfx::EMPTY_BUFFER, GrContextType::kGL, {});
-
-  EXPECT_EQ(should_succeed, supported);
-  if (!should_succeed)
-    return;
-
-  auto backing = backing_factory_->CreateSharedImage(
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
-  ASSERT_TRUE(backing);
-
-  SkColorType color_type =
-      viz::ResourceFormatToClosestSkColorType(true, format);
-
-  // Allocate a bitmap with green pixels and upload from it.
-  SkBitmap bitmap;
-  SkImageInfo info =
-      SkImageInfo::Make(size.width(), size.height(), color_type, alpha_type);
-  bitmap.allocPixels(info);
-  bitmap.eraseColor(SK_ColorGREEN);
-
-  EXPECT_TRUE(backing->UploadFromMemory(bitmap.pixmap()));
-
-  // Allocate a bitmap with much larger stride that necessary. Upload from that
-  // bitmap should still work correctly.
-  SkBitmap larger_bitmap;
-  size_t larger_stride = info.minRowBytes() + 100;
-  larger_bitmap.allocPixels(info, larger_stride);
-  larger_bitmap.eraseColor(SK_ColorGREEN);
-
-  EXPECT_TRUE(backing->UploadFromMemory(larger_bitmap.pixmap()));
-}
-
+#if !BUILDFLAG(IS_ANDROID)
 const auto kResourceFormats =
     ::testing::Values(viz::ResourceFormat::RGBA_8888,
-                      viz::ResourceFormat::BGRA_8888,
-                      viz::ResourceFormat::RGBX_8888,
-                      viz::ResourceFormat::BGRX_8888
-#if !BUILDFLAG(IS_ANDROID)
-                      ,
                       viz::ResourceFormat::BGRA_1010102,
-                      viz::ResourceFormat::RGBA_1010102
+                      viz::ResourceFormat::RGBA_1010102);
+#else
+// High bit depth rendering is not supported on Android.
+const auto kResourceFormats = ::testing::Values(viz::ResourceFormat::RGBA_8888);
 #endif
-    );
 
 std::string TestParamToString(
     const testing::TestParamInfo<std::tuple<bool, viz::ResourceFormat>>&
@@ -619,17 +546,11 @@ std::string TestParamToString(
   const viz::ResourceFormat format = std::get<1>(param_info.param);
   return base::StringPrintf(
       "%s_%s", (allow_passthrough ? "AllowPassthrough" : "DisallowPassthrough"),
-      viz::ResourceFormatToString(format));
+      gfx::BufferFormatToString(viz::BufferFormat(format)));
 }
 
 INSTANTIATE_TEST_SUITE_P(Service,
                          GLTextureImageBackingFactoryTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            kResourceFormats),
-                         TestParamToString);
-
-INSTANTIATE_TEST_SUITE_P(Service,
-                         GLTextureImageBackingFactoryWithUploadTest,
                          ::testing::Combine(::testing::Bool(),
                                             kResourceFormats),
                          TestParamToString);
