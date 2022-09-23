@@ -97,6 +97,11 @@
         ],
         'swarming': {
           'shards': 2,
+          'dimension_sets': [
+            {
+              'machine_type': 'e2-standard-8', # crbug/1292221
+            },
+          ],
         },
       },
     },
