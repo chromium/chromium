@@ -7125,3 +7125,5 @@ crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-storage-key-t
 # fully launched.
 # The ones defined in VirtualTestSuites are run instead.
 crbug.com/1293679 wpt_internal/pending_beacon/* [ Skip ]
+
+external/wpt/css/css-values/calc-in-media-queries-with-mixed-units.html [ Skip ]
