@@ -141,6 +141,9 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverTest.testTakeElementScreenshotPartlyVisible',
     'ChromeDriverTest.testTakeLargeElementScreenshot',
     'ChromeDriverSiteIsolation.testCanClickOOPIF',
+    # https://bugs.chromium.org/p/chromium/issues/detail?id=1367160
+    # Flaky test.
+    'ChromeDriverTest.testClickElementThatRestartsBrowser',
 ]
 
 _DESKTOP_NEGATIVE_FILTER = [
