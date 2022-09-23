@@ -3398,23 +3398,6 @@
       ]
     },
     {
-      "id": 346,
-      "cr_bugs": [1062184],
-      "description": "Enable HDR video playing through overlay on Intel",
-      "os": {
-        "type": "win"
-      },
-      "intel_gpu_series": [
-        "icelake",
-        "tigerlake",
-        "alderlake",
-        "alchemist"
-      ],
-      "features": [
-        "force_rgb10a2_overlay_support_flags"
-      ]
-    },
-    {
       "id": 347,
       "cr_bugs": [1119491],
       "description": "Intel GPUs fail to report BGRA8 overlay support",
