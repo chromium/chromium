@@ -566,7 +566,7 @@ void ClientSession::CreatePerMonitorVideoStreams() {
     HOST_LOG << "Creating video stream: " << stream_name;
 
     auto video_stream = connection_->StartVideoStream(
-        kStreamName, desktop_environment_->CreateVideoCapturer());
+        stream_name, desktop_environment_->CreateVideoCapturer());
     video_stream->SelectSource(id);
 
     // SetObserver(this) is not called on the new video-stream, because
