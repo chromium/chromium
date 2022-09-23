@@ -1402,6 +1402,9 @@
     },
     {
       name: "IdentityInCanMakePaymentEventFeature",
+      origin_trial_allows_third_party: true,
+      origin_trial_feature_name: "IdentityInCanMakePaymentEventFeature",
+      origin_trial_type: "deprecation",
       public: true,
       status: "stable",
     },
