@@ -36,13 +36,10 @@ std::set<std::string> PrefServiceFlagsStorage::GetFlags() const {
 }
 
 bool PrefServiceFlagsStorage::SetFlags(const std::set<std::string>& flags) {
-  ListPrefUpdate update(prefs_, prefs::kAboutFlagsEntries);
-  base::Value* experiments_list = update.Get();
-  DCHECK(experiments_list->is_list());
-
-  experiments_list->ClearList();
+  base::Value::List experiments_list;
   for (const auto& flag : flags)
-    experiments_list->Append(flag);
+    experiments_list.Append(flag);
+  prefs_->SetList(prefs::kAboutFlagsEntries, std::move(experiments_list));
 
   return true;
 }
@@ -59,8 +56,8 @@ std::string PrefServiceFlagsStorage::GetOriginListFlag(
 void PrefServiceFlagsStorage::SetOriginListFlag(
     const std::string& internal_entry_name,
     const std::string& origin_list_value) {
-  DictionaryPrefUpdate update(prefs_, prefs::kAboutFlagsOriginLists);
-  update->SetStringPath(internal_entry_name, origin_list_value);
+  ScopedDictPrefUpdate update(prefs_, prefs::kAboutFlagsOriginLists);
+  update->SetByDottedPath(internal_entry_name, origin_list_value);
 }
 
 void PrefServiceFlagsStorage::CommitPendingWrites() {
