@@ -133,6 +133,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       apps::mojom::LaunchSource launch_source,
       apps::mojom::WindowInfoPtr window_info,
       apps::mojom::Publisher::LaunchAppWithIntentCallback callback) override;
+
+  base::WeakPtr<AppServiceProxy> GetWeakPtr();
+
   void FlushMojoCallsForTesting() override;
 
   void ReInitializeCrostiniForTesting();

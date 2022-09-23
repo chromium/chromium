@@ -82,6 +82,10 @@ void AppServiceProxy::SetRunOnOsLoginMode(
   }
 }
 
+base::WeakPtr<AppServiceProxy> AppServiceProxy::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool AppServiceProxy::MaybeShowLaunchPreventionDialog(
     const apps::AppUpdate& update) {
   return false;

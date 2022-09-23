@@ -492,6 +492,17 @@ void AppServiceProxyBase::LaunchAppWithUrl(const std::string& app_id,
       launch_source, std::move(window_info), base::DoNothing());
 }
 
+void AppServiceProxyBase::LaunchAppWithUrlForBind(const std::string& app_id,
+                                                  int32_t event_flags,
+                                                  GURL url,
+                                                  LaunchSource launch_source,
+                                                  WindowInfoPtr window_info) {
+  LaunchAppWithIntent(
+      app_id, event_flags,
+      std::make_unique<apps::Intent>(apps_util::kIntentActionView, url),
+      launch_source, std::move(window_info), base::DoNothing());
+}
+
 void AppServiceProxyBase::LaunchAppWithUrl(
     const std::string& app_id,
     int32_t event_flags,

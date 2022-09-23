@@ -172,6 +172,14 @@ class AppServiceProxyLacros : public KeyedService,
                         GURL url,
                         LaunchSource launch_source,
                         WindowInfoPtr window_info = nullptr);
+  // TODO(crbug.com/1253250): Will be replaced with LaunchAppWithUrl once the
+  // mojom LaunchAppWithUrl interface is removed.
+  void LaunchAppWithUrlForBind(const std::string& app_id,
+                               int32_t event_flags,
+                               GURL url,
+                               LaunchSource launch_source,
+                               WindowInfoPtr window_info = nullptr);
+
   // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
   // interface.
   void LaunchAppWithUrl(const std::string& app_id,
@@ -288,6 +296,8 @@ class AppServiceProxyLacros : public KeyedService,
 
   void SetCrosapiAppServiceProxyForTesting(
       crosapi::mojom::AppServiceProxy* proxy);
+
+  base::WeakPtr<AppServiceProxyLacros> GetWeakPtr();
 
  protected:
   // An adapter, presenting an IconLoader interface based on the underlying

@@ -260,6 +260,17 @@ void AppServiceProxyLacros::LaunchAppWithUrl(const std::string& app_id,
       launch_source, std::move(window_info), base::DoNothing());
 }
 
+void AppServiceProxyLacros::LaunchAppWithUrlForBind(const std::string& app_id,
+                                                    int32_t event_flags,
+                                                    GURL url,
+                                                    LaunchSource launch_source,
+                                                    WindowInfoPtr window_info) {
+  LaunchAppWithIntent(
+      app_id, event_flags,
+      std::make_unique<apps::Intent>(apps_util::kIntentActionView, url),
+      launch_source, std::move(window_info), base::DoNothing());
+}
+
 void AppServiceProxyLacros::LaunchAppWithUrl(
     const std::string& app_id,
     int32_t event_flags,
@@ -529,6 +540,10 @@ void AppServiceProxyLacros::SetCrosapiAppServiceProxyForTesting(
   // Set the proxy version to the newest version for testing.
   crosapi_app_service_proxy_version_ =
       crosapi::mojom::AppServiceProxy::Version_;
+}
+
+base::WeakPtr<AppServiceProxyLacros> AppServiceProxyLacros::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 AppServiceProxyLacros::InnerIconLoader::InnerIconLoader(
