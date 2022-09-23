@@ -67,7 +67,7 @@
       'mac-archive-dbg': 'debug_bot',
       'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols_reclient',
       'mac-arm64-archive-dbg': 'debug_bot_arm64',
-      'mac-arm64-archive-rel': 'release_bot_mac_strip_minimal_symbols_arm64',
+      'mac-arm64-archive-rel': 'release_bot_mac_strip_minimal_symbols_arm64_reclient',
       'mac-official': 'official_optimize_goma',
       'win-archive-dbg': 'debug_bot_reclient',
       'win-archive-rel': 'release_bot_minimal_symbols_enable_archive_compression_reclient',
@@ -472,7 +472,7 @@
       'mac-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
       'mac-code-coverage': 'clang_code_coverage',
       'mac-fieldtrial-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
-      'mac-hermetic-upgrade-rel': 'release_bot',
+      'mac-hermetic-upgrade-rel': 'release_bot_reclient',
       'mac-perfetto-rel': 'perfetto_release_bot_reclient',
       'mac-upload-perfetto': 'release_bot_perfetto_zlib',
       'win-annotator-rel': 'release_bot_reclient',
@@ -735,7 +735,7 @@
       'linux-swangle-chromium-x64': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'linux-swangle-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
       'linux-swangle-x64': 'angle_deqp_release_trybot_reclient',
-      'mac-swangle-chromium-x64': 'gpu_tests_release_trybot_minimal_symbols',
+      'mac-swangle-chromium-x64': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'win-swangle-chromium-x86': 'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient',
       'win-swangle-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
       'win-swangle-tot-swiftshader-x86': 'angle_deqp_release_bot_dcheck_always_on_x86_reclient',
@@ -3489,8 +3489,8 @@
       'release_bot', 'mac_strip', 'minimal_symbols',
     ],
 
-    'release_bot_mac_strip_minimal_symbols_arm64': [
-      'release_bot', 'mac_strip', 'minimal_symbols', 'arm64',
+    'release_bot_mac_strip_minimal_symbols_arm64_reclient': [
+      'release_bot_reclient', 'mac_strip', 'minimal_symbols', 'arm64',
     ],
 
     'release_bot_mac_strip_minimal_symbols_no_nacl_reclient': [

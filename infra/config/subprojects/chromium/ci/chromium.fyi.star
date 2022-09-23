@@ -2309,6 +2309,9 @@ fyi_mac_builder(
         short_name = "herm",
     ),
     cores = 12,
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
