@@ -25,8 +25,10 @@ source_set("feature_list") {
 
   deps = [
     ":commerce_heuristics_data",
+    ":pref_names",
     "//base",
     "//components/flags_ui",
+    "//components/prefs",
     "//components/search",
     "//third_party/re2:re2",
     "//url:url",
@@ -176,7 +178,6 @@ static_library("shopping_service") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/power_bookmarks/core",
     "//components/power_bookmarks/core:proto",
-    "//components/pref_registry",
     "//components/prefs:prefs",
     "//components/resources:components_resources_grit",
     "//components/session_proto_db:core",
@@ -266,7 +267,11 @@ source_set("pref_names") {
     "pref_names.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
 }
 
 source_set("account_checker") {

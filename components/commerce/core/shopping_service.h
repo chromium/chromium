@@ -27,8 +27,6 @@
 class GURL;
 class PrefService;
 
-class PrefRegistrySimple;
-
 template <typename T>
 class SessionProtoStorage;
 
@@ -168,8 +166,6 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   ShoppingService(const ShoppingService&) = delete;
   ShoppingService& operator=(const ShoppingService&) = delete;
-
-  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // This API retrieves the product information for the provided |url| and
   // passes the payload back to the caller via |callback|. At minimum, this

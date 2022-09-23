@@ -46,7 +46,7 @@ class BookmarkUpdateManagerTest : public testing::Test {
     // The update manager should not have an update scheduled by default.
     EXPECT_FALSE(IsUpdateScheduled());
 
-    ShoppingService::RegisterPrefs(pref_service_->registry());
+    RegisterPrefs(pref_service_->registry());
   }
 
   void TearDown() override { update_manager_->CancelUpdates(); }

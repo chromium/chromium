@@ -2081,6 +2081,7 @@ static_library("browser") {
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:persisted_state_db_content_proto",
+    "//components/commerce/core:pref_names",
     "//components/commerce/core:shopping_service",
     "//components/component_updater",
     "//components/component_updater:crl_set_remover",
