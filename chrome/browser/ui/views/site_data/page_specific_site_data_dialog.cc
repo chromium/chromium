@@ -6,7 +6,6 @@
 
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,7 +17,6 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/strings/grit/components_strings.h"
@@ -35,7 +33,6 @@ namespace {
 struct PageSpecificSiteDataDialogSite {
   url::Origin origin;
   ContentSetting setting;
-  bool is_fully_partitioned;
 };
 
 struct PageSpecificSiteDataDialogSection {
@@ -142,8 +139,6 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS));
     cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
-    host_content_settings_map_ =
-        HostContentSettingsMapFactory::GetForProfile(profile);
   }
 
   void OnDialogExplicitlyClosed() {
@@ -173,30 +168,18 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   }
 
   std::vector<PageSpecificSiteDataDialogSite> GetAllSites() {
-    std::map<std::string, PageSpecificSiteDataDialogSite> sites_map;
+    // TODO(crbug.com/1344787): Keep a map of all origins to avoid having
+    // multiple entries. This could happen when there are both partitioned and
+    // regular cookies.
+    std::vector<PageSpecificSiteDataDialogSite> sites;
     for (const auto& node :
          allowed_cookies_tree_model_->GetRoot()->children()) {
-      sites_map.emplace(node->GetDetailedInfo().origin.host(),
-                        CreateSiteFromHostNode(node.get()));
+      sites.push_back(CreateSiteFromHostNode(node.get()));
     }
     for (const auto& node :
          blocked_cookies_tree_model_->GetRoot()->children()) {
-      auto entry = sites_map.find(node->GetDetailedInfo().origin.host());
-      if (entry == sites_map.end()) {
-        sites_map.emplace(node->GetDetailedInfo().origin.host(),
-                          CreateSiteFromHostNode(node.get()));
-      } else {
-        // There is already an entry with the same origin. If that's the case,
-        // the entry should be from the allowed tree and it should be fully
-        // partitioned. The effective setting might be blocked if the site was
-        // blocked and the page wasn't reloaded.
-        DCHECK(entry->second.is_fully_partitioned);
-      }
+      sites.push_back(CreateSiteFromHostNode(node.get()));
     }
-
-    std::vector<PageSpecificSiteDataDialogSite> sites;
-    for (auto site : sites_map)
-      sites.push_back(site.second);
 
     std::sort(sites.begin(), sites.end(), [](const auto& o1, const auto& o2) {
       return GetContentSettingRowOrder(o1.setting) <
@@ -263,48 +246,9 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
         site.origin.GetURL(), current_url, &source,
         content_settings::CookieSettings::QueryReason::kCookies);
     // TODO(crbug.com/1344787): Handle sources other than SETTING_SOURCE_USER.
-
-    site.is_fully_partitioned = AreAllCookiesPartitioned(node);
-    if (site.is_fully_partitioned) {
-      // Because partitioned cookies are considered first party cookies, if
-      // first party is blocked from accessing storage, partitioned cookies are
-      // too.
-      ContentSetting first_party_setting =
-          host_content_settings_map_->GetContentSetting(
-              current_url, GURL(), ContentSettingsType::COOKIES);
-      if (first_party_setting == CONTENT_SETTING_BLOCK) {
-        site.setting = CONTENT_SETTING_BLOCK;
-      } else {
-        // Check the explicit content setting from HostContentSettingsMap
-        // instead of CookieSettings because partitioned cookies aren't
-        // third-party cookies and are not influenced by third-party cookie
-        // blocking.
-        site.setting = host_content_settings_map_->GetContentSetting(
-            site.origin.GetURL(), current_url, ContentSettingsType::COOKIES);
-      }
-    }
+    // TODO(crbug.com/1344787): Handle partitioned nodes.
 
     return site;
-  }
-
-  bool AreAllCookiesPartitioned(CookieTreeNode* node) {
-    bool all_partitioned = true;
-    for (const auto& storage_type_node : node->children()) {
-      if (storage_type_node->GetDetailedInfo().node_type !=
-          CookieTreeNode::DetailedInfo::TYPE_COOKIES) {
-        all_partitioned = false;
-        break;
-      }
-
-      for (const auto& cookie_node : storage_type_node->children()) {
-        if (!cookie_node->GetDetailedInfo().cookie->IsPartitioned()) {
-          all_partitioned = false;
-          break;
-        }
-      }
-    }
-
-    return all_partitioned;
   }
 
   base::WeakPtr<content::WebContents> web_contents_;
@@ -315,7 +259,6 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   std::unique_ptr<CookiesTreeModel> blocked_cookies_tree_model_;
   std::unique_ptr<FaviconCache> favicon_cache_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 
   // Whether user has done any changes to the site data, deleted site data for a
   // site or created a content setting exception for a site.
@@ -335,8 +278,7 @@ class PageSpecificSiteDataSectionView : public views::BoxLayoutView {
       // the row view and the delegate are owned by the dialog and will be
       // destroyed when the dialog is destroyed.
       auto* const row_view = AddChildView(std::make_unique<SiteDataRowView>(
-          site.origin, site.setting, site.is_fully_partitioned,
-          delegate->favicon_cache(),
+          site.origin, site.setting, delegate->favicon_cache(),
           base::BindRepeating(
               &PageSpecificSiteDataDialogModelDelegate::DeleteStoredObjects,
               base::Unretained(delegate)),
