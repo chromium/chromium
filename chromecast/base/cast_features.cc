@@ -20,8 +20,6 @@
 
 namespace chromecast {
 namespace {
-// A constant used to always activate a FieldTrial.
-const base::FieldTrial::Probability k100PercentProbability = 100;
 
 // The name of the default group to use for Cast DCS features.
 const char kDefaultDCSFeaturesGroup[] = "default_dcs_features_group";
@@ -225,17 +223,21 @@ void InitializeFeatureList(const base::Value::Dict& dcs_features,
     //     maintain a 1:1 mapping with Features in order to properly store and
     //     access parameters associated with each Feature. Therefore, use the
     //     Feature's name as the FieldTrial name to ensure uniqueness.
-    //   - The probability is hard-coded to 100% so that the FeatureList always
-    //     respects the value from DCS.
-    //   - The default group is unused; it will be the same for every feature.
-    //   - SessionRandomization is used as a trivial entropy_provider. However,
-    //     this value doesn't matter.
     //   - We don't care about the group_id.
     //
     const std::string& feature_name = kv.first;
-    auto* field_trial = base::FieldTrialList::FactoryGetFieldTrial(
-        feature_name, k100PercentProbability, kDefaultDCSFeaturesGroup,
-        base::FieldTrialList::GetEntropyProviderForSessionRandomization());
+    auto* field_trial = base::FieldTrialList::CreateFieldTrial(
+        feature_name, kDefaultDCSFeaturesGroup);
+
+    // |field_trial| is null only if the trial has already been forced to
+    // another group. This shouldn't happen, unless we've processed a
+    // --force-fieldtrial commandline argument that overrides this to some other
+    // group.
+    if (!field_trial) {
+      LOG(ERROR) << "A trial was already created for a DCS feature: "
+                 << feature_name;
+      continue;
+    }
 
     if (kv.second.is_bool()) {
       // A boolean entry simply either enables or disables a feature.

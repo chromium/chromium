@@ -39,14 +39,13 @@ void CreateFirstRunFieldTrial(base::FeatureList* feature_list) {
   // configurations do not take effect on the first run. For those devices,
   // enable Instant Tethering for this first run; on subsequent runs, the
   // server-side configuration will be used instead.
-  scoped_refptr<base::FieldTrial> trial(
-      base::FieldTrialList::FactoryGetFieldTrial(
-          kInstantTetheringTrialName, 100 /* total_probability */,
-          kInstantTetheringGroupName,
-          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization()));
-  feature_list->RegisterFieldTrialOverride(
-      features::kInstantTethering.name,
-      base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
+  scoped_refptr<base::FieldTrial> trial(base::FieldTrialList::CreateFieldTrial(
+      kInstantTetheringTrialName, kInstantTetheringGroupName));
+  if (trial.get()) {
+    feature_list->RegisterFieldTrialOverride(
+        features::kInstantTethering.name,
+        base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
+  }
 }
 
 }  // namespace multidevice_setup

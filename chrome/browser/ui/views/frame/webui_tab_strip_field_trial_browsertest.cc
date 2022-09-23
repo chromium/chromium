@@ -30,11 +30,8 @@ namespace {
 
 void RegisterFakeFieldTrialWithState(base::FeatureList* feature_list,
                                      bool enabled) {
-  base::FieldTrial* field_trial = base::FieldTrialList::FactoryGetFieldTrial(
-      "WebUITabStrip", 100, "Default",
-      base::FieldTrialList::GetEntropyProviderForOneTimeRandomization());
-
-  field_trial->AppendGroup("Active", 100);
+  base::FieldTrial* field_trial =
+      base::FieldTrialList::CreateFieldTrial("WebUITabStrip", "Active");
   EXPECT_EQ(field_trial->group_name(), "Active");
 
   base::FeatureList::OverrideState override_state =
