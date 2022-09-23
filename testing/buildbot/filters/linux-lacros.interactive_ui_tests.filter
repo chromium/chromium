@@ -10,8 +10,22 @@
 -AppWindowTest.RuntimeAlwaysOnTopToFullscreen
 -AppWindowTest.RuntimeFullscreenToAlwaysOnTop
 
+# Drag and drop based interactive_ui_tests mostly don't work. This will be fixed
+# by making a new ui control test protocol.
+# https://crbug.com/1366264
+# https://crbug.com/1353089
+-BookmarkBarViewTest22.CloseSourceBrowserDuringDrag
+-BookmarkBarViewTest5.DND
+-BookmarkBarViewTest7.DNDToDifferentMenu
+-BookmarkBarViewTest8.DNDBackToOriginatingMenu
+
+# Mouse clicks with modifier keys currently don't work. This will be fixed by
+# making a new ui control test protocol.
+# https://crbug.com/1352618
+# https://crbug.com/1353089
+-BookmarkBarViewTest28.ClickWithModifierOnFolderOpensAllBookmarks
+
 # TODO(crbug.com/1111979) Enable all tests on lacros.
--BookmarkBarViewTest*
 -ChromeVisibilityObserverInteractiveTest.VisibilityTest
 -CrossSiteSubframe/DragAndDropBrowserTest.CrossSiteDrag/*
 -CrossSiteSubframe/DragAndDropBrowserTest.CrossTabDrag/*
