@@ -1759,7 +1759,13 @@ INSTANTIATE_TEST_SUITE_P(
     DictationPumpkinInstallTest,
     ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
-IN_PROC_BROWSER_TEST_P(DictationPumpkinInstallTest, WaitForInstall) {
+// TODO(crbug.com/1367156): Test is flaky on linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DictationPumpkinInstallTest DISABLED_DictationPumpkinInstallTest
+#else
+#define MAYBE_DictationPumpkinInstallTest DictationPumpkinInstallTest
+#endif
+IN_PROC_BROWSER_TEST_P(MAYBE_DictationPumpkinInstallTest, WaitForInstall) {
   // Dictation will request a Pumpkin install when it starts up. Wait for
   // the install to succeed.
   WaitForInstallToSucceed();
