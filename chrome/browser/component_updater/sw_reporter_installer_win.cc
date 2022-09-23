@@ -312,7 +312,7 @@ void SwReporterInstallerPolicy::ComponentReady(
     base::Value manifest) {
   ScheduleSoftwareReporterWithManifest(
       install_dir.Append(kSwReporterExeName), version,
-      std::move(manifest.GetDict()),
+      std::move(manifest).TakeDict(),
       // Unless otherwise specified by a unit test, This will post
       // |safe_browsing::OnSwReporterReady| to the UI thread.
       on_component_ready_callback_);
