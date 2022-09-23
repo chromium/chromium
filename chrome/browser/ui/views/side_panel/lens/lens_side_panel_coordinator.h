@@ -13,7 +13,9 @@
 #include "chrome/browser/ui/views/side_panel/lens/lens_unified_side_panel_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
+#include "components/omnibox/browser/favicon_cache.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "ui/gfx/image/image.h"
 
 class Browser;
 
@@ -49,9 +51,14 @@ class LensSidePanelCoordinator
 
   bool IsDefaultSearchProviderGoogle();
 
+  // Get the label to display in the side panel combobox dropdown.
   std::u16string GetComboboxLabel();
 
-  const gfx::VectorIcon& GetComboboxIcon();
+  // Get the favicon to display in the side panel combobox dropdown.
+  const ui::ImageModel GetFaviconImage();
+
+  // This is a callback called after fetching favicon from favicon_cache.
+  void OnFaviconFetched(const gfx::Image& favicon);
 
   BrowserView* GetBrowserView();
 
@@ -70,6 +77,9 @@ class LensSidePanelCoordinator
   raw_ptr<TemplateURLService> template_url_service_;
   base::WeakPtr<lens::LensUnifiedSidePanelView> lens_side_panel_view_;
   raw_ptr<const TemplateURL> current_default_search_provider_;
+  std::unique_ptr<FaviconCache> favicon_cache_;
+
+  base::WeakPtrFactory<LensSidePanelCoordinator> weak_ptr_factory_{this};
 
   BROWSER_USER_DATA_KEY_DECL();
 };

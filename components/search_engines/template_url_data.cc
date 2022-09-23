@@ -76,7 +76,6 @@ TemplateURLData::TemplateURLData(
     base::StringPiece side_image_search_param,
     base::StringPiece favicon_url,
     base::StringPiece encoding,
-    base::StringPiece image_search_favicon_url,
     base::StringPiece16 image_search_branding_label,
     const base::Value& alternate_urls_list,
     bool preconnect_to_search_url,
@@ -93,7 +92,6 @@ TemplateURLData::TemplateURLData(
       image_url_post_params(image_url_post_params),
       side_search_param(side_search_param),
       side_image_search_param(side_image_search_param),
-      image_search_favicon_url(image_search_favicon_url),
       image_search_branding_label(image_search_branding_label),
       favicon_url(favicon_url),
       safe_for_autoreplace(true),
@@ -164,6 +162,7 @@ size_t TemplateURLData::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(side_search_param);
   res += base::trace_event::EstimateMemoryUsage(side_image_search_param);
   res += base::trace_event::EstimateMemoryUsage(favicon_url);
+  res += base::trace_event::EstimateMemoryUsage(image_search_branding_label);
   res += base::trace_event::EstimateMemoryUsage(originating_url);
   res += base::trace_event::EstimateMemoryUsage(input_encodings);
   res += base::trace_event::EstimateMemoryUsage(sync_guid);

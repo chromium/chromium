@@ -10,6 +10,8 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -20,12 +22,15 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/keyed_service/core/service_access_type.h"
+#include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image.h"
 #include "ui/views/vector_icons.h"
 
 LensSidePanelCoordinator::LensSidePanelCoordinator(Browser* browser)
@@ -33,14 +38,16 @@ LensSidePanelCoordinator::LensSidePanelCoordinator(Browser* browser)
   GetBrowserView()->side_panel_coordinator()->AddSidePanelViewStateObserver(
       this);
   lens_side_panel_view_ = nullptr;
-
   auto* profile = GetBrowserView()->GetProfile();
+  favicon_cache_ = std::make_unique<FaviconCache>(
+      FaviconServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS),
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS));
   template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile);
-
   current_default_search_provider_ =
       template_url_service_->GetDefaultSearchProvider();
-  if (template_url_service_ != nullptr)
-    template_url_service_->AddObserver(this);
+  template_url_service_->AddObserver(this);
 }
 
 BrowserView* LensSidePanelCoordinator::GetBrowserView() {
@@ -72,6 +79,23 @@ void LensSidePanelCoordinator::OnSidePanelDidClose() {
       base::UserMetricsAction("LensUnifiedSidePanel.HideSidePanel"));
 }
 
+void LensSidePanelCoordinator::OnFaviconFetched(const gfx::Image& favicon) {
+  auto* side_panel_coordinator = GetBrowserView()->side_panel_coordinator();
+  if (side_panel_coordinator == nullptr)
+    return;
+
+  auto* global_registry = side_panel_coordinator->GetGlobalSidePanelRegistry();
+  if (global_registry == nullptr)
+    return;
+
+  auto* lens_side_panel_entry = global_registry->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kLens));
+  if (lens_side_panel_entry == nullptr)
+    return;
+
+  lens_side_panel_entry->ResetIcon(ui::ImageModel::FromImage(favicon));
+}
+
 void LensSidePanelCoordinator::OnTemplateURLServiceChanged() {
   // When the default search engine changes, remove lens from the side panel to
   // avoid a potentially mismatched state between the combo box label and lens
@@ -84,6 +108,7 @@ void LensSidePanelCoordinator::OnTemplateURLServiceChanged() {
 
   current_default_search_provider_ = default_search_provider;
   DeregisterLensFromSidePanel();
+
   base::RecordAction(base::UserMetricsAction(
       "LensUnifiedSidePanel.RemoveLensEntry_SearchEngineChanged"));
 }
@@ -116,11 +141,34 @@ std::u16string LensSidePanelCoordinator::GetComboboxLabel() {
   return GetDefaultSearchEngineName(template_url_service_);
 }
 
-const gfx::VectorIcon& LensSidePanelCoordinator::GetComboboxIcon() {
+const ui::ImageModel LensSidePanelCoordinator::GetFaviconImage() {
+  // If google is search engine, return checked-in lens icon.
   if (IsDefaultSearchProviderGoogle())
-    return vector_icons::kGoogleLensLogoIcon;
+    return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleLensLogoIcon);
 
-  return vector_icons::kImageSearchIcon;
+  auto default_image = ui::ImageModel::FromVectorIcon(
+      vector_icons::kImageSearchIcon, ui::kColorIcon);
+
+  // Return default icon if the search provider is nullptr.
+  if (template_url_service_ == nullptr ||
+      template_url_service_->GetDefaultSearchProvider() == nullptr) {
+    return default_image;
+  }
+
+  // Use favicon URL for image search favicon for 3P DSE to avoid latency in
+  // showing the icon.
+  auto url = template_url_service_->GetDefaultSearchProvider()->favicon_url();
+  // Return default icon if the favicon url is empty.
+  if (url.is_empty())
+    return default_image;
+
+  auto image = favicon_cache_->GetFaviconForIconUrl(
+      url, base::BindRepeating(&LensSidePanelCoordinator::OnFaviconFetched,
+                               weak_ptr_factory_.GetWeakPtr()));
+
+  // Return default icon if the icon returned from cache is empty.
+  return image.IsEmpty() ? std::move(default_image)
+                         : ui::ImageModel::FromImage(image);
 }
 
 void LensSidePanelCoordinator::RegisterEntryAndShow(
@@ -141,8 +189,7 @@ void LensSidePanelCoordinator::RegisterEntryAndShow(
     base::RecordAction(
         base::UserMetricsAction("LensUnifiedSidePanel.LensQuery_New"));
     auto entry = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kLens, GetComboboxLabel(),
-        ui::ImageModel::FromVectorIcon(GetComboboxIcon(), ui::kColorIcon),
+        SidePanelEntry::Id::kLens, GetComboboxLabel(), GetFaviconImage(),
         base::BindRepeating(&LensSidePanelCoordinator::CreateLensWebView,
                             base::Unretained(this), params));
     entry->AddObserver(this);

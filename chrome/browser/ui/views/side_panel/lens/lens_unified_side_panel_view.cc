@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -18,16 +19,23 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/web_applications/web_app_icon_downloader.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/download/content/factory/navigation_monitor_factory.h"
+#include "components/download/content/public/download_navigation_observer.h"
+#include "components/favicon_base/favicon_util.h"
+#include "components/keyed_service/core/simple_factory_key.h"
 #include "components/lens/lens_features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/image/image.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/separator.h"
@@ -62,8 +70,8 @@ constexpr gfx::Insets kLensLabelButtonMargins = gfx::Insets::VH(12, 0);
 constexpr char kStaticLoadingScreenURL[] =
     "https://www.gstatic.com/lens/chrome/lens_side_panel_loading.html";
 
-LensUnifiedSidePanelView::LensUnifiedSidePanelView(BrowserView* browser_view) {
-  browser_view_ = browser_view;
+LensUnifiedSidePanelView::LensUnifiedSidePanelView(BrowserView* browser_view)
+    : browser_view_(browser_view) {
   auto* browser_context = browser_view->GetProfile();
   // Align views vertically top to bottom.
   SetOrientation(views::LayoutOrientation::kVertical);
@@ -85,21 +93,25 @@ LensUnifiedSidePanelView::LensUnifiedSidePanelView(BrowserView* browser_view) {
 
   SetContentAndNewTabButtonVisible(/* visible= */ false,
                                    /* enable_new_tab_button= */ false);
+
   auto* web_contents = web_view_->GetWebContents();
   web_contents->SetDelegate(this);
   Observe(web_contents);
 
+  auto* profile = browser_view->GetProfile();
+  download::DownloadNavigationObserver::CreateForWebContents(
+      web_contents,
+      download::NavigationMonitorFactory::GetForKey(profile->GetProfileKey()));
+
   // Setup NavigationThrottler to stop navigation outside of current domain
   TemplateURLService* service =
-      TemplateURLServiceFactory::GetForProfile(browser_view->GetProfile());
+      TemplateURLServiceFactory::GetForProfile(profile);
   const TemplateURL* const provider = service->GetDefaultSearchProvider();
-  bool is_lens_enabled =
-      base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
-      search::DefaultSearchProviderIsGoogle(browser_view->GetProfile());
   lens::LensSidePanelNavigationHelper::CreateForWebContents(
       web_contents, browser_view->browser(),
-      is_lens_enabled ? lens::features::GetHomepageURLForLens()
-                      : provider->image_url());
+      search::DefaultSearchProviderIsGoogle(profile)
+          ? lens::features::GetHomepageURLForLens()
+          : provider->image_url());
 }
 
 content::WebContents* LensUnifiedSidePanelView::GetWebContents() {
