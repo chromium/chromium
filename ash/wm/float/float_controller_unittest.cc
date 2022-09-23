@@ -169,21 +169,26 @@ TEST_F(WindowFloatTest, WindowFloatingResize) {
   EXPECT_TRUE(window_state->IsMaximized());
 
   // Float full screen window.
-  const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
-  window_state->OnWMEvent(&fullscreen_event);
+  const WMEvent toggle_fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
+  window_state->OnWMEvent(&toggle_fullscreen_event);
+  EXPECT_TRUE(window_state->IsFullscreen());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(window_state->IsFloated());
+  default_float_bounds =
+      FloatController::GetPreferredFloatWindowClamshellBounds(window.get());
   EXPECT_EQ(default_float_bounds, window->GetBoundsInScreen());
   // Unfloat.
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_FALSE(window_state->IsFloated());
-  // TODO(crbug.com/1330999): This should return to Fullscreen state after
-  // the change.
+  EXPECT_TRUE(window_state->IsFullscreen());
+  // Unfullscreen.
+  window_state->OnWMEvent(&toggle_fullscreen_event);
+  EXPECT_TRUE(window_state->IsFloated());
+  EXPECT_FALSE(window_state->IsFullscreen());
 
   // Minimize floated window.
   // Minimized window can't be floated, but when a floated window enter/exit
   // minimized state, it remains floated.
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(window_state->IsFloated());
   const gfx::Rect curr_bounds = window->GetBoundsInScreen();
   window_state->Minimize();

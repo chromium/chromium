@@ -100,9 +100,6 @@ constexpr auto kWindowStateRestoreHistoryLayerMap =
         {WindowStateType::kSecondarySnapped, 1},
         {WindowStateType::kMaximized, 2},
         {WindowStateType::kFullscreen, 3},
-        // TODO(crbug.com/1330999): Special handling is needed for
-        // Fullscreen/Float restore behavior in
-        // WindowState::UpdateWindowStateRestoreHistoryStack.
         {WindowStateType::kFloated, 3},
         {WindowStateType::kPip, 4},
         {WindowStateType::kMinimized, 4},
@@ -1043,14 +1040,24 @@ void WindowState::UpdateWindowStateRestoreHistoryStack(
     window_state_restore_history_.pop_back();
   }
 
-  // If `current_state_type` can restore to `previous_state_type`, push
+  // `Fullscreen` and `Floated` have the same restore order, but can restore
+  // to each other.
+  const bool is_restore_between_float_and_full =
+      (current_state_type == WindowStateType::kFullscreen &&
+       previous_state_type == WindowStateType::kFloated) ||
+      (current_state_type == WindowStateType::kFloated &&
+       previous_state_type == WindowStateType::kFullscreen);
+
+  // If `current_state_type` can restore to `previous_state_type`, or we're
+  // restoring between Fullscreen and Floated window state, push
   // `previous_state_type` into the stack.
   const bool is_previous_state_type_supported =
       kWindowStateRestoreHistoryLayerMap.find(previous_state_type) !=
       kWindowStateRestoreHistoryLayerMap.end();
-  if (is_previous_state_type_supported &&
-      (kWindowStateRestoreHistoryLayerMap.at(current_state_type) >
-       kWindowStateRestoreHistoryLayerMap.at(previous_state_type))) {
+  if ((is_previous_state_type_supported &&
+       (kWindowStateRestoreHistoryLayerMap.at(current_state_type) >
+        kWindowStateRestoreHistoryLayerMap.at(previous_state_type))) ||
+      is_restore_between_float_and_full) {
     window_state_restore_history_.push_back(previous_state_type);
   }
 
