@@ -646,7 +646,7 @@ void ArcGraphicsTracingHandler::HandleLoadFromText(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadGraphicsModel, mode_, std::move(args[0].GetString())),
+      base::BindOnce(&LoadGraphicsModel, mode_, args[0].GetString()),
       base::BindOnce(&ArcGraphicsTracingHandler::OnGraphicsModelReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }
