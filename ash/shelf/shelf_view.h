@@ -369,8 +369,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Sets the bounds of each view to its ideal bounds.
   void LayoutToIdealBounds();
 
-  void LayoutBackAndHomeButtons();
-
   // Returns the index of the last view whose max primary axis coordinate is
   // less than |max_value|. Returns -1 if nothing fits, or there are no views.
   int IndexOfLastItemThatFitsSize(int max_value) const;
