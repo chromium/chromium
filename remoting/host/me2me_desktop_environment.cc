@@ -103,6 +103,15 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
     capabilities += protocol::kRemoteWebAuthnCapability;
   }
 
+#if BUILDFLAG(IS_LINUX)
+  capabilities += " ";
+  capabilities += protocol::kMultiStreamCapability;
+#if defined(REMOTING_USE_X11)
+  capabilities += " ";
+  capabilities += protocol::kClientControlledLayoutCapability;
+#endif  // defined(REMOTING_USE_X11)
+#endif  // BUILDFLAG(IS_LINUX)
+
   return capabilities;
 }
 
