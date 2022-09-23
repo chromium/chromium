@@ -54,7 +54,7 @@ def ReadPowerMetricsData(scenario_dir, browser_identifier: str):
       coalition_keys = [
           "energy_impact", "gputime_ms", "diskio_byteswritten",
           "diskio_bytesread", "idle_wakeups", "intr_wakeups",
-          "cputime_sample_ms", "cputime_ms"
+          "cputime_sample_ms_per_s", "cputime_ns"
       ]
       coalitions_data = parsed_sample['coalitions']
       if browser_identifier is not None:
@@ -64,6 +64,14 @@ def ReadPowerMetricsData(scenario_dir, browser_identifier: str):
                                                   coalition_keys)
       out_sample['all'] = GetDictionaryKeys(parsed_sample['all_tasks'],
                                             coalition_keys)
+
+      # Add information for coalitions that could be of interest since they
+      # might execute code on behalf of the browser.
+      out_sample['window_server'] = GetDictionaryKeys(
+          GetCoalition(coalitions_data, "com.apple.WindowServer"),
+          coalition_keys)
+      out_sample['kernel_coalition'] = GetDictionaryKeys(
+          GetCoalition(coalitions_data, "kernel_coalition"), coalition_keys)
 
       # Processing output of the 'cpu_power' sampler.
       # Expected processor fields on Intel.
