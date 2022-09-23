@@ -145,14 +145,12 @@ void LiveCaptionUnavailabilityNotifier::
   PrefService* prefs =
       Profile::FromBrowserContext(render_frame_host().GetBrowserContext())
           ->GetPrefs();
-  ListPrefUpdate update(
+  ScopedListPrefUpdate update(
       prefs, prefs::kLiveCaptionMediaFoundationRendererErrorSilenced);
-  base::Value::List& update_list = update->GetList();
   if (checked) {
-    update_list.Append(
-        render_frame_host().GetLastCommittedOrigin().Serialize());
+    update->Append(render_frame_host().GetLastCommittedOrigin().Serialize());
   } else {
-    update_list.EraseIf([&](const base::Value& value) {
+    update->EraseIf([&](const base::Value& value) {
       return value.GetString() ==
              render_frame_host().GetLastCommittedOrigin().Serialize();
     });
