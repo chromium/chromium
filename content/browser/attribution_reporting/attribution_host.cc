@@ -231,6 +231,36 @@ void AttributionHost::MaybeNotifyFailedSourceNavigation(
   data_host_manager->NotifyNavigationFailure(impression->attribution_src_token);
 }
 
+const url::Origin* AttributionHost::TopFrameOriginForSecureContext() {
+  RenderFrameHostImpl* render_frame_host =
+      static_cast<RenderFrameHostImpl*>(receivers_.GetCurrentTargetFrame());
+
+  const url::Origin& top_frame_origin =
+      render_frame_host->GetOutermostMainFrame()->GetLastCommittedOrigin();
+
+  // We need a potentially trustworthy origin here because we need to be able to
+  // store it as either the source or destination origin. Using
+  // `is_web_secure_context` would allow opaque origins to pass through, but
+  // they cannot be handled by the storage layer.
+  if (!network::IsOriginPotentiallyTrustworthy(top_frame_origin)) {
+    mojo::ReportBadMessage(
+        "blink.mojom.ConversionHost can only be used with a secure top-level "
+        "frame.");
+    return nullptr;
+  }
+
+  if (render_frame_host != render_frame_host->GetOutermostMainFrame() &&
+      !render_frame_host->policy_container_host()
+           ->policies()
+           .is_web_secure_context) {
+    mojo::ReportBadMessage(
+        "blink.mojom.ConversionHost can only be used in secure contexts.");
+    return nullptr;
+  }
+
+  return &top_frame_origin;
+}
+
 void AttributionHost::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
   // If there is no attribution manager available, ignore any registrations.
@@ -239,32 +269,16 @@ void AttributionHost::RegisterDataHost(
   if (!attribution_manager)
     return;
 
-  content::RenderFrameHost* render_frame_host =
-      receivers_.GetCurrentTargetFrame();
-
-  const url::Origin& frame_origin = render_frame_host->GetLastCommittedOrigin();
-  const url::Origin& top_frame_origin =
-      render_frame_host->GetOutermostMainFrame()->GetLastCommittedOrigin();
-
-  if (!network::IsOriginPotentiallyTrustworthy(top_frame_origin)) {
-    mojo::ReportBadMessage(
-        "blink.mojom.ConversionHost can only be used with a secure top-level "
-        "frame.");
-    return;
-  }
-
-  if (render_frame_host != render_frame_host->GetOutermostMainFrame() &&
-      !network::IsOriginPotentiallyTrustworthy(frame_origin)) {
-    mojo::ReportBadMessage(
-        "blink.mojom.ConversionHost can only be used in secure contexts.");
-    return;
-  }
-
-  if (!attribution_manager->GetDataHostManager())
+  AttributionDataHostManager* data_host_manager =
+      attribution_manager->GetDataHostManager();
+  if (!data_host_manager)
     return;
 
-  attribution_manager->GetDataHostManager()->RegisterDataHost(
-      std::move(data_host), top_frame_origin);
+  const url::Origin* top_frame_origin = TopFrameOriginForSecureContext();
+  if (!top_frame_origin)
+    return;
+
+  data_host_manager->RegisterDataHost(std::move(data_host), *top_frame_origin);
 }
 
 void AttributionHost::RegisterNavigationDataHost(
@@ -276,29 +290,12 @@ void AttributionHost::RegisterNavigationDataHost(
   if (!attribution_manager)
     return;
 
-  content::RenderFrameHost* render_frame_host =
-      receivers_.GetCurrentTargetFrame();
-
-  const url::Origin& frame_origin = render_frame_host->GetLastCommittedOrigin();
-  const url::Origin& top_frame_origin =
-      render_frame_host->GetOutermostMainFrame()->GetLastCommittedOrigin();
-
-  if (!network::IsOriginPotentiallyTrustworthy(top_frame_origin)) {
-    mojo::ReportBadMessage(
-        "blink.mojom.ConversionHost can only be used with a secure top-level "
-        "frame.");
-    return;
-  }
-
-  if (render_frame_host != render_frame_host->GetOutermostMainFrame() &&
-      !network::IsOriginPotentiallyTrustworthy(frame_origin)) {
-    mojo::ReportBadMessage(
-        "blink.mojom.ConversionHost can only be used in secure contexts.");
-    return;
-  }
-
-  auto* data_host_manager = attribution_manager->GetDataHostManager();
+  AttributionDataHostManager* data_host_manager =
+      attribution_manager->GetDataHostManager();
   if (!data_host_manager)
+    return;
+
+  if (!TopFrameOriginForSecureContext())
     return;
 
   if (!data_host_manager->RegisterNavigationDataHost(std::move(data_host),
