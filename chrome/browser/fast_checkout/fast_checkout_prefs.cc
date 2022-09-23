@@ -4,8 +4,15 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_prefs.h"
 
-#include "components/pref_registry/pref_registry_syncable.h"
+#include "base/command_line.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+
+namespace {
+// Copy from autofill_assistant::switches::kAutofillAssistantForceOnboarding.
+const char kAutofillAssistantForceOnboarding[] =
+    "autofill-assistant-force-onboarding";
+}  // namespace
 
 namespace prefs {
 // Indicates whether a user has declined to give consent to Fast Checkout's
@@ -22,11 +29,16 @@ void FastCheckoutPrefs::DeclineOnboarding() {
 }
 
 bool FastCheckoutPrefs::IsOnboardingDeclined() {
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kAutofillAssistantForceOnboarding) == "true") {
+    // Ignore whether onboarding was declined if onboarding is forced to be
+    // shown. This is only for developing and testing purposes.
+    return false;
+  }
   return pref_service_->GetBoolean(prefs::kFastCheckoutOnboardingDeclined);
 }
 
 // static
-void FastCheckoutPrefs::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
+void FastCheckoutPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kFastCheckoutOnboardingDeclined, false);
 }

@@ -7,9 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
+class PrefRegistrySimple;
 class PrefService;
 
 // Handler for Fast Checkout related prefs.
@@ -29,7 +27,7 @@ class FastCheckoutPrefs {
   bool IsOnboardingDeclined();
 
   // Register Fast Checkout related profile prefs in `registry`.
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
   const raw_ptr<PrefService> pref_service_;
