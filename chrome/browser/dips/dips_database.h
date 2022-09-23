@@ -53,7 +53,7 @@ class DIPSDatabase {
   // executes successfully.
   bool RemoveRow(const std::string& site);
 
-  constexpr bool in_memory() const { return db_path_.empty(); }
+  bool in_memory() const { return db_path_.empty(); }
 
  protected:
   // Initialization functions --------------------------------------------------
