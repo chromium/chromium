@@ -131,22 +131,6 @@ void PdfViewPluginBase::DocumentLoadProgress(uint32_t available,
   SendLoadingProgress(progress);
 }
 
-void PdfViewPluginBase::FormFieldFocusChange(PDFEngine::FocusFieldType type) {
-  base::Value::Dict message;
-  message.Set("type", "formFocusChange");
-  message.Set("focused", type != PDFEngine::FocusFieldType::kNoFocus);
-  SendMessage(std::move(message));
-
-  SetFormTextFieldInFocus(type == PDFEngine::FocusFieldType::kText);
-}
-
-void PdfViewPluginBase::SetIsSelecting(bool is_selecting) {
-  base::Value::Dict message;
-  message.Set("type", "setIsSelecting");
-  message.Set("isSelecting", is_selecting);
-  SendMessage(std::move(message));
-}
-
 void PdfViewPluginBase::SelectionChanged(const gfx::Rect& left,
                                          const gfx::Rect& right) {
   gfx::PointF left_point(left.x() + available_area_.x(), left.y());
@@ -161,13 +145,6 @@ void PdfViewPluginBase::SelectionChanged(const gfx::Rect& left,
 
   if (accessibility_state_ == AccessibilityState::kLoaded)
     PrepareAndSetAccessibilityViewportInfo();
-}
-
-void PdfViewPluginBase::DocumentFocusChanged(bool document_has_focus) {
-  base::Value::Dict message;
-  message.Set("type", "documentFocusChanged");
-  message.Set("hasFocus", document_has_focus);
-  SendMessage(std::move(message));
 }
 
 void PdfViewPluginBase::SendLoadingProgress(double percentage) {

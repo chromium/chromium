@@ -317,10 +317,13 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                                const char16_t* term,
                                                bool case_sensitive) override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
+  void FormFieldFocusChange(PDFEngine::FocusFieldType type) override;
   bool IsPrintPreview() const override;
   SkColor GetBackgroundColor() const override;
+  void SetIsSelecting(bool is_selecting) override;
   void CaretChanged(const gfx::Rect& caret_rect) override;
   void EnteredEditMode() override;
+  void DocumentFocusChanged(bool document_has_focus) override;
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;

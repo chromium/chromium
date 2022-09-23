@@ -1071,6 +1071,15 @@ void PdfViewWebPlugin::DocumentHasUnsupportedFeature(
   pdf_service_->HasUnsupportedFeature();
 }
 
+void PdfViewWebPlugin::FormFieldFocusChange(PDFEngine::FocusFieldType type) {
+  base::Value::Dict message;
+  message.Set("type", "formFocusChange");
+  message.Set("focused", type != PDFEngine::FocusFieldType::kNoFocus);
+  SendMessage(std::move(message));
+
+  SetFormTextFieldInFocus(type == PDFEngine::FocusFieldType::kText);
+}
+
 bool PdfViewWebPlugin::IsPrintPreview() const {
   return is_print_preview_;
 }
@@ -1079,12 +1088,26 @@ SkColor PdfViewWebPlugin::GetBackgroundColor() const {
   return background_color_;
 }
 
+void PdfViewWebPlugin::SetIsSelecting(bool is_selecting) {
+  base::Value::Dict message;
+  message.Set("type", "setIsSelecting");
+  message.Set("isSelecting", is_selecting);
+  SendMessage(std::move(message));
+}
+
 void PdfViewWebPlugin::EnteredEditMode() {
   edit_mode_ = true;
   pdf_service_->SetPluginCanSave(true);
 
   base::Value::Dict message;
   message.Set("type", "setIsEditing");
+  SendMessage(std::move(message));
+}
+
+void PdfViewWebPlugin::DocumentFocusChanged(bool document_has_focus) {
+  base::Value::Dict message;
+  message.Set("type", "documentFocusChanged");
+  message.Set("hasFocus", document_has_focus);
   SendMessage(std::move(message));
 }
 

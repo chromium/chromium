@@ -66,10 +66,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void DocumentLoadComplete() override;
   void DocumentLoadFailed() override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
-  void FormFieldFocusChange(PDFEngine::FocusFieldType type) override;
-  void SetIsSelecting(bool is_selecting) override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
-  void DocumentFocusChanged(bool document_has_focus) override;
 
   // Gets the content restrictions based on the permissions which `engine_` has.
   int GetContentRestrictions() const;
