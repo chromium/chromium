@@ -673,9 +673,6 @@ extern const char kNtpModulesFirstShownTime[];
 extern const char kNtpModulesFreVisible[];
 extern const char kNtpPromoBlocklist[];
 extern const char kNtpPromoVisible[];
-extern const char kNtpSearchSuggestionsBlocklist[];
-extern const char kNtpSearchSuggestionsImpressions[];
-extern const char kNtpSearchSuggestionsOptOut[];
 #endif  // BUILDFLAG(IS_ANDROID)
 extern const char kNtpShownPage[];
 

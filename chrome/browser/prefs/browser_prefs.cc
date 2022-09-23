@@ -489,29 +489,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-const char kDiceMigrationCompletePref[] = "signin.DiceMigrationComplete";
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-// Deprecated 09/2021.
-const char kNtpSearchSuggestionsBlocklist[] =
-    "ntp.search_suggestions_blocklist";
-const char kNtpSearchSuggestionsImpressions[] =
-    "ntp.search_suggestions_impressions";
-const char kNtpSearchSuggestionsOptOut[] = "ntp.search_suggestions_opt_out";
-#endif
-
-// Deprecated 09/2021.
-const char kAutofillAcceptSaveCreditCardPromptState[] =
-    "autofill.accept_save_credit_card_prompt_state";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 09/2021.
-const char kNearbySharingFastInitiationNotificationEnabledPrefName[] =
-    "nearby_sharing.fast_initiation_notification_enabled";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Deprecated 10/2021.
 const char kAppCacheForceEnabled[] = "app_cache_force_enabled";
 
@@ -876,23 +853,6 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterListPref(
       prefs::kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated);
 #endif
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  registry->RegisterDictionaryPref(kDiceMigrationCompletePref);
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterDictionaryPref(kNtpSearchSuggestionsBlocklist);
-  registry->RegisterDictionaryPref(kNtpSearchSuggestionsImpressions);
-  registry->RegisterBooleanPref(kNtpSearchSuggestionsOptOut, false);
-#endif
-
-  registry->RegisterIntegerPref(kAutofillAcceptSaveCreditCardPromptState, 0);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterIntegerPref(
-      kNearbySharingFastInitiationNotificationEnabledPrefName, 0);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   registry->RegisterBooleanPref(kAppCacheForceEnabled, false);
   registry->RegisterBooleanPref(kWasPreviouslySetUpPrefName, false);
@@ -1786,27 +1746,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 06/2021
   feed::MigrateObsoleteProfilePrefsJune_2021(profile_prefs);
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Added 09/2021.
-  profile_prefs->ClearPref(kNtpSearchSuggestionsBlocklist);
-  profile_prefs->ClearPref(kNtpSearchSuggestionsImpressions);
-  profile_prefs->ClearPref(kNtpSearchSuggestionsOptOut);
-#endif
-
-  // Added 09/2021.
-  profile_prefs->ClearPref(kAutofillAcceptSaveCreditCardPromptState);
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Added 09/2021.
-  profile_prefs->ClearPref(kDiceMigrationCompletePref);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 09/2021
-  profile_prefs->ClearPref(
-      kNearbySharingFastInitiationNotificationEnabledPrefName);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Added 10/2021.
   translate::TranslatePrefs::MigrateObsoleteProfilePrefs(profile_prefs);
