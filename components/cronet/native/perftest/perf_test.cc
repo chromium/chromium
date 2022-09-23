@@ -421,7 +421,7 @@ void PerfTest(const char* json_args) {
       << "Benchmark options string is not a dictionary: " << benchmark_options
       << " See DEFAULT_BENCHMARK_CONFIG in perf_test_util.py.";
   g_options =
-      std::make_unique<base::Value::Dict>(std::move(options_value->GetDict()));
+      std::make_unique<base::Value::Dict>(std::move(*options_value).TakeDict());
 
   // Run benchmarks putting timing results into |results|.
   base::Value::Dict results;
