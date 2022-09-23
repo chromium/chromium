@@ -62,7 +62,7 @@ class MediaInternalsTestBase {
     ASSERT_TRUE(output_value);
     ASSERT_TRUE(output_value->is_dict());
 
-    update_data_.Merge(std::move(output_value->GetDict()));
+    update_data_.Merge(std::move(*output_value).TakeDict());
   }
 
   void ExpectInt(const std::string& key, int expected_value) const {
