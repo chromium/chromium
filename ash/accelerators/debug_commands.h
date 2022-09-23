@@ -16,6 +16,8 @@
 namespace ash {
 namespace debug {
 
+ASH_EXPORT bool CanToggleFloatingWindow();
+
 // Print the views::View, ui::Layer and aura::Window hierarchies. This may be
 // useful in debugging user reported bugs.
 ASH_EXPORT void PrintUIHierarchies();

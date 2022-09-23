@@ -18,6 +18,64 @@
 namespace ash {
 namespace accelerators {
 
+//////////////////////////////////////////////////////////////////////////////
+// CanFoo() functions:
+// True should be returned if running |action| does something. Otherwise,
+// false should be returned to give the web contents a chance at handling the
+// accelerator.
+// Note: These functions should be independent and not depend on
+// ui::Accelerator.
+
+ASH_EXPORT bool CanActivateTouchHud();
+
+ASH_EXPORT bool CanCreateNewIncognitoWindow();
+
+ASH_EXPORT bool CanCycleInputMethod();
+
+ASH_EXPORT bool CanCycleMru();
+
+ASH_EXPORT bool CanCycleUser();
+
+ASH_EXPORT bool CanFindPipWidget();
+
+ASH_EXPORT bool CanFocusCameraPreview();
+
+ASH_EXPORT bool CanLock();
+
+ASH_EXPORT bool CanMoveActiveWindowBetweenDisplays();
+
+ASH_EXPORT bool CanMinimizeTopWindowOnBack();
+
+ASH_EXPORT bool CanPerformMagnifierZoom();
+
+ASH_EXPORT bool CanScreenshot(bool take_screenshot);
+
+ASH_EXPORT bool CanShowStylusTools();
+
+ASH_EXPORT bool CanStartAmbientMode();
+
+ASH_EXPORT bool CanSwapPrimaryDisplay();
+
+ASH_EXPORT bool CanToggleCalendar();
+
+ASH_EXPORT bool CanToggleDictation();
+
+ASH_EXPORT bool CanToggleOverview();
+
+ASH_EXPORT bool CanTogglePrivacyScreen();
+
+ASH_EXPORT bool CanToggleProjectorMarker();
+
+ASH_EXPORT bool CanToggleResizeLockMenu();
+
+ASH_EXPORT bool CanUnpinWindow();
+
+ASH_EXPORT bool CanWindowSnap();
+
+//////////////////////////////////////////////////////////////////////////////
+// Accelerator commands.
+// Note: These functions should be independent and not depend on ui::Accelerator
+
 // Activate desk on the left/right.
 ASH_EXPORT void ActivateDesk(bool activate_left);
 

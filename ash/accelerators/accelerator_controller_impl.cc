@@ -213,52 +213,6 @@ void RecordNewTab(const ui::Accelerator& accelerator) {
     base::RecordAction(UserMetricsAction("Accel_NewTab_T"));
 }
 
-// TODO(zentaro): This is duplicated in accelerator_commands.cc. Remove
-// once the CanFocusPipWidget() function is moved.
-views::Widget* FindPipWidget() {
-  return Shell::Get()->focus_cycler()->FindWidget(
-      base::BindRepeating([](views::Widget* widget) {
-        return WindowState::Get(widget->GetNativeWindow())->IsPip();
-      }));
-}
-
-bool CanHandleFocusCameraPreview() {
-  auto* controller = CaptureModeController::Get();
-  // Only use the shortcut to focus the camera preview while video recording is
-  // in progress. As focus traversal of the camera preview in the capture
-  // session will be handled by CaptureModeSessionFocusCycler instead.
-  if (controller->IsActive() || !controller->is_recording_in_progress())
-    return false;
-
-  auto* camera_controller = controller->camera_controller();
-  DCHECK(camera_controller);
-  auto* preview_widget = camera_controller->camera_preview_widget();
-  return preview_widget && preview_widget->IsVisible();
-}
-
-bool CanHandleNewIncognitoWindow() {
-  // Guest mode does not use incognito windows. The browser may have other
-  // restrictions on incognito mode (e.g. enterprise policy) but those are rare.
-  // For non-guest mode, consume the key and defer the decision to the browser.
-  absl::optional<user_manager::UserType> user_type =
-      Shell::Get()->session_controller()->GetUserType();
-  return user_type && *user_type != user_manager::USER_TYPE_GUEST;
-}
-
-bool CanCycleInputMethod() {
-  return Shell::Get()->ime_controller()->CanSwitchIme();
-}
-
-bool CanHandleCycleMru(const ui::Accelerator& accelerator) {
-  // Don't do anything when Alt+Tab is hit while a virtual keyboard is showing.
-  // Touchscreen users have better window switching options. It would be
-  // preferable if we could tell whether this event actually came from a virtual
-  // keyboard, but there's no easy way to do so, thus we block Alt+Tab when the
-  // virtual keyboard is showing, even if it came from a real keyboard. See
-  // http://crbug.com/638269
-  return !keyboard::KeyboardUIController::Get()->IsKeyboardVisible();
-}
-
 void HandleSwitchToNextIme(const ui::Accelerator& accelerator) {
   base::RecordAction(UserMetricsAction("Accel_Next_Ime"));
   if (accelerator.key_code() == ui::VKEY_MODECHANGE)
@@ -275,27 +229,6 @@ void HandleSwitchToLastUsedIme(const ui::Accelerator& accelerator) {
     Shell::Get()->ime_controller()->SwitchToLastUsedIme();
   }
   // Else: consume the Ctrl+Space ET_KEY_RELEASED event but do not do anything.
-}
-
-bool CanHandleScreenshot(AcceleratorAction action) {
-  // |TAKE_SCREENSHOT| is allowed when user session is blocked.
-  return action == TAKE_SCREENSHOT ||
-         !Shell::Get()->session_controller()->IsUserSessionBlocked();
-}
-
-bool CanHandleToggleResizeLockMenu() {
-  aura::Window* active_window = window_util::GetActiveWindow();
-  if (!active_window)
-    return false;
-  auto* frame_view = ash::NonClientFrameViewAsh::Get(active_window);
-  return frame_view && frame_view->GetToggleResizeLockMenuCallback();
-}
-
-bool CanHandleToggleFloatingWindow() {
-  if (!chromeos::wm::features::IsFloatWindowEnabled())
-    return false;
-
-  return window_util::GetActiveWindow() != nullptr;
 }
 
 void HandleTakeScreenshot(ui::KeyboardCode key_code) {
@@ -362,14 +295,6 @@ bool CanHandleToggleAppList(
   return true;
 }
 
-bool CanHandleWindowSnap() {
-  aura::Window* active_window = window_util::GetActiveWindow();
-  if (!active_window)
-    return false;
-  WindowState* window_state = WindowState::Get(active_window);
-  return window_state && window_state->IsUserPositionable();
-}
-
 bool CanHandleDisableCapsLock(const ui::Accelerator& previous_accelerator) {
   ui::KeyboardCode previous_key_code = previous_accelerator.key_code();
   if (previous_accelerator.key_state() == ui::Accelerator::KeyState::RELEASED ||
@@ -381,24 +306,6 @@ bool CanHandleDisableCapsLock(const ui::Accelerator& previous_accelerator) {
     return false;
   }
   return Shell::Get()->ime_controller()->IsCapsLockEnabled();
-}
-
-bool CanHandleLock() {
-  return Shell::Get()->session_controller()->CanLockScreen();
-}
-
-PaletteTray* GetPaletteTray() {
-  return Shelf::ForWindow(Shell::GetRootWindowForNewWindows())
-      ->GetStatusAreaWidget()
-      ->palette_tray();
-}
-
-bool CanHandleShowStylusTools() {
-  return GetPaletteTray()->ShouldShowPalette();
-}
-
-bool CanHandleStartAmbientMode() {
-  return chromeos::features::IsAmbientModeEnabled();
 }
 
 void HandleToggleAssistant(const ui::Accelerator& accelerator) {
@@ -482,10 +389,6 @@ void HandleToggleAssistant(const ui::Accelerator& accelerator) {
       /*exit_point=*/assistant::AssistantExitPoint::kHotkey);
 }
 
-bool CanHandleCycleUser() {
-  return Shell::Get()->session_controller()->NumberOfLoggedInUsers() > 1;
-}
-
 bool CanHandleToggleCapsLock(
     const ui::Accelerator& accelerator,
     const ui::Accelerator& previous_accelerator,
@@ -527,50 +430,6 @@ bool CanHandleToggleCapsLock(
     }
   }
 
-  return false;
-}
-
-bool CanHandleToggleDictation() {
-  return Shell::Get()->accessibility_controller()->dictation().enabled();
-}
-
-bool CanHandleToggleOverview() {
-  auto windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  // Do not toggle overview if there is a window being dragged.
-  for (auto* window : windows) {
-    if (WindowState::Get(window)->is_dragged())
-      return false;
-  }
-  return true;
-}
-
-bool CanHandleTogglePrivacyScreen() {
-  return Shell::Get()->privacy_screen_controller()->IsSupported();
-}
-
-bool CanHandleActiveMagnifierZoom() {
-  return Shell::Get()->fullscreen_magnifier_controller()->IsEnabled() ||
-         Shell::Get()->docked_magnifier_controller()->GetEnabled();
-}
-
-bool CanHandleTouchHud() {
-  return RootWindowController::ForTargetRootWindow()->touch_hud_debug();
-}
-
-bool CanUnpinWindow() {
-  // WindowStateType::kTrustedPinned does not allow the user to press a key to
-  // exit pinned mode.
-  WindowState* window_state = WindowState::ForActiveWindow();
-  return window_state &&
-         window_state->GetStateType() == WindowStateType::kPinned;
-}
-
-bool CanHandleToggleProjectorMarker() {
-  auto* projector_controller = ProjectorController::Get();
-  if (projector_controller) {
-    return projector_controller->GetAnnotatorAvailability();
-  }
   return false;
 }
 
@@ -897,7 +756,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
   switch (action) {
     case CYCLE_BACKWARD_MRU:
     case CYCLE_FORWARD_MRU:
-      return CanHandleCycleMru(accelerator);
+      return accelerators::CanCycleMru();
     case DESKS_ACTIVATE_DESK_LEFT:
     case DESKS_ACTIVATE_DESK_RIGHT:
     case DESKS_MOVE_ACTIVE_ITEM_LEFT:
@@ -941,19 +800,18 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case DISABLE_CAPS_LOCK:
       return CanHandleDisableCapsLock(previous_accelerator);
     case LOCK_SCREEN:
-      return CanHandleLock();
+      return accelerators::CanLock();
     case MAGNIFIER_ZOOM_IN:
     case MAGNIFIER_ZOOM_OUT:
-      return CanHandleActiveMagnifierZoom();
+      return accelerators::CanPerformMagnifierZoom();
     case MICROPHONE_MUTE_TOGGLE:
       return true;
     case MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS:
-      return display_move_window_util::
-          CanHandleMoveActiveWindowBetweenDisplays();
+      return accelerators::CanMoveActiveWindowBetweenDisplays();
     case NEW_INCOGNITO_WINDOW:
-      return CanHandleNewIncognitoWindow();
+      return accelerators::CanCreateNewIncognitoWindow();
     case PRIVACY_SCREEN_TOGGLE:
-      return CanHandleTogglePrivacyScreen();
+      return accelerators::CanTogglePrivacyScreen();
     case ROTATE_SCREEN:
       return true;
     case SCALE_UI_DOWN:
@@ -961,28 +819,28 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case SCALE_UI_UP:
       return true;
     case SHOW_STYLUS_TOOLS:
-      return CanHandleShowStylusTools();
+      return accelerators::CanShowStylusTools();
     case START_AMBIENT_MODE:
-      return CanHandleStartAmbientMode();
+      return accelerators::CanStartAmbientMode();
     case START_ASSISTANT:
       return true;
     case SWAP_PRIMARY_DISPLAY:
-      return display::Screen::GetScreen()->GetNumDisplays() > 1;
+      return accelerators::CanSwapPrimaryDisplay();
     case SWITCH_IME:
       return CanHandleSwitchIme(accelerator);
     case SWITCH_TO_NEXT_IME:
-      return CanCycleInputMethod();
+      return accelerators::CanCycleInputMethod();
     case SWITCH_TO_LAST_USED_IME:
-      return CanCycleInputMethod();
+      return accelerators::CanCycleInputMethod();
     case SWITCH_TO_PREVIOUS_USER:
     case SWITCH_TO_NEXT_USER:
-      return CanHandleCycleUser();
+      return accelerators::CanCycleUser();
     case TOGGLE_APP_LIST:
       return CanHandleToggleAppList(
           accelerator, previous_accelerator,
           accelerator_history_->currently_pressed_keys());
     case TOGGLE_CALENDAR:
-      return features::IsCalendarViewEnabled();
+      return accelerators::CanToggleCalendar();
     case TOGGLE_CAPS_LOCK:
       return CanHandleToggleCapsLock(
           accelerator, previous_accelerator,
@@ -990,7 +848,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case TOGGLE_CLIPBOARD_HISTORY:
       return true;
     case TOGGLE_DICTATION:
-      return CanHandleToggleDictation();
+      return accelerators::CanToggleDictation();
     case TOGGLE_DOCKED_MAGNIFIER:
       return true;
     case TOGGLE_FULLSCREEN_MAGNIFIER:
@@ -1000,33 +858,33 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case TOGGLE_MIRROR_MODE:
       return true;
     case TOGGLE_OVERVIEW:
-      return CanHandleToggleOverview();
+      return accelerators::CanToggleOverview();
     case TOUCH_HUD_CLEAR:
     case TOUCH_HUD_MODE_CHANGE:
-      return CanHandleTouchHud();
+      return accelerators::CanActivateTouchHud();
     case UNPIN:
-      return CanUnpinWindow();
+      return accelerators::CanUnpinWindow();
     case WINDOW_CYCLE_SNAP_LEFT:
     case WINDOW_CYCLE_SNAP_RIGHT:
-      return CanHandleWindowSnap();
+      return accelerators::CanWindowSnap();
     case FOCUS_PIP:
-      return !!FindPipWidget();
+      return accelerators::CanFindPipWidget();
     case FOCUS_CAMERA_PREVIEW:
-      return CanHandleFocusCameraPreview();
+      return accelerators::CanFocusCameraPreview();
     case MINIMIZE_TOP_WINDOW_ON_BACK:
-      return window_util::ShouldMinimizeTopWindowOnBack();
+      return accelerators::CanMinimizeTopWindowOnBack();
     case TAKE_PARTIAL_SCREENSHOT:
     case TAKE_SCREENSHOT:
     case TAKE_WINDOW_SCREENSHOT:
-      return CanHandleScreenshot(action);
+      return accelerators::CanScreenshot(action == TAKE_SCREENSHOT);
     case TOGGLE_PROJECTOR_MARKER:
-      return CanHandleToggleProjectorMarker();
+      return accelerators::CanToggleProjectorMarker();
     case TOGGLE_RESIZE_LOCK_MENU:
-      return CanHandleToggleResizeLockMenu();
+      return accelerators::CanToggleResizeLockMenu();
     case TOGGLE_FLOATING:
     case DEBUG_FLOAT_FLING_LEFT:
     case DEBUG_FLOAT_FLING_RIGHT:
-      return CanHandleToggleFloatingWindow();
+      return debug::CanToggleFloatingWindow();
 
     // The following are always enabled.
     case BRIGHTNESS_DOWN:

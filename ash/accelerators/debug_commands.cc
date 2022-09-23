@@ -30,6 +30,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/manager/display_manager.h"
@@ -223,6 +224,13 @@ void PrintUIHierarchies() {
   HandlePrintLayerHierarchy();
   HandlePrintWindowHierarchy();
   HandlePrintViewHierarchy();
+}
+
+bool CanToggleFloatingWindow() {
+  if (!chromeos::wm::features::IsFloatWindowEnabled())
+    return false;
+
+  return window_util::GetActiveWindow() != nullptr;
 }
 
 bool DebugAcceleratorsEnabled() {

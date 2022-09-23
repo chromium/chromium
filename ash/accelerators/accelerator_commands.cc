@@ -23,6 +23,7 @@
 #include "ash/focus_cycler.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/ime/ime_controller_impl.h"
+#include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/projector/projector_controller.h"
@@ -94,6 +95,7 @@ namespace accelerators {
 namespace {
 
 using ::base::UserMetricsAction;
+using ::chromeos::WindowStateType;
 
 // Percent by which the volume should be changed when a volume key is pressed.
 constexpr double kStepPercentage = 4.0;
@@ -345,6 +347,145 @@ void EnterImageCaptureMode(CaptureModeSource source,
 }
 
 }  // namespace
+
+bool CanActivateTouchHud() {
+  return RootWindowController::ForTargetRootWindow()->touch_hud_debug();
+}
+
+bool CanCreateNewIncognitoWindow() {
+  // Guest mode does not use incognito windows. The browser may have other
+  // restrictions on incognito mode (e.g. enterprise policy) but those are rare.
+  // For non-guest mode, consume the key and defer the decision to the browser.
+  absl::optional<user_manager::UserType> user_type =
+      Shell::Get()->session_controller()->GetUserType();
+  return user_type && *user_type != user_manager::USER_TYPE_GUEST;
+}
+
+bool CanCycleInputMethod() {
+  return Shell::Get()->ime_controller()->CanSwitchIme();
+}
+
+bool CanCycleMru() {
+  // Don't do anything when Alt+Tab is hit while a virtual keyboard is showing.
+  // Touchscreen users have better window switching options. It would be
+  // preferable if we could tell whether this event actually came from a virtual
+  // keyboard, but there's no easy way to do so, thus we block Alt+Tab when the
+  // virtual keyboard is showing, even if it came from a real keyboard. See
+  // http://crbug.com/638269
+  return !keyboard::KeyboardUIController::Get()->IsKeyboardVisible();
+}
+
+bool CanCycleUser() {
+  return Shell::Get()->session_controller()->NumberOfLoggedInUsers() > 1;
+}
+
+bool CanFindPipWidget() {
+  return !!FindPipWidget();
+}
+
+bool CanFocusCameraPreview() {
+  auto* controller = CaptureModeController::Get();
+  // Only use the shortcut to focus the camera preview while video recording is
+  // in progress. As focus traversal of the camera preview in the capture
+  // session will be handled by CaptureModeSessionFocusCycler instead.
+  if (controller->IsActive() || !controller->is_recording_in_progress())
+    return false;
+
+  auto* camera_controller = controller->camera_controller();
+  DCHECK(camera_controller);
+  auto* preview_widget = camera_controller->camera_preview_widget();
+  return preview_widget && preview_widget->IsVisible();
+}
+
+bool CanLock() {
+  return Shell::Get()->session_controller()->CanLockScreen();
+}
+
+bool CanMinimizeTopWindowOnBack() {
+  return window_util::ShouldMinimizeTopWindowOnBack();
+}
+
+bool CanMoveActiveWindowBetweenDisplays() {
+  return display_move_window_util::CanHandleMoveActiveWindowBetweenDisplays();
+}
+
+bool CanPerformMagnifierZoom() {
+  return Shell::Get()->fullscreen_magnifier_controller()->IsEnabled() ||
+         Shell::Get()->docked_magnifier_controller()->GetEnabled();
+}
+
+bool CanScreenshot(bool take_screenshot) {
+  // |TAKE_SCREENSHOT| is allowed when user session is blocked.
+  return take_screenshot ||
+         !Shell::Get()->session_controller()->IsUserSessionBlocked();
+}
+
+bool CanShowStylusTools() {
+  return GetPaletteTray()->ShouldShowPalette();
+}
+
+bool CanStartAmbientMode() {
+  return chromeos::features::IsAmbientModeEnabled();
+}
+
+bool CanSwapPrimaryDisplay() {
+  return display::Screen::GetScreen()->GetNumDisplays() > 1;
+}
+
+bool CanToggleCalendar() {
+  return features::IsCalendarViewEnabled();
+}
+
+bool CanToggleDictation() {
+  return Shell::Get()->accessibility_controller()->dictation().enabled();
+}
+
+bool CanToggleOverview() {
+  auto windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  // Do not toggle overview if there is a window being dragged.
+  for (auto* window : windows) {
+    if (WindowState::Get(window)->is_dragged())
+      return false;
+  }
+  return true;
+}
+
+bool CanTogglePrivacyScreen() {
+  return Shell::Get()->privacy_screen_controller()->IsSupported();
+}
+
+bool CanToggleProjectorMarker() {
+  auto* projector_controller = ProjectorController::Get();
+  if (projector_controller) {
+    return projector_controller->GetAnnotatorAvailability();
+  }
+  return false;
+}
+
+bool CanToggleResizeLockMenu() {
+  aura::Window* active_window = window_util::GetActiveWindow();
+  if (!active_window)
+    return false;
+  auto* frame_view = ash::NonClientFrameViewAsh::Get(active_window);
+  return frame_view && frame_view->GetToggleResizeLockMenuCallback();
+}
+
+bool CanUnpinWindow() {
+  // WindowStateType::kTrustedPinned does not allow the user to press a key to
+  // exit pinned mode.
+  WindowState* window_state = WindowState::ForActiveWindow();
+  return window_state &&
+         window_state->GetStateType() == WindowStateType::kPinned;
+}
+
+bool CanWindowSnap() {
+  aura::Window* active_window = window_util::GetActiveWindow();
+  if (!active_window)
+    return false;
+  WindowState* window_state = WindowState::Get(active_window);
+  return window_state && window_state->IsUserPositionable();
+}
 
 void ActivateDesk(bool activate_left) {
   auto* desks_controller = DesksController::Get();
