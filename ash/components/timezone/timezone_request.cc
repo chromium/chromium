@@ -237,8 +237,7 @@ bool ParseServerResponse(const GURL& server_url,
     return false;
   }
 
-  const base::DictionaryValue* response_object = NULL;
-  if (!parsed_json->GetAsDictionary(&response_object)) {
+  if (!parsed_json->is_dict()) {
     PrintTimeZoneError(server_url,
                        "Unexpected response type : " +
                            base::StringPrintf("%u", static_cast<unsigned int>(
@@ -248,7 +247,9 @@ bool ParseServerResponse(const GURL& server_url,
     return false;
   }
 
-  const std::string* status = response_object->FindStringKey(kStatusString);
+  base::Value::Dict response_object = std::move(*parsed_json).TakeDict();
+
+  const std::string* status = response_object.FindString(kStatusString);
 
   if (!status) {
     PrintTimeZoneError(server_url, "Missing status attribute.", timezone);
@@ -276,7 +277,7 @@ bool ParseServerResponse(const GURL& server_url,
   const bool status_ok = (timezone->status == TimeZoneResponseData::OK);
 
   absl::optional<double> dst_offset =
-      response_object->FindDoubleKey(kDstOffsetString);
+      response_object.FindDouble(kDstOffsetString);
   if (dst_offset.has_value()) {
     timezone->dstOffset = dst_offset.value();
   } else if (status_ok) {
@@ -286,7 +287,7 @@ bool ParseServerResponse(const GURL& server_url,
   }
 
   absl::optional<double> raw_offset =
-      response_object->FindDoubleKey(kRawOffsetString);
+      response_object.FindDouble(kRawOffsetString);
   if (raw_offset.has_value()) {
     timezone->rawOffset = raw_offset.value();
   } else if (status_ok) {
@@ -296,7 +297,7 @@ bool ParseServerResponse(const GURL& server_url,
   }
 
   const std::string* time_zone_id =
-      response_object->FindStringKey(kTimeZoneIdString);
+      response_object.FindString(kTimeZoneIdString);
   if (time_zone_id) {
     timezone->timeZoneId = *time_zone_id;
   } else if (status_ok) {
@@ -306,7 +307,7 @@ bool ParseServerResponse(const GURL& server_url,
   }
 
   const std::string* time_zone_name =
-      response_object->FindStringKey(kTimeZoneNameString);
+      response_object.FindString(kTimeZoneNameString);
   if (time_zone_name) {
     timezone->timeZoneName = *time_zone_name;
   } else if (status_ok) {
@@ -317,7 +318,7 @@ bool ParseServerResponse(const GURL& server_url,
 
   // "error_message" field is optional. Ignore result.
   const std::string* error_message =
-      response_object->FindStringKey(kErrorMessageString);
+      response_object.FindString(kErrorMessageString);
   if (error_message)
     timezone->error_message = *error_message;
 
