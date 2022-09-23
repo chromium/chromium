@@ -285,7 +285,7 @@ bool CustomizationDocument::LoadManifestFromString(
   }
 
   root_ =
-      std::make_unique<base::Value::Dict>(std::move(parsed_json->GetDict()));
+      std::make_unique<base::Value::Dict>(std::move(*parsed_json).TakeDict());
 
   const std::string* result = root_->FindString(kVersionAttr);
   if (!result || *result != accepted_version_) {
