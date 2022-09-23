@@ -16,9 +16,11 @@
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/accelerators/exit_warning_handler.h"
+#include "ash/accelerators/tablet_volume_controller.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
+#include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_map.h"
@@ -33,15 +35,6 @@ namespace ash {
 struct AcceleratorData;
 class ExitWarningHandler;
 
-// See TabletModeVolumeAdjustType at tools/metrics/histograms/enums.xml.
-enum class TabletModeVolumeAdjustType {
-  kAccidentalAdjustWithSwapEnabled = 0,
-  kNormalAdjustWithSwapEnabled = 1,
-  kAccidentalAdjustWithSwapDisabled = 2,
-  kNormalAdjustWithSwapDisabled = 3,
-  kMaxValue = kNormalAdjustWithSwapDisabled,
-};
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Captures usage of Alt+[ and Alt+].
@@ -54,9 +47,6 @@ enum class WindowSnapAcceleratorAction {
   kCycleRightSnapInTablet = 5,
   kMaxValue = kCycleRightSnapInTablet,
 };
-
-// Histogram for volume adjustment in tablet mode.
-ASH_EXPORT extern const char kTabletCountOfVolumeAdjustType[];
 
 // UMA accessibility histogram names.
 ASH_EXPORT extern const char kAccessibilityHighContrastShortcut[];
@@ -75,21 +65,6 @@ class ASH_EXPORT AcceleratorControllerImpl
       public AcceleratorController,
       public input_method::InputMethodManager::Observer {
  public:
-  // Some Chrome OS devices have volume up and volume down buttons on their
-  // side. We want the button that's closer to the top/right to increase the
-  // volume and the button that's closer to the bottom/left to decrease the
-  // volume, so we use the buttons' location and the device orientation to
-  // determine whether the buttons should be swapped.
-  struct SideVolumeButtonLocation {
-    // The button can be at the side of the keyboard or the display. Then value
-    // of the region could be kVolumeButtonRegionKeyboard or
-    // kVolumeButtonRegionScreen.
-    std::string region;
-    // Side info of region. The value could be kVolumeButtonSideLeft,
-    // kVolumeButtonSideRight, kVolumeButtonSideTop or kVolumeButtonSideBottom.
-    std::string side;
-  };
-
   // TestApi is used for tests to get internal implementation details.
   class TestApi {
    public:
@@ -121,10 +96,8 @@ class ASH_EXPORT AcceleratorControllerImpl
     // Provides access to the ExitWarningHandler.
     ExitWarningHandler* GetExitWarningHandler();
 
-    AcceleratorControllerImpl::SideVolumeButtonLocation
-    side_volume_button_location() {
-      return controller_->side_volume_button_location_;
-    }
+    const TabletVolumeController::SideVolumeButtonLocation&
+    GetSideVolumeButtonLocation();
     void SetSideVolumeButtonFilePath(base::FilePath path);
     void SetSideVolumeButtonLocation(const std::string& region,
                                      const std::string& side);
@@ -132,19 +105,6 @@ class ASH_EXPORT AcceleratorControllerImpl
    private:
     AcceleratorControllerImpl* controller_;  // Not owned.
   };
-
-  // Fields of the side volume button location info.
-  static constexpr const char* kVolumeButtonRegion = "region";
-  static constexpr const char* kVolumeButtonSide = "side";
-
-  // Values of kVolumeButtonRegion.
-  static constexpr const char* kVolumeButtonRegionKeyboard = "keyboard";
-  static constexpr const char* kVolumeButtonRegionScreen = "screen";
-  // Values of kVolumeButtonSide.
-  static constexpr const char* kVolumeButtonSideLeft = "left";
-  static constexpr const char* kVolumeButtonSideRight = "right";
-  static constexpr const char* kVolumeButtonSideTop = "top";
-  static constexpr const char* kVolumeButtonSideBottom = "bottom";
 
   AcceleratorControllerImpl();
   AcceleratorControllerImpl(const AcceleratorControllerImpl&) = delete;
@@ -281,34 +241,6 @@ class ASH_EXPORT AcceleratorControllerImpl
       AcceleratorAction action,
       const ui::Accelerator& accelerator) const;
 
-  // Returns true if |source_device_id| corresponds to the internal keyboard or
-  // an internal uncategorized input device.
-  bool IsInternalKeyboardOrUncategorizedDevice(int source_device_id) const;
-
-  // Returns true if |side_volume_button_location_| is in agreed format and
-  // values.
-  bool IsValidSideVolumeButtonLocation() const;
-
-  // Returns true if the side volume buttons should be swapped. See
-  // SideVolumeButonLocation for the details.
-  bool ShouldSwapSideVolumeButtons(int source_device_id) const;
-
-  // Read the side volume button location info from local file under
-  // kSideVolumeButtonLocationFilePath, parse and write it into
-  // |side_volume_button_location_|.
-  void ParseSideVolumeButtonLocationInfo();
-
-  // The metrics recorded include accidental volume adjustments (defined as a
-  // sequence of volume button events in close succession starting with a
-  // volume-up event but ending with an overall-decreased volume, or vice versa)
-  // or normal volume adjustments w/o SwapSideVolumeButtonsForOrientation
-  // feature enabled.
-  void UpdateTabletModeVolumeAdjustHistogram();
-
-  // Starts |tablet_mode_volume_adjust_timer_| while see VOLUME_UP or
-  // VOLUME_DOWN acceleration action when in tablet mode.
-  void StartTabletModeVolumeAdjustTimer(AcceleratorAction action);
-
   std::unique_ptr<ui::AcceleratorManager> accelerator_manager_;
 
   // A tracker for the current and previous accelerators.
@@ -320,6 +252,9 @@ class ASH_EXPORT AcceleratorControllerImpl
   // Handles the exit accelerator which requires a double press to exit and
   // shows a popup with an explanation.
   ExitWarningHandler exit_warning_handler_;
+
+  // Handle the orientation of volume buttons in tablet mode.
+  TabletVolumeController tablet_volume_controller_;
 
   // Actions allowed when the user is not signed in.
   std::set<int> actions_allowed_at_login_screen_;
@@ -346,25 +281,6 @@ class ASH_EXPORT AcceleratorControllerImpl
 
   // Holds a weak pointer to the accessibility confirmation dialog.
   base::WeakPtr<AccessibilityConfirmationDialog> confirmation_dialog_;
-
-  // Path of the file that contains the side volume button location info. It
-  // should always be kSideVolumeButtonLocationFilePath. But it is allowed to be
-  // set to different paths in test.
-  base::FilePath side_volume_button_location_file_path_;
-
-  // Stores the location info of side volume buttons.
-  SideVolumeButtonLocation side_volume_button_location_;
-
-  // Started when VOLUME_DOWN or VOLUME_UP accelerator action is seen while in
-  // tablet mode. Runs UpdateTabletModeVolumeAdjustHistogram() to record
-  // metrics.
-  base::OneShotTimer tablet_mode_volume_adjust_timer_;
-
-  // True if volume adjust starts with VOLUME_UP action.
-  bool volume_adjust_starts_with_up_ = false;
-
-  // The initial volume percentage when volume adjust starts.
-  int initial_volume_percent_ = 0;
 
   // Prevents the processing of all KB shortcuts in the controller.
   bool prevent_processing_accelerators_ = false;

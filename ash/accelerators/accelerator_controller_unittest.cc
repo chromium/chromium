@@ -1548,16 +1548,14 @@ TEST_F(AcceleratorControllerTest, PreferredReservedAccelerators) {
 TEST_F(AcceleratorControllerTest, SideVolumeButtonLocation) {
   // |side_volume_button_location_| should be empty when location info file
   // doesn't exist.
-  EXPECT_TRUE(test_api_->side_volume_button_location().region.empty());
-  EXPECT_TRUE(test_api_->side_volume_button_location().side.empty());
+  EXPECT_TRUE(test_api_->GetSideVolumeButtonLocation().region.empty());
+  EXPECT_TRUE(test_api_->GetSideVolumeButtonLocation().side.empty());
 
   // Tests that |side_volume_button_location_| is read correctly if the location
   // file exists.
   base::DictionaryValue location;
-  location.SetStringKey(AcceleratorControllerImpl::kVolumeButtonRegion,
-                        AcceleratorControllerImpl::kVolumeButtonRegionScreen);
-  location.SetStringKey(AcceleratorControllerImpl::kVolumeButtonSide,
-                        AcceleratorControllerImpl::kVolumeButtonSideLeft);
+  location.SetString(kVolumeButtonRegion, kVolumeButtonRegionScreen);
+  location.SetString(kVolumeButtonSide, kVolumeButtonSideLeft);
   std::string json_location;
   base::JSONWriter::Write(location, &json_location);
   base::ScopedTempDir file_tmp_dir;
@@ -1566,10 +1564,10 @@ TEST_F(AcceleratorControllerTest, SideVolumeButtonLocation) {
   ASSERT_TRUE(WriteJsonFile(file_path, json_location));
   EXPECT_TRUE(base::PathExists(file_path));
   test_api_->SetSideVolumeButtonFilePath(file_path);
-  EXPECT_EQ(AcceleratorControllerImpl::kVolumeButtonRegionScreen,
-            test_api_->side_volume_button_location().region);
-  EXPECT_EQ(AcceleratorControllerImpl::kVolumeButtonSideLeft,
-            test_api_->side_volume_button_location().side);
+  EXPECT_EQ(kVolumeButtonRegionScreen,
+            test_api_->GetSideVolumeButtonLocation().region);
+  EXPECT_EQ(kVolumeButtonSideLeft,
+            test_api_->GetSideVolumeButtonLocation().side);
   base::DeleteFile(file_path);
 }
 
@@ -1626,13 +1624,10 @@ class SideVolumeButtonAcceleratorTest
   }
 
   bool IsLeftOrRightSide() const {
-    return side_ == AcceleratorControllerImpl::kVolumeButtonSideLeft ||
-           side_ == AcceleratorControllerImpl::kVolumeButtonSideRight;
+    return side_ == kVolumeButtonSideLeft || side_ == kVolumeButtonSideRight;
   }
 
-  bool IsOnKeyboard() const {
-    return region_ == AcceleratorControllerImpl::kVolumeButtonRegionKeyboard;
-  }
+  bool IsOnKeyboard() const { return region_ == kVolumeButtonRegionKeyboard; }
 
  private:
   std::string region_, side_;
@@ -1723,27 +1718,20 @@ INSTANTIATE_TEST_SUITE_P(
     AshSideVolumeButton,
     SideVolumeButtonAcceleratorTest,
     testing::ValuesIn(
-        {std::make_pair<std::string, std::string>(
-             AcceleratorControllerImpl::kVolumeButtonRegionKeyboard,
-             AcceleratorControllerImpl::kVolumeButtonSideLeft),
-         std::make_pair<std::string, std::string>(
-             AcceleratorControllerImpl::kVolumeButtonRegionKeyboard,
-             AcceleratorControllerImpl::kVolumeButtonSideRight),
-         std::make_pair<std::string, std::string>(
-             AcceleratorControllerImpl::kVolumeButtonRegionKeyboard,
-             AcceleratorControllerImpl::kVolumeButtonSideBottom),
-         std::make_pair<std::string, std::string>(
-             AcceleratorControllerImpl::kVolumeButtonRegionScreen,
-             AcceleratorControllerImpl::kVolumeButtonSideLeft),
-         std::make_pair<std::string, std::string>(
-             AcceleratorControllerImpl::kVolumeButtonRegionScreen,
-             AcceleratorControllerImpl::kVolumeButtonSideRight),
-         std::make_pair<std::string, std::string>(
-             AcceleratorControllerImpl::kVolumeButtonRegionScreen,
-             AcceleratorControllerImpl::kVolumeButtonSideTop),
-         std::make_pair<std::string, std::string>(
-             AcceleratorControllerImpl::kVolumeButtonRegionScreen,
-             AcceleratorControllerImpl::kVolumeButtonSideBottom)}));
+        {std::make_pair<std::string, std::string>(kVolumeButtonRegionKeyboard,
+                                                  kVolumeButtonSideLeft),
+         std::make_pair<std::string, std::string>(kVolumeButtonRegionKeyboard,
+                                                  kVolumeButtonSideRight),
+         std::make_pair<std::string, std::string>(kVolumeButtonRegionKeyboard,
+                                                  kVolumeButtonSideBottom),
+         std::make_pair<std::string, std::string>(kVolumeButtonRegionScreen,
+                                                  kVolumeButtonSideLeft),
+         std::make_pair<std::string, std::string>(kVolumeButtonRegionScreen,
+                                                  kVolumeButtonSideRight),
+         std::make_pair<std::string, std::string>(kVolumeButtonRegionScreen,
+                                                  kVolumeButtonSideTop),
+         std::make_pair<std::string, std::string>(kVolumeButtonRegionScreen,
+                                                  kVolumeButtonSideBottom)}));
 
 // Tests the TOGGLE_CAPS_LOCK accelerator.
 TEST_F(AcceleratorControllerTest, ToggleCapsLockAccelerators) {

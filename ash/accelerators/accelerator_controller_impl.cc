@@ -80,10 +80,7 @@
 #include "ash/wm/wm_metrics.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/files/file_util.h"
-#include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -110,8 +107,6 @@
 
 namespace ash {
 
-const char kTabletCountOfVolumeAdjustType[] = "Tablet.CountOfVolumeAdjustType";
-
 const char kAccessibilityHighContrastShortcut[] =
     "Accessibility.Shortcuts.CrosHighContrast";
 const char kAccessibilitySpokenFeedbackShortcut[] =
@@ -132,13 +127,6 @@ using input_method::InputMethodManager;
 // Toast id and duration for Assistant shortcuts.
 constexpr char kAssistantErrorToastId[] = "assistant_error";
 
-// Path of the json file that contains side volume button location info.
-constexpr char kSideVolumeButtonLocationFilePath[] =
-    "/usr/share/chromeos-assets/side_volume_button/location.json";
-
-// The interval between two volume control actions within one volume adjust.
-constexpr base::TimeDelta kVolumeAdjustTimeout = base::Seconds(2);
-
 static_assert(DESKS_ACTIVATE_0 == DESKS_ACTIVATE_1 - 1 &&
                   DESKS_ACTIVATE_1 == DESKS_ACTIVATE_2 - 1 &&
                   DESKS_ACTIVATE_2 == DESKS_ACTIVATE_3 - 1 &&
@@ -147,10 +135,6 @@ static_assert(DESKS_ACTIVATE_0 == DESKS_ACTIVATE_1 - 1 &&
                   DESKS_ACTIVATE_5 == DESKS_ACTIVATE_6 - 1 &&
                   DESKS_ACTIVATE_6 == DESKS_ACTIVATE_7 - 1,
               "DESKS_ACTIVATE* actions must be consecutive");
-
-void RecordTabletVolumeAdjustTypeHistogram(TabletModeVolumeAdjustType type) {
-  UMA_HISTOGRAM_ENUMERATION(kTabletCountOfVolumeAdjustType, type);
-}
 
 void ShowToast(std::string id,
                ToastCatalogName catalog_name,
@@ -435,15 +419,6 @@ bool CanHandleToggleCapsLock(
 
 }  // namespace
 
-constexpr const char* AcceleratorControllerImpl::kVolumeButtonRegion;
-constexpr const char* AcceleratorControllerImpl::kVolumeButtonSide;
-constexpr const char* AcceleratorControllerImpl::kVolumeButtonRegionKeyboard;
-constexpr const char* AcceleratorControllerImpl::kVolumeButtonRegionScreen;
-constexpr const char* AcceleratorControllerImpl::kVolumeButtonSideLeft;
-constexpr const char* AcceleratorControllerImpl::kVolumeButtonSideRight;
-constexpr const char* AcceleratorControllerImpl::kVolumeButtonSideTop;
-constexpr const char* AcceleratorControllerImpl::kVolumeButtonSideBottom;
-
 ////////////////////////////////////////////////////////////////////////////////
 // AcceleratorControllerImpl, public:
 
@@ -454,11 +429,8 @@ AcceleratorControllerImpl::TestApi::TestApi(
 }
 
 bool AcceleratorControllerImpl::TestApi::TriggerTabletModeVolumeAdjustTimer() {
-  if (!controller_->tablet_mode_volume_adjust_timer_.IsRunning())
-    return false;
-
-  controller_->tablet_mode_volume_adjust_timer_.FireNow();
-  return true;
+  return controller_->tablet_volume_controller_
+      .TriggerTabletModeVolumeAdjustTimerForTest();  // IN-TEST
 }
 
 void AcceleratorControllerImpl::TestApi::RegisterAccelerators(
@@ -489,26 +461,32 @@ AcceleratorControllerImpl::TestApi::GetExitWarningHandler() {
   return &controller_->exit_warning_handler_;
 }
 
+const TabletVolumeController::SideVolumeButtonLocation&
+AcceleratorControllerImpl::TestApi::GetSideVolumeButtonLocation() {
+  return controller_->tablet_volume_controller_
+      .GetSideVolumeButtonLocationForTest();  // IN-TEST
+}
+
 void AcceleratorControllerImpl::TestApi::SetSideVolumeButtonFilePath(
     base::FilePath path) {
-  controller_->side_volume_button_location_file_path_ = path;
-  controller_->ParseSideVolumeButtonLocationInfo();
+  controller_->tablet_volume_controller_
+      .SetSideVolumeButtonFilePathForTest(  // IN-TEST
+          path);
 }
 
 void AcceleratorControllerImpl::TestApi::SetSideVolumeButtonLocation(
     const std::string& region,
     const std::string& side) {
-  controller_->side_volume_button_location_.region = region;
-  controller_->side_volume_button_location_.side = side;
+  controller_->tablet_volume_controller_
+      .SetSideVolumeButtonLocationForTest(  // IN-TEST
+          region, side);
 }
 
 AcceleratorControllerImpl::AcceleratorControllerImpl()
     : accelerator_manager_(std::make_unique<ui::AcceleratorManager>()),
       accelerator_history_(std::make_unique<AcceleratorHistoryImpl>()),
       accelerator_configuration_(
-          std::make_unique<AshAcceleratorConfiguration>()),
-      side_volume_button_location_file_path_(
-          base::FilePath(kSideVolumeButtonLocationFilePath)) {
+          std::make_unique<AshAcceleratorConfiguration>()) {
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
     // Observe input method changes to determine when to use positional
     // shortcuts. Calling AddObserver will cause InputMethodChanged to be
@@ -517,8 +495,6 @@ AcceleratorControllerImpl::AcceleratorControllerImpl()
   }
 
   Init();
-
-  ParseSideVolumeButtonLocationInfo();
 
   // Let AcceleratorHistory be a PreTargetHandler on aura::Env to ensure that it
   // receives KeyEvents and MouseEvents. In some cases Shell PreTargetHandlers
@@ -957,10 +933,12 @@ void AcceleratorControllerImpl::PerformAction(
 
   if ((action == VOLUME_DOWN || action == VOLUME_UP) &&
       Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-    if (ShouldSwapSideVolumeButtons(accelerator.source_device_id()))
+    if (tablet_volume_controller_.ShouldSwapSideVolumeButtons(
+            accelerator.source_device_id()))
       action = action == VOLUME_DOWN ? VOLUME_UP : VOLUME_DOWN;
 
-    StartTabletModeVolumeAdjustTimer(action);
+    tablet_volume_controller_.StartTabletModeVolumeAdjustTimer(action ==
+                                                               VOLUME_UP);
   }
 
   // If your accelerator invokes more than one line of code, please either
@@ -1571,127 +1549,6 @@ void AcceleratorControllerImpl::MaybeShowConfirmationDialog(
       l10n_util::GetStringUTF16(dialog_text_id), std::move(on_accept_callback),
       std::move(on_cancel_callback), /* on close */ base::DoNothing());
   confirmation_dialog_ = dialog->GetWeakPtr();
-}
-
-bool AcceleratorControllerImpl::IsInternalKeyboardOrUncategorizedDevice(
-    int source_device_id) const {
-  if (source_device_id == ui::ED_UNKNOWN_DEVICE)
-    return false;
-
-  for (const ui::InputDevice& keyboard :
-       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-    if (keyboard.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL &&
-        keyboard.id == source_device_id) {
-      return true;
-    }
-  }
-
-  for (const ui::InputDevice& uncategorized_device :
-       ui::DeviceDataManager::GetInstance()->GetUncategorizedDevices()) {
-    if (uncategorized_device.id == source_device_id &&
-        uncategorized_device.type ==
-            ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool AcceleratorControllerImpl::IsValidSideVolumeButtonLocation() const {
-  const std::string region = side_volume_button_location_.region;
-  const std::string side = side_volume_button_location_.side;
-  if (region != kVolumeButtonRegionKeyboard &&
-      region != kVolumeButtonRegionScreen) {
-    return false;
-  }
-  if (side != kVolumeButtonSideLeft && side != kVolumeButtonSideRight &&
-      side != kVolumeButtonSideTop && side != kVolumeButtonSideBottom) {
-    return false;
-  }
-  return true;
-}
-
-bool AcceleratorControllerImpl::ShouldSwapSideVolumeButtons(
-    int source_device_id) const {
-  if (!IsInternalKeyboardOrUncategorizedDevice(source_device_id))
-    return false;
-
-  if (!IsValidSideVolumeButtonLocation())
-    return false;
-
-  chromeos::OrientationType screen_orientation =
-      Shell::Get()->screen_orientation_controller()->GetCurrentOrientation();
-  const std::string side = side_volume_button_location_.side;
-  const bool is_landscape_secondary_or_portrait_primary =
-      screen_orientation == chromeos::OrientationType::kLandscapeSecondary ||
-      screen_orientation == chromeos::OrientationType::kPortraitPrimary;
-
-  if (side_volume_button_location_.region == kVolumeButtonRegionKeyboard) {
-    if (side == kVolumeButtonSideLeft || side == kVolumeButtonSideRight)
-      return chromeos::IsPrimaryOrientation(screen_orientation);
-    return is_landscape_secondary_or_portrait_primary;
-  }
-
-  DCHECK_EQ(kVolumeButtonRegionScreen, side_volume_button_location_.region);
-  if (side == kVolumeButtonSideLeft || side == kVolumeButtonSideRight)
-    return !chromeos::IsPrimaryOrientation(screen_orientation);
-  return is_landscape_secondary_or_portrait_primary;
-}
-
-void AcceleratorControllerImpl::ParseSideVolumeButtonLocationInfo() {
-  std::string location_info;
-  const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-  if (cl->HasSwitch(switches::kAshSideVolumeButtonPosition)) {
-    location_info =
-        cl->GetSwitchValueASCII(switches::kAshSideVolumeButtonPosition);
-  } else if (!base::PathExists(side_volume_button_location_file_path_) ||
-             !base::ReadFileToString(side_volume_button_location_file_path_,
-                                     &location_info) ||
-             location_info.empty()) {
-    return;
-  }
-
-  absl::optional<base::Value> parsed_json =
-      base::JSONReader::Read(location_info);
-  if (!parsed_json || !parsed_json->is_dict()) {
-    LOG(ERROR) << "JSONReader failed reading side volume button location info: "
-               << location_info;
-    return;
-  }
-
-  const base::Value::Dict& info_in_dict = parsed_json->GetDict();
-  const std::string* region = info_in_dict.FindString(kVolumeButtonRegion);
-  if (region)
-    side_volume_button_location_.region = *region;
-
-  const std::string* side = info_in_dict.FindString(kVolumeButtonSide);
-  if (side)
-    side_volume_button_location_.side = *side;
-}
-
-void AcceleratorControllerImpl::UpdateTabletModeVolumeAdjustHistogram() {
-  const int volume_percent = CrasAudioHandler::Get()->GetOutputVolumePercent();
-  if ((volume_adjust_starts_with_up_ &&
-       volume_percent >= initial_volume_percent_) ||
-      (!volume_adjust_starts_with_up_ &&
-       volume_percent <= initial_volume_percent_)) {
-    RecordTabletVolumeAdjustTypeHistogram(
-        TabletModeVolumeAdjustType::kNormalAdjustWithSwapEnabled);
-  } else {
-    RecordTabletVolumeAdjustTypeHistogram(
-        TabletModeVolumeAdjustType::kAccidentalAdjustWithSwapEnabled);
-  }
-}
-
-void AcceleratorControllerImpl::StartTabletModeVolumeAdjustTimer(
-    AcceleratorAction action) {
-  if (!tablet_mode_volume_adjust_timer_.IsRunning()) {
-    volume_adjust_starts_with_up_ = action == VOLUME_UP;
-    initial_volume_percent_ = CrasAudioHandler::Get()->GetOutputVolumePercent();
-  }
-  tablet_mode_volume_adjust_timer_.Start(
-      FROM_HERE, kVolumeAdjustTimeout, this,
-      &AcceleratorControllerImpl::UpdateTabletModeVolumeAdjustHistogram);
 }
 
 void AcceleratorControllerImpl::SetPreventProcessingAccelerators(

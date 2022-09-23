@@ -53,6 +53,8 @@ component("ash") {
     "accelerators/pre_target_accelerator_handler.h",
     "accelerators/spoken_feedback_toggler.cc",
     "accelerators/spoken_feedback_toggler.h",
+    "accelerators/tablet_volume_controller.cc",
+    "accelerators/tablet_volume_controller.h",
     "accelerometer/accelerometer_constants.h",
     "accelerometer/accelerometer_file_reader.cc",
     "accelerometer/accelerometer_file_reader.h",
