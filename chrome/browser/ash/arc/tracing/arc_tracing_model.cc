@@ -439,7 +439,7 @@ bool ArcTracingModel::ProcessEvent(base::Value::List* events) {
     }
 
     std::unique_ptr<ArcTracingEvent> event =
-        std::make_unique<ArcTracingEvent>(std::move(event_data.GetDict()));
+        std::make_unique<ArcTracingEvent>(std::move(event_data).TakeDict());
     const uint64_t timestamp = event->GetTimestamp();
     if (timestamp < min_timestamp_ || timestamp >= max_timestamp_)
       continue;
