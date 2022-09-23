@@ -395,7 +395,6 @@ void WaylandInputMethodContext::OnPreeditString(
   ui::CompositionText composition_text;
   composition_text.text = base::UTF8ToUTF16(text);
   for (const auto& span : spans) {
-    ImeTextSpan text_span;
     auto start_offset = OffsetFromUTF8Offset(text, span.index);
     if (!start_offset)
       continue;
