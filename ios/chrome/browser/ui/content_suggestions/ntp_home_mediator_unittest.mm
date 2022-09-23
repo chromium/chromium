@@ -171,25 +171,3 @@ TEST_F(NTPHomeMediatorTest, DisableVoiceSearch) {
 
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
-
-TEST_F(NTPHomeMediatorTest, TestFakeboxTapped) {
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnStartSurface",
-      IOSContentSuggestionsActionType::kFakebox, 0);
-  NewTabPageTabHelper::FromWebState(fake_web_state_.get())
-      ->SetShowStartSurface(true);
-  [mediator_ fakeboxTapped];
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnStartSurface",
-      IOSContentSuggestionsActionType::kFakebox, 1);
-
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kFakebox, 0);
-  NewTabPageTabHelper::FromWebState(fake_web_state_.get())
-      ->SetShowStartSurface(false);
-  [mediator_ fakeboxTapped];
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kFakebox, 1);
-}

@@ -232,10 +232,6 @@ const base::Feature kNoRecentTabIfNullWebState(
 }
 
 - (void)viewDidDisappear {
-  if (IsStartSurfaceSplashStartupEnabled()) {
-    NewTabPageTabHelper::FromWebState(self.webState)
-        ->SetShowStartSurface(false);
-  }
   // Start no longer showing
   self.contentSuggestionsMediator.showingStartSurface = NO;
   DiscoverFeedServiceFactory::GetForBrowserState(
@@ -439,9 +435,7 @@ const base::Feature kNoRecentTabIfNullWebState(
     base::RecordAction(
         base::UserMetricsAction("IOS.StartSurface.HideShortcuts"));
   }
-  if (!IsStartSurfaceSplashStartupEnabled()) {
-    scene.modifytVisibleNTPForStartSurface = NO;
-  }
+  NewTabPageTabHelper::FromWebState(self.webState)->SetShowStartSurface(false);
 }
 
 // Triggers the URL sharing flow for the given `URL` and `title`, with the

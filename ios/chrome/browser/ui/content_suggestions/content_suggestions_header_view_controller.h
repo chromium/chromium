@@ -55,6 +55,9 @@ class ReadingListModel;
 // over.
 @property(nonatomic, assign) BOOL focusOmniboxWhenViewAppears;
 
+// `YES` if the Start Surface is currently being shown.
+@property(nonatomic, assign) BOOL isStartShowing;
+
 // The base view controller from which to present UI.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
