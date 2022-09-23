@@ -10,21 +10,21 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace permissions {
 
 struct NotificationPermissions {
-  std::string origin;
+  url::Origin origin;
   int notification_count;
 
-  NotificationPermissions(std::string origin, int notification_count);
+  NotificationPermissions(const url::Origin& origin, int notification_count);
   ~NotificationPermissions();
 };
 
-// Manages a list of sites that send a high volume of notifications with low
-// engagement. The list may be displayed for user review in the Notifications
-// settings page.
+// This class provides data for "Review Notification Permissions" module in site
+// settings notification page. This module shows the domains that send a lot of
+// notification, but have low engagement.
 class NotificationPermissionsReviewService : public KeyedService {
  public:
   explicit NotificationPermissionsReviewService(HostContentSettingsMap* hcsm);
@@ -39,8 +39,18 @@ class NotificationPermissionsReviewService : public KeyedService {
   // KeyedService implementation.
   void Shutdown() override;
 
-  // Returns a list of sites that send a high volume of notifications.
+  // Returns a list containing the sites that send a lot of notifications.
   std::vector<NotificationPermissions> GetNotificationSiteListForReview();
+
+  // Add given origin to the blocklist for review notification permissions
+  // feature. The origins in blocklist will not be suggested to be reviewed to
+  // user again.
+  void AddOriginToNotificationPermissionReviewBlocklist(
+      const url::Origin& origin);
+
+ private:
+  // Used to update the notification permissions per URL.
+  const scoped_refptr<HostContentSettingsMap> hcsm_;
 };
 
 }  // namespace permissions

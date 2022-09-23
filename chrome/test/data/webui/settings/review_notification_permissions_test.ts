@@ -4,8 +4,10 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {SettingsReviewNotificationPermissionsElement, SiteSettingsPrefsBrowserProxyImpl } from 'chrome://settings/lazy_load.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {SettingsReviewNotificationPermissionsElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {CrActionMenuElement} from 'chrome://settings/settings.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
@@ -27,10 +29,16 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     const mock_data = [
-      {origin: origin_1, notificationInfoString: detail_1},
-      {origin: origin_2, notificationInfoString: detail_2},
+      {
+        origin: origin_1,
+        notificationInfoString: detail_1,
+      },
+      {
+        origin: origin_2,
+        notificationInfoString: detail_2,
+      },
     ];
-    browserProxy.setReviewNotificationPermissions(mock_data);
+    browserProxy.setNotificationPermissionReview(mock_data);
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
 
     document.body.innerHTML = '';
@@ -43,8 +51,26 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     testElement.remove();
   });
 
+  /**
+   * Opens the action menu for a particular element in the list.
+   * @param index The index of the child element (which site) to
+   *     open the action menu for.
+   */
+  function openActionMenu(index: number) {
+    const menu_empty = testElement.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(menu_empty === null);
+
+    const item = testElement.shadowRoot!.querySelectorAll('.cr-row')[index]!;
+    (item.querySelector('#actionMenuButton')! as HTMLElement).click();
+    flush();
+
+    const menu = testElement.shadowRoot!.querySelector('cr-action-menu')! as
+        CrActionMenuElement;
+    assertTrue(isVisible(menu.getDialog()));
+  }
+
   test('Notification Permission strings', async function() {
-    await browserProxy.whenCalled('getReviewNotificationPermissions');
+    await browserProxy.whenCalled('getNotificationPermissionReview');
     flush();
 
     const entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
@@ -63,5 +89,75 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     assertEquals(
         detail_2,
         entries[1]!.querySelector('.second-line')!.textContent!.trim());
+  });
+
+  test('Dont Allow Click', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+
+    const entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    assertEquals(2, entries.length);
+
+    // User clicks don't allow.
+    const element = entries[0]!.querySelector('#block')! as HTMLElement;
+    element.click();
+    // Ensure the browser proxy call is done.
+    const expectedOrigin =
+        entries[0]!.querySelector('.site-representation')!.textContent!.trim();
+    await browserProxy.whenCalled('blockNotificationPermissionForOrigin')
+        .then(function([origin]) {
+          assertEquals(origin, expectedOrigin);
+        });
+  });
+
+  test('Ignore Click', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+
+    const entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    assertEquals(2, entries.length);
+
+    // User clicks ignore.
+    openActionMenu(0);
+    const reset =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#ignore')!;
+    reset.click();
+    // Ensure the browser proxy call is done.
+    const expectedOrigin =
+        entries[0]!.querySelector('.site-representation')!.textContent!.trim();
+    await browserProxy.whenCalled('ignoreNotificationPermissionForOrigin')
+        .then(function([origin]) {
+          assertEquals(origin, expectedOrigin);
+        });
+    // Ensure the action menu is closed.
+    const menu = testElement.shadowRoot!.querySelector('cr-action-menu')! as
+        CrActionMenuElement;
+    const dialog = menu.getDialog() as HTMLDialogElement;
+    assertFalse(isVisible(dialog));
+  });
+
+  test('Reset Click', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+
+    const entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    assertEquals(2, entries.length);
+
+    // User clicks reset.
+    openActionMenu(0);
+    const reset = testElement.shadowRoot!.querySelector<HTMLElement>('#reset')!;
+    reset.click();
+    // Ensure the browser proxy call is done.
+    const expectedOrigin =
+        entries[0]!.querySelector('.site-representation')!.textContent!.trim();
+    await browserProxy.whenCalled('resetNotificationPermissionForOrigin')
+        .then(function([origin]) {
+          assertEquals(origin, expectedOrigin);
+        });
+    // Ensure the action menu is closed.
+    const menu = testElement.shadowRoot!.querySelector('cr-action-menu')! as
+        CrActionMenuElement;
+    const dialog = menu.getDialog() as HTMLDialogElement;
+    assertFalse(isVisible(dialog));
   });
 });

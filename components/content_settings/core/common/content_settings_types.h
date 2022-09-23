@@ -287,6 +287,10 @@ enum class ContentSettingsType : int32_t {
   // for a given origin, to be used on future visits to the origin.
   REDUCED_ACCEPT_LANGUAGE,
 
+  // Website setting which is used for NotificationPermissionReviewService to
+  // store origin blocklist from review notification permissions feature.
+  NOTIFICATION_PERMISSION_REVIEW,
+
   NUM_TYPES,
 };
 

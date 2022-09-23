@@ -48,15 +48,15 @@
   <iron-icon role="img" icon="settings:notifications-none" id="headerIcon">
   </iron-icon>
   <div class="header-group-wrapper">
-    <h2>$i18n{safetyCheckReviewNotificationPermissionsPrimaryLabel}</h2>
+    <h2>$i18n{safetyCheckNotificationPermissionReviewPrimaryLabel}</h2>
     <div class="secondary">
-      $i18n{safetyCheckReviewNotificationPermissionsSecondaryLabel}
+      $i18n{safetyCheckNotificationPermissionReviewSecondaryLabel}
     </div>
   </div>
 </div>
 <div class="notification-permissions-list">
-  <template id="reviewNotificatioPermissionsList" is="dom-repeat"
-      items="[[reviewNotificationPermissionsList_]]">
+  <template id="notificationPermissionReviewList" is="dom-repeat"
+      items="[[notificationPermissionReviewList_]]">
     <div class$="cr-row [[getClassForIndex_(index)]]">
       <site-favicon url="[[item.origin]]"></site-favicon>
       <div id="displayName_[[index]]" class="display-name cr-padded-text">
@@ -66,7 +66,8 @@
         <div class="second-line secondary">[[item.notificationInfoString]]
         </div>
       </div>
-      <cr-icon-button iron-icon="cr20:block"
+      <cr-icon-button iron-icon="cr20:block" id="block"
+          on-click="onBlockNotificationPermissionClick_"
           aria-label$="[[getDisplayName_(item)]]"
           aria-describedby$="displayName_[[index]]"
           focus-row-control focus-type="show-detail"
@@ -80,18 +81,17 @@
 </div>
 <paper-tooltip id="tooltip"
     fit-to-visible-bounds manual-mode position="top">
-  $i18n{safetyCheckReviewNotificationPermissionsDontAllowLabel}
+  $i18n{safetyCheckNotificationPermissionReviewDontAllowLabel}
 </paper-tooltip>
 <cr-lazy-render id="actionMenu">
   <template>
     <cr-action-menu role-description="$i18n{menu}">
-      <button class="dropdown-item" id="allow">
-        $i18n{safetyCheckReviewNotificationPermissionsIgnoreLabel}
+      <button class="dropdown-item" id="ignore" on-click="onIgnoreClick_">
+        $i18n{safetyCheckNotificationPermissionReviewIgnoreLabel}
       </button>
-      <button class="dropdown-item" id="block">
-        $i18n{safetyCheckReviewNotificationPermissionsResetLabel}
+      <button class="dropdown-item" id="reset" on-click="onResetClick_">
+        $i18n{safetyCheckNotificationPermissionReviewResetLabel}
       </button>
     </cr-action-menu>
-
   </template>
 </cr-lazy-render>

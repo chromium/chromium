@@ -67,7 +67,10 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'recordAction',
       'getCookieSettingDescription',
       'getRecentSitePermissions',
-      'getReviewNotificationPermissions',
+      'getNotificationPermissionReview',
+      'blockNotificationPermissionForOrigin',
+      'ignoreNotificationPermissionForOrigin',
+      'resetNotificationPermissionForOrigin',
     ]);
 
 
@@ -601,13 +604,25 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     this.methodCalled('setProtocolHandlerDefault', value);
   }
 
-  getReviewNotificationPermissions(): Promise<NotificationPermission[]> {
-    this.methodCalled('getReviewNotificationPermissions');
+  getNotificationPermissionReview(): Promise<NotificationPermission[]> {
+    this.methodCalled('getNotificationPermissionReview');
     return Promise.resolve(this.reviewNotificationList_.slice());
   }
 
-  setReviewNotificationPermissions(reviewNotificationList:
-                                       NotificationPermission[]) {
+  setNotificationPermissionReview(reviewNotificationList:
+                                      NotificationPermission[]) {
     this.reviewNotificationList_ = reviewNotificationList;
+  }
+
+  blockNotificationPermissionForOrigin(origin: string): void {
+    this.methodCalled('blockNotificationPermissionForOrigin', [origin]);
+  }
+
+  ignoreNotificationPermissionForOrigin(origin: string): void {
+    this.methodCalled('ignoreNotificationPermissionForOrigin', [origin]);
+  }
+
+  resetNotificationPermissionForOrigin(origin: string): void {
+    this.methodCalled('resetNotificationPermissionForOrigin', [origin]);
   }
 }

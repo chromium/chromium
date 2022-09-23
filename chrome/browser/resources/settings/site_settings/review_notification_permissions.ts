@@ -10,14 +10,15 @@ import '../i18n_setup.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
 
 import {getTemplate} from './review_notification_permissions.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {NotificationPermission, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
+import {NotificationPermission, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
 export interface SettingsReviewNotificationPermissionsElement {
   $: {
@@ -27,7 +28,7 @@ export interface SettingsReviewNotificationPermissionsElement {
 }
 
 const SettingsReviewNotificationPermissionsElementBase =
-    BaseMixin(SiteSettingsMixin(PolymerElement));
+    WebUIListenerMixin(BaseMixin(SiteSettingsMixin(PolymerElement)));
 
 export class SettingsReviewNotificationPermissionsElement extends
     SettingsReviewNotificationPermissionsElementBase {
@@ -42,14 +43,20 @@ export class SettingsReviewNotificationPermissionsElement extends
   static get properties() {
     return {
       /* List of domains that sends a lot of notifications. */
-      reviewNotificationPermissionsList_: {
+      notificationPermissionReviewList_: {
         type: Array,
         value: () => [],
       },
+
+      /* The site for the currently open action menu. */
+      actionMenuSite_: Object,
     };
   }
 
-  private reviewNotificationPermissionsList_: NotificationPermission[];
+  private notificationPermissionReviewList_: NotificationPermission[];
+  private browserProxy_: SiteSettingsPrefsBrowserProxy =
+      SiteSettingsPrefsBrowserProxyImpl.getInstance();
+  private actionMenuSite_: NotificationPermission|null;
 
   /**
    * Load the review notification permission list whenever the page is
@@ -57,25 +64,22 @@ export class SettingsReviewNotificationPermissionsElement extends
    */
   override connectedCallback() {
     super.connectedCallback();
+    // Register for review notification permission list updates.
+    this.addWebUIListener(
+        'notification-permission-review-list-changed',
+        (sites: NotificationPermission[]) =>
+            this.onReviewNotificationPermissionListChanged_(sites));
+
     this.populateList_();
   }
 
   /**
-   * @return a user-friendly name for the origin that is granted with
+   * @return a user-friendly name for the primary pattern that is granted with
    *     notification permission.
    */
   private getDisplayName_(notificationPermission: NotificationPermission):
       string {
     return this.toUrl(notificationPermission.origin)!.host;
-  }
-
-  /**
-   * @return the site scheme for the origin that is granted with notification
-   *     permission.
-   */
-  private getSiteScheme_({origin}: NotificationPermission): string {
-    const scheme = this.toUrl(origin)!.protocol.slice(0, -1);
-    return scheme === 'https' ? '' : scheme;
   }
 
   /**
@@ -86,9 +90,34 @@ export class SettingsReviewNotificationPermissionsElement extends
     return index === 0 ? 'first' : '';
   }
 
-  /* Show action menu when clicked to three dot menu. */
-  private onShowActionMenuClick_(e: Event) {
+  private onShowActionMenuClick_(e: DomRepeatEvent<NotificationPermission>) {
+    this.actionMenuSite_ =
+        this.notificationPermissionReviewList_[e.model.index];
     this.$.actionMenu.get().showAt(e.target as HTMLElement);
+  }
+
+  private onBlockNotificationPermissionClick_(
+      event: DomRepeatEvent<NotificationPermission>) {
+    const item = this.notificationPermissionReviewList_[event.model.index];
+    this.browserProxy_.blockNotificationPermissionForOrigin(item.origin);
+  }
+
+  private onIgnoreClick_() {
+    this.browserProxy_.ignoreNotificationPermissionForOrigin(
+        this.actionMenuSite_!.origin);
+    this.closeActionMenu_();
+  }
+
+  private onResetClick_() {
+    this.browserProxy_.resetNotificationPermissionForOrigin(
+        this.actionMenuSite_!.origin);
+    this.closeActionMenu_();
+  }
+
+  /* Repopulate the list when notification permission list is updated. */
+  private onReviewNotificationPermissionListChanged_(
+      sites: NotificationPermission[]) {
+    this.notificationPermissionReviewList_ = sites;
   }
 
   private onShowTooltip_(e: Event) {
@@ -111,14 +140,21 @@ export class SettingsReviewNotificationPermissionsElement extends
     tooltip.show();
   }
 
+  private closeActionMenu_() {
+    this.actionMenuSite_ = null;
+    const actionMenu = this.shadowRoot!.querySelector('cr-action-menu')!;
+    if (actionMenu.open) {
+      actionMenu.close();
+    }
+  }
+
   /**
-   * Retrieve the list of domains that sned lots of notification and implicitly
+   * Retrieve the list of domains that send lots of notification and implicitly
    * trigger the update of the display list.
    */
   private async populateList_() {
-    const browserProxy = SiteSettingsPrefsBrowserProxyImpl.getInstance();
-    this.reviewNotificationPermissionsList_ =
-        await browserProxy.getReviewNotificationPermissions();
+    this.notificationPermissionReviewList_ =
+        await this.browserProxy_.getNotificationPermissionReview();
   }
 }
 

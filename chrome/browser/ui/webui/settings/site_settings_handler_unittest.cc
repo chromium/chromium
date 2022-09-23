@@ -3132,4 +3132,61 @@ TEST_F(SiteSettingsHandlerTest, FirstPartySetsMembership) {
 
   ValidateSitesWithFps(storage_and_cookie_list, first_party_sets);
 }
+
+TEST_F(SiteSettingsHandlerTest,
+       HandleIgnoreOriginForNotificationPermissionReview) {
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  ContentSettingsForOneType ignored_patterns;
+  content_settings->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
+  ASSERT_EQ(0U, ignored_patterns.size());
+
+  base::Value::List args;
+  args.Append("https://www.google.com:443");
+  handler()->HandleIgnoreOriginForNotificationPermissionReview(args);
+
+  // Check there is 1 origin in ignore list.
+  content_settings->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
+  ASSERT_EQ(1U, ignored_patterns.size());
+}
+
+TEST_F(SiteSettingsHandlerTest, HandleBlockNotificationPermissionForOrigin) {
+  base::Value::List args;
+  args.Append("https://www.google.com:443");
+  handler()->HandleBlockNotificationPermissionForOrigin(args);
+
+  // Check the permission for the origin is block.
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  ContentSettingsForOneType notification_permissions;
+  content_settings->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
+                                          &notification_permissions);
+  auto type = content_settings->GetContentSetting(
+      GURL("https://www.google.com:443"), GURL(),
+      ContentSettingsType::NOTIFICATIONS);
+  ASSERT_EQ(CONTENT_SETTING_BLOCK, type);
+}
+
+TEST_F(SiteSettingsHandlerTest, HandleResetNotificationPermissionForOrigin) {
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  ContentSettingsForOneType notification_permissions;
+  content_settings->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromString("https://www.google.com:443"),
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
+      CONTENT_SETTING_ALLOW);
+
+  base::Value::List args;
+  args.Append("https://www.google.com:443");
+  handler()->HandleResetNotificationPermissionForOrigin(args);
+
+  // Check the permission for the origin is reset.
+  auto type = content_settings->GetContentSetting(
+      GURL("https://www.google.com:443"), GURL(),
+      ContentSettingsType::NOTIFICATIONS);
+  ASSERT_EQ(CONTENT_SETTING_ASK, type);
+}
+
 }  // namespace settings

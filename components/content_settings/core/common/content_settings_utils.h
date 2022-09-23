@@ -29,6 +29,12 @@ std::unique_ptr<base::Value> ToNullableUniquePtrValue(base::Value value);
 // Like base::Value::FromUniquePtrValue but converts nullptr to NONE-type value.
 base::Value FromNullableUniquePtrValue(std::unique_ptr<base::Value> value);
 
+// Whether |primary_pattern| and |secondary_pattern| pair applies to a single
+// origin.
+bool PatternAppliesToSingleOrigin(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern);
+
 }  // namespace content_settings
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_UTILS_H_

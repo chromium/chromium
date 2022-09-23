@@ -161,6 +161,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS, nullptr},
     {ContentSettingsType::NOTIFICATION_INTERACTIONS, nullptr},
     {ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, nullptr},
+    {ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==
@@ -263,20 +264,6 @@ SiteSettingSource CalculateSiteSettingSource(
 
   NOTREACHED();
   return SiteSettingSource::kPreference;
-}
-
-// Whether |pattern| applies to a single origin.
-bool PatternAppliesToSingleOrigin(const ContentSettingPatternSource& pattern) {
-  const GURL url(pattern.primary_pattern.ToString());
-  // Default settings and other patterns apply to multiple origins.
-  if (url::Origin::Create(url).opaque())
-    return false;
-  // Embedded content settings only match when |url| is embedded in another
-  // origin, so ignore non-wildcard secondary patterns.
-  if (pattern.secondary_pattern != ContentSettingsPattern::Wildcard()) {
-    return false;
-  }
-  return true;
 }
 
 bool PatternAppliesToWebUISchemes(const ContentSettingPatternSource& pattern) {
@@ -771,12 +758,11 @@ std::vector<ContentSettingPatternSource> GetSiteExceptionsForContentType(
     ContentSettingsType content_type) {
   ContentSettingsForOneType entries;
   map->GetSettingsForOneType(content_type, &entries);
-  entries.erase(std::remove_if(entries.begin(), entries.end(),
-                               [](const ContentSettingPatternSource& e) {
-                                 return !PatternAppliesToSingleOrigin(e) ||
-                                        PatternAppliesToWebUISchemes(e);
-                               }),
-                entries.end());
+  base::EraseIf(entries, [](const ContentSettingPatternSource& e) {
+    return !content_settings::PatternAppliesToSingleOrigin(
+               e.primary_pattern, e.secondary_pattern) ||
+           PatternAppliesToWebUISchemes(e);
+  });
   return entries;
 }
 

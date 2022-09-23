@@ -142,6 +142,12 @@ class SiteSettingsHandler
                            HandleGetFpsMembershipLabel);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, NonTreeModelDeletion);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, FirstPartySetsMembership);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           HandleIgnoreOriginForNotificationPermissionReview);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           HandleBlockNotificationPermissionForOrigin);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           HandleResetNotificationPermissionForOrigin);
 
   // Creates the CookiesTreeModel if necessary.
   void EnsureCookiesTreeModelCreated();
@@ -223,7 +229,8 @@ class SiteSettingsHandler
   // Returns the list of chooser exceptions for a given chooser type.
   void HandleGetChooserExceptionList(const base::Value::List& args);
 
-  void HandleGetReviewNotificationPermissions(const base::Value::List& args);
+  // Returns the list of notification permissions that needs to be reviewed.
+  void HandleGetNotificationPermissionReviewList(const base::Value::List& args);
 
   // Gets and sets a list of ContentSettingTypes for an origin.
   // TODO(https://crbug.com/739241): Investigate replacing the
@@ -240,6 +247,18 @@ class SiteSettingsHandler
   // simply (origin) and update all call sites.
   // Handles resetting a chooser exception for the given site.
   void HandleResetChooserExceptionForSite(const base::Value::List& args);
+
+  // Handles ignoring an origin for review notification permissions feature.
+  void HandleIgnoreOriginForNotificationPermissionReview(
+      const base::Value::List& args);
+
+  // Handles resetting a notification permission for a given origin.
+  void HandleResetNotificationPermissionForOrigin(
+      const base::Value::List& args);
+
+  // Handles blocking a notification permission for a given origin.
+  void HandleBlockNotificationPermissionForOrigin(
+      const base::Value::List& args);
 
   // Returns whether a given string is a valid origin.
   void HandleIsOriginValid(const base::Value::List& args);
@@ -291,6 +310,11 @@ class SiteSettingsHandler
   // Notifies the JS side the effective cookies setting has changed and
   // provides the updated description label for display.
   void SendCookieSettingDescription();
+
+  // Returns a list of domains to be shown on the 'Review Notification
+  // Permissions' module in site settings notification page. Those domains send
+  // a lot of notifications, but have low site engagement.
+  base::Value::List PopulateNotificationPermissionReviewData();
 
   const raw_ptr<Profile> profile_;
 
