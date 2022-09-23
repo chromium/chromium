@@ -848,6 +848,12 @@ Document::~Document() {
   DCHECK(!ax_object_cache_);
 
   InstanceCounters::DecrementCounter(InstanceCounters::kDocumentCounter);
+
+  // Let the UKM recorder leak if we created one. Destroying this will release
+  // an assortment of mojo resources which must happen at deterministic points.
+  if (recordreplay::AreEventsDisallowed() && ukm_recorder_) {
+    ukm_recorder_.release();
+  }
 }
 
 Range* Document::CreateRangeAdjustedToTreeScope(const TreeScope& tree_scope,

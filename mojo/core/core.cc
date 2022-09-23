@@ -254,10 +254,16 @@ MojoTimeTicks Core::GetTimeTicksNow() {
 }
 
 MojoResult Core::Close(MojoHandle handle) {
+  // Refuse to close handles at non-deterministic points, as this requires a lot
+  // of interaction with other mojo components.
+  if (recordreplay::AreEventsDisallowed()) {
+    return MOJO_RESULT_OK;
+  }
+
   RequestContext request_context;
   scoped_refptr<Dispatcher> dispatcher;
   {
-    recordreplay::AutoLockMaybeEventsDisallowed lock(handles_->GetLock());
+    base::AutoLock lock(handles_->GetLock());
     MojoResult rv = handles_->GetAndRemoveDispatcher(handle, &dispatcher);
     if (rv != MOJO_RESULT_OK)
       return rv;
