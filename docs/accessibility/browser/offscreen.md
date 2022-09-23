@@ -71,11 +71,12 @@ For example, these nodes are invisible:
 <div style="visibility:hidden">
   This text should also be marked 'invisible' along with its parent div.
 </div>
-
-<div style="opacity:0">
-  Opactiy zero is also treated as invisible.
-</div>
 ```
+
+### Technical implementation
+See `AXObject::IsVisible()` ([source](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/modules/accessibility/ax_object.cc)).
+
+Note: `Opacity: 0` is explicitly not treated as invisible.
 
 ## Bounding box calculation
 A node's bounding box (location and size) are calculated based on its
