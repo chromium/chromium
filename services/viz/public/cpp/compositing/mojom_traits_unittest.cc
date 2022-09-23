@@ -516,15 +516,26 @@ TEST_F(StructTraitsTest, CompositorFrame) {
   solid_quad->SetNew(sqs, rect2, rect2, color2, force_anti_aliasing_off);
 
   // TransferableResource constants.
-  const ResourceId tr_id(1337);
-  const SharedImageFormat tr_format = SharedImageFormat::SinglePlane(ALPHA_8);
+  const ResourceId single_plane_id(1337);
+  const ResourceId multi_plane_id(1338);
+  const SharedImageFormat single_plane_format =
+      SharedImageFormat::SinglePlane(ALPHA_8);
+  const SharedImageFormat multi_plane_format =
+      SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
+                                    SharedImageFormat::Subsampling::k420,
+                                    SharedImageFormat::ChannelFormat::k8);
   const uint32_t tr_filter = 1234;
   const gfx::Size tr_size(1234, 5678);
-  TransferableResource resource;
-  resource.id = tr_id;
-  resource.format = tr_format;
-  resource.filter = tr_filter;
-  resource.size = tr_size;
+  TransferableResource single_plane_resource;
+  single_plane_resource.id = single_plane_id;
+  single_plane_resource.format = single_plane_format;
+  single_plane_resource.filter = tr_filter;
+  single_plane_resource.size = tr_size;
+  TransferableResource multi_plane_resource;
+  multi_plane_resource.id = multi_plane_id;
+  multi_plane_resource.format = multi_plane_format;
+  multi_plane_resource.filter = tr_filter;
+  multi_plane_resource.size = tr_size;
 
   // CompositorFrameMetadata constants.
   const float device_scale_factor = 2.6f;
@@ -539,7 +550,8 @@ TEST_F(StructTraitsTest, CompositorFrame) {
   input.metadata.page_scale_factor = page_scale_factor;
   input.metadata.scrollable_viewport_size = scrollable_viewport_size;
   input.render_pass_list.push_back(std::move(render_pass));
-  input.resource_list.push_back(resource);
+  input.resource_list.push_back(single_plane_resource);
+  input.resource_list.push_back(multi_plane_resource);
   input.metadata.begin_frame_ack = begin_frame_ack;
   input.metadata.frame_token = 1;
 
@@ -552,12 +564,17 @@ TEST_F(StructTraitsTest, CompositorFrame) {
   EXPECT_EQ(scrollable_viewport_size, output.metadata.scrollable_viewport_size);
   EXPECT_EQ(begin_frame_ack, output.metadata.begin_frame_ack);
 
-  ASSERT_EQ(1u, output.resource_list.size());
-  TransferableResource out_resource = output.resource_list[0];
-  EXPECT_EQ(tr_id, out_resource.id);
-  EXPECT_EQ(tr_format, out_resource.format);
-  EXPECT_EQ(tr_filter, out_resource.filter);
-  EXPECT_EQ(tr_size, out_resource.size);
+  ASSERT_EQ(2u, output.resource_list.size());
+  TransferableResource out_resource1 = output.resource_list[0];
+  EXPECT_EQ(single_plane_id, out_resource1.id);
+  EXPECT_EQ(single_plane_format, out_resource1.format);
+  EXPECT_EQ(tr_filter, out_resource1.filter);
+  EXPECT_EQ(tr_size, out_resource1.size);
+  TransferableResource out_resource2 = output.resource_list[1];
+  EXPECT_EQ(multi_plane_id, out_resource2.id);
+  EXPECT_EQ(multi_plane_format, out_resource2.format);
+  EXPECT_EQ(tr_filter, out_resource2.filter);
+  EXPECT_EQ(tr_size, out_resource2.size);
 
   EXPECT_EQ(1u, output.render_pass_list.size());
   const CompositorRenderPass* out_render_pass =
@@ -1177,6 +1194,32 @@ TEST_F(StructTraitsTest, TransferableResource) {
   EXPECT_EQ(sync_type, output.synchronization_type);
   EXPECT_EQ(is_software, output.is_software);
   EXPECT_EQ(is_overlay_candidate, output.is_overlay_candidate);
+}
+
+TEST_F(StructTraitsTest, SharedImageFormatWithSinglePlane) {
+  const ResourceFormat resource_format = RED_8;
+  SharedImageFormat input = SharedImageFormat::SinglePlane(resource_format);
+
+  SharedImageFormat output;
+  mojo::test::SerializeAndDeserialize<mojom::SharedImageFormat>(input, output);
+
+  EXPECT_EQ(input, output);
+}
+
+TEST_F(StructTraitsTest, SharedImageFormatWithMultiPlane) {
+  const SharedImageFormat::PlaneConfig plane_config =
+      SharedImageFormat::PlaneConfig::kY_UV;
+  const SharedImageFormat::Subsampling subsampling =
+      SharedImageFormat::Subsampling::k420;
+  const SharedImageFormat::ChannelFormat channel_format =
+      SharedImageFormat::ChannelFormat::k8;
+  SharedImageFormat input =
+      SharedImageFormat::MultiPlane(plane_config, subsampling, channel_format);
+
+  SharedImageFormat output;
+  mojo::test::SerializeAndDeserialize<mojom::SharedImageFormat>(input, output);
+
+  EXPECT_EQ(input, output);
 }
 
 TEST_F(StructTraitsTest, YUVDrawQuad) {
