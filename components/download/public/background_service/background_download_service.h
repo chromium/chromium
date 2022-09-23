@@ -25,6 +25,11 @@ struct SchedulingParams;
 
 using TaskFinishedCallback = base::OnceCallback<void(bool)>;
 
+#if BUILDFLAG(IS_IOS)
+// Identifier for background download service.
+extern const char kBackgroundDownloadIdentifier[];
+#endif  // BUILDFLAG(IS_IOS)
+
 // A service responsible for helping facilitate the scheduling and downloading
 // of file content from the web.  See |DownloadParams| for more details on the
 // types of scheduling that can be achieved and the required input parameters
@@ -97,6 +102,12 @@ class BackgroundDownloadService : public KeyedService {
   // Returns a Logger instance that is meant to be used by logging and debug UI
   // components in the larger system.
   virtual Logger* GetLogger() = 0;
+
+#if BUILDFLAG(IS_IOS)
+  // Called by the  system to handle events for background URL session. Once
+  // done, the passed function should be called.
+  virtual void HandleEventsForBackgroundURLSession(base::OnceClosure) {}
+#endif  // BUILDFLAG(IS_IOS)
 
   BackgroundDownloadService(const BackgroundDownloadService&) = delete;
   BackgroundDownloadService& operator=(const BackgroundDownloadService&) =

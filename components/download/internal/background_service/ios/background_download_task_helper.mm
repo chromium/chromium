@@ -20,6 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_params.h"
 #include "net/base/mac/url_conversions.h"
 
@@ -53,10 +54,17 @@ class DownloadTaskInfo {
   UpdateCallback update_callback_;
 };
 
-@interface BackgroundDownloadDelegate : NSObject <NSURLSessionDownloadDelegate>
+@interface BackgroundDownloadDelegate
+    : NSObject <NSURLSessionDownloadDelegate> {
+ @private
+  // Callback to invoke once background session completes.
+  base::OnceClosure _sessionCompletionHandler;
+}
+
 - (instancetype)initWithTaskRunner:
     (scoped_refptr<base::SingleThreadTaskRunner>)taskRunner;
 
+- (void)setSessionCompletionHandler:(base::OnceClosure)sessionCompletionHandler;
 @end
 
 @implementation BackgroundDownloadDelegate {
@@ -98,6 +106,11 @@ class DownloadTaskInfo {
         FROM_HERE, base::BindOnce(std::move(taskInfo->completion_callback_),
                                   success, filePath, fileSize));
   }
+}
+
+- (void)setSessionCompletionHandler:
+    (base::OnceClosure)sessionCompletionHandler {
+  _sessionCompletionHandler = std::move(sessionCompletionHandler);
 }
 
 #pragma mark - NSURLSessionDownloadDelegate
@@ -187,6 +200,14 @@ class DownloadTaskInfo {
                     fileSize:fileSize];
 }
 
+- (void)URLSessionDidFinishEventsForBackgroundURLSession:
+    (NSURLSession*)session {
+  if (!_sessionCompletionHandler.is_null()) {
+    // Nothing should be called after invoking completionHandler.
+    std::move(_sessionCompletionHandler).Run();
+  }
+}
+
 #pragma mark - NSURLSessionDelegate
 
 - (void)URLSession:(NSURLSession*)session
@@ -245,11 +266,9 @@ using CreateUrlSessionCallback =
 
 void CreateNSURLSession(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                         CreateUrlSessionCallback callback) {
-  // TODO(xingliu): Implement handleEventsForBackgroundURLSession and invoke
-  // the callback passed from it.
   NSURLSessionConfiguration* configuration = [NSURLSessionConfiguration
-      backgroundSessionConfigurationWithIdentifier:base::SysUTF8ToNSString(
-                                                       "background_download")];
+      backgroundSessionConfigurationWithIdentifier:
+          base::SysUTF8ToNSString(download::kBackgroundDownloadIdentifier)];
   configuration.sessionSendsLaunchEvents = YES;
   // TODO(qinmin): Check if we need 2 sessions here, since discretionary
   // value may be different.
@@ -360,6 +379,11 @@ class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
     [delegate_ addDownloadTask:downloadTask
               downloadTaskInfo:std::move(download_task_info)];
     [downloadTask resume];
+  }
+
+  void HandleEventsForBackgroundURLSession(
+      base::OnceClosure completion_handler) override {
+    delegate_.sessionCompletionHandler = std::move(completion_handler);
   }
 
   BackgroundDownloadDelegate* delegate_ = nullptr;

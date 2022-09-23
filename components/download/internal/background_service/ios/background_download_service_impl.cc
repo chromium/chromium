@@ -136,6 +136,12 @@ Logger* BackgroundDownloadServiceImpl::GetLogger() {
   return logger_.get();
 }
 
+void BackgroundDownloadServiceImpl::HandleEventsForBackgroundURLSession(
+    base::OnceClosure completion_handler) {
+  download_helper_->HandleEventsForBackgroundURLSession(
+      std::move(completion_handler));
+}
+
 void BackgroundDownloadServiceImpl::OnModelReady(bool success) {
   startup_status_.model_ok = success;
 

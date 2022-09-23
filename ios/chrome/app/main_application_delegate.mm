@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/download/public/background_service/background_download_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
@@ -24,6 +25,8 @@
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate_testing.h"
 #import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/download/background_service/background_download_service_factory.h"
 #import "ios/chrome/browser/push_notification/push_notification_delegate.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
@@ -246,6 +249,27 @@ const int kMainIntentCheckDelay = 1;
   // obtain the device's APNS token from APNS failed
   base::UmaHistogramBoolean("IOS.PushNotification.APNSDeviceRegistration",
                             false);
+}
+
+- (void)application:(UIApplication*)application
+    handleEventsForBackgroundURLSession:(NSString*)identifier
+                      completionHandler:(void (^)())completionHandler {
+  if ([identifier
+          isEqualToString:base::SysUTF8ToNSString(
+                              download::kBackgroundDownloadIdentifier)]) {
+    download::BackgroundDownloadService* download_service =
+        BackgroundDownloadServiceFactory::GetForBrowserState(
+            _mainController.interfaceProvider.mainInterface.browserState);
+    if (download_service) {
+      base::OnceClosure callback = base::BindOnce(^() {
+        completionHandler();
+      });
+      download_service->HandleEventsForBackgroundURLSession(
+          std::move(callback));
+      return;
+    }
+  }
+  completionHandler();
 }
 
 #pragma mark - Scenes lifecycle
