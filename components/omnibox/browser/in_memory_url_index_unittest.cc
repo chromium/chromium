@@ -62,6 +62,7 @@ const char kClientAllowlistedScheme[] = "xyz";
 
 // TemplateURLs used to test filtering of search engine URLs.
 const char16_t kDefaultTemplateURLKeyword[] = u"default-engine.com";
+const char16_t kNonDefaultTemplateURLKeyword[] = u"non-default-engine.com";
 const TemplateURLService::Initializer kTemplateURLData[] = {
     {"default-engine.com", "http://default-engine.com?q={searchTerms}",
      "Default"},
@@ -441,7 +442,7 @@ TEST_F(InMemoryURLIndexTest, HiddenURLRowsAreIgnored) {
                     .size());
 }
 
-TEST_F(InMemoryURLIndexTest, DISABLED_Retrieval) {
+TEST_F(InMemoryURLIndexTest, Retrieval) {
   // See if a very specific term gives a single result.
   ScoredHistoryMatches matches = url_index_->HistoryItemsForTerms(
       u"DrudgeReport", std::u16string::npos, kProviderMaxMatches);
@@ -502,7 +503,7 @@ TEST_F(InMemoryURLIndexTest, DISABLED_Retrieval) {
 
   // But if it's not from the default search engine, it should be returned.
   TemplateURL* template_url = template_url_service_->GetTemplateURLForKeyword(
-      kDefaultTemplateURLKeyword);
+      kNonDefaultTemplateURLKeyword);
   template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
   matches = url_index_->HistoryItemsForTerms(u"query", std::u16string::npos,
                                              kProviderMaxMatches);
@@ -901,7 +902,7 @@ TEST_F(InMemoryURLIndexTest, TypedCharacterCaching) {
   CheckTerm(cache, u"rec");
 }
 
-TEST_F(InMemoryURLIndexTest, DISABLED_AddNewRows) {
+TEST_F(InMemoryURLIndexTest, AddNewRows) {
   // Verify that the row we're going to add does not already exist.
   history::URLID new_row_id = 87654321;
   // Newly created history::URLRows get a last_visit time of 'right now' so it
