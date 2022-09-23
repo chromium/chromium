@@ -152,9 +152,6 @@ class ArcIntentHelperBridge : public KeyedService,
   // A map of each package name to the intent filters for that package.
   // Used to determine if Chrome should handle a URL without handing off to
   // Android.
-  // TODO(crbug.com/853604): Now the package name exists in the map key as well
-  // as the IntentFilter struct, it is a duplication. Should update the ARC
-  // mojom type to optimise the structure.
   std::map<std::string, std::vector<IntentFilter>> intent_filters_;
 
   base::ObserverList<ArcIntentHelperObserver>::Unchecked observer_list_;

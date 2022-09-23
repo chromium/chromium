@@ -679,9 +679,6 @@ bool OnlyShareToDrive(const apps::mojom::IntentPtr& intent) {
 }
 
 bool IsIntentValid(const apps::mojom::IntentPtr& intent) {
-  // TODO(crbug.com/853604):Add more checks here to make this a general intent
-  // validity check. Return false if this is a share intent with no file or
-  // text.
   if (IsShareIntent(intent))
     return intent->share_text || intent->files;
 
