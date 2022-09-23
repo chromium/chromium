@@ -46,7 +46,7 @@
     flex: 1;
     margin-inline-end: 12px;
     overflow: hidden;
-    padding: 4px 0 4px 0;
+    padding: 4px 2px;
     white-space: nowrap;
   }
 
@@ -72,8 +72,20 @@
   }
 
   #addFileIcon {
-    margin-inline-end: 10px;
-    margin-inline-start: 12px;
+    --cr-icon-button-fill-color: var(--cros-color-prominent);
+    --cr-icon-button-size: 34px;
+    margin-inline-end: 4px;
+    margin-inline-start: 6px;
+  }
+
+  #addFileIcon:focus {
+    border-radius: 36px;
+    box-shadow: none;
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+
+  #addFileIcon:active {
+    outline: none;
   }
 
   #selectFileCheckbox {
@@ -84,6 +96,7 @@
   #selectedImageButton {
     background: none;
     border: none;
+    border-radius: 4px;
     height: 48px;
     padding: 0;
     width: 68px;
@@ -116,8 +129,10 @@
 </style>
 <div id="addFileContainer" hidden="[[hasSelectedAFile_]]">
   <button id="addFileLabel" class="file-input"
-      on-click="handleOpenFileInputClick_">
-    <iron-icon id="addFileIcon" icon="attachment:add-file"></iron-icon>
+      on-click="handleOpenFileInputClick_" tabindex="-1">
+    <cr-icon-button id="addFileIcon" iron-icon="attachment:add-file"
+        aria-label="[[i18n('addFileLabel')]]" title="[[i18n('addFileLabel')]]">
+    </cr-icon-button>
     [[i18n('addFileLabel')]]
   </button>
 </div>
@@ -129,16 +144,16 @@
   </cr-checkbox>
   <div id="selectedFileContainer">
     <button id="selectedImageButton" on-click="handleSelectedImageClick_"
-        hidden="[[!selectedImageUrl_]]">
+        hidden="[[!selectedImageUrl_]]" class="focusable">
       <img id="selectedFileImage" src="[[selectedImageUrl_]]">
     </button>
     <div id="replaceFileInfo">
       <div id="selectedFileName" class="overflow-text">
         [[selectedFileName_]]
       </div>
-      <button id="replaceFileButton" class="file-input"
+      <button id="replaceFileButton" class="file-input focusable"
           aria-label="[[i18n('replaceFileArialLabel')]]"
-          on-click="handleOpenFileInputClick_">
+          on-click="handleOpenFileInputClick_" tabindex="0">
         [[i18n('replaceFileLabel')]]
       </button>
     </div>
