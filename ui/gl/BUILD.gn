@@ -442,6 +442,9 @@ component("gl") {
 
     deps += [ ":gl_jni_headers" ]
   }
+  if (is_linux) {
+    deps += [ "//third_party/angle:angle_gpu_info_util" ]
+  }
 }
 
 if (is_mac && use_egl) {
