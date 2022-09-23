@@ -37,3 +37,14 @@ source_set("features") {
     "//ios/chrome/browser/promos_manager:features",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_store_rating_scene_agent_unittest.mm" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":app_store_rating",
+    "//base",
+    "//testing/gtest",
+  ]
+}
