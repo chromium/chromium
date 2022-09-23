@@ -11,41 +11,38 @@ source_set("core") {
   deps = [ "//components/leveldb_proto" ]
 }
 
-if (!is_ios) {
-  source_set("session_proto_db") {
-    sources = [ "session_proto_db.h" ]
+source_set("session_proto_db") {
+  sources = [ "session_proto_db.h" ]
 
-    deps = [
-      ":core",
-      "//base:base",
-      "//components/commerce/core:persisted_state_db_content_proto",
-      "//components/keyed_service/content",
-      "//components/leveldb_proto",
-      "//content/public/browser:browser",
-      "//third_party/leveldatabase",
-    ]
-  }
+  deps = [
+    ":core",
+    "//base:base",
+    "//components/commerce/core:persisted_state_db_content_proto",
+    "//components/keyed_service/core",
+    "//components/leveldb_proto",
+    "//third_party/leveldatabase",
+  ]
+}
 
-  source_set("unit_tests") {
-    testonly = true
-    sources = [ "session_proto_db_unittest.cc" ]
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "session_proto_db_unittest.cc" ]
 
-    deps = [
-      ":core",
-      ":session_proto_db",
-      ":session_proto_db_test_proto",
-      "//base:base",
-      "//base/test:test_support",
-      "//components/commerce/core:persisted_state_db_content_proto",
-      "//components/leveldb_proto:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/leveldatabase",
-      "//third_party/protobuf:protobuf_lite",
-    ]
-  }
+  deps = [
+    ":core",
+    ":session_proto_db",
+    ":session_proto_db_test_proto",
+    "//base:base",
+    "//base/test:test_support",
+    "//components/commerce/core:persisted_state_db_content_proto",
+    "//components/leveldb_proto:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/leveldatabase",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
 
-  proto_library("session_proto_db_test_proto") {
-    sources = [ "session_proto_db_test_proto.proto" ]
-  }
+proto_library("session_proto_db_test_proto") {
+  sources = [ "session_proto_db_test_proto.proto" ]
 }

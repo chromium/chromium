@@ -107,32 +107,32 @@ KeyedService* SessionProtoDBFactory<T>::BuildServiceInstanceFor(
   if (std::is_base_of<persisted_state_db::PersistedStateContentProto,
                       T>::value) {
     return new SessionProtoDB<T>(
-        context, proto_database_provider,
+        proto_database_provider,
         context->GetPath().AppendASCII(kPersistedStateDBFolder),
         leveldb_proto::ProtoDbType::PERSISTED_STATE_DATABASE);
   } else if (std::is_base_of<
                  commerce_subscription_db::CommerceSubscriptionContentProto,
                  T>::value) {
     return new SessionProtoDB<T>(
-        context, proto_database_provider,
+        proto_database_provider,
         context->GetPath().AppendASCII(kCommerceSubscriptionDBFolder),
         leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE);
 #if !BUILDFLAG(IS_ANDROID)
   } else if (std::is_base_of<cart_db::ChromeCartContentProto, T>::value) {
     return new SessionProtoDB<T>(
-        context, proto_database_provider,
+        proto_database_provider,
         context->GetPath().AppendASCII(kChromeCartDBFolder),
         leveldb_proto::ProtoDbType::CART_DATABASE);
   } else if (std::is_base_of<coupon_db::CouponContentProto, T>::value) {
     return new SessionProtoDB<T>(
-        context, proto_database_provider,
+        proto_database_provider,
         context->GetPath().AppendASCII(kCouponDBFolder),
         leveldb_proto::ProtoDbType::COUPON_DATABASE);
 #else
   } else if (std::is_base_of<merchant_signal_db::MerchantSignalContentProto,
                              T>::value) {
     return new SessionProtoDB<T>(
-        context, proto_database_provider,
+        proto_database_provider,
         context->GetPath().AppendASCII(kMerchantTrustSignalDBFolder),
         leveldb_proto::ProtoDbType::MERCHANT_TRUST_SIGNAL_DATABASE);
 #endif

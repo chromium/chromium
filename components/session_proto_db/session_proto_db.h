@@ -23,7 +23,6 @@
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/session_proto_db/session_proto_storage.h"
-#include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
 
@@ -103,8 +102,7 @@ class SessionProtoDB : public KeyedService, public SessionProtoStorage<T> {
   friend class ::SessionProtoDBFactory;
 
   // Initializes the database.
-  SessionProtoDB(content::BrowserContext* browser_context,
-                 leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
+  SessionProtoDB(leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
                  const base::FilePath& database_dir,
                  leveldb_proto::ProtoDbType proto_db_type);
 
@@ -144,10 +142,6 @@ class SessionProtoDB : public KeyedService, public SessionProtoStorage<T> {
                                    const std::string& key) {
     return base::StartsWith(key, key_prefix, base::CompareCase::SENSITIVE);
   }
-
-  // Browser context associated with SessionProtoDB (SessionProtoDB are per
-  // BrowserContext).
-  raw_ptr<content::BrowserContext> browser_context_;
 
   // Status of the database initialization.
   absl::optional<leveldb_proto::Enums::InitStatus> database_status_;
@@ -345,12 +339,10 @@ void SessionProtoDB<T>::Destroy() const {
 
 template <typename T>
 SessionProtoDB<T>::SessionProtoDB(
-    content::BrowserContext* browser_context,
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     const base::FilePath& database_dir,
     leveldb_proto::ProtoDbType proto_db_type)
     : SessionProtoStorage<T>(),
-      browser_context_(browser_context),
       database_status_(absl::nullopt),
       storage_database_(proto_database_provider->GetDB<T>(
           proto_db_type,
