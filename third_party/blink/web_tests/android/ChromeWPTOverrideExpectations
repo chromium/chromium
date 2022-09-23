@@ -1421,8 +1421,6 @@ crbug.com/1050754 external/wpt/requestidlecallback/callback-suspended.html [ Cra
 crbug.com/1050754 external/wpt/requestidlecallback/callback-timeout-when-busy.html [ Pass ]
 crbug.com/1050754 external/wpt/requestidlecallback/callback-timeout.html [ Pass ]
 crbug.com/1050754 external/wpt/requestidlecallback/callback-xhr-sync.html [ Pass ]
-crbug.com/1050754 external/wpt/resize-observer/observe.html [ Failure Timeout ]
-crbug.com/1050754 external/wpt/resize-observer/svg.html [ Failure ]
 crbug.com/1050754 external/wpt/resource-timing/nested-context-navigations-embed.html [ Crash Pass ]
 crbug.com/1050754 external/wpt/resource-timing/nested-context-navigations-iframe.html [ Crash Pass ]
 crbug.com/1050754 external/wpt/resource-timing/nested-context-navigations-object.html [ Crash Pass ]

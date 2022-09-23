@@ -34,10 +34,11 @@ async function getDirectoryEntryCount(handle) {
 async function getSortedDirectoryEntries(handle) {
   let result = [];
   for await (let entry of handle.values()) {
-    if (entry.kind === 'directory')
+    if (entry.kind === 'directory') {
       result.push(entry.name + '/');
-    else
+    } else {
       result.push(entry.name);
+    }
   }
   result.sort();
   return result;
@@ -85,3 +86,21 @@ function garbageCollect() {
   if (self.gc)
     self.gc();
 };
+
+async function cleanup(test, value, cleanup_func) {
+  test.add_cleanup(async () => {
+    try {
+      await cleanup_func();
+    } catch (e) {
+      // Ignore any errors when removing files, as tests might already remove
+      // the file.
+    }
+  });
+  return value;
+}
+
+async function cleanup_writable(test, value) {
+  return cleanup(test, value, async () => {
+    value.close();
+  });
+}

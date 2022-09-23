@@ -11,6 +11,8 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/resize-observer/notify.html [ Timeout ]
+crbug.com/626703 external/wpt/resize-observer/svg.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-contain/content-visibility/content-visibility-fieldset-size.html [ Failure ]
 crbug.com/626703 virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/content-visibility-fieldset-size.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-border-sizing.html [ Failure ]

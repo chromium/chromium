@@ -50,6 +50,8 @@ crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/resize-observer/notify.html [ Timeout ]
+crbug.com/626703 external/wpt/resize-observer/svg.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-border-sizing.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-content-sizing.html [ Failure ]
 crbug.com/626703 external/wpt/page-visibility/visibility-state-entry.tentative.html [ Timeout ]

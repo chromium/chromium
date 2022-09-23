@@ -1365,6 +1365,7 @@ crbug.com/1351422 virtual/document-transition/wpt_internal/document-transition/c
 crbug.com/1351422 virtual/document-transition-wide-gamut/wpt_internal/document-transition/content-visibility-auto-shared-element.html [ Failure ]
 
 crbug.com/1314903 external/wpt/css/css-sizing/contain-intrinsic-size/animation/contain-intrinsic-size-interpolation.html [ Failure ]
+crbug.com/1314903 external/wpt/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-009.html [ Failure ]
 
 crbug.com/1179544 compositing/canvas-with-object-fit-contain-in-composited-layer.html [ Failure ]
 crbug.com/1179544 compositing/composited-replaced-subpixel-location.html [ Failure ]

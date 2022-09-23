@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Cannot close a CLOSED writable stream
 PASS move(name) to rename a file
+PASS get a handle to a moved file
 PASS move(name) to rename a file the same name
 PASS move("") to rename a file fails
 PASS move(name) can be called multiple times
