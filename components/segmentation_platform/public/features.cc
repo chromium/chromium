@@ -15,7 +15,7 @@ const base::Feature kSegmentationPlatformDummyFeature{
     "SegmentationPlatformDummyFeature", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSegmentationStructuredMetricsFeature{
-    "SegmentationStructuredMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SegmentationStructuredMetrics", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSegmentationPlatformUkmEngine{
     "SegmentationPlatformUkmEngine", base::FEATURE_DISABLED_BY_DEFAULT};
