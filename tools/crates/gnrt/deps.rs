@@ -146,7 +146,16 @@ impl std::fmt::Display for LibType {
 /// package may have multiple crates, each of which corresponds to a single
 /// rustc invocation: e.g. a package may have a lib crate as well as multiple
 /// binary crates.
-pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<Package> {
+///
+/// Optionally, `roots` specifies from which packages to traverse the dependency
+/// graph (likely the root packages to generate build files for). This overrides
+/// the usual behavior, which traverses from all workspace members and the root
+/// workspace package. The package names in `roots` should still only contain
+/// workspace members.
+pub fn collect_dependencies(
+    metadata: &cargo_metadata::Metadata,
+    roots: Option<Vec<String>>,
+) -> Vec<Package> {
     // The metadata is split into two parts:
     // 1. A list of packages and associated info: targets (e.g. lib, bin,
     //    tests), source path, etc. This includes all workspace members and all
@@ -186,10 +195,19 @@ pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<Package>
         dependencies: HashMap::new(),
     };
 
+    let traversal_roots: Vec<&cargo_metadata::PackageId> = match roots {
+        Some(roots) => metadata
+            .packages
+            .iter()
+            .filter_map(|pkg| if roots.contains(&pkg.name) { Some(&pkg.id) } else { None })
+            .collect(),
+        None => dep_graph.roots.clone(),
+    };
+
     // Do a depth-first traversal of the graph to find all relevant
     // dependencies. Start from each workspace package ("chromium" and
     // additional binary members used in the build).
-    for root_id in dep_graph.roots.iter() {
+    for root_id in traversal_roots.iter() {
         let node_map: &HashMap<&cargo_metadata::PackageId, &cargo_metadata::Node> =
             &dep_graph.nodes;
         explore_node(&mut traversal_state, node_map.get(*root_id).unwrap());

@@ -14,14 +14,14 @@ use semver::Version;
 #[gtest(DepsTest, CollectDependenciesOnSampleOutput)]
 fn test() {
     let metadata: cargo_metadata::Metadata = serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
-    let mut dependencies = collect_dependencies(&metadata);
+    let mut dependencies = collect_dependencies(&metadata, None);
     dependencies.sort_by(|left, right| {
         left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
     });
 
     let empty_str_slice: &'static [&'static str] = &[];
 
-    expect_eq!(dependencies.len(), 14);
+    expect_eq!(dependencies.len(), 16);
 
     let mut i = 0;
 
@@ -39,6 +39,24 @@ fn test() {
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Build).unwrap().features,
         empty_str_slice
+    );
+
+    i += 1;
+
+    expect_eq!(dependencies[i].package_name, "foo");
+    expect_eq!(dependencies[i].version, Version::new(0, 1, 0));
+    expect_eq!(
+        dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+        empty_str_slice
+    );
+    expect_eq!(dependencies[i].dependencies.len(), 1);
+    expect_eq!(
+        dependencies[i].dependencies[0],
+        DepOfDep {
+            package_name: "time".to_string(),
+            version: Version::new(0, 3, 14),
+            platform: None,
+        }
     );
 
     i += 1;
@@ -209,6 +227,15 @@ fn test() {
 
     i += 1;
 
+    expect_eq!(dependencies[i].package_name, "time");
+    expect_eq!(dependencies[i].version, Version::new(0, 3, 14));
+    expect_eq!(
+        dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+        &["alloc", "std"]
+    );
+
+    i += 1;
+
     expect_eq!(dependencies[i].package_name, "unicode-ident");
     expect_eq!(dependencies[i].version, Version::new(1, 0, 1));
     expect_eq!(
@@ -260,7 +287,34 @@ fn test() {
     );
 }
 
+#[gtest(DepsTest, DependenciesForWorkspaceMember)]
+fn test() {
+    let metadata: cargo_metadata::Metadata = serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
+
+    // Start from "foo" workspace member.
+    let mut dependencies = collect_dependencies(&metadata, Some(vec!["foo".to_string()]));
+    dependencies.sort_by(|left, right| {
+        left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
+    });
+
+    expect_eq!(dependencies.len(), 2);
+
+    let mut i = 0;
+
+    expect_eq!(dependencies[i].package_name, "foo");
+    expect_eq!(dependencies[i].version, Version::new(0, 1, 0));
+
+    i += 1;
+
+    expect_eq!(dependencies[i].package_name, "time");
+    expect_eq!(dependencies[i].version, Version::new(0, 3, 14));
+    expect_eq!(
+        dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
+        &["alloc", "std"]
+    );
+}
+
 // test_metadata.json contains the output of "cargo metadata" run in
 // sample_package. The dependency graph is relatively simple but includes
-// transitive deps.
+// transitive deps and a workspace member.
 static SAMPLE_CARGO_METADATA: &'static str = include_str!("test_metadata.json");

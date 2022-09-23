@@ -122,7 +122,7 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     // depend on.
     let mut command = cargo_metadata::MetadataCommand::new();
     command.current_dir(&paths.third_party);
-    let dependencies = deps::collect_dependencies(&command.exec().unwrap());
+    let dependencies = deps::collect_dependencies(&command.exec().unwrap(), None);
 
     // Compare cargo's dependency resolution with the crates we have on disk. We
     // want to ensure:
@@ -254,7 +254,8 @@ fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> E
     command.other_options(["--locked".to_string(), "--offline".to_string()]);
 
     // Compute the set of crates we need to build to build libstd.
-    let dependencies = deps::collect_dependencies(&command.exec().unwrap());
+    let dependencies =
+        deps::collect_dependencies(&command.exec().unwrap(), Some(vec!["std".to_string()]));
 
     // Collect the set of third-party dependencies vendored in the Rust source
     // package.
