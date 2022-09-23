@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/browser/web_applications/isolation_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
@@ -30,6 +31,8 @@ struct ResourceRequest;
 }
 
 namespace web_app {
+
+class IsolatedWebAppUrlInfo;
 
 // A URLLoaderFactory used for the isolated-app:// scheme.
 class IsolatedWebAppURLLoaderFactory
@@ -55,6 +58,14 @@ class IsolatedWebAppURLLoaderFactory
       int frame_tree_node_id,
       Profile* profile,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
+
+  void HandleDevModeProxy(
+      const IsolatedWebAppUrlInfo& url_info,
+      const IsolationData::DevModeProxy& dev_mode_proxy,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+      const network::ResourceRequest& resource_request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
   void LogErrorAndFail(
       const std::string& error_message,

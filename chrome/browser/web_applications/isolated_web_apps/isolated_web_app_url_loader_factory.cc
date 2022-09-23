@@ -25,15 +25,18 @@
 #include "components/web_package/web_bundle_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -47,12 +50,18 @@ namespace web_app {
 
 namespace {
 
-void CompleteWith404(
-    mojo::Remote<network::mojom::URLLoaderClient> loader_client) {
+bool IsSupportedHttpMethod(const std::string& method) {
+  return method == net::HttpRequestHeaders::kGetMethod ||
+         method == net::HttpRequestHeaders::kHeadMethod;
+}
+
+void CompleteWithErrorCode(
+    mojo::Remote<network::mojom::URLLoaderClient> loader_client,
+    int http_status_code) {
   auto generated_response = web_package::mojom::BundleResponse::New();
-  generated_response->response_code = net::HTTP_NOT_FOUND;
+  generated_response->response_code = http_status_code;
   // Setting the Content-Type header makes Chrome return a nicer error page
-  // that shows the actual error code ("HTTP ERROR 404") instead of just
+  // that shows the actual error code (e.g. "HTTP ERROR 404") instead of just
   // "ERR_INVALID_RESPONSE".
   generated_response->response_headers["Content-Type"] =
       "text/html;charset=utf-8";
@@ -96,6 +105,8 @@ void LogErrorMessageToConsole(int frame_tree_node_id,
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   if (!web_contents) {
+    // Log to the terminal if we can't log to the console.
+    LOG(ERROR) << error_message;
     return;
   }
   web_contents->ForEachRenderFrameHostWithAction(
@@ -177,7 +188,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
         case IsolatedWebAppReaderRegistry::ReadResponseError::Type::
             kResponseNotFound:
           // Return a synthetic 404 response.
-          CompleteWith404(std::move(loader_client_));
+          CompleteWithErrorCode(std::move(loader_client_), net::HTTP_NOT_FOUND);
           return;
       }
     }
@@ -311,10 +322,17 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
+  if (!IsSupportedHttpMethod(resource_request.method)) {
+    CompleteWithErrorCode(
+        mojo::Remote<network::mojom::URLLoaderClient>(std::move(loader_client)),
+        net::HTTP_METHOD_NOT_ALLOWED);
+    return;
+  }
+
   IsolationData isolation_data = iwa->get().isolation_data().value();
   absl::visit(
       base::Overloaded{
-          [&](IsolationData::InstalledBundle content) {
+          [&](const IsolationData::InstalledBundle& content) {
             auto* isolated_web_app_reader_registry =
                 IsolatedWebAppReaderRegistryFactory::GetForProfile(profile_);
             if (!isolated_web_app_reader_registry) {
@@ -332,15 +350,16 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
                 mojo::PendingReceiver<network::mojom::URLLoader>(
                     std::move(loader_receiver)));
           },
-          [&loader_client](IsolationData::DevModeBundle content) {
+          [&loader_client](const IsolationData::DevModeBundle& content) {
             // TODO: Implement dev mode bundles.
-            CompleteWith404(mojo::Remote<network::mojom::URLLoaderClient>(
-                std::move(loader_client)));
+            CompleteWithErrorCode(mojo::Remote<network::mojom::URLLoaderClient>(
+                                      std::move(loader_client)),
+                                  net::HTTP_NOT_FOUND);
           },
-          [&loader_client](IsolationData::DevModeProxy content) {
-            // TODO: Implement dev mode proxy.
-            CompleteWith404(mojo::Remote<network::mojom::URLLoaderClient>(
-                std::move(loader_client)));
+          [&](const IsolationData::DevModeProxy& content) {
+            HandleDevModeProxy(*url_info, content, std::move(loader_receiver),
+                               resource_request, std::move(loader_client),
+                               traffic_annotation);
           }},
       isolation_data.content);
 }
@@ -353,6 +372,43 @@ void IsolatedWebAppURLLoaderFactory::OnProfileWillBeDestroyed(
     profile_observation_.Reset();
     DisconnectReceiversAndDestroy();
   }
+}
+
+void IsolatedWebAppURLLoaderFactory::HandleDevModeProxy(
+    const IsolatedWebAppUrlInfo& url_info,
+    const IsolationData::DevModeProxy& dev_mode_proxy,
+    mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+    const network::ResourceRequest& resource_request,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  // Generate the proxy URL.
+  // TODO(b/248125557): Consider making DevModeProxy::proxy_url a url::Origin.
+  GURL proxy_url_base(dev_mode_proxy.proxy_url);
+  if (url::Origin::Create(proxy_url_base).GetURL() != proxy_url_base) {
+    LogErrorAndFail(base::StrCat({"Proxy base URL must be an origin: ",
+                                  proxy_url_base.possibly_invalid_spec()}),
+                    std::move(loader_client));
+    return;
+  }
+  GURL proxy_url = proxy_url_base.Resolve(resource_request.url.path());
+
+  // Create a new ResourceRequest with the proxy URL.
+  network::ResourceRequest proxy_request(resource_request);
+  proxy_request.url = proxy_url;
+
+  content::StoragePartition* iwa_partition = profile_->GetStoragePartition(
+      url_info.storage_partition_config(profile_), /*can_create=*/false);
+  if (iwa_partition == nullptr) {
+    LogErrorAndFail(base::StrCat({"Storage not found for Isolated Web App: ",
+                                  resource_request.url.spec()}),
+                    std::move(loader_client));
+    return;
+  }
+
+  iwa_partition->GetURLLoaderFactoryForBrowserProcess()->CreateLoaderAndStart(
+      std::move(loader_receiver),
+      /*request_id=*/0, network::mojom::kURLLoadOptionNone, proxy_request,
+      std::move(loader_client), traffic_annotation);
 }
 
 void IsolatedWebAppURLLoaderFactory::LogErrorAndFail(
