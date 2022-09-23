@@ -364,8 +364,8 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
   const auto& entropy_provider =
       SelectEntropyProviderForStudy(processed_study, low_entropy_provider);
   uint32_t randomization_seed = ShouldSessionRandomizeStudy(processed_study)
-                                    ? study.randomization_seed()
-                                    : 0;
+                                    ? 0
+                                    : study.randomization_seed();
 
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
