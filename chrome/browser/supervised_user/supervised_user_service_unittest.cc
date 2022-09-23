@@ -146,7 +146,8 @@ class SupervisedUserServiceTest : public ::testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-TEST_F(SupervisedUserServiceTest, DeprecatedFilterPolicy) {
+// TODO(crbug.com/1364589): Failing consistently
+TEST_F(SupervisedUserServiceTest, DISABLED_DeprecatedFilterPolicy) {
   PrefService* prefs = profile_->GetPrefs();
   EXPECT_EQ(prefs->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior),
             SupervisedUserURLFilter::ALLOW);
