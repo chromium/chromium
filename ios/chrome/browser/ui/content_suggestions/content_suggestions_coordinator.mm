@@ -361,6 +361,12 @@ const base::Feature kNoRecentTabIfNullWebState(
     return;
   }
 
+  if (self.contentSuggestionsMediator.showingStartSurface) {
+    // Start has already been configured. Don't try again or else another Return
+    // To Recent Tab tile will be added.
+    return;
+  }
+
   // Update Mediator property to signal the NTP is currently showing Start.
   self.contentSuggestionsMediator.showingStartSurface = YES;
   if (ShouldShowReturnToMostRecentTabForStartSurface()) {
