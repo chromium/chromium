@@ -194,7 +194,7 @@ const char kPrintPdfAsImage[] = "printPdfAsImage";
 // Preview WebUI does not send over invalid data.
 base::Value::Dict GetSettingsDictionary(const std::string& json_str) {
   absl::optional<base::Value> settings = base::JSONReader::Read(json_str);
-  base::Value::Dict dict = std::move(settings->GetDict());
+  base::Value::Dict dict = std::move(*settings).TakeDict();
   CHECK(!dict.empty());
   return dict;
 }

@@ -156,7 +156,7 @@ base::Value::Dict GetPdfCapabilities(
   dpi.SaveTo(&description);
 
   base::Value capabilities = std::move(description).ToValue();
-  return std::move(capabilities.GetDict());
+  return std::move(capabilities).TakeDict();
 }
 
 // Callback that stores a PDF file on disk.

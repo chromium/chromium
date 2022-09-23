@@ -661,7 +661,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetCapability) {
   printer->Set("dpi", std::move(dpi_dict));
 
   fake_api->TriggerNextGetCapabilityCallback(
-      std::move(original_capability.GetDict()));
+      std::move(original_capability).TakeDict());
 
   EXPECT_EQ(1u, call_count);
   EXPECT_EQ(capability, original_capability_with_dpi_dict);
