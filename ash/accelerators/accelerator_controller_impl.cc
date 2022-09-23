@@ -40,6 +40,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/multi_profile_uma.h"
+#include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -602,9 +603,9 @@ bool AcceleratorControllerImpl::TestApi::TriggerTabletModeVolumeAdjustTimer() {
 }
 
 void AcceleratorControllerImpl::TestApi::RegisterAccelerators(
-    const AcceleratorData accelerators[],
-    size_t accelerators_length) {
-  controller_->RegisterAccelerators(accelerators, accelerators_length);
+    base::span<const AcceleratorData> accelerators) {
+  controller_->accelerator_configuration()->Initialize(accelerators);
+  controller_->RegisterAccelerators(accelerators);
 }
 
 bool AcceleratorControllerImpl::TestApi::IsActionForAcceleratorEnabled(
@@ -615,11 +616,8 @@ bool AcceleratorControllerImpl::TestApi::IsActionForAcceleratorEnabled(
 const DeprecatedAcceleratorData*
 AcceleratorControllerImpl::TestApi::GetDeprecatedAcceleratorData(
     AcceleratorAction action) {
-  auto it = controller_->actions_with_deprecations_.find(action);
-  if (it == controller_->actions_with_deprecations_.end())
-    return nullptr;
-
-  return it->second;
+  return controller_->accelerator_configuration()->GetDeprecatedAcceleratorData(
+      action);
 }
 
 AccessibilityConfirmationDialog*
@@ -648,6 +646,8 @@ void AcceleratorControllerImpl::TestApi::SetSideVolumeButtonLocation(
 AcceleratorControllerImpl::AcceleratorControllerImpl()
     : accelerator_manager_(std::make_unique<ui::AcceleratorManager>()),
       accelerator_history_(std::make_unique<AcceleratorHistoryImpl>()),
+      accelerator_configuration_(
+          std::make_unique<AshAcceleratorConfiguration>()),
       side_volume_button_location_file_path_(
           base::FilePath(kSideVolumeButtonLocationFilePath)) {
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
@@ -689,7 +689,7 @@ void AcceleratorControllerImpl::InputMethodChanged(InputMethodManager* manager,
   // seen.
   const bool use_positional_lookup =
       manager->ArePositionalShortcutsUsedByCurrentInputMethod();
-  accelerators_.set_use_positional_lookup(use_positional_lookup);
+  accelerator_configuration_->SetUsePositionalLookup(use_positional_lookup);
   accelerator_manager_->SetUsePositionalLookup(use_positional_lookup);
 }
 
@@ -715,7 +715,7 @@ bool AcceleratorControllerImpl::Process(const ui::Accelerator& accelerator) {
 
 bool AcceleratorControllerImpl::IsDeprecated(
     const ui::Accelerator& accelerator) const {
-  return base::Contains(deprecated_accelerators_, accelerator);
+  return accelerator_configuration_->IsDeprecated(accelerator);
 }
 
 bool AcceleratorControllerImpl::PerformActionIfEnabled(
@@ -733,7 +733,8 @@ bool AcceleratorControllerImpl::OnMenuAccelerator(
   accelerator_history_->StoreCurrentAccelerator(accelerator);
 
   // Menu shouldn't be closed for an invalid accelerator.
-  AcceleratorAction* action_ptr = accelerators_.Find(accelerator);
+  AcceleratorAction* action_ptr =
+      accelerator_configuration_->FindAcceleratorAction(accelerator);
   return action_ptr && !base::Contains(actions_keeping_menu_open_, *action_ptr);
 }
 
@@ -749,19 +750,23 @@ AcceleratorHistoryImpl* AcceleratorControllerImpl::GetAcceleratorHistory() {
 bool AcceleratorControllerImpl::DoesAcceleratorMatchAction(
     const ui::Accelerator& accelerator,
     AcceleratorAction action) {
-  AcceleratorAction* action_ptr = accelerators_.Find(accelerator);
+  AcceleratorAction* action_ptr =
+      accelerator_configuration_->FindAcceleratorAction(accelerator);
   return action_ptr && *action_ptr == action;
 }
 
 bool AcceleratorControllerImpl::IsPreferred(
     const ui::Accelerator& accelerator) const {
-  const AcceleratorAction* action_ptr = accelerators_.Find(accelerator);
+  const AcceleratorAction* action_ptr =
+      accelerator_configuration_->FindAcceleratorAction(accelerator);
   return action_ptr && base::Contains(preferred_actions_, *action_ptr);
 }
 
 bool AcceleratorControllerImpl::IsReserved(
     const ui::Accelerator& accelerator) const {
-  const AcceleratorAction* action_ptr = accelerators_.Find(accelerator);
+  const AcceleratorAction* action_ptr =
+      accelerator_configuration_->FindAcceleratorAction(accelerator);
+
   return action_ptr && base::Contains(reserved_actions_, *action_ptr);
 }
 
@@ -770,7 +775,8 @@ bool AcceleratorControllerImpl::IsReserved(
 
 bool AcceleratorControllerImpl::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
-  AcceleratorAction action = accelerators_.Get(accelerator);
+  AcceleratorAction action =
+      accelerator_configuration_->GetAcceleratorAction(accelerator);
   if (!CanPerformAction(action, accelerator))
     return false;
 
@@ -827,36 +833,16 @@ void AcceleratorControllerImpl::Init() {
   for (size_t i = 0; i < kActionsKeepingMenuOpenLength; ++i)
     actions_keeping_menu_open_.insert(kActionsKeepingMenuOpen[i]);
 
-  RegisterAccelerators(kAcceleratorData, kAcceleratorDataLength);
-
-  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
-    RegisterAccelerators(kEnableWithPositionalAcceleratorsData,
-                         kEnableWithPositionalAcceleratorsDataLength);
-    if (ash::features::IsImprovedDesksKeyboardShortcutsEnabled()) {
-      RegisterAccelerators(
-          kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData,
-          kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength);
-    }
-  } else if (::features::IsNewShortcutMappingEnabled()) {
-    RegisterAccelerators(kEnableWithNewMappingAcceleratorData,
-                         kEnableWithNewMappingAcceleratorDataLength);
-  } else {
-    RegisterAccelerators(kDisableWithNewMappingAcceleratorData,
-                         kDisableWithNewMappingAcceleratorDataLength);
-  }
-
-  RegisterDeprecatedAccelerators();
+  accelerator_configuration_->Initialize();
+  RegisterAccelerators(accelerator_configuration_->GetAllAcceleratorInfos());
 
   if (debug::DebugAcceleratorsEnabled()) {
-    RegisterAccelerators(kDebugAcceleratorData, kDebugAcceleratorDataLength);
     // All debug accelerators are reserved.
     for (size_t i = 0; i < kDebugAcceleratorDataLength; ++i)
       reserved_actions_.insert(kDebugAcceleratorData[i].action);
   }
 
   if (debug::DeveloperAcceleratorsEnabled()) {
-    RegisterAccelerators(kDeveloperAcceleratorData,
-                         kDeveloperAcceleratorDataLength);
     // Developer accelerators are also reserved.
     for (size_t i = 0; i < kDeveloperAcceleratorDataLength; ++i)
       reserved_actions_.insert(kDeveloperAcceleratorData[i].action);
@@ -864,44 +850,30 @@ void AcceleratorControllerImpl::Init() {
 }
 
 void AcceleratorControllerImpl::RegisterAccelerators(
-    const AcceleratorData accelerators[],
-    size_t accelerators_length) {
+    base::span<const AcceleratorData> accelerators) {
   std::vector<ui::Accelerator> ui_accelerators;
-  for (size_t i = 0; i < accelerators_length; ++i) {
+  for (const auto& accelerator_data : accelerators) {
     ui::Accelerator accelerator =
-        CreateAccelerator(accelerators[i].keycode, accelerators[i].modifiers,
-                          accelerators[i].trigger_on_press);
-    ui_accelerators.push_back(accelerator);
-    accelerators_.InsertNew(
-        std::make_pair(accelerator, accelerators[i].action));
-  }
-  Register(ui_accelerators, this);
-}
-
-void AcceleratorControllerImpl::RegisterDeprecatedAccelerators() {
-  for (size_t i = 0; i < kDeprecatedAcceleratorsDataLength; ++i) {
-    const DeprecatedAcceleratorData* data = &kDeprecatedAcceleratorsData[i];
-    actions_with_deprecations_[data->action] = data;
-  }
-
-  std::vector<ui::Accelerator> ui_accelerators;
-  for (size_t i = 0; i < kDeprecatedAcceleratorsLength; ++i) {
-    const AcceleratorData& accelerator_data = kDeprecatedAccelerators[i];
-    const ui::Accelerator deprecated_accelerator =
         CreateAccelerator(accelerator_data.keycode, accelerator_data.modifiers,
                           accelerator_data.trigger_on_press);
-
-    ui_accelerators.push_back(deprecated_accelerator);
-    accelerators_.InsertNew(
-        std::make_pair(deprecated_accelerator, accelerator_data.action));
-    deprecated_accelerators_.insert(deprecated_accelerator);
+    ui_accelerators.push_back(accelerator);
   }
-  Register(ui_accelerators, this);
+  Register(std::move(ui_accelerators), this);
+}
+
+void AcceleratorControllerImpl::RegisterAccelerators(
+    std::vector<AcceleratorInfo> accelerator_infos) {
+  std::vector<ui::Accelerator> accelerators;
+  for (const auto& info : accelerator_infos) {
+    accelerators.push_back(info.accelerator);
+  }
+  Register(std::move(accelerators), this);
 }
 
 bool AcceleratorControllerImpl::IsActionForAcceleratorEnabled(
     const ui::Accelerator& accelerator) const {
-  const AcceleratorAction* action_ptr = accelerators_.Find(accelerator);
+  const AcceleratorAction* action_ptr =
+      accelerator_configuration_->FindAcceleratorAction(accelerator);
   return action_ptr && CanPerformAction(*action_ptr, accelerator);
 }
 
@@ -1692,8 +1664,9 @@ AcceleratorControllerImpl::AcceleratorProcessingStatus
 AcceleratorControllerImpl::MaybeDeprecatedAcceleratorPressed(
     AcceleratorAction action,
     const ui::Accelerator& accelerator) const {
-  auto itr = actions_with_deprecations_.find(action);
-  if (itr == actions_with_deprecations_.end()) {
+  const DeprecatedAcceleratorData* deprecated_data =
+      accelerator_configuration_->GetDeprecatedAcceleratorData(action);
+  if (!deprecated_data) {
     // The action is not associated with any deprecated accelerators, and hence
     // should be performed normally.
     return AcceleratorProcessingStatus::PROCEED;
@@ -1701,11 +1674,10 @@ AcceleratorControllerImpl::MaybeDeprecatedAcceleratorPressed(
 
   // This action is associated with new and deprecated accelerators, find which
   // one is |accelerator|.
-  const DeprecatedAcceleratorData* data = itr->second;
-  if (!base::Contains(deprecated_accelerators_, accelerator)) {
+  if (!accelerator_configuration_->IsDeprecated(accelerator)) {
     // This is a new accelerator replacing the old deprecated one.
     // Record UMA stats and proceed normally to perform it.
-    RecordUmaHistogram(data->uma_histogram_name, NEW_USED);
+    RecordUmaHistogram(deprecated_data->uma_histogram_name, NEW_USED);
     return AcceleratorProcessingStatus::PROCEED;
   }
 
@@ -1713,14 +1685,15 @@ AcceleratorControllerImpl::MaybeDeprecatedAcceleratorPressed(
   // to its |DeprecatedAcceleratorData|.
 
   // Record UMA stats.
-  RecordUmaHistogram(data->uma_histogram_name, DEPRECATED_USED);
+  RecordUmaHistogram(deprecated_data->uma_histogram_name, DEPRECATED_USED);
 
   // We always display the notification as long as this |data| entry exists.
   ShowDeprecatedAcceleratorNotification(
-      data->uma_histogram_name, data->notification_message_id,
-      data->old_shortcut_id, data->new_shortcut_id);
+      deprecated_data->uma_histogram_name,
+      deprecated_data->notification_message_id,
+      deprecated_data->old_shortcut_id, deprecated_data->new_shortcut_id);
 
-  if (!data->deprecated_enabled)
+  if (!deprecated_data->deprecated_enabled)
     return AcceleratorProcessingStatus::STOP;
 
   return AcceleratorProcessingStatus::PROCEED;

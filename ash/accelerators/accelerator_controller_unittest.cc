@@ -1128,7 +1128,7 @@ TEST_F(AcceleratorControllerTest, DontRepeatToggleFullscreen) {
       {true, ui::VKEY_J, ui::EF_ALT_DOWN, TOGGLE_FULLSCREEN},
       {true, ui::VKEY_K, ui::EF_ALT_DOWN, TOGGLE_FULLSCREEN},
   };
-  test_api_->RegisterAccelerators(accelerators, std::size(accelerators));
+  test_api_->RegisterAccelerators(accelerators);
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(5, 5, 20, 20);

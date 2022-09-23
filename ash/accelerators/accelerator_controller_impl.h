@@ -14,6 +14,7 @@
 
 #include "ash/accelerators/accelerator_history_impl.h"
 #include "ash/accelerators/accelerator_table.h"
+#include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/accelerators/exit_warning_handler.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/ash_export.h"
@@ -104,8 +105,7 @@ class ASH_EXPORT AcceleratorControllerImpl
     [[nodiscard]] bool TriggerTabletModeVolumeAdjustTimer();
 
     // Registers the specified accelerators.
-    void RegisterAccelerators(const AcceleratorData accelerators[],
-                              size_t accelerators_length);
+    void RegisterAccelerators(base::span<const AcceleratorData> accelerators);
 
     // Returns whether the action for this accelerator is enabled.
     bool IsActionForAcceleratorEnabled(const ui::Accelerator& accelerator);
@@ -232,6 +232,10 @@ class ASH_EXPORT AcceleratorControllerImpl
   void SetPreventProcessingAccelerators(bool prevent_processing_accelerators);
   bool ShouldPreventProcessingAccelerators() const;
 
+  AshAcceleratorConfiguration* accelerator_configuration() {
+    return accelerator_configuration_.get();
+  }
+
  private:
   // A map for looking up actions from accelerators.
   using AcceleratorActionMap = ui::AcceleratorMap<AcceleratorAction>;
@@ -240,11 +244,10 @@ class ASH_EXPORT AcceleratorControllerImpl
   void Init();
 
   // Registers the specified accelerators.
-  void RegisterAccelerators(const AcceleratorData accelerators[],
-                            size_t accelerators_length);
+  void RegisterAccelerators(base::span<const AcceleratorData> accelerators);
 
-  // Registers the deprecated accelerators and their replacing new ones.
-  void RegisterDeprecatedAccelerators();
+  // Registers accelerators from AcceleratorInfo's.
+  void RegisterAccelerators(std::vector<AcceleratorInfo> accelerator_infos);
 
   // Returns true if there is an action for |accelerator| and it is enabled.
   bool IsActionForAcceleratorEnabled(const ui::Accelerator& accelerator) const;
@@ -311,17 +314,12 @@ class ASH_EXPORT AcceleratorControllerImpl
   // A tracker for the current and previous accelerators.
   std::unique_ptr<AcceleratorHistoryImpl> accelerator_history_;
 
+  // Manages all accelerator mappings.
+  std::unique_ptr<AshAcceleratorConfiguration> accelerator_configuration_;
+
   // Handles the exit accelerator which requires a double press to exit and
   // shows a popup with an explanation.
   ExitWarningHandler exit_warning_handler_;
-
-  // A map from accelerators to the AcceleratorAction values, which are used in
-  // the implementation.
-  AcceleratorActionMap accelerators_;
-
-  std::map<AcceleratorAction, const DeprecatedAcceleratorData*>
-      actions_with_deprecations_;
-  std::set<ui::Accelerator> deprecated_accelerators_;
 
   // Actions allowed when the user is not signed in.
   std::set<int> actions_allowed_at_login_screen_;

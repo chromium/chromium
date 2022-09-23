@@ -96,6 +96,8 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
     return map_.erase(accelerator) > 0;
   }
 
+  void Clear() { map_.clear(); }
+
   // Inserts a new accelerator and value into the map. DCHECKs if the
   // accelerator was already in the map.
   void InsertNew(const std::pair<const Accelerator, V>& value) {
