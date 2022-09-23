@@ -185,9 +185,10 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_utils.h"
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
@@ -576,6 +577,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   SharedHighlightingPromo::CreateForWebContents(web_contents);
   if (user_notes::IsUserNotesEnabled() && !profile->IsOffTheRecord()) {
     user_notes::UserNotesTabHelper::CreateForWebContents(web_contents);
+  }
+  if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
+    commerce::ShoppingListUiTabHelper::CreateForWebContents(web_contents);
   }
 #endif
 

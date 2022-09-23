@@ -3582,6 +3582,12 @@ const char kConsumerAutoUpdateToggle[] = "settings.consumer_auto_update_toggle";
 // page action chip in the expanded size.
 const char kHighEfficiencyChipExpandedCount[] =
     "high_efficiency.chip_expanded_count";
+
+// A boolean indicating whether the price track first user experience bubble
+// should show. This is set to false if the user has clicked the "Price track"
+// button in the FUE bubble once.
+const char kShouldShowPriceTrackFUEBubble[] =
+    "should_show_price_track_fue_bubble_fue";
 #endif
 
 const char kStrictMimetypeCheckForWorkerScriptsEnabled[] =

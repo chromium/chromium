@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("shopping_list") {
+  sources = [
+    "shopping_list_ui_tab_helper.cc",
+    "shopping_list_ui_tab_helper.h",
+  ]
+
+  deps = [
+    "//chrome/common:constants",
+    "//components/commerce/core:shopping_service",
+    "//components/image_fetcher/core",
+    "//components/prefs:prefs",
+    "//content/public/browser",
+    "//net/traffic_annotation",
+    "//ui/gfx",
+    "//url",
+  ]
+}

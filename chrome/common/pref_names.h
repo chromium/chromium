@@ -1265,6 +1265,8 @@ extern const char kConsumerAutoUpdateToggle[];
 
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kHighEfficiencyChipExpandedCount[];
+
+extern const char kShouldShowPriceTrackFUEBubble[];
 #endif
 
 extern const char kStrictMimetypeCheckForWorkerScriptsEnabled[];

@@ -9592,6 +9592,7 @@ if (!is_android) {
         "../browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h",
         "../browser/ui/views/certificate_selector_browsertest.cc",
         "../browser/ui/views/commander_frontend_views_browsertest.cc",
+        "../browser/ui/views/commerce/price_tracking_icon_view_interactive_uitest.cc",
         "../browser/ui/views/constrained_window_views_browsertest.cc",
         "../browser/ui/views/content_setting_bubble_contents_interactive_uitest.cc",
         "../browser/ui/views/exclusive_access_bubble_views_interactive_uitest.cc",
@@ -9651,6 +9652,7 @@ if (!is_android) {
         "interaction/webui_interaction_test_util_interactive_uitest.cc",
       ]
       deps += [
+        "//components/commerce/core:feature_list",
         "//components/live_caption:utils",
         "//components/optimization_guide/core:test_support",
         "//components/optimization_guide/proto:optimization_guide_proto",
