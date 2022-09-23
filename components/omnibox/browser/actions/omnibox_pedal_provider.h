@@ -118,10 +118,6 @@ class OmniboxPedalProvider {
   // This holds the tokens currently being matched against.
   OmniboxPedal::TokenSequence match_tokens_;
 
-  // This serves as an upper bound on the number of tokens we will accept from
-  // text before giving up and treating it as non-match for all Pedals.
-  size_t max_tokens_ = 0;
-
   // Whether a field trial has triggered for this query and this session
   bool field_trial_triggered_ = false;
   bool field_trial_triggered_in_session_ = false;

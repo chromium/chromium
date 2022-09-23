@@ -18618,10 +18618,13 @@ class OmniboxPedalImplementationsTest : public testing::Test {
         EXPECT_NE(iter, pedals.end()) << "Pedal not found for: " << expression;
         EXPECT_EQ(iter->second.get(), canonical_pedal)
             << "Found wrong Pedal for: " << expression;
+        const int found_id = static_cast<int>(iter->second->id());
         std::advance(iter, 1);
         iter = std::find_if(iter, pedals.end(), is_match);
         EXPECT_EQ(iter, pedals.end())
-            << "Found more than one Pedal match for: " << expression;
+            << "Found more than one Pedal match for: " << expression
+            << " -- IDs: first " << found_id << " then "
+            << static_cast<int>(iter->second->id());
       }
     }
   }

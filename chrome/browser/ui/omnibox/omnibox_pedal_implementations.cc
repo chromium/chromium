@@ -1922,7 +1922,10 @@ std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
 GetPedalImplementations(bool incognito, bool testing) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
   const auto add = [&](OmniboxPedal* pedal) {
-    pedals.insert(std::make_pair(pedal->id(), base::WrapRefCounted(pedal)));
+    const bool inserted =
+        pedals.insert(std::make_pair(pedal->id(), base::WrapRefCounted(pedal)))
+            .second;
+    DCHECK(inserted);
   };
 
 #if BUILDFLAG(IS_ANDROID)
