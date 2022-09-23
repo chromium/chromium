@@ -56,7 +56,7 @@ REGISTER_OP("TFSentencepieceTokenizeOp")
       tensorflow::shape_inference::DimensionHandle num_splits;
       TF_RETURN_IF_ERROR(c->Add(c->NumElements(c->input(1)), 1, &num_splits));
       c->set_output(1, c->Vector(num_splits));
-      return tensorflow::Status::OK();
+      return tensorflow::OkStatus();
     });
 
 class TFSentencepieceOp : public tensorflow::OpKernel {

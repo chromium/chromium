@@ -1,7 +1,7 @@
-From de908b777dc9d52e9c6b88c582ecf906cf645760 Mon Sep 17 00:00:00 2001
+From 16c2e92b6c01382d368f54e55c565de9c0477a16 Mon Sep 17 00:00:00 2001
 From: Jun Zou <junzou@chromium.org>
 Date: Tue, 30 Aug 2022 18:38:00 +0000
-Subject: [PATCH 08/12] Fix TFLite build errors on linux when using the system
+Subject: [PATCH 07/12] Fix TFLite build errors on linux when using the system
  zlib
 
 ---
@@ -94,5 +94,5 @@ index 762dd58f0fb41..bb27d96aef4b5 100644
  namespace tflite {
  namespace metadata {
 -- 
-2.37.2.672.g94769d06f0-goog
+2.37.3.998.g577e59143f-goog
 

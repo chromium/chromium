@@ -30,7 +30,6 @@ android_library_with_tflite(
 android_library(
     name = "bert_clu_annotator_java",
     srcs = glob(["*.java"]),
-    javacopts = ["-source 7 -target 7"],
     deps = [
         "//tensorflow_lite_support/java:tensorflowlite_support_java",
         "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/core:base_task_api",

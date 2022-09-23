@@ -1,7 +1,7 @@
-From 9f522c3171a63f2b244632ec90646755998129f4 Mon Sep 17 00:00:00 2001
+From 4b1f31cd8bbe84d121017b680b872d513ce162a8 Mon Sep 17 00:00:00 2001
 From: Jun Zou <junzou@chromium.org>
 Date: Tue, 30 Aug 2022 18:46:22 +0000
-Subject: [PATCH 11/12] Use SysNSStringToUTF8 to convert NSString
+Subject: [PATCH 10/12] Use SysNSStringToUTF8 to convert NSString
 
 ---
  .../tensorflow_lite_support/ios/utils/Sources/TFLStringUtil.mm  | 2 +-
@@ -21,5 +21,5 @@ index 0361d7fce863b..eec1423caeece 100644
  
  NSString* MakeNSString(const std::string& str) {
 -- 
-2.37.2.672.g94769d06f0-goog
+2.37.3.998.g577e59143f-goog
 

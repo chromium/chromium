@@ -19,7 +19,6 @@ android_library_with_tflite(
         "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/vision/searcher:image_searcher_src",
         "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/vision/segmenter:image_segmenter_src",
     ],
-    javacopts = ["-source 7 -target 7"],
     manifest = "AndroidManifest.xml",
     tflite_exports = [
         "//tensorflow_lite_support/java/src/native/task/vision:task_vision_native",

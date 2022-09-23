@@ -1,7 +1,7 @@
-From 00f1725ce2025ad86b6acc4b71c3d8df081b9334 Mon Sep 17 00:00:00 2001
+From 4486076d02e6fbb5feb60a5b7e28d3d3c7ce7186 Mon Sep 17 00:00:00 2001
 From: Jun Zou <junzou@chromium.org>
 Date: Tue, 30 Aug 2022 18:42:25 +0000
-Subject: [PATCH 09/12] fix unused variable in task utils
+Subject: [PATCH 08/12] fix unused variable in task utils
 
 ---
  .../src/tensorflow_lite_support/cc/task/core/task_utils.h   | 6 ++++--
@@ -25,5 +25,5 @@ index 540d3c2e7c7d4..33459268968cd 100644
    data->reserve(num);
    for (int i = 0; i < num; i++) {
 -- 
-2.37.2.672.g94769d06f0-goog
+2.37.3.998.g577e59143f-goog
 

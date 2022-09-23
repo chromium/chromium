@@ -1,7 +1,7 @@
-From 317f40c5cb75655e87f47980d7262212803a0788 Mon Sep 17 00:00:00 2001
-From: Jun Zou <junzou@chromium.org>
-Date: Tue, 30 Aug 2022 18:43:05 +0000
-Subject: [PATCH 10/12] run clang-format
+From 64fda4f0a2700aeed5ef3b8e273f28c24f84b805 Mon Sep 17 00:00:00 2001
+From: Clark DuVall <cduvall@chromium.org>
+Date: Wed, 21 Sep 2022 10:44:20 -0700
+Subject: [PATCH 09/12] run clang format
 
 ---
  .../configuration/edgetpu_coral_plugin.cc     |   20 +-
@@ -27,7 +27,6 @@ Subject: [PATCH 10/12] run clang-format
  .../c/task/vision/image_segmenter.h           |    6 +-
  .../c/task/vision/object_detector.cc          |    6 +-
  .../c/task/vision/object_detector.h           |    6 +-
- .../test/task/audio/audio_classifier_test.cc  |   36 +-
  .../test/task/vision/image_classifier_test.cc |   84 +-
  .../test/task/vision/image_segmenter_test.cc  |   62 +-
  .../test/task/vision/object_detector_test.cc  |   90 +-
@@ -49,7 +48,7 @@ Subject: [PATCH 10/12] run clang-format
  .../cc/task/core/base_task_api.h              |    2 +-
  .../cc/task/core/classification_head.h        |    2 +-
  .../cc/task/core/error_reporter.cc            |    8 +-
- .../cc/task/core/external_file_handler.cc     |    4 +-
+ .../cc/task/core/external_file_handler.cc     |   13 +-
  .../cc/task/core/external_file_handler.h      |    2 +-
  .../cc/task/core/label_map_item.cc            |    5 +-
  .../cc/task/core/label_map_item.h             |    7 +-
@@ -463,7 +462,7 @@ Subject: [PATCH 10/12] run clang-format
  .../leveldb_testing_utils_py_wrapper.cc       |   14 +-
  .../src/third_party/fft2d/fft.h               |   12 +-
  .../src/third_party/fft2d/fft2d.h             |   12 +-
- 459 files changed, 20471 insertions(+), 19530 deletions(-)
+ 458 files changed, 20455 insertions(+), 19519 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin.cc b/third_party/tflite_support/src/tensorflow_lite_support/acceleration/configuration/edgetpu_coral_plugin.cc
 index 9f27f3baae82f..6a16d12856258 100644
@@ -992,103 +991,6 @@ index e2e08ec161559..b4d4564fefeb0 100644
      TfLiteSupportError** error);
  
  // Disposes off the object detector.
-diff --git a/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/audio/audio_classifier_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/audio/audio_classifier_test.cc
-index 948b64288d40f..c9bae179fb8d9 100644
---- a/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/audio/audio_classifier_test.cc
-+++ b/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/audio/audio_classifier_test.cc
-@@ -45,9 +45,10 @@ constexpr char kYamNetAudioClassifierWithMetadata[] =
-     "yamnet_audio_classifier_with_metadata.tflite";
- 
- StatusOr<TfLiteAudioBuffer> LoadAudioBufferFromFileNamed(
--    const std::string wav_file, int buffer_size) {
--  std::string contents = ReadFile(
--      JoinPath("./" /*test src dir*/, kTestDataDirectory, wav_file));
-+    const std::string wav_file,
-+    int buffer_size) {
-+  std::string contents =
-+      ReadFile(JoinPath("./" /*test src dir*/, kTestDataDirectory, wav_file));
- 
-   uint32_t offset = 0;
-   uint32_t decoded_sample_count;
-@@ -91,7 +92,8 @@ void Verify(TfLiteClassificationResult* classification_result,
- }
- 
- void Verify(TfLiteClassifications& classifications,
--            int expected_categories_size, int expected_head_index,
-+            int expected_categories_size,
-+            int expected_head_index,
-             char const* expected_head_name) {
-   EXPECT_EQ(classifications.size, expected_categories_size);
-   EXPECT_EQ(classifications.head_index, expected_head_index);
-@@ -102,8 +104,10 @@ void Verify(TfLiteClassifications& classifications,
-   EXPECT_NE(classifications.categories, nullptr);
- }
- 
--void Verify(TfLiteCategory& category, int expected_index,
--            char const* expected_label, float expected_score) {
-+void Verify(TfLiteCategory& category,
-+            int expected_index,
-+            char const* expected_label,
-+            float expected_score) {
-   const float kPrecision = 1e-6;
-   EXPECT_EQ(category.index, expected_index);
-   EXPECT_NE(category.label, nullptr);
-@@ -116,7 +120,8 @@ void Verify(TfLiteCategory& category, int expected_index,
-   EXPECT_NEAR(category.score, expected_score, kPrecision);
- }
- 
--void Verify(TfLiteSupportError* error, TfLiteSupportErrorCode error_code,
-+void Verify(TfLiteSupportError* error,
-+            TfLiteSupportErrorCode error_code,
-             char const* message) {
-   ASSERT_NE(error, nullptr);
-   EXPECT_EQ(error->code, kInvalidArgumentError);
-@@ -134,7 +139,8 @@ TEST_F(AudioClassifierFromOptionsTest, FailsWithMissingModelPathAndError) {
-       TfLiteAudioClassifierFromOptions(&options, &error);
- 
-   EXPECT_EQ(audio_classifier, nullptr);
--  if (audio_classifier) TfLiteAudioClassifierDelete(audio_classifier);
-+  if (audio_classifier)
-+    TfLiteAudioClassifierDelete(audio_classifier);
- 
-   Verify(error, kInvalidArgumentError,
-          "INVALID_ARGUMENT: Missing mandatory `model_file` field in "
-@@ -144,9 +150,8 @@ TEST_F(AudioClassifierFromOptionsTest, FailsWithMissingModelPathAndError) {
- }
- 
- TEST_F(AudioClassifierFromOptionsTest, SucceedsWithModelPath) {
--  std::string model_path =
--      JoinPath("./" /*test src dir*/, kTestDataDirectory,
--               kYamNetAudioClassifierWithMetadata);
-+  std::string model_path = JoinPath("./" /*test src dir*/, kTestDataDirectory,
-+                                    kYamNetAudioClassifierWithMetadata);
-   TfLiteAudioClassifierOptions options = TfLiteAudioClassifierOptionsCreate();
-   options.base_options.model_file.file_path = model_path.data();
-   TfLiteAudioClassifier* audio_classifier =
-@@ -159,9 +164,8 @@ TEST_F(AudioClassifierFromOptionsTest, SucceedsWithModelPath) {
- class AudioClassifierClassifyTest : public tflite_shims::testing::Test {
-  protected:
-   void SetUp() override {
--    std::string model_path =
--        JoinPath("./" /*test src dir*/, kTestDataDirectory,
--                 kYamNetAudioClassifierWithMetadata);
-+    std::string model_path = JoinPath("./" /*test src dir*/, kTestDataDirectory,
-+                                      kYamNetAudioClassifierWithMetadata);
- 
-     TfLiteAudioClassifierOptions options = TfLiteAudioClassifierOptionsCreate();
-     options.base_options.model_file.file_path = model_path.data();
-@@ -194,9 +198,9 @@ TEST_F(AudioClassifierClassifyTest, SucceedsWithAudioFile) {
-   Verify(classification_result->classifications[0].categories[0], 0, "Speech",
-          0.917969);
-   Verify(classification_result->classifications[0].categories[1], 500,
--           "Inside, small room", 0.058594);
-+         "Inside, small room", 0.058594);
-   Verify(classification_result->classifications[0].categories[2], 494,
--           "Silence", 0.011719);
-+         "Silence", 0.011719);
-   TfLiteClassificationResultDelete(classification_result);
- }
- 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/vision/image_classifier_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/vision/image_classifier_test.cc
 index 0a59344f4394c..cce2fa63fad17 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/c/test/task/vision/image_classifier_test.cc
@@ -2240,10 +2142,21 @@ index 80dea95cce24b..a626ce6030b96 100644
  }  // namespace core
  }  // namespace task
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
-index 09d29f7b83eb7..e15830d5ab061 100644
+index 04fbbd3d00bc0..7aed2f10ed87a 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
-@@ -18,11 +18,11 @@ limitations under the License.
+@@ -24,9 +24,9 @@ limitations under the License.
+ #endif
+ 
+ #ifdef _WIN32
+-#include <windows.h>
+ #include <direct.h>
+ #include <io.h>
++#include <windows.h>
+ #else
+ #include <unistd.h>
+ #endif
+@@ -34,11 +34,11 @@ limitations under the License.
  #include <memory>
  #include <string>
  
@@ -2257,8 +2170,22 @@ index 09d29f7b83eb7..e15830d5ab061 100644
  
  namespace tflite {
  namespace task {
+@@ -85,10 +85,9 @@ ExternalFileHandler::CreateFromExternalFile(const ExternalFile* external_file) {
+ absl::Status ExternalFileHandler::MapExternalFile() {
+ // TODO(b/195588083): Add Windows support
+ #ifdef _WIN32
+-  return CreateStatusWithPayload(
+-      StatusCode::kFailedPrecondition,
+-      "File loading is not yet supported on Windows",
+-      TfLiteSupportStatus::kFileReadError);
++  return CreateStatusWithPayload(StatusCode::kFailedPrecondition,
++                                 "File loading is not yet supported on Windows",
++                                 TfLiteSupportStatus::kFileReadError);
+ #else
+   if (!external_file_.file_content().empty()) {
+     return absl::OkStatus();
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.h
-index 08c3111b4b0ec..9f35fdd6d09ce 100644
+index e8b6831c6ad69..0b74e468d004f 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.h
 @@ -18,7 +18,7 @@ limitations under the License.
@@ -2481,10 +2408,10 @@ index 33459268968cd..acb7111dc1729 100644
  
    return FindTensorIndexByModelName(tensors, model_tensor_name);
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
-index 5999090cab973..41e06389af80b 100644
+index 0ec88d5bd1846..1ccd1e1480f51 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
-@@ -17,7 +17,7 @@ limitations under the License.
+@@ -21,7 +21,7 @@ limitations under the License.
  
  #include <memory>
  
@@ -2493,7 +2420,7 @@ index 5999090cab973..41e06389af80b 100644
  #include "absl/strings/str_cat.h"  // from @com_google_absl
  #include "tensorflow/lite/builtin_ops.h"
  #include "tensorflow/lite/core/shims/cc/kernels/register.h"
-@@ -38,7 +38,8 @@ using ::tflite::support::CreateStatusWithPayload;
+@@ -42,7 +42,8 @@ using ::tflite::support::CreateStatusWithPayload;
  using ::tflite::support::InterpreterCreationResources;
  using ::tflite::support::TfLiteSupportStatus;
  
@@ -2503,7 +2430,7 @@ index 5999090cab973..41e06389af80b 100644
                                      tflite::ErrorReporter* reporter) {
    return tflite_shims::Verify(data, length, reporter);
  }
-@@ -69,7 +70,8 @@ std::vector<const TfLiteTensor*> TfLiteEngine::GetOutputs() {
+@@ -73,7 +74,8 @@ std::vector<const TfLiteTensor*> TfLiteEngine::GetOutputs() {
  }
  
  void TfLiteEngine::VerifyAndBuildModelFromBuffer(
@@ -2513,7 +2440,7 @@ index 5999090cab973..41e06389af80b 100644
      TfLiteVerifier* extra_verifier) {
    model_ = tflite_shims::FlatBufferModel::VerifyAndBuildFromBuffer(
        buffer_data, buffer_size, extra_verifier, &error_reporter_);
-@@ -116,7 +118,8 @@ absl::Status TfLiteEngine::InitializeFromModelFileHandler(
+@@ -120,7 +122,8 @@ absl::Status TfLiteEngine::InitializeFromModelFileHandler(
  }
  
  absl::Status TfLiteEngine::BuildModelFromFlatBuffer(
@@ -2523,7 +2450,7 @@ index 5999090cab973..41e06389af80b 100644
      const tflite::proto::ComputeSettings& compute_settings) {
    if (model_) {
      return CreateStatusWithPayload(StatusCode::kInternal,
-@@ -205,7 +208,8 @@ absl::Status TfLiteEngine::InitInterpreter(int num_threads) {
+@@ -209,7 +212,8 @@ absl::Status TfLiteEngine::InitInterpreter(int num_threads) {
  // absl::Status TfLiteEngine::InitInterpreter(
  //    const tflite::proto::ComputeSettings& compute_settings)
  absl::Status TfLiteEngine::InitInterpreter(
@@ -2534,7 +2461,7 @@ index 5999090cab973..41e06389af80b 100644
    settings_copy.mutable_tflite_settings()
        ->mutable_cpu_settings()
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h
-index 53dabdc4841d7..0cbaa738e6db6 100644
+index e4eed604d676e..840b7ccbda201 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.h
 @@ -18,8 +18,8 @@ limitations under the License.
@@ -2548,7 +2475,7 @@ index 53dabdc4841d7..0cbaa738e6db6 100644
  #include "absl/strings/string_view.h"  // from @com_google_absl
  #include "tensorflow/lite/core/api/op_resolver.h"
  #include "tensorflow/lite/core/shims/c/common.h"
-@@ -96,7 +96,8 @@ class TfLiteEngine {
+@@ -100,7 +100,8 @@ class TfLiteEngine {
    // object. This performs extra verification on the input data using
    // tflite::Verify.
    absl::Status BuildModelFromFlatBuffer(
@@ -2558,7 +2485,7 @@ index 53dabdc4841d7..0cbaa738e6db6 100644
        const tflite::proto::ComputeSettings& compute_settings =
            tflite::proto::ComputeSettings());
  
-@@ -138,7 +139,8 @@ class TfLiteEngine {
+@@ -142,7 +143,8 @@ class TfLiteEngine {
    // absl::Status TfLiteEngine::InitInterpreter(
    //    const tflite::proto::ComputeSettings& compute_settings)
    absl::Status InitInterpreter(
@@ -2568,7 +2495,7 @@ index 53dabdc4841d7..0cbaa738e6db6 100644
  
    // Cancels the on-going `Invoke()` call if any and if possible. This method
    // can be called from a different thread than the one where `Invoke()` is
-@@ -155,7 +157,8 @@ class TfLiteEngine {
+@@ -159,7 +161,8 @@ class TfLiteEngine {
    // the FlatBuffer data provided as input.
    class Verifier : public tflite::TfLiteVerifier {
     public:
@@ -8551,7 +8478,7 @@ index 54b34e4e33196..f5be376b45e12 100644
    return nullptr;
  }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_tokenizer_op.cc b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_tokenizer_op.cc
-index 41fc5aa28bf30..68f8e64492394 100644
+index b4418f61a6798..bd8e39dc6f3ab 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_tokenizer_op.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_tokenizer_op.cc
 @@ -16,16 +16,16 @@ limitations under the License.
@@ -53992,5 +53919,5 @@ index d587b3b441ce2..d79441827d54c 100644
  #ifdef __cplusplus
  }
 -- 
-2.37.2.672.g94769d06f0-goog
+2.37.3.998.g577e59143f-goog
 

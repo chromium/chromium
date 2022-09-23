@@ -10,7 +10,6 @@ android_library(
     srcs = glob(["**/*.java"]) + [
         "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/processor:task_processor_src",
     ],
-    javacopts = ["-source 7 -target 7"],
     proguard_specs = ["proguard.flags"],
     visibility = ["//visibility:public"],
     # LINT.IfChange(dep)

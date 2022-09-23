@@ -15,6 +15,10 @@ limitations under the License.
 
 #include "tensorflow_lite_support/cc/task/core/tflite_engine.h"
 
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#include <unistd.h>
+#endif
+
 #include <memory>
 
 #include "absl/strings/match.h"    // from @com_google_absl

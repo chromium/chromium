@@ -26,7 +26,6 @@ android_library(
 android_library(
     name = "audio_classifier_java",
     srcs = [":audio_classifier_src"],
-    javacopts = ["-source 7 -target 7"],
     manifest = "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/audio:AndroidManifest.xml",
     deps = [
         "//tensorflow_lite_support/java:tensorflowlite_support_java",

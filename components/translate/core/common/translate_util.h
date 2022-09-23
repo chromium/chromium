@@ -34,6 +34,11 @@ extern const base::FeatureParam<int>
 // is shown.
 extern const base::FeatureParam<int> kDesktopPartialTranslateBubbleShowDelayMs;
 
+#if !BUILDFLAG(IS_WIN)
+// Controls whether mmap is used to load the language detection model.
+extern const base::Feature kMmapLanguageDetectionModel;
+#endif
+
 // Isolated world sets following security-origin by default.
 extern const char kSecurityOrigin[];
 

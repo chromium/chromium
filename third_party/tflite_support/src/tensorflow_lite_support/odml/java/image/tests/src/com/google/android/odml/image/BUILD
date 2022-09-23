@@ -11,7 +11,6 @@ android_library(
     ],
     custom_package = "com.google.android.odml.image",
     # TODO(b/163039980): Use JAVACOPTS in TF. "-Xep:RemoveUnusedImports:ERROR" wierdly break the build.
-    javacopts = ["-source 7 -target 7"],
     manifest = "AndroidManifest.xml",
     deps = [
         "@maven//:androidx_annotation_annotation",
