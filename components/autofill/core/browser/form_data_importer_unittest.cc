@@ -708,9 +708,6 @@ class FormDataImporterTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1103421): Clean legacy implementation once structured names
-// are fully launched. Here, the changes applied in CL 2339350 must be reverted
-// by removing the parameterization.
 class FormDataImporterTest
     : public FormDataImporterTestBase,
       public testing::Test,
