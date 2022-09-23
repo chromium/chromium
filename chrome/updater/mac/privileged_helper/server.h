@@ -31,6 +31,7 @@ class PrivilegedHelperServer : public App {
   void FirstTaskRun() override;
   void Uninitialize() override;
 
+  void Uninstall();
   void MarkTaskStarted();
   void AcknowledgeTaskCompletion();
   base::TimeDelta ServerKeepAlive();

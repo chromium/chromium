@@ -5,18 +5,23 @@
 #include "chrome/updater/mac/privileged_helper/server.h"
 
 #include "base/bind.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/process/launch.h"
 #include "base/sequence_checker.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chrome/updater/mac/privileged_helper/helper_branding.h"
 #include "chrome/updater/updater_branding.h"
 
 namespace updater {
 
 namespace {
-int kServerKeepAliveSeconds = 10;
+int kServerKeepAliveSeconds = 1;
 }
 
 PrivilegedHelperServer::PrivilegedHelperServer()
@@ -44,6 +49,7 @@ void PrivilegedHelperServer::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   service_delegate_.reset();
   service_listener_.reset();
+  Uninstall();
 }
 
 void PrivilegedHelperServer::TaskStarted() {
@@ -66,6 +72,17 @@ void PrivilegedHelperServer::TaskCompleted() {
       FROM_HERE,
       base::BindOnce(&PrivilegedHelperServer::AcknowledgeTaskCompletion, this),
       ServerKeepAlive());
+}
+
+void PrivilegedHelperServer::Uninstall() {
+  base::DeleteFile(base::FilePath("/Library/LaunchDaemons")
+                       .Append(UPDATER_HELPER_BUNDLE_ID ".plist"));
+  base::DeleteFile(base::FilePath("/Library/PrivilegedHelperTools")
+                       .Append(UPDATER_HELPER_BUNDLE_ID));
+  base::CommandLine launchctl(base::FilePath("/bin/launchctl"));
+  launchctl.AppendArg("remove");
+  launchctl.AppendArg(UPDATER_HELPER_BUNDLE_ID);
+  base::LaunchProcess(launchctl, {});
 }
 
 void PrivilegedHelperServer::AcknowledgeTaskCompletion() {
