@@ -46,8 +46,11 @@ http/tests/inspector-protocol/timeline/auction-worklet-frame.js [ Skip ]
 virtual/fledge/http/tests/inspector-protocol/timeline/auction-worklet-frame.js [ Skip ]
 
 # Fix to unblock wpt-importer
+# The paths for these tests' baselines (with an `-expected.{txt,png}` suffix) is
+# too long on Windows. Skip for now.
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-multi-globals.sub.html [ Failure ]
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
+crbug.com/1209233 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-redirect-with-same-origin-allow-popups.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/resize-observer/notify.html [ Timeout ]
