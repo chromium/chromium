@@ -39,8 +39,7 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The type of archive file that Chrome OS cros-disks daemon is requested to
-    mount.
+    Archive type that the ChromeOS cros-disks daemon is requested to mount.
   </summary>
 </histogram>
 
@@ -49,7 +48,7 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The media type of removable device that Chrome OS cros-disks daemon is
+    Media type of removable device that the ChromeOS cros-disks daemon is
     requested to mount.
   </summary>
 </histogram>
@@ -59,8 +58,8 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The type of file system that Chrome OS cros-disks daemon is requested to
-    mount.
+    File system type of external media that the ChromeOS cros-disks daemon is
+    requested to mount.
   </summary>
 </histogram>
 
@@ -69,8 +68,8 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The error code returned by the fuse-archive program, which is called every
-    time a user opens various archive files in ChromeOS Files App.
+    Error returned by the fuse-archive program, which is called every time a
+    user opens various archive files in ChromeOS Files App.
   </summary>
 </histogram>
 
@@ -79,8 +78,8 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The error code returned by ZIP mounting program fuse-zip, which is called
-    every time a user opens a ZIP archive in ChromeOS Files App.
+    Error returned by the ZIP mounting program mount-zip, which is called every
+    time a user opens a ZIP archive in ChromeOS Files App.
   </summary>
 </histogram>
 
@@ -89,8 +88,8 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The error code returned by RAR mounting program rar2fs, which is called
-    every time a user opens a RAR archive in ChromeOS Files App.
+    Error returned by the RAR mounting program rar2fs, which is called every
+    time a user opens a RAR archive in ChromeOS Files App.
   </summary>
 </histogram>
 
@@ -99,8 +98,8 @@ chromium-metrics-reviews@google.com.
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The error code of disk format signals received from the Chrome OS cros-disks
-    daemon.
+    Error returned by the ChromeOS cros-disks daemon when formatting an external
+    drive.
   </summary>
 </histogram>
 
@@ -109,8 +108,7 @@ chromium-metrics-reviews@google.com.
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Time taken for the Chrome OS cros-disks daemon to perform a format
-    operation.
+    Time taken by the ChromeOS cros-disks daemon to format an external drive.
   </summary>
 </histogram>
 
@@ -119,8 +117,8 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The error code of disk mount signals received from the Chrome OS cros-disks
-    daemon.
+    Error returned by the ChromeOS cros-disks daemon when mounting a file
+    system.
   </summary>
 </histogram>
 
@@ -129,7 +127,7 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The {mount type}x{mount error code} received from the Chrome OS cros-disks
+    Combination of (mount type, mount error) returned by the ChromeOS cros-disks
     daemon.
   </summary>
 </histogram>
@@ -139,7 +137,7 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Time taken by the Chrome OS cros-disks daemon to perform a Mount operation.
+    Time taken by the ChromeOS cros-disks daemon to mount a file system.
   </summary>
 </histogram>
 
@@ -148,8 +146,8 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The error code of disk unmount operations returned from the Chrome OS
-    cros-disks daemon.
+    Error returned by the ChromeOS cros-disks daemon when unmounting a file
+    system.
   </summary>
 </histogram>
 
@@ -158,8 +156,7 @@ chromium-metrics-reviews@google.com.
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Time taken by the Chrome OS cros-disks daemon to perform an Unmount
-    operation.
+    Time taken by the ChromeOS cros-disks daemon to unmount a file system.
   </summary>
 </histogram>
 
