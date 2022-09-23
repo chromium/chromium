@@ -911,8 +911,9 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
 
     EXPECT_EQ(expected_num_jobs,
               static_cast<int>(ongoing_mock_requests_.size()));
-    for (auto& job : ongoing_mock_requests_)
-      std::ignore = job.client.Unbind().PassPipe().release();
+    for (auto& job : ongoing_mock_requests_) {
+      abandoned_client_pipes_.push_back(job.client.Unbind().PassPipe());
+    }
     ongoing_mock_requests_.clear();
   }
 
@@ -941,6 +942,7 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
   int num_jobs_to_wait_for_ = 0;
   std::vector<content::URLLoaderInterceptor::RequestParams>
       ongoing_mock_requests_;
+  std::vector<mojo::ScopedMessagePipeHandle> abandoned_client_pipes_;
   std::atomic<bool> behind_captive_portal_;
 #if BUILDFLAG(IS_WIN)
   base::win::ScopedDomainStateForTesting scoped_domain_;
@@ -1104,6 +1106,7 @@ void CaptivePortalBrowserTest::TearDownOnMainThread() {
   // No test should have a captive portal check pending on quit.
   EXPECT_FALSE(CheckPending(browser()));
   url_loader_interceptor_.reset();
+  abandoned_client_pipes_.clear();
 }
 
 void CaptivePortalBrowserTest::EnableCaptivePortalDetection(
