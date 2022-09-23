@@ -109,17 +109,6 @@ void OpenHostedDriveFsFile(const base::FilePath& file_path,
   OpenNewTab(hosted_url);
 }
 
-// Open a hosted MS Office file e.g. .docx, from a path hosted in DriveFS.
-void OpenHostedOfficeFile(const base::FilePath& file_path,
-                          drive::FileError error,
-                          drivefs::mojom::FileMetadataPtr metadata) {
-  if (error != drive::FILE_ERROR_OK)
-    return;
-  GURL hosted_url(metadata->alternate_url);
-
-  OpenNewTabForHostedOfficeFile(hosted_url);
-}
-
 }  // namespace
 
 bool OpenFileWithBrowser(Profile* profile,

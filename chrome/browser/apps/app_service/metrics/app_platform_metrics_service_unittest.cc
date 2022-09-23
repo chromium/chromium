@@ -160,28 +160,6 @@ void SetSuspendImminent() {
       power_manager::SuspendImminent_Reason_OTHER);
 }
 
-apps::mojom::AppPtr MakeApp(
-    const std::string& app_id,
-    apps::mojom::AppType app_type,
-    const std::string& publisher_id,
-    apps::mojom::Readiness readiness,
-    apps::mojom::InstallReason install_reason,
-    apps::mojom::InstallSource install_source,
-    apps::mojom::OptionalBool is_platform_app =
-        apps::mojom::OptionalBool::kUnknown,
-    apps::mojom::WindowMode window_mode = apps::mojom::WindowMode::kUnknown) {
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_id = app_id;
-  app->app_type = app_type;
-  app->publisher_id = publisher_id;
-  app->readiness = readiness;
-  app->install_reason = install_reason;
-  app->install_source = install_source;
-  app->is_platform_app = is_platform_app;
-  app->window_mode = window_mode;
-  return app;
-}
-
 apps::AppPtr MakeApp(const std::string& app_id,
                      apps::AppType app_type,
                      const std::string& publisher_id,

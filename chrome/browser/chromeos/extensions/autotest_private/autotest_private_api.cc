@@ -496,11 +496,6 @@ api::autotest_private::HotseatState GetHotseatState(
   NOTREACHED();
 }
 
-std::unique_ptr<bool> ConvertOptionalBool(absl::optional<bool> optional) {
-  return optional.has_value() ? std::make_unique<bool>(optional.value())
-                              : nullptr;
-}
-
 // Helper function to set allowed user pref based on |pref_name| with any
 // specific pref validations. Returns error messages if any.
 std::string SetAllowedPref(Profile* profile,

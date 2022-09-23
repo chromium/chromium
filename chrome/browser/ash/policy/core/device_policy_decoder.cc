@@ -155,14 +155,6 @@ std::unique_ptr<base::Value> DecodeConnectionType(int value) {
   return std::make_unique<base::Value>(iter->second);
 }
 
-void AddDeprecationWarning(const std::string& old_name,
-                           const std::string& new_name,
-                           PolicyMap* policies) {
-  policies->AddMessage(old_name, PolicyMap::MessageType::kError,
-                       IDS_POLICY_MIGRATED_OLD_POLICY,
-                       {base::UTF8ToUTF16(new_name)});
-}
-
 void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                          PolicyMap* policies) {
   if (policy.has_guest_mode_enabled()) {

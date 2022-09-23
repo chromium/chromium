@@ -21,6 +21,7 @@
 
 namespace {
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Maps an upgrade level to a severity level. When |show_very_low_upgrade_level|
 // is true, VERY_LOW through HIGH all return Severity::LOW. Otherwise, VERY_LOW
 // is ignored and LOW through HIGH return their respective Severity level, with
@@ -63,6 +64,7 @@ AppMenuIconController::Severity SeverityFromUpgradeLevel(
 
   return AppMenuIconController::Severity::NONE;
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Return true if the browser is updating on the dev or canary channels.
 bool IsUnstableChannel() {

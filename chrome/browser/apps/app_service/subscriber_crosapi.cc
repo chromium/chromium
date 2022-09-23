@@ -30,15 +30,6 @@ bool Accepts(apps::AppType app_type) {
          app_type == apps::AppType::kStandaloneBrowserChromeApp;
 }
 
-bool Accepts(const std::vector<apps::mojom::AppPtr>& deltas) {
-  for (const auto& delta : deltas) {
-    if (!Accepts(apps::ConvertMojomAppTypToAppType(delta->app_type))) {
-      return false;
-    }
-  }
-  return true;
-}
-
 }  // namespace
 
 namespace apps {

@@ -10,7 +10,6 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -145,18 +144,6 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
 
   NOTREACHED() << "Bad enrollment mode: " << mode;
   return em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_MANUAL;
-}
-
-// A utility function of base::ReadFileToString which returns an optional
-// string.
-// TODO(mukai): move this to base/files.
-absl::optional<std::string> ReadFileToOptionalString(
-    const base::FilePath& file_path) {
-  std::string content;
-  absl::optional<std::string> result;
-  if (base::ReadFileToString(file_path, &content))
-    result = std::move(content);
-  return result;
 }
 
 // Returns the PSM protocol execution result if prefs::kEnrollmentPsmResult is

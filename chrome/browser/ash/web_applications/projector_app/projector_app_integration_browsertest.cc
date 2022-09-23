@@ -18,6 +18,7 @@
 
 namespace {
 
+#if BUILDFLAG(ENABLE_CROS_MEDIA_APP) && BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
 // File containing the test utility library
 constexpr base::FilePath::CharType kTestLibraryPath[] =
     FILE_PATH_LITERAL("ash/webui/system_apps/public/js/dom_testing_helpers.js");
@@ -29,6 +30,8 @@ void PrepareAppForTest(content::WebContents* web_contents) {
                 web_contents, SandboxedWebUiAppTestBase::LoadJsTestLibrary(
                                   base::FilePath(kTestLibraryPath))));
 }
+#endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP) &&
+        // BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
 
 }  // namespace
 
@@ -93,7 +96,8 @@ IN_PROC_BROWSER_TEST_P(ProjectorAppIntegrationTest,
                       annotator_embedder, kCheckInkLoaded)
                       .ExtractBool());
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP) &&
+        // BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     ProjectorAppIntegrationTest);

@@ -470,20 +470,20 @@ extensions::api::file_manager_private::DlpLevel DlpRulesManagerLevelToApiEnum(
 extensions::api::file_manager_private::VolumeType
 DlpRulesManagerComponentToApiEnum(
     policy::DlpRulesManager::Component component) {
-  using extensions::api::file_manager_private::VolumeType;
-  using Component = policy::DlpRulesManager::Component;
+  using ::extensions::api::file_manager_private::VolumeType;
+  using Component = ::policy::DlpRulesManager::Component;
   switch (component) {
-    case policy::DlpRulesManager::Component::kArc:
+    case Component::kArc:
       return VolumeType::VOLUME_TYPE_ANDROID_FILES;
-    case policy::DlpRulesManager::Component::kCrostini:
+    case Component::kCrostini:
       return VolumeType::VOLUME_TYPE_CROSTINI;
-    case policy::DlpRulesManager::Component::kPluginVm:
+    case Component::kPluginVm:
       return VolumeType::VOLUME_TYPE_GUEST_OS;
-    case policy::DlpRulesManager::Component::kUsb:
+    case Component::kUsb:
       return VolumeType::VOLUME_TYPE_REMOVABLE;
-    case policy::DlpRulesManager::Component::kDrive:
+    case Component::kDrive:
       return VolumeType::VOLUME_TYPE_DRIVE;
-    case policy::DlpRulesManager::Component::kUnknownComponent:
+    case Component::kUnknownComponent:
       NOTREACHED() << "DLP component not set.";
       return {};
   }

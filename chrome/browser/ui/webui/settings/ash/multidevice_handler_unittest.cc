@@ -1074,7 +1074,6 @@ TEST_F(MultideviceHandlerTest, CameraRollSetupFlow) {
 }
 
 TEST_F(MultideviceHandlerTest, LogUmaMetricsForSetupFlow) {
-  using Status = phonehub::CombinedAccessSetupOperation::Status;
   fake_multidevice_feature_access_manager()
       ->SetFeatureSetupRequestSupportedInternal(true);
   base::HistogramTester histogram_tester;

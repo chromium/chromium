@@ -25,7 +25,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -303,20 +302,6 @@ Profile* GetProfileForExtensionTask(Profile* profile,
   if (extension.is_platform_app())
     return profile->GetOriginalProfile();
   return profile;
-}
-
-GURL GetIconURL(Profile* profile, const Extension& extension) {
-  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile) &&
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-              ->AppRegistryCache()
-              .GetAppType(extension.id()) != apps::AppType::kUnknown) {
-    return apps::AppIconSource::GetIconURL(
-        extension.id(), extension_misc::EXTENSION_ICON_SMALL);
-  }
-  return extensions::ExtensionIconSource::GetIconURL(
-      &extension, extension_misc::EXTENSION_ICON_SMALL,
-      ExtensionIconSet::MATCH_BIGGER,
-      false);  // grayscale
 }
 
 void ExecuteTaskAfterMimeTypesCollected(

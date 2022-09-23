@@ -28,6 +28,8 @@ namespace power {
 namespace auto_screen_brightness {
 
 namespace {
+
+#if !BUILDFLAG(USE_IIOSERVICE)
 // Returns the number of ALS on this device that we can use. This should run in
 // another thread to be non-blocking to the main thread.
 int GetNumAls() {
@@ -55,6 +57,8 @@ int GetNumAls() {
 
   return num_als;
 }
+#endif  // !BUILDFLAG(USE_IIOSERVICE)
+
 }  // namespace
 
 AlsReader::AlsReader() = default;

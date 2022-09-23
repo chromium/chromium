@@ -278,32 +278,6 @@ static std::string Join(const List& list) {
   return joined;
 }
 
-void SetLocaleString(App::LocaleString* locale_string,
-                     const std::string& locale,
-                     const std::string& value) {
-  DCHECK(!locale.empty());
-  App::LocaleString::Entry* entry = locale_string->add_values();
-  // Add both specified locale, and empty default.
-  for (auto& l : {locale, std::string()}) {
-    entry->set_locale(l);
-    entry->set_value(value);
-  }
-}
-
-void SetLocaleStrings(App::LocaleStrings* locale_strings,
-                      const std::string& locale,
-                      std::vector<std::string> values) {
-  DCHECK(!locale.empty());
-  App::LocaleStrings::StringsWithLocale* strings = locale_strings->add_values();
-  // Add both specified locale, and empty default.
-  for (auto& l : {locale, std::string()}) {
-    strings->set_locale(l);
-    for (auto& v : values) {
-      strings->add_value(v);
-    }
-  }
-}
-
 std::string GetStringKey(const base::Value& dict,
                          const base::StringPiece& key) {
   if (!dict.is_dict()) {

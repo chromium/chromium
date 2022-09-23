@@ -220,11 +220,6 @@ std::string Redact(const base::FilePath& path) {
   return Redact(path.value());
 }
 
-std::string SkColorToHexString(const SkColor color) {
-  return base::StringPrintf("#%02x%02x%02x", SkColorGetR(color),
-                            SkColorGetG(color), SkColorGetB(color));
-}
-
 }  // namespace
 
 ExtensionFunction::ResponseAction

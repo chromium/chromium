@@ -7,7 +7,6 @@
 #include <cmath>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
@@ -44,23 +43,6 @@ constexpr auto kAllowedLaunchAppIds = base::MakeFixedFlatSet<base::StringPiece>(
 void LogIconLoadStatus(apps::DiscoveryError status) {
   base::UmaHistogramEnumeration("Apps.AppList.GameResult.IconLoadStatus",
                                 status);
-}
-
-bool IsDarkModeEnabled() {
-  // TODO(crbug.com/1258415): Simplify this logic once the productivity launcher
-  // is launched.
-
-  // Launcher search results UI is light by default, so use icons for light
-  // background if dark/light mode feature is not enabled. Productivity launcher
-  // has dark background by default, so use icons for dark background in that
-  // case.
-  if (ash::features::IsProductivityLauncherEnabled())
-    return true;
-  auto* dark_light_mode_controller = ash::DarkLightModeController::Get();
-  if (!dark_light_mode_controller)
-    return false;
-  return ash::features::IsDarkLightModeEnabled() &&
-         dark_light_mode_controller->IsDarkModeEnabled();
 }
 
 // Calculates the side length of the largest square that will fit in a circle of
