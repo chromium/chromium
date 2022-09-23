@@ -30,18 +30,17 @@ std::string eTLDPlusOne(const GURL& url) {
 
 const std::map<std::string, std::string>& GetCartPatternMapping() {
   static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
-    const base::Value json(
-        base::JSONReader::Read(
-            commerce::kCartPatternMapping.Get().empty()
-                ? ui::ResourceBundle::GetSharedInstance()
-                      .LoadDataResourceString(
-                          IDR_CART_DOMAIN_CART_URL_REGEX_JSON)
-                : commerce::kCartPatternMapping.Get())
-            .value());
+    base::Value json(base::JSONReader::Read(
+                         commerce::kCartPatternMapping.Get().empty()
+                             ? ui::ResourceBundle::GetSharedInstance()
+                                   .LoadDataResourceString(
+                                       IDR_CART_DOMAIN_CART_URL_REGEX_JSON)
+                             : commerce::kCartPatternMapping.Get())
+                         .value());
     DCHECK(json.is_dict());
     std::map<std::string, std::string> map;
-    for (auto item : json.DictItems()) {
-      map.insert({std::move(item.first), std::move(item.second.GetString())});
+    for (auto&& item : json.DictItems()) {
+      map.insert({std::move(item.first), std::move(item.second).TakeString()});
     }
     return map;
   }());
@@ -50,7 +49,7 @@ const std::map<std::string, std::string>& GetCartPatternMapping() {
 
 const std::map<std::string, std::string>& GetCheckoutPatternMapping() {
   static base::NoDestructor<std::map<std::string, std::string>> pattern_map([] {
-    const base::Value json(
+    base::Value json(
         base::JSONReader::Read(
             commerce::kCheckoutPatternMapping.Get().empty()
                 ? ui::ResourceBundle::GetSharedInstance()
@@ -60,8 +59,8 @@ const std::map<std::string, std::string>& GetCheckoutPatternMapping() {
             .value());
     DCHECK(json.is_dict());
     std::map<std::string, std::string> map;
-    for (const auto item : json.DictItems()) {
-      map.insert({std::move(item.first), std::move(item.second.GetString())});
+    for (auto&& item : json.DictItems()) {
+      map.insert({std::move(item.first), std::move(item.second).TakeString()});
     }
     return map;
   }());
