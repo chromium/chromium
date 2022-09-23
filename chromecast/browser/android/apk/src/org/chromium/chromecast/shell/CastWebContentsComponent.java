@@ -253,6 +253,11 @@ public class CastWebContentsComponent {
         sendIntentSync(CastWebContentsIntentUtils.enableTouchInput(mSessionId, enabled));
     }
 
+    public void setAllowPictureInPicture(boolean allowPictureInPicture) {
+        sendIntentSync(CastWebContentsIntentUtils.allowPictureInPicture(
+                mSessionId, allowPictureInPicture));
+    }
+
     public static void onComponentClosed(String sessionId) {
         if (DEBUG) Log.d(TAG, "onComponentClosed");
         sendIntentSync(CastWebContentsIntentUtils.onActivityStopped(sessionId));

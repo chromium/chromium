@@ -93,6 +93,7 @@ public class CastWebContentsActivity extends Activity {
     @Nullable
     private CastWebContentsSurfaceHelper mSurfaceHelper;
 
+    private boolean mAllowPictureInPicture;
     private boolean mIsInPictureInPictureMode;
 
     {
@@ -131,6 +132,15 @@ public class CastWebContentsActivity extends Activity {
         });
 
         mCreatedState.subscribe(Observers.onExit(x -> mSurfaceHelperState.reset()));
+
+        mCreatedState.subscribe(x -> {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(CastWebContentsIntentUtils.ACTION_ALLOW_PICTURE_IN_PICTURE);
+            return new LocalBroadcastReceiverScope(filter, (Intent intent) -> {
+                mAllowPictureInPicture =
+                        CastWebContentsIntentUtils.isPictureInPictureAllowed(intent);
+            });
+        });
 
         // Set a flag to exit sleep mode when this activity starts.
         mCreatedState.and(mGotIntentState)
@@ -200,11 +210,6 @@ public class CastWebContentsActivity extends Activity {
         // For more information read:
         // http://developer.android.com/training/managing-audio/volume-playback.html
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
-        if (canAutoEnterPictureInPicture()) {
-            setPictureInPictureParams(
-                    new PictureInPictureParams.Builder().setAutoEnterEnabled(true).build());
-        }
     }
 
     @Override
@@ -283,7 +288,7 @@ public class CastWebContentsActivity extends Activity {
     @Override
     public void onUserLeaveHint() {
         if (DEBUG) Log.d(TAG, "onUserLeaveHint");
-        if (canUsePictureInPicture() && !canAutoEnterPictureInPicture()) {
+        if (canUsePictureInPicture() && mAllowPictureInPicture) {
             enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
         }
     }
@@ -318,10 +323,6 @@ public class CastWebContentsActivity extends Activity {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 && getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
                 && !BuildInfo.getInstance().isTV;
-    }
-
-    private boolean canAutoEnterPictureInPicture() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && canUsePictureInPicture();
     }
 
     public void finishForTesting() {

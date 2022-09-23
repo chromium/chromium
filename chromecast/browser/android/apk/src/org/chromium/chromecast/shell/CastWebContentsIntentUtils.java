@@ -48,6 +48,12 @@ public class CastWebContentsIntentUtils {
     public static final String ACTION_ENABLE_TOUCH_INPUT =
             "com.google.android.apps.castshell.intent.action.ENABLE_TOUCH_INPUT";
 
+    /**
+     * Action to notify CastWebContentsActivity whether PiP is allowed.
+     */
+    public static final String ACTION_ALLOW_PICTURE_IN_PICTURE =
+            "com.google.android.apps.castshell.intent.action.ALLOW_PICTURE_IN_PICTURE";
+
     /** Key of extra value in an intent, the value is a URI of cast://webcontents/<instanceId> */
     static final String INTENT_EXTRA_URI = "content_uri";
 
@@ -62,6 +68,12 @@ public class CastWebContentsIntentUtils {
      */
     static final String INTENT_EXTRA_TOUCH_INPUT_ENABLED =
             "com.google.android.apps.castshell.intent.extra.ENABLE_TOUCH";
+
+    /**
+     *  Key of extra indicating whether PiP is allowed.
+     */
+    static final String INTENT_EXTRA_ALLOW_PICTURE_IN_PICTURE =
+            "com.google.android.apps.castshell.intent.extra.ALLOW_PICTURE_IN_PICTURE";
 
     /** Key of extra value of the intent to start a web content, value is true is if cast app is
      *  a remote control app.
@@ -222,6 +234,11 @@ public class CastWebContentsIntentUtils {
         return isTouchable(in.getExtras());
     }
 
+    // Used by ACTION_ALLOW_PICTURE_IN_PICTURE
+    public static boolean isPictureInPictureAllowed(Intent in) {
+        return in.getExtras().getBoolean(INTENT_EXTRA_ALLOW_PICTURE_IN_PICTURE);
+    }
+
     // Used by ACTION_VIEW
     public static boolean isRemoteControlMode(Bundle bundle) {
         return bundle.getBoolean(INTENT_EXTRA_REMOTE_CONTROL_MODE);
@@ -247,6 +264,14 @@ public class CastWebContentsIntentUtils {
         Intent intent = new Intent(ACTION_ENABLE_TOUCH_INPUT);
         intent.putExtra(INTENT_EXTRA_URI, getInstanceUri(instanceId).toString());
         intent.putExtra(INTENT_EXTRA_TOUCH_INPUT_ENABLED, enabled);
+        return intent;
+    }
+
+    // CastWebContentsComponent -> CastWebContentsActivity
+    public static Intent allowPictureInPicture(String instanceId, boolean allowPictureInPicture) {
+        Intent intent = new Intent(ACTION_ALLOW_PICTURE_IN_PICTURE);
+        intent.putExtra(INTENT_EXTRA_URI, getInstanceUri(instanceId).toString());
+        intent.putExtra(INTENT_EXTRA_ALLOW_PICTURE_IN_PICTURE, allowPictureInPicture);
         return intent;
     }
 

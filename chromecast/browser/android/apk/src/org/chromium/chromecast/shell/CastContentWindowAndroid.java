@@ -97,6 +97,12 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
 
     @SuppressWarnings("unused")
     @CalledByNative
+    private void setAllowPictureInPicture(boolean allowPictureInPicture) {
+        mComponent.setAllowPictureInPicture(allowPictureInPicture);
+    }
+
+    @SuppressWarnings("unused")
+    @CalledByNative
     private void onNativeDestroyed() {
         assert mNativeCastContentWindowAndroid != 0;
         mNativeCastContentWindowAndroid = 0;

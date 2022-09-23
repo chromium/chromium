@@ -10,7 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chromecast/browser/jni_headers/CastContentWindowAndroid_jni.h"
-#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace chromecast {
 
@@ -56,6 +56,9 @@ void CastContentWindowAndroid::CreateWindow(
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
+
+  content::WebContentsObserver::Observe(cast_web_contents()->web_contents());
+
   base::android::ScopedJavaLocalRef<jobject> java_web_contents =
       cast_web_contents()->web_contents()->GetJavaWebContents();
 
@@ -80,6 +83,25 @@ void CastContentWindowAndroid::EnableTouchInput(bool enabled) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CastContentWindowAndroid_enableTouchInput(
       env, java_window_, static_cast<jboolean>(enabled));
+}
+
+void CastContentWindowAndroid::MediaStartedPlaying(
+    const content::WebContentsObserver::MediaPlayerInfo& video_type,
+    const content::MediaPlayerId& id) {
+  if (video_type.has_video) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_CastContentWindowAndroid_setAllowPictureInPicture(
+        env, java_window_, static_cast<jboolean>(true));
+  }
+}
+
+void CastContentWindowAndroid::MediaStoppedPlaying(
+    const content::WebContentsObserver::MediaPlayerInfo& video_type,
+    const content::MediaPlayerId& id,
+    content::WebContentsObserver::MediaStoppedReason reason) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_CastContentWindowAndroid_setAllowPictureInPicture(
+      env, java_window_, static_cast<jboolean>(false));
 }
 
 void CastContentWindowAndroid::OnActivityStopped(

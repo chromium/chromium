@@ -19,10 +19,12 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.PictureInPictureParams;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -50,7 +52,9 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowActivityManager;
+import org.robolectric.shadows.ShadowPackageManager;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
@@ -69,6 +73,7 @@ public class CastWebContentsActivityTest {
     public static class ExtendedShadowActivity extends ShadowActivity {
         private boolean mTurnScreenOn;
         private boolean mShowWhenLocked;
+        private boolean mInPipMode;
         private MotionEvent mLastTouchEvent;
 
         public boolean getTurnScreenOn() {
@@ -77,6 +82,10 @@ public class CastWebContentsActivityTest {
 
         public boolean getShowWhenLocked() {
             return mShowWhenLocked;
+        }
+
+        public boolean getInPictureInPictureMode() {
+            return mInPipMode;
         }
 
         public MotionEvent popLastTouchEvent() {
@@ -100,9 +109,16 @@ public class CastWebContentsActivityTest {
             mLastTouchEvent = ev;
             return true;
         }
+
+        @Override
+        public boolean enterPictureInPictureMode(PictureInPictureParams params) {
+            mInPipMode = true;
+            return true;
+        }
     }
 
     private ShadowActivityManager mShadowActivityManager;
+    private ShadowPackageManager mShadowPackageManager;
     private ActivityController<CastWebContentsActivity> mActivityLifecycle;
     private CastWebContentsActivity mActivity;
     private ShadowActivity mShadowActivity;
@@ -122,11 +138,15 @@ public class CastWebContentsActivityTest {
         mShadowActivityManager =
                 Shadows.shadowOf((ActivityManager) RuntimeEnvironment.application.getSystemService(
                         Context.ACTIVITY_SERVICE));
+        mShadowPackageManager =
+                Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
         mActivityLifecycle =
                 Robolectric.buildActivity(CastWebContentsActivity.class, defaultIntent);
         mActivity = mActivityLifecycle.get();
         mActivity.testingModeForTesting();
         mShadowActivity = Shadows.shadowOf(mActivity);
+
+        ContextUtils.initApplicationContextForTests(RuntimeEnvironment.application);
     }
 
     @Test
@@ -467,6 +487,34 @@ public class CastWebContentsActivityTest {
                     mActivityLifecycle.pause().stop();
                     assertTrue(mActivity.isFinishing());
                 }, true);
+    }
+
+    @Test
+    @Config(shadows = {ExtendedShadowActivity.class})
+    public void testEntersPipWhenAllowPipIsTrue() {
+        mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
+        mActivityLifecycle.create().start().resume();
+
+        CastWebContentsIntentUtils.getLocalBroadcastManager().sendBroadcastSync(
+                CastWebContentsIntentUtils.allowPictureInPicture(mSessionId, true));
+        mActivity.onUserLeaveHint();
+
+        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
+        assertTrue(shadowActivity.getInPictureInPictureMode());
+    }
+
+    @Test
+    @Config(shadows = {ExtendedShadowActivity.class})
+    public void testDoesNotenterPipWhenAllowPipIsFalse() {
+        mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
+        mActivityLifecycle.create().start().resume();
+
+        CastWebContentsIntentUtils.getLocalBroadcastManager().sendBroadcastSync(
+                CastWebContentsIntentUtils.allowPictureInPicture(mSessionId, false));
+        mActivity.onUserLeaveHint();
+
+        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
+        assertFalse(shadowActivity.getInPictureInPictureMode());
     }
 
     private IntentFilter filterFor(String action) {
