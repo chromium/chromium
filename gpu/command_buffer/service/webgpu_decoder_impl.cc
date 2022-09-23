@@ -575,15 +575,16 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       DCHECK(texture_);
     }
 
-    bool ComputeStagingBufferParams(const SkImageInfo& image_info,
+    bool ComputeStagingBufferParams(viz::ResourceFormat format,
+                                    const gfx::Size& size,
                                     uint32_t* bytes_per_row,
                                     size_t* buffer_size) const {
       DCHECK(bytes_per_row);
       DCHECK(buffer_size);
 
       base::CheckedNumeric<uint32_t> checked_bytes_per_row(
-          image_info.bytesPerPixel());
-      checked_bytes_per_row *= image_info.width();
+          viz::BitsPerPixel(format) / 8);
+      checked_bytes_per_row *= size.width();
 
       uint32_t packed_bytes_per_row;
       if (!checked_bytes_per_row.AssignIfValid(&packed_bytes_per_row)) {
@@ -603,12 +604,13 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       }
 
       base::CheckedNumeric<size_t> checked_buffer_size = checked_bytes_per_row;
-      checked_buffer_size *= image_info.height();
+      checked_buffer_size *= size.height();
 
       return checked_buffer_size.AssignIfValid(buffer_size);
     }
 
-    bool PopulateFromSkia() {
+    bool ReadPixelsIntoBuffer(void* dst_pointer, uint32_t bytes_per_row) {
+      DCHECK(dst_pointer);
       std::vector<GrBackendSemaphore> begin_semaphores;
       std::vector<GrBackendSemaphore> end_semaphores;
       auto scoped_read_access = representation_->BeginScopedReadAccess(
@@ -621,17 +623,49 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       // Wait for any work that previously used the image.
       WaitForSemaphores(std::move(begin_semaphores));
 
+      // Success status will be stored here instead of returning early
+      // because proper cleanup up the read access must be done at the
+      // end of the function.
+      bool success = true;
+
       // Make an SkImage to read the image contents
       auto sk_image = scoped_read_access->CreateSkImage(
           shared_context_state_->gr_context());
       if (!sk_image) {
         DLOG(ERROR) << "Couldn't make SkImage";
-        return false;
+        // Don't return early so we can perform proper cleanup later.
+        success = false;
       }
 
+      // Read back the Skia image contents into the staging buffer.
+      DCHECK(dst_pointer);
+      if (success && !sk_image->readPixels(shared_context_state_->gr_context(),
+                                           sk_image->imageInfo(), dst_pointer,
+                                           bytes_per_row, 0, 0)) {
+        DLOG(ERROR) << "Failed to read from SkImage";
+        success = false;
+      }
+
+      // Transition the image back to the desired end state. This is used
+      // for transitioning the image to the external queue for Vulkan/GL
+      // interop.
+      if (auto end_state = scoped_read_access->TakeEndState()) {
+        if (!shared_context_state_->gr_context()->setBackendTextureState(
+                scoped_read_access->promise_image_texture()->backendTexture(),
+                *end_state)) {
+          DLOG(ERROR) << "setBackendTextureState() failed.";
+        }
+      }
+      // Signal the semaphores.
+      SignalSemaphores(std::move(end_semaphores));
+      return success;
+    }
+
+    bool PopulateFromSkia() {
       uint32_t bytes_per_row;
       size_t buffer_size;
-      if (!ComputeStagingBufferParams(sk_image->imageInfo(), &bytes_per_row,
+      if (!ComputeStagingBufferParams(representation_->format(),
+                                      representation_->size(), &bytes_per_row,
                                       &buffer_size)) {
         return false;
       }
@@ -644,34 +678,15 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
           .mappedAtCreation = true,
       };
       WGPUBuffer buffer = procs_.deviceCreateBuffer(device_, &buffer_desc);
-
-      // Read back the Skia image contents into the staging buffer.
       void* dst_pointer =
           procs_.bufferGetMappedRange(buffer, 0, WGPU_WHOLE_MAP_SIZE);
-      DCHECK(dst_pointer);
-      if (!sk_image->readPixels(shared_context_state_->gr_context(),
-                                sk_image->imageInfo(), dst_pointer,
-                                bytes_per_row, 0, 0)) {
+
+      if (!ReadPixelsIntoBuffer(dst_pointer, bytes_per_row)) {
         procs_.bufferRelease(buffer);
-        DLOG(ERROR) << "Failed to read from SkImage";
         return false;
       }
       // Unmap the buffer.
       procs_.bufferUnmap(buffer);
-
-      // Transition the image back to the desired end state. This is used for
-      // transitioning the image to the external queue for Vulkan/GL interop.
-      if (auto end_state = scoped_read_access->TakeEndState()) {
-        if (!shared_context_state_->gr_context()->setBackendTextureState(
-                scoped_read_access->promise_image_texture()->backendTexture(),
-                *end_state)) {
-          DLOG(ERROR) << "setBackendTextureState() failed.";
-          return false;
-        }
-      }
-
-      // ReadPixels finished; signal the semaphores.
-      SignalSemaphores(std::move(end_semaphores));
 
       // Copy from the staging WGPUBuffer into the WGPUTexture.
       WGPUDawnEncoderInternalUsageDescriptor internal_usage_desc = {
@@ -713,22 +728,10 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     }
 
     bool UploadContentsToSkia() {
-      std::vector<GrBackendSemaphore> begin_semaphores;
-      std::vector<GrBackendSemaphore> end_semaphores;
-      auto scoped_write_access = representation_->BeginScopedWriteAccess(
-          &begin_semaphores, &end_semaphores,
-          SharedImageRepresentation::AllowUnclearedAccess::kYes);
-      if (!scoped_write_access) {
-        DLOG(ERROR)
-            << "UploadContentsToSkia: Couldn't begin shared image access";
-        return false;
-      }
-
-      auto* surface = scoped_write_access->surface();
-
       uint32_t bytes_per_row;
       size_t buffer_size;
-      if (!ComputeStagingBufferParams(surface->imageInfo(), &bytes_per_row,
+      if (!ComputeStagingBufferParams(representation_->format(),
+                                      representation_->size(), &bytes_per_row,
                                       &buffer_size)) {
         return false;
       }
@@ -791,10 +794,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
           },
           &userdata);
 
-      // While the map is in flight, wait for any work that previously used the
-      // image.
-      WaitForSemaphores(std::move(begin_semaphores));
-
       // Poll for the map to complete.
       while (!userdata.map_complete) {
         base::PlatformThread::Sleep(base::Milliseconds(1));
@@ -808,6 +807,22 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       const void* data =
           procs_.bufferGetConstMappedRange(buffer, 0, WGPU_WHOLE_MAP_SIZE);
       DCHECK(data);
+
+      std::vector<GrBackendSemaphore> begin_semaphores;
+      std::vector<GrBackendSemaphore> end_semaphores;
+      auto scoped_write_access = representation_->BeginScopedWriteAccess(
+          &begin_semaphores, &end_semaphores,
+          SharedImageRepresentation::AllowUnclearedAccess::kYes);
+      if (!scoped_write_access) {
+        DLOG(ERROR)
+            << "UploadContentsToSkia: Couldn't begin shared image access";
+        procs_.bufferRelease(buffer);
+        return false;
+      }
+
+      auto* surface = scoped_write_access->surface();
+
+      WaitForSemaphores(std::move(begin_semaphores));
       surface->writePixels(SkPixmap(surface->imageInfo(), data, bytes_per_row),
                            /*x*/ 0, /*y*/ 0);
 
@@ -818,7 +833,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       if (auto end_state = scoped_write_access->TakeEndState()) {
         // It's ok to pass in empty GrFlushInfo here since SignalSemaphores()
         // will populate it with semaphores and call GrDirectContext::flush.
-        scoped_write_access->surface()->flush(/*info=*/{}, end_state.get());
+        surface->flush(/*info=*/{}, end_state.get());
       }
 
       SignalSemaphores(std::move(end_semaphores));
