@@ -559,7 +559,7 @@ void AutofillAgent::FillOrPreviewForm(int32_t query_id,
   // If `element_` is null or not focused, Autofill was triggered from another
   // frame. In this case, set `element_` to some form field as if Autofill had
   // been triggered from that field. This is necessary because currently
-  // AutofillAgent relies on `elemet_` in many places.
+  // AutofillAgent relies on `element_` in many places.
   // Note: The `element_` needs to be updated for the new, parameterized
   // sectioning algorithm regardless the `query_id`. Otherwise,
   // `ReplaceElementIfNowInvalid()` choses the incorrect element as the

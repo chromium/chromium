@@ -28,6 +28,27 @@ bool HaveSeenSimilarType(ServerFieldType type,
   return seen_types.count(type) > 0;
 }
 
+// Some forms have adjacent fields of the same or very similar type. These
+// generally belong in the same section. Common examples:
+//  * Forms with two email fields, where the second is meant to "confirm"
+//    the first.
+//  * Forms with a <select> field for states in some countries, and a freeform
+//    <input> field for states in other countries. (Usually, only one of these
+//    two will be visible for any given choice of country.)
+//  * In Japan, forms commonly have separate inputs for phonetic names. In
+//    practice this means consecutive name field types (e.g. first name and last
+//    name).
+bool ConsecutiveSimilarFieldType(ServerFieldType current_type,
+                                 ServerFieldType previous_type) {
+  if (previous_type == current_type)
+    return true;
+  if (AutofillType(current_type).group() == FieldTypeGroup::kName &&
+      AutofillType(previous_type).group() == FieldTypeGroup::kName) {
+    return true;
+  }
+  return false;
+}
+
 // Sectionable fields are all the fields that are in a non-default section.
 // Generally, only focusable fields are assigned a section. As an exception,
 // unfocusable <select> elements get a section, as hidden <select> elements are
@@ -89,15 +110,10 @@ bool ShouldStartNewSection(const ServerFieldTypeSet& seen_types,
   if (current_type == UNKNOWN_TYPE)
     return false;
 
-  // Some forms have adjacent fields of the same type. Two common examples:
-  //  * Forms with two email fields, where the second is meant to "confirm"
-  //    the first.
-  //  * Forms with a <select> menu for states in some countries, and a freeform
-  //    <input> field for states in other countries. (Usually, only one  of
-  //    these two will be visible for any given choice of country.)
-  // Generally, adjacent fields of the same type belong in the same logical
-  // section.
-  if (current_type == previous_field.Type().GetStorableType()) {
+  // Generally, adjacent fields of the same or very similar type belong in the
+  // same logical section.
+  if (ConsecutiveSimilarFieldType(current_type,
+                                  previous_field.Type().GetStorableType())) {
     return false;
   }
 

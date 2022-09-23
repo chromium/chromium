@@ -6183,6 +6183,53 @@ TEST_F(FormStructureTestImpl, NoSplitByRecurringPhoneFieldType) {
   EXPECT_EQ("blue-billing", form_structure.field(6)->section.ToString());
 }
 
+// Tests that adjacent name field types are not split into different sections.
+TEST_F(FormStructureTestImpl, NoSplitAdjacentNameFieldType) {
+  base::test::ScopedFeatureList enabled;
+  enabled.InitAndEnableFeature(features::kAutofillUseParameterizedSectioning);
+
+  FormData form;
+  form.url = GURL("http://foo.com");
+  FormFieldData field;
+
+  test::CreateTestFormField("First Name", "firstname", "", "text", &field);
+  form.fields.push_back(field);
+
+  test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
+  form.fields.push_back(field);
+
+  test::CreateTestFormField("Phonetic First Name", "firstname", "", "text",
+                            &field);
+  form.fields.push_back(field);
+
+  test::CreateTestFormField("Phonetic Last Name", "lastname", "", "text",
+                            &field);
+  form.fields.push_back(field);
+
+  test::CreateTestFormField("Country", "country", "", "text", &field);
+  form.fields.push_back(field);
+
+  test::CreateTestFormField("First Name", "firstname", "", "text", &field);
+  form.fields.push_back(field);
+
+  FormStructure form_structure(form);
+  test_api(&form_structure)
+      .SetFieldTypes({NAME_FIRST, NAME_LAST, NAME_FIRST, NAME_LAST,
+                      ADDRESS_HOME_COUNTRY, NAME_FIRST});
+
+  test_api(&form_structure).IdentifySections(/*ignore_autocomplete=*/false);
+
+  // Assert the correct number of fields.
+  ASSERT_EQ(6U, form_structure.field_count());
+
+  EXPECT_EQ(form_structure.field(0)->section, form_structure.field(1)->section);
+  EXPECT_EQ(form_structure.field(0)->section, form_structure.field(2)->section);
+  EXPECT_EQ(form_structure.field(0)->section, form_structure.field(3)->section);
+  EXPECT_EQ(form_structure.field(0)->section, form_structure.field(4)->section);
+  // The non-adjacent name field should be split into a different section.
+  EXPECT_NE(form_structure.field(0)->section, form_structure.field(5)->section);
+}
+
 // Tests if a new logical form is started with the second appearance of a field
 // of type |ADDRESS_HOME_COUNTRY|.
 TEST_F(FormStructureTestImpl, SplitByRecurringFieldType) {
