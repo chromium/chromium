@@ -49,7 +49,7 @@ const base::Feature kDesktopPartialTranslate{"DesktopPartialTranslate",
 const base::FeatureParam<int>
     kDesktopPartialTranslateTextSelectionMaxCharacters{
         &kDesktopPartialTranslate,
-        "DesktopPartialTranslateTextSelectionMaxCharacters", 150};
+        "DesktopPartialTranslateTextSelectionMaxCharacters", 500};
 const base::FeatureParam<int> kDesktopPartialTranslateBubbleShowDelayMs{
     &kDesktopPartialTranslate, "DesktopPartialTranslateBubbleShowDelayMs", 500};
 
