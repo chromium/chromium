@@ -104,8 +104,14 @@ void FedCmAccountSelectionView::OnVisibilityChanged(
     return;
 
   if (visibility == content::Visibility::VISIBLE) {
+    bubble_widget_->widget_delegate()->SetCanActivate(true);
     bubble_widget_->Show();
   } else {
+    // On Mac, NativeWidgetMac::Activate() ignores the views::Widget visibility.
+    // Make the views::Widget non-activatable while it is hidden to prevent the
+    // views::Widget from being shown during focus traversal.
+    // TODO(crbug.com/1367309): fix the issue on Mac.
+    bubble_widget_->widget_delegate()->SetCanActivate(false);
     bubble_widget_->Hide();
   }
 }
