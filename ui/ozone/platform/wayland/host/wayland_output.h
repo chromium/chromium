@@ -51,7 +51,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
                                        float scale_factor,
                                        int32_t panel_transform,
                                        int32_t logical_transform,
-                                       const std::string& label) = 0;
+                                       const std::string& description) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -79,8 +79,8 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   gfx::Size logical_size() const;
   gfx::Size physical_size() const { return physical_size_; }
   gfx::Insets insets() const;
-  const std::string& label() const;
   const std::string& name() const;
+  const std::string& description() const;
   WaylandZcrColorManagementOutput* color_management_output() const {
     return color_management_output_.get();
   }
@@ -142,6 +142,14 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   gfx::Point origin_;
   // Size of the output in physical pixels.
   gfx::Size physical_size_;
+
+  // Fallback name and description.
+  // The XDG output specification suggests using it as the primary source of
+  // the information about the output.  Two attributes below are used if
+  // xdg_output_ is not present.
+  // See https://wayland.app/protocols/xdg-output-unstable-v1
+  std::string name_;
+  std::string description_;
 
   raw_ptr<Delegate> delegate_ = nullptr;
   raw_ptr<WaylandConnection> connection_ = nullptr;

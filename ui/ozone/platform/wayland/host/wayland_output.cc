@@ -132,12 +132,12 @@ gfx::Insets WaylandOutput::insets() const {
   return aura_output_ ? aura_output_->insets() : gfx::Insets();
 }
 
-const std::string& WaylandOutput::label() const {
-  return xdg_output_ ? xdg_output_->description() : base::EmptyString();
+const std::string& WaylandOutput::description() const {
+  return xdg_output_ ? xdg_output_->description() : description_;
 }
 
 const std::string& WaylandOutput::name() const {
-  return xdg_output_ ? xdg_output_->name() : base::EmptyString();
+  return xdg_output_ ? xdg_output_->name() : name_;
 }
 
 zaura_output* WaylandOutput::get_zaura_output() {
@@ -164,7 +164,7 @@ void WaylandOutput::TriggerDelegateNotifications() {
   }
   delegate_->OnOutputHandleMetrics(
       output_id_, origin(), logical_size(), physical_size_, insets(),
-      scale_factor_, panel_transform_, logical_transform(), label());
+      scale_factor_, panel_transform_, logical_transform(), description());
 }
 
 // static
@@ -220,19 +220,25 @@ void WaylandOutput::OutputHandleScale(void* data,
 }
 
 #if CHROME_WAYLAND_CHECK_VERSION(1, 20, 0)
+
 // static
 void WaylandOutput::OutputHandleName(void* data,
                                      struct wl_output* wl_output,
                                      const char* name) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data))
+    wayland_output->name_ = name ? std::string(name) : std::string{};
 }
 
 // static
 void WaylandOutput::OutputHandleDescription(void* data,
                                             struct wl_output* wl_output,
                                             const char* description) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data)) {
+    wayland_output->description_ =
+        description ? std::string(description) : std::string{};
+  }
 }
+
 #endif
 
 }  // namespace ui

@@ -67,7 +67,7 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
                              float scale_factor,
                              int32_t panel_transform,
                              int32_t logical_transform,
-                             const std::string& label) override;
+                             const std::string& description) override;
 
   OutputList output_list_;
 

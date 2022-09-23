@@ -121,7 +121,7 @@ void WaylandOutputManager::InitWaylandScreen(WaylandScreen* screen) {
           output.second->logical_size(), output.second->physical_size(),
           output.second->insets(), output.second->scale_factor(),
           output.second->panel_transform(), output.second->logical_transform(),
-          output.second->label());
+          output.second->description());
     }
   }
 }
@@ -145,19 +145,20 @@ const WaylandOutputManager::OutputList& WaylandOutputManager::GetAllOutputs()
   return output_list_;
 }
 
-void WaylandOutputManager::OnOutputHandleMetrics(WaylandOutput::Id output_id,
-                                                 const gfx::Point& origin,
-                                                 const gfx::Size& logical_size,
-                                                 const gfx::Size& physical_size,
-                                                 const gfx::Insets& insets,
-                                                 float scale_factor,
-                                                 int32_t panel_transform,
-                                                 int32_t logical_transform,
-                                                 const std::string& label) {
+void WaylandOutputManager::OnOutputHandleMetrics(
+    WaylandOutput::Id output_id,
+    const gfx::Point& origin,
+    const gfx::Size& logical_size,
+    const gfx::Size& physical_size,
+    const gfx::Insets& insets,
+    float scale_factor,
+    int32_t panel_transform,
+    int32_t logical_transform,
+    const std::string& description) {
   if (wayland_screen_) {
     wayland_screen_->OnOutputAddedOrUpdated(
         output_id, origin, logical_size, physical_size, insets, scale_factor,
-        panel_transform, logical_transform, label);
+        panel_transform, logical_transform, description);
   }
 
   // Update scale of the windows currently associated with |output_id|. i.e:
