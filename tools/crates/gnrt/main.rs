@@ -39,7 +39,13 @@ fn main() -> ExitCode {
 fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> ExitCode {
     let manifest_contents =
         String::from_utf8(fs::read(paths.third_party.join("third_party.toml")).unwrap()).unwrap();
-    let third_party_manifest: ThirdPartyManifest = toml::de::from_str(&manifest_contents).unwrap();
+    let third_party_manifest: ThirdPartyManifest = match toml::de::from_str(&manifest_contents) {
+        Ok(m) => m,
+        Err(e) => {
+            eprintln!("Failed to parse 'third_party.toml': {e}");
+            return ExitCode::FAILURE;
+        }
+    };
 
     // Collect special fields from third_party.toml.
     //
