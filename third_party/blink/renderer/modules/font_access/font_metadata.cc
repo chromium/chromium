@@ -55,8 +55,10 @@ ScriptPromise FontMetadata::blob(ScriptState* script_state) {
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&FontMetadata::BlobImpl,
+  ExecutionContext::From(script_state)
+      ->GetTaskRunner(TaskType::kFontLoading)
+      ->PostTask(FROM_HERE,
+                 WTF::BindOnce(&FontMetadata::BlobImpl,
                                WrapPersistent(resolver), postscriptName_));
 
   return promise;
