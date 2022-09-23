@@ -54,6 +54,13 @@ Vector<std::pair<String, String>> ResultsFromMojo(
       case mojom::blink::SubAppsServiceAddResultCode::kParentAppUninstalled:
         result = "parent-app-uninstalled";
         break;
+      case mojom::blink::SubAppsServiceAddResultCode::kInstallUrlInvalid:
+        result = "install-url-invalid";
+        break;
+      case mojom::blink::SubAppsServiceAddResultCode::
+          kNotValidManifestForWebApp:
+        result = "invalid-manifest-for-web-app";
+        break;
       case mojom::blink::SubAppsServiceAddResultCode::kFailure:
         result = "failure";
         break;

@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/commands/sub_app_install_command.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -165,20 +166,13 @@ void SubAppsServiceImpl::Add(
     }
   }
 
-  std::vector<AppId> app_ids_vector = {*parent_app_id};
-  base::ranges::for_each(
-      sub_apps,
-      [&app_ids_vector](const blink::mojom::SubAppsServiceAddInfoPtr& sub_app) {
-        app_ids_vector.push_back(
-            GenerateAppIdFromUnhashed(sub_app->unhashed_app_id));
-      });
-  base::flat_set<AppId> app_ids =
-      base::flat_set<AppId>(std::move(app_ids_vector));
-
   auto install_command = std::make_unique<SubAppInstallCommand>(
-      &provider->install_manager(), &provider->registrar(), *parent_app_id,
-      InstallParamsFromMojo(std::move(sub_apps)), std::move(app_ids),
-      base::BindOnce(&OnAdd, std::move(result_callback)));
+      *parent_app_id, InstallParamsFromMojo(std::move(sub_apps)),
+      base::BindOnce(&OnAdd, std::move(result_callback)),
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext()),
+      &provider->registrar(), &provider->install_finalizer(),
+      std::make_unique<WebAppUrlLoader>(),
+      std::make_unique<WebAppDataRetriever>());
 
   provider->command_manager().ScheduleCommand(std::move(install_command));
 }

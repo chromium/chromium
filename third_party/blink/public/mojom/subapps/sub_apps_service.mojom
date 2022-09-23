@@ -29,6 +29,8 @@ enum SubAppsServiceAddResultCode {
   kUserInstallDeclined,
   kExpectedAppIdCheckFailed,
   kParentAppUninstalled,
+  kInstallUrlInvalid,
+  kNotValidManifestForWebApp,
   kFailure,
 };
 

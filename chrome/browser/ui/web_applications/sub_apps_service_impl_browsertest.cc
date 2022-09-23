@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -390,8 +391,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
           std::pair{
               unhashed_sub_app_id_1,
               blink::mojom::SubAppsServiceAddResultCode::kSuccessNewInstall},
-          std::pair{unhashed_sub_app_id_2,
-                    blink::mojom::SubAppsServiceAddResultCode::kFailure},
+          std::pair{
+              unhashed_sub_app_id_2,
+              blink::mojom::SubAppsServiceAddResultCode::kInstallUrlInvalid},
           std::pair{
               unhashed_sub_app_id_3,
               blink::mojom::SubAppsServiceAddResultCode::kSuccessNewInstall}));
@@ -455,17 +457,17 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
       GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
 
   AppInstallResults results;
-  base::flat_set<AppId> app_ids = {
-      GenerateAppIdFromUnhashed(unhashed_sub_app_id)};
   std::vector<std::pair<UnhashedAppId, GURL>> subapps = {
       {unhashed_sub_app_id, kSubAppUrl}};
   auto install_command = std::make_unique<SubAppInstallCommand>(
-      &provider().install_manager(), &provider().registrar(), parent_app_id_,
-      std::move(subapps), app_ids,
+      parent_app_id_, std::move(subapps),
       base::BindLambdaForTesting([&](AppInstallResults arg_results) {
         results = arg_results;
         loop.Quit();
-      }));
+      }),
+      profile(), &provider().registrar(), &provider().install_finalizer(),
+      std::make_unique<WebAppUrlLoader>(),
+      std::make_unique<WebAppDataRetriever>());
   provider().command_manager().ScheduleCommand(std::move(install_command));
   loop.Run();
 
@@ -565,9 +567,10 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddNonExistent) {
   UnhashedAppId unhashed_sub_app_id =
       GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
 
-  EXPECT_EQ(Result(blink::mojom::SubAppsServiceAddResultCode::kFailure,
-                   unhashed_sub_app_id),
-            CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
+  EXPECT_EQ(
+      Result(blink::mojom::SubAppsServiceAddResultCode::kInstallUrlInvalid,
+             unhashed_sub_app_id),
+      CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 }
 

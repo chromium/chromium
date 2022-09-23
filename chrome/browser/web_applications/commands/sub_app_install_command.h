@@ -6,99 +6,141 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_SUB_APP_INSTALL_COMMAND_H_
 
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/locks/lock.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_logging.h"
+#include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/subapps/sub_apps_service.mojom-shared.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
 struct WebAppInstallInfo;
 
-namespace content {
-class WebContents;
-}
+class Profile;
 
 namespace web_app {
 
-class AppLock;
-class WebAppInstallManager;
+class SharedWebContentsWithAppLock;
 class WebAppRegistrar;
+class WebAppInstallFinalizer;
+class WebAppUrlLoader;
+class WebAppDataRetriever;
 
 using AppInstallResults =
     std::vector<std::pair<AppId, blink::mojom::SubAppsServiceAddResultCode>>;
+using SubAppInstallResultCallback = base::OnceCallback<void(AppInstallResults)>;
 
 class SubAppInstallCommand : public WebAppCommand {
  public:
-  SubAppInstallCommand(WebAppInstallManager* install_manager,
-                       WebAppRegistrar* registrar,
-                       AppId& parent_app_id,
+  SubAppInstallCommand(AppId& parent_app_id,
                        std::vector<std::pair<UnhashedAppId, GURL>> sub_apps,
-                       base::flat_set<AppId> app_ids_for_lock,
-                       base::OnceCallback<void(AppInstallResults)> callback);
+                       SubAppInstallResultCallback install_callback,
+                       Profile* profile,
+                       WebAppRegistrar* registrar,
+                       WebAppInstallFinalizer* install_finalizer,
+                       std::unique_ptr<WebAppUrlLoader> url_loader,
+                       std::unique_ptr<WebAppDataRetriever> data_retriever);
   ~SubAppInstallCommand() override;
   SubAppInstallCommand(const SubAppInstallCommand&) = delete;
   SubAppInstallCommand& operator=(const SubAppInstallCommand&) = delete;
 
   Lock& lock() const override;
-
   base::Value ToDebugValue() const override;
+  void SetDialogNotAcceptedForTesting();
 
  protected:
   void Start() override;
-  void OnSyncSourceRemoved() override;
+  void OnSyncSourceRemoved() override {}
   void OnShutdown() override;
 
  private:
   enum class State {
     kNotStarted = 0,
     kPendingDialogCallbacks = 1,
-    kPendingInstallComplete = 2
+    kCallbacksComplete = 2
   } state_ = State::kNotStarted;
 
+  // Functions to perform install flow for each sub app.
   void StartNextInstall();
-
-  void OnDialogRequested(
-      const UnhashedAppId& app_id,
-      content::WebContents* initiator_web_contents,
+  void OnWebAppUrlLoadedGetWebAppInstallInfo(
+      const UnhashedAppId& unhashed_app_id,
+      const GURL& url_to_load,
+      WebAppUrlLoader::Result result);
+  void OnGetWebAppInstallInfo(const UnhashedAppId& unhashed_app_id,
+                              std::unique_ptr<WebAppInstallInfo> install_info);
+  void OnDidPerformInstallableCheck(
+      const UnhashedAppId& unhashed_app_id,
       std::unique_ptr<WebAppInstallInfo> web_app_info,
-      WebAppInstallationAcceptanceCallback acceptance_callback);
+      blink::mojom::ManifestPtr opt_manifest,
+      const GURL& manifest_url,
+      bool valid_manifest_for_web_app,
+      bool is_installable);
+  void OnIconsRetrievedShowDialog(
+      const UnhashedAppId& unhashed_app_id,
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      IconsDownloadedResult result,
+      IconsMap icons_map,
+      DownloadedIconsHttpResults icons_http_results);
+  void OnDialogCompleted(const UnhashedAppId& unhashed_app_id,
+                         bool user_accepted,
+                         std::unique_ptr<WebAppInstallInfo> web_app_info);
+  void OnInstallFinalized(const UnhashedAppId& unhashed_app_id,
+                          std::unique_ptr<WebAppInstallInfo> web_app_info,
+                          const AppId& app_id,
+                          webapps::InstallResultCode code,
+                          OsHooksErrors os_hooks_errors);
+  void MaybeFinishInstall(const UnhashedAppId& app_id,
+                          webapps::InstallResultCode code);
 
+  // Functions to manage all sub apps installations.
   void MaybeShowDialog();
-
-  void OnInstalled(const UnhashedAppId& unhashed_app_id,
-                   const AppId& app_id,
-                   webapps::InstallResultCode result);
-
   void MaybeFinishCommand();
-
   void AddResultAndRemoveFromPendingInstalls(
       const UnhashedAppId& unhashed_app_id,
       webapps::InstallResultCode result);
+  bool IsWebContentsDestroyed();
+  void AddResultToDebugData(
+      const UnhashedAppId& unhashed_app_id,
+      const GURL& url,
+      const AppId& installed_app_id,
+      const blink::mojom::SubAppsServiceAddResultCode& code);
 
-  std::unique_ptr<AppLock> lock_;
-  raw_ptr<WebAppInstallManager> install_manager_;
-  raw_ptr<WebAppRegistrar> registrar_;
+  std::unique_ptr<SharedWebContentsWithAppLock> lock_;
+  const AppId parent_app_id_;
   std::vector<std::pair<UnhashedAppId, GURL>> requested_installs_;
-  std::set<UnhashedAppId> pending_installs_;
+  SubAppInstallResultCallback install_callback_;
+
+  raw_ptr<Profile> profile_;
+  raw_ptr<WebAppRegistrar> registrar_;
+  raw_ptr<WebAppInstallFinalizer> install_finalizer_;
+  std::unique_ptr<WebAppUrlLoader> url_loader_;
+  std::unique_ptr<WebAppDataRetriever> data_retriever_;
+
+  base::flat_map<UnhashedAppId, GURL> pending_installs_map_;
   size_t num_pending_dialog_callbacks_ = 0;
   AppInstallResults results_;
-  const AppId parent_app_id_;
-  base::OnceCallback<void(AppInstallResults)> install_callback_;
-
+  InstallErrorLogEntry log_entry_;
+  base::Value::Dict debug_install_results_;
   std::vector<
       std::tuple<UnhashedAppId,
                  std::unique_ptr<WebAppInstallInfo>,
                  base::OnceCallback<void(bool user_accepted,
                                          std::unique_ptr<WebAppInstallInfo>)>>>
       acceptance_callbacks_;
-  std::vector<std::pair<std::u16string, SkBitmap>> dialog_data_;
+
+  // Testing variables.
+  bool dialog_not_accepted_for_testing_ = false;
+
   base::WeakPtrFactory<SubAppInstallCommand> weak_ptr_factory_{this};
 };
 

@@ -542,6 +542,7 @@ source_set("web_applications_unit_tests") {
     "commands/install_from_sync_command_unittest.cc",
     "commands/install_isolated_app_command_unittest.cc",
     "commands/run_on_os_login_command_unittest.cc",
+    "commands/sub_app_install_command_unittest.cc",
     "commands/web_app_uninstall_command_unittest.cc",
     "daily_metrics_helper_unittest.cc",
     "external_install_options_unittest.cc",
