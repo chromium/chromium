@@ -75,16 +75,6 @@ bool HasSupportedScheme(const GURL& url) {
          url.SchemeIs(kAppScheme);
 }
 
-void LogEventHashAsUmaHistogram(const std::string& histogram_name,
-                                uint64_t event_hash) {
-  // The enum for this histogram gets populated by the PopulateEnumWithUkmEvents
-  // function in populate_enums.py when producing the merged XML.
-  base::UmaHistogramSparse(histogram_name,
-                           // Truncate the unsigned 64-bit hash to 31 bits, to
-                           // make it a suitable histogram sample.
-                           event_hash & 0x7fffffff);
-}
-
 enum class DroppedDataReason {
   NOT_DROPPED = 0,
   RECORDING_DISABLED = 1,
@@ -114,7 +104,14 @@ void RecordDroppedSource(bool already_recorded_another_reason,
 }
 
 void RecordDroppedEntry(uint64_t event_hash, DroppedDataReason reason) {
-  LogEventHashAsUmaHistogram("UKM.Entries.Dropped.ByEntryHash", event_hash);
+  // Truncate the unsigned 64-bit hash to 31 bits, to
+  // make it a suitable histogram sample.
+  uint32_t value = event_hash & 0x7fffffff;
+  // The enum for these histograms gets populated by the
+  // PopulateEnumWithUkmEvents
+  // function in populate_enums.py when producing the merged XML.
+
+  UMA_HISTOGRAM_SPARSE("UKM.Entries.Dropped.ByEntryHash", value);
 
   // Because the "UKM.Entries.Dropped.ByEntryHash" histogram will be emitted to
   // every single time an entry is dropped, it will be dominated by the
@@ -123,12 +120,10 @@ void RecordDroppedEntry(uint64_t event_hash, DroppedDataReason reason) {
   // split by those reasons.
   switch (reason) {
     case DroppedDataReason::MAX_HIT:
-      LogEventHashAsUmaHistogram("UKM.Entries.Dropped.MaxHit.ByEntryHash",
-                                 event_hash);
+      UMA_HISTOGRAM_SPARSE("UKM.Entries.Dropped.MaxHit.ByEntryHash", value);
       break;
     case DroppedDataReason::SAMPLED_OUT:
-      LogEventHashAsUmaHistogram("UKM.Entries.Dropped.SampledOut.ByEntryHash",
-                                 event_hash);
+      UMA_HISTOGRAM_SPARSE("UKM.Entries.Dropped.SampledOut.ByEntryHash", value);
       break;
     default:
       break;
@@ -990,8 +985,10 @@ void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
 
   // Log a corresponding entry to UMA so we get a per-metric breakdown of UKM
   // entry counts.
-  LogEventHashAsUmaHistogram("UKM.Entries.Recorded.ByEntryHash",
-                             entry->event_hash);
+  // Truncate the unsigned 64-bit hash to 31 bits, to
+  // make it a suitable histogram sample.
+  UMA_HISTOGRAM_SPARSE("UKM.Entries.Recorded.ByEntryHash",
+                       entry->event_hash & 0x7fffffff);
 
   recordings_.entries.push_back(std::move(entry));
 }

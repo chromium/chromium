@@ -382,6 +382,25 @@ enum class ScopedHistogramTiming {
       base::HistogramBase::kUmaStabilityHistogramFlag)
 
 //------------------------------------------------------------------------------
+// Sparse histograms.
+//
+// The |sample| can be a negative or non-negative number.
+//
+// Sparse histograms are well suited for recording counts of exact sample values
+// that are sparsely distributed over a relatively large range, in cases where
+// ultra-fast performance is not critical. For instance, Sqlite.Version.* are
+// sparse because for any given database, there's going to be exactly one
+// version logged.
+//
+// For important details on performance, data size, and usage, see the
+// documentation on the regular function equivalents (histogram_functions.h).
+#define UMA_HISTOGRAM_SPARSE(name, sample) \
+  STATIC_HISTOGRAM_POINTER_BLOCK(          \
+      name, Add(sample),                   \
+      base::SparseHistogram::FactoryGet(   \
+          name, base::HistogramBase::kUmaTargetedHistogramFlag))
+
+//------------------------------------------------------------------------------
 // Histogram instantiation helpers.
 
 // Support a collection of histograms, perhaps one for each entry in an
