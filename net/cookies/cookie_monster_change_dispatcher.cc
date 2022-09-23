@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_delegate.h"
@@ -37,6 +38,7 @@ CookieMonsterChangeDispatcher::Subscription::Subscription(
     GURL url,
     absl::optional<CookiePartitionKey> cookie_partition_key,
     const bool first_party_sets_enabled,
+    bool same_party_attribute_enabled,
     net::CookieChangeCallback callback)
     : change_dispatcher_(std::move(change_dispatcher)),
       domain_key_(std::move(domain_key)),
@@ -45,6 +47,7 @@ CookieMonsterChangeDispatcher::Subscription::Subscription(
       cookie_partition_key_(std::move(cookie_partition_key)),
       callback_(std::move(callback)),
       first_party_sets_enabled_(first_party_sets_enabled),
+      same_party_attribute_enabled_(same_party_attribute_enabled),
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   DCHECK(url_.is_valid() || url_.is_empty());
   DCHECK_EQ(url_.is_empty(), domain_key_ == kGlobalDomainKey);
@@ -74,7 +77,8 @@ void CookieMonsterChangeDispatcher::Subscription::DispatchChange(
         cookie_access_delegate->ShouldTreatUrlAsTrustworthy(url_);
     CookieOptions options = CookieOptions::MakeAllInclusive();
     CookieSamePartyStatus same_party_status = cookie_util::GetSamePartyStatus(
-        cookie, options, first_party_sets_enabled_);
+        cookie, options,
+        first_party_sets_enabled_ && same_party_attribute_enabled_);
     if (!cookie
              .IncludeForRequestURL(
                  url_, options,
@@ -111,9 +115,11 @@ void CookieMonsterChangeDispatcher::Subscription::DoDispatchChange(
 
 CookieMonsterChangeDispatcher::CookieMonsterChangeDispatcher(
     const CookieMonster* cookie_monster,
-    const bool first_party_sets_enabled)
+    const bool first_party_sets_enabled,
+    bool same_party_attribute_enabled)
     : cookie_monster_(cookie_monster),
-      first_party_sets_enabled_(first_party_sets_enabled) {}
+      first_party_sets_enabled_(first_party_sets_enabled),
+      same_party_attribute_enabled_(same_party_attribute_enabled) {}
 
 CookieMonsterChangeDispatcher::~CookieMonsterChangeDispatcher() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -154,7 +160,8 @@ CookieMonsterChangeDispatcher::AddCallbackForCookie(
 
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), DomainKey(url), NameKey(name), url,
-      cookie_partition_key, first_party_sets_enabled_, std::move(callback));
+      cookie_partition_key, first_party_sets_enabled_,
+      same_party_attribute_enabled_, std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;
@@ -170,7 +177,8 @@ CookieMonsterChangeDispatcher::AddCallbackForUrl(
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), DomainKey(url),
       std::string(kGlobalNameKey), url, cookie_partition_key,
-      first_party_sets_enabled_, std::move(callback));
+      first_party_sets_enabled_, same_party_attribute_enabled_,
+      std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;
@@ -184,7 +192,8 @@ CookieMonsterChangeDispatcher::AddCallbackForAllChanges(
   std::unique_ptr<Subscription> subscription = std::make_unique<Subscription>(
       weak_ptr_factory_.GetWeakPtr(), std::string(kGlobalDomainKey),
       std::string(kGlobalNameKey), GURL(""), absl::nullopt,
-      first_party_sets_enabled_, std::move(callback));
+      first_party_sets_enabled_, same_party_attribute_enabled_,
+      std::move(callback));
 
   LinkSubscription(subscription.get());
   return subscription;

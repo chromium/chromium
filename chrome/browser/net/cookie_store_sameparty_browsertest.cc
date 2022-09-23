@@ -15,6 +15,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/features.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -41,11 +42,12 @@ class CookieStoreSamePartyTest : public InProcessBrowserTest {
   explicit CookieStoreSamePartyTest(bool enable_fps)
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         enable_fps_(enable_fps) {
-    if (!enable_fps) {
+    if (enable_fps) {
+      feature_list_.InitAndEnableFeature(
+          net::features::kSamePartyAttributeEnabled);
+    } else {
       feature_list_.InitAndDisableFeature(features::kFirstPartySets);
     }
-    // If FPS is to be enabled, that happens in `SetUpCommandLine` when the
-    // `kUseFirstPartySet` switch is provided.
   }
 
   CookieStoreSamePartyTest(const CookieStoreSamePartyTest&) = delete;

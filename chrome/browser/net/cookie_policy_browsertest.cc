@@ -746,10 +746,13 @@ class SamePartyIsFirstPartyCookiePolicyBrowserTest
  public:
   SamePartyIsFirstPartyCookiePolicyBrowserTest() {
     if (sameparty_considered_first_party()) {
-      feature_list_.InitAndEnableFeature(
-          net::features::kSamePartyCookiesConsideredFirstParty);
+      feature_list_.InitWithFeatures(
+          {net::features::kSamePartyAttributeEnabled,
+           net::features::kSamePartyCookiesConsideredFirstParty},
+          {});
     } else {
-      feature_list_.Init();
+      feature_list_.InitWithFeatures(
+          {net::features::kSamePartyAttributeEnabled}, {});
     }
   }
 

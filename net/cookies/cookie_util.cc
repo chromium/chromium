@@ -825,10 +825,11 @@ absl::optional<FirstPartySetMetadata> ComputeFirstPartySetMetadataMaybeAsync(
   return FirstPartySetMetadata();
 }
 
-CookieSamePartyStatus GetSamePartyStatus(const CanonicalCookie& cookie,
-                                         const CookieOptions& options,
-                                         const bool first_party_sets_enabled) {
-  if (!first_party_sets_enabled || !cookie.IsSameParty() ||
+CookieSamePartyStatus GetSamePartyStatus(
+    const CanonicalCookie& cookie,
+    const CookieOptions& options,
+    const bool same_party_attribute_enabled) {
+  if (!same_party_attribute_enabled || !cookie.IsSameParty() ||
       !options.is_in_nontrivial_first_party_set()) {
     return CookieSamePartyStatus::kNoSamePartyEnforcement;
   }

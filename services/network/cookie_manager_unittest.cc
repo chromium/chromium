@@ -19,6 +19,7 @@
 #include "base/test/spin_wait.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
@@ -314,8 +315,9 @@ class CookieManagerTest : public testing::Test {
   CookieManagerTest() {
     scoped_feature_list_.InitWithFeatures({net::features::kPartitionedCookies},
                                           {});
-    InitializeCookieService(nullptr, nullptr);
   }
+
+  void SetUp() override { InitializeCookieService(nullptr, nullptr); }
 
   CookieManagerTest(const CookieManagerTest&) = delete;
   CookieManagerTest& operator=(const CookieManagerTest&) = delete;
@@ -850,6 +852,135 @@ TEST_F(CookieManagerTest, GetCookieListSameSite) {
 }
 
 TEST_F(CookieManagerTest, GetCookieListSameParty) {
+  // Create SameParty & non-SameParty cookies for each valid SameSite choice.
+  // Unspecified:
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "nonSameParty-Unspecified", "A", kCookieDomain, "/", base::Time(),
+          base::Time(), base::Time(), base::Time(),
+          /*secure=*/true, /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false),
+      "https", true));
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "SameParty-Unspecified", "B", kCookieDomain, "/", base::Time(),
+          base::Time(), base::Time(), base::Time(), /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/true),
+      "https", true));
+  // None:
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "nonSameParty-None", "C", kCookieDomain, "/", base::Time(),
+          base::Time(), base::Time(), base::Time(),
+          /*secure=*/true, /*httponly=*/false,
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM,
+          /*same_party=*/false),
+      "https", true));
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "SameParty-None", "D", kCookieDomain, "/", base::Time(), base::Time(),
+          base::Time(), base::Time(), /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/true),
+      "https", true));
+  // Lax:
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "nonSameParty-Lax", "E", kCookieDomain, "/", base::Time(),
+          base::Time(), base::Time(), base::Time(), /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false),
+      "https", true));
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "SameParty-Lax", "F", kCookieDomain, "/", base::Time(), base::Time(),
+          base::Time(), base::Time(), /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/true),
+      "https", true));
+
+  const GURL cookie_url("https://foo_host.com/with/path");
+
+  // Verify that sites do not get SameParty semantics (and get SameSite
+  // semantics instead), regardless of whether they're in a First-Party Set.
+  for (bool in_first_party_set : std::initializer_list<bool>{true, false}) {
+    net::CookieOptions options;
+    options.set_return_excluded_cookies();
+    options.set_is_in_nontrivial_first_party_set(in_first_party_set);
+    ASSERT_EQ(net::SamePartyContext::Type::kCrossParty,
+              options.same_party_context().context_type());
+    ASSERT_EQ(
+        net::CookieOptions::SameSiteCookieContext(
+            net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
+        options.same_site_cookie_context());
+
+    // Cross-party, cross-site.
+    EXPECT_THAT(
+        service_wrapper()->GetCookieList(cookie_url, options,
+                                         net::CookiePartitionKeyCollection()),
+        UnorderedElementsAre(net::MatchesCookieWithName("SameParty-None"),
+                             net::MatchesCookieWithName("nonSameParty-None")))
+        << in_first_party_set;
+
+    EXPECT_THAT(
+        service_wrapper()->GetExcludedCookieList(cookie_url, options),
+        UnorderedElementsAre(
+            net::MatchesCookieAccessWithName("SameParty-Unspecified"),
+            net::MatchesCookieAccessWithName("SameParty-Lax"),
+            net::MatchesCookieAccessWithName("nonSameParty-Unspecified"),
+            net::MatchesCookieAccessWithName("nonSameParty-Lax")))
+        << in_first_party_set;
+
+    // Same-party, cross-site.
+    options.set_same_party_context(
+        net::SamePartyContext(net::SamePartyContext::Type::kSameParty));
+    EXPECT_THAT(
+        service_wrapper()->GetCookieList(cookie_url, options,
+                                         net::CookiePartitionKeyCollection()),
+        UnorderedElementsAre(net::MatchesCookieWithName("SameParty-None"),
+                             net::MatchesCookieWithName("nonSameParty-None")))
+        << in_first_party_set;
+    EXPECT_THAT(
+        service_wrapper()->GetExcludedCookieList(cookie_url, options),
+        UnorderedElementsAre(
+            net::MatchesCookieAccessWithName("SameParty-Unspecified"),
+            net::MatchesCookieAccessWithName("SameParty-Lax"),
+            net::MatchesCookieAccessWithName("nonSameParty-Unspecified"),
+            net::MatchesCookieAccessWithName("nonSameParty-Lax")))
+        << in_first_party_set;
+
+    // Same-party, same-site.
+    options.set_same_site_cookie_context(
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+    EXPECT_THAT(service_wrapper()->GetCookieList(
+                    cookie_url, options, net::CookiePartitionKeyCollection()),
+                UnorderedElementsAre(
+                    net::MatchesCookieWithName("SameParty-Unspecified"),
+                    net::MatchesCookieWithName("SameParty-None"),
+                    net::MatchesCookieWithName("SameParty-Lax"),
+                    net::MatchesCookieWithName("nonSameParty-Unspecified"),
+                    net::MatchesCookieWithName("nonSameParty-None"),
+                    net::MatchesCookieWithName("nonSameParty-Lax")))
+        << in_first_party_set;
+    EXPECT_THAT(service_wrapper()->GetExcludedCookieList(cookie_url, options),
+                IsEmpty())
+        << in_first_party_set;
+  }
+}
+
+class SamePartyCookieManagerTest : public CookieManagerTest {
+ public:
+  SamePartyCookieManagerTest() {
+    feature_list_.InitWithFeatures({net::features::kSamePartyAttributeEnabled},
+                                   {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SamePartyCookieManagerTest, GetCookieListSameParty) {
   // Create SameParty & non-SameParty cookies for each valid SameSite choice.
   // Unspecified:
   ASSERT_TRUE(SetCanonicalCookie(
@@ -2673,9 +2804,9 @@ TEST_F(CookieManagerTest, BlockThirdPartyCookies) {
 class FlushableCookieManagerTest : public CookieManagerTest {
  public:
   FlushableCookieManagerTest()
-      : store_(base::MakeRefCounted<net::FlushablePersistentStore>()) {
-    InitializeCookieService(store_, nullptr);
-  }
+      : store_(base::MakeRefCounted<net::FlushablePersistentStore>()) {}
+
+  void SetUp() override { InitializeCookieService(store_, nullptr); }
 
   ~FlushableCookieManagerTest() override {}
 

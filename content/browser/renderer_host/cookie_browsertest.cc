@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -28,6 +29,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "ipc/ipc_security_test_util.h"
+#include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_util.h"
@@ -502,15 +504,23 @@ class SamePartyEnabledCookieBrowserTest : public CookieBrowserTest {
  public:
   ~SamePartyEnabledCookieBrowserTest() override = default;
 
+  void SetUpInProcessBrowserTestFixture() override {
+    feature_list_.InitAndEnableFeature(
+        net::features::kSamePartyAttributeEnabled);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     CookieBrowserTest::SetUpCommandLine(command_line);
-    // Set up First-Party Sets and also enables net::Feature::kFirstPartySets.
+    // Set up First-Party Sets and also enables features::kFirstPartySets.
     // a.test, b.test and c.test are in the same FPS.
     command_line->AppendSwitchASCII(
         network::switches::kUseFirstPartySet,
         R"({"primary": "https://a.test",)"
         R"("associatedSites": ["https://b.test","https://c.test"]})");
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // SameParty cookies (that aren't marked as http-only) should be available to

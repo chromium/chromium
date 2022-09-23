@@ -1,5 +1,0 @@
-Verifies that making cross-party subresource requests from JS which set SameParty cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.
-
-Javascript initiated subresource blocked set-cookies:[
-]
-

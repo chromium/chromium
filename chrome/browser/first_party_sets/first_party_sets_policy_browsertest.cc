@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/frame_test_utils.h"
+#include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -64,7 +65,10 @@ class EnabledPolicyBrowsertest
   EnabledPolicyBrowsertest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     if (IsFeatureEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kFirstPartySets);
+      scoped_feature_list_.InitWithFeatures(
+          {features::kFirstPartySets,
+           net::features::kSamePartyAttributeEnabled},
+          {});
     } else {
       scoped_feature_list_.InitAndDisableFeature(features::kFirstPartySets);
     }

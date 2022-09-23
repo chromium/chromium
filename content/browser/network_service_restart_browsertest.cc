@@ -32,6 +32,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
@@ -49,6 +50,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "net/base/features.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -1095,7 +1097,10 @@ class NetworkServiceRestartWithFirstPartySetBrowserTest
   NetworkServiceRestartWithFirstPartySetBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     if (IsFirstPartySetsEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kFirstPartySets);
+      scoped_feature_list_.InitWithFeatures(
+          {features::kFirstPartySets,
+           net::features::kSamePartyAttributeEnabled},
+          {});
     } else {
       scoped_feature_list_.InitAndDisableFeature(features::kFirstPartySets);
     }

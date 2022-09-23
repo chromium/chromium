@@ -739,6 +739,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // global maximum on the number of partitioned cookies.
   size_t num_partitioned_cookies_ = 0u;
 
+  bool same_party_attribute_enabled_ = false;
+
   CookieMonsterChangeDispatcher change_dispatcher_;
 
   // Indicates whether the cookie store has been initialized.

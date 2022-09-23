@@ -265,7 +265,7 @@ ComputeFirstPartySetMetadataMaybeAsync(
 NET_EXPORT CookieSamePartyStatus
 GetSamePartyStatus(const CanonicalCookie& cookie,
                    const CookieOptions& options,
-                   bool first_party_sets_enabled);
+                   bool same_party_attribute_enabled);
 
 // Takes a callback accepting a CookieAccessResult and returns a callback
 // that accepts a bool, setting the bool to true if the CookieInclusionStatus

@@ -1514,7 +1514,7 @@ TEST(CookieUtilTest, AdaptCookieAccessResultToBool) {
 }
 
 TEST(CookieUtilTest, GetSamePartyStatus_NotInSet) {
-  const bool first_party_sets_enabled = true;
+  const bool same_party_attribute_enabled = true;
   CookieOptions options;
   options.set_is_in_nontrivial_first_party_set(false);
 
@@ -1542,7 +1542,7 @@ TEST(CookieUtilTest, GetSamePartyStatus_NotInSet) {
                 SamePartyContext(party_context_type));
             EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
                       cookie_util::GetSamePartyStatus(
-                          *cookie, options, first_party_sets_enabled));
+                          *cookie, options, same_party_attribute_enabled));
           }
         }
       }
@@ -1551,7 +1551,7 @@ TEST(CookieUtilTest, GetSamePartyStatus_NotInSet) {
 }
 
 TEST(CookieUtilTest, GetSamePartyStatus_FeatureDisabled) {
-  const bool first_party_sets_enabled = false;
+  const bool same_party_attribute_enabled = false;
   CookieOptions options;
   options.set_is_in_nontrivial_first_party_set(true);
 
@@ -1579,7 +1579,7 @@ TEST(CookieUtilTest, GetSamePartyStatus_FeatureDisabled) {
                 SamePartyContext(party_context_type));
             EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
                       cookie_util::GetSamePartyStatus(
-                          *cookie, options, first_party_sets_enabled));
+                          *cookie, options, same_party_attribute_enabled));
           }
         }
       }

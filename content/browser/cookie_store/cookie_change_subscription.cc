@@ -9,6 +9,7 @@
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "net/first_party_sets/same_party_context.h"
@@ -187,7 +188,9 @@ bool CookieChangeSubscription::ShouldObserveChangeTo(
               network::IsUrlPotentiallyTrustworthy(url_),
               net::cookie_util::GetSamePartyStatus(
                   cookie, net_options,
-                  GetContentClient()->browser()->IsFirstPartySetsEnabled()),
+                  GetContentClient()->browser()->IsFirstPartySetsEnabled() &&
+                      base::FeatureList::IsEnabled(
+                          net::features::kSamePartyAttributeEnabled)),
           })
       .status.IsInclude();
 }

@@ -45,10 +45,12 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
                               public ::testing::WithParamInterface<bool> {
  public:
   HttpCookieBrowserTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    std::vector<base::Feature> enabled(
+        {net::features::kSamePartyAttributeEnabled});
     if (DoesSameSiteConsiderRedirectChain()) {
-      feature_list_.InitAndEnableFeature(
-          net::features::kCookieSameSiteConsidersRedirectChain);
+      enabled.push_back(net::features::kCookieSameSiteConsidersRedirectChain);
     }
+    feature_list_.InitWithFeatures(enabled, {});
   }
 
   ~HttpCookieBrowserTest() override = default;

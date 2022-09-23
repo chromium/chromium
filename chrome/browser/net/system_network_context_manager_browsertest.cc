@@ -36,6 +36,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/frame_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/features.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
@@ -229,7 +230,9 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
 
   void SetUpInProcessBrowserTestFixture() override {
     SystemNetworkContextManagerBrowsertest::SetUpInProcessBrowserTestFixture();
-    feature_list_.InitAndEnableFeature(features::kFirstPartySets);
+    feature_list_.InitWithFeatures(
+        {features::kFirstPartySets, net::features::kSamePartyAttributeEnabled},
+        {});
     CHECK(component_dir_.CreateUniqueTempDir());
     base::ScopedAllowBlockingForTesting allow_blocking;
 

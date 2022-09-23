@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -761,6 +762,11 @@ class FirstPartySetsWebSocketBrowserTest
   FirstPartySetsWebSocketBrowserTest()
       : WebSocketBrowserHTTPSConnectToTest(SSLOptions::CERT_TEST_NAMES) {}
 
+  void SetUpInProcessBrowserTestFixture() override {
+    feature_list_.InitAndEnableFeature(
+        net::features::kSamePartyAttributeEnabled);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebSocketBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(
@@ -768,6 +774,9 @@ class FirstPartySetsWebSocketBrowserTest
         R"({"primary": "https://a.test",)"
         R"("associatedSites": ["https://b.test","https://c.test"]})");
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FirstPartySetsWebSocketBrowserTest,

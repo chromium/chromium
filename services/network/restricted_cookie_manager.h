@@ -264,6 +264,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   CookieAccessesByURLAndSite recent_cookie_accesses_;
 
   const bool first_party_sets_enabled_;
+  bool same_party_attribute_enabled_;
 
   base::WeakPtrFactory<RestrictedCookieManager> weak_ptr_factory_{this};
 };

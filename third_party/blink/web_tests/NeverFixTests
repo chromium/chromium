@@ -1935,12 +1935,6 @@ crbug.com/1225606 virtual/sanitizer-api-namespaces/virtual/mathml-disabled/sanit
 # Skip manual tests, see crbug/1114920
 external/wpt/html/semantics/forms/the-input-element/disabled-click-picker-manual.html [ Skip ]
 
-# First party DevTools issues only work in the first-party-sets virtual suite
-crbug.com/1179186 http/tests/inspector-protocol/network/blocked-cookie-same-party-issue.js [ Skip ]
-crbug.com/1179186 http/tests/inspector-protocol/network/blocked-setcookie-same-party-cross-party-issue.js [ Skip ]
-crbug.com/1179186 virtual/first-party-sets/http/tests/inspector-protocol/network/blocked-cookie-same-party-issue.js [ Pass ]
-crbug.com/1179186 virtual/first-party-sets/http/tests/inspector-protocol/network/blocked-setcookie-same-party-cross-party-issue.js [ Pass ]
-
 # This test passes only when the JXL feature is enabled.
 crbug.com/1161994 http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-jxl.js [ Skip ]
 crbug.com/1161994 virtual/jxl-enabled/http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-jxl.js [ Pass ]
