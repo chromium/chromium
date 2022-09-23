@@ -39,22 +39,17 @@
           "builder": "Cast Linux ARM64",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "cast_shell_linux_arm64",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux-arm64-castos",
-          "group": "tryserver.chromium.linux"
-        }
       ]
     }
   },
+  "$build/goma": {
+    "enable_ats": true,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org",
+    "use_luci_auth": true
+  },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "instance": "rbe-chromium-untrusted",
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -64,9 +59,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.linux",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.linux",
+  "recipe": "chromium_trybot"
 }

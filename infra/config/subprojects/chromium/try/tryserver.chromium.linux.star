@@ -127,6 +127,16 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-arm64-castos",
+    branch_selector = branches.MAIN,
+    mirrors = [
+        "ci/Cast Linux ARM64",
+    ],
+    main_list_view = "try",
+    os = os.LINUX_BIONIC,
+)
+
+try_.builder(
     name = "linux-autofill-assistant",
 )
 
@@ -346,6 +356,32 @@ try_.builder(
 
 try_.builder(
     name = "linux-wpt-input-fyi-rel",
+)
+
+try_.builder(
+    name = "linux-x64-castos",
+    branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/Cast Linux",
+    ],
+    builderless = not settings.is_main,
+    main_list_view = "try",
+)
+
+try_.builder(
+    name = "linux-x64-castos-audio",
+    mirrors = [
+        "ci/Cast Audio Linux",
+    ],
+)
+
+try_.builder(
+    name = "linux-x64-castos-dbg",
+    branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/Cast Linux Debug",
+    ],
+    main_list_view = "try",
 )
 
 try_.builder(

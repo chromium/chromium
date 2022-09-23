@@ -619,6 +619,20 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-x64-cast",
+    branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/Cast Android (dbg)",
+    ],
+    builderless = not settings.is_main,
+    main_list_view = "try",
+    experiments = {
+        "enable_weetbix_queries": 100,
+        "weetbix.retry_weak_exonerations": 100,
+    },
+)
+
+try_.builder(
     name = "android_compile_dbg",
     branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [

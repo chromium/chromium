@@ -1048,6 +1048,20 @@
       "use_goma": true
     }
   },
+  "android-x64-cast": {
+    "gn_args": {
+      "enable_cast_receiver": true,
+      "ffmpeg_branding": "Chrome",
+      "is_cast_android": true,
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
   "android_archive_rel_ng": {
     "gn_args": {
       "dcheck_always_on": true,

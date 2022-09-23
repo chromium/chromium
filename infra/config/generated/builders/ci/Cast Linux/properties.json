@@ -42,6 +42,10 @@
         {
           "builder": "cast_shell_linux",
           "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux-x64-castos",
+          "group": "tryserver.chromium.linux"
         }
       ]
     }

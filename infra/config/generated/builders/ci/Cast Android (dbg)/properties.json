@@ -45,6 +45,10 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "android-x64-cast",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "cast_shell_android",
           "group": "tryserver.chromium.android"
         }
