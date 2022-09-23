@@ -364,19 +364,6 @@ class RegionCaptureBrowserTest : public WebRtcTestBase {
     }
   }
 
-  void TestCanCropToElementTag(const char* tag) {
-    TabInfo& tab = tabs_[kMainTab];
-
-    const std::string element_id = base::StrCat({"new_id_", tag});
-    ASSERT_TRUE(
-        tab.CreateNewElement(Frame::kTopLevelDocument, tag, element_id));
-    const std::string crop_target =
-        tab.CropTargetFromElement(Frame::kTopLevelDocument, element_id);
-    ASSERT_THAT(crop_target, IsExpectedCropTarget("0"));
-
-    EXPECT_TRUE(tab.CropTo(crop_target, Frame::kTopLevelDocument));
-  }
-
   // Manipulation after SetUpCommandLine, but before capture starts,
   // allows tests to set which tab to capture.
   raw_ptr<base::CommandLine> command_line_ = nullptr;
@@ -396,6 +383,19 @@ class RegionCaptureBrowserCropTest
       public testing::WithParamInterface<const char*> {
  public:
   ~RegionCaptureBrowserCropTest() override = default;
+
+  void TestCanCropToElementTag(const char* tag) {
+    TabInfo& tab = tabs_[kMainTab];
+
+    const std::string element_id = base::StrCat({"new_id_", tag});
+    ASSERT_TRUE(
+        tab.CreateNewElement(Frame::kTopLevelDocument, tag, element_id));
+    const std::string crop_target =
+        tab.CropTargetFromElement(Frame::kTopLevelDocument, element_id);
+    ASSERT_THAT(crop_target, IsExpectedCropTarget("0"));
+
+    EXPECT_TRUE(tab.CropTo(crop_target, Frame::kTopLevelDocument));
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(RegionCaptureBrowserCropTestInstantiation,
