@@ -5,8 +5,8 @@ bundled together and downloaded at run time.
 
 This directory contains the logic that powers Language Packs.
 
-The main logic runs in the Browser Process (lacros-chrome) and it allows
-clients to query and retrieve language packs for a specific language.
+The main logic runs in Ash process (ash-chrome) and it allows clients to query
+and retrieve language packs for a specific language.
 
 The pack is verified, extracted and mounted to the user partition.
 
