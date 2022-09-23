@@ -289,6 +289,13 @@ absl::optional<base::ScopedTempDir> CreateSecureTempDir();
 // Returns a closure that resets the shutdown event when it goes out of scope.
 [[nodiscard]] base::ScopedClosureRunner SignalShutdownEvent(UpdaterScope scope);
 
+// Returns `true` if the legacy GoogleUpdate shutdown event is signaled.
+bool IsShutdownEventSignaled(UpdaterScope scope);
+
+// Attempts to stop the legacy GoogleUpdate processes. Returns `true` if all the
+// processes exited cleanly.
+bool StopGoogleUpdateProcesses(UpdaterScope scope);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_WIN_UTIL_H_

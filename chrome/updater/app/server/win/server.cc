@@ -274,10 +274,9 @@ bool ComServerApp::SwapInNewVersion() {
     AddComServerWorkItems(updater_path, false, list.get());
   }
 
-  // TODO(crbug.com/1290496) Do we need to force kill and wait for any running
-  // GoogleUpdate.exe instances?
   const base::ScopedClosureRunner reset_shutdown_event(
       SignalShutdownEvent(updater_scope()));
+  StopGoogleUpdateProcesses(updater_scope());
 
   if (list->Do()) {
     CheckComInterfaceTypeLib(updater_scope(), true);

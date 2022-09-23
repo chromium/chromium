@@ -28,6 +28,7 @@
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/path_service.h"
+#include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
 #include "base/ranges/algorithm.h"
@@ -37,6 +38,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/time/time.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
@@ -723,7 +725,7 @@ absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {
     return absl::nullopt;
   }
 
-  return goopdate_dir.AppendASCII("GoogleUpdate.exe");
+  return goopdate_dir.AppendASCII(base::WideToASCII(kLegacyExeName));
 }
 
 HRESULT DisableCOMExceptionHandling() {
@@ -907,6 +909,57 @@ base::ScopedClosureRunner SignalShutdownEvent(UpdaterScope scope) {
   shutdown_event->Signal();
   return base::ScopedClosureRunner(
       base::BindOnce(&base::WaitableEvent::Reset, std::move(shutdown_event)));
+}
+
+bool IsShutdownEventSignaled(UpdaterScope scope) {
+  NamedObjectAttributes attr;
+  GetNamedObjectAttributes(kShutdownEvent, scope, &attr);
+
+  base::win::ScopedHandle event_handle(
+      ::OpenEvent(EVENT_ALL_ACCESS, false, attr.name.c_str()));
+  if (!event_handle.IsValid())
+    return false;
+
+  base::WaitableEvent event(std::move(event_handle));
+  return event.IsSignaled();
+}
+
+bool StopGoogleUpdateProcesses(UpdaterScope scope) {
+  // Filters processes running under `path_prefix`.
+  class PathPrefixProcessFilter : public base::ProcessFilter {
+   public:
+    explicit PathPrefixProcessFilter(const base::FilePath& path_prefix)
+        : path_prefix_(path_prefix) {}
+
+    bool Includes(const base::ProcessEntry& entry) const override {
+      base::Process process(::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,
+                                          false, entry.th32ProcessID));
+      if (!process.IsValid())
+        return false;
+
+      DWORD path_len = MAX_PATH;
+      wchar_t path_string[MAX_PATH];
+      if (!::QueryFullProcessImageName(process.Handle(), 0, path_string,
+                                       &path_len)) {
+        return false;
+      }
+
+      return path_prefix_.IsParent(base::FilePath(path_string));
+    }
+
+   private:
+    const base::FilePath path_prefix_;
+  };
+
+  constexpr base::TimeDelta kShutdownWaitSeconds = base::Seconds(45);
+
+  absl::optional<base::FilePath> target = GetGoogleUpdateExePath(scope);
+  if (!target)
+    return false;
+
+  PathPrefixProcessFilter path_prefix_filter(target->DirName());
+  return base::CleanupProcesses(kLegacyExeName, kShutdownWaitSeconds, -1,
+                                &path_prefix_filter);
 }
 
 }  // namespace updater

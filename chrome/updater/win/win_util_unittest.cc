@@ -276,26 +276,24 @@ TEST(WinUtil, CreateSecureTempDir) {
 }
 
 TEST(WinUtil, SignalShutdownEvent) {
-  NamedObjectAttributes attr;
-  GetNamedObjectAttributes(kShutdownEvent, GetTestScope(), &attr);
-
   {
     const base::ScopedClosureRunner reset_shutdown_event(
         SignalShutdownEvent(GetTestScope()));
 
     // Expect that the legacy GoogleUpdate shutdown event is signaled.
-    base::WaitableEvent event(base::win::ScopedHandle(
-        ::OpenEvent(EVENT_ALL_ACCESS, false, attr.name.c_str())));
-    ASSERT_TRUE(event.handle())
-        << "Could not open the shutdown event: " << std::hex
-        << HRESULTFromLastError();
-    EXPECT_TRUE(event.IsSignaled());
+    EXPECT_TRUE(IsShutdownEventSignaled(GetTestScope()))
+        << "Unexpected shutdown event not signaled";
   }
 
   // Expect that the legacy GoogleUpdate shutdown event is invalid now.
-  base::win::ScopedHandle event(
-      ::OpenEvent(EVENT_ALL_ACCESS, false, attr.name.c_str()));
-  EXPECT_FALSE(event.IsValid()) << "Unexpected valid shutdown event handle";
+  EXPECT_FALSE(IsShutdownEventSignaled(GetTestScope()))
+      << "Unexpected shutdown event signaled";
+}
+
+TEST(WinUtil, StopGoogleUpdateProcesses) {
+  // TODO(crbug.com/1290496) perhaps some comprehensive tests for
+  // `StopGoogleUpdateProcesses`?
+  EXPECT_TRUE(StopGoogleUpdateProcesses(GetTestScope()));
 }
 
 }  // namespace updater
