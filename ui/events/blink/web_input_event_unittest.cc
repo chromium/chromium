@@ -36,7 +36,7 @@ TEST(WebInputEventTest, TestMakeWebKeyboardEvent) {
     EXPECT_EQ(blink::WebInputEvent::kControlKey | blink::WebInputEvent::kIsLeft,
               webkit_event.GetModifiers());
     EXPECT_EQ(static_cast<int>(DomCode::CONTROL_LEFT), webkit_event.dom_code);
-    EXPECT_EQ(static_cast<int>(DomKey::CONTROL), webkit_event.dom_key);
+    EXPECT_EQ(DomKey::CONTROL, webkit_event.dom_key);
   }
   {
     // Release left Ctrl.
@@ -46,7 +46,7 @@ TEST(WebInputEventTest, TestMakeWebKeyboardEvent) {
     // However, modifier bit for Control in |webkit_event| shouldn't be set.
     EXPECT_EQ(blink::WebInputEvent::kIsLeft, webkit_event.GetModifiers());
     EXPECT_EQ(static_cast<int>(DomCode::CONTROL_LEFT), webkit_event.dom_code);
-    EXPECT_EQ(static_cast<int>(DomKey::CONTROL), webkit_event.dom_key);
+    EXPECT_EQ(DomKey::CONTROL, webkit_event.dom_key);
   }
   {
     // Press right Ctrl.
@@ -67,7 +67,7 @@ TEST(WebInputEventTest, TestMakeWebKeyboardEvent) {
     // However, modifier bit for Control in |webkit_event| shouldn't be set.
     EXPECT_EQ(blink::WebInputEvent::kIsRight, webkit_event.GetModifiers());
     EXPECT_EQ(static_cast<int>(DomCode::CONTROL_RIGHT), webkit_event.dom_code);
-    EXPECT_EQ(static_cast<int>(DomKey::CONTROL), webkit_event.dom_key);
+    EXPECT_EQ(DomKey::CONTROL, webkit_event.dom_key);
   }
 }
 

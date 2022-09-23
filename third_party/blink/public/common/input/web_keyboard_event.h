@@ -40,7 +40,7 @@ class BLINK_COMMON_EXPORT WebKeyboardEvent : public WebInputEvent {
 
   // The DOM key enum of the key pressed as passed by the embedder. DOM
   // key enums are defined in ui/events/keycodes/dom/dom_key_data.inc.
-  int dom_key = 0;
+  uint32_t dom_key = 0;
 
   // This identifies whether this event was tagged by the system as being a
   // "system key" event (see

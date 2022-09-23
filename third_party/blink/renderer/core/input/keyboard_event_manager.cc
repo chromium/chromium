@@ -260,12 +260,12 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
     const int kDomKeysDontSend[] = {0x00200309, 0x00200310};
     const int kDomKeysNotCancellabelUnlessInEditor[] = {0x00400031, 0x00400032,
                                                         0x00400033};
-    for (int dom_key : kDomKeysDontSend) {
+    for (uint32_t dom_key : kDomKeysDontSend) {
       if (initial_key_event.dom_key == dom_key)
         send_key_event = false;
     }
 
-    for (int dom_key : kDomKeysNotCancellabelUnlessInEditor) {
+    for (uint32_t dom_key : kDomKeysNotCancellabelUnlessInEditor) {
       auto* text_control = ToTextControlOrNull(node);
       auto* element = DynamicTo<Element>(node);
       bool is_editable =

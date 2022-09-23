@@ -38,7 +38,7 @@ namespace ui {
 //
 class DomKey {
  public:
-  using Base = int32_t;
+  using Base = uint32_t;
 
  private:
   // Integer representation of DomKey. This is arranged so that DomKey encoded
@@ -129,27 +129,27 @@ class DomKey {
 
   // Returns the Unicode code point for a Unicode key.
   // It is incorrect to call this for other kinds of key.
-  int32_t ToCharacter() const {
+  uint32_t ToCharacter() const {
     DCHECK(IsCharacter()) << value_;
     return value_ & VALUE_MASK;
   }
 
   // Returns the associated combining code point for a dead key.
   // It is incorrect to call this for other kinds of key.
-  int32_t ToDeadKeyCombiningCharacter() const {
+  uint32_t ToDeadKeyCombiningCharacter() const {
     DCHECK(IsDeadKey()) << value_;
     return value_ & VALUE_MASK;
   }
 
   // Returns a DomKey for the given Unicode character.
-  static DomKey FromCharacter(int32_t character) {
-    DCHECK(character >= 0 && character <= 0x10FFFF);
+  static DomKey FromCharacter(uint32_t character) {
+    DCHECK(character <= 0x10FFFF);
     return DomKey(TYPE_UNICODE | character);
   }
 
   // Returns a dead-key DomKey for the given combining character.
-  static DomKey DeadKeyFromCombiningCharacter(int32_t combining_character) {
-    DCHECK(combining_character >= 0 && combining_character <= 0x10FFFF);
+  static DomKey DeadKeyFromCombiningCharacter(uint32_t combining_character) {
+    DCHECK(combining_character <= 0x10FFFF);
     return DomKey(TYPE_DEAD | combining_character);
   }
 
