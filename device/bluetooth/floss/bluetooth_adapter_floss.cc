@@ -914,8 +914,25 @@ void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
 
 void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
   device::BluetoothDevice* device = new BluetoothDeviceFloss(
-      this, FlossDeviceId({.address = scan_result.address, .name = ""}),
+      this,
+      FlossDeviceId({.address = scan_result.address, .name = scan_result.name}),
       ui_task_runner_, socket_thread_);
+
+  device::BluetoothDevice::ServiceDataMap service_data_map;
+  for (const auto& [uuid, bytes] : scan_result.service_data) {
+    service_data_map[device::BluetoothUUID(uuid)] = bytes;
+  }
+
+  device->UpdateAdvertisementData(scan_result.rssi, scan_result.flags,
+                                  scan_result.service_uuids,
+                                  scan_result.tx_power, service_data_map,
+                                  device::BluetoothDevice::ManufacturerDataMap(
+                                      scan_result.manufacturer_data.begin(),
+                                      scan_result.manufacturer_data.end()));
+
+  for (auto& observer : observers_)
+    observer.DeviceAdvertisementReceived(this, device, scan_result.rssi,
+                                         scan_result.adv_data);
 
   // All scanners share scan results
   for (const auto& [key, scanner] : scanners_) {

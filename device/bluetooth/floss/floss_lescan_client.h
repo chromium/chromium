@@ -37,10 +37,26 @@ class ScanSettings {};
 
 class ScanFilter {};
 
-struct ScanResult {
+struct DEVICE_BLUETOOTH_EXPORT ScanResult {
+  std::string name;
   std::string address;
   uint8_t addr_type;
-  // TODO(b/217274013): add rest of fields
+  uint16_t event_type;
+  uint8_t primary_phy;
+  uint8_t secondary_phy;
+  uint8_t advertising_sid;
+  int8_t tx_power;
+  int8_t rssi;
+  uint16_t periodic_adv_int;
+  uint8_t flags;
+  std::vector<device::BluetoothUUID> service_uuids;
+  std::map<std::string, std::vector<uint8_t>> service_data;
+  std::map<uint16_t, std::vector<uint8_t>> manufacturer_data;
+  std::vector<uint8_t> adv_data;
+
+  ScanResult();
+  ScanResult(const ScanResult&);
+  ~ScanResult();
 };
 
 class ScannerClientObserver : public base::CheckedObserver {

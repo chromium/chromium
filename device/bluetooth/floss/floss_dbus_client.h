@@ -326,7 +326,34 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   // Generalized write for std::vector.
   template <typename T>
   static void WriteDBusParam(dbus::MessageWriter* writer,
-                             const std::vector<T>& value);
+                             const std::vector<T>& value) {
+    dbus::MessageWriter array_writer(nullptr);
+    writer->OpenArray(GetDBusTypeInfo<T>().dbus_signature, &array_writer);
+    for (const auto& entry : value) {
+      WriteDBusParam<>(&array_writer, entry);
+    }
+    writer->CloseContainer(&array_writer);
+  }
+
+  // Generalized write for std::map.
+  template <typename T, typename U>
+  static void WriteDBusParam(dbus::MessageWriter* writer,
+                             const std::map<T, U>& data) {
+    std::string signature(
+        std::string("{") + GetDBusTypeInfo<T>().dbus_signature +
+        GetDBusTypeInfo<U>().dbus_signature + std::string("}"));
+
+    dbus::MessageWriter array(nullptr);
+    writer->OpenArray(signature, &array);
+    for (auto const& [key, val] : data) {
+      dbus::MessageWriter dict(nullptr);
+      array.OpenDictEntry(&dict);
+      WriteDBusParam<>(&dict, key);
+      WriteDBusParam<>(&dict, val);
+      array.CloseContainer(&dict);
+    }
+    writer->CloseContainer(&array);
+  }
 
   // Optional container type needs to be explicitly listed here.
   template <typename T>
@@ -407,10 +434,34 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
 
     while (subreader.HasMoreData()) {
       T element;
-      if (!ReadDBusParam<T>(&subreader, &element))
+      if (!ReadDBusParam<>(&subreader, &element))
         return false;
 
       value->emplace_back(std::move(element));
+    }
+
+    return true;
+  }
+
+  // Specialization for std::map.
+  template <typename T, typename U>
+  static bool ReadDBusParam(dbus::MessageReader* reader, std::map<T, U>* data) {
+    dbus::MessageReader array_reader(nullptr);
+    if (!reader->PopArray(&array_reader))
+      return false;
+
+    while (array_reader.HasMoreData()) {
+      dbus::MessageReader dict_entry_reader(nullptr);
+      if (!array_reader.PopDictEntry(&dict_entry_reader))
+        return false;
+
+      T key;
+      U value;
+      if (!ReadDBusParam<>(&dict_entry_reader, &key) ||
+          !ReadDBusParam<>(&dict_entry_reader, &value))
+        return false;
+
+      data->insert({key, value});
     }
 
     return true;

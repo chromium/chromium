@@ -201,7 +201,7 @@ const DBusTypeInfo& GetDBusTypeInfo<uint8_t>() {
 
 template <>
 const DBusTypeInfo& GetDBusTypeInfo<int8_t>() {
-  static DBusTypeInfo info{"y", "int8"};
+  static DBusTypeInfo info{"n", "int8"};
   return info;
 }
 
@@ -272,14 +272,36 @@ const DBusTypeInfo& GetDBusTypeInfo<FlossDeviceId>() {
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<device::BluetoothUUID>() {
+DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo&
+GetDBusTypeInfo<device::BluetoothUUID>() {
   static DBusTypeInfo info{"ay", "BluetoothUUID"};
   return info;
 }
 
 template <>
+DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo&
+GetDBusTypeInfo<std::vector<device::BluetoothUUID>>() {
+  static DBusTypeInfo info{"aay", "vector<BluetoothUUID>"};
+  return info;
+}
+
+template <>
 const DBusTypeInfo& GetDBusTypeInfo<std::vector<uint8_t>>() {
-  static DBusTypeInfo info{"ay", "std::vector<uint8_t>"};
+  static DBusTypeInfo info{"ay", "vector<uint8_t>"};
+  return info;
+}
+
+template <>
+DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo&
+GetDBusTypeInfo<std::map<uint16_t, std::vector<uint8_t>>>() {
+  static DBusTypeInfo info{"a{qay}", "map<uint16_t, vector<uint8_t>>>"};
+  return info;
+}
+
+template <>
+DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo&
+GetDBusTypeInfo<std::map<std::string, std::vector<uint8_t>>>() {
+  static DBusTypeInfo info{"a{say}", "map<string, vector<uint8_t>>>"};
   return info;
 }
 
@@ -358,6 +380,26 @@ template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     uint8_t* value) {
   return reader->PopByte(value);
+}
+
+// static
+template <>
+bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
+                                    int8_t* value) {
+  int16_t val;
+  bool success;
+
+  success = reader->PopInt16(&val);
+  *value = static_cast<int8_t>(val);
+
+  return success;
+}
+
+// static
+template <>
+bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
+                                    uint16_t* value) {
+  return reader->PopUint16(value);
 }
 
 // static
@@ -511,6 +553,18 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
   writer->AppendByte(data);
 }
 
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const int8_t& data) {
+  return writer->AppendInt16(static_cast<int16_t>(data));
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const uint16_t& data) {
+  return writer->AppendUint16(data);
+}
+
 template void FlossDBusClient::WriteDBusParam<uint32_t>(
     dbus::MessageWriter* writer,
     const absl::optional<uint32_t>& data);
@@ -540,8 +594,9 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 }
 
 template <>
-void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
-                                     const device::BluetoothUUID& uuid) {
+DEVICE_BLUETOOTH_EXPORT void FlossDBusClient::WriteDBusParam(
+    dbus::MessageWriter* writer,
+    const device::BluetoothUUID& uuid) {
   WriteDBusParam(writer, uuid.GetBytes());
 }
 

@@ -33,6 +33,7 @@ using ::testing::StrictMock;
 
 const uint8_t kTestScannerId = 10;
 constexpr char kTestDeviceAddr[] = "11:22:33:44:55:66";
+constexpr char kTestDeviceName[] = "FlossDevice";
 
 }  // namespace
 
@@ -138,7 +139,8 @@ class BluetoothFlossTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  // Simulates getting an OnScannerRegistered callback and then an OnScanResult
+  // Simulates getting a ScannerRegistered callback and then a
+  // ScanResultReceived
   void RegisterScannerAndGetScanResult() {
     ASSERT_TRUE(adapter_.get() != nullptr);
     BluetoothAdapterFloss* floss_adapter =
@@ -146,7 +148,10 @@ class BluetoothFlossTest : public testing::Test {
 
     floss_adapter->ScannerRegistered(device::BluetoothUUID(kTestUuidStr),
                                      kTestScannerId, GattStatus::kSuccess);
-    floss_adapter->ScanResultReceived(ScanResult{kTestDeviceAddr});
+    ScanResult scan_result;
+    scan_result.address = kTestDeviceAddr;
+    scan_result.name = kTestDeviceName;
+    floss_adapter->ScanResultReceived(scan_result);
 
     base::RunLoop().RunUntilIdle();
   }

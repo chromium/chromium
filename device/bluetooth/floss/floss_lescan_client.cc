@@ -24,6 +24,12 @@ namespace floss {
 const char kNoCallbackRegistered[] =
     "org.chromium.bluetooth.Error.NoCallbackRegistered";
 
+ScanResult::ScanResult() = default;
+
+ScanResult::ScanResult(const ScanResult&) = default;
+
+ScanResult::~ScanResult() = default;
+
 std::unique_ptr<FlossLEScanClient> FlossLEScanClient::Create() {
   return std::make_unique<FlossLEScanClient>();
 }
@@ -189,23 +195,25 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
   writer->CloseContainer(&array_writer);
 }
 
-template <typename T>
-void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
-                                     const std::vector<T>& value) {
-  dbus::MessageWriter array_writer(nullptr);
-  writer->OpenArray("a{sv}", &array_writer);
-  for (const auto& entry : value) {
-    WriteDBusParam<T>(&array_writer, entry);
-  }
-  writer->CloseContainer(&array_writer);
-}
-
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     ScanResult* scan_result) {
   static StructReader<ScanResult> struct_reader({
+      {"name", CreateFieldReader(&ScanResult::name)},
       {"address", CreateFieldReader(&ScanResult::address)},
       {"addr_type", CreateFieldReader(&ScanResult::addr_type)},
+      {"event_type", CreateFieldReader(&ScanResult::event_type)},
+      {"primary_phy", CreateFieldReader(&ScanResult::primary_phy)},
+      {"secondary_phy", CreateFieldReader(&ScanResult::secondary_phy)},
+      {"advertising_sid", CreateFieldReader(&ScanResult::advertising_sid)},
+      {"tx_power", CreateFieldReader(&ScanResult::tx_power)},
+      {"rssi", CreateFieldReader(&ScanResult::rssi)},
+      {"periodic_adv_int", CreateFieldReader(&ScanResult::periodic_adv_int)},
+      {"flags", CreateFieldReader(&ScanResult::flags)},
+      {"service_uuids", CreateFieldReader(&ScanResult::service_uuids)},
+      {"service_data", CreateFieldReader(&ScanResult::service_data)},
+      {"manufacturer_data", CreateFieldReader(&ScanResult::manufacturer_data)},
+      {"adv_data", CreateFieldReader(&ScanResult::adv_data)},
   });
 
   return struct_reader.ReadDBusParam(reader, scan_result);
