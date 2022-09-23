@@ -10,8 +10,9 @@ import("//build/config/sysroot.gni")
 declare_args() {
   # This variable is deprecated.  use_system_libwayland_client should be used
   # instead.
-  use_system_libwayland = is_linux && !is_castos && !is_msan &&
-                          default_toolchain != "//build/toolchain/cros:target"
+  use_system_libwayland =
+      is_linux && !is_castos && !is_msan && target_cpu == "x64" &&
+      default_toolchain != "//build/toolchain/cros:target"
 
   # Controls whether the build should use the version of Wayland
   # library shipped with the system or Chromium third_party (server library).
