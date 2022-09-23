@@ -1184,6 +1184,14 @@ void SimulateGestureScrollSequence(WebContents* web_contents,
   SimulateGestureScrollSequence(widget_host, point, delta);
 }
 
+void SimulateGestureEvent(RenderWidgetHost* render_widget_host,
+                          const blink::WebGestureEvent& gesture_event,
+                          const ui::LatencyInfo& latency) {
+  RenderWidgetHostViewBase* view =
+      static_cast<RenderWidgetHostViewBase*>(render_widget_host->GetView());
+  view->ProcessGestureEvent(gesture_event, latency);
+}
+
 void SimulateGestureEvent(WebContents* web_contents,
                           const blink::WebGestureEvent& gesture_event,
                           const ui::LatencyInfo& latency) {

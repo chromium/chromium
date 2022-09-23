@@ -4889,16 +4889,14 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest,
   content::RenderFrameSubmissionObserver embedder_frame_observer(
       embedder_contents);
 
-  std::vector<content::WebContents*> guest_web_contents_list;
+  std::vector<content::RenderFrameHost*> guest_rfh_list;
   GetGuestViewManager()->WaitForNumGuestsCreated(1u);
-  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
-      &guest_web_contents_list);
-  ASSERT_EQ(1u, guest_web_contents_list.size());
+  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_rfh_list);
+  ASSERT_EQ(1u, guest_rfh_list.size());
 
-  content::WebContents* guest_contents = guest_web_contents_list[0];
-  content::RenderFrameSubmissionObserver guest_frame_observer(guest_contents);
-  content::RenderWidgetHostView* guest_host_view =
-      guest_contents->GetRenderWidgetHostView();
+  content::RenderFrameHost* guest_rfh = guest_rfh_list[0];
+  content::RenderFrameSubmissionObserver guest_frame_observer(guest_rfh);
+  content::RenderWidgetHostView* guest_host_view = guest_rfh->GetView();
 
   gfx::PointF default_offset;
   guest_frame_observer.WaitForScrollOffset(default_offset);
@@ -4919,11 +4917,11 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest,
   scroll_begin.SetPositionInScreen(guest_scroll_location_in_root);
   scroll_begin.data.scroll_begin.delta_x_hint = 0;
   scroll_begin.data.scroll_begin.delta_y_hint = 5;
-  content::SimulateGestureEvent(guest_contents, scroll_begin,
+  content::SimulateGestureEvent(guest_rfh->GetRenderWidgetHost(), scroll_begin,
                                 ui::LatencyInfo(ui::SourceEventType::WHEEL));
 
   content::InputEventAckWaiter update_waiter(
-      guest_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget(),
+      guest_rfh->GetRenderWidgetHost(),
       base::BindRepeating([](blink::mojom::InputEventResultSource,
                              blink::mojom::InputEventResultState state,
                              const blink::WebInputEvent& event) {
@@ -4943,7 +4941,7 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest,
       scroll_begin.data.scroll_begin.delta_x_hint;
   scroll_update.data.scroll_update.delta_y =
       scroll_begin.data.scroll_begin.delta_y_hint;
-  content::SimulateGestureEvent(guest_contents, scroll_update,
+  content::SimulateGestureEvent(guest_rfh->GetRenderWidgetHost(), scroll_update,
                                 ui::LatencyInfo(ui::SourceEventType::WHEEL));
   update_waiter.Wait();
   update_waiter.Reset();
@@ -4958,7 +4956,7 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest,
   // Now we switch directions and scroll down. The guest can scroll in this
   // direction, but since we're bubbling, the guest should not consume this.
   scroll_update.data.scroll_update.delta_y = -5;
-  content::SimulateGestureEvent(guest_contents, scroll_update,
+  content::SimulateGestureEvent(guest_rfh->GetRenderWidgetHost(), scroll_update,
                                 ui::LatencyInfo(ui::SourceEventType::WHEEL));
   update_waiter.Wait();
 
