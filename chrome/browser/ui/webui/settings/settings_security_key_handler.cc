@@ -818,8 +818,7 @@ void SecurityKeysBioEnrollmentHandler::HandleGetSensorInfo(
   if (sensor_info_.max_samples_for_enroll) {
     response.Set("maxSamplesForEnroll", *sensor_info_.max_samples_for_enroll);
   }
-  ResolveJavascriptCallback(base::Value(std::move(args[0].GetString())),
-                            response);
+  ResolveJavascriptCallback(base::Value(args[0].GetString()), response);
 }
 
 void SecurityKeysBioEnrollmentHandler::HandleEnumerate(
