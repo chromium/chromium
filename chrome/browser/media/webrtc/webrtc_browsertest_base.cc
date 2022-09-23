@@ -113,9 +113,9 @@ std::vector<std::string> JsonArrayToVectorOfStrings(
       base::ListValue::From(std::move(value));
   std::vector<std::string> vector;
   vector.reserve(list->GetListDeprecated().size());
-  for (const base::Value& item : list->GetListDeprecated()) {
+  for (base::Value& item : list->GetListDeprecated()) {
     EXPECT_TRUE(item.is_string());
-    vector.push_back(std::move(item.GetString()));
+    vector.push_back(std::move(item).TakeString());
   }
   return vector;
 }

@@ -75,7 +75,7 @@ class WebRtcInternalsPerfBrowserTest : public WebRtcTestBase {
     absl::optional<base::Value> parsed_json =
         base::JSONReader::Read(all_stats_json);
     if (parsed_json.has_value() && parsed_json->is_dict()) {
-      return absl::make_optional(std::move(parsed_json->GetDict()));
+      return absl::make_optional(std::move(*parsed_json).TakeDict());
     }
 
     return absl::nullopt;
