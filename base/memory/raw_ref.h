@@ -15,7 +15,7 @@
 
 namespace base {
 
-template <class T, class Impl>
+template <class T, class RawPtrType>
 class raw_ref;
 
 namespace internal {
@@ -51,9 +51,10 @@ constexpr inline bool is_raw_ref_v = is_raw_ref<T>::value;
 // Unlike a native `T&` reference, a mutable `raw_ref<T>` can be changed
 // independent of the underlying `T`, similar to `std::reference_wrapper`. That
 // means the reference inside it can be moved and reassigned.
-template <class T, class Impl = DefaultRawPtrImpl>
+template <class T, class RawPtrType = DefaultRawPtrType>
 class TRIVIAL_ABI GSL_POINTER raw_ref {
-  using Inner = raw_ptr<T, Impl>;
+  using Inner = raw_ptr<T, RawPtrType>;
+  using Impl = typename raw_ptr_traits::RawPtrTypeToImpl<RawPtrType>::Impl;
   // These impls do not clear on move, which produces an inconsistent behaviour.
   // We want consistent behaviour such that using a raw_ref after move is caught
   // and aborts. Failure to clear would be indicated by the related death tests
@@ -106,13 +107,14 @@ class TRIVIAL_ABI GSL_POINTER raw_ref {
   // Deliberately implicit in order to support implicit upcast.
   template <class U, class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  ALWAYS_INLINE raw_ref(const raw_ref<U, Impl>& p) noexcept : inner_(p.inner_) {
+  ALWAYS_INLINE raw_ref(const raw_ref<U, RawPtrType>& p) noexcept
+      : inner_(p.inner_) {
     CHECK(inner_.get());  // Catch use-after-move.
   }
   // Deliberately implicit in order to support implicit upcast.
   template <class U, class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  ALWAYS_INLINE raw_ref(raw_ref<U, Impl>&& p) noexcept
+  ALWAYS_INLINE raw_ref(raw_ref<U, RawPtrType>&& p) noexcept
       : inner_(std::move(p.inner_)) {
     CHECK(inner_.get());  // Catch use-after-move.
     if constexpr (need_clear_after_move)
@@ -121,13 +123,13 @@ class TRIVIAL_ABI GSL_POINTER raw_ref {
 
   // Upcast assignment
   template <class U, class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
-  ALWAYS_INLINE raw_ref& operator=(const raw_ref<U, Impl>& p) noexcept {
+  ALWAYS_INLINE raw_ref& operator=(const raw_ref<U, RawPtrType>& p) noexcept {
     CHECK(p.inner_.get());  // Catch use-after-move.
     inner_.operator=(p.inner_);
     return *this;
   }
   template <class U, class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
-  ALWAYS_INLINE raw_ref& operator=(raw_ref<U, Impl>&& p) noexcept {
+  ALWAYS_INLINE raw_ref& operator=(raw_ref<U, RawPtrType>&& p) noexcept {
     CHECK(p.inner_.get());  // Catch use-after-move.
     inner_.operator=(std::move(p.inner_));
     if constexpr (need_clear_after_move)
@@ -176,42 +178,42 @@ class TRIVIAL_ABI GSL_POINTER raw_ref {
 
   template <class U>
   friend ALWAYS_INLINE bool operator==(const raw_ref& lhs,
-                                       const raw_ref<U, Impl>& rhs) {
+                                       const raw_ref<U, RawPtrType>& rhs) {
     CHECK(lhs.inner_.get());  // Catch use-after-move.
     CHECK(rhs.inner_.get());  // Catch use-after-move.
     return lhs.inner_ == rhs.inner_;
   }
   template <class U>
   friend ALWAYS_INLINE bool operator!=(const raw_ref& lhs,
-                                       const raw_ref<U, Impl>& rhs) {
+                                       const raw_ref<U, RawPtrType>& rhs) {
     CHECK(lhs.inner_.get());  // Catch use-after-move.
     CHECK(rhs.inner_.get());  // Catch use-after-move.
     return lhs.inner_ != rhs.inner_;
   }
   template <class U>
   friend ALWAYS_INLINE bool operator<(const raw_ref& lhs,
-                                      const raw_ref<U, Impl>& rhs) {
+                                      const raw_ref<U, RawPtrType>& rhs) {
     CHECK(lhs.inner_.get());  // Catch use-after-move.
     CHECK(rhs.inner_.get());  // Catch use-after-move.
     return lhs.inner_ < rhs.inner_;
   }
   template <class U>
   friend ALWAYS_INLINE bool operator>(const raw_ref& lhs,
-                                      const raw_ref<U, Impl>& rhs) {
+                                      const raw_ref<U, RawPtrType>& rhs) {
     CHECK(lhs.inner_.get());  // Catch use-after-move.
     CHECK(rhs.inner_.get());  // Catch use-after-move.
     return lhs.inner_ > rhs.inner_;
   }
   template <class U>
   friend ALWAYS_INLINE bool operator<=(const raw_ref& lhs,
-                                       const raw_ref<U, Impl>& rhs) {
+                                       const raw_ref<U, RawPtrType>& rhs) {
     CHECK(lhs.inner_.get());  // Catch use-after-move.
     CHECK(rhs.inner_.get());  // Catch use-after-move.
     return lhs.inner_ <= rhs.inner_;
   }
   template <class U>
   friend ALWAYS_INLINE bool operator>=(const raw_ref& lhs,
-                                       const raw_ref<U, Impl>& rhs) {
+                                       const raw_ref<U, RawPtrType>& rhs) {
     CHECK(lhs.inner_.get());  // Catch use-after-move.
     CHECK(rhs.inner_.get());  // Catch use-after-move.
     return lhs.inner_ >= rhs.inner_;
@@ -321,22 +323,24 @@ namespace std {
 
 // Override so set/map lookups do not create extra raw_ref. This also
 // allows C++ references to be used for lookup.
-template <typename T, typename Impl>
-struct less<raw_ref<T, Impl>> {
+template <typename T, typename RawPtrType>
+struct less<raw_ref<T, RawPtrType>> {
+  using Impl =
+      typename base::raw_ptr_traits::RawPtrTypeToImpl<RawPtrType>::Impl;
   using is_transparent = void;
 
-  bool operator()(const raw_ref<T, Impl>& lhs,
-                  const raw_ref<T, Impl>& rhs) const {
+  bool operator()(const raw_ref<T, RawPtrType>& lhs,
+                  const raw_ref<T, RawPtrType>& rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(T& lhs, const raw_ref<T, Impl>& rhs) const {
+  bool operator()(T& lhs, const raw_ref<T, RawPtrType>& rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(const raw_ref<T, Impl>& lhs, T& rhs) const {
+  bool operator()(const raw_ref<T, RawPtrType>& lhs, T& rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }

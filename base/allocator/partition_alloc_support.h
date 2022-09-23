@@ -35,6 +35,7 @@ BASE_EXPORT std::map<std::string, std::string> ProposeSyntheticFinchTrials();
 // This is currently effective, only when compiled with
 // `enable_dangling_raw_ptr_checks` build flag.
 BASE_EXPORT void InstallDanglingRawPtrChecks();
+BASE_EXPORT void InstallUnretainedDanglingRawPtrChecks();
 
 }  // namespace allocator
 }  // namespace base

@@ -60,6 +60,25 @@ namespace base {
 // NOTE: All methods should be `ALWAYS_INLINE`. raw_ptr is meant to be a
 // lightweight replacement of a raw pointer, hence performance is critical.
 
+// The following types are the different RawPtrType template option possible for
+// a `raw_ptr`:
+// - RawPtrMayDangle disables dangling pointers check when the object is
+//   released.
+// - RawPtrBanDanglingIfSupported may enable dangling pointers check on object
+//   destruction.
+//
+// We describe those types here so that they can be used outside of `raw_ptr` as
+// object markers, and their meaning might vary depending on where those markers
+// are being used. For instance, we are using those in `UnretainedWrapper` to
+// change behavior depending on RawPtrType.
+struct RawPtrMayDangle {};
+struct RawPtrBanDanglingIfSupported {};
+
+namespace raw_ptr_traits {
+template <typename T>
+struct RawPtrTypeToImpl;
+}
+
 namespace internal {
 // These classes/structures are part of the raw_ptr implementation.
 // DO NOT USE THESE CLASSES DIRECTLY YOURSELF.
@@ -553,6 +572,12 @@ struct BackupRefPtrImpl {
     return WrapRawPtr(wrapped_ptr);
   }
 
+  // Report the current wrapped pointer if pointee isn't alive anymore.
+  template <typename T>
+  static ALWAYS_INLINE void ReportIfDangling(T* wrapped_ptr) {
+    ReportIfDanglingInternal(partition_alloc::UntagPtr(wrapped_ptr));
+  }
+
   // This is for accounting only, used by unit tests.
   static ALWAYS_INLINE void IncrementSwapCountForTest() {}
   static ALWAYS_INLINE void IncrementLessCountForTest() {}
@@ -568,6 +593,7 @@ struct BackupRefPtrImpl {
   static BASE_EXPORT NOINLINE void AcquireInternal(uintptr_t address);
   static BASE_EXPORT NOINLINE void ReleaseInternal(uintptr_t address);
   static BASE_EXPORT NOINLINE bool IsPointeeAlive(uintptr_t address);
+  static BASE_EXPORT NOINLINE void ReportIfDanglingInternal(uintptr_t address);
   template <typename Z, typename = std::enable_if_t<offset_type<Z>, void>>
   static ALWAYS_INLINE bool IsValidDelta(uintptr_t address, Z delta_in_bytes) {
     if constexpr (std::is_signed_v<Z>)
@@ -665,35 +691,37 @@ struct AsanBackupRefPtrImpl {
 };
 
 template <class Super>
-struct RawPtrCountingImplWrapperForTest : public Super {
+struct RawPtrCountingImplWrapperForTest
+    : public raw_ptr_traits::RawPtrTypeToImpl<Super>::Impl {
+  using SuperImpl = typename raw_ptr_traits::RawPtrTypeToImpl<Super>::Impl;
   template <typename T>
   static ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
     ++wrap_raw_ptr_cnt;
-    return Super::WrapRawPtr(ptr);
+    return SuperImpl::WrapRawPtr(ptr);
   }
 
   template <typename T>
   static ALWAYS_INLINE void ReleaseWrappedPtr(T* ptr) {
     ++release_wrapped_ptr_cnt;
-    Super::ReleaseWrappedPtr(ptr);
+    SuperImpl::ReleaseWrappedPtr(ptr);
   }
 
   template <typename T>
   static ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
     ++get_for_dereference_cnt;
-    return Super::SafelyUnwrapPtrForDereference(wrapped_ptr);
+    return SuperImpl::SafelyUnwrapPtrForDereference(wrapped_ptr);
   }
 
   template <typename T>
   static ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
     ++get_for_extraction_cnt;
-    return Super::SafelyUnwrapPtrForExtraction(wrapped_ptr);
+    return SuperImpl::SafelyUnwrapPtrForExtraction(wrapped_ptr);
   }
 
   template <typename T>
   static ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
     ++get_for_comparison_cnt;
-    return Super::UnsafelyUnwrapPtrForComparison(wrapped_ptr);
+    return SuperImpl::UnsafelyUnwrapPtrForComparison(wrapped_ptr);
   }
 
   static ALWAYS_INLINE void IncrementSwapCountForTest() {
@@ -816,6 +844,42 @@ struct IsSupportedType<T,
 #undef CHROME_WINDOWS_HANDLE_TYPE
 #endif
 
+template <typename T>
+struct RawPtrTypeToImpl {};
+
+template <typename T>
+struct RawPtrTypeToImpl<internal::RawPtrCountingImplWrapperForTest<T>> {
+  using Impl = internal::RawPtrCountingImplWrapperForTest<T>;
+};
+
+template <>
+struct RawPtrTypeToImpl<RawPtrMayDangle> {
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  using Impl = internal::BackupRefPtrImpl</*AllowDangling=*/true>;
+#elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+  using Impl = internal::AsanBackupRefPtrImpl;
+#elif defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+  using Impl = internal::MTECheckedPtrImpl<
+      internal::MTECheckedPtrImplPartitionAllocSupport>;
+#else
+  using Impl = internal::RawPtrNoOpImpl;
+#endif
+};
+
+template <>
+struct RawPtrTypeToImpl<RawPtrBanDanglingIfSupported> {
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  using Impl = internal::BackupRefPtrImpl</*AllowDangling=*/false>;
+#elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+  using Impl = internal::AsanBackupRefPtrImpl;
+#elif defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+  using Impl = internal::MTECheckedPtrImpl<
+      internal::MTECheckedPtrImplPartitionAllocSupport>;
+#else
+  using Impl = internal::RawPtrNoOpImpl;
+#endif
+};
+
 }  // namespace raw_ptr_traits
 
 // `raw_ptr<T>` is a non-owning smart pointer that has improved memory-safety
@@ -844,27 +908,12 @@ struct IsSupportedType<T,
 // non-default move constructor/assignment. Thus, it's possible to get an error
 // where the pointer is not actually dangling, and have to work around the
 // compiler. We have not managed to construct such an example in Chromium yet.
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-using RawPtrMayDangle = internal::BackupRefPtrImpl</*AllowDangling=*/true>;
-using RawPtrBanDanglingIfSupported =
-    internal::BackupRefPtrImpl</*AllowDangling=*/false>;
-#elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-using RawPtrMayDangle = internal::AsanBackupRefPtrImpl;
-using RawPtrBanDanglingIfSupported = internal::AsanBackupRefPtrImpl;
-#elif defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
-using RawPtrMayDangle = internal::MTECheckedPtrImpl<
-    internal::MTECheckedPtrImplPartitionAllocSupport>;
-using RawPtrBanDanglingIfSupported = internal::MTECheckedPtrImpl<
-    internal::MTECheckedPtrImplPartitionAllocSupport>;
-#else
-using RawPtrMayDangle = internal::RawPtrNoOpImpl;
-using RawPtrBanDanglingIfSupported = internal::RawPtrNoOpImpl;
-#endif
 
-using DefaultRawPtrImpl = RawPtrBanDanglingIfSupported;
+using DefaultRawPtrType = RawPtrBanDanglingIfSupported;
 
-template <typename T, typename Impl = DefaultRawPtrImpl>
+template <typename T, typename RawPtrType = DefaultRawPtrType>
 class TRIVIAL_ABI GSL_POINTER raw_ptr {
+  using Impl = typename raw_ptr_traits::RawPtrTypeToImpl<RawPtrType>::Impl;
   using DanglingRawPtr = std::conditional_t<
       raw_ptr_traits::IsRawPtrCountingImpl<Impl>::value,
       raw_ptr<T, internal::RawPtrCountingImplWrapperForTest<RawPtrMayDangle>>,
@@ -955,7 +1004,7 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  ALWAYS_INLINE raw_ptr(const raw_ptr<U, Impl>& ptr) noexcept
+  ALWAYS_INLINE raw_ptr(const raw_ptr<U, RawPtrType>& ptr) noexcept
       : wrapped_ptr_(
             Impl::Duplicate(Impl::template Upcast<T, U>(ptr.wrapped_ptr_))) {}
   // Deliberately implicit in order to support implicit upcast.
@@ -964,7 +1013,7 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  ALWAYS_INLINE raw_ptr(raw_ptr<U, Impl>&& ptr) noexcept
+  ALWAYS_INLINE raw_ptr(raw_ptr<U, RawPtrType>&& ptr) noexcept
       : wrapped_ptr_(Impl::template Upcast<T, U>(ptr.wrapped_ptr_)) {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     ptr.wrapped_ptr_ = nullptr;
@@ -987,7 +1036,7 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
             typename Unused = std::enable_if_t<
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
-  ALWAYS_INLINE raw_ptr& operator=(const raw_ptr<U, Impl>& ptr) noexcept {
+  ALWAYS_INLINE raw_ptr& operator=(const raw_ptr<U, RawPtrType>& ptr) noexcept {
     // Make sure that pointer isn't assigned to itself (look at pointer address,
     // not its value).
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
@@ -1003,7 +1052,7 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
             typename Unused = std::enable_if_t<
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
-  ALWAYS_INLINE raw_ptr& operator=(raw_ptr<U, Impl>&& ptr) noexcept {
+  ALWAYS_INLINE raw_ptr& operator=(raw_ptr<U, RawPtrType>&& ptr) noexcept {
     // Make sure that pointer isn't assigned to itself (look at pointer address,
     // not its value).
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
@@ -1253,6 +1302,12 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
     perfetto::WriteIntoTracedValue(std::move(context), get());
   }
 
+  ALWAYS_INLINE void ReportIfDangling() const noexcept {
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+    Impl::ReportIfDangling(wrapped_ptr_);
+#endif
+  }
+
  private:
   // This getter is meant for situations where the pointer is meant to be
   // dereferenced. It is allowed to crash on nullptr (it may or may not),
@@ -1415,22 +1470,24 @@ namespace std {
 
 // Override so set/map lookups do not create extra raw_ptr. This also allows
 // dangling pointers to be used for lookup.
-template <typename T, typename Impl>
-struct less<raw_ptr<T, Impl>> {
+template <typename T, typename RawPtrType>
+struct less<raw_ptr<T, RawPtrType>> {
+  using Impl =
+      typename base::raw_ptr_traits::RawPtrTypeToImpl<RawPtrType>::Impl;
   using is_transparent = void;
 
-  bool operator()(const raw_ptr<T, Impl>& lhs,
-                  const raw_ptr<T, Impl>& rhs) const {
+  bool operator()(const raw_ptr<T, RawPtrType>& lhs,
+                  const raw_ptr<T, RawPtrType>& rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(T* lhs, const raw_ptr<T, Impl>& rhs) const {
+  bool operator()(T* lhs, const raw_ptr<T, RawPtrType>& rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(const raw_ptr<T, Impl>& lhs, T* rhs) const {
+  bool operator()(const raw_ptr<T, RawPtrType>& lhs, T* rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }

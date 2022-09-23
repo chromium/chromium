@@ -236,7 +236,8 @@ void InProgressDownloadManager::OnUrlDownloadStarted(
   StartDownload(std::move(download_create_info), std::move(input_stream),
                 std::move(url_loader_factory_provider),
                 base::BindOnce(&InProgressDownloadManager::CancelUrlDownload,
-                               weak_factory_.GetWeakPtr(), downloader),
+                               weak_factory_.GetWeakPtr(),
+                               base::UnsafeDanglingUntriaged(downloader)),
                 std::move(callback));
 }
 

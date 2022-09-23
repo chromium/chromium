@@ -105,7 +105,7 @@ void TrackedChildURLLoaderFactoryBundle::AddObserverOnMainThread() {
       FROM_HERE,
       base::BindOnce(
           &HostChildURLLoaderFactoryBundle::AddObserver,
-          main_thread_host_bundle_->first, base::Unretained(this),
+          main_thread_host_bundle_->first, base::UnsafeDanglingUntriaged(this),
           std::make_unique<
               HostChildURLLoaderFactoryBundle::ObserverPtrAndTaskRunner>(
               AsWeakPtr(), base::SequencedTaskRunnerHandle::Get())));
@@ -117,7 +117,8 @@ void TrackedChildURLLoaderFactoryBundle::RemoveObserverOnMainThread() {
   main_thread_host_bundle_->second->PostTask(
       FROM_HERE,
       base::BindOnce(&HostChildURLLoaderFactoryBundle::RemoveObserver,
-                     main_thread_host_bundle_->first, base::Unretained(this)));
+                     main_thread_host_bundle_->first,
+                     base::UnsafeDanglingUntriaged(this)));
 }
 
 void TrackedChildURLLoaderFactoryBundle::OnUpdate(

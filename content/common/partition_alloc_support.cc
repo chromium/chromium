@@ -186,6 +186,7 @@ void PartitionAllocSupport::ReconfigureAfterZygoteFork(
 void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     const std::string& process_type) {
   base::allocator::InstallDanglingRawPtrChecks();
+  base::allocator::InstallUnretainedDanglingRawPtrChecks();
   {
     base::AutoLock scoped_lock(lock_);
     // Avoid initializing more than once.

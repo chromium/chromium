@@ -205,7 +205,7 @@ void FreezingVoteTokenPMRegistry::UnregisterVote(FreezingVoteTokenImpl* token) {
                 FreezingVoteTokenPMRegistry::GetOrCreateInstance(graph);
             registry->UnregisterVoteOnPMSequence(token);
           },
-          token));
+          base::UnsafeDanglingUntriaged(token)));
 }
 
 void FreezingVoteTokenPMRegistry::RegisterVoteOnPMSequence(

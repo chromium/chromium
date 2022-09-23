@@ -583,7 +583,7 @@ void WindowsSpellChecker::RecordChromeLocalesStats(
       base::BindOnce(
           &windows_spell_checker::BackgroundHelper::RecordChromeLocalesStats,
           base::Unretained(background_helper_.get()), std::move(chrome_locales),
-          metrics));
+          base::UnsafeDanglingUntriaged(metrics)));
 }
 
 void WindowsSpellChecker::RecordSpellcheckLocalesStats(

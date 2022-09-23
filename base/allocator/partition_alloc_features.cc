@@ -11,6 +11,24 @@
 namespace base {
 namespace features {
 
+BASE_FEATURE(kPartitionAllocUnretainedDanglingPtr,
+             "PartitionAllocUnretainedDanglingPtr",
+             FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr FeatureParam<UnretainedDanglingPtrMode>::Option
+    kUnretainedDanglingPtrModeOption[] = {
+        {UnretainedDanglingPtrMode::kCrash, "crash"},
+        {UnretainedDanglingPtrMode::kDumpWithoutCrashing,
+         "dump_without_crashing"},
+};
+const base::FeatureParam<UnretainedDanglingPtrMode>
+    kUnretainedDanglingPtrModeParam = {
+        &kPartitionAllocUnretainedDanglingPtr,
+        "mode",
+        UnretainedDanglingPtrMode::kDumpWithoutCrashing,
+        &kUnretainedDanglingPtrModeOption,
+};
+
 BASE_FEATURE(kPartitionAllocDanglingPtr,
              "PartitionAllocDanglingPtr",
              FEATURE_DISABLED_BY_DEFAULT);

@@ -106,7 +106,7 @@ void HistogramController::InsertChildHistogramFetcherInterface(
   // the number of known processes
   child_histogram_fetcher.set_disconnect_handler(base::BindOnce(
       &HistogramController::RemoveChildHistogramFetcherInterface<T>,
-      base::Unretained(this), base::Unretained(host)));
+      base::Unretained(this), base::UnsafeDanglingUntriaged(host)));
   GetChildHistogramFetcherMap<T>()[host] = std::move(child_histogram_fetcher);
 }
 

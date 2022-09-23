@@ -580,7 +580,8 @@ void MediaRouterMojoImpl::RegisterMediaRoutesObserver(
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&MediaRouterMojoImpl::NotifyOfExistingRoutesIfRegistered,
-                       weak_factory_.GetWeakPtr(), observer));
+                       weak_factory_.GetWeakPtr(),
+                       base::UnsafeDanglingUntriaged(observer)));
   }
 }
 

@@ -921,10 +921,11 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       content::WebContents* const web_contents =
           browser_->tab_strip_model()->GetActiveWebContents();
       if (web_contents) {
-        ShowPageInfoDialog(web_contents,
-                           base::BindOnce(&AppInfoDialogClosedCallback,
-                                          base::Unretained(web_contents)),
-                           bubble_anchor_util::kAppMenuButton);
+        ShowPageInfoDialog(
+            web_contents,
+            base::BindOnce(&AppInfoDialogClosedCallback,
+                           base::UnsafeDanglingUntriaged(web_contents)),
+            bubble_anchor_util::kAppMenuButton);
       }
       break;
     }

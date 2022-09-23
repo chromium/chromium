@@ -9,6 +9,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_alloc_support.h"
+#include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
+#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -18,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1792,6 +1797,144 @@ TEST(BindDeathTest, BanFirstOwnerOfRefCountedType) {
     base::BindOnce(&HasRef::VoidMethod0, rawptr);
   });
 }
+
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+
+void HandleOOM(size_t unused_size) {
+  LOG(FATAL) << "Out of memory";
+}
+
+// Basic set of options to mostly only enable `BackupRefPtr::kEnabled`.
+// This avoids the boilerplate of having too much options enabled for simple
+// testing purpose.
+static constexpr partition_alloc::PartitionOptions kOpts = {
+    partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
+    partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+    partition_alloc::PartitionOptions::Quarantine::kDisallowed,
+    partition_alloc::PartitionOptions::Cookie::kAllowed,
+    partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
+    partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled,
+    partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
+};
+
+class BindUnretainedDanglingInternalFixture : public BindTest {
+ public:
+  void SetUp() override {
+    partition_alloc::PartitionAllocGlobalInit(HandleOOM);
+    allocator_.init(kOpts);
+    enabled_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPartitionAllocUnretainedDanglingPtr, {{"mode", "crash"}}}},
+        {/* disabled_features */});
+    allocator::InstallUnretainedDanglingRawPtrChecks();
+  }
+  void TearDown() override {
+    enabled_feature_list_.Reset();
+    allocator::InstallUnretainedDanglingRawPtrChecks();
+    allocator_.root()->PurgeMemory(
+        partition_alloc::PurgeFlags::kDecommitEmptySlotSpans |
+        partition_alloc::PurgeFlags::kDiscardUnusedSystemPages);
+    partition_alloc::PartitionAllocGlobalUninitForTesting();
+  }
+
+  // In unit tests, allocations being tested need to live in a separate PA
+  // root so the test code doesn't interfere with various counters. Following
+  // methods are helpers for managing allocations inside the separate allocator
+  // root.
+  template <typename T, typename... Args>
+  raw_ptr<T> Alloc(Args&&... args) {
+    void* ptr = allocator_.root()->Alloc(sizeof(T), "");
+    T* p = new (reinterpret_cast<T*>(ptr)) T(std::forward<Args>(args)...);
+    return raw_ptr<T>(p);
+  }
+  template <typename T>
+  void Free(raw_ptr<T>& ptr) {
+    allocator_.root()->Free(ptr);
+  }
+
+ private:
+  test::ScopedFeatureList enabled_feature_list_;
+  partition_alloc::PartitionAllocator allocator_;
+};
+
+class BindUnretainedDanglingTest
+    : public BindUnretainedDanglingInternalFixture {};
+class BindUnretainedDanglingDeathTest
+    : public BindUnretainedDanglingInternalFixture {};
+
+bool PtrCheckFn(int* p) {
+  return p != nullptr;
+}
+
+class ClassWithWeakPtr {
+ public:
+  ClassWithWeakPtr() = default;
+  void RawPtrArg(int* p) { *p = 123; }
+  WeakPtr<ClassWithWeakPtr> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
+
+ private:
+  WeakPtrFactory<ClassWithWeakPtr> weak_factory_{this};
+};
+
+TEST_F(BindUnretainedDanglingTest, UnretainedNoDanglingPtr) {
+  raw_ptr<int> p = Alloc<int>(3);
+  auto callback = base::BindOnce(PingPong, base::Unretained(p));
+  EXPECT_EQ(std::move(callback).Run(), 3);
+  Free(p);
+}
+
+TEST_F(BindUnretainedDanglingTest, UnsafeDanglingPtr) {
+  raw_ptr<int> p = Alloc<int>(3);
+  auto callback = base::BindOnce(PtrCheckFn, base::UnsafeDangling(p));
+  Free(p);
+  EXPECT_EQ(std::move(callback).Run(), true);
+}
+
+TEST_F(BindUnretainedDanglingTest, UnsafeDanglingUntriagedPtr) {
+  raw_ptr<int> p = Alloc<int>(3);
+  auto callback = base::BindOnce(PtrCheckFn, base::UnsafeDanglingUntriaged(p));
+  Free(p);
+  EXPECT_EQ(std::move(callback).Run(), true);
+}
+
+TEST_F(BindUnretainedDanglingTest, UnretainedWeakReceiverValidNoDangling) {
+  raw_ptr<int> p = Alloc<int>(3);
+  std::unique_ptr<ClassWithWeakPtr> r = std::make_unique<ClassWithWeakPtr>();
+  auto callback = base::BindOnce(&ClassWithWeakPtr::RawPtrArg, r->GetWeakPtr(),
+                                 base::Unretained(p));
+  std::move(callback).Run();
+  EXPECT_EQ(*p, 123);
+  Free(p);
+}
+
+TEST_F(BindUnretainedDanglingTest, UnretainedWeakReceiverInvalidNoDangling) {
+  raw_ptr<int> p = Alloc<int>(3);
+  std::unique_ptr<ClassWithWeakPtr> r = std::make_unique<ClassWithWeakPtr>();
+  auto callback = base::BindOnce(&ClassWithWeakPtr::RawPtrArg, r->GetWeakPtr(),
+                                 base::Unretained(p));
+  r.reset();
+  Free(p);
+  std::move(callback).Run();
+  // Should reach this point without crashing; there is a dangling pointer, but
+  // the callback is cancelled because the WeakPtr is already invalidated.
+}
+
+TEST_F(BindUnretainedDanglingDeathTest, UnretainedDanglingPtr) {
+  raw_ptr<int> p = Alloc<int>(3);
+  auto callback = base::BindOnce(PingPong, base::Unretained(p));
+  Free(p);
+  EXPECT_DEATH(std::move(callback).Run(), "");
+}
+
+TEST_F(BindUnretainedDanglingDeathTest, UnretainedWeakReceiverDangling) {
+  raw_ptr<int> p = Alloc<int>(3);
+  std::unique_ptr<ClassWithWeakPtr> r = std::make_unique<ClassWithWeakPtr>();
+  auto callback = base::BindOnce(&ClassWithWeakPtr::RawPtrArg, r->GetWeakPtr(),
+                                 base::Unretained(p));
+  Free(p);
+  EXPECT_DEATH(std::move(callback).Run(), "");
+}
+
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 }  // namespace
 }  // namespace base

@@ -92,7 +92,7 @@ static_assert(
 namespace {
 
 using RawPtrCountingImpl =
-    base::internal::RawPtrCountingImplWrapperForTest<base::DefaultRawPtrImpl>;
+    base::internal::RawPtrCountingImplWrapperForTest<base::DefaultRawPtrType>;
 using RawPtrCountingMayDangleImpl =
     base::internal::RawPtrCountingImplWrapperForTest<base::RawPtrMayDangle>;
 

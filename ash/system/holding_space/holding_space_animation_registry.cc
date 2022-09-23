@@ -148,7 +148,8 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
     auto animation = ProgressRingAnimation::CreateOfType(type);
     animation->AddUnsafeAnimationUpdatedCallback(base::BindRepeating(
         &ProgressIndicatorAnimationDelegate::OnRingAnimationUpdatedForKey,
-        base::Unretained(this), key, animation.get()));
+        base::Unretained(this), base::UnsafeDanglingUntriaged(key),
+        animation.get()));
 
     registry_->SetProgressRingAnimationForKey(key, std::move(animation))
         ->Start();
@@ -287,7 +288,8 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
               if (registry->GetProgressRingAnimationForKey(key) == animation)
                 registry->SetProgressRingAnimationForKey(key, nullptr);
             },
-            weak_factory_.GetWeakPtr(), key, animation));
+            weak_factory_.GetWeakPtr(), base::UnsafeDanglingUntriaged(key),
+            base::UnsafeDanglingUntriaged(animation)));
   }
 
   ProgressIndicatorAnimationRegistry* const registry_;

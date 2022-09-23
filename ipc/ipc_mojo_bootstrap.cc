@@ -817,10 +817,10 @@ class ChannelAssociatedGroupController
       client->NotifyError(reason);
     } else {
       endpoint->task_runner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ChannelAssociatedGroupController::
-                             NotifyEndpointOfErrorOnEndpointThread,
-                         this, endpoint->id(), base::Unretained(endpoint)));
+          FROM_HERE, base::BindOnce(&ChannelAssociatedGroupController::
+                                        NotifyEndpointOfErrorOnEndpointThread,
+                                    this, endpoint->id(),
+                                    base::UnsafeDanglingUntriaged(endpoint)));
     }
   }
 

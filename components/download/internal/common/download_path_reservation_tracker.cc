@@ -465,7 +465,8 @@ void DownloadItemObserver::OnDownloadUpdated(DownloadItem* download) {
       // restarted. Holding on to the reservation now would prevent the name
       // from being used for a subsequent retry attempt.
       DownloadPathReservationTracker::GetTaskRunner()->PostTask(
-          FROM_HERE, base::BindOnce(&RevokeReservation, download));
+          FROM_HERE, base::BindOnce(&RevokeReservation,
+                                    base::UnsafeDanglingUntriaged(download)));
       download->RemoveObserver(this);
       download->RemoveUserData(&kUserDataKey);
       break;
@@ -480,7 +481,8 @@ void DownloadItemObserver::OnDownloadDestroyed(DownloadItem* download) {
   // Items should be COMPLETE/INTERRUPTED/CANCELLED before being destroyed.
   NOTREACHED();
   DownloadPathReservationTracker::GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&RevokeReservation, download));
+      FROM_HERE, base::BindOnce(&RevokeReservation,
+                                base::UnsafeDanglingUntriaged(download)));
 }
 
 // static
