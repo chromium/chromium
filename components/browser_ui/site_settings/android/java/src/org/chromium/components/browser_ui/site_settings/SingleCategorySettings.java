@@ -699,6 +699,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 RecordUserAction.record("SoundContentSetting.UnmuteBy.PatternException");
             }
         }
+        DesktopSiteMetrics.recordDesktopSiteSettingsManuallyAdded(
+                mCategory.getType(), setting, hostname);
     }
 
     /**
@@ -1227,6 +1229,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                             site.setContentSetting(
                                     browserContextHandle, contentSettingsType, permission);
 
+                            DesktopSiteMetrics.recordDesktopSiteSettingsChanged(
+                                    mCategory.getType(), permission, site);
                             getInfoForOrigins();
                             dialog.dismiss();
                         });
