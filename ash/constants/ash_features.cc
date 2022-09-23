@@ -337,7 +337,7 @@ BASE_FEATURE(kBorealisLinuxMode,
 // kBorealisDiskManagement.
 BASE_FEATURE(kBorealisStorageBallooning,
              "BorealisStorageBallooning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable TermsOfServiceURL policy for managed users.
 // https://crbug.com/1221342
