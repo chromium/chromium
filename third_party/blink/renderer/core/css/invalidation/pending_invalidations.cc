@@ -162,10 +162,16 @@ void PendingInvalidations::RescheduleSiblingInvalidationsAsDescendants(
 
   InvalidationLists invalidation_lists;
   for (const auto& invalidation_set : pending_invalidations.Siblings()) {
+    // https://linear.app/replay/issue/RUN-556
+    recordreplay::Assert("PendingInvalidations::RescheduleSiblingInvalidationsAsDescendants #5 %d",
+                         recordreplay::PointerId(invalidation_set.get()));
     invalidation_lists.descendants.push_back(invalidation_set);
     if (DescendantInvalidationSet* descendants =
             To<SiblingInvalidationSet>(*invalidation_set)
                 .SiblingDescendants()) {
+      // https://linear.app/replay/issue/RUN-556
+      recordreplay::Assert("PendingInvalidations::RescheduleSiblingInvalidationsAsDescendants #6 %d",
+                           recordreplay::PointerId(descendants));
       invalidation_lists.descendants.push_back(descendants);
     }
   }

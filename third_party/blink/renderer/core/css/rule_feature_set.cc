@@ -1166,6 +1166,10 @@ void RuleFeatureSet::CollectInvalidationSetsForClass(
   ExtractInvalidationSets(it->value.get(), descendants, siblings);
 
   if (descendants) {
+    // https://linear.app/replay/issue/RUN-556
+    recordreplay::Assert("RuleFeatureSet::CollectInvalidationSetsForClass #5 %d",
+                         recordreplay::PointerId(descendants));
+
     TRACE_SCHEDULE_STYLE_INVALIDATION(element, *descendants, ClassChange,
                                       class_name);
     invalidation_lists.descendants.push_back(descendants);
@@ -1213,6 +1217,10 @@ void RuleFeatureSet::CollectInvalidationSetsForId(
   ExtractInvalidationSets(it->value.get(), descendants, siblings);
 
   if (descendants) {
+    // https://linear.app/replay/issue/RUN-556
+    recordreplay::Assert("RuleFeatureSet::CollectInvalidationSetsForId #5 %d",
+                         recordreplay::PointerId(descendants));
+
     TRACE_SCHEDULE_STYLE_INVALIDATION(element, *descendants, IdChange, id);
     invalidation_lists.descendants.push_back(descendants);
   }
@@ -1257,6 +1265,10 @@ void RuleFeatureSet::CollectInvalidationSetsForAttribute(
   ExtractInvalidationSets(it->value.get(), descendants, siblings);
 
   if (descendants) {
+    // https://linear.app/replay/issue/RUN-556
+    recordreplay::Assert("RuleFeatureSet::CollectInvalidationSetsForAttribute #5 %d",
+                         recordreplay::PointerId(descendants));
+
     TRACE_SCHEDULE_STYLE_INVALIDATION(element, *descendants, AttributeChange,
                                       attribute_name);
     invalidation_lists.descendants.push_back(descendants);
@@ -1305,6 +1317,10 @@ void RuleFeatureSet::CollectInvalidationSetsForPseudoClass(
   ExtractInvalidationSets(it->value.get(), descendants, siblings);
 
   if (descendants) {
+    // https://linear.app/replay/issue/RUN-556
+    recordreplay::Assert("RuleFeatureSet::CollectInvalidationSetsForPseudoClass #5 %d",
+                         recordreplay::PointerId(descendants));
+
     TRACE_SCHEDULE_STYLE_INVALIDATION(element, *descendants, PseudoChange,
                                       pseudo);
     invalidation_lists.descendants.push_back(descendants);
@@ -1349,6 +1365,10 @@ NthSiblingInvalidationSet& RuleFeatureSet::EnsureNthInvalidationSet() {
 void RuleFeatureSet::CollectPartInvalidationSet(
     InvalidationLists& invalidation_lists) const {
   if (metadata_.invalidates_parts) {
+    // https://linear.app/replay/issue/RUN-556
+    recordreplay::Assert("RuleFeatureSet::CollectPartInvalidationSet #5 %d",
+                         recordreplay::PointerId(InvalidationSet::PartInvalidationSet()));
+
     invalidation_lists.descendants.push_back(
         InvalidationSet::PartInvalidationSet());
   }
@@ -1358,6 +1378,10 @@ void RuleFeatureSet::CollectTypeRuleInvalidationSet(
     InvalidationLists& invalidation_lists,
     ContainerNode& root_node) const {
   if (type_rule_invalidation_set_) {
+    // https://linear.app/replay/issue/RUN-556
+    recordreplay::Assert("RuleFeatureSet::CollectTypeRuleInvalidationSet #5 %d",
+                         recordreplay::PointerId(type_rule_invalidation_set_.get()));
+
     invalidation_lists.descendants.push_back(type_rule_invalidation_set_);
     TRACE_SCHEDULE_STYLE_INVALIDATION(root_node, *type_rule_invalidation_set_,
                                       RuleSetInvalidation);

@@ -1250,6 +1250,11 @@ void StyleEngine::ScheduleCustomElementInvalidations(
     invalidation_set->AddTagName(tag_name);
   }
   invalidation_set->SetTreeBoundaryCrossing();
+
+  // https://linear.app/replay/issue/RUN-556
+  recordreplay::Assert("StyleEngine::ScheduleCustomElementInvalidations %d",
+                       recordreplay::PointerId(invalidation_set.get()));
+
   InvalidationLists invalidation_lists;
   invalidation_lists.descendants.push_back(invalidation_set);
   pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
