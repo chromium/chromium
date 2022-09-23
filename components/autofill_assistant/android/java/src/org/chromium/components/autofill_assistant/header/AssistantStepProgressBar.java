@@ -95,6 +95,7 @@ public class AssistantStepProgressBar {
 
             pulsor.setBackground(ApiCompatibilityUtils.getDrawable(
                     context.getResources(), R.drawable.autofill_assistant_circle_background));
+            pulsor.setBackgroundTintList(ContextCompat.getColorStateList(context, COLOR_LIST));
 
             pulsor.setVisibility(View.GONE);
 
