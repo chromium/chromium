@@ -307,6 +307,16 @@ extern const base::FeatureParam<int> kMigrationVersion = {
 // configured version is greater than the saved one.
 extern const base::FeatureParam<int> kGmsApiErrorListVersion = {
     &kUnifiedPasswordManagerAndroid, "api_error_list_version", 0};
+
+// Current list of the GMS Core API error codes that should be ignored and not
+// result in user eviction.
+extern const base::FeatureParam<std::string> kIgnoredGmsApiErrors = {
+    &kUnifiedPasswordManagerAndroid, "ignored_api_errors", ""};
+
+// Current list of the GMS Core API error codes considered retriable.
+// User could still be evicted if retries do not resolve the error.
+extern const base::FeatureParam<std::string> kRetriableGmsApiErrors = {
+    &kUnifiedPasswordManagerAndroid, "retriable_api_errors", ""};
 #endif
 
 // Field trial identifier for password generation requirements.
