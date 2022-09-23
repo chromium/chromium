@@ -67,6 +67,7 @@ non_web_component_files = [
   "cr_picture/cr_picture_types.js",
   "cr_picture/png.js",
   "cr_picture/webcam_utils.js",
+  "keyboard_shortcut_list_js.js",
   "multidevice_setup/fake_mojo_service.js",
   "multidevice_setup/mojo_api.js",
   "multidevice_setup/multidevice_setup_browser_proxy.js",
@@ -214,6 +215,7 @@ generate_definitions_js_files = [
   "cr_picture/icons.html.js",
   "cr_picture/png.js",
   "cr_picture/webcam_utils.js",
+  "keyboard_shortcut_list_js.js",
   "navigation_shared_vars.css.js",
   "network/network_shared.css.js",
   "quick_unlock/lock_screen_constants.js",
@@ -304,6 +306,7 @@ js_type_check("closure_compile_local") {
     ":keyboard_diagram",
     ":keyboard_key",
     ":keyboard_layouts",
+    ":keyboard_shortcut_list_js",
     ":mojo_utils",
     ":navigation_selector",
     ":navigation_view_panel",
@@ -337,6 +340,9 @@ js_library("keyboard_key") {
 
 js_library("keyboard_layouts") {
   sources = [ "keyboard_layouts.js" ]
+}
+
+js_library("keyboard_shortcut_list_js") {
 }
 
 js_library("mojo_utils") {

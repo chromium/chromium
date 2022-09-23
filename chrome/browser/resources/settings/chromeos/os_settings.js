@@ -130,6 +130,7 @@ export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';
 export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_assistant_browser_proxy.js';
 export {ConsentStatus, DspHotwordState} from './google_assistant_page/google_assistant_page.js';
+export {FindShortcutBehavior, FindShortcutManager} from './find_shortcut_behavior.js';
 export {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page/internet_page_browser_proxy.js';
 export {KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType} from './kerberos_page/kerberos_accounts_browser_proxy.js';
 export {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from './metrics_recorder.js';

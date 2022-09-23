@@ -17,7 +17,7 @@ import './shared_style.css.js';
 import '../../settings_shared.css.js';
 
 import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://resources/cr_elements/cr_scrollable_behavior.js';
-import {FindShortcutBehavior, FindShortcutBehaviorInterface} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {FindShortcutBehavior, FindShortcutBehaviorInterface} from '../find_shortcut_behavior.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './add_items_dialog.html.js';

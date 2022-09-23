@@ -24,7 +24,7 @@ import '../../settings_vars.css.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
-import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
+import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {Debouncer, DomIf, microTask, mixinBehaviors, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -75,14 +75,13 @@ const OsSettingsUiElementBase =
     mixinBehaviors(
         [
           CrContainerShadowBehavior,
-          FindShortcutBehavior,
           // Calls currentRouteChanged() in attached(),so ensure other behaviors
           // run their attached() first.
           RouteObserverBehavior,
         ],
-        PolymerElement) as {
+        FindShortcutMixin(PolymerElement)) as {
       new (): PolymerElement & CrContainerShadowBehavior &
-          FindShortcutBehavior & RouteObserverBehaviorInterface,
+          FindShortcutMixinInterface & RouteObserverBehaviorInterface,
     };
 
 class OsSettingsUiElement extends OsSettingsUiElementBase {

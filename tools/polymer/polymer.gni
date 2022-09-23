@@ -9,7 +9,6 @@ common_auto_imports = [
   "third_party/polymer/v1_0/components-chromium/paper-behaviors/paper-ripple-behavior.html|PaperRippleBehavior",
   "ui/webui/resources/cr_elements/cr_scrollable_behavior.html|CrScrollableBehavior",
   "ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_behavior.html|CrRadioButtonBehavior",
-  "ui/webui/resources/cr_elements/find_shortcut_behavior.html|FindShortcutBehavior",
   "ui/webui/resources/cr_elements/i18n_behavior.html|I18nBehavior",
   "ui/webui/resources/cr_elements/policy/cr_policy_pref_behavior.html|CrPolicyPrefBehavior",
   "ui/webui/resources/cr_elements/web_ui_listener_behavior.html|WebUIListenerBehavior",

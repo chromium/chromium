@@ -312,6 +312,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
  ['FilesPage', 'os_files_page_test.js'],
  ['FingerprintPage', 'fingerprint_browsertest_chromeos.js'],
+ ['FindShortcutBehaviorTest', 'find_shortcut_behavior_test.js'],
  ['GoogleAssistantPage', 'google_assistant_page_test.js'],
  ['GuestOsSharedPaths', 'guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os_shared_usb_devices_test.js'],

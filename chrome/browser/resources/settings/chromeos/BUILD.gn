@@ -466,6 +466,7 @@ js_type_check("closure_compile_local_module") {
   deps = [
     ":combined_search_handler",
     ":deep_linking_behavior",
+    ":find_shortcut_behavior",
     ":global_scroll_target_behavior",
     ":lazy_load",
     ":main_page_behavior",
@@ -497,6 +498,15 @@ js_library("deep_linking_behavior") {
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("find_shortcut_behavior") {
+  deps = [
+    "//ash/webui/common/resources:keyboard_shortcut_list_js",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 

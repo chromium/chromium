@@ -112,19 +112,6 @@ TEST_F('CrElementsExpandButtonTest', 'All', function() {
   mocha.run();
 });
 
-GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
-var CrElementsFindShortcutBehaviorTest = class extends CrElementsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=cr_elements/find_shortcut_behavior_test.js';
-  }
-};
-
-TEST_F('CrElementsFindShortcutBehaviorTest', 'All', function() {
-  mocha.run();
-});
-GEN('#endif');
-
 var CrElementsFindShortcutMixinTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {

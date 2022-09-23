@@ -139,7 +139,7 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   constructor() {
     super();
 
-    // Override FindShortcutBehavior property.
+    // Override FindShortcutMixin property.
     this.findShortcutListenOnAttach = false;
   }
 
@@ -281,7 +281,7 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     return this.i18n('subpageBackButtonAriaRoleDescription', this.pageTitle);
   }
 
-  // Override FindShortcutBehavior methods.
+  // Override FindShortcutMixin methods.
   override handleFindShortcut(modalContextOpen: boolean) {
     if (modalContextOpen) {
       return false;
@@ -290,7 +290,7 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     return true;
   }
 
-  // Override FindShortcutBehavior methods.
+  // Override FindShortcutMixin methods.
   override searchInputHasFocus() {
     const field = this.shadowRoot!.querySelector('cr-search-field')!;
     return field.getSearchInput() === field.shadowRoot!.activeElement;

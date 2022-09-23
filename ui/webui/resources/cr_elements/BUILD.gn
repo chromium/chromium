@@ -69,7 +69,6 @@ if (include_polymer) {
       in_files += [
         "cr_container_shadow_behavior.js",
         "cr_scrollable_behavior.js",
-        "find_shortcut_behavior.js",
         "policy/cr_policy_indicator_behavior.js",
       ]
     }
@@ -93,7 +92,6 @@ js_type_check("cr_elements_module_resources") {
     deps += [
       ":cr_container_shadow_behavior",
       ":cr_scrollable_behavior",
-      ":find_shortcut_behavior",
     ]
   }
 }
@@ -118,15 +116,6 @@ if (is_chromeos_ash) {
     deps = [
       "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
       "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    ]
-  }
-
-  js_library("find_shortcut_behavior") {
-    deps = [
-      "//ui/webui/resources/js:assert",
-      "//ui/webui/resources/js:cr.m",
-      "//ui/webui/resources/js:util.m",
-      "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list_js",
     ]
   }
 }

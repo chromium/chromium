@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from '../js/assert.js';
-import {isMac} from '../js/cr.m.js';
-import {KeyboardShortcutList} from '../js/cr/ui/keyboard_shortcut_list_js.js';
-import {isTextInputElement} from '../js/util.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {KeyboardShortcutList} from 'chrome://resources/ash/common/keyboard_shortcut_list_js.js';
+import {isTextInputElement} from 'chrome://resources/js/util.m.js';
 
 /**
  * @fileoverview Listens for a find keyboard shortcut (i.e. Ctrl/Cmd+f or /)
@@ -30,7 +29,7 @@ export const FindShortcutManager = (() => {
    */
   let modalContextOpen = false;
 
-  const shortcutCtrlF = new KeyboardShortcutList(isMac ? 'meta|f' : 'ctrl|f');
+  const shortcutCtrlF = new KeyboardShortcutList('ctrl|f');
   const shortcutSlash = new KeyboardShortcutList('/');
 
   window.addEventListener('keydown', e => {

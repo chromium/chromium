@@ -165,10 +165,10 @@ js_library("combobutton") {
 
 js_library("command") {
   deps = [
+    "//ash/webui/common/resources:keyboard_shortcut_list_js",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:ui",
-    "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list_js",
   ]
 }
 
