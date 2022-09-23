@@ -84,19 +84,18 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
   gfx::PointF screen_location = event->location_f();
   wm::ConvertPointToScreen(active_window, &screen_location);
 
-  // TODO(sophiewen): Consider checking greater bounds to take into account
-  // events that start in the target area, but end outside.
-
-  // If the menu is open, only handle events inside the menu.
-  if (multitask_menu_ &&
+  // If no drag is in process and the menu is open, only handle events inside
+  // the menu.
+  if (!is_drag_to_open_ && multitask_menu_ &&
       !gfx::RectF(
            multitask_menu_->multitask_menu_widget()->GetWindowBoundsInScreen())
            .Contains(screen_location)) {
     return;
   }
 
-  // If no menu is open, only handle events inside the target area.
-  if (!multitask_menu_ &&
+  // If no drag is in process and the menu is closed, only handle events inside
+  // the target area.
+  if (!is_drag_to_open_ && !multitask_menu_ &&
       !gfx::RectF(active_window->GetBoundsInScreen().CenterPoint().x() -
                       kTargetAreaWidth / 2,
                   0, kTargetAreaWidth, kTargetAreaHeight)

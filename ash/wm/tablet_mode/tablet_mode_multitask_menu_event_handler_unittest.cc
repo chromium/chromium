@@ -262,6 +262,11 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeFlingGestures) {
   // the menu.
   GenerateFling(window->bounds().CenterPoint().x(), 50, 8);
   ASSERT_FALSE(GetMultitaskMenu());
+
+  // Fling down and end the gesture outside of the target area. Verify that we
+  // open the menu.
+  GenerateFling(window->bounds().CenterPoint().x(), 1, 150);
+  EXPECT_TRUE(GetMultitaskMenu());
 }
 
 // Tests that scroll up closes the menu as expected.
