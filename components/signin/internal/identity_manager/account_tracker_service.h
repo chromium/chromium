@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -28,10 +29,6 @@
 class AccountCapabilities;
 class PrefRegistrySimple;
 class PrefService;
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace gfx {
 class Image;
@@ -156,7 +153,7 @@ class AccountTrackerService {
  protected:
   // Available to be called in tests.
   void SetAccountInfoFromUserInfo(const CoreAccountId& account_id,
-                                  const base::DictionaryValue* user_info);
+                                  const base::Value::Dict& user_info);
 
   // Updates the account image. Does nothing if |account_id| does not exist in
   // |accounts_|.

@@ -252,10 +252,10 @@ void TokenHandleUtil::TokenDelegate::OnNetworkError(int response_code) {
 }
 
 void TokenHandleUtil::TokenDelegate::OnGetTokenInfoResponse(
-    std::unique_ptr<base::DictionaryValue> token_info) {
+    const base::Value::Dict& token_info) {
   TokenHandleStatus outcome = UNKNOWN;
-  if (!token_info->FindKey("error")) {
-    absl::optional<int> expires_in = token_info->FindIntKey("expires_in");
+  if (!token_info.Find("error")) {
+    absl::optional<int> expires_in = token_info.FindInt("expires_in");
     if (expires_in)
       outcome = (*expires_in < 0) ? INVALID : VALID;
   }

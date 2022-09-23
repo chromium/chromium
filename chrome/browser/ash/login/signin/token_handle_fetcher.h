@@ -56,8 +56,7 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   // GaiaOAuthClient::Delegate overrides:
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
-  void OnGetTokenInfoResponse(
-      std::unique_ptr<base::DictionaryValue> token_info) override;
+  void OnGetTokenInfoResponse(const base::Value::Dict& token_info) override;
 
   void FillForAccessToken(const std::string& access_token);
 

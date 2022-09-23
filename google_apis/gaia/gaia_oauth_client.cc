@@ -525,18 +525,13 @@ void GaiaOAuthClient::Core::HandleResponse(std::unique_ptr<std::string> body,
     return;
   }
 
-  std::unique_ptr<base::DictionaryValue> response_dict;
+  absl::optional<base::Value> message_value;
   if (response_code == net::HTTP_OK && body) {
     std::string data = std::move(*body);
-    std::unique_ptr<base::Value> message_value =
-        base::JSONReader::ReadDeprecated(data);
-    if (message_value.get() && message_value->is_dict()) {
-      response_dict.reset(
-          static_cast<base::DictionaryValue*>(message_value.release()));
-    }
+    message_value = base::JSONReader::Read(data);
   }
 
-  if (!response_dict.get()) {
+  if (!message_value.has_value() || !message_value->is_dict()) {
     // If we don't have an access token yet and the the error was not
     // RC_BAD_REQUEST, we may need to retry.
     if ((max_retries_ != -1) && (num_retries_ >= max_retries_)) {
@@ -549,42 +544,55 @@ void GaiaOAuthClient::Core::HandleResponse(std::unique_ptr<std::string> body,
     return;
   }
 
+  const base::Value::Dict& response_dict = message_value->GetDict();
+
   RequestType type = request_type_;
   request_type_ = NO_PENDING_REQUEST;
 
   switch (type) {
     case USER_EMAIL: {
       std::string email;
-      response_dict->GetString("email", &email);
+      if (const std::string* dict_value = response_dict.FindString("email"))
+        email = *dict_value;
       delegate_->OnGetUserEmailResponse(email);
       break;
     }
 
     case USER_ID: {
       std::string id;
-      response_dict->GetString("id", &id);
+      if (const std::string* dict_value = response_dict.FindString("id"))
+        id = *dict_value;
       delegate_->OnGetUserIdResponse(id);
       break;
     }
 
     case USER_INFO: {
-      delegate_->OnGetUserInfoResponse(std::move(response_dict));
+      delegate_->OnGetUserInfoResponse(response_dict);
       break;
     }
 
     case TOKEN_INFO: {
-      delegate_->OnGetTokenInfoResponse(std::move(response_dict));
+      delegate_->OnGetTokenInfoResponse(response_dict);
       break;
     }
 
     case TOKENS_FROM_AUTH_CODE:
     case REFRESH_TOKEN: {
       std::string access_token;
+      if (const std::string* dict_value =
+              response_dict.FindString(kAccessTokenValue)) {
+        access_token = *dict_value;
+      }
       std::string refresh_token;
+      if (const std::string* dict_value =
+              response_dict.FindString(kRefreshTokenValue)) {
+        refresh_token = *dict_value;
+      }
       int expires_in_seconds = 0;
-      response_dict->GetString(kAccessTokenValue, &access_token);
-      response_dict->GetString(kRefreshTokenValue, &refresh_token);
-      response_dict->GetInteger(kExpiresInValue, &expires_in_seconds);
+      if (const absl::optional<int> dict_value =
+              response_dict.FindInt(kExpiresInValue)) {
+        expires_in_seconds = *dict_value;
+      }
 
       if (access_token.empty()) {
         delegate_->OnOAuthError();
@@ -594,15 +602,14 @@ void GaiaOAuthClient::Core::HandleResponse(std::unique_ptr<std::string> body,
       if (type == REFRESH_TOKEN) {
         delegate_->OnRefreshTokenResponse(access_token, expires_in_seconds);
       } else {
-        delegate_->OnGetTokensResponse(refresh_token,
-                                       access_token,
+        delegate_->OnGetTokensResponse(refresh_token, access_token,
                                        expires_in_seconds);
       }
       break;
     }
 
     case ACCOUNT_CAPABILITIES: {
-      delegate_->OnGetAccountCapabilitiesResponse(std::move(response_dict));
+      delegate_->OnGetAccountCapabilitiesResponse(response_dict);
       break;
     }
 

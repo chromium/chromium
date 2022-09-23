@@ -63,10 +63,9 @@ void CredentialProviderSigninInfoFetcher::SetCompletionCallbackAndStart(
 }
 
 void CredentialProviderSigninInfoFetcher::OnGetTokenInfoResponse(
-    std::unique_ptr<base::DictionaryValue> token_info) {
+    const base::Value::Dict& token_info) {
   DCHECK(token_handle_.empty());
-  if (const std::string* token_handle =
-          token_info->GetDict().FindString("token_handle");
+  if (const std::string* token_handle = token_info.FindString("token_handle");
       token_handle) {
     token_handle_ = *token_handle;
   }
@@ -75,16 +74,14 @@ void CredentialProviderSigninInfoFetcher::OnGetTokenInfoResponse(
 }
 
 void CredentialProviderSigninInfoFetcher::OnGetUserInfoResponse(
-    std::unique_ptr<base::DictionaryValue> user_info) {
+    const base::Value::Dict& user_info) {
   DCHECK(!mdm_access_token_.empty());
   DCHECK(!mdm_id_token_.empty());
   DCHECK(full_name_.empty());
-  if (const std::string* full_name = user_info->GetDict().FindString("name");
-      full_name) {
+  if (const std::string* full_name = user_info.FindString("name"); full_name) {
     full_name_ = *full_name;
   }
-  if (const std::string* picture_url =
-          user_info->GetDict().FindString("picture");
+  if (const std::string* picture_url = user_info.FindString("picture");
       picture_url) {
     picture_url_ = *picture_url;
   }

@@ -528,18 +528,18 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
                                           const std::string& given_name,
                                           const std::string& locale,
                                           const std::string& picture_url) {
-  base::DictionaryValue user_info;
-  user_info.SetString("id", gaia);
-  user_info.SetString("email", email);
-  user_info.SetString("hd", hosted_domain);
-  user_info.SetString("name", full_name);
-  user_info.SetString("given_name", given_name);
-  user_info.SetString("locale", locale);
-  user_info.SetString("picture", picture_url);
+  base::Value::Dict user_info;
+  user_info.Set("id", gaia);
+  user_info.Set("email", email);
+  user_info.Set("hd", hosted_domain);
+  user_info.Set("name", full_name);
+  user_info.Set("given_name", given_name);
+  user_info.Set("locale", locale);
+  user_info.Set("picture", picture_url);
 
   AccountTrackerService* account_tracker_service =
       identity_manager->GetAccountTrackerService();
-  account_tracker_service->SetAccountInfoFromUserInfo(account_id, &user_info);
+  account_tracker_service->SetAccountInfoFromUserInfo(account_id, user_info);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

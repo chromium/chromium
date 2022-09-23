@@ -142,9 +142,9 @@ void DeviceOAuth2TokenService::OnRefreshTokenResponse(
 }
 
 void DeviceOAuth2TokenService::OnGetTokenInfoResponse(
-    std::unique_ptr<base::DictionaryValue> token_info) {
+    const base::Value::Dict& token_info) {
   // For robot accounts email id is the account id.
-  const std::string* robot_email = token_info->GetDict().FindString("email");
+  const std::string* robot_email = token_info.FindString("email");
   gaia_oauth_client_.reset();
 
   store_->PrepareTrustedAccountId(base::BindRepeating(

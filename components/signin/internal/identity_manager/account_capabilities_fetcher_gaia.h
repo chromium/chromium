@@ -58,7 +58,7 @@ class AccountCapabilitiesFetcherGaia
 
   // gaia::GaiaOAuthClient::Delegate:
   void OnGetAccountCapabilitiesResponse(
-      std::unique_ptr<base::Value> account_capabilities) override;
+      const base::Value::Dict& account_capabilities) override;
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
 

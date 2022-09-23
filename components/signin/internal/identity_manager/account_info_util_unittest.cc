@@ -11,52 +11,51 @@
 #include "testing/platform_test.h"
 
 namespace {
-// Returns a base::Value corresponding to the user info as would be returned
-// by gaia server with provided values (if null is passed for a value, it will
-// not be set in the returned user_info object).
-base::Value CreateUserInfoWithValues(const char* email,
-                                     const char* gaia,
-                                     const char* hosted_domain,
-                                     const char* full_name,
-                                     const char* given_name,
-                                     const char* locale,
-                                     const char* picture_url) {
-  base::Value user_info(base::Value::Type::DICTIONARY);
+// Returns a base::Value::Dict corresponding to the user info as would be
+// returned by gaia server with provided values (if null is passed for a value,
+// it will not be set in the returned user_info object).
+base::Value::Dict CreateUserInfoWithValues(const char* email,
+                                           const char* gaia,
+                                           const char* hosted_domain,
+                                           const char* full_name,
+                                           const char* given_name,
+                                           const char* locale,
+                                           const char* picture_url) {
+  base::Value::Dict user_info;
   if (email)
-    user_info.SetKey("email", base::Value(email));
+    user_info.Set("email", base::Value(email));
 
   if (gaia)
-    user_info.SetKey("id", base::Value(gaia));
+    user_info.Set("id", base::Value(gaia));
 
   if (hosted_domain)
-    user_info.SetKey("hd", base::Value(hosted_domain));
+    user_info.Set("hd", base::Value(hosted_domain));
 
   if (full_name)
-    user_info.SetKey("name", base::Value(full_name));
+    user_info.Set("name", base::Value(full_name));
 
   if (given_name)
-    user_info.SetKey("given_name", base::Value(given_name));
+    user_info.Set("given_name", base::Value(given_name));
 
   if (locale)
-    user_info.SetKey("locale", base::Value(locale));
+    user_info.Set("locale", base::Value(locale));
 
   if (picture_url)
-    user_info.SetKey("picture", base::Value(picture_url));
+    user_info.Set("picture", base::Value(picture_url));
 
   return user_info;
 }
 
-base::Value CreateAccountCapabilitiesValue(
+base::Value::Dict CreateAccountCapabilitiesValue(
     const std::vector<std::pair<std::string, bool>>& capabilities) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  base::Value* list =
-      dict.SetKey("accountCapabilities", base::Value(base::Value::Type::LIST));
+  base::Value::Dict dict;
+  base::Value* list = dict.Set("accountCapabilities", base::Value::List());
 
   for (const auto& capability : capabilities) {
-    base::Value entry(base::Value::Type::DICTIONARY);
-    entry.SetStringKey("name", capability.first);
-    entry.SetBoolKey("booleanValue", capability.second);
-    list->Append(std::move(entry));
+    base::Value::Dict entry;
+    entry.Set("name", capability.first);
+    entry.Set("booleanValue", capability.second);
+    list->GetList().Append(std::move(entry));
   }
 
   return dict;
@@ -168,15 +167,6 @@ TEST_F(AccountInfoUtilTest, FromUserInfo_NoGaiaId) {
   EXPECT_FALSE(maybe_account_info.has_value());
 }
 
-// Tests that if AccountInfoFromUserInfo fails if the value passed is not a
-// dictionary.
-TEST_F(AccountInfoUtilTest, FromUserInfo_NotADictionary) {
-  absl::optional<AccountInfo> maybe_account_info =
-      AccountInfoFromUserInfo(base::Value("not a dictionary"));
-
-  EXPECT_FALSE(maybe_account_info.has_value());
-}
-
 TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue) {
   absl::optional<AccountCapabilities> capabilities =
       AccountCapabilitiesFromValue(CreateAccountCapabilitiesValue(
@@ -208,50 +198,40 @@ TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_SeveralCapabilities) {
 }
 
 TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_NonBooleanValue) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  base::Value* list =
-      value.SetKey("accountCapabilities", base::Value(base::Value::Type::LIST));
-  base::Value entry(base::Value::Type::DICTIONARY);
-  entry.SetStringKey("name", kCanOfferExtendedChromeSyncPromosCapabilityName);
-  entry.SetIntKey("intValue", 42);
-  list->Append(std::move(entry));
+  base::Value::Dict dict;
+  base::Value* list = dict.Set("accountCapabilities", base::Value::List());
+  base::Value::Dict entry;
+  entry.Set("name", kCanOfferExtendedChromeSyncPromosCapabilityName);
+  entry.Set("intValue", 42);
+  list->GetList().Append(std::move(entry));
 
   absl::optional<AccountCapabilities> capabilities =
-      AccountCapabilitiesFromValue(value);
+      AccountCapabilitiesFromValue(dict);
 
   ASSERT_TRUE(capabilities.has_value());
   EXPECT_EQ(capabilities->can_offer_extended_chrome_sync_promos(),
             signin::Tribool::kUnknown);
 }
 
-TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_NotADictionary) {
-  absl::optional<AccountCapabilities> capabilities =
-      AccountCapabilitiesFromValue(base::Value("not a dictionary"));
-
-  EXPECT_FALSE(capabilities.has_value());
-}
-
 TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_DoesNotContainList) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetKey("accountCapabilities",
-               base::Value(base::Value::Type::DICTIONARY));
+  base::Value::Dict dict;
+  dict.Set("accountCapabilities", base::Value::Dict());
 
   absl::optional<AccountCapabilities> capabilities =
-      AccountCapabilitiesFromValue(value);
+      AccountCapabilitiesFromValue(dict);
 
   EXPECT_FALSE(capabilities.has_value());
 }
 
 TEST_F(AccountInfoUtilTest, AccountCapabilitiesFromValue_NameNotFound) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  base::Value* list =
-      value.SetKey("accountCapabilities", base::Value(base::Value::Type::LIST));
-  base::Value entry(base::Value::Type::DICTIONARY);
-  entry.SetBoolKey("booleanValue", true);
-  list->Append(std::move(entry));
+  base::Value::Dict dict;
+  base::Value* list = dict.Set("accountCapabilities", base::Value::List());
+  base::Value::Dict entry;
+  entry.Set("booleanValue", true);
+  list->GetList().Append(std::move(entry));
 
   absl::optional<AccountCapabilities> capabilities =
-      AccountCapabilitiesFromValue(value);
+      AccountCapabilitiesFromValue(dict);
 
   EXPECT_FALSE(capabilities.has_value());
 }

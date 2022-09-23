@@ -298,12 +298,12 @@ void AccountTrackerService::StopTrackingAccount(
 
 void AccountTrackerService::SetAccountInfoFromUserInfo(
     const CoreAccountId& account_id,
-    const base::DictionaryValue* user_info) {
+    const base::Value::Dict& user_info) {
   DCHECK(base::Contains(accounts_, account_id));
   AccountInfo& account_info = accounts_[account_id];
 
   absl::optional<AccountInfo> maybe_account_info =
-      AccountInfoFromUserInfo(*user_info);
+      AccountInfoFromUserInfo(user_info);
   if (maybe_account_info) {
     // Should we DCHECK that the account stored in |accounts_| has the same
     // value for |gaia_id| and |email| as the value loaded from |user_info|?

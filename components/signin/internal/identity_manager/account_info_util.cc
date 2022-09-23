@@ -29,53 +29,44 @@ const char kAccountCapabilityBooleanValueKey[] = "booleanValue";
 }  // namespace
 
 absl::optional<AccountInfo> AccountInfoFromUserInfo(
-    const base::Value& user_info) {
-  if (!user_info.is_dict())
-    return absl::nullopt;
-
+    const base::Value::Dict& user_info) {
   // Both |gaia_id| and |email| are required value in the JSON reply, so
   // return empty result if any is missing.
-  const base::Value* gaia_id_value =
-      user_info.FindKeyOfType(kGaiaIdKey, base::Value::Type::STRING);
+  const std::string* gaia_id_value = user_info.FindString(kGaiaIdKey);
   if (!gaia_id_value)
     return absl::nullopt;
 
-  const base::Value* email_value =
-      user_info.FindKeyOfType(kEmailKey, base::Value::Type::STRING);
+  const std::string* email_value = user_info.FindString(kEmailKey);
   if (!email_value)
     return absl::nullopt;
 
   AccountInfo account_info;
-  account_info.email = email_value->GetString();
-  account_info.gaia = gaia_id_value->GetString();
+  account_info.email = *email_value;
+  account_info.gaia = *gaia_id_value;
 
   // All other fields are optional, some with default values.
-  const base::Value* hosted_domain_value =
-      user_info.FindKeyOfType(kHostedDomainKey, base::Value::Type::STRING);
-  if (hosted_domain_value && !hosted_domain_value->GetString().empty())
-    account_info.hosted_domain = hosted_domain_value->GetString();
+  const std::string* hosted_domain_value =
+      user_info.FindString(kHostedDomainKey);
+  if (hosted_domain_value && !hosted_domain_value->empty())
+    account_info.hosted_domain = *hosted_domain_value;
   else
     account_info.hosted_domain = kNoHostedDomainFound;
 
-  const base::Value* full_name_value =
-      user_info.FindKeyOfType(kFullNameKey, base::Value::Type::STRING);
+  const std::string* full_name_value = user_info.FindString(kFullNameKey);
   if (full_name_value)
-    account_info.full_name = full_name_value->GetString();
+    account_info.full_name = *full_name_value;
 
-  const base::Value* given_name_value =
-      user_info.FindKeyOfType(kGivenNameKey, base::Value::Type::STRING);
+  const std::string* given_name_value = user_info.FindString(kGivenNameKey);
   if (given_name_value)
-    account_info.given_name = given_name_value->GetString();
+    account_info.given_name = *given_name_value;
 
-  const base::Value* locale_value =
-      user_info.FindKeyOfType(kLocaleKey, base::Value::Type::STRING);
+  const std::string* locale_value = user_info.FindString(kLocaleKey);
   if (locale_value)
-    account_info.locale = locale_value->GetString();
+    account_info.locale = *locale_value;
 
-  const base::Value* picture_url_value =
-      user_info.FindKeyOfType(kPictureUrlKey, base::Value::Type::STRING);
-  if (picture_url_value && !picture_url_value->GetString().empty())
-    account_info.picture_url = picture_url_value->GetString();
+  const std::string* picture_url_value = user_info.FindString(kPictureUrlKey);
+  if (picture_url_value && !picture_url_value->empty())
+    account_info.picture_url = *picture_url_value;
   else
     account_info.picture_url = kNoPictureURLFound;
 
@@ -83,26 +74,23 @@ absl::optional<AccountInfo> AccountInfoFromUserInfo(
 }
 
 absl::optional<AccountCapabilities> AccountCapabilitiesFromValue(
-    const base::Value& account_capabilities) {
-  if (!account_capabilities.is_dict())
-    return absl::nullopt;
-
-  const base::Value* list =
-      account_capabilities.FindListKey(kAccountCapabilitiesListKey);
+    const base::Value::Dict& account_capabilities) {
+  const base::Value::List* list =
+      account_capabilities.FindList(kAccountCapabilitiesListKey);
   if (!list)
     return absl::nullopt;
 
   // 1. Create "capability name" -> "boolean value" mapping.
   std::map<std::string, bool> boolean_capabilities;
-  for (const auto& capability_value : list->GetList()) {
+  for (const auto& capability_value : *list) {
     const std::string* name =
-        capability_value.FindStringKey(kAccountCapabilityNameKey);
+        capability_value.GetDict().FindString(kAccountCapabilityNameKey);
     if (!name)
       return absl::nullopt;  // name is a required field.
 
     // Check whether a capability has a boolean value.
     absl::optional<bool> boolean_value =
-        capability_value.FindBoolKey(kAccountCapabilityBooleanValueKey);
+        capability_value.GetDict().FindBool(kAccountCapabilityBooleanValueKey);
     if (boolean_value.has_value()) {
       boolean_capabilities[*name] = *boolean_value;
     }

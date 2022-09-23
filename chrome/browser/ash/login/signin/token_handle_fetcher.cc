@@ -135,10 +135,10 @@ void TokenHandleFetcher::OnNetworkError(int response_code) {
 }
 
 void TokenHandleFetcher::OnGetTokenInfoResponse(
-    std::unique_ptr<base::DictionaryValue> token_info) {
+    const base::Value::Dict& token_info) {
   bool success = false;
-  if (!token_info->FindKey("error")) {
-    const std::string* handle = token_info->FindStringKey("token_handle");
+  if (!token_info.Find("error")) {
+    const std::string* handle = token_info.FindString("token_handle");
     if (handle) {
       success = true;
       token_handle_util_->StoreTokenHandle(account_id_, *handle);
