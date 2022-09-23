@@ -410,7 +410,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   // can often call another action).
   int executing_action_level_ = 0;
 
-  raw_ptr<Browser> active_browser_ = nullptr;
   raw_ptr<Profile> active_profile_ = nullptr;
   AppId active_app_id_;
   // TODO(crbug.com/1298696): browser_tests breaks with MTECheckedPtr

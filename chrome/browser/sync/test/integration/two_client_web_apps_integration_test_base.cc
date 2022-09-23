@@ -36,7 +36,14 @@ TwoClientWebAppsIntegrationTestBase::EmbeddedTestServer() const {
 }
 
 std::vector<Profile*> TwoClientWebAppsIntegrationTestBase::GetAllProfiles() {
-  return WebAppsSyncTestBase::GetAllProfiles();
+  std::vector<Profile*> profiles = WebAppsSyncTestBase::GetAllProfiles();
+  size_t profile_count = profiles.size();
+  for (size_t i = 0; i < profile_count; ++i) {
+    std::vector<Profile*> otr_profiles =
+        profiles[i]->GetAllOffTheRecordProfiles();
+    profiles.insert(profiles.end(), otr_profiles.begin(), otr_profiles.end());
+  }
+  return profiles;
 }
 
 bool TwoClientWebAppsIntegrationTestBase::IsSyncTest() {

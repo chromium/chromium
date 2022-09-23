@@ -1636,7 +1636,9 @@ void WebAppIntegrationTestDriver::SwitchIncognitoProfile() {
   CHECK(chrome::ExecuteCommand(browser(), IDC_NEW_INCOGNITO_WINDOW));
   ASSERT_EQ(1U, BrowserList::GetIncognitoBrowserCount());
   nav_observer.GetWebContents();
-  active_browser_ = BrowserList::GetInstance()->GetLastActive();
+  std::vector<Profile*> otr_profiles = profile()->GetAllOffTheRecordProfiles();
+  CHECK(!otr_profiles.empty());
+  active_profile_ = otr_profiles.back();
   AfterStateChangeAction();
 }
 
@@ -1655,8 +1657,6 @@ void WebAppIntegrationTestDriver::SwitchProfileClients(ProfileClient client) {
       active_profile_ = profiles[1];
       break;
   }
-  active_browser_ = chrome::FindTabbedBrowser(
-      active_profile_, /*match_original_profiles=*/false);
   delegate_->AwaitWebAppQuiescence();
   AfterStateChangeAction();
 }
@@ -2595,8 +2595,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
     base::flat_map<Browser*, BrowserState> browser_state;
     auto* browser_list = BrowserList::GetInstance();
     for (Browser* browser : *browser_list) {
-      if (browser->profile() != profile &&
-          browser->profile()->GetOriginalProfile() != profile) {
+      if (browser->profile() != profile) {
         continue;
       }
 
@@ -2655,7 +2654,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
           registrar.IsIsolated(app_id));
 #if !BUILDFLAG(IS_CHROMEOS)
       if (registrar.IsLocallyInstalled(app_id)) {
-        CheckAppSettingsAppState(profile, state);
+        CheckAppSettingsAppState(profile->GetOriginalProfile(), state);
       }
 #endif
       app_state.emplace(app_id, state);
@@ -2997,10 +2996,8 @@ void WebAppIntegrationTestDriver::LaunchAppStartupBrowserCreator(
 }
 
 Browser* WebAppIntegrationTestDriver::browser() {
-  Browser* browser = active_browser_
-                         ? active_browser_.get()
-                         : chrome::FindTabbedBrowser(
-                               profile(), /*match_original_profiles=*/false);
+  Browser* browser =
+      chrome::FindTabbedBrowser(profile(), /*match_original_profiles=*/false);
   DCHECK(browser);
   if (!browser->tab_strip_model()->count()) {
     delegate_->AddBlankTabAndShow(browser);
@@ -3092,7 +3089,10 @@ const net::EmbeddedTestServer* WebAppIntegrationTest::EmbeddedTestServer()
 }
 
 std::vector<Profile*> WebAppIntegrationTest::GetAllProfiles() {
-  return std::vector<Profile*>{browser()->profile()};
+  std::vector<Profile*> profiles =
+      browser()->profile()->GetAllOffTheRecordProfiles();
+  profiles.insert(profiles.begin(), browser()->profile());
+  return profiles;
 }
 
 bool WebAppIntegrationTest::IsSyncTest() {
