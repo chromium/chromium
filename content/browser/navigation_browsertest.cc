@@ -183,7 +183,8 @@ class RenderFrameHostFactoryForHistoryBackInterceptor
         frame_tree_node, routing_id, std::move(frame_remote), frame_token,
         document_token, renderer_initiated_creation, lifecycle_state,
         std::move(browsing_context_state),
-        frame_tree_node->frame_owner_element_type()));
+        frame_tree_node->frame_owner_element_type(),
+        frame_tree_node->fenced_frame_status()));
   }
 };
 
@@ -5623,8 +5624,9 @@ IN_PROC_BROWSER_TEST_F(
   BeginNewNavigationAfterCommitNavigationInSubFrame
 #endif
 
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
-                       MAYBE_BeginNewNavigationAfterCommitNavigationInSubFrame) {
+IN_PROC_BROWSER_TEST_F(
+    NavigationBrowserTestWithPerformanceManager,
+    MAYBE_BeginNewNavigationAfterCommitNavigationInSubFrame) {
   if (!AreAllSitesIsolatedForTesting())
     return;
 

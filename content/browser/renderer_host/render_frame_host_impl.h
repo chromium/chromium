@@ -2551,12 +2551,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
           remote_desktop_client_override);
 #endif
 
-  enum class FencedFrameStatus {
-    kNotNestedInFencedFrame,
-    kFencedFrameRoot,
-    kIframeNestedWithinFencedFrame
-  };
-
   using JavaScriptResultAndTypeCallback =
       base::OnceCallback<void(blink::mojom::JavaScriptExecutionResultType,
                               base::Value)>;
@@ -2592,6 +2586,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // This method must be called when navigating away from the current document.
   void SendAllPendingBeaconsOnNavigation();
 
+  enum class FencedFrameStatus {
+    kNotNestedInFencedFrame,
+    kFencedFrameRoot,
+    kIframeNestedWithinFencedFrame
+  };
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -2614,7 +2614,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool renderer_initiated_creation_of_main_frame,
       LifecycleStateImpl lifecycle_state,
       scoped_refptr<BrowsingContextState> browsing_context_state,
-      blink::FrameOwnerElementType frame_owner_element_type);
+      blink::FrameOwnerElementType frame_owner_element_type,
+      FencedFrameStatus fenced_frame_status);
 
   // The SendCommit* functions below are wrappers for commit calls
   // made to mojom::NavigationClient.

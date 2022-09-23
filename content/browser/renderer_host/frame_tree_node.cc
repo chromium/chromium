@@ -133,7 +133,7 @@ FrameTreeNode* FrameTreeNode::From(RenderFrameHost* rfh) {
   return static_cast<RenderFrameHostImpl*>(rfh)->frame_tree_node();
 }
 
-RenderFrameHostImpl::FencedFrameStatus ComputeFencedFrameStatus(
+FencedFrameStatus ComputeFencedFrameStatus(
     FrameTree* frame_tree,
     RenderFrameHostImpl* parent,
     const blink::FramePolicy& frame_policy) {
@@ -142,12 +142,10 @@ RenderFrameHostImpl::FencedFrameStatus ComputeFencedFrameStatus(
       case blink::features::FencedFramesImplementationType::kMPArch: {
         if (frame_tree->type() == FrameTree::Type::kFencedFrame) {
           if (!parent)
-            return RenderFrameHostImpl::FencedFrameStatus::kFencedFrameRoot;
-          return RenderFrameHostImpl::FencedFrameStatus::
-              kIframeNestedWithinFencedFrame;
+            return FencedFrameStatus::kFencedFrameRoot;
+          return FencedFrameStatus::kIframeNestedWithinFencedFrame;
         } else {
-          return RenderFrameHostImpl::FencedFrameStatus::
-              kNotNestedInFencedFrame;
+          return FencedFrameStatus::kNotNestedInFencedFrame;
         }
       }
       case blink::features::FencedFramesImplementationType::kShadowDOM: {
@@ -155,20 +153,19 @@ RenderFrameHostImpl::FencedFrameStatus ComputeFencedFrameStatus(
         // fenced frame lives in the same FrameTree as its parent, so we need to
         // check its effective frame policy instead.
         if (frame_policy.is_fenced) {
-          return RenderFrameHostImpl::FencedFrameStatus::kFencedFrameRoot;
+          return FencedFrameStatus::kFencedFrameRoot;
         } else if (parent && parent->frame_tree_node()->IsInFencedFrameTree()) {
-          return RenderFrameHostImpl::FencedFrameStatus::
-              kIframeNestedWithinFencedFrame;
+          return FencedFrameStatus::kIframeNestedWithinFencedFrame;
         }
-        return RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
+        return FencedFrameStatus::kNotNestedInFencedFrame;
       }
       default: {
-        return RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
+        return FencedFrameStatus::kNotNestedInFencedFrame;
       }
     }
   }
 
-  return RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
+  return FencedFrameStatus::kNotNestedInFencedFrame;
 }
 
 FrameTreeNode::FrameTreeNode(
@@ -918,13 +915,11 @@ bool FrameTreeNode::HasNavigation() {
 }
 
 bool FrameTreeNode::IsFencedFrameRoot() const {
-  return fenced_frame_status_ ==
-         RenderFrameHostImpl::FencedFrameStatus::kFencedFrameRoot;
+  return fenced_frame_status_ == FencedFrameStatus::kFencedFrameRoot;
 }
 
 bool FrameTreeNode::IsInFencedFrameTree() const {
-  return fenced_frame_status_ !=
-         RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
+  return fenced_frame_status_ != FencedFrameStatus::kNotNestedInFencedFrame;
 }
 
 void FrameTreeNode::SetFencedFrameNonceIfNeeded() {

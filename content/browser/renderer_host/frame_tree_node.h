@@ -41,6 +41,8 @@ class NavigationRequest;
 class RenderFrameHostImpl;
 class NavigationEntryImpl;
 
+using FencedFrameStatus = RenderFrameHostImpl::FencedFrameStatus;
+
 // When a page contains iframes, its renderer process maintains a tree structure
 // of those frames. We are mirroring this tree in the browser process. This
 // class represents a node in this tree and is a wrapper for all objects that
@@ -426,6 +428,8 @@ class CONTENT_EXPORT FrameTreeNode {
   // will never be reused - this saves memory.
   void PruneChildFrameNavigationEntries(NavigationEntryImpl* entry);
 
+  FencedFrameStatus fenced_frame_status() const { return fenced_frame_status_; }
+
   blink::FrameOwnerElementType frame_owner_element_type() const {
     return frame_owner_element_type_;
   }
@@ -767,8 +771,8 @@ class CONTENT_EXPORT FrameTreeNode {
   // Note that this reinitialization is only implemented for MPArch.
   absl::optional<base::UnguessableToken> fenced_frame_nonce_;
 
-  const RenderFrameHostImpl::FencedFrameStatus fenced_frame_status_ =
-      RenderFrameHostImpl::FencedFrameStatus::kNotNestedInFencedFrame;
+  const FencedFrameStatus fenced_frame_status_ =
+      FencedFrameStatus::kNotNestedInFencedFrame;
 
   // If this is a fenced frame resulting from a urn:uuid navigation, this
   // contains all the metadata specifying the resulting context.
