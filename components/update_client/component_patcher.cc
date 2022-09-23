@@ -38,7 +38,7 @@ absl::optional<base::Value::List> ReadCommands(
       deserializer.Deserialize(nullptr, nullptr);
 
   return (root.get() && root->is_list())
-             ? absl::make_optional(std::move(root->GetList()))
+             ? absl::make_optional(std::move(*root).TakeList())
              : absl::nullopt;
 }
 
