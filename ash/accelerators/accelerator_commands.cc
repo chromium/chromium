@@ -17,6 +17,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/display_configuration_controller.h"
+#include "ash/display/display_move_window_util.h"
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/focus_cycler.h"
@@ -39,6 +40,7 @@
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/palette/palette_tray.h"
+#include "ash/system/power/power_button_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_model.h"
@@ -480,6 +482,11 @@ void LaunchLastApp() {
   Shelf::LaunchShelfItem(-1);
 }
 
+void LockPressed(bool pressed) {
+  Shell::Get()->power_button_controller()->OnLockButtonEvent(pressed,
+                                                             base::TimeTicks());
+}
+
 void LockScreen() {
   Shell::Get()->session_controller()->LockScreen();
 }
@@ -595,6 +602,10 @@ void MoveActiveItem(bool going_left) {
   }
 }
 
+void MoveActiveWindowBetweenDisplays() {
+  display_move_window_util::HandleMoveActiveWindowBetweenDisplays();
+}
+
 void NewDesk() {
   auto* desks_controller = DesksController::Get();
   if (!desks_controller->CanCreateDesks()) {
@@ -652,6 +663,11 @@ void OpenFileManager() {
 
 void OpenHelp() {
   NewWindowDelegate::GetInstance()->OpenGetHelp();
+}
+
+void PowerPressed(bool pressed) {
+  Shell::Get()->power_button_controller()->OnPowerButtonEvent(
+      pressed, base::TimeTicks());
 }
 
 void RemoveCurrentDesk() {

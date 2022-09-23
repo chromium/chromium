@@ -1313,8 +1313,7 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case LOCK_PRESSED:
     case LOCK_RELEASED:
-      Shell::Get()->power_button_controller()->OnLockButtonEvent(
-          action == LOCK_PRESSED, base::TimeTicks());
+      accelerators::LockPressed(action == LOCK_PRESSED);
       break;
     case LOCK_SCREEN:
       base::RecordAction(base::UserMetricsAction("Accel_LockScreen_L"));
@@ -1363,7 +1362,7 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::MicrophoneMuteToggle();
       break;
     case MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS:
-      display_move_window_util::HandleMoveActiveWindowBetweenDisplays();
+      accelerators::MoveActiveWindowBetweenDisplays();
       break;
     case NEW_INCOGNITO_WINDOW:
       base::RecordAction(base::UserMetricsAction("Accel_New_Incognito_Window"));
@@ -1405,8 +1404,7 @@ void AcceleratorControllerImpl::PerformAction(
       if (!base::SysInfo::IsRunningOnChromeOS()) {
         // There is no powerd, the Chrome OS power manager, in linux desktop,
         // so call the PowerButtonController here.
-        Shell::Get()->power_button_controller()->OnPowerButtonEvent(
-            action == POWER_PRESSED, base::TimeTicks());
+        accelerators::PowerPressed(action == POWER_PRESSED);
       }
       // We don't do anything with these at present on the device,
       // (power button events are reported to us from powerm via

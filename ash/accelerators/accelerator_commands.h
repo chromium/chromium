@@ -69,6 +69,9 @@ ASH_EXPORT void LaunchAppN(int n);
 // Launch the right-most app on the shelf.
 ASH_EXPORT void LaunchLastApp();
 
+// Press lock button.
+ASH_EXPORT void LockPressed(bool pressed);
+
 // Lock the screen.
 ASH_EXPORT void LockScreen();
 
@@ -101,6 +104,9 @@ ASH_EXPORT void MediaRewind();
 
 // Stop playing media.
 ASH_EXPORT void MediaStop();
+
+// Move active window between displays.
+ASH_EXPORT void MoveActiveWindowBetweenDisplays();
 
 // Toggle microphone mute.
 ASH_EXPORT void MicrophoneMuteToggle();
@@ -137,6 +143,9 @@ ASH_EXPORT void OpenFileManager();
 
 // Open the help/explore app.
 ASH_EXPORT void OpenHelp();
+
+// Press power button.
+ASH_EXPORT void PowerPressed(bool pressed);
 
 // Remove the current desk.
 ASH_EXPORT void RemoveCurrentDesk();
