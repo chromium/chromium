@@ -253,6 +253,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kSuppressDifferentOriginSubframeJSDialogs);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSyntheticPointerActions);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kThreadingOptimizationsOnIO);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchDragAndContextMenu);
+#if BUILDFLAG(IS_ANDROID)
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kTouchDragMovementThresholdDip;
+#endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchpadAsyncPinchEvents);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchpadOverscrollHistoryNavigation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTreatBootstrapAsDefault);
@@ -309,8 +313,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserMediaScreenCapturing);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWarmUpNetworkProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebNfc);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebViewThrottleBackgroundBeginFrame);
-
-extern const char kDragAndDropMovementThresholdDipParam[];
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kOptimizeEarlyNavigation);
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
