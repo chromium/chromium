@@ -312,7 +312,7 @@ bool SynchronizedMinidumpManager::ParseFiles() {
   RCHECK(metadata_ptr, false);
   RCHECK(metadata_ptr->is_dict(), false);
   absl::optional<base::Value::Dict> metadata =
-      std::move(metadata_ptr->GetDict());
+      std::move(*metadata_ptr).TakeDict();
   RCHECK(ValidateMetadata(metadata), false);
 
   dumps_ = std::move(dumps);
