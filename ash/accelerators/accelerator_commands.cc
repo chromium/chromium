@@ -11,6 +11,7 @@
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/assistant/assistant_controller_impl.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
@@ -25,6 +26,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
@@ -67,6 +69,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -100,6 +103,8 @@ using ::chromeos::WindowStateType;
 // Percent by which the volume should be changed when a volume key is pressed.
 constexpr double kStepPercentage = 4.0;
 constexpr char kVirtualDesksToastId[] = "virtual_desks_toast";
+// Toast id for Assistant shortcuts.
+constexpr char kAssistantErrorToastId[] = "assistant_error";
 
 // These values are written to logs.  New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.
@@ -934,12 +939,31 @@ void Suspend() {
   chromeos::PowerManagerClient::Get()->RequestSuspend();
 }
 
+void SwitchToNextIme() {
+  Shell::Get()->ime_controller()->SwitchToNextIme();
+}
+
 void ToggleAppList(AppListShowSource show_source,
                    base::TimeTicks event_time_stamp) {
   aura::Window* const root_window = Shell::GetRootWindowForNewWindows();
   Shell::Get()->app_list_controller()->ToggleAppList(
       display::Screen::GetScreen()->GetDisplayNearestWindow(root_window).id(),
       show_source, event_time_stamp);
+}
+
+void TakeScreenshot(bool from_snapshot_key) {
+  // If it is the snip key, toggle capture mode unless the session is blocked,
+  // in which case, it behaves like a fullscreen screenshot.
+  auto* capture_mode_controller = CaptureModeController::Get();
+  if (from_snapshot_key &&
+      !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+    if (capture_mode_controller->IsActive())
+      capture_mode_controller->Stop();
+    else
+      capture_mode_controller->Start(CaptureModeEntryType::kSnipKey);
+    return;
+  }
+  capture_mode_controller->CaptureScreenshotsOfAllDisplays();
 }
 
 void ToggleAmbientMode() {
@@ -969,6 +993,68 @@ void ToggleAssignToAllDesk() {
             ? aura::client::kWindowWorkspaceUnassignedWorkspace
             : aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
   }
+}
+
+void ToggleAssistant() {
+  using assistant::AssistantAllowedState;
+  switch (AssistantState::Get()->allowed_state().value_or(
+      AssistantAllowedState::ALLOWED)) {
+    case AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER:
+      // Show a toast if the active user is not primary.
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
+                l10n_util::GetStringUTF16(
+                    IDS_ASH_ASSISTANT_SECONDARY_USER_TOAST_MESSAGE));
+      return;
+    case AssistantAllowedState::DISALLOWED_BY_LOCALE:
+      // Show a toast if the Assistant is disabled due to unsupported
+      // locales.
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
+                l10n_util::GetStringUTF16(
+                    IDS_ASH_ASSISTANT_LOCALE_UNSUPPORTED_TOAST_MESSAGE));
+      return;
+    case AssistantAllowedState::DISALLOWED_BY_POLICY:
+      // Show a toast if the Assistant is disabled due to enterprise policy.
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
+                l10n_util::GetStringUTF16(
+                    IDS_ASH_ASSISTANT_DISABLED_BY_POLICY_MESSAGE));
+      return;
+    case AssistantAllowedState::DISALLOWED_BY_DEMO_MODE:
+      // Show a toast if the Assistant is disabled due to being in Demo
+      // Mode.
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
+                l10n_util::GetStringUTF16(
+                    IDS_ASH_ASSISTANT_DISABLED_IN_DEMO_MODE_MESSAGE));
+      return;
+    case AssistantAllowedState::DISALLOWED_BY_PUBLIC_SESSION:
+      // Show a toast if the Assistant is disabled due to being in public
+      // session.
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
+                l10n_util::GetStringUTF16(
+                    IDS_ASH_ASSISTANT_DISABLED_IN_PUBLIC_SESSION_MESSAGE));
+      return;
+    case AssistantAllowedState::DISALLOWED_BY_INCOGNITO:
+      // Show a toast if the Assistant is disabled due to being in Incognito
+      // mode.
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
+                l10n_util::GetStringUTF16(
+                    IDS_ASH_ASSISTANT_DISABLED_IN_GUEST_MESSAGE));
+      return;
+    case AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE:
+      // Show a toast if the Assistant is disabled due to the account type.
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
+                l10n_util::GetStringUTF16(
+                    IDS_ASH_ASSISTANT_DISABLED_BY_ACCOUNT_MESSAGE));
+      return;
+    case AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE:
+      // No need to show toast in KIOSK mode.
+      return;
+    case AssistantAllowedState::ALLOWED:
+      // Nothing need to do if allowed.
+      break;
+  }
+  AssistantUiController::Get()->ToggleUi(
+      /*entry_point=*/assistant::AssistantEntryPoint::kHotkey,
+      /*exit_point=*/assistant::AssistantExitPoint::kHotkey);
 }
 
 void ToggleCalendar() {

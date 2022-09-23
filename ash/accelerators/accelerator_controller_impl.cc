@@ -124,9 +124,6 @@ using ::base::UserMetricsAction;
 using ::chromeos::WindowStateType;
 using input_method::InputMethodManager;
 
-// Toast id and duration for Assistant shortcuts.
-constexpr char kAssistantErrorToastId[] = "assistant_error";
-
 static_assert(DESKS_ACTIVATE_0 == DESKS_ACTIVATE_1 - 1 &&
                   DESKS_ACTIVATE_1 == DESKS_ACTIVATE_2 - 1 &&
                   DESKS_ACTIVATE_2 == DESKS_ACTIVATE_3 - 1 &&
@@ -135,14 +132,6 @@ static_assert(DESKS_ACTIVATE_0 == DESKS_ACTIVATE_1 - 1 &&
                   DESKS_ACTIVATE_5 == DESKS_ACTIVATE_6 - 1 &&
                   DESKS_ACTIVATE_6 == DESKS_ACTIVATE_7 - 1,
               "DESKS_ACTIVATE* actions must be consecutive");
-
-void ShowToast(std::string id,
-               ToastCatalogName catalog_name,
-               const std::u16string& text) {
-  ToastData toast(id, catalog_name, text, ToastData::kDefaultToastDuration,
-                  /*visible_on_lock_screen=*/true);
-  Shell::Get()->toast_manager()->Show(toast);
-}
 
 ui::Accelerator CreateAccelerator(ui::KeyboardCode keycode,
                                   int modifiers,
@@ -182,9 +171,30 @@ void RecordCycleForwardMru(const ui::Accelerator& accelerator) {
     base::RecordAction(base::UserMetricsAction("Accel_NextWindow_Tab"));
 }
 
+void RecordToggleAssistant(const ui::Accelerator& accelerator) {
+  if (accelerator.IsCmdDown() && accelerator.key_code() == ui::VKEY_SPACE) {
+    base::RecordAction(
+        base::UserMetricsAction("VoiceInteraction.Started.Search_Space"));
+  } else if (accelerator.IsCmdDown() && accelerator.key_code() == ui::VKEY_A) {
+    base::RecordAction(
+        base::UserMetricsAction("VoiceInteraction.Started.Search_A"));
+  } else if (accelerator.key_code() == ui::VKEY_ASSISTANT) {
+    base::RecordAction(
+        base::UserMetricsAction("VoiceInteraction.Started.Assistant"));
+  }
+}
+
 void RecordToggleAppList(const ui::Accelerator& accelerator) {
   if (accelerator.key_code() == ui::VKEY_LWIN)
     base::RecordAction(UserMetricsAction("Accel_Search_LWin"));
+}
+
+void RecordSwitchToNextIme(const ui::Accelerator& accelerator) {
+  base::RecordAction(UserMetricsAction("Accel_Next_Ime"));
+  if (accelerator.key_code() == ui::VKEY_MODECHANGE)
+    RecordImeSwitchByModeChangeKey();
+  else
+    RecordImeSwitchByAccelerator();
 }
 
 void RecordToggleFullscreen(const ui::Accelerator& accelerator) {
@@ -197,13 +207,16 @@ void RecordNewTab(const ui::Accelerator& accelerator) {
     base::RecordAction(UserMetricsAction("Accel_NewTab_T"));
 }
 
-void HandleSwitchToNextIme(const ui::Accelerator& accelerator) {
-  base::RecordAction(UserMetricsAction("Accel_Next_Ime"));
-  if (accelerator.key_code() == ui::VKEY_MODECHANGE)
-    RecordImeSwitchByModeChangeKey();
-  else
-    RecordImeSwitchByAccelerator();
-  Shell::Get()->ime_controller()->SwitchToNextIme();
+// Check if accelerator should trigger ToggleAssistant action.
+bool ShouldToggleAssistant(const ui::Accelerator& accelerator) {
+  // Search+A shortcut is disabled on device with an assistant key.
+  // Currently only Google branded device has the key. Some external keyboard
+  // may report it has the key but actually not.  This would cause keyboard
+  // shortcut stops working.  So we only check the key on these branded
+  // devices.
+  return !(accelerator.IsCmdDown() && accelerator.key_code() == ui::VKEY_A &&
+           chromeos::IsGoogleBrandedDevice() &&
+           ui::DeviceKeyboardHasAssistantKey());
 }
 
 void HandleSwitchToLastUsedIme(const ui::Accelerator& accelerator) {
@@ -213,23 +226,6 @@ void HandleSwitchToLastUsedIme(const ui::Accelerator& accelerator) {
     Shell::Get()->ime_controller()->SwitchToLastUsedIme();
   }
   // Else: consume the Ctrl+Space ET_KEY_RELEASED event but do not do anything.
-}
-
-void HandleTakeScreenshot(ui::KeyboardCode key_code) {
-  base::RecordAction(UserMetricsAction("Accel_Take_Screenshot"));
-  // If it is the snip key, toggle capture mode unless the session is blocked,
-  // in which case, it behaves like a fullscreen screenshot.
-  auto* capture_mode_controller = CaptureModeController::Get();
-  if (key_code == ui::VKEY_SNAPSHOT &&
-      !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
-    if (capture_mode_controller->IsActive())
-      capture_mode_controller->Stop();
-    else
-      capture_mode_controller->Start(CaptureModeEntryType::kSnipKey);
-    return;
-  }
-
-  capture_mode_controller->CaptureScreenshotsOfAllDisplays();
 }
 
 bool CanHandleSwitchIme(const ui::Accelerator& accelerator) {
@@ -290,87 +286,6 @@ bool CanHandleDisableCapsLock(const ui::Accelerator& previous_accelerator) {
     return false;
   }
   return Shell::Get()->ime_controller()->IsCapsLockEnabled();
-}
-
-void HandleToggleAssistant(const ui::Accelerator& accelerator) {
-  if (accelerator.IsCmdDown() && accelerator.key_code() == ui::VKEY_SPACE) {
-    base::RecordAction(
-        base::UserMetricsAction("VoiceInteraction.Started.Search_Space"));
-  } else if (accelerator.IsCmdDown() && accelerator.key_code() == ui::VKEY_A) {
-    // Search+A shortcut is disabled on device with an assistant key.
-    // Currently only Google branded device has the key. Some external keyboard
-    // may report it has the key but actually not.  This would cause keyboard
-    // shortcut stops working.  So we only check the key on these branded
-    // devices.
-    if (chromeos::IsGoogleBrandedDevice() &&
-        ui::DeviceKeyboardHasAssistantKey()) {
-      return;
-    }
-
-    base::RecordAction(
-        base::UserMetricsAction("VoiceInteraction.Started.Search_A"));
-  } else if (accelerator.key_code() == ui::VKEY_ASSISTANT) {
-    base::RecordAction(
-        base::UserMetricsAction("VoiceInteraction.Started.Assistant"));
-  }
-
-  using assistant::AssistantAllowedState;
-  switch (AssistantState::Get()->allowed_state().value_or(
-      AssistantAllowedState::ALLOWED)) {
-    case AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER:
-      // Show a toast if the active user is not primary.
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_SECONDARY_USER_TOAST_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_LOCALE:
-      // Show a toast if the Assistant is disabled due to unsupported
-      // locales.
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_LOCALE_UNSUPPORTED_TOAST_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_POLICY:
-      // Show a toast if the Assistant is disabled due to enterprise policy.
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_DISABLED_BY_POLICY_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_DEMO_MODE:
-      // Show a toast if the Assistant is disabled due to being in Demo
-      // Mode.
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_DISABLED_IN_DEMO_MODE_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_PUBLIC_SESSION:
-      // Show a toast if the Assistant is disabled due to being in public
-      // session.
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_DISABLED_IN_PUBLIC_SESSION_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_INCOGNITO:
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_DISABLED_IN_GUEST_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE:
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_DISABLED_BY_ACCOUNT_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE:
-      // No need to show toast in KIOSK mode.
-      return;
-    case AssistantAllowedState::ALLOWED:
-      // Nothing need to do if allowed.
-      break;
-  }
-
-  AssistantUiController::Get()->ToggleUi(
-      /*entry_point=*/assistant::AssistantEntryPoint::kHotkey,
-      /*exit_point=*/assistant::AssistantExitPoint::kHotkey);
 }
 
 bool CanHandleToggleCapsLock(
@@ -1272,7 +1187,11 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::ToggleAmbientMode();
       break;
     case START_ASSISTANT:
-      HandleToggleAssistant(accelerator);
+      // TODO(longbowei): Move this to CanToggleAssistant().
+      if (ShouldToggleAssistant(accelerator)) {
+        RecordToggleAssistant(accelerator);
+        accelerators::ToggleAssistant();
+      }
       break;
     case SUSPEND:
       base::RecordAction(UserMetricsAction("Accel_Suspend"));
@@ -1289,7 +1208,8 @@ void AcceleratorControllerImpl::PerformAction(
       HandleSwitchToLastUsedIme(accelerator);
       break;
     case SWITCH_TO_NEXT_IME:
-      HandleSwitchToNextIme(accelerator);
+      RecordSwitchToNextIme(accelerator);
+      accelerators::SwitchToNextIme();
       break;
     case SWITCH_TO_NEXT_USER:
       MultiProfileUMA::RecordSwitchActiveUser(
@@ -1308,7 +1228,8 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::MaybeTakePartialScreenshot();
       break;
     case TAKE_SCREENSHOT:
-      HandleTakeScreenshot(accelerator.key_code());
+      base::RecordAction(UserMetricsAction("Accel_Take_Screenshot"));
+      accelerators::TakeScreenshot(accelerator.key_code() == ui::VKEY_SNAPSHOT);
       break;
     case TAKE_WINDOW_SCREENSHOT:
       // UMA metrics are recorded in the function.

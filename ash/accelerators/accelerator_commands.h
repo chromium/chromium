@@ -242,6 +242,12 @@ ASH_EXPORT void ShowTaskManager();
 // Put device in sleep mode(suspend).
 ASH_EXPORT void Suspend();
 
+// Switch to next language.
+ASH_EXPORT void SwitchToNextIme();
+
+// Take screenshot.
+ASH_EXPORT void TakeScreenshot(bool from_snapshot_key);
+
 // Turn the ambient mode on or off.
 ASH_EXPORT void ToggleAmbientMode();
 
@@ -251,6 +257,9 @@ ASH_EXPORT void ToggleAppList(AppListShowSource show_source,
 
 // Assign active window to all desks.
 ASH_EXPORT void ToggleAssignToAllDesk();
+
+// Toggles Google assistant.
+ASH_EXPORT void ToggleAssistant();
 
 // Toogles to show and hide the calendar widget.
 ASH_EXPORT void ToggleCalendar();
