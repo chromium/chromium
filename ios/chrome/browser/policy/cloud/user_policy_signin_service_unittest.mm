@@ -10,7 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/bind.h"
-#import "base/test/scoped_command_line.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/threading/thread_task_runner_handle.h"
 #import "base/time/time.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
@@ -30,6 +30,7 @@
 #import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
@@ -111,8 +112,8 @@ class UserPolicySigninServiceTest : public PlatformTest {
   }
 
   void SetUp() override {
-    command_line_ = std::make_unique<base::test::ScopedCommandLine>();
-    policy::EnableUserPolicy();
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatures({policy::kUserPolicy}, {});
 
     device_management_service_.ScheduleInitialization(0);
     base::RunLoop().RunUntilIdle();
@@ -289,7 +290,7 @@ class UserPolicySigninServiceTest : public PlatformTest {
       web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<base::test::ScopedCommandLine> command_line_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   raw_ptr<MockUserCloudPolicyStore> mock_store_ = nullptr;  // Not owned.
@@ -383,8 +384,8 @@ TEST_F(UserPolicySigninServiceTest,
 // feature is disabled despite the account being eligible for user policy.
 TEST_F(UserPolicySigninServiceTest,
        DontRegisterDuringInitializationBecauseFeatureDisabled) {
-  // Disable the user policy feature by clearing the commandline arguments.
-  command_line_.reset();
+  // Disable the user policy features by clearing the scoped feature list.
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
 
   // Set the user as syncing with a managed account.
   AccountInfo account_info =

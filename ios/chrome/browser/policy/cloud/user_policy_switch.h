@@ -7,11 +7,6 @@
 
 namespace policy {
 
-extern const char kEnableUserPolicy[];
-
-// Enables User Policy with the commandline switch.
-void EnableUserPolicy();
-
 // True if User Policy is enabled.
 bool IsUserPolicyEnabled();
 

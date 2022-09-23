@@ -56,6 +56,7 @@ source_set("policy") {
   ]
 
   deps = [
+    ":constants",
     ":policy_util",
     "//base",
     "//components/account_id",
@@ -115,6 +116,15 @@ source_set("policy_util") {
     "//components/prefs",
     "//ios/chrome/browser/prefs:pref_names",
   ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "cloud/user_policy_constants.h",
+    "cloud/user_policy_constants.mm",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("test_support") {
@@ -181,6 +191,7 @@ source_set("unit_tests") {
     "restrict_accounts_policy_handler_unittest.cc",
   ]
   deps = [
+    ":constants",
     ":policy",
     ":policy_util",
     ":test_resources",
@@ -240,6 +251,7 @@ source_set("eg2_tests") {
   ]
 
   deps = [
+    ":constants",
     ":eg_test_support+eg2",
     ":test_resources",
     "//base",

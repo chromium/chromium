@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/promos_manager/features.h"
@@ -1196,7 +1197,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(omnibox::kZeroSuggestPrefetching)},
     {"enable-user-policy", flag_descriptions::kEnableUserPolicyName,
      flag_descriptions::kEnableUserPolicyDescription, flags_ui::kOsIos,
-     SINGLE_VALUE_TYPE(policy::kEnableUserPolicy)},
+     FEATURE_VALUE_TYPE(policy::kUserPolicy)},
     {"enable-sync-history-datatype",
      flag_descriptions::kSyncEnableHistoryDataTypeName,
      flag_descriptions::kSyncEnableHistoryDataTypeDescription, flags_ui::kOsIos,
@@ -1503,10 +1504,6 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
   if ([token length] > 0) {
     command_line->AppendSwitch(switches::kEnableChromeBrowserCloudManagement);
     [testing_policies setValue:token forKey:token_key];
-  }
-
-  if ([defaults boolForKey:@"EnableUserPolicy"]) {
-    policy::EnableUserPolicy();
   }
 
   // If some policies were set, commit them to the app's registration defaults.

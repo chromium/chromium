@@ -22,6 +22,7 @@
 #import "components/policy/test_support/signature_provider.h"
 #import "components/strings/grit/components_strings.h"
 #import "google_apis/gaia/gaia_switches.h"
+#import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -191,8 +192,6 @@ void VerifyTheNotificationUI() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.additional_args.push_back(
-      base::StrCat({"--enable-user-policy-for-ios"}));
   // Set the url of the DMServer to reach the local test server.
   config.additional_args.push_back(
       base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
@@ -201,6 +200,7 @@ void VerifyTheNotificationUI() {
   config.additional_args.push_back(
       base::StrCat({"--", switches::kGoogleApisUrl, "=",
                     embedded_test_server_->base_url().spec()}));
+  config.features_enabled.push_back(policy::kUserPolicy);
   return config;
 }
 

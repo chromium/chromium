@@ -10,13 +10,14 @@
 #import "base/memory/ptr_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_command_line.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -398,9 +399,8 @@ TEST_F(AuthenticationFlowTest, TestSyncAfterSigninAndSync) {
 // enabled and the user policy feature is enabled for the browser.
 TEST_F(AuthenticationFlowTest,
        TestRegisterAndFetchUserPolicyWithManagedAccountWhenEligible) {
-  base::test::ScopedCommandLine command_line;
-
-  policy::EnableUserPolicy();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({policy::kUserPolicy}, {});
 
   CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, managed_identity_);
 
@@ -449,7 +449,8 @@ TEST_F(AuthenticationFlowTest,
 // sync.
 TEST_F(AuthenticationFlowTest,
        TestSkipFetchUserPolicyWithManagedAccountWhenRegistrationFailed) {
-  policy::EnableUserPolicy();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({policy::kUserPolicy}, {});
 
   CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, managed_identity_);
 
@@ -495,9 +496,8 @@ TEST_F(AuthenticationFlowTest,
 // authentication flow. The user should sill be able to sign-in and
 // sync.
 TEST_F(AuthenticationFlowTest, TestCanSyncWithUserPolicyFetchFailure) {
-  base::test::ScopedCommandLine command_line;
-
-  policy::EnableUserPolicy();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({policy::kUserPolicy}, {});
 
   CreateAuthenticationFlow(POST_SIGNIN_ACTION_COMMIT_SYNC, managed_identity_);
 
