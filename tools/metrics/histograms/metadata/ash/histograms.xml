@@ -3619,6 +3619,7 @@ chromium-metrics-reviews@google.com.
     <variant name="DiveIn" summary="Go to the feature detailed page"/>
     <variant name="ToggleOff" summary="Toggle to disable the feature"/>
     <variant name="ToggleOn" summary="Toggle to enable the feature"/>
+    <variant name="Visible" summary="The feature pod is shown"/>
   </token>
 </histogram>
 
@@ -4381,17 +4382,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.SystemMenu.DefaultView.VisibleRows"
-    enum="SystemMenuDefaultViewRows" expires_after="2022-04-24">
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <owner>gzadina@chromium.org</owner>
-  <summary>
-    The visible rows displayed in the system menu's default view. Recorded each
-    time the menu is opened.
-  </summary>
-</histogram>
-
 <histogram name="Ash.SystemMenu.PercentageOfWorkAreaHeightCoveredByMenu"
     units="%" expires_after="2021-12-12">
   <owner>amehfooz@chromium.org</owner>
@@ -4560,12 +4550,14 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when an action is done on any FeaturePod in the old quick settings
     view. {FeaturePodBehavior} can be toggled to enable the feature, toggle to
-    disable this feature, or go to the feature's detailed page.
+    disable this feature, go to the feature's detailed page, or the feature pod
+    is shown (visible).
   </summary>
   <token key="FeaturePodBehavior">
     <variant name="DiveIn" summary="Go to the feature detailed page"/>
     <variant name="ToggleOff" summary="Toggle to disable the feature"/>
     <variant name="ToggleOn" summary="Toggle to enable the feature"/>
+    <variant name="Visible" summary="The feature pod is shown"/>
   </token>
 </histogram>
 

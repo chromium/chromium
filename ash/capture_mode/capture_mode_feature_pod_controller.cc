@@ -11,7 +11,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/tray/system_tray_item_uma_type.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -50,10 +49,6 @@ void CaptureModeFeaturePodController::OnIconPressed() {
   tray_controller_->CloseBubble();
 
   CaptureModeController::Get()->Start(CaptureModeEntryType::kQuickSettings);
-}
-
-SystemTrayItemUmaType CaptureModeFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_SCREEN_CAPTURE;
 }
 
 }  // namespace ash

@@ -86,10 +86,6 @@ void QuietModeFeaturePodController::OnLabelPressed() {
   tray_controller_->ShowNotifierSettingsView();
 }
 
-SystemTrayItemUmaType QuietModeFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_QUIET_MODE;
-}
-
 void QuietModeFeaturePodController::OnQuietModeChanged(bool in_quiet_mode) {
   button_->SetToggled(in_quiet_mode);
   button_->SetIconTooltip(l10n_util::GetStringFUTF16(

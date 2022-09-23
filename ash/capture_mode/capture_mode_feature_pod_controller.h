@@ -27,7 +27,6 @@ class CaptureModeFeaturePodController : public FeaturePodControllerBase {
   FeaturePodButton* CreateButton() override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
  private:
   UnifiedSystemTrayController* const tray_controller_;

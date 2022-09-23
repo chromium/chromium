@@ -56,10 +56,6 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
 
   void OnIconPressed() override {}
 
-  SystemTrayItemUmaType GetUmaType() const override {
-    return SystemTrayItemUmaType::UMA_TEST;
-  }
-
   QsFeatureCatalogName GetCatalogName() override {
     return QsFeatureCatalogName::kUnknown;
   }

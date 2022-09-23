@@ -54,8 +54,4 @@ void LocaleFeaturePodController::OnIconPressed() {
   tray_controller_->ShowLocaleDetailedView();
 }
 
-SystemTrayItemUmaType LocaleFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_LOCALE;
-}
-
 }  // namespace ash

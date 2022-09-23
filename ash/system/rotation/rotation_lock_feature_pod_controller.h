@@ -32,7 +32,6 @@ class ASH_EXPORT RotationLockFeaturePodController
   FeaturePodButton* CreateButton() override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
   // TabletModeObserver:
   void OnTabletPhysicalStateChanged() override;

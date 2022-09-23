@@ -36,7 +36,6 @@ class ASH_EXPORT NearbyShareFeaturePodController
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
   // NearbyShareController::Observer
   void OnHighVisibilityEnabledChanged(bool enabled) override;

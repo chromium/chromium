@@ -40,7 +40,6 @@ class ASH_EXPORT QuietModeFeaturePodController
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
   // message_center::MessageCenterObserver:
   void OnQuietModeChanged(bool in_quiet_mode) override;

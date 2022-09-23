@@ -31,7 +31,6 @@ class ASH_EXPORT AccessibilityFeaturePodController
   FeaturePodButton* CreateButton() override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
  private:
   // Unowned.

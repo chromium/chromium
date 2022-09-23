@@ -100,10 +100,6 @@ void NearbyShareFeaturePodController::OnLabelPressed() {
   nearby_share_delegate_->ShowNearbyShareSettings();
 }
 
-SystemTrayItemUmaType NearbyShareFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_NEARBY_SHARE;
-}
-
 void NearbyShareFeaturePodController::OnHighVisibilityEnabledChanged(
     bool enabled) {
   if (enabled) {

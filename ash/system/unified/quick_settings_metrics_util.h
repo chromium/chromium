@@ -32,6 +32,9 @@ void RecordQsFeatureToggle(QsFeatureCatalogName feature_catalog_name,
 // Records dive into a feature's details page from the quick settings main page.
 void RecordQsFeatureDiveIn(QsFeatureCatalogName feature_catalog_name);
 
+// Records the visible feature pods on the quick settings main page.
+void RecordVisibleQsFeature(QsFeatureCatalogName feature_catalog_name);
+
 // Records visible feature pod number in the quick settings main page.
 void RecordQsFeaturePodCount(int feature_pod_count, bool is_tablet);
 

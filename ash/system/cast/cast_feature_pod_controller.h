@@ -32,7 +32,6 @@ class ASH_EXPORT CastFeaturePodController
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
   // CastConfigControllerObserver:
   void OnDevicesUpdated(const std::vector<SinkAndRoute>& devices) override;

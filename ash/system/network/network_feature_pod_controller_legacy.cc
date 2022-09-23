@@ -90,10 +90,6 @@ void NetworkFeaturePodControllerLegacy::OnLabelPressed() {
   tray_controller_->ShowNetworkDetailedView(true /* force */);
 }
 
-SystemTrayItemUmaType NetworkFeaturePodControllerLegacy::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_NETWORK;
-}
-
 void NetworkFeaturePodControllerLegacy::UpdateButton() {
   // Network setting is always immutable in lock screen.
   SessionControllerImpl* session_controller =

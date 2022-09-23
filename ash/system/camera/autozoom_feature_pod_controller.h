@@ -27,7 +27,6 @@ class AutozoomFeaturePodController : public FeaturePodControllerBase,
   FeaturePodButton* CreateButton() override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
   // AutozoomObserver:
   void OnAutozoomStateChanged(

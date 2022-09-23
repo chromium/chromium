@@ -75,10 +75,6 @@ void VPNFeaturePodController::OnIconPressed() {
   tray_controller_->ShowVPNDetailedView();
 }
 
-SystemTrayItemUmaType VPNFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_VPN;
-}
-
 void VPNFeaturePodController::ActiveNetworkStateChanged() {
   Update();
 }

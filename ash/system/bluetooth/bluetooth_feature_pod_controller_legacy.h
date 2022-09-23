@@ -37,7 +37,6 @@ class BluetoothFeaturePodControllerLegacy
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
  private:
   void UpdateButton();

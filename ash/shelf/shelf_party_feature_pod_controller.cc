@@ -49,10 +49,6 @@ void ShelfPartyFeaturePodController::OnIconPressed() {
   Shell::Get()->shelf_controller()->model()->ToggleShelfParty();
 }
 
-SystemTrayItemUmaType ShelfPartyFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_SHELF_PARTY;
-}
-
 void ShelfPartyFeaturePodController::OnSessionStateChanged(
     session_manager::SessionState state) {
   UpdateButton();

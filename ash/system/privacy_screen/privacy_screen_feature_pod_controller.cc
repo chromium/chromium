@@ -43,10 +43,6 @@ void PrivacyScreenFeaturePodController::OnIconPressed() {
   TogglePrivacyScreen();
 }
 
-SystemTrayItemUmaType PrivacyScreenFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_PRIVACY_SCREEN;
-}
-
 void PrivacyScreenFeaturePodController::TogglePrivacyScreen() {
   auto* privacy_screen_controller = Shell::Get()->privacy_screen_controller();
   DCHECK(privacy_screen_controller->IsSupported());

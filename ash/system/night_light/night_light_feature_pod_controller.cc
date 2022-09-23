@@ -92,10 +92,6 @@ void NightLightFeaturePodController::OnLabelPressed() {
   }
 }
 
-SystemTrayItemUmaType NightLightFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_NIGHT_LIGHT;
-}
-
 void NightLightFeaturePodController::OnDateFormatChanged() {
   UpdateButton();
 }

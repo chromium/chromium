@@ -31,7 +31,6 @@ class ASH_EXPORT DarkModeFeaturePodController : public FeaturePodControllerBase,
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
   // ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;

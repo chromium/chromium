@@ -207,10 +207,6 @@ void NetworkFeaturePodController::OnLabelPressed() {
   tray_controller_->ShowNetworkDetailedView(/*force=*/true);
 }
 
-SystemTrayItemUmaType NetworkFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_NETWORK;
-}
-
 void NetworkFeaturePodController::OnFeaturePodButtonThemeChanged() {
   // All of the network icons will need to be redrawn.
   Shell::Get()

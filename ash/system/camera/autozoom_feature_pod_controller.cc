@@ -45,10 +45,6 @@ QsFeatureCatalogName AutozoomFeaturePodController::GetCatalogName() {
   return QsFeatureCatalogName::kAutozoom;
 }
 
-SystemTrayItemUmaType AutozoomFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_AUTOZOOM;
-}
-
 void AutozoomFeaturePodController::OnIconPressed() {
   TrackToggleUMA(
       /*target_toggle_state=*/Shell::Get()->autozoom_controller()->GetState() !=

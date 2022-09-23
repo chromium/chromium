@@ -11,7 +11,6 @@
 #include "ash/system/network/network_feature_pod_button.h"
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/network/tray_network_state_observer.h"
-#include "ash/system/tray/system_tray_item_uma_type.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
@@ -41,7 +40,6 @@ class ASH_EXPORT NetworkFeaturePodController
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
  private:
   // network_icon::AnimationObserver:

@@ -5,6 +5,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
@@ -15,6 +16,7 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
@@ -129,6 +131,36 @@ TEST_F(UnifiedSystemTrayControllerTest, ToggleExpanded) {
   EXPECT_FALSE(model()->IsExpandedOnOpen());
 
   EXPECT_EQ(expanded_height, view()->GetExpandedSystemTrayHeight());
+}
+
+TEST_F(UnifiedSystemTrayControllerTest, UMATracking) {
+  // No metrics logged before rendering on any views.
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.Visible",
+                                     /*count=*/0);
+
+  InitializeView();
+  EXPECT_TRUE(model()->IsExpandedOnOpen());
+
+  // Should show network pod.
+  histogram_tester->ExpectBucketCount(
+      "Ash.UnifiedSystemView.FeaturePod.Visible",
+      QsFeatureCatalogName::kNetwork,
+      /*expected_count=*/1);
+
+  // Should not show cast pod since no casting service is setup.
+  histogram_tester->ExpectBucketCount(
+      "Ash.UnifiedSystemView.FeaturePod.Visible", QsFeatureCatalogName::kCast,
+      /*expected_count=*/0);
+
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+
+  // Should show network pod again.
+  histogram_tester->ExpectBucketCount(
+      "Ash.UnifiedSystemView.FeaturePod.Visible",
+      QsFeatureCatalogName::kNetwork,
+      /*expected_count=*/2);
 }
 
 TEST_F(UnifiedSystemTrayControllerTest, EnsureExpanded_UserChooserShown) {

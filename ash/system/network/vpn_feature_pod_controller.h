@@ -29,7 +29,6 @@ class VPNFeaturePodController : public FeaturePodControllerBase,
   FeaturePodButton* CreateButton() override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
   // TrayNetworkStateObserver:
   void ActiveNetworkStateChanged() override;

@@ -30,7 +30,6 @@ class ASH_EXPORT ShelfPartyFeaturePodController
   FeaturePodButton* CreateButton() override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;

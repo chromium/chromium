@@ -74,10 +74,6 @@ void DarkModeFeaturePodController::OnLabelPressed() {
     Shell::Get()->system_tray_model()->client()->ShowDarkModeSettings();
 }
 
-SystemTrayItemUmaType DarkModeFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_DARK_MODE;
-}
-
 void DarkModeFeaturePodController::OnColorModeChanged(bool dark_mode_enabled) {
   UpdateButton(dark_mode_enabled);
 }

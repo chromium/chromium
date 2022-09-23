@@ -22,6 +22,8 @@ constexpr char kQuickSettingsFeaturePodDisabled[] =
     "Ash.QuickSettings.FeaturePod.ToggledOff";
 constexpr char kQuickSettingsFeaturePodDiveIn[] =
     "Ash.QuickSettings.FeaturePod.DiveIn";
+constexpr char kQuickSettingsFeaturePodVisible[] =
+    "Ash.QuickSettings.FeaturePod.Visible";
 constexpr char kQuickSettingsFeaturePodCount[] =
     "Ash.QuickSettings.Clamshell.FeaturePodCountOnOpen";
 constexpr char kQuickSettingsTabletFeaturePodCount[] =
@@ -35,6 +37,8 @@ constexpr char kUnifiedViewFeaturePodDisabled[] =
     "Ash.UnifiedSystemView.FeaturePod.ToggledOff";
 constexpr char kUnifiedViewFeaturePodDiveIn[] =
     "Ash.UnifiedSystemView.FeaturePod.DiveIn";
+constexpr char kUnifiedViewFeaturePodVisible[] =
+    "Ash.UnifiedSystemView.FeaturePod.Visible";
 constexpr char kUnifiedViewFeaturePodCount[] =
     "Ash.UnifiedSystemView.Clamshell.FeaturePodCountOnOpen";
 constexpr char kUnifiedViewTabletFeaturePodCount[] =
@@ -71,6 +75,13 @@ void RecordQsFeatureDiveIn(QsFeatureCatalogName feature_catalog_name) {
   base::UmaHistogramEnumeration(features::IsQsRevampEnabled()
                                     ? kQuickSettingsFeaturePodDiveIn
                                     : kUnifiedViewFeaturePodDiveIn,
+                                feature_catalog_name);
+}
+
+void RecordVisibleQsFeature(QsFeatureCatalogName feature_catalog_name) {
+  base::UmaHistogramEnumeration(features::IsQsRevampEnabled()
+                                    ? kQuickSettingsFeaturePodVisible
+                                    : kUnifiedViewFeaturePodVisible,
                                 feature_catalog_name);
 }
 

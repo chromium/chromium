@@ -76,10 +76,6 @@ void BluetoothFeaturePodController::OnLabelPressed() {
   tray_controller_->ShowBluetoothDetailedView();
 }
 
-SystemTrayItemUmaType BluetoothFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_BLUETOOTH;
-}
-
 BluetoothFeaturePodController::BluetoothDeviceNameAndBatteryInfo::
     BluetoothDeviceNameAndBatteryInfo(
         const std::u16string& device_name,

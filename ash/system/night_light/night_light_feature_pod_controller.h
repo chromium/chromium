@@ -35,7 +35,6 @@ class ASH_EXPORT NightLightFeaturePodController
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
   // ClockObserver:
   void OnDateFormatChanged() override;

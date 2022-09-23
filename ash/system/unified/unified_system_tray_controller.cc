@@ -50,7 +50,6 @@
 #include "ash/system/rotation/rotation_lock_feature_pod_controller.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/unified_calendar_view_controller.h"
-#include "ash/system/tray/system_tray_item_uma_type.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/deferred_update_dialog.h"
 #include "ash/system/unified/detailed_view_controller.h"
@@ -668,12 +667,10 @@ void UnifiedSystemTrayController::AddFeaturePodItem(
   button->SetExpandedAmount(IsExpanded() ? 1.0 : 0.0,
                             false /* fade_icon_button */);
 
-  // Record DefaultView.VisibleRows UMA.
-  SystemTrayItemUmaType uma_type = controller->GetUmaType();
-  if (uma_type != SystemTrayItemUmaType::UMA_NOT_RECORDED &&
-      button->visible_preferred()) {
-    UMA_HISTOGRAM_ENUMERATION("Ash.SystemMenu.DefaultView.VisibleRows",
-                              uma_type, SystemTrayItemUmaType::UMA_COUNT);
+  // Records visible pods.
+  if (button->visible_preferred()) {
+    quick_settings_metrics_util::RecordVisibleQsFeature(
+        controller->GetCatalogName());
   }
   if (features::IsQsRevampEnabled())
     quick_settings_view_->AddFeaturePodButton(button);
