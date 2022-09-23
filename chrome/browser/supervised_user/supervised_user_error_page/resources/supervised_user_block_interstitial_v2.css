@@ -134,11 +134,11 @@ p {
 }
 
 .button-container {
-  margin-top: 40px;
-}
-
-.remote-approvals-button {
-  float: right;
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  margin: 40px -12px;
 }
 
 .go-back-button {
@@ -233,6 +233,7 @@ p {
   background: var(--background-color);
   border: 1px solid var(--google-gray-300);
   color: var(--google-blue-600);
+  order: 2
 }
 
 .secondary-button:active {
@@ -243,15 +244,8 @@ picture {
   margin: auto;
 }
 
-/* Local approvals button is only shown when the local web approvals flag
-is enabled. */
-.local-approvals-button {
-  float: right;
-  margin-left: 24px;
-}
-
-.local-approvals-button:active {
-  background: var(--primary-button-fill-color-active);
+.primary-button, .secondary-button {
+  margin: 0 12px;
 }
 
 /* Remove focus-visible outline styles, because forced focus is used for
@@ -272,7 +266,7 @@ button:focus-visible {
     --paragraph-color: var(--google-gray-500);
   }
 
-  .remote-approvals-button {
+  .secondary-button {
     color: var(--google-blue-300);
     border-color: var(--secondary-button-border-color);
   }
@@ -355,9 +349,6 @@ margin to 0. This will be useful for subframes. */
   }
 
   .button-container {
-    display: flex;
-    flex-direction: row-reverse;
-    flex-wrap: wrap;
     justify-content: center;
     margin: 24px 0 16px;
   }

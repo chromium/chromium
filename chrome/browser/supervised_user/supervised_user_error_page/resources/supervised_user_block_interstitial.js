@@ -46,6 +46,8 @@ function initialize() {
   const custodianName = loadTimeData.getString('custodianName');
   localWebApprovalsEnabled =
       loadTimeData.getBoolean('isLocalWebApprovalsEnabled');
+  const localWebApprovalsPreferred =
+      loadTimeData.getBoolean('isLocalWebApprovalsPreferred');
   interstitialRefreshEnabled =
       loadTimeData.getBoolean('isWebFilterInterstitialRefreshEnabled');
   if (localWebApprovalsEnabled && !interstitialRefreshEnabled) {
@@ -91,7 +93,14 @@ function initialize() {
     $('remote-approvals-button').hidden = false;
     if (interstitialRefreshEnabled && localWebApprovalsEnabled) {
       $('local-approvals-button').hidden = false;
-      $('remote-approvals-button').classList.add('secondary-button');
+      if (localWebApprovalsPreferred) {
+        $('local-approvals-button').classList.add('primary-button');
+        $('remote-approvals-button').classList.add('secondary-button');
+      }
+      else {
+        $('remote-approvals-button').classList.add('primary-button');
+        $('local-approvals-button').classList.add('secondary-button');
+      }
     }
     $('remote-approvals-button').onclick = function(event) {
       $('remote-approvals-button').disabled = true;

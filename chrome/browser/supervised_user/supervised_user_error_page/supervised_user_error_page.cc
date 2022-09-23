@@ -101,6 +101,8 @@ std::string BuildHtml(bool allow_access_requests,
   strings.Set("isWebFilterInterstitialRefreshEnabled",
               web_filter_interstitial_refresh_enabled);
   strings.Set("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
+  strings.Set("isLocalWebApprovalsPreferred",
+              supervised_users::IsLocalWebApprovalThePreferredButton());
   bool is_automatically_blocked = ReasonIsAutomatic(reason);
 
   std::string block_header;

@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
+#include <string>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace supervised_users {
 
@@ -20,9 +23,18 @@ BASE_FEATURE(kWebFilterInterstitialRefresh,
 // user's device.
 // This feature requires a refreshed layout and `kWebFilterInterstitialRefresh`
 // to be enabled.
+//
+// The feature includes one experiment parameter: "preferred_button", which
+// determines which button is displayed as the preferred option in the
+// interstitial UI (i.e. dark blue button).
 BASE_FEATURE(kLocalWebApprovals,
              "LocalWebApprovals",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const char kLocalWebApprovalsPreferredButtonLocal[] = "local";
+const char kLocalWebApprovalsPreferredButtonRemote[] = "remote";
+constexpr base::FeatureParam<std::string> kLocalWebApprovalsPreferredButton{
+    &kLocalWebApprovals, "preferred_button",
+    kLocalWebApprovalsPreferredButtonLocal};
 
 // Enables child accounts (i.e. Unicorn accounts) to clear their browsing
 // history data from Settings.
@@ -41,6 +53,13 @@ bool IsLocalWebApprovalsEnabled() {
   // whether the feature is supported.
   return IsWebFilterInterstitialRefreshEnabled() &&
          base::FeatureList::IsEnabled(kLocalWebApprovals);
+}
+
+bool IsLocalWebApprovalThePreferredButton() {
+  std::string preferred_button = kLocalWebApprovalsPreferredButton.Get();
+  DCHECK((preferred_button == kLocalWebApprovalsPreferredButtonLocal) ||
+         (preferred_button == kLocalWebApprovalsPreferredButtonRemote));
+  return (preferred_button == kLocalWebApprovalsPreferredButtonLocal);
 }
 
 }  // namespace supervised_users
