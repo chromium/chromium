@@ -29,7 +29,10 @@ void ScreenlockMonitorDeviceSource::ScreenLockListener::
     screenlock_event = SCREEN_UNLOCK_EVENT;
   }
 
-  ProcessScreenlockEvent(screenlock_event);
+  if (!prev_event_ || *prev_event_ != screenlock_event) {
+    prev_event_ = screenlock_event;
+    ProcessScreenlockEvent(screenlock_event);
+  }
 }
 
 }  // namespace content

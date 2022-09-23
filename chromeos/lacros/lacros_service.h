@@ -281,6 +281,17 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
             weak_sequenced_state_, std::move(pending_receiver_or_remote)));
   }
 
+  // Injects remote for a registered crosapi interface.
+  template <typename CrosapiInterface>
+  void InjectRemoteForTesting(
+      mojo::PendingRemote<CrosapiInterface> pending_remote) {
+    DCHECK(IsRegistered<CrosapiInterface>());
+    did_bind_receiver_ = true;
+
+    interfaces_.find(CrosapiInterface::Uuid_)
+        ->second->InjectRemoteForTesting(std::move(pending_remote));
+  }
+
  private:
   // This class is a wrapper around a crosapi remote, e.g.
   // mojo::Remote<crosapi::mojom::Automation>. This base class uses type erasure
@@ -301,6 +312,13 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
 
     // Initialization for the remote and |available_|.
     virtual void MaybeBind(uint32_t crosapi_version, LacrosService* impl) = 0;
+
+    template <typename CrosapiInterface>
+    void InjectRemoteForTesting(
+        mojo::PendingRemote<CrosapiInterface> pending_remote) {
+      available_ = pending_remote.is_valid();
+      Get<CrosapiInterface>() = mojo::Remote(std::move(pending_remote));
+    }
 
    protected:
     InterfaceEntryBase();

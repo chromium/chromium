@@ -2931,7 +2931,11 @@ test("content_unittests") {
     ]
   }
   if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:test_support" ]
+    sources += [ "../browser/screenlock_monitor/screenlock_monitor_device_source_lacros_unittest.cc" ]
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros:test_support",
+    ]
   }
   if (is_android) {
     sources += [

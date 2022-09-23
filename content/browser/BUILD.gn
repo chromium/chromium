@@ -2496,8 +2496,7 @@ source_set("browser") {
   }
 
   if (is_chromeos_ash) {
-    sources +=
-        [ "screenlock_monitor/screenlock_monitor_device_source_chromeos.cc" ]
+    sources += [ "screenlock_monitor/screenlock_monitor_device_source_ash.cc" ]
   }
 
   if (is_linux) {
@@ -3274,6 +3273,7 @@ source_set("browser") {
     sources += [
       "accessibility/browser_accessibility_state_impl_lacros.cc",
       "accessibility/browser_accessibility_state_impl_lacros.h",
+      "screenlock_monitor/screenlock_monitor_device_source_lacros.cc",
     ]
   }
 }

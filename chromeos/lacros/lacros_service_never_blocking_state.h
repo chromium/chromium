@@ -30,8 +30,8 @@ class LacrosServiceNeverBlockingState {
 
   // Crosapi is the interface that lacros-chrome uses to message
   // ash-chrome. This method binds the remote, which allows queuing of message
-  // to ash-chrome. The messages will not go through until
-  // RequestCrosapiReceiver() is invoked.
+  // to ash-chrome. The messages will not go through until FusePipeCrosapi() is
+  // invoked.
   void BindCrosapi();
 
   void FusePipeCrosapi(
