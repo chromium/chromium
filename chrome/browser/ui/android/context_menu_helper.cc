@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "chrome/android/chrome_jni_headers/ContextMenuHelper_jni.h"
-#include "chrome/browser/performance_hints/performance_hints_observer.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "components/embedder_support/android/contextmenu/context_menu_builder.h"
 #include "content/public/browser/context_menu_params.h"
@@ -28,7 +27,6 @@
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
-using optimization_guide::proto::PerformanceClass;
 
 ContextMenuHelper::ContextMenuHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<ContextMenuHelper>(*web_contents) {
@@ -57,10 +55,6 @@ void ContextMenuHelper::ShowContextMenu(
   JNIEnv* env = base::android::AttachCurrentThread();
   context_menu_params_ = params;
   gfx::NativeView view = GetWebContents().GetNativeView();
-  if (!params.link_url.is_empty()) {
-    performance_hints::PerformanceHintsObserver::RecordPerformanceUMAForURL(
-        &GetWebContents(), params.link_url);
-  }
   Java_ContextMenuHelper_showContextMenu(
       env, java_obj_,
       context_menu::BuildJavaContextMenuParams(context_menu_params_),

@@ -22,8 +22,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
@@ -187,12 +185,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mDialog.setOnDismissListener(dialogInterface -> mOnMenuClosed.run());
 
         mWebContents = webContents;
-        int performanceClass = params.isAnchor()
-                ? PerformanceHintsObserver.getPerformanceClassForURL(
-                        webContents, params.getLinkUrl())
-                : PerformanceClass.PERFORMANCE_UNKNOWN;
-        mHeaderCoordinator = new ContextMenuHeaderCoordinator(activity, performanceClass, params,
-                Profile.fromWebContents(mWebContents), mNativeDelegate);
+        mHeaderCoordinator = new ContextMenuHeaderCoordinator(
+                activity, params, Profile.fromWebContents(mWebContents), mNativeDelegate);
 
         // The Integer here specifies the {@link ListItemType}.
         ModelList listItems = getItemList(
@@ -389,8 +383,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     @VisibleForTesting
     void initializeHeaderCoordinatorForTesting(Activity activity, ContextMenuParams params,
             Profile profile, ContextMenuNativeDelegate nativeDelegate) {
-        mHeaderCoordinator = new ContextMenuHeaderCoordinator(
-                activity, PerformanceClass.PERFORMANCE_UNKNOWN, params, profile, nativeDelegate);
+        mHeaderCoordinator =
+                new ContextMenuHeaderCoordinator(activity, params, profile, nativeDelegate);
     }
 
     @VisibleForTesting

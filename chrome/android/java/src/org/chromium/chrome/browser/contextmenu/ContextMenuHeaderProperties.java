@@ -26,7 +26,6 @@ class ContextMenuHeaderProperties {
     public static final WritableObjectPropertyKey<Bitmap> IMAGE = new WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableBooleanPropertyKey CIRCLE_BG_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
-    public static final WritableIntPropertyKey URL_PERFORMANCE_CLASS = new WritableIntPropertyKey();
 
     /** Size in pixel of monogram / favicon on link context menu header . */
     public static final WritableIntPropertyKey MONOGRAM_SIZE_PIXEL = new WritableIntPropertyKey();
@@ -55,6 +54,6 @@ class ContextMenuHeaderProperties {
 
     public static final PropertyKey[] ALL_KEYS = {TITLE, TITLE_MAX_LINES, URL,
             TITLE_AND_URL_CLICK_LISTENER, URL_MAX_LINES, IMAGE, CIRCLE_BG_VISIBLE,
-            URL_PERFORMANCE_CLASS, MONOGRAM_SIZE_PIXEL, OVERRIDE_HEADER_IMAGE_MAX_SIZE_PIXEL,
+            MONOGRAM_SIZE_PIXEL, OVERRIDE_HEADER_IMAGE_MAX_SIZE_PIXEL,
             OVERRIDE_HEADER_CIRCLE_BG_SIZE_PIXEL, OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL};
 }

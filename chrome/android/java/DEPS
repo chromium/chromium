@@ -21,7 +21,6 @@ include_rules = [
   "+components/image_fetcher/android/java",
   "+chrome/browser/paint_preview/android/java",
   "+chrome/browser/password_check/android",
-  "+chrome/browser/performance_hints/android/java",
   "+chrome/browser/settings/android/java",
   "+chrome/browser/tabmodel/android/java",
   "+chrome/browser/page_annotations/android/java",

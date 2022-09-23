@@ -23,8 +23,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -40,9 +38,8 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
     private Context mContext;
     private GURL mPlainUrl;
 
-    ContextMenuHeaderMediator(Context context, PropertyModel model,
-            @PerformanceClass int performanceClass, ContextMenuParams params, Profile profile,
-            ContextMenuNativeDelegate nativeDelegate) {
+    ContextMenuHeaderMediator(Context context, PropertyModel model, ContextMenuParams params,
+            Profile profile, ContextMenuNativeDelegate nativeDelegate) {
         mContext = context;
         mPlainUrl = params.getUrl();
         mModel = model;
@@ -61,10 +58,6 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
                     this::onFaviconAvailable);
         } else if (params.isVideo()) {
             setVideoIcon();
-        }
-
-        if (PerformanceHintsObserver.isContextMenuPerformanceInfoEnabled() && params.isAnchor()) {
-            mModel.set(ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS, performanceClass);
         }
     }
 

@@ -42,8 +42,6 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -265,14 +263,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     assert histogramName.equals("ContextMenu.SelectedOptionAndroid.Link");
                 }
                 tryToRecordGroupRelatedHistogram(histogramName, action);
-            }
-
-            if (params.isAnchor()
-                    && PerformanceHintsObserver.getPerformanceClassForURL(
-                               webContents, params.getLinkUrl())
-                            == PerformanceClass.PERFORMANCE_FAST) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        histogramName + ".PerformanceClassFast", action, Action.NUM_ENTRIES);
             }
         }
 
