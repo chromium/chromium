@@ -325,9 +325,7 @@ void ArcDefaultAppList::SetAppHidden(const std::string& app_id, bool hidden) {
 
   // Store hidden flag.
   arc::ArcAppScopedPrefUpdate(profile_->GetPrefs(), app_id, kDefaultApps)
-      .Get()
-      ->GetDict()
-      .Set(kHidden, hidden);
+      ->Set(kHidden, hidden);
 }
 
 std::map<std::string, const ArcDefaultAppList::AppInfo*>
