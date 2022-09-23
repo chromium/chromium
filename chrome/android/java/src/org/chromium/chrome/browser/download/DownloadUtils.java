@@ -488,11 +488,14 @@ public class DownloadUtils {
         // Mapping generic MIME type to android openable type based on URL and file extension.
         String newMimeType = MimeUtils.remapGenericMimeType(mimeType, originalUrl, filePath);
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_NEW_DOWNLOAD_TAB)
-                && DownloadManagerService.getDownloadManagerService()
-                           .getMessageUiController(null)
-                           .isDownloadInterstitialItem(new GURL(originalUrl), downloadGuid)) {
-            return;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_NEW_DOWNLOAD_TAB)) {
+            DownloadMessageUiController messageUiController =
+                    DownloadManagerService.getDownloadManagerService().getMessageUiController(null);
+            if (messageUiController != null
+                    && messageUiController.isDownloadInterstitialItem(
+                            new GURL(originalUrl), downloadGuid)) {
+                return;
+            }
         }
         boolean canOpen = DownloadUtils.openFile(filePath, newMimeType, downloadGuid, otrProfileID,
                 originalUrl, referer, source,
