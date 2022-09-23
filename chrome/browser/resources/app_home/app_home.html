@@ -1,13 +1,22 @@
-<!--
-Copyright 2022 The Chromium Authors
-Use of this source code is governed by a BSD-style license that can be
-found in the LICENSE file.
--->
+<!-- Copyright 2022 The Chromium Authors.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
 
 <!doctype html>
-<html>
-  <head>
-  </head>
-  <body>
-  </body>
+<html class="loading">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <base href="chrome://apps">
+  <title>app home</title>
+  <script type="module" src="app_list.js"></script>
+</head>
+<style>
+  body {
+    height: 100%;
+  }
+</style>
+<body>
+  <app-list></app-list>
+</body>
 </html>

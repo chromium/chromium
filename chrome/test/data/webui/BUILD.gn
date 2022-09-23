@@ -273,6 +273,9 @@ if (include_js_tests) {
     if (is_win || is_mac || is_linux || is_fuchsia) {
       sources += [ "app_settings/app_settings_browsertest.js" ]
     }
+    if (is_win || is_mac || is_linux) {
+      sources += [ "app_home/app_home_browsertest.js" ]
+    }
     if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [ "discards/discards_browsertest.js" ]
     }
@@ -603,8 +606,14 @@ generate_grd("build_grd") {
   }
 
   if (is_win || is_mac || is_linux) {
-    deps += [ "app_settings:build_grdp" ]
-    grdp_files += [ "$target_gen_dir/app_settings/resources.grdp" ]
+    deps += [
+      "app_home:build_grdp",
+      "app_settings:build_grdp",
+    ]
+    grdp_files += [
+      "$target_gen_dir/app_settings/resources.grdp",
+      "$target_gen_dir/app_home/resources.grdp",
+    ]
   }
 
   if (is_chromeos_ash) {
