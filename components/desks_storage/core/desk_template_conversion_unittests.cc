@@ -32,22 +32,16 @@ namespace desks_storage {
 
 namespace {
 
-const int32_t kTestWindowId = 1234567;
-const std::string kEmptyJson = "{}";
-const std::string kTestUuidBrowser = "040b6112-67f2-4d3c-8ba8-53a117272eba";
+constexpr char kTestUuidBrowser[] = "040b6112-67f2-4d3c-8ba8-53a117272eba";
 constexpr int kBrowserWindowId = 1555;
-const std::string kBrowserUrl1 = "https://example.com/";
-const std::string kBrowserUrl2 = "https://example.com/2";
-const std::string kTestUuidChromeAndProgressive =
-    "7f4b7ff0-970a-41bb-aa91-f6c3e2724207";
-const std::string kBrowserTemplateName = "BrowserTest";
-const std::string kChromePwaTemplateName = "ChromeAppTest";
-const constexpr char16_t kSampleTabGroupTitle[] = u"sample_tab_group";
+constexpr char kBrowserUrl1[] = "https://example.com/";
+constexpr char kBrowserUrl2[] = "https://example.com/2";
+constexpr char kBrowserTemplateName[] = "BrowserTest";
 
 app_restore::TabGroupInfo MakeSampleTabGroup() {
   return app_restore::TabGroupInfo(
       {1, 2}, tab_groups::TabGroupVisualData(
-                  kSampleTabGroupTitle, tab_groups::TabGroupColorId::kGrey));
+                  u"sample_tab_group", tab_groups::TabGroupColorId::kGrey));
 }
 
 apps::AppRegistryCache* GetAppsCache(AccountId& account_id) {
@@ -92,7 +86,8 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
   EXPECT_EQ(dt->uuid(), base::GUID::ParseCaseInsensitive(kTestUuidBrowser));
   EXPECT_EQ(dt->created_time(),
             desk_template_conversion::ProtoTimeToTime(1633535632));
-  EXPECT_EQ(dt->template_name(), base::UTF8ToUTF16(kBrowserTemplateName));
+  EXPECT_EQ(dt->template_name(),
+            base::ASCIIToUTF16(std::string(kBrowserTemplateName)));
 
   const app_restore::RestoreData* rd = dt->desk_restore_data();
 
@@ -148,7 +143,8 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplateMinimized) {
   EXPECT_EQ(dt->uuid(), base::GUID::ParseCaseInsensitive(kTestUuidBrowser));
   EXPECT_EQ(dt->created_time(),
             desk_template_conversion::ProtoTimeToTime(1633535632));
-  EXPECT_EQ(dt->template_name(), base::UTF8ToUTF16(kBrowserTemplateName));
+  EXPECT_EQ(dt->template_name(),
+            base::ASCIIToUTF16(std::string(kBrowserTemplateName)));
 
   const app_restore::RestoreData* rd = dt->desk_restore_data();
 
@@ -206,11 +202,11 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
           *parsed_json, ash::DeskTemplateSource::kPolicy);
 
   EXPECT_TRUE(dt != nullptr);
-  EXPECT_EQ(dt->uuid(),
-            base::GUID::ParseCaseInsensitive(kTestUuidChromeAndProgressive));
+  EXPECT_EQ(dt->uuid(), base::GUID::ParseCaseInsensitive(
+                            "7f4b7ff0-970a-41bb-aa91-f6c3e2724207"));
   EXPECT_EQ(dt->created_time(),
             desk_template_conversion::ProtoTimeToTime(1633535632000LL));
-  EXPECT_EQ(dt->template_name(), base::UTF8ToUTF16(kChromePwaTemplateName));
+  EXPECT_EQ(dt->template_name(), u"ChromeAppTest");
 
   const app_restore::RestoreData* rd = dt->desk_restore_data();
 
@@ -275,8 +271,8 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
 }
 
 TEST_F(DeskTemplateConversionTest, EmptyJsonTest) {
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      base::StringPiece(kEmptyJson));
+  auto parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(base::StringPiece("{}"));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -319,6 +315,7 @@ TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonBrowserTest) {
 }
 
 TEST_F(DeskTemplateConversionTest, ToJsonIgnoreUnsupportedApp) {
+  constexpr int32_t kTestWindowId = 1234567;
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       base::StringPiece(desk_test_util::kValidPolicyTemplateBrowser));
 
