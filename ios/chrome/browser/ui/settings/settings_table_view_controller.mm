@@ -1058,13 +1058,13 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 - (TableViewItem*)priceNotificationsItem {
   NSString* title = l10n_util::GetNSString(IDS_IOS_PRICE_NOTIFICATIONS_TITLE);
 
+  // TODO(crbug.com/1363175): Replace kSettingsPrivacyImageName.
   if (UseSymbols()) {
-    // TODO(crbug.com/1363175): Replace kPrivacySymbol with proper symbol.
     return [self detailItemWithType:SettingsItemTypePriceNotifications
                                text:title
                          detailText:nil
-                             symbol:CustomSettingsRootSymbol(kPrivacySymbol)
-              symbolBackgroundColor:[UIColor colorNamed:kBlue500Color]
+                             symbol:DefaultSettingsRootSymbol(kBellSymbol)
+              symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
             accessibilityIdentifier:kSettingsPriceNotificationsId];
   }
 

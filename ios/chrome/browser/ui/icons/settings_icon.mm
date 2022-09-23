@@ -23,6 +23,7 @@ NSString* const kSyncErrorSymbol =
 NSString* const kSyncEnabledSymbol = @"arrow.triangle.2.circlepath";
 NSString* const kDefaultBrowserSymbol = @"app.badge.checkmark";
 NSString* const kDiscoverSymbol = @"flame";
+NSString* const kBellSymbol = @"bell";
 
 UIImage* DefaultSettingsRootSymbol(NSString* symbol_name) {
   return DefaultSymbolWithPointSize(symbol_name,

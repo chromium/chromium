@@ -135,3 +135,10 @@ symbolset("camera_lens") {
     "camera_lens.symbolset/camera.lens.cr.svg",
   ]
 }
+
+symbolset("line_downtrend") {
+  sources = [
+    "line_downtrend.symbolset/Contents.json",
+    "line_downtrend.symbolset/line.downtrend.cr.svg",
+  ]
+}

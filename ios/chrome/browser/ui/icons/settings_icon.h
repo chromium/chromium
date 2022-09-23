@@ -17,6 +17,7 @@ extern NSString* const kSyncErrorSymbol;
 extern NSString* const kSyncEnabledSymbol;
 extern NSString* const kDefaultBrowserSymbol;
 extern NSString* const kDiscoverSymbol;
+extern NSString* const kBellSymbol;
 
 // Returns a SF symbol named `symbol_name` configured for the Settings root
 // screen.

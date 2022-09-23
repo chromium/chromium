@@ -40,15 +40,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (TableViewItem*)priceTrackingItem {
   if (!_priceTrackingItem) {
-    // TODO(crbug.com/1363175): Replace kReadingListSymbol with proper symbol.
+    // TODO(crbug.com/1363175): Add logic to use an icon image.
     _priceTrackingItem = [self
              detailItemWithType:ItemTypeTrackingPrice
                            text:
                                l10n_util::GetNSString(
                                    IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACKING_TITLE)
                      detailText:nil
-                         symbol:CustomSettingsRootSymbol(kReadingListSymbol)
-          symbolBackgroundColor:[UIColor colorNamed:kGrey500Color]
+                         symbol:kDownTrendSymbol
+          symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
         accessibilityIdentifier:kSettingsPriceNotificationsPriceTrackingCellId];
   }
   return _priceTrackingItem;
@@ -67,7 +67,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (TableViewDetailIconItem*)detailItemWithType:(NSInteger)type
                                           text:(NSString*)text
                                     detailText:(NSString*)detailText
-                                        symbol:(UIImage*)symbol
+                                        symbol:(NSString*)symbol
                          symbolBackgroundColor:(UIColor*)backgroundColor
                        accessibilityIdentifier:
                            (NSString*)accessibilityIdentifier {
@@ -78,7 +78,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   detailItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   detailItem.accessibilityTraits |= UIAccessibilityTraitButton;
   detailItem.accessibilityIdentifier = accessibilityIdentifier;
-  detailItem.iconImage = symbol;
+  detailItem.iconImage = CustomSettingsRootSymbol(symbol);
   detailItem.iconBackgroundColor = backgroundColor;
   detailItem.iconTintColor = UIColor.whiteColor;
   detailItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;

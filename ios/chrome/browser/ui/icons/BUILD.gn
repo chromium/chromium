@@ -71,6 +71,7 @@ source_set("settings_icons") {
     "//ios/chrome/browser/ui/icons/resources:arrow_triangle_slash_circlepath",
     "//ios/chrome/browser/ui/icons/resources:checkerboard_shield",
     "//ios/chrome/browser/ui/icons/resources:checkermark_shield",
+    "//ios/chrome/browser/ui/icons/resources:line_downtrend",
   ]
   frameworks = [ "UIKit.framework" ]
 }

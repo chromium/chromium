@@ -24,6 +24,7 @@ extern NSString* const kRecentTabsSymbol;
 extern NSString* const kLanguageSymbol;
 extern NSString* const kPasswordSymbol;
 extern NSString* const kCameraLensSymbol;
+extern NSString* const kDownTrendSymbol;
 
 // Default symbol names.
 extern NSString* const kCreditCardSymbol;
