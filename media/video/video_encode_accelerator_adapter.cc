@@ -876,6 +876,18 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
     scoped_refptr<VideoFrame> src_frame) {
   TRACE_EVENT0("media", "VideoEncodeAcceleratorAdapter::PrepareCpuFrame");
 
+  // The frame whose storage type is STORAGE_OWNED_MEMORY and
+  // STORAGE_UNOWNED_MEMORY is copied here, not in mojo_video_frame_traits.
+  // It is because VEAAdapter recycles the SharedMemoryRegion, but
+  // mojo_video_frame_traits doesn't.
+  if (src_frame->storage_type() == VideoFrame::STORAGE_SHMEM &&
+      src_frame->format() == PIXEL_FORMAT_I420 &&
+      src_frame->visible_rect().size() == size &&
+      src_frame->visible_rect().origin().IsOrigin()) {
+    // Nothing to do here, the input frame is already what we need.
+    return src_frame;
+  }
+
   if (!input_pool_) {
     const size_t input_buffer_size =
         VideoFrame::AllocationSize(PIXEL_FORMAT_I420, size);
