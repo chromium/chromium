@@ -333,3 +333,19 @@ TEST_F(FaviconSourceTestWithFavicon2Format,
            "?size=16&scaleFactor=1000x&pageUrl=https%3A%2F%2Fwww.google.com"})),
       test_web_contents_getter_, base::DoNothing());
 }
+
+TEST_F(FaviconSourceTestWithFavicon2Format,
+       ShouldNotQueryIfInvalidScaleFactor) {
+  EXPECT_CALL(*mock_history_ui_favicon_request_handler_,
+              GetRawFaviconForPageURL)
+      .Times(0);
+  EXPECT_CALL(*mock_favicon_service_, GetRawFavicon).Times(0);
+  EXPECT_CALL(*mock_favicon_service_, GetRawFaviconForPageURL).Times(0);
+
+  // A negative scale factor cannot be parsed.
+  source()->StartDataRequest(
+      GURL(base::StrCat(
+          {kDummyPrefix,
+           "?size=16&scaleFactor=-2x&pageUrl=https%3A%2F%2Fwww.google.com"})),
+      test_web_contents_getter_, base::DoNothing());
+}

@@ -137,8 +137,14 @@ TEST_F(FaviconUrlParserTest, Favicon2ParsingScaleFactorParam) {
                                chrome::FaviconUrlFormat::kFavicon2, &parsed));
   EXPECT_EQ(2.1f, parsed.device_scale_factor);
 
+  // Missing 'x' in scale factor (parsing error).
   EXPECT_FALSE(
-      chrome::ParseFaviconPath("?scaleFactor=-1&pageUrl=https%3A%2F%2Fg.com",
+      chrome::ParseFaviconPath("?scaleFactor=2.1&pageUrl=https%3A%2F%2Fg.com",
+                               chrome::FaviconUrlFormat::kFavicon2, &parsed));
+
+  // Negative scale factor (parsing error).
+  EXPECT_FALSE(
+      chrome::ParseFaviconPath("?scaleFactor=-2.1x&pageUrl=https%3A%2F%2Fg.com",
                                chrome::FaviconUrlFormat::kFavicon2, &parsed));
 }
 

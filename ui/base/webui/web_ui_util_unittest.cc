@@ -101,3 +101,27 @@ TEST(WebUIUtilTest, GetPngDataUrl_EmptyInput) {
   webui::GetPngDataUrl(in.data(), in.size());
   // No crash.
 }
+
+TEST(WebUIUtilTest, ParseScaleFactor) {
+  float scale_factor = 0;
+
+  // Invalid input.
+  EXPECT_FALSE(webui::ParseScaleFactor("", &scale_factor));
+  EXPECT_FALSE(webui::ParseScaleFactor("a", &scale_factor));
+  EXPECT_FALSE(webui::ParseScaleFactor("x", &scale_factor));
+  EXPECT_FALSE(webui::ParseScaleFactor("ax", &scale_factor));
+  EXPECT_FALSE(webui::ParseScaleFactor("5", &scale_factor));
+  EXPECT_FALSE(webui::ParseScaleFactor("-5", &scale_factor));
+  EXPECT_FALSE(webui::ParseScaleFactor("-5x", &scale_factor));
+  EXPECT_FALSE(webui::ParseScaleFactor("2000x", &scale_factor));
+
+  // Valid input.
+  EXPECT_TRUE(webui::ParseScaleFactor("2x", &scale_factor));
+  EXPECT_EQ(2.0f, scale_factor);
+
+  EXPECT_TRUE(webui::ParseScaleFactor("1.5x", &scale_factor));
+  EXPECT_EQ(1.5f, scale_factor);
+
+  EXPECT_TRUE(webui::ParseScaleFactor("1000x", &scale_factor));
+  EXPECT_EQ(1000.0f, scale_factor);
+}
