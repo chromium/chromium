@@ -40,6 +40,7 @@
 #include "content/public/common/page_type.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
+#include "content/public/test/fake_local_frame.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
@@ -4541,6 +4542,106 @@ TEST_F(NavigationControllerTest, NavigateToNavigationApiKey_KeyForWrongFrame) {
   controller_impl().NavigateToNavigationApiKey(
       root_ftn(), FrameTreeNode::kFrameTreeNodeInvalidId, first_main_key);
   EXPECT_TRUE(controller_impl().GetPendingEntry());
+}
+
+class FakeLocalFrameWithDisposedEntries : public content::FakeLocalFrame {
+ public:
+  explicit FakeLocalFrameWithDisposedEntries(RenderFrameHost* host) {
+    Init(static_cast<TestRenderFrameHost*>(host)
+             ->GetRemoteAssociatedInterfaces());
+  }
+
+  const std::vector<std::string>& disposed_keys() const {
+    return disposed_keys_;
+  }
+
+  // FakeLocalFrame:
+  void NotifyNavigationApiOfDisposedEntries(
+      const std::vector<std::string>& keys) final {
+    disposed_keys_ = keys;
+  }
+
+ private:
+  std::vector<std::string> disposed_keys_;
+};
+
+TEST_F(NavigationControllerTest, NavigationApiDisposedEntries) {
+  // Construct first entry (cross-origin to the rest).
+  const GURL kUrl1("http://google.com");
+  NavigationSimulator::NavigateAndCommitFromDocument(kUrl1, main_test_rfh());
+  controller_impl()
+      .GetLastCommittedEntry()
+      ->GetFrameEntry(root_ftn())
+      ->set_navigation_api_key("1");
+
+  // Construct second entry (from which we will conduct the final checks).
+  const GURL kUrl2("http://example.com");
+  NavigationSimulator::NavigateAndCommitFromDocument(kUrl2, main_test_rfh());
+  controller_impl()
+      .GetLastCommittedEntry()
+      ->GetFrameEntry(root_ftn())
+      ->set_navigation_api_key("2");
+  const GURL kSubframeUrl2("http://example.com/subframe");
+  TestRenderFrameHost* subframe2 = main_test_rfh()->AppendChild("subframe");
+  NavigationSimulator::NavigateAndCommitFromDocument(kSubframeUrl2, subframe2);
+  controller_impl()
+      .GetLastCommittedEntry()
+      ->GetFrameEntry(root_ftn()->child_at(0))
+      ->set_navigation_api_key("2_sub");
+
+  std::string iframe_unique_name = root_ftn()->child_at(0)->unique_name();
+
+  // Setup a FakeLocalFrame in order to inspect the
+  // NotifyNavigationApiOfDisposedEntries() callback.
+  FakeLocalFrameWithDisposedEntries main_frame(main_test_rfh());
+  FakeLocalFrameWithDisposedEntries sub_frame(
+      root_ftn()->child_at(0)->current_frame_host());
+  main_test_rfh()->FlushLocalFrameMessages();
+  static_cast<TestRenderFrameHost*>(
+      root_ftn()->child_at(0)->current_frame_host())
+      ->FlushLocalFrameMessages();
+
+  // Construct third entry (same-origin to the second, but cross-document so
+  // that the iframe gets detached). Set the iframe's FNE's unique name to match
+  // the previous detached one, to ensure they aren't spuriously considered the
+  // same conceptual iframe.
+  const GURL kUrl3("http://example.com?next");
+  NavigationSimulator::NavigateAndCommitFromDocument(kUrl3, main_test_rfh());
+  controller_impl()
+      .GetLastCommittedEntry()
+      ->GetFrameEntry(root_ftn())
+      ->set_navigation_api_key("3");
+  const GURL kSubframeUrl3("http://example.com/subframe?next");
+  TestRenderFrameHost* subframe3 = main_test_rfh()->AppendChild("subframe");
+  NavigationSimulator::NavigateAndCommitFromDocument(kSubframeUrl3, subframe3);
+  controller_impl()
+      .GetLastCommittedEntry()
+      ->GetFrameEntry(root_ftn()->child_at(0))
+      ->set_navigation_api_key("3_sub");
+  controller_impl()
+      .GetLastCommittedEntry()
+      ->GetFrameEntry(root_ftn()->child_at(0))
+      ->set_frame_unique_name(iframe_unique_name);
+
+  // Go back to the second entry.
+  NavigationSimulator::GoBack(contents());
+  EXPECT_EQ(controller_impl().GetLastCommittedEntryIndex(), 1);
+  EXPECT_EQ(controller_impl().GetEntryCount(), 3);
+
+  // Prune the first and last entries. In the main frame, we should notify the
+  // renderer of the last key's disposal, but not the first key, because it was
+  // cross-origin. In the subframe, we should not notify for either: the first
+  // because the subframe was not present at all, and the second because the
+  // subframe was detached and reattached, so it's not really the same frame,
+  // even though it had the same unique name.
+  controller_impl().PruneAllButLastCommitted();
+  main_frame.FlushMessages();
+  sub_frame.FlushMessages();
+  EXPECT_EQ(sub_frame.disposed_keys().size(), 0u);
+
+  auto main_frame_disposed_keys = main_frame.disposed_keys();
+  EXPECT_EQ(main_frame_disposed_keys.size(), 1u);
+  EXPECT_EQ(main_frame_disposed_keys[0], "3");
 }
 
 class NavigationControllerFencedFrameTest : public NavigationControllerTest {

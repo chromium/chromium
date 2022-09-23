@@ -21454,6 +21454,53 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(1, controller.GetCurrentEntryIndex());
 }
 
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       DeleteNavigationEntriesFiresNavigationApiDisposeEvent) {
+  GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL url2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL url3(embedded_test_server()->GetURL("a.com", "/title3.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url1));
+  ASSERT_TRUE(NavigateToURL(shell(), url2));
+  ASSERT_TRUE(NavigateToURL(shell(), url3));
+  NavigationControllerImpl& controller = contents()->GetController();
+
+  // Go back.
+  TestNavigationObserver back_load_observer(shell()->web_contents());
+  controller.GoBack();
+  back_load_observer.Wait();
+  EXPECT_EQ(3, controller.GetEntryCount());
+  EXPECT_EQ(1, controller.GetCurrentEntryIndex());
+
+  // Insert dispose events on all navigation API entries.
+  EXPECT_TRUE(ExecJs(contents(), R"(
+      window.dispose0_fired = false;
+      window.dispose1_fired = false;
+      window.dispose2_fired = false;
+      navigation.entries()[0].ondispose = () => window.dispose0_fired = true;
+      navigation.entries()[1].ondispose = () => window.dispose2_fired = true;
+      navigation.entries()[2].ondispose = () => window.dispose2_fired = true;
+    )"));
+
+  // Delete the NavigationEntry for |url1| and ensure the appropriate dispose
+  // event fires.
+  controller.DeleteNavigationEntries(
+      base::BindLambdaForTesting([&](content::NavigationEntry* entry) {
+        return entry->GetURL() == url1;
+      }));
+  EXPECT_EQ(true, EvalJs(shell(), "window.dispose0_fired").ExtractBool());
+  EXPECT_EQ(false, EvalJs(shell(), "window.dispose1_fired").ExtractBool());
+  EXPECT_EQ(false, EvalJs(shell(), "window.dispose2_fired").ExtractBool());
+
+  // Do the same for |url3|.
+  controller.DeleteNavigationEntries(
+      base::BindLambdaForTesting([&](content::NavigationEntry* entry) {
+        return entry->GetURL() == url3;
+      }));
+  EXPECT_EQ(true, EvalJs(shell(), "window.dispose0_fired").ExtractBool());
+  EXPECT_EQ(false, EvalJs(shell(), "window.dispose1_fired").ExtractBool());
+  EXPECT_EQ(true, EvalJs(shell(), "window.dispose2_fired").ExtractBool());
+}
+
 // Tests that renderer-initiated navigation cancellation from the same JS task
 // that created the navigation can still be triggered after WillProcessResponse,
 // as the browser defers the navigation until the JS task that started it

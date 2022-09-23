@@ -630,6 +630,118 @@ NavigationControllerImpl::ScopedShowRepostDialogForTesting::
   g_check_for_repost = was_disallowed_;
 }
 
+NavigationControllerImpl::RemovedEntriesTracker::RemovedEntriesTracker(
+    base::SafeRef<NavigationControllerImpl> controller)
+    : controller_(controller) {
+  for (FrameTreeNode* frame_tree_node : controller_->frame_tree().Nodes()) {
+    names_to_nodes_.insert({frame_tree_node->unique_name(), frame_tree_node});
+    frame_tree_node_id_to_keys_.insert(
+        {frame_tree_node->frame_tree_node_id(), std::set<std::string>()});
+    if (auto* frame_entry = frame_tree_node->current_frame_host()
+                                ->last_committed_frame_entry()) {
+      frame_tree_node_id_to_doc_seq_nos_.insert(
+          {frame_tree_node->frame_tree_node_id(),
+           frame_entry->document_sequence_number()});
+    }
+  }
+  PopulateKeySet(Direction::kBack);
+  PopulateKeySet(Direction::kForward);
+}
+
+void NavigationControllerImpl::RemovedEntriesTracker::PopulateKeySet(
+    Direction direction) {
+  // Keep track of which FrameTreeNodes may still have relevant API keys in
+  // additional FrameNavigationEntries.
+  std::set<FrameTreeNode*> nodes_to_process;
+  for (FrameTreeNode* node : controller_->frame_tree().Nodes()) {
+    nodes_to_process.insert(node);
+  }
+
+  const int offset = direction == Direction::kForward ? 1 : -1;
+  const int start = direction == Direction::kForward
+                        ? controller_->GetLastCommittedEntryIndex()
+                        : controller_->GetLastCommittedEntryIndex() - 1;
+  for (int i = start;
+       i >= 0 && i < controller_->GetEntryCount() && !nodes_to_process.empty();
+       i += offset) {
+    std::set<FrameTreeNode*> nodes_to_continue_processing;
+
+    NavigationEntryImpl* entry = controller_->GetEntryAtIndex(i);
+    entry->ForEachFrameEntry([this, &nodes_to_process,
+                              &nodes_to_continue_processing,
+                              &entry](FrameNavigationEntry* frame_entry) {
+      // Find the |node| that matches |frame_entry|, if any.
+      FrameTreeNode* node = nullptr;
+      if (frame_entry == entry->root_node()->frame_entry) {
+        node = controller_->frame_tree().root();
+      } else {
+        auto it = names_to_nodes_.find(frame_entry->frame_unique_name());
+        if (it == names_to_nodes_.end())
+          return;
+        node = it->second;
+      }
+
+      // Skip this node if a previous step determine there are no longer
+      // relevant navigation API keys in this direction.
+      if (nodes_to_process.find(node) == nodes_to_process.end())
+        return;
+
+      // Stop processing |node| if we reach a point where it's cross-origin.
+      // See also PopulateSingleNavigationApiHistoryEntryVector().
+      url::Origin frame_entry_origin =
+          frame_entry->committed_origin().value_or(url::Origin::Resolve(
+              frame_entry->url(),
+              frame_entry->initiator_origin().value_or(url::Origin())));
+      if (!node->current_origin().IsSameOriginWith(frame_entry_origin))
+        return;
+
+      frame_tree_node_id_to_keys_[node->frame_tree_node_id()].insert(
+          frame_entry->navigation_api_key());
+      // Mark |node| as needing more processing for the next entry.
+      nodes_to_continue_processing.insert(node);
+
+      // Check whether |node| went cross-document. If so, its children are
+      // no longer the same conceptual iframe as the current one, and
+      // should no longer be processed. This check is intentionally done
+      // after processing the current |node|, which may still have relevant
+      // discarded API keys.
+      if (frame_entry->document_sequence_number() !=
+          frame_tree_node_id_to_doc_seq_nos_[node->frame_tree_node_id()]) {
+        for (auto* descendant : node->frame_tree()->SubtreeNodes(node))
+          nodes_to_process.erase(descendant);
+      }
+    });
+
+    nodes_to_process.swap(nodes_to_continue_processing);
+  }
+}
+
+NavigationControllerImpl::RemovedEntriesTracker::~RemovedEntriesTracker() {
+  std::set<std::string> all_keys;
+  // Find all remaining navigation API keys after some entries have been
+  // removed.
+  for (auto& entry : controller_->entries_) {
+    entry->ForEachFrameEntry([&all_keys](FrameNavigationEntry* frame_entry) {
+      all_keys.insert(frame_entry->navigation_api_key());
+    });
+  }
+
+  // Notify each frame in the renderer of any disposed navigation API keys.
+  for (auto& id_to_keys : frame_tree_node_id_to_keys_) {
+    std::vector<std::string> disposed_keys;
+    for (const auto& key : id_to_keys.second) {
+      if (all_keys.find(key) == all_keys.end())
+        disposed_keys.push_back(key);
+    }
+    if (disposed_keys.empty())
+      continue;
+
+    FrameTreeNode* node = controller_->frame_tree().FindByID(id_to_keys.first);
+    auto& frame = node->current_frame_host()->GetAssociatedLocalFrame();
+    frame->NotifyNavigationApiOfDisposedEntries(disposed_keys);
+  }
+}
+
 NavigationControllerImpl::NavigationControllerImpl(
     BrowserContext* browser_context,
     FrameTree& frame_tree,
@@ -1139,6 +1251,7 @@ void NavigationControllerImpl::PruneForwardEntries() {
   int num_removed = static_cast<int>(entries_.size()) - remove_start_index;
   if (num_removed <= 0)
     return;
+  RemovedEntriesTracker tracker(weak_factory_.GetSafeRef());
   entries_.erase(entries_.begin() + remove_start_index, entries_.end());
   NotifyPrunedEntries(this, remove_start_index /* start index */,
                       num_removed /* count */);
@@ -2437,6 +2550,8 @@ void NavigationControllerImpl::PruneAllButLastCommittedInternal() {
   // It is up to callers to check the invariants before calling this.
   CHECK(CanPruneAllButLastCommitted());
 
+  RemovedEntriesTracker tracker(weak_factory_.GetSafeRef());
+
   // Erase all entries but the last committed entry.  There may still be a
   // new pending entry after this.
   entries_.erase(entries_.begin(),
@@ -2882,6 +2997,7 @@ void NavigationControllerImpl::RemoveEntryAtIndexInternal(int index) {
   DCHECK_NE(index, last_committed_entry_index_);
   DiscardNonCommittedEntries();
 
+  RemovedEntriesTracker tracker(weak_factory_.GetSafeRef());
   entries_.erase(entries_.begin() + index);
   if (last_committed_entry_index_ > index)
     last_committed_entry_index_--;

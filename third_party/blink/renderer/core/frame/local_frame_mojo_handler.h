@@ -195,6 +195,8 @@ class LocalFrameMojoHandler
 
   void SetNavigationApiHistoryEntriesForRestore(
       mojom::blink::NavigationApiHistoryEntryArraysPtr) final;
+  void NotifyNavigationApiOfDisposedEntries(
+      const WTF::Vector<WTF::String>&) final;
 
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,

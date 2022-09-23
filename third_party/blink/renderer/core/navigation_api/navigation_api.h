@@ -62,6 +62,15 @@ class CORE_EXPORT NavigationApi final
   void SetEntriesForRestore(
       const mojom::blink::NavigationApiHistoryEntryArraysPtr&);
 
+  // The entries indicated by |keys| have been removed from the session history
+  // in the browser process and should be disposed. In many cases, this won't
+  // do anything because those entries have already been synchronously removed
+  // in UpdateForNavigation(). However, if the entries are being removed due to
+  // a navigation in a different frame or due to the user manually removing
+  // things from their history, this callback will be our only notification
+  // that those entries are no longer valid.
+  void DisposeEntriesForSessionHistoryRemoval(const Vector<String>& keys);
+
   // From the navigation API's perspective, a dropped navigation is still
   // "ongoing"; that is, ongoing_navigation_event_ and ongoing_navigation_ are
   // non-null. (The impact of this is that another navigation will cancel that

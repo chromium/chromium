@@ -1088,6 +1088,23 @@ FrameNavigationEntry* NavigationEntryImpl::GetFrameEntry(
   return tree_node ? tree_node->frame_entry.get() : nullptr;
 }
 
+void NavigationEntryImpl::ForEachFrameEntry(
+    FrameEntryIterationCallback on_frame_entry) {
+  NavigationEntryImpl::TreeNode* node = nullptr;
+  base::queue<NavigationEntryImpl::TreeNode*> work_queue;
+  work_queue.push(root_node());
+  while (!work_queue.empty()) {
+    node = work_queue.front();
+    work_queue.pop();
+
+    on_frame_entry(node->frame_entry.get());
+
+    // Enqueue any children.
+    for (const auto& child : node->children)
+      work_queue.push(child.get());
+  }
+}
+
 base::flat_map<std::string, bool> NavigationEntryImpl::GetSubframeUniqueNames(
     FrameTreeNode* frame_tree_node) const {
   base::flat_map<std::string, bool> names;

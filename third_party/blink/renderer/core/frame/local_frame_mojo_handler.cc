@@ -1235,6 +1235,14 @@ void LocalFrameMojoHandler::SetNavigationApiHistoryEntriesForRestore(
     navigation_api->SetEntriesForRestore(entry_arrays);
 }
 
+void LocalFrameMojoHandler::NotifyNavigationApiOfDisposedEntries(
+    const WTF::Vector<WTF::String>& keys) {
+  if (NavigationApi* navigation_api =
+          NavigationApi::navigation(*frame_->DomWindow())) {
+    navigation_api->DisposeEntriesForSessionHistoryRemoval(keys);
+  }
+}
+
 void LocalFrameMojoHandler::AnimateDoubleTapZoom(const gfx::Point& point,
                                                  const gfx::Rect& rect) {
   frame_->GetPage()->GetChromeClient().AnimateDoubleTapZoom(point, rect);

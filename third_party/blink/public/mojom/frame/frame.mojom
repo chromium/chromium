@@ -870,6 +870,10 @@ interface LocalFrame {
   // bfcache.
   SetNavigationApiHistoryEntriesForRestore(
       NavigationApiHistoryEntryArrays entry_arrays);
+
+  // Updates navigation.entries() when entries are disposed from the session
+  // history.
+  NotifyNavigationApiOfDisposedEntries(array<string> keys);
 };
 
 // Also implemented in Blink, this interface defines frame-specific methods

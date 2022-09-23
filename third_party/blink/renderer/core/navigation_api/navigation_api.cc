@@ -413,6 +413,41 @@ void NavigationApi::SetEntriesForRestore(
                                           WrapPersistent(disposed_entries)));
 }
 
+void NavigationApi::DisposeEntriesForSessionHistoryRemoval(
+    const Vector<String>& keys) {
+  if (HasEntriesAndEventsDisabled())
+    return;
+
+  HeapHashSet<Member<NavigationHistoryEntry>> disposed_entries;
+  for (const String& key : keys) {
+    auto it = keys_to_indices_.find(key);
+    // |key| may have already been disposed in UpdateForNavigation() if the
+    // entry was removed due to a navigation in this frame.
+    // The browser process may give us the key for currentEntry() in certain
+    // situations (e.g., if this is an iframe that was added after a push, and
+    // we navigate back past the creation of the iframe, currentEntry()'s key
+    // will no longer be present in the session history). Don't ever dispose the
+    // currentEntry().
+    if (it != keys_to_indices_.end() && entries_[it->value] != currentEntry())
+      disposed_entries.insert(entries_[it->value]);
+  }
+
+  HeapVector<Member<NavigationHistoryEntry>> entries_after_dispose;
+  for (auto& entry : entries_) {
+    if (!disposed_entries.Contains(entry))
+      entries_after_dispose.push_back(entry);
+  }
+
+  String current_entry_key = currentEntry()->key();
+  entries_.swap(entries_after_dispose);
+  keys_to_indices_.clear();
+  PopulateKeySet();
+  current_entry_index_ = keys_to_indices_.at(current_entry_key);
+
+  for (const auto& disposed_entry : disposed_entries)
+    disposed_entry->DispatchEvent(*Event::Create(event_type_names::kDispose));
+}
+
 NavigationHistoryEntry* NavigationApi::currentEntry() const {
   // current_index_ is initialized to -1 and set >= 0 when entries_ is
   // populated. It will still be negative if the navigation object of an initial

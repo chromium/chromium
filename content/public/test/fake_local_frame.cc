@@ -194,6 +194,9 @@ void FakeLocalFrame::GetOpenGraphMetadata(
 void FakeLocalFrame::SetNavigationApiHistoryEntriesForRestore(
     blink::mojom::NavigationApiHistoryEntryArraysPtr entry_arrays) {}
 
+void FakeLocalFrame::NotifyNavigationApiOfDisposedEntries(
+    const std::vector<std::string>& keys) {}
+
 void FakeLocalFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<blink::mojom::LocalFrame>(
