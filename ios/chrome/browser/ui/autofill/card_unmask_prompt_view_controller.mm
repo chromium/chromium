@@ -315,7 +315,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
       base::SysUTF16ToNSString(_bridge->GetController()->GetOkButtonLabel());
   UIBarButtonItem* confirmButton =
       [[UIBarButtonItem alloc] initWithTitle:confirmButtonText
-                                       style:UIBarButtonItemStylePlain
+                                       style:UIBarButtonItemStyleDone
                                       target:self
                                       action:@selector(onVerifyTapped)];
   [confirmButton setTitleTextAttributes:@{
