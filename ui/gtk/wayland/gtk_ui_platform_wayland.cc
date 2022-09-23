@@ -11,7 +11,9 @@
 #include "base/logging.h"
 #include "ui/base/glib/glib_cast.h"
 #include "ui/events/event_utils.h"
+#include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
+#include "ui/gtk/input_method_context_impl_gtk.h"
 #include "ui/linux/linux_ui_delegate.h"
 
 namespace gtk {
@@ -143,6 +145,16 @@ void GtkUiPlatformWayland::OnHandleSetTransient(GtkWidget* widget,
                  << gtk_get_major_version() << '.' << gtk_get_minor_version()
                  << '.' << gtk_get_micro_version();
   }
+}
+
+std::unique_ptr<ui::LinuxInputMethodContext>
+GtkUiPlatformWayland::CreateInputMethodContext(
+    ui::LinuxInputMethodContextDelegate* delegate) const {
+  // GDK3 doesn't have a way to create foreign wayland windows, so we can't
+  // translate from ui::KeyEvent to GdkEventKey for InputMethodContextImplGtk.
+  if (!GtkCheckVersion(4))
+    return nullptr;
+  return std::make_unique<InputMethodContextImplGtk>(delegate);
 }
 
 }  // namespace gtk

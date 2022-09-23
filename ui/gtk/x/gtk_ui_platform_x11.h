@@ -34,6 +34,8 @@ class GtkUiPlatformX11 : public GtkUiPlatform {
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;
+  std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
+      ui::LinuxInputMethodContextDelegate* delegate) const override;
 
  private:
   GdkDisplay* GetGdkDisplay();

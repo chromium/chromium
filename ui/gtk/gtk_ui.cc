@@ -447,7 +447,7 @@ void GtkUi::SetWindowFrameAction(WindowFrameActionSource source,
 
 std::unique_ptr<ui::LinuxInputMethodContext> GtkUi::CreateInputMethodContext(
     ui::LinuxInputMethodContextDelegate* delegate) const {
-  return std::make_unique<InputMethodContextImplGtk>(delegate);
+  return GetPlatform()->CreateInputMethodContext(delegate);
 }
 
 gfx::FontRenderParams GtkUi::GetDefaultFontRenderParams() const {
