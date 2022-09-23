@@ -633,7 +633,7 @@ std::vector<int32_t> GetInt32List(const base::Value* dict, const char* key) {
     return result;
   }
   if (v) {
-    for (const base::Value& e : v->GetListDeprecated())
+    for (const base::Value& e : v->GetList())
       result.push_back(e.GetInt());
   }
   return result;
@@ -658,7 +658,7 @@ absl::optional<std::vector<std::string>> GetStringList(const base::Value* dict,
     return absl::nullopt;
   }
   std::vector<std::string> result;
-  for (const base::Value& e : v->GetListDeprecated())
+  for (const base::Value& e : v->GetList())
     result.push_back(e.GetString());
   return result;
 }
@@ -842,7 +842,7 @@ mojom::ManagedStringListPtr GetManagedStringList(const base::Value* dict,
   if (v->is_list()) {
     auto result = mojom::ManagedStringList::New();
     std::vector<std::string> active;
-    for (const base::Value& e : v->GetListDeprecated())
+    for (const base::Value& e : v->GetList())
       active.push_back(e.GetString());
     result->active_value = std::move(active);
     return result;
@@ -854,12 +854,12 @@ mojom::ManagedStringListPtr GetManagedStringList(const base::Value* dict,
       return nullptr;
     }
     auto result = mojom::ManagedStringList::New();
-    for (const base::Value& e : managed_dict.active_value.GetListDeprecated())
+    for (const base::Value& e : managed_dict.active_value.GetList())
       result->active_value.push_back(e.GetString());
     result->policy_source = managed_dict.policy_source;
     if (!managed_dict.policy_value.is_none()) {
       result->policy_value = std::vector<std::string>();
-      for (const base::Value& e : managed_dict.policy_value.GetListDeprecated())
+      for (const base::Value& e : managed_dict.policy_value.GetList())
         result->policy_value->push_back(e.GetString());
     }
     return result;
@@ -951,7 +951,7 @@ mojom::ManagedSubjectAltNameMatchListPtr GetManagedSubjectAltNameMatchList(
 
   if (value->is_list()) {
     std::vector<mojom::SubjectAltNamePtr> active;
-    for (const base::Value& e : value->GetListDeprecated())
+    for (const base::Value& e : value->GetList())
       active.push_back(GetSubjectAltName(&e));
     result->active_value = std::move(active);
     return result;
@@ -962,12 +962,12 @@ mojom::ManagedSubjectAltNameMatchListPtr GetManagedSubjectAltNameMatchList(
       NET_LOG(ERROR) << "No active or effective value for WireGuardPeerList";
       return result;
     }
-    for (const base::Value& e : managed_dict.active_value.GetListDeprecated())
+    for (const base::Value& e : managed_dict.active_value.GetList())
       result->active_value.push_back(GetSubjectAltName(&e));
     result->policy_source = managed_dict.policy_source;
     if (!managed_dict.policy_value.is_none()) {
       result->policy_value = std::vector<mojom::SubjectAltNamePtr>();
-      for (const base::Value& e : managed_dict.policy_value.GetListDeprecated())
+      for (const base::Value& e : managed_dict.policy_value.GetList())
         result->policy_value.push_back(GetSubjectAltName(&e));
     }
     return result;
@@ -1117,7 +1117,7 @@ mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value) {
   if (value->is_list()) {
     auto result = mojom::ManagedApnList::New();
     std::vector<mojom::ApnPropertiesPtr> active;
-    for (const base::Value& e : value->GetListDeprecated())
+    for (const base::Value& e : value->GetList())
       active.push_back(GetApnProperties(&e));
     result->active_value = std::move(active);
     return result;
@@ -1128,12 +1128,12 @@ mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value) {
       return nullptr;
     }
     auto result = mojom::ManagedApnList::New();
-    for (const base::Value& e : managed_dict.active_value.GetListDeprecated())
+    for (const base::Value& e : managed_dict.active_value.GetList())
       result->active_value.push_back(GetApnProperties(&e));
     result->policy_source = managed_dict.policy_source;
     if (!managed_dict.policy_value.is_none()) {
       result->policy_value = std::vector<mojom::ApnPropertiesPtr>();
-      for (const base::Value& e : managed_dict.policy_value.GetListDeprecated())
+      for (const base::Value& e : managed_dict.policy_value.GetList())
         result->policy_value->push_back(GetApnProperties(&e));
     }
     return result;
@@ -1153,7 +1153,7 @@ std::vector<mojom::FoundNetworkPropertiesPtr> GetFoundNetworksList(
     NET_LOG(ERROR) << "Expected list, found: " << *v;
     return result;
   }
-  for (const base::Value& e : v->GetListDeprecated()) {
+  for (const base::Value& e : v->GetList()) {
     auto found_network = mojom::FoundNetworkProperties::New();
     found_network->status =
         GetRequiredString(&e, ::onc::cellular_found_network::kStatus);
@@ -1442,7 +1442,7 @@ mojom::ManagedWireGuardPeerListPtr GetManagedWireGuardPeerList(
     return result;
   if (value->is_list()) {
     std::vector<mojom::WireGuardPeerPropertiesPtr> active;
-    for (const base::Value& e : value->GetListDeprecated())
+    for (const base::Value& e : value->GetList())
       active.push_back(GetWireGuardPeerProperties(&e));
     result->active_value = std::move(active);
     return result;
@@ -1453,12 +1453,12 @@ mojom::ManagedWireGuardPeerListPtr GetManagedWireGuardPeerList(
       NET_LOG(ERROR) << "No active or effective value for WireGuardPeerList";
       return result;
     }
-    for (const base::Value& e : managed_dict.active_value.GetListDeprecated())
+    for (const base::Value& e : managed_dict.active_value.GetList())
       result->active_value.push_back(GetWireGuardPeerProperties(&e));
     result->policy_source = managed_dict.policy_source;
     if (!managed_dict.policy_value.is_none()) {
       result->policy_value = std::vector<mojom::WireGuardPeerPropertiesPtr>();
-      for (const base::Value& e : managed_dict.policy_value.GetListDeprecated())
+      for (const base::Value& e : managed_dict.policy_value.GetList())
         result->policy_value->push_back(GetWireGuardPeerProperties(&e));
     }
     return result;
@@ -1532,8 +1532,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       properties->FindKey(::onc::network_config::kIPConfigs);
   if (ip_configs_list) {
     std::vector<mojom::IPConfigPropertiesPtr> ip_configs;
-    for (const base::Value& ip_config_value :
-         ip_configs_list->GetListDeprecated())
+    for (const base::Value& ip_config_value : ip_configs_list->GetList())
       ip_configs.push_back(GetIPConfig(&ip_config_value));
     result->ip_configs = std::move(ip_configs);
   }
@@ -2898,7 +2897,7 @@ std::vector<mojom::ApnPropertiesPtr> CrosNetworkConfig::GetCustomAPNList(
     return mojo_custom_apns;
   }
   DCHECK(custom_apn_list->is_list());
-  for (const auto& apn : custom_apn_list->GetListDeprecated()) {
+  for (const auto& apn : custom_apn_list->GetList()) {
     DCHECK(apn.is_dict());
     mojom::ApnPropertiesPtr mojo_apn = mojom::ApnProperties::New();
     mojo_apn->access_point_name =
@@ -3227,12 +3226,12 @@ void CrosNetworkConfig::PopulateTrafficCounters(
     RequestTrafficCountersCallback callback,
     absl::optional<base::Value> traffic_counters) {
   if (!traffic_counters || !traffic_counters->is_list() ||
-      !traffic_counters->GetListDeprecated().size()) {
+      !traffic_counters->GetList().size()) {
     std::move(callback).Run({});
     return;
   }
   std::vector<mojom::TrafficCounterPtr> counters;
-  for (const base::Value& tc : traffic_counters->GetListDeprecated()) {
+  for (const base::Value& tc : traffic_counters->GetList()) {
     DCHECK(tc.is_dict());
     const base::Value* source =
         tc.FindKeyOfType("source", base::Value::Type::STRING);
