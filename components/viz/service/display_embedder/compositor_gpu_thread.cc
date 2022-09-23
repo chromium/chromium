@@ -47,16 +47,20 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
     return nullptr;
   }
 
+#if DCHECK_IS_ON()
 #if BUILDFLAG(IS_ANDROID)
   // When using angle via enabling passthrough command decoder on android, angle
   // context virtualization group extension should be enabled. Also since angle
-  // currently always enables this extension, we are adding DCHECK() to ensure
-  // that instead of enabling/disabling DrDc based on the extension.
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
+  // currently always enables this extension with GL backend, we are adding
+  // DCHECK() to ensure that instead of enabling/disabling DrDc based on the
+  // extension.
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kOpenGLES) {
     gl::GLDisplayEGL* display_egl = display->GetAs<gl::GLDisplayEGL>();
     DCHECK(display_egl->ext->b_EGL_ANGLE_context_virtualization);
   }
 #endif
+#endif  // DCHECK_IS_ON()
 
   scoped_refptr<VulkanContextProvider> vulkan_context_provider;
 #if BUILDFLAG(ENABLE_VULKAN)
