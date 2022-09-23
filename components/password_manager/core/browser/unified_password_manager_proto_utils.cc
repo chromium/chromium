@@ -108,7 +108,7 @@ void DeserializeOpaqueLocalData(const std::string& opaque_metadata,
     return;
   }
 
-  base::Value::Dict serialized_data(std::move(root->GetDict()));
+  base::Value::Dict serialized_data(std::move(*root).TakeDict());
   auto skip_zero_click = serialized_data.FindBool(kSkipZeroClickKey);
   auto* serialized_form_data = serialized_data.FindDict(kFormDataKey);
   if (!skip_zero_click.has_value() || !serialized_form_data) {
