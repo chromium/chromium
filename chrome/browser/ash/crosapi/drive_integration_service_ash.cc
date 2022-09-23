@@ -55,8 +55,8 @@ void DriveIntegrationServiceAsh::AddDriveIntegrationServiceObserver(
       std::move(observer));
   observers_.Add(std::move(remote));
   // Fire the observer with the initial value.
-  for (auto& observer : observers_)
-    observer->OnMountPointPathChanged(GetMountPoint());
+  for (auto& registered_observer : observers_)
+    registered_observer->OnMountPointPathChanged(GetMountPoint());
 }
 
 void DriveIntegrationServiceAsh::OnFileSystemMounted() {

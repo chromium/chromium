@@ -65,8 +65,8 @@ bool LoadValueEvents(const base::Value* value, ValueEvents* value_events) {
       return false;
     if (!entry.GetListDeprecated()[2].is_int())
       return false;
-    const int value = entry.GetListDeprecated()[2].GetInt();
-    value_events->emplace_back(timestamp, type, value);
+    value_events->emplace_back(timestamp, type,
+                               entry.GetListDeprecated()[2].GetInt());
     previous_timestamp = timestamp;
   }
 

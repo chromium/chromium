@@ -972,14 +972,12 @@ void SetProfileMigrationCompletedForUser(PrefService* local_state,
                                          MigrationMode mode) {
   DictionaryPrefUpdate update(local_state,
                               kProfileMigrationCompletedForUserPref);
-  base::Value* dict = update.Get();
-  dict->SetBoolKey(user_id_hash, true);
+  update.Get()->SetBoolKey(user_id_hash, true);
 
   if (mode == MigrationMode::kMove) {
-    DictionaryPrefUpdate update(local_state,
-                                kProfileMoveMigrationCompletedForUserPref);
-    base::Value* dict = update.Get();
-    dict->SetBoolKey(user_id_hash, true);
+    DictionaryPrefUpdate move_update(local_state,
+                                     kProfileMoveMigrationCompletedForUserPref);
+    move_update.Get()->SetBoolKey(user_id_hash, true);
   }
 }
 

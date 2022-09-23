@@ -246,11 +246,11 @@ void AuthorizationZoneImpl::FinishAuthorization(const GURL& redirect_url,
   // Create and add a new session.
   if (sessions_.size() == kMaxNumberOfSessions) {
     // There are too many sessions. Remove the oldest one.
-    auto callbacks = sessions_.front()->TakeWaitingList();
+    auto sessions_callbacks = sessions_.front()->TakeWaitingList();
     sessions_.pop_front();
-    for (auto& callback : callbacks) {
-      std::move(callback).Run(StatusCode::kTooManySessions,
-                              "The oldest session was closed");
+    for (auto& sessions_callback : sessions_callbacks) {
+      std::move(sessions_callback)
+          .Run(StatusCode::kTooManySessions, "The oldest session was closed");
     }
     // TODO(b:228876367) - revoke the token in AuthorizationServerSession
   }

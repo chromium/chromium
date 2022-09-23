@@ -556,16 +556,20 @@ bool AppActivityRegistry::SetAppLimit(
   }
 
   for (auto& entry : activity_registry_) {
-    const AppId& app_id = entry.first;
-    AppDetails& details = entry.second;
-    if (ContributesToWebTimeLimit(app_id, GetAppState(app_id)))
-      details.limit = app_limit;
+    const AppId& app_id_for_entry = entry.first;
+    AppDetails& details_for_entry = entry.second;
+    if (ContributesToWebTimeLimit(app_id_for_entry,
+                                  GetAppState(app_id_for_entry))) {
+      details_for_entry.limit = app_limit;
+    }
   }
 
   for (auto& entry : activity_registry_) {
-    const AppId& app_id = entry.first;
-    if (ContributesToWebTimeLimit(app_id, GetAppState(app_id)))
-      AppLimitUpdated(app_id);
+    const AppId& app_id_for_entry = entry.first;
+    if (ContributesToWebTimeLimit(app_id_for_entry,
+                                  GetAppState(app_id_for_entry))) {
+      AppLimitUpdated(app_id_for_entry);
+    }
   }
 
   return updated;
@@ -829,14 +833,15 @@ void AppActivityRegistry::SetAppInactive(const AppId& app_id,
   if (ContributesToWebTimeLimit(app_id, GetAppState(app_id))) {
     base::TimeDelta active_time = details.activity.RunningActiveTime();
     for (auto& app_info : activity_registry_) {
-      const AppId& app_id = app_info.first;
-      if (!ContributesToWebTimeLimit(app_id, GetAppState(app_id))) {
+      const AppId& app_id_for_info = app_info.first;
+      if (!ContributesToWebTimeLimit(app_id_for_info,
+                                     GetAppState(app_id_for_info))) {
         continue;
       }
 
-      AppDetails& details = app_info.second;
-      if (!details.activity.is_active())
-        details.activity.set_running_active_time(active_time);
+      AppDetails& details_for_info = app_info.second;
+      if (!details_for_info.activity.is_active())
+        details_for_info.activity.set_running_active_time(active_time);
     }
   }
 }

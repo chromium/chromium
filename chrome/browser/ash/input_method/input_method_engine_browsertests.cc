@@ -306,9 +306,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
   ASSERT_TRUE(host);
 
   engine_handler->Enable("APIArgumentIME");
-  const auto context =
-      CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT);
-  engine_handler->FocusIn(context);
+  engine_handler->FocusIn(
+      CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT));
 
   {
     SCOPED_TRACE("KeyDown, Ctrl:No, Alt:No, AltGr:No, Shift:No, Caps:No");
@@ -1179,54 +1178,48 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
     {
       ExtensionTestMessageListener focus_listener(
           "onFocus:text:true:true:true:false");
-      const auto context =
-          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT);
-      engine_handler->FocusIn(context);
+      engine_handler->FocusIn(
+          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT));
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());
     }
     {
       ExtensionTestMessageListener focus_listener(
           "onFocus:search:true:true:true:false");
-      const auto context =
-          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_SEARCH);
-      engine_handler->FocusIn(context);
+      engine_handler->FocusIn(
+          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_SEARCH));
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());
     }
     {
       ExtensionTestMessageListener focus_listener(
           "onFocus:tel:true:true:true:false");
-      const auto context =
-          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TELEPHONE);
-      engine_handler->FocusIn(context);
+      engine_handler->FocusIn(
+          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TELEPHONE));
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());
     }
     {
       ExtensionTestMessageListener focus_listener(
           "onFocus:url:true:true:true:false");
-      const auto context =
-          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_URL);
-      engine_handler->FocusIn(context);
+      engine_handler->FocusIn(
+          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_URL));
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());
     }
     {
       ExtensionTestMessageListener focus_listener(
           "onFocus:email:true:true:true:false");
-      const auto context =
-          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_EMAIL);
-      engine_handler->FocusIn(context);
+      engine_handler->FocusIn(
+          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_EMAIL));
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());
     }
     {
       ExtensionTestMessageListener focus_listener(
           "onFocus:number:true:true:true:false");
-      const auto context =
-          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_NUMBER);
-      engine_handler->FocusIn(context);
+      engine_handler->FocusIn(
+          CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_NUMBER));
       ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
       ASSERT_TRUE(focus_listener.was_satisfied());
     }

@@ -392,18 +392,18 @@ struct AddEntriesMessage {
   // ui/file_manager/integration_tests/test_util.js, which generates the message
   // that contains this object.
   struct TestEntryInfo {
-    TestEntryInfo() : type(FILE), shared_option(NONE) {}
+    TestEntryInfo() : entry_type(FILE), shared_option(NONE) {}
 
-    TestEntryInfo(EntryType type,
+    TestEntryInfo(EntryType entry_type,
                   const std::string& source_file_name,
                   const std::string& target_path)
-        : type(type),
+        : entry_type(entry_type),
           shared_option(NONE),
           source_file_name(source_file_name),
           target_path(target_path),
           last_modified_time(base::Time::Now()) {}
 
-    EntryType type;                   // Entry type: file or directory.
+    EntryType entry_type;             // Entry type: file or directory.
     SharedOption shared_option;       // File entry sharing option.
     std::string source_file_name;     // Source file name prototype.
     std::string thumbnail_file_name;  // DocumentsProvider thumbnail file name.
@@ -473,7 +473,7 @@ struct AddEntriesMessage {
     // Registers the member information to the given converter.
     static void RegisterJSONConverter(
         base::JSONValueConverter<TestEntryInfo>* converter) {
-      converter->RegisterCustomField("type", &TestEntryInfo::type,
+      converter->RegisterCustomField("type", &TestEntryInfo::entry_type,
                                      &MapStringToEntryType);
       converter->RegisterStringField("sourceFileName",
                                      &TestEntryInfo::source_file_name);
@@ -908,7 +908,7 @@ class LocalTestVolume : public TestVolume {
   void CreateEntryImpl(const AddEntriesMessage::TestEntryInfo& entry,
                        const base::FilePath& target_path) {
     entries_.insert(std::make_pair(target_path, entry));
-    switch (entry.type) {
+    switch (entry.entry_type) {
       case AddEntriesMessage::FILE: {
         const base::FilePath source_path =
             TestVolume::GetTestDataFilePath(entry.source_file_name);
@@ -1239,7 +1239,7 @@ class DriveFsTestVolume : public TestVolume {
     entries_.insert(std::make_pair(target_path, entry));
     auto relative_path = GetRelativeDrivePathForTestEntry(entry);
     auto original_name = relative_path.BaseName();
-    switch (entry.type) {
+    switch (entry.entry_type) {
       case AddEntriesMessage::FILE: {
         original_name = base::FilePath(entry.target_path).BaseName();
         if (entry.source_file_name.empty()) {
@@ -1451,7 +1451,7 @@ class DocumentsProviderTestVolume : public TestVolume {
         !entry.thumbnail_file_name.empty());
     file_system_instance_->AddDocument(document);
 
-    if (entry.type != AddEntriesMessage::FILE)
+    if (entry.entry_type != AddEntriesMessage::FILE)
       return;
 
     // arc::FakeFileSystemInstance has a dedicated method AddRecentDocument(),
@@ -1498,7 +1498,7 @@ class DocumentsProviderTestVolume : public TestVolume {
 
  private:
   int64_t GetFileSize(const AddEntriesMessage::TestEntryInfo& entry) {
-    if (entry.type != AddEntriesMessage::FILE)
+    if (entry.entry_type != AddEntriesMessage::FILE)
       return 0;
 
     int64_t file_size = 0;
@@ -1509,7 +1509,7 @@ class DocumentsProviderTestVolume : public TestVolume {
   }
 
   std::string GetMimeType(const AddEntriesMessage::TestEntryInfo& entry) {
-    return entry.type == AddEntriesMessage::FILE
+    return entry.entry_type == AddEntriesMessage::FILE
                ? entry.mime_type
                : arc::kAndroidDirectoryMimeType;
   }

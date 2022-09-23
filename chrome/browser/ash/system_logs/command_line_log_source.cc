@@ -29,44 +29,47 @@ void ExecuteCommandLines(system_logs::SystemLogsResponse* response) {
   // it more easier to modify and understand.
   std::vector<std::pair<std::string, base::CommandLine>> commands;
 
-  base::CommandLine command(base::FilePath("/usr/bin/amixer"));
-  command.AppendArg("-c0");
-  command.AppendArg("contents");
-  commands.emplace_back("alsa controls", command);
+  base::CommandLine command_line(base::FilePath("/usr/bin/amixer"));
+  command_line.AppendArg("-c0");
+  command_line.AppendArg("contents");
+  commands.emplace_back("alsa controls", command_line);
 
-  command = base::CommandLine((base::FilePath("/usr/bin/cras_test_client")));
-  command.AppendArg("--dump_server_info");
-  command.AppendArg("--dump_audio_thread");
-  commands.emplace_back("cras", command);
+  command_line =
+      base::CommandLine((base::FilePath("/usr/bin/cras_test_client")));
+  command_line.AppendArg("--dump_server_info");
+  command_line.AppendArg("--dump_audio_thread");
+  commands.emplace_back("cras", command_line);
 
-  command = base::CommandLine((base::FilePath("/usr/bin/audio_diagnostics")));
-  commands.emplace_back("audio_diagnostics", command);
+  command_line =
+      base::CommandLine((base::FilePath("/usr/bin/audio_diagnostics")));
+  commands.emplace_back("audio_diagnostics", command_line);
 
 #if 0
   // This command hangs as of R39. TODO(alhli): Make cras_test_client more
   // robust or add a wrapper script that times out, and fix this or remove
   // this code. crbug.com/419523
-  command = base::CommandLine((base::FilePath("/usr/bin/cras_test_client")));
-  command.AppendArg("--loopback_file");
-  command.AppendArg("/dev/null");
-  command.AppendArg("--rate");
-  command.AppendArg("44100");
-  command.AppendArg("--duration_seconds");
-  command.AppendArg("0.01");
-  command.AppendArg("--show_total_rms");
-  commands.emplace_back("cras_rms", command);
+  command_line =
+      base::CommandLine((base::FilePath("/usr/bin/cras_test_client")));
+  command_line.AppendArg("--loopback_file");
+  command_line.AppendArg("/dev/null");
+  command_line.AppendArg("--rate");
+  command_line.AppendArg("44100");
+  command_line.AppendArg("--duration_seconds");
+  command_line.AppendArg("0.01");
+  command_line.AppendArg("--show_total_rms");
+  commands.emplace_back("cras_rms", command_line);
 #endif
 
-  command = base::CommandLine((base::FilePath("/usr/bin/printenv")));
-  commands.emplace_back("env", command);
+  command_line = base::CommandLine((base::FilePath("/usr/bin/printenv")));
+  commands.emplace_back("env", command_line);
 
   // Get disk space usage information
-  command = base::CommandLine(base::FilePath("/bin/df"));
-  command.AppendArg("--human-readable");
-  commands.emplace_back("disk_usage", command);
+  command_line = base::CommandLine(base::FilePath("/bin/df"));
+  command_line.AppendArg("--human-readable");
+  commands.emplace_back("disk_usage", command_line);
 
   for (const auto& command : commands) {
-    VLOG(1) << "Executting System Logs Command: " << command.first;
+    VLOG(1) << "Executing System Logs Command: " << command.first;
     std::string output;
     base::GetAppOutput(command.second, &output);
     response->emplace(command.first, output);

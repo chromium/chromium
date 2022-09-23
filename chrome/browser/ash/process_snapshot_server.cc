@@ -63,9 +63,9 @@ void ProcessSnapshotServer::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 
   base::TimeDelta min_refresh_time = base::TimeDelta::Max();
-  for (auto& observer : observers_) {
+  for (const auto& remaining_observer : observers_) {
     min_refresh_time =
-        std::min(min_refresh_time, observer.desired_refresh_time());
+        std::min(min_refresh_time, remaining_observer.desired_refresh_time());
   }
 
   RefreshTimer(min_refresh_time);

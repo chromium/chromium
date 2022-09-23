@@ -23,6 +23,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/location.h"
@@ -1494,8 +1495,7 @@ void UserSessionManager::InitProfilePreferences(
       }
     }
 
-    const user_manager::User* user =
-        user_manager->FindUser(user_context.GetAccountId());
+    user = user_manager->FindUser(user_context.GetAccountId());
     bool is_child = user->GetType() == user_manager::USER_TYPE_CHILD;
     DCHECK(is_child ==
            (user_context.GetUserType() == user_manager::USER_TYPE_CHILD));
@@ -2078,17 +2078,9 @@ void UserSessionManager::RestorePendingUserSessions() {
   // session restore to existing users only. Currently this breakes some tests
   // (namely CrashRestoreComplexTest.RestoreSessionForThreeUsers), but
   // it may be test-specific and could probably be changed.
-  user_manager::UserList logged_in_users =
-      user_manager::UserManager::Get()->GetLoggedInUsers();
-  bool user_already_logged_in = false;
-  for (user_manager::UserList::const_iterator it = logged_in_users.begin();
-       it != logged_in_users.end(); ++it) {
-    const user_manager::User* user = (*it);
-    if (user->GetAccountId() == account_id) {
-      user_already_logged_in = true;
-      break;
-    }
-  }
+  const bool user_already_logged_in =
+      base::Contains(user_manager::UserManager::Get()->GetLoggedInUsers(),
+                     account_id, &user_manager::User::GetAccountId);
   DCHECK(!user_already_logged_in);
 
   if (!user_already_logged_in) {

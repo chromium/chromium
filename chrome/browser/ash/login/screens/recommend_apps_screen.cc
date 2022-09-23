@@ -135,7 +135,6 @@ void RecommendAppsScreen::ShowImpl() {
 
   if (features::IsOobeNewRecommendAppsEnabled() &&
       base::FeatureList::IsEnabled(::features::kAppDiscoveryForOobe)) {
-    Profile* profile = ProfileManager::GetActiveUserProfile();
     app_discovery_service_ =
         apps::AppDiscoveryServiceFactory::GetForProfile(profile);
     app_discovery_service_->GetApps(

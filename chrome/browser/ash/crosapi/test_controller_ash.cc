@@ -385,13 +385,14 @@ void TestControllerAsh::RegisterStandaloneBrowserTestController(
 void TestControllerAsh::WaiterFinished(OverviewWaiter* waiter) {
   for (size_t i = 0; i < overview_waiters_.size(); ++i) {
     if (waiter == overview_waiters_[i].get()) {
-      std::unique_ptr<OverviewWaiter> waiter = std::move(overview_waiters_[i]);
+      std::unique_ptr<OverviewWaiter> overview_waiter =
+          std::move(overview_waiters_[i]);
       overview_waiters_.erase(overview_waiters_.begin() + i);
 
       // Delete asynchronously to avoid re-entrancy. This is safe because the
       // class will never use |test_controller_| after this callback.
-      base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                      std::move(waiter));
+      base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
+          FROM_HERE, std::move(overview_waiter));
       break;
     }
   }

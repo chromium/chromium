@@ -596,15 +596,15 @@ TEST_F(AppActivityRegistryTest, AllowlistedAppsNoLimits) {
 
 TEST_F(AppActivityRegistryTest, RestoredApplicationInformation) {
   auto app1_instance_id = CreateInstanceIdForApp(kApp1);
-  base::TimeDelta active_time = base::Minutes(30);
+  base::TimeDelta active_timedelta = base::Minutes(30);
 
-  const AppLimit limit(AppRestriction::kTimeLimit, active_time,
+  const AppLimit limit(AppRestriction::kTimeLimit, active_timedelta,
                        base::Time::Now());
   SetAppLimit(kApp1, limit);
 
   base::Time app1_start_time_1 = base::Time::Now();
   registry().OnAppActive(kApp1, app1_instance_id, app1_start_time_1);
-  task_environment()->FastForwardBy(active_time / 2);
+  task_environment()->FastForwardBy(active_timedelta / 2);
 
   // Save app activity.
   registry_test().SaveAppActivity();
@@ -617,7 +617,7 @@ TEST_F(AppActivityRegistryTest, RestoredApplicationInformation) {
 
   base::Time app1_start_time_2 = base::Time::Now();
   registry().OnAppActive(kApp1, app1_instance_id, app1_start_time_2);
-  task_environment()->FastForwardBy(active_time / 2);
+  task_environment()->FastForwardBy(active_timedelta / 2);
 
   // Time limit is reached. App becomes inactive.
   EXPECT_FALSE(registry().IsAppActive(kApp1));
@@ -633,7 +633,7 @@ TEST_F(AppActivityRegistryTest, RestoredApplicationInformation) {
   EXPECT_TRUE(registry().IsAppInstalled(kApp2));
   EXPECT_TRUE(registry().IsAppTimeLimitReached(kApp1));
   EXPECT_TRUE(registry().IsAppAvailable(kApp2));
-  EXPECT_EQ(registry().GetActiveTime(kApp1), active_time);
+  EXPECT_EQ(registry().GetActiveTime(kApp1), active_timedelta);
 
   // Now let's test that the app activity are stored appropriately.
   const base::Value::List& list =

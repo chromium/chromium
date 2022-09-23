@@ -1351,8 +1351,8 @@ void InputMethodManagerImpl::OverrideKeyboardKeyset(ImeKeyset keyset) {
   auto id_end = overridden_ref.find("&", id_start + 1);
   std::string id_string = overridden_ref.substr(id_start, id_end - id_start);
   // Remove existing keyset string.
-  for (const ImeKeyset keyset : kKeysets) {
-    std::string keyset_string = KeysetToString(keyset);
+  for (const ImeKeyset keyset_to_find : kKeysets) {
+    std::string keyset_string = KeysetToString(keyset_to_find);
     auto keyset_start = id_string.find("." + keyset_string);
     if (keyset_start != std::string::npos) {
       id_string.replace(keyset_start, keyset_string.length() + 1, "");

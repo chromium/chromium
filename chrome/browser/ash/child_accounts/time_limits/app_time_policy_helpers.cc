@@ -232,19 +232,20 @@ std::map<AppId, AppLimit> AppLimitsFromDict(const base::Value::Dict& dict) {
     return app_limits;
   }
 
-  for (const base::Value& dict : *limits_array) {
-    if (!dict.is_dict()) {
+  for (const base::Value& app_limits_dict : *limits_array) {
+    if (!app_limits_dict.is_dict()) {
       DLOG(ERROR) << "Invalid app limits entry. ";
       continue;
     }
 
-    absl::optional<AppId> app_id = AppIdFromAppInfoDict(dict);
+    absl::optional<AppId> app_id = AppIdFromAppInfoDict(app_limits_dict);
     if (!app_id) {
       DLOG(ERROR) << "Invalid app id.";
       continue;
     }
 
-    absl::optional<AppLimit> app_limit = AppLimitFromDict(dict.GetDict());
+    absl::optional<AppLimit> app_limit =
+        AppLimitFromDict(app_limits_dict.GetDict());
     if (!app_limit) {
       DLOG(ERROR) << "Invalid app limit.";
       continue;

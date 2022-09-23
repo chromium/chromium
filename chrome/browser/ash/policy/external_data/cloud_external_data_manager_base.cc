@@ -217,8 +217,8 @@ void CloudExternalDataManagerBase::Backend::OnMetadataUpdated(
   for (FetchCallbackMap::iterator it = pending_downloads_.begin();
        it != pending_downloads_.end();) {
     const MetadataKey key = it->first;
-    Metadata::const_iterator metadata = metadata_.find(key);
-    if (metadata == metadata_.end()) {
+    Metadata::const_iterator metadata_iter = metadata_.find(key);
+    if (metadata_iter == metadata_.end()) {
       // |policy| no longer references external data.
       if (updater_) {
         // Cancel the external data download.
@@ -230,7 +230,7 @@ void CloudExternalDataManagerBase::Backend::OnMetadataUpdated(
       continue;
     }
 
-    if (updater_ && metadata->second != old_metadata[key]) {
+    if (updater_ && metadata_iter->second != old_metadata[key]) {
       // |policy| still references external data but the reference has changed.
       // Cancel the external data download and start a new one.
       updater_->CancelExternalDataFetch(key.ToString());

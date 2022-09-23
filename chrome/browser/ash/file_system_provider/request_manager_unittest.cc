@@ -420,9 +420,7 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndFulFill) {
   // Confirm, that the request is removed. Basically, fulfilling again for the
   // same request, should fail.
   {
-    const std::vector<int> active_request_ids =
-        request_manager_->GetActiveRequestIds();
-    EXPECT_EQ(0u, active_request_ids.size());
+    EXPECT_EQ(0u, request_manager_->GetActiveRequestIds().size());
 
     const base::File::Error retry = request_manager_->FulfillRequest(
         request_id, std::make_unique<RequestValue>(), has_more);

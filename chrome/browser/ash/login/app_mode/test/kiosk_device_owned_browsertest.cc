@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
     waiter.Run();
 
     // One browser should be created.
-    Browser* settings_browser = app_session->GetSettingsBrowserForTesting();
+    settings_browser = app_session->GetSettingsBrowserForTesting();
     ASSERT_TRUE(settings_browser);
     EXPECT_FALSE(params.browser == settings_browser);
   }

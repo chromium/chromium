@@ -207,23 +207,26 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
                            const std::string& guid,
                            bool vm_success = true,
                            bool container_success = true) {
-    absl::optional<vm_tools::concierge::AttachUsbDeviceResponse> response;
-    response.emplace();
-    response->set_success(vm_success);
-    response->set_guest_port(0);
-    fake_concierge_client_->set_attach_usb_device_response(response);
+    absl::optional<vm_tools::concierge::AttachUsbDeviceResponse>
+        attach_device_response;
+    attach_device_response.emplace();
+    attach_device_response->set_success(vm_success);
+    attach_device_response->set_guest_port(0);
+    fake_concierge_client_->set_attach_usb_device_response(
+        std::move(attach_device_response));
 
     if (vm_success && !guest_id.container_name.empty()) {
-      vm_tools::cicerone::AttachUsbToContainerResponse response;
-      response.set_status(
+      vm_tools::cicerone::AttachUsbToContainerResponse
+          attach_container_response;
+      attach_container_response.set_status(
           container_success
               ? vm_tools::cicerone::AttachUsbToContainerResponse_Status_OK
               : vm_tools::cicerone::AttachUsbToContainerResponse_Status_FAILED);
       if (!container_success) {
-        response.set_failure_reason("Expected failure");
+        attach_container_response.set_failure_reason("Expected failure");
       }
       fake_cicerone_client_->set_attach_usb_to_container_response(
-          std::move(response));
+          std::move(attach_container_response));
 
       EXPECT_CALL(*this, OnAttach(container_success));
     } else {

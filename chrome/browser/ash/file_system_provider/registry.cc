@@ -141,14 +141,14 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
   std::unique_ptr<RestoredFileSystems> restored_file_systems(
       new RestoredFileSystems);
 
-  for (const auto it : *file_systems_per_extension) {
-    if (!it.second.is_dict()) {
+  for (const auto file_system_it : *file_systems_per_extension) {
+    if (!file_system_it.second.is_dict()) {
       LOG(ERROR)
           << "Malformed provided file system information in preferences.";
       continue;
     }
 
-    const base::Value::Dict& file_system = it.second.GetDict();
+    const base::Value::Dict& file_system = file_system_it.second.GetDict();
 
     const std::string* file_system_id =
         file_system.FindString(kPrefKeyFileSystemId);
@@ -186,13 +186,13 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
     // Restore watchers. It's optional, since this field is new.
     const base::Value::Dict* watchers = file_system.FindDict(kPrefKeyWatchers);
     if (watchers) {
-      for (const auto it : *watchers) {
-        if (!it.second.is_dict()) {
+      for (const auto watcher_it : *watchers) {
+        if (!watcher_it.second.is_dict()) {
           LOG(ERROR) << "Malformed watcher information in preferences.";
           continue;
         }
 
-        const base::Value::Dict& watcher = it.second.GetDict();
+        const base::Value::Dict& watcher = watcher_it.second.GetDict();
 
         const std::string* entry_path =
             watcher.FindString(kPrefKeyWatcherEntryPath);
@@ -204,7 +204,7 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
             watcher.FindList(kPrefKeyWatcherPersistentOrigins);
 
         if (!entry_path || !recursive || !last_tag || !persistent_origins ||
-            it.first != *entry_path || entry_path->empty() ||
+            watcher_it.first != *entry_path || entry_path->empty() ||
             (!options.supports_notify_tag &&
              (!last_tag->empty() || persistent_origins->size()))) {
           LOG(ERROR) << "Malformed watcher information in preferences.";

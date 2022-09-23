@@ -457,13 +457,15 @@ void CertStoreServiceTest::SetUpCerts(
   // Remember current size of |installed_certs_| before new certs.
   size_t initial_size = installed_certs_.size();
 
-  // Read certs from files.
-  base::RunLoop loop;
-  NssServiceFactory::GetForContext(profile())
-      ->UnsafelyGetNSSCertDatabaseForTesting(base::BindOnce(
-          &CertStoreServiceTest::SetUpTestClientCerts, base::Unretained(this),
-          certs_to_setup, loop.QuitClosure()));
-  loop.Run();
+  {
+    // Read certs from files.
+    base::RunLoop loop;
+    NssServiceFactory::GetForContext(profile())
+        ->UnsafelyGetNSSCertDatabaseForTesting(base::BindOnce(
+            &CertStoreServiceTest::SetUpTestClientCerts, base::Unretained(this),
+            certs_to_setup, loop.QuitClosure()));
+    loop.Run();
+  }
 
   // Verify |certs_to_setup.size()| new certs have been installed.
   ASSERT_EQ(installed_certs_.size(), certs_to_setup.size() + initial_size);

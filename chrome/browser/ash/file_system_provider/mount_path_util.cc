@@ -118,13 +118,11 @@ bool FileSystemURLParser::Parse() {
   }
 
   // Find the service that handles the provider URL mount point.
-  const std::vector<Profile*>& profiles =
-      g_browser_process->profile_manager()->GetLoadedProfiles();
+  for (Profile* profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    Profile* original_profile = profile->GetOriginalProfile();
 
-  for (size_t i = 0; i < profiles.size(); ++i) {
-    Profile* original_profile = profiles[i]->GetOriginalProfile();
-
-    if (original_profile != profiles[i] ||
+    if (original_profile != profile ||
         !ProfileHelper::IsRegularProfile(original_profile)) {
       continue;
     }

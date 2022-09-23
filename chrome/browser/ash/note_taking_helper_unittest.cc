@@ -1058,7 +1058,6 @@ TEST_F(NoteTakingHelperTest, AddProfileWithPlayStoreEnabled) {
   // should be immediately regarded as being enabled and the observer should be
   // notified, since OnArcPlayStoreEnabledChanged() apparently isn't called in
   // this case: http://crbug.com/700554
-  const char kSecondProfileName[] = "second-profile";
   auto prefs = std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
   RegisterUserProfilePrefs(prefs->registry());
   prefs->SetBoolean(arc::prefs::kArcEnabled, true);

@@ -360,32 +360,33 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
           policy.ephemeral_users_enabled().has_ephemeral_users_enabled() &&
           policy.ephemeral_users_enabled().ephemeral_users_enabled());
 
-  base::Value::List list;
-  const em::UserAllowlistProto& allowlist_proto = policy.user_allowlist();
-  if (policy.user_allowlist().user_allowlist_size() > 0) {
-    const RepeatedPtrField<std::string>& allowlist =
-        allowlist_proto.user_allowlist();
-    for (const std::string& value : allowlist) {
-      list.Append(value);
+  {
+    base::Value::List list;
+    const em::UserAllowlistProto& allowlist_proto = policy.user_allowlist();
+    if (policy.user_allowlist().user_allowlist_size() > 0) {
+      const RepeatedPtrField<std::string>& allowlist =
+          allowlist_proto.user_allowlist();
+      for (const std::string& value : allowlist) {
+        list.Append(value);
+      }
+    } else {
+      const em::UserWhitelistProto& whitelist_proto =   // nocheck
+          policy.user_whitelist();                      // nocheck
+      const RepeatedPtrField<std::string>& whitelist =  // nocheck
+          whitelist_proto.user_whitelist();             // nocheck
+      for (const std::string& value : whitelist) {      // nocheck
+        list.Append(value);
+      }
     }
-  } else {
-    const em::UserWhitelistProto& whitelist_proto =   // nocheck
-        policy.user_whitelist();                      // nocheck
-    const RepeatedPtrField<std::string>& whitelist =  // nocheck
-        whitelist_proto.user_whitelist();             // nocheck
-    for (const std::string& value : whitelist) {      // nocheck
-      list.Append(value);
-    }
+    new_values_cache->SetValue(kAccountsPrefUsers,
+                               base::Value(std::move(list)));
   }
-
-  new_values_cache->SetValue(kAccountsPrefUsers, base::Value(std::move(list)));
 
   base::Value::List account_list;
   const em::DeviceLocalAccountsProto device_local_accounts_proto =
       policy.device_local_accounts();
   const RepeatedPtrField<em::DeviceLocalAccountInfoProto>& accounts =
       device_local_accounts_proto.account();
-  RepeatedPtrField<em::DeviceLocalAccountInfoProto>::const_iterator entry;
   for (const em::DeviceLocalAccountInfoProto& entry : accounts) {
     base::Value entry_dict(base::Value::Type::DICTIONARY);
     if (entry.has_type()) {

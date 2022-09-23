@@ -45,14 +45,13 @@ void EnterpriseActivityStorage::FilterActivityPeriodsByUsers(
 const std::map<std::string, ActivityStorage::Activities>
 EnterpriseActivityStorage::GetRedactedActivityPeriods(
     const std::vector<std::string>& reporting_users) const {
-  const auto& activity_periods = GetActivityPeriods();
   std::set<std::string> reporting_users_set(reporting_users.begin(),
                                             reporting_users.end());
 
   std::map<std::string, ActivityStorage::Activities> filtered_activity_periods;
   std::map<int64_t, enterprise_management::TimePeriod> unreported_activities;
   const std::string empty;
-  for (const auto& activity_pair : activity_periods) {
+  for (const auto& activity_pair : GetActivityPeriods()) {
     const std::string& user_email = activity_pair.first;
     const Activities& activity_periods = activity_pair.second;
 
