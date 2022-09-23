@@ -621,12 +621,10 @@ class BuildConfigGenerator extends DefaultTask {
             // The androidx and com_android_support libraries have duplicate resources such as
             // 'primary_text_default_material_dark'.
             sb.append('  resource_overlay = true\n')
-                }
+        }
 
         switch (dependencyId) {
             case 'androidx_annotation_annotation':
-                sb.append('  # https://crbug.com/989505\n')
-                sb.append('  jar_excluded_patterns = ["META-INF/proguard/*"]\n')
                 break
             case 'androidx_core_core':
                 sb.with {
