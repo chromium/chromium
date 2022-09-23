@@ -45,7 +45,9 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="HangWatcher.IsThreadHung.{ProcessAndThreadType}"
-    enum="BooleanHung" expires_after="2022-10-23">
+    enum="BooleanHung" expires_after="never">
+<!-- expires-never: Staple top-level metric for chrome-catan@. -->
+
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
