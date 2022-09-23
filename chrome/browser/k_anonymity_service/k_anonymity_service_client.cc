@@ -14,6 +14,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 
+namespace {
+constexpr size_t kMaxQueueSize = 100;
+}  // namespace
+
 KAnonymityServiceClient::PendingJoinRequest::PendingJoinRequest(
     std::string set_id,
     base::OnceCallback<void(bool)> callback)
@@ -44,6 +48,15 @@ KAnonymityServiceClient::~KAnonymityServiceClient() = default;
 void KAnonymityServiceClient::JoinSet(std::string id,
                                       base::OnceCallback<void(bool)> callback) {
   RecordJoinSetAction(KAnonymityServiceJoinSetAction::kJoinSet);
+
+  // Fail immediately if the queue is full.
+  if (join_queue_.size() >= kMaxQueueSize) {
+    RecordJoinSetAction(KAnonymityServiceJoinSetAction::kJoinSetQueueFull);
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
   // Add to the queue. If this is the only request in the queue, start it.
   join_queue_.push_back(
       std::make_unique<PendingJoinRequest>(std::move(id), std::move(callback)));

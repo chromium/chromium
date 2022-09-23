@@ -53331,6 +53331,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="FetchJoinSetOHTTPKeyFailed"/>
   <int value="4" label="SendJoinSetRequest"/>
   <int value="5" label="JoinSetRequestFailed"/>
+  <int value="6" label="JoinSetQueueFull"/>
 </enum>
 
 <enum name="KAnonymityServiceQuerySetAction">
@@ -53340,6 +53341,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="FetchQuerySetOHTTPKeyFailed"/>
   <int value="4" label="SendQuerySetRequest"/>
   <int value="5" label="QuerySetRequestFailed"/>
+  <int value="6" label="QuerySetQueueFull"/>
 </enum>
 
 <enum name="KAnonymityTrustTokenGetterAction">

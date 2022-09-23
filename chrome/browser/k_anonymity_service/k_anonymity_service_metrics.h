@@ -16,7 +16,8 @@ enum class KAnonymityServiceJoinSetAction {
   kFetchJoinSetOHTTPKeyFailed = 3,
   kSendJoinSetRequest = 4,
   kJoinSetRequestFailed = 5,
-  kMaxValue = 5,
+  kJoinSetQueueFull = 6,
+  kMaxValue = 6,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -28,7 +29,8 @@ enum class KAnonymityServiceQuerySetAction {
   kFetchQuerySetOHTTPKeyFailed = 3,
   kSendQuerySetRequest = 4,
   kQuerySetRequestFailed = 5,
-  kMaxValue = 5,
+  kQuerySetQueueFull = 6,
+  kMaxValue = 6,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
