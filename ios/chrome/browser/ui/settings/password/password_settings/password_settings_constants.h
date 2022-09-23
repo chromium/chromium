@@ -20,4 +20,7 @@ extern NSString* const kPasswordSettingsManagedSavePasswordSwitchTableViewId;
 // Accessibility ID for the UITableView in Password Settings.
 extern NSString* const kPasswordsSettingsTableViewId;
 
+// Accessibility ID for the row showing status of Passwords in Other Apps.
+extern NSString* const kPasswordSettingsPasswordsInOtherAppsRowId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_CONSTANTS_H_

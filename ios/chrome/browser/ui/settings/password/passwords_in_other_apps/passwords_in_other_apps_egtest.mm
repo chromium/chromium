@@ -4,9 +4,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/password_manager/core/common/password_manager_features.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -52,7 +55,7 @@ id<GREYMatcher> PasswordsInOtherAppsImageMatcher() {
 
 // Matcher for the cell item in Password Settings page.
 id<GREYMatcher> PasswordsInOtherAppsListItemMatcher() {
-  return grey_accessibilityID(kSettingsPasswordsInOtherAppsCellId);
+  return grey_accessibilityID(kPasswordSettingsPasswordsInOtherAppsRowId);
 }
 
 // Matcher for turn off instructions.
@@ -73,6 +76,10 @@ void OpensPasswordsInOtherApps() {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsMenuPasswordsButton()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSettingsToolbarSettingsButtonId)]
+      performAction:grey_tap()];
+
   [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsListItemMatcher()]
       performAction:grey_tap()];
 }
@@ -101,6 +108,15 @@ void OpensPasswordsInOtherApps() {
   [super tearDown];
   [PasswordsInOtherAppsAppInterface resetManager];
   _passwordAutoFillStatusSwizzler.reset();
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  config.features_enabled.push_back(
+      password_manager::features::kIOSPasswordUISplit);
+
+  return config;
 }
 
 #pragma mark - helper functions
@@ -251,14 +267,18 @@ void OpensPasswordsInOtherApps() {
   [self checkThatCommonElementsAreVisible];
   [self checkThatTurnOffInstructionsAreNotVisible];
   [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"UIActivityIndicatorView")]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      selectElementWithMatcher:grey_allOf(grey_kindOfClassName(
+                                              @"UIActivityIndicatorView"),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 
   // Simulate status retrieved.
   [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:NO];
   [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"UIActivityIndicatorView")]
-      assertWithMatcher:grey_notVisible()];
+      selectElementWithMatcher:grey_allOf(grey_kindOfClassName(
+                                              @"UIActivityIndicatorView"),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests Passwords In Other Apps dismisses itself when top right "done" button
@@ -267,7 +287,9 @@ void OpensPasswordsInOtherApps() {
   OpensPasswordsInOtherApps();
   [self checkThatCommonElementsAreVisible];
   // Taps done button and check settings dismissed.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(SettingsDoneButton(),
+                                          grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsViewMatcher()]
       assertWithMatcher:grey_notVisible()];

@@ -20,6 +20,10 @@
 // Indicates whether or not the "Offer to Save Passwords" feature is enabled.
 - (void)setSavePasswordsEnabled:(BOOL)enabled;
 
+// Indicates whether or not Chromium has been enabled as a credential provider
+// at the iOS level.
+- (void)setPasswordsInOtherAppsEnabled:(BOOL)enabled;
+
 // Enables/disables the "Export Passwords..." button based on the current state.
 - (void)updateExportPasswordsButton;
 

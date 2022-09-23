@@ -23,6 +23,10 @@
 // requested info is dismissed.
 - (void)showManagedPrefInfoForSourceView:(UIButton*)sourceView;
 
+// Method invoked when the user has tapped on the "Passwords in Other Apps"
+// menu item, requesting information about the state and usage of this feature.
+- (void)showPasswordsInOtherAppsScreen;
+
 @end
 
 // ViewController used to present settings and infrequently-used actions

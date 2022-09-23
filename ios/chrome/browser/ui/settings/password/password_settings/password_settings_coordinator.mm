@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/scoped_password_settings_reauth_module_override.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -80,6 +81,7 @@
     ExportActivityViewControllerDelegate,
     PasswordExportHandler,
     PasswordSettingsPresentationDelegate,
+    PasswordsInOtherAppsCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
     SettingsNavigationControllerDelegate> {
   // Service which gives us a view on users' saved passwords.
@@ -108,6 +110,10 @@
 
 // Module handling reauthentication before accessing sensitive data.
 @property(nonatomic, strong) ReauthenticationModule* reauthModule;
+
+// Coordinator for the "Passwords in Other Apps" screen.
+@property(nonatomic, strong)
+    PasswordsInOtherAppsCoordinator* passwordsInOtherAppsCoordinator;
 
 @end
 
@@ -171,9 +177,15 @@
     [self.baseViewController dismissViewControllerAnimated:NO completion:nil];
   }
 
+  [self.passwordsInOtherAppsCoordinator stop];
+  self.passwordsInOtherAppsCoordinator.delegate = nil;
+  self.passwordsInOtherAppsCoordinator = nil;
+
   self.passwordSettingsViewController = nil;
   self.settingsNavigationController = nil;
   _preparingPasswordsAlert = nil;
+
+  [self.mediator disconnect];
 }
 
 #pragma mark - PasswordSettingsPresentationDelegate
@@ -238,6 +250,16 @@
       presentViewController:bubbleViewController
                    animated:YES
                  completion:nil];
+}
+
+- (void)showPasswordsInOtherAppsScreen {
+  DCHECK(!self.passwordsInOtherAppsCoordinator);
+  self.passwordsInOtherAppsCoordinator =
+      [[PasswordsInOtherAppsCoordinator alloc]
+          initWithBaseNavigationController:self.settingsNavigationController
+                                   browser:self.browser];
+  self.passwordsInOtherAppsCoordinator.delegate = self;
+  [self.passwordsInOtherAppsCoordinator start];
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate
@@ -355,6 +377,16 @@
 
 - (void)resetExport {
   [self.mediator userDidCompleteExportFlow];
+}
+
+#pragma mark - PasswordsInOtherAppsCoordinatorDelegate
+
+- (void)passwordsInOtherAppsCoordinatorDidRemove:
+    (PasswordsInOtherAppsCoordinator*)coordinator {
+  DCHECK_EQ(self.passwordsInOtherAppsCoordinator, coordinator);
+  [self.passwordsInOtherAppsCoordinator stop];
+  self.passwordsInOtherAppsCoordinator.delegate = nil;
+  self.passwordsInOtherAppsCoordinator = nil;
 }
 
 #pragma mark - SettingsNavigationControllerDelegate

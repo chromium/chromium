@@ -9,6 +9,7 @@
 #import "base/notreached.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -31,6 +33,7 @@ namespace {
 // Sections of the password settings UI.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSavePasswordsSwitch = kSectionIdentifierEnumZero,
+  SectionIdentifierPasswordsInOtherApps,
   SectionIdentifierExportPasswordsButton,
 };
 
@@ -38,6 +41,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSavePasswordsSwitch = kItemTypeEnumZero,
   ItemTypeManagedSavePasswords,
+  ItemTypePasswordsInOtherApps,
   ItemTypeExportPasswordsButton,
 };
 
@@ -49,6 +53,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Whether or not the model has been loaded.
   BOOL _isModelLoaded;
+
+  // Whether or not Chromium has been enabled as a credential provider at the
+  // iOS level. This may not be known at load time; the detail text showing on
+  // or off status will be omitted until this is populated.
+  absl::optional<bool> _passwordsInOtherAppsEnabled;
 }
 
 // State
@@ -72,12 +81,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, readonly)
     TableViewInfoButtonItem* managedSavePasswordsItem;
 
+// The item showing the current status of Passwords in Other Apps (i.e.,
+// credential provider).
+@property(nonatomic, readonly)
+    TableViewDetailIconItem* passwordsInOtherAppsItem;
+
 @end
 
 @implementation PasswordSettingsViewController
 
 @synthesize savePasswordsItem = _savePasswordsItem;
 @synthesize managedSavePasswordsItem = _managedSavePasswordsItem;
+@synthesize passwordsInOtherAppsItem = _passwordsInOtherAppsItem;
 
 - (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
@@ -113,8 +128,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewModel* model = self.tableViewModel;
 
+  _isModelLoaded = YES;
+
   [model addSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
   [self addSavePasswordsSwitchOrManagedInfo];
+
+  [model addSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
+  [model addItem:[self passwordsInOtherAppsItem]
+      toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
 
   // Export passwords button.
   [model addSectionWithIdentifier:SectionIdentifierExportPasswordsButton];
@@ -122,8 +143,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self updateExportPasswordsButton];
   [model addItem:_exportPasswordsItem
       toSectionWithIdentifier:SectionIdentifierExportPasswordsButton];
-
-  _isModelLoaded = YES;
 }
 
 #pragma mark - UITableViewDataSource
@@ -161,6 +180,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
+    case ItemTypePasswordsInOtherApps: {
+      [self.presentationDelegate showPasswordsInOtherAppsScreen];
+      break;
+    }
     case ItemTypeExportPasswordsButton: {
       if (self.canExportPasswords) {
         [self.presentationDelegate startExportFlow];
@@ -223,6 +246,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _managedSavePasswordsItem;
 }
 
+- (TableViewDetailIconItem*)passwordsInOtherAppsItem {
+  if (_passwordsInOtherAppsItem) {
+    return _passwordsInOtherAppsItem;
+  }
+
+  _passwordsInOtherAppsItem = [[TableViewDetailIconItem alloc]
+      initWithType:ItemTypePasswordsInOtherApps];
+  _passwordsInOtherAppsItem.text =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
+  _passwordsInOtherAppsItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  _passwordsInOtherAppsItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  _passwordsInOtherAppsItem.accessibilityIdentifier =
+      kPasswordSettingsPasswordsInOtherAppsRowId;
+  [self updatePasswordsInOtherAppsItem];
+  return _passwordsInOtherAppsItem;
+}
+
 // Creates the "Export Passwords..." button. Coloring and enabled/disabled state
 // are handled by `updateExportPasswordsButton`, which should be called as soon
 // as the mediator has provided the necessary state.
@@ -279,6 +320,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   } else {
     [self updateSavePasswordsSwitch];
   }
+}
+
+- (void)setPasswordsInOtherAppsEnabled:(BOOL)enabled {
+  if (_passwordsInOtherAppsEnabled.has_value() &&
+      _passwordsInOtherAppsEnabled.value() == enabled) {
+    return;
+  }
+
+  _passwordsInOtherAppsEnabled = enabled;
+
+  if (!_isModelLoaded) {
+    return;
+  }
+
+  [self updatePasswordsInOtherAppsItem];
 }
 
 - (void)updateExportPasswordsButton {
@@ -338,6 +394,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)updateSavePasswordsSwitch {
   self.savePasswordsItem.on = self.isSavePasswordsEnabled;
   [self reconfigureCellsForItems:@[ self.savePasswordsItem ]];
+}
+
+// Updates the appearance of the Passwords In Other Apps item to reflect the
+// current state of `_passwordsInOtherAppsEnabled`.
+- (void)updatePasswordsInOtherAppsItem {
+  if (_passwordsInOtherAppsEnabled.has_value()) {
+    self.passwordsInOtherAppsItem.detailText =
+        _passwordsInOtherAppsEnabled.value()
+            ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+            : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+    [self reconfigureCellsForItems:@[ self.passwordsInOtherAppsItem ]];
+  }
 }
 
 @end

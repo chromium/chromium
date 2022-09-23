@@ -45,6 +45,9 @@
 // Indicates that the user canceled the export flow while it was processing.
 - (void)userDidCancelExportFlow;
 
+// Detaches observers.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_MEDIATOR_H_

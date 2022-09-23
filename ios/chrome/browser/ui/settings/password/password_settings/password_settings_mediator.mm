@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_exporter.h"
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/browser/ui/settings/utils/observable_boolean.h"
+#import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 
@@ -22,6 +23,7 @@
 using password_manager::prefs::kCredentialsEnableService;
 
 @interface PasswordSettingsMediator () <BooleanObserver,
+                                        PasswordAutoFillStatusObserver,
                                         PasswordExporterDelegate,
                                         SavedPasswordsPresenterObserver> {
   // A helper object for passing data about saved passwords from a finished
@@ -38,6 +40,10 @@ using password_manager::prefs::kCredentialsEnableService;
   // The observable boolean that binds to the password manager setting state.
   // Saved passwords are only on if the password manager is enabled.
   PrefBackedBoolean* _passwordManagerEnabled;
+
+  // Provides status of Chrome as iOS AutoFill credential provider (i.e.,
+  // whether or not Chrome passwords can currently be used in other apps).
+  PasswordAutoFillStatusManager* _passwordAutoFillStatusManager;
 }
 
 // Helper object which maintains state about the "Export Passwords..." flow, and
@@ -80,6 +86,9 @@ using password_manager::prefs::kCredentialsEnableService;
         initWithPrefService:_prefService
                    prefName:kCredentialsEnableService];
     _passwordManagerEnabled.observer = self;
+    _passwordAutoFillStatusManager =
+        [PasswordAutoFillStatusManager sharedManager];
+    [_passwordAutoFillStatusManager addObserver:self];
   }
   return self;
 }
@@ -99,6 +108,8 @@ using password_manager::prefs::kCredentialsEnableService;
   // push that to the consumer.
   [self.consumer setManagedByPolicy:_prefService->IsManagedPreference(
                                         kCredentialsEnableService)];
+
+  [self passwordAutoFillStatusDidChange];
 }
 
 - (void)userDidStartExportFlow {
@@ -120,6 +131,13 @@ using password_manager::prefs::kCredentialsEnableService;
 
 - (void)userDidCancelExportFlow {
   [self.passwordExporter cancelExport];
+}
+
+- (void)disconnect {
+  DCHECK(_savedPasswordsPresenter);
+  DCHECK(_passwordsPresenterObserver);
+  _savedPasswordsPresenter->RemoveObserver(_passwordsPresenterObserver.get());
+  [[PasswordAutoFillStatusManager sharedManager] removeObserver:self];
 }
 
 #pragma mark - PasswordExporterDelegate
@@ -170,6 +188,15 @@ using password_manager::prefs::kCredentialsEnableService;
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
   DCHECK(observableBoolean == _passwordManagerEnabled);
   [self.consumer setSavePasswordsEnabled:observableBoolean.value];
+}
+
+#pragma mark - PasswordAutoFillStatusObserver
+
+- (void)passwordAutoFillStatusDidChange {
+  if (_passwordAutoFillStatusManager.ready) {
+    [self.consumer setPasswordsInOtherAppsEnabled:_passwordAutoFillStatusManager
+                                                      .autoFillEnabled];
+  }
 }
 
 #pragma mark - Private

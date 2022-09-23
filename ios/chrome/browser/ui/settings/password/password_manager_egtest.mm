@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -392,12 +394,20 @@ id<GREYMatcher> EditDoneButton() {
 @interface PasswordManagerTestCase : ChromeTestCase
 @end
 
-@implementation PasswordManagerTestCase
+@implementation PasswordManagerTestCase {
+  // A swizzler to observe fake auto-fill status instead of real one.
+  std::unique_ptr<EarlGreyScopedBlockSwizzler> _passwordAutoFillStatusSwizzler;
+}
 
 - (void)setUp {
   [super setUp];
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Cannot setup histogram tester.");
+  _passwordAutoFillStatusSwizzler =
+      std::make_unique<EarlGreyScopedBlockSwizzler>(
+          @"PasswordAutoFillStatusManager", @"sharedManager",
+          [PasswordsInOtherAppsAppInterface
+              swizzlePasswordAutoFillStatusManagerWithFake]);
 }
 
 - (void)tearDown {
@@ -410,6 +420,9 @@ id<GREYMatcher> EditDoneButton() {
 
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
+
+  [PasswordsInOtherAppsAppInterface resetManager];
+  _passwordAutoFillStatusSwizzler.reset();
 
   [super tearDown];
 }
@@ -2256,6 +2269,33 @@ id<GREYMatcher> EditDoneButton() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kPasswordsSettingsTableViewId)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the detail text in this row reflects the status of the system
+// setting.
+- (void)testPasswordsInOtherAppsItem {
+  OpenPasswordManager();
+  OpenSettingsSubmenu();
+
+  id<GREYMatcher> onMatcher = grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(IDS_IOS_SETTING_ON)),
+      grey_sufficientlyVisible(), nil);
+
+  id<GREYMatcher> offMatcher = grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(IDS_IOS_SETTING_OFF)),
+      grey_sufficientlyVisible(), nil);
+
+  // No detail text should appear until the AutoFill status has been populated.
+  [[EarlGrey selectElementWithMatcher:onMatcher] assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:offMatcher] assertWithMatcher:grey_nil()];
+
+  [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:NO];
+  [[EarlGrey selectElementWithMatcher:offMatcher]
+      assertWithMatcher:grey_notNil()];
+
+  [PasswordsInOtherAppsAppInterface setAutoFillStatus:YES];
+  [[EarlGrey selectElementWithMatcher:onMatcher]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end
