@@ -347,9 +347,9 @@ TEST_F(CronetEnabledMetricsTest, SessionWithoutDelegate) {
             dispatch_semaphore_signal(semaphore);
           }];
     __block BOOL block_used = NO;
-    [Cronet setRequestFilterBlock:^(NSURLRequest* request) {
+    [Cronet setRequestFilterBlock:^(NSURLRequest* nsUrlRequest) {
       block_used = YES;
-      EXPECT_EQ(request.URL, url);
+      EXPECT_EQ(nsUrlRequest.URL, url);
       return YES;
     }];
 
