@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_page_handler.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_page_handler.h"
@@ -109,6 +110,8 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       resource);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
+  content::URLDataSource::Add(profile,
+                              std::make_unique<SanitizedImageSource>(profile));
 }
 
 ReadingListUI::~ReadingListUI() = default;
