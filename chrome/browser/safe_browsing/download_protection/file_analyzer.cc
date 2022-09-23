@@ -374,8 +374,12 @@ void FileAnalyzer::OnDocumentAnalysisFinished(
 void FileAnalyzer::StartExtractSevenZipFeatures() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug/1355567): Implement SandboxedSevenZipAnalyzer and call it here.
-  NOTREACHED();
+  seven_zip_analyzer_ = new SandboxedSevenZipAnalyzer(
+      tmp_path_,
+      base::BindOnce(&FileAnalyzer::OnSevenZipAnalysisFinished,
+                     weakptr_factory_.GetWeakPtr()),
+      LaunchFileUtilService());
+  seven_zip_analyzer_->Start();
 }
 
 void FileAnalyzer::OnSevenZipAnalysisFinished(

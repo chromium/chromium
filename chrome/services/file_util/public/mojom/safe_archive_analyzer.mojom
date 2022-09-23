@@ -30,6 +30,19 @@ interface SafeArchiveAnalyzer {
   AnalyzeRarFile(mojo_base.mojom.ReadOnlyFile rar_file,
                  mojo_base.mojom.File temporary_file)
       => (SafeArchiveAnalyzerResults results);
+
+  // Build flag FULL_SAFE_BROWSING: Analyze the |seven_zip_file| for malicious
+  // download protection. Uses |temporary_file| and |temporary_file2| to extract
+  // files from the |seven_zip_file| archive. This needs two temporary files due
+  // to the internal structure of 7z archives. Archives are groups of "folders"
+  // (still a group of files, but not a directory in the extracted contents)
+  // which share decompressor state. For performance, each folder is extracted
+  // in its entirety (using the first temp file), and then files are extracted
+  // from the decompressed folders (using the second).
+  AnalyzeSevenZipFile(mojo_base.mojom.ReadOnlyFile seven_zip_file,
+                      mojo_base.mojom.File temporary_file,
+                      mojo_base.mojom.File temporary_file2)
+      => (SafeArchiveAnalyzerResults results);
 };
 
 [Native]

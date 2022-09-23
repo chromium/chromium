@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
+#include "chrome/services/file_util/public/cpp/sandboxed_seven_zip_analyzer.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
@@ -136,6 +137,8 @@ class FileAnalyzer {
   scoped_refptr<SandboxedDocumentAnalyzer> document_analyzer_;
   base::TimeTicks document_analysis_start_time_;
 #endif
+
+  scoped_refptr<SandboxedSevenZipAnalyzer> seven_zip_analyzer_;
 
   base::WeakPtrFactory<FileAnalyzer> weakptr_factory_{this};
 };

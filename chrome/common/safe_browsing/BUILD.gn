@@ -181,6 +181,8 @@ source_set("safe_browsing") {
       "protobuf_message_log_macros.h",
       "protobuf_message_read_macros.h",
       "protobuf_message_write_macros.h",
+      "seven_zip_analyzer.cc",
+      "seven_zip_analyzer.h",
       "zip_analyzer.cc",
       "zip_analyzer.h",
     ]
@@ -191,6 +193,7 @@ source_set("safe_browsing") {
       ":download_type_util",
       ":rar_analyzer",
       "//components/safe_browsing/core/common",
+      "//third_party/lzma_sdk/google:seven_zip_reader",
     ]
 
     if (is_linux) {
@@ -208,9 +211,7 @@ source_set("safe_browsing") {
     ]
 
     if (is_linux || is_win) {
-      public_deps += [
-        ":document_analyzer_results",
-      ]
+      public_deps += [ ":document_analyzer_results" ]
     }
   }
 }
