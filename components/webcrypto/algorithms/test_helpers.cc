@@ -154,7 +154,7 @@ base::Value::List ReadJsonTestFileAsList(const char* test_file_name) {
   CHECK(result.has_value());
   CHECK(result->is_list());
 
-  return std::move(result->GetList());
+  return std::move(*result).TakeList();
 }
 
 std::vector<uint8_t> GetBytesFromHexString(const base::Value* dict,
@@ -337,7 +337,7 @@ absl::optional<base::Value::Dict> GetJwkDictionary(
   absl::optional<base::Value> value = base::JSONReader::Read(json_string);
   EXPECT_TRUE(value.has_value());
   EXPECT_TRUE(value.value().is_dict());
-  return absl::make_optional(std::move(value->GetDict()));
+  return absl::make_optional(std::move(*value).TakeDict());
 }
 
 // Verifies the input dictionary contains the expected values. Exact matches are
