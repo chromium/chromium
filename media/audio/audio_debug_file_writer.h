@@ -22,6 +22,8 @@ namespace media {
 
 class AudioBus;
 
+class AudioBusPool;
+
 // Writes audio data to a 16 bit PCM WAVE file used for debugging purposes.
 // Functions are virtual for the purpose of test mocking. This class can be
 // created and used anywhere, but must be destroyed using the
@@ -35,7 +37,7 @@ class MEDIA_EXPORT AudioDebugFileWriter {
   virtual ~AudioDebugFileWriter();
 
   // Write |data| to file.
-  virtual void Write(std::unique_ptr<AudioBus> data);
+  virtual void Write(const AudioBus& data);
 
   using Ptr = std::unique_ptr<AudioDebugFileWriter, base::OnTaskRunnerDeleter>;
 
@@ -47,7 +49,14 @@ class MEDIA_EXPORT AudioDebugFileWriter {
 
  protected:
   // Protected for testing.
-  AudioDebugFileWriter(const AudioParameters& params, base::File file);
+  AudioDebugFileWriter(const AudioParameters& params,
+                       base::File file,
+                       std::unique_ptr<AudioBusPool> audio_bus_pool);
+
+  // Create with a custom AudioBusPool.
+  static Ptr Create(const AudioParameters& params,
+                    base::File file,
+                    std::unique_ptr<AudioBusPool> audio_bus_pool);
 
   const AudioParameters params_;
 
@@ -74,6 +83,15 @@ class MEDIA_EXPORT AudioDebugFileWriter {
   // Intermediate buffer to be written to file. Interleaved 16 bit audio data.
   std::unique_ptr<int16_t[]> interleaved_data_;
   int interleaved_data_size_ = 0;
+
+  // Stores AudioBuses to be reused.
+  const std::unique_ptr<AudioBusPool> audio_bus_pool_;
+
+  // The number of AudioBuses that should be preallocated on creation.
+  static constexpr size_t kPreallocatedAudioBuses = 100;
+
+  // The maximum number of AudioBuses we should cache at once.
+  static constexpr size_t kMaxCachedAudioBuses = 500;
 
   base::WeakPtr<AudioDebugFileWriter> weak_this_;
   base::WeakPtrFactory<AudioDebugFileWriter> weak_factory_{this};
