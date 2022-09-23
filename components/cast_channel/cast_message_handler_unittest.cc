@@ -72,7 +72,7 @@ absl::optional<base::Value::Dict> GetDictionaryFromCastMessage(
       base::JSONReader::Read(message.payload_utf8());
   if (!value || !value->is_dict())
     return absl::nullopt;
-  return std::move(value->GetDict());
+  return std::move(*value).TakeDict();
 }
 
 CastMessageType GetMessageType(const CastMessage& message) {
