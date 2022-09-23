@@ -429,9 +429,13 @@ void DocumentTransitionStyleTracker::CaptureResolved() {
   for (auto& entry : element_data_map_) {
     auto& element_data = entry.value;
     element_data->target_element = nullptr;
-    element_data->cached_border_box_size_in_css_space =
-        element_data->border_box_size_in_css_space;
-    element_data->cached_viewport_matrix = element_data->viewport_matrix;
+
+    // This could be empty if the element was uncontained and was ignored for a
+    // transition.
+    if (!element_data->container_properties.empty()) {
+      element_data->cached_container_properties =
+          element_data->container_properties.back();
+    }
     element_data->cached_visual_overflow_rect_in_layout_space =
         element_data->visual_overflow_rect_in_layout_space;
     element_data->effect_node = nullptr;
@@ -751,17 +755,28 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
 
     WritingMode writing_mode = layout_object->StyleRef().GetWritingMode();
 
-    if (viewport_matrix == element_data->viewport_matrix &&
-        border_box_size_in_css_space ==
-            element_data->border_box_size_in_css_space &&
+    ContainerProperties container_properties(border_box_size_in_css_space,
+                                             viewport_matrix);
+    if (!element_data->container_properties.empty() &&
+        element_data->container_properties.back() == container_properties &&
         visual_overflow_rect_in_layout_space ==
             element_data->visual_overflow_rect_in_layout_space &&
         writing_mode == element_data->container_writing_mode) {
       continue;
     }
 
-    element_data->viewport_matrix = viewport_matrix;
-    element_data->border_box_size_in_css_space = border_box_size_in_css_space;
+    // Only add a new container properties entry if it differs from the last
+    // one.
+    if (element_data->container_properties.empty()) {
+      element_data->container_properties.push_back(container_properties);
+    } else if (element_data->container_properties.back() !=
+               container_properties) {
+      if (state_ == State::kStarted)
+        element_data->container_properties.push_back(container_properties);
+      else
+        element_data->container_properties.back() = container_properties;
+    }
+
     element_data->visual_overflow_rect_in_layout_space =
         visual_overflow_rect_in_layout_space;
     element_data->container_writing_mode = writing_mode;
@@ -1065,6 +1080,13 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
     const auto& document_transition_tag = entry.key.GetString();
     auto& element_data = entry.value;
 
+    // TODO(vmpstr): We will run a style resolution before the first time we get
+    // a chance to update our rendering in RunPostPrePaintSteps. There is no
+    // point in adding any styles here, because those will be wrong. The TODO
+    // here is to skip this step earlier, instead of per each element.
+    if (element_data->container_properties.empty())
+      continue;
+
     const bool tag_is_old_root =
         old_root_data_ &&
         old_root_data_->tags.Contains(document_transition_tag);
@@ -1079,15 +1101,16 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
     if (!tag_is_new_root) {
       // ::page-transition-container styles using computed properties for each
       // element.
-      builder.AddContainerStyles(
-          document_transition_tag, element_data->border_box_size_in_css_space,
-          element_data->viewport_matrix, element_data->container_writing_mode);
+      builder.AddContainerStyles(document_transition_tag,
+                                 element_data->container_properties.back(),
+                                 element_data->container_writing_mode);
 
       // Incoming inset also only makes sense if the tag is a new shared element
       // (not a new root).
       absl::optional<String> incoming_inset = ComputeInsetDifference(
           element_data->visual_overflow_rect_in_layout_space,
-          LayoutRect(LayoutPoint(), element_data->border_box_size_in_css_space),
+          LayoutRect(LayoutPoint(), element_data->container_properties.back()
+                                        .border_box_size_in_css_space),
           device_pixel_ratio);
       if (incoming_inset) {
         builder.AddIncomingObjectViewBox(document_transition_tag,
@@ -1100,8 +1123,8 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
     if (!tag_is_old_root) {
       absl::optional<String> outgoing_inset = ComputeInsetDifference(
           element_data->cached_visual_overflow_rect_in_layout_space,
-          LayoutRect(LayoutPoint(),
-                     element_data->cached_border_box_size_in_css_space),
+          LayoutRect(LayoutPoint(), element_data->cached_container_properties
+                                        .border_box_size_in_css_space),
           device_pixel_ratio);
       if (outgoing_inset) {
         builder.AddOutgoingObjectViewBox(document_transition_tag,
@@ -1122,8 +1145,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
       if (element_data->old_snapshot_id.IsValid() &&
           (element_data->new_snapshot_id.IsValid() || tag_is_new_root)) {
         builder.AddAnimationAndBlending(
-            document_transition_tag, element_data->cached_viewport_matrix,
-            element_data->cached_border_box_size_in_css_space);
+            document_transition_tag, element_data->cached_container_properties);
       } else if (element_data->new_snapshot_id.IsValid() && tag_is_old_root) {
         // TODO(vmpstr): Update the size to be the cached one, here and when
         // constructing outgoing pseudos.
@@ -1134,7 +1156,8 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
         layout_view_size.Scale(
             1 / document_->GetLayoutView()->StyleRef().EffectiveZoom());
         builder.AddAnimationAndBlending(
-            document_transition_tag, TransformationMatrix(), layout_view_size);
+            document_transition_tag,
+            ContainerProperties(layout_view_size, TransformationMatrix()));
       }
     }
   }

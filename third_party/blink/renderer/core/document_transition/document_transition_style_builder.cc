@@ -12,6 +12,15 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+namespace {
+
+const char* kContainerTagName = "html::page-transition-container";
+const char* kImageWrapperTagName = "html::page-transition-image-wrapper";
+const char* kIncomingImageTagName = "html::page-transition-incoming-image";
+const char* kOutgoingImageTagName = "html::page-transition-outgoing-image";
+const char* kKeyframeNamePrefix = "-ua-page-transition-container-anim-";
+
+}  // namespace
 
 void DocumentTransitionStyleBuilder::AddUAStyle(const String& style) {
   builder_.Append(style);
@@ -39,18 +48,15 @@ void DocumentTransitionStyleBuilder::AddRules(const String& selector,
 }
 
 void DocumentTransitionStyleBuilder::AddPlusLighter(const String& tag) {
-  AddRules("html::page-transition-image-wrapper", tag, "isolation: isolate");
-  AddRules("html::page-transition-incoming-image", tag,
-           "mix-blend-mode: plus-lighter");
-  AddRules("html::page-transition-outgoing-image", tag,
-           "mix-blend-mode: plus-lighter");
+  AddRules(kImageWrapperTagName, tag, "isolation: isolate");
+  AddRules(kIncomingImageTagName, tag, "mix-blend-mode: plus-lighter");
+  AddRules(kOutgoingImageTagName, tag, "mix-blend-mode: plus-lighter");
 }
 
 void DocumentTransitionStyleBuilder::AddAnimationAndBlending(
     const String& tag,
-    const TransformationMatrix& source_matrix,
-    const LayoutSize& source_size) {
-  const String& animation_name = AddKeyframes(tag, source_matrix, source_size);
+    const ContainerProperties& source_properties) {
+  const String& animation_name = AddKeyframes(tag, source_properties);
   StringBuilder rule_builder;
   rule_builder.Append("animation-name: ");
   rule_builder.Append(animation_name);
@@ -61,8 +67,7 @@ void DocumentTransitionStyleBuilder::AddAnimationAndBlending(
   rule_builder.Append("animation-delay: 0s;\n");
   rule_builder.Append("animation-iteration-count: 1;\n");
   rule_builder.Append("animation-direction: normal;\n");
-  AddRules("html::page-transition-container", tag,
-           rule_builder.ReleaseString());
+  AddRules(kContainerTagName, tag, rule_builder.ReleaseString());
 
   // Add plus-lighter blending.
   AddPlusLighter(tag);
@@ -70,11 +75,10 @@ void DocumentTransitionStyleBuilder::AddAnimationAndBlending(
 
 String DocumentTransitionStyleBuilder::AddKeyframes(
     const String& tag,
-    const TransformationMatrix& source_matrix,
-    const LayoutSize& source_size) {
+    const ContainerProperties& source_properties) {
   String keyframe_name = [&tag]() {
     StringBuilder builder;
-    builder.Append("-ua-page-transition-container-anim-");
+    builder.Append(kKeyframeNamePrefix);
     builder.Append(tag);
     return builder.ReleaseString();
   }();
@@ -89,24 +93,26 @@ String DocumentTransitionStyleBuilder::AddKeyframes(
           height: %3fpx;
         }
       })CSS",
-      ComputedStyleUtils::ValueForTransformationMatrix(source_matrix, 1, false)
+      ComputedStyleUtils::ValueForTransformationMatrix(
+          source_properties.viewport_matrix, 1, false)
           ->CssText()
           .Utf8()
           .c_str(),
-      source_size.Width().ToFloat(), source_size.Height().ToFloat());
+      source_properties.border_box_size_in_css_space.Width().ToFloat(),
+      source_properties.border_box_size_in_css_space.Height().ToFloat());
   return keyframe_name;
 }
 
 void DocumentTransitionStyleBuilder::AddIncomingObjectViewBox(
     const String& tag,
     const String& value) {
-  AddObjectViewBox("html::page-transition-incoming-image", tag, value);
+  AddObjectViewBox(kIncomingImageTagName, tag, value);
 }
 
 void DocumentTransitionStyleBuilder::AddOutgoingObjectViewBox(
     const String& tag,
     const String& value) {
-  AddObjectViewBox("html::page-transition-outgoing-image", tag, value);
+  AddObjectViewBox(kOutgoingImageTagName, tag, value);
 }
 
 void DocumentTransitionStyleBuilder::AddObjectViewBox(const String& selector,
@@ -119,13 +125,12 @@ void DocumentTransitionStyleBuilder::AddObjectViewBox(const String& selector,
 
 void DocumentTransitionStyleBuilder::AddContainerStyles(const String& tag,
                                                         const String& rules) {
-  AddRules("html::page-transition-container", tag, rules);
+  AddRules(kContainerTagName, tag, rules);
 }
 
 void DocumentTransitionStyleBuilder::AddContainerStyles(
     const String& tag,
-    const LayoutSize& size,
-    const TransformationMatrix& transform,
+    const ContainerProperties& properties,
     WritingMode writing_mode) {
   std::ostringstream writing_mode_stream;
   writing_mode_stream << writing_mode;
@@ -138,8 +143,10 @@ void DocumentTransitionStyleBuilder::AddContainerStyles(
         transform: %s;
         writing-mode: %s;
       )CSS",
-      size.Width().ToFloat(), size.Height().ToFloat(),
-      ComputedStyleUtils::ValueForTransformationMatrix(transform, 1, false)
+      properties.border_box_size_in_css_space.Width().ToFloat(),
+      properties.border_box_size_in_css_space.Height().ToFloat(),
+      ComputedStyleUtils::ValueForTransformationMatrix(
+          properties.viewport_matrix, 1, false)
           ->CssText()
           .Utf8()
           .c_str(),

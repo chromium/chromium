@@ -38,6 +38,26 @@ class PseudoElement;
 class DocumentTransitionStyleTracker
     : public GarbageCollected<DocumentTransitionStyleTracker> {
  public:
+  // Properties that transition on container elements.
+  struct ContainerProperties {
+    ContainerProperties() = default;
+    ContainerProperties(const LayoutSize& size,
+                        const TransformationMatrix& matrix)
+        : border_box_size_in_css_space(size), viewport_matrix(matrix) {}
+
+    bool operator==(const ContainerProperties& other) const {
+      return border_box_size_in_css_space ==
+                 other.border_box_size_in_css_space &&
+             viewport_matrix == other.viewport_matrix;
+    }
+    bool operator!=(const ContainerProperties& other) const {
+      return !(*this == other);
+    }
+
+    LayoutSize border_box_size_in_css_space;
+    TransformationMatrix viewport_matrix;
+  };
+
   explicit DocumentTransitionStyleTracker(Document& document);
   ~DocumentTransitionStyleTracker();
 
@@ -147,12 +167,11 @@ class DocumentTransitionStyleTracker
 
     // Computed info for each element participating in the transition for the
     // |target_element|. This information is mirrored into the UA stylesheet.
-    LayoutSize border_box_size_in_css_space;
-    TransformationMatrix viewport_matrix;
+    // This is stored in a vector to be able to stack animations.
+    Vector<ContainerProperties> container_properties;
 
     // Computed info cached before the DOM switches to the new state.
-    LayoutSize cached_border_box_size_in_css_space;
-    TransformationMatrix cached_viewport_matrix;
+    ContainerProperties cached_container_properties;
 
     // Valid if there is an element in the old DOM generating a snapshot.
     viz::SharedElementResourceId old_snapshot_id;
