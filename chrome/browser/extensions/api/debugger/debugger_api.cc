@@ -167,8 +167,7 @@ bool ExtensionMayAttachToRenderFrameHost(
         // If |rfh| is attached to an inner MimeHandlerViewGuest skip it.
         // This is done to fix crbug.com/1293856 because an extension cannot
         // inspect another extension.
-        WebContents* rfh_web_contents = WebContents::FromRenderFrameHost(rfh);
-        if (MimeHandlerViewGuest::FromWebContents(rfh_web_contents)) {
+        if (MimeHandlerViewGuest::FromRenderFrameHost(rfh)) {
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
         }
 
