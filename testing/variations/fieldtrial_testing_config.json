@@ -7248,6 +7248,21 @@
             ]
         }
     ],
+    "OneGroupPerRenderer": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OneGroupPerRenderer"
+                    ]
+                }
+            ]
+        }
+    ],
     "OneTimeGeolocationPermission": [
         {
             "platforms": [
