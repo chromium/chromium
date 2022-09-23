@@ -4,10 +4,10 @@
 
 import 'chrome://chrome-signin/inline_login_app.js';
 
+import {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -77,13 +77,17 @@ suite(inline_login_test.suiteName, () => {
       // 'Welcome' screen should exist only on Chrome OS.
       assertEquals(
           null,
-          inlineLoginComponent.$$(`#${inlineLoginComponent.View.welcome}`));
+          inlineLoginComponent.shadowRoot.querySelector(
+              `#${inlineLoginComponent.View.welcome}`));
     }
 
     // The 'loading' spinner should be shown and 'initialize' should be called
     // on startup.
-    assertTrue(inlineLoginComponent.$$('paper-spinner-lite').active);
-    assertTrue(inlineLoginComponent.$$('#signinFrame').hidden);
+    assertTrue(
+        inlineLoginComponent.shadowRoot.querySelector('paper-spinner-lite')
+            .active);
+    assertTrue(
+        inlineLoginComponent.shadowRoot.querySelector('#signinFrame').hidden);
     assertEquals(1, testBrowserProxy.getCallCount('initialize'));
   });
 
@@ -107,10 +111,14 @@ suite(inline_login_test.suiteName, () => {
   test(assert(inline_login_test.TestNames.AuthExtHostCallbacks), async () => {
     const fakeUrl = 'www.google.com/fake';
 
-    assertTrue(inlineLoginComponent.$$('paper-spinner-lite').active);
+    assertTrue(
+        inlineLoginComponent.shadowRoot.querySelector('paper-spinner-lite')
+            .active);
     testAuthenticator.dispatchEvent(new Event('ready'));
     assertEquals(1, testBrowserProxy.getCallCount('authExtensionReady'));
-    assertFalse(inlineLoginComponent.$$('paper-spinner-lite').active);
+    assertFalse(
+        inlineLoginComponent.shadowRoot.querySelector('paper-spinner-lite')
+            .active);
 
     testAuthenticator.dispatchEvent(
         new CustomEvent('resize', {detail: fakeUrl}));
@@ -123,7 +131,9 @@ suite(inline_login_test.suiteName, () => {
         new CustomEvent('authCompleted', {detail: fakeCredentials}));
     const completeLoginResult =
         await testBrowserProxy.whenCalled('completeLogin');
-    assertTrue(inlineLoginComponent.$$('paper-spinner-lite').active);
+    assertTrue(
+        inlineLoginComponent.shadowRoot.querySelector('paper-spinner-lite')
+            .active);
 
     if (isChromeOS &&
         loadTimeData.getBoolean('isArcAccountRestrictionsEnabled')) {
@@ -149,7 +159,8 @@ suite(inline_login_test.suiteName, () => {
   });
 
   test(assert(inline_login_test.TestNames.BackButton), () => {
-    const backButton = inlineLoginComponent.$$('.back-button');
+    const backButton =
+        inlineLoginComponent.shadowRoot.querySelector('.back-button');
     if (!isChromeOS) {
       // Back button should be shown only on ChromeOS.
       assertEquals(null, backButton);
@@ -157,10 +168,12 @@ suite(inline_login_test.suiteName, () => {
     }
 
     let backInWebviewCalls = 0;
-    inlineLoginComponent.$$('#signinFrame').back = () => backInWebviewCalls++;
+    inlineLoginComponent.shadowRoot.querySelector('#signinFrame').back = () =>
+        backInWebviewCalls++;
 
     // If we cannot go back in the webview - we should close the dialog.
-    inlineLoginComponent.$$('#signinFrame').canGoBack = () => false;
+    inlineLoginComponent.shadowRoot.querySelector('#signinFrame').canGoBack =
+        () => false;
     backButton.click();
     assertEquals(1, testBrowserProxy.getCallCount('dialogClose'));
     assertEquals(0, backInWebviewCalls);
@@ -168,7 +181,8 @@ suite(inline_login_test.suiteName, () => {
     testBrowserProxy.reset();
 
     // Go back in the webview if possible.
-    inlineLoginComponent.$$('#signinFrame').canGoBack = () => true;
+    inlineLoginComponent.shadowRoot.querySelector('#signinFrame').canGoBack =
+        () => true;
     backButton.click();
     assertEquals(0, testBrowserProxy.getCallCount('dialogClose'));
     assertEquals(1, backInWebviewCalls);
@@ -176,6 +190,7 @@ suite(inline_login_test.suiteName, () => {
 
   test(assert(inline_login_test.TestNames.OkButton), () => {
     // 'OK' button should be hidden.
-    assertTrue(inlineLoginComponent.$$('.next-button').hidden);
+    assertTrue(
+        inlineLoginComponent.shadowRoot.querySelector('.next-button').hidden);
   });
 });

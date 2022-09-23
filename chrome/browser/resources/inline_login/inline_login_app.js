@@ -8,12 +8,11 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
-import {isChromeOS} from '//resources/js/cr.m.js';
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // <if expr="chromeos_ash">
 import './arc_account_picker/arc_account_picker_app.js';
@@ -23,11 +22,12 @@ import './signin_error_page.js';
 import './welcome_page_app.js';
 import './strings.m.js';
 import {getAccountAdditionOptionsFromJSON} from './arc_account_picker/arc_util.js';
+import {WelcomePageAppElement} from './welcome_page_app.js';
 // </if>
 
 import {AuthCompletedCredentials, Authenticator, AuthParams} from './gaia_auth_host/authenticator.m.js';
-import {InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
 import {getTemplate} from './inline_login_app.html.js';
+import {InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
 
 /**
  * @fileoverview Inline login WebUI in various signin flows for ChromeOS and
@@ -43,141 +43,159 @@ const View = {
   arcAccountPicker: 'arcAccountPicker',
 };
 
-Polymer({
-  is: 'inline-login-app',
 
-  _template: getTemplate(),
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ */
+const InlineLoginAppElementBase =
+    mixinBehaviors([WebUIListenerBehavior, I18nBehavior], PolymerElement);
 
-  behaviors: [WebUIListenerBehavior, I18nBehavior],
+/** @polymer */
+export class InlineLoginAppElement extends InlineLoginAppElementBase {
+  static get is() {
+    return 'inline-login-app';
+  }
 
-  properties: {
-    /** Mirroring the enum so that it can be used from HTML bindings. */
-    View: {
-      type: Object,
-      value: View,
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /**
-     * Indicates whether the page is loading.
-     * @private {boolean}
-     */
-    loading_: {
-      type: Boolean,
-      value: true,
-    },
-
-    /**
-     * Indicates whether the account is being verified.
-     * @private {boolean}
-     */
-    verifyingAccount_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * The auth extension host instance.
-     * @private {?Authenticator}
-     */
-    authExtHost_: {
-      type: Object,
-      value: null,
-    },
-
-    // <if expr="chromeos_ash">
-    /*
-     * True if welcome page should not be shown.
-     * @private
-     */
-    shouldSkipWelcomePage_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('shouldSkipWelcomePage');
+  static get properties() {
+    return {
+      /** Mirroring the enum so that it can be used from HTML bindings. */
+      View: {
+        type: Object,
+        value: View,
       },
-      readOnly: true,
-    },
 
-    /*
-     * True if `kArcAccountRestrictions` feature is enabled.
-     * @private
-     */
-    isArcAccountRestrictionsEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isArcAccountRestrictionsEnabled');
+      /**
+       * Indicates whether the page is loading.
+       * @private {boolean}
+       */
+      loading_: {
+        type: Boolean,
+        value: true,
       },
-      readOnly: true,
-    },
 
-    /*
-     * True if the dialog is open for reauthentication.
-     * @private
-     */
-    isReauthentication_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /*
-     * True if the account should be available in ARC++ after addition.
-     * @private
-     */
-    isAvailableInArc_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * User's email used in the sign-in flow.
-     * @private {string}
-     */
-    email_: {type: String, value: ''},
-
-    /**
-     * Hosted domain of the user's email used in the sign-in flow.
-     * @private {string}
-     */
-    hostedDomain_: {type: String, value: ''},
-
-    /**
-     * @return {boolean} True if secondary account sign-ins are allowed, false
-     *    otherwise.
-     * @private
-     */
-    isSecondaryGoogleAccountSigninAllowed_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('secondaryGoogleAccountSigninAllowed');
+      /**
+       * Indicates whether the account is being verified.
+       * @private {boolean}
+       */
+      verifyingAccount_: {
+        type: Boolean,
+        value: false,
       },
-    },
-    // </if>
 
-    /**
-     * Id of the screen that is currently displayed.
-     * @private {View}
-     */
-    currentView_: {
-      type: String,
-      value: '',
-    },
-  },
+      /**
+       * The auth extension host instance.
+       * @private {?Authenticator}
+       */
+      authExtHost_: {
+        type: Object,
+        value: null,
+      },
 
-  /** @private {?InlineLoginBrowserProxy} */
-  browserProxy_: null,
+      // <if expr="chromeos_ash">
+      /*
+       * True if welcome page should not be shown.
+       * @private
+       */
+      shouldSkipWelcomePage_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('shouldSkipWelcomePage');
+        },
+        readOnly: true,
+      },
 
-  /**
-   * Whether the login UI is loaded for signing in primary account.
-   * @private {boolean}
-   */
-  isLoginPrimaryAccount_: false,
+      /*
+       * True if `kArcAccountRestrictions` feature is enabled.
+       * @private
+       */
+      isArcAccountRestrictionsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isArcAccountRestrictionsEnabled');
+        },
+        readOnly: true,
+      },
+
+      /*
+       * True if the dialog is open for reauthentication.
+       * @private
+       */
+      isReauthentication_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /*
+       * True if the account should be available in ARC++ after addition.
+       * @private
+       */
+      isAvailableInArc_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * User's email used in the sign-in flow.
+       * @private {string}
+       */
+      email_: {type: String, value: ''},
+
+      /**
+       * Hosted domain of the user's email used in the sign-in flow.
+       * @private {string}
+       */
+      hostedDomain_: {type: String, value: ''},
+
+      /**
+       * @return {boolean} True if secondary account sign-ins are allowed, false
+       *    otherwise.
+       * @private
+       */
+      isSecondaryGoogleAccountSigninAllowed_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('secondaryGoogleAccountSigninAllowed');
+        },
+      },
+      // </if>
+
+      /**
+       * Id of the screen that is currently displayed.
+       * @private {View}
+       */
+      currentView_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /**
+     * Whether the login UI is loaded for signing in primary account.
+     * @private {boolean}
+     */
+    this.isLoginPrimaryAccount_ = false;
+
+
+    /** @private {InlineLoginBrowserProxy} */
     this.browserProxy_ = InlineLoginBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     // <if expr="chromeos_ash">
     if (!this.isSecondaryGoogleAccountSigninAllowed_) {
       // This can happen only if the user opened chrome://chrome-signin manually
@@ -193,10 +211,12 @@ Polymer({
         /** @type {!WebView} */ (this.$.signinFrame));
     this.addAuthExtHostListeners_();
     this.browserProxy_.initialize();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.addWebUIListener(
         'load-auth-extension', data => this.loadAuthExtension_(data));
     this.addWebUIListener(
@@ -206,7 +226,7 @@ Polymer({
     this.addWebUIListener(
         'show-signin-error-page', data => this.signinErrorShowView_(data));
     // </if>
-  },
+  }
 
   /** @private */
   addAuthExtHostListeners_() {
@@ -231,7 +251,7 @@ Polymer({
         'showIncognito', () => this.onShowIncognito_());
     this.authExtHost_.addEventListener(
         'getAccounts', () => this.onGetAccounts_());
-  },
+  }
 
   /**
    * @param {!CustomEvent<string>} e
@@ -240,7 +260,7 @@ Polymer({
   onDropLink_(e) {
     // Navigate to the dropped link.
     window.location.href = e.detail;
-  },
+  }
 
   /**
    * @param {!CustomEvent<NewWindowProperties>} e
@@ -254,7 +274,7 @@ Polymer({
     // user opens a link in a new window.
     this.closeDialog_();
     // </if>
-  },
+  }
 
   /** @private */
   onAuthReady_() {
@@ -263,7 +283,7 @@ Polymer({
       this.browserProxy_.recordAction('Signin_SigninPage_Shown');
     }
     this.browserProxy_.authExtensionReady();
-  },
+  }
 
   /**
    * @param {!CustomEvent<string>} e
@@ -271,7 +291,7 @@ Polymer({
    */
   onResize_(e) {
     this.browserProxy_.switchToFullTab(e.detail);
-  },
+  }
 
   /**
    * @param {!CustomEvent<!AuthCompletedCredentials>} e
@@ -289,19 +309,19 @@ Polymer({
     // </if>
 
     this.browserProxy_.completeLogin(credentials);
-  },
+  }
 
   /** @private */
   onShowIncognito_() {
     this.browserProxy_.showIncognito();
-  },
+  }
 
   /** @private */
   onGetAccounts_() {
     this.browserProxy_.getAccounts().then(result => {
       this.authExtHost_.getAccountsResponse(result);
     });
-  },
+  }
 
   /**
    * Loads auth extension.
@@ -312,12 +332,14 @@ Polymer({
     this.authExtHost_.load(data.authMode, data);
     this.loading_ = true;
     this.isLoginPrimaryAccount_ = data.isLoginPrimaryAccount;
+    // <if expr="chromeos_ash">
     // Skip welcome page for reauthentication.
     if (data.email) {
       this.isReauthentication_ = true;
     }
+    // </if>
     this.switchToDefaultView_();
-  },
+  }
 
   /**
    * Sends a message 'lstFetchResults'. This is a specific message sent when
@@ -330,7 +352,7 @@ Polymer({
    */
   sendLSTFetchResults_(arg) {
     this.browserProxy_.lstFetchResults(arg);
-  },
+  }
 
   /**
    * @param {boolean} loading Indicates whether the page is loading.
@@ -341,7 +363,7 @@ Polymer({
    */
   isSpinnerActive_(loading, verifyingAccount) {
     return loading || verifyingAccount;
-  },
+  }
 
   /**
    * Closes the login dialog.
@@ -349,7 +371,7 @@ Polymer({
    */
   closeDialog_() {
     this.browserProxy_.dialogClose();
-  },
+  }
 
   // <if expr="chromeos_ash">
   /**
@@ -358,7 +380,7 @@ Polymer({
    */
   goToWelcomeScreen_() {
     this.switchView_(View.welcome);
-  },
+  }
 
   /**
    * Navigates back in the web view if possible. Otherwise closes the dialog.
@@ -374,7 +396,7 @@ Polymer({
     } else {
       this.closeDialog_();
     }
-  },
+  }
 
   /**
    * @return {string}
@@ -382,7 +404,7 @@ Polymer({
    */
   getBackButtonIcon_() {
     return isRTL() ? 'cr:chevron-right' : 'cr:chevron-left';
-  },
+  }
 
   /**
    * @return {string}
@@ -397,7 +419,7 @@ Polymer({
       return this.i18n('ok');
     }
     return this.i18n('nextButtonLabel');
-  },
+  }
 
   /**
    * @param {View} currentView Identifier of the view that is being shown.
@@ -408,7 +430,7 @@ Polymer({
    */
   shouldShowBackButton_(currentView, verifyingAccount) {
     return currentView === View.addAccount && !verifyingAccount;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -418,7 +440,7 @@ Polymer({
     return this.currentView_ === View.welcome ||
         this.currentView_ === View.signinBlockedByPolicy ||
         this.currentView_ === View.signinError;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -426,7 +448,7 @@ Polymer({
    */
   shouldShowGaiaButtons_() {
     return this.currentView_ === View.addAccount;
-  },
+  }
   // </if>
 
   /**
@@ -439,7 +461,7 @@ Polymer({
     // <if expr="chromeos_ash">
     if (this.isArcAccountRestrictionsEnabled_ &&
         view === View.arcAccountPicker) {
-      this.$$('arc-account-picker-app')
+      this.shadowRoot.querySelector('arc-account-picker-app')
           .loadAccounts()
           .then(
               accountsFound => {
@@ -454,7 +476,7 @@ Polymer({
     // </if>
 
     this.switchView_(view);
-  },
+  }
 
   /**
    * @return {View}
@@ -482,7 +504,7 @@ Polymer({
     return this.shouldSkipWelcomePage_ ? View.addAccount :
                                          View.welcome;
     // </if>
-  },
+  }
 
   /**
    * @param {View} id identifier of the view that should be shown.
@@ -495,7 +517,7 @@ Polymer({
     /** @type {CrViewManagerElement} */ (this.$.viewManager)
         .switchView(id, enterAnimation, exitAnimation);
     this.dispatchEvent(new CustomEvent('switch-view-notify-for-testing'));
-  },
+  }
 
   /**
    * @return {boolean}
@@ -508,7 +530,7 @@ Polymer({
     // <if expr="chromeos_ash">
     return !this.shouldSkipWelcomePage_ && !this.isReauthentication_;
     // </if>
-  },
+  }
 
   // <if expr="chromeos_ash">
 
@@ -534,7 +556,7 @@ Polymer({
     }
 
     this.setFocusToWebview_();
-  },
+  }
 
   /** @private */
   onOkButtonClick_() {
@@ -542,7 +564,8 @@ Polymer({
       case View.welcome:
         this.switchView_(View.addAccount);
         const skipChecked =
-            /** @type {WelcomePageAppElement} */ (this.$$('welcome-page-app'))
+            /** @type {WelcomePageAppElement} */ (
+                this.shadowRoot.querySelector('welcome-page-app'))
                 .isSkipCheckboxChecked();
         this.browserProxy_.skipWelcomePage(skipChecked);
         this.setFocusToWebview_();
@@ -552,17 +575,19 @@ Polymer({
         this.closeDialog_();
         break;
     }
-  },
+  }
 
   /** @private */
   setFocusToWebview_() {
     this.$.signinFrame.focus();
-  },
+  }
   // </if>
 
   /** @param {Object} authExtHost */
   setAuthExtHostForTest(authExtHost) {
     this.authExtHost_ = /** @type {!Authenticator} */ (authExtHost);
     this.addAuthExtHostListeners_();
-  },
-});
+  }
+}
+
+customElements.define(InlineLoginAppElement.is, InlineLoginAppElement);

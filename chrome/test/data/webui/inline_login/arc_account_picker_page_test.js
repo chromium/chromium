@@ -7,6 +7,7 @@ import 'chrome://chrome-signin/inline_login_app.js';
 import {ArcAccountPickerAppElement} from 'chrome://chrome-signin/arc_account_picker/arc_account_picker_app.js';
 import {Account} from 'chrome://chrome-signin/arc_account_picker/arc_account_picker_browser_proxy.js';
 import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
+import {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
@@ -44,7 +45,9 @@ suite(arc_account_picker_page_test.suiteName, () => {
    * @return {string} id of the active view.
    */
   function getActiveViewId() {
-    return inlineLoginComponent.$$('div.active[slot="view"]').id;
+    return inlineLoginComponent.shadowRoot
+        .querySelector('div.active[slot="view"]')
+        .id;
   }
 
   /**
@@ -70,7 +73,8 @@ suite(arc_account_picker_page_test.suiteName, () => {
     inlineLoginComponent.setAuthExtHostForTest(new TestAuthenticator());
     flush();
     arcAccountPickerComponent = /** @type {ArcAccountPickerAppElement} */ (
-        inlineLoginComponent.$$('arc-account-picker-app'));
+        inlineLoginComponent.shadowRoot.querySelector(
+            'arc-account-picker-app'));
 
     const switchViewPromise = new Promise(
         resolve => inlineLoginComponent.addEventListener(

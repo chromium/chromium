@@ -9,49 +9,60 @@ import './account_manager_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getAccountAdditionOptionsFromJSON} from './arc_account_picker/arc_util.js';
 import {InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
 import {getTemplate} from './welcome_page_app.html.js';
 
-Polymer({
-  is: 'welcome-page-app',
 
-  _template: getTemplate(),
+/** @polymer */
+export class WelcomePageAppElement extends PolymerElement {
+  static get is() {
+    return 'welcome-page-app';
+  }
 
-  properties: {
-    /* The value of the 'available in ARC' toggle.*/
-    isAvailableInArc: {
-      type: Boolean,
-      notify: true,
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /*
-     * True if the 'Add account' flow is opened from ARC.
-     * In this case we will hide the toggle and show different welcome message.
-     * @private
-     */
-    isArcFlow_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /*
-     * True if `kArcAccountRestrictions` feature is enabled.
-     * @private
-     */
-    isArcAccountRestrictionsEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isArcAccountRestrictionsEnabled');
+  static get properties() {
+    return {
+      /* The value of the 'available in ARC' toggle.*/
+      isAvailableInArc: {
+        type: Boolean,
+        notify: true,
       },
-      readOnly: true,
-    },
-  },
+
+      /*
+       * True if the 'Add account' flow is opened from ARC.
+       * In this case we will hide the toggle and show different welcome
+       * message.
+       * @private
+       */
+      isArcFlow_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /*
+       * True if `kArcAccountRestrictions` feature is enabled.
+       * @private
+       */
+      isArcAccountRestrictionsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isArcAccountRestrictionsEnabled');
+        },
+        readOnly: true,
+      },
+    };
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     if (this.isArcAccountRestrictionsEnabled_) {
       const options = getAccountAdditionOptionsFromJSON(
           InlineLoginBrowserProxyImpl.getInstance().getDialogArguments());
@@ -69,17 +80,18 @@ Polymer({
     }
 
     this.setUpLinkCallbacks_();
-  },
+  }
 
   /** @return {boolean} */
   isSkipCheckboxChecked() {
     return !!this.$.checkbox && this.$.checkbox.checked;
-  },
+  }
 
   /** @private */
   setUpLinkCallbacks_() {
-    [this.$$('#osSettingsLink'), this.$$('#appsSettingsLink'),
-     this.$$('#newPersonLink')]
+    [this.shadowRoot.querySelector('#osSettingsLink'),
+     this.shadowRoot.querySelector('#appsSettingsLink'),
+     this.shadowRoot.querySelector('#newPersonLink')]
         .filter(link => !!link)
         .forEach(link => {
           link.addEventListener(
@@ -88,18 +100,18 @@ Polymer({
         });
 
     if (this.isArcAccountRestrictionsEnabled_) {
-      const guestModeLink = this.$$('#guestModeLink');
+      const guestModeLink = this.shadowRoot.querySelector('#guestModeLink');
       if (guestModeLink) {
         guestModeLink.addEventListener('click', () => this.openGuestLink_());
       }
     } else {
-      const incognitoLink = this.$$('#incognitoLink');
+      const incognitoLink = this.shadowRoot.querySelector('#incognitoLink');
       if (incognitoLink) {
         incognitoLink.addEventListener(
             'click', () => this.openIncognitoLink_());
       }
     }
-  },
+  }
 
   /**
    * @return {boolean}
@@ -107,7 +119,7 @@ Polymer({
    */
   isArcToggleVisible_() {
     return this.isArcAccountRestrictionsEnabled_ && !this.isArcFlow_;
-  },
+  }
 
   /**
    * @return {string}
@@ -116,7 +128,7 @@ Polymer({
   getWelcomeTitle_() {
     return loadTimeData.getStringF(
         'accountManagerDialogWelcomeTitle', loadTimeData.getString('userName'));
-  },
+  }
 
   /**
    * @return {string}
@@ -128,17 +140,19 @@ Polymer({
         'accountManagerDialogWelcomeBodyArc' :
         'accountManagerDialogWelcomeBody';
     return loadTimeData.getString(welcomeBodyKey);
-  },
+  }
 
   /** @private */
   openIncognitoLink_() {
     InlineLoginBrowserProxyImpl.getInstance().showIncognito();
     // `showIncognito` will close the dialog.
-  },
+  }
 
   /** @private */
   openGuestLink_() {
     InlineLoginBrowserProxyImpl.getInstance().openGuestWindow();
     // `openGuestWindow` will close the dialog.
-  },
-});
+  }
+}
+
+customElements.define(WelcomePageAppElement.is, WelcomePageAppElement);

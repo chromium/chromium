@@ -11,6 +11,7 @@
 import 'chrome://chrome-signin/inline_login_app.js';
 
 import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
+import {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {SigninBlockedByPolicyPageElement} from 'chrome://chrome-signin/signin_blocked_by_policy_page.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -48,7 +49,9 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
    * @return {string} id of the active view.
    */
   function getActiveViewId() {
-    return inlineLoginComponent.$$('div.active[slot="view"]').id;
+    return inlineLoginComponent.shadowRoot
+        .querySelector('div.active[slot="view"]')
+        .id;
   }
 
   /**
@@ -68,7 +71,8 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
     flush();
     signinBlockedByPolicyPageComponent =
         /** @type {SigninBlockedByPolicyPageElement}*/
-        (inlineLoginComponent.$$('signin-blocked-by-policy-page'));
+        (inlineLoginComponent.shadowRoot.querySelector(
+            'signin-blocked-by-policy-page'));
   }
 
   test(
@@ -151,7 +155,8 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
         webUIListenerCallback(
             'show-signin-error-page', fakeSigninBlockedByPolicyData);
 
-        const okButton = inlineLoginComponent.$$('.next-button');
+        const okButton =
+            inlineLoginComponent.shadowRoot.querySelector('.next-button');
         // OK button and signin blocked by policy screen should be visible.
         assertFalse(okButton.hidden, 'OK button should be visible');
         assertEquals(

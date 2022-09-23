@@ -5,6 +5,7 @@
 import 'chrome://chrome-signin/inline_login_app.js';
 
 import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
+import {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
@@ -43,7 +44,9 @@ suite(inline_login_welcome_page_test.suiteName, () => {
    * @return {string} id of the active view.
    */
   function getActiveViewId() {
-    return inlineLoginComponent.$$('div.active[slot="view"]').id;
+    return inlineLoginComponent.shadowRoot
+        .querySelector('div.active[slot="view"]')
+        .id;
   }
 
   /**
@@ -81,7 +84,8 @@ suite(inline_login_welcome_page_test.suiteName, () => {
   test(assert(inline_login_welcome_page_test.TestNames.OkButton), () => {
     testSetup(/*dialogArgs=*/ null);
     webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
-    const okButton = inlineLoginComponent.$$('.next-button');
+    const okButton =
+        inlineLoginComponent.shadowRoot.querySelector('.next-button');
     // OK button and welcome screen should be visible.
     assertFalse(okButton.hidden, 'OK button should be visible');
     assertEquals(
@@ -108,12 +112,14 @@ suite(inline_login_welcome_page_test.suiteName, () => {
 
     webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
     const checkbox =
-        inlineLoginComponent.$$('welcome-page-app').$$('cr-checkbox');
+        inlineLoginComponent.shadowRoot.querySelector('welcome-page-app')
+            .shadowRoot.querySelector('cr-checkbox');
     assertFalse(checkbox.checked, 'Checkbox should be unchecked by default');
     checkbox.click();
     assertTrue(checkbox.checked, 'Checkbox should be checked');
 
-    const okButton = inlineLoginComponent.$$('.next-button');
+    const okButton =
+        inlineLoginComponent.shadowRoot.querySelector('.next-button');
     okButton.click();
     return testBrowserProxy.whenCalled('skipWelcomePage').then(skip => {
       assertEquals(true, skip, 'skipWelcomePage should be called with "true"');
@@ -123,8 +129,10 @@ suite(inline_login_welcome_page_test.suiteName, () => {
   test(assert(inline_login_welcome_page_test.TestNames.GoBack), () => {
     testSetup(/*dialogArgs=*/ null);
     webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
-    const backButton = inlineLoginComponent.$$('.back-button');
-    const okButton = inlineLoginComponent.$$('.next-button');
+    const backButton =
+        inlineLoginComponent.shadowRoot.querySelector('.back-button');
+    const okButton =
+        inlineLoginComponent.shadowRoot.querySelector('.next-button');
 
     assertTrue(backButton.hidden, 'Back button should be hidden');
     assertFalse(okButton.hidden, 'OK button should be visible');
@@ -154,12 +162,14 @@ suite(inline_login_welcome_page_test.suiteName, () => {
           showArcAvailabilityPicker: false,
         };
         testSetup(dialogArgs);
-        const toggle = inlineLoginComponent.$$('welcome-page-app')
-                           .$$('.arc-toggle-container');
+        const toggle =
+            inlineLoginComponent.shadowRoot.querySelector('welcome-page-app')
+                .shadowRoot.querySelector('.arc-toggle-container');
         assertTrue(!!toggle);
         assertFalse(toggle.hidden, 'ARC toggle should be visible');
         const toggleButton =
-            inlineLoginComponent.$$('welcome-page-app').$$('cr-toggle');
+            inlineLoginComponent.shadowRoot.querySelector('welcome-page-app')
+                .shadowRoot.querySelector('cr-toggle');
         assertTrue(!!toggleButton);
         assertTrue(toggleButton.checked);
         toggleButton.click();
@@ -176,7 +186,8 @@ suite(inline_login_welcome_page_test.suiteName, () => {
     };
     testSetup(dialogArgs);
     const toggle =
-        inlineLoginComponent.$$('welcome-page-app').$$('.arc-toggle-container');
+        inlineLoginComponent.shadowRoot.querySelector('welcome-page-app')
+            .shadowRoot.querySelector('.arc-toggle-container');
     assertTrue(!!toggle);
     assertTrue(toggle.hidden, 'ARC toggle should be hidden');
   });
@@ -188,16 +199,24 @@ suite(inline_login_welcome_page_test.suiteName, () => {
     };
     testSetup(dialogArgs);
 
-    inlineLoginComponent.$$('welcome-page-app').$$('#osSettingsLink').click();
+    inlineLoginComponent.shadowRoot.querySelector('welcome-page-app')
+        .shadowRoot.querySelector('#osSettingsLink')
+        .click();
     await testBrowserProxy.whenCalled('dialogClose');
 
-    inlineLoginComponent.$$('welcome-page-app').$$('#appsSettingsLink').click();
+    inlineLoginComponent.shadowRoot.querySelector('welcome-page-app')
+        .shadowRoot.querySelector('#appsSettingsLink')
+        .click();
     await testBrowserProxy.whenCalled('dialogClose');
 
-    inlineLoginComponent.$$('welcome-page-app').$$('#newPersonLink').click();
+    inlineLoginComponent.shadowRoot.querySelector('welcome-page-app')
+        .shadowRoot.querySelector('#newPersonLink')
+        .click();
     await testBrowserProxy.whenCalled('dialogClose');
 
-    inlineLoginComponent.$$('welcome-page-app').$$('#guestModeLink').click();
+    inlineLoginComponent.shadowRoot.querySelector('welcome-page-app')
+        .shadowRoot.querySelector('#guestModeLink')
+        .click();
     return testBrowserProxy.whenCalled('openGuestWindow');
   });
 });
