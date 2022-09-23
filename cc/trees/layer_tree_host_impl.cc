@@ -1972,8 +1972,11 @@ int LayerTreeHostImpl::GetMSAASampleCountForRaster(
   if (!can_use_msaa_)
     return 0;
 
-  if (display_list->HasNonAAPaint() && !supports_disable_msaa_)
-    return 0;
+  if (display_list->HasNonAAPaint()) {
+    UMA_HISTOGRAM_BOOLEAN("GPU.SupportsDisableMsaa", supports_disable_msaa_);
+    if (!supports_disable_msaa_)
+      return 0;
+  }
 
   return RequestedMSAASampleCount();
 }

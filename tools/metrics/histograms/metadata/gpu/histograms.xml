@@ -1461,6 +1461,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.SupportsDisableMsaa" enum="BooleanSupported"
+    expires_after="2023-03-19">
+  <owner>vasilyt@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    This metric records if we had support for non-aa draws with hardware MSAA
+    via GL_EXT_multisample_compatibility. Recorded once for each raster task
+    that had non-aa draw.
+  </summary>
+</histogram>
+
 <histogram name="GPU.SupportsDX12" enum="BooleanSupported"
     expires_after="2023-02-19">
   <owner>magchen@chromium.org</owner>
